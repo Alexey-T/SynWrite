@@ -1,0 +1,43 @@
+object fmClips: TfmClips
+  Left = 326
+  Top = 442
+  AutoScroll = False
+  ClientHeight = 304
+  ClientWidth = 174
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Combo: TTntComboBox
+    Left = 0
+    Top = 0
+    Width = 174
+    Height = 21
+    Align = alTop
+    Style = csDropDownList
+    DropDownCount = 20
+    ItemHeight = 13
+    Sorted = True
+    TabOrder = 0
+    OnChange = ComboChange
+  end
+  object List: TTntListBox
+    Left = 0
+    Top = 21
+    Width = 174
+    Height = 283
+    Align = alClient
+    ItemHeight = 13
+    TabOrder = 1
+    OnDblClick = ListDblClick
+    OnKeyDown = ListKeyDown
+  end
+end
