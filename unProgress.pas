@@ -26,12 +26,11 @@ type
     laBin: TTntLabel;
     Pro: TGauge;
     LaBk: TTntLabel;
-    TimerOnTop: TTimer;
     laText: TTntLabel;
     labCount: TTntLabel;
     laSort: TTntLabel;
     procedure bCanClick(Sender: TObject);
-    procedure TimerOnTopTimer(Sender: TObject);
+    procedure TntFormPaint(Sender: TObject);
   private
     { Private declarations }
   public
@@ -50,7 +49,8 @@ procedure TfmProgress.SetMode(m: TProgressType);
  //Align center
  procedure A(L: TTntLabel);
  begin
-   L.Left:= (Width-L.Width) div 2;
+   L.Top:= labCount.Top;
+   L.Left:= (Pro.Left - L.Width) div 2;
  end;
 begin
   Pro.Progress:= 0; //reset bar on mode change
@@ -76,12 +76,13 @@ begin
   StopFind:= true;
 end;
 
-procedure TfmProgress.TimerOnTopTimer(Sender: TObject);
+procedure TfmProgress.TntFormPaint(Sender: TObject);
 begin
-  TimerOnTop.Enabled:= false;
-  FormStyle:= fsStayOnTop;
-  //runtime OnTop setting. This sets form on top of app's
-  //forms only.
+  if BorderStyle=bsNone then
+  begin
+    Canvas.Brush.Color:= clInfoBk;
+    Canvas.FillRect(ClientRect);
+  end;  
 end;
 
 end.

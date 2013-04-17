@@ -11,7 +11,7 @@ type
 
 function DoDedupStringList(
   List: TTntStringList;
-  AMode: TSynDedupMode): boolean;
+  AMode: TSynDedupMode): Integer;
 
 function DoSortStringList(
   List: TTntStringList;
@@ -236,12 +236,12 @@ end;
 
 function DoDedupStringList(
   List: TTntStringList;
-  AMode: TSynDedupMode): boolean;
+  AMode: TSynDedupMode): Integer;
 var
   i, N: Integer;
   L: TTntStringList;
 begin
-  Result:= true;
+  Result:= 0;
   Screen.Cursor:= crHourGlass;
   try
     //delete last empty line
@@ -254,7 +254,10 @@ begin
         begin
           for i:= List.Count-1 downto 1{not 0} do
             if (List[i]=List[i-1]) then
+            begin
               List.Delete(i);
+              Inc(Result);
+            end;
         end;
       dedupAll:
         begin
@@ -270,7 +273,10 @@ begin
 
             for i:= List.Count-1 downto 0 do
               if List.Objects[i]<>nil then
+              begin
                 List.Delete(i);
+                Inc(Result);
+              end;  
           finally
             FreeAndNil(L);
           end;

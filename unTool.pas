@@ -214,9 +214,7 @@ begin
       cbCtx.Checked:= Bool(StrToIntDef(SubItems[10], 0));
 
       edOutType.ItemIndex:= OutputTypeStrToOrder(SubItems[11]);
-      edOutTypeChange(Self);
       edOutEnc.ItemIndex:= StrToIntDef(SubItems[12], 0);
-
       edOutType.Enabled:= cbOut.Checked;
       edOutEnc.Enabled:= cbOut.Checked;
       bOut.Enabled:= cbOut.Checked and

@@ -713,7 +713,6 @@ type
     TBXSeparatorItem57: TTBXSeparatorItem;
     TBXItemValClr: TTBXItem;
     ecToggleFocusValidate: TAction;
-    ecRemoveDups: TAction;
     TBXItemEDedupAdjacent: TTBXItem;
     TBXItemTbDedupAdjacent: TTBXItem;
     TBXSeparatorItem58: TTBXSeparatorItem;
@@ -1417,7 +1416,6 @@ type
     procedure ListValKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure ecToggleFocusValidateExecute(Sender: TObject);
-    procedure ecRemoveDupsExecute(Sender: TObject);
     procedure TBXItemSessClrClick(Sender: TObject);
     procedure TBXItemFSesSaveClick(Sender: TObject);
     procedure TBXItemFSesCloseClick(Sender: TObject);
@@ -2245,6 +2243,7 @@ type
     procedure DoToggleLineComment(Alt: boolean);
     procedure DoCopyFilenameToClipboard(F: TEditorFrame; Cmd: TSynCopyNameCmd);
     function IsCommandAllowedInMacro(Cmd: Integer): boolean;
+    procedure UpdateFormEnabled(En: boolean);
     //end of private
 
   protected
@@ -2548,7 +2547,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.2.155';
+  cSynVer = '5.2.160';
 
 implementation
 
@@ -2589,7 +2588,7 @@ uses
   unCmdList, unProjList;
 
 {$R *.dfm}
-{$R Ico\Cur.res}
+{$R Cur.res}
 
 const
   cRegexColorCode = '\#\w{3,6}';
@@ -3626,7 +3625,6 @@ begin
   ecTitleCase.Enabled:= sel2;
   ecSentCase.Enabled:= sel2;
   ecGoto.Enabled:= ed.Lines.Count>0;
-  ecRemoveDups.Enabled:= sel and not ro;
   ecRemoveBlanks.Enabled:= not ro;
   ecPasteNoCurChange.Enabled:= ecPaste.Enabled;
   ecSortDialog.Enabled:= (ed.Lines.Count>0) and not ro;
@@ -3635,7 +3633,7 @@ begin
   ecDedupAll.Enabled:= ecSortDialog.Enabled;
   ecDedupAdjacent.Enabled:= ecSortDialog.Enabled;
 
-  ecSpellLive.Checked:= frame.SpellLive;
+  ecSpellLive.Checked:= Frame.SpellLive;
   ecSyncV.Enabled:= PageControl2.Visible;
   ecSyncH.Enabled:= ecSyncV.Enabled;
 
@@ -7886,19 +7884,44 @@ end;
     end;
   end;
 
+  procedure TfmMain.UpdateFormEnabled(En: boolean);
+  begin
+    plTree.Enabled:= En;
+    plClip.Enabled:= En;
+    plOut.Enabled:= En;
+
+    PageControl1.Enabled:= En;
+    PageControl2.Enabled:= En;
+
+    TbxDockTop.Enabled:= En;
+    TbxDockLeft.Enabled:= En;
+    TbxDockRight.Enabled:= En;
+    TbxDockBottom.Enabled:= En;
+    Menu.Enabled:= En;
+    SB2.Enabled:= En;
+
+    if Assigned(fmSR) then
+      fmSR.Enabled:= En;
+    if Assigned(fmNumConv) then
+      fmNumConv.Enabled:= En;
+  end;
+
   procedure TfmMain.ShowProgress(AMode: TProgressType);
   begin
-    Self.Enabled:= false;
-    if Assigned(fmSR) then
-      fmSR.Enabled:= false;
-    if Assigned(fmNumConv) then
-      fmNumConv.Enabled:= false;
+    UpdateFormEnabled(false);
 
     if not Assigned(fmProgress) then
+    begin
       fmProgress:= TfmProgress.Create(Self);
+      fmProgress.Parent:= Self;
+      fmProgress.BorderStyle:= bsNone;
+      fmProgress.Align:= alBottom;
+      fmProgress.Height:= 40;
+    end;
     fmProgress.SetMode(AMode);
     fmProgress.Show;
-    fmProgress.BringToFront;
+    fmProgress.Top:= 10; //put form above the status-bar
+    DoRepaint;  
 
     FinderPro:= fmProgress.Pro;
     StopFind:= false;
@@ -7907,19 +7930,18 @@ end;
 
   procedure TfmMain.HideProgress;
   begin
-    Self.Enabled:= true;
+    UpdateFormEnabled(true);
+
     if Assigned(fmProgress) then
+    begin
       fmProgress.Hide;
+      DoRepaint;
+    end;
     if Assigned(fmSR) then
     begin
-      fmSR.Enabled:= true;
       if fmSR.Enabled and fmSR.Visible and fmSR.CanFocus then
         fmSR.SetFocus;
     end;
-    if Assigned(fmNumConv) then
-    begin
-      fmNumConv.Enabled:= true;
-    end;  
   end;
 
 procedure TfmMain.FindActionWrapper(act: TSRAction);
@@ -16513,45 +16535,6 @@ begin
   end;
 end;
 
-procedure TfmMain.ecRemoveDupsExecute(Sender: TObject);
-const
-  cMaxLinesForceUndo = 500;
-var
-  ed: TSyntaxMemo;
-  i, Ln1, Ln2, NDel: Integer;
-  AForceUndo: boolean;
-begin
-  ed:= CurrentEditor;
-  with ed do
-  begin
-    if ReadOnly or (SelLength=0) then Exit;
-    DoGetSelLines(ed, Ln1, Ln2);
-    NDel:= 0;
-    AForceUndo:= (Ln2-Ln1)<=cMaxLinesForceUndo;
-
-    ShowProgress;
-    BeginUpdate;
-    try
-      for i:= Ln2 downto Ln1+1 do
-      begin
-        if Lines[i] = Lines[i-1] then
-        begin
-          if IsProgressStopped(Ln2-i+1, Ln2-Ln1+1) then
-            Break;
-          DoDeleteLine(ed, i, AForceUndo);
-          Inc(NDel);
-        end;
-      end;
-    finally
-      EndUpdate;
-      HideProgress;
-      StopFind:= false;
-    end;
-  end;
-
-  MsgDelLines(NDel);
-end;
-
 procedure TfmMain.ecReduceBlanksExecute(Sender: TObject);
 var
   ed: TSyntaxMemo;
@@ -23345,9 +23328,17 @@ begin
       scmdSortDialog:
         b:= DoSortStringList(L, opSortMode, true, true{AShowDlg}, Col1, Col2);
       scmdDedupAll:
-        b:= DoDedupStringList(L, dedupAll);
+        begin
+          i:= DoDedupStringList(L, dedupAll);
+          b:= i>0;
+          MsgDelLines(i);
+        end;
       scmdDedupAdjacent:
-        b:= DoDedupStringList(L, dedupAdjacent);
+        begin
+          i:= DoDedupStringList(L, dedupAdjacent);
+          b:= i>0;
+          MsgDelLines(i);
+        end;
       else
         b:= false;
     end;
