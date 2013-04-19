@@ -19,6 +19,7 @@ uses
 function DoInputFilename(const dkmsg: string; var S: Widestring): boolean;
 function DoInputString(const dkmsg: string; var S: Widestring): boolean;
 
+function EditorShortSelText(Ed: TSyntaxMemo): Widestring;
 function EditorGetCollapsedRanges(Ed: TSyntaxMemo): string;
 procedure EditorSetCollapsedRanges(Ed: TSyntaxMemo; S: Widestring);
 procedure DoDeleteComboItem(ed: TTntCombobox);
@@ -235,7 +236,7 @@ end;
 procedure TTntPageControl.AdjustClientRect(var Rect: TRect);
 begin
   Rect:= DisplayRect;
-  Rect:= Types.Rect(Rect.Left-4, Rect.Top-6, Rect.Right+4, Rect.Bottom+4);
+  Rect:= Types.Rect(Rect.Left-4, Rect.Top-4, Rect.Right+4, Rect.Bottom+4);
 end;
 
 var
@@ -1494,6 +1495,16 @@ begin
   finally
     Free
   end;
+end;
+
+
+function EditorShortSelText(Ed: TSyntaxMemo): Widestring;
+begin
+  Result:= Ed.SelText;
+  SDeleteFromW(Result, #13);
+  SDeleteFromW(Result, #10);
+  if Length(Result)>80 then
+    SetLength(Result, 80);
 end;
 
 

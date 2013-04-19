@@ -54,7 +54,6 @@ type
     cbSmCaret: TTntCheckBox;
     cbKeepCaret: TTntCheckBox;
     cbOptFill: TTntCheckBox;
-    cbColSel: TTntCheckBox;
     cbFloatM: TTntCheckBox;
     cbScrollLast: TTntCheckBox;
     cbWrapMar: TTntCheckBox;
@@ -78,14 +77,10 @@ type
     Label15: TTntLabel;
     Label3: TTntLabel;
     Label14: TTntLabel;
-    cbDSep: TTntCheckBox;
-    cbDGrad: TTntCheckBox;
     cbLink: TTntCheckBox;
     cbDLBack: TTntCheckBox;
     cbCaret: TTntCheckBox;
     cbHideCur: TTntCheckBox;
-    cbHideD: TTntCheckBox;
-    cbHideSel: TTntCheckBox;
     edLSpace: TSpinEdit;
     edMar: TSpinEdit;
     cbMar: TTntCheckBox;
@@ -107,7 +102,6 @@ type
     cbLang: TTntComboBox;
     DKLanguageController1: TDKLanguageController;
     ColorBox1: TColorBox;
-    cbKeepScr: TTntCheckBox;
     cbInst: TTntCheckBox;
     gAcpAll: TTntGroupBox;
     Label42: TTntLabel;
@@ -144,7 +138,6 @@ type
     edDirLast: TTntEdit;
     bDirLast: TTntButton;
     cbSmHiCase: TTntCheckBox;
-    cbFixBlocks: TTntCheckBox;
     TntLabel10: TTntLabel;
     cbBak: TTntComboBox;
     edAcpNum: TSpinEdit;
@@ -333,7 +326,6 @@ type
     cbTreeDelay: TSpinEdit;
     TntLabel39: TTntLabel;
     TntLabel29: TTntLabel;
-    cbUrlClick: TTntCheckBox;
     tabCarets: TTntTabSheet;
     boxCarets: TTntGroupBox;
     cbCaretMulti: TTntCheckBox;
@@ -344,6 +336,9 @@ type
     TntLabel31: TTntLabel;
     edCaretGutterCol: TSpinEdit;
     labCaretHelp: TTntLabel;
+    cbUrlClick: TTntCheckBox;
+    edSrMaxTreeMatches: TSpinEdit;
+    TntLabel17: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure tabEdShow(Sender: TObject);
@@ -513,7 +508,7 @@ const
   );
 
 const
-  cColorsOrder: array[0..cColorsNum-1-2] of integer = (
+  cColorsOrder: array[0..cColorsNum-5] of integer = (
   0,
   1,
   9,
@@ -530,8 +525,6 @@ const
   14,
   49,
   15,
-  8,
-  16,
   11,
   24,
   25,
@@ -627,10 +620,6 @@ begin
       TemplateEditor.Options:=TemplateEditor.Options + [soPersistentBlocks]
     else
       TemplateEditor.Options:=TemplateEditor.Options - [soPersistentBlocks];
-    if cbColSel.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soEnableBlockSel]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soEnableBlockSel];
     if cbDClick.Checked then
       TemplateEditor.Options:=TemplateEditor.Options + [soDoubleClickLine]
     else
@@ -728,9 +717,6 @@ begin
       TemplateEditor.OptionsEx:=TemplateEditor.OptionsEx + [soKeepCaretPaste]
     else
       TemplateEditor.OptionsEx:=TemplateEditor.OptionsEx - [soKeepCaretPaste];
-
-    opSingleClickURL:= cbUrlClick.Checked;
-    ApplyUrlClick;
   end;
 
   //auto-save
@@ -751,6 +737,7 @@ begin
   //search/tree
   if tabSearch.Tag<>0 then
   begin
+    opMaxTreeMatches:=edSrMaxTreeMatches.Value;
     opSrOffsetY:=edSrOffsetY.Value;
     opSrExpand:=cbSrExpand.Checked;
     opSrOnTop:=cbSrOnTop.Checked;
@@ -808,7 +795,7 @@ begin
     TemplateEditor.CollapseBreakColor:=Colors[5];
     TemplateEditor.Gutter.CollapsePen.Color:=Colors[6];
     TemplateEditor.Gutter.Bands[3].Color:=Colors[7];
-    TemplateEditor.Gutter.SeparatorColor:=Colors[8];
+    //TemplateEditor.Gutter.SeparatorColor:=Colors[8];
     TemplateEditor.DefaultStyles.SelectioMark.Font.Color:=Colors[9];
     TemplateEditor.DefaultStyles.SelectioMark.BgColor:=Colors[10];
     TemplateEditor.RightMarginColor:=Colors[11];
@@ -816,7 +803,7 @@ begin
     //TemplateEditor.HintProps.Color:=Colors[13];
     TemplateEditor.NonPrinted.Color:=Colors[14];
     TemplateEditor.StaplePen.Color:=Colors[15];
-    TemplateEditor.Gutter.Bands[1].GradientRight:=Colors[16];
+    //TemplateEditor.Gutter.Bands[1].GradientRight:=Colors[16];
     TemplateEditor.Gutter.Bands[2].Color:=Colors[16];
     Tree.Font.Color:=Colors[17];
     Tree.Color:=Colors[18];
@@ -865,14 +852,6 @@ begin
 
   if tabEd2.Tag<>0 then
   begin
-    if cbHideSel.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soHideSelection]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soHideSelection];
-    if cbHideD.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soHideDynamic]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soHideDynamic];
     if cbCaret.Checked then
       TemplateEditor.Options:=TemplateEditor.Options + [soAlwaysShowCaret]
     else
@@ -893,8 +872,6 @@ begin
     else
       TemplateEditor.OptionsEx:=TemplateEditor.OptionsEx + [soNormalSelToLineEnd];
 
-    TemplateEditor.Gutter.Bands[1].Gradient:=cbDGrad.Checked;
-    TemplateEditor.Gutter.ShowSeparator:=cbDSep.Checked;
     TemplateEditor.LineSpacing:=edLSpace.Value;
     TemplateEditor.ShowRightMargin:=cbMar.Checked;
     TemplateEditor.RightMargin:=edMar.Value;
@@ -903,14 +880,11 @@ begin
     TemplateEditor.StapleOffset:=edStapleOffset.Value;
     TemplateEditor.StaplePen.Style:=TPenStyle(cbStaples.ItemIndex);
 
-    if opLink<>cbLink.Checked then
-      for i:= 0 to FrameCount - 1 do
-        Frames[i].HyperlinkHighlighter.Active:= cbLink.Checked;
-    opLink:=cbLink.Checked;
+    opLink:= cbLink.Checked;
+    opSingleClickURL:= cbUrlClick.Checked;
+    ApplyUrlClick;
 
-    opShowWrapMark:=cbDWrapMark.Checked;
-    opKeepScr:=cbKeepScr.Checked;
-    opFixBlocks:=cbFixBlocks.Checked;
+    //opShowWrapMark:=cbDWrapMark.Checked;
     opCopyLineIfNoSel:=cbCopyLineNSel.Checked;
     opSmartHi:=cbSmHi.Checked;
     opSmartHiCase:=cbSmHiCase.Checked;
@@ -1002,7 +976,7 @@ begin
     ApplyFrames;
 
     Menu.Visible:=cbMenu.Checked;
-    SB2.Visible:=cbStat.Checked;
+    Status.Visible:=cbStat.Checked;
     opEsc:=cbEsc.ItemIndex;
     opSingleInstance:=cbInst.Checked;
     ApplyInst;
@@ -1124,7 +1098,6 @@ begin
   begin
     cbBOver.Checked:=sooverwriteBlocks in TemplateEditor.Options;
     cbBPers.Checked:=soPersistentBlocks in TemplateEditor.Options;
-    cbColSel.Checked:=soEnableBlockSel in TemplateEditor.Options;
     cbDClick.Checked:=soDoubleClickLine in TemplateEditor.Options;
     cbKeepCaret.Checked:=soKeepCaretInText in TemplateEditor.Options;
     cbCopyRtf.Checked:=soCopyAsRTF in TemplateEditor.Options;
@@ -1156,8 +1129,6 @@ begin
       msColumn: cbSelMode.ItemIndex:= 1;
       msLine: cbSelMode.ItemIndex:= 2;
     end;
-
-    cbUrlClick.Checked:= opSingleClickURL;
 
     tabEd.Tag:=1;
   end;
@@ -1198,7 +1169,7 @@ begin
     Colors[5]:= TemplateEditor.CollapseBreakColor;
     Colors[6]:= TemplateEditor.Gutter.CollapsePen.Color;
     Colors[7]:= TemplateEditor.Gutter.Bands[3].Color;
-    Colors[8]:= TemplateEditor.Gutter.SeparatorColor;
+    //Colors[8]:= TemplateEditor.Gutter.SeparatorColor;
     Colors[9]:= TemplateEditor.DefaultStyles.SelectioMark.Font.Color;
     Colors[10]:= TemplateEditor.DefaultStyles.SelectioMark.BgColor;
     Colors[11]:= TemplateEditor.RightMarginColor;
@@ -1206,7 +1177,7 @@ begin
     Colors[13]:= TemplateEditor.HintProps.Color;
     Colors[14]:= TemplateEditor.NonPrinted.Color;
     Colors[15]:= TemplateEditor.StaplePen.Color;
-    Colors[16]:= TemplateEditor.Gutter.Bands[1].GradientRight;
+    //Colors[16]:= TemplateEditor.Gutter.Bands[1].GradientRight;
     Colors[17]:= Tree.Font.Color;
     Colors[18]:= Tree.Color;
     Colors[19]:= TemplateEditor.HorzRuler.Font.Color;
@@ -1623,7 +1594,7 @@ begin
   with fmMain do
   begin
     cbMenu.Checked:=Menu.Visible;
-    cbStat.Checked:=SB2.Visible;
+    cbStat.Checked:=Status.Visible;
     cbChar.Checked:=opChInf;
     cbMicroMap.Checked:=opMicroMap;
     cbRoStart.Checked:=opStartRO;
@@ -1722,15 +1693,12 @@ begin
     edTabModeChange(Self);
 
     cbLink.Checked:=opLink;
+    cbUrlClick.Checked:=opSingleClickURL;
     cbCaret.Checked:=soAlwaysShowCaret in TemplateEditor.Options;
     cbRuler.Checked:=TemplateEditor.HorzRuler.Visible;
-    cbHideSel.Checked:=soHideSelection in TemplateEditor.Options;
-    cbHideD.Checked:=soHideDynamic in TemplateEditor.Options;
     cbHideCur.Checked:=soHideCursorOnType in TemplateEditor.Options;
     cbDFocus.Checked:=soDrawCurLineFocus in TemplateEditor.Options;
     cbDLBack.Checked:=TemplateEditor.DefaultStyles.CurrentLine.Enabled;
-    cbDGrad.Checked:=TemplateEditor.Gutter.Bands[1].Gradient;
-    cbDSep.Checked:=TemplateEditor.Gutter.ShowSeparator;
     cbMar.Checked:=TemplateEditor.ShowRightMargin;
     edMar.Value:=TemplateEditor.RightMargin;
     edLSpace.Value:=TemplateEditor.LineSpacing;
@@ -1739,10 +1707,8 @@ begin
     cbColorOnEmpty.Checked:= not (soNormalSelToLineEnd in TemplateEditor.OptionsEx);
     edStapleOffset.Value:=TemplateEditor.StapleOffset;
     cbStaples.ItemIndex:= Ord(TemplateEditor.StaplePen.Style);
-    cbFixBlocks.Checked:=opFixBlocks;
     cbCopyLineNSel.Checked:= opCopyLineIfNoSel;
-    cbDWrapMark.Checked:= opShowWrapMark;
-    cbKeepScr.Checked:=opKeepScr;
+    //cbDWrapMark.Checked:= opShowWrapMark;
     cbSmHi.Checked:=opSmartHi;
     cbSmHiCase.Checked:=opSmartHiCase;
     cbBrHi.Checked:=opBracketHi;
@@ -1980,6 +1946,7 @@ begin
 
   with fmMain do
   begin
+    edSrMaxTreeMatches.Value:=opMaxTreeMatches;
     edSrOffsetY.Value:=opSrOffsetY;
     cbSrExpand.Checked:=opSrExpand;
     cbSrOnTop.Checked:=opSrOnTop;

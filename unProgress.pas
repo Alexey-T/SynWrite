@@ -80,7 +80,7 @@ procedure TfmProgress.TntFormPaint(Sender: TObject);
 begin
   if BorderStyle=bsNone then
   begin
-    Canvas.Brush.Color:= clInfoBk;
+    Canvas.Brush.Color:= $A0FFFF; //light yellow
     Canvas.FillRect(ClientRect);
   end;  
 end;

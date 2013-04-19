@@ -81,6 +81,7 @@ object fmProgress: TfmProgress
     Height = 25
     Cancel = True
     Caption = 'Cancel'
+    Default = True
     TabOrder = 0
     OnClick = bCanClick
   end

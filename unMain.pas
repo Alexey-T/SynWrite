@@ -51,8 +51,9 @@ uses
 
 const
   opMruForPlugin = false;
-  cTabColors = 10; //count of misc tab colors
-  cFixedLeftTabs = 3; //fixed tabs on left panel
+  cTabColors = 10; //number of misc tab colors (user-defined)
+  cFixedLeftTabs = 3; //number of fixed tabs on left panel
+  cMaxTreeLen = 400; //find in files result: max node length
 
 type
   TSynSortCmd = (
@@ -124,6 +125,10 @@ type
     LineNum, ColNum, Len: integer;
     constructor Create;
   end;
+
+  TFindCount = class
+    Matches: integer;
+  end;  
 
   TFileSort = (sortNone, sortDate, sortDateDesc);
   TSelState = (selNone, selSmall, selStream, selColumn, selCarets);
@@ -265,7 +270,7 @@ type
     TBXItemToolNew: TTBXSubmenuItem;
     TBXItemCCInv: TTBXItem;
     TBXSeparatorItem10: TTBXSeparatorItem;
-    SB2: TTBXStatusBar;
+    Status: TTBXStatusBar;
     TBXSubmenuItemSort: TTBXSubmenuItem;
     TBXItemTbSortAsc: TTBXItem;
     TBXItemTbSortDesc: TTBXItem;
@@ -1133,7 +1138,7 @@ type
     procedure ecACPListKeyDown(Sender: TObject;
       var key: Word; Shift: TShiftState);
     procedure fNewExecute(Sender: TObject);
-    procedure SB2PanelClick(Sender: TTBXCustomStatusBar;
+    procedure StatusPanelClick(Sender: TTBXCustomStatusBar;
       Panel: TTBXStatusPanel);
     procedure TBXItemWPriorClick(Sender: TObject);
     procedure TBXItemWNextClick(Sender: TObject);
@@ -2260,6 +2265,7 @@ type
     hLister: HWND;
 
     //opt
+    opMaxTreeMatches: integer;
     opCaretsEnabled: boolean;
     opCaretsIndicator: integer;
     opCaretsGutterBand: integer;
@@ -2547,7 +2553,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.2.160';
+  cSynVer = '5.2.170';
 
 implementation
 
@@ -3573,24 +3579,24 @@ begin
   TBXItemEToggleLineComment.Enabled:= ecToggleLineCommentAlt.Enabled;
   }
 
-  if Assigned(SB2) then
+  if Assigned(Status) then
   if ro then
-    SB2.Panels[ccRO].ImageIndex:= 0
+    Status.Panels[ccRO].ImageIndex:= 0
   else
-    SB2.Panels[ccRO].ImageIndex:= 1;
+    Status.Panels[ccRO].ImageIndex:= 1;
 
-  if Assigned(SB2) then
+  if Assigned(Status) then
     case ed.SelectModeDefault of
-      msColumn: SB2.Panels[ccSelMode].ImageIndex:= 9;
-      msLine: SB2.Panels[ccSelMode].ImageIndex:= 10;
-      else SB2.Panels[ccSelMode].ImageIndex:= 8;
+      msColumn: Status.Panels[ccSelMode].ImageIndex:= 9;
+      msLine: Status.Panels[ccSelMode].ImageIndex:= 10;
+      else Status.Panels[ccSelMode].ImageIndex:= 8;
     end;
 
-  if Assigned(SB2) then
+  if Assigned(Status) then
     if ed.WordWrap then
-      SB2.Panels[ccWrap].ImageIndex:= 3
+      Status.Panels[ccWrap].ImageIndex:= 3
     else
-      SB2.Panels[ccWrap].ImageIndex:= 4;
+      Status.Panels[ccWrap].ImageIndex:= 4;
 
   UpdateStatusbarEnc(frame);
   UpdateStatusbarLineEnds;    
@@ -3690,8 +3696,8 @@ end;
 
 procedure TfmMain.UpdateCh;
 begin
-  if Assigned(SB2) then
-  with SB2.Panels[ccChar] do
+  if Assigned(Status) then
+  with Status.Panels[ccChar] do
     if opChInf then
       begin Size:= 100; ImageIndex:= -1; end
     else
@@ -3820,7 +3826,7 @@ begin
       opKeepScr:= true;
     ApplyEd2;
 
-    opShowWrapMark:= ReadBool('Setup', 'WrapMk', true);
+    opShowWrapMark:= true; //ReadBool('Setup', 'WrapMk', true);
     opTxOnly:= ReadInteger('Setup', 'TxOnly', 0);
     opSaveSRHist:= ReadInteger('Setup', 'SaveSRHist', 10);
     opSaveState:= ReadInteger('Setup', 'SaveState', 10);
@@ -3834,7 +3840,7 @@ begin
     opStatusText[selStream]:= ReadString('View', 'StatusStreamSel', '{LineNum} : {ColNum} ({SelLines}/{TotalLines})');
     opStatusText[selColumn]:= ReadString('View', 'StatusColumnSel', '{LineNum} : {ColNum} ({SelLines}x{SelCols}/{TotalLines})');
     opStatusText[selCarets]:= ReadString('View', 'StatusCarets', '#={Carets} ({TotalLines})');
-    with SB2.Panels[cc0] do
+    with Status.Panels[cc0] do
     begin
       Size:= ReadInteger('View', 'StatusWidth', Size);
       case ReadInteger('View', 'StatusAlign', 0) of
@@ -3906,6 +3912,7 @@ begin
     opSrShowMsg:= ReadBool('SR', 'Msg', true);
     opSrShowMsg2:= ReadBool('SR', 'Msg2', true);
     opSrHistTC:= ReadBool('SR', 'HistTC', false);
+    opMaxTreeMatches:= ReadInteger('SR', 'MaxTreeMatches', 100);
 
     opTabOpLast:= ReadInteger('View', 'TabLast', 0);
     opTabNums:= ReadBool('View', 'TabNum', false);
@@ -3964,7 +3971,7 @@ begin
     UpdateCh;
 
     opLang:= ReadInteger('Setup', 'Lang', 0);
-    SB2.Visible:= ReadBool('Setup', 'Stat', true);
+    Status.Visible:= ReadBool('Setup', 'Stat', true);
     if not QuickView then
       Menu.Visible:= ReadBool('Setup', 'Menu' + c_exe[SynExe], true);
     opStartRO:= ReadBool('Setup', 'InitRO' + c_exe[SynExe], false);
@@ -4353,7 +4360,7 @@ begin
     WriteInteger('Setup', 'LinkCl', opColorLink);
     WriteBool('Setup', 'FixBl', opFixBlocks);
     WriteBool('Setup', 'KeepScr', opKeepScr);
-    WriteBool('Setup', 'WrapMk', opShowWrapMark);
+    //WriteBool('Setup', 'WrapMk', opShowWrapMark);
     WriteInteger('Setup', 'TxOnly', opTxOnly);
 
     WriteInteger('Setup', 'SaveSRHist', opSaveSRHist);
@@ -4420,6 +4427,7 @@ begin
     WriteBool('SR', 'Msg', opSrShowMsg);
     WriteBool('SR', 'Msg2', opSrShowMsg2);
     WriteBool('SR', 'HistTC', opSrHistTC);
+    WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
 
     WriteBool('View', 'Tips', opTipsToken);
     WriteInteger('View', 'TabLast', opTabOpLast);
@@ -4446,7 +4454,7 @@ begin
     WriteInteger('Setup', 'Lang', opLang);
     if not QuickView then
       WriteBool('Setup', 'Menu' + c_exe[SynExe], Menu.Visible);
-    WriteBool('Setup', 'Stat', SB2.Visible);
+    WriteBool('Setup', 'Stat', Status.Visible);
     WriteBool('Setup', 'InitRO' + c_exe[SynExe], opStartRO);
     WriteString('Setup', 'Oem', opOem);
     WriteString('Setup', 'UTF8', opUTF8);
@@ -5543,17 +5551,17 @@ begin
 
     sm_MenuEnc:
       begin
-      p:= SB2.ClientToScreen(Point(SB2.Panels[cc0].Size, 0));
+      p:= Status.ClientToScreen(Point(Status.Panels[cc0].Size, 0));
       PopupCP.Popup(p.x, p.y);
       end;
     sm_MenuLex:
       begin
-      p:= SB2.ClientToScreen(Point(SB2.Panels[cc0].Size+SB2.Panels[ccEnc].Size+SB2.Panels[ccLE].Size, 0));
+      p:= Status.ClientToScreen(Point(Status.Panels[cc0].Size+Status.Panels[ccEnc].Size+Status.Panels[ccLE].Size, 0));
       PopupLex.Popup(p.x, p.y);
       end;
     sm_MenuLE:
       begin
-      p:= SB2.ClientToScreen(Point(SB2.Panels[cc0].Size+SB2.Panels[ccEnc].Size, 0));
+      p:= Status.ClientToScreen(Point(Status.Panels[cc0].Size+Status.Panels[ccEnc].Size, 0));
       PopupLE.Popup(p.x, p.y);
       end;
     sm_QS:
@@ -6306,6 +6314,18 @@ end;
 
 procedure TfmMain.FormShow(Sender: TObject);
 begin
+  //scale fonts for 150% DPI
+  if PixelsPerInch<>96 then
+  begin
+    with Panel1 do
+      Font.Size:= ScaleFontSize(Font.Size, Self);
+    with Status do
+    begin
+      Height:= ScaleFontSize(Height, Self);
+      Font.Size:= ScaleFontSize(Font.Size, Self);
+    end;
+  end;
+
   {$ifdef P}
   tbPlLeft.Hide;
   TbxItemWinProj.Visible:= false;
@@ -6433,7 +6453,7 @@ begin
     if SelLength>0 then
     begin
       //search for selection
-      Finder.FindText:= SelText;
+      Finder.FindText:= EditorShortSelText(CurrentEditor);
       wStart:= SelStart;
       wEnd:= wStart+SelLength;
     end
@@ -6450,15 +6470,18 @@ begin
     //clear RegEx
     Finder.Flags:= Finder.Flags-[ftRegularExpr];
     //search
-    if Next then begin
+    if Next then
+    begin
       CaretStrPos:= wEnd;
        //repeat selection as caret moving may clear it
        SelStart:= wStart;
        SelLength:= wEnd-wStart;
       Finder.FindNext;
     end
-    else begin
+    else
+    begin
       CaretStrPos:= wStart;
+       //repeat selection
        SelStart:= wStart;
        SelLength:= wEnd-wStart;
       Finder.FindPrev;
@@ -7338,8 +7361,8 @@ begin
   //update status hint
   en:= SyntaxManager.AnalyzerCount > 0;
   TbxSubmenuItemLexer.Enabled:= en;
-  if Assigned(SB2) then
-    SB2.Panels[ccLex].Enabled:= en;
+  if Assigned(Status) then
+    Status.Panels[ccLex].Enabled:= en;
   if not en then
   begin
     SHint[ccLex]:= DKLangConstW('nlex');
@@ -7898,12 +7921,17 @@ end;
     TbxDockRight.Enabled:= En;
     TbxDockBottom.Enabled:= En;
     Menu.Enabled:= En;
-    SB2.Enabled:= En;
+    Status.Enabled:= En;
 
     if Assigned(fmSR) then
       fmSR.Enabled:= En;
     if Assigned(fmNumConv) then
       fmNumConv.Enabled:= En;
+
+    if En then
+      Screen.Cursor:= crDefault
+    else
+      Screen.Cursor:= crHourGlass;
   end;
 
   procedure TfmMain.ShowProgress(AMode: TProgressType);
@@ -8577,13 +8605,13 @@ end;
 procedure TfmMain.SetHint(n: integer; const s: WideString);
 begin
   if n<0 then n:= ccTxt;
-  if Assigned(SB2) then
-    SB2.Panels[n].Caption:= s;
+  if Assigned(Status) then
+    Status.Panels[n].Caption:= s;
   TimerHint.Enabled:= false;
   TimerHint.Enabled:= true;
 end;
 
-procedure TfmMain.SB2PanelClick(Sender: TTBXCustomStatusBar;
+procedure TfmMain.StatusPanelClick(Sender: TTBXCustomStatusBar;
   Panel: TTBXStatusPanel);
 var
   p: TPoint;
@@ -9719,8 +9747,8 @@ end;
 procedure TfmMain.TimerHintTimer(Sender: TObject);
 begin
   TimerHint.Enabled:= false;
-  if Assigned(SB2) then
-    SB2.Panels[ccTxt].Caption:= '';
+  if Assigned(Status) then
+    Status.Panels[ccTxt].Caption:= '';
   PageControl1.Hint:= '';
   PageControl2.Hint:= '';
 end;
@@ -9736,7 +9764,7 @@ begin
   UpdateStatusBar;
 
   //other
-  SB2.Panels[ccMacro].Hint:= DKLangConstW('MBusyIco');
+  Status.Panels[ccMacro].Hint:= DKLangConstW('MBusyIco');
   TbxItemSplitCaption.Caption:= DKLangConstW('Split_Vw');
   if SyntaxManager.CurrentLexer = nil then
     SHint[ccLex]:= DKLangConstW('None');
@@ -10601,13 +10629,13 @@ procedure TfmMain.PageControl1MouseMove(Sender: TObject; Shift: TShiftState;
     bmp: TBitmap;
     i, size: integer;
   begin
-    if not Assigned(SB2) then Exit;
-    size:= SB2.ClientWidth - 8;
+    if not Assigned(Status) then Exit;
+    size:= Status.ClientWidth - 8;
     for i:= 0 to ccTxt-1 do
-      Dec(size, SB2.Panels[i].Size);
+      Dec(size, Status.Panels[i].Size);
     bmp:= TBitmap.Create;
     try
-      bmp.Canvas.Font.Assign(SB2.Font);
+      bmp.Canvas.Font.Assign(Status.Font);
       SHint[-1]:= WideMinimizeName(fn, bmp.Canvas, size);
     finally
       FreeAndNil(bmp);
@@ -12661,8 +12689,6 @@ end;
 
 procedure TfmMain.FinderFind(Sender: TObject;
       StartPos, EndPos: integer; var Accept: Boolean);
-const
-  cc=500; //max len to show
 var
   Ed: TCustomSyntaxMemo;
   p: TPoint;
@@ -12671,13 +12697,32 @@ var
   Node, NodeFile: TTntTreeNode;
   Info: TFindInfo;
 begin
+  //find NodeFile: note with filename
+  Node:= TreeFind.Items[TreeFind.Items.Count-1];
+  if Node=FTreeRoot then
+    NodeFile:= TreeFind.Items.AddChildObject(Node, FListResFN, TFindCount.Create)
+  else
+  begin
+    if Assigned(Node.Data) and (TObject(Node.Data) is TFindInfo) and (TFindInfo(Node.Data).FN<>FListResFN) then
+      NodeFile:= TreeFind.Items.AddChildObject(FTreeRoot, FListResFN, TFindCount.Create)
+    else
+      NodeFile:= Node.Parent;
+  end;
+
+  //store Finder.Matches into (NodeFile.Data).Matches
+  if (TObject(NodeFile.Data) is TFindCount) then
+    TFindCount(NodeFile.Data).Matches:= Finder.Matches;
+
+  if Finder.Matches>opMaxTreeMatches then Exit;
+
+  //get info about match and store it into Info
   Ed:= (Sender as TTextFinder).Control;
   p:= Ed.StrPosToCaretPos(StartPos);
   if not ((p.y >= 0) and (p.y < Ed.Lines.Count)) then Exit;
   ColNum:= p.X;
   LineNum:= p.Y;
 
-  S:= Copy(Ed.Lines[LineNum], 1, cc); //cut so Treeview doesn't crash
+  S:= Copy(Ed.Lines[LineNum], 1, cMaxTreeLen); //cut so Treeview doesn't crash
   SReplaceAllW(S, #9, ' '); //replace tabs with 1 space (to not break BG hiliting) in Treeview
 
   Info:= TFindInfo.Create;
@@ -12686,21 +12731,12 @@ begin
   Info.ColNum:= ColNum-1; //ColNum - 1-based
   Info.Len:= EndPos-StartPos;
 
-  //find NodeFile: note with filename
-  Node:= TreeFind.Items[TreeFind.Items.Count-1];
-  if Node=FTreeRoot then
-    NodeFile:= TreeFind.Items.AddChild(Node, FListResFN)
-  else
-  begin
-    if Assigned(Node.Data) and (TFindInfo(Node.Data).FN<>FListResFN) then
-      NodeFile:= TreeFind.Items.AddChild(FTreeRoot, FListResFN)
-    else
-      NodeFile:= Node.Parent;
-  end;
-
   //add node under NodeFile
-  TreeFind.Items.AddChildObject(NodeFile,
-    SFindResPrefix(FListResFN, LineNum)+S, Info);
+  if Finder.Matches=opMaxTreeMatches then
+    TreeFind.Items.AddChildObject(NodeFile, '...', Info)
+  else
+    TreeFind.Items.AddChildObject(NodeFile,
+      SFindResPrefix(FListResFN, LineNum)+S, Info);
 
   //scroll to last file, update
   FTreeRoot.Expand(false);
@@ -13854,7 +13890,7 @@ end;
 procedure TfmMain.Splitter1Paint(Sender: TObject);
 const
   c=3;//Size of dot
-  cc=8;//Num dots
+  cc=8;//Num of dots
   procedure D(Y: integer);
   begin
     with Sender as TSplitter do
@@ -18257,10 +18293,12 @@ procedure TfmMain.UpdateTreeFind(const AStr, ADir: Widestring;
     Result:= SStart + ' (' + SEnd + ')';
   end;
   //-------------------
-  function Upd(NodeFile: TTntTreeNode): integer;
+  function UpdateTreeCounter(NodeFile: TTntTreeNode): integer;
   var
-    Node: TTntTreeNode;
+    //Node: TTntTreeNode;
+    Obj: TObject;
   begin
+    {
     Result:= 1;
     Node:= NodeFile.GetFirstChild;
     if Node<>nil then
@@ -18269,7 +18307,12 @@ procedure TfmMain.UpdateTreeFind(const AStr, ADir: Widestring;
       if Node=nil then Break;
       Inc(Result);
     until false;
-    NodeFile.Text:= NodeFile.Text+ ' ('+IntToStr(Result)+')';
+    }
+    Result:= 0;
+    Obj:= TObject(NodeFile.Data);
+    if Obj is TFindCount then
+      Result:= (Obj as TFindCount).Matches + 1;
+    NodeFile.Text:= NodeFile.Text+ Format(' (%d)', [Result]);
   end;
 var
   Node: TTntTreeNode;
@@ -18289,7 +18332,7 @@ begin
   end;
   repeat
     Inc(NFiles);
-    Inc(NItems, Upd(Node));
+    Inc(NItems, UpdateTreeCounter(Node));
     Node:= FTreeRoot.GetNextChild(Node);
     if Node=nil then Break;
   until false;
@@ -18316,12 +18359,18 @@ end;
 
 procedure TfmMain.TreeFindDblClick(Sender: TObject);
 var
+  Obj: TObject;
   Info: TFindInfo;
   fn: Widestring;
   n: integer;
 begin
   if TreeFind.Selected=nil then Exit;
-  Info:= TFindInfo(TreeFind.Selected.Data);
+  Obj:= TObject(TreeFind.Selected.Data);
+  if Obj is TFindInfo then
+    Info:= Obj as TFindInfo
+  else
+    Info:= nil;
+      
   if Info=nil then
   begin
     //maybe clicked on Replace result: "filename (NN)"
@@ -18359,26 +18408,8 @@ end;
 
 procedure TfmMain.TreeFindCustomDrawItem(Sender: TCustomTreeView;
   Node: TTreeNode; State: TCustomDrawState; var DefaultDraw: Boolean);
-var
-  R: TRect;
-  Info: TFindInfo;
-//  n: Integer;
-//  S: Widestring;
 begin
   DefaultDraw:= true;
-  Info:= TFindInfo(Node.Data);
-  if Info=nil then Exit;
-
-  R:= Node.DisplayRect(true);
-  {
-  Sender.Canvas.Font.Assign(TreeFind.Font);
-  Sender.Canvas.Font.Color:= clBlue;
-  }
-  {
-  S:= Copy(Node.Text, 1, Info.ColNum);
-  n:= ecTextExtent(Sender.Canvas, S).cx;
-  S:= Copy(Node.Text, Info.ColNum+1, Info.Len);
-  }
 end;
 
 procedure TfmMain.TreeFindAdvancedCustomDrawItem(Sender: TCustomTreeView;
@@ -18386,12 +18417,16 @@ procedure TfmMain.TreeFindAdvancedCustomDrawItem(Sender: TCustomTreeView;
   var PaintImages, DefaultDraw: Boolean);
 var
   r: TRect;
+  Obj: TObject;
   Info: TFindInfo;
   sInf, s: Widestring;
   n: Integer;
 begin
-  Info:= TFindInfo(Node.Data);
-  if Info=nil then Exit;
+  Obj:= TObject(Node.Data);
+  if Obj is TFindInfo then
+    Info:= Obj as TFindInfo
+  else
+    Exit;
 
   if Stage<>cdPostPaint then Exit;
   DefaultDraw:= true;
@@ -18558,8 +18593,12 @@ begin
       Node2:= Node.GetFirstChild;
       if Node2<>nil then
         repeat
-          Info:= TFindInfo(Node2.Data);
+          if TObject(Node2.Data) is TFindInfo then
+            Info:= TFindInfo(Node2.Data)
+          else
+            Info:= nil;
           if Info=nil then Continue;
+
           n:= Pos('): ', Node2.Text);
           if n=0 then Continue;
           L.Add(
@@ -18580,16 +18619,14 @@ end;
 procedure TfmMain.ClearTreeFind;
 var
   i: integer;
-  Info: TFindInfo;
   Node: TTntTreeNode;
 begin
   for i:= TreeFind.Items.Count-1 downto 0 do
   begin
     Node:= TreeFind.Items[i];
-    Info:= TFindInfo(Node.Data);
-    if Info<>nil then
+    if Node.Data<>nil then
     begin
-      Info.Free;
+      TObject(Node.Data).Free;
       Node.Data:= nil;
     end;
   end;
@@ -19711,7 +19748,7 @@ begin
   SReplaceAllW(SH, '{FileDateOp}', cStatFDate);
   //
   SReplaceAllW(SH, '  ', ' '); //del dupe spaces
-  SB2.Panels[cc0].Hint:= SH;
+  Status.Panels[cc0].Hint:= SH;
 end;
 
 procedure TfmMain.TBXItemClipCopyToEdClick(Sender: TObject);
@@ -23786,14 +23823,14 @@ end;
 
 procedure TfmMain.UpdateBusyIco;
 begin
-  if Assigned(SB2) then
+  if Assigned(Status) then
     if ecMacroRecorder1.Recording then
-      SB2.Panels[ccMacro].ImageIndex:= 7
+      Status.Panels[ccMacro].ImageIndex:= 7
     else
     if FSpellChecking then
-      SB2.Panels[ccMacro].ImageIndex:= 11
+      Status.Panels[ccMacro].ImageIndex:= 11
     else
-      SB2.Panels[ccMacro].ImageIndex:= 6;
+      Status.Panels[ccMacro].ImageIndex:= 6;
 end;
 
 procedure TfmMain.UpdateSaveIco;
@@ -24133,7 +24170,10 @@ var
   i: Integer;
 begin
   for i:= 0 to FrameAllCount-1 do
+  begin
+    FramesAll[i].HyperlinkHighlighter.Active:= opLink;
     FramesAll[i].HyperlinkHighlighter.SingleClick:= opSingleClickURL;
+  end;
 end;
 
 procedure TfmMain.ApplyCarets;
