@@ -11646,7 +11646,7 @@ var
   ASortMode: TFileSort;
   ANeedFocusResult: boolean;
   AFnOnly, AToTab, AOutAppend: boolean;
-  InOEM, InUTF8, InUTF16: boolean;
+  InOEM, InUTF8, InUTF16, ThisInUTF8: boolean;
   NTotalSize, NDoneSize: Int64;
   ATextSearch,
   ATextReplace: Widestring;
@@ -11888,12 +11888,19 @@ begin
       for i:= 0 to FListFiles.Count-1 do
       begin
         try
-          FindInFile(FListFiles[i]);
+          //first search in auto-detected encoding
+          ThisInUTF8:= IsFileUTF8NoBOM(FListFiles[i]);
+          if ThisInUTF8 then
+            FindInFile(FListFiles[i], cp_sr_UTF8)
+          else
+            FindInFile(FListFiles[i]);
+
+          //additional searches in OEM/UTF8/UTF16
           if not IsFileWithBOM(FListFiles[i]) then
           begin
             if InOEM then
               FindInFile(FListFiles[i], cp_sr_OEM);
-            if InUTF8 then
+            if InUTF8 and not ThisInUTF8 then
               FindInFile(FListFiles[i], cp_sr_UTF8);
             if InUTF16 then
               FindInFile(FListFiles[i], cp_sr_UTF16);
