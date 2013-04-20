@@ -1,8 +1,8 @@
 object fmMain: TfmMain
-  Left = 229
-  Top = 235
+  Left = 225
+  Top = 163
   Width = 776
-  Height = 759
+  Height = 648
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -372,7 +372,7 @@ object fmMain: TfmMain
     Left = 0
     Top = 50
     Width = 201
-    Height = 485
+    Height = 374
     Position = dpLeft
     object tbView: TTBXToolbar
       Left = 174
@@ -504,7 +504,7 @@ object fmMain: TfmMain
       end
       object tbPlLeft: TTBXToolbar
         Left = 0
-        Top = 444
+        Top = 333
         Width = 170
         Height = 19
         Align = alBottom
@@ -557,7 +557,7 @@ object fmMain: TfmMain
   end
   object TBXDockBottom: TTBXDock
     Left = 0
-    Top = 535
+    Top = 424
     Width = 768
     Height = 171
     Position = dpBottom
@@ -746,7 +746,7 @@ object fmMain: TfmMain
     Left = 636
     Top = 50
     Width = 132
-    Height = 485
+    Height = 374
     Position = dpRight
     object plClip: TTBXDockablePanel
       Left = 0
@@ -763,7 +763,7 @@ object fmMain: TfmMain
       OnVisibleChanged = plClipVisibleChanged
       object tbClipMap: TTBXToolbar
         Left = 0
-        Top = 444
+        Top = 333
         Width = 128
         Height = 19
         Align = alBottom
@@ -788,7 +788,7 @@ object fmMain: TfmMain
   end
   object Status: TTBXStatusBar
     Left = 0
-    Top = 706
+    Top = 595
     Width = 768
     Height = 19
     Images = ImageListStatus
@@ -806,7 +806,7 @@ object fmMain: TfmMain
       end
       item
         Alignment = taCenter
-        Size = 38
+        Size = 35
         Tag = 0
         Hint = 'Line endings (click to change)'
       end
@@ -844,13 +844,13 @@ object fmMain: TfmMain
       end
       item
         Alignment = taCenter
-        Size = 35
+        Size = 30
         Tag = 0
         Hint = 'Insert/Overwrite mode (click to change)'
       end
       item
         Alignment = taCenter
-        Size = 46
+        Size = 40
         Tag = 0
         Hint = 'Zoom value (click to change)'
       end
@@ -3072,7 +3072,7 @@ object fmMain: TfmMain
     Left = 201
     Top = 50
     Width = 435
-    Height = 485
+    Height = 374
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 6
@@ -3081,7 +3081,7 @@ object fmMain: TfmMain
       Left = 315
       Top = 0
       Width = 5
-      Height = 485
+      Height = 374
       Align = alRight
       AutoSnap = False
       MinSize = 50
@@ -3093,7 +3093,7 @@ object fmMain: TfmMain
       Left = 0
       Top = 0
       Width = 315
-      Height = 485
+      Height = 374
       Align = alClient
       OwnerDraw = True
       TabOrder = 0
@@ -3291,7 +3291,7 @@ object fmMain: TfmMain
       Left = 320
       Top = 0
       Width = 115
-      Height = 485
+      Height = 374
       Align = alRight
       OwnerDraw = True
       TabOrder = 2

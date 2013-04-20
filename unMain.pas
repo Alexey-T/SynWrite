@@ -6314,7 +6314,7 @@ end;
 
 procedure TfmMain.FormShow(Sender: TObject);
 begin
-  //scale fonts for 150% DPI
+  //scale sizes for 150% DPI
   if PixelsPerInch<>96 then
   begin
     with Panel1 do
@@ -6323,6 +6323,12 @@ begin
     begin
       Height:= ScaleFontSize(Height, Self);
       Font.Size:= ScaleFontSize(Font.Size, Self);
+      with Panels[cc0] do Size:= ScaleFontSize(Size, Self);
+      with Panels[ccEnc] do Size:= ScaleFontSize(Size, Self);
+      with Panels[ccLE] do Size:= ScaleFontSize(Size, Self);
+      with Panels[ccLex] do Size:= ScaleFontSize(Size, Self);
+      with Panels[ccIns] do Size:= ScaleFontSize(Size, Self);
+      with Panels[ccZoom] do Size:= ScaleFontSize(Size, Self);
     end;
   end;
 
