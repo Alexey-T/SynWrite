@@ -6329,6 +6329,7 @@ begin
       with Panels[ccLex] do Size:= ScaleFontSize(Size, Self);
       with Panels[ccIns] do Size:= ScaleFontSize(Size, Self);
       with Panels[ccZoom] do Size:= ScaleFontSize(Size, Self);
+      
     end;
   end;
 
