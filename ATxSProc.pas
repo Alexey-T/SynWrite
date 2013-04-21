@@ -10,6 +10,7 @@ procedure SGetCharArray(S, Filter: Widestring; var Arr: TSynCharArray);
 function SSubstringMatch(const Str, SFilter: Widestring): boolean;
 function SFuzzyMatch(S, Filter: Widestring): boolean;
 
+function SUntab(const S: Widestring; TabSize: Integer): Widestring;
 function SDecodeSpecChars(const s: WideString): WideString;
 function SEncodeHtmlChars(const S: WideString): WideString;
 function IsUpperChar(Ch: WideChar): boolean;
@@ -1124,5 +1125,21 @@ begin
 end;
 
 
+function SUntab(const S: Widestring; TabSize: Integer): Widestring;
+var
+  i, NSize: Integer;
+begin
+  Result:= S;
+  repeat
+    i:= Pos(#9, Result);
+    if i=0 then Break;
+
+    NSize:= TabSize - ((i-1) mod TabSize);
+
+    //don't do Delete, it's slower
+    Result[i]:= ' ';
+    Insert(StringOfChar(' ', NSize-1), Result, i);
+  until false;
+end;
 
 end.

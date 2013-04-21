@@ -9,6 +9,15 @@ type
   TSynSortMode = (sortUnicodeRaw, sortUnicode, sortAscii, sortNumeric);
   TSynDedupMode = (dedupAll, dedupAdjacent);
 
+function DoUnspaceStringList(
+  List: TTntStringList;
+  const Spaces: Widestring;
+  LeadOnly: boolean): boolean;
+
+function DoUntabStringList(
+  List: TTntStringList;
+  TabSize: Integer): Integer;
+
 function DoDedupStringList(
   List: TTntStringList;
   AMode: TSynDedupMode): Integer;
@@ -23,7 +32,8 @@ function DoSortStringList(
 implementation
 
 uses
-  SysUtils, unSort, Controls, Forms, Math;
+  SysUtils, unSort, Controls, Forms, Math,
+  ATxSProc;
 
 var
   opSort: record
@@ -33,6 +43,15 @@ var
     bType: TSynSortMode;
     Col1, Col2: Integer;
   end;
+
+procedure DelLastEmpty(List: TTntStringList);
+var
+  N: Integer;
+begin
+  N:= List.Count;
+  if (N>0) and (List[N-1]='') then
+    List.Delete(N-1);
+end;
 
 function WideCompareStr_Raw(const S1, S2: Widestring): Integer;
 var
@@ -234,20 +253,40 @@ begin
 end;
 
 
+function DoUntabStringList(
+  List: TTntStringList;
+  TabSize: Integer): Integer;
+var
+  i: Integer;
+begin
+  Result:= 0;
+  Screen.Cursor:= crHourGlass;
+  try
+    DelLastEmpty(List);
+
+    for i:= 0 to List.Count-1 do
+      if Pos(#9, List[i])>0 then
+      begin
+        List[i]:= SUntab(List[i], TabSize);
+        Inc(Result);
+      end;
+  finally
+    Screen.Cursor:= crDefault;
+  end;
+end;
+
+
 function DoDedupStringList(
   List: TTntStringList;
   AMode: TSynDedupMode): Integer;
 var
-  i, N: Integer;
+  i: Integer;
   L: TTntStringList;
 begin
   Result:= 0;
   Screen.Cursor:= crHourGlass;
   try
-    //delete last empty line
-    N:= List.Count;
-    if (N>0) and (List[N-1]='') then
-      List.Delete(N-1);
+    DelLastEmpty(List);
 
     case AMode of
       dedupAdjacent:
@@ -281,6 +320,35 @@ begin
             FreeAndNil(L);
           end;
         end;
+    end;
+  finally
+    Screen.Cursor:= crDefault;
+  end;
+end;
+
+
+function DoUnspaceStringList(
+  List: TTntStringList;
+  const Spaces: Widestring;
+  LeadOnly: boolean): boolean;
+var
+  i: Integer;
+  S: Widestring;
+begin
+  Result:= true;
+  Screen.Cursor:= crHourGlass;
+  try
+    DelLastEmpty(List);
+
+    for i:= 0 to List.Count-1 do
+    begin
+      S:= List[i];
+      if LeadOnly then
+        SReplaceSpToTabLeading(S, Spaces)
+      else
+        SReplaceAllW(S, Spaces, #9);
+      if S<>List[i] then
+        List[i]:= S;
     end;
   finally
     Screen.Cursor:= crDefault;

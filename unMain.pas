@@ -61,7 +61,10 @@ type
     scmdSortDesc,
     scmdSortDialog,
     scmdDedupAll,
-    scmdDedupAdjacent
+    scmdDedupAdjacent,
+    scmdUntab,
+    scmdSpacesToTabs,
+    scmdSpacesToTabsLead
     );
 
   TSynCopyNameCmd = (
@@ -138,7 +141,7 @@ type
   TRightTab = (tbClip, tbMap, tbTextClips);
   TLeftTab = (tbTree, tbProj, tbTabs, tbPugin1, tbPugin2, tbPugin3, tbPugin4, tbPugin5);
   TCpOverride = (cp_sr_Def, cp_sr_OEM, cp_sr_UTF8, cp_sr_UTF16);
-  TSpMode = (spTrimLead, spTrimTrail, spTrimAll, spDelDupSp, spTabToSp, spSpToTab, spSpToTabLead);
+  TSpMode = (spTrimLead, spTrimTrail, spTrimAll, spDelDupSp);
   TSelSave = record
     FSelStream: boolean;
     FSelStart, FSelEnd: TPoint;
@@ -1957,6 +1960,7 @@ type
     function GetHtmlAcpFN: string;
     function GetAcpFN(const LexerName: string): string;
     function IsMultilineSelection(Ed: TSyntaxMemo): boolean;
+    function CurrentTabSize(Ed: TSyntaxMemo): Integer;
     function CurrentTabExpansion(Ed: TSyntaxMemo): Widestring;
     function CurrentCR(Ed: TSyntaxMemo = nil): ecString;
     function CurrentLexer: string;
@@ -2244,7 +2248,7 @@ type
     procedure ChangeEncoding(Frame: TEditorFrame; ATag: Integer;
       ACanReload: boolean = true);
     procedure DoCheckAutoShowACP(Ed: TSyntaxMemo);
-    procedure DoSortLines(Cmd: TSynSortCmd);
+    procedure DoLinesCommand(Cmd: TSynSortCmd);
     procedure DoToggleLineComment(Alt: boolean);
     procedure DoCopyFilenameToClipboard(F: TEditorFrame; Cmd: TSynCopyNameCmd);
     function IsCommandAllowedInMacro(Cmd: Integer): boolean;
@@ -2553,7 +2557,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.2.170';
+  cSynVer = '5.2.190';
 
 implementation
 
@@ -11289,8 +11293,21 @@ begin
 end;
 
 procedure TfmMain.DoReplaceTabsToSpaces(F: TEditorFrame);
+var
+  L: TTntStringList;
 begin
+  {
+  //slow!
   F.EditorMaster.UnTabText;
+  }
+  L:= TTntStringList.Create;
+  try
+    L.SetTextW(PWChar(F.EditorMaster.Text));
+    DoUntabStringList(L, CurrentTabSize(F.EditorMaster));
+    F.EditorMaster.Text:= L.Text;
+  finally
+    FreeAndNil(L);
+  end;
 end;
 
 procedure TfmMain.TBXItemRunFindPhpClick(Sender: TObject);
@@ -11374,7 +11391,13 @@ end;
 procedure TfmMain.TBXItemRunOpenFileClick(Sender: TObject);
 begin
   if CurrentFrame.FileName<>'' then
+  begin
+    if CurrentFrame.Modified then
+      SaveFrame(CurrentFrame, false);
     FOpenURL(CurrentFrame.FileName, Handle);
+  end
+  else
+    MsgBeep;
 end;
 
 procedure TfmMain.TBXItemRunOpenDirClick(Sender: TObject);
@@ -16884,15 +16907,17 @@ begin
   MsgDelLines(NDel);
 end;
 
-function TfmMain.CurrentTabExpansion(Ed: TSyntaxMemo): Widestring;
-var
-  N: Integer;
+function TfmMain.CurrentTabSize(Ed: TSyntaxMemo): Integer;
 begin
   if Ed.TabList.Count>0 then
-    N:= Ed.TabList[0]
+    Result:= Ed.TabList[0]
   else
-    N:= 8;
-  Result:= StringOfChar(' ', N);
+    Result:= 8;
+end;
+
+function TfmMain.CurrentTabExpansion(Ed: TSyntaxMemo): Widestring;
+begin
+  Result:= StringOfChar(' ', CurrentTabSize(Ed));
 end;
 
 procedure TfmMain.DoTrim(ed: TSyntaxMemo; mode: TSpMode);
@@ -16926,9 +16951,6 @@ begin
           spTrimTrail:   s:= WideTrimRight(s);
           spTrimAll:     s:= WideTrim(s);
           spDelDupSp:    SDeleteDupSpaces(s);
-          spTabToSp:     SReplaceAllW(s, #9, spaces);
-          spSpToTab:     SReplaceAllW(s, spaces, #9);
-          spSpToTabLead: SReplaceSpToTabLeading(s, spaces);
           else
             raise Exception.Create('Unknown trim op');
         end;
@@ -16966,20 +16988,20 @@ end;
 
 procedure TfmMain.ecTabToSpExecute(Sender: TObject);
 begin
-  //works bad with var-length tabs:
-  //DoTrim(CurrentEditor, spTabToSp);
-  
+  DoLinesCommand(scmdUntab);
+  {
   //code from EC demo:
   with CurrentEditor do
     if (SelectMode in [msLine, msNormal]) and HaveSelection then
       UnTabText(SelStart + 1, SelStart + SelLength)
     else
       UnTabText;
+      }
 end;
 
 procedure TfmMain.ecSpToTabExecute(Sender: TObject);
 begin
-  DoTrim(CurrentEditor, spSpToTab);
+  DoLinesCommand(scmdSpacesToTabs);
 end;
 
 procedure TfmMain.DoFindClip(Next: boolean);
@@ -23331,10 +23353,10 @@ end;
 
 procedure TfmMain.ecSortDialogExecute(Sender: TObject);
 begin
-  DoSortLines(scmdSortDialog);
+  DoLinesCommand(scmdSortDialog);
 end;
 
-procedure TfmMain.DoSortLines(Cmd: TSynSortCmd);
+procedure TfmMain.DoLinesCommand(Cmd: TSynSortCmd);
 var
   Ed: TSyntaxMemo;
   Ln1, Ln2: Integer;
@@ -23388,6 +23410,19 @@ begin
           i:= DoDedupStringList(L, dedupAdjacent);
           b:= i>0;
           MsgDelLines(i);
+        end;
+      scmdUntab:
+        begin
+          i:= DoUntabStringList(L, CurrentTabSize(Ed));
+          b:= i>0;
+        end;
+      scmdSpacesToTabs:
+        begin
+          b:= DoUnspaceStringList(L, CurrentTabExpansion(Ed), false);
+        end;
+      scmdSpacesToTabsLead:
+        begin
+          b:= DoUnspaceStringList(L, CurrentTabExpansion(Ed), true);
         end;
       else
         b:= false;
@@ -23989,17 +24024,17 @@ end;
 
 procedure TfmMain.ecSortAscendingExecute(Sender: TObject);
 begin
-  DoSortLines(scmdSortAsc);
+  DoLinesCommand(scmdSortAsc);
 end;
 
 procedure TfmMain.ecSortDescendingExecute(Sender: TObject);
 begin
-  DoSortLines(scmdSortDesc);
+  DoLinesCommand(scmdSortDesc);
 end;
 
 procedure TfmMain.ecSpToTabLeadingExecute(Sender: TObject);
 begin
-  DoTrim(CurrentEditor, spSpToTabLead);
+  DoLinesCommand(scmdSpacesToTabsLead);
 end;
 
 procedure TfmMain.TBXItemEToggleLineCommentAltClick(Sender: TObject);
@@ -24289,12 +24324,12 @@ end;
 
 procedure TfmMain.ecDedupAllExecute(Sender: TObject);
 begin
-  DoSortLines(scmdDedupAll);
+  DoLinesCommand(scmdDedupAll);
 end;
 
 procedure TfmMain.ecDedupAdjacentExecute(Sender: TObject);
 begin
-  DoSortLines(scmdDedupAdjacent);
+  DoLinesCommand(scmdDedupAdjacent);
 end;
 
 procedure TfmMain.TBXItemEDedupAllClick(Sender: TObject);
