@@ -84,8 +84,8 @@ begin
   SParseOut(edTest.Text, edRE.Text,
     edFN.ItemIndex, edLn.ItemIndex, edCol.ItemIndex, fn, n_line, n_col);
 
-  if fn='' then begin Msg(DKLangConstW('O_fn')); Exit end;
-  if n_line<=0 then begin Msg(DKLangConstW('O_l')); Exit end;
+  if fn='' then begin MsgError(DKLangConstW('O_fn')); Exit end;
+  if n_line<=0 then begin MsgError(DKLangConstW('O_l')); Exit end;
 
   MsgInfo(WideFormat(DKLangConstW('O_ok'), [fn, n_line, n_col]));
 end;

@@ -71,14 +71,14 @@ procedure TfmShell.cbShellClick(Sender: TObject);
 begin
   if FLock then Exit;
   if not ApplyShellExtension(cbShell.Checked) then
-    Msg(DKLangConstW('shNN'));
+    MsgError(DKLangConstW('shNN'));
 end;
 
 procedure TfmShell.DoAssoc(const ext: string; en: boolean);
 begin
   if FLock then Exit;
   if not ApplyFileAssoc(ext, en) then
-    Msg(DKLangConstW('shNN'));
+    MsgError(DKLangConstW('shNN'));
 end;
 
 procedure TfmShell.cbTxtClick(Sender: TObject);

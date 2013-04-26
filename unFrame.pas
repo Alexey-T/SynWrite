@@ -123,6 +123,7 @@ type
     FSplitPos: Double;
     FNotInRecents: boolean;
     FLockMapUpdate: boolean;
+    FSavingBusy: boolean;
 
     procedure EditorShowHint(Sender: TObject; const HintStr: string; var HintObj: THintWindow);
     function GetColMarkers: string;
@@ -184,7 +185,7 @@ type
     procedure DoStopNotif;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure SaveFile(const AFileName: Widestring);
+    procedure SaveFile(AFileName: Widestring);
     procedure LoadFile(const AFileName: Widestring);
     function IsTheFile(const AFileName: Widestring): Boolean;
     function IsNewFile: Boolean;
@@ -316,6 +317,7 @@ begin
   FSplitPos:= 0;
   FNotInRecents:= false;
   FLockMapUpdate:= false;
+  FSavingBusy:= false;
 
   FCollapsedString:= '';
   FCollapsedRestored:= false;
@@ -339,7 +341,7 @@ end;
 
 procedure TEditorFrame.EditorMasterEnter(Sender: TObject);
 begin
-  TfmMain(Owner).CurrentEditor := (Sender as TSyntaxMemo);
+  TfmMain(Owner).CurrentEditor:= (Sender as TSyntaxMemo);
   SyncMap;
 end;
 
@@ -366,55 +368,69 @@ begin
 end;
 
 {$warnings off}
-procedure TEditorFrame.SaveFile(const AFileName: Widestring);
-  procedure Err;
+procedure TEditorFrame.SaveFile(AFileName: Widestring);
+  procedure ErrorWritable;
   begin
-    MessageBoxW(Handle,
-      PWChar(WideFormat(DKLangConstW('MAtt'), [WideExtractFileName(AFileName)])),
-      'SynWrite', mb_ok or mb_iconerror);
+    MsgError(WideFormat(DKLangConstW('MAtt'), [AFileName]));
   end;
-  function CfmOvr: boolean;
+  procedure ErrorCantSave;
   begin
-    Result:= MessageBoxW(Handle,
-      PWChar(WideFormat(DKLangConstW('MOver'), [WideExtractFileName(AFileName)])),
-      'SynWrite', mb_okcancel or MB_ICONWARNING) = id_ok;
+    MsgError(WideFormat(DKLangConstW('zMCantSave'), [AFileName]));
+  end;
+  function MsgConfirmOverwrite: boolean;
+  begin
+    Result:= MsgConfirm(WideFormat(DKLangConstW('MOver'), [WideExtractFileName(AFileName)]));
   end;
 var
   attr: integer;
+  ext: string;
 const
   fa = (file_attribute_readonly or file_attribute_hidden or file_attribute_system);
 begin
+  if FSavingBusy then Exit;
   TfmMain(Owner).DoBackup(AFileName);
 
-  attr := -1;
+  //handle ReadOnly/Hidden/System attribs
+  attr:= -1;
   if IsFileExist(AFileName) then
   begin
-    attr := GetFileAttributesW(PWChar(AFileName));
+    attr:= GetFileAttributesW(PWChar(AFileName));
     if (attr and fa) <> 0 then begin
-      if TfmMain(Owner).opAskOverwrite and not CfmOvr then
+      if TfmMain(Owner).opAskOverwrite and not MsgConfirmOverwrite then
         Exit;
       if not SetFileAttributesW(PWChar(AFileName), attr and not fa) then
-        begin Err; Exit end;
+        begin ErrorWritable; Exit end;
     end
     else
-      attr := -1;
+      attr:= -1;
   end;
 
-  //File permission denied
+  //check that file permission enabled
   if IsFileExist(AFileName) and not IsFileWritable(AFileName) then
-    begin Err; Exit end;
+    begin ErrorWritable; Exit end;
 
-  TextSource.Lines.SkipSignature := SkipSign;
-  try
-    EditorMaster.SaveToFile(AFileName);
-  except
-    MsgError('Cannot save file:'#13+AFileName);
-  end;
-  TextSource.Lines.SkipSignature := False;
-  Modified := False;
+  FSavingBusy:= true;
+  TextSource.Lines.SkipSignature:= SkipSign;
+  ext:= Copy(WideExtractFileExt(AFileName), 2, MaxInt);
 
-  FFileName := AFileName;
+  repeat
+    try
+      EditorMaster.SaveToFile(AFileName);
+      Modified:= False;
+    except
+      ErrorCantSave;
+    end;
+    if not Modified then Break;
+    if not WidePromptForFileName(AFileName, '', ext, '', '', true) then Break;
+  until false;
+
+  FSavingBusy:= false;
+  TextSource.Lines.SkipSignature:= False;
+
+  FFileName:= AFileName;
   DoTitleChanged;
+
+  //restore ReadOnly/Hidden/System attribs
   if (attr <> -1) then
     SetFileAttributesW(PWChar(FileName), attr);
 end;
@@ -422,8 +438,8 @@ end;
 
 procedure TEditorFrame.LoadFile(const AFileName: Widestring);
 begin
-  SkipSign := False;
-  TextSource.Lines.SkipSignature := False;
+  SkipSign:= False;
+  TextSource.Lines.SkipSignature:= False;
 
   if (AFileName = '') then
     TextSource.Lines.Clear
@@ -431,22 +447,22 @@ begin
   if not TfmMain(Owner).LoadState(Self, AFileName) then
     TextSource.Lines.LoadFromFile(AFileName);
 
-  Modified := False;
-  ModifiedClr := False;
-  FFileName := AFileName;
+  Modified:= False;
+  ModifiedClr:= False;
+  FFileName:= AFileName;
   DoTitleChanged;
 end;
 
 function TEditorFrame.GetModified: boolean;
 begin
-  Result := EditorMaster.Modified;
-  if FModifiedClr then Result := False;
+  Result:= EditorMaster.Modified;
+  if FModifiedClr then Result:= False;
 end;
 
 procedure TEditorFrame.SetModified(const Value: boolean);
 begin
-  EditorSlave.Modified := Value;
-  EditorMaster.Modified := Value;
+  EditorSlave.Modified:= Value;
+  EditorMaster.Modified:= Value;
 end;
 
 function TEditorFrame.GetTitle: Widestring;
@@ -485,7 +501,7 @@ procedure TEditorFrame.DoTitleChanged;
 begin
   if Parent<>nil then
     if Parent is TTntTabSheet then
-      (Parent as TTntTabSheet).Caption := Title;
+      (Parent as TTntTabSheet).Caption:= Title;
   if Assigned(FOnTitleChanged) then
     FOnTitleChanged(Self);
 end;
@@ -493,14 +509,14 @@ end;
 //is filename already opened?
 function TEditorFrame.IsTheFile(const AFileName: Widestring): Boolean;
 begin
-  Result := (FFileName <> '') and
+  Result:= (FFileName <> '') and
     (WideUpperCase(FFileName) = WideUpperCase(AFileName));
 end;
 
 //is frame hold untitled document?
 function TEditorFrame.IsNewFile: Boolean;
 begin
-  Result := FFileName = '';
+  Result:= FFileName = '';
 end;
 
 procedure TEditorFrame.EditorMasterChange(Sender: TObject);
@@ -527,25 +543,25 @@ var
   gi: TGutterObject;
   Memo: TSyntaxMemo;
 begin
-  Memo := Sender as TSyntaxMemo;
+  Memo:= Sender as TSyntaxMemo;
   if (Memo.SelLength > 0) and
      (Line = Memo.StrPosToCaretPos(Memo.SelStart + Memo.SelLength).Y) then
   begin
-    gi := TGutterObject.Create(nil);
+    gi:= TGutterObject.Create(nil);
     gi.Band:= 1; //Band index for Bookmarks
-    gi.OnClick := SyncEditClick;
-    gi.ImageIndex := 10;
-    gi.Hint := DKLangConstW('Sync');
+    gi.OnClick:= SyncEditClick;
+    gi.ImageIndex:= 10;
+    gi.Hint:= DKLangConstW('Sync');
     List.Add(gi);
     Exit;
   end;
   if Memo.SyncEditing.RangeEndAtLine(Line) <> -1 then
   begin
-    gi := TGutterObject.Create(nil);
+    gi:= TGutterObject.Create(nil);
     gi.Band:= 1; //Band index for Bookmarks
-    gi.ImageIndex := 11;
-    gi.Hint := DKLangConstW('SynR');
-    gi.OnClick := SyncEditClick;
+    gi.ImageIndex:= 11;
+    gi.Hint:= DKLangConstW('SynR');
+    gi.OnClick:= SyncEditClick;
     List.Add(gi);
     Exit;
   end;
@@ -563,7 +579,7 @@ begin
     memo.SyncEditing.AddCurSelection
   else
   begin
-    idx := memo.SyncEditing.RangeEndAtLine(Line);
+    idx:= memo.SyncEditing.RangeEndAtLine(Line);
     if idx <> -1 then
       memo.SyncEditing.Delete(idx);
   end;
@@ -585,14 +601,14 @@ procedure TEditorFrame.EditorMasterOleDragEnter(Sender: TObject;
   const DataObject: IDataObject; KeyState: Integer; Pt: TPoint;
   var Effect: Integer; var Handled: Boolean);
 begin
-  Handled := GetFormatInfo(DataObject, CF_DRAGCOLOR);
+  Handled:= GetFormatInfo(DataObject, CF_DRAGCOLOR);
 end;
 
 procedure TEditorFrame.EditorMasterOleDragOver(Sender: TObject; const DataObject: IDataObject;
   KeyState: Integer; Pt: TPoint; var Effect: Integer;
   var Handled: Boolean);
 begin
-  Handled := GetFormatInfo(DataObject, CF_DRAGCOLOR);
+  Handled:= GetFormatInfo(DataObject, CF_DRAGCOLOR);
 end;
 
 procedure TEditorFrame.EditorMasterOleDrop(Sender: TObject;
@@ -607,14 +623,14 @@ var FormatInfo: TFormatEtc;
 begin
   with Sender as TSyntaxMemo do
    begin
-     Handled := GetFormatInfo(DataObject, CF_DRAGCOLOR, FormatInfo);
+     Handled:= GetFormatInfo(DataObject, CF_DRAGCOLOR, FormatInfo);
      if Handled then
        begin
-         Fg := (KeyState and MK_CONTROL) <> 0;
-         Pt := ScreenToClient(Pt);
+         Fg:= (KeyState and MK_CONTROL) <> 0;
+         Pt:= ScreenToClient(Pt);
          if DataObject.GetData(FormatInfo, Medium) = S_OK then
          begin
-           Data := GlobalLock(Medium.hGlobal);
+           Data:= GlobalLock(Medium.hGlobal);
            if Data <> nil then
            try
              Move(Data^, C, SizeOf(C));
@@ -626,47 +642,47 @@ begin
          if Gutter.Visible and (Pt.X < Gutter.Width) then
            begin // Gutter
              if Fg then
-               LineNumbers.Font.Color := C
+               LineNumbers.Font.Color:= C
              else
               begin
-               W := 0;
-               for Idx := 0 to Gutter.Bands.Count - 1 do
+               W:= 0;
+               for Idx:= 0 to Gutter.Bands.Count - 1 do
                  begin
                    if (Pt.X >= W) and (Pt.X < W + Gutter.Bands[Idx].Width) then
                      begin
                        if Gutter.Bands[Idx].Color = clNone then Break
-                        else Gutter.Bands[Idx].Color := C;
+                        else Gutter.Bands[Idx].Color:= C;
                        Exit;
                      end;
                    Inc(W, Gutter.Bands[Idx].Width);
                  end;
-               Gutter.Color := C;
+               Gutter.Color:= C;
               end;
            end else
          if ShowRightMargin and (abs(Pt.X - RightMargin * DefTextExt.cx) < 2) then
            begin
-             RightMarginColor := C;
+             RightMarginColor:= C;
            end else
            begin
-             Pt := MouseToCaret(Pt.X, Pt.Y);
+             Pt:= MouseToCaret(Pt.X, Pt.Y);
              if (SyntObj = nil) or
                 (Pt.Y < 0) or (Pt.Y >= Lines.Count) or
                 (Pt.X >= Lines.LineLength(Pt.Y)) then
                begin // Default editor style
                  if Fg then
-                   Font.Color := C
+                   Font.Color:= C
                  else
-                   Color := C;
+                   Color:= C;
                end else
                begin
-                 Idx := SyntObj.TokenAtPos(CaretPosToStrPos(Pt));
+                 Idx:= SyntObj.TokenAtPos(CaretPosToStrPos(Pt));
                  if (Idx <> -1) and (SyntObj.Tags[Idx].Rule <> nil) and
                     (SyntObj.Tags[Idx].Rule.Style <> nil) then
                    begin
                      if Fg then
-                       SyntObj.Tags[Idx].Rule.Style.Font.Color := C
+                       SyntObj.Tags[Idx].Rule.Style.Font.Color:= C
                      else
-                       SyntObj.Tags[Idx].Rule.Style.BgColor := C;
+                       SyntObj.Tags[Idx].Rule.Style.BgColor:= C;
                    end;
                end;
            end;
@@ -765,14 +781,14 @@ end;
 
 procedure TEditorFrame.DoStartNotif;
 begin
-  Notif.FileName := FileName;
-  Notif.Timer.Enabled := (FileName <> '') and (TfmMain(Owner).opNotif > 0);
+  Notif.FileName:= FileName;
+  Notif.Timer.Enabled:= (FileName <> '') and (TfmMain(Owner).opNotif > 0);
 end;
 
 procedure TEditorFrame.DoStopNotif;
 begin
-  Notif.Timer.Enabled := False;
-  Notif.FileName := '';
+  Notif.Timer.Enabled:= False;
+  Notif.FileName:= '';
 end;
 
 destructor TEditorFrame.Destroy;
@@ -812,9 +828,7 @@ begin
   //special confirm on modified
   if Modified then
   begin
-    b:= (MessageBoxW(Handle,
-      PWChar(WideFormat(DKLangConstW('MRelMod'), [WideExtractFileName(FileName)])),
-      'SynWrite', MB_okcancel or MB_iconwarning) = id_ok);
+    b:= MsgConfirm(WideFormat(DKLangConstW('MRelMod'), [WideExtractFileName(FileName)]));
   end
   else
   //normal confirm
@@ -822,9 +836,7 @@ begin
   if not TfmMain(Owner).SynExe then
   begin
     b:= (TfmMain(Owner).opNotif = 1) or
-    (MessageBoxW(Handle,
-      PWChar(WideFormat(DKLangConstW('MRel'), [WideExtractFileName(FileName)])),
-      'SynWrite', MB_okcancel or MB_iconwarning) = id_ok);
+      MsgConfirm(WideFormat(DKLangConstW('MRel'), [WideExtractFileName(FileName)]));
   end
   else
   begin

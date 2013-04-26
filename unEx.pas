@@ -144,8 +144,9 @@ begin
       CREATE_NEW, FILE_ATTRIBUTE_NORMAL, 0);
     if h <> INVALID_HANDLE_VALUE then
       CloseHandle(h)
-    else begin
-      Msg(DKLangConstW('MNCreate')+#13 + S);
+    else
+    begin
+      MsgError(DKLangConstW('MNCreate')+#13 + S);
       Result:= false;
     end;
   end;
@@ -179,8 +180,9 @@ begin
     end;
   end;
 
-  if (SF <> '') and FBigSized(SF) then begin
-    Msg(WideFormat(DKLangConstW('MBig'), [WideExtractFileName(SF)]));
+  if (SF <> '') and FBigSized(SF) then
+  begin
+    MsgError(WideFormat(DKLangConstW('MBig'), [WideExtractFileName(SF)]));
     Result:= false;
     Exit
   end;
@@ -365,6 +367,10 @@ begin
         1: fmMain.fExit.Execute;
         else fmMain.FocusEditor;
       end
+    else
+    //Esc in progress form
+    if Assigned(fmMain.fmProgress) and (fmMain.fmProgress.Visible) then
+      fmMain.fmProgress.bCan.Click
     else
     //Esc in panels
     if (fmMain.CurrentEditor<>nil) and (not fmMain.CurrentEditor.Focused) then

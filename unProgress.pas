@@ -29,6 +29,7 @@ type
     laText: TTntLabel;
     labCount: TTntLabel;
     laSort: TTntLabel;
+    labFilename: TTntLabel;
     procedure bCanClick(Sender: TObject);
     procedure TntFormPaint(Sender: TObject);
   private
@@ -36,6 +37,7 @@ type
   public
     { Public declarations }
     procedure SetMode(M: TProgressType);
+    procedure SetStatusMode(V: boolean);
   end;
 
 implementation
@@ -44,6 +46,16 @@ uses
   ATxFProc;
 
 {$R *.dfm}
+
+procedure TfmProgress.SetStatusMode(V: boolean);
+begin
+  if V then
+  begin
+    labCount.Top:= 2;
+    Pro.Top:= 1;
+    bCan.Top:= 0;
+  end;
+end;
 
 procedure TfmProgress.SetMode(m: TProgressType);
  //Align center
@@ -56,6 +68,7 @@ begin
   Pro.Progress:= 0; //reset bar on mode change
   Pro.Visible:= (m<>proFindFiles);
 
+  labFilename.Visible:= m=proFindText;
   laText.Visible:= m=proFindText;
   laFile.Visible:= m in [proFindFiles, proAddFolders];
   laBin.Visible:= m=proExclBinary;
@@ -69,6 +82,7 @@ begin
   A(laBin);
   A(laBk);
   A(laSort);
+  labFilename.Top:= labCount.Top;
 end;
 
 procedure TfmProgress.bCanClick(Sender: TObject);

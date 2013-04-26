@@ -839,7 +839,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 92
         Width = 529
-        Height = 197
+        Height = 213
         TabOrder = 1
         object Label15: TTntLabel
           Left = 56
@@ -857,14 +857,14 @@ object fmSetup: TfmSetup
         end
         object Label14: TTntLabel
           Left = 400
-          Top = 140
+          Top = 156
           Width = 63
           Height = 13
           Caption = 'Line numbers'
         end
         object TntLabel28: TTntLabel
           Left = 400
-          Top = 164
+          Top = 180
           Width = 61
           Height = 13
           Caption = 'Block staples'
@@ -942,7 +942,7 @@ object fmSetup: TfmSetup
         end
         object edNums: TTntComboBox
           Left = 270
-          Top = 136
+          Top = 152
           Width = 123
           Height = 21
           Hint = 'Style of line numbering.'
@@ -1004,7 +1004,7 @@ object fmSetup: TfmSetup
         end
         object cbShowEOL: TTntCheckBox
           Left = 270
-          Top = 76
+          Top = 92
           Width = 256
           Height = 17
           Hint = 
@@ -1015,7 +1015,7 @@ object fmSetup: TfmSetup
         end
         object cbBkUndo: TTntCheckBox
           Left = 270
-          Top = 108
+          Top = 124
           Width = 256
           Height = 25
           Hint = 
@@ -1027,7 +1027,7 @@ object fmSetup: TfmSetup
         end
         object cbStaples: TComboBox
           Left = 312
-          Top = 160
+          Top = 176
           Width = 81
           Height = 22
           Hint = 'Line style of block staples.'
@@ -1038,7 +1038,7 @@ object fmSetup: TfmSetup
         end
         object edStapleOffset: TSpinEdit
           Left = 270
-          Top = 160
+          Top = 176
           Width = 41
           Height = 22
           Hint = 'Horizontal offset of block staples (in pixels).'
@@ -1049,18 +1049,17 @@ object fmSetup: TfmSetup
           OnKeyDown = edIndKeyDown
         end
         object cbDWrapMark: TTntCheckBox
-          Left = 390
-          Top = 184
+          Left = 270
+          Top = 60
           Width = 256
           Height = 17
           Hint = 'Draw "line is wrapped" icons on gutter.'
           Caption = 'Draw gutter "line wrapped" mark'
           TabOrder = 13
-          Visible = False
         end
         object cbColorOnEmpty: TTntCheckBox
           Left = 270
-          Top = 92
+          Top = 108
           Width = 256
           Height = 17
           Hint = 
@@ -1071,7 +1070,7 @@ object fmSetup: TfmSetup
         end
         object cbCopyLineNSel: TTntCheckBox
           Left = 270
-          Top = 60
+          Top = 76
           Width = 256
           Height = 17
           Hint = 
@@ -1667,10 +1666,10 @@ object fmSetup: TfmSetup
           Width = 57
           Height = 22
           Increment = 10
-          MaxValue = 1000
-          MinValue = 5
+          MaxValue = 2000
+          MinValue = 0
           TabOrder = 6
-          Value = 3
+          Value = 5
           OnKeyDown = edIndKeyDown
         end
       end
@@ -2561,9 +2560,9 @@ object fmSetup: TfmSetup
         object TntLabel14: TTntLabel
           Left = 8
           Top = 216
-          Width = 267
+          Width = 283
           Height = 13
-          Caption = 'Hint: add * after folder name to search in it recursively.'
+          Caption = 'Hint: add * after folder name to search in all its subfolders.'
         end
         object TntLabel15: TTntLabel
           Left = 8

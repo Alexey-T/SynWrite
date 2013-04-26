@@ -4,7 +4,7 @@ object fmSRFiles: TfmSRFiles
   ActiveControl = ed1
   BorderStyle = bsDialog
   Caption = 'Find/Replace in files'
-  ClientHeight = 425
+  ClientHeight = 445
   ClientWidth = 457
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -345,7 +345,7 @@ object fmSRFiles: TfmSRFiles
     Left = 200
     Top = 352
     Width = 249
-    Height = 69
+    Height = 85
     Caption = 'Result list'
     TabOrder = 11
     object cbFnOnly: TTntCheckBox
@@ -373,6 +373,14 @@ object fmSRFiles: TfmSRFiles
       Caption = '&Append results list'
       TabOrder = 2
     end
+    object cbCloseAfter: TTntCheckBox
+      Left = 8
+      Top = 64
+      Width = 238
+      Height = 17
+      Caption = 'Close dialog when finished'
+      TabOrder = 3
+    end
   end
   object bCurFile: TTntButton
     Left = 128
@@ -398,7 +406,7 @@ object fmSRFiles: TfmSRFiles
     Left = 408
     Top = 140
     LangData = {
-      0900666D535246696C6573010100000001000000070043617074696F6E012A00
+      0900666D535246696C6573010100000001000000070043617074696F6E012B00
       000006004C6162656C32010100000002000000070043617074696F6E0006004C
       6162656C34010100000003000000070043617074696F6E000900546E744C6162
       656C31010100000004000000070043617074696F6E000900546E744C6162656C
@@ -429,7 +437,8 @@ object fmSRFiles: TfmSRFiles
       0043617074696F6E000E00546E744F70656E4469616C6F6731000007006C6162
       46696E6400000A006C616246696E6452657000000B0063624F7574417070656E
       6401010000001F000000070043617074696F6E000900546E744C6162656C3301
-      0100000020000000070043617074696F6E0006006564536F72740000}
+      0100000020000000070043617074696F6E0006006564536F727400000C006362
+      436C6F73654166746572010100000021000000070043617074696F6E00}
   end
   object Timer1: TTimer
     Enabled = False

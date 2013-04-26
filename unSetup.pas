@@ -884,7 +884,7 @@ begin
     opSingleClickURL:= cbUrlClick.Checked;
     ApplyUrlClick;
 
-    //opShowWrapMark:=cbDWrapMark.Checked;
+    opShowWrapMark:=cbDWrapMark.Checked;
     opCopyLineIfNoSel:=cbCopyLineNSel.Checked;
     opSmartHi:=cbSmHi.Checked;
     opSmartHiCase:=cbSmHiCase.Checked;
@@ -1708,7 +1708,7 @@ begin
     edStapleOffset.Value:=TemplateEditor.StapleOffset;
     cbStaples.ItemIndex:= Ord(TemplateEditor.StaplePen.Style);
     cbCopyLineNSel.Checked:= opCopyLineIfNoSel;
-    //cbDWrapMark.Checked:= opShowWrapMark;
+    cbDWrapMark.Checked:= opShowWrapMark;
     cbSmHi.Checked:=opSmartHi;
     cbSmHiCase.Checked:=opSmartHiCase;
     cbBrHi.Checked:=opBracketHi;

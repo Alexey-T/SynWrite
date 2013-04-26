@@ -145,11 +145,11 @@ function SFilterNum(const s: string): integer;
 function SFilterIdxToExt(const Filter: string; Index: integer): string;
 function SFilterNameToIdx(const Filter, name: string): integer;
 
-procedure Msg(const S: WideString);
 procedure MsgInfo(const S: WideString);
 procedure MsgWarn(const S: WideString);
 procedure MsgError(const S: WideString);
 procedure MsgExcept(const S: Widestring; E: Exception);
+function MsgConfirm(const S: Widestring): boolean;
 
 procedure SetFormStyle(Form: TForm; Value: Boolean);
 procedure SetFormOnTop(H: THandle; V: boolean);
@@ -204,28 +204,36 @@ uses
   TntSysUtils,
   unSRTree, unRename;
 
-procedure Msg(const S: WideString);
+function WinHandle: THandle;
 begin
-  MessageBoxW(0, PWChar(S), 'SynWrite',
-    mb_ok or mb_iconerror or mb_taskmodal);
+  if Assigned(Application) and Assigned(Application.MainForm) then
+    Result:= Application.MainForm.Handle
+  else
+    Result:= 0;  
 end;
 
 procedure MsgInfo(const S: WideString);
 begin
-  MessageBoxW(0, PWChar(S), 'SynWrite',
+  MessageBoxW(WinHandle, PWChar(S), 'SynWrite',
     mb_ok or mb_iconinformation or mb_taskmodal);
 end;
 
 procedure MsgWarn(const S: WideString);
 begin
-  MessageBoxW(0, PWChar(S), 'SynWrite',
+  MessageBoxW(WinHandle, PWChar(S), 'SynWrite',
     mb_ok or mb_iconwarning or mb_taskmodal);
 end;
 
 procedure MsgError(const S: WideString);
 begin
-  MessageBoxW(0, PWChar(S), 'SynWrite',
+  MessageBoxW(WinHandle, PWChar(S), 'SynWrite',
     mb_ok or mb_iconerror or mb_taskmodal);
+end;
+
+function MsgConfirm(const S: Widestring): boolean;
+begin
+  Result:= MessageBoxW(WinHandle, PWChar(S), 'SynWrite',
+    MB_okcancel or MB_iconwarning) = id_ok;
 end;
 
 procedure MsgExcept(const S: Widestring; E: Exception);

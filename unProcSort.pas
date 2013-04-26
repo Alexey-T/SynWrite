@@ -8,21 +8,36 @@ uses
 type
   TSynSortMode = (sortUnicodeRaw, sortUnicode, sortAscii, sortNumeric);
   TSynDedupMode = (dedupAll, dedupAdjacent);
+  TSynTrimMode = (cTrimLead, cTrimTrail, cTrimAll, cTrimDups);
 
-function DoUnspaceStringList(
+function DoListCommand_RemoveBlanks(
+  L: TTntStringList): Integer;
+function DoListCommand_RemoveDupBlanks(
+  L: TTntStringList): Integer;
+
+function DoListCommand_Trim(
+  L: TTntStringList;
+  Mode: TSynTrimMode): Integer;
+  
+function DoListCommand_AlignWithSep(
+  L: TTntStringList;
+  const Sep: Widestring;
+  TabSize: Integer): Integer;
+
+function DoListCommand_Unspace(
   List: TTntStringList;
-  const Spaces: Widestring;
+  TabSize: Integer;
   LeadOnly: boolean): boolean;
 
-function DoUntabStringList(
+function DoListCommand_Untab(
   List: TTntStringList;
   TabSize: Integer): Integer;
 
-function DoDedupStringList(
+function DoListCommand_Deduplicate(
   List: TTntStringList;
   AMode: TSynDedupMode): Integer;
 
-function DoSortStringList(
+function DoListCommand_Sort(
   List: TTntStringList;
   AMode: TSynSortMode;
   AAscend: boolean;
@@ -33,6 +48,8 @@ implementation
 
 uses
   SysUtils, unSort, Controls, Forms, Math,
+  Dialogs,
+  ecStrUtils,
   ATxSProc;
 
 var
@@ -44,7 +61,7 @@ var
     Col1, Col2: Integer;
   end;
 
-procedure DelLastEmpty(List: TTntStringList);
+procedure DoDeleteLastEmpty(List: TTntStringList);
 var
   N: Integer;
 begin
@@ -52,6 +69,19 @@ begin
   if (N>0) and (List[N-1]='') then
     List.Delete(N-1);
 end;
+
+{
+function IsLastEOL(List: TTntStringList): boolean;
+var
+  N: Integer;
+begin
+  N:= List.Count;
+  if N>0 then
+    Result:= (Length(List[N-1])>=2) and (Copy(List[N-1], Length(List[N-1])-1, 2)=sLineBreak)
+  else
+    Result:= false;
+end;
+}
 
 function WideCompareStr_Raw(const S1, S2: Widestring): Integer;
 var
@@ -178,7 +208,7 @@ begin
       List.Delete(i);
 end;
 
-function DoSortStringList(
+function DoListCommand_Sort(
   List: TTntStringList;
   AMode: TSynSortMode;
   AAscend: boolean;
@@ -253,7 +283,7 @@ begin
 end;
 
 
-function DoUntabStringList(
+function DoListCommand_Untab(
   List: TTntStringList;
   TabSize: Integer): Integer;
 var
@@ -262,7 +292,7 @@ begin
   Result:= 0;
   Screen.Cursor:= crHourGlass;
   try
-    DelLastEmpty(List);
+    DoDeleteLastEmpty(List);
 
     for i:= 0 to List.Count-1 do
       if Pos(#9, List[i])>0 then
@@ -276,7 +306,7 @@ begin
 end;
 
 
-function DoDedupStringList(
+function DoListCommand_Deduplicate(
   List: TTntStringList;
   AMode: TSynDedupMode): Integer;
 var
@@ -286,7 +316,7 @@ begin
   Result:= 0;
   Screen.Cursor:= crHourGlass;
   try
-    DelLastEmpty(List);
+    DoDeleteLastEmpty(List);
 
     case AMode of
       dedupAdjacent:
@@ -327,19 +357,20 @@ begin
 end;
 
 
-function DoUnspaceStringList(
+function DoListCommand_Unspace(
   List: TTntStringList;
-  const Spaces: Widestring;
+  TabSize: Integer;
   LeadOnly: boolean): boolean;
 var
   i: Integer;
-  S: Widestring;
+  S, Spaces: Widestring;
 begin
   Result:= true;
   Screen.Cursor:= crHourGlass;
   try
-    DelLastEmpty(List);
+    DoDeleteLastEmpty(List);
 
+    Spaces:= StringOfChar(' ', TabSize);
     for i:= 0 to List.Count-1 do
     begin
       S:= List[i];
@@ -354,5 +385,115 @@ begin
     Screen.Cursor:= crDefault;
   end;
 end;
+
+function DoListCommand_AlignWithSep(
+  L: TTntStringList;
+  const Sep: Widestring;
+  TabSize: Integer): Integer;
+  //
+  function PosSep(S: Widestring): Integer;
+  var
+    n: Integer;
+  begin
+    S:= SUntab(S, TabSize);
+    n:= 1;
+    while (n<=Length(S)) and ((S[n]=' ') or (S[n]=#9)) do
+      Inc(n);
+    Result:= ecPosEx(Sep, S, n);
+  end;
+var
+  i, N, NPos, NSize: Integer;
+  S, Spaces: Widestring;
+begin
+  Result:= 0;
+
+  NSize:= 0;
+  for i:= 0 to L.Count-1 do
+  begin
+    N:= PosSep(L[i]);
+    if N=0 then Continue;
+    if N>NSize then
+      NSize:= N;
+  end;
+  if NSize=0 then Exit;
+
+  for i:= 0 to L.Count-1 do
+  begin
+    N:= PosSep(L[i]);
+    if N=0 then Continue;
+    if N<NSize then
+    begin
+      S:= L[i];
+      NPos:= Pos(Sep, L[i]); //insert spaces before NPos, not N
+      if NPos=0 then Continue;
+      Spaces:= StringOfChar(' ', NSize-N);
+      Insert(Spaces, S, NPos);
+      L[i]:= S;
+      Inc(Result);
+    end;
+  end;
+
+  {
+  if OptFill then
+    DoListCommand_Unspace(L, TabSize, false);
+    }
+end;
+
+function DoListCommand_RemoveBlanks(
+  L: TTntStringList): Integer;
+var
+  i: Integer;
+begin
+  Result:= 0;
+  for i:= L.Count-1 downto 0 do
+    if Trim(L[i])='' then
+    begin
+      L.Delete(i);
+      Inc(Result);
+    end;
+end;
+
+function DoListCommand_RemoveDupBlanks(
+  L: TTntStringList): Integer;
+var
+  i: Integer;
+begin
+  Result:= 0;
+  for i:= L.Count-1 downto 1{not 0} do
+    if (Trim(L[i])='') and (Trim(L[i-1])='') then
+    begin
+      L.Delete(i);
+      Inc(Result);
+    end;
+end;
+
+
+function DoListCommand_Trim(
+  L: TTntStringList;
+  Mode: TSynTrimMode): Integer;
+var
+  i: Integer;
+  S: Widestring;
+begin
+  Result:= 0;
+  for i:= 0 to L.Count-1 do
+  begin
+    S:= L[i];
+    case Mode of
+      cTrimLead: S:= TrimLeft(S);
+      cTrimTrail: S:= TrimRight(S);
+      cTrimAll: S:= Trim(S);
+      cTrimDups: SDeleteDupSpaces(S);
+      else
+        raise Exception.Create('Unknown trim op');
+    end;
+    if S<>L[i] then
+    begin
+      L[i]:= S;
+      Inc(Result);
+    end;
+  end;
+end;
+
 
 end.

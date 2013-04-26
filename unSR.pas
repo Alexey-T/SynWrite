@@ -150,6 +150,7 @@ type
     FTopGOpt,
     FTopGScope,
     FHeight0: Integer;
+    procedure SModClick(const SMod: Widestring);
     procedure mnuComboClick(Sender: TObject);
     procedure DoCombo(ed: TTntCombobox; edMemo: TTntMemo; edNum: integer);
     procedure ReClick(Sender: TObject);
@@ -202,6 +203,7 @@ uses
 
 const
   cc = 50; //Max items in history
+  SMod = '(?s)'; //Dot modifier for regex
 
 procedure TfmSR.FormShow(Sender: TObject);
 begin
@@ -919,9 +921,11 @@ begin
 end;
 
 const
-  cRe: array[0..35] of record
+  cRe: array[0..37] of record
     id, s, re: string;
   end = (
+   (id: 're_s_mod'; s: SMod; re: SMod),
+   (id: ''; s: ''; re: ''),
    (id: 're_dot'; s: '.'; re: '.'),
    (id: 're_st'; s: '^'; re: '^'),
    (id: 're_end'; s: '$'; re: '$'),
@@ -991,6 +995,12 @@ var
 begin
   cbRe.Checked:= true;
   S:= cRe[(Sender as TComponent).Tag].re;
+
+  if S=SMod then
+  begin
+    SModClick(SMod);
+    Exit
+  end;
 
   if not IsMultiline then
   begin
@@ -1408,6 +1418,20 @@ begin
     Key:= 0;
     Exit
   end;
+end;
+
+procedure TfmSR.SModClick(const SMod: Widestring);
+var
+  S: Widestring;
+begin
+  S:= GetText1;
+
+  if Pos(SMod, S)=1 then
+    Delete(S, 1, Length(SMod))
+  else
+    Insert(SMod, S, 1);
+
+  SetText1(S);
 end;
 
 end.

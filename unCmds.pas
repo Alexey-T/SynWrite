@@ -135,6 +135,7 @@ const
   sm_CommandsList = 794;
   sm_ScrollToSel = 795;
   sm_ProjectList = 796;
+  sm_AlignWithSep = 797;
   //free
 
   sm_EncAnsi = 800;

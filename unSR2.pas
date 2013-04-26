@@ -66,6 +66,7 @@ type
     cbOutAppend: TTntCheckBox;
     TntLabel3: TTntLabel;
     edSort: TTntComboBox;
+    cbCloseAfter: TTntCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -188,6 +189,7 @@ begin
     Top:= ReadInteger('Search', 'WTopFiles', Self.Monitor.Top + (Self.Monitor.Height - Height) div 2);
 
     edSort.ItemIndex:= ReadInteger('Search', 'Sort', 0);
+    cbCloseAfter.Checked:= ReadBool('Search', 'CloseAfter', true);
     cbOutAppend.Checked:= ReadBool('Search', 'OutAdd', true);
     cbOutTab.Checked:= ReadBool('Search', 'OutTab', false);
     cbFnOnly.Checked:= ReadBool('Search', 'FnOnly', false);
@@ -254,6 +256,7 @@ begin
   with TIniFile.Create(SRIni) do
   try
     WriteInteger('Search', 'Sort', edSort.ItemIndex);
+    WriteBool('Search', 'CloseAfter', cbCloseAfter.Checked);
     WriteBool('Search', 'OutAdd', cbOutAppend.Checked);
     WriteBool('Search', 'OutTab', cbOutTab.Checked);
     WriteBool('Search', 'FnOnly', cbFnOnly.Checked);

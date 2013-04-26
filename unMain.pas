@@ -56,7 +56,7 @@ const
   cMaxTreeLen = 400; //find in files result: max node length
 
 type
-  TSynSortCmd = (
+  TSynLineCmd = (
     scmdSortAsc,
     scmdSortDesc,
     scmdSortDialog,
@@ -64,7 +64,14 @@ type
     scmdDedupAdjacent,
     scmdUntab,
     scmdSpacesToTabs,
-    scmdSpacesToTabsLead
+    scmdSpacesToTabsLead,
+    scmdAlignWithSep,
+    scmdRemoveBlanks,
+    scmdRemoveDupBlanks,
+    scmdTrimLead,
+    scmdTrimTrail,
+    scmdTrimAll,
+    scmdRemoveDupSpaces
     );
 
   TSynCopyNameCmd = (
@@ -141,7 +148,6 @@ type
   TRightTab = (tbClip, tbMap, tbTextClips);
   TLeftTab = (tbTree, tbProj, tbTabs, tbPugin1, tbPugin2, tbPugin3, tbPugin4, tbPugin5);
   TCpOverride = (cp_sr_Def, cp_sr_OEM, cp_sr_UTF8, cp_sr_UTF16);
-  TSpMode = (spTrimLead, spTrimTrail, spTrimAll, spDelDupSp);
   TSelSave = record
     FSelStream: boolean;
     FSelStart, FSelEnd: TPoint;
@@ -366,8 +372,8 @@ type
     TBXItemSWordPrior: TTBXItem;
     TBXSeparatorItem20: TTBXSeparatorItem;
     TBXItemSMarkClear: TTBXItem;
-    TBXItemEUnind: TTBXItem;
-    TBXItemEInd: TTBXItem;
+    TBXItemEUnindent: TTBXItem;
+    TBXItemEIndent: TTBXItem;
     TBXSubmenuItem19: TTBXSubmenuItem;
     TBXItemESortAsc: TTBXItem;
     TBXItemESortDesc: TTBXItem;
@@ -1073,6 +1079,8 @@ type
     TBXSeparatorItem85: TTBXSeparatorItem;
     TBXItemTbDedupAll: TTBXItem;
     TBXSeparatorItem95: TTBXSeparatorItem;
+    TBXItemEAlignWithSep: TTBXItem;
+    ecAlignWithSep: TAction;
     procedure fOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1621,7 +1629,7 @@ type
     procedure fRenameExecute(Sender: TObject);
     procedure TBXItemRunNumConvClick(Sender: TObject);
     procedure ecNumericConverterExecute(Sender: TObject);
-    procedure TBXItemEUnindClick(Sender: TObject);
+    procedure TBXItemEUnindentClick(Sender: TObject);
     procedure ecIndentLike1stExecute(Sender: TObject);
     procedure fColumnMarkersExecute(Sender: TObject);
     procedure ecJumpColumnMarkerLeftExecute(Sender: TObject);
@@ -1729,6 +1737,30 @@ type
     procedure TBXItemECaseTitleClick(Sender: TObject);
     procedure TBXItemECaseSentClick(Sender: TObject);
     procedure TBXItemECaseInvertClick(Sender: TObject);
+    procedure TBXItemEAlignWithSepClick(Sender: TObject);
+    procedure TBXItemERemBlanksClick(Sender: TObject);
+    procedure TBXItemEReduceBlanksClick(Sender: TObject);
+    procedure TBXItemETrimLeadClick(Sender: TObject);
+    procedure TBXItemETrimTrailClick(Sender: TObject);
+    procedure TBXItemETrimAllClick(Sender: TObject);
+    procedure TBXItemERemDupSpClick(Sender: TObject);
+    procedure TBXItemETabToSpClick(Sender: TObject);
+    procedure TBXItemESpToTabClick(Sender: TObject);
+    procedure TBXItemESpToTabLeadClick(Sender: TObject);
+    procedure TBXItemECenterLinesClick(Sender: TObject);
+    procedure ecAlignWithSepExecute(Sender: TObject);
+    procedure TBXItemEJoinClick(Sender: TObject);
+    procedure TBXItemESplitClick(Sender: TObject);
+    procedure TBXItemECopyLineClick(Sender: TObject);
+    procedure TBXItemECutLineClick(Sender: TObject);
+    procedure TBXItemECopyAppClick(Sender: TObject);
+    procedure TBXItemECutAppClick(Sender: TObject);
+    procedure TBXItemEIndentClick(Sender: TObject);
+    procedure TBXItemEIndentLike1stClick(Sender: TObject);
+    procedure TBXItemECommClick(Sender: TObject);
+    procedure TBXItemEUncommClick(Sender: TObject);
+    procedure TBXItemEZenExpandClick(Sender: TObject);
+    procedure TBXItemEZenWrapClick(Sender: TObject);
 
   private
     cStatLine,
@@ -1782,7 +1814,6 @@ type
     fmClips: TfmClips;
     fmMap: TfmMap;
     fmProj: TfmProj;
-    fmProgress: TfmProgress;
     fmSR: TfmSR;
 
     //original options values
@@ -1982,6 +2013,7 @@ type
     procedure MsgNoDir(const fn: Widestring);
     procedure MsgEmptyMacro(const s: Widestring);
     procedure MsgDelLines(N: integer);
+    procedure MsgDoneLines(N: integer);
     procedure MsgTabbing(const s: Widestring);
     procedure UpdateSaveIco;
     procedure UpdateBusyIco;
@@ -2053,7 +2085,6 @@ type
     procedure DoBlockIndent(Ed: TSyntaxMemo; shift: boolean);
     procedure DoRecordToMacro(Cmd: integer; Data: PWChar);
     procedure DoFindClip(Next: boolean);
-    procedure DoTrim(ed: TSyntaxMemo; mode: TSpMode);
     function SNewDocName(const fn: Widestring): string;
     procedure NewDocClick(Sender: TObject);
     procedure NewDocFolderClick(Sender: TObject);
@@ -2169,7 +2200,7 @@ type
     procedure UpdateShortcuts;
     procedure UpdateLang;
     procedure UpdateSpellLang;
-    procedure UpdateCur;
+    procedure UpdateCur(Ed: TSyntaxMemo);
     procedure UpdateLexList;
     procedure UpdateEnc(Frame: TEditorFrame);
     procedure UpdateStatusbarLineEnds;
@@ -2248,7 +2279,7 @@ type
     procedure ChangeEncoding(Frame: TEditorFrame; ATag: Integer;
       ACanReload: boolean = true);
     procedure DoCheckAutoShowACP(Ed: TSyntaxMemo);
-    procedure DoLinesCommand(Cmd: TSynSortCmd);
+    procedure DoLinesCommand(Cmd: TSynLineCmd);
     procedure DoToggleLineComment(Alt: boolean);
     procedure DoCopyFilenameToClipboard(F: TEditorFrame; Cmd: TSynCopyNameCmd);
     function IsCommandAllowedInMacro(Cmd: Integer): boolean;
@@ -2267,6 +2298,7 @@ type
     SynExe: boolean;
     SynIsPortable: boolean;
     hLister: HWND;
+    fmProgress: TfmProgress;
 
     //opt
     opMaxTreeMatches: integer;
@@ -2304,6 +2336,7 @@ type
     opTipsPanels: boolean;
     opTipsToken: boolean;
     opFollowTail: boolean;
+    //opSrShowFilename: boolean; //Show filename on progress form (find in files)
     opSrExpand: boolean; //Expand results tree on progress
     opSrOnTop: boolean; //Find dlg on top
     opSrUseDlg: boolean; //Use custom search dlg
@@ -2548,7 +2581,7 @@ procedure StopSyn(hWin: HWND);
 function FBigSized(const fn: WideString): boolean;
 procedure WndCenter(H: THandle; fm: TCustomForm);
 
-function MsgConfirmBinary(const sf: WideString): boolean;
+function MsgConfirmBinary(const fn: WideString): boolean;
 function MsgConfirmCreate(const fn: Widestring): boolean;
 function SAppDir: string;
 function SDefSessionFN: string;
@@ -2557,7 +2590,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.2.190';
+  cSynVer = '5.2.230';
 
 implementation
 
@@ -2641,20 +2674,14 @@ const
   ccMacro = 10;
   ccTxt = 11;
 
-function MsgConfirm(const s: Widestring): boolean;
-begin
-  Result:= MessageBoxW(0, PWChar(s),
-     'SynWrite', mb_okcancel or mb_iconwarning or mb_taskmodal) = idok;
-end;
-
 function MsgConfirmFtp: boolean;
 begin
   Result:= MsgConfirm(DKLangConstW('zMFtpOp'));
 end;
 
-function MsgConfirmBinary(const sf: Widestring): boolean;
+function MsgConfirmBinary(const fn: Widestring): boolean;
 begin
-  Result:= MsgConfirm(WideFormat(DKLangConstW('MNText'), [WideExtractFileName(SF)]));
+  Result:= MsgConfirm(WideFormat(DKLangConstW('MNText'), [WideExtractFileName(fn)]));
 end;
 
 function MsgConfirmCreate(const fn: Widestring): boolean;
@@ -2662,7 +2689,7 @@ begin
   Result:= MsgConfirm(WideFormat(DKLangConstW('MCre'), [WideExtractFileName(fn)]));
 end;
 
-function MsgConfirmManyOpen(const N: Integer): boolean;
+function MsgConfirmManyOpen(N: Integer): boolean;
 begin
   Result:= MsgConfirm(WideFormat(DKLangConstW('zMOpenFiles'), [N]));
 end;
@@ -2965,7 +2992,7 @@ begin
   begin
     S:= OD.Files[i];
     if FBigSized(S) then
-      Msg(WideFormat(DKLangConstW('MBig'), [WideExtractFileName(S)]))
+      MsgError(WideFormat(DKLangConstW('MBig'), [WideExtractFileName(S)]))
     else
       OpnFile(S);
   end;
@@ -3830,7 +3857,7 @@ begin
       opKeepScr:= true;
     ApplyEd2;
 
-    opShowWrapMark:= true; //ReadBool('Setup', 'WrapMk', true);
+    opShowWrapMark:= ReadBool('Setup', 'WrapMk', true);
     opTxOnly:= ReadInteger('Setup', 'TxOnly', 0);
     opSaveSRHist:= ReadInteger('Setup', 'SaveSRHist', 10);
     opSaveState:= ReadInteger('Setup', 'SaveState', 10);
@@ -4364,7 +4391,7 @@ begin
     WriteInteger('Setup', 'LinkCl', opColorLink);
     WriteBool('Setup', 'FixBl', opFixBlocks);
     WriteBool('Setup', 'KeepScr', opKeepScr);
-    //WriteBool('Setup', 'WrapMk', opShowWrapMark);
+    WriteBool('Setup', 'WrapMk', opShowWrapMark);
     WriteInteger('Setup', 'TxOnly', opTxOnly);
 
     WriteInteger('Setup', 'SaveSRHist', opSaveSRHist);
@@ -4468,7 +4495,7 @@ begin
     Free;
   end;
  except
-   Msg(DKLangConstW('Appn'));
+   MsgError(DKLangConstW('Appn'));
  end;
 end;
 
@@ -4950,7 +4977,7 @@ begin
   {
   if Assigned(fmSR) and fmSR.Focused then
   begin
-    msg('1');
+    MsgError('1');
     Key:= 0;
     Exit
   end;
@@ -5409,6 +5436,7 @@ begin
     sm_SelectBrackets: ecSelBrackets.Execute;
     sm_CollapseParent: ecCollapseParent.Execute;
     sm_CollapseWithNested: ecCollapseWithNested.Execute;
+    sm_AlignWithSep: ecAlignWithSep.Execute;
 
     //Del key
     smDeleteChar:
@@ -6115,21 +6143,23 @@ procedure TfmMain.ecReadOnlyExecute(Sender: TObject);
 begin
   CurrentEditor.ReadOnly:= not CurrentEditor.ReadOnly;
   UpdateStatusbar;
-  UpdateCur;
+  UpdateCur(CurrentEditor);
   UpdateTitle(CurrentFrame);
 end;
 
-procedure TfmMain.UpdateCur;
+//fix for missing EC's cursor hiding
+procedure TfmMain.UpdateCur(Ed: TSyntaxMemo);
 begin
   if QuickView then Exit;
-  //fix for missing EC's cursor hiding
-  with TEdit.Create(Self) do
-  begin
-    Parent:= Self;
+  if not Ed.ReadOnly then Exit;
+  with TEdit.Create(Ed) do
+  try
+    Parent:= Ed;
     Left:= 0;
     Top:= 0;
     if Self.Enabled and CanFocus then
       SetFocus;
+  finally
     Free;
   end;
   FocusEditor;
@@ -6235,7 +6265,7 @@ begin
   end;
 
   if AUpdateCur then
-    UpdateCur;
+    UpdateCur(F.EditorMaster);
 end;
 
 procedure TfmMain.ButtonOnSelect(Sender: TTBCustomItem; Viewer: TTBItemViewer; Selecting: Boolean);
@@ -6290,7 +6320,7 @@ begin
 
   s:= WideFormat(DKLangConstW('MNFound2'), [Finder.FindText]);
   SHint[ccTxt]:= s;
-  if opSrShowMsg then
+  if opSrShowMsg and not (Assigned(fmSR) and fmSR.Visible) then
     MsgWarn(s)
   else
     MsgBeep;
@@ -6321,12 +6351,10 @@ begin
   //scale sizes for 150% DPI
   if PixelsPerInch<>96 then
   begin
-    with Panel1 do
-      Font.Size:= ScaleFontSize(Font.Size, Self);
+    Font.Size:= ScaleFontSize(Font.Size, Self);
     with Status do
     begin
       Height:= ScaleFontSize(Height, Self);
-      Font.Size:= ScaleFontSize(Font.Size, Self);
       with Panels[cc0] do Size:= ScaleFontSize(Size, Self);
       with Panels[ccEnc] do Size:= ScaleFontSize(Size, Self);
       with Panels[ccLE] do Size:= ScaleFontSize(Size, Self);
@@ -7904,7 +7932,7 @@ end;
     Result:= false;
     try
       if NTotalSize<=0 then
-        begin Msg('NTotalSize<=0'); Result:= true; Exit end;
+        raise Exception.Create('NTotalSize<=0');
       if Assigned(fmProgress) then
       begin
         fmProgress.Pro.Progress:= NDoneSize * 100 div NTotalSize;
@@ -7931,7 +7959,7 @@ end;
     TbxDockRight.Enabled:= En;
     TbxDockBottom.Enabled:= En;
     Menu.Enabled:= En;
-    Status.Enabled:= En;
+    //Status.Enabled:= En;
 
     if Assigned(fmSR) then
       fmSR.Enabled:= En;
@@ -7951,15 +7979,16 @@ end;
     if not Assigned(fmProgress) then
     begin
       fmProgress:= TfmProgress.Create(Self);
-      fmProgress.Parent:= Self;
+      fmProgress.ParentWindow:= Status.Handle; //"Parent:= Status" doesn't work
       fmProgress.BorderStyle:= bsNone;
-      fmProgress.Align:= alBottom;
-      fmProgress.Height:= 40;
+      fmProgress.Align:= alClient;
     end;
+    fmProgress.SetStatusMode(true);
     fmProgress.SetMode(AMode);
     fmProgress.Show;
-    fmProgress.Top:= 10; //put form above the status-bar
-    DoRepaint;  
+    with fmProgress.bCan do
+      if CanFocus then SetFocus;
+    //DoRepaint; //no need
 
     FinderPro:= fmProgress.Pro;
     StopFind:= false;
@@ -7973,7 +8002,7 @@ end;
     if Assigned(fmProgress) then
     begin
       fmProgress.Hide;
-      DoRepaint;
+      DoRepaint; //needed anyway, even if controls not resized
     end;
     if Assigned(fmSR) then
     begin
@@ -8607,7 +8636,7 @@ end;
 procedure TfmMain.fNewExecute(Sender: TObject);
 begin
   CreateFrame;
-  UpdateCur;
+  UpdateCur(CurrentEditor);
   UpdateZoom(CurrentFrame);
   UpdateColorHint;
 end;
@@ -8711,7 +8740,7 @@ begin
   try
     SaveIni2;
   except
-    Msg(DKLangConstW('Appn'));
+    MsgError(DKLangConstW('Appn'));
   end;
 
   //close Spell dialog
@@ -8939,7 +8968,7 @@ begin
             or (ch=' ') {fix for unneeded "<" at text end} then
             FBrAdd:= false;
           //else
-          //  Msg(WideFormat('%d %d %d', [i, TextLength, Ord(ch)])); ////
+          //  MsgError(WideFormat('%d %d %d', [i, TextLength, Ord(ch)])); ////
         end;
         if (i+1<=TextLength) then
         begin
@@ -9136,6 +9165,7 @@ begin
   K(tbxItemESortDesc, smSortDescending);
 
   //blank ops
+  K(TBXItemEAlignWithSep, sm_AlignWithSep);
   K(TbxItemECenterLines, sm_CenterLines);
   K(TbxItemETabToSp, sm_TabToSp);
   K(TbxItemESpToTab, sm_SpToTab);
@@ -9329,8 +9359,8 @@ begin
   K(tbxItemETable, smSelCharacter);
   K(tbxItemEComm, smCommentLines);
   K(tbxItemEUncomm, smUncommentLines);
-  K(tbxItemEInd, smBlockIndent);
-  K(tbxItemEUnind, smBlockUnindent);
+  K(tbxItemEIndent, smBlockIndent);
+  K(tbxItemEUnindent, smBlockUnindent);
   K(tbxItemECaseUpper, smUpperCaseBlock);
   K(tbxItemECaseLower, smLowerCaseBlock);
   K(tbxItemECaseTitle, smTitleCaseBlock);
@@ -9980,6 +10010,10 @@ begin
     //check correctness of tool params
     if (Pos('{File', SPar)>0) and (CurrentFrame.FileName='') then
       begin MsgWarn(DKLangConstW('NSaved')); Exit end;
+
+    if (Pos('{Select', SPar)>0) and not CurrentEditor.HaveSelection then
+      begin MsgNoSelection; Exit end;
+
     if (Pos('{ProjectWorkDir}', SPar)>0) and (CurrentProjectWorkDir='') then
       begin MsgEmptyMacro('{ProjectWorkDir}'); Exit end;
     if (Pos('{ProjectMainFileName}', SPar)>0) and (CurrentProjectMainFN='') then
@@ -10899,7 +10933,7 @@ begin
       Free;
     end;
   except
-    Msg(WideFormat(DKLangConstW('AppNSes'), [fn]));
+    MsgError(WideFormat(DKLangConstW('AppNSes'), [fn]));
   end;
 end;
 
@@ -11038,7 +11072,7 @@ begin
       N:= PageControl.ActivePageIndex;
       if N<0 then N:= 0;
       if (N>=FrameCount) then
-        Msg('Incorrect tab index to set')
+        MsgError('Incorrect tab index to set')
       else
         CurrentFrame:= Frames[N];
 
@@ -11303,7 +11337,7 @@ begin
   L:= TTntStringList.Create;
   try
     L.SetTextW(PWChar(F.EditorMaster.Text));
-    DoUntabStringList(L, CurrentTabSize(F.EditorMaster));
+    DoListCommand_Untab(L, CurrentTabSize(F.EditorMaster));
     F.EditorMaster.Text:= L.Text;
   finally
     FreeAndNil(L);
@@ -11484,7 +11518,7 @@ begin
     fn:= CurrentFrame.FileName;
     FClose.Execute;
     if not FDeleteToRecycle(Handle, fn, true) then
-      Msg(WideFormat(DKLangConstW('mdeln'), [WideExtractFileName(fn)]));
+      MsgError(WideFormat(DKLangConstW('mdeln'), [WideExtractFileName(fn)]));
     MRU.Remove(fn);
     DoRefreshPluginsFiles(fn);
   end;
@@ -11674,7 +11708,7 @@ var
   AShowResult: TModalResult;
   ASortMode: TFileSort;
   ANeedFocusResult: boolean;
-  AFnOnly, AToTab, AOutAppend: boolean;
+  AFnOnly, AToTab, AOutAppend, ACloseAfter: boolean;
   InOEM, InUTF8, InUTF16, ThisInUTF8: boolean;
   NTotalSize, NDoneSize: Int64;
   ATextSearch,
@@ -11682,7 +11716,7 @@ var
   ADir: Widestring;
   ACountMatches,
   ACountFiles: Integer;
-  ANodeText: Widestring;
+  ANodeText, AFn: Widestring;
   i, N: Integer;
 label
   _Exit, _Show;
@@ -11711,6 +11745,16 @@ begin
     ATextSearch:= '';
     ATextReplace:= '';
   end;
+
+  //this is 'hidden' option
+  {
+  with TIniFile.Create(SynIni) do
+  try
+    opSrShowFilename:= ReadBool('SR', 'ShowFN', true);
+  finally
+    Free
+  end;
+  }
 
   _Show:
   ANeedFocusResult:= false;
@@ -11802,6 +11846,7 @@ begin
     AFnOnly:= cbFnOnly.Checked;
     AToTab:= cbOutTab.Checked;
     AOutAppend:= cbOutAppend.Checked;
+    ACloseAfter:= cbCloseAfter.Checked;
     ASortMode:= TFileSort(edSort.ItemIndex);
 
     ShowProgress(proFindFiles);
@@ -11912,11 +11957,20 @@ begin
         NTotalSize:= 1;
 
       FFinderTotalSize:= NTotalSize;
-      FFinderDoneSize:= NDoneSize;  
+      FFinderDoneSize:= NDoneSize;
 
       for i:= 0 to FListFiles.Count-1 do
       begin
         try
+          //show filename on progress form
+          if Assigned(fmProgress) then
+          begin
+            AFn:= FListFiles[i];
+            Delete(AFn, 1, Length(ADir)+1);
+            AFn:= WideMinimizeName(AFn, fmProgress.Canvas, Self.ClientWidth - fmProgress.labFilename.Left);
+            fmProgress.labFilename.Caption:= AFn;
+          end;
+
           //first search in auto-detected encoding
           ThisInUTF8:= IsFileUTF8NoBOM(FListFiles[i]);
           if ThisInUTF8 then
@@ -12077,7 +12131,7 @@ begin
   //"Find/Replace in files" work is finished,
   //now a) exit or b) show red error line and goto ShowModal
 
-  if AErrorMode>0 then
+  if (AErrorMode>0) or (not ACloseAfter) then
   begin
     HideProgress;
     goto _Show;
@@ -12223,15 +12277,13 @@ begin
   //TBXItemECopy.Enabled:= en;
   //TBXItemEDelete.Enabled:= en and not ro;
   //TBXItemEPaste.Enabled:= not ro;
-  TBXItemECopyApp.Enabled:= en;
-  TBXItemECutApp.Enabled:= en and not ro;
 
   TBXItemEUndo.Enabled:= not ro;
   TBXItemERedo.Enabled:= not ro;
   TBXItemEComm.Enabled:= not ro;
   TBXItemEUncomm.Enabled:= not ro;
-  TBXItemEInd.Enabled:= not ro;
-  TBXItemEUnind.Enabled:= not ro;
+  TBXItemEIndent.Enabled:= not ro;
+  TBXItemEUnindent.Enabled:= not ro;
   TbxItemEMoveUp.Enabled:= not ro;
   TbxItemEMoveDn.Enabled:= not ro;
   TBXItemEDup.Enabled:= not ro;
@@ -12332,7 +12384,7 @@ begin
   if (SExtractFilePath(fn)='') and (CurrentFrame.FileName<>'') then
     fn:= SExtractFilePath(CurrentFrame.FileName)+fn;
   if not IsFileExist(fn) then
-    begin Msg(WideFormat(DKLangConstW('O_fne'), [fn])); Exit end;
+    begin MsgError(WideFormat(DKLangConstW('O_fne'), [fn])); Exit end;
 
   OpnFile(fn); //must activate tab too
   FocusEditor;
@@ -12749,7 +12801,8 @@ begin
   if (TObject(NodeFile.Data) is TFindCount) then
     TFindCount(NodeFile.Data).Matches:= Finder.Matches;
 
-  if Finder.Matches>opMaxTreeMatches then Exit;
+  if (opMaxTreeMatches>0) then
+    if (Finder.Matches>opMaxTreeMatches) then Exit;
 
   //get info about match and store it into Info
   Ed:= (Sender as TTextFinder).Control;
@@ -12768,7 +12821,8 @@ begin
   Info.Len:= EndPos-StartPos;
 
   //add node under NodeFile
-  if Finder.Matches=opMaxTreeMatches then
+  if (opMaxTreeMatches>0) and
+    (Finder.Matches=opMaxTreeMatches) then
     TreeFind.Items.AddChildObject(NodeFile, '...', Info)
   else
     TreeFind.Items.AddChildObject(NodeFile,
@@ -13564,7 +13618,7 @@ end;
 
   procedure TfmMain.MsgBakEr(const fn: Widestring);
   begin
-    Msg(WideFormat(DKLangConstW('MBakEr'), [fn]));
+    MsgError(WideFormat(DKLangConstW('MBakEr'), [fn]));
   end;
   procedure TfmMain.MsgBakOk(const fn: Widestring);
   begin
@@ -14473,9 +14527,17 @@ begin
         //Put caret
         case InsPos of
           pCol:
-            CaretPos:= Point(InsCol-1, i);
+            begin
+              CaretPos:= Point(InsCol-1, i);
+              //handle "Keep caret in text"
+              if soKeepCaretInText in Ed.Options then
+                if CaretPos.X<InsCol-1 then
+                  InsertText(StringOfChar(' ', (InsCol-1)-CaretPos.X));
+            end;
           pAfterSp:
-            CaretPos:= Point(SNumLeadSpaces(Lines[i]), i);
+            begin
+              CaretPos:= Point(SNumLeadSpaces(Lines[i]), i);
+            end;  
           else
             begin
               n:= Pos(InsStrAfter, Lines[i]);
@@ -15178,7 +15240,7 @@ begin
     if FExecProcess(fcmd, SExtractFileDir(fn), sw_hide, true{DoWait})<>exOk then
       begin MsgNoRun(fr); Exit end;
     if (not IsFileExist(ft)) or (FGetFileSize(ft)=0) then
-      begin Msg(WideFormat(DKLangConstW('MZen'), [s])); Exit end;
+      begin MsgError(WideFormat(DKLangConstW('MZen'), [s])); Exit end;
 
     L:= TStringList.Create;
     try
@@ -15259,7 +15321,7 @@ begin
   if sCom='' then
     begin MsgBeep; Exit; end;
 
-  //get NeedUncomm  
+  //get NeedUncomm
   with Ed do
   begin
     if SelLength=0 then
@@ -16449,7 +16511,7 @@ begin
     FreeAndNil(L);
 
     if (not IsFileExist(fn_cfg)) or (FGetFileSize(fn_cfg)=0) then
-      begin Msg('Tidy configuration empty: "'+Cfg+'"'); Exit end;
+      begin MsgError('Tidy configuration empty: "'+Cfg+'"'); Exit end;
     //OpnFile(fn_cfg); exit;
 
     fcmd:= WideFormat('"%s" -output "%s" -config "%s" -file "%s" -quiet "%s"',
@@ -16608,42 +16670,8 @@ begin
 end;
 
 procedure TfmMain.ecReduceBlanksExecute(Sender: TObject);
-var
-  ed: TSyntaxMemo;
-  i, Ln1, Ln2, NDel: Integer;
 begin
-  ed:= CurrentEditor;
-  with ed do
-  begin
-    if ReadOnly then Exit;
-    if HaveSelection then
-      DoGetSelLines(ed, Ln1, Ln2)
-    else
-      begin Ln1:= 0; Ln2:= Lines.Count-1; end;
-    NDel:= 0;
-
-    BeginUpdate;
-    ShowProgress;
-    try
-      for i:= Ln2 downto Ln1+1 do
-      begin
-        if IsProgressStopped(Ln2-i+1, Ln2-Ln1) then
-          Break;
-        if (WideTrim(Lines[i])='') and
-           (WideTrim(Lines[i-1])='') then
-        begin
-          DoDeleteLine(ed, i, true{ForceUndo});
-          Inc(NDel);
-        end;
-      end;
-    finally
-      HideProgress;
-      EndUpdate;
-    end;  
-  end;
-
-  MsgDelLines(NDel);
-  FocusEditor;
+  DoLinesCommand(scmdRemoveDupBlanks);
 end;
 
 
@@ -16719,41 +16747,8 @@ begin
 end;
 
 procedure TfmMain.ecRemoveBlanksExecute(Sender: TObject);
-var
-  ed: TSyntaxMemo;
-  i, Ln1, Ln2, NDel: Integer;
 begin
-  ed:= CurrentEditor;
-  with ed do
-  begin
-    if ReadOnly or (Lines.Count=0) then Exit;
-    if SelLength>0 then
-      DoGetSelLines(ed, Ln1, Ln2)
-    else
-      begin Ln1:= 0; Ln2:= Lines.Count-1 end;
-    NDel:= 0;
-
-    BeginUpdate;
-    ShowProgress;
-    try
-      for i:= Ln2 downto Ln1 do
-      begin
-        if IsProgressStopped(Ln2-i+1, Ln2-Ln1+1) then
-          Break;
-        if WideTrim(Lines[i]) = '' then
-        begin
-          DoDeleteLine(ed, i, true{ForceUndo});
-          Inc(NDel);
-        end;
-      end;
-    finally
-      HideProgress;
-      EndUpdate;
-    end;  
-  end;
-
-  MsgDelLines(NDel);
-  FocusEditor;
+  DoLinesCommand(scmdRemoveBlanks);
 end;
 
 {
@@ -16920,70 +16915,24 @@ begin
   Result:= StringOfChar(' ', CurrentTabSize(Ed));
 end;
 
-procedure TfmMain.DoTrim(ed: TSyntaxMemo; mode: TSpMode);
-var
-  i, Ln1, Ln2: Integer;
-  s, spaces: ecString;
-begin
-  with ed do
-    if ReadOnly or (Lines.Count=0) then Exit;
-  spaces:= CurrentTabExpansion(ed);
-
-  with ed do
-  begin
-    if SelLength>0 then
-      DoGetSelLines(ed, Ln1, Ln2)
-    else
-      begin Ln1:= 0; Ln2:= Lines.Count-1 end;
-
-    BeginUpdate;
-    ShowProgress;
-
-    try
-      for i:= Ln2 downto Ln1 do
-      begin
-        if IsProgressStopped(Ln2-i+1, Ln2-Ln1+1) then
-          Break;
-
-        s:= Lines[i];
-        case mode of
-          spTrimLead:    s:= WideTrimLeft(s);
-          spTrimTrail:   s:= WideTrimRight(s);
-          spTrimAll:     s:= WideTrim(s);
-          spDelDupSp:    SDeleteDupSpaces(s);
-          else
-            raise Exception.Create('Unknown trim op');
-        end;
-        if s<>Lines[i] then
-          DoReplaceLine(ed, i, s, true{ForceUndo});
-      end;
-    finally
-      HideProgress;
-      EndUpdate;
-    end;
-  end;
-
-  FocusEditor;
-end;
-
 procedure TfmMain.ecTrimLeadExecute(Sender: TObject);
 begin
-  DoTrim(CurrentEditor, spTrimLead);
+  DoLinesCommand(scmdTrimLead);
 end;
 
 procedure TfmMain.ecTrimTrailExecute(Sender: TObject);
 begin
-  DoTrim(CurrentEditor, spTrimTrail);
+  DoLinesCommand(scmdTrimTrail);
 end;
 
 procedure TfmMain.ecTrimAllExecute(Sender: TObject);
 begin
-  DoTrim(CurrentEditor, spTrimAll);
+  DoLinesCommand(scmdTrimAll);
 end;
 
 procedure TfmMain.ecRemoveDupSpacesExecute(Sender: TObject);
 begin
-  DoTrim(CurrentEditor, spDelDupSp);
+  DoLinesCommand(scmdRemoveDupSpaces);
 end;
 
 procedure TfmMain.ecTabToSpExecute(Sender: TObject);
@@ -18632,13 +18581,15 @@ begin
             Info:= TFindInfo(Node2.Data)
           else
             Info:= nil;
-          if Info=nil then Continue;
 
-          n:= Pos('): ', Node2.Text);
-          if n=0 then Continue;
-          L.Add(
-            Info.FN + '(' + IntToStr(Info.LineNum+1) + '): ' +
-            Copy(Node2.Text, n+3, MaxInt));
+          if Info<>nil then
+          begin
+            n:= Pos('): ', Node2.Text);
+            if n>0 then
+              L.Add(
+                Info.FN + '(' + IntToStr(Info.LineNum+1) + '): ' +
+                Copy(Node2.Text, n+3, MaxInt));
+          end;
           Node2:= Node.GetNextChild(Node2);
         until Node2=nil;
     end;
@@ -18698,7 +18649,7 @@ end;
 
 procedure TfmMain.MsgNoRun(const fn: Widestring);
 begin
-  Msg(WideFormat(DKLangConstW('MRun'), [fn]));
+  MsgError(WideFormat(DKLangConstW('MRun'), [fn]));
 end;
 
 procedure TfmMain.MsgNoSelection;
@@ -18713,7 +18664,7 @@ end;
 
 procedure TfmMain.MsgNoFile(const fn: Widestring);
 begin
-  Msg(DKLangConstW('MNFound')+#13+fn);
+  MsgError(DKLangConstW('MNFound')+#13+fn);
 end;
 
 procedure TfmMain.MsgNoDir(const fn: Widestring);
@@ -18729,6 +18680,11 @@ end;
 procedure TfmMain.MsgDelLines(N: integer);
 begin
   SHint[-1]:= WideFormat(DKLangConstW('zDelLn'), [N]);
+end;
+
+procedure TfmMain.MsgDoneLines(N: integer);
+begin
+  SHint[-1]:= WideFormat(DKLangConstW('zDoneLn'), [N]);
 end;
 
 procedure TfmMain.MsgTabbing(const s: Widestring);
@@ -21215,7 +21171,7 @@ begin
   fClose.Execute;
   if not MoveFileW(PWChar(fn), PWChar(fn_new)) then
   begin
-    Msg(DKLangConstW('zMRenameErr')+#13+fn+#13'-->'#13+fn_new);
+    MsgError(DKLangConstW('zMRenameErr')+#13+fn+#13'-->'#13+fn_new);
     OpnFile(fn);
   end
   else
@@ -21290,14 +21246,14 @@ begin
   CurrentEditor.InsertText(S);
 end;
 
-procedure TfmMain.TBXItemEUnindClick(Sender: TObject);
+procedure TfmMain.TBXItemEUnindentClick(Sender: TObject);
 begin
   if Assigned(fmNumConv) and (fmNumConv.ActiveControl.Focused) then
   begin
     fmNumConv.SelNext;
   end
   else
-    ecUnindent.Execute;
+    CurrentEditor.ExecCommand(smBlockUnindent);
 end;
 
 procedure TfmMain.ecIndentLike1stExecute(Sender: TObject);
@@ -21532,7 +21488,7 @@ begin
   for i:= 0 to 7 do
     with FPluginsCommand[i] do
       sValue:= sValue+sFilename+#13+sLexers+#13+SCmd+#13#13;
-  Msg(sValue);
+  MsgError(sValue);
   }
 end;
 
@@ -21604,35 +21560,35 @@ begin
     FDll:= LoadLibrary(PChar(string(SFileName)));
     if FDll=0 then
     begin
-      Msg('Can''t load dll:'#13+SFileName);
+      MsgError('Can''t load dll:'#13+SFileName);
       Exit
     end;
 
     FSynInit:= GetProcAddress(FDll, 'SynInit');
     if @FSynInit=nil then
     begin
-      Msg('Can''t find SynInit'#13+SFileName);
+      MsgError('Can''t find SynInit'#13+SFileName);
       Exit
     end;
 
     FSynOpenForm:= GetProcAddress(FDll, 'SynOpenForm');
     if @FSynOpenForm=nil then
     begin
-      Msg('Can''t find SynOpenForm'#13+SFileName);
+      MsgError('Can''t find SynOpenForm'#13+SFileName);
       Exit
     end;
 
     FSynCloseForm:= GetProcAddress(FDll, 'SynCloseForm');
     if @FSynCloseForm=nil then
     begin
-      Msg('Can''t find SynCloseForm'#13+SFileName);
+      MsgError('Can''t find SynCloseForm'#13+SFileName);
       Exit
     end;
 
     FSynAction:= GetProcAddress(FDll, 'SynAction');
     if @FSynAction=nil then
     begin
-      Msg('Can''t find SynAction'#13+SFileName);
+      MsgError('Can''t find SynAction'#13+SFileName);
       Exit
     end;
 
@@ -22755,7 +22711,7 @@ begin
   end
   else
   begin
-    Msg('Unknown menuitem (SynHide.ini): '+Str);
+    MsgError('Unknown menuitem (SynHide.ini): '+Str);
     Exit
   end;
 
@@ -22822,21 +22778,21 @@ begin
   FDll:= LoadLibrary(PChar(string(AFileName)));
   if FDll=0 then
   begin
-    Msg('Can''t load dll:'#13+AFileName);
+    MsgError('Can''t load dll:'#13+AFileName);
     Exit
   end;
 
   FSynInit:= GetProcAddress(FDll, 'SynInit');
   if @FSynInit=nil then
   begin
-    Msg('Can''t find SynInit'#13+AFileName);
+    MsgError('Can''t find SynInit'#13+AFileName);
     Exit
   end;
 
   FSynAction:= GetProcAddress(FDll, 'SynAction');
   if @FSynAction=nil then
   begin
-    Msg('Can''t find SynAction'#13+AFileName);
+    MsgError('Can''t find SynAction'#13+AFileName);
     Exit
   end;
 
@@ -23356,15 +23312,16 @@ begin
   DoLinesCommand(scmdSortDialog);
 end;
 
-procedure TfmMain.DoLinesCommand(Cmd: TSynSortCmd);
+procedure TfmMain.DoLinesCommand(Cmd: TSynLineCmd);
 var
   Ed: TSyntaxMemo;
   Ln1, Ln2: Integer;
   Pos1, Pos2, i: Integer;
   Col1, Col2: Integer;
   L: TTntStringList;
-  S: Widestring;
+  S, Sep: Widestring;
   b: boolean;
+  //NoEOL: boolean;
 begin
   Ed:= CurrentEditor;
   if not Ed.HaveSelection then
@@ -23392,37 +23349,101 @@ begin
   try
     for i:= Ln1 to Ln2 do
       L.Add(Ed.Lines[i]);
+    //NoEOL:= not IsLastEOL(L);  
 
     case Cmd of
       scmdSortAsc,
       scmdSortDesc:
-        b:= DoSortStringList(L, opSortMode, Cmd=scmdSortAsc, false{AShowDlg}, Col1, Col2);
+        b:= DoListCommand_Sort(L, opSortMode, Cmd=scmdSortAsc, false{AShowDlg}, Col1, Col2);
       scmdSortDialog:
-        b:= DoSortStringList(L, opSortMode, true, true{AShowDlg}, Col1, Col2);
+        b:= DoListCommand_Sort(L, opSortMode, true, true{AShowDlg}, Col1, Col2);
+
       scmdDedupAll:
         begin
-          i:= DoDedupStringList(L, dedupAll);
+          i:= DoListCommand_Deduplicate(L, dedupAll);
           b:= i>0;
           MsgDelLines(i);
         end;
       scmdDedupAdjacent:
         begin
-          i:= DoDedupStringList(L, dedupAdjacent);
+          i:= DoListCommand_Deduplicate(L, dedupAdjacent);
           b:= i>0;
           MsgDelLines(i);
         end;
+
+      scmdTrimLead:
+        begin
+          i:= DoListCommand_Trim(L, cTrimLead);
+          b:= i>0;
+          MsgDoneLines(i);
+        end;
+      scmdTrimTrail:
+        begin
+          i:= DoListCommand_Trim(L, cTrimTrail);
+          b:= i>0;
+          MsgDoneLines(i);
+        end;
+      scmdTrimAll:
+        begin
+          i:= DoListCommand_Trim(L, cTrimAll);
+          b:= i>0;
+          MsgDoneLines(i);
+        end;
+      scmdRemoveDupSpaces:
+        begin
+          i:= DoListCommand_Trim(L, cTrimDups);
+          b:= i>0;
+          MsgDoneLines(i);
+        end;
+
       scmdUntab:
         begin
-          i:= DoUntabStringList(L, CurrentTabSize(Ed));
+          i:= DoListCommand_Untab(L, CurrentTabSize(Ed));
           b:= i>0;
+          MsgDoneLines(i);
         end;
+
       scmdSpacesToTabs:
         begin
-          b:= DoUnspaceStringList(L, CurrentTabExpansion(Ed), false);
+          b:= DoListCommand_Unspace(L, CurrentTabSize(Ed), false);
         end;
       scmdSpacesToTabsLead:
         begin
-          b:= DoUnspaceStringList(L, CurrentTabExpansion(Ed), true);
+          b:= DoListCommand_Unspace(L, CurrentTabSize(Ed), true);
+        end;
+
+      scmdRemoveBlanks:
+        begin
+          i:= DoListCommand_RemoveBlanks(L);
+          b:= i>0;
+          MsgDelLines(i);
+        end;
+      scmdRemoveDupBlanks:
+        begin
+          i:= DoListCommand_RemoveDupBlanks(L);
+          b:= i>0;
+          MsgDelLines(i);
+        end;
+
+      scmdAlignWithSep:
+        begin
+          //read separator from ini
+          with TIniFile.Create(SynIni) do
+          try
+            Sep:= UTF8Decode(ReadString('Win', 'AlignSep', '='));
+            b:= DoInputString('zMEnterSep', Sep) and (Sep<>'');
+            if b then
+              WriteString('Win', 'AlignSep', UTF8Encode(Sep));
+          finally
+            Free
+          end;
+          //do alignment
+          if b then
+          begin
+            i:= DoListCommand_AlignWithSep(L, Sep, CurrentTabSize(Ed){, soOptimalFill in Ed.Options});
+            b:= i>0;
+            MsgDoneLines(i);
+          end;
         end;
       else
         b:= false;
@@ -23430,6 +23451,10 @@ begin
     if not b then Exit;
 
     S:= L.Text;
+    //delete trailing EOLs
+    //if NoEOL and (Length(S)>=2) and (Copy(S, Length(S)-1, 2)=sLineBreak) then
+    //  Delete(S, Length(S)-1, 2);
+    //correct format of EOLs
     FixLineEnds(S, Ed.Lines.TextFormat);
   finally
     FreeAndNil(L);
@@ -23988,12 +24013,12 @@ begin
   case Act of
     arFindNext: Finder.FindNext;
     arFindAll: Finder.FindAll;
-    arFindInTabs: Msg('Command "Find in all tabs" not supported in macros yet');
+    arFindInTabs: MsgError('Command "Find in all tabs" not supported in macros yet');
     arCount: Finder.CountAll;
     arSkip: Finder.FindNext;
     arReplaceNext: Finder.ReplaceAgain;
     arReplaceAll: Finder.ReplaceAll;
-    arReplaceAllInAll: Msg('Command "Replace in all tabs" not supported in macros yet');
+    arReplaceAllInAll: MsgError('Command "Replace in all tabs" not supported in macros yet');
   end;
 
   //restote Finder
@@ -24430,6 +24455,126 @@ end;
 procedure TfmMain.TBXItemECaseInvertClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smToggleCaseBlock);
+end;
+
+procedure TfmMain.TBXItemEAlignWithSepClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_AlignWithSep);
+end;
+
+procedure TfmMain.TBXItemERemBlanksClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_RemoveBlanks);
+end;
+
+procedure TfmMain.TBXItemEReduceBlanksClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_ReduceBlanks);
+end;
+
+procedure TfmMain.TBXItemETrimLeadClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_TrimLead);
+end;
+
+procedure TfmMain.TBXItemETrimTrailClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_TrimTrail);
+end;
+
+procedure TfmMain.TBXItemETrimAllClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_TrimAll);
+end;
+
+procedure TfmMain.TBXItemERemDupSpClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_RemoveDupSp);
+end;
+
+procedure TfmMain.TBXItemETabToSpClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_TabToSp);
+end;
+
+procedure TfmMain.TBXItemESpToTabClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_SpToTab);
+end;
+
+procedure TfmMain.TBXItemESpToTabLeadClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_SpToTabLead);
+end;
+
+procedure TfmMain.TBXItemECenterLinesClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_CenterLines);
+end;
+
+procedure TfmMain.ecAlignWithSepExecute(Sender: TObject);
+begin
+  DoLinesCommand(scmdAlignWithSep);
+end;
+
+procedure TfmMain.TBXItemEJoinClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_JoinLines);
+end;
+
+procedure TfmMain.TBXItemESplitClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_SplitLines);
+end;
+
+procedure TfmMain.TBXItemECopyLineClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_CopyLine);
+end;
+
+procedure TfmMain.TBXItemECutLineClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_CutLine);
+end;
+
+procedure TfmMain.TBXItemECopyAppClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_CopyAppend);
+end;
+
+procedure TfmMain.TBXItemECutAppClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_CutAppend);
+end;
+
+procedure TfmMain.TBXItemEIndentClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(smBlockIndent);
+end;
+
+procedure TfmMain.TBXItemEIndentLike1stClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_IndentLike1st);
+end;
+
+procedure TfmMain.TBXItemECommClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(smCommentLines);
+end;
+
+procedure TfmMain.TBXItemEUncommClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(smUncommentLines);
+end;
+
+procedure TfmMain.TBXItemEZenExpandClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_ZenExpand);
+end;
+
+procedure TfmMain.TBXItemEZenWrapClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_ZenWrap);
 end;
 
 end.
