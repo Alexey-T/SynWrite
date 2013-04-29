@@ -1,8 +1,8 @@
 object fmMap: TfmMap
   Left = 525
-  Top = 225
+  Top = 226
   Width = 226
-  Height = 462
+  Height = 461
   Caption = 'Map'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object fmMap: TfmMap
     Left = 0
     Top = 0
     Width = 218
-    Height = 428
+    Height = 427
     Lines.Strings = (
       'edMap')
     TabList.AsString = '4'
@@ -121,6 +121,7 @@ object fmMap: TfmMap
     SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
     SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
     SyncEditing.InactiveWordsStyle.BorderColorBottom = clBtnFace
+    Options = [soOverwriteBlocks, soEnableBlockSel, soHideSelection, soHideDynamic, soAutoIndentMode, soBackUnindent, soGroupUndo, soDragText, soScrollLastLine, soVariableHorzScrollBar]
     HorzRuler.Font.Charset = DEFAULT_CHARSET
     HorzRuler.Font.Color = clWindowText
     HorzRuler.Font.Height = -11

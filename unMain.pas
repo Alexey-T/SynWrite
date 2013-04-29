@@ -1081,6 +1081,8 @@ type
     TBXSeparatorItem95: TTBXSeparatorItem;
     TBXItemEAlignWithSep: TTBXItem;
     ecAlignWithSep: TAction;
+    TBXItemTbSplit: TTBXItem;
+    TBXItemTbToggleSplit: TTBXItem;
     procedure fOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1761,6 +1763,8 @@ type
     procedure TBXItemEUncommClick(Sender: TObject);
     procedure TBXItemEZenExpandClick(Sender: TObject);
     procedure TBXItemEZenWrapClick(Sender: TObject);
+    procedure TBXItemTbSplitClick(Sender: TObject);
+    procedure TBXItemTbToggleSplitClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2590,7 +2594,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.2.230';
+  cSynVer = '5.2.240';
 
 implementation
 
@@ -10849,6 +10853,7 @@ begin
   TBXItemTbCl.Enabled:= en_all;
   TBXItemTbOth.Enabled:= en_all and (FrameAllCount>1);
   TBXSubmenuTabColor.Enabled:= en_all;
+  TBXItemTbToggleSplit.Enabled:= en_all;
   TBXItemTbCpFN.Enabled:= en;
   TBXItemTbCpFull.Enabled:= en;
   TBXItemTbCpDir.Enabled:= en;
@@ -14054,8 +14059,10 @@ begin
   if NTab<0 then
     begin MsgBeep; Exit; end;
   Frame:= Frames[NTab];
+  {
   if (not Frame.Modified) and (Frame.FileName='') then
     begin MsgBeep; Exit; end;
+    }
 
   Page_S:= PageControl;
   if Page_S=PageControl1 then
@@ -24575,6 +24582,36 @@ end;
 procedure TfmMain.TBXItemEZenWrapClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_ZenWrap);
+end;
+
+procedure TfmMain.TBXItemTbSplitClick(Sender: TObject);
+var
+  F: TEditorFrame;
+  en, two: boolean;
+begin
+  F:= CurrentFrame;
+  en:= (F<>nil) and (F.Modified or (F.FileName<>''));
+  two:= not PagesEmpty(PageControl2);
+  if two then
+  begin
+    repeat
+      PageControl:= PageControl2;
+      DoMoveTabToOtherView(0);
+      two:= not PagesEmpty(PageControl2);
+    until not two;
+  end
+  else
+  begin
+    if en then
+      DoMoveTabToOtherView(PageControl.ActivePageIndex)
+    else
+      MsgBeep;
+  end;
+end;
+
+procedure TfmMain.TBXItemTbToggleSplitClick(Sender: TObject);
+begin
+  CurrentFrame.ToggleSplitted;
 end;
 
 end.

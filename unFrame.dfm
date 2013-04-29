@@ -30,23 +30,23 @@ object EditorFrame: TEditorFrame
     BevelOuter = bvNone
     TabOrder = 0
     object Splitter2: TSplitter
-      Left = 0
-      Top = 57
-      Width = 433
-      Height = 5
-      Cursor = crVSplit
-      Align = alTop
+      Left = 57
+      Top = 0
+      Width = 5
+      Height = 270
+      AutoSnap = False
       Color = clBtnFace
+      MinSize = 70
       ParentColor = False
       ResizeStyle = rsUpdate
       OnMoved = Splitter2Moved
       OnPaint = Splitter2Paint
     end
     object EditorMaster: TSyntaxMemo
-      Left = 0
-      Top = 62
-      Width = 433
-      Height = 208
+      Left = 62
+      Top = 0
+      Width = 371
+      Height = 270
       TextSource = TextSource
       TabList.AsString = '4'
       NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -248,8 +248,8 @@ object EditorFrame: TEditorFrame
     object EditorSlave: TSyntaxMemo
       Left = 0
       Top = 0
-      Width = 433
-      Height = 57
+      Width = 57
+      Height = 270
       TextSource = TextSource
       TabList.AsString = '4'
       NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -411,7 +411,7 @@ object EditorFrame: TEditorFrame
       Caret.Custom.Width = -2
       Transparent = False
       Alignment = taLeftJustify
-      Align = alTop
+      Align = alLeft
       BevelInner = bvNone
       BevelOuter = bvNone
       Ctl3D = True
@@ -551,6 +551,15 @@ object EditorFrame: TEditorFrame
     object TBXItemSplitHorz: TTBXItem
       OnClick = TBXItemSplitHorzClick
       Caption = 'Split horozintally'
+      Hint = ''
+    end
+    object TBXSeparatorItem2: TTBXSeparatorItem
+      Caption = ''
+      Hint = ''
+    end
+    object TBXItemSplitCancel: TTBXItem
+      OnClick = TBXItemSplitCancelClick
+      Caption = 'Cancel split mode'
       Hint = ''
     end
   end

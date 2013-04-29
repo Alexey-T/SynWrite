@@ -45,6 +45,8 @@ type
     Splitter2: TSplitter;
     EditorSlave: TSyntaxMemo;
     TimerMap: TTimer;
+    TBXSeparatorItem2: TTBXSeparatorItem;
+    TBXItemSplitCancel: TTBXItem;
     procedure EditorMasterEnter(Sender: TObject);
     procedure EditorMasterSetBookmark(Snder: TObject; Bookmark: TBookmark;
       var Accept: Boolean);
@@ -98,6 +100,7 @@ type
       var Handled: Boolean);
     procedure EditorMasterFinishAnalysis(Sender: TObject);
     procedure EditorSlaveFinishAnalysis(Sender: TObject);
+    procedure TBXItemSplitCancelClick(Sender: TObject);
   private
     NotifAll,
     NotifNAll: boolean;
@@ -190,6 +193,7 @@ type
     function IsTheFile(const AFileName: Widestring): Boolean;
     function IsNewFile: Boolean;
     function IsSplitted: boolean;
+    procedure ToggleSplitted;
     procedure UpdateGutterWidth(Sender: TObject);
 
     property NotInRecents: boolean read FNotInRecents write FNotInRecents;
@@ -265,12 +269,16 @@ begin
 end;
 
 procedure TEditorFrame.Splitter2Paint(Sender: TObject);
+{
 const
   cc = 18; //width of drag-hint rect
   cY1 = 1; //top of drag-hint rect
 var
   r: TRect;
+  }
 begin
+  Color:= TfmMain(Self.Owner).opColorSplitSlave
+  (*
   with Sender as TSplitter do
   if IsSplitted then
     Color:= TfmMain(Self.Owner).opColorSplitSlave
@@ -280,6 +288,7 @@ begin
       Color:= TfmMain(Self.Owner).opColorTab2
     else
       Color:= TfmMain(Self.Owner).opColorTab1;
+    {
     if FSplitHorz then
     begin
       r:= Rect(ClientWidth - cc, cY1, ClientWidth, ClientHeight);
@@ -292,7 +301,9 @@ begin
       Canvas.MoveTo(ClientWidth - cc + 1, cY1);
       Canvas.LineTo(ClientWidth - 1, cY1);
     end;
+    }
   end;
+  *)
 end;
 
 // Initializing events
@@ -313,7 +324,7 @@ begin
   FSpell:= false;
   FLineEndsChg:= false;
   FModifiedClr:= false;
-  FSplitHorz:= true;
+  FSplitHorz:= false;
   FSplitPos:= 0;
   FNotInRecents:= false;
   FLockMapUpdate:= false;
@@ -954,6 +965,7 @@ begin
   if (F < 100.0) then
   begin
     FSplitPos:= F;
+    Splitter2.Visible:= F>1.0;
     if FSplitHorz then
     begin
       EditorSlave.Top:= 0;
@@ -999,10 +1011,25 @@ end;
 
 function TEditorFrame.IsSplitted: boolean;
 begin
+  {
   if SplitHorz then
     Result:= Splitter2.Top > 0
   else
     Result:= Splitter2.Left > 1; //minimal Left is 0 and 1
+    }
+  Result:= FSplitPos>1.0;  
+end;
+
+procedure TEditorFrame.ToggleSplitted;
+begin
+  if IsSplitted then
+  begin
+    SplitPos:= 0.0;
+    with EditorMaster do
+      if CanFocus then SetFocus;
+  end
+  else
+    SplitPos:= 50.0;
 end;
 
 procedure TEditorFrame.TBXItemSplitHorzClick(Sender: TObject);
@@ -1015,6 +1042,7 @@ begin
   TbxItemSplitHorz.Checked:= SplitHorz;
   TbxItemSplitHorz.Caption:= TfmMain(Owner).TBXItemSpHorz.Caption;
   TbxItemSplitCaption.Caption:= DKLangConstW('Split_Ed');
+  TbxItemSplitCancel.Caption:= DKLangConstW('Split_Cancel');
 end;
 
 procedure TEditorFrame.TBXItemSplit20_80Click(Sender: TObject);
@@ -1563,6 +1591,11 @@ end;
 procedure TEditorFrame.CaretsProps(var NTop, NBottom: integer);
 begin
   FocusedEditor.CaretsProps(NTop, NBottom);
+end;
+
+procedure TEditorFrame.TBXItemSplitCancelClick(Sender: TObject);
+begin
+  ToggleSplitted;
 end;
 
 initialization
