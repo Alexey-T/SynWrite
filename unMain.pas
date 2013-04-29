@@ -20420,16 +20420,8 @@ procedure TfmMain.fFavManageExecute(Sender: TObject);
 begin
   with TfmFav.Create(nil) do
   try
-    with TIniFile.Create(SynIni) do
-    try
-      Width:= ReadInteger('Win', 'FavW', Width);
-      Height:= ReadInteger('Win', 'FavH', Height);
-      cbPaths.Checked:= ReadBool('Win', 'FavPath', true);
-    finally
-      Free
-    end;  
-
     FIniFN:= SynFavIni;
+    FOptFN:= SynIni;
     if ShowModal=mrOk then
     begin
       if FCurrentFileName<>'' then
@@ -20443,15 +20435,6 @@ begin
         else
         if not DoOpenPluginFavorite(FCurrentFileName) then
           MsgNoFile(FCurrentFileName);
-    end;
-
-    with TIniFile.Create(SynIni) do
-    try
-      WriteInteger('Win', 'FavW', Width);
-      WriteInteger('Win', 'FavH', Height);
-      WriteBool('Win', 'FavPath', cbPaths.Checked);
-    finally
-      Free
     end;
   finally
     Free

@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls,
-  TntForms, TntStdCtrls, TntClasses, DKLang;
+  TntForms, TntStdCtrls, TntClasses, DKLang, ComCtrls, TntComCtrls;
 
 type
   TfmFav = class(TTntForm)
@@ -17,6 +17,7 @@ type
     btnDown: TTntButton;
     btnDel: TTntButton;
     DKLanguageController1: TDKLanguageController;
+    Tabs: TTntTabControl;
     procedure TntFormShow(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
     procedure TntFormDestroy(Sender: TObject);
@@ -29,47 +30,78 @@ type
     procedure btnDownClick(Sender: TObject);
     procedure TntFormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure TabsChange(Sender: TObject);
+    procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
     FFileNames: TTntStringList;
     procedure DoList;
+    procedure DoListTabs;
     procedure DoLoad;
     procedure DoSave;
     function AKey(n: integer): char;
+    procedure DoMoveItem(AUp: boolean);
+    function DoGetTabIndex(const s: Widestring): Integer;
   public
     { Public declarations }
     FIniFN: string;
+    FOptFN: string;
     FCurrentFileName: Widestring;
   end;
 
 implementation
 
 uses
+  IniFiles,
   ATxSProc,
   TntSysUtils;
 
 {$R *.dfm}
 
+function TfmFav.DoGetTabIndex(const s: Widestring): Integer;
+var
+  SPrefix: Widestring;
+  N: Integer;
+begin
+  Result:= 0;
+
+  if IsFileProject(s) then
+  begin
+    Result:= 1;
+    Exit
+  end;
+
+  N:= Pos('::', s);
+  if N>0 then
+  begin
+    SPrefix:= Copy(s, 1, N-1);
+    Result:= Tabs.Tabs.IndexOf(SPrefix);
+    Exit;
+  end;
+end;
+
 procedure TfmFav.DoList;
 var
-  i, N: Integer;
+  i, iList, N: Integer;
   s, SShort, SPrefix: Widestring;
-  Idx: Integer;
+  Idx, TabIdx: Integer;
 begin
   Idx:= List.ItemIndex;
   List.Items.BeginUpdate;
   try
     List.Items.Clear;
+    iList:= 0;
     for i:= 0 to FFileNames.Count-1 do
     begin
       s:= FFileNames[i];
+      TabIdx:= DoGetTabIndex(s);
 
       N:= Pos('::', s);
       if N=0 then
         SPrefix:= ''
       else
       begin
-        SPrefix:= '['+Copy(s, 1, N-1)+']';
+        SPrefix:= Copy(s, 1, N-1);
         Delete(S, 1, N+1);
       end;
 
@@ -82,15 +114,13 @@ begin
       else
         s:= SShort;
 
-      if IsFileProject(FFileNames[i]) then
-        SPrefix:= DKLangConstW('zProj');
-
-      if SPrefix<>'' then
-        Insert(SPrefix+'  ', s, 1);
-
-      List.Items.Add(AKey(i)+':  '+s);
+      if TabIdx=Tabs.TabIndex then
+      begin
+        List.Items.AddObject(AKey(iList)+':  '+s, Pointer(i));
+        Inc(iList);
+      end;
     end;
-    
+
     //restore Idx
     if (Idx>=0) and (Idx<=List.Items.Count-1) then
       List.ItemIndex:= Idx
@@ -108,11 +138,30 @@ begin
 end;
 
 procedure TfmFav.TntFormShow(Sender: TObject);
+var
+  N: Integer;
 begin
   if FIniFN='' then
     raise Exception.Create('Ini nil');
   DoLoad;
+  DoListTabs;
   DoList;
+
+  with TIniFile.Create(FOptFN) do
+  try
+    Width:= ReadInteger('Win', 'FavW', Width);
+    Height:= ReadInteger('Win', 'FavH', Height);
+    cbPaths.Checked:= ReadBool('Win', 'FavPath', true);
+    N:= ReadInteger('Win', 'FavTab', 0);
+  finally
+    Free
+  end;
+
+  if (N>=0) and (N<Tabs.Tabs.Count) then
+    Tabs.TabIndex:= N
+  else
+    Tabs.TabIndex:= 0;
+  TabsChange(Self);
 end;
 
 procedure TfmFav.TntFormCreate(Sender: TObject);
@@ -144,9 +193,14 @@ begin
 end;
 
 procedure TfmFav.btnOkClick(Sender: TObject);
+var
+  N: Integer;
 begin
   if List.ItemIndex>=0 then
-    FCurrentFileName:= FFileNames[List.ItemIndex];
+  begin
+    N:= Integer(List.Items.Objects[List.ItemIndex]);
+    FCurrentFileName:= FFileNames[N];
+  end;
 end;
 
 procedure TfmFav.ListDblClick(Sender: TObject);
@@ -155,28 +209,39 @@ begin
 end;
 
 procedure TfmFav.btnDelClick(Sender: TObject);
+var
+  N: Integer;
 begin
   if List.ItemIndex>=0 then
   begin
-    FFileNames.Delete(List.ItemIndex);
+    N:= Integer(List.Items.Objects[List.ItemIndex]);
+    FFileNames.Delete(N);
     DoSave;
     DoList;
   end;
 end;
 
 procedure TfmFav.btnUpClick(Sender: TObject);
-var
-  n:Integer;
 begin
-  n:= List.ItemIndex;
-  if n>0 then
-  begin
-    FFileNames.Move(n, n-1);
-    DoSave;
-    DoList;
-    List.ItemIndex:= n-1;
-    ListClick(Self);
-  end;
+  DoMoveItem(true);
+end;
+
+procedure TfmFav.DoMoveItem(AUp: boolean);
+var
+  nFrom, nTo, nList: Integer;
+begin
+  nFrom:= Integer(List.Items.Objects[List.ItemIndex]);
+  if AUp then
+    nList:= List.ItemIndex-1
+  else
+    nList:= List.ItemIndex+1;
+  nTo:= Integer(List.Items.Objects[nList]);
+
+  FFileNames.Move(nFrom, nTo);
+  DoSave;
+  DoList;
+  List.ItemIndex:= nList;
+  ListClick(Self);
 end;
 
 procedure TfmFav.ListClick(Sender: TObject);
@@ -189,18 +254,8 @@ begin
 end;
 
 procedure TfmFav.btnDownClick(Sender: TObject);
-var
-  n:Integer;
 begin
-  n:= List.ItemIndex;
-  if n<List.Items.Count-1 then
-  begin
-    FFileNames.Move(n, n+1);
-    DoSave;
-    DoList;
-    List.ItemIndex:= n+1;
-    ListClick(Self);
-  end;
+  DoMoveItem(false);
 end;
 
 function TfmFav.AKey(n: integer): char;
@@ -236,7 +291,56 @@ begin
     btnDel.Click;
     Key:= 0;
     Exit
-  end;  
+  end;
+
+  if (Key=vk_tab) and (Shift=[ssCtrl]) then
+  begin
+    with Tabs do
+      if TabIndex<Tabs.Count-1 then
+        TabIndex:= TabIndex+1
+      else
+        TabIndex:= 0;
+    TabsChange(Self);      
+  end;
+end;
+
+procedure TfmFav.DoListTabs;
+var
+  i, N: Integer;
+  s: Widestring;
+begin
+  Tabs.Tabs.Clear;
+  Tabs.Tabs.Add(DKLangConstW('zFavFiles'));
+  Tabs.Tabs.Add(DKLangConstW('zFavProj'));
+  for i:= 0 to FFileNames.Count-1 do
+  begin
+    s:= FFileNames[i];
+    N:= Pos('::', s);
+    if N>0 then
+    begin
+      s:= Copy(s, 1, N-1);
+      if Tabs.Tabs.IndexOf(s)<0 then
+        Tabs.Tabs.Add(s);
+    end;
+  end;
+end;
+
+procedure TfmFav.TabsChange(Sender: TObject);
+begin
+  DoList;
+end;
+
+procedure TfmFav.TntFormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  with TIniFile.Create(FOptFN) do
+  try
+    WriteInteger('Win', 'FavW', Width);
+    WriteInteger('Win', 'FavH', Height);
+    WriteBool('Win', 'FavPath', cbPaths.Checked);
+    WriteInteger('Win', 'FavTab', Tabs.TabIndex);
+  finally
+    Free
+  end;
 end;
 
 end.
