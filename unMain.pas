@@ -20026,15 +20026,7 @@ end;
 
 procedure TfmMain.ecToggleSlaveExecute(Sender: TObject);
 begin
-  with CurrentFrame do
-    if not IsSplitted then
-      SplitPos:= 50.0
-    else
-    begin
-      if Self.Enabled and EditorMaster.CanFocus then
-        EditorMaster.SetFocus;
-      SplitPos:= 0.0;
-    end;
+  CurrentFrame.ToggleSplitted;
 end;
 
 procedure TfmMain.TBXItemSplitEdHorzClick(Sender: TObject);
@@ -24586,7 +24578,8 @@ end;
 
 procedure TfmMain.TBXItemTbToggleSplitClick(Sender: TObject);
 begin
-  CurrentFrame.ToggleSplitted;
+  if Assigned(FClickedFrame) then
+    FClickedFrame.ToggleSplitted;
 end;
 
 procedure TfmMain.TBXItemCtxCopyClick(Sender: TObject);
