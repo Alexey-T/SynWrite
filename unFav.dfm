@@ -1,12 +1,15 @@
 object fmFav: TfmFav
   Left = 248
   Top = 490
-  Width = 570
-  Height = 380
   ActiveControl = List
+  AutoScroll = False
   BorderIcons = [biSystemMenu]
   Caption = 'Favorites'
+  ClientHeight = 346
+  ClientWidth = 562
   Color = clBtnFace
+  Constraints.MinHeight = 200
+  Constraints.MinWidth = 300
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11

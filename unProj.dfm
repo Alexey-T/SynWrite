@@ -1,6 +1,6 @@
 object fmProj: TfmProj
-  Left = 315
-  Top = 560
+  Left = 252
+  Top = 579
   Width = 354
   Height = 309
   Color = clBtnFace
@@ -1095,15 +1095,15 @@ object fmProj: TfmProj
     end
   end
   object ODProj: TOpenDialog
-    DefaultExt = 'synwproj'
-    Filter = 'SynWrite projects|*.synwproj'
+    DefaultExt = 'synw-proj'
+    Filter = 'SynWrite projects|*.synw-proj;*.synwproj'
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Left = 216
     Top = 48
   end
   object SDProj: TSaveDialog
-    DefaultExt = 'synwproj'
-    Filter = 'SynWrite projects|*.synwproj'
+    DefaultExt = 'synw-proj'
+    Filter = 'SynWrite projects|*.synw-proj;*.synwproj'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Left = 240
     Top = 48

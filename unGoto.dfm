@@ -4,7 +4,7 @@ object fmGoto: TfmGoto
   ActiveControl = edLine
   BorderStyle = bsDialog
   Caption = 'Go to'
-  ClientHeight = 243
+  ClientHeight = 214
   ClientWidth = 283
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,55 +21,44 @@ object fmGoto: TfmGoto
   object Label1: TTntLabel
     Left = 24
     Top = 28
-    Width = 62
+    Width = 23
     Height = 13
-    Caption = '&Line number:'
+    Caption = '&Line:'
     FocusControl = edLine
   end
   object Label2: TTntLabel
     Left = 24
     Top = 52
-    Width = 78
+    Width = 39
     Height = 13
-    Caption = '&Column number:'
+    Caption = '&Column:'
     FocusControl = edCol
   end
   object Bevel1: TBevel
     Left = 8
-    Top = 104
+    Top = 76
     Width = 265
     Height = 9
     Shape = bsTopLine
   end
   object Bevel2: TBevel
     Left = 8
-    Top = 184
+    Top = 156
     Width = 265
     Height = 9
     Shape = bsTopLine
   end
-  object TntLabel1: TTntLabel
-    Left = 24
-    Top = 72
-    Width = 249
-    Height = 29
-    AutoSize = False
-    Caption = 
-      'Relative values are allowed: specify + or - sign before the numb' +
-      'er.'
-    WordWrap = True
-  end
   object edLine: TComboBox
-    Left = 152
+    Left = 144
     Top = 24
-    Width = 105
+    Width = 113
     Height = 21
     ItemHeight = 13
     TabOrder = 1
   end
   object ButtonOk: TTntButton
     Left = 57
-    Top = 212
+    Top = 184
     Width = 80
     Height = 23
     Caption = 'OK'
@@ -80,7 +69,7 @@ object fmGoto: TfmGoto
   end
   object ButtonCan: TTntButton
     Left = 145
-    Top = 212
+    Top = 184
     Width = 80
     Height = 23
     Cancel = True
@@ -89,16 +78,16 @@ object fmGoto: TfmGoto
     TabOrder = 9
   end
   object edCol: TComboBox
-    Left = 152
+    Left = 144
     Top = 48
-    Width = 105
+    Width = 113
     Height = 21
     ItemHeight = 13
     TabOrder = 2
   end
   object cbExtSel: TTntCheckBox
     Left = 8
-    Top = 188
+    Top = 160
     Width = 265
     Height = 17
     Caption = 'E&xtend selection'
@@ -109,7 +98,7 @@ object fmGoto: TfmGoto
     Top = 6
     Width = 265
     Height = 17
-    Caption = '&Go to line/column'
+    Caption = '&Go to position'
     Checked = True
     TabOrder = 0
     TabStop = True
@@ -117,7 +106,7 @@ object fmGoto: TfmGoto
   end
   object cbPrev: TTntRadioButton
     Left = 8
-    Top = 108
+    Top = 80
     Width = 265
     Height = 17
     Caption = 'Go to &previous bookmark'
@@ -126,7 +115,7 @@ object fmGoto: TfmGoto
   end
   object cbNext: TTntRadioButton
     Left = 8
-    Top = 124
+    Top = 96
     Width = 265
     Height = 17
     Caption = 'Go to &next bookmark'
@@ -135,7 +124,7 @@ object fmGoto: TfmGoto
   end
   object cbNum: TTntRadioButton
     Left = 8
-    Top = 140
+    Top = 112
     Width = 265
     Height = 17
     Caption = 'Go to n&umbered bookmark:'
@@ -144,7 +133,7 @@ object fmGoto: TfmGoto
   end
   object edNum: TTntComboBox
     Left = 24
-    Top = 158
+    Top = 130
     Width = 233
     Height = 21
     Style = csDropDownList
@@ -157,7 +146,7 @@ object fmGoto: TfmGoto
     Left = 192
     Top = 4
     LangData = {
-      0600666D476F746F010100000001000000070043617074696F6E010F00000006
+      0600666D476F746F010100000001000000070043617074696F6E010E00000006
       004C6162656C31010100000002000000070043617074696F6E00060065644C69
       6E6500000800427574746F6E4F6B010100000003000000070043617074696F6E
       000900427574746F6E43616E010100000004000000070043617074696F6E0005
@@ -167,7 +156,6 @@ object fmGoto: TfmGoto
       696F6E000600636250726576010100000008000000070043617074696F6E0006
       0063624E657874010100000009000000070043617074696F6E00050063624E75
       6D01010000000A000000070043617074696F6E00050065644E756D0000060042
-      6576656C3200000900546E744C6162656C3101010000000B0000000700436170
-      74696F6E00}
+      6576656C320000}
   end
 end

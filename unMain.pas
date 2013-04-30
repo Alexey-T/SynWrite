@@ -1083,6 +1083,7 @@ type
     ecAlignWithSep: TAction;
     TBXItemTbSplit: TTBXItem;
     TBXItemTbToggleSplit: TTBXItem;
+    ecToggleView2: TAction;
     procedure fOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1765,6 +1766,13 @@ type
     procedure TBXItemEZenWrapClick(Sender: TObject);
     procedure TBXItemTbSplitClick(Sender: TObject);
     procedure TBXItemTbToggleSplitClick(Sender: TObject);
+    procedure TBXItemCtxCopyClick(Sender: TObject);
+    procedure TBXItemCtxCutClick(Sender: TObject);
+    procedure TBXItemCtxPasteClick(Sender: TObject);
+    procedure TBXItemCtxDelClick(Sender: TObject);
+    procedure TBXItemCtxSelectAllClick(Sender: TObject);
+    procedure TBXItemERedoClick(Sender: TObject);
+    procedure ecToggleView2Execute(Sender: TObject);
 
   private
     cStatLine,
@@ -2594,7 +2602,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.2.240';
+  cSynVer = '5.2.250';
 
 implementation
 
@@ -5441,6 +5449,7 @@ begin
     sm_CollapseParent: ecCollapseParent.Execute;
     sm_CollapseWithNested: ecCollapseWithNested.Execute;
     sm_AlignWithSep: ecAlignWithSep.Execute;
+    sm_ToggleView2: ecToggleView2.Execute;
 
     //Del key
     smDeleteChar:
@@ -11225,7 +11234,7 @@ begin
   if IsNumConvEditFocused then
     (fmNumConv.ActiveControl as TWinControl).Perform(WM_PASTE, 0, 0)
   else
-    ecPaste.Execute;
+    CurrentEditor.ExecCommand(smPaste);
 end;
 
 procedure TfmMain.TBXItemEDeleteClick(Sender: TObject);
@@ -11242,7 +11251,7 @@ begin
   if TreeFind.Focused then
     TbxItemTreeFindClearClick(Self)
   else
-    ecClear.Execute;
+    CurrentEditor.ExecCommand(smClearSelection);
 end;
 
 procedure TfmMain.TBXItemESelectAllClick(Sender: TObject);
@@ -11259,7 +11268,7 @@ begin
   if IsNumConvEditFocused then
     (fmNumConv.ActiveControl as TTntEdit).SelectAll
   else
-    ecSelectAll.Execute;
+    CurrentEditor.ExecCommand(smSelectAll);
 end;
 
 procedure TfmMain.TBXItemECutClick(Sender: TObject);
@@ -11279,10 +11288,10 @@ begin
   if not CurrentEditor.HaveSelection then
   begin
     if opCopyLineIfNoSel then
-      ecCutLine.Execute;
+      CurrentEditor.ExecCommand(sm_CutLine);
   end
   else
-    ecCut.Execute;
+    CurrentEditor.ExecCommand(smCut);
 end;
 
 procedure TfmMain.TBXItemECopyClick(Sender: TObject);
@@ -11314,10 +11323,10 @@ begin
   if not CurrentEditor.HaveSelection then
   begin
     if opCopyLineIfNoSel then
-      ecCopyLine.Execute;
+      CurrentEditor.ExecCommand(sm_CopyLine);
   end
-  else  
-    ecCopy.Execute;
+  else
+    CurrentEditor.ExecCommand(smCopy);
 end;
 
 procedure TfmMain.TBXItemEUndoClick(Sender: TObject);
@@ -11328,7 +11337,7 @@ begin
   if edQs.Focused then
     edQs.Undo
   else
-    ecUndo.Execute;
+    CurrentEditor.ExecCommand(smUndo);
 end;
 
 procedure TfmMain.DoReplaceTabsToSpaces(F: TEditorFrame);
@@ -17646,6 +17655,9 @@ begin
      en:= CurrentEditor.BookmarkObj.Count>0;
      cbPrev.Enabled:= en;
      cbNext.Enabled:= en;
+
+     if not cbPrev.Enabled and not cbNext.Enabled and not cbNum.Enabled then
+       cbPos.Enabled:= false;
 
      Result:= ShowModal = mrOk;
      if Result then
@@ -24568,6 +24580,64 @@ begin
 end;
 
 procedure TfmMain.TBXItemTbSplitClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_ToggleView2);
+end;  
+
+procedure TfmMain.TBXItemTbToggleSplitClick(Sender: TObject);
+begin
+  CurrentFrame.ToggleSplitted;
+end;
+
+procedure TfmMain.TBXItemCtxCopyClick(Sender: TObject);
+begin
+  with CurrentEditor do
+    if not HaveSelection then
+    begin
+      if opCopyLineIfNoSel then
+        ExecCommand(sm_CopyLine)
+      else
+        MsgBeep;
+    end
+    else
+      ExecCommand(smCopy);
+end;
+
+procedure TfmMain.TBXItemCtxCutClick(Sender: TObject);
+begin
+  with CurrentEditor do
+    if not HaveSelection then
+    begin
+      if opCopyLineIfNoSel then
+        ExecCommand(sm_CutLine)
+      else
+        MsgBeep;
+    end
+    else
+      ExecCommand(smCut);
+end;
+
+procedure TfmMain.TBXItemCtxPasteClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(smPaste);
+end;
+
+procedure TfmMain.TBXItemCtxDelClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(smClearSelection);
+end;
+
+procedure TfmMain.TBXItemCtxSelectAllClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(smSelectAll);
+end;
+
+procedure TfmMain.TBXItemERedoClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(smRedo);
+end;
+
+procedure TfmMain.ecToggleView2Execute(Sender: TObject);
 var
   F: TEditorFrame;
   en, two: boolean;
@@ -24590,11 +24660,6 @@ begin
     else
       MsgBeep;
   end;
-end;
-
-procedure TfmMain.TBXItemTbToggleSplitClick(Sender: TObject);
-begin
-  CurrentFrame.ToggleSplitted;
 end;
 
 end.

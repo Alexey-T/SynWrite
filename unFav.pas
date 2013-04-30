@@ -82,8 +82,8 @@ end;
 
 procedure TfmFav.DoList;
 var
-  i, iList, N: Integer;
-  s, SShort, SPrefix: Widestring;
+  i, iList, n: Integer;
+  s, SShort: Widestring;
   Idx, TabIdx: Integer;
 begin
   Idx:= List.ItemIndex;
@@ -96,14 +96,9 @@ begin
       s:= FFileNames[i];
       TabIdx:= DoGetTabIndex(s);
 
-      N:= Pos('::', s);
-      if N=0 then
-        SPrefix:= ''
-      else
-      begin
-        SPrefix:= Copy(s, 1, N-1);
-        Delete(S, 1, N+1);
-      end;
+      n:= Pos('::', s);
+      if n>0 then
+        Delete(s, 1, n+1);
 
       SShort:= WideExtractFileName(s);
       if SShort='' then

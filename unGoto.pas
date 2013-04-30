@@ -24,7 +24,6 @@ type
     cbNum: TTntRadioButton;
     edNum: TTntComboBox;
     Bevel2: TBevel;
-    TntLabel1: TTntLabel;
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
     procedure cbPosClick(Sender: TObject);

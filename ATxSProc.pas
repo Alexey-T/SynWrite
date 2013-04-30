@@ -957,7 +957,9 @@ end;
 
 function IsFileProject(const fn: Widestring): boolean;
 begin
-  Result:= SFileExtensionMatch(fn, 'synwproj');
+  Result:= 
+    SFileExtensionMatch(fn, 'synwproj') or 
+    SFileExtensionMatch(fn, 'synw-proj');
 end;
 
 function IsUpperChar(Ch: WideChar): boolean;

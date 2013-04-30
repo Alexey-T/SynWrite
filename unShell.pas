@@ -58,7 +58,7 @@ begin
   cbShell.Checked:= IsShellExtensionEnabled;
   cbTxt.Checked:= IsFileAssocEnabled('txt');
   cbIni.Checked:= IsFileAssocEnabled('ini');
-  cbProj.Checked:= IsFileAssocEnabled('synwproj');
+  cbProj.Checked:= IsFileAssocEnabled('synwproj') or IsFileAssocEnabled('synw-proj');
 
   for i:= 0 to FLex.Count-1 do
     ed.Items.Add(Copy(FLex[i], 1, Pos('=', FLex[i])-1));
@@ -94,6 +94,7 @@ end;
 procedure TfmShell.cbProjClick(Sender: TObject);
 begin
   DoAssoc('synwproj', cbProj.Checked);
+  DoAssoc('synw-proj', cbProj.Checked);
 end;
 
 procedure TfmShell.FormCreate(Sender: TObject);
@@ -154,7 +155,7 @@ begin
   FLock:= true;
   cbTxt.Checked:= IsFileAssocEnabled('txt');
   cbIni.Checked:= IsFileAssocEnabled('ini');
-  cbProj.Checked:= IsFileAssocEnabled('synwproj');
+  cbProj.Checked:= IsFileAssocEnabled('synwproj') or IsFileAssocEnabled('synw-proj');
   edChange(Self);
   FLock:= false;
 end;

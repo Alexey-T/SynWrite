@@ -136,6 +136,7 @@ const
   sm_ScrollToSel = 795;
   sm_ProjectList = 796;
   sm_AlignWithSep = 797;
+  sm_ToggleView2 = 798;
   //free
 
   sm_EncAnsi = 800;
