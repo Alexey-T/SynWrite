@@ -33,6 +33,8 @@ const
   sm_ListerFPrev = 622;
   sm_PrinterSetup = 634;
 
+  sm_AutoComplete = 670;
+
   sm_FNew = 700;
   sm_FOpen = 701;
   sm_FSave = 702;

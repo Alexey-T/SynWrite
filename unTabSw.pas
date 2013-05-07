@@ -6,16 +6,17 @@ uses
   Classes;
 
 type
-  TTabSwitcherGetTab = procedure(N: integer;
+  TTabSwitcherGetTab = procedure(APagesNumber, ATabIndex: integer;
     var ATitle, AFN, ALex: Widestring) of object;
 
 type
   TTabSwitcher = class
   private
     FTabList: TList;
+    FPagesNumber: Integer;
   public
     OnGetTab: TTabSwitcherGetTab;
-    constructor Create;
+    constructor Create(APagesNumber: Integer);
     destructor Destroy; override;
     function TabSwitch(ANext: boolean; AOwner: TComponent): integer;
     procedure UpdateTabList(TopItem, NewItem, DelItem: Integer);
@@ -23,10 +24,6 @@ type
     procedure InitTabList(ACount: integer);
     function GetTabList: string;
   end;
-
-var
-  TabSwitcher,
-  TabSwitcher2: TTabSwitcher;
 
 implementation
 
@@ -56,7 +53,7 @@ begin
       TabFN:= TabName;
       TabLex:= '';
       if Assigned(OnGetTab) then
-        OnGetTab(n, TabName, TabFN, TabLex);
+        OnGetTab(FPagesNumber, n, TabName, TabFN, TabLex);
 
       List.Items.AddObject(TabName, TObject(n));
       FListFN.Add(TabFN);
@@ -142,9 +139,10 @@ begin
     end;
 end;
 
-constructor TTabSwitcher.Create;
+constructor TTabSwitcher.Create(APagesNumber: Integer);
 begin
-  inherited;
+  inherited Create;
+  FPagesNumber:= APagesNumber;
   FTabList:= TList.Create;
   OnGetTab:= nil;
 end;
@@ -154,13 +152,5 @@ begin
   FreeAndNil(FTabList);
   inherited;
 end;
-
-initialization
-  TabSwitcher:= TTabSwitcher.Create;
-  TabSwitcher2:= TTabSwitcher.Create;
-
-finalization
-  FreeAndNil(TabSwitcher2);
-  FreeAndNil(TabSwitcher);
 
 end.

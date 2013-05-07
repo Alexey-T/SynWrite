@@ -129,6 +129,7 @@ object fmMap: TfmMap
     HorzRuler.Font.Style = []
     TextMargins = <
       item
+        Visible = False
         Pen.Color = clSilver
         RulerMark = False
       end>

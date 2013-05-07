@@ -128,6 +128,7 @@ type
     FLockMapUpdate: boolean;
     FSavingBusy: boolean;
 
+    procedure FixEditorCollapsed(Ed: TSyntaxMemo);
     procedure EditorShowHint(Sender: TObject; const HintStr: string; var HintObj: THintWindow);
     function GetColMarkers: string;
     procedure SetColmarkers(const S: string);
@@ -530,6 +531,32 @@ begin
   Result:= FFileName = '';
 end;
 
+procedure TEditorFrame.FixEditorCollapsed(Ed: TSyntaxMemo);
+var
+  i: Integer;
+  S: string;
+  AMod: boolean;
+begin
+  AMod:= false;
+  for i:= Ed.Collapsed.Count-1 downto 0 do
+    with Ed.Collapsed[i] do
+    begin
+      S:= EditorTokenName(Ed, StartPos+1, EndPos+1);
+      if S='Comment' then
+      begin
+        Ed.Collapsed.Delete(i);
+        AMod:= true;
+      end;
+    end;
+  if AMod then
+  begin
+    //TfmMain(Owner).SHint[-1]:= 'Adjust';
+    //Ed.DoScroll;
+    MsgBeep;
+  end;
+end;
+
+
 procedure TEditorFrame.EditorMasterChange(Sender: TObject);
 begin
   if FPrevMod <> Modified then
@@ -537,10 +564,14 @@ begin
     DoTitleChanged;
     FPrevMod:= Modified;
   end;
+
   UpdateGutterWidth(Sender);
   TfmMain(Owner).UpdateStatusBar;
   TfmMain(Owner).SynChange(Sender);
   SyncMap;
+  
+  //not good, may be slow
+  //FixEditorCollapsed(Sender as TSyntaxMemo);
 end;
 
 procedure TEditorFrame.EditorMasterCaretPosChanged(Sender: TObject);

@@ -79,6 +79,8 @@ const
   cActionSaveFtpFile        : PWideChar = 'SaveFtpFile';
   cActionFindID             : PWideChar = 'FindID';
   cActionMenuCommand        : PWideChar = 'MenuCmd';
+  cActionGetAutoComplete    : PWideChar = 'Acp';
+  cActionGetFunctionHint    : PWideChar = 'FuncHint';
 
 //for cActionParseRegex  
 type

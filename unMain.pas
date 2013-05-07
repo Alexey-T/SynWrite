@@ -34,6 +34,7 @@ uses
   unProgress,
   unSR,
   unProcSort,
+  unTabSw,
 
   TB2Item, TBX, TB2Dock, TB2Toolbar, TBXDkPanels, TBXGraphics,
   TBXStatusBars, TB2MDI, TB2MRU, TBXSwitcher, TBXExtItems, TB2ExtItems,
@@ -90,6 +91,8 @@ type
     SFilename: string;
     SLexers: string;
   end;
+
+  TPluginList_Acp = TPluginList_FindId;
 
   TPluginList_Panel = array[0..7] of record
     SCaption: string;
@@ -1773,6 +1776,8 @@ type
     procedure TBXItemCtxSelectAllClick(Sender: TObject);
     procedure TBXItemERedoClick(Sender: TObject);
     procedure ecToggleView2Execute(Sender: TObject);
+    procedure PluginACPAfterComplete(Sender: TObject;
+      const Item: WideString);
 
   private
     cStatLine,
@@ -1805,6 +1810,7 @@ type
     FPlugins: TPluginList_Panel;
     FPluginsFindid: TPluginList_Findid;
     FPluginsCommand: TPluginList_Command;
+    FPluginsAcp: TPluginList_Acp;
     FPanelDrawBusy: boolean;
     FSyncBusy: boolean;
     FSplitHorz: boolean; //views splitter is horizontal
@@ -1827,6 +1833,9 @@ type
     fmMap: TfmMap;
     fmProj: TfmProj;
     fmSR: TfmSR;
+
+    TabSwitcher,
+    TabSwitcher2: TTabSwitcher;
 
     //original options values
     orig_Zoom: integer;
@@ -1872,7 +1881,6 @@ type
     FLexerACP: string; //lexer for which ACP was called
     FTagList: boolean; //ACP shows tags, not attribs
     FTagCss: boolean; //ACP called for CSS
-    FTagPhp: boolean; //ACP called for PHP
     FTagClosing: boolean; //ACP called for closing tag </tag>
     FBrAdd: boolean; //Added '<' on ACP call
 
@@ -1899,6 +1907,7 @@ type
     procedure SetCurrentEditor(Value: TSyntaxMemo);
     function GetFrameCount: integer;
     function GetFrameAllCount: integer;
+    function PagesToFrame(APages: TTntPageControl; ATabIndex: Integer): TEditorFrame;
     function GetFrames(Index: integer): TEditorFrame;
     function GetFramesAll(Index: integer): TEditorFrame;
     procedure SetCurrentFrame(Value: TEditorFrame);
@@ -1932,6 +1941,9 @@ type
       const AFileName: string;
       const AActionName: Widestring;
       P1, P2, P3, P4: Pointer);
+    function DoLoadPlugin_GetString(
+      const AFileName: string;
+      const AActionName: Widestring): Widestring;
     procedure DoLoadPluginsList;
     procedure LoadPluginsInfo;
     procedure PluginPanelItemClick(Sender: TObject);
@@ -1994,7 +2006,7 @@ type
     procedure GetColorRange(var NStart, NEnd: integer; var NColor: integer);
     procedure UpdateColorHint(AClearHint: boolean = true);
     function IsShowColor(s: string; var NColor, NColorText: TColor): boolean;
-    procedure GetTabName(n: Integer; var AName, AFN, ALex: Widestring);
+    procedure GetTabName(APagesNumber, ATabIndex: Integer; var AName, AFN, ALex: Widestring);
     procedure ClearTabList;
     procedure MoveTabInList(FromN, ToN: integer);
     procedure UpdateListTabs;
@@ -2124,6 +2136,8 @@ type
     procedure DoAcpCss(List, Display: TWideStrings);
     procedure DoAcpHtm(List, Display: TWideStrings);
     procedure DoAcpFromFile(List, Display: TWideStrings);
+    procedure DoAcpCommand;
+    function DoAcpFromPlugins(const AAction: PWideChar): Widestring;
     procedure DoInsertTextDialog;
     procedure DoFillBlock;
     procedure DoCommentLines(Comm: boolean);
@@ -2602,7 +2616,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.2.250';
+  cSynVer = '5.3.292';
 
 implementation
 
@@ -2617,7 +2631,6 @@ uses
   ATxLoremIpsum,
 
   unSaveLex,
-  unTabSw,
   unProcImg,
 
   {$ifdef SPELL}
@@ -3207,18 +3220,27 @@ begin
     Inc(Result, PageControl2.PageCount);
 end;
 
+function TfmMain.PagesToFrame(APages: TTntPageControl; ATabIndex: Integer): TEditorFrame;
+begin
+  if (APages<>nil) and (ATabIndex>=0) and (ATabIndex<APages.PageCount) and
+    (APages.Pages[ATabIndex].ControlCount>0) then
+    Result:= APages.Pages[ATabIndex].Controls[0] as TEditorFrame
+  else
+    Result:= nil;
+end;
+
 function TfmMain.GetFrames(Index: integer): TEditorFrame;
 begin
-  Result:= PageControl.Pages[Index].Controls[0] as TEditorFrame;
+  Result:= PagesToFrame(PageControl, Index);
 end;
 
 function TfmMain.GetFramesAll(Index: integer): TEditorFrame;
 begin
   if (Index >= 0) and (Index <= PageControl1.PageCount - 1) then
-    Result:= PageControl1.Pages[Index].Controls[0] as TEditorFrame
+    Result:= PagesToFrame(PageControl1, Index)
   else
   if (Index - PageControl1.PageCount >= 0) and (Index - PageControl1.PageCount <= PageControl2.PageCount - 1) then
-    Result:= PageControl2.Pages[Index - PageControl1.PageCount].Controls[0] as TEditorFrame
+    Result:= PagesToFrame(PageControl2, Index - PageControl1.PageCount)
   else
     Result:= nil;
 end;
@@ -3238,10 +3260,7 @@ end;
 
 function TfmMain.GetCurrentFrame: TEditorFrame;
 begin
-  Result:= nil;
-  with PageControl do
-    if (PageCount > 0) and (ActivePage <> nil) and (ActivePage.ControlCount > 0) then
-      Result:= ActivePage.Controls[0] as TEditorFrame;
+  Result:= PagesToFrame(PageControl, PageControl.ActivePageIndex);
 end;
 
 function TfmMain.CreateFrame: TEditorFrame;
@@ -3381,9 +3400,8 @@ begin
   if not v then
   begin
     PageControl:= PageControl1;
-    if PageControl.ActivePage <> nil then
-      if PageControl.ActivePage.ControlCount > 0 then
-        CurrentFrame:= PageControl.ActivePage.Controls[0] as TEditorFrame;
+    if PageControl.ActivePage<>nil then
+      CurrentFrame:= PagesToFrame(PageControl, PageControl.ActivePageIndex);
   end;
 end;
 
@@ -5183,6 +5201,9 @@ begin
         Handled:= False;
       end;
 
+    sm_AutoComplete:
+      DoAcpCommand;
+
     //bkmarks
     sm_BkClear:
       ecBkClearAll.Execute;
@@ -6580,9 +6601,6 @@ begin
   ecOnSavingLexer:= DoSaveStyles;
   TbxHiContrast:= true;
 
-  TabSwitcher.OnGetTab:= GetTabName;
-  TabSwitcher2.OnGetTab:= GetTabName;
-
   ListOut.Align:= alClient;
   ListVal.Align:= alClient;
   TreeFind.Align:= alClient;
@@ -6595,6 +6613,9 @@ begin
 
   //init plugins
   FillChar(FPlugins, Sizeof(FPlugins), 0);
+  FillChar(FPluginsFindid, Sizeof(FPluginsFindid), 0);
+  FillChar(FPluginsCommand, Sizeof(FPluginsCommand), 0);
+  FillChar(FPluginsAcp, Sizeof(FPluginsAcp), 0);
 
   FInitialDir:= 'C:\'; //used on file closing
   FLastCmdId:= 0;
@@ -6622,6 +6643,11 @@ begin
   fmProj:= nil;
   fmProgress:= nil;
   fmSR:= nil;
+
+  TabSwitcher:= TTabSwitcher.Create(0);
+  TabSwitcher2:= TTabSwitcher.Create(1);
+  TabSwitcher.OnGetTab:= GetTabName;
+  TabSwitcher2.OnGetTab:= GetTabName;
 
   FFullScr:= false;
   FOnTop:= false;
@@ -6767,7 +6793,7 @@ begin
   if acp.Count>0 then
   for i:=0 to acp.Count-1 do
   begin
-    s:= acp.Strings[i];
+    s:= acp[i];
     if Trim(s)='' then Continue;
     if s[1]='#' then
     begin
@@ -6805,24 +6831,33 @@ begin
     begin
       slACPHint.Add('');
     end;
-    s:=Copy(acp.Strings[i],a+1,b-a-1);
+    s:=Copy(acp[i],a+1,b-a-1);
+
+    //strip type for Pascal funcs
     if IsPas then
-      SDeleteFrom(s, ':'); //for Pascal result type
+      SDeleteFrom(s, ':');
+    //insert text with "(" if params not empty  
+    if Pos('(', acp[i])>0 then
+      s:= s+'(';
     slACPitem.Add(s);
-    c:=PosEx('|',acp.Strings[i],b);
+
+    c:=PosEx('|',acp[i],b);
     if c=0 then c:= MaxInt div 2;
     slACPdisp.Add('\s1\'+
-      copy(acp.Strings[i],1,a-1) + '\t\\s2\' +
-      copy(acp.Strings[i],a+1,b-a-1) + '\t\\s0\' +
-      copy(acp.Strings[i],b,c-b) + '\s3\ '+
-      copy(acp.Strings[i],c+1,100) );
-    slACPdesc.Add(copy(acp.Strings[i],c+1,MaxInt));
+      copy(acp[i],1,a-1) + '\t\\s2\' +
+      copy(acp[i],a+1,b-a-1) + '\t\\s0\' +
+      copy(acp[i],b,c-b) + '\s3\ '+
+      copy(acp[i],c+1,100) );
+    slACPdesc.Add(copy(acp[i],c+1,MaxInt));
   end;
   acp.Free;
 end;
 
 procedure TfmMain.FormDestroy(Sender: TObject);
 begin
+  FreeAndNil(TabSwitcher2);
+  FreeAndNil(TabSwitcher);
+
   FreeAndNil(slACPdisp);
   FreeAndNil(slACPitem);
   FreeAndNil(slACPHint);
@@ -6841,26 +6876,45 @@ begin
     FreeAndNil(FListStringStyles);
 end;
 
+function SAcpItemToId(const S: Widestring): Widestring;
+begin
+  Result:= S;
+  //strip last "(" from id
+  if (Result<>'') and (Result[Length(Result)]='(') then
+    SetLength(Result, Length(Result)-1);
+end;
+
 procedure TfmMain.ParamCompletionGetParams(Sender: TObject;
   const FuncName: WideString; Pos: Integer);
 var
+  SText, S: Widestring;
   i: integer;
-  S: string;
 begin
   ParamCompletion.Items.Clear;
-  S:= LowerCase(FuncName);
-  for i:= 0 to slACPitem.Count-1 do
+
+  SText:= DoAcpFromPlugins(cActionGetFunctionHint);
+  if SText<>'' then
   begin
-    if S = LowerCase(slACPitem[i]) then
-     if slACPHint.Strings[i] <> '' then
-      ParamCompletion.Items.Add(slACPHint.Strings[i]);
+    ParamCompletion.Items.SetText(PWChar(SText));
+  end
+  else
+  begin
+    SText:= LowerCase(FuncName);
+    for i:= 0 to slACPitem.Count-1 do
+    begin
+      S:= LowerCase(slACPitem[i]);
+      S:= SAcpItemToId(S);
+      if SText=S then
+        if slACPHint[i]<>'' then
+          ParamCompletion.Items.Add(slACPHint[i]);
+    end;
   end;
 end;
 
 procedure TfmMain.SynGetTokenHint(Sender: TObject; TokenIndex: Integer; var HintText: String);
 var
   p, p1: TPoint;
-  i: integer;
+  i, n: integer;
   e: TSyntaxMemo;
   Frame: TEditorFrame;
   s, sFilename, sResult: ecString;
@@ -6909,6 +6963,7 @@ begin
       s:= TagStr[TokenIndex];
 
       //add lefter tokens
+      //(needed for complex id.id.id, e.g. for C#)
       i:= TokenIndex;
       while (i-2>=0) do
       begin
@@ -6929,51 +6984,38 @@ begin
       end;
 
       //show for strings their ACP hint/description
-      i:= slACPitem.IndexOf(s);
-      if i>=0 then
-        if slACPHint.Strings[i]<>'' then
-          HintText:= Trim(
-            '\s5\\s4\'+slACPitem.Strings[i]+
-            '\s5\'+slACPHint.Strings[i]+sLineBreak+
-            '\s6\'+slACPdesc.Strings[i]);
+      n:= -1;
+      for i:= 0 to slACPitem.Count-1 do
+        if SAcpItemToId(slACPitem[i]) = s then
+          begin n:= i; Break; end;
 
-      {
-      HintText:= 'Token:      ' + TagStr[TokenIndex] + sLineBreak;
-      if Length(HintText) > 100 then HintText:= '';
-      p:= TagPos[TokenIndex];
-      HintText:= HintText +
-                 'Rule:       ' + Tags[TokenIndex].Rule.DisplayName + sLineBreak +
-                 'Token pos:  ' + Format('(X: %d; Y: %d)', [p.X + 1, p.Y + 1]) + sLineBreak +
-                 'Position: ' + IntToStr(TokenIndex);
-                 }
+      if n>=0 then
+        if slACPHint[n]<>'' then
+          HintText:= Trim(
+            '\s4\'+SAcpItemToId(slACPitem[n])+' '+
+            '\s5\'+slACPHint[n]+sLineBreak+
+            '\s6\'+slACPdesc[n]);
      end;
   except
     on E: Exception do
-      HintText:= 'Exception on reading hint'#13+E.Message;
+    begin
+      HintText:= '';
+      SHint[-1]:= 'Exception on reading hint: '+E.Message;
+    end;
   end;
 end;
 
 procedure TfmMain.ecACPAfterComplete(Sender: TObject;
   const Item: WideString);
-var
-  i: integer;
+//var
+//  n: integer;
 begin
- //Php func
- if FTagPhp then
- begin
-   i:=slACPitem.IndexOf(Item);
-   with CurrentEditor do
-     if (i<>-1) and (slACPHint.Strings[i]<>'') and
-       (TextLength>0) and (Lines.FText[CaretStrPos+1]<>'(') then
-     InsertText('(');
- end;
-
  //Closing tag
  if FTagClosing then
    with CurrentEditor do
      InsertText('>')
  else
- //Ctrl+Enter
+ //handle Ctrl+Enter pressing in ACP list
  if FTagList and (KeyboardStateToShiftState=[ssCtrl]) then
    with CurrentEditor do
      if (TextLength>0) and (CaretStrPos>=1) and (Lines.FText[CaretStrPos]=' ') then
@@ -7023,18 +7065,18 @@ begin
       if t<>'' then begin
         i:=slINTcss.IndexOfName(t);
         if i>=0 then begin
-          sx:=pos('=',slINTcss.Strings[i]);
-          while sx<length(slINTcss.Strings[i]) do begin
+          sx:=pos('=',slINTcss[i]);
+          while sx<length(slINTcss[i]) do begin
             inc(sx);
-            j:=PosEx(',',slINTcss.Strings[i],sx);
-            if j=0 then j:=length(slINTcss.Strings[i])+1;
-            ins:=copy(slINTcss.Strings[i],sx,j-sx);
+            j:=PosEx(',',slINTcss[i],sx);
+            if j=0 then j:=length(slINTcss[i])+1;
+            ins:=copy(slINTcss[i],sx,j-sx);
             //color
             if ins='color' then begin
               ins:='#000000';
               Display.Add('\s1\color\t\\s2\#000000');
             end
-            else Display.Add('\s1\css\t\\s2\'+copy(slINTcss.Strings[i],sx,j-sx));
+            else Display.Add('\s1\css\t\\s2\'+copy(slINTcss[i],sx,j-sx));
             List.Add(ins);
             sx:=j;
           end
@@ -7043,10 +7085,10 @@ begin
       //property not found
       else begin
         for i:=0 to slINTcss.Count-1 do begin
-          j:=pos('=',slINTcss.Strings[i]);
+          j:=pos('=',slINTcss[i]);
           if j=0 then Continue;
-          List.Add(copy(slINTcss.Strings[i],1,j-1)+' ' );
-          Display.Add('\s1\css\t\\s2\'+copy(slINTcss.Strings[i],1,j-2) );
+          List.Add(copy(slINTcss[i],1,j-1)+' ' );
+          Display.Add('\s1\css\t\\s2\'+copy(slINTcss[i],1,j-2) );
         end
       end;
 
@@ -7076,16 +7118,16 @@ begin
       if i>=0 then
       //attrib names needed
       if atr='' then begin
-        sx:=pos('=',slINTatr.Strings[i]);
-        while sx<length(slINTatr.Strings[i]) do begin
+        sx:=pos('=',slINTatr[i]);
+        while sx<length(slINTatr[i]) do begin
           inc(sx);
-          a:=PosEx(',',slINTatr.Strings[i],sx);
-          if a=0 then a:=length(slINTatr.Strings[i])+1;
-          k:=PosEx(':',slINTatr.Strings[i],sx);
+          a:=PosEx(',',slINTatr[i],sx);
+          if a=0 then a:=length(slINTatr[i])+1;
+          k:=PosEx(':',slINTatr[i],sx);
           if (k<>0)and(k<a)then j:=k
           else j:=a;
-          List.Add( copy(slINTatr.Strings[i],sx,j-sx)+'="' ); //HTML quote
-          Display.Add( '\s1\attrib\t\\s2\'+copy(slINTatr.Strings[i],sx,j-sx) );
+          List.Add( copy(slINTatr[i],sx,j-sx)+'="' ); //HTML quote
+          Display.Add( '\s1\attrib\t\\s2\'+copy(slINTatr[i],sx,j-sx) );
           sx:=a;
         end;
         ecACP.Tag:=2;
@@ -7093,22 +7135,22 @@ begin
       end
       //attrib params needed
       else begin
-        j:=pos('='+atr+':',slINTatr.Strings[i]);
-        k:=pos(','+atr+':',slINTatr.Strings[i]);
+        j:=pos('='+atr+':',slINTatr[i]);
+        k:=pos(','+atr+':',slINTatr[i]);
         if (j=0)and(k=0) then exit
         else if k<>0 then j:=k;
-        j:=PosEx(':',slINTatr.Strings[i],j+1);
+        j:=PosEx(':',slINTatr[i],j+1);
         //color
-        if posex('color',slINTatr.Strings[i],j)=j+1 then begin
+        if posex('color',slINTatr[i],j)=j+1 then begin
           List.Add( '#000000' );
           Display.Add('\s1\color\t\\s2\#000000');
           exit;
         end
         // {var1|var2}
-        else if slINTatr.Strings[i][j+1]<>'{' then exit;
+        else if slINTatr[i][j+1]<>'{' then exit;
         inc(j);
-        k:=PosEx('}',slINTatr.Strings[i],j);
-        t:=copy(slINTatr.Strings[i],j+1,k-j-1);
+        k:=PosEx('}',slINTatr[i],j);
+        t:=copy(slINTatr[i],j+1,k-j-1);
         sx:=0;
         while sx<length(t) do begin
         inc(sx);
@@ -7136,11 +7178,11 @@ begin
       if FTagClosing then begin
         //closing tag
         for i:=0 to slINTatr.Count-1 do begin
-          j:=pos('=',slINTatr.Strings[i]);
+          j:=pos('=',slINTatr[i]);
           if j=0 then Continue;
-          List.Add(copy(slINTatr.Strings[i],1,j-1));
+          List.Add(copy(slINTatr[i],1,j-1));
           Display.Add( '\s1\tag\t\\s2\</'+
-            copy(slINTatr.Strings[i],1,j-1)+'>' );
+            copy(slINTatr[i],1,j-1)+'>' );
         end;
         ecACP.Tag:=3;
         FTagList:= true;
@@ -7151,12 +7193,12 @@ begin
         AddBr:= false;
         for i:=0 to slINTatr.Count-1 do
         begin
-          j:=pos('=',slINTatr.Strings[i]);
+          j:=pos('=',slINTatr[i]);
           if j=0 then continue;
-          if AddBr then List.Add( '<'+copy(slINTatr.Strings[i],1,j-1)+' ' )
-                       else List.Add( copy(slINTatr.Strings[i],1,j-1)+' ' );
+          if AddBr then List.Add( '<'+copy(slINTatr[i],1,j-1)+' ' )
+                       else List.Add( copy(slINTatr[i],1,j-1)+' ' );
           Display.Add( '\s1\tag\t\\s2\<'+
-            copy(slINTatr.Strings[i],1,j-1)+'>' );
+            copy(slINTatr[i],1,j-1)+'>' );
         end;
         ecACP.Tag:=2;
         FTagList:= true;
@@ -7182,7 +7224,6 @@ begin
 
   FTagList:= false;
   FTagCss:= false;
-  FTagPhp:= false;
   FTagClosing:= false;
   Lexer:= CurrentLexer;
 
@@ -7197,7 +7238,6 @@ begin
       Exit
     end;
 
-  FTagPhp:= IsLexerPHP(Lexer);
   ParamCompletion.CloseUp(False); //or Stack overflow
 
   if slAcpItem.Count>0 then
@@ -7587,6 +7627,8 @@ procedure TfmMain.ecACPChange(Sender: TObject);
 var
   i: integer;
   s: string;
+const
+  sep: TSysCharSet = ['.',' ',#9,'-'];
 begin
   if opAcpUseSingle then
     with ecACP do
@@ -7607,8 +7649,9 @@ begin
       (i<slACPHint.Count) and
       (i<slACPdesc.Count) then
       ecACP.ToolHint.Text:= Trim(
-        '\s5\\s4\'+ WrapText(s+' \s5\'+slACPHint.Strings[i], sLineBreak+'\s5\', ['.',' ',#9,'-'], 50) + sLineBreak +
-        '\s6\' + WrapText(slACPdesc.Strings[i], sLineBreak+'\s6\', ['.',' ',#9,'-'], 45));
+        '\s4\' + SAcpItemToId(s) + ' ' +
+        '\s5\' + WrapText(slACPHint[i], sLineBreak+'\s5\', sep, 70) + sLineBreak +
+        '\s6\' + WrapText(slACPdesc[i], sLineBreak+'\s6\', sep, 65));
   end;
 end;
 
@@ -10493,6 +10536,7 @@ end;
 procedure TfmMain.PageControl1DrawTab(Control: TCustomTabControl;
   TabIndex: Integer; const Rect: TRect; Active: Boolean);
 var
+  F: TEditorFrame;
   R, RLine: TRect;
   s, sCap: Widestring;
   c, ColorMisc: TColor;
@@ -10502,15 +10546,16 @@ var
 begin
   PageControl:= Control as TTntPageControl;
 
+  //AT --todo
   //get frame properties
   ColorMisc:= clNone;
   AFtp:= false;
-  with PageControl.Pages[TabIndex] do
-    if ControlCount>0 then
-    begin
-      ColorMisc:= (Controls[0] as TEditorFrame).TabColor;
-      AFtp:= (Controls[0] as TEditorFrame).IsFtp;
-    end;
+  F:= PagesToFrame(PageControl, TabIndex);
+  if F<>nil then
+  begin
+    ColorMisc:= F.TabColor;
+    AFtp:= F.IsFtp;
+  end;
 
   //get title string
   sCap:= (PageControl.Pages[TabIndex] as TTntTabSheet).Caption;
@@ -10711,7 +10756,7 @@ begin
     //draw tab hint
     TabCtrl_GetItemRect(PageControl.Handle, i, R);
     if PtInRect(R, Point(x, y)) then
-      ShowFN((PageControl.Pages[i].Controls[0] as TEditorFrame).FileName);
+      ShowFN(PagesToFrame(PageControl, i).FileName);
 
     //handle X btn mouse-over
     TabCtrl_GetXRect(PageControl.Handle, i, ImageListCloseBtn.Width, R);
@@ -14044,15 +14089,13 @@ end;
 
 function TfmMain.PagesEmpty(P: TTntPageControl): boolean;
 var
-  tab: TTntTabSheet;
   F: TEditorFrame;
 begin
   if P.PageCount=0 then
     begin Result:= true; Exit end;
   if P.PageCount>1 then
     begin Result:= false; Exit end;
-  tab:= P.Pages[0] as TTntTabSheet;
-  F:= tab.Controls[0] as TEditorFrame;
+  F:= PagesToFrame(P, 0);
   Result:= (not F.Modified) and (F.FileName = '');
 end;
 
@@ -14209,6 +14252,7 @@ procedure TfmMain.DoSyncScroll(Src: TSyntaxMemo);
 var
   Oth: TSyntaxMemo;
   P1, P: TTntPageControl;
+  F: TEditorFrame;
 begin
   if not (ecSyncV.Checked or ecSyncH.Checked) then Exit;
   if (Src=nil) then Exit;
@@ -14222,10 +14266,10 @@ begin
   else
     P:= PageControl2;
 
-  if (P.PageCount=0) or (P.ActivePage=nil) or (P.ActivePage.ControlCount=0) then Exit;
-  Oth:= (P.ActivePage.Controls[0] as TEditorFrame).EditorMaster;
-  if (Oth=nil) then Exit;
-  if (Oth.Lines.Count=0) then Exit;
+  F:= PagesToFrame(P, P.ActivePageIndex);
+  if F=nil then Exit;
+  Oth:= F.EditorMaster;
+  if Oth.Lines.Count=0 then Exit;
 
   if ecSyncV.Checked then
     Oth.TopLine:= Src.TopLine;
@@ -16423,19 +16467,17 @@ begin
 end;
 
 procedure TfmMain.ecToggleViewExecute(Sender: TObject);
+var
+  F: TEditorFrame;
 begin
-  if PagesEmpty(PageControl2) then
-    begin MsgBeep; Exit end;
-
-  if PageControl=PageControl1 then
-    PageControl:= PageControl2
+  F:= OppositeFrame;
+  if F<>nil then
+  begin
+    CurrentFrame:= F;
+    FocusEditor;
+  end
   else
-    PageControl:= PageControl1;
-
-  if PageControl.ActivePage <> nil then
-    if PageControl.ActivePage.ControlCount > 0 then
-      CurrentFrame:= PageControl.ActivePage.Controls[0] as TEditorFrame;
-  FocusEditor;
+    MsgBeep;
 end;
 
 procedure TfmMain.ecCopyLineExecute(Sender: TObject);
@@ -19136,14 +19178,25 @@ begin
   {$endif}
 end;
 
-procedure TfmMain.GetTabName(n: Integer; var AName, AFN, ALex: Widestring);
+procedure TfmMain.GetTabName(
+  APagesNumber, ATabIndex: Integer;
+  var AName, AFN, ALex: Widestring);
 var
+  P: TTntPageControl;
   F: TEditorFrame;
+  NFrames: Integer;
 begin
-  if (n>=0) and (n<FrameCount) then
+  case APagesNumber of
+    0: P:= PageControl1;
+    1: P:= PageControl2;
+    else raise Exception.Create('Unknown pages number');
+  end;
+  NFrames:= P.PageCount;
+
+  if (ATabIndex>=0) and (ATabIndex<NFrames) then
   begin
-    F:= Frames[n];
-    AName:= WideFormat('[%d] ', [n+1]) + F.Title;
+    F:= PagesToFrame(P, ATabIndex);
+    AName:= WideFormat('[%d] ', [ATabIndex+1]) + F.Title;
     AFN:= F.FileName;
     if AFN='' then
       AFN:= DKLangConstW('Untitled');
@@ -19153,8 +19206,8 @@ begin
   end
   else
   begin
-    AName:= IntToStr(n+1);
-    AFN:= '';
+    AName:= WideFormat('[%d]', [ATabIndex+1]);
+    AFN:= WideFormat('(index=%d, FrameCount=%d)', [ATabIndex, NFrames]);
     ALex:= '';
   end;
 end;
@@ -21191,15 +21244,12 @@ function TfmMain.OppositeFrame: TEditorFrame;
 var
   P: TTntPageControl;
 begin
-  Result:= nil;
-
   if PageControl=PageControl2 then
     P:= PageControl1
   else
     P:= PageControl2;
 
-  if (P.PageCount=0) or (P.ActivePage=nil) or (P.ActivePage.ControlCount=0) then Exit;
-  Result:= P.ActivePage.Controls[0] as TEditorFrame;
+  Result:= PagesToFrame(P, P.ActivePageIndex);
 end;
 
 function TfmMain.OppositeFileName: Widestring;
@@ -21372,6 +21422,14 @@ begin
       SFileName:= '';
     end;
 
+  //clear ACP list
+  for i:= Low(FPluginsAcp) to High(FPluginsAcp) do
+    with FPluginsAcp[i] do
+    begin
+      SLexers:= '';
+      SFileName:= '';
+    end;
+
   //clear Command list
   for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
     with FPluginsCommand[i] do
@@ -21444,6 +21502,33 @@ begin
     FreeAndNil(ListSec);
   end;
 
+  //load section "Complete"
+  ListSec:= TStringList.Create;
+  with TIniFile.Create(fn_plug_ini) do
+  try
+    ReadSectionValues('Complete', ListSec);
+  finally
+    Free
+  end;
+
+  //parse section "Complete"
+  try
+    NIndex:= Low(FPluginsAcp);
+    for i:= 0 to ListSec.Count-1 do
+    begin
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      if (sKey='') or (sValue='') then Continue;
+
+      if NIndex<=High(FPluginsAcp) then
+      begin
+        FPluginsAcp[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
+        FPluginsAcp[NIndex].SLexers:= sValue2;
+        Inc(NIndex);
+      end;
+    end;
+  finally
+    FreeAndNil(ListSec);
+  end;
 
   //load section "Commands"
   ListSec:= TStringList.Create;
@@ -22327,16 +22412,42 @@ function TfmMain.PluginAction_SuggestCompletion(
 var
   P: TPoint;
   L: TWideStrings;
+  i: Integer;
+  S, S_id, S_type, S_param: Widestring;
 begin
   Result:= cSynOK;
 
   PluginACP.Items.Clear;
   PluginACP.DisplayItems.Clear;
 
-  L:= PluginACP.Items;
-  L.SetText(Str);
-  if L.Count=0 then
-    begin Result:= cSynError; Exit; end;
+  L:= TWideStringList.Create;
+  try
+    L.SetText(Str);
+    if L.Count=0 then
+      begin Result:= cSynError; Exit; end;
+    for i:= 0 to L.Count-1 do
+    begin
+      S:= L[i];
+      if Pos('|', S)>0 then
+      begin
+        S_id:= SGetItem(S, '|');
+        S_type:= SGetItem(S, '|');
+        S_param:= SGetItem(S, '|');
+      end
+      else
+      begin
+        S_id:= S;
+        S_type:= '';
+        S_param:= '';
+      end;
+      if S_id='' then Continue;
+      S:= IfThen(Pos('(', S_param)>0, '('); //insert text with "(" if params not empty
+      PluginACP.Items.Add(S_id+S);
+      PluginACP.DisplayItems.Add(WideFormat('\s1\%s\t\\s2\%s\t\\s0\%s', [S_type, S_id, S_param]));
+    end;
+  finally
+    FreeAndNil(L);
+  end;
 
   with CurrentEditor do
   begin
@@ -22744,6 +22855,24 @@ begin
       end;
 end;
 
+function TfmMain.DoAcpFromPlugins(const AAction: PWideChar): Widestring;
+var
+  i: Integer;
+begin
+  Result:= '';
+  for i:= Low(FPluginsAcp) to High(FPluginsAcp) do
+    with FPluginsAcp[i] do
+      if IsLexerListed(CurrentLexer, SLexers) then
+      begin
+        SHint[-1]:= DKLangConstW('zMTryAcp')+' '+ExtractFileName(SFileName);
+        Result:= DoLoadPlugin_GetString(
+          SFilename,
+          AAction);
+        SHint[-1]:= '';
+        if Result<>'' then Exit;
+      end;
+end;
+
 
 procedure TfmMain.DoLoadPlugin_FindID(Index: Integer);
 begin
@@ -22795,6 +22924,63 @@ begin
   FSynAction(nil, PWChar(AActionName), P1, P2, P3, P4);
   FreeLibrary(FDll);
 end;
+
+function TfmMain.DoLoadPlugin_GetString(
+  const AFileName: string;
+  const AActionName: Widestring): Widestring;
+var
+  FDll: THandle;
+  FSynInit: TSynInit;
+  FSynAction: TSynAction;
+  AIni: Widestring;
+  P1, P2, P3, P4: Pointer;
+  AText: array[0..2047] of WideChar;
+begin
+  Result:= '';
+
+  if not IsFileExist(AFileName) then
+  begin
+    MsgNoFile(AFileName);
+    Exit;
+  end;
+
+  FDll:= LoadLibrary(PChar(string(AFileName)));
+  if FDll=0 then
+  begin
+    MsgError('Can''t load dll:'#13+AFileName);
+    Exit
+  end;
+
+  FSynInit:= GetProcAddress(FDll, 'SynInit');
+  if @FSynInit=nil then
+  begin
+    MsgError('Can''t find SynInit'#13+AFileName);
+    Exit
+  end;
+
+  FSynAction:= GetProcAddress(FDll, 'SynAction');
+  if @FSynAction=nil then
+  begin
+    MsgError('Can''t find SynAction'#13+AFileName);
+    Exit
+  end;
+
+  FillChar(AText, SizeOf(AText), 0);
+  P1:= @AText;
+  P2:= Pointer(SizeOf(AText) div 2 - 1);
+  P3:= nil;
+  P4:= nil;
+
+  try
+    AIni:= SynPluginIni(ChangeFileExt(ExtractFileName(AFileName), ''));
+    FSynInit(PWChar(AIni), @_SynActionProc);
+    if FSynAction(nil, PWChar(AActionName), P1, P2, P3, P4) = cSynOK then
+      Result:= Widestring(AText);
+  finally
+    FreeLibrary(FDll);
+  end;  
+end;
+
 
 procedure TfmMain.PluginCommandItemClick(Sender: TObject);
 var
@@ -24635,11 +24821,11 @@ var
   F: TEditorFrame;
   en, two: boolean;
 begin
-  F:= CurrentFrame;
-  en:= (F<>nil) and (F.Modified or (F.FileName<>''));
   two:= not PagesEmpty(PageControl2);
   if two then
   begin
+    //be carefull
+    //(test it isn't looped forever for e.g. empty tabs in view2)
     repeat
       PageControl:= PageControl2;
       DoMoveTabToOtherView(0);
@@ -24648,11 +24834,41 @@ begin
   end
   else
   begin
+    F:= CurrentFrame;
+    en:= (F<>nil) and (F.Modified or (F.FileName<>''));
     if en then
-      DoMoveTabToOtherView(PageControl.ActivePageIndex)
+    begin
+      PageControl:= PageControl1;
+      DoMoveTabToOtherView(PageControl.ActivePageIndex);
+    end
     else
       MsgBeep;
   end;
+end;
+
+procedure TfmMain.DoAcpCommand;
+var
+  Ed: TSyntaxMemo;
+  SText: Widestring;
+begin
+  PluginACP.Items.Clear;
+  PluginACP.DisplayItems.Clear;
+
+  SText:= DoAcpFromPlugins(cActionGetAutoComplete);
+  if SText<>'' then
+  begin
+    Ed:= CurrentEditor;
+    PluginAction_SuggestCompletion(PWChar(SText), EditorWordLength(Ed), true);
+  end
+  else
+    DoACP;
+end;
+
+procedure TfmMain.PluginACPAfterComplete(Sender: TObject;
+  const Item: WideString);
+begin
+  //need to force parameter hint, it doesn't appear auto on plugin ACP
+  ParamCompletion.Execute;
 end;
 
 end.

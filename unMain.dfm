@@ -5671,7 +5671,7 @@ object fmMain: TfmMain
         DisplayName = 'Move lines down'
       end
       item
-        Command = 650
+        Command = 670
         KeyStrokes = <
           item
             KeyDefs = <
@@ -5681,7 +5681,7 @@ object fmMain: TfmMain
           end>
         Caption = 'Auto Complete Popup'
         Category = 'Hints'
-        DisplayName = 'Auto Complete Popup'
+        DisplayName = 'Auto-complete popup'
       end
       item
         Command = 652
@@ -5694,7 +5694,7 @@ object fmMain: TfmMain
           end>
         Caption = 'Parameters Popup'
         Category = 'Hints'
-        DisplayName = 'Parameters Popup'
+        DisplayName = 'Parameters popup'
       end
       item
         Command = 651
@@ -5707,14 +5707,14 @@ object fmMain: TfmMain
           end>
         Caption = 'Template Popup'
         Category = 'Hints'
-        DisplayName = 'Template Popup'
+        DisplayName = 'Code template popup'
       end
       item
-        Command = 653
+        Command = 0
         KeyStrokes = <>
         Caption = 'Context Help'
         Category = 'Hints'
-        DisplayName = 'Context Help'
+        DisplayName = 'Context help'
       end
       item
         Command = 630
@@ -9217,7 +9217,13 @@ object fmMain: TfmMain
       end
       item
         Command = 797
-        KeyStrokes = <>
+        KeyStrokes = <
+          item
+            KeyDefs = <
+              item
+                ShortCut = 24763
+              end>
+          end>
         Category = 'Blank operations'
         DisplayName = 'Align with separator'
       end
@@ -19366,9 +19372,11 @@ object fmMain: TfmMain
     ShowWhenNone = True
     Images = ImgListTree
     Delay = 200
+    Styles = SyntStyles
     FixedItemHeight = True
     ColumnSpace = 4
-    Options = []
+    Options = [aoFormatted]
+    OnAfterComplete = PluginACPAfterComplete
     OnDefineStartPos = PluginAcpDefineStartPos
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

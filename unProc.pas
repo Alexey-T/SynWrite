@@ -16,6 +16,7 @@ uses
   ecSyntDlg,
   ecSyntTree;
 
+function EditorWordLength(Ed: TSyntaxMemo): Integer;
 function DoInputFilename(const dkmsg: string; var S: Widestring): boolean;
 function DoInputString(const dkmsg: string; var S: Widestring): boolean;
 
@@ -1513,6 +1514,29 @@ begin
   SDeleteFromW(Result, #10);
   if Length(Result)>80 then
     SetLength(Result, 80);
+end;
+
+function EditorWordLength(Ed: TSyntaxMemo): Integer;
+var
+  S: Widestring;
+  N: Integer;
+begin
+  Result:= 0;
+  N:= Ed.CurrentLine;
+  if (N>=0) and (N<Ed.Lines.Count) then
+    S:= Ed.Lines[N]
+  else
+    Exit;
+
+  N:= Ed.CaretPos.X+1;
+  if N>Length(S) then
+    N:= Length(S)+1;
+  repeat
+    Dec(N);
+    if N=0 then Break;
+    if not IsWordChar(S[N]) then Break;
+    Inc(Result);
+  until false;
 end;
 
 
