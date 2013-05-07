@@ -1405,8 +1405,8 @@ object fmMain: TfmMain
           object TBXItemEAlignWithSep: TTBXItem
             OnClick = TBXItemEAlignWithSepClick
             OnSelect = ButtonOnSelect
-            Caption = 'Align with separator...'
-            Hint = 'Align two columns of selection, separated with some string'
+            Caption = 'Align by separator...'
+            Hint = 'Align two columns, separated by some substring'
           end
         end
         object TBXSubmenuItem13: TTBXSubmenuItem
@@ -9225,7 +9225,7 @@ object fmMain: TfmMain
               end>
           end>
         Category = 'Blank operations'
-        DisplayName = 'Align with separator'
+        DisplayName = 'Align by separator'
       end
       item
         Command = 798
