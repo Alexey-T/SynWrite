@@ -2,6 +2,11 @@ program Syn;
 
 uses
   FastMM4,
+  madExcept,
+  madLinkDisAsm,
+  madListHardware,
+  madListProcesses,
+  madListModules,
   FastMove,
   FastCode,
   Forms,

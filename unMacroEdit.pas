@@ -348,13 +348,28 @@ end;
 procedure TfmMacroEdit.CommandInsertExecute(Sender: TObject);
 var cmd: integer;
     data: ecString;
+    Rec: TMacroRecord;
+    Index: Integer;
 begin
   if EditMacroCommand(cmd, data) then
-   begin
-    Recorder[MacrosList.ItemIndex].Add(cmd, data);
+  begin
+    Rec:= Recorder[MacrosList.ItemIndex];
+    Rec.Add(cmd, data);
+    Index:= Rec.Count-1;
+
+    //insert item instead of add to end
+    if CmdList.Selected<>nil then
+    begin
+      Rec.Move(Index, CmdList.Selected.Index);
+      Index:= CmdList.Selected.Index;
+    end;
+
     FillCommands;
     if CmdList.Items.Count > 0 then
-      CmdList.Items[CmdList.Items.Count - 1].Selected:= True;
+    begin
+      CmdList.Items[Index].Selected:= True;
+      CmdList.Selected.MakeVisible(false);
+    end;
    end;
 end;
 

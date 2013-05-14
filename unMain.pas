@@ -72,7 +72,9 @@ type
     scmdTrimLead,
     scmdTrimTrail,
     scmdTrimAll,
-    scmdRemoveDupSpaces
+    scmdRemoveDupSpaces,
+    scmdReverse,
+    scmdShuffle
     );
 
   TSynCopyNameCmd = (
@@ -837,7 +839,6 @@ type
     TBXItemTreeFind: TTBXItem;
     TBXItemTreeExpand: TTBXItem;
     TBXItemTreeCollapse: TTBXItem;
-    TBXSeparatorItem68: TTBXSeparatorItem;
     TimerAutoSave: TTimer;
     TBXItemMacro29: TTBXItem;
     TBXItemMacro28: TTBXItem;
@@ -1087,6 +1088,37 @@ type
     TBXItemTbSplit: TTBXItem;
     TBXItemTbToggleSplit: TTBXItem;
     ecToggleView2: TAction;
+    ecSelExtend: TAction;
+    ecSelShrink: TAction;
+    TBXItemSSelExtend: TTBXItem;
+    TBXItemTreeCollapseAll: TTBXItem;
+    TBXItemTreeExpandAll: TTBXItem;
+    TBXItemTreeLevel2: TTBXItem;
+    TBXItemTreeLevel5: TTBXItem;
+    TBXItemTreeLevel4: TTBXItem;
+    TBXItemTreeLevel3: TTBXItem;
+    TBXSeparatorItem96: TTBXSeparatorItem;
+    TBXSubmenuTreeLevel: TTBXSubmenuItem;
+    TBXItemTreeLevel6: TTBXItem;
+    TBXItemTreeLevel9: TTBXItem;
+    TBXItemTreeLevel8: TTBXItem;
+    TBXItemTreeLevel7: TTBXItem;
+    ecReverseLines: TAction;
+    TBXSeparatorItem68: TTBXSeparatorItem;
+    TBXItemEReverse: TTBXItem;
+    ecDeleteToFileBegin: TAction;
+    ecDeleteToFileEnd: TAction;
+    ecShuffleLines: TAction;
+    TBXItemEShuffle: TTBXItem;
+    TBXSubmenuIFoldLevel: TTBXSubmenuItem;
+    TBXItemFoldLevel9: TTBXItem;
+    TBXItemFoldLevel8: TTBXItem;
+    TBXItemFoldLevel7: TTBXItem;
+    TBXItemFoldLevel6: TTBXItem;
+    TBXItemFoldLevel5: TTBXItem;
+    TBXItemFoldLevel4: TTBXItem;
+    TBXItemFoldLevel3: TTBXItem;
+    TBXItemFoldLevel2: TTBXItem;
     procedure fOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1778,6 +1810,32 @@ type
     procedure ecToggleView2Execute(Sender: TObject);
     procedure PluginACPAfterComplete(Sender: TObject;
       const Item: WideString);
+    procedure ecSelExtendExecute(Sender: TObject);
+    procedure TBXItemSSelExtendClick(Sender: TObject);
+    procedure TBXItemTreeExpandAllClick(Sender: TObject);
+    procedure TBXItemTreeCollapseAllClick(Sender: TObject);
+    procedure TBXItemTreeLevel2Click(Sender: TObject);
+    procedure TBXItemTreeLevel3Click(Sender: TObject);
+    procedure TBXItemTreeLevel4Click(Sender: TObject);
+    procedure TBXItemTreeLevel5Click(Sender: TObject);
+    procedure TBXItemTreeLevel6Click(Sender: TObject);
+    procedure TBXItemTreeLevel7Click(Sender: TObject);
+    procedure TBXItemTreeLevel8Click(Sender: TObject);
+    procedure TBXItemTreeLevel9Click(Sender: TObject);
+    procedure ecReverseLinesExecute(Sender: TObject);
+    procedure TBXItemEReverseClick(Sender: TObject);
+    procedure ecDeleteToFileBeginExecute(Sender: TObject);
+    procedure ecDeleteToFileEndExecute(Sender: TObject);
+    procedure ecShuffleLinesExecute(Sender: TObject);
+    procedure TBXItemEShuffleClick(Sender: TObject);
+    procedure TBXItemFoldLevel2Click(Sender: TObject);
+    procedure TBXItemFoldLevel3Click(Sender: TObject);
+    procedure TBXItemFoldLevel4Click(Sender: TObject);
+    procedure TBXItemFoldLevel5Click(Sender: TObject);
+    procedure TBXItemFoldLevel6Click(Sender: TObject);
+    procedure TBXItemFoldLevel7Click(Sender: TObject);
+    procedure TBXItemFoldLevel8Click(Sender: TObject);
+    procedure TBXItemFoldLevel9Click(Sender: TObject);
 
   private
     cStatLine,
@@ -2310,6 +2368,8 @@ type
     procedure DoCopyFilenameToClipboard(F: TEditorFrame; Cmd: TSynCopyNameCmd);
     function IsCommandAllowedInMacro(Cmd: Integer): boolean;
     procedure UpdateFormEnabled(En: boolean);
+    procedure DoTreeLevel(NLevel: Integer);
+    procedure DoFoldLevel(NLevel: Integer);
     //end of private
 
   protected
@@ -2616,7 +2676,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.3.292';
+  cSynVer = '5.4.350';
 
 implementation
 
@@ -2989,9 +3049,13 @@ end;
 
 procedure TfmMain.fOpenExecute(Sender: TObject);
 var
-  i:Integer;
+  i: Integer;
   s: Widestring;
 begin
+//debug MadExcept
+//i:= 0;
+//if 2/i>0 then begin end;
+
   OD.Filter:= SyntaxManager.GetFilesFilter(DKLangConstW('AllF'));
   if (opLastDir=1) and (opHistFilter>0) then
     OD.FilterIndex:= opHistFilter
@@ -3082,6 +3146,10 @@ begin
   UpdateEnc(Result);
   UpdateSpell(Result);
   UpdateZoom(Result);
+
+  //maybe set opened editor R/O for Lister plugin
+  if not SynExe then
+    UpdateRO;
 
   if not SynExe then
     BringWindowToTop(hLister);
@@ -5421,6 +5489,34 @@ begin
     sm_CutLine:
       ecCutLine.Execute;
 
+    //Del key
+    smDeleteChar:
+    begin
+      DoCheckIfBookmarkSetHere(Ed, Ed.CaretStrPos);
+      Handled:= false;
+    end;
+    //BackSpace key
+    smDeleteLastChar:
+    begin
+      DoCheckIfBookmarkSetHere(Ed, Ed.CaretStrPos-1);
+      Handled:= false;
+    end;
+
+    //Delete lines
+    smDeleteLine:
+      ecRemoveLines.Execute;
+
+    //Ctrl+End: if pressed on last line, scroll editor up
+    smEditorBottom:
+    begin
+      if (soScrollLastLine in Ed.Options) and
+        (Ed.CaretPos.Y = Ed.Lines.Count-1) then
+        Ed.TopLine:= Ed.Lines.Count-1
+      else
+        Handled:= false;
+    end;
+
+    //sorting
     smSortAscending:
       ecSortAscending.Execute;
     smSortDescending:
@@ -5471,33 +5567,12 @@ begin
     sm_CollapseWithNested: ecCollapseWithNested.Execute;
     sm_AlignWithSep: ecAlignWithSep.Execute;
     sm_ToggleView2: ecToggleView2.Execute;
-
-    //Del key
-    smDeleteChar:
-    begin
-      DoCheckIfBookmarkSetHere(Ed, Ed.CaretStrPos);
-      Handled:= false;
-    end;
-    //BackSpace key
-    smDeleteLastChar:
-    begin
-      DoCheckIfBookmarkSetHere(Ed, Ed.CaretStrPos-1);
-      Handled:= false;
-    end;
-
-    //Delete lines
-    smDeleteLine:
-      ecRemoveLines.Execute;
-
-    //Ctrl+End: if pressed on last line, scroll editor up
-    smEditorBottom:
-    begin
-      if (soScrollLastLine in Ed.Options) and
-        (Ed.CaretPos.Y = Ed.Lines.Count-1) then
-        Ed.TopLine:= Ed.Lines.Count-1
-      else
-        Handled:= false;
-    end;
+    sm_SelectionExtend: ecSelExtend.Execute;
+    sm_SelectionShrink: ecSelShrink.Execute;
+    sm_ReverseLines: ecReverseLines.Execute;
+    sm_ShuffleLines: ecShuffleLines.Execute;
+    sm_DeleteToFileBegin: ecDeleteToFileBegin.Execute;
+    sm_DeleteToFileEnd: ecDeleteToFileEnd.Execute;
 
     //blank operations
     sm_RemoveDupsAll: ecDedupAll.Execute;
@@ -5815,6 +5890,16 @@ begin
         SHint[ccZoom]:= IntToStr(Ed.Zoom) + '%';
         SHint[ccTxt]:= WideFormat(DKLangConstW('Zoom'), [Ed.Zoom]);
       end;
+
+    sm_FoldLevel2: DoFoldLevel(2);
+    sm_FoldLevel3: DoFoldLevel(3);
+    sm_FoldLevel4: DoFoldLevel(4);
+    sm_FoldLevel5: DoFoldLevel(5);
+    sm_FoldLevel6: DoFoldLevel(6);
+    sm_FoldLevel7: DoFoldLevel(7);
+    sm_FoldLevel8: DoFoldLevel(8);
+    sm_FoldLevel9: DoFoldLevel(9);
+
     else
       Handled:= false;
   end;
@@ -9177,6 +9262,10 @@ procedure TfmMain.UpdateShortcuts;
     K2str(item, ShortcutToText(ShFor(id)));
   end;
 begin
+  K(TBXItemEReverse, sm_ReverseLines);
+  K(TBXItemEShuffle, sm_ShuffleLines);
+  K(TBXItemSSelExtend, sm_SelectionExtend);
+
   //multi-carets
   K(TbxItemCaretsRemove1, sm_CaretsRemoveLeaveFirst);
   K(TbxItemCaretsRemove2, sm_CaretsRemoveLeaveLast);
@@ -10908,6 +10997,7 @@ begin
   TBXItemTbOth.Enabled:= en_all and (FrameAllCount>1);
   TBXSubmenuTabColor.Enabled:= en_all;
   TBXItemTbToggleSplit.Enabled:= en_all;
+  TBXItemTbToggleSplit.Checked:= (F<>nil) and F.IsSplitted;
   TBXItemTbCpFN.Enabled:= en;
   TBXItemTbCpFull.Enabled:= en;
   TBXItemTbCpDir.Enabled:= en;
@@ -13957,11 +14047,13 @@ end;
 *)
 
 procedure TfmMain.FocusEditor;
-var E: TSyntaxMemo;
+var
+  Ed: TSyntaxMemo;
 begin
-  E:= CurrentEditor;
-  if (E<>nil) and E.CanFocus and Self.Enabled then
-    E.SetFocus;
+  Ed:= CurrentEditor;
+  if Self.Enabled then
+    if (Ed<>nil) and Ed.CanFocus then
+      Ed.SetFocus;
 end;
 
 procedure TfmMain.DoClearHistory;
@@ -14354,11 +14446,9 @@ begin
   end
   else
   begin
+    //consider option
     if opStartRO then RO;
-  end;
-
-  //Cmdline param
-  if SynExe then
+    //consider cmdline param
     for i:= 1 to ParamCount do
     begin
       s:= ParamStr(i);
@@ -14373,6 +14463,7 @@ begin
         CurrentEditor.CaretPos:= Point(0, N-1);
       end;
     end;
+  end;
 end;
 
 procedure TfmMain.ecOnTopExecute(Sender: TObject);
@@ -17945,13 +18036,19 @@ begin
 end;
 
 procedure TfmMain.PopupTreePopup(Sender: TObject);
+var
+  en: boolean;
 begin
   with Tree do
   begin
-    TbxItemTreeCollapse.Enabled:= Items.Count>0;
-    TbxItemTreeExpand.Enabled:= Items.Count>0;
-    TbxItemTreeFind.Enabled:= Items.Count>0;
-  end;
+    en:= Items.Count>0;
+    TbxItemTreeCollapse.Enabled:= en;
+    TbxItemTreeCollapseAll.Enabled:= en;
+    TbxItemTreeExpand.Enabled:= en;
+    TbxItemTreeExpandAll.Enabled:= en;
+    TBXSubmenuTreeLevel.Enabled:= en;
+    TbxItemTreeFind.Enabled:= en;
+    end;
 end;
 
 procedure TfmMain.TBXItemTreeCollapseClick(Sender: TObject);
@@ -20442,12 +20539,12 @@ end;
 
 procedure TfmMain.TBXItemFavAddFileClick(Sender: TObject);
 begin
-  fFavAddFile.Execute;
+  CurrentEditor.ExecCommand(sm_FavAddFile);
 end;
 
 procedure TfmMain.TBXItemFavManageClick(Sender: TObject);
 begin
-  fFavManage.Execute;
+  CurrentEditor.ExecCommand(sm_FavOrganize);
 end;
 
 procedure TfmMain.DoAddFav(const fn: Widestring);
@@ -20714,7 +20811,7 @@ end;
 
 procedure TfmMain.TBXItemFavAddProjClick(Sender: TObject);
 begin
-  fFavAddProj.Execute;
+  CurrentEditor.ExecCommand(sm_FavAddProj);
 end;
 
 procedure TfmMain.fFavAddFileExecute(Sender: TObject);
@@ -23576,6 +23673,15 @@ begin
           MsgDoneLines(i);
         end;
 
+      scmdReverse:
+        begin
+          b:= DoListCommand_Reverse(L);
+        end;
+      scmdShuffle:
+        begin
+          b:= DoListCommand_Shuffle(L);
+        end;
+
       scmdUntab:
         begin
           i:= DoListCommand_Untab(L, CurrentTabSize(Ed));
@@ -24869,6 +24975,257 @@ procedure TfmMain.PluginACPAfterComplete(Sender: TObject;
 begin
   //need to force parameter hint, it doesn't appear auto on plugin ACP
   ParamCompletion.Execute;
+end;
+
+procedure TfmMain.ecSelExtendExecute(Sender: TObject);
+var
+  Ed: TSyntaxMemo;
+  An: TClientSyntAnalyzer;
+  R: TTextRange;
+  i, StPos, EndPos, NCaret: Integer;
+  SelSave: TSelSave;
+  Lex: string;
+begin
+  Ed:= CurrentEditor;
+  An:= nil;
+
+  if Assigned(Ed) then
+    An:= Ed.SyntObj;
+  if An=nil then
+    begin SHint[-1]:= 'Extend selection: no lexer active'; MsgBeep; Exit end;
+
+  //we have two variants of code: for usual code (Pascal/C/PHP/etc) and for HTML,
+  //HTML case is special, need precise jumps considering "<" and ">"
+  DoSaveSel(Ed, SelSave);
+  Lex:= CurrentLexer;
+  if not IsLexerHTML(Lex) and not IsLexerXML(Lex) then
+  begin
+    //if selection is made, it may be selection from prev ExtendSel call,
+    //so need to increment caret pos, to extend selection further
+    if Ed.HaveSelection then
+    begin
+      Ed.ResetSelection;
+      Ed.CaretStrPos:= Ed.CaretStrPos+2;
+    end;
+
+    R:= An.NearestRangeAtPos(Ed.CaretStrPos);
+    if (R=nil) or not R.IsClosed then
+      begin SHint[-1]:= 'Extend selection: no range at caret'; MsgBeep; DoRestoreSel(Ed, SelSave); Exit end;
+
+    EndPos:= R.EndIdx;
+    if not ((EndPos>=0) and (EndPos<An.TagCount)) then
+      begin SHint[-1]:= 'Extend selection: no closed range'; MsgBeep; Exit end;
+
+    EndPos:= An.Tags[EndPos].EndPos;
+    Ed.SetSelection(R.StartPos, EndPos-R.StartPos);
+  end
+  else
+  //code for HTML/XML
+  begin
+    NCaret:= Ed.CaretStrPos;
+    for i:= An.RangeCount-1 downto 0 do
+    begin
+      //get StPos start of range, EndPos end of range
+      StPos:= An.Ranges[i].StartPos;
+      EndPos:= An.Ranges[i].EndIdx;
+      if EndPos<0 then Continue;
+      EndPos:= An.Tags[EndPos].EndPos;
+
+      //take only range, which starts before NCaret, and ends after NCaret
+      if (StPos<NCaret) and (EndPos>=NCaret) then
+        //and not range which is from "<" to ">" - this is just tag
+        if not (Ed.Lines.FText[StPos+1]='<') then
+        begin
+          //correct StPos, EndPos coz they don't include "<" and ">" in HTML
+          Dec(StPos);
+          Inc(EndPos);
+          Ed.SetSelection(StPos, EndPos-StPos);
+          Break
+        end;
+    end;
+  end;
+end;
+
+procedure TfmMain.TBXItemSSelExtendClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_SelectionExtend);
+end;
+
+procedure TfmMain.TBXItemTreeExpandAllClick(Sender: TObject);
+begin
+  Tree.FullExpand;
+  if Tree.Items.Count>0 then
+  begin
+    Tree.Selected:= Tree.Items[0];
+    Tree.Selected.MakeVisible;
+  end;
+end;
+
+procedure TfmMain.TBXItemTreeCollapseAllClick(Sender: TObject);
+begin
+  Tree.FullCollapse;
+end;
+
+procedure TfmMain.DoTreeLevel(NLevel: Integer);
+var
+  i: Integer;
+begin
+  with Tree do
+  begin
+    Items.BeginUpdate;
+    try
+      FullExpand;
+      if Items.Count>0 then
+        for i:= 0 to Items.Count-1 do
+          if Items[i].Level >= NLevel then
+            Items[i].Collapse(true);
+      Selected:= Items[0];
+      Selected.MakeVisible;
+    finally
+      Items.EndUpdate;
+    end;  
+  end;
+end;
+
+procedure TfmMain.TBXItemTreeLevel2Click(Sender: TObject);
+begin
+  DoTreeLevel(2);
+end;
+
+procedure TfmMain.TBXItemTreeLevel3Click(Sender: TObject);
+begin
+  DoTreeLevel(3);
+end;
+
+procedure TfmMain.TBXItemTreeLevel4Click(Sender: TObject);
+begin
+  DoTreeLevel(4);
+end;
+
+procedure TfmMain.TBXItemTreeLevel5Click(Sender: TObject);
+begin
+  DoTreeLevel(5);
+end;
+
+procedure TfmMain.TBXItemTreeLevel6Click(Sender: TObject);
+begin
+  DoTreeLevel(6);
+end;
+
+procedure TfmMain.TBXItemTreeLevel7Click(Sender: TObject);
+begin
+  DoTreeLevel(7);
+end;
+
+procedure TfmMain.TBXItemTreeLevel8Click(Sender: TObject);
+begin
+  DoTreeLevel(8);
+end;
+
+procedure TfmMain.TBXItemTreeLevel9Click(Sender: TObject);
+begin
+  DoTreeLevel(9);
+end;
+
+procedure TfmMain.ecReverseLinesExecute(Sender: TObject);
+begin
+  DoLinesCommand(scmdReverse);
+end;
+
+procedure TfmMain.TBXItemEReverseClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_ReverseLines);
+end;
+
+procedure TfmMain.ecDeleteToFileBeginExecute(Sender: TObject);
+var
+  NCaret: Integer;
+begin
+  with CurrentEditor do
+  begin
+    NCaret:= CaretStrPos;
+    CaretStrPos:= 0;
+    DeleteText(NCaret);
+  end;  
+end;
+
+procedure TfmMain.ecDeleteToFileEndExecute(Sender: TObject);
+begin
+  with CurrentEditor do
+    DeleteText(TextLength);
+end;
+
+procedure TfmMain.ecShuffleLinesExecute(Sender: TObject);
+begin
+  DoLinesCommand(scmdShuffle);
+end;
+
+procedure TfmMain.TBXItemEShuffleClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_ShuffleLines);
+end;
+
+procedure TfmMain.DoFoldLevel(NLevel: Integer);
+var
+  Ed: TSyntaxMemo;
+  An: TClientSyntAnalyzer;
+  i: Integer;
+begin
+  Ed:= CurrentEditor;
+  An:= Ed.SyntObj;
+  if An=nil then
+    begin SHint[-1]:= 'Fold level: no lexer active'; MsgBeep; Exit end;
+
+  Ed.BeginUpdate;
+  try
+    Ed.FullExpand;
+    for i:= 0 to An.RangeCount-1 do
+      if An.Ranges[i].Level > NLevel then
+        Ed.CollapseRange(An.Ranges[i]);
+  finally
+    Ed.EndUpdate;
+  end;
+end;
+
+
+procedure TfmMain.TBXItemFoldLevel2Click(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_FoldLevel2);
+end;
+
+procedure TfmMain.TBXItemFoldLevel3Click(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_FoldLevel3);
+end;
+
+procedure TfmMain.TBXItemFoldLevel4Click(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_FoldLevel4);
+end;
+
+procedure TfmMain.TBXItemFoldLevel5Click(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_FoldLevel5);
+end;
+
+procedure TfmMain.TBXItemFoldLevel6Click(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_FoldLevel6);
+end;
+
+procedure TfmMain.TBXItemFoldLevel7Click(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_FoldLevel7);
+end;
+
+procedure TfmMain.TBXItemFoldLevel8Click(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_FoldLevel8);
+end;
+
+procedure TfmMain.TBXItemFoldLevel9Click(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_FoldLevel9);
 end;
 
 end.

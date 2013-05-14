@@ -562,6 +562,7 @@ begin
       smFirstLetter,
       smLastLetter,
       smChar,
+      smString,
       smTab,
       smTabChar,
       smDeleteChar,
@@ -667,6 +668,7 @@ begin
   //for all text-changing commands from ExecCommand
   case Cmd of
     smChar,
+    smString,
     smTab,
     smTabChar,
     smDeleteChar,
@@ -828,6 +830,11 @@ begin
           ch:= PWChar(Data)^;
           if ch>=' ' then
             DoInputText(ch, P);
+        end;
+      smString:
+        begin
+          S:= PWChar(Data);
+          DoInputText(S, P);
         end;
 
       smTab:

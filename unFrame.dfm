@@ -30,10 +30,11 @@ object EditorFrame: TEditorFrame
     BevelOuter = bvNone
     TabOrder = 0
     object Splitter2: TSplitter
-      Left = 57
+      Left = 371
       Top = 0
       Width = 5
       Height = 270
+      Align = alRight
       AutoSnap = False
       Color = clBtnFace
       MinSize = 70
@@ -43,7 +44,7 @@ object EditorFrame: TEditorFrame
       OnPaint = Splitter2Paint
     end
     object EditorMaster: TSyntaxMemo
-      Left = 62
+      Left = 0
       Top = 0
       Width = 371
       Height = 270
@@ -246,7 +247,7 @@ object EditorFrame: TEditorFrame
       OnKeyDown = EditorMasterKeyDown
     end
     object EditorSlave: TSyntaxMemo
-      Left = 0
+      Left = 376
       Top = 0
       Width = 57
       Height = 270
@@ -411,7 +412,7 @@ object EditorFrame: TEditorFrame
       Caret.Custom.Width = -2
       Transparent = False
       Alignment = taLeftJustify
-      Align = alLeft
+      Align = alRight
       BevelInner = bvNone
       BevelOuter = bvNone
       Ctl3D = True

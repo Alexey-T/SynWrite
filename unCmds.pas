@@ -236,6 +236,12 @@ const
   sm_EncodeHtmlChars = 890;
   sm_SortDialog = 891;
   sm_ToggleLineCommentAlt = 892;
+  sm_SelectionExtend = 893;
+  sm_SelectionShrink = 894;
+  sm_ReverseLines = 895;
+  sm_DeleteToFileBegin = 896;
+  sm_DeleteToFileEnd = 897;
+  sm_ShuffleLines = 898;
   //free
 
   sm_MacroRepeat = 900;
@@ -315,6 +321,16 @@ const
   sm_Macro39 = 969;
   sm_Macro40 = 970;
   }
+
+  sm_FoldLevel2 = 982;
+  sm_FoldLevel3 = 983;
+  sm_FoldLevel4 = 984;
+  sm_FoldLevel5 = 985;
+  sm_FoldLevel6 = 986;
+  sm_FoldLevel7 = 987;
+  sm_FoldLevel8 = 988;
+  sm_FoldLevel9 = 989;
+
 
 implementation
 

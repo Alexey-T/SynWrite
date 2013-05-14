@@ -128,7 +128,6 @@ type
     FLockMapUpdate: boolean;
     FSavingBusy: boolean;
 
-    procedure FixEditorCollapsed(Ed: TSyntaxMemo);
     procedure EditorShowHint(Sender: TObject; const HintStr: string; var HintObj: THintWindow);
     function GetColMarkers: string;
     procedure SetColmarkers(const S: string);
@@ -531,6 +530,7 @@ begin
   Result:= FFileName = '';
 end;
 
+{
 procedure TEditorFrame.FixEditorCollapsed(Ed: TSyntaxMemo);
 var
   i: Integer;
@@ -555,7 +555,7 @@ begin
     MsgBeep;
   end;
 end;
-
+}
 
 procedure TEditorFrame.EditorMasterChange(Sender: TObject);
 begin
@@ -999,17 +999,13 @@ begin
     Splitter2.Visible:= F>1.0;
     if FSplitHorz then
     begin
-      EditorSlave.Top:= 0;
-      ////Application.ProcessMessages; //workaround VCL issue: cann't move splitter initially
+      Splitter2.Top:= 0;
       EditorSlave.Height:= Abs(Trunc((Self.Height - Splitter2.Height) * F / 100.0));
     end
     else
     begin
-      EditorSlave.Left:= 0;
-      ////Application.ProcessMessages; //workaround VCL issue
+      Splitter2.Left:= 0;
       EditorSlave.Width:= Abs(Trunc((Self.Width - Splitter2.Width) * F / 100.0));
-      if EditorSlave.Width=0 then
-        EditorSlave.Width:= 1; //workaround for VCL issue: not-draggable vert splitter
     end;
   end;
 end;
@@ -1019,15 +1015,15 @@ begin
   FSplitHorz:= Value;
   if FSplitHorz then
   begin
-    EditorSlave.Align:= alTop;
-    Splitter2.Align:= alTop;
-    EditorSlave.Top:= 0;
+    EditorSlave.Align:= alBottom;
+    Splitter2.Align:= alBottom;
+    Splitter2.Top:= 0;
   end
   else
   begin
-    EditorSlave.Align:= alLeft;
-    Splitter2.Align:= alLeft;
-    EditorSlave.Left:= 0;
+    EditorSlave.Align:= alRight;
+    Splitter2.Align:= alRight;
+    Splitter2.Left:= 0;
   end;
   SplitPos:= SplitPos;
 end;
@@ -1078,17 +1074,17 @@ end;
 
 procedure TEditorFrame.TBXItemSplit20_80Click(Sender: TObject);
 begin
-  SplitPos:= 20.0;
+  SplitPos:= 80.0;
 end;
 
 procedure TEditorFrame.TBXItemSplit30_70Click(Sender: TObject);
 begin
-  SplitPos:= 30.0;
+  SplitPos:= 70.0;
 end;
 
 procedure TEditorFrame.TBXItemSplit40_60Click(Sender: TObject);
 begin
-  SplitPos:= 40.0;
+  SplitPos:= 60.0;
 end;
 
 procedure TEditorFrame.TBXItemSplit50_50Click(Sender: TObject);
@@ -1098,17 +1094,17 @@ end;
 
 procedure TEditorFrame.TBXItemSplit60_40Click(Sender: TObject);
 begin
-  SplitPos:= 60.0;
+  SplitPos:= 40.0;
 end;
 
 procedure TEditorFrame.TBXItemSplit70_30Click(Sender: TObject);
 begin
-  SplitPos:= 70.0;
+  SplitPos:= 30.0;
 end;
 
 procedure TEditorFrame.TBXItemSplit80_20Click(Sender: TObject);
 begin
-  SplitPos:= 80.0;
+  SplitPos:= 20.0;
 end;
 
 procedure TEditorFrame.SplitterDblClick(Sender: TObject);

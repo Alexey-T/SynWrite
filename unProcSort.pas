@@ -10,6 +10,10 @@ type
   TSynDedupMode = (dedupAll, dedupAdjacent);
   TSynTrimMode = (cTrimLead, cTrimTrail, cTrimAll, cTrimDups);
 
+function DoListCommand_Reverse(
+  L: TTntStringList): boolean;
+function DoListCommand_Shuffle(
+  L: TTntStringList): boolean;
 function DoListCommand_RemoveBlanks(
   L: TTntStringList): Integer;
 function DoListCommand_RemoveDupBlanks(
@@ -492,6 +496,45 @@ begin
       L[i]:= S;
       Inc(Result);
     end;
+  end;
+end;
+
+
+function DoListCommand_Reverse(
+  L: TTntStringList): boolean;
+var
+  i: Integer;
+  LRes: TTntStringList;
+begin
+  Result:= L.Count>1;
+  LRes:= TTntStringList.Create;
+  try
+    for i:= L.Count-1 downto 0 do
+      LRes.Add(L[i]);
+    L.Assign(LRes);
+  finally
+    FreeAndNil(LRes);
+  end;
+end;
+
+function DoListCommand_Shuffle(
+  L: TTntStringList): boolean;
+var
+  i, N: Integer;
+  LRes: TTntStringList;
+begin
+  Result:= L.Count>1;
+  LRes:= TTntStringList.Create;
+  try
+    for i:= L.Count-1 downto 0 do
+    begin
+      N:= Random(L.Count);
+      LRes.Add(L[N]);
+      L.Delete(N);
+    end;
+    L.Assign(LRes);
+  finally
+    FreeAndNil(LRes);
   end;
 end;
 
