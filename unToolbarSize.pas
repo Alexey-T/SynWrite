@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls,
-  TntForms, TntStdCtrls, Spin;
+  TntForms, TntStdCtrls, Spin, DKLang;
 
 type
   TfmToolbarSize = class(TTntForm)
@@ -18,6 +18,7 @@ type
     edSizeY: TSpinEdit;
     bOk: TTntButton;
     bCan: TTntButton;
+    DKLanguageController1: TDKLanguageController;
   private
     { Private declarations }
   public

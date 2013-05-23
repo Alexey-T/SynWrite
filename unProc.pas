@@ -14,8 +14,10 @@ uses
   ecStrUtils,
   ecMemoStrings,
   ecSyntDlg,
-  ecSyntTree;
+  ecSyntTree,
+  TbxGraphics;
 
+function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
 function EditorWordLength(Ed: TSyntaxMemo): Integer;
 function DoInputFilename(const dkmsg: string; var S: Widestring): boolean;
 function DoInputString(const dkmsg: string; var S: Widestring): boolean;
@@ -1537,6 +1539,31 @@ begin
     if not IsWordChar(S[N]) then Break;
     Inc(Result);
   until false;
+end;
+
+
+function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
+var
+  FileHandle: THandle;
+  HandleStream: THandleStream;
+  Image: TDib32;
+begin
+  Result:= false;
+  FileHandle:= CreateFileW(PWideChar(Widestring(fn)), GENERIC_READ, FILE_SHARE_READ,
+    nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  if FileHandle<>INVALID_HANDLE_VALUE then
+  begin
+    HandleStream:= THandleStream.Create(FileHandle);
+    Image:= TDib32.Create;
+    try
+      LoadPNGGraphic(HandleStream, Image);
+      ImageList.Add(Image);
+      Result:= true;
+    finally
+      FreeAndNil(HandleStream);
+      FreeAndNil(Image);
+    end;
+  end;
 end;
 
 

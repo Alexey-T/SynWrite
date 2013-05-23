@@ -162,11 +162,12 @@ begin
               @Text[StrtPos], L2,
               PWideChar(FFindText), L2) = 2;
     if Result then mLen:= L2;
-  end;
 
-  if Result and (ftWholeWordOnly in Flags) then
-    Result:= ((StrtPos <= 1) or not IsWordChar(Text[StrtPos - 1]) or not IsWordChar(Text[StrtPos])) and
-              ((StrtPos + L2 > Length(Text)) or not IsWordChar(Text[StrtPos + L2]) or not IsWordChar(Text[StrtPos + L2-1]));
+    //check "Whole words" only for non-regex search
+    if Result and (ftWholeWordOnly in Flags) then
+      Result:= ((StrtPos <= 1) or not IsWordChar(Text[StrtPos - 1]) or not IsWordChar(Text[StrtPos])) and
+                ((StrtPos + L2 > Length(Text)) or not IsWordChar(Text[StrtPos + L2]) or not IsWordChar(Text[StrtPos + L2-1]));
+  end;
 end;
 
 

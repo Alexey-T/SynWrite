@@ -6,10 +6,12 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, TntStdCtrls, ImgList, ExtDlgs, ExtCtrls,
   TntForms,
-  PngImage;
+  PngImage, DKLang;
 
-const
-  MsgIcoCannotSave = 'Can''t save icon as png';
+var
+  MsgIcoCannotSave: Widestring = 'Can''t save icon as png';
+  MsgIcoBadSize: Widestring = 'Bad size (%dx%d) of image "%s"';
+  MsgIcoBadDLL: Widestring = 'No icons in file "%s"';
 
 type
   TfmToolbarIcon = class(TTntForm)
@@ -20,7 +22,6 @@ type
     bOk: TTntButton;
     bCan: TTntButton;
     ListBox1: TListBox;
-    Label2: TTntLabel;
     ImageList32: TImageList;
     ImageList16: TImageList;
     OpenDialogDLL: TOpenDialog;
@@ -28,6 +29,7 @@ type
     Image1: TImage;
     LabelErr: TTntLabel;
     btnShell32: TTntButton;
+    DKLanguageController1: TDKLanguageController;
     procedure ListBox1MeasureItem(Control: TWinControl; Index: Integer;
       var Height: Integer);
     procedure ListBox1DrawItem(Control: TWinControl; Index: Integer;
@@ -42,17 +44,13 @@ type
     FFileNameDLL: string;
     FFileNamePNG: string;
     procedure OpnFile(const fn: string);
-    procedure Err(const Msg: string);
+    procedure MsgError(const Msg: Widestring);
   public
     { Public declarations }
     FImage: TPngObject;
     FSizeX,
     FSizeY: integer;
   end;
-
-var
-  MsgIcoBadSize: Widestring = 'Bad size (%dx%d) of image "%s"';
-  MsgIcoBadDLL: Widestring = 'No icons in file "%s"';
 
 implementation
 
@@ -90,7 +88,7 @@ begin
   end;
 end;
 
-procedure TfmToolbarIcon.Err(const Msg: string);
+procedure TfmToolbarIcon.MsgError(const Msg: Widestring);
 begin
   LabelErr.Caption:= Msg;
   LabelErr.Visible:= true;
@@ -138,7 +136,7 @@ begin
     LoadImageListFromDLL(ImageList16, ImageList32, FFileNameDLL);
     if ImageList32.Count=0 then
     begin
-      Err(Format(MsgIcoBadDLL, [ExtractFileName(FFileNameDLL)]));
+      MsgError(WideFormat(MsgIcoBadDLL, [ExtractFileName(FFileNameDLL)]));
       Exit
     end;
     for i:= 0 to ImageList32.Count-1 do
@@ -153,7 +151,7 @@ begin
       if (Picture.Width<>FSizeX) or
         (Picture.Height<>FSizeY) then
       begin
-        Err(Format(MsgIcoBadSize,
+        MsgError(WideFormat(MsgIcoBadSize,
           [Picture.Width, Picture.Height, ExtractFileName(FFileNamePNG)]));
         Exit;  
       end;
@@ -162,6 +160,10 @@ end;
 
 procedure TfmToolbarIcon.FormShow(Sender: TObject);
 begin
+  MsgIcoCannotSave:= DKLangConstW('zMIcoCantsave');
+  MsgIcoBadSize:= DKLangConstW('zMIcoBadsize');
+  MsgIcoBadDLL:= DKLangConstW('zMIcoBadDll');
+
   if (FSizeX=0) or (FSizeY=0) then
     raise Exception.Create('Size not set');
 
@@ -179,10 +181,13 @@ begin
   DeleteFile(fn_png);
 
   if btnDLL.Checked then
-    SaveIconFromDllToPng(FFileNameDLL, Listbox1.ItemIndex, FSizeX=16, fn_png)
+  begin
+    if Listbox1.ItemIndex>=0 then
+      SaveIconFromDllToPng(FFileNameDLL, Listbox1.ItemIndex, FSizeX=16, fn_png);
+  end
   else
-    CopyFile(PChar(FFileNamePNG), PChar(fn_png), false);
-    
+    CopyFile(PChar(string(FFileNamePNG)), PChar(string(fn_png)), false);
+
   if FileExists(fn_png) then
   begin
     FImage:= TPngObject.Create;
@@ -191,7 +196,8 @@ begin
     ModalResult:= mrOk;
   end
   else
-    Application.MessageBox(MsgIcoCannotSave, 'SynWrite', mb_ok or mb_iconerror);
+    //MessageBoxW(Handle, PWChar(Widestring(MsgIcoCannotSave)), 'SynWrite', mb_ok or mb_iconerror);
+    MsgError(MsgIcoCannotSave);
 end;
 
 procedure TfmToolbarIcon.FormCreate(Sender: TObject);
@@ -201,7 +207,10 @@ end;
 
 procedure TfmToolbarIcon.btnShell32Click(Sender: TObject);
 begin
-  OpnFile(SExpandVars('%windir%\system32\shell32.dll'));
+  if btnDll.Checked then
+    OpnFile(SExpandVars('%windir%\system32\shell32.dll'))
+  else
+    MessageBeep(mb_iconwarning);  
 end;
 
 end.

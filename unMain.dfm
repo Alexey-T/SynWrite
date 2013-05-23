@@ -368,6 +368,36 @@ object fmMain: TfmMain
         end
       end
     end
+    object tbUser1: TTBXToolbar
+      Left = 576
+      Top = 0
+      DockPos = 576
+      Images = ImageListUser1
+      TabOrder = 2
+      Visible = False
+      OnMove = tbViewMove
+      Caption = '1'
+    end
+    object tbUser2: TTBXToolbar
+      Left = 609
+      Top = 0
+      DockPos = 608
+      Images = ImageListUser2
+      TabOrder = 3
+      Visible = False
+      OnMove = tbViewMove
+      Caption = '2'
+    end
+    object tbUser3: TTBXToolbar
+      Left = 642
+      Top = 0
+      DockPos = 640
+      Images = ImageListUser3
+      TabOrder = 4
+      Visible = False
+      OnMove = tbViewMove
+      Caption = '3'
+    end
   end
   object TBXDockLeft: TTBXDock
     Left = 0
@@ -424,14 +454,18 @@ object fmMain: TfmMain
       end
       object TBXItemVComm: TTBXItem
         Tag = 560
-        Action = ecCommentLines
+        ImageIndex = 21
+        OnClick = TBXItemVCommClick
         OnSelect = ButtonOnSelect
+        Caption = 'Comment lines'
         Hint = 'Comment selected lines'
       end
       object TBXItemVUncom: TTBXItem
         Tag = 561
-        Action = ecUnCommentLines
+        ImageIndex = 22
+        OnClick = TBXItemVUncomClick
         OnSelect = ButtonOnSelect
+        Caption = 'Uncomment lines'
         Hint = 'Uncomment selected lines'
       end
       object TBXSeparatorItem10: TTBXSeparatorItem
@@ -623,6 +657,7 @@ object fmMain: TfmMain
       DockedHeight = 135
       DockPos = 0
       TabOrder = 1
+      Visible = False
       OnContextPopup = plOutContextPopup
       OnMove = tbViewMove
       OnResize = plOutResize
@@ -760,6 +795,7 @@ object fmMain: TfmMain
       ParentFont = False
       TabOrder = 0
       OnContextPopup = plClipContextPopup
+      OnMove = tbViewMove
       OnResize = plClipResize
       OnVisibleChanged = plClipVisibleChanged
       object tbClipMap: TTBXToolbar
@@ -2232,6 +2268,25 @@ object fmMain: TfmMain
             Caption = 'Quick search'
             Hint = 'Toggle Quick Search toolbar'
           end
+          object TBXSeparatorItem97: TTBXSeparatorItem
+            Caption = ''
+            Hint = ''
+          end
+          object TBXItemTUser1: TTBXItem
+            OnClick = TBXItemTUser1Click
+            Caption = '1'
+            Hint = ''
+          end
+          object TBXItemTUser2: TTBXItem
+            OnClick = TBXItemTUser2Click
+            Caption = '2'
+            Hint = ''
+          end
+          object TBXItemTUser3: TTBXItem
+            OnClick = TBXItemTUser3Click
+            Caption = '3'
+            Hint = ''
+          end
         end
         object TBXSeparatorItem25: TTBXSeparatorItem
           Caption = ''
@@ -2473,6 +2528,25 @@ object fmMain: TfmMain
           OnSelect = ButtonOnSelect
           Caption = 'E&xplorer integration...'
           Hint = 'Customize integration with Windows Explorer'
+        end
+        object TBXSubmenuToolbars: TTBXSubmenuItem
+          Caption = 'Customize toolbars'
+          Hint = ''
+          object TBXItemOToolbar1: TTBXItem
+            OnClick = TBXItemOToolbar1Click
+            Caption = '1'
+            Hint = ''
+          end
+          object TBXItemOToolbar2: TTBXItem
+            OnClick = TBXItemOToolbar2Click
+            Caption = '2'
+            Hint = ''
+          end
+          object TBXItemOToolbar3: TTBXItem
+            OnClick = TBXItemOToolbar3Click
+            Caption = '3'
+            Hint = ''
+          end
         end
         object TBXSeparatorItem38: TTBXSeparatorItem
           Caption = ''
@@ -9342,7 +9416,7 @@ object fmMain: TfmMain
       item
         Command = 895
         KeyStrokes = <>
-        Category = 'Sorting'
+        Category = 'Miscellaneous'
         DisplayName = 'Reverse lines'
       end
       item
@@ -9360,7 +9434,7 @@ object fmMain: TfmMain
       item
         Command = 898
         KeyStrokes = <>
-        Category = 'Sorting'
+        Category = 'Miscellaneous'
         DisplayName = 'Shuffle lines'
       end
       item
@@ -15989,7 +16063,7 @@ object fmMain: TfmMain
     Left = 609
     Top = 233
     LangData = {
-      0600666D4D61696E0001BC0300000A00544258446F636B546F70000006007462
+      0600666D4D61696E0001CA0300000A00544258446F636B546F70000006007462
       46696C650101000000B5020000070043617074696F6E000E005442584974656D
       546F6F6C4E65770102000000B6020000070043617074696F6EB7020000040048
       696E740016005442585375626D656E754974656D546F6F6C4F70656E01020000
@@ -17790,7 +17864,20 @@ object fmMain: TfmMain
       0011005442584974656D466F6C644C6576656C34010100000074090000070043
       617074696F6E0011005442584974656D466F6C644C6576656C33010100000075
       090000070043617074696F6E0011005442584974656D466F6C644C6576656C32
-      010100000076090000070043617074696F6E00}
+      010100000076090000070043617074696F6E0007007462557365723101010000
+      0087090000070043617074696F6E000700746255736572320101000000880900
+      00070043617074696F6E00070074625573657233010100000089090000070043
+      617074696F6E001200544258536570617261746F724974656D393700000D0054
+      42584974656D545573657233010100000093090000070043617074696F6E000D
+      005442584974656D545573657232010100000092090000070043617074696F6E
+      000D005442584974656D54557365723101010000009109000007004361707469
+      6F6E0012005442585375626D656E75546F6F6C6261727301010000008D090000
+      070043617074696F6E0010005442584974656D4F546F6F6C6261723301010000
+      008E090000070043617074696F6E0010005442584974656D4F546F6F6C626172
+      3201010000008F090000070043617074696F6E0010005442584974656D4F546F
+      6F6C62617231010100000090090000070043617074696F6E000E00496D616765
+      4C697374557365723100000E00496D6167654C697374557365723200000E0049
+      6D6167654C69737455736572330000}
   end
   object TimerHint: TTimer
     Enabled = False
@@ -19720,5 +19807,17 @@ object fmMain: TfmMain
     OnTimer = TimerTreeTimer
     Left = 465
     Top = 362
+  end
+  object ImageListUser1: TTBXImageList
+    Left = 257
+    Top = 142
+  end
+  object ImageListUser2: TTBXImageList
+    Left = 281
+    Top = 142
+  end
+  object ImageListUser3: TTBXImageList
+    Left = 305
+    Top = 142
   end
 end

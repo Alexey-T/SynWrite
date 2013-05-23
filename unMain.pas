@@ -6,6 +6,7 @@
 //{$define TabOrder} //Show tabs switch-order in caption
 //{$define P} //Disable projects
 //SPELL word must be defined in project options (if spell lib available)
+{$Q-} //Need to disable to avoid EIntOveflow in TabCtrl_GetXRect
 
 unit unMain;
 
@@ -13,7 +14,7 @@ interface
 
 uses
   Windows, SysUtils, Messages, Controls, StdCtrls, ComCtrls, Classes, Menus, Forms,
-  ActnList, Dialogs, ImgList, ExtCtrls, Graphics,
+  ActnList, Dialogs, ImgList, ExtCtrls, Graphics, IniFiles,
   TntForms, TntClasses,
   Gauges,
 
@@ -55,6 +56,9 @@ const
   cTabColors = 10; //number of misc tab colors (user-defined)
   cFixedLeftTabs = 3; //number of fixed tabs on left panel
   cMaxTreeLen = 400; //find in files result: max node length
+
+type
+  TSynDock = (sdockTop, sdockLeft, sdockRight, sdockBottom);
 
 type
   TSynLineCmd = (
@@ -1119,6 +1123,20 @@ type
     TBXItemFoldLevel4: TTBXItem;
     TBXItemFoldLevel3: TTBXItem;
     TBXItemFoldLevel2: TTBXItem;
+    tbUser1: TTBXToolbar;
+    tbUser2: TTBXToolbar;
+    tbUser3: TTBXToolbar;
+    TBXSeparatorItem97: TTBXSeparatorItem;
+    TBXItemTUser3: TTBXItem;
+    TBXItemTUser2: TTBXItem;
+    TBXItemTUser1: TTBXItem;
+    TBXSubmenuToolbars: TTBXSubmenuItem;
+    TBXItemOToolbar3: TTBXItem;
+    TBXItemOToolbar2: TTBXItem;
+    TBXItemOToolbar1: TTBXItem;
+    ImageListUser1: TTBXImageList;
+    ImageListUser2: TTBXImageList;
+    ImageListUser3: TTBXImageList;
     procedure fOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1836,6 +1854,14 @@ type
     procedure TBXItemFoldLevel7Click(Sender: TObject);
     procedure TBXItemFoldLevel8Click(Sender: TObject);
     procedure TBXItemFoldLevel9Click(Sender: TObject);
+    procedure TBXItemVCommClick(Sender: TObject);
+    procedure TBXItemVUncomClick(Sender: TObject);
+    procedure TBXItemTUser1Click(Sender: TObject);
+    procedure TBXItemTUser2Click(Sender: TObject);
+    procedure TBXItemTUser3Click(Sender: TObject);
+    procedure TBXItemOToolbar1Click(Sender: TObject);
+    procedure TBXItemOToolbar2Click(Sender: TObject);
+    procedure TBXItemOToolbar3Click(Sender: TObject);
 
   private
     cStatLine,
@@ -1846,7 +1872,10 @@ type
     cStatTLines,
     cStatTChars,
     cStatFSize,
-    cStatFDate: Widestring;
+    cStatFDate,
+    cStatCarets,
+    cStatCaretsTopLn,
+    cStatCaretsBotLn: Widestring;
 
     FInitialDir: Widestring;
     FLastOnContinueCheck: DWORD;
@@ -2060,6 +2089,8 @@ type
     function DoAutoCloseTag: boolean;
     procedure UpdateOutFromList(List: TWideStringList);
     function SStatusText: Widestring;
+    function SStatusHint(state: TSelState): Widestring;
+    function SStatusCharInfo: Widestring;
     procedure HandleToolOutput(const ft: Widestring; NTool: integer);
     procedure GetColorRange(var NStart, NEnd: integer; var NColor: integer);
     procedure UpdateColorHint(AClearHint: boolean = true);
@@ -2250,6 +2281,7 @@ type
     function SynLexLib: string;
     function SynPluginIni(const SCaption: string): string;
     function SynIni: string;
+    function SynToolbarsIni: string;
     function SynFavIni: string;
     function SynIniDir: string;
     function SynStylesIni: string;
@@ -2336,8 +2368,7 @@ type
     procedure SaveMacros;
     procedure SavePrintOptions;
     procedure SaveLexLib;
-    procedure SaveTBVis;
-    procedure SaveTBPos;
+    procedure SaveToolbarsProps;
     function ReadTCHist: Widestring;
 
     procedure InitStyleLists;
@@ -2370,6 +2401,19 @@ type
     procedure UpdateFormEnabled(En: boolean);
     procedure DoTreeLevel(NLevel: Integer);
     procedure DoFoldLevel(NLevel: Integer);
+    procedure DoToolbarCommentUncomment(AComment: boolean);
+    procedure LoadToolbarProp(Toolbar: TTbxToolbar; Ini: TCustomIniFile; const Id: string);
+    procedure SaveToolbarProp(Toolbar: TTbxToolbar; Ini: TCustomIniFile; const Id: string);
+    procedure SavePanelProp(Panel: TTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
+    procedure LoadPanelProp(Panel: TTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
+    procedure LoadToolbarContent(Toolbar: TTbxToolbar; NIndex: Integer; AutoShow: boolean = false);
+    //function DockTypeToName(Typ: TSynDock): string;
+    function DoShowCmdList: Integer;
+    function DoShowCmdListStr: string;
+    function DoShowCmdHint(Cmd: string): Widestring;
+    procedure DoCustomizeToolbar(NIndex: Integer);
+    procedure ToolbarUserClick(Sender: TObject);
+    procedure DoExtToolsList(L: TTntStringList);
     //end of private
 
   protected
@@ -2387,6 +2431,8 @@ type
     fmProgress: TfmProgress;
 
     //opt
+    opCaretType: integer;
+    opShowCurrentColumn: boolean;
     opMaxTreeMatches: integer;
     opCaretsEnabled: boolean;
     opCaretsIndicator: integer;
@@ -2676,12 +2722,12 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.4.350';
+  cSynVer = '5.5.415';
 
 implementation
 
 uses
-  IniFiles, Clipbrd, Registry, CommCtrl,
+  Clipbrd, Registry, CommCtrl,
   StrUtils, Types, Math,
   TntSysUtils, TntClipbrd, TntFileCtrl,
   ShellApi,
@@ -2713,7 +2759,7 @@ uses
   unSetup, unAb, unEnc, unTool, unSR2, unExtr, unShell, unInsTxt,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
-  unCmdList, unProjList;
+  unCmdList, unProjList, unToolbarProp;
 
 {$R *.dfm}
 {$R Cur.res}
@@ -3331,6 +3377,39 @@ begin
   Result:= PagesToFrame(PageControl, PageControl.ActivePageIndex);
 end;
 
+procedure EditorCaretUpdate(Ed: TSyntaxMemo; Opt: Integer);
+begin
+  case Opt of
+    0:
+      begin
+        Ed.Caret.Insert.Width:= -2; //negative default value
+        Ed.Caret.Insert.Height:= 100;
+      end;
+    1:
+      begin
+        Ed.Caret.Insert.Width:= 50;
+        Ed.Caret.Insert.Height:= 100;
+      end;
+    2:
+      begin
+        Ed.Caret.Insert.Width:= 100;
+        Ed.Caret.Insert.Height:= 100;
+      end;
+    3:
+      begin
+        Ed.Caret.Insert.Width:= 100;
+        Ed.Caret.Insert.Height:= 20;
+      end;
+    4:
+      begin
+        Ed.Caret.Insert.Width:= 100;
+        Ed.Caret.Insert.Height:= 50;
+      end;
+    else
+      raise Exception.Create('Unknown caret type');  
+  end;
+end;
+
 function TfmMain.CreateFrame: TEditorFrame;
 begin
   Result:= TEditorFrame.Create(Self);
@@ -3350,6 +3429,9 @@ begin
   Result.CaretsGutterBand:= opCaretsGutterBand;
   Result.CaretsGutterColor:= opColorCaretsGutter;
   Result.CaretsIndicator:= opCaretsIndicator;
+
+  EditorCaretUpdate(Result.EditorMaster, opCaretType);
+  EditorCaretUpdate(Result.EditorSlave, opCaretType);
 
   PropsManager.Add(Result.EditorMaster);
   PropsManager.Add(Result.EditorSlave);
@@ -3658,10 +3740,7 @@ end;
 
 procedure TfmMain.UpdateStatusBar;
 var
-  c: WideChar;
-  s: string;
-  ss: Widestring;
-  bk, ro, sel, sel2: boolean;
+  bk, ro, sel, sel2, en_lex: boolean;
   ed: TSyntaxMemo;
   frame: TEditorFrame;
 begin
@@ -3677,6 +3756,7 @@ begin
   ro:= ed.ReadOnly;
   sel:= ed.SelLength>0;
   sel2:= ed.HaveSelection;
+  en_lex:= SyntaxManager.CurrentLexer<>nil;
 
   if frame.Modified then
     fSave.ImageIndex:= 1
@@ -3690,6 +3770,18 @@ begin
   TbxItemTEdit.Checked:= tbEdit.Visible;
   TbxItemTView.Checked:= tbView.Visible;
   TbxItemTQs.Checked:= tbQs.Visible;
+
+  TbxItemTUser1.Checked:= tbUser1.Visible;
+  TbxItemTUser2.Checked:= tbUser2.Visible;
+  TbxItemTUser3.Checked:= tbUser3.Visible;
+  TbxItemTUser1.Visible:= tbUser1.Items.Count>0;
+  TbxItemTUser2.Visible:= tbUser2.Items.Count>0;
+  TbxItemTUser3.Visible:= tbUser3.Items.Count>0;
+  {
+  TbxItemTUser1.Caption:= tbUser1.Caption;
+  TbxItemTUser2.Caption:= tbUser2.Caption;
+  TbxItemTUser3.Caption:= tbUser3.Caption;
+  }
 
   ecReadOnly.Checked:= ro;
   ecWrap.Checked:= ed.WordWrap;
@@ -3728,14 +3820,14 @@ begin
       Status.Panels[ccWrap].ImageIndex:= 4;
 
   UpdateStatusbarEnc(frame);
-  UpdateStatusbarLineEnds;    
+  UpdateStatusbarLineEnds;
 
   fSave.Enabled:= not ro;
   fNew.Enabled:= not Quickview;
   fClose.Enabled:= not Quickview;
   fOpen.Enabled:= not Quickview;
   fNewWin.Enabled:= SynExe;
-  fCustomizeHi.Enabled:= SyntaxManager.CurrentLexer<>nil;
+  fCustomizeHi.Enabled:= en_lex;
   ecFullScr.Enabled:= SynExe;
   ecOnTop.Enabled:= SynExe;
 
@@ -3768,6 +3860,10 @@ begin
   ecDedupAll.Enabled:= ecSortDialog.Enabled;
   ecDedupAdjacent.Enabled:= ecSortDialog.Enabled;
 
+  TBXItemVComm.Enabled:= (ed.Lines.Count>0) and not ro and en_lex;
+  TBXItemVUncom.Enabled:= TBXItemVComm.Enabled;
+  TbxSubmenuCase.Enabled:= sel and not ro;
+
   ecSpellLive.Checked:= Frame.SpellLive;
   ecSyncV.Enabled:= PageControl2.Visible;
   ecSyncH.Enabled:= ecSyncV.Enabled;
@@ -3787,8 +3883,6 @@ begin
   ecBkPaste.Enabled:= bk and not ro;
   TBXItemBkGoto.Enabled:= bk;
 
-  TbxSubmenuCase.Enabled:= sel and not ro;
-
   with ed do
   begin
     SHint[cc0]:= SStatusText;
@@ -3801,25 +3895,39 @@ begin
     SHint[ccZoom]:= IntToStr(Zoom) + '%';
 
     if opChInf and (TextLength>0) and (not NoCursor(ed)) then
-    begin
-      c:= Lines.Chars[CaretStrPos + 1];
-      if Lines.TextCoding <> tcAnsi then begin
-        //Unicode
-        if Ord(c)<32 then ss:= '' else ss:= '"' + WideString(c) + '" ';
-        ss:= ss+ Format('#%d 0x%x', [ord(c), ord(c)]);
-        SHint[ccChar]:= ss;
-      end
-      else begin
-        //Codepage
-        s:= UnicodeToAnsiCP(WideString(c), Lines.Codepage);
-        if s = '' then s:= #0;
-        if Ord(c)<32 then ss:= '' else ss:= '"' + WideString(c) + '" ';
-        ss:= ss+ Format('#%d 0x%2.2x', [ord(s[1]), ord(s[1])]);
-        SHint[ccChar]:= ss;
-      end;
-    end
+      SHint[ccChar]:= SStatusCharInfo
     else
       SHint[ccChar]:= '';
+  end;
+end;
+
+function TfmMain.SStatusCharInfo: Widestring;
+var
+  ch: Widechar;
+  sAnsi: string;
+begin
+  Result:= '';
+  with CurrentEditor do
+  if TextLength>0 then
+  begin
+    ch:= Lines.Chars[CaretStrPos+1];
+    if Ord(ch)<32 then
+      Result:= ''
+    else
+      Result:= '"' + WideString(ch) + '" ';
+      
+    if Lines.TextCoding <> tcAnsi then
+    begin
+      //Unicode encoding active
+      Result:= Result + Format('#%d 0x%x', [Ord(ch), Ord(ch)]);
+    end
+    else
+    begin
+      //Some codepage active
+      sAnsi:= UnicodeToAnsiCP(WideString(ch), Lines.Codepage);
+      if sAnsi='' then sAnsi:= #0;
+      Result:= Result + Format('#%d 0x%2.2x', [Ord(sAnsi[1]), Ord(sAnsi[1])]);
+    end;
   end;
 end;
 
@@ -3849,10 +3957,9 @@ const
 
 procedure TfmMain.LoadIni;
 var
-  p: TPoint;
   i, NCount: integer;
   s: Widestring;
-  f: TMemIniFile;
+  ini: TMemIniFile;
 const
   cTp: array[boolean] of TTabPosition = (tpTop, tpBottom);
 begin
@@ -3867,16 +3974,24 @@ begin
     end;
 
   //get all options from Syn.ini
-  f:= TMemIniFile.Create(SynIni);
-  with f do
+  ini:= TMemIniFile.Create(SynIni);
+  with ini do
   try
-    //TB
+    //toolbars props
     if not QuickView then
     begin
-      tbFile.Visible:= ReadBool('Menu', 'tbFileVis', true);
-      tbEdit.Visible:= ReadBool('Menu', 'tbEditVis', true);
-      tbView.Visible:= ReadBool('Menu', 'tbViewVis', true);
-      tbQs.Visible:= ReadBool('Menu', 'tbQsVis', true);
+      LoadToolbarProp(tbFile, ini, 'File');
+      LoadToolbarProp(tbEdit, ini, 'Edit');
+      LoadToolbarProp(tbView, ini, 'View');
+      LoadToolbarProp(tbQs, ini, 'Qs');
+
+      LoadToolbarProp(tbUser1, ini, 'U1');
+      LoadToolbarProp(tbUser2, ini, 'U2');
+      LoadToolbarProp(tbUser3, ini, 'U3');
+
+      LoadToolbarContent(tbUser1, 1);
+      LoadToolbarContent(tbUser2, 2);
+      LoadToolbarContent(tbUser3, 3);
     end
     else
     begin
@@ -4059,6 +4174,8 @@ begin
     opMapZoom:= ReadInteger('View', 'MapZoom', 30);
     opMicroMap:= ReadBool('View', 'MicroMap', false);
     opColorMap:= ReadInteger('View', 'MapColor', clSkyBlue);
+    opShowCurrentColumn:= ReadBool('View', 'CurrCol', false);
+    opCaretType:= ReadInteger('View', 'CarWidth', 0);
 
     opBigSize:= ReadInteger('Setup', 'BigSize', 4);
     opBkUndo:= ReadBool('Setup', 'BkUndo', false);
@@ -4149,74 +4266,16 @@ begin
       RecentColorsStr:= ReadString('MRU', 'Col', '');
     end;
 
-    //toolbars
-    tbFile.CurrentDock:= (FindComponent(ReadString('Menu','tbFile','TBXDockTop')) as TTBDock);
-    tbFile.DockPos:= ReadInteger('Menu','tbFilePos',0);
-    tbFile.DockRow:= ReadInteger('Menu','tbFileRow',0);
-    tbEdit.CurrentDock:= (FindComponent(ReadString('Menu','tbEdit','TBXDockTop')) as TTBDock);
-    tbEdit.DockPos:= ReadInteger('Menu','tbEditPos',tbEdit.DockPos);
-    tbEdit.DockRow:= ReadInteger('Menu','tbEditRow',0);
-    tbView.CurrentDock:= (FindComponent(ReadString('Menu','tbView','TBXDockLeft')) as TTBDock);
-    tbView.DockPos:= ReadInteger('Menu','tbViewPos',0);
-    tbView.DockRow:= ReadInteger('Menu','tbViewRow',0);
-    tbQs.CurrentDock:= (FindComponent(ReadString('Menu','tbQs','TBXDockBottom')) as TTBDock);
-    tbQs.DockPos:= ReadInteger('Menu','tbQsPos',tbQs.DockPos);
-    tbQs.DockRow:= ReadInteger('Menu','tbQsRow',tbQs.DockRow);
-
-    with plTree do
-    begin
-      CurrentDock:= (Self.FindComponent(ReadString('plTree', 'Dock', 'TBXDockLeft')) as TTBDock);
-      DockedWidth:= ReadInteger('plTree', 'W', DockedWidth);
-      DockPos:= ReadInteger('plTree', 'DPos', 0);
-      DockRow:= ReadInteger('plTree', 'DRow', 0);
-      if not QuickView then
-        Visible:= ReadBool('plTree', 'Vis', true);
-      Floating:= ReadBool('plTree', 'Fl', false);
-      FloatingWidth:= ReadInteger('plTree', 'FlW', 170);
-      FloatingHeight:= ReadInteger('plTree', 'FlH', 300);
-      p.X:= ReadInteger('plTree', 'FlX', 100);
-      p.Y:= ReadInteger('plTree', 'FlY', 100);
-      FloatingPosition:= p;
-      FTabLeft:= TLeftTab(ReadInteger('plTree', 'Tab', 0));
-    end;
-
-    with plOut do
-    begin
-      CurrentDock:= (Self.FindComponent(ReadString('plOut','Dock','TBXDockBottom')) as TTBDock);
-      DockPos:= ReadInteger('plOut','DPos',0);
-      DockRow:= ReadInteger('plOut','DRow',0);
-      DockedWidth:= ReadInteger('plOut','DW',DockedWidth);
-      DockedHeight:= ReadInteger('plOut','DH',DockedHeight);
-      Visible:= ReadBool('plOut', 'Vis', false);
-      FOutVisible:= Visible;
-      Floating:= ReadBool('plOut', 'Fl', false);
-      FloatingWidth:= ReadInteger('plOut', 'FlW', 800);
-      FloatingHeight:= ReadInteger('plOut', 'FlH', 100);
-      p.X:= ReadInteger('plOut', 'FlX', 100);
-      p.Y:= ReadInteger('plOut', 'FlY', 600);
-      FloatingPosition:= p;
-    end;
-
-    with plClip do
-    begin
-      CurrentDock:= (Self.FindComponent(ReadString('plClip','Dock','TBXDockRight')) as TTBDock);
-      DockedWidth:= ReadInteger('plClip','DW',DockedWidth);
-      DockPos:= ReadInteger('plClip','DPos',DockPos);
-      DockRow:= ReadInteger('plClip','DRow',DockRow);
-      if not QuickView then
-        Visible:= ReadBool('plClip', 'Vis', true);
-      Floating:= ReadBool('plClip', 'Fl', false);
-      FloatingWidth:= ReadInteger('plClip', 'FlW', 150);
-      FloatingHeight:= ReadInteger('plClip', 'FlH', 300);
-      p.X:= ReadInteger('plClip', 'FlX', 100);
-      p.Y:= ReadInteger('plClip', 'FlY', 600);
-      FloatingPosition:= p;
-      FTabRight:= TRightTab(ReadInteger('plClip', 'Tab', 0));
-    end;
+    LoadPanelProp(plTree, Ini, 'Tree');
+    LoadPanelProp(plOut, Ini, 'Out');
+    LoadPanelProp(plClip, Ini, 'Clip');
+    FOutVisible:= plOut.Visible;
+    FTabLeft:= TLeftTab(ReadInteger('plTree', 'Tab', 0));
+    FTabRight:= TRightTab(ReadInteger('plClip', 'Tab', 0));
 
     //opt
     ApplyDefaultFonts;
-    PropsManager.LoadProps(f);
+    PropsManager.LoadProps(ini);
     //always set KeepSelMode (override old value)
     with TemplateEditor do
     begin
@@ -4257,9 +4316,11 @@ procedure TfmMain.SaveIni2;
 const
   S: array[boolean] of string = ('False', 'True');
 var
+  Ini: TIniFile;
   i: integer;
 begin
-  with TIniFile.Create(SynIni) do
+  Ini:= TIniFile.Create(SynIni);
+  with Ini do
   try
     if TemplateEditor.Zoom <> orig_Zoom then
       WriteInteger('Template', 'Zoom', TemplateEditor.Zoom);
@@ -4321,84 +4382,19 @@ begin
       //save recent colors
       WriteString('MRU', 'Col', RecentColorsStr);
     end;
+
+    //save toolbars and panels
+    if not FullScr then
+      if FToolbarMoved then
+      begin
+        SaveToolbarsProps;
+        SavePanelProp(plTree, Ini, 'Tree');
+        SavePanelProp(plOut, Ini, 'Out');
+        SavePanelProp(plClip, Ini, 'Clip');
+      end;
   finally
     Free;
   end;
-
-  SaveTBPos;
-end;
-
-procedure TfmMain.SaveTBPos;
-begin
-  if FullScr then Exit;
-  if FToolbarMoved then
-    with TIniFile.Create(SynIni) do
-    try
-      if tbFile.CurrentDock<>nil then
-        WriteString('Menu', 'tbFile', tbFile.CurrentDock.Name);
-      WriteInteger('Menu', 'tbFilePos', tbFile.DockPos);
-      WriteInteger('Menu', 'tbFileRow', tbFile.DockRow);
-      if tbEdit.CurrentDock<>nil then
-        WriteString('Menu', 'tbEdit', tbEdit.CurrentDock.Name);
-      WriteInteger('Menu', 'tbEditPos', tbEdit.DockPos);
-      WriteInteger('Menu', 'tbEditRow', tbEdit.DockRow);
-      if tbView.CurrentDock<>nil then
-        WriteString('Menu', 'tbView', tbView.CurrentDock.Name);
-      WriteInteger('Menu', 'tbViewPos', tbView.DockPos);
-      WriteInteger('Menu', 'tbViewRow', tbView.DockRow);
-      if tbQs.CurrentDock<>nil then
-        WriteString('Menu', 'tbQs', tbQs.CurrentDock.Name);
-      WriteInteger('Menu', 'tbQsPos', tbQs.DockPos);
-      WriteInteger('Menu', 'tbQsRow', tbQs.DockRow);
-
-      with plTree do
-      begin
-        if CurrentDock<>nil then
-          WriteString('plTree', 'Dock', CurrentDock.Name);
-        WriteInteger('plTree', 'W', DockedWidth);
-        WriteInteger('plTree', 'DPos', DockPos);
-        WriteInteger('plTree', 'DRow', DockRow);
-        WriteBool('plTree', 'Vis', Visible);
-        WriteBool('plTree', 'Fl', Floating);
-        WriteInteger('plTree', 'FlW', FloatingWidth);
-        WriteInteger('plTree', 'FlH', FloatingHeight);
-        WriteInteger('plTree', 'FlX', FloatingPosition.X);
-        WriteInteger('plTree', 'FlY', FloatingPosition.Y);
-      end;
-
-      with plOut do
-      begin
-        if CurrentDock<>nil then
-          WriteString('plOut', 'Dock', CurrentDock.Name);
-        WriteInteger('plOut', 'DW', DockedWidth);
-        WriteInteger('plOut', 'DH', DockedHeight);
-        WriteInteger('plOut', 'DPos', DockPos);
-        WriteInteger('plOut', 'DRow', DockRow);
-        WriteBool('plOut', 'Vis', FOutVisible);
-        WriteBool('plOut', 'Fl', Floating);
-        WriteInteger('plOut', 'FlW', FloatingWidth);
-        WriteInteger('plOut', 'FlH', FloatingHeight);
-        WriteInteger('plOut', 'FlX', FloatingPosition.X);
-        WriteInteger('plOut', 'FlY', FloatingPosition.Y);
-      end;
-
-      with plClip do
-      begin
-        if CurrentDock<>nil then
-          WriteString('plClip', 'Dock', CurrentDock.Name);
-        WriteInteger('plClip', 'DW', DockedWidth);
-        WriteInteger('plClip', 'DPos', DockPos);
-        WriteInteger('plClip', 'DRow', DockRow);
-        WriteBool('plClip', 'Vis', Visible);
-        WriteBool('plClip', 'Fl', Floating);
-        WriteInteger('plClip', 'FlW', FloatingWidth);
-        WriteInteger('plClip', 'FlH', FloatingHeight);
-        WriteInteger('plClip', 'FlX', FloatingPosition.X);
-        WriteInteger('plClip', 'FlY', FloatingPosition.Y);
-      end;
-    finally
-      Free;
-    end;
 end;
 
 //save all
@@ -4426,6 +4422,8 @@ begin
     WriteInteger('View', 'MapZoom', opMapZoom);
     WriteInteger('View', 'MapColor', opColorMap);
     WriteBool('View', 'MicroMap', opMicroMap);
+    WriteBool('View', 'CurrCol', opShowCurrentColumn);
+    WriteInteger('View', 'CarWidth', opCaretType);
 
     //auto-save
     WriteBool('ASave', 'OnTime', opASaveOnTimer);
@@ -4647,6 +4645,11 @@ end;
 function TfmMain.SynIni: string;
 begin
   Result:= SynIniDir + 'Syn.ini';
+end;
+
+function TfmMain.SynToolbarsIni: string;
+begin
+  Result:= SynIniDir + 'SynToolbars.ini';
 end;
 
 function TfmMain.SynFavIni: string;
@@ -6657,12 +6660,19 @@ begin
     Visible:= not Visible;
   if not plTree.Visible then
     FocusEditor;
+
+  DoRepaintTBs;
+  {
   tbMenu.Invalidate;
   tbFile.Invalidate;
   tbEdit.Invalidate;
   tbView.Invalidate;
   tbQS.Invalidate;
   edQs.Invalidate;
+  tbUser1.Invalidate;
+  tbUser2.Invalidate;
+  tbUser3.Invalidate;
+  }
 end;
 
 type
@@ -7662,6 +7672,11 @@ begin
   tbView.Invalidate;
   tbQs.Invalidate;
   edQs.Invalidate;
+
+  tbUser1.Invalidate;
+  tbUser2.Invalidate;
+  tbUser3.Invalidate;
+
   plTree.Invalidate;
   plOut.Invalidate;
   plClip.Invalidate;
@@ -8561,22 +8576,28 @@ begin
 end;
 
 procedure TfmMain.fRereadExecute(Sender: TObject);
+var
+  F: TEditorFrame;
 begin
-  if not IsFileExist(CurrentFrame.FileName) then
+  F:= CurrentFrame;
+  if F.FileName='' then
+    begin MsgBeep; Exit end;
+
+  if not IsFileExist(F.FileName) then
   begin
-    MsgNoFile(CurrentFrame.FileName);
+    MsgNoFile(F.FileName);
     Exit
-  end;  
+  end;
 
   DoFileReopen;
-  UpdateEnc(CurrentFrame); //calls DoFileReopen
+  UpdateEnc(F); //calls DoFileReopen
 
-  CurrentFrame.EditorMaster.Lines.ResetLineStates;
-  CurrentFrame.EditorSlave.Lines.ResetLineStates;
+  F.EditorMaster.Lines.ResetLineStates;
+  F.EditorSlave.Lines.ResetLineStates;
 
-  CurrentFrame.EditorMaster.ResetSearchMarks;
-  CurrentFrame.EditorSlave.ResetSearchMarks;
-  UpdateMicroMap(CurrentFrame);
+  F.EditorMaster.ResetSearchMarks;
+  F.EditorSlave.ResetSearchMarks;
+  UpdateMicroMap(F);
 end;
 
 procedure TfmMain.DoFileReopen;
@@ -9965,6 +9986,9 @@ begin
   tbPlLeft.ChevronHint:= tbQS.ChevronHint;
   tbClipMap.ChevronHint:= tbQS.ChevronHint;
   tbPlOut.ChevronHint:= tbQS.ChevronHint;
+  tbUser1.ChevronHint:= tbQS.ChevronHint;
+  tbUser2.ChevronHint:= tbQS.ChevronHint;
+  tbUser3.ChevronHint:= tbQS.ChevronHint;
   if Assigned(fmProj) then
     fmProj.tbProject.ChevronHint:= tbQS.ChevronHint;
 
@@ -9989,6 +10013,9 @@ begin
   cStatTChars:=   ' '+DKLangConstW('stat_tchars')+' ';
   cStatFSize:=   ' '+DKLangConstW('stat_fsize')+' ';
   cStatFDate:=   ' '+DKLangConstW('stat_fdate')+' ';
+  cStatCarets:=  ' '+DKLangConstW('stat_carets')+' ';
+  cStatCaretsTopLn:= ' '+DKLangConstW('stat_carets_top')+' ';
+  cStatCaretsBotLn:= ' '+DKLangConstW('stat_carets_btm')+' ';
 
   FUpdatePluginsLang:= true;
 end;
@@ -10146,7 +10173,7 @@ procedure TfmMain.RunTool(NTool: Integer);
     //
   end;
 var
-  ft, fcmd, fr, fd, fpar,
+  ft, fcmd, fpar, frun, fexe, fdir,
   SCurWord: Widestring;
 begin
   if CurrentFrame = nil then Exit;
@@ -10169,7 +10196,16 @@ begin
     if SExe = '' then
       begin MsgBeep; Exit end;
 
-    //save files if needed  
+    //expand macros in "File name", "Initial dir" fields  
+    fexe:= SExe;
+    SReplaceW(fexe, '{SynDir}', ExtractFileDir(SynDir));
+    SReplaceW(fexe, '{SynIniDir}', ExtractFileDir(SynIni));
+
+    fdir:= SDir;
+    SReplaceW(fdir, '{SynDir}', ExtractFileDir(SynDir));
+    SReplaceW(fdir, '{SynIniDir}', ExtractFileDir(SynIni));
+
+    //save files if needed
     case SSave of
       svCurrent:
         if CurrentFrame.Modified then
@@ -10179,10 +10215,10 @@ begin
     end;
 
     //CHM file
-    if SFileExtensionMatch(SExe, 'chm') then
+    if SFileExtensionMatch(fexe, 'chm') then
     begin
-      if not IsFileExist(SExe) then
-        begin MsgNoFile(SExe); Exit end;
+      if not IsFileExist(fexe) then
+        begin MsgNoFile(fexe); Exit end;
 
       if CurrentEditor.SelLength>0 then
         SCurWord:= CurrentEditor.SelText
@@ -10193,21 +10229,21 @@ begin
       if Trim(SCurWord)='' then
         begin MsgNoSelectionForHelp; Exit end;
         
-      fr:= SynDir + 'Tools\HtmlHelpView.exe';
-      if not IsFileExist(fr) then
-        begin MsgNoFile(fr); Exit end;
+      frun:= SynDir + 'Tools\HtmlHelpView.exe';
+      if not IsFileExist(frun) then
+        begin MsgNoFile(frun); Exit end;
         
-      FExecute(fr,
-        '"'+SExe+'" "'+SCurWord+'"',
+      FExecute(frun,
+        '"'+fexe+'" "'+SCurWord+'"',
         '', Handle);
       Exit;
     end;
 
     //HLP file
-    if SFileExtensionMatch(SExe, 'hlp') then
+    if SFileExtensionMatch(fexe, 'hlp') then
     begin
-      if not IsFileExist(SExe) then
-        begin MsgNoFile(SExe); Exit end;
+      if not IsFileExist(fexe) then
+        begin MsgNoFile(fexe); Exit end;
 
       if CurrentEditor.SelLength>0 then
         SCurWord:= CurrentEditor.SelText
@@ -10220,7 +10256,7 @@ begin
         
       Application.HelpSystem.Hook(
         Longint(Handle),
-        string(SExe),
+        string(fexe),
         HELP_PARTIALKEY,
         Integer(PChar(string(SCurWord))));
       Exit;
@@ -10229,44 +10265,44 @@ begin
     if not OUse then
     //don't handle output
     begin
-      fr:= SExpandVars(SExe);
-      fd:= SExpandVars(SDir);
-      if fd='' then
-        fd:= SExtractFileDir(CurrentFrame.FileName);
+      frun:= SExpandVars(fexe);
+      fdir:= SExpandVars(fdir);
+      if fdir='' then
+        fdir:= SExtractFileDir(CurrentFrame.FileName);
 
       try
         fpar:= SExpandVars(SPar);
-        fpar:= HandleParams(fpar, fd);
+        fpar:= HandleParams(fpar, fdir);
       except
         Exit
       end;
 
-      if not FExecute(fr, fpar, fd, Handle) then
-        begin MsgNoRun(fr); Exit end;
+      if not FExecute(frun, fpar, fdir, Handle) then
+        begin MsgNoRun(frun); Exit end;
     end
     else
     //handle output by running cmd.exe
     begin
       ft:= SExpandVars('%temp%\SynWr$$.txt');
-      fr:= SExpandVars(SExe);
-      fd:= SExpandVars(SDir);
-      if fd='' then
-        fd:= SExtractFileDir(CurrentFrame.FileName);
-      if fd='' then
-        fd:= SExpandVars('%temp%');
+      frun:= SExpandVars(fexe);
+      fdir:= SExpandVars(fdir);
+      if fdir='' then
+        fdir:= SExtractFileDir(CurrentFrame.FileName);
+      if fdir='' then
+        fdir:= SExpandVars('%temp%');
       try
         fpar:= SExpandVars(SPar);
-        fpar:= HandleParams(fpar, fd);
+        fpar:= HandleParams(fpar, fdir);
       except
         Exit
       end;
-      fcmd:= WideFormat('cmd.exe /c""%s" %s >"%s" 2>&1"', [fr, fpar, ft]);
+      fcmd:= WideFormat('cmd.exe /c""%s" %s >"%s" 2>&1"', [frun, fpar, ft]);
 
       Screen.Cursor:= crHourGlass;
       try
         FDelete(ft);
-        if FExecProcess(fcmd, fd, sw_hide, true{Wait})=exCannotRun then
-          begin MsgNoRun(fr); Exit end;
+        if FExecProcess(fcmd, fdir, sw_hide, true{Wait})=exCannotRun then
+          begin MsgNoRun(frun); Exit end;
       finally
         Screen.Cursor:= crDefault;
       end;
@@ -10335,52 +10371,61 @@ end;
 
 procedure TfmMain.TBXItemTFileClick(Sender: TObject);
 begin
-  with tbFile do Visible:= not Visible;
+  with tbFile do
+    Visible:= not Visible;
   UpdateStatusBar;
-  SaveTBVis;
+  SaveToolbarsProps;
 end;
 
 procedure TfmMain.TBXItemTEditClick(Sender: TObject);
 begin
-  with tbEdit do Visible:= not Visible;
+  with tbEdit do
+    Visible:= not Visible;
   UpdateStatusBar;
-  SaveTBVis;
+  SaveToolbarsProps;
 end;
 
 procedure TfmMain.TBXItemTViewClick(Sender: TObject);
 begin
-  with tbView do Visible:= not Visible;
+  with tbView do
+    Visible:= not Visible;
   UpdateStatusBar;
-  SaveTBVis;
+  SaveToolbarsProps;
 end;
 
 procedure TfmMain.TBXItemTQsClick(Sender: TObject);
 begin
-  with tbQs do Visible:= not Visible;
+  with tbQs do
+    Visible:= not Visible;
   if not tbQs.Visible then
     FocusEditor;
   UpdateStatusBar;
-  SaveTBVis;
+  SaveToolbarsProps;
 end;
 
-procedure TfmMain.SaveTBVis;
+procedure TfmMain.SaveToolbarsProps;
+var
+  Ini: TIniFile;
 begin
   if FullScr then Exit;
-  with TIniFile.Create(SynIni) do
+  Ini:= TIniFile.Create(SynIni);
   try
-    WriteBool('Menu', 'tbFileVis', tbFile.Visible);
-    WriteBool('Menu', 'tbEditVis', tbEdit.Visible);
-    WriteBool('Menu', 'tbViewVis', tbView.Visible);
-    WriteBool('Menu', 'tbQsVis', tbQs.Visible);
+    SaveToolbarProp(tbFile, Ini, 'File');
+    SaveToolbarProp(tbEdit, Ini, 'Edit');
+    SaveToolbarProp(tbView, Ini, 'View');
+    SaveToolbarProp(tbQs, Ini, 'Qs');
+    SaveToolbarProp(tbUser1, Ini, 'U1');
+    SaveToolbarProp(tbUser2, Ini, 'U2');
+    SaveToolbarProp(tbUser3, Ini, 'U3');
   finally
-    Free;
+    FreeAndNil(Ini);
   end;
 end;
 
 procedure TfmMain.tbQsClose(Sender: TObject);
 begin
   UpdateStatusBar;
-  SaveTBVis;
+  SaveToolbarsProps;
 end;
 
 procedure TfmMain.TBXItemFFPrevClick(Sender: TObject);
@@ -11420,6 +11465,9 @@ begin
   if IsNumConvEditFocused then
     (fmNumConv.ActiveControl as TWinControl).Perform(WM_CUT, 0, 0)
   else
+  if CurrentFrame.CaretsCount>1 then
+    CurrentEditor.ExecCommand(smCut)
+  else
   if not CurrentEditor.HaveSelection then
   begin
     if opCopyLineIfNoSel then
@@ -11454,6 +11502,9 @@ begin
   else
   if ListPLog.Focused then
     TbxItemPLogCopySelClick(Self)
+  else
+  if CurrentFrame.CaretsCount>1 then
+    CurrentEditor.ExecCommand(smCopy)
   else
   if not CurrentEditor.HaveSelection then
   begin
@@ -13606,12 +13657,19 @@ begin
     begin Width:= Width+2; Width:= Width-2; end;
   if not plClip.Visible then
     FocusEditor;
+    
+  DoRepaintTBs;  
+  {
   tbMenu.Invalidate;
   tbFile.Invalidate;
   tbEdit.Invalidate;
   tbView.Invalidate;
   tbQS.Invalidate;
   edQs.Invalidate;
+  tbUser1.Invalidate;
+  tbUser2.Invalidate;
+  tbUser3.Invalidate;
+  }
 end;
 
 procedure TfmMain.TBXItemClipClrClick(Sender: TObject);
@@ -19803,7 +19861,6 @@ var
   NCarets, NTopLine, NBottomLine: integer;
   NTime: TFileTime;
   NSize: Int64;
-  SH: Widestring;
 begin
   Result:= '';
   if CurrentEditor=nil then Exit;
@@ -19893,22 +19950,31 @@ begin
   end;
 
   //update statusbar hint  
-  SH:= opStatusText[state];
-  SReplaceAllW(SH, '{LineNum}', cStatLine);
-  SReplaceAllW(SH, '{ColNum}', cStatCol);
-  SReplaceAllW(SH, '{SelLines}', cStatSelLines);
-  SReplaceAllW(SH, '{SelCols}', cStatSelCols);
-  SReplaceAllW(SH, '{SelChars}', cStatSelChars);
-  SReplaceAllW(SH, '{TotalLines}', cStatTLines);
-  SReplaceAllW(SH, '{TotalChars}', cStatTChars);
-  //
-  //SReplaceAllW(SH, '{FileSize}', cStatFSize);
-  SReplaceAllW(SH, '{FileDate}', cStatFDate);
-  SReplaceAllW(SH, '{FileDate2}', cStatFDate);
-  SReplaceAllW(SH, '{FileDateOp}', cStatFDate);
-  //
-  SReplaceAllW(SH, '  ', ' '); //del dupe spaces
-  Status.Panels[cc0].Hint:= SH;
+  Status.Panels[cc0].Hint:= SStatusHint(state);
+end;
+
+function TfmMain.SStatusHint(state: TSelState): Widestring;
+begin
+  Result:= opStatusText[state];
+  
+  SReplaceAllW(Result, '{LineNum}', cStatLine);
+  SReplaceAllW(Result, '{ColNum}', cStatCol);
+  SReplaceAllW(Result, '{SelLines}', cStatSelLines);
+  SReplaceAllW(Result, '{SelCols}', cStatSelCols);
+  SReplaceAllW(Result, '{SelChars}', cStatSelChars);
+  SReplaceAllW(Result, '{TotalLines}', cStatTLines);
+  SReplaceAllW(Result, '{TotalChars}', cStatTChars);
+
+  SReplaceAllW(Result, '{FileDate}', cStatFDate);
+  SReplaceAllW(Result, '{FileDate2}', cStatFDate);
+  SReplaceAllW(Result, '{FileDateOp}', cStatFDate);
+
+  SReplaceAllW(Result, '{Carets}', cStatCarets);
+  SReplaceAllW(Result, '{CaretsTopLine}', cStatCaretsTopLn);
+  SReplaceAllW(Result, '{CaretsBottomLine}', cStatCaretsBotLn);
+
+  //del dup spaces
+  SReplaceAllW(Result, '  ', ' ');
 end;
 
 procedure TfmMain.TBXItemClipCopyToEdClick(Sender: TObject);
@@ -24394,9 +24460,29 @@ end;
 procedure TfmMain.ecCommandsListExecute(Sender: TObject);
 var
   Cmd: Integer;
+begin
+  Cmd:= DoShowCmdList;
+  if Cmd>0 then
+    CurrentEditor.ExecCommand(Cmd);
+end;
+
+
+function TfmMain.DoShowCmdListStr: string;
+var
+  Cmd: Integer;
+begin
+  Result:= '';
+  Cmd:= DoShowCmdList;
+  if Cmd<>0 then
+    Result:= 'cm:'+IntToStr(Cmd);
+
+end;
+
+function TfmMain.DoShowCmdList: Integer;
+var
   Ini: TIniFile;
 begin
-  Cmd:= 0;
+  Result:= 0;
   Ini:= TIniFile.Create(SynIni);
 
   with TfmCmdList.Create(Self) do
@@ -24420,7 +24506,7 @@ begin
     if ShowModal=mrOk then
     begin
       if List.ItemIndex>=0 then
-        Cmd:= Integer(List.Items.Objects[List.ItemIndex]);
+        Result:= Integer(List.Items.Objects[List.ItemIndex]);
 
       Ini.WriteInteger('Win', 'CmdListW', Width);
       Ini.WriteInteger('Win', 'CmdListH', Height);
@@ -24430,11 +24516,8 @@ begin
     end;
   finally
     Free;
-    Ini.Free;
+    FreeAndNil(Ini);
   end;
-
-  if Cmd>0 then
-    CurrentEditor.ExecCommand(Cmd);
 end;
 
 procedure TfmMain.ecScrollToSelExecute(Sender: TObject);
@@ -24545,6 +24628,10 @@ begin
       CaretsGutterBand:= opCaretsGutterBand;
       CaretsGutterColor:= opColorCaretsGutter;
       CaretsIndicator:= opCaretsIndicator;
+
+      //apply "Block caret"
+      EditorCaretUpdate(EditorMaster, opCaretType);
+      EditorCaretUpdate(EditorSlave, opCaretType);
     end;
 end;
 
@@ -25226,6 +25313,326 @@ end;
 procedure TfmMain.TBXItemFoldLevel9Click(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_FoldLevel9);
+end;
+
+procedure TfmMain.TBXItemVCommClick(Sender: TObject);
+begin
+  DoToolbarCommentUncomment(true);
+end;
+
+procedure TfmMain.TBXItemVUncomClick(Sender: TObject);
+begin
+  DoToolbarCommentUncomment(false);
+end;
+
+procedure TfmMain.DoToolbarCommentUncomment(AComment: boolean);
+var
+  Lex: string;
+  Cmd: Integer;
+begin
+  //this code is to call "Toggle stream comment" for HTML and CSS.
+  //on other lexs it should call default commands "Comment lines"/"Uncomment lines"
+  Lex:= CurrentLexer;
+  if IsLexerHTML(Lex) or IsLexerCSS(Lex) then
+    CurrentEditor.ExecCommand(sm_ToggleStreamComment)
+  else
+  begin
+    Cmd:= IfThen(AComment, smCommentLines, smUncommentLines);
+    if ecCommentLines.Enabled then
+      CurrentEditor.ExecCommand(Cmd)
+    else
+      MsgBeep;
+  end;
+end;
+
+{
+function TfmMain.DockTypeToName(Typ: TSynDock): string;
+begin
+  case Typ of
+    sdockTop: Result:= TbxDockTop.Name;
+    sdockLeft: Result:= TbxDockLeft.Name;
+    sdockRight: Result:= TbxDockRight.Name;
+    sdockBottom: Result:= TbxDockBottom.Name;
+    else raise Exception.Create('Unknown dock type');
+  end;
+end;
+}
+
+procedure TfmMain.LoadToolbarProp(
+  Toolbar: TTbxToolbar;
+  Ini: TCustomIniFile;
+  const Id: string);
+var
+  DockStr: string;
+begin
+  Toolbar.Visible:= Ini.ReadBool('Menu', 'tb'+Id+'Vis', Toolbar.Visible);
+  
+  if Toolbar.CurrentDock<>nil then
+    DockStr:= Toolbar.CurrentDock.Name
+  else
+    DockStr:= '';
+  DockStr:= Ini.ReadString('Menu', 'tb'+Id, DockStr);
+  Toolbar.CurrentDock:= Self.FindComponent(DockStr) as TTBDock;
+
+  Toolbar.DockPos:= Ini.ReadInteger('Menu', 'tb'+Id+'Pos', Toolbar.DockPos);
+  Toolbar.DockRow:= Ini.ReadInteger('Menu', 'tb'+Id+'Row', Toolbar.DockRow);
+end;
+
+procedure TfmMain.SaveToolbarProp(
+  Toolbar: TTbxToolbar;
+  Ini: TCustomIniFile;
+  const Id: string);
+begin
+  Ini.WriteBool('Menu', 'tb'+Id+'Vis', Toolbar.Visible);
+  if Toolbar.CurrentDock<>nil then
+    Ini.WriteString('Menu', 'tb'+Id, Toolbar.CurrentDock.Name);
+  Ini.WriteInteger('Menu', 'tb'+Id+'Pos', Toolbar.DockPos);
+  Ini.WriteInteger('Menu', 'tb'+Id+'Row', Toolbar.DockRow);
+end;
+
+procedure TfmMain.SavePanelProp(
+  Panel: TTbxDockablePanel;
+  Ini: TCustomIniFile;
+  const Id: string);
+begin
+  with Panel do
+  begin
+    Ini.WriteBool('pl'+Id, 'Vis', Visible);
+    if CurrentDock<>nil then
+      Ini.WriteString('pl'+Id, 'Dock', CurrentDock.Name);
+    Ini.WriteInteger('pl'+Id, 'DW', DockedWidth);
+    Ini.WriteInteger('pl'+Id, 'DH', DockedHeight);
+    Ini.WriteInteger('pl'+Id, 'DPos', DockPos);
+    Ini.WriteInteger('pl'+Id, 'DRow', DockRow);
+    Ini.WriteBool('pl'+Id, 'Fl', Floating);
+    Ini.WriteInteger('pl'+Id, 'FlW', FloatingWidth);
+    Ini.WriteInteger('pl'+Id, 'FlH', FloatingHeight);
+    Ini.WriteInteger('pl'+Id, 'FlX', FloatingPosition.X);
+    Ini.WriteInteger('pl'+Id, 'FlY', FloatingPosition.Y);
+  end;
+end;
+
+procedure TfmMain.LoadPanelProp(
+  Panel: TTbxDockablePanel;
+  Ini: TCustomIniFile;
+  const Id: string);
+var
+  p: TPoint;
+  DockStr: string;
+begin
+  with Panel do
+  begin
+    if not QuickView then
+      Visible:= Ini.ReadBool('pl'+Id, 'Vis', Visible);
+
+    if CurrentDock<>nil then
+      DockStr:= CurrentDock.Name
+    else
+      DockStr:= '';
+    DockStr:= Ini.ReadString('pl'+Id, 'Dock', DockStr);
+    CurrentDock:= Self.FindComponent(DockStr) as TTBDock;
+
+    DockPos:= Ini.ReadInteger('pl'+Id, 'DPos', DockPos);
+    DockRow:= Ini.ReadInteger('pl'+Id, 'DRow', DockRow);
+    DockedWidth:= Ini.ReadInteger('pl'+Id, 'DW', DockedWidth);
+    DockedHeight:= Ini.ReadInteger('pl'+Id, 'DH', DockedHeight);
+    Floating:= Ini.ReadBool('pl'+Id, 'Fl', false);
+    FloatingWidth:= Ini.ReadInteger('pl'+Id, 'FlW', FloatingWidth);
+    FloatingHeight:= Ini.ReadInteger('pl'+Id, 'FlH', FloatingHeight);
+    p.X:= Ini.ReadInteger('pl'+Id, 'FlX', 0);
+    p.Y:= Ini.ReadInteger('pl'+Id, 'FlY', 0);
+    FloatingPosition:= p;
+  end;
+end;
+
+procedure TfmMain.TBXItemTUser1Click(Sender: TObject);
+begin
+  with tbUser1 do
+    Visible:= not Visible;
+  UpdateStatusbar;
+  SaveToolbarsProps;
+end;
+
+procedure TfmMain.TBXItemTUser2Click(Sender: TObject);
+begin
+  with tbUser2 do
+    Visible:= not Visible;
+  UpdateStatusbar;
+  SaveToolbarsProps;
+end;
+
+procedure TfmMain.TBXItemTUser3Click(Sender: TObject);
+begin
+  with tbUser3 do
+    Visible:= not Visible;
+  UpdateStatusbar;
+  SaveToolbarsProps;
+end;
+
+procedure TfmMain.TBXItemOToolbar1Click(Sender: TObject);
+begin
+  DoCustomizeToolbar(1);
+  LoadToolbarContent(tbUser1, 1, true);
+  UpdateStatusbar;
+end;
+
+procedure TfmMain.TBXItemOToolbar2Click(Sender: TObject);
+begin
+  DoCustomizeToolbar(2);
+  LoadToolbarContent(tbUser2, 2, true);
+  UpdateStatusbar;
+end;
+
+procedure TfmMain.TBXItemOToolbar3Click(Sender: TObject);
+begin
+  DoCustomizeToolbar(3);
+  LoadToolbarContent(tbUser3, 3, true);
+  UpdateStatusbar;
+end;
+
+procedure TfmMain.DoCustomizeToolbar(NIndex: Integer);
+begin
+  with TfmToolbarProp.Create(nil) do
+  try
+    FToolbarIni:= SynToolbarsIni;
+    FToolbarIndex:= NIndex;
+    with TIniFile.Create(FToolbarIni) do
+    try
+      FSizeX:= ReadInteger(IntToStr(FToolbarIndex), 'ix', 32);
+      FSizeY:= ReadInteger(IntToStr(FToolbarIndex), 'iy', 32);
+    finally
+      Free;  
+    end;
+    FShowCmdList:= DoShowCmdListStr;
+    FShowCmdHint:= DoShowCmdHint;
+    FGetExtTools:= DoExtToolsList;
+    ShowModal;
+  finally
+    Free;
+  end;
+end;
+
+function TfmMain.DoShowCmdHint(Cmd: string): Widestring;
+var
+  N, i: Integer;
+begin
+  Result:= '';
+  if Cmd='-' then Exit;
+
+  if Pos('cm:', Cmd)=1 then
+  begin
+    Delete(Cmd, 1, 3);
+    N:= StrToIntDef(Cmd, 0);
+    if N=0 then Exit;
+
+    for i:= 0 to SyntKeyMapping.Items.Count-1 do
+      with SyntKeyMapping.Items[i] do
+        if Command = N then
+        begin
+          Result:= Category + ': ' + DisplayName;
+          Exit
+        end;
+  end
+  else
+  if Pos('ext:', Cmd)=1 then
+  begin
+    Result:= Cmd;
+  end;
+end;
+
+procedure TfmMain.LoadToolbarContent(Toolbar: TTbxToolbar; NIndex: Integer; AutoShow: boolean = false);
+var
+  Item: TTbCustomItem;
+  i: Integer;
+  SCmd, SHint, SIcoFN, SIni: Widestring;
+  IcoLoaded: boolean;
+begin
+  Toolbar.Items.Clear;
+  SIni:= SynToolbarsIni;
+  with TIniFile.Create(SIni) do
+  try
+    //Toolbar.Caption:= UTF8Decode(ReadString(IntToStr(NIndex), 'cap', ''));
+    Toolbar.Images.Width:= ReadInteger(IntToStr(NIndex), 'ix', 32);
+    Toolbar.Images.Height:= ReadInteger(IntToStr(NIndex), 'iy', 32);
+    for i:= 0 to High(TToolbarProps) do
+    begin
+      SCmd:= UTF8Decode(ReadString(IntToStr(NIndex), IntToStr(i)+'c', ''));
+      SHint:= UTF8Decode(ReadString(IntToStr(NIndex), IntToStr(i)+'h', ''));
+      SIcoFN:= UTF8Decode(ReadString(IntToStr(NIndex), IntToStr(i)+'i', ''));
+      SReplaceAllW(SIcoFN, '{ini}', ExtractFileDir(SIni));
+
+      IcoLoaded:= false;
+      if SCmd='' then Break;
+      if SCmd='-' then
+      begin
+        Item:= TTBXSeparatorItem.Create(Self);
+      end
+      else
+      begin
+        Item:= TTbxItem.Create(Self);
+        Item.Caption:= SCmd;
+        Item.Hint:= SHint;
+        Item.OnClick:= ToolbarUserClick;
+        Item.OnSelect:= ButtonOnSelect;
+        IcoLoaded:= LoadPngIcon(Toolbar.Images as TTbxImageList, SIcoFN);
+      end;
+      Toolbar.Items.Add(Item);
+      if IcoLoaded then
+        Toolbar.Items[Toolbar.Items.Count-1].ImageIndex:= Toolbar.Images.Count-1;
+    end;
+  finally
+    Free
+  end;
+
+  if Toolbar.Items.Count=0 then
+    Toolbar.Visible:= false
+  else
+  if AutoShow then
+  begin
+    Toolbar.Visible:= true;
+    SaveToolbarsProps;
+  end;
+end;
+
+procedure TfmMain.ToolbarUserClick(Sender: TObject);
+var
+  Cmd: Widestring;
+  NCmd, i: Integer;
+begin
+  Cmd:= (Sender as TTbxItem).Caption;
+  if Cmd='' then begin MsgBeep; Exit end;
+
+  //run internal command
+  if Pos('cm:', Cmd)=1 then
+  begin
+    Delete(Cmd, 1, 3);
+    NCmd:= StrToIntDef(Cmd, 0);
+    if NCmd<=0 then begin MsgBeep; Exit end;
+    CurrentEditor.ExecCommand(NCmd);
+  end
+  else
+  //run external tool
+  if Pos('ext:', Cmd)=1 then
+  begin
+    Delete(Cmd, 1, 4);
+    for i:= Low(opTools) to High(opTools) do
+      if opTools[i].SCap=Cmd then
+      begin
+        RunTool(i);
+        Exit
+      end;
+    MsgError(WideFormat(DKLangConstW('MRun'), [Cmd]));
+  end;
+end;
+
+procedure TfmMain.DoExtToolsList(L: TTntStringList);
+var
+  i: Integer;
+begin
+  for i:= Low(opTools) to High(opTools) do
+    with opTools[i] do
+      if SCap<>'' then
+        L.Add(SCap);
 end;
 
 end.

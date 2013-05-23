@@ -55,7 +55,10 @@ uses
   unCmdList in 'unCmdList.pas' {fmCmdList},
   unProjList in 'unProjList.pas' {fmProjList: TTntForm},
   unRename in 'unRename.pas' {fmRename: TTntForm},
-  ATSyntMemo in 'ATSyntMemo.pas';
+  ATSyntMemo in 'ATSyntMemo.pas',
+  unToolbarProp in 'unToolbarProp.pas' {fmToolbarProp: TTntForm},
+  unToolbarIcon in 'unToolbarIcon.pas' {fmToolbarIcon: TTntForm},
+  unToolbarSize in 'unToolbarSize.pas' {fmToolbarSize: TTntForm};
 
 {$R *.res}
 {$R *.dkl_const.res}

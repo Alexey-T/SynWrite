@@ -51,6 +51,9 @@ uses
   Controls, ExtCtrls,
   ecSyntMemo;
 
+var
+  opSeparateCopiedLines: boolean = false;
+
 type
   TCaretsColorIndicator = (cciNone, cciLineBg, cciGutterBg);
 
@@ -162,7 +165,7 @@ const
 implementation
 
 uses
-  Windows, SysUtils,
+  Windows, SysUtils, StrUtils,
   Forms, Dialogs,
   Math,
   TntClipbrd,
@@ -708,7 +711,10 @@ begin
       smCopy,
       smCut:
         try
-          TntClipboard.AsWideText:= Lines[P.Y] + sLineBreak + sLineBreak + TntClipboard.AsWideText;
+          TntClipboard.AsWideText:=
+            Lines[P.Y] + sLineBreak +
+            IfThen(opSeparateCopiedLines, sLineBreak) +
+            TntClipboard.AsWideText;
           if Cmd=smCut then
             DoDelLine(P);
         except
@@ -1265,9 +1271,14 @@ begin
 end;
 
 procedure TSyntaxMemo.GetDrawCoord(var NSize: TSize; var RClient: TRect);
+const
+  cDefCaretWidth = 2;
+var
+  NDefWidth: Integer;
 begin
-  NSize.cx:= IfThen(ReplaceMode, FTextExt.cx, Abs(Caret.Insert.Width));
-  NSize.cy:= FTextExt.cy + LineSpacing;
+  NDefWidth:= IfThen(Caret.Insert.Width<0, cDefCaretWidth, FTextExt.cx * Caret.Insert.Width div 100);
+  NSize.cx:= IfThen(ReplaceMode, FTextExt.cx, NDefWidth);
+  NSize.cy:= IfThen(ReplaceMode, FTextExt.cy + LineSpacing, FTextExt.cy * Caret.Insert.Height div 100);
 
   RClient:= ClientRect;
   Inc(RClient.Left, Gutter.Width);
@@ -1289,11 +1300,12 @@ begin
     //  Continue;
 
     P:= GetCaretCoord(i);
+    Inc(P.Y, FTextExt.cy + LineSpacing);
     R:= Rect(
       P.X,
-      P.Y,
+      P.Y - NSize.cy,
       P.X + NSize.cx,
-      P.Y + NSize.cy);
+      P.Y);
 
     if IntersectRect(R2, R, RClient) then
       InvertRect(Canvas.Handle, R);

@@ -326,7 +326,12 @@ var re: boolean;
 begin
   re:= cbRe.Checked;
   if re then
+  begin
     cbSpec.Checked:= false;
+    cbWords.Checked:= false;
+  end;
+  cbWords.Enabled:= not re;
+
   ed1.Color:= C[re];
   ed2.Color:= C[re];  
 end;

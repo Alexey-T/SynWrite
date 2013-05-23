@@ -412,7 +412,11 @@ var
 begin
   re:= cbRe.Checked;
   if re then
+  begin
     cbSpec.Checked:= false;
+    cbWords.Checked:= false;
+  end;
+  cbWords.Enabled:= not re;
 
   C:= IfThen(re, $B0FFFF, clWindow);
   ed1.Color:= C;

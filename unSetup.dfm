@@ -30,7 +30,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabSearch
+    ActivePage = tabCarets
     Style = tsButtons
     TabOrder = 0
     object tabIntf: TTntTabSheet
@@ -243,6 +243,7 @@ object fmSetup: TfmSetup
           Width = 240
           Height = 21
           Style = csDropDownList
+          DropDownCount = 20
           ItemHeight = 13
           TabOrder = 0
         end
@@ -252,6 +253,7 @@ object fmSetup: TfmSetup
           Width = 240
           Height = 21
           Style = csDropDownList
+          DropDownCount = 20
           ItemHeight = 13
           TabOrder = 1
           Items.Strings = (
@@ -314,6 +316,7 @@ object fmSetup: TfmSetup
           Width = 177
           Height = 22
           Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames]
+          DropDownCount = 20
           ItemHeight = 16
           TabOrder = 1
           OnSelect = ColorBox1Select
@@ -839,7 +842,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 92
         Width = 529
-        Height = 213
+        Height = 237
         TabOrder = 1
         object Label15: TTntLabel
           Left = 56
@@ -857,14 +860,14 @@ object fmSetup: TfmSetup
         end
         object Label14: TTntLabel
           Left = 400
-          Top = 156
+          Top = 180
           Width = 63
           Height = 13
           Caption = 'Line numbers'
         end
         object TntLabel28: TTntLabel
           Left = 400
-          Top = 180
+          Top = 204
           Width = 61
           Height = 13
           Caption = 'Block staples'
@@ -942,13 +945,13 @@ object fmSetup: TfmSetup
         end
         object edNums: TTntComboBox
           Left = 270
-          Top = 152
+          Top = 176
           Width = 123
           Height = 21
           Hint = 'Style of line numbering.'
           Style = csDropDownList
           ItemHeight = 13
-          TabOrder = 18
+          TabOrder = 19
           Items.Strings = (
             'Default'
             'Delphi style'
@@ -1004,80 +1007,80 @@ object fmSetup: TfmSetup
         end
         object cbShowEOL: TTntCheckBox
           Left = 270
-          Top = 92
+          Top = 112
           Width = 256
           Height = 17
           Hint = 
             'Show CR/LF chars for line endings, when "Show non-printable char' +
             's" is on.'
           Caption = 'Show EOL characters'
-          TabOrder = 15
+          TabOrder = 16
         end
         object cbBkUndo: TTntCheckBox
           Left = 270
-          Top = 124
+          Top = 144
           Width = 256
           Height = 25
           Hint = 
             'Allow Undo for such operations as "Delete bookmarked lines", "Pa' +
             'ste into bookmarked lines". Much slower.'
           Caption = 'Allow Undo for massive strings deletion'
-          TabOrder = 17
+          TabOrder = 18
           WordWrap = True
         end
         object cbStaples: TComboBox
           Left = 312
-          Top = 176
+          Top = 200
           Width = 81
           Height = 22
           Hint = 'Line style of block staples.'
           Style = csOwnerDrawFixed
           ItemHeight = 16
-          TabOrder = 20
+          TabOrder = 21
           OnDrawItem = cbStaplesDrawItem
         end
         object edStapleOffset: TSpinEdit
           Left = 270
-          Top = 176
+          Top = 200
           Width = 41
           Height = 22
           Hint = 'Horizontal offset of block staples (in pixels).'
           MaxValue = 5
           MinValue = -5
-          TabOrder = 19
+          TabOrder = 20
           Value = 0
           OnKeyDown = edIndKeyDown
         end
         object cbDWrapMark: TTntCheckBox
           Left = 270
-          Top = 60
+          Top = 76
           Width = 256
           Height = 17
           Hint = 'Draw "line is wrapped" icons on gutter.'
           Caption = 'Draw gutter "line wrapped" mark'
-          TabOrder = 13
+          TabOrder = 14
         end
         object cbColorOnEmpty: TTntCheckBox
           Left = 270
-          Top = 108
+          Top = 128
           Width = 256
           Height = 17
           Hint = 
             'Colorize selected lines background with white space after line e' +
             'nds.'
           Caption = 'Colorize selection BG including white space'
-          TabOrder = 16
+          TabOrder = 17
         end
         object cbCopyLineNSel: TTntCheckBox
           Left = 270
-          Top = 76
+          Top = 96
           Width = 256
           Height = 17
           Hint = 
             'Copy/Cut operations will take current line, if no selection is m' +
             'ade in editor.'
           Caption = 'Copy/Cut current line if no selection made'
-          TabOrder = 14
+          TabOrder = 15
         end
         object cbUrlClick: TTntCheckBox
           Left = 22
@@ -1089,6 +1092,15 @@ object fmSetup: TfmSetup
             'RL) under cursor.'
           Caption = 'Activate URLs by single click'
           TabOrder = 1
+        end
+        object cbShowCol: TTntCheckBox
+          Left = 270
+          Top = 60
+          Width = 256
+          Height = 17
+          Hint = 'Draw vertical line at caret'#39's column position.'
+          Caption = 'Draw current column margin'
+          TabOrder = 13
         end
       end
       object GroupBox2: TTntGroupBox
@@ -1197,19 +1209,19 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 189
+        Height = 225
         Caption = 'Carets'
         TabOrder = 0
         object TntLabel30: TTntLabel
           Left = 8
-          Top = 52
+          Top = 56
           Width = 162
           Height = 13
           Caption = 'Indicate lines with multiple carets:'
         end
         object TntLabel31: TTntLabel
           Left = 104
-          Top = 124
+          Top = 128
           Width = 106
           Height = 13
           Caption = 'Gutter column number'
@@ -1229,6 +1241,13 @@ object fmSetup: TfmSetup
           ParentFont = False
           OnClick = labCaretHelpClick
         end
+        object TntLabel40: TTntLabel
+          Left = 80
+          Top = 160
+          Width = 59
+          Height = 13
+          Caption = 'Caret shape'
+        end
         object cbCaretMulti: TTntCheckBox
           Left = 8
           Top = 16
@@ -1239,7 +1258,7 @@ object fmSetup: TfmSetup
         end
         object cbCaretIndNone: TTntRadioButton
           Left = 24
-          Top = 68
+          Top = 72
           Width = 500
           Height = 17
           Caption = 'Don'#39't indicate'
@@ -1247,7 +1266,7 @@ object fmSetup: TfmSetup
         end
         object cbCaretIndLine: TTntRadioButton
           Left = 24
-          Top = 84
+          Top = 88
           Width = 500
           Height = 17
           Caption = 'By line background color'
@@ -1255,7 +1274,7 @@ object fmSetup: TfmSetup
         end
         object cbCaretIndGutter: TTntRadioButton
           Left = 24
-          Top = 100
+          Top = 104
           Width = 500
           Height = 17
           Caption = 'By gutter background color'
@@ -1263,7 +1282,7 @@ object fmSetup: TfmSetup
         end
         object edCaretGutterCol: TSpinEdit
           Left = 48
-          Top = 120
+          Top = 124
           Width = 49
           Height = 22
           MaxValue = 3
@@ -1271,6 +1290,40 @@ object fmSetup: TfmSetup
           TabOrder = 4
           Value = 1
           OnKeyDown = edIndKeyDown
+        end
+        object cbCaretWidth: TTrackBar
+          Left = 192
+          Top = 156
+          Width = 105
+          Height = 25
+          Max = 4
+          PageSize = 1
+          TabOrder = 5
+          ThumbLength = 18
+          Visible = False
+        end
+        object edCaretType: TTntComboBox
+          Left = 16
+          Top = 156
+          Width = 57
+          Height = 22
+          Style = csDropDownList
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Arial'
+          Font.Style = []
+          ItemHeight = 14
+          ItemIndex = 4
+          ParentFont = False
+          TabOrder = 6
+          Text = '  '#9604
+          Items.Strings = (
+            '  '#9474
+            '  '#9612
+            '  '#9608
+            '  _'
+            '  '#9604)
         end
       end
     end
@@ -2866,12 +2919,13 @@ object fmSetup: TfmSetup
   end
   object DKLanguageController1: TDKLanguageController
     IgnoreList.Strings = (
+      'edCaretType.*'
       'OpenDialogPre.*'
       'SaveDialogPre.*')
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E013E010000
+      0700666D5365747570010100000001000000070043617074696F6E0142010000
       040054616273000005007461624564010100000002000000070043617074696F
       6E000500674564697400000600426576656C31000007006362424F7665720102
       00000004000000070043617074696F6E03000000040048696E74000700636242
@@ -3151,7 +3205,10 @@ object fmSetup: TfmSetup
       74696F6E000A00636255726C436C69636B010200000004020000070043617074
       696F6E03020000040048696E74001200656453724D6178547265654D61746368
       657300000A00546E744C6162656C313701010000000502000007004361707469
-      6F6E00}
+      6F6E000900636253686F77436F6C010200000007020000070043617074696F6E
+      06020000040048696E74000C0063624361726574576964746800000A00546E74
+      4C6162656C3430010100000008020000070043617074696F6E000B0065644361
+      726574547970650000}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

@@ -339,6 +339,10 @@ type
     cbUrlClick: TTntCheckBox;
     edSrMaxTreeMatches: TSpinEdit;
     TntLabel17: TTntLabel;
+    cbShowCol: TTntCheckBox;
+    cbCaretWidth: TTrackBar;
+    TntLabel40: TTntLabel;
+    edCaretType: TTntComboBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure tabEdShow(Sender: TObject);
@@ -890,6 +894,7 @@ begin
     opSmartHiCase:=cbSmHiCase.Checked;
     opBracketHi:=cbBrHi.Checked;
     opBkUndo:=cbBkUndo.Checked;
+    opShowCurrentColumn:= cbShowCol.Checked;
     ApplyEd2;
     ApplyFrames;
 
@@ -1027,6 +1032,7 @@ begin
      if cbCaretIndLine.Checked then opCaretsIndicator:= 1 else
       if cbCaretIndGutter.Checked then opCaretsIndicator:= 2;
     opCaretsGutterBand:= edCaretGutterCol.Value;
+    opCaretType:= edCaretType.ItemIndex; //cbCaretWidth.Position;
     ApplyCarets;
   end;
 
@@ -1713,6 +1719,7 @@ begin
     cbSmHiCase.Checked:=opSmartHiCase;
     cbBrHi.Checked:=opBracketHi;
     cbBkUndo.Checked:=opBkUndo;
+    cbShowCol.Checked:= opShowCurrentColumn;
   end;
   tabEd2.Tag:=1;
 end;
@@ -2455,6 +2462,8 @@ begin
     cbCaretIndLine.Checked:= opCaretsIndicator=1;
     cbCaretIndGutter.Checked:= opCaretsIndicator=2;
     edCaretGutterCol.Value:= opCaretsGutterBand;
+    //cbCaretWidth.Position:= opCaretType;
+    edCaretType.ItemIndex:= opCaretType;
   end;
   tabCarets.Tag:= 1;
 end;

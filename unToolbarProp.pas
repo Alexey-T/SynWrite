@@ -5,14 +5,20 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, TntStdCtrls, Spin, ExtCtrls,
-  TntForms,
-  PngImage, ImgList;
+  TntForms, TntClasses,
+  PngImage, ImgList, DKLang, Menus, TntMenus;
+
+type
+  TShowCmdListProc = function: string of object;
+  TShowCmdHintProc = function(Cmd: string): Widestring of object;
+  TGetExtToolsProc = procedure(List: TTntStringList) of object;
 
 type
   TToolbarProp = record
     FHint,
     FCmd: Widestring;
     FImage: TPngObject;
+    FImageFN: string;
   end;
   TToolbarProps = array[0..80] of TToolbarProp;
 
@@ -42,6 +48,9 @@ type
     btnAdd: TTntButton;
     btnDel: TTntButton;
     btnSep: TTntButton;
+    DKLanguageController1: TDKLanguageController;
+    btnBrowseExtTool: TTntButton;
+    MenuTool: TTntPopupMenu;
     procedure FormShow(Sender: TObject);
     procedure btnIconSizeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -53,41 +62,81 @@ type
     procedure btnBrowseIconClick(Sender: TObject);
     procedure ListBox1Click(Sender: TObject);
     procedure edHintChange(Sender: TObject);
-    procedure edCmdChange(Sender: TObject);
     procedure btnSepClick(Sender: TObject);
     procedure ListBox1DragOver(Sender, Source: TObject; X, Y: Integer;
       State: TDragState; var Accept: Boolean);
     procedure ListBox1DragDrop(Sender, Source: TObject; X, Y: Integer);
+    procedure bOkClick(Sender: TObject);
+    procedure btnBrowseCmdClick(Sender: TObject);
+    procedure btnBrowseExtToolClick(Sender: TObject);
   private
     { Private declarations }
+    procedure MenuToolClick(Sender: TObject);
     procedure SwapBtn(var BFrom, BTo: TToolbarProp);
     procedure ClearBtn(var Btn: TToolbarProp);
     function CanAddBtn: boolean;
     procedure MoveBtn(NFrom, NTo: integer);
   public
     { Public declarations }
-    FCaption: Widestring;
+    //FCaption: Widestring;
     FSizeX,
     FSizeY: integer;
     FToolbar: TToolbarProps;
+    FToolbarIni: string;
+    FToolbarIndex: integer;
+    FShowCmdList: TShowCmdListProc;
+    FShowCmdHint: TShowCmdHintProc;
+    FGetExtTools: TGetExtToolsProc;
   end;
 
 implementation
 
 uses
-  Types,
+  Types, IniFiles,
+  ATxSProc,
   unToolbarSize, unToolbarIcon;
 
 {$R *.dfm}
 
 procedure TfmToolbarProp.FormShow(Sender: TObject);
+var
+  sCmd, sHint, sFN: Widestring;
+  i: Integer;
 begin
   LabelSize.Caption:= Format('%dx%d', [FSizeX, FSizeY]);
   with Listbox1 do
   begin
+    Items.Clear;
     Columns:= ClientWidth div (FSizeX+4);
     Invalidate;
   end;
+
+  with TIniFile.Create(FToolbarIni) do
+  try
+    //edCaption.Text:= UTF8Decode(ReadString(IntToStr(FToolbarIndex), 'cap', IntToStr(FToolbarIndex)));
+    for i:= 0 to High(FToolbar) do
+    begin
+      sCmd:= UTF8Decode(ReadString(IntToStr(FToolbarIndex), IntToStr(i)+'c', ''));
+      sHint:= UTF8Decode(ReadString(IntToStr(FToolbarIndex), IntToStr(i)+'h', ''));
+      sFN:= ReadString(IntToStr(FToolbarIndex), IntToStr(i)+'i', '');
+      SReplaceAllW(sFN, '{ini}', ExtractFileDir(FToolbarIni));
+
+      if sCmd='' then Break;
+      FToolbar[i].FCmd:= sCmd;
+      FToolbar[i].FHint:= sHint;
+      FToolbar[i].FImageFN:= sFN;
+      if FileExists(sFN) then
+      begin
+        FToolbar[i].FImage:= TPngObject.Create;
+        FToolbar[i].FImage.LoadFromFile(sFN);
+      end;  
+      Listbox1.Items.Add('');
+      Listbox1.ItemIndex:= 0;
+    end;
+  finally
+    Free
+  end;
+
   Listbox1Click(Self);
 end;
 
@@ -172,14 +221,17 @@ begin
   B.FHint:= BFrom.FHint;
   B.FCmd:= BFrom.FCmd;
   B.FImage:= BFrom.FImage;
+  B.FImageFN:= BFrom.FImageFN;
 
   BFrom.FHint:= BTo.FHint;
   BFrom.FCmd:= BTo.FCmd;
   BFrom.FImage:= BTo.FImage;
+  BFrom.FImageFN:= BTo.FImageFN;
 
   BTo.FHint:= B.FHint;
   BTo.FCmd:= B.FCmd;
   BTo.FImage:= B.FImage;
+  BTo.FImageFN:= B.FImageFN;
 end;
 
 procedure TfmToolbarProp.btnDelClick(Sender: TObject);
@@ -262,6 +314,7 @@ end;
 procedure TfmToolbarProp.btnBrowseIconClick(Sender: TObject);
 var
   AIndex: integer;
+  fn, dir: string;
 begin
   AIndex:= ListBox1.ItemIndex;
   if not ((AIndex>=Low(FToolbar)) and (AIndex<=High(FToolbar))) then Exit;
@@ -272,10 +325,17 @@ begin
     FSizeY:= Self.FSizeY;
     if (ShowModal=mrOk) and Assigned(FImage) then
     begin
-      if Assigned(FToolbar[AIndex].FImage) then
-        FreeAndNil(FToolbar[AIndex].FImage);
-      FToolbar[AIndex].FImage:= FImage;
-      Self.Listbox1.Invalidate;
+      dir:= ExtractFileDir(FToolbarIni)+'\Ico';
+      CreateDir(dir);
+      if PromptForFileName(fn, '*.png|*.png', 'png', '', dir, true) then
+      begin
+        if Assigned(FToolbar[AIndex].FImage) then
+          FreeAndNil(FToolbar[AIndex].FImage);
+        FToolbar[AIndex].FImage:= FImage;
+        FToolbar[AIndex].FImageFN:= fn;
+        FImage.SaveToFile(fn);
+        Self.Listbox1.Invalidate;
+      end;
     end;
   finally
     Free
@@ -303,7 +363,10 @@ begin
     with FToolbar[n] do
     begin
       edHint.Text:= FHint;
-      edCmd.Text:= FCmd;
+      if Assigned(FShowCmdHint) then
+        edCmd.Text:= FShowCmdHint(FCmd)
+      else
+        edCmd.Text:= '?';  
     end;
 end;
 
@@ -314,16 +377,6 @@ begin
   if (n>=0) and (n<=High(FToolbar)) then
   begin
     FToolbar[n].FHint:= edHint.Text;
-  end;
-end;
-
-procedure TfmToolbarProp.edCmdChange(Sender: TObject);
-var n:Integer;
-begin
-  n:= Listbox1.ItemIndex;
-  if (n>=0) and (n<=High(FToolbar)) then
-  begin
-    FToolbar[n].FCmd:= edCmd.Text;
   end;
 end;
 
@@ -393,6 +446,101 @@ begin
       SwapBtn(FToolbar[i], FToolbar[i-1]);
   end;
   SwapBtn(B, FToolbar[NTo]);
+end;
+
+procedure TfmToolbarProp.bOkClick(Sender: TObject);
+var
+  i: Integer;
+  fn: Widestring;
+begin
+  with TIniFile.Create(FToolbarIni) do
+  try
+    //WriteString(IntToStr(FToolbarIndex), 'cap', UTF8Encode(edCaption.Text));
+    WriteInteger(IntToStr(FToolbarIndex), 'ix', FSizeX);
+    WriteInteger(IntToStr(FToolbarIndex), 'iy', FSizeY);
+    for i:= 0 to High(FToolbar) do
+      if FToolbar[i].FCmd<>'' then
+      begin
+        WriteString(IntToStr(FToolbarIndex), IntToStr(i)+'c', UTF8Encode(FToolbar[i].FCmd));
+        WriteString(IntToStr(FToolbarIndex), IntToStr(i)+'h', UTF8Encode(FToolbar[i].FHint));
+
+        fn:= FToolbar[i].FImageFN;
+        SReplaceAllW(fn, ExtractFileDir(FToolbarIni), '{ini}');
+        WriteString(IntToStr(FToolbarIndex), IntToStr(i)+'i', fn);
+      end
+      else
+      begin
+        DeleteKey(IntToStr(FToolbarIndex), IntToStr(i)+'c');
+        DeleteKey(IntToStr(FToolbarIndex), IntToStr(i)+'h');
+        DeleteKey(IntToStr(FToolbarIndex), IntToStr(i)+'i');
+      end;
+  finally
+    Free
+  end;
+end;
+
+procedure TfmToolbarProp.btnBrowseCmdClick(Sender: TObject);
+var
+  Cmd: string;
+  n: Integer;
+  SameStr: boolean;
+begin
+  if Assigned(FShowCmdList) then
+  begin
+    Cmd:= FShowCmdList;
+    if Cmd<>'' then
+    begin
+      n:= Listbox1.ItemIndex;
+      FToolbar[n].FCmd:= Cmd;
+      SameStr:= (edHint.Text='') or (edHint.Text=edCmd.Text);
+      edCmd.Text:= FShowCmdHint(Cmd);
+      if SameStr then
+        edHint.Text:= edCmd.Text;
+    end;
+  end;
+end;
+
+procedure TfmToolbarProp.btnBrowseExtToolClick(Sender: TObject);
+var
+  L: TTntStringList;
+  i: Integer;
+  Item: TTntMenuItem;
+  p: TPoint;
+begin
+  if not Assigned(FGetExtTools) then Exit;
+  L:= TTntStringList.Create;
+  try
+    FGetExtTools(L);
+    MenuTool.Items.Clear;
+    for i:= 0 to L.Count-1 do
+    begin
+      Item:= TTntMenuItem.Create(Self);
+      Item.Caption:= L[i];
+      Item.OnClick:= MenuToolClick;
+      MenuTool.Items.Add(Item);
+    end;
+  finally
+    FreeAndNil(L)
+  end;
+
+  p:= btnBrowseExtTool.ClientToScreen(point(0, 0));
+  if MenuTool.Items.Count>0 then
+    MenuTool.Popup(p.x, p.y)
+  else
+    MessageBeep(mb_iconwarning);  
+end;
+
+procedure TfmToolbarProp.MenuToolClick(Sender: TObject);
+var
+  S: Widestring;
+  n: Integer;
+begin
+  S:= (Sender as TTntMenuItem).Caption;
+  n:= Listbox1.ItemIndex;
+  FToolbar[n].FCmd:= 'ext:'+S;
+  FToolbar[n].FHint:= 'External tool: '+S;
+  edCmd.Text:= FToolbar[n].FCmd;
+  edHint.Text:= FToolbar[n].FHint;
 end;
 
 end.

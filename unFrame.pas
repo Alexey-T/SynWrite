@@ -464,10 +464,13 @@ begin
   DoTitleChanged;
 end;
 
+
 function TEditorFrame.GetModified: boolean;
 begin
-  Result:= EditorMaster.Modified;
-  if FModifiedClr then Result:= False;
+  if FModifiedClr then
+    Result:= False
+  else
+    Result:= EditorMaster.Modified;
 end;
 
 procedure TEditorFrame.SetModified(const Value: boolean);
@@ -1152,7 +1155,11 @@ procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
 var
   Ed: TSyntaxMemo;
   C: TCanvas;
+  p: TPoint;
   i, X: Integer;
+const
+  cLineWidthMargin = 1; //1px line for column markers
+  cLineWidthColumn = 2; //2px thicker line for current column
 begin
   Ed:= Sender as TSyntaxMemo;
   C:= Ed.Canvas;
@@ -1161,11 +1168,22 @@ begin
     begin
       C.Pen.Color:= Ed.RightMarginColor;
       C.Pen.Style:= psSolid;
-      C.Pen.Width:= 1;
+      C.Pen.Width:= cLineWidthMargin;
       X:= Rect.Left + Ed.DefTextExt.cx * FColMarkers[i];
       C.MoveTo(X, Rect.Top);
       C.LineTo(X, Rect.Bottom);
     end;
+
+  if TfmMain(Owner).opShowCurrentColumn then
+  begin
+    C.Pen.Color:= Ed.RightMarginColor;
+    C.Pen.Style:= psSolid;
+    C.Pen.Width:= cLineWidthColumn;
+    p:= Ed.CaretPos;
+    X:= Ed.CaretToMouse(p.x, p.y).X;
+    C.MoveTo(X, Rect.Top);
+    C.LineTo(X, Rect.Bottom);
+  end;
 end;
 
 
@@ -1614,7 +1632,6 @@ begin
   Result:= FocusedEditor.CaretsCount;
 end;
 
-
 procedure TEditorFrame.CaretsProps(var NTop, NBottom: integer);
 begin
   FocusedEditor.CaretsProps(NTop, NBottom);
@@ -1624,6 +1641,7 @@ procedure TEditorFrame.TBXItemSplitCancelClick(Sender: TObject);
 begin
   ToggleSplitted;
 end;
+
 
 initialization
   CF_DRAGCOLOR:= RegisterClipboardFormat(CFSTR_DRAGCOLOR);
