@@ -10,8 +10,17 @@ uses
 
 type
   TShowCmdListProc = function: string of object;
-  TShowCmdHintProc = function(Cmd: string): Widestring of object;
+  TShowCmdHintProc = function(Cmd: Widestring): Widestring of object;
   TGetExtToolsProc = procedure(List: TTntStringList) of object;
+
+procedure DoShowToolbarProp(
+  const AIni, AId: string;
+  AShowCmdList: TShowCmdListProc;
+  AShowCmdHint: TShowCmdHintProc;
+  AGetExtTools: TGetExtToolsProc;
+  AForceSizeX,
+  AForceSizeY: Integer;
+  var AImageDir: string);
 
 type
   TToolbarProp = record
@@ -40,8 +49,6 @@ type
     btnBrowseIcon: TTntButton;
     btnBrowseCmd: TTntButton;
     GroupBoxProp: TTntGroupBox;
-    Label6: TTntLabel;
-    edCaption: TTntEdit;
     Label1: TTntLabel;
     LabelSize: TTntLabel;
     btnIconSize: TTntButton;
@@ -51,6 +58,16 @@ type
     DKLanguageController1: TDKLanguageController;
     btnBrowseExtTool: TTntButton;
     MenuTool: TTntPopupMenu;
+    btnBrowseMenu: TTntButton;
+    btnBrowseMenuSys: TTntButton;
+    MenuSys: TTntPopupMenu;
+    mnuRecFiles: TTntMenuItem;
+    mnuNewFile: TTntMenuItem;
+    mnuRecColors: TTntMenuItem;
+    mnuRecSessions: TTntMenuItem;
+    mnuEncChange: TTntMenuItem;
+    mnuEncConv: TTntMenuItem;
+    mnuTidy: TTntMenuItem;
     procedure FormShow(Sender: TObject);
     procedure btnIconSizeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -69,8 +86,18 @@ type
     procedure bOkClick(Sender: TObject);
     procedure btnBrowseCmdClick(Sender: TObject);
     procedure btnBrowseExtToolClick(Sender: TObject);
+    procedure btnBrowseMenuClick(Sender: TObject);
+    procedure mnuRecFilesClick(Sender: TObject);
+    procedure mnuNewFileClick(Sender: TObject);
+    procedure btnBrowseMenuSysClick(Sender: TObject);
+    procedure mnuRecColorsClick(Sender: TObject);
+    procedure mnuRecSessionsClick(Sender: TObject);
+    procedure mnuEncChangeClick(Sender: TObject);
+    procedure mnuEncConvClick(Sender: TObject);
+    procedure mnuTidyClick(Sender: TObject);
   private
     { Private declarations }
+    procedure DoMenuSys(const Cmd, Hint: Widestring);
     procedure MenuToolClick(Sender: TObject);
     procedure SwapBtn(var BFrom, BTo: TToolbarProp);
     procedure ClearBtn(var Btn: TToolbarProp);
@@ -78,12 +105,14 @@ type
     procedure MoveBtn(NFrom, NTo: integer);
   public
     { Public declarations }
-    //FCaption: Widestring;
     FSizeX,
     FSizeY: integer;
+    FImagesDir: string;
+    FForceSizeX,
+    FForceSizeY: integer;
     FToolbar: TToolbarProps;
     FToolbarIni: string;
-    FToolbarIndex: integer;
+    FToolbarId: string;
     FShowCmdList: TShowCmdListProc;
     FShowCmdHint: TShowCmdHintProc;
     FGetExtTools: TGetExtToolsProc;
@@ -93,6 +122,7 @@ implementation
 
 uses
   Types, IniFiles,
+  TntDialogs,
   ATxSProc,
   unToolbarSize, unToolbarIcon;
 
@@ -102,7 +132,22 @@ procedure TfmToolbarProp.FormShow(Sender: TObject);
 var
   sCmd, sHint, sFN: Widestring;
   i: Integer;
+const
+  sSep = ' — ';
 begin
+  //correct caption
+  sCmd:= Caption;
+  SDeleteFromW(sCmd, sSep);
+  Caption:= sCmd + sSep + FToolbarId;
+
+  //disable icon sizes
+  if (FForceSizeX>0) and (FForceSizeY>0) then
+  begin
+    FSizeX:= FForceSizeX;
+    FSizeY:= FForceSizeY;
+    btnIconSize.Enabled:= false;
+  end;
+
   LabelSize.Caption:= Format('%dx%d', [FSizeX, FSizeY]);
   with Listbox1 do
   begin
@@ -113,15 +158,14 @@ begin
 
   with TIniFile.Create(FToolbarIni) do
   try
-    //edCaption.Text:= UTF8Decode(ReadString(IntToStr(FToolbarIndex), 'cap', IntToStr(FToolbarIndex)));
     for i:= 0 to High(FToolbar) do
     begin
-      sCmd:= UTF8Decode(ReadString(IntToStr(FToolbarIndex), IntToStr(i)+'c', ''));
-      sHint:= UTF8Decode(ReadString(IntToStr(FToolbarIndex), IntToStr(i)+'h', ''));
-      sFN:= ReadString(IntToStr(FToolbarIndex), IntToStr(i)+'i', '');
+      sCmd:= UTF8Decode(ReadString(FToolbarId, IntToStr(i)+'c', ''));
+      sHint:= UTF8Decode(ReadString(FToolbarId, IntToStr(i)+'h', ''));
+      sFN:= ReadString(FToolbarId, IntToStr(i)+'i', '');
       SReplaceAllW(sFN, '{ini}', ExtractFileDir(FToolbarIni));
 
-      if sCmd='' then Break;
+      if (sCmd='') and (sHint='') and (sFN='') then Break;
       FToolbar[i].FCmd:= sCmd;
       FToolbar[i].FHint:= sHint;
       FToolbar[i].FImageFN:= sFN;
@@ -323,19 +367,29 @@ begin
   try
     FSizeX:= Self.FSizeX;
     FSizeY:= Self.FSizeY;
-    if (ShowModal=mrOk) and Assigned(FImage) then
+    FImagesDir:= Self.FImagesDir;
+    if ShowModal=mrOk then
     begin
-      dir:= ExtractFileDir(FToolbarIni)+'\Ico';
-      CreateDir(dir);
-      if PromptForFileName(fn, '*.png|*.png', 'png', '', dir, true) then
+      Self.FImagesDir:= FImagesDir;
+      //get filename
+      if FPngFilename<>'' then
+        fn:= FPngFilename
+      else
       begin
-        if Assigned(FToolbar[AIndex].FImage) then
-          FreeAndNil(FToolbar[AIndex].FImage);
-        FToolbar[AIndex].FImage:= FImage;
-        FToolbar[AIndex].FImageFN:= fn;
-        FImage.SaveToFile(fn);
-        Self.Listbox1.Invalidate;
+        dir:= ExtractFileDir(FToolbarIni)+'\Ico';
+        CreateDir(dir);
+        if not PromptForFileName(fn, '*.png|*.png', 'png', '', dir, true) then Exit;
       end;
+      //apply got filename
+      if Assigned(FToolbar[AIndex].FImage) then
+        FreeAndNil(FToolbar[AIndex].FImage);
+      FToolbar[AIndex].FImage:= TPngObject.Create;
+      FToolbar[AIndex].FImage.Assign(FImage);
+      FToolbar[AIndex].FImageFN:= fn;
+      //save to png only if not linked
+      if FPngFilename='' then
+        FImage.SaveToFile(fn);
+      Self.Listbox1.Invalidate;
     end;
   finally
     Free
@@ -355,6 +409,9 @@ begin
   edCmd.Enabled:= en;
   btnBrowseIcon.Enabled:= en;
   btnBrowseCmd.Enabled:= en;
+  btnBrowseExtTool.Enabled:= en;
+  btnBrowseMenu.Enabled:= en;
+  btnBrowseMenuSys.Enabled:= en;
   LabelHint.Enabled:= en;
   LabelCmd.Enabled:= en;
   LabelIcon.Enabled:= en;
@@ -455,24 +512,25 @@ var
 begin
   with TIniFile.Create(FToolbarIni) do
   try
-    //WriteString(IntToStr(FToolbarIndex), 'cap', UTF8Encode(edCaption.Text));
-    WriteInteger(IntToStr(FToolbarIndex), 'ix', FSizeX);
-    WriteInteger(IntToStr(FToolbarIndex), 'iy', FSizeY);
+    WriteInteger(FToolbarId, 'ix', FSizeX);
+    WriteInteger(FToolbarId, 'iy', FSizeY);
     for i:= 0 to High(FToolbar) do
-      if FToolbar[i].FCmd<>'' then
+      if (FToolbar[i].FCmd<>'') or
+        (FToolbar[i].FHint<>'') or
+        (FToolbar[i].FImageFN<>'') then
       begin
-        WriteString(IntToStr(FToolbarIndex), IntToStr(i)+'c', UTF8Encode(FToolbar[i].FCmd));
-        WriteString(IntToStr(FToolbarIndex), IntToStr(i)+'h', UTF8Encode(FToolbar[i].FHint));
+        WriteString(FToolbarId, IntToStr(i)+'c', UTF8Encode(FToolbar[i].FCmd));
+        WriteString(FToolbarId, IntToStr(i)+'h', UTF8Encode(FToolbar[i].FHint));
 
         fn:= FToolbar[i].FImageFN;
         SReplaceAllW(fn, ExtractFileDir(FToolbarIni), '{ini}');
-        WriteString(IntToStr(FToolbarIndex), IntToStr(i)+'i', fn);
+        WriteString(FToolbarId, IntToStr(i)+'i', fn);
       end
       else
       begin
-        DeleteKey(IntToStr(FToolbarIndex), IntToStr(i)+'c');
-        DeleteKey(IntToStr(FToolbarIndex), IntToStr(i)+'h');
-        DeleteKey(IntToStr(FToolbarIndex), IntToStr(i)+'i');
+        DeleteKey(FToolbarId, IntToStr(i)+'c');
+        DeleteKey(FToolbarId, IntToStr(i)+'h');
+        DeleteKey(FToolbarId, IntToStr(i)+'i');
       end;
   finally
     Free
@@ -541,6 +599,131 @@ begin
   FToolbar[n].FHint:= 'External tool: '+S;
   edCmd.Text:= FToolbar[n].FCmd;
   edHint.Text:= FToolbar[n].FHint;
+end;
+
+
+procedure DoShowToolbarProp(
+  const AIni, AId: string;
+  AShowCmdList: TShowCmdListProc;
+  AShowCmdHint: TShowCmdHintProc;
+  AGetExtTools: TGetExtToolsProc;
+  AForceSizeX,
+  AForceSizeY: Integer;
+  var AImageDir: string);
+begin
+  with TfmToolbarProp.Create(nil) do
+  try
+    FToolbarIni:= AIni;
+    FToolbarId:= AId;
+
+    FForceSizeX:= AForceSizeX;
+    FForceSizeY:= AForceSizeY;
+    with TIniFile.Create(FToolbarIni) do
+    try
+      FSizeX:= ReadInteger(FToolbarId, 'ix', 32);
+      FSizeY:= ReadInteger(FToolbarId, 'iy', 32);
+    finally
+      Free;
+    end;
+
+    FShowCmdList:= AShowCmdList;
+    FShowCmdHint:= AShowCmdHint;
+    FGetExtTools:= AGetExtTools;
+    FImagesDir:= AImageDir;
+
+    if ShowModal=mrOk then
+      AImageDir:= FImagesDir;
+  finally
+    Free;
+  end;
+end;
+
+procedure TfmToolbarProp.btnBrowseMenuClick(Sender: TObject);
+var
+  N: Integer;
+  MenuId, S: Widestring;
+begin
+  N:= Listbox1.ItemIndex;
+  if N<0 then Exit;
+
+  MenuId:= '';
+  S:= FToolbar[N].FCmd;
+  if SBegin(S, 'm:') then
+  begin
+    SDeleteToW(S, ':');
+    MenuId:= S;
+  end;
+
+  if WideInputQuery(btnBrowseMenu.Caption, 'Menu id:', MenuId) and (MenuId<>'') then
+  begin
+    S:= 'm:'+MenuId;
+    FToolbar[N].FCmd:= S;
+    edCmd.Text:= S;
+    DoShowToolbarProp(
+      FToolbarIni,
+      S,
+      FShowCmdList,
+      FShowCmdHint,
+      FGetExtTools,
+      FSizeX,
+      FSizeY,
+      FImagesDir);
+  end;
+end;
+
+procedure TfmToolbarProp.mnuRecFilesClick(Sender: TObject);
+begin
+  DoMenuSys('m:{recent}', mnuRecFiles.Caption);
+end;
+
+procedure TfmToolbarProp.mnuNewFileClick(Sender: TObject);
+begin
+  DoMenuSys('m:{new}', mnuNewFile.Caption);
+end;
+
+procedure TfmToolbarProp.mnuRecColorsClick(Sender: TObject);
+begin
+  DoMenuSys('m:{colors}', mnuRecColors.Caption);
+end;
+
+procedure TfmToolbarProp.DoMenuSys(const Cmd, Hint: Widestring);
+var
+  N: Integer;
+begin
+  N:= Listbox1.ItemIndex;
+  if N<0 then Exit;
+  FToolbar[N].FCmd:= Cmd;
+  FToolbar[N].FHint:= Hint;
+  edCmd.Text:= Cmd;
+  edHint.Text:= Hint;
+end;
+
+procedure TfmToolbarProp.btnBrowseMenuSysClick(Sender: TObject);
+var
+  p: TPoint;
+begin
+  p:= btnBrowseMenuSys.ClientToScreen(Point(0, 0));
+  MenuSys.Popup(p.x, p.y);
+end;
+
+procedure TfmToolbarProp.mnuRecSessionsClick(Sender: TObject);
+begin
+  DoMenuSys('m:{sess}', mnuRecSessions.Caption);
+end;
+
+procedure TfmToolbarProp.mnuEncChangeClick(Sender: TObject);
+begin
+  DoMenuSys('m:{enc-chg}', mnuEncChange.Caption);
+end;
+
+procedure TfmToolbarProp.mnuEncConvClick(Sender: TObject);
+begin
+  DoMenuSys('m:{enc-conv}', mnuEncConv.Caption);
+end;
+
+procedure TfmToolbarProp.mnuTidyClick(Sender: TObject);
+begin
+  DoMenuSys('m:{tidy}', mnuTidy.Caption);
 end;
 
 end.

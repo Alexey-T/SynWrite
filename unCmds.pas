@@ -45,16 +45,16 @@ const
   sm_FProps = 708;
 
   sm_OSetup = 709;
-  sm_OLexer = 710;
-  sm_OLexerLib = 711;
-  sm_ORO = 712;
-  sm_OOut = 713;
-  sm_OFullScr = 714;
-  sm_OTree = 715;
+  sm_OSetupLexer = 710;
+  sm_OSetupLexerLib = 711;
+  sm_OReadOnly = 712;
+  sm_OShowOut = 713;
+  //sm_OFullScr = 714; //see sm_FullScr
+  sm_OShowTree = 715;
   sm_ZoomOut = 716;
   sm_ZoomIn = 717;
   sm_Zoom0 = 718;
-  sm_OClip = 719;
+  sm_OShowClip = 719;
 
   sm_CopyAppend = 720;
   sm_CutAppend = 721;
@@ -68,9 +68,9 @@ const
 
   sm_ORuler = 729;
   sm_OWrap = 730;
-  sm_OLines = 731;
-  sm_OFold = 732;
-  sm_ONPrint = 733;
+  sm_OLineNums = 731;
+  sm_OFolding = 732;
+  sm_ONonPrint = 733;
   sm_ToggleFocusTree = 734;
   sm_ToggleFocusClip = 735;
   sm_ZenExpand = 736;
@@ -139,7 +139,7 @@ const
   sm_ProjectList = 796;
   sm_AlignWithSep = 797;
   sm_ToggleView2 = 798;
-  //free
+  sm_PasteAsColumnBlock = 799;
 
   sm_EncAnsi = 800;
   sm_EncOem = 801;
@@ -160,8 +160,8 @@ const
   sm_GotoPrevFindResult = 818;
   sm_SyncEdit = 819;
   sm_FullScr = 820;
-  sm_SyncH = 821;
-  sm_SyncV = 822;
+  sm_SyncScrollH = 821;
+  sm_SyncScrollV = 822;
   sm_OnTop = 823;
   sm_FillBlock = 824;
   sm_InsText = 825;
@@ -330,7 +330,29 @@ const
   sm_FoldLevel7 = 987;
   sm_FoldLevel8 = 988;
   sm_FoldLevel9 = 989;
+  //free
 
+  sm_ExtractDupsCase = 1000;
+  sm_ExtractDupsNoCase = 1001;
+  sm_ONonPrintOff = 1002;
+  sm_ONonPrintSpaces = 1003;
+  sm_ONonPrintEol = 1004;
+  sm_ONonPrintBoth = 1005;
+  sm_ONonPrintEolDetails = 1006;
+  //free
+
+  sm_TabColorDefault = 1100;
+  sm_TabColor1 = 1101;
+  sm_TabColor2 = 1102;
+  sm_TabColor3 = 1103;
+  sm_TabColor4 = 1104;
+  sm_TabColor5 = 1105;
+  sm_TabColor6 = 1106;
+  sm_TabColor7 = 1107;
+  sm_TabColor8 = 1108;
+  sm_TabColor9 = 1109;
+  sm_TabColor10 = 1110;
+  sm_TabColorCustom = 1111;
 
 implementation
 

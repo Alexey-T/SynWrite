@@ -149,7 +149,6 @@ type
     LabelAcpFileSize: TTntLabel;
     cbKeyCat: TTntComboBox;
     TntLabel19: TTntLabel;
-    cbShowEOL: TTntCheckBox;
     cbEsc: TTntComboBox;
     TntLabel21: TTntLabel;
     tabSearch: TTntTabSheet;
@@ -343,6 +342,11 @@ type
     cbCaretWidth: TTrackBar;
     TntLabel40: TTntLabel;
     edCaretType: TTntComboBox;
+    gNonPrint: TTntGroupBox;
+    cbNPrintShow: TTntCheckBox;
+    cbNPrintSp: TTntCheckBox;
+    cbNPrintEol: TTntCheckBox;
+    cbNPrintEolEx: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure tabEdShow(Sender: TObject);
@@ -880,9 +884,13 @@ begin
     TemplateEditor.ShowRightMargin:=cbMar.Checked;
     TemplateEditor.RightMargin:=edMar.Value;
     TemplateEditor.LineNumbers.NumberingStyle:=TLineNumberingStyle(edNums.ItemIndex);
-    TemplateEditor.ShowLineEnds:=cbShowEOL.Checked;
     TemplateEditor.StapleOffset:=edStapleOffset.Value;
     TemplateEditor.StaplePen.Style:=TPenStyle(cbStaples.ItemIndex);
+
+    opNonPrint:=cbNPrintShow.Checked;
+    opNonPrintSpaces:=cbNPrintSp.Checked;
+    opNonPrintEol:=cbNPrintEol.Checked;
+    opNonPrintEolDetail:=cbNPrintEolEx.Checked;
 
     opLink:= cbLink.Checked;
     opSingleClickURL:= cbUrlClick.Checked;
@@ -1709,7 +1717,6 @@ begin
     edMar.Value:=TemplateEditor.RightMargin;
     edLSpace.Value:=TemplateEditor.LineSpacing;
     edNums.ItemIndex:=Ord(TemplateEditor.LineNumbers.NumberingStyle);
-    cbShowEOL.Checked:=TemplateEditor.ShowLineEnds;
     cbColorOnEmpty.Checked:= not (soNormalSelToLineEnd in TemplateEditor.OptionsEx);
     edStapleOffset.Value:=TemplateEditor.StapleOffset;
     cbStaples.ItemIndex:= Ord(TemplateEditor.StaplePen.Style);
@@ -1720,6 +1727,11 @@ begin
     cbBrHi.Checked:=opBracketHi;
     cbBkUndo.Checked:=opBkUndo;
     cbShowCol.Checked:= opShowCurrentColumn;
+
+    cbNPrintShow.Checked:= opNonPrint;
+    cbNPrintSp.Checked:= opNonPrintSpaces;
+    cbNPrintEol.Checked:= opNonPrintEol;
+    cbNPrintEolEx.Checked:= opNonPrintEolDetail;
   end;
   tabEd2.Tag:=1;
 end;

@@ -102,9 +102,9 @@ type
     procedure EditorSlaveFinishAnalysis(Sender: TObject);
     procedure TBXItemSplitCancelClick(Sender: TObject);
   private
-    NotifAll,
-    NotifNAll: boolean;
-    Notif: TATFileNotificationSimple;
+    FNotifAllYes,
+    FNotifAllNo: boolean;
+    FNotif: TATFileNotificationSimple;
     FCollapsedString: Widestring;
     FCollapsedString2: Widestring;
     FCollapsedRestored: boolean;
@@ -311,10 +311,10 @@ constructor TEditorFrame.Create(AOwner: TComponent);
 begin
   inherited;
 
-  Notif:= TATFileNotificationSimple.Create(Self);
-  Notif.Timer.Enabled:= False;
-  Notif.Timer.Interval:= 1000;
-  Notif.OnChanged:= FileReload;
+  FNotif:= TATFileNotificationSimple.Create(Self);
+  FNotif.Timer.Enabled:= False;
+  FNotif.Timer.Interval:= 1000;
+  FNotif.OnChanged:= FileReload;
 
   FFtpInfoPtr:= nil;
   FFtpInfoSize:= 0;
@@ -826,14 +826,14 @@ end;
 
 procedure TEditorFrame.DoStartNotif;
 begin
-  Notif.FileName:= FileName;
-  Notif.Timer.Enabled:= (FileName <> '') and (TfmMain(Owner).opNotif > 0);
+  FNotif.FileName:= FileName;
+  FNotif.Timer.Enabled:= (FileName <> '') and (TfmMain(Owner).opNotif > 0);
 end;
 
 procedure TEditorFrame.DoStopNotif;
 begin
-  Notif.Timer.Enabled:= False;
-  Notif.FileName:= '';
+  FNotif.Timer.Enabled:= False;
+  FNotif.FileName:= '';
 end;
 
 destructor TEditorFrame.Destroy;
@@ -841,8 +841,8 @@ begin
   FreeFtpInfo;
 
   ecSpellChecker.Active:= false;
-  Notif.Timer.Enabled:= false;
-  FreeAndNil(Notif);
+  FNotif.Timer.Enabled:= false;
+  FreeAndNil(FNotif);
 
   inherited;
 end;
@@ -885,9 +885,9 @@ begin
   end
   else
   begin
-    if NotifAll then b:= true
+    if FNotifAllYes then b:= true
     else
-    if NotifNAll then b:= false
+    if FNotifAllNo then b:= false
     else
     begin
       b:= (TfmMain(Owner).opNotif = 1);
@@ -897,8 +897,8 @@ begin
         r:= WideMessageDlg(
           WideFormat(DKLangConstW('MRel'), [WideExtractFileName(FileName)]),
           mtWarning, [mbOk, mbCancel, mbYesToAll, mbNoToAll], 0);
-        NotifAll:= r = mrYesToAll;
-        NotifNAll:= r = mrNoToAll;
+        FNotifAllYes:= r = mrYesToAll;
+        FNotifAllNo:= r = mrNoToAll;
         b:= r in [mrOk, mrYesToAll];
       end;
     end;

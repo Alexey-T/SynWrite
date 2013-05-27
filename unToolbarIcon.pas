@@ -30,6 +30,7 @@ type
     LabelErr: TTntLabel;
     btnShell32: TTntButton;
     DKLanguageController1: TDKLanguageController;
+    btnPngLink: TTntRadioButton;
     procedure ListBox1MeasureItem(Control: TWinControl; Index: Integer;
       var Height: Integer);
     procedure ListBox1DrawItem(Control: TWinControl; Index: Integer;
@@ -39,6 +40,7 @@ type
     procedure bOkClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnShell32Click(Sender: TObject);
+    procedure TntFormDestroy(Sender: TObject);
   private
     { Private declarations }
     FFileNameDLL: string;
@@ -48,8 +50,10 @@ type
   public
     { Public declarations }
     FImage: TPngObject;
+    FPngFilename: string;
     FSizeX,
     FSizeY: integer;
+    FImagesDir: string;
   end;
 
 implementation
@@ -103,10 +107,17 @@ begin
     OD:= OpenDialogDLL
   else
     OD:= OpenDialogPNG;
+
+  FPngFilename:= '';
   OD.FileName:= '';
-  OD.InitialDir:= 'C:\';
-  if not OD.Execute then Exit;
-  OpnFile(OD.FileName);
+  OD.InitialDir:= FImagesDir;
+  if OD.Execute then
+  begin
+    OpnFile(OD.FileName);
+    if btnPngLink.Checked then
+      FPngFilename:= OD.Filename;
+    FImagesDir:= ExtractFileDir(OD.FileName);
+  end;
 end;
 
 procedure TfmToolbarIcon.OpnFile(const fn: string);
@@ -119,7 +130,7 @@ begin
     FFileNamePNG:= fn;
 
   ListBox1.Visible:= btnDLL.Checked;
-  Image1.Visible:= btnPNG.Checked;
+  Image1.Visible:= btnPNG.Checked or btnPngLink.Checked;
   LabelErr.Visible:= false;
   bOk.Enabled:= true;
 
@@ -144,7 +155,6 @@ begin
     Listbox1.ItemIndex:= 0;
   end
   else
-  if btnPNG.Checked then
     with Image1 do
     begin
       Picture.LoadFromFile(FFileNamePNG);
@@ -190,7 +200,6 @@ begin
 
   if FileExists(fn_png) then
   begin
-    FImage:= TPngObject.Create;
     FImage.LoadFromFile(fn_png);
     DeleteFile(fn_png);
     ModalResult:= mrOk;
@@ -202,7 +211,8 @@ end;
 
 procedure TfmToolbarIcon.FormCreate(Sender: TObject);
 begin
-  FImage:= nil;
+  FImage:= TPngObject.Create;
+  FPngFilename:= '';
 end;
 
 procedure TfmToolbarIcon.btnShell32Click(Sender: TObject);
@@ -211,6 +221,12 @@ begin
     OpnFile(SExpandVars('%windir%\system32\shell32.dll'))
   else
     MessageBeep(mb_iconwarning);  
+end;
+
+procedure TfmToolbarIcon.TntFormDestroy(Sender: TObject);
+begin
+  if Assigned(FImage) then
+    FreeAndNil(FImage);
 end;
 
 end.

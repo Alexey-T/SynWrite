@@ -7,6 +7,7 @@ uses
   Classes,
   Graphics,
   Controls,
+  StdCtrls,
   Messages,
   TntComCtrls, TntStdCtrls, TntClasses,
   ecSyntMemo,
@@ -17,6 +18,12 @@ uses
   ecSyntTree,
   TbxGraphics;
 
+function GetEditHandle(Target: TObject): THandle;
+//procedure FixEditBkSp(H: THandle);
+
+function FHelpLangSuffix: string;
+function FHelpFilename(const SynDir: string): string;
+
 function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
 function EditorWordLength(Ed: TSyntaxMemo): Integer;
 function DoInputFilename(const dkmsg: string; var S: Widestring): boolean;
@@ -25,6 +32,7 @@ function DoInputString(const dkmsg: string; var S: Widestring): boolean;
 function EditorShortSelText(Ed: TSyntaxMemo): Widestring;
 function EditorGetCollapsedRanges(Ed: TSyntaxMemo): string;
 procedure EditorSetCollapsedRanges(Ed: TSyntaxMemo; S: Widestring);
+procedure DoDeleteComboLastWord(ed: TTntCombobox);
 procedure DoDeleteComboItem(ed: TTntCombobox);
 procedure DoCheckDialogOverlapsCaret(Ed: TCustomSyntaxMemo; Form: TForm);
 function ScaleFontSize(Size: Integer; Form: TForm): Integer;
@@ -618,9 +626,41 @@ begin
   end;
 end;
 
+function FHelpLangSuffix: string;
+begin
+  //see contents of SynWrite LNG files - string "LANGID="
+  case LangManager.LanguageID of
+    1049: Result:= 'Ru';
+    1029: Result:= 'Cz';
+    1031: Result:= 'De';
+    1036: Result:= 'Fr';
+    1040: Result:= 'It';
+    1041: Result:= 'Jp';
+    2052: Result:= 'Chs';
+    3082: Result:= 'Sp';
+    else Result:= 'En';
+  end;
+end;
+
+function FHelpFilename(const SynDir: string): string;
+var
+  Suffix: string;
+begin
+  Suffix:= FHelpLangSuffix;
+  if Suffix='En' then
+    Suffix:= ''
+  else
+    Suffix:= '.'+Suffix;
+  //get localized filename  
+  Result:= SynDir + 'Readme\SynWrite' + Suffix + '.chm';
+  //localized file may not exist
+  if (Suffix<>'') and not FileExists(Result) then
+    Result:= SynDir + 'Readme\SynWrite' + '' + '.chm';
+end;
+
 procedure ShowHelp(const SynDir: string; ID: TSynHelpId; Handle: THandle);
 begin
-  FExecute('hh.exe', '"' + SynDir + 'Readme\SynWrite.chm::/' + cSynHelpId[ID] + '"', '', Handle);
+  FExecute('hh.exe', '"' + FHelpFilename(SynDir) + '::/' + cSynHelpId[ID] + '"', '', Handle);
 end;
 
 { TFinderInTree }
@@ -1447,6 +1487,21 @@ begin
     ed.Items.Delete(ed.ItemIndex);
 end;
 
+procedure DoDeleteComboLastWord(ed: TTntCombobox);
+var
+  N1, N2: Integer;
+begin
+  Exit; //todo
+  N1:= ed.SelStart;
+  if N1=0 then Exit;
+  N2:= N1-1;
+  while (N2>0) and IsWordChar(ed.Text[N2]) do
+    Dec(N2);
+  ed.SelStart:= N2;
+  ed.SelLength:= N1-N2;
+  ed.SelText:= '';
+end;
+
 function EditorGetCollapsedRanges(Ed: TSyntaxMemo): string;
 var
   i: Integer;
@@ -1564,6 +1619,45 @@ begin
       FreeAndNil(Image);
     end;
   end;
+end;
+
+{
+function SHAutoComplete(H: THandle; Flags: DWord): HResult; stdcall; external 'shlwapi.dll';
+const
+  SHACF_AUTOAPPEND_FORCE_OFF: DWord = $80000000;
+  SHACF_AUTOSUGGEST_FORCE_OFF: DWord = $20000000;
+
+procedure FixEditBkSp(H: THandle);
+begin
+  SHAutoComplete(H,
+    SHACF_AUTOAPPEND_FORCE_OFF or SHACF_AUTOSUGGEST_FORCE_OFF)
+end;
+}
+
+function GetEditHandle(Target: TObject): THandle;
+begin
+    Result := 0;
+    {
+    if (Target is TCustomEdit) then
+        Result := GetControl(Target).Handle
+    else} if (Target is TComboBox) then
+    begin
+        Result := GetWindow((Target as TWinControl).Handle, GW_CHILD);
+        if (Result <> 0) then
+        begin
+          if ((Target as TComboBox).Style = csSimple) then
+            Result := GetWindow(Result, GW_HWNDNEXT);
+        end;
+    end
+    else if (Target is TTntComboBox) then
+    begin
+        Result := GetWindow((Target as TWinControl).Handle, GW_CHILD);
+        if (Result <> 0) then
+        begin
+          if ((Target as TTntComboBox).Style = csSimple) then
+            Result := GetWindow(Result, GW_HWNDNEXT);
+        end;
+    end;
 end;
 
 

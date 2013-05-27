@@ -14,6 +14,7 @@ object fmToolbarIcon: TfmToolbarIcon
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnDestroy = TntFormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -64,11 +65,11 @@ object fmToolbarIcon: TfmToolbarIcon
     end
     object btnBrowse: TTntButton
       Left = 8
-      Top = 60
+      Top = 72
       Width = 97
       Height = 23
       Caption = 'Browse...'
-      TabOrder = 2
+      TabOrder = 3
       OnClick = btnBrowseClick
     end
     object ListBox1: TListBox
@@ -80,18 +81,26 @@ object fmToolbarIcon: TfmToolbarIcon
       Columns = 10
       ExtendedSelect = False
       ItemHeight = 36
-      TabOrder = 3
+      TabOrder = 5
       OnDrawItem = ListBox1DrawItem
       OnMeasureItem = ListBox1MeasureItem
     end
     object btnShell32: TTntButton
       Left = 112
-      Top = 60
+      Top = 72
       Width = 97
       Height = 23
       Caption = 'shell32.dll'
       TabOrder = 4
       OnClick = btnShell32Click
+    end
+    object btnPngLink: TTntRadioButton
+      Left = 8
+      Top = 48
+      Width = 300
+      Height = 17
+      Caption = 'Link PNG file'
+      TabOrder = 2
     end
   end
   object bOk: TTntButton
@@ -145,7 +154,7 @@ object fmToolbarIcon: TfmToolbarIcon
     Top = 204
     LangData = {
       0D00666D546F6F6C62617249636F6E010100000001000000070043617074696F
-      6E010E000000090047726F7570426F783100000600496D61676531000008004C
+      6E010F000000090047726F7570426F783100000600496D61676531000008004C
       6162656C4572720000060062746E444C4C010100000003000000070043617074
       696F6E00060062746E504E47010100000004000000070043617074696F6E0009
       0062746E42726F777365010100000005000000070043617074696F6E0008004C
@@ -153,6 +162,7 @@ object fmToolbarIcon: TfmToolbarIcon
       43617074696F6E000300624F6B010100000007000000070043617074696F6E00
       04006243616E010100000008000000070043617074696F6E000B00496D616765
       4C697374333200000B00496D6167654C697374313600000D004F70656E446961
-      6C6F67444C4C00000D004F70656E4469616C6F67504E470000}
+      6C6F67444C4C00000D004F70656E4469616C6F67504E4700000A0062746E506E
+      674C696E6B010100000009000000070043617074696F6E00}
   end
 end

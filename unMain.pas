@@ -2,11 +2,10 @@
 // SynWrite
 // Main form class
 //-------------------------------------------------------
-//{$define NoRO} //Make QuickView editable
 //{$define TabOrder} //Show tabs switch-order in caption
 //{$define P} //Disable projects
 //SPELL word must be defined in project options (if spell lib available)
-{$Q-} //Need to disable to avoid EIntOveflow in TabCtrl_GetXRect
+{$Q-} //Disable to avoid integer exception in TabCtrl_GetXRect (can't find)
 
 unit unMain;
 
@@ -78,7 +77,9 @@ type
     scmdTrimAll,
     scmdRemoveDupSpaces,
     scmdReverse,
-    scmdShuffle
+    scmdShuffle,
+    scmdExtractDupsCase,
+    scmdExtractDupsNoCase
     );
 
   TSynCopyNameCmd = (
@@ -182,7 +183,6 @@ type
     ImgListGutter: TTBImageList;
     TBXItemCtxCopy: TTBXItem;
     TBXSubmenuItemToolOpen: TTBXSubmenuItem;
-    MRUtbx: TTBXMRUListItem;
     TBXSwitcher: TTBXSwitcher;
     MRU: TTBXMRUList;
     SyntKeyMapping: TSyntKeyMapping;
@@ -248,7 +248,7 @@ type
     Tree: TSyntaxTreeView;
     ecTitleCase: TAction;
     TBXItemCCTitle: TTBXItem;
-    ecTree: TAction;
+    ecShowTree: TAction;
     TBXItemVTree: TTBXItem;
     ecPrintAction: TecPrintAction;
     ecPreviewAction: TecPreviewAction;
@@ -273,12 +273,10 @@ type
     TBXItemOOLexLib: TTBXItem;
     PopupLex: TTBXPopupMenu;
     ecWrap: TAction;
-    ecLines: TAction;
-    ecFold: TAction;
-    ecNPrint: TAction;
+    ecLineNums: TAction;
+    ecFolding: TAction;
+    ecNonPrint: TAction;
     fReread: TAction;
-    TBXSeparatorItem7: TTBXSeparatorItem;
-    TBXItemClr: TTBXItem;
     ImageListIconsStd: TImageList;
     TBXSeparatorItem8: TTBXSeparatorItem;
     ImageListIconsFogue16: TTBXImageList;
@@ -451,7 +449,7 @@ type
     TBXItemFSesSaveAs: TTBXItem;
     OD_Session: TTntOpenDialog;
     SD_Session: TTntSaveDialog;
-    TBXSubmenuItem25: TTBXSubmenuItem;
+    TBXSubmenuItemFRecents: TTBXSubmenuItem;
     MRUtbx2: TTBXMRUListItem;
     TBXSeparatorItem30: TTBXSeparatorItem;
     TBXItemFClr: TTBXItem;
@@ -519,7 +517,7 @@ type
     plOut: TTBXDockablePanel;
     ListOut: TTntListBox;
     TBXItemVOut: TTBXItem;
-    ecOut: TAction;
+    ecShowOut: TAction;
     TBXItemOOut: TTBXItem;
     PopupOut: TTBXPopupMenu;
     TBXItemOClr: TTBXItem;
@@ -559,7 +557,7 @@ type
     TBXItemZSet: TTBXItem;
     TBXItemZOther: TTBXItem;
     plClip: TTBXDockablePanel;
-    ecClip: TAction;
+    ecShowClip: TAction;
     TBXSeparatorItem25: TTBXSeparatorItem;
     TBXItemOClip: TTBXItem;
     PopupClip: TTBXPopupMenu;
@@ -589,8 +587,8 @@ type
     TBXSeparatorItem44: TTBXSeparatorItem;
     TBXItemVSyncH: TTBXItem;
     TBXItemVSyncV: TTBXItem;
-    ecSyncH: TAction;
-    ecSyncV: TAction;
+    ecSyncScrollH: TAction;
+    ecSyncScrollV: TAction;
     TBXItemOShell: TTBXItem;
     TBXSubmenuItemView: TTBXSubmenuItem;
     TBXItemOOnTop: TTBXItem;
@@ -943,7 +941,7 @@ type
     TBXItemFavManage: TTBXItem;
     fFavAddFile: TAction;
     fFavManage: TAction;
-    TBXMnuRecentColors: TTBXSubmenuItem;
+    TbxSubmenuItemRecentColors: TTBXSubmenuItem;
     ImageListColorRecent: TImageList;
     TBXItemCtxAddColor: TTBXItem;
     TBXItemFavAddProj: TTBXItem;
@@ -1137,6 +1135,32 @@ type
     ImageListUser1: TTBXImageList;
     ImageListUser2: TTBXImageList;
     ImageListUser3: TTBXImageList;
+    ecPasteAsColumnBlock: TAction;
+    ecExtractDupsCase: TAction;
+    ecExtractDupsNoCase: TAction;
+    TBXSeparatorItem7: TTBXSeparatorItem;
+    TBXItemEExtractDupNoCase: TTBXItem;
+    TBXItemEExtractDupCase: TTBXItem;
+    ecNonPrintOff: TAction;
+    ecNonPrintSpaces: TAction;
+    ecNonPrintEol: TAction;
+    ecNonPrintBoth: TAction;
+    TBXSubmenuItemNonPrint: TTBXSubmenuItem;
+    TBXSeparatorItem98: TTBXSeparatorItem;
+    TBXItemONPrintAll: TTBXItem;
+    TBXItemONPrintEol: TTBXItem;
+    TBXItemONPrintSpaces: TTBXItem;
+    PopupUserTB1: TTBXPopupMenu;
+    TBXItemUserTb1: TTBXItem;
+    PopupUserTB2: TTBXPopupMenu;
+    TBXItemUserTB2: TTBXItem;
+    PopupUserTB3: TTBXPopupMenu;
+    TBXItemUserTB3: TTBXItem;
+    TBXItemCtxPasteBkmkLines: TTBXItem;
+    TBXItemCtxPasteAsColumn: TTBXItem;
+    TBXSeparatorItem99: TTBXSeparatorItem;
+    TBXItemONPrintEolDetails: TTBXItem;
+    ecNonPrintEolDetails: TAction;
     procedure fOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1167,7 +1191,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure IncSearchChange(Sender: TObject; State: TIncSearchState);
     procedure plTreeVisibleChanged(Sender: TObject);
-    procedure ecTreeExecute(Sender: TObject);
+    procedure ecShowTreeExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ecPrinterSetupExecute(Sender: TObject);
     procedure SetFormat(Sender: TObject);
@@ -1191,9 +1215,9 @@ type
       Shift: TShiftState);
     procedure TBXItemAbClick(Sender: TObject);
     procedure ecWrapExecute(Sender: TObject);
-    procedure ecLinesExecute(Sender: TObject);
-    procedure ecFoldExecute(Sender: TObject);
-    procedure ecNPrintExecute(Sender: TObject);
+    procedure ecLineNumsExecute(Sender: TObject);
+    procedure ecFoldingExecute(Sender: TObject);
+    procedure ecNonPrintExecute(Sender: TObject);
     procedure fRereadExecute(Sender: TObject);
     procedure TBXItemClrClick(Sender: TObject);
     procedure tbViewMove(Sender: TObject);
@@ -1333,7 +1357,7 @@ type
     procedure TBXItemT12Click(Sender: TObject);
     procedure TBXItemSGoBracketClick(Sender: TObject);
     procedure plOutResize(Sender: TObject);
-    procedure ecOutExecute(Sender: TObject);
+    procedure ecShowOutExecute(Sender: TObject);
     procedure plOutVisibleChanged(Sender: TObject);
     procedure ListOutDblClick(Sender: TObject);
     procedure ListOutKeyDown(Sender: TObject; var Key: Word;
@@ -1364,7 +1388,7 @@ type
     procedure ListClipDblClick(Sender: TObject);
     procedure plClipResize(Sender: TObject);
     procedure plClipVisibleChanged(Sender: TObject);
-    procedure ecClipExecute(Sender: TObject);
+    procedure ecShowClipExecute(Sender: TObject);
     procedure TBXItemClipClrClick(Sender: TObject);
     procedure ecGotoNextFindResultExecute(Sender: TObject);
     procedure ecGotoPrevFindResultExecute(Sender: TObject);
@@ -1386,8 +1410,8 @@ type
     procedure TBXItemTbCloseAllClick(Sender: TObject);
     procedure TBXItemSpHorzClick(Sender: TObject);
     procedure PopupSplitterPopup(Sender: TObject);
-    procedure ecSyncHExecute(Sender: TObject);
-    procedure ecSyncVExecute(Sender: TObject);
+    procedure ecSyncScrollHExecute(Sender: TObject);
+    procedure ecSyncScrollVExecute(Sender: TObject);
     procedure Panel1MouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure TBXItemOShellClick(Sender: TObject);
@@ -1649,7 +1673,7 @@ type
     procedure TBXItemFavManageClick(Sender: TObject);
     procedure fFavManageExecute(Sender: TObject);
     procedure TBXItemCtxAddColorClick(Sender: TObject);
-    procedure TBXMnuRecentColorsPopup(Sender: TTBCustomItem;
+    procedure TbxSubmenuItemRecentColorsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemFavAddProjClick(Sender: TObject);
     procedure fFavAddFileExecute(Sender: TObject);
@@ -1862,6 +1886,17 @@ type
     procedure TBXItemOToolbar1Click(Sender: TObject);
     procedure TBXItemOToolbar2Click(Sender: TObject);
     procedure TBXItemOToolbar3Click(Sender: TObject);
+    procedure ecPasteAsColumnBlockExecute(Sender: TObject);
+    procedure ecExtractDupsCaseExecute(Sender: TObject);
+    procedure ecExtractDupsNoCaseExecute(Sender: TObject);
+    procedure TBXItemEExtractDupCaseClick(Sender: TObject);
+    procedure TBXItemEExtractDupNoCaseClick(Sender: TObject);
+    procedure ecNonPrintSpacesExecute(Sender: TObject);
+    procedure ecNonPrintEolExecute(Sender: TObject);
+    procedure ecNonPrintBothExecute(Sender: TObject);
+    procedure TBXItemCtxPasteAsColumnClick(Sender: TObject);
+    procedure TBXItemCtxPasteBkmkLinesClick(Sender: TObject);
+    procedure ecNonPrintEolDetailsExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -1877,6 +1912,7 @@ type
     cStatCaretsTopLn,
     cStatCaretsBotLn: Widestring;
 
+    FUserToolbarCommands: TTntStringList;
     FInitialDir: Widestring;
     FLastOnContinueCheck: DWORD;
     FLastCmdId: integer;
@@ -2051,7 +2087,9 @@ type
     function GetTabColors: Widestring;
     procedure SetTabColors(S: Widestring);
     property TabColorsString: Widestring read GetTabColors write SetTabColors;
-    procedure DoSetTabColor(NColor: Longint);
+    procedure DoSetFrameTabColor(F: TEditorFrame; NColor: Longint);
+    procedure DoSetTabColorValue(NColor: Longint);
+    procedure DoSetTabColorIndex(NIndex: Integer);
     procedure ClipsClick(Sender: TObject; const S: Widestring);
     procedure ClipsInsPress(Sender: TObject);
     function IsProgressNeeded(Ed: TSyntaxMemo): boolean;
@@ -2406,14 +2444,14 @@ type
     procedure SaveToolbarProp(Toolbar: TTbxToolbar; Ini: TCustomIniFile; const Id: string);
     procedure SavePanelProp(Panel: TTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
     procedure LoadPanelProp(Panel: TTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
-    procedure LoadToolbarContent(Toolbar: TTbxToolbar; NIndex: Integer; AutoShow: boolean = false);
-    //function DockTypeToName(Typ: TSynDock): string;
+    procedure LoadToolbarContent(Toolbar: TObject; Id: string; AutoShow: boolean = false);
     function DoShowCmdList: Integer;
     function DoShowCmdListStr: string;
-    function DoShowCmdHint(Cmd: string): Widestring;
+    function DoShowCmdHint(Cmd: Widestring): Widestring;
     procedure DoCustomizeToolbar(NIndex: Integer);
     procedure ToolbarUserClick(Sender: TObject);
     procedure DoExtToolsList(L: TTntStringList);
+    procedure EditorNonPrintUpdate(Ed: TSyntaxMemo);
     //end of private
 
   protected
@@ -2431,6 +2469,10 @@ type
     fmProgress: TfmProgress;
 
     //opt
+    opNonPrint,
+    opNonPrintSpaces,
+    opNonPrintEol,
+    opNonPrintEolDetail: boolean;
     opCaretType: integer;
     opShowCurrentColumn: boolean;
     opMaxTreeMatches: integer;
@@ -2578,7 +2620,6 @@ type
 
     //public methods
     //plugins related
-    function PluginLangSuffix: string;
     function PluginAction_TranslatePos(var PosX, PosY, PosAbs: Integer; Direction: Boolean): Integer;
     function PluginAction_ReplaceText(DelLen: Integer; BufPtr: Pointer; BufSize: Integer): Integer;
     function PluginAction_GetProp(id: Integer; Buffer: Pointer; Param: Integer): Integer;
@@ -2722,7 +2763,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.5.415';
+  cSynVer = '5.5.460';
 
 implementation
 
@@ -3377,6 +3418,14 @@ begin
   Result:= PagesToFrame(PageControl, PageControl.ActivePageIndex);
 end;
 
+procedure TfmMain.EditorNonPrintUpdate(Ed: TSyntaxMemo);
+begin
+  Ed.NonPrinted.Visible:= opNonPrint;
+  Ed.NonPrintedSpaces:= opNonPrintSpaces;
+  Ed.NonPrintedEol:= opNonPrintEol;
+  Ed.NonPrintedEolDetails:= opNonPrintEolDetail;
+end;  
+
 procedure EditorCaretUpdate(Ed: TSyntaxMemo; Opt: Integer);
 begin
   case Opt of
@@ -3422,6 +3471,9 @@ begin
   Result.HyperlinkHighlighter.Active:= opLink;
   Result.HyperlinkHighlighter.Style.Font.Color:= opColorLink;
   Result.HyperlinkHighlighter.SingleClick:= opSingleClickURL;
+
+  EditorNonPrintUpdate(Result.EditorMaster);
+  EditorNonPrintUpdate(Result.EditorSlave);
 
   Result.ShowMap:= opMicroMap;
   Result.MapColor:= opColorMap;
@@ -3777,18 +3829,21 @@ begin
   TbxItemTUser1.Visible:= tbUser1.Items.Count>0;
   TbxItemTUser2.Visible:= tbUser2.Items.Count>0;
   TbxItemTUser3.Visible:= tbUser3.Items.Count>0;
-  {
-  TbxItemTUser1.Caption:= tbUser1.Caption;
-  TbxItemTUser2.Caption:= tbUser2.Caption;
-  TbxItemTUser3.Caption:= tbUser3.Caption;
-  }
 
   ecReadOnly.Checked:= ro;
   ecWrap.Checked:= ed.WordWrap;
-  ecLines.Checked:= ed.LineNumbers.Visible;
-  ecFold.Checked:= not ed.DisableFolding;
-  ecNPrint.Checked:= ed.NonPrinted.Visible;
+  ecLineNums.Checked:= ed.LineNumbers.Visible;
+  ecFolding.Checked:= not ed.DisableFolding;
   ecRuler.Checked:= ed.HorzRuler.Visible;
+  ecSmartHl.Checked:= opSmartHi;
+  ecFullScr.Checked:= FullScr;
+
+  ecNonPrint.Checked:= ed.NonPrinted.Visible;
+  ecNonPrintOff.Checked:= not ed.NonPrinted.Visible;
+  ecNonPrintSpaces.Checked:= ed.NonPrinted.Visible and ed.NonPrintedSpaces and not ed.NonPrintedEol;
+  ecNonPrintEol.Checked:= ed.NonPrinted.Visible and not ed.NonPrintedSpaces and ed.NonPrintedEol;
+  ecNonPrintBoth.Checked:= ed.NonPrinted.Visible and ed.NonPrintedSpaces and ed.NonPrintedEol;
+  ecNonPrintEolDetails.Checked:= ed.NonPrintedEolDetails;
 
   ecReplace.Enabled:= not ro;
   ecRepeatCmd.Enabled:= (not ro) and (FLastCmdId>0);
@@ -3865,8 +3920,8 @@ begin
   TbxSubmenuCase.Enabled:= sel and not ro;
 
   ecSpellLive.Checked:= Frame.SpellLive;
-  ecSyncV.Enabled:= PageControl2.Visible;
-  ecSyncH.Enabled:= ecSyncV.Enabled;
+  ecSyncScrollV.Enabled:= PageControl2.Visible;
+  ecSyncScrollH.Enabled:= ecSyncScrollV.Enabled;
 
   ecPrintAction.Update;
   ecPreviewAction.Update;
@@ -3989,9 +4044,9 @@ begin
       LoadToolbarProp(tbUser2, ini, 'U2');
       LoadToolbarProp(tbUser3, ini, 'U3');
 
-      LoadToolbarContent(tbUser1, 1);
-      LoadToolbarContent(tbUser2, 2);
-      LoadToolbarContent(tbUser3, 3);
+      LoadToolbarContent(tbUser1, '1');
+      LoadToolbarContent(tbUser2, '2');
+      LoadToolbarContent(tbUser3, '3');
     end
     else
     begin
@@ -4176,6 +4231,12 @@ begin
     opColorMap:= ReadInteger('View', 'MapColor', clSkyBlue);
     opShowCurrentColumn:= ReadBool('View', 'CurrCol', false);
     opCaretType:= ReadInteger('View', 'CarWidth', 0);
+
+    NCount:= ReadInteger('View', 'NPrint', 0+2+4);
+    opNonPrint:=       (NCount and 1)<>0;
+    opNonPrintSpaces:= (NCount and 2)<>0;
+    opNonPrintEol:=    (NCount and 4)<>0;
+    opNonPrintEolDetail:= (NCount and 8)<>0;
 
     opBigSize:= ReadInteger('Setup', 'BigSize', 4);
     opBkUndo:= ReadBool('Setup', 'BkUndo', false);
@@ -4424,6 +4485,11 @@ begin
     WriteBool('View', 'MicroMap', opMicroMap);
     WriteBool('View', 'CurrCol', opShowCurrentColumn);
     WriteInteger('View', 'CarWidth', opCaretType);
+    WriteInteger('View', 'NPrint',
+      Ord(opNonPrint)*1 +
+      Ord(opNonPrintSpaces)*2 +
+      Ord(opNonPrintEol)*4 +
+      Ord(opNonPrintEolDetail)*8);
 
     //auto-save
     WriteBool('ASave', 'OnTime', opASaveOnTimer);
@@ -4864,10 +4930,8 @@ begin
       SyntaxManager.CurrentLexer:=TextSource.SyntaxAnalyzer;
       SyntaxManagerChange(Self);
 
-      {$ifndef NoRO}
       if QuickView then
         TextSource.ReadOnly:= true;
-      {$endif}
 
       EditorSlave.WordWrap:=tmp.Wrap;
       EditorMaster.WordWrap:=tmp.Wrap;
@@ -5560,6 +5624,7 @@ begin
     sm_JumpColumnMarkerRight: ecJumpColumnMarkerRight.Execute;
     sm_PasteNoCursorChange: ecPasteNoCurChange.Execute;
     sm_PasteToColumn1: ecPasteToColumn1.Execute;
+    sm_PasteAsColumnBlock: ecPasteAsColumnBlock.Execute;
     sm_JumpMixedCaseLeft: ecJumpMixedCaseLeft.Execute;
     sm_JumpMixedCaseRight: ecJumpMixedCaseRight.Execute;
     sm_CancelSelection: ecCancelSelection.Execute;
@@ -5578,8 +5643,6 @@ begin
     sm_DeleteToFileEnd: ecDeleteToFileEnd.Execute;
 
     //blank operations
-    sm_RemoveDupsAll: ecDedupAll.Execute;
-    sm_RemoveDupsAdjacent: ecDedupAdjacent.Execute;
     sm_RemoveBlanks: ecRemoveBlanks.Execute;
     sm_ReduceBlanks: ecReduceBlanks.Execute;
     sm_TrimLead: ecTrimLead.Execute;
@@ -5608,6 +5671,11 @@ begin
 
     sm_MarkersClear: ecMarkersClear.Execute;
     sm_JumpToLastMarker: ecJumpToLastMarker.Execute;
+
+    sm_RemoveDupsAll: ecDedupAll.Execute;
+    sm_RemoveDupsAdjacent: ecDedupAdjacent.Execute;
+    sm_ExtractDupsCase: ecExtractDupsCase.Execute;
+    sm_ExtractDupsNoCase: ecExtractDupsNoCase.Execute;
 
     //tree
     sm_TreeNext: ecTreeNext.Execute;
@@ -5732,10 +5800,10 @@ begin
       ecFullScr.Execute;
     sm_OnTop:
       ecOnTop.Execute;
-    sm_SyncH:
-      ecSyncH.Execute;
-    sm_SyncV:
-      ecSyncV.Execute;
+    sm_SyncScrollH:
+      ecSyncScrollH.Execute;
+    sm_SyncScrollV:
+      ecSyncScrollV.Execute;
     sm_FillBlock:
       DoFillBlock;
     sm_InsText:
@@ -5803,16 +5871,16 @@ begin
     sm_FExpHtml: fExportHTMLAction.Execute;
 
     sm_OSetup: fSetup.Execute;
-    sm_OLexer: fCustomizeLexer.Execute;
-    sm_OLexerLib: fCustomizeLexerLib.Execute;
-    sm_ORO: ecReadOnly.Execute;
-    sm_OTree: ecTree.Execute;
-    sm_OClip: ecClip.Execute;
-    sm_OOut: ecOut.Execute;
+    sm_OSetupLexer: fCustomizeLexer.Execute;
+    sm_OSetupLexerLib: fCustomizeLexerLib.Execute;
+    sm_OReadOnly: ecReadOnly.Execute;
+    sm_OShowTree: ecShowTree.Execute;
+    sm_OShowClip: ecShowClip.Execute;
+    sm_OShowOut: ecShowOut.Execute;
     sm_OWrap: ecWrap.Execute;
-    sm_OLines: ecLines.Execute;
-    sm_OFold: ecFold.Execute;
-    sm_ONPrint: ecNPrint.Execute;
+    sm_OLineNums: ecLineNums.Execute;
+    sm_OFolding: ecFolding.Execute;
+    sm_ONonPrint: ecNonPrint.Execute;
     sm_ORuler: ecRuler.Execute;
     sm_ToggleSmartHl: ecSmartHl.Execute;
 
@@ -5894,6 +5962,12 @@ begin
         SHint[ccTxt]:= WideFormat(DKLangConstW('Zoom'), [Ed.Zoom]);
       end;
 
+    sm_ONonPrintOff: ecNonPrintOff.Execute;
+    sm_ONonPrintSpaces: ecNonPrintSpaces.Execute;
+    sm_ONonPrintEol: ecNonPrintEol.Execute;
+    sm_ONonPrintBoth: ecNonPrintBoth.Execute;
+    sm_ONonPrintEolDetails: ecNonPrintEolDetails.Execute;
+
     sm_FoldLevel2: DoFoldLevel(2);
     sm_FoldLevel3: DoFoldLevel(3);
     sm_FoldLevel4: DoFoldLevel(4);
@@ -5903,11 +5977,25 @@ begin
     sm_FoldLevel8: DoFoldLevel(8);
     sm_FoldLevel9: DoFoldLevel(9);
 
+    sm_TabColorDefault: DoSetTabColorIndex(0);
+    sm_TabColorCustom: DoSetTabColorIndex(-1);
+    sm_TabColor1: DoSetTabColorIndex(1);
+    sm_TabColor2: DoSetTabColorIndex(2);
+    sm_TabColor3: DoSetTabColorIndex(3);
+    sm_TabColor4: DoSetTabColorIndex(4);
+    sm_TabColor5: DoSetTabColorIndex(5);
+    sm_TabColor6: DoSetTabColorIndex(6);
+    sm_TabColor7: DoSetTabColorIndex(7);
+    sm_TabColor8: DoSetTabColorIndex(8);
+    sm_TabColor9: DoSetTabColorIndex(9);
+    sm_TabColor10: DoSetTabColorIndex(10);
+
+    //end of commands list
     else
       Handled:= false;
   end;
 
-  //Workaround for non-recorded commands
+  //workaround for non-recorded commands
   //(EC issue)
   if Handled or IsCommandAllowedInMacro(Command) then
     DoRecordToMacro(Command, nil);
@@ -6651,10 +6739,10 @@ end;
 
 procedure TfmMain.plTreeVisibleChanged(Sender: TObject);
 begin
-  ecTree.Checked:= plTree.Visible;
+  ecShowTree.Checked:= plTree.Visible;
 end;
 
-procedure TfmMain.ecTreeExecute(Sender: TObject);
+procedure TfmMain.ecShowTreeExecute(Sender: TObject);
 begin
   with plTree do
     Visible:= not Visible;
@@ -6783,6 +6871,9 @@ begin
   Cur:= LoadCursor(HInstance, 'GCURSOR');
   if Cur>0 then
     Screen.Cursors[1]:= Cur;
+
+  //others
+  FUserToolbarCommands:= TTntStringList.Create;  
 end;
 
 procedure TfmMain.ecPrinterSetupExecute(Sender: TObject);
@@ -6950,6 +7041,8 @@ end;
 
 procedure TfmMain.FormDestroy(Sender: TObject);
 begin
+  FreeAndNil(FUserToolbarCommands);
+
   FreeAndNil(TabSwitcher2);
   FreeAndNil(TabSwitcher);
 
@@ -8543,7 +8636,7 @@ begin
   UpdateStatusbar;
 end;
 
-procedure TfmMain.ecLinesExecute(Sender: TObject);
+procedure TfmMain.ecLineNumsExecute(Sender: TObject);
 begin
   with CurrentFrame do
   begin
@@ -8557,7 +8650,7 @@ begin
   UpdateStatusbar;
 end;
 
-procedure TfmMain.ecFoldExecute(Sender: TObject);
+procedure TfmMain.ecFoldingExecute(Sender: TObject);
 begin
   with CurrentFrame do begin
     EditorMaster.DisableFolding:= not EditorMaster.DisableFolding;
@@ -8568,10 +8661,11 @@ begin
   UpdateStatusbar;
 end;
 
-procedure TfmMain.ecNPrintExecute(Sender: TObject);
+procedure TfmMain.ecNonPrintExecute(Sender: TObject);
 begin
-  CurrentEditor.NonPrinted.Visible:= not CurrentEditor.NonPrinted.Visible;
-  TemplateEditor.NonPrinted.Visible:= CurrentEditor.NonPrinted.Visible;
+  with CurrentEditor do
+    NonPrinted.Visible:= not NonPrinted.Visible;
+  //TemplateEditor.NonPrinted.Visible:= CurrentEditor.NonPrinted.Visible;
   UpdateStatusbar;
 end;
 
@@ -9283,6 +9377,13 @@ procedure TfmMain.UpdateShortcuts;
     K2str(item, ShortcutToText(ShFor(id)));
   end;
 begin
+  K(TBXItemONPrintSpaces, sm_ONonPrintSpaces);
+  K(TBXItemONPrintEol, sm_ONonPrintEol);
+  K(TBXItemONPrintAll, sm_ONonPrintBoth);
+  K(TBXItemONPrintEolDetails, sm_ONonPrintEolDetails);
+
+  K(TBXItemEExtractDupCase, sm_ExtractDupsCase);
+  K(TBXItemEExtractDupNoCase, sm_ExtractDupsNoCase);
   K(TBXItemEReverse, sm_ReverseLines);
   K(TBXItemEShuffle, sm_ShuffleLines);
   K(TBXItemSSelExtend, sm_SelectionExtend);
@@ -9406,8 +9507,8 @@ begin
   K(TbxItemWin9, sm_Tab9);
 
   //view
-  K(TbxItemVSyncHorz, sm_SyncH);
-  K(TbxItemVSyncVert, sm_SyncV);
+  K(TbxItemVSyncHorz, sm_SyncScrollH);
+  K(TbxItemVSyncVert, sm_SyncScrollV);
   K(TbxItemVSpellLive, sm_SpellLive);
   K(TbxItemVSpellCheck, sm_SpellCheck);
 
@@ -9572,8 +9673,8 @@ begin
 
   //opt
   K(tbxItemOSetup, sm_OSetup);
-  K(tbxItemOLexer, sm_OLexer);
-  K(tbxItemOLexerLib, sm_OLexerLib);
+  K(tbxItemOLexer, sm_OSetupLexer);
+  K(tbxItemOLexerLib, sm_OSetupLexerLib);
   //search
   K(tbxItemSRep, smReplaceDialog);
   K(tbxItemSRepFiles, sm_ReplaceInFiles);
@@ -9586,14 +9687,14 @@ begin
   K(TBXItemSGoBracket, smChangeRangeSide);
   K(TbxItemSSelBrackets, sm_SelectBrackets);
   //
-  K(tbxItemORO, sm_ORO);
-  K(tbxItemOTree, sm_OTree);
-  K(tbxItemOOut, sm_OOut);
-  K(tbxItemOClip, sm_OClip);
-  K(tbxItemOFold, sm_OFold);
+  K(tbxItemORO, sm_OReadOnly);
+  K(tbxItemOTree, sm_OShowTree);
+  K(tbxItemOOut, sm_OShowOut);
+  K(tbxItemOClip, sm_OShowClip);
+  K(tbxItemOFold, sm_OFolding);
   K(tbxItemOWrap, sm_OWrap);
-  K(tbxItemONums, sm_OLines);
-  K(tbxItemONPrint, sm_ONPrint);
+  K(tbxItemONums, sm_OLineNums);
+  K(tbxItemONPrint, sm_ONonPrint);
   K(tbxItemORuler, sm_ORuler);
 
   //=========popup menus
@@ -9612,6 +9713,8 @@ begin
   K2(TbxItemCtxCopyRTF, sm_CopyAsRTF);
   K2(TbxItemCtxPasteNoCurChange, sm_PasteNoCursorChange);
   K2(TBXItemCtxPasteToColumn1, sm_PasteToColumn1);
+  K2(TBXItemCtxPasteAsColumn, sm_PasteAsColumnBlock);
+  K2(TBXItemCtxPasteBkmkLines, sm_BkPaste);
 
   //clip popup menu
   K2(TBXItemClipFind, smFindDialog);
@@ -9669,7 +9772,7 @@ end;
 
 procedure TfmMain.TBXItemHHelpClick(Sender: TObject);
 begin
-  FOpenURL(SynDir + 'Readme\SynWrite.chm', Handle);
+  FOpenURL(FHelpFilename(SynDir), Handle);
 end;
 
 procedure TfmMain.TBXSubmenuEncPopup(Sender: TTBCustomItem;
@@ -12533,7 +12636,7 @@ begin
   tbViewMove(Self);
 end;
 
-procedure TfmMain.ecOutExecute(Sender: TObject);
+procedure TfmMain.ecShowOutExecute(Sender: TObject);
 begin
   with plOut do
   begin
@@ -12548,7 +12651,7 @@ end;
 
 procedure TfmMain.plOutVisibleChanged(Sender: TObject);
 begin
-  ecOut.Checked:= plOut.Visible;
+  ecShowOut.Checked:= plOut.Visible;
   if not plOut.Visible then //Apply when X icon pressed
   begin
     FOutVisible:= false;
@@ -13646,10 +13749,10 @@ end;
 
 procedure TfmMain.plClipVisibleChanged(Sender: TObject);
 begin
-  ecClip.Checked:= plClip.Visible;
+  ecShowClip.Checked:= plClip.Visible;
 end;
 
-procedure TfmMain.ecClipExecute(Sender: TObject);
+procedure TfmMain.ecShowClipExecute(Sender: TObject);
 begin
   with plClip do
     Visible:= not Visible;
@@ -13875,11 +13978,11 @@ begin
       Result:= opLastDirPath;
   end;
 
-  if not IsDirExist(Result) then
+  if (Result<>'') and not IsDirExist(Result) then
   begin
     SHint[-1]:= DKLangConstW('MNFoundFold')+': '+Result;
     MsgBeep;
-    Result:= 'C:\'; //SynIniDir;
+    Result:= 'C:\';
   end;
 end;
 
@@ -13925,6 +14028,9 @@ begin
       //apply "Show wrap mark"
       EditorMaster.Gutter.LineBreakObj:= IfThen(opShowWrapMark, 0, -1);
       EditorSlave.Gutter.LineBreakObj:= EditorMaster.Gutter.LineBreakObj;
+      //apply non-printed
+      EditorNonPrintUpdate(EditorMaster);
+      EditorNonPrintUpdate(EditorSlave);
     end;
 end;
 
@@ -14039,7 +14145,7 @@ end;
 procedure TfmMain.ecFullScrExecute(Sender: TObject);
 begin
   FullScr:= not FullScr;
-  ecFullScr.Checked:= FullScr;
+  UpdateStatusbar;
 end;
 
 procedure TfmMain.SetOnTop(V: boolean);
@@ -14386,15 +14492,15 @@ begin
   TBXItemSpHorz.Checked:= FSplitHorz;
 end;
 
-procedure TfmMain.ecSyncHExecute(Sender: TObject);
+procedure TfmMain.ecSyncScrollHExecute(Sender: TObject);
 begin
-  with ecSyncH do
+  with ecSyncScrollH do
     Checked:= not Checked;
 end;
 
-procedure TfmMain.ecSyncVExecute(Sender: TObject);
+procedure TfmMain.ecSyncScrollVExecute(Sender: TObject);
 begin
-  with ecSyncV do
+  with ecSyncScrollV do
     Checked:= not Checked;
 end;
 
@@ -14404,7 +14510,7 @@ var
   P1, P: TTntPageControl;
   F: TEditorFrame;
 begin
-  if not (ecSyncV.Checked or ecSyncH.Checked) then Exit;
+  if not (ecSyncScrollV.Checked or ecSyncScrollH.Checked) then Exit;
   if (Src=nil) then Exit;
 
  //parents are:
@@ -14421,9 +14527,9 @@ begin
   Oth:= F.EditorMaster;
   if Oth.Lines.Count=0 then Exit;
 
-  if ecSyncV.Checked then
+  if ecSyncScrollV.Checked then
     Oth.TopLine:= Src.TopLine;
-  if ecSyncH.Checked then
+  if ecSyncScrollH.Checked then
     Oth.ScrollPosX:= Src.ScrollPosX;
 end;
 
@@ -14497,10 +14603,8 @@ begin
   begin
     if not QuickView then
       if opStartRO then RO;
-    {$ifndef NoRO}
     if QuickView then
       if NeedQViewRO then RO else NoRO;
-    {$endif}
   end
   else
   begin
@@ -15291,7 +15395,7 @@ procedure TfmMain.ecToggleFocusTreeExecute(Sender: TObject);
 begin
   if not plTree.Visible then
   begin
-    ecTree.Execute;
+    ecShowTree.Execute;
     UpdLeft(tbTree);
     if Self.Enabled and Tree.CanFocus then
       Tree.SetFocus
@@ -15311,7 +15415,7 @@ procedure TfmMain.ecToggleFocusClipExecute(Sender: TObject);
 begin
   if not plClip.Visible then
   begin
-    ecClip.Execute;
+    ecShowClip.Execute;
     UpdRight(tbClip);
     if fmClip.ListClip.CanFocus then
       fmClip.ListClip.SetFocus;
@@ -15558,7 +15662,7 @@ procedure TfmMain.ecToggleFocusOutputExecute(Sender: TObject);
 begin
   if not plOut.Visible then
   begin
-    ecOut.Execute;
+    ecShowOut.Execute;
     UpdOut(tbOut);
     if Self.Enabled and ListOut.CanFocus then
       ListOut.SetFocus;
@@ -15751,7 +15855,7 @@ procedure TfmMain.ecToggleFocusFindResExecute(Sender: TObject);
 begin
   if not plOut.Visible then
   begin
-    ecOut.Execute;
+    ecShowOut.Execute;
     UpdOut(tbFind);
     if Self.Enabled and TreeFind.CanFocus then
       TreeFind.SetFocus;
@@ -16860,7 +16964,7 @@ procedure TfmMain.ecToggleFocusValidateExecute(Sender: TObject);
 begin
   if not plOut.Visible then
   begin
-    ecOut.Execute;
+    ecShowOut.Execute;
     UpdOut(tbVal);
     if Self.Enabled and ListVal.CanFocus then
       ListVal.SetFocus;
@@ -17567,7 +17671,7 @@ procedure TfmMain.ecToggleFocusMapExecute(Sender: TObject);
 begin
   if not plClip.Visible then
   begin
-    ecClip.Execute;
+    ecShowClip.Execute;
     UpdRight(tbMap);
     if Assigned(fmMap) and fmMap.edMap.CanFocus then
       fmMap.edMap.SetFocus;
@@ -19606,15 +19710,15 @@ end;
 procedure TfmMain.ApplyShowRecentColors;
 begin
   case opShowRecentColors of
-    0: TbxMnuRecentColors.Visible:= ImageListColorRecent.Count>1;
-    1: TbxMnuRecentColors.Visible:= true;
-    2: TbxMnuRecentColors.Visible:= false;
+    0: TbxSubmenuItemRecentColors.Visible:= ImageListColorRecent.Count>1;
+    1: TbxSubmenuItemRecentColors.Visible:= true;
+    2: TbxSubmenuItemRecentColors.Visible:= false;
   end;
 end;
 
 procedure TfmMain.DoClearRecentColors;
 begin
-  TbxMnuRecentColors.Clear;
+  TbxSubmenuItemRecentColors.Clear;
 
   //leave only 1st color ico
   with ImageListColorRecent do
@@ -19646,14 +19750,14 @@ begin
   Item.OnClick:= RecentColorClick;
   Item.Images:= ImageListColorRecent;
   Item.ImageIndex:= Item.Images.Count-1;
-  TbxMnuRecentColors.Insert(cColorIdxMin, Item);
+  TbxSubmenuItemRecentColors.Insert(cColorIdxMin, Item);
 end;
 
 procedure TfmMain.DoDeleteRecentColor(N: Integer);
 var
   i: Integer;
 begin
-  with TbxMnuRecentColors do
+  with TbxSubmenuItemRecentColors do
     for i:= cColorIdxMin to Count-1 do
       if Items[i].Tag=N then
       begin
@@ -20082,7 +20186,7 @@ procedure TfmMain.ecToggleFocusProjectExecute(Sender: TObject);
 begin
   if not plTree.Visible then
   begin
-    ecTree.Execute;
+    ecShowTree.Execute;
     UpdLeft(tbProj);
     if Assigned(fmProj) then
       if fmProj.TreeProj.CanFocus then
@@ -20690,7 +20794,7 @@ var
   i: Integer;
 begin
   Result:= '';
-  with TbxMnuRecentColors do
+  with TbxSubmenuItemRecentColors do
     for i:= Count-1 downto cColorIdxMin do
       Result:= Result+ Color2str(Items[i].Tag)+',';
 end;
@@ -20722,7 +20826,7 @@ var
   ItemSep: TTbxSeparatorItem;
 begin
   //add menu items and separator
-  with TbxMnuRecentColors do
+  with TbxSubmenuItemRecentColors do
     if Count=0 then
     begin
       Item:= TTbxItem.Create(Self);
@@ -20754,13 +20858,13 @@ begin
     end;
 end;
 
-procedure TfmMain.TBXMnuRecentColorsPopup(Sender: TTBCustomItem;
+procedure TfmMain.TbxSubmenuItemRecentColorsPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
   en: boolean;
 begin
   DoInitRecentColorsMenu;
-  with TbxMnuRecentColors do
+  with TbxSubmenuItemRecentColors do
     if Count>0 then
     begin
       Items[0].Caption:= TBXItemEColor.Caption;
@@ -20980,7 +21084,7 @@ procedure TfmMain.ecToggleFocusClipsExecute(Sender: TObject);
 begin
   if not plClip.Visible then
   begin
-    ecClip.Execute;
+    ecShowClip.Execute;
     UpdRight(tbTextClips);
     if Assigned(fmClips) then
       if fmClips.List.CanFocus then
@@ -21170,7 +21274,7 @@ end;
 
 procedure TfmMain.MsgCloseHint(panelType: TPanelType);
 const
-  Cmd: array[TPanelType] of integer = (sm_OTree, sm_OClip, sm_OOut);
+  Cmd: array[TPanelType] of integer = (sm_OShowTree, sm_OShowClip, sm_OShowOut);
 begin
   SHint[-1]:= DKLangConstW('zMCloseHint') + ' ' + ShortcutToText(ShFor(Cmd[panelType]));
 end;
@@ -21195,19 +21299,51 @@ end;
 
 procedure TfmMain.TBXTabColorChange(Sender: TObject);
 begin
-  DoSetTabColor(TbxTabColor.Color);
+  DoSetTabColorValue(TbxTabColor.Color);
 end;
 
-procedure TfmMain.DoSetTabColor(NColor: Longint);
-var F: TEditorFrame;
+procedure TfmMain.DoSetFrameTabColor(F: TEditorFrame; NColor: Longint);
 begin
-  F:= FClickedFrame;
   if F<>nil then
   begin
     F.TabColor:= NColor;
     PageControl1.Invalidate;
     PageControl2.Invalidate;
   end;
+end;
+
+procedure TfmMain.DoSetTabColorValue(NColor: Longint);
+begin
+  DoSetFrameTabColor(FClickedFrame, NColor);
+end;
+
+procedure TfmMain.DoSetTabColorIndex(NIndex: Integer);
+var
+  NColor: TColor;
+begin
+  case NIndex of
+    0:
+      NColor:= clNone;
+    -1:
+      begin
+        with TColorDialog.Create(nil) do
+        try
+          Options:= Options+[cdFullOpen];
+          if Execute then
+            NColor:= Color
+          else
+            Exit;
+        finally
+          Free
+        end;
+      end;
+    1..10:
+      NColor:= opTabColors[NIndex-1];
+    else
+      raise Exception.Create('Unknown tab color index');
+  end;
+  
+  DoSetFrameTabColor(CurrentFrame, NColor);
 end;
 
 procedure TfmMain.TBXSubmenuTabColorPopup(Sender: TTBCustomItem;
@@ -21229,7 +21365,7 @@ begin
   try
     Options:= Options+[cdFullOpen];
     if Execute then
-      DoSetTabColor(Color);
+      DoSetTabColorValue(Color);
   finally
     Free
   end;
@@ -21237,7 +21373,7 @@ end;
 
 procedure TfmMain.TBXItemTabColorDefClick(Sender: TObject);
 begin
-  DoSetTabColor(clNone);
+  DoSetTabColorValue(clNone);
 end;
 
 function TfmMain.GetTabColors: Widestring;
@@ -21319,6 +21455,7 @@ end;
 procedure TfmMain.ecSmartHlExecute(Sender: TObject);
 begin
   opSmartHi:= not opSmartHi;
+  UpdateStatusBar;
 end;
 
 procedure TfmMain.TBXItemBkDropPortableClick(Sender: TObject);
@@ -21896,7 +22033,7 @@ begin
       if SCaption=AName then
       begin
         if not plTree.Visible then
-          ecTree.Execute;
+          ecShowTree.Execute;
         PluginPanelItemClick(FToolButton);
         with FPlugins[i] do
           if (FForm<>nil) and Assigned(FSynAction) then
@@ -22020,22 +22157,6 @@ begin
 end;
 }
 
-function TfmMain.PluginLangSuffix: string;
-begin
-  //see contents of SynWrite LNG files - string "LANGID="
-  case LangManager.LanguageID of
-    1049: Result:= 'Ru';
-    1029: Result:= 'Cz';
-    1031: Result:= 'De';
-    1036: Result:= 'Fr';
-    1040: Result:= 'It';
-    1041: Result:= 'Jp';
-    2052: Result:= 'Chs';
-    3082: Result:= 'Sp';
-    else Result:= 'En';
-  end;
-end;
-
 function TfmMain.PluginAction_GetMsg(const ADllFN, AMsg: Widestring; AResult: PWideChar): Integer;
   function GetFN(const fn_dll, Suffix: string): string;
   begin
@@ -22047,7 +22168,7 @@ var
   S: Widestring;
   fn_lng, fn_en_lng: string;
 begin
-  fn_lng:= GetFN(ADllFN, PluginLangSuffix);
+  fn_lng:= GetFN(ADllFN, FHelpLangSuffix);
   fn_en_lng:= GetFN(ADllFN, 'En');
   S:= '';
 
@@ -22878,7 +22999,7 @@ procedure TfmMain.ecToggleFocusTabsExecute(Sender: TObject);
 begin
   if not plTree.Visible then
   begin
-    ecTree.Execute;
+    ecShowTree.Execute;
     UpdLeft(tbTabs);
     if ListTabs.CanFocus then
       ListTabs.SetFocus
@@ -23663,8 +23784,7 @@ var
   Col1, Col2: Integer;
   L: TTntStringList;
   S, Sep: Widestring;
-  b: boolean;
-  //NoEOL: boolean;
+  ok: boolean;
 begin
   Ed:= CurrentEditor;
   if not Ed.HaveSelection then
@@ -23692,89 +23812,101 @@ begin
   try
     for i:= Ln1 to Ln2 do
       L.Add(Ed.Lines[i]);
-    //NoEOL:= not IsLastEOL(L);  
 
     case Cmd of
       scmdSortAsc,
       scmdSortDesc:
-        b:= DoListCommand_Sort(L, opSortMode, Cmd=scmdSortAsc, false{AShowDlg}, Col1, Col2);
+        ok:= DoListCommand_Sort(L, opSortMode, Cmd=scmdSortAsc, false{AShowDlg}, Col1, Col2);
       scmdSortDialog:
-        b:= DoListCommand_Sort(L, opSortMode, true, true{AShowDlg}, Col1, Col2);
+        ok:= DoListCommand_Sort(L, opSortMode, true, true{AShowDlg}, Col1, Col2);
 
       scmdDedupAll:
         begin
           i:= DoListCommand_Deduplicate(L, dedupAll);
-          b:= i>0;
+          ok:= i>0;
           MsgDelLines(i);
         end;
       scmdDedupAdjacent:
         begin
           i:= DoListCommand_Deduplicate(L, dedupAdjacent);
-          b:= i>0;
+          ok:= i>0;
           MsgDelLines(i);
         end;
 
       scmdTrimLead:
         begin
           i:= DoListCommand_Trim(L, cTrimLead);
-          b:= i>0;
+          ok:= i>0;
           MsgDoneLines(i);
         end;
       scmdTrimTrail:
         begin
           i:= DoListCommand_Trim(L, cTrimTrail);
-          b:= i>0;
+          ok:= i>0;
           MsgDoneLines(i);
         end;
       scmdTrimAll:
         begin
           i:= DoListCommand_Trim(L, cTrimAll);
-          b:= i>0;
+          ok:= i>0;
           MsgDoneLines(i);
         end;
       scmdRemoveDupSpaces:
         begin
           i:= DoListCommand_Trim(L, cTrimDups);
-          b:= i>0;
+          ok:= i>0;
           MsgDoneLines(i);
         end;
 
       scmdReverse:
         begin
-          b:= DoListCommand_Reverse(L);
+          ok:= DoListCommand_Reverse(L);
         end;
       scmdShuffle:
         begin
-          b:= DoListCommand_Shuffle(L);
+          ok:= DoListCommand_Shuffle(L);
         end;
 
       scmdUntab:
         begin
           i:= DoListCommand_Untab(L, CurrentTabSize(Ed));
-          b:= i>0;
+          ok:= i>0;
           MsgDoneLines(i);
         end;
 
       scmdSpacesToTabs:
         begin
-          b:= DoListCommand_Unspace(L, CurrentTabSize(Ed), false);
+          ok:= DoListCommand_Unspace(L, CurrentTabSize(Ed), false);
         end;
       scmdSpacesToTabsLead:
         begin
-          b:= DoListCommand_Unspace(L, CurrentTabSize(Ed), true);
+          ok:= DoListCommand_Unspace(L, CurrentTabSize(Ed), true);
         end;
 
       scmdRemoveBlanks:
         begin
           i:= DoListCommand_RemoveBlanks(L);
-          b:= i>0;
+          ok:= i>0;
           MsgDelLines(i);
         end;
       scmdRemoveDupBlanks:
         begin
           i:= DoListCommand_RemoveDupBlanks(L);
-          b:= i>0;
+          ok:= i>0;
           MsgDelLines(i);
+        end;
+
+      scmdExtractDupsCase,
+      scmdExtractDupsNoCase:
+        begin
+          i:= DoListCommand_ExtractDups(L, Cmd=scmdExtractDupsCase);
+          ok:= false;
+          if i>0 then
+          begin
+            FNew.Execute;
+            CurrentEditor.InsertText(L.Text);
+          end;  
+          MsgDoneLines(i);
         end;
 
       scmdAlignWithSep:
@@ -23783,35 +23915,34 @@ begin
           with TIniFile.Create(SynIni) do
           try
             Sep:= UTF8Decode(ReadString('Win', 'AlignSep', '='));
-            b:= DoInputString('zMEnterSep', Sep) and (Sep<>'');
-            if b then
+            ok:= DoInputString('zMEnterSep', Sep) and (Sep<>'');
+            if ok then
               WriteString('Win', 'AlignSep', UTF8Encode(Sep));
           finally
             Free
           end;
           //do alignment
-          if b then
+          if ok then
           begin
             i:= DoListCommand_AlignWithSep(L, Sep, CurrentTabSize(Ed){, soOptimalFill in Ed.Options});
-            b:= i>0;
+            ok:= i>0;
             MsgDoneLines(i);
           end;
         end;
       else
-        b:= false;
+        ok:= false;
     end;
-    if not b then Exit;
+    if not ok then Exit;
 
+    //get resulting string
     S:= L.Text;
-    //delete trailing EOLs
-    //if NoEOL and (Length(S)>=2) and (Copy(S, Length(S)-1, 2)=sLineBreak) then
-    //  Delete(S, Length(S)-1, 2);
-    //correct format of EOLs
+    //correct EOLs
     FixLineEnds(S, Ed.Lines.TextFormat);
   finally
     FreeAndNil(L);
   end;
 
+  //insert string into editor
   Ed.BeginUpdate;
   try
     Ed.ReplaceText(Pos1, Pos2-Pos1, S);
@@ -24473,9 +24604,8 @@ var
 begin
   Result:= '';
   Cmd:= DoShowCmdList;
-  if Cmd<>0 then
+  if Cmd>0 then
     Result:= 'cm:'+IntToStr(Cmd);
-
 end;
 
 function TfmMain.DoShowCmdList: Integer;
@@ -25423,7 +25553,10 @@ begin
   with Panel do
   begin
     if not QuickView then
+    begin
       Visible:= Ini.ReadBool('pl'+Id, 'Vis', Visible);
+      Panel.OnVisibleChanged(Self);
+    end;  
 
     if CurrentDock<>nil then
       DockStr:= CurrentDock.Name
@@ -25472,56 +25605,55 @@ end;
 procedure TfmMain.TBXItemOToolbar1Click(Sender: TObject);
 begin
   DoCustomizeToolbar(1);
-  LoadToolbarContent(tbUser1, 1, true);
+  LoadToolbarContent(tbUser1, '1', true);
   UpdateStatusbar;
 end;
 
 procedure TfmMain.TBXItemOToolbar2Click(Sender: TObject);
 begin
   DoCustomizeToolbar(2);
-  LoadToolbarContent(tbUser2, 2, true);
+  LoadToolbarContent(tbUser2, '2', true);
   UpdateStatusbar;
 end;
 
 procedure TfmMain.TBXItemOToolbar3Click(Sender: TObject);
 begin
   DoCustomizeToolbar(3);
-  LoadToolbarContent(tbUser3, 3, true);
+  LoadToolbarContent(tbUser3, '3', true);
   UpdateStatusbar;
 end;
 
 procedure TfmMain.DoCustomizeToolbar(NIndex: Integer);
+var
+  Dir: string;
 begin
-  with TfmToolbarProp.Create(nil) do
+  with TIniFile.Create(SynIni) do
   try
-    FToolbarIni:= SynToolbarsIni;
-    FToolbarIndex:= NIndex;
-    with TIniFile.Create(FToolbarIni) do
-    try
-      FSizeX:= ReadInteger(IntToStr(FToolbarIndex), 'ix', 32);
-      FSizeY:= ReadInteger(IntToStr(FToolbarIndex), 'iy', 32);
-    finally
-      Free;  
-    end;
-    FShowCmdList:= DoShowCmdListStr;
-    FShowCmdHint:= DoShowCmdHint;
-    FGetExtTools:= DoExtToolsList;
-    ShowModal;
+    Dir:= ReadString('Win', 'ImagesDir', '');
+    DoShowToolbarProp(
+      SynToolbarsIni,
+      IntToStr(NIndex),
+      DoShowCmdListStr,
+      DoShowCmdHint,
+      DoExtToolsList,
+      0, 0,
+      Dir);
+    WriteString('Win', 'ImagesDir', Dir);
   finally
-    Free;
-  end;
+    Free
+  end;  
 end;
 
-function TfmMain.DoShowCmdHint(Cmd: string): Widestring;
+function TfmMain.DoShowCmdHint(Cmd: Widestring): Widestring;
 var
   N, i: Integer;
 begin
   Result:= '';
   if Cmd='-' then Exit;
 
-  if Pos('cm:', Cmd)=1 then
+  if SBegin(Cmd, 'cm:') then
   begin
-    Delete(Cmd, 1, 3);
+    SDeleteToW(Cmd, ':');
     N:= StrToIntDef(Cmd, 0);
     if N=0 then Exit;
 
@@ -25534,62 +25666,193 @@ begin
         end;
   end
   else
-  if Pos('ext:', Cmd)=1 then
-  begin
     Result:= Cmd;
-  end;
 end;
 
-procedure TfmMain.LoadToolbarContent(Toolbar: TTbxToolbar; NIndex: Integer; AutoShow: boolean = false);
+procedure TfmMain.LoadToolbarContent(Toolbar: TObject; Id: string; AutoShow: boolean = false);
 var
   Item: TTbCustomItem;
   i: Integer;
-  SCmd, SHint, SIcoFN, SIni: Widestring;
-  IcoLoaded: boolean;
+  SCmd, SHint, SIcoFN, SIni, S: Widestring;
+  IcoLoaded, IsSubmenu, IsEmpty, IsSep: boolean;
+  ImgList: TTbxImageList;
 begin
-  Toolbar.Items.Clear;
+  if Toolbar is TTbxToolbar then
+  begin
+    (Toolbar as TTbxToolbar).Items.Clear;
+    ImgList:= (Toolbar as TTbxToolbar).Images as TTbxImageList;
+  end
+  else
+  if Toolbar is TTbxSubmenuItem then
+  begin
+    (Toolbar as TTbxSubmenuItem).Clear;
+    ImgList:= (Toolbar as TTbxSubmenuItem).Images as TTbxImageList;
+  end
+  else
+    raise Exception.Create('Unknown toolbar class');
+
   SIni:= SynToolbarsIni;
   with TIniFile.Create(SIni) do
   try
     //Toolbar.Caption:= UTF8Decode(ReadString(IntToStr(NIndex), 'cap', ''));
-    Toolbar.Images.Width:= ReadInteger(IntToStr(NIndex), 'ix', 32);
-    Toolbar.Images.Height:= ReadInteger(IntToStr(NIndex), 'iy', 32);
+    if Toolbar is TTbxToolbar then
+    begin
+      ImgList.Width:= ReadInteger(Id, 'ix', 32);
+      ImgList.Height:= ReadInteger(Id, 'iy', 32);
+    end;
+
     for i:= 0 to High(TToolbarProps) do
     begin
-      SCmd:= UTF8Decode(ReadString(IntToStr(NIndex), IntToStr(i)+'c', ''));
-      SHint:= UTF8Decode(ReadString(IntToStr(NIndex), IntToStr(i)+'h', ''));
-      SIcoFN:= UTF8Decode(ReadString(IntToStr(NIndex), IntToStr(i)+'i', ''));
+      SCmd:= UTF8Decode(ReadString(Id, IntToStr(i)+'c', ''));
+      SHint:= UTF8Decode(ReadString(Id, IntToStr(i)+'h', ''));
+      SIcoFN:= UTF8Decode(ReadString(Id, IntToStr(i)+'i', ''));
       SReplaceAllW(SIcoFN, '{ini}', ExtractFileDir(SIni));
 
+      if (SCmd='') and (SHint='') and (SIcoFN='') then Break;
       IcoLoaded:= false;
-      if SCmd='' then Break;
-      if SCmd='-' then
+      IsSep:= SCmd='-';
+      IsSubmenu:= SBegin(SCmd, 'm:');
+
+      if IsSep then
+      //create separator
       begin
         Item:= TTBXSeparatorItem.Create(Self);
       end
       else
+      //create submenu
+      if IsSubmenu then
+      begin
+        Item:= TTbxSubmenuItem.Create(Self);
+        if SCmd='m:{recent}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuItemFRecents;
+        end
+        else
+        if SCmd='m:{new}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuItemFNew;
+        end
+        else
+        if SCmd='m:{sess}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuItemSess;
+        end
+        else
+        if SCmd='m:{colors}' then
+        begin
+          Item.LinkSubitems:= TbxSubmenuItemRecentColors;
+        end
+        else
+        if SCmd='m:{enc-chg}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuEnc;
+        end
+        else
+        if SCmd='m:{enc-conv}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuEnc2; 
+        end
+        else
+        if SCmd='m:{tidy}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuItemTidy;
+        end
+        else
+        begin
+          FUserToolbarCommands.Add(SCmd);
+          Item.Tag:= FUserToolbarCommands.Count-1;
+        end;
+        Item.Caption:= SHint;
+        Item.Hint:= SHint;
+        Item.Images:= ImgList; //inherit ImageList
+        Item.Options:= [tboDropdownArrow];
+        Item.OnSelect:= ButtonOnSelect;
+        IcoLoaded:= LoadPngIcon(ImgList, SIcoFN);
+      end
+      else
+      //create usual command item
       begin
         Item:= TTbxItem.Create(Self);
-        Item.Caption:= SCmd;
-        Item.Hint:= SHint;
+        FUserToolbarCommands.Add(SCmd);
+        Item.Enabled:= SCmd<>'';
+        Item.Tag:= FUserToolbarCommands.Count-1;
         Item.OnClick:= ToolbarUserClick;
         Item.OnSelect:= ButtonOnSelect;
-        IcoLoaded:= LoadPngIcon(Toolbar.Images as TTbxImageList, SIcoFN);
+        IcoLoaded:= LoadPngIcon(ImgList, SIcoFN);
+
+        //add Action to "options" buttons, so toggling will check/uncheck these buttons
+        S:= SCmd;
+        SDeleteToW(S, ':');
+        case StrToIntDef(S, 0) of
+          sm_OReadOnly:  Item.Action:= ecReadOnly;
+          sm_OWrap:      Item.Action:= ecWrap;
+          sm_OShowTree:  Item.Action:= ecShowTree;
+          sm_OShowOut:   Item.Action:= ecShowOut;
+          sm_OShowClip:  Item.Action:= ecShowClip;
+          sm_FullScr:    Item.Action:= ecFullScr;
+          sm_ORuler:     Item.Action:= ecRuler;
+          sm_OLineNums:  Item.Action:= ecLineNums;
+          sm_OFolding:   Item.Action:= ecFolding;
+
+          sm_ONonPrint:       Item.Action:= ecNonPrint;
+          sm_ONonPrintOff:    Item.Action:= ecNonPrintOff;
+          sm_ONonPrintSpaces: Item.Action:= ecNonPrintSpaces;
+          sm_ONonPrintEol:    Item.Action:= ecNonPrintEol;
+          sm_ONonPrintBoth:   Item.Action:= ecNonPrintBoth;
+          sm_ONonPrintEolDetails: Item.Action:= ecNonPrintEolDetails;
+
+          sm_ToggleSmartHl:   Item.Action:= ecSmartHl;
+          sm_OnTop:           Item.Action:= ecOnTop;
+          sm_SpellLive:       Item.Action:= ecSpellLive;
+          sm_SyncScrollH:     Item.Action:= ecSyncScrollH;
+          sm_SyncScrollV:     Item.Action:= ecSyncScrollV;
+        end;
+
+        //set Caption after Action
+        Item.Hint:= SHint;
+        Item.Caption:= SHint;
       end;
-      Toolbar.Items.Add(Item);
-      if IcoLoaded then
-        Toolbar.Items[Toolbar.Items.Count-1].ImageIndex:= Toolbar.Images.Count-1;
+
+      //now add ready button to toolbar or submenu
+      if Toolbar is TTbxToolbar then
+      begin
+        (Toolbar as TTbxToolbar).Items.Add(Item);
+        if IcoLoaded then
+          (Toolbar as TTbxToolbar).Items[(Toolbar as TTbxToolbar).Items.Count-1].ImageIndex:= ImgList.Count-1;
+      end
+      else
+      if Toolbar is TTbxSubmenuItem then
+      begin
+        (Toolbar as TTbxSubmenuItem).Add(Item);
+        if IcoLoaded then
+          (Toolbar as TTbxSubmenuItem).Items[(Toolbar as TTbxSubmenuItem).Count-1].ImageIndex:= ImgList.Count-1;
+      end;
+
+      //load submenu contents
+      if IsSubmenu then
+        LoadToolbarContent(Item, SCmd);
     end;
   finally
     Free
   end;
 
-  if Toolbar.Items.Count=0 then
-    Toolbar.Visible:= false
+  if Toolbar is TTbxToolbar then
+    IsEmpty:= (Toolbar as TTbxToolbar).Items.Count=0
+  else
+  {
+  if Toolbar is TTbxSubmenuItem then
+    IsEmpty:= (Toolbar as TTbxSubmenuItem).Count=0
+  else
+    }
+    IsEmpty:= false;
+
+  if Toolbar is TControl then
+  if IsEmpty then
+    (Toolbar as TControl).Visible:= false
   else
   if AutoShow then
   begin
-    Toolbar.Visible:= true;
+    (Toolbar as TControl).Visible:= true;
     SaveToolbarsProps;
   end;
 end;
@@ -25599,22 +25862,24 @@ var
   Cmd: Widestring;
   NCmd, i: Integer;
 begin
-  Cmd:= (Sender as TTbxItem).Caption;
-  if Cmd='' then begin MsgBeep; Exit end;
+  NCmd:= (Sender as TTbxItem).Tag;
+  if not ((NCmd>=0) and (NCmd<FUserToolbarCommands.Count)) then
+    begin MsgBeep; Exit end;
+  Cmd:= FUserToolbarCommands[NCmd];  
 
   //run internal command
-  if Pos('cm:', Cmd)=1 then
+  if SBegin(Cmd, 'cm:') then
   begin
-    Delete(Cmd, 1, 3);
+    SDeleteToW(Cmd, ':');
     NCmd:= StrToIntDef(Cmd, 0);
     if NCmd<=0 then begin MsgBeep; Exit end;
     CurrentEditor.ExecCommand(NCmd);
   end
   else
   //run external tool
-  if Pos('ext:', Cmd)=1 then
+  if SBegin(Cmd, 'ext:') then
   begin
-    Delete(Cmd, 1, 4);
+    SDeleteToW(Cmd, ':');
     for i:= Low(opTools) to High(opTools) do
       if opTools[i].SCap=Cmd then
       begin
@@ -25633,6 +25898,90 @@ begin
     with opTools[i] do
       if SCap<>'' then
         L.Add(SCap);
+end;
+
+procedure TfmMain.ecPasteAsColumnBlockExecute(Sender: TObject);
+begin
+  if TntClipboard.HasFormat(CF_TEXT) then
+    CurrentEditor.PasteFromClipboard(true)
+  else
+    MsgBeep;  
+end;
+
+procedure TfmMain.ecExtractDupsCaseExecute(Sender: TObject);
+begin
+  DoLinesCommand(scmdExtractDupsCase);
+end;
+
+procedure TfmMain.ecExtractDupsNoCaseExecute(Sender: TObject);
+begin
+  DoLinesCommand(scmdExtractDupsNoCase);
+end;
+
+procedure TfmMain.TBXItemEExtractDupCaseClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_ExtractDupsCase);
+end;
+
+procedure TfmMain.TBXItemEExtractDupNoCaseClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_ExtractDupsNoCase);
+end;
+
+procedure TfmMain.ecNonPrintSpacesExecute(Sender: TObject);
+begin
+  with CurrentEditor do
+  begin
+    NonPrinted.Visible:= true;
+    NonPrintedSpaces:= true;
+    NonPrintedEol:= false;
+    Invalidate;
+  end;
+  UpdateStatusBar;
+end;
+
+procedure TfmMain.ecNonPrintEolExecute(Sender: TObject);
+begin
+  with CurrentEditor do
+  begin
+    NonPrinted.Visible:= true;
+    NonPrintedSpaces:= false;
+    NonPrintedEol:= true;
+    Invalidate;
+  end;
+  UpdateStatusBar;
+end;
+
+procedure TfmMain.ecNonPrintBothExecute(Sender: TObject);
+begin
+  with CurrentEditor do
+  begin
+    NonPrinted.Visible:= true;
+    NonPrintedSpaces:= true;
+    NonPrintedEol:= true;
+    Invalidate;
+  end;
+  UpdateStatusBar;
+end;
+
+procedure TfmMain.TBXItemCtxPasteAsColumnClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_PasteAsColumnBlock);
+end;
+
+procedure TfmMain.TBXItemCtxPasteBkmkLinesClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_BkPaste);
+end;
+
+procedure TfmMain.ecNonPrintEolDetailsExecute(Sender: TObject);
+begin
+  with CurrentEditor do
+  begin
+    NonPrintedEolDetails:= not NonPrintedEolDetails;
+    Invalidate;
+  end;
+  UpdateStatusBar;
 end;
 
 end.

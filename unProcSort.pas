@@ -10,6 +10,9 @@ type
   TSynDedupMode = (dedupAll, dedupAdjacent);
   TSynTrimMode = (cTrimLead, cTrimTrail, cTrimAll, cTrimDups);
 
+function DoListCommand_ExtractDups(
+  List: TTntStringList;
+  CaseSens: boolean): Integer;
 function DoListCommand_Reverse(
   L: TTntStringList): boolean;
 function DoListCommand_Shuffle(
@@ -538,5 +541,38 @@ begin
   end;
 end;
 
+function DoListCommand_ExtractDups(List: TTntStringList; CaseSens: boolean): Integer;
+var
+  L: TTntStringList;
+  i: Integer;
+  same: boolean;
+begin
+  L:= TTntStringList.Create;
+  try
+    for i:= 0 to List.Count-1 do
+      L.AddObject(List[i], Pointer(i));
+    L.Sort;
+
+    List.Clear;
+    for i:= L.Count-1 downto 1{not 0} do
+    begin
+      if CaseSens then
+        same:= (WideCompareStr(L[i], L[i-1])=0)
+      else
+        same:= (WideCompareText(L[i], L[i-1])=0);
+      if same then
+        List.Insert(0, L[i]);
+    end;
+
+    //remove empty lines
+    for i:= List.Count-1 downto 0 do
+      if List[i]='' then
+        List.Delete(i);
+
+    Result:= List.Count;
+  finally
+    FreeAndNil(L);
+  end;
+end;
 
 end.

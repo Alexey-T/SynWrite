@@ -673,32 +673,6 @@ end;
     end;
   end;
 
-function GetEditHandle(Target: TObject): THandle;
-begin
-    Result := 0;
-    {
-    if (Target is TCustomEdit) then
-        Result := GetControl(Target).Handle
-    else} if (Target is TComboBox) then
-    begin
-        Result := GetWindow((Target as TWinControl).Handle, GW_CHILD);
-        if (Result <> 0) then
-        begin
-          if ((Target as TComboBox).Style = csSimple) then
-            Result := GetWindow(Result, GW_HWNDNEXT);
-        end;
-    end
-    else if (Target is TTntComboBox) then
-    begin
-        Result := GetWindow((Target as TWinControl).Handle, GW_CHILD);
-        if (Result <> 0) then
-        begin
-          if ((Target as TTntComboBox).Style = csSimple) then
-            Result := GetWindow(Result, GW_HWNDNEXT);
-        end;
-    end;
-end;
-
 procedure DoUndo(ed: TTntCombobox);
 begin
   SendMessage(GetEditHandle(ed), wm_undo, 0, 0);
@@ -1411,6 +1385,12 @@ begin
     Key:= 0;
     Exit
   end;
+  if (Key=vk_back) and (Shift=[ssCtrl]) then
+  begin
+    DoDeleteComboLastWord(ed1);
+    Key:= 0;
+    Exit
+  end;
 end;
 
 procedure TfmSR.ed2KeyDown(Sender: TObject; var Key: Word;
@@ -1419,6 +1399,12 @@ begin
   if (Key=vk_delete) and (Shift=[ssAlt]) then
   begin
     DoDeleteComboItem(ed2);
+    Key:= 0;
+    Exit
+  end;
+  if (Key=vk_back) and (Shift=[ssCtrl]) then
+  begin
+    DoDeleteComboLastWord(ed2);
     Key:= 0;
     Exit
   end;

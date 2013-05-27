@@ -162,6 +162,8 @@ type
     FOnSetProjDir: TListProc;
     FShellIcons: boolean;
     fmProgress: TfmProgress;
+    function GetCollapsedList: string;
+    procedure SetCollapsedList(S: Widestring);
     procedure ProjMRUListClick(Sender: TObject; const Filename: WideString);
     function DoSortCfm: boolean;
     procedure ShowProgress(M: TProgressType);
@@ -1015,8 +1017,8 @@ procedure TfmProj.DoLoadProjectFromFile(const fn: Widestring);
 var
   L: TStringList;
   i, j, n: integer;
-  Level, LevelDir: integer;
-  S: string;
+  Level, LevelDir, SelItem: integer;
+  S, SFolded: string;
   SName: Widestring;
   dir: boolean;
   Node, NodeDir: TTntTreeNode;
@@ -1046,6 +1048,8 @@ begin
     FOpts.DefEnc:= ReadInteger('Ini', 'DefEnc', 0);
     FOpts.SortType:= TProjSort(ReadInteger('Ini', 'SortType', Ord(srExt)));
     FOpts.SearchDirs:= UTF8Decode(ReadString('Ini', 'SearchDirs', ''));
+    SFolded:= ReadString('Ini', 'Folded', '');
+    SelItem:= ReadInteger('Ini', 'SelItem', 0);
   finally
     Free
   end;
@@ -1101,7 +1105,13 @@ begin
   end;
 
   RootNode.Expand(false);
-  RootNode.MakeVisible;
+  SetCollapsedList(SFolded);
+
+  if SelItem>=0 then
+    TreeProj.Selected:= TreeProj.Items[SelItem]
+  else
+    TreeProj.Selected:= RootNode;
+  TreeProj.Selected.MakeVisible;
 
   FModified:= false;
   UpdateTitle;
@@ -1134,10 +1144,12 @@ end;
 procedure TfmProj.DoSaveProjectToFile(const fn: string);
 var
   List, ListNodes: TStringList;
+  //
   procedure Write(const Id, S: string);
   begin
     List.Add(Id+'='+S);
   end;
+  //
 const
   cUtfSign = #$EF#$BB#$BF;
 begin
@@ -1156,7 +1168,12 @@ begin
     Write('DefEnc', IntToStr(FOpts.DefEnc));
     Write('SortType', IntToStr(Ord(FOpts.SortType)));
     Write('SearchDirs', UTF8Encode(FOpts.SearchDirs));
-    
+    Write('Folded', GetCollapsedList);
+    if TreeProj.Selected<>nil then
+      Write('SelItem', IntToStr(TreeProj.Selected.AbsoluteIndex))
+    else
+      Write('SelItem', '0');
+
     List.Add('');
     List.Add('[Nodes]');
 
@@ -1752,6 +1769,37 @@ procedure TfmProj.TBXItemProjOpenPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
   TBXItemProjClearRecent.Enabled:= ProjMRUList.Items.Count>0;
+end;
+
+function TfmProj.GetCollapsedList: string;
+var
+  i: Integer;
+begin
+  Result:= '';
+  for i:= 0 to TreeProj.Items.Count-1 do
+    with TreeProj.Items[i] do
+      if Expanded then
+        Result:= Result+ IntToStr(i) + ',';
+end;
+
+
+procedure TfmProj.SetCollapsedList(S: Widestring);
+var
+  SItem: string;
+  N: Integer;
+begin
+  TreeProj.Items.BeginUpdate;
+  try
+    repeat
+      SItem:= SGetItem(S, ',');
+      if SItem='' then Break;
+      N:= StrToIntDef(SItem, -1);
+      if (N>=0) and (N<TreeProj.Items.Count) then
+        TreeProj.Items[N].Expanded:= true;
+    until false;
+  finally
+    TreeProj.Items.EndUpdate;
+  end;
 end;
 
 end.
