@@ -68,6 +68,10 @@ type
     mnuEncChange: TTntMenuItem;
     mnuEncConv: TTntMenuItem;
     mnuTidy: TTntMenuItem;
+    mnuFolding: TTntMenuItem;
+    mnuFoldLevel: TTntMenuItem;
+    mnuNonPrint: TTntMenuItem;
+    labInfo: TTntLabel;
     procedure FormShow(Sender: TObject);
     procedure btnIconSizeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -95,6 +99,9 @@ type
     procedure mnuEncChangeClick(Sender: TObject);
     procedure mnuEncConvClick(Sender: TObject);
     procedure mnuTidyClick(Sender: TObject);
+    procedure mnuFoldingClick(Sender: TObject);
+    procedure mnuFoldLevelClick(Sender: TObject);
+    procedure mnuNonPrintClick(Sender: TObject);
   private
     { Private declarations }
     procedure DoMenuSys(const Cmd, Hint: Widestring);
@@ -247,6 +254,7 @@ begin
   begin
     FHint:= '';
     FCmd:= '';
+    FImageFN:= '';
     if Assigned(FImage) then
       FreeAndNil(FImage);
   end;
@@ -724,6 +732,21 @@ end;
 procedure TfmToolbarProp.mnuTidyClick(Sender: TObject);
 begin
   DoMenuSys('m:{tidy}', mnuTidy.Caption);
+end;
+
+procedure TfmToolbarProp.mnuFoldingClick(Sender: TObject);
+begin
+  DoMenuSys('m:{folding}', mnuFolding.Caption);
+end;
+
+procedure TfmToolbarProp.mnuFoldLevelClick(Sender: TObject);
+begin
+  DoMenuSys('m:{foldlevel}', mnuFoldLevel.Caption);
+end;
+
+procedure TfmToolbarProp.mnuNonPrintClick(Sender: TObject);
+begin
+  DoMenuSys('m:{nonprint}', mnuNonPrint.Caption);
 end;
 
 end.

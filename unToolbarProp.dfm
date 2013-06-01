@@ -74,6 +74,15 @@ object fmToolbarProp: TfmToolbarProp
       Height = 13
       Caption = 'Icon:'
     end
+    object labInfo: TTntLabel
+      Left = 424
+      Top = 124
+      Width = 97
+      Height = 53
+      AutoSize = False
+      Caption = 'Add * to button hint to show both icon and caption.'
+      WordWrap = True
+    end
     object ListBox1: TListBox
       Left = 9
       Top = 32
@@ -216,7 +225,7 @@ object fmToolbarProp: TfmToolbarProp
     Top = 380
     LangData = {
       0D00666D546F6F6C62617250726F70010100000001000000070043617074696F
-      6E011F0000000300624F6B010100000002000000070043617074696F6E000400
+      6E01230000000300624F6B010100000002000000070043617074696F6E000400
       6243616E010100000003000000070043617074696F6E000B0047726F7570426F
       78436D64010100000004000000070043617074696F6E0006004C6162656C3201
       0100000005000000070043617074696F6E0009004C6162656C48696E74010100
@@ -242,7 +251,11 @@ object fmToolbarProp: TfmToolbarProp
       000000070043617074696F6E000A006D6E75456E63436F6E7601010000001900
       0000070043617074696F6E000C006D6E75456E634368616E676501010000001A
       000000070043617074696F6E0007006D6E755469647901010000001B00000007
-      0043617074696F6E00}
+      0043617074696F6E000B006D6E754E6F6E5072696E7401010000001C00000007
+      0043617074696F6E000C006D6E75466F6C644C6576656C01010000001D000000
+      070043617074696F6E000A006D6E75466F6C64696E6701010000001E00000007
+      0043617074696F6E0007006C6162496E666F01010000001F0000000700436170
+      74696F6E00}
   end
   object MenuTool: TTntPopupMenu
     AutoHotkeys = maManual
@@ -276,6 +289,18 @@ object fmToolbarProp: TfmToolbarProp
     object mnuEncConv: TTntMenuItem
       Caption = 'Encoding - convert to'
       OnClick = mnuEncConvClick
+    end
+    object mnuNonPrint: TTntMenuItem
+      Caption = 'Non-printable chars'
+      OnClick = mnuNonPrintClick
+    end
+    object mnuFolding: TTntMenuItem
+      Caption = 'Folding'
+      OnClick = mnuFoldingClick
+    end
+    object mnuFoldLevel: TTntMenuItem
+      Caption = 'Fold level'
+      OnClick = mnuFoldLevelClick
     end
     object mnuTidy: TTntMenuItem
       Caption = 'Html Tidy'

@@ -228,7 +228,7 @@ type
     TBXItemTbDel: TTBXItem;
     tbView: TTBXToolbar;
     TBXItemVFold: TTBXItem;
-    TBXItemVNonpr: TTBXItem;
+    TBXItemVNonpr: TTBXSubmenuItem;
     TBXItemVNums: TTBXItem;
     TBXItemVWrap: TTBXItem;
     TBXItemVComm: TTBXItem;
@@ -2763,7 +2763,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.5.460';
+  cSynVer = '5.5.464';
 
 implementation
 
@@ -25753,6 +25753,21 @@ begin
           Item.LinkSubitems:= TBXSubmenuEnc2; 
         end
         else
+        if SCmd='m:{folding}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuFolding;
+        end
+        else
+        if SCmd='m:{foldlevel}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuIFoldLevel;
+        end
+        else
+        if SCmd='m:{nonprint}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuItemNonPrint;
+        end
+        else
         if SCmd='m:{tidy}' then
         begin
           Item.LinkSubitems:= TBXSubmenuItemTidy;
@@ -25806,6 +25821,13 @@ begin
           sm_SpellLive:       Item.Action:= ecSpellLive;
           sm_SyncScrollH:     Item.Action:= ecSyncScrollH;
           sm_SyncScrollV:     Item.Action:= ecSyncScrollV;
+        end;
+
+        //handle "*" at end of hint
+        if (SHint<>'') and (SHint[Length(SHint)]='*') then
+        begin
+          SetLength(SHint, Length(SHint)-1);
+          Item.DisplayMode:= nbdmImageAndText;
         end;
 
         //set Caption after Action

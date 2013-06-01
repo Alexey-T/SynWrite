@@ -390,7 +390,7 @@ object fmMain: TfmMain
   object TBXDockLeft: TTBXDock
     Left = 0
     Top = 50
-    Width = 201
+    Width = 214
     Height = 384
     Position = dpLeft
     object tbView: TTBXToolbar
@@ -425,9 +425,12 @@ object fmMain: TfmMain
         Action = ecLineNums
         OnSelect = ButtonOnSelect
       end
-      object TBXItemVNonpr: TTBXItem
+      object TBXItemVNonpr: TTBXSubmenuItem
         Tag = 733
         Action = ecNonPrint
+        DropdownCombo = True
+        LinkSubitems = TBXSubmenuItemNonPrint
+        Options = [tboDropdownArrow]
         OnSelect = ButtonOnSelect
       end
       object TBXItemVOut: TTBXItem
@@ -3268,16 +3271,16 @@ object fmMain: TfmMain
     end
   end
   object Panel1: TPanel
-    Left = 201
+    Left = 214
     Top = 50
-    Width = 435
+    Width = 422
     Height = 384
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 6
     OnResize = Panel1Resize
     object Splitter1: TSplitter
-      Left = 315
+      Left = 302
       Top = 0
       Width = 5
       Height = 384
@@ -3291,7 +3294,7 @@ object fmMain: TfmMain
     object PageControl1: TTntPageControl
       Left = 0
       Top = 0
-      Width = 315
+      Width = 302
       Height = 384
       Align = alClient
       OwnerDraw = True
@@ -3487,7 +3490,7 @@ object fmMain: TfmMain
       Visible = False
     end
     object PageControl2: TTntPageControl
-      Left = 320
+      Left = 307
       Top = 0
       Width = 115
       Height = 384
