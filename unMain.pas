@@ -1016,7 +1016,7 @@ type
     TbxItemWinTabs: TTBXItem;
     TBXSubmenuItemPlugins: TTBXSubmenuItem;
     TBXSeparatorItem84: TTBXSeparatorItem;
-    TBXItemOOpenPluginsIni: TTBXItem;
+    TBXItemOEditSynPluginsIni: TTBXItem;
     TBXItemPLogSaveAs: TTBXItem;
     TBXItemTbMoveToWindow: TTBXItem;
     TBXItemTbOpenInWindow: TTBXItem;
@@ -1161,6 +1161,9 @@ type
     TBXSeparatorItem99: TTBXSeparatorItem;
     TBXItemONPrintEolDetails: TTBXItem;
     ecNonPrintEolDetails: TAction;
+    TBXItemOHideItems: TTBXItem;
+    TBXSeparatorItem100: TTBXSeparatorItem;
+    TBXItemOEditSynIni: TTBXItem;
     procedure fOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1742,7 +1745,7 @@ type
     procedure ListTabsCompare(Sender: TObject; Item1, Item2: TListItem;
       Data: Integer; var Compare: Integer);
     procedure ecToggleFocusTabsExecute(Sender: TObject);
-    procedure TBXItemOOpenPluginsIniClick(Sender: TObject);
+    procedure TBXItemOEditSynPluginsIniClick(Sender: TObject);
     procedure TBXItemPLogSaveAsClick(Sender: TObject);
     procedure TBXItemTbMoveToWindowClick(Sender: TObject);
     procedure TBXItemTbOpenInWindowClick(Sender: TObject);
@@ -1897,6 +1900,8 @@ type
     procedure TBXItemCtxPasteAsColumnClick(Sender: TObject);
     procedure TBXItemCtxPasteBkmkLinesClick(Sender: TObject);
     procedure ecNonPrintEolDetailsExecute(Sender: TObject);
+    procedure TBXItemOHideItemsClick(Sender: TObject);
+    procedure TBXItemOEditSynIniClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2019,6 +2024,7 @@ type
     FCurrToolFN: Widestring; //filename for last called ext-tool
     FCurrPluginAcpStartPos: TPoint; //ACP popup position, for cActionSuggestCompletion
     FClickedFrame: TEditorFrame;
+    FMenuItems: array of record Id: string; Item: TComponent; end;
 
     FinderPro: TGauge;  //current TGauge for progress showing
     FinderProNum: integer; //previous "NN%" progress value
@@ -2452,6 +2458,7 @@ type
     procedure ToolbarUserClick(Sender: TObject);
     procedure DoExtToolsList(L: TTntStringList);
     procedure EditorNonPrintUpdate(Ed: TSyntaxMemo);
+    procedure InitMenuItemsList;
     //end of private
 
   protected
@@ -2763,7 +2770,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.5.464';
+  cSynVer = '5.5.480';
 
 implementation
 
@@ -2800,7 +2807,7 @@ uses
   unSetup, unAb, unEnc, unTool, unSR2, unExtr, unShell, unInsTxt,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
-  unCmdList, unProjList, unToolbarProp;
+  unCmdList, unProjList, unToolbarProp, unHideItems;
 
 {$R *.dfm}
 {$R Cur.res}
@@ -5990,6 +5997,13 @@ begin
     sm_TabColor9: DoSetTabColorIndex(9);
     sm_TabColor10: DoSetTabColorIndex(10);
 
+    sm_OHideMenuItems: TBXItemOHideItems.Click;
+    sm_ORestoreStyles: TBXItemORestoreStyles.Click;
+    sm_OExternalTools: TbxItemOTools.Click;
+    sm_OExplorerIntegration: TbxItemOShell.Click;
+    sm_OEditSynIni: TBXItemOEditSynIni.Click;
+    sm_OEditSynPluginsIni: TBXItemOEditSynPluginsIni.Click;
+
     //end of commands list
     else
       Handled:= false;
@@ -6601,7 +6615,7 @@ begin
 
   TbxItemORo.Visible:= not SynExe;
   TbxItemOShell.Enabled:= SynExe;
-  TBXItemOOpenPluginsIni.Enabled:= SynExe;
+  TBXItemOEditSynPluginsIni.Enabled:= SynExe;
   TbxItemCtxCustomize.Visible:= QuickView;
 
   //init plugins before LoadIni
@@ -6779,6 +6793,7 @@ begin
   SynDir:= ExtractFilePath(GetModuleName(HInstance));
   SynIsPortable:= IsFileExist(SynDir + 'Portable.ini');
 
+  InitMenuItemsList;
   LangManager.ScanForLangFiles(SynDir + 'Lang', '*.lng', False);
   TSpCrack(Splitter1).PopupMenu:= PopupSplitter;
   ecOnSavingLexer:= DoSaveStyles;
@@ -23036,80 +23051,59 @@ end;
 
 procedure TfmMain.DoHideMenuItem(const Str: string);
 var
-  id, s1: Widestring;
-  nn: integer;
-  MI: TTbxCustomItem;
+  id, s1, sIndex: Widestring;
+  NIndex, i: integer;
+  Item: TComponent;
 begin
   if Trim(Str)='' then Exit;
   s1:= Str;
   id:= SGetItem(s1, ' ');
-  nn:= StrToIntDef(SGetItem(s1, ' '), -1);
-  //msg(id+#13+inttostr(nn));
+  if id='' then Exit;
+  SIndex:= SGetItem(s1, ' ');
+  NIndex:= StrToIntDef(SIndex, -1);
 
-  if id='' then Exit else
-  if id='file' then MI:= TbxSubmenuItemFile else
-  if id='edit' then MI:= TbxSubmenuItemEd else
-  if id='search' then MI:= TbxSubmenuItemSr else
-  if id='encoding' then MI:= TbxSubmenuItemEnc else
-  if id='lexer' then MI:= TbxSubmenuItemLexer else
-  if id='bookmarks' then MI:= TbxSubmenuItemBk else
-  if id='view' then MI:= TbxSubmenuItemView else
-  if id='options' then MI:= TbxSubmenuItemOpt else
-  if id='run' then MI:= TbxSubmenuItemRun else
-  if id='macros' then MI:= TbxSubmenuItemMacros else
-  if id='window' then MI:= tbxWin else
-  if id='help' then MI:= TbxSubmenuItemHelp else
-  if id='x' then
-  begin
-    TBXItemTbClose.Visible:= false;
-    Exit
-  end
-  else
-  if id='xx' then
-  begin
-    TBXItemTbCloseAll.Visible:= false;
-    Exit
-  end
-  else
-  if id='context' then
-  begin
-    if (NN>=0) and (NN<PopupEditor.Items.Count) then
-      PopupEditor.Items[NN].Visible:= false;
-    Exit
-  end
-  else
-  if id='toolbar-file' then
-  begin
-    if (NN>=0) and (NN<tbFile.Items.Count) then
-      tbFile.Items[NN].Visible:= false;
-    Exit
-  end
-  else
-  if id='toolbar-edit' then
-  begin
-    if (NN>=0) and (NN<tbEdit.Items.Count) then
-      tbEdit.Items[NN].Visible:= false;
-    Exit
-  end
-  else
-  if id='toolbar-view' then
-  begin
-    if (NN>=0) and (NN<tbView.Items.Count) then
-      tbView.Items[NN].Visible:= false;
-    Exit
-  end
-  else
-  begin
-    MsgError('Unknown menuitem (SynHide.ini): '+Str);
-    Exit
-  end;
+  for i:= Low(FMenuItems) to High(FMenuItems) do
+    if FMenuItems[i].Id = id then
+    begin
+      Item:= FMenuItems[i].Item;
 
-  if MI<>nil then
-    if NN<0 then
-      MI.Visible:= false
-    else
-    if (NN>=0) and (NN<MI.Count) then
-      MI.Items[NN].Visible:= false;
+      if Item is TTbxSubmenuItem then
+      begin
+        if NIndex<0 then
+          (Item as TTbxSubmenuItem).Visible:= false
+        else
+        if NIndex<(Item as TTbxSubmenuItem).Count then
+          (Item as TTbxSubmenuItem).Items[NIndex].Visible:= false
+        else
+          MsgError('[SynHide.ini] Bad index: '+Str);
+      end
+      else
+      if Item is TTbxItem then
+      begin
+        (Item as TTbxItem).Visible:= false;
+      end
+      else
+      if Item is TTBXPopupMenu then
+      begin
+        if (NIndex>=0) and (NIndex<(Item as TTbxPopupMenu).Items.Count) then
+          (Item as TTbxPopupMenu).Items[NIndex].Visible:= false
+        else
+          MsgError('[SynHide.ini] Bad index: '+Str);
+      end
+      else
+      if Item is TTBXToolbar then
+      begin
+        if (NIndex>=0) and (NIndex<(Item as TTbxToolbar).Items.Count) then
+          (Item as TTbxToolbar).Items[NIndex].Visible:= false
+        else
+          MsgError('[SynHide.ini] Bad index: '+Str);
+      end
+      else
+        MsgError('[SynHide.ini] Unknown item type: '+Str);
+      Exit;
+    end;
+
+  MsgError('[SynHide.ini] Unknown item id: '+Str);
 end;
 
 function TfmMain.IsLexerFindID(const Lex: string): boolean;
@@ -23337,7 +23331,7 @@ begin
   FocusEditor;
 end;
 
-procedure TfmMain.TBXItemOOpenPluginsIniClick(Sender: TObject);
+procedure TfmMain.TBXItemOEditSynPluginsIniClick(Sender: TObject);
 begin
   OpnFile(SynPluginsIni);
 end;
@@ -25750,7 +25744,7 @@ begin
         else
         if SCmd='m:{enc-conv}' then
         begin
-          Item.LinkSubitems:= TBXSubmenuEnc2; 
+          Item.LinkSubitems:= TBXSubmenuEnc2;
         end
         else
         if SCmd='m:{folding}' then
@@ -25777,8 +25771,6 @@ begin
           FUserToolbarCommands.Add(SCmd);
           Item.Tag:= FUserToolbarCommands.Count-1;
         end;
-        Item.Caption:= SHint;
-        Item.Hint:= SHint;
         Item.Images:= ImgList; //inherit ImageList
         Item.Options:= [tboDropdownArrow];
         Item.OnSelect:= ButtonOnSelect;
@@ -25822,18 +25814,17 @@ begin
           sm_SyncScrollH:     Item.Action:= ecSyncScrollH;
           sm_SyncScrollV:     Item.Action:= ecSyncScrollV;
         end;
-
-        //handle "*" at end of hint
-        if (SHint<>'') and (SHint[Length(SHint)]='*') then
-        begin
-          SetLength(SHint, Length(SHint)-1);
-          Item.DisplayMode:= nbdmImageAndText;
-        end;
-
-        //set Caption after Action
-        Item.Hint:= SHint;
-        Item.Caption:= SHint;
       end;
+
+      //handle "*" at end of hint
+      if (SHint<>'') and (SHint[Length(SHint)]='*') then
+      begin
+        SetLength(SHint, Length(SHint)-1);
+        Item.DisplayMode:= nbdmImageAndText;
+      end;
+      //set caption and hint last
+      Item.Hint:= SHint;
+      Item.Caption:= SHint;
 
       //now add ready button to toolbar or submenu
       if Toolbar is TTbxToolbar then
@@ -26004,6 +25995,119 @@ begin
     Invalidate;
   end;
   UpdateStatusBar;
+end;
+
+procedure TfmMain.InitMenuItemsList;
+begin
+  SetLength(FMenuItems, 19);
+  with FMenuItems[0] do begin Id:= 'file'; Item:= TbxSubmenuItemFile; end;
+  with FMenuItems[1] do begin Id:= 'edit'; Item:= TbxSubmenuItemEd; end;
+  with FMenuItems[2] do begin Id:= 'search'; Item:= TbxSubmenuItemSr; end;
+  with FMenuItems[3] do begin Id:= 'encoding'; Item:= TbxSubmenuItemEnc; end;
+  with FMenuItems[4] do begin Id:= 'lexer'; Item:= TbxSubmenuItemLexer; end;
+  with FMenuItems[5] do begin Id:= 'bookmarks'; Item:= TbxSubmenuItemBk; end;
+  with FMenuItems[6] do begin Id:= 'view'; Item:= TbxSubmenuItemView; end;
+  with FMenuItems[7] do begin Id:= 'options'; Item:= TbxSubmenuItemOpt; end;
+  with FMenuItems[8] do begin Id:= 'run'; Item:= TbxSubmenuItemRun; end;
+  with FMenuItems[9] do begin Id:= 'macros'; Item:= TbxSubmenuItemMacros; end;
+  with FMenuItems[10] do begin Id:= 'window'; Item:= TbxWin; end;
+  with FMenuItems[11] do begin Id:= 'help'; Item:= TbxSubmenuItemHelp; end;
+  with FMenuItems[12] do begin Id:= 'x'; Item:= TBXItemTbClose; end;
+  with FMenuItems[13] do begin Id:= 'xx'; Item:= TBXItemTbCloseAll; end;
+  with FMenuItems[14] do begin Id:= 'split'; Item:= TbxItemTbSplit; end;
+
+  with FMenuItems[15] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
+  with FMenuItems[16] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
+  with FMenuItems[17] do begin Id:= 'toolbar-view'; Item:= tbView; end;
+
+  with FMenuItems[18] do begin Id:= 'context'; Item:= PopupEditor; end;
+end;
+
+procedure TfmMain.TBXItemOHideItemsClick(Sender: TObject);
+const
+  cSep: Widestring = '———';
+  cSub: Widestring = '  >>';
+var
+  i, j: Integer;
+  Item: TComponent;
+  Id, S: Widestring;
+begin
+  with TfmHideItems.Create(nil) do
+  try
+    FIniFN:= SynHideIni;
+    for i:= Low(FMenuItems) to High(FMenUItems) do
+    begin
+      Item:= FMenuItems[i].Item;
+      Id:= FMenuItems[i].Id;
+      if Item is TTbxItem then
+      begin
+        List.Items.Add('['+Id+']');
+      end
+      else
+      if Item is TTbxToolbar then
+      begin
+        for j:= 0 to (Item as TTbxToolbar).Items.Count-1 do
+        begin
+          S:= (Item as TTbxToolbar).Items[j].Caption;
+          if (Item as TTbxToolbar).Items[j] is TTBXSeparatorItem then
+            S:= cSep;
+          if (Item as TTbxToolbar).Items[j] is TTBXSubmenuItem then
+            S:= S+cSub;
+          List.Items.Add('['+id+' '+IntToStr(j)+']  '+S);
+        end;
+      end
+      else
+      if Item is TTbxPopupMenu then
+      begin
+        for j:= 0 to 14{max index is "More..." item} do
+        begin
+          S:= (Item as TTbxPopupMenu).Items[j].Caption;
+          SDeleteFromW(S, #9);
+          if (Item as TTbxPopupMenu).Items[j] is TTBXSeparatorItem then
+            S:= cSep;
+          if (Item as TTbxPopupMenu).Items[j] is TTBXSubmenuItem then
+            S:= S+cSub;
+          List.Items.Add('['+id+' '+IntToStr(j)+']  '+S);
+        end;
+      end
+      else
+      if Item is TTbxSubmenuItem then
+      begin
+        //menu item
+        S:= (Item as TTbxSubmenuItem).Caption;
+        SReplaceAllW(S, '&', '');
+        List.Items.Add('['+id+']  '+S);
+        //subitems
+        for j:= 0 to (Item as TTbxSubmenuItem).Count-1 do
+        begin
+          S:= (Item as TTbxSubmenuItem).Items[j].Caption;
+          SReplaceAllW(S, '&', '');
+          if (Item as TTbxSubmenuItem).Items[j] is TTBXSeparatorItem then
+            S:= cSep;
+          if (Item as TTbxSubmenuItem).Items[j] is TTBXSubmenuItem then
+            S:= S+cSub;
+          List.Items.Add('    '+'['+id+' '+IntToStr(j)+']  '+S);
+        end;
+      end
+      else
+      begin
+        MsgError('Unknown item type: '+Id);
+        Exit
+      end;  
+      //separator
+      List.Items.Add('');
+    end;
+
+    if ShowModal=mrOk then
+      begin end;
+  finally
+    Free
+  end;
+end;
+
+procedure TfmMain.TBXItemOEditSynIniClick(Sender: TObject);
+begin
+  OpnFile(SynIni);
 end;
 
 end.

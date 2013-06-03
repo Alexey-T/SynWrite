@@ -644,18 +644,19 @@ end;
 
 function FHelpFilename(const SynDir: string): string;
 var
-  Suffix: string;
+  Suffix, HelpEn, HelpLocal: string;
 begin
   Suffix:= FHelpLangSuffix;
+  HelpEn:= SynDir + 'Readme\SynWrite.chm';
+  HelpLocal:= SynDir + 'Readme\SynWrite.' + Suffix + '.chm';
+
   if Suffix='En' then
-    Suffix:= ''
+    Result:= HelpEn
   else
-    Suffix:= '.'+Suffix;
-  //get localized filename  
-  Result:= SynDir + 'Readme\SynWrite' + Suffix + '.chm';
-  //localized file may not exist
-  if (Suffix<>'') and not FileExists(Result) then
-    Result:= SynDir + 'Readme\SynWrite' + '' + '.chm';
+    if FileExists(HelpLocal) then
+      Result:= HelpLocal
+    else
+      Result:= HelpEn;
 end;
 
 procedure ShowHelp(const SynDir: string; ID: TSynHelpId; Handle: THandle);

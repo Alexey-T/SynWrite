@@ -58,7 +58,8 @@ uses
   ATSyntMemo in 'ATSyntMemo.pas',
   unToolbarProp in 'unToolbarProp.pas' {fmToolbarProp: TTntForm},
   unToolbarIcon in 'unToolbarIcon.pas' {fmToolbarIcon: TTntForm},
-  unToolbarSize in 'unToolbarSize.pas' {fmToolbarSize: TTntForm};
+  unToolbarSize in 'unToolbarSize.pas' {fmToolbarSize: TTntForm},
+  unHideItems in 'unHideItems.pas' {fmHideItems};
 
 {$R *.res}
 {$R *.dkl_const.res}

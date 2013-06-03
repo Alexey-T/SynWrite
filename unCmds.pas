@@ -339,6 +339,14 @@ const
   sm_ONonPrintEol = 1004;
   sm_ONonPrintBoth = 1005;
   sm_ONonPrintEolDetails = 1006;
+
+  sm_OHideMenuItems = 1007;
+  sm_ORestoreStyles = 1008;
+  sm_OExternalTools = 1009;
+  sm_OExplorerIntegration = 1010;
+  sm_OEditSynPluginsIni = 1011;
+  sm_OEditSynIni = 1012;
+  
   //free
 
   sm_TabColorDefault = 1100;
