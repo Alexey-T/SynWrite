@@ -36,6 +36,7 @@ type
       Rect: TRect; State: TOwnerDrawState);
     procedure edKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure edKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
     Finder: TSynFindReplace;
@@ -227,6 +228,11 @@ begin
     Key:= 0;
     Exit
   end;
+end;
+
+procedure TfmExtract.edKeyPress(Sender: TObject; var Key: Char);
+begin
+  DoHandleCtrlBkSp(ed, Key);
 end;
 
 end.

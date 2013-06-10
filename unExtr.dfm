@@ -62,6 +62,7 @@ object fmExtract: TfmExtract
       ItemHeight = 13
       TabOrder = 0
       OnKeyDown = edKeyDown
+      OnKeyPress = edKeyPress
     end
     object bCase: TTntCheckBox
       Left = 8

@@ -94,6 +94,7 @@ type
       Shift: TShiftState);
     procedure edDirKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure ed1KeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
     procedure DoCopyToEdit(ed: TTntCombobox;
@@ -504,6 +505,11 @@ begin
     Key:= 0;
     Exit
   end;
+end;
+
+procedure TfmSRFiles.ed1KeyPress(Sender: TObject; var Key: Char);
+begin
+  DoHandleCtrlBkSp(Sender as TTntCombobox, Key);
 end;
 
 end.

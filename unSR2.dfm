@@ -109,6 +109,7 @@ object fmSRFiles: TfmSRFiles
     TabOrder = 0
     OnChange = ed1Change
     OnKeyDown = ed1KeyDown
+    OnKeyPress = ed1KeyPress
   end
   object ed2: TTntComboBox
     Left = 8
@@ -120,6 +121,7 @@ object fmSRFiles: TfmSRFiles
     ItemHeight = 13
     TabOrder = 1
     OnKeyDown = ed2KeyDown
+    OnKeyPress = ed1KeyPress
   end
   object bHelp: TTntButton
     Left = 392
@@ -225,6 +227,7 @@ object fmSRFiles: TfmSRFiles
     TabOrder = 5
     OnChange = edDirChange
     OnKeyDown = edDirKeyDown
+    OnKeyPress = ed1KeyPress
   end
   object bRAll: TTntButton
     Left = 336
@@ -262,6 +265,7 @@ object fmSRFiles: TfmSRFiles
     TabOrder = 2
     OnChange = edFileChange
     OnKeyDown = edFileKeyDown
+    OnKeyPress = ed1KeyPress
   end
   object bFAll: TTntButton
     Left = 336

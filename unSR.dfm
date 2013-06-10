@@ -240,6 +240,7 @@ object fmSR: TfmSR
     TabOrder = 0
     OnChange = ed1Change
     OnKeyDown = ed1KeyDown
+    OnKeyPress = ed1KeyPress
     OnSelect = ed1Change
   end
   object ed2: TTntComboBox
@@ -252,6 +253,7 @@ object fmSR: TfmSR
     ItemHeight = 13
     TabOrder = 1
     OnKeyDown = ed2KeyDown
+    OnKeyPress = ed2KeyPress
   end
   object gOp: TTntGroupBox
     Left = 8

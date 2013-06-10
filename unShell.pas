@@ -78,7 +78,10 @@ procedure TfmShell.DoAssoc(const ext: string; en: boolean);
 begin
   if FLock then Exit;
   if not ApplyFileAssoc(ext, en) then
-    MsgError(DKLangConstW('shNN'));
+    MessageBoxW(Handle,
+      PWChar(DKLangConstW('shNN')),
+      PWChar(WideString(Caption)),
+      mb_ok or mb_iconerror);
 end;
 
 procedure TfmShell.cbTxtClick(Sender: TObject);

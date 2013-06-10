@@ -11,7 +11,7 @@ type
     List: TTntCheckListBox;
     bOk: TTntButton;
     bCancel: TTntButton;
-    TntLabel1: TTntLabel;
+    labInf: TTntLabel;
     DKLanguageController1: TDKLanguageController;
     bUncheck: TTntButton;
     procedure TntFormShow(Sender: TObject);

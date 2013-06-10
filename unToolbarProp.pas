@@ -131,6 +131,7 @@ uses
   Types, IniFiles,
   TntDialogs,
   ATxSProc,
+  unProc,
   unToolbarSize, unToolbarIcon;
 
 {$R *.dfm}
@@ -226,6 +227,9 @@ end;
 procedure TfmToolbarProp.FormCreate(Sender: TObject);
 begin
   FillChar(FToolbar, SizeOf(FToolbar), 0);
+
+  with Listbox1 do
+    ItemHeight:= ScaleFontSize(ItemHeight, Self);
 end;
 
 procedure TfmToolbarProp.FormDestroy(Sender: TObject);

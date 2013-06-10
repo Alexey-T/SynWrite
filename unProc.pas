@@ -19,7 +19,7 @@ uses
   TbxGraphics;
 
 function GetEditHandle(Target: TObject): THandle;
-//procedure FixEditBkSp(H: THandle);
+procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
 
 function FHelpLangSuffix: string;
 function FHelpFilename(const SynDir: string): string;
@@ -1659,6 +1659,26 @@ begin
             Result := GetWindow(Result, GW_HWNDNEXT);
         end;
     end;
+end;
+
+
+procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
+var
+  S: Widestring;
+  n1, n2: Integer;
+begin
+  if Key=#127 then
+  begin
+    S:= Ed.Text;
+    n2:= Ed.SelStart;
+    n1:= n2;
+    while (n1>0) and (S[n1]=' ') do Dec(n1);
+    while (n1>0) and (S[n1]<>' ') do Dec(n1);
+    Delete(S, n1+1, n2-n1);
+    Ed.Text:= S;
+    Ed.SelStart:= n1;
+    Key:= #0;
+  end;
 end;
 
 

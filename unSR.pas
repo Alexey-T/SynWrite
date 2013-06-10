@@ -139,6 +139,8 @@ type
       Shift: TShiftState);
     procedure ed2KeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure ed1KeyPress(Sender: TObject; var Key: Char);
+    procedure ed2KeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
     CurChecked: boolean;
@@ -1422,6 +1424,16 @@ begin
     Insert(SMod, S, 1);
 
   SetText1(S);
+end;
+
+procedure TfmSR.ed1KeyPress(Sender: TObject; var Key: Char);
+begin
+  DoHandleCtrlBkSp(ed1, Key);
+end;
+
+procedure TfmSR.ed2KeyPress(Sender: TObject; var Key: Char);
+begin
+  DoHandleCtrlBkSp(ed2, Key);
 end;
 
 end.

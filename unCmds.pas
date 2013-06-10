@@ -346,7 +346,7 @@ const
   sm_OExplorerIntegration = 1010;
   sm_OEditSynPluginsIni = 1011;
   sm_OEditSynIni = 1012;
-  
+  sm_OpenBySelection = 1013;
   //free
 
   sm_TabColorDefault = 1100;

@@ -1164,6 +1164,7 @@ type
     TBXItemOHideItems: TTBXItem;
     TBXSeparatorItem100: TTBXSeparatorItem;
     TBXItemOEditSynIni: TTBXItem;
+    fOpenBySelection: TAction;
     procedure fOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1902,6 +1903,7 @@ type
     procedure ecNonPrintEolDetailsExecute(Sender: TObject);
     procedure TBXItemOHideItemsClick(Sender: TObject);
     procedure TBXItemOEditSynIniClick(Sender: TObject);
+    procedure fOpenBySelectionExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -2459,6 +2461,7 @@ type
     procedure DoExtToolsList(L: TTntStringList);
     procedure EditorNonPrintUpdate(Ed: TSyntaxMemo);
     procedure InitMenuItemsList;
+    procedure DoOpenBySelection;
     //end of private
 
   protected
@@ -2770,7 +2773,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.5.480';
+  cSynVer = '5.5.500';
 
 implementation
 
@@ -6003,6 +6006,7 @@ begin
     sm_OExplorerIntegration: TbxItemOShell.Click;
     sm_OEditSynIni: TBXItemOEditSynIni.Click;
     sm_OEditSynPluginsIni: TBXItemOEditSynPluginsIni.Click;
+    sm_OpenBySelection: fOpenBySelection.Execute;
 
     //end of commands list
     else
@@ -11477,7 +11481,10 @@ end;
 procedure TfmMain.TabClickN(n: integer);
 begin
   if (n>=0) and (n<FrameAllCount) then
-    CurrentFrame:= FramesAll[n]
+  begin
+    CurrentFrame:= FramesAll[n];
+    UpdateTabList(PageControl.ActivePageIndex, -1, -1);
+  end
   else
     MsgBeep;
 end;
@@ -11491,7 +11498,10 @@ begin
   PrevPages:= PageControl;
   PageControl:= PageControl2;
   if (n>=0) and (n<FrameCount) then //not FrameAllCount
-    CurrentFrame:= Frames[n] //not FramesAll
+  begin
+    CurrentFrame:= Frames[n]; //not FramesAll
+    UpdateTabList(PageControl.ActivePageIndex, -1, -1);
+  end
   else
   begin
     MsgBeep;
@@ -14968,6 +14978,11 @@ begin
 end;
 
 procedure TfmMain.TBXItemCtxOpenSelClick(Sender: TObject);
+begin
+  fOpenBySelection.Execute;
+end;
+
+procedure TfmMain.DoOpenBySelection;
 var
   sel, fn, s, dir, ext: Widestring;
   n, LnNum: integer;
@@ -20270,27 +20285,53 @@ end;
 
 function TfmMain.DoAutoCloseBracket(const ch: Widechar): boolean;
 var
-  S: ecString;
+  Ed: TSyntaxMemo;
+  ch2: Widechar;
+  NStart, NLen: Integer;
 begin
   Result:= false;
-  if CurrentEditor.ReadOnly then Exit;
-  
+  Ed:= CurrentEditor;
+  if Ed.ReadOnly then Exit;
+
+  //options enabled?
   if (Pos(ch, '([{')>0) and not opAutoCloseBrackets then Exit;
   if (Pos(ch, '"''')>0) and not opAutoCloseQuotes then Exit;
   if opAutoCloseBracketsNoEsc then
-    with CurrentEditor do
-      if (CaretStrPos>0) and (Lines.FText[CaretStrPos]='\') then Exit;
-      
+    with Ed do
+    if (CaretStrPos>0) and (Lines.FText[CaretStrPos]='\') then Exit;
+
   case ch of
-    '(': s:= '()';
-    '[': s:= '[]';
-    '{': s:= '{}';
-    '"': s:= '""';
-    '''': s:= '''''';
+    '(': ch2:= ')';
+    '[': ch2:= ']';
+    '{': ch2:= '}';
+    '"', '''': ch2:= ch;
     else Exit
   end;
-  CurrentEditor.InsertText(s);
-  CurrentEditor.CaretStrPos:= CurrentEditor.CaretStrPos-1;
+
+  if Ed.SelLength=0 then
+  //simply input start+end brackets
+  begin
+    Ed.InsertText(WideString(ch)+WideString(ch2));
+    Ed.CaretStrPos:= Ed.CaretStrPos-1;
+  end
+  else
+  //code to wrap selection with brackets
+  begin
+    Ed.BeginUpdate;
+    try
+      NStart:= Ed.SelStart;
+      NLen:= Ed.SelLength;
+      Ed.ResetSelection;
+      Ed.CaretStrPos:= NStart+NLen;
+      Ed.InsertText(ch2);
+      Ed.CaretStrPos:= NStart;
+      Ed.InsertText(ch);
+      Ed.SetSelection(NStart+1, NLen);
+    finally
+      Ed.EndUpdate;
+    end;
+  end;
+
   Result:= true;
 end;
 
@@ -26077,7 +26118,8 @@ begin
         S:= (Item as TTbxSubmenuItem).Caption;
         SReplaceAllW(S, '&', '');
         List.Items.Add('['+id+']  '+S);
-        //subitems
+        //subitems (not for "window" item)
+        if id<>'window' then
         for j:= 0 to (Item as TTbxSubmenuItem).Count-1 do
         begin
           S:= (Item as TTbxSubmenuItem).Items[j].Caption;
@@ -26108,6 +26150,11 @@ end;
 procedure TfmMain.TBXItemOEditSynIniClick(Sender: TObject);
 begin
   OpnFile(SynIni);
+end;
+
+procedure TfmMain.fOpenBySelectionExecute(Sender: TObject);
+begin
+  DoOpenBySelection;
 end;
 
 end.

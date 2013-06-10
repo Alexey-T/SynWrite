@@ -4,8 +4,8 @@ object fmHideItems: TfmHideItems
   ActiveControl = List
   BorderStyle = bsDialog
   Caption = 'Hide menu items'
-  ClientHeight = 465
-  ClientWidth = 529
+  ClientHeight = 469
+  ClientWidth = 473
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,10 +17,10 @@ object fmHideItems: TfmHideItems
   OnShow = TntFormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object TntLabel1: TTntLabel
+  object labInf: TTntLabel
     Left = 8
     Top = 4
-    Width = 513
+    Width = 457
     Height = 45
     AutoSize = False
     Caption = 
@@ -32,15 +32,15 @@ object fmHideItems: TfmHideItems
   end
   object List: TTntCheckListBox
     Left = 8
-    Top = 48
-    Width = 513
+    Top = 52
+    Width = 457
     Height = 381
     ItemHeight = 13
     TabOrder = 0
   end
   object bOk: TTntButton
-    Left = 320
-    Top = 436
+    Left = 264
+    Top = 440
     Width = 97
     Height = 23
     Caption = 'OK'
@@ -50,8 +50,8 @@ object fmHideItems: TfmHideItems
     OnClick = bOkClick
   end
   object bCancel: TTntButton
-    Left = 424
-    Top = 436
+    Left = 368
+    Top = 440
     Width = 97
     Height = 23
     Cancel = True
@@ -61,7 +61,7 @@ object fmHideItems: TfmHideItems
   end
   object bUncheck: TTntButton
     Left = 8
-    Top = 436
+    Top = 440
     Width = 153
     Height = 23
     Caption = 'Uncheck all'
@@ -69,13 +69,13 @@ object fmHideItems: TfmHideItems
     OnClick = bUncheckClick
   end
   object DKLanguageController1: TDKLanguageController
-    Left = 464
-    Top = 36
+    Left = 400
+    Top = 44
     LangData = {
       0B00666D486964654974656D73010100000001000000070043617074696F6E01
-      050000000900546E744C6162656C31010100000002000000070043617074696F
-      6E0004004C69737400000300624F6B010100000003000000070043617074696F
-      6E0007006243616E63656C010100000004000000070043617074696F6E000800
-      62556E636865636B010100000005000000070043617074696F6E00}
+      0500000006006C6162496E66010100000002000000070043617074696F6E0004
+      004C69737400000300624F6B010100000003000000070043617074696F6E0007
+      006243616E63656C010100000004000000070043617074696F6E00080062556E
+      636865636B010100000005000000070043617074696F6E00}
   end
 end
