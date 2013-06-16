@@ -46,9 +46,13 @@ uses
   TntStdCtrls,
   TntComCtrls,
   TBXControls,
+  TBXToolPals,
+
   unProc,
   ATSynPlugins,
-  ecMacroRec, TBXToolPals, ecExtHighlight, ecSpell;
+  ecMacroRec,
+  ecExtHighlight,
+  ecSpell;
 
 const
   opMruForPlugin = false;
@@ -2421,7 +2425,7 @@ type
     function IsPositionMatchesTokens(Ed: TSyntaxMemo; StartPos, EndPos: Integer;
       OptTokens: TSearchTokens): boolean;
 
-    procedure DoFindResNext(ANext: boolean);
+    procedure DoJumpToNextSearchResult(ANext: boolean);
     procedure DoHideMenuItem(const Str: string);
     function IsLexerFindID(const Lex: string): boolean;
 
@@ -2506,6 +2510,8 @@ type
     opColorBkmk: integer;
     opShowWrapMark: boolean;
     opTabVisible: integer;
+    opTabMultiLine: boolean;
+    opTabAtBottom: boolean;
     opTabNums: boolean; //show numbers on tabs
     opTabBtn: boolean; //show [x] button on tabs
     opTabOpLast: integer; //index of last closed tab on Options dialog
@@ -2664,13 +2670,13 @@ type
     property FullScr: boolean read FFullScr write SetFS;
     property OnTop: boolean read FOnTop write SetOnTop;
 
+    procedure ApplyTabOptions;
     procedure ApplyCarets;
     procedure ApplyUrlClick;
     procedure ApplyShowRecentColors;
     procedure ApplySpell;
     procedure ApplyProj;
     procedure ApplyFrames;
-    procedure ApplyTabVisibleMode;
     procedure ApplyTips;
     procedure ApplyAutoSave;
     procedure ApplyDefaultFonts;
@@ -2731,6 +2737,7 @@ type
     property Theme: integer read GetTheme write SetTheme;
     //procedure TestApi;
     function IsPluginWindowActive(var HWnd: THandle): boolean;
+    function opMarkDeletedAsModified: boolean;
     //end of public
   end;
 
@@ -2773,7 +2780,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.5.500';
+  cSynVer = '5.5.532';
 
 implementation
 
@@ -4025,8 +4032,6 @@ var
   i, NCount: integer;
   s: Widestring;
   ini: TMemIniFile;
-const
-  cTp: array[boolean] of TTabPosition = (tpTop, tpBottom);
 begin
   //get plugin-related options from LSPlugin.ini
   if not SynExe then
@@ -4114,19 +4119,25 @@ begin
     opAutoCloseBracketsNoEsc:= ReadBool('Setup', 'ACloseBrEsc', false);
     opAutoCloseQuotes:= ReadBool('Setup', 'ACloseQ', false);
 
+    opLexerCat:= ReadBool('Setup', 'LexCat', true);
     opLexersOverride:= ReadString('Setup', 'LexOvr', '');
+
     opTabVisible:= ReadInteger('Setup', 'TabVMode', 0);
     opTabMaxLen:= ReadInteger('Setup', 'TabMaxL', 24);
     opTabDblClick:= ReadBool('Setup', 'TabDbl', true);
     opTabDragDrop:= ReadBool('Setup', 'TabDnD', true);
     opTabSwitcher:= ReadBool('Setup', 'TabSw', true);
+    opTabNums:= ReadBool('View', 'TabNum', false);
+    opTabBtn:= ReadBool('View', 'TabBtn', true);
+    opTabMultiLine:= ReadBool('View', 'TabMul', false);
+    opTabAtBottom:= ReadBool('View', 'TabDown', false);
+    ApplyTabOptions;
 
     opSingleInstance:= ReadBool('Setup', 'Inst', false);
     ApplyInst;
     opQsCap:= ReadBool('Setup', 'QsCap', false);
     opQsEsc:= ReadInteger('Setup', 'QsEsc', 2);
     ApplyQs;
-    opLexerCat:= ReadBool('Setup', 'LexCat', true);
     opLink:= ReadBool('Setup', 'Link', true);
     opColorLink:= ReadInteger('Setup', 'LinkCl', clBlue);
       //opFixBlocks:= ReadBool('Setup', 'FixBl', true);
@@ -4224,16 +4235,8 @@ begin
     opMaxTreeMatches:= ReadInteger('SR', 'MaxTreeMatches', 100);
 
     opTabOpLast:= ReadInteger('View', 'TabLast', 0);
-    opTabNums:= ReadBool('View', 'TabNum', false);
-    opTabBtn:= ReadBool('View', 'TabBtn', true);
-
     opTabsSortMode:= ReadInteger('Win', 'TabSort', 0);
     opTabsWidths:= ReadString('Win', 'TabWdt', '100,400,');
-
-    PageControl1.MultiLine:= ReadBool('View', 'TabMul', false);
-    PageControl2.MultiLine:= PageControl1.MultiLine;
-    PageControl1.TabPosition:= cTp[ReadBool('View', 'TabDown', false)];
-    PageControl2.TabPosition:= PageControl1.TabPosition;
 
     opMapVScroll:= ReadBool('View', 'MapVSc', true);
     opMapZoom:= ReadInteger('View', 'MapZoom', 30);
@@ -4636,8 +4639,8 @@ begin
     WriteInteger('View', 'TabLast', opTabOpLast);
     WriteBool('View', 'TabNum', opTabNums);
     WriteBool('View', 'TabBtn', opTabBtn);
-    WriteBool('View', 'TabMul', PageControl1.MultiLine);
-    WriteBool('View', 'TabDown', PageControl1.TabPosition=tpBottom);
+    WriteBool('View', 'TabMul', opTabMultiLine);
+    WriteBool('View', 'TabDown', opTabAtBottom);
 
     WriteInteger('View', 'CaretsGut', opColorCaretsGutter);
     WriteInteger('View', 'MapMkC', opColorMapMarks);
@@ -5234,7 +5237,10 @@ begin
 
   Handled:= True;
   Ed:= Sender as TSyntaxMemo;
-  
+
+  ////debug
+  //Application.MainForm.Caption:= IntToStr(Command);
+
   case Command of
     //auto-close tag
     smChar:
@@ -8384,7 +8390,7 @@ begin
         //sel next match
         Finder.FindAgain;
         //workaround for Bug1
-        if (Finder.MatchLen=0) and (not Finder.IsEOLReplaced) then
+        if (Finder.MatchLen=0) and (not Finder.IsSpecialCase1) then
           with CurrentEditor do
             if CaretStrPos>0 then
               CaretStrPos:= CaretStrPos-1;
@@ -12179,8 +12185,8 @@ begin
 
     ShowProgress(proFindFiles);
     try
-      FFindToList(FListFiles, edDir.Text, edFile.Text, cbSubDir.Checked,
-        cbNoRO.Checked, cbNoHid.Checked, cbNoHid2.Checked);
+      FFindToList(FListFiles, edDir.Text, edFile.Text, edFileExc.Text,
+        cbSubDir.Checked, cbNoRO.Checked, cbNoHid.Checked, cbNoHid2.Checked);
       if StopFind then
       begin
         HideProgress;
@@ -13807,17 +13813,17 @@ end;
 
 procedure TfmMain.ecGotoNextFindResultExecute(Sender: TObject);
 begin
-  DoFindResNext(true);
+  DoJumpToNextSearchResult(true);
 end;
 
 procedure TfmMain.ecGotoPrevFindResultExecute(Sender: TObject);
 begin
-  DoFindResNext(false);
+  DoJumpToNextSearchResult(false);
 end;
 
-procedure TfmMain.DoFindResNext(ANext: boolean);
+procedure TfmMain.DoJumpToNextSearchResult(ANext: boolean);
 var
-  Node: TTntTreeNode;
+  Node, NodeChild: TTntTreeNode;
 begin
   with TreeFind do
   begin
@@ -13832,6 +13838,14 @@ begin
         Node:= Selected.GetPrev;
       if Node=nil then
         begin MsgBeep; Exit end;
+
+      //allow to stop only on leaf nodes
+      NodeChild:= Node.GetFirstChild;
+      if NodeChild<>nil then
+        Node:= NodeChild;
+      if Node=nil then
+        begin MsgBeep; Exit end;
+        
       Selected:= Node;
     until Selected.Data<>nil;
 
@@ -16717,6 +16731,7 @@ var
   AExt: boolean;
   AMode: TGotoMode;
   ABkNum: integer;
+  Pnt: TPoint;
 begin
   with CurrentEditor do
   begin
@@ -16729,7 +16744,11 @@ begin
     begin
       case AMode of
         goLine:
-          CaretPos:= Point(m-1, n-1);
+          begin
+            Pnt:= Point(m-1, n-1);
+            DoRecordToMacro(smGotoXY, @Pnt);
+            CaretPos:= Point(m-1, n-1);
+          end;
         goPrevBk:
           ecBkPrev.Execute;
         goNextBk:
@@ -17146,6 +17165,7 @@ begin
   FFindToList(FListNewDocs,
     SynDir + 'Template\newdoc',
     '*.*',
+    '',
     false{SubDirs},
     false, false, false);
 
@@ -19061,23 +19081,6 @@ begin
       Selected.Expand(true);
 end;
 
-{
-procedure TfmMain.ApplyTabs;
-begin
-  if opTabDragDrop then
-    PageControl1.DragMode:= dmAutomatic
-  else
-    PageControl1.DragMode:= dmManual;
-  PageControl2.DragMode:= PageControl1.DragMode;
-end;
-}
-
-procedure TfmMain.ApplyTabVisibleMode;
-begin
-  UpdateTabs(PageControl1);
-  UpdateTabs(PageControl2);
-end;
-
 procedure TfmMain.ApplyTips;
 begin
   Tree.ToolTips:= opTipsPanels;
@@ -19442,6 +19445,8 @@ begin
           ImageIndex:= -1;  
       end;
     Items.EndUpdate;
+    if Selected<>nil then
+      Selected.MakeVisible(false);
   end;
 end;
 
@@ -26155,6 +26160,32 @@ end;
 procedure TfmMain.fOpenBySelectionExecute(Sender: TObject);
 begin
   DoOpenBySelection;
+end;
+
+function TfmMain.opMarkDeletedAsModified: boolean;
+begin
+  with TIniFile.Create(SynIni) do
+  try
+    Result:= ReadBool('Setup', 'MarkDeletedModified', true);
+  finally
+    Free
+  end;
+end;
+
+procedure TfmMain.ApplyTabOptions;
+var
+  Pos: TTabPosition;
+begin
+  //apply visible-mode
+  UpdateTabs(PageControl1);
+  UpdateTabs(PageControl2);
+
+  PageControl1.MultiLine:= opTabMultiLine;
+  PageControl2.MultiLine:= opTabMultiLine;
+
+  if opTabAtBottom then Pos:= tpBottom else Pos:= tpTop;
+  PageControl1.TabPosition:= Pos;
+  PageControl2.TabPosition:= Pos;
 end;
 
 end.

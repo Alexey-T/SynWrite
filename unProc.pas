@@ -1669,6 +1669,13 @@ var
 begin
   if Key=#127 then
   begin
+    if Ed.SelLength>0 then
+    begin
+      n1:= Ed.SelStart+Ed.SelLength;
+      Ed.SelLength:= 0;
+      Ed.SelStart:= n1;
+    end;
+
     S:= Ed.Text;
     n2:= Ed.SelStart;
     n1:= n2;

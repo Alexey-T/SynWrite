@@ -1013,22 +1013,20 @@ begin
   //Tabs
   if tabTabs.Tag<>0 then
   begin
+    opTabVisible:=cbTabVis.ItemIndex;
     opTabBtn:=cbTabBtn.Checked;
-    opTabVisible:= cbTabVis.ItemIndex;
     opTabNums:=cbTabNums.Checked;
     opTabSwitcher:=cbTabSw.Checked;
     opTabDragDrop:=cbTabDnD.Checked;
     opTabDblClick:=cbTabDbl.Checked;
     opTabMaxLen:=edTabMaxLen.Value;
-    ApplyTabVisibleMode;
+    opTabMultiLine:=cbTabMul.Checked;
+    opTabAtBottom:=cbTabDown.Checked;
 
     for i:= 0 to High(ColorsOfTabs) do
       opTabColors[i]:= ColorsOfTabs[i];
 
-    PageControl1.MultiLine:=cbTabMul.Checked;
-    PageControl2.MultiLine:=cbTabMul.Checked;
-    PageControl1.TabPosition:= cTp[cbTabDown.Checked];
-    PageControl2.TabPosition:= PageControl1.TabPosition;
+    ApplyTabOptions;
     ApplyFrames;
   end;
 
@@ -2203,9 +2201,8 @@ begin
     cbTabBtn.Checked:=opTabBtn;
     cbTabVis.ItemIndex:=opTabVisible;
     cbTabNums.Checked:=opTabNums;
-    cbTabMul.Checked:=PageControl1.MultiLine;
-    cbTabDown.Checked:=PageControl1.TabPosition=tpBottom;
-
+    cbTabMul.Checked:=opTabMultiLine;
+    cbTabDown.Checked:=opTabAtBottom;
     cbTabSw.Checked:=opTabSwitcher;
     cbTabDnD.Checked:=opTabDragDrop;
     cbTabDbl.Checked:=opTabDblClick;

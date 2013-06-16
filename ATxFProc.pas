@@ -20,13 +20,15 @@ function FormatFileTimeFmt(const ft: TFileTime; const Fmt: string): string;
 
 procedure MsgBeep(Err: boolean = false);
 
+function FFilenameMatchesMaskList(const fn, masks: Widestring): boolean;
 function FReadString(const fn: string): string;
 function FFindInSubdirs(const sname, sdir: Widestring; var fn: Widestring): boolean;
 function FAppDataPath: string;
 function FExecProcess(const CmdLine, CurrentDir: Widestring; ShowCmd: integer; DoWait: boolean): TExecCode;
 procedure FReadSection(const fn, sec: string; L: TStringList);
 procedure FFindToList(List: TTntStringList;
-  const SDir, SMask: Widestring; ASubDir: boolean;
+  const ADir, AMasksInclude, AMasksExclude: Widestring;
+  ASubDir: boolean;
   ANoRO: boolean;
   ANoHidFiles: boolean;
   ANoHidFolders: boolean);
@@ -777,9 +779,27 @@ end;
     end;
   end;
 
-//SMask: space separated masks
+function PathMatchSpecW(const pszFileParam, pszSpec: PWideChar): Bool;
+  stdcall; external 'shlwapi.dll';
+
+function FFilenameMatchesMaskList(const fn, masks: Widestring): boolean;
+var
+  s, msk: Widestring;
+begin
+  Result:= false;
+  s:= Trim(masks);
+  repeat
+    msk:= SGetMask(s);
+    if msk='' then Break;
+    Result:= PathMatchSpecW(PWChar(fn), PWChar(msk));
+    if Result then Break;
+  until false;
+end;
+
+
 procedure FFindToList(List: TTntStringList;
-  const SDir, SMask: Widestring; ASubDir: boolean;
+  const ADir, AMasksInclude, AMasksExclude: Widestring;
+  ASubDir: boolean;
   ANoRO: boolean;
   ANoHidFiles: boolean;
   ANoHidFolders: boolean);
@@ -791,42 +811,46 @@ begin
   Application.ProcessMessages;
   if StopFind then Exit;
 
-  s:= SMask;
-  repeat
-    msk:= SGetMask(s);
-    if msk='' then Break;
+  a:= faArchive;
+  if not ANoHidFiles then
+    Inc(a, faHidden or faSysFile);
+  //R/O inclusion to parameter doesn't work
 
-    a:= faArchive;
-    if not ANoHidFiles then Inc(a, faHidden or faSysFile);
-    //R/O inclusion to parameter doesn't work
-
-    if WideFindFirst(SDir+'\'+msk, a, F) = 0 then
-    begin
-      repeat
-        //handle R/o here
-        if ANoRO and ((F.Attr and faReadOnly) <> 0) then
-          Continue;
-        if List.IndexOf(SDir+'\'+F.Name) < 0 then
-          List.AddObject(SDir+'\'+F.Name, Pointer(DWORD(F.Size)));
-      until WideFindNext(F) <> 0;
-      WideFindClose(F);
-    end;
-  until False;
+  if WideFindFirst(ADir+'\*.*', a, F) = 0 then
+  begin
+    repeat
+      //test include-mask
+      if not FFilenameMatchesMaskList(F.Name, AMasksInclude) then
+        Continue;
+      //test exclude-mask
+      if FFilenameMatchesMaskList(F.Name, AMasksExclude) then
+        Continue;
+      //test R/O here
+      if ANoRO and ((F.Attr and faReadOnly) <> 0) then
+        Continue;
+      //add filename to List
+      List.AddObject(ADir+'\'+F.Name, Pointer(DWORD(F.Size)));
+    until WideFindNext(F) <> 0;
+    WideFindClose(F);
+  end;
 
   //see dirs
   a:= faArchive or faDirectory or faReadOnly;
-  if not ANoHidFolders then Inc(a, faHidden or faSysFile);
+  if not ANoHidFolders then
+    Inc(a, faHidden or faSysFile);
 
   if ASubDir then
-  if WideFindFirst(SDir+'\*.*', a, F) = 0 then
+  if WideFindFirst(ADir+'\*.*', a, F) = 0 then
   begin
     repeat
-      if (F.Name<>'.') and (F.Name<>'..') and IsDirExist(SDir+'\'+F.Name) then
-      begin
-        //Messagebox(0, PChar(string(SDir+'\'+F.Name)), '', 0);
-        FFindToList(List, SDir+'\'+F.Name, SMask, ASubDir,
-          ANoRO, ANoHidFiles, ANoHidFolders);
-      end;
+      if (F.Name<>'.') and (F.Name<>'..') and IsDirExist(ADir+'\'+F.Name) then
+        //test exclude-mask for folders
+        if not FFilenameMatchesMaskList(F.Name, AMasksExclude) then
+        begin
+          //Messagebox(0, PChar(string(SDir+'\'+F.Name)), '', 0);
+          FFindToList(List, ADir+'\'+F.Name, AMasksInclude, AMasksExclude, ASubDir,
+            ANoRO, ANoHidFiles, ANoHidFolders);
+        end;
     until WideFindNext(F) <> 0;
     WideFindClose(F);
   end;
@@ -1208,6 +1232,7 @@ begin
     CloseHandle(pi.hProcess);
     end;
 end;
+
 
 
 end.

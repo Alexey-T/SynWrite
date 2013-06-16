@@ -96,7 +96,7 @@ type
     function Search(StrtPos, EndPos: integer; ToBack, ToAll, Replace, CntOnly: boolean): Boolean; virtual;
     function DoSearch(ToAll, ToBack, FromCur: Boolean; Replace: Boolean=False; CntOnly: Boolean=False): Boolean;
     function RepCfm(APos, ALen: integer; ToBack, ToAll: boolean): TModalResult;
-    function SRepl: WideString;
+    function StrReplaceWith: WideString;
     procedure CenterPos;
   public
     constructor Create(AOwner: TComponent); override;
@@ -108,7 +108,8 @@ type
     function CountAll: boolean;
     function ReplaceAll: Boolean;
     function ReplaceAgain: boolean;
-    function IsEOLReplaced: boolean;
+    function IsSpecialCase1: boolean;
+    function IsSpecialCase2: boolean;
   published
     property SelectResult: Boolean read FSelectResult write FSelectResult default False;
     property OnNotFound: TNotifyEvent read FOnNotFound write FOnNotFound;
@@ -353,7 +354,7 @@ begin
          case ACfm of
            mrYes, mrAll:
            begin
-             S:= SRepl;
+             S:= StrReplaceWith;
              FControl.ReplaceText(st - 1, N, S);
              RepLen:= Length(S);
              Inc(EndPos, RepLen - N); //text may become longer
@@ -378,12 +379,15 @@ begin
      else
      begin
        StrtPos:= st + RepLen;
-       //Workaround for hang on replacing regex '$':
-       if (ftRegularExpr in FFlags) and IsEOLReplaced then
+       //workaround for inf-looping on replacing regex '$':
+       if IsSpecialCase1 then
          case FControl.Lines.TextFormat of
            tfCR_NL: Inc(StrtPos, 2);
            else Inc(StrtPos);
          end;
+       //workaround for replacing regex "^www" with empty sting:
+       if IsSpecialCase2 then
+         Inc(StrtPos);
      end;
   until False;
 
@@ -646,7 +650,7 @@ begin
   Result:= DoSearch(False, ftBackward in Flags, not (ftEntireScope in Flags), True);
 end;
 
-function TSynFindReplace.SRepl: WideString;
+function TSynFindReplace.StrReplaceWith: WideString;
 begin
   if (ftRegularExpr in FFlags) then
     Result:= FRegExpr.Substitute(FControl.Lines.FText, FReplaceText)
@@ -693,14 +697,6 @@ begin
   FCfmAll:= false;
 end;
 
-function TSynFindReplace.IsEOLReplaced: boolean;
-begin
-  Result:=
-    (ftRegularExpr in FFlags) and
-    (FFindText<>'') and
-    (FFindText[Length(FFindText)] = '$');
-end;
-
 function SFixEOL(const S: Widestring; Ed: TCustomSyntaxMemo): Widestring;
 const
   cc: Widestring = #1;
@@ -733,6 +729,22 @@ begin
   end;  
 end;
 
+function TSynFindReplace.IsSpecialCase1: boolean;
+begin
+  Result:=
+    (ftRegularExpr in FFlags) and
+    (FFindText<>'') and
+    (FFindText[Length(FFindText)] = '$');
+end;
+
+function TSynFindReplace.IsSpecialCase2: boolean;
+begin
+  Result:=
+    (ftRegularExpr in FFlags) and
+    (FFindText<>'') and
+    (FFindText[1] = '^') and
+    (FReplaceText = '');
+end;
 
 end.
 

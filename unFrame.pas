@@ -120,7 +120,7 @@ type
     FFileName: WideString;
     FOnTitleChanged: TEditorEvent;
     FOnSaveState: TNotifyEvent;
-    FPrevMod: Boolean;
+    FModifiedPrev: Boolean;
     FModifiedClr: Boolean;
     FSplitHorz: boolean;
     FSplitPos: Double;
@@ -135,7 +135,7 @@ type
     procedure SetSplitPos(const F: Double);
     procedure SetSplitHorz(Value: boolean);
     function GetModified: boolean;
-    procedure SetModified(const Value: boolean);
+    procedure SetModified(Value: boolean);
     function GetTitle: WideString;
     procedure FileReload(Sender: TObject);
     function GetShowMap: boolean;
@@ -473,10 +473,12 @@ begin
     Result:= EditorMaster.Modified;
 end;
 
-procedure TEditorFrame.SetModified(const Value: boolean);
+procedure TEditorFrame.SetModified(Value: boolean);
 begin
-  EditorSlave.Modified:= Value;
   EditorMaster.Modified:= Value;
+  EditorSlave.Modified:= Value;
+  if not Value then
+    FModifiedPrev:= Value;
 end;
 
 function TEditorFrame.GetTitle: Widestring;
@@ -562,10 +564,10 @@ end;
 
 procedure TEditorFrame.EditorMasterChange(Sender: TObject);
 begin
-  if FPrevMod <> Modified then
+  if FModifiedPrev <> Modified then
   begin
     DoTitleChanged;
-    FPrevMod:= Modified;
+    FModifiedPrev:= Modified;
   end;
 
   UpdateGutterWidth(Sender);
@@ -855,7 +857,7 @@ procedure TEditorFrame.FileReload(Sender: TObject);
   end;
 var
   Ln1, Ln2: integer;
-  b, WasEnd: boolean;
+  Cfm, WasEnd: boolean;
   r: TModalResult;
   Ed, Ed2: TSyntaxMemo;
   P1, P2: TPoint;
@@ -865,7 +867,8 @@ begin
   begin
     Msg;
     //mark deleted file as modified
-    EditorMaster.Modified:= true;
+    if TfmMain(Owner).opMarkDeletedAsModified then
+      Modified:= true;
     EditorMasterChange(EditorMaster);
     Exit
   end;
@@ -873,25 +876,25 @@ begin
   //special confirm on modified
   if Modified then
   begin
-    b:= MsgConfirm(WideFormat(DKLangConstW('MRelMod'), [WideExtractFileName(FileName)]));
+    Cfm:= MsgConfirm(WideFormat(DKLangConstW('MRelMod'), [WideExtractFileName(FileName)]));
   end
   else
   //normal confirm
   //use MsgBox for plugin, MsgDlg for exe
   if not TfmMain(Owner).SynExe then
   begin
-    b:= (TfmMain(Owner).opNotif = 1) or
+    Cfm:= (TfmMain(Owner).opNotif = 1) or
       MsgConfirm(WideFormat(DKLangConstW('MRel'), [WideExtractFileName(FileName)]));
   end
   else
   begin
-    if FNotifAllYes then b:= true
+    if FNotifAllYes then Cfm:= true
     else
-    if FNotifAllNo then b:= false
+    if FNotifAllNo then Cfm:= false
     else
     begin
-      b:= (TfmMain(Owner).opNotif = 1);
-      if not b then
+      Cfm:= (TfmMain(Owner).opNotif = 1);
+      if not Cfm then
       begin
         MsgBeep;
         r:= WideMessageDlg(
@@ -899,13 +902,13 @@ begin
           mtWarning, [mbOk, mbCancel, mbYesToAll, mbNoToAll], 0);
         FNotifAllYes:= r = mrYesToAll;
         FNotifAllNo:= r = mrNoToAll;
-        b:= r in [mrOk, mrYesToAll];
+        Cfm:= r in [mrOk, mrYesToAll];
       end;
     end;
   end;
 
   //if confirmed - reload
-  if b then
+  if Cfm then
   begin
     if not IsFileExist(FileName) then
       begin Msg; Exit end; //file could be deleted while msg shown
@@ -927,8 +930,6 @@ begin
     TextSource.Lines.SkipSignature:= True;
     TextSource.Lines.LoadFromFile(FileName);
     TextSource.Lines.SkipSignature:= False;
-    Modified:= false;
-    ModifiedClr:= false;
 
     if TfmMain(Owner).opFollowTail and WasEnd then
     begin
@@ -949,6 +950,11 @@ begin
     EditorSlave.Lines.ResetLineStates;
     EditorMaster.ResetSearchMarks;
     EditorSlave.ResetSearchMarks;
+
+    //mark file as non-modified
+    Modified:= false;
+    ModifiedClr:= false;
+    DoTitleChanged;
   end;
 
   DoStartNotif;

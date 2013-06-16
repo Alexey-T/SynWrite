@@ -1,3 +1,4 @@
+{$define GotoWork}
 {
 Multi-carets memo add-on for EControl Syntax Editor SDK
 (c) A. Torgashin, www.uvviewsoft.com
@@ -548,6 +549,15 @@ begin
       OnExecuteCommand(Self, Command, Data, Ok);
     Exit
   end;
+  
+  {$ifdef GotoWork}
+  //workaround: commands 17 and 117 recorded swapped:
+  //click records 117 and Shift+click records 17
+  case Command of
+    smGotoXY: Inc(Command, smSelection);
+    smGotoXY+smSelection: Dec(Command, smSelection);
+  end;  
+  {$endif}
 
   //handle all commands here
   if CaretsCount=0 then

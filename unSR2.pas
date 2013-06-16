@@ -67,6 +67,8 @@ type
     TntLabel3: TTntLabel;
     edSort: TTntComboBox;
     cbCloseAfter: TTntCheckBox;
+    TntLabel4: TTntLabel;
+    edFileExc: TTntComboBox;
     procedure FormCreate(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -95,6 +97,8 @@ type
     procedure edDirKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure ed1KeyPress(Sender: TObject; var Key: Char);
+    procedure edFileExcKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
     procedure DoCopyToEdit(ed: TTntCombobox;
@@ -177,6 +181,8 @@ begin
 end;
 
 procedure TfmSRFiles.FormShow(Sender: TObject);
+var
+  bExcludeEmpty: boolean;
 begin
   labFind.Caption:= #$00BB + DKLangConstW('fn');
   labFindRep.Caption:= #$00BB + DKLangConstW('fnR');
@@ -206,6 +212,7 @@ begin
     cbInOEM.Checked:= ReadBool('Search', 'InOEM', false);
     cbInUTF8.Checked:= ReadBool('Search', 'InUTF8', false);
     cbInUTF16.Checked:= ReadBool('Search', 'InUTF16', false);
+    bExcludeEmpty:= ReadBool('Search', 'Exc_em', true);
   finally
     Free;
   end;
@@ -213,10 +220,14 @@ begin
   SLoadCombo(ed1, SRIniS, 'SearchText');
   SLoadCombo(ed2, SRIni, 'RHist', False);
   SLoadCombo(edFile, SRIni, 'IncHist');
+  SLoadCombo(edFileExc, SRIni, 'ExcHist');
   SLoadCombo(edDir, SRIni, 'DirHist'{, False});
 
   if edFile.Text='' then
     edFile.Text:= '*.*';
+
+  if bExcludeEmpty then
+    edFileExc.Text:= '';  
 
   if SRTextS<>'' then
     ed1.Text:= SRTextS
@@ -273,6 +284,7 @@ begin
     WriteBool('Search', 'InOEM', cbInOEM.Checked);
     WriteBool('Search', 'InUTF8', cbInUTF8.Checked);
     WriteBool('Search', 'InUTF16', cbInUTF16.Checked);
+    WriteBool('Search', 'Exc_em', edFileExc.Text='');
   finally
     Free;
   end;
@@ -280,11 +292,13 @@ begin
   SSave(ed1, SRCount);
   SSave(ed2, SRCount);
   SSave(edFile, SRCount);
+  SSave(edFileExc, SRCount);
   SSave(edDir, SRCount);
 
   SSaveCombo(ed1, SRIniS, 'SearchText');
   SSaveCombo(ed2, SRIni, 'RHist');
   SSaveCombo(edFile, SRIni, 'IncHist');
+  SSaveCombo(edFileExc, SRIni, 'ExcHist');
   SSaveCombo(edDir, SRIni, 'DirHist');
 end;
 
@@ -510,6 +524,17 @@ end;
 procedure TfmSRFiles.ed1KeyPress(Sender: TObject; var Key: Char);
 begin
   DoHandleCtrlBkSp(Sender as TTntCombobox, Key);
+end;
+
+procedure TfmSRFiles.edFileExcKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=vk_delete) and (Shift=[ssAlt]) then
+  begin
+    DoDeleteComboItem(edFileExc);
+    Key:= 0;
+    Exit
+  end;
 end;
 
 end.

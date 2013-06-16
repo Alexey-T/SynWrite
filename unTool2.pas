@@ -94,7 +94,8 @@ procedure TfmToolOutput.bPreLoadClick(Sender: TObject);
 var
   p: TPoint;
 begin
-  FFindToList(FList, FDir, '*.'+cExt, false, false, false, false);
+  FList.Clear;
+  FFindToList(FList, FDir, '*.'+cExt{MasksInclude}, ''{MasksExclude}, false, false, false, false);
   FList.Sort;
 
   p:= Point(0, bPreLoad.Height);

@@ -4,8 +4,8 @@ object fmSRFiles: TfmSRFiles
   ActiveControl = ed1
   BorderStyle = bsDialog
   Caption = 'Find/Replace in files'
-  ClientHeight = 445
-  ClientWidth = 457
+  ClientHeight = 484
+  ClientWidth = 497
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -38,7 +38,7 @@ object fmSRFiles: TfmSRFiles
   end
   object TntLabel1: TTntLabel
     Left = 8
-    Top = 152
+    Top = 192
     Width = 79
     Height = 13
     Caption = 'Search in f&older:'
@@ -53,7 +53,7 @@ object fmSRFiles: TfmSRFiles
     FocusControl = edFile
   end
   object LabelErr: TTntLabel
-    Left = 292
+    Left = 340
     Top = 4
     Width = 10
     Height = 13
@@ -69,7 +69,7 @@ object fmSRFiles: TfmSRFiles
     Visible = False
   end
   object labFind: TTntLabel
-    Left = 336
+    Left = 376
     Top = 140
     Width = 26
     Height = 13
@@ -84,7 +84,7 @@ object fmSRFiles: TfmSRFiles
     OnClick = labFindClick
   end
   object labFindRep: TTntLabel
-    Left = 336
+    Left = 376
     Top = 156
     Width = 26
     Height = 13
@@ -98,10 +98,18 @@ object fmSRFiles: TfmSRFiles
     ParentFont = False
     OnClick = labFindRepClick
   end
+  object TntLabel4: TTntLabel
+    Left = 8
+    Top = 152
+    Width = 205
+    Height = 13
+    Caption = 'Files mask(s) to exclude, space separated:'
+    FocusControl = edFileExc
+  end
   object ed1: TTntComboBox
     Left = 8
     Top = 20
-    Width = 321
+    Width = 361
     Height = 21
     AutoComplete = False
     DropDownCount = 15
@@ -114,7 +122,7 @@ object fmSRFiles: TfmSRFiles
   object ed2: TTntComboBox
     Left = 8
     Top = 60
-    Width = 321
+    Width = 361
     Height = 21
     AutoComplete = False
     DropDownCount = 15
@@ -124,43 +132,43 @@ object fmSRFiles: TfmSRFiles
     OnKeyPress = ed1KeyPress
   end
   object bHelp: TTntButton
-    Left = 392
+    Left = 432
     Top = 200
     Width = 114
     Height = 25
     Caption = 'Help'
-    TabOrder = 14
+    TabOrder = 15
     Visible = False
     OnClick = bHelpClick
   end
   object bCan: TTntButton
-    Left = 336
+    Left = 376
     Top = 74
     Width = 114
     Height = 25
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
-    TabOrder = 15
+    TabOrder = 16
   end
   object gOp: TTntGroupBox
     Left = 8
-    Top = 240
-    Width = 185
+    Top = 280
+    Width = 209
     Height = 141
     Caption = 'Options for text search'
-    TabOrder = 9
+    TabOrder = 10
     object Bevel1: TBevel
       Left = 8
       Top = 84
-      Width = 169
+      Width = 193
       Height = 5
       Shape = bsTopLine
     end
     object cbRE: TTntCheckBox
       Left = 8
       Top = 48
-      Width = 174
+      Width = 198
       Height = 17
       Caption = 'Regular e&xpressions'
       TabOrder = 2
@@ -169,7 +177,7 @@ object fmSRFiles: TfmSRFiles
     object cbCase: TTntCheckBox
       Left = 8
       Top = 16
-      Width = 174
+      Width = 198
       Height = 17
       Caption = '&Case sensitive'
       TabOrder = 0
@@ -177,7 +185,7 @@ object fmSRFiles: TfmSRFiles
     object cbWords: TTntCheckBox
       Left = 8
       Top = 32
-      Width = 174
+      Width = 198
       Height = 17
       Caption = '&Whole words'
       TabOrder = 1
@@ -185,7 +193,7 @@ object fmSRFiles: TfmSRFiles
     object cbSpec: TTntCheckBox
       Left = 8
       Top = 64
-      Width = 174
+      Width = 198
       Height = 17
       Caption = 'S&pecial chars (\n \r \t...)'
       TabOrder = 3
@@ -194,7 +202,7 @@ object fmSRFiles: TfmSRFiles
     object cbInOEM: TTntCheckBox
       Left = 8
       Top = 88
-      Width = 174
+      Width = 198
       Height = 17
       Caption = 'Search also in OE&M'
       TabOrder = 4
@@ -202,7 +210,7 @@ object fmSRFiles: TfmSRFiles
     object cbInUTF8: TTntCheckBox
       Left = 8
       Top = 104
-      Width = 174
+      Width = 198
       Height = 17
       Caption = 'Search also in UTF-&8'
       TabOrder = 5
@@ -210,7 +218,7 @@ object fmSRFiles: TfmSRFiles
     object cbInUTF16: TTntCheckBox
       Left = 8
       Top = 120
-      Width = 174
+      Width = 198
       Height = 17
       Caption = 'Search also in UTF-1&6'
       TabOrder = 6
@@ -218,46 +226,46 @@ object fmSRFiles: TfmSRFiles
   end
   object edDir: TTntComboBox
     Left = 8
-    Top = 168
-    Width = 321
+    Top = 208
+    Width = 361
     Height = 21
     AutoComplete = False
     DropDownCount = 15
     ItemHeight = 13
-    TabOrder = 5
+    TabOrder = 6
     OnChange = edDirChange
     OnKeyDown = edDirKeyDown
     OnKeyPress = ed1KeyPress
   end
   object bRAll: TTntButton
-    Left = 336
+    Left = 376
     Top = 38
     Width = 114
     Height = 25
     Caption = 'Replace all'
-    TabOrder = 13
+    TabOrder = 14
   end
   object cbSubDir: TTntCheckBox
     Left = 8
-    Top = 192
+    Top = 232
     Width = 305
     Height = 17
     Caption = 'With all s&ubfolders'
-    TabOrder = 6
+    TabOrder = 7
   end
   object bBrowseDir: TTntButton
     Left = 8
-    Top = 212
+    Top = 252
     Width = 113
     Height = 23
     Caption = '&Browse for folder...'
-    TabOrder = 7
+    TabOrder = 8
     OnClick = bBrowseDirClick
   end
   object edFile: TTntComboBox
     Left = 8
     Top = 100
-    Width = 321
+    Width = 361
     Height = 21
     AutoComplete = False
     DropDownCount = 15
@@ -268,31 +276,31 @@ object fmSRFiles: TfmSRFiles
     OnKeyPress = ed1KeyPress
   end
   object bFAll: TTntButton
-    Left = 336
+    Left = 376
     Top = 8
     Width = 114
     Height = 25
     Caption = '&Find all'
     Default = True
     Enabled = False
-    TabOrder = 12
+    TabOrder = 13
   end
   object bCurrDir: TTntButton
     Left = 128
-    Top = 212
+    Top = 252
     Width = 113
     Height = 23
     Caption = 'Curre&nt folder'
-    TabOrder = 8
+    TabOrder = 9
     OnClick = bCurrDirClick
   end
   object gFile: TTntGroupBox
-    Left = 200
-    Top = 240
-    Width = 249
+    Left = 224
+    Top = 280
+    Width = 265
     Height = 109
     Caption = 'Options for files search'
-    TabOrder = 10
+    TabOrder = 11
     object TntLabel3: TTntLabel
       Left = 8
       Top = 84
@@ -304,7 +312,7 @@ object fmSRFiles: TfmSRFiles
     object cbNoBin: TTntCheckBox
       Left = 8
       Top = 16
-      Width = 238
+      Width = 254
       Height = 17
       Caption = 'Skip b&inary files'
       TabOrder = 0
@@ -312,7 +320,7 @@ object fmSRFiles: TfmSRFiles
     object cbNoRO: TTntCheckBox
       Left = 8
       Top = 32
-      Width = 238
+      Width = 254
       Height = 17
       Caption = 'Skip r&ead-only files'
       TabOrder = 1
@@ -320,7 +328,7 @@ object fmSRFiles: TfmSRFiles
     object cbNoHid: TTntCheckBox
       Left = 8
       Top = 48
-      Width = 238
+      Width = 254
       Height = 17
       Caption = 'Skip &hidden files'
       TabOrder = 2
@@ -328,7 +336,7 @@ object fmSRFiles: TfmSRFiles
     object cbNoHid2: TTntCheckBox
       Left = 8
       Top = 64
-      Width = 238
+      Width = 254
       Height = 17
       Caption = 'Skip hi&dden folders'
       TabOrder = 3
@@ -346,16 +354,16 @@ object fmSRFiles: TfmSRFiles
     end
   end
   object gRes: TTntGroupBox
-    Left = 200
-    Top = 352
-    Width = 249
+    Left = 224
+    Top = 392
+    Width = 265
     Height = 85
     Caption = 'Result list'
-    TabOrder = 11
+    TabOrder = 12
     object cbFnOnly: TTntCheckBox
       Left = 8
       Top = 32
-      Width = 238
+      Width = 254
       Height = 17
       Caption = 'Show filenames onl&y'
       TabOrder = 1
@@ -363,7 +371,7 @@ object fmSRFiles: TfmSRFiles
     object cbOutTab: TTntCheckBox
       Left = 8
       Top = 16
-      Width = 238
+      Width = 254
       Height = 17
       Caption = 'Show results in edi&tor tab'
       TabOrder = 0
@@ -372,7 +380,7 @@ object fmSRFiles: TfmSRFiles
     object cbOutAppend: TTntCheckBox
       Left = 8
       Top = 48
-      Width = 238
+      Width = 254
       Height = 17
       Caption = '&Append results list'
       TabOrder = 2
@@ -380,7 +388,7 @@ object fmSRFiles: TfmSRFiles
     object cbCloseAfter: TTntCheckBox
       Left = 8
       Top = 64
-      Width = 238
+      Width = 254
       Height = 17
       Caption = 'Close dialog when finished'
       TabOrder = 3
@@ -404,13 +412,25 @@ object fmSRFiles: TfmSRFiles
     TabOrder = 3
     OnClick = bBrowseFileClick
   end
+  object edFileExc: TTntComboBox
+    Left = 8
+    Top = 168
+    Width = 361
+    Height = 21
+    AutoComplete = False
+    DropDownCount = 15
+    ItemHeight = 13
+    TabOrder = 5
+    OnKeyDown = edFileExcKeyDown
+    OnKeyPress = ed1KeyPress
+  end
   object DKLanguageController1: TDKLanguageController
     IgnoreList.Strings = (
       'labFind*.*')
-    Left = 408
+    Left = 448
     Top = 140
     LangData = {
-      0900666D535246696C6573010100000001000000070043617074696F6E012B00
+      0900666D535246696C6573010100000001000000070043617074696F6E012D00
       000006004C6162656C32010100000002000000070043617074696F6E0006004C
       6162656C34010100000003000000070043617074696F6E000900546E744C6162
       656C31010100000004000000070043617074696F6E000900546E744C6162656C
@@ -442,18 +462,20 @@ object fmSRFiles: TfmSRFiles
       46696E6400000A006C616246696E6452657000000B0063624F7574417070656E
       6401010000001F000000070043617074696F6E000900546E744C6162656C3301
       0100000020000000070043617074696F6E0006006564536F727400000C006362
-      436C6F73654166746572010100000021000000070043617074696F6E00}
+      436C6F73654166746572010100000021000000070043617074696F6E00090054
+      6E744C6162656C34010100000022000000070043617074696F6E000900656446
+      696C654578630000}
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 5000
     OnTimer = Timer1Timer
-    Left = 408
+    Left = 448
     Top = 168
   end
   object TntOpenDialog1: TTntOpenDialog
     Filter = '*.*|*.*'
-    Left = 376
+    Left = 416
     Top = 140
   end
 end
