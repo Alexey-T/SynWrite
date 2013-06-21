@@ -69,8 +69,8 @@ object fmSRFiles: TfmSRFiles
     Visible = False
   end
   object labFind: TTntLabel
-    Left = 376
-    Top = 140
+    Left = 392
+    Top = 132
     Width = 26
     Height = 13
     Cursor = crHandPoint
@@ -84,8 +84,8 @@ object fmSRFiles: TfmSRFiles
     OnClick = labFindClick
   end
   object labFindRep: TTntLabel
-    Left = 376
-    Top = 156
+    Left = 392
+    Top = 148
     Width = 26
     Height = 13
     Cursor = crHandPoint
@@ -101,9 +101,9 @@ object fmSRFiles: TfmSRFiles
   object TntLabel4: TTntLabel
     Left = 8
     Top = 152
-    Width = 205
+    Width = 264
     Height = 13
-    Caption = 'Files mask(s) to exclude, space separated:'
+    Caption = 'File and "folder\" mask(s) to exclude, space separated:'
     FocusControl = edFileExc
   end
   object ed1: TTntComboBox
@@ -342,7 +342,7 @@ object fmSRFiles: TfmSRFiles
       TabOrder = 3
     end
     object edSort: TTntComboBox
-      Left = 112
+      Left = 128
       Top = 80
       Width = 129
       Height = 21

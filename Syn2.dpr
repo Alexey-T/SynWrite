@@ -146,7 +146,7 @@ begin
   f:= TfmMain(FindControl(ListWin));
   if f <> nil then
   with f do begin
-    SHint[-1]:= '';
+    SetHint('');
     Finder.Flags:= [];
     if (SearchParameter and lcs_backwards) <> 0 then
       Finder.Flags:= Finder.Flags + [ftBackward];

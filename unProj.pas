@@ -6,10 +6,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, ImgList,
-  TB2Item, TBX, TB2Dock, TB2Toolbar,
+  Dialogs, ComCtrls, ImgList, ExtCtrls, Menus,
+
   TntForms, TntClasses, TntComCtrls, TntDialogs,
-  ExtCtrls, Menus, DKLang, unProgress, TBXExtItems, TB2MRU;
+  TB2Item, TB2Dock, TB2Toolbar,
+  SpTBXItem, SpTbxMDIMRU,
+
+  DKLang,
+  unProgress, unProc;
 
 var
   SMsgProjNew: Widestring = 'Untitled';
@@ -38,57 +42,57 @@ type
 type
   TfmProj = class(TForm)
     TreeProj: TTntTreeView;
-    tbProject: TTBXToolbar;
-    TBXItemProjOpen: TTBXSubmenuItem;
-    TBXItemProjSave: TTBXItem;
-    TBXItemProjAddVirtDir: TTBXItem;
-    TBXItemProjAddFiles: TTBXItem;
-    TBXItemProjDelFiles: TTBXItem;
-    TBXItemProjRename: TTBXItem;
+    tbProject: TSpTbxToolbar;
+    TBXItemProjOpen: TSpTbxSubmenuItem;
+    TBXItemProjSave: TSpTbxItem;
+    TBXItemProjAddVirtDir: TSpTbxItem;
+    TBXItemProjAddFiles: TSpTbxItem;
+    TBXItemProjDelFiles: TSpTbxItem;
+    TBXItemProjRename: TSpTbxItem;
     ImageList1: TImageList;
     ODFile: TTntOpenDialog;
     TimerHint: TTimer;
-    TBXItemProjOpenFiles: TTBXItem;
+    TBXItemProjOpenFiles: TSpTbxItem;
     ImageListTool: TImageList;
-    TBXItemProjProp: TTBXItem;
-    PopupProj: TTBXPopupMenu;
-    TbxItemMnuAdd: TTBXSubmenuItem;
-    TbxItemMnuAddFiles: TTBXItem;
-    TbxItemMnuAddDir: TTBXItem;
-    TbxItemMnuAddVDir: TTBXItem;
-    TbxItemMnuRename: TTBXItem;
-    TbxItemMnuRemove: TTBXItem;
-    TBXSeparatorItem1: TTBXSeparatorItem;
-    TBXItemMnuProjSaveAs: TTBXItem;
-    TBXItemMnuProjSave: TTBXItem;
-    TBXItemMnuProjOpen: TTBXItem;
-    TBXItemMnuProjClose: TTBXItem;
-    TBXItemMnuProjProp: TTBXItem;
-    TBXSeparatorItem2: TTBXSeparatorItem;
-    TBXItemMnuOpenFiles: TTBXItem;
+    TBXItemProjProp: TSpTbxItem;
+    PopupProj: TSpTbxPopupMenu;
+    TbxItemMnuAdd: TSpTbxSubmenuItem;
+    TbxItemMnuAddFiles: TSpTbxItem;
+    TbxItemMnuAddDir: TSpTbxItem;
+    TbxItemMnuAddVDir: TSpTbxItem;
+    TbxItemMnuRename: TSpTbxItem;
+    TbxItemMnuRemove: TSpTbxItem;
+    TBXSeparatorItem1: TSpTbxSeparatorItem;
+    TBXItemMnuProjSaveAs: TSpTbxItem;
+    TBXItemMnuProjSave: TSpTbxItem;
+    TBXItemMnuProjOpen: TSpTbxItem;
+    TBXItemMnuProjClose: TSpTbxItem;
+    TBXItemMnuProjProp: TSpTbxItem;
+    TBXSeparatorItem2: TSpTbxSeparatorItem;
+    TBXItemMnuOpenFiles: TSpTbxItem;
     ODProj: TOpenDialog;
     SDProj: TSaveDialog;
-    TBXItemProjAddFilesDir: TTBXItem;
-    TBXSeparatorItem3: TTBXSeparatorItem;
-    TBXItemMnuAddOpenedFiles: TTBXItem;
-    TBXItemMnuAddCurrFile: TTBXItem;
-    TBXItemMnuSetMain: TTBXItem;
-    TBXSeparatorItem4: TTBXSeparatorItem;
-    TBXItemMnuCollapse: TTBXItem;
-    TBXItemMnuExpand: TTBXItem;
-    TBXSubmenuItemSort: TTBXSubmenuItem;
-    TBXItemMnuSortByName: TTBXItem;
-    TBXItemMnuSortByExt: TTBXItem;
+    TBXItemProjAddFilesDir: TSpTbxItem;
+    TBXSeparatorItem3: TSpTbxSeparatorItem;
+    TBXItemMnuAddOpenedFiles: TSpTbxItem;
+    TBXItemMnuAddCurrFile: TSpTbxItem;
+    TBXItemMnuSetMain: TSpTbxItem;
+    TBXSeparatorItem4: TSpTbxSeparatorItem;
+    TBXItemMnuCollapse: TSpTbxItem;
+    TBXItemMnuExpand: TSpTbxItem;
+    TBXSubmenuItemSort: TSpTbxSubmenuItem;
+    TBXItemMnuSortByName: TSpTbxItem;
+    TBXItemMnuSortByExt: TSpTbxItem;
     DKLanguageController1: TDKLanguageController;
-    TBXItemMnuSortBySizeDesc: TTBXItem;
-    TBXItemMnuSortByDateDesc: TTBXItem;
-    TBXItemMnuSortBySize: TTBXItem;
-    TBXItemMnuSortByDate: TTBXItem;
-    TBXItemMnuProps: TTBXItem;
-    TBXSeparatorItem5: TTBXSeparatorItem;
-    TBXItemProjClearRecent: TTBXItem;
-    TBXItemProjMRU: TTBXMRUListItem;
-    ProjMRUList: TTBXMRUList;
+    TBXItemMnuSortBySizeDesc: TSpTbxItem;
+    TBXItemMnuSortByDateDesc: TSpTbxItem;
+    TBXItemMnuSortBySize: TSpTbxItem;
+    TBXItemMnuSortByDate: TSpTbxItem;
+    TBXItemMnuProps: TSpTbxItem;
+    TBXSeparatorItem5: TSpTbxSeparatorItem;
+    TBXItemProjClearRecent: TSpTbxItem;
+    TBXItemProjMRU: TSpTbxMRUListItem;
+    SpTBXDock1: TSpTBXDock;
     procedure TBXItemProjAddVirtDirClick(Sender: TObject);
     procedure TBXItemProjDelFilesClick(Sender: TObject);
     procedure TBXItemProjAddFilesClick(Sender: TObject);
@@ -144,10 +148,13 @@ type
     procedure FormShow(Sender: TObject);
     procedure TBXItemProjOpenPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
+    procedure TBXItemProjMRUClick(Sender: TObject;
+      const Filename: WideString);
   private
     { Private declarations }
     FProjectFN: Widestring;
     FModified: boolean;
+    FMruList: TSynMruList;
     FIcoList: TStringList;
     FPathList: TTntStringList;
     FOldItemsCount: integer;
@@ -164,7 +171,6 @@ type
     fmProgress: TfmProgress;
     function GetCollapsedList: string;
     procedure SetCollapsedList(S: Widestring);
-    procedure ProjMRUListClick(Sender: TObject; const Filename: WideString);
     function DoSortCfm: boolean;
     procedure ShowProgress(M: TProgressType);
     procedure HideProgress;
@@ -561,17 +567,18 @@ procedure TfmProj.FormCreate(Sender: TObject);
 begin
   FixImageList32bit(ImageList1);
 
+  FMruList:= TSynMruList.Create;
   FShellIcons:= true; //todo
   FIcoList:= TStringList.Create;
   FPathList:= TTntStringList.Create;
   fmProgress:= nil;
 
-  ProjMRUList.OnClick:= ProjMRUListClick;
   DoNewProject;
 end;
 
 procedure TfmProj.FormDestroy(Sender: TObject);
 begin
+  FreeAndNil(FMruList);
   FreeAndNil(FPathList);
   FreeAndNil(FIcoList);
 end;
@@ -1029,10 +1036,7 @@ begin
   //add to recents
   if fn<>'' then
   begin
-    n:= ProjMRUList.Items.IndexOf(fn);
-    if n>=0 then
-      ProjMRUList.Items.Delete(n);
-    ProjMRUList.Items.Insert(0, fn);
+    FMruList.AddItem(fn);
     DoUpdateMRU;
   end;
 
@@ -1739,25 +1743,19 @@ end;
 procedure TfmProj.DoUpdateMRU;
 begin
   if Assigned(FOnUpdateMRU) then
-    FOnUpdateMRU(Self, ProjMRUList.Items);
+    FOnUpdateMRU(Self, FMruList.Items);
 end;
 
 procedure TfmProj.DoLoadMRU;
 begin
   if Assigned(FOnLoadMRU) then
-    FOnLoadMRU(Self, ProjMRUList.Items);
+    FOnLoadMRU(Self, FMruList.Items);
 end;
 
 procedure TfmProj.TBXItemProjClearRecentClick(Sender: TObject);
 begin
-  ProjMRUList.Items.Clear;
+  FMruList.Items.Clear;
   DoUpdateMRU;
-end;
-
-procedure TfmProj.ProjMRUListClick(Sender: TObject;
-  const Filename: WideString);
-begin
-  DoLoadProjectFromFile(Filename);
 end;
 
 procedure TfmProj.FormShow(Sender: TObject);
@@ -1767,8 +1765,17 @@ end;
 
 procedure TfmProj.TBXItemProjOpenPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
+var
+  i: Integer;
 begin
-  TBXItemProjClearRecent.Enabled:= ProjMRUList.Items.Count>0;
+  with TBXItemProjMRU do
+  begin
+    Clear;
+    for i:= FMruList.Items.Count-1 downto 0 do
+      MRUAdd(FMruList.Items[i]);
+  end;    
+
+  TBXItemProjClearRecent.Enabled:= FMruList.Items.Count>0;
 end;
 
 function TfmProj.GetCollapsedList: string;
@@ -1800,6 +1807,12 @@ begin
   finally
     TreeProj.Items.EndUpdate;
   end;
+end;
+
+procedure TfmProj.TBXItemProjMRUClick(Sender: TObject;
+  const Filename: WideString);
+begin
+  DoLoadProjectFromFile(Filename);
 end;
 
 end.

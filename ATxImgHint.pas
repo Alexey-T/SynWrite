@@ -43,8 +43,8 @@ uses
   Math,
   ATxSProc, ATxFProc,
   ATxColorCodes,
-  unProc,
-  TBXGraphics;
+  PngImage,
+  unProc;
 
 const
   cGap = 4; //hint border width
@@ -101,13 +101,13 @@ begin
 end;
 
 type
-  TPngBitmapCracker = class(TPngBitmap);
+  TPngBitmapCracker = class(TPngObject);
 
 procedure LoadPngToBitmap(b: TBitmap; const fn: string);
 var
-  b_png: TPngBitmap;
+  b_png: TPngObject;
 begin
-  b_png:= TPngBitmap.Create;
+  b_png:= TPngObject.Create;
   try
     b_png.LoadFromFile(fn);
     b.Width:= b_png.Width;

@@ -36,23 +36,25 @@ uses
   unProcSort,
   unTabSw,
 
-  TB2Item, TBX, TB2Dock, TB2Toolbar, TBXDkPanels, TBXGraphics,
-  TBXStatusBars, TB2MDI, TB2MRU, TBXSwitcher, TBXExtItems, TB2ExtItems,
+  TB2Item, TB2Dock, TB2Toolbar,
+  TB2MDI, TB2ExtItems,
+  SpTBXItem, SpTbxMDIMRU, SpTBXDkPanels, SpTBXSkins,
+  SpTBXControls,
 
   ecActns, ecPrint, ecSyntMemo, ecKeyMap, ecPropManager, ecSyntAnal,
-  ecSyntTree, ecStrUtils, ecPopupCtrl, ecUnicode, DKLang,
+  ecSyntTree, ecStrUtils, ecPopupCtrl, ecUnicode,
 
   TntDialogs,
   TntStdCtrls,
   TntComCtrls,
-  TBXControls,
-  TBXToolPals,
+  DKLang,
 
   unProc,
   ATSynPlugins,
   ecMacroRec,
   ecExtHighlight,
-  ecSpell;
+  ecSpell,
+  PngImageList, SpTBXTabs, SpTBXEditors;
 
 const
   opMruForPlugin = false;
@@ -108,7 +110,7 @@ type
   TPluginList_Panel = array[0..7] of record
     SCaption: string;
     SFileName: string;
-    FToolButton: TTbxItem;
+    FToolButton: TSpTbxItem;
     FDll: THandle;
     FWindow: THandle;
     FForm: Pointer;
@@ -172,23 +174,21 @@ type
 type
   TfmMain = class(TTntForm)
     ActionList: TActionList;
-    TBXDockTop: TTBXDock;
-    tbFile: TTBXToolbar;
+    TBXDockTop: TSpTbxDock;
+    tbFile: TSpTbxToolbar;
     fOpen: TAction;
     fSave: TAction;
     fSaveAs: TAction;
-    TBXItem4: TTBXItem;
+    TBXItem4: TSpTbxItem;
     SD: TTntSaveDialog;
     OD: TTntOpenDialog;
     SyntaxManager: TSyntaxManager;
     PropsManager: TPropsManager;
     ecSyntPrinter: TecSyntPrinter;
-    PopupEditor: TTBXPopupMenu;
+    PopupEditor: TSpTbxPopupMenu;
     ImgListGutter: TTBImageList;
-    TBXItemCtxCopy: TTBXItem;
-    TBXSubmenuItemToolOpen: TTBXSubmenuItem;
-    TBXSwitcher: TTBXSwitcher;
-    MRU: TTBXMRUList;
+    TBXItemCtxCopy: TSpTbxItem;
+    TBXSubmenuItemToolOpen: TSpTbxSubmenuItem;
     SyntKeyMapping: TSyntKeyMapping;
     fCustomizeLexer: TecCustomizeLexerPropertiesAction;
     ecCopy: TecCopy;
@@ -202,12 +202,12 @@ type
     ecLowerCase: TecLowerCase;
     ecUpperCase: TecUpperCase;
     ecToggleCase: TecToggleCase;
-    TBXItemCtxCut: TTBXItem;
-    TBXItemCtxPaste: TTBXItem;
-    TBXItemCtxSelectAll: TTBXItem;
+    TBXItemCtxCut: TSpTbxItem;
+    TBXItemCtxPaste: TSpTbxItem;
+    TBXItemCtxSelectAll: TSpTbxItem;
     fSetup: TAction;
-    TBXDockLeft: TTBXDock;
-    TBXSubmenuItemToolSave: TTBXSubmenuItem;
+    TBXDockLeft: TSpTbxMultiDock;
+    TBXSubmenuItemToolSave: TSpTbxSubmenuItem;
     fExportRTFAction: TecExportRTFAction;
     fExportHTMLAction: TecExportHTMLAction;
     ecCommentLines: TecCommentLines;
@@ -216,464 +216,457 @@ type
     ecSortDescending: TAction;
     fCustomizeLexerLib: TecCustomizeLexerLib;
     Timer1: TTimer;
-    TBXItem11: TTBXItem;
-    TBXItem15: TTBXItem;
-    PopupCP: TTBXPopupMenu;
-    PopupLE: TTBXPopupMenu;
+    TBXItem11: TSpTbxItem;
+    TBXItem15: TSpTbxItem;
+    PopupCP: TSpTbxPopupMenu;
+    PopupLE: TSpTbxPopupMenu;
     ecReadOnly: TAction;
-    tbEdit: TTBXToolbar;
-    TBXItemTbCopy: TTBXItem;
-    TBXItemTbCut: TTBXItem;
-    TBXItemTbPaste: TTBXItem;
-    TBXItemTbSelAll: TTBXItem;
-    TBXItemTbUndo: TTBXItem;
-    TBXItemTbRedo: TTBXItem;
+    tbEdit: TSpTbxToolbar;
+    TBXItemTbCopy: TSpTbxItem;
+    TBXItemTbCut: TSpTbxItem;
+    TBXItemTbPaste: TSpTbxItem;
+    TBXItemTbSelAll: TSpTbxItem;
+    TBXItemTbUndo: TSpTbxItem;
+    TBXItemTbRedo: TSpTbxItem;
     ecClear: TecClear;
-    TBXItemTbDel: TTBXItem;
-    tbView: TTBXToolbar;
-    TBXItemVFold: TTBXItem;
-    TBXItemVNonpr: TTBXSubmenuItem;
-    TBXItemVNums: TTBXItem;
-    TBXItemVWrap: TTBXItem;
-    TBXItemVComm: TTBXItem;
-    TBXItemVUncom: TTBXItem;
-    TBXSeparatorItem2: TTBXSeparatorItem;
-    TBXItemVInd: TTBXItem;
-    TBXItemVUnind: TTBXItem;
-    TBXSeparatorItem3: TTBXSeparatorItem;
-    TBXSeparatorItem4: TTBXSeparatorItem;
-    TBXSubmenuCase: TTBXSubmenuItem;
-    TBXItemCCLower: TTBXItem;
-    TBXItemCCUpper: TTBXItem;
+    TBXItemTbDel: TSpTbxItem;
+    tbView: TSpTbxToolbar;
+    TBXItemVFold: TSpTbxItem;
+    TBXItemVNonpr: TSpTbxSubmenuItem;
+    TBXItemVNums: TSpTbxItem;
+    TBXItemVWrap: TSpTbxItem;
+    TBXItemVComm: TSpTbxItem;
+    TBXItemVUncom: TSpTbxItem;
+    TBXSeparatorItem2: TSpTbxSeparatorItem;
+    TBXItemVInd: TSpTbxItem;
+    TBXItemVUnind: TSpTbxItem;
+    TBXSeparatorItem3: TSpTbxSeparatorItem;
+    TBXSeparatorItem4: TSpTbxSeparatorItem;
+    TBXSubmenuCase: TSpTbxSubmenuItem;
+    TBXItemCCLower: TSpTbxItem;
+    TBXItemCCUpper: TSpTbxItem;
     ImgListTree: TImageList;
-    plTree: TTBXDockablePanel;
-    TBXDockBottom: TTBXDock;
-    TBXDockRight: TTBXDock;
+    plTree: TSpTbxDockablePanel;
+    TBXDockBottom: TSpTbxMultiDock;
+    TBXDockRight: TSpTbxMultiDock;
     Tree: TSyntaxTreeView;
     ecTitleCase: TAction;
-    TBXItemCCTitle: TTBXItem;
+    TBXItemCCTitle: TSpTbxItem;
     ecShowTree: TAction;
-    TBXItemVTree: TTBXItem;
+    TBXItemVTree: TSpTbxItem;
     ecPrintAction: TecPrintAction;
     ecPreviewAction: TecPreviewAction;
     ecPageSetupAction: TecPageSetupAction;
     ecPrinterSetup: TAction;
     PrinterSetupDialog: TPrinterSetupDialog;
-    TBXItemToolPrint: TTBXSubmenuItem;
-    TBXItemPrintS: TTBXItem;
-    TBXItemPreview: TTBXItem;
-    TBXItemPageS: TTBXItem;
-    TBXItemEndWin: TTBXItem;
-    TBXItemEndUn: TTBXItem;
-    TBXItemEndMac: TTBXItem;
+    TBXItemToolPrint: TSpTbxSubmenuItem;
+    TBXItemPrintS: TSpTbxItem;
+    TBXItemPreview: TSpTbxItem;
+    TBXItemPageS: TSpTbxItem;
+    TBXItemEndWin: TSpTbxItem;
+    TBXItemEndUn: TSpTbxItem;
+    TBXItemEndMac: TSpTbxItem;
     SyntStyles: TSyntStyles;
     ecACP: TAutoCompletePopup;
     ParamCompletion: TParamCompletion;
     TemplatePopup: TTemplatePopup;
     ecFind: TAction;
-    TBXSubmenuItemTbSetup: TTBXSubmenuItem;
-    TBXSeparatorItem1: TTBXSeparatorItem;
-    TBXItemOOLex: TTBXItem;
-    TBXItemOOLexLib: TTBXItem;
-    PopupLex: TTBXPopupMenu;
+    TBXSubmenuItemTbSetup: TSpTbxSubmenuItem;
+    TBXSeparatorItem1: TSpTbxSeparatorItem;
+    TBXItemOOLex: TSpTbxItem;
+    TBXItemOOLexLib: TSpTbxItem;
+    PopupLex: TSpTbxPopupMenu;
     ecWrap: TAction;
     ecLineNums: TAction;
     ecFolding: TAction;
     ecNonPrint: TAction;
     fReread: TAction;
     ImageListIconsStd: TImageList;
-    TBXSeparatorItem8: TTBXSeparatorItem;
-    ImageListIconsFogue16: TTBXImageList;
-    TBXSubmenuItemTbFind: TTBXSubmenuItem;
-    TBXItem2: TTBXItem;
+    TbxSubmenuItemTblFind: TSpTBXSubmenuItem;
+    TBXItem2: TSpTbxItem;
     fNew: TAction;
-    TBXItemToolNew: TTBXSubmenuItem;
-    TBXItemCCInv: TTBXItem;
-    TBXSeparatorItem10: TTBXSeparatorItem;
-    Status: TTBXStatusBar;
-    TBXSubmenuItemSort: TTBXSubmenuItem;
-    TBXItemTbSortAsc: TTBXItem;
-    TBXItemTbSortDesc: TTBXItem;
-    ImageListIconsTango22: TTBXImageList;
-    ImageListIconsTango16: TTBXImageList;
-    ImageListIconsFogue24: TTBXImageList;
-    ImageListIconsGnome: TTBXImageList;
+    TBXItemToolNew: TSpTbxSubmenuItem;
+    TBXItemCCInv: TSpTbxItem;
+    TBXSeparatorItem10: TSpTbxSeparatorItem;
+    Status: TSpTbxStatusBar;
+    TBXSubmenuItemSort: TSpTbxSubmenuItem;
+    TBXItemTbSortAsc: TSpTbxItem;
+    TBXItemTbSortDesc: TSpTbxItem;
     ecSelCharPopup1: TecSelCharPopup;
-    TBXItemWPrior: TTBXItem;
-    TBXSeparatorItem9: TTBXSeparatorItem;
-    TBXItemWNext: TTBXItem;
-    TBXSeparatorItem11: TTBXSeparatorItem;
-    TBXItemFNext: TTBXItem;
-    TBXItemFPrev: TTBXItem;
+    TBXItemWPrior: TSpTbxItem;
+    TBXSeparatorItem9: TSpTbxSeparatorItem;
+    TBXItemWNext: TSpTbxItem;
+    TBXSeparatorItem11: TSpTbxSeparatorItem;
+    TBXItemFNext: TSpTbxItem;
+    TBXItemFPrev: TSpTbxItem;
     TimerRedraw: TTimer;
-    TBXItemCtxDel: TTBXItem;
-    TBXSeparatorItem14: TTBXSeparatorItem;
-    TBXItemCtxRedo: TTBXItem;
-    TBXItemCtxUndo: TTBXItem;
-    Menu: TTBXDock;
-    tbMenu: TTBXToolbar;
-    TBXSubmenuItemEd: TTBXSubmenuItem;
-    TBXSubmenuItemFile: TTBXSubmenuItem;
-    TBXItemFOpen: TTBXItem;
+    TBXItemCtxDel: TSpTbxItem;
+    TBXSeparatorItem14: TSpTbxSeparatorItem;
+    TBXItemCtxRedo: TSpTbxItem;
+    TBXItemCtxUndo: TSpTbxItem;
+    Menu: TSpTbxDock;
+    tbMenu: TSpTbxToolbar;
+    TBXSubmenuItemEd: TSpTbxSubmenuItem;
+    TBXSubmenuItemFile: TSpTbxSubmenuItem;
+    TBXItemFOpen: TSpTbxItem;
     fNewWin: TAction;
-    TBXItemFExit: TTBXItem;
-    TBXItemFSaveAs: TTBXItem;
-    TBXItemFSave: TTBXItem;
-    TBXItemFReopen: TTBXItem;
-    TBXItemFNewWin: TTBXItem;
-    TBXItemFNew: TTBXItem;
-    TBXSeparatorItem15: TTBXSeparatorItem;
-    TBXSubmenuItemFNew: TTBXSubmenuItem;
-    TBXSeparatorItem16: TTBXSeparatorItem;
-    TBXItemFPreview: TTBXItem;
-    TBXItemFPrint: TTBXItem;
-    TBXItemFPageSetup: TTBXItem;
-    TBXItemFPrinterSetup: TTBXItem;
-    TBXSubmenuItem12: TTBXSubmenuItem;
-    TBXItemFExpRtf: TTBXItem;
-    TBXItemFExpHtml: TTBXItem;
+    TBXItemFExit: TSpTbxItem;
+    TBXItemFSaveAs: TSpTbxItem;
+    TBXItemFSave: TSpTbxItem;
+    TBXItemFReopen: TSpTbxItem;
+    TBXItemFNewWin: TSpTbxItem;
+    TBXItemFNew: TSpTbxItem;
+    TBXSeparatorItem15: TSpTbxSeparatorItem;
+    TBXSubmenuItemFNew: TSpTbxSubmenuItem;
+    TBXSeparatorItem16: TSpTbxSeparatorItem;
+    TBXItemFPreview: TSpTbxItem;
+    TBXItemFPrint: TSpTbxItem;
+    TBXItemFPageSetup: TSpTbxItem;
+    TBXItemFPrinterSetup: TSpTbxItem;
+    TBXSubmenuItem12: TSpTbxSubmenuItem;
+    TBXItemFExpRtf: TSpTbxItem;
+    TBXItemFExpHtml: TSpTbxItem;
     Panel1: TPanel;
     PageControl1: TTntPageControl;
     TemplateEditor: TSyntaxMemo;
-    TBXSubmenuItemBk: TTBXSubmenuItem;
-    TBXSubmenuItemBkGoto: TTBXSubmenuItem;
-    TBXItemB0: TTBXItem;
-    TBXItemB1: TTBXItem;
-    TBXItemB2: TTBXItem;
-    TBXItemB3: TTBXItem;
-    TBXItemB4: TTBXItem;
-    TBXItemB5: TTBXItem;
-    TBXItemB6: TTBXItem;
-    TBXItemB7: TTBXItem;
-    TBXItemB8: TTBXItem;
-    TBXItemB9: TTBXItem;
-    TBXItemEUndo: TTBXItem;
-    TBXItemERedo: TTBXItem;
-    TBXSeparatorItem6: TTBXSeparatorItem;
-    TBXItemECut: TTBXItem;
-    TBXItemECopy: TTBXItem;
-    TBXItemEPaste: TTBXItem;
-    TBXItemESelectAll: TTBXItem;
-    TBXItemEDelete: TTBXItem;
-    TBXSeparatorItem17: TTBXSeparatorItem;
-    TBXSubmenuItemBkSet: TTBXSubmenuItem;
-    TBXItemG0: TTBXItem;
-    TBXItemG1: TTBXItem;
-    TBXItemG2: TTBXItem;
-    TBXItemG3: TTBXItem;
-    TBXItemG4: TTBXItem;
-    TBXItemG5: TTBXItem;
-    TBXItemG6: TTBXItem;
-    TBXItemG7: TTBXItem;
-    TBXItemG8: TTBXItem;
-    TBXItemG9: TTBXItem;
-    TBXSubmenuItemHelp: TTBXSubmenuItem;
-    TBXItemHAbout: TTBXItem;
-    TBXSubmenuItemOpt: TTBXSubmenuItem;
-    TBXItemOSetup: TTBXItem;
-    TBXItemOLexer: TTBXItem;
-    TBXItemOLexerLib: TTBXItem;
-    TBXSubmenuItemSr: TTBXSubmenuItem;
-    TBXItemSGoto: TTBXItem;
-    TBXSeparatorItem21: TTBXSeparatorItem;
-    TBXItemSNext: TTBXItem;
-    TBXItemSPrev: TTBXItem;
-    TBXSeparatorItem19: TTBXSeparatorItem;
-    TBXItemSWordNext: TTBXItem;
-    TBXItemSWordPrior: TTBXItem;
-    TBXSeparatorItem20: TTBXSeparatorItem;
-    TBXItemSMarkClear: TTBXItem;
-    TBXItemEUnindent: TTBXItem;
-    TBXItemEIndent: TTBXItem;
-    TBXSubmenuItem19: TTBXSubmenuItem;
-    TBXItemESortAsc: TTBXItem;
-    TBXItemESortDesc: TTBXItem;
-    TBXSubmenuItem20: TTBXSubmenuItem;
-    TBXItemECaseUpper: TTBXItem;
-    TBXItemECaseLower: TTBXItem;
-    TBXItemECaseTitle: TTBXItem;
-    TBXItemECaseInvert: TTBXItem;
-    TBXItemHRead: TTBXItem;
-    TBXItemONPrint: TTBXItem;
-    TBXItemONums: TTBXItem;
-    TBXItemOTree: TTBXItem;
-    TBXItemOFold: TTBXItem;
-    TBXItemOWrap: TTBXItem;
-    TBXItemORO: TTBXItem;
-    TBXItemSMarkPrev: TTBXItem;
-    TBXItemSMarkNext: TTBXItem;
-    TBXItemETable: TTBXItem;
-    TBXSubmenuItemLexer: TTBXSubmenuItem;
-    TBXItemEDup: TTBXItem;
+    TBXSubmenuItemBk: TSpTbxSubmenuItem;
+    TBXSubmenuItemBkGoto: TSpTbxSubmenuItem;
+    TBXItemB0: TSpTbxItem;
+    TBXItemB1: TSpTbxItem;
+    TBXItemB2: TSpTbxItem;
+    TBXItemB3: TSpTbxItem;
+    TBXItemB4: TSpTbxItem;
+    TBXItemB5: TSpTbxItem;
+    TBXItemB6: TSpTbxItem;
+    TBXItemB7: TSpTbxItem;
+    TBXItemB8: TSpTbxItem;
+    TBXItemB9: TSpTbxItem;
+    TBXItemEUndo: TSpTbxItem;
+    TBXItemERedo: TSpTbxItem;
+    TBXSeparatorItem6: TSpTbxSeparatorItem;
+    TBXItemECut: TSpTbxItem;
+    TBXItemECopy: TSpTbxItem;
+    TBXItemEPaste: TSpTbxItem;
+    TBXItemESelectAll: TSpTbxItem;
+    TBXItemEDelete: TSpTbxItem;
+    TBXSeparatorItem17: TSpTbxSeparatorItem;
+    TBXSubmenuItemBkSet: TSpTbxSubmenuItem;
+    TBXItemG0: TSpTbxItem;
+    TBXItemG1: TSpTbxItem;
+    TBXItemG2: TSpTbxItem;
+    TBXItemG3: TSpTbxItem;
+    TBXItemG4: TSpTbxItem;
+    TBXItemG5: TSpTbxItem;
+    TBXItemG6: TSpTbxItem;
+    TBXItemG7: TSpTbxItem;
+    TBXItemG8: TSpTbxItem;
+    TBXItemG9: TSpTbxItem;
+    TBXSubmenuItemHelp: TSpTbxSubmenuItem;
+    TBXItemHAbout: TSpTbxItem;
+    TBXSubmenuItemOpt: TSpTbxSubmenuItem;
+    TBXItemOSetup: TSpTbxItem;
+    TBXItemOLexer: TSpTbxItem;
+    TBXItemOLexerLib: TSpTbxItem;
+    TBXSubmenuItemSr: TSpTbxSubmenuItem;
+    TBXItemSGoto: TSpTbxItem;
+    TBXSeparatorItem21: TSpTbxSeparatorItem;
+    TBXItemSNext: TSpTbxItem;
+    TBXItemSPrev: TSpTbxItem;
+    TBXSeparatorItem19: TSpTbxSeparatorItem;
+    TBXItemSWordNext: TSpTbxItem;
+    TBXItemSWordPrior: TSpTbxItem;
+    TBXSeparatorItem20: TSpTbxSeparatorItem;
+    TBXItemSMarkClear: TSpTbxItem;
+    TBXItemEUnindent: TSpTbxItem;
+    TBXItemEIndent: TSpTbxItem;
+    TBXSubmenuItem19: TSpTbxSubmenuItem;
+    TBXItemESortAsc: TSpTbxItem;
+    TBXItemESortDesc: TSpTbxItem;
+    TBXSubmenuItem20: TSpTbxSubmenuItem;
+    TBXItemECaseUpper: TSpTbxItem;
+    TBXItemECaseLower: TSpTbxItem;
+    TBXItemECaseTitle: TSpTbxItem;
+    TBXItemECaseInvert: TSpTbxItem;
+    TBXItemHRead: TSpTbxItem;
+    TBXItemONPrint: TSpTbxItem;
+    TBXItemONums: TSpTbxItem;
+    TBXItemOTree: TSpTbxItem;
+    TBXItemOFold: TSpTbxItem;
+    TBXItemOWrap: TSpTbxItem;
+    TBXItemORO: TSpTbxItem;
+    TBXItemSMarkPrev: TSpTbxItem;
+    TBXItemSMarkNext: TSpTbxItem;
+    TBXItemETable: TSpTbxItem;
+    TBXSubmenuItemLexer: TSpTbxSubmenuItem;
+    TBXItemEDup: TSpTbxItem;
     DKLanguageController1: TDKLanguageController;
-    TBXItemOTools: TTBXItem;
-    TBXSeparatorItem22: TTBXSeparatorItem;
-    TBXItemBkClear: TTBXItem;
+    TBXItemOTools: TSpTbxItem;
+    TBXSeparatorItem22: TSpTbxSeparatorItem;
+    TBXItemBkClear: TSpTbxItem;
     TimerHint: TTimer;
-    TBXSubmenuItemZoom: TTBXSubmenuItem;
-    TBXSeparatorItem26: TTBXSeparatorItem;
-    TBXItemZIn: TTBXItem;
-    TBXItemZOut: TTBXItem;
-    TBXItemZ0: TTBXItem;
-    TBXSeparatorItem27: TTBXSeparatorItem;
-    TBXItemMarkSwap: TTBXItem;
-    TBXItemMarkColl: TTBXItem;
-    TBXItemMarkDrop: TTBXItem;
-    tbQs: TTBXToolbar;
-    TBXItemFFNext: TTBXItem;
-    TBXItemFFPrev: TTBXItem;
-    TBXSubmenuItemToolbars: TTBXSubmenuItem;
-    TBXItemTQs: TTBXItem;
-    TBXItemTView: TTBXItem;
-    TBXItemTEdit: TTBXItem;
-    TBXItemTFile: TTBXItem;
-    cbCase: TTBXItem;
-    edQs: TTntEdit;
+    TBXSubmenuItemZoom: TSpTbxSubmenuItem;
+    TBXSeparatorItem26: TSpTbxSeparatorItem;
+    TBXItemZIn: TSpTbxItem;
+    TBXItemZOut: TSpTbxItem;
+    TBXItemZ0: TSpTbxItem;
+    TBXSeparatorItem27: TSpTbxSeparatorItem;
+    TBXItemMarkSwap: TSpTbxItem;
+    TBXItemMarkColl: TSpTbxItem;
+    TBXItemMarkDrop: TSpTbxItem;
+    tbQs: TSpTbxToolbar;
+    TBXItemFFNext: TSpTbxItem;
+    TBXItemFFPrev: TSpTbxItem;
+    TBXSubmenuItemToolbars: TSpTbxSubmenuItem;
+    TBXItemTQs: TSpTbxItem;
+    TBXItemTView: TSpTbxItem;
+    TBXItemTEdit: TSpTbxItem;
+    TBXItemTFile: TSpTbxItem;
+    cbCase: TSpTbxItem;
+    edQs: TSpTBXEdit;
     TBControlItem1aa: TTBControlItem;
-    TBXItemQs: TTBXItem;
-    cbWord: TTBXItem;
-    TBXItemSMarkAll: TTBXItem;
-    TBXItemHHelp: TTBXItem;
-    TBXItemFClose: TTBXItem;
+    TBXItemQs: TSpTbxItem;
+    cbWord: TSpTbxItem;
+    TBXItemSMarkAll: TSpTbxItem;
+    TBXItemHHelp: TSpTbxItem;
+    TBXItemFClose: TSpTbxItem;
     fClose: TAction;
-    PopupTb: TTBXPopupMenu;
-    TBXItemTbOth: TTBXItem;
-    TBXItemTbCl: TTBXItem;
-    TBXItemTbNew: TTBXItem;
-    TBXSeparatorItem28: TTBXSeparatorItem;
+    PopupTb: TSpTbxPopupMenu;
+    TBXItemTbOth: TSpTbxItem;
+    TBXItemTbCl: TSpTbxItem;
+    TBXItemTbNew: TSpTbxItem;
+    TBXSeparatorItem28: TSpTbxSeparatorItem;
     ImageListCloseBtn: TImageList;
     fSaveAll: TAction;
-    TBXItemFSaveAll: TTBXItem;
+    TBXItemFSaveAll: TSpTbxItem;
     fCloseAll: TAction;
-    TBXItemFCloseAll: TTBXItem;
+    TBXItemFCloseAll: TSpTbxItem;
     fCloseOth: TAction;
-    TBXItemFCloseOth: TTBXItem;
-    TBXSeparatorItem29: TTBXSeparatorItem;
-    TBXItemFSesOpen: TTBXItem;
-    TBXItemFSesSaveAs: TTBXItem;
+    TBXItemFCloseOth: TSpTbxItem;
+    TBXSeparatorItem29: TSpTbxSeparatorItem;
+    TBXItemFSesOpen: TSpTbxItem;
+    TBXItemFSesSaveAs: TSpTbxItem;
     OD_Session: TTntOpenDialog;
     SD_Session: TTntSaveDialog;
-    TBXSubmenuItemFRecents: TTBXSubmenuItem;
-    MRUtbx2: TTBXMRUListItem;
-    TBXSeparatorItem30: TTBXSeparatorItem;
-    TBXItemFClr: TTBXItem;
-    tbxWin: TTBXSubmenuItem;
-    TBXItemETime: TTBXItem;
-    TBXSubmenuItemRun: TTBXSubmenuItem;
-    TBXItemT1: TTBXItem;
-    TBXItemT2: TTBXItem;
-    TBXItemT3: TTBXItem;
-    TBXItemT4: TTBXItem;
-    TBXSeparatorItem31: TTBXSeparatorItem;
-    TBXItemRunFindPhp: TTBXItem;
-    TBXItemRunFindGoogle: TTBXItem;
-    TBXItemRunMSIE: TTBXItem;
-    TBXItemRunFirefox: TTBXItem;
-    TBXItemRunFindWiki: TTBXItem;
-    TBXItemRunChrome: TTBXItem;
-    TBXItemRunSafari: TTBXItem;
-    TBXItemRunOpenDir: TTBXItem;
-    TBXItemT5: TTBXItem;
-    TBXItemT6: TTBXItem;
-    TBXItemT7: TTBXItem;
-    TBXItemT8: TTBXItem;
-    TBXSubmenuItemEnc: TTBXSubmenuItem;
-    TBXSubmenuLineEnds: TTBXSubmenuItem;
-    TBXItemEndMWin: TTBXItem;
-    TBXItemEndMUn: TTBXItem;
-    TBXItemEndMMac: TTBXItem;
-    TBXSubmenuEnc: TTBXSubmenuItem;
-    TBXSubmenuEnc2: TTBXSubmenuItem;
+    TBXSubmenuItemFRecents: TSpTbxSubmenuItem;
+    TBXSeparatorItem30: TSpTbxSeparatorItem;
+    TBXItemFClr: TSpTbxItem;
+    tbxWin: TSpTbxSubmenuItem;
+    TBXItemETime: TSpTbxItem;
+    TBXSubmenuItemRun: TSpTbxSubmenuItem;
+    TBXItemT1: TSpTbxItem;
+    TBXItemT2: TSpTbxItem;
+    TBXItemT3: TSpTbxItem;
+    TBXItemT4: TSpTbxItem;
+    TBXSeparatorItem31: TSpTbxSeparatorItem;
+    TBXItemRunFindPhp: TSpTbxItem;
+    TBXItemRunFindGoogle: TSpTbxItem;
+    TBXItemRunMSIE: TSpTbxItem;
+    TBXItemRunFirefox: TSpTbxItem;
+    TBXItemRunFindWiki: TSpTbxItem;
+    TBXItemRunChrome: TSpTbxItem;
+    TBXItemRunSafari: TSpTbxItem;
+    TBXItemRunOpenDir: TSpTbxItem;
+    TBXItemT5: TSpTbxItem;
+    TBXItemT6: TSpTbxItem;
+    TBXItemT7: TSpTbxItem;
+    TBXItemT8: TSpTbxItem;
+    TBXSubmenuItemEnc: TSpTbxSubmenuItem;
+    TBXSubmenuLineEnds: TSpTbxSubmenuItem;
+    TBXItemEndMWin: TSpTbxItem;
+    TBXItemEndMUn: TSpTbxItem;
+    TBXItemEndMMac: TSpTbxItem;
+    TBXSubmenuEnc: TSpTbxSubmenuItem;
+    TBXSubmenuEnc2: TSpTbxSubmenuItem;
     TimerLoad: TTimer;
-    TBXItemTbClose: TTBXItem;
+    TBXItemTbClose: TSpTbxItem;
     ecReplace: TAction;
-    TBXItemSRep: TTBXItem;
-    TBXItemSFind: TTBXItem;
-    TBXItem8: TTBXItem;
-    TBXItemRunFindMSDN: TTBXItem;
+    TBXItemSRep: TSpTbxItem;
+    TBXItemSFind: TSpTbxItem;
+    TBXItem8: TSpTbxItem;
+    TBXItemRunFindMSDN: TSpTbxItem;
     fExit: TAction;
-    TBXItemFCloseDel: TTBXItem;
+    TBXItemFCloseDel: TSpTbxItem;
     fCloseDel: TAction;
-    TBXItemRFiles: TTBXItem;
+    TBXItemRFiles: TSpTbxItem;
     ecReplaceInFiles: TAction;
-    TBXItemSRepFiles: TTBXItem;
+    TBXItemSRepFiles: TSpTbxItem;
     TimerSel: TTimer;
-    TBXSubmenuItemCtxMore: TTBXSubmenuItem;
-    TBXItemCtxCopyUrl: TTBXItem;
-    TBXItemCtxCopyAppend: TTBXItem;
-    TBXItemCtxCutAppend: TTBXItem;
-    TBXSeparatorItem34: TTBXSeparatorItem;
-    TBXItemCtxCopyHTML: TTBXItem;
-    TBXItemCtxCopyRTF: TTBXItem;
+    TBXSubmenuItemCtxMore: TSpTbxSubmenuItem;
+    TBXItemCtxCopyUrl: TSpTbxItem;
+    TBXItemCtxCopyAppend: TSpTbxItem;
+    TBXItemCtxCutAppend: TSpTbxItem;
+    TBXSeparatorItem34: TSpTbxSeparatorItem;
+    TBXItemCtxCopyHTML: TSpTbxItem;
+    TBXItemCtxCopyRTF: TSpTbxItem;
     ecCopyAsHTML: TAction;
     ecCopyApp: TAction;
     ecCutApp: TAction;
-    TBXSeparatorItem35: TTBXSeparatorItem;
-    TBXItemECutApp: TTBXItem;
-    TBXItemECopyApp: TTBXItem;
-    TBXSubmenuItemWb: TTBXSubmenuItem;
-    TBXSubmenuItemBr: TTBXSubmenuItem;
-    TBXItemT9: TTBXItem;
-    TBXItemT10: TTBXItem;
-    TBXItemT11: TTBXItem;
-    TBXItemT12: TTBXItem;
-    TBXItemSGoBracket: TTBXItem;
-    plOut: TTBXDockablePanel;
+    TBXSeparatorItem35: TSpTbxSeparatorItem;
+    TBXItemECutApp: TSpTbxItem;
+    TBXItemECopyApp: TSpTbxItem;
+    TBXSubmenuItemWb: TSpTbxSubmenuItem;
+    TBXSubmenuItemBr: TSpTbxSubmenuItem;
+    TBXItemT9: TSpTbxItem;
+    TBXItemT10: TSpTbxItem;
+    TBXItemT11: TSpTbxItem;
+    TBXItemT12: TSpTbxItem;
+    TBXItemSGoBracket: TSpTbxItem;
+    plOut: TSpTbxDockablePanel;
     ListOut: TTntListBox;
-    TBXItemVOut: TTBXItem;
+    TBXItemVOut: TSpTbxItem;
     ecShowOut: TAction;
-    TBXItemOOut: TTBXItem;
-    PopupOut: TTBXPopupMenu;
-    TBXItemOClr: TTBXItem;
-    TBXItemOCp: TTBXItem;
-    TBXItemONav: TTBXItem;
-    TBXSeparatorItem18: TTBXSeparatorItem;
-    TBXItemOCpAll: TTBXItem;
-    TBXSeparatorItem32: TTBXSeparatorItem;
+    TBXItemOOut: TSpTbxItem;
+    PopupOut: TSpTbxPopupMenu;
+    TBXItemOClr: TSpTbxItem;
+    TBXItemOCp: TSpTbxItem;
+    TBXItemONav: TSpTbxItem;
+    TBXSeparatorItem18: TSpTbxSeparatorItem;
+    TBXItemOCpAll: TSpTbxItem;
+    TBXSeparatorItem32: TSpTbxSeparatorItem;
     ImageListStatus: TImageList;
-    TBXItemODel: TTBXItem;
-    TBXItemODelN: TTBXItem;
-    tbPlOut: TTBXToolbar;
-    TBXItemOOOut: TTBXItem;
-    TBXItemOOFind: TTBXItem;
-    PopupFind: TTBXPopupMenu;
-    TBXItemTreeFindNav: TTBXItem;
-    TBXSeparatorItem36: TTBXSeparatorItem;
-    TBXSeparatorItem37: TTBXSeparatorItem;
+    TBXItemODel: TSpTbxItem;
+    TBXItemODelN: TSpTbxItem;
+    tbPlOut: TSpTbxToolbar;
+    TBXItemOOOut: TSpTbxItem;
+    TBXItemOOFind: TSpTbxItem;
+    PopupFind: TSpTbxPopupMenu;
+    TBXItemTreeFindNav: TSpTbxItem;
+    TBXSeparatorItem36: TSpTbxSeparatorItem;
+    TBXSeparatorItem37: TSpTbxSeparatorItem;
     ecCopyAsRTF: TAction;
     fCustomizeHi: TAction;
-    TBXItemOLexerHi: TTBXItem;
-    TBXSeparatorItem38: TTBXSeparatorItem;
-    TBXItemOOLexSt: TTBXItem;
-    TBXItemEExtr: TTBXItem;
-    TBXSeparatorItem39: TTBXSeparatorItem;
-    TBXItemECaseSent: TTBXItem;
-    TBXItemCCSent: TTBXItem;
+    TBXItemOLexerHi: TSpTbxItem;
+    TBXSeparatorItem38: TSpTbxSeparatorItem;
+    TBXItemOOLexSt: TSpTbxItem;
+    TBXItemEExtr: TSpTbxItem;
+    TBXSeparatorItem39: TSpTbxSeparatorItem;
+    TBXItemECaseSent: TSpTbxItem;
+    TBXItemCCSent: TSpTbxItem;
     ecSentCase: TAction;
-    PopupZoom: TTBXPopupMenu;
-    TBXSeparatorItem5: TTBXSeparatorItem;
-    TBXItemZSet300: TTBXItem;
-    TBXItemZSet200: TTBXItem;
-    TBXItemZSet150: TTBXItem;
-    TBXItemZSet100: TTBXItem;
-    TBXItemZSet75: TTBXItem;
-    TBXItemZSet50: TTBXItem;
-    TBXItemZSet: TTBXItem;
-    TBXItemZOther: TTBXItem;
-    plClip: TTBXDockablePanel;
+    PopupZoom: TSpTbxPopupMenu;
+    TBXSeparatorItem5: TSpTbxSeparatorItem;
+    TBXItemZSet300: TSpTbxItem;
+    TBXItemZSet200: TSpTbxItem;
+    TBXItemZSet150: TSpTbxItem;
+    TBXItemZSet100: TSpTbxItem;
+    TBXItemZSet75: TSpTbxItem;
+    TBXItemZSet50: TSpTbxItem;
+    TBXItemZSet: TSpTbxItem;
+    TBXItemZOther: TSpTbxItem;
+    plClip: TSpTbxDockablePanel;
     ecShowClip: TAction;
-    TBXSeparatorItem25: TTBXSeparatorItem;
-    TBXItemOClip: TTBXItem;
-    PopupClip: TTBXPopupMenu;
-    TBXItemClipClr: TTBXItem;
+    TBXSeparatorItem25: TSpTbxSeparatorItem;
+    TBXItemOClip: TSpTbxItem;
+    PopupClip: TSpTbxPopupMenu;
+    TBXItemClipClr: TSpTbxItem;
     ecGotoNextFindResult: TAction;
     ecGotoPrevFindResult: TAction;
-    TBXSeparatorItem40: TTBXSeparatorItem;
-    TBXItemSResPrev: TTBXItem;
-    TBXItemSResNext: TTBXItem;
-    TBXItemESyncEd: TTBXItem;
-    TBXItemFSesAdd: TTBXItem;
+    TBXSeparatorItem40: TSpTbxSeparatorItem;
+    TBXItemSResPrev: TSpTbxItem;
+    TBXItemSResNext: TSpTbxItem;
+    TBXItemESyncEd: TSpTbxItem;
+    TBXItemFSesAdd: TSpTbxItem;
     ecFullScr: TAction;
-    TBXItemOFullScr: TTBXItem;
+    TBXItemOFullScr: TSpTbxItem;
     TimerBrackets: TTimer;
-    TBXSeparatorItem41: TTBXSeparatorItem;
-    TBXItemTbCpDir: TTBXItem;
-    TBXItemTbCpFull: TTBXItem;
-    TBXItemTbCpFN: TTBXItem;
-    Splitter1: TSplitter;
+    TBXSeparatorItem41: TSpTbxSeparatorItem;
+    TBXItemTbCpDir: TSpTbxItem;
+    TBXItemTbCpFull: TSpTbxItem;
+    TBXItemTbCpFN: TSpTbxItem;
+    Splitter1: TSpTBXSplitter;
     PageControl2: TTntPageControl;
-    TBXSeparatorItem42: TTBXSeparatorItem;
-    TBXItemTbMoveToView: TTBXItem;
-    PopupSplitter: TTBXPopupMenu;
-    TBXItemTbCloseAll: TTBXItem;
-    TBXItemSpHorz: TTBXItem;
-    TBXSeparatorItem43: TTBXSeparatorItem;
-    TBXSeparatorItem44: TTBXSeparatorItem;
-    TBXItemVSyncH: TTBXItem;
-    TBXItemVSyncV: TTBXItem;
+    TBXSeparatorItem42: TSpTbxSeparatorItem;
+    TBXItemTbMoveToView: TSpTbxItem;
+    PopupSplitter: TSpTbxPopupMenu;
+    TBXItemTbCloseAll: TSpTbxItem;
+    TBXItemSpHorz: TSpTbxItem;
+    TBXSeparatorItem43: TSpTbxSeparatorItem;
+    TBXSeparatorItem44: TSpTbxSeparatorItem;
+    TBXItemVSyncH: TSpTbxItem;
+    TBXItemVSyncV: TSpTbxItem;
     ecSyncScrollH: TAction;
     ecSyncScrollV: TAction;
-    TBXItemOShell: TTBXItem;
-    TBXSubmenuItemView: TTBXSubmenuItem;
-    TBXItemOOnTop: TTBXItem;
+    TBXItemOShell: TSpTbxItem;
+    TBXSubmenuItemView: TSpTbxSubmenuItem;
+    TBXItemOOnTop: TSpTbxItem;
     ecOnTop: TAction;
-    TBXItemEFillBlock: TTBXItem;
-    TBXItemEInsText: TTBXItem;
-    TBXSeparatorItem23: TTBXSeparatorItem;
-    TBXItemCtxOpenSel: TTBXItem;
-    TBXItemFEmail: TTBXItem;
-    TBXSeparatorItem45: TTBXSeparatorItem;
-    TBXItemCC12: TTBXItem;
-    TBXItemCC11: TTBXItem;
-    TBXItemCC10: TTBXItem;
-    TBXItemCC9: TTBXItem;
-    TBXItemCC8: TTBXItem;
-    TBXItemCC7: TTBXItem;
-    TBXItemCC6: TTBXItem;
-    TBXItemCC5: TTBXItem;
-    TBXItemCC4: TTBXItem;
-    TBXItemCC3: TTBXItem;
-    TBXItemCC2: TTBXItem;
-    TBXItemCC1: TTBXItem;
-    TBXSeparatorItem13: TTBXSeparatorItem;
-    TBXSeparatorItem24: TTBXSeparatorItem;
-    TBXSubmenuItem10: TTBXSubmenuItem;
-    TBXItemORestoreStyles: TTBXItem;
-    TBXItemCtxCustomize: TTBXItem;
+    TBXItemEFillBlock: TSpTbxItem;
+    TBXItemEInsText: TSpTbxItem;
+    TBXSeparatorItem23: TSpTbxSeparatorItem;
+    TBXItemCtxOpenSel: TSpTbxItem;
+    TBXItemFEmail: TSpTbxItem;
+    TBXSeparatorItem45: TSpTbxSeparatorItem;
+    TBXItemCC12: TSpTbxItem;
+    TBXItemCC11: TSpTbxItem;
+    TBXItemCC10: TSpTbxItem;
+    TBXItemCC9: TSpTbxItem;
+    TBXItemCC8: TSpTbxItem;
+    TBXItemCC7: TSpTbxItem;
+    TBXItemCC6: TSpTbxItem;
+    TBXItemCC5: TSpTbxItem;
+    TBXItemCC4: TSpTbxItem;
+    TBXItemCC3: TSpTbxItem;
+    TBXItemCC2: TSpTbxItem;
+    TBXItemCC1: TSpTbxItem;
+    TBXSeparatorItem13: TSpTbxSeparatorItem;
+    TBXSeparatorItem24: TSpTbxSeparatorItem;
+    TBXSubmenuItem10: TSpTbxSubmenuItem;
+    TBXItemORestoreStyles: TSpTbxItem;
+    TBXItemCtxCustomize: TSpTbxItem;
     ecToggleFocusTree: TAction;
     ecToggleFocusClip: TAction;
     ecZenExpand: TAction;
-    TBXSeparatorItem46: TTBXSeparatorItem;
+    TBXSeparatorItem46: TSpTbxSeparatorItem;
     ecZenWrap: TAction;
-    TBXSubmenuItem13: TTBXSubmenuItem;
-    TBXItemEComm: TTBXItem;
-    TBXItemEUncomm: TTBXItem;
-    TBXItemEToggleLineComment: TTBXItem;
+    TBXSubmenuItem13: TSpTbxSubmenuItem;
+    TBXItemEComm: TSpTbxItem;
+    TBXItemEUncomm: TSpTbxItem;
+    TBXItemEToggleLineComment: TSpTbxItem;
     ecToggleLineComment: TAction;
     ecToggleFocusOutput: TAction;
     fMakeBak: TAction;
     ecToggleStreamComment: TAction;
-    TBXItemEToggleStreamComment: TTBXItem;
-    TBXSubmenuItem16: TTBXSubmenuItem;
-    TBXSubmenuItem17: TTBXSubmenuItem;
-    TBXItemEMoveDn: TTBXItem;
-    TBXItemEMoveUp: TTBXItem;
-    TBXItemHDonate: TTBXItem;
-    TBXItemEDelLn: TTBXItem;
-    TBXSeparatorItem47: TTBXSeparatorItem;
-    TBXSubmenuItem18: TTBXSubmenuItem;
-    TBXItemECpDirPath: TTBXItem;
-    TBXItemECpFullPath: TTBXItem;
-    TBXItemECpFN: TTBXItem;
+    TBXItemEToggleStreamComment: TSpTbxItem;
+    TBXSubmenuItem16: TSpTbxSubmenuItem;
+    TBXSubmenuItem17: TSpTbxSubmenuItem;
+    TBXItemEMoveDn: TSpTbxItem;
+    TBXItemEMoveUp: TSpTbxItem;
+    TBXItemHDonate: TSpTbxItem;
+    TBXItemEDelLn: TSpTbxItem;
+    TBXSeparatorItem47: TSpTbxSeparatorItem;
+    TBXSubmenuItem18: TSpTbxSubmenuItem;
+    TBXItemECpDirPath: TSpTbxItem;
+    TBXItemECpFullPath: TSpTbxItem;
+    TBXItemECpFN: TSpTbxItem;
     ecToggleFocusFindRes: TAction;
-    TBXItemTbSpellCheck: TTBXItem;
-    TBXSeparatorItem48: TTBXSeparatorItem;
+    TBXItemTbSpellCheck: TSpTbxItem;
+    TBXSeparatorItem48: TSpTbxSeparatorItem;
     ecSpellCheck: TAction;
     ecSpellLive: TAction;
-    TBXItemTbSpellLive: TTBXSubmenuItem;
-    TBXItemVSpellCheck: TTBXItem;
-    TBXItemVSpellLive: TTBXItem;
+    TBXItemTbSpellLive: TSpTbxSubmenuItem;
+    TBXItemVSpellCheck: TSpTbxItem;
+    TBXItemVSpellLive: TSpTbxItem;
     ecJoinLines: TAction;
-    TBXSeparatorItem49: TTBXSeparatorItem;
-    TBXItemEJoin: TTBXItem;
+    TBXSeparatorItem49: TSpTbxSeparatorItem;
+    TBXItemEJoin: TSpTbxItem;
     ecSplitLines: TAction;
-    TBXItemESplit: TTBXItem;
-    TBXSeparatorItem50: TTBXSeparatorItem;
-    TBXSubmenuItemMacros: TTBXSubmenuItem;
-    TBXItemMacroPlay: TTBXItem;
-    TBXItemMacroStop: TTBXItem;
-    TBXItemMacroRecord: TTBXItem;
-    TBXItemMacroCancel: TTBXItem;
-    TBXSeparatorItem51: TTBXSeparatorItem;
-    TBXItemMacroDlg: TTBXItem;
+    TBXItemESplit: TSpTbxItem;
+    TBXSeparatorItem50: TSpTbxSeparatorItem;
+    TBXSubmenuItemMacros: TSpTbxSubmenuItem;
+    TBXItemMacroPlay: TSpTbxItem;
+    TBXItemMacroStop: TSpTbxItem;
+    TBXItemMacroRecord: TSpTbxItem;
+    TBXItemMacroCancel: TSpTbxItem;
+    TBXSeparatorItem51: TSpTbxSeparatorItem;
+    TBXItemMacroDlg: TSpTbxItem;
     ecMacroRecord1: TecMacroRecord;
     ecMacroStop1: TecMacroStop;
     ecMacroCancel1: TecMacroCancel;
     ecMacroPlay1: TecMacroPlay;
     ecMacroDlg: TAction;
     ecMacroRecorder1: TecMacroRecorder;
-    TBXItemRunPreview: TTBXItem;
-    TBXSeparatorItem52: TTBXSeparatorItem;
+    TBXItemRunPreview: TSpTbxItem;
+    TBXSeparatorItem52: TSpTbxSeparatorItem;
     ecMacro1: TAction;
     ecMacro2: TAction;
     ecMacro3: TAction;
@@ -684,101 +677,99 @@ type
     ecMacro8: TAction;
     ecMacro9: TAction;
     PropsManagerKeys: TPropsManager;
-    TBXSeparatorItem53: TTBXSeparatorItem;
-    TBXItemMacro9: TTBXItem;
-    TBXItemMacro8: TTBXItem;
-    TBXItemMacro7: TTBXItem;
-    TBXItemMacro6: TTBXItem;
-    TBXItemMacro5: TTBXItem;
-    TBXItemMacro4: TTBXItem;
-    TBXItemMacro3: TTBXItem;
-    TBXItemMacro2: TTBXItem;
-    TBXItemMacro1: TTBXItem;
-    TBXItemBkNext: TTBXItem;
-    TBXItemBkPrev: TTBXItem;
-    TBXItemBkToggle: TTBXItem;
+    TBXSeparatorItem53: TSpTbxSeparatorItem;
+    TBXItemMacro9: TSpTbxItem;
+    TBXItemMacro8: TSpTbxItem;
+    TBXItemMacro7: TSpTbxItem;
+    TBXItemMacro6: TSpTbxItem;
+    TBXItemMacro5: TSpTbxItem;
+    TBXItemMacro4: TSpTbxItem;
+    TBXItemMacro3: TSpTbxItem;
+    TBXItemMacro2: TSpTbxItem;
+    TBXItemMacro1: TSpTbxItem;
+    TBXItemBkNext: TSpTbxItem;
+    TBXItemBkPrev: TSpTbxItem;
+    TBXItemBkToggle: TSpTbxItem;
     ecBkClearAll: TAction;
     ecBkToggle: TAction;
     ecBkNext: TAction;
     ecBkPrev: TAction;
     ecBkInverse: TAction;
-    TBXItemBkInverse: TTBXItem;
+    TBXItemBkInverse: TSpTbxItem;
     ecBkCopy: TAction;
     ecBkCut: TAction;
     ecBkDelete: TAction;
     ecBkDeleteUnmk: TAction;
     ecBkPaste: TAction;
-    TBXItemBkDelUnmk: TTBXItem;
-    TBXItemBkDel: TTBXItem;
-    TBXItemBkPaste: TTBXItem;
-    TBXItemBkCut: TTBXItem;
-    TBXItemBkCopy: TTBXItem;
-    TBXItemTbGoto: TTBXItem;
+    TBXItemBkDelUnmk: TSpTbxItem;
+    TBXItemBkDel: TSpTbxItem;
+    TBXItemBkPaste: TSpTbxItem;
+    TBXItemBkCut: TSpTbxItem;
+    TBXItemBkCopy: TSpTbxItem;
+    TBXItemTbGoto: TSpTbxItem;
     ecGoto: TAction;
-    TBXSeparatorItem12: TTBXSeparatorItem;
-    TBXItemVSyncVert: TTBXItem;
-    TBXItemVSyncHorz: TTBXItem;
+    TBXSeparatorItem12: TSpTbxSeparatorItem;
+    TBXItemVSyncVert: TSpTbxItem;
+    TBXItemVSyncHorz: TSpTbxItem;
     ecToggleView: TAction;
     ecCopyLine: TAction;
     ecCutLine: TAction;
-    TBXSeparatorItem54: TTBXSeparatorItem;
-    TBXItemECutLine: TTBXItem;
-    TBXItemECopyLine: TTBXItem;
-    TBXSubmenuItemTidy: TTBXSubmenuItem;
-    TBXItemTidyCfg: TTBXItem;
-    TBXItemTidyVal: TTBXItem;
-    TBXSeparatorItem55: TTBXSeparatorItem;
+    TBXSeparatorItem54: TSpTbxSeparatorItem;
+    TBXItemECutLine: TSpTbxItem;
+    TBXItemECopyLine: TSpTbxItem;
+    TBXSubmenuItemTidy: TSpTbxSubmenuItem;
+    TBXItemTidyCfg: TSpTbxItem;
+    TBXItemTidyVal: TSpTbxItem;
+    TBXSeparatorItem55: TSpTbxSeparatorItem;
     ListVal: TTntListBox;
-    TBXItemOOVal: TTBXItem;
-    PopupValidate: TTBXPopupMenu;
-    TBXItemValNav: TTBXItem;
-    TBXSeparatorItem56: TTBXSeparatorItem;
-    TBXItemValCp: TTBXItem;
-    TBXItemValCpAll: TTBXItem;
-    TBXSeparatorItem57: TTBXSeparatorItem;
-    TBXItemValClr: TTBXItem;
+    TBXItemOOVal: TSpTbxItem;
+    PopupValidate: TSpTbxPopupMenu;
+    TBXItemValNav: TSpTbxItem;
+    TBXSeparatorItem56: TSpTbxSeparatorItem;
+    TBXItemValCp: TSpTbxItem;
+    TBXItemValCpAll: TSpTbxItem;
+    TBXSeparatorItem57: TSpTbxSeparatorItem;
+    TBXItemValClr: TSpTbxItem;
     ecToggleFocusValidate: TAction;
-    TBXItemEDedupAdjacent: TTBXItem;
-    TBXItemTbDedupAdjacent: TTBXItem;
-    TBXSeparatorItem58: TTBXSeparatorItem;
-    TBXItemWin9: TTBXItem;
-    TBXItemWin8: TTBXItem;
-    TBXItemWin7: TTBXItem;
-    TBXItemWin6: TTBXItem;
-    TBXItemWin5: TTBXItem;
-    TBXItemWin4: TTBXItem;
-    TBXItemWin3: TTBXItem;
-    TBXItemWin2: TTBXItem;
-    TBXItemWin1: TTBXItem;
-    TBXItemWin0: TTBXItem;
-    TBXSubmenuItemSess: TTBXSubmenuItem;
-    TBXMRUListItem1: TTBXMRUListItem;
-    TBXSeparatorItem59: TTBXSeparatorItem;
-    TBXItemSessClr: TTBXItem;
-    MRU_Sess: TTBXMRUList;
-    TBXItemFSesSave: TTBXItem;
-    TBXItemFSesClose: TTBXItem;
+    TBXItemEDedupAdjacent: TSpTbxItem;
+    TBXItemTbDedupAdjacent: TSpTbxItem;
+    TBXSeparatorItem58: TSpTbxSeparatorItem;
+    TBXItemWin9: TSpTbxItem;
+    TBXItemWin8: TSpTbxItem;
+    TBXItemWin7: TSpTbxItem;
+    TBXItemWin6: TSpTbxItem;
+    TBXItemWin5: TSpTbxItem;
+    TBXItemWin4: TSpTbxItem;
+    TBXItemWin3: TSpTbxItem;
+    TBXItemWin2: TSpTbxItem;
+    TBXItemWin1: TSpTbxItem;
+    TBXItemWin0: TSpTbxItem;
+    TBXSubmenuItemSess: TSpTbxSubmenuItem;
+    TBXSeparatorItem59: TSpTbxSeparatorItem;
+    TBXItemSessClr: TSpTbxItem;
+    TBXItemFSesSave: TSpTbxItem;
+    TBXItemFSesClose: TSpTbxItem;
     ecRemoveBlanks: TAction;
-    TBXItemERemBlanks: TTBXItem;
+    TBXItemERemBlanks: TSpTbxItem;
     ecRemoveLines: TAction;
-    TBXSubmenuItem1: TTBXSubmenuItem;
-    TBXSeparatorItem60: TTBXSeparatorItem;
-    TBXItemETrimAll: TTBXItem;
-    TBXItemETrimTrail: TTBXItem;
-    TBXItemETrimLead: TTBXItem;
+    TBXSubmenuItem1: TSpTbxSubmenuItem;
+    TBXSeparatorItem60: TSpTbxSeparatorItem;
+    TBXItemETrimAll: TSpTbxItem;
+    TBXItemETrimTrail: TSpTbxItem;
+    TBXItemETrimLead: TSpTbxItem;
     ecTrimLead: TAction;
     ecTrimTrail: TAction;
     ecTrimAll: TAction;
     ecRemoveDupSpaces: TAction;
-    TBXItemERemDupSp: TTBXItem;
+    TBXItemERemDupSp: TSpTbxItem;
     ecTabToSp: TAction;
     ecSpToTab: TAction;
-    TBXSeparatorItem61: TTBXSeparatorItem;
-    TBXItemESpToTab: TTBXItem;
-    TBXItemETabToSp: TTBXItem;
+    TBXSeparatorItem61: TSpTbxSeparatorItem;
+    TBXItemESpToTab: TSpTbxItem;
+    TBXItemETabToSp: TSpTbxItem;
     ecFindClipNext: TAction;
     ecFindClipPrev: TAction;
-    TBXSubmenuItem2: TTBXSubmenuItem;
+    TBXSubmenuItem2: TSpTbxSubmenuItem;
     ecSplit50_50: TAction;
     ecSplit40_60: TAction;
     ecSplit60_40: TAction;
@@ -786,87 +777,87 @@ type
     ecSplit70_30: TAction;
     ecSplit20_80: TAction;
     ecSplit80_20: TAction;
-    TBXItemSp50: TTBXItem;
-    TBXItemSp80: TTBXItem;
-    TBXItemSp70: TTBXItem;
-    TBXItemSp60: TTBXItem;
-    TBXItemSp40: TTBXItem;
-    TBXItemSp30: TTBXItem;
-    TBXItemSp20: TTBXItem;
-    TBXItemMacroRepeat: TTBXItem;
+    TBXItemSp50: TSpTbxItem;
+    TBXItemSp80: TSpTbxItem;
+    TBXItemSp70: TSpTbxItem;
+    TBXItemSp60: TSpTbxItem;
+    TBXItemSp40: TSpTbxItem;
+    TBXItemSp30: TSpTbxItem;
+    TBXItemSp20: TSpTbxItem;
+    TBXItemMacroRepeat: TSpTbxItem;
     ecMacroRepeat: TAction;
-    TBXSeparatorItem62: TTBXSeparatorItem;
+    TBXSeparatorItem62: TSpTbxSeparatorItem;
     ecRepeatCmd: TAction;
-    TBXItemERepeatCmd: TTBXItem;
-    TBXSepWin: TTBXSeparatorItem;
-    TBXItemWinFRes: TTBXItem;
-    TBXItemWinOut: TTBXItem;
-    TBXItemWinClip: TTBXItem;
-    TBXItemWinTree: TTBXItem;
-    TBXItemWinVal: TTBXItem;
-    TBXSubWin: TTBXSubmenuItem;
+    TBXItemERepeatCmd: TSpTbxItem;
+    TBXSepWin: TSpTbxSeparatorItem;
+    TBXItemWinFRes: TSpTbxItem;
+    TBXItemWinOut: TSpTbxItem;
+    TBXItemWinClip: TSpTbxItem;
+    TBXItemWinTree: TSpTbxItem;
+    TBXItemWinVal: TSpTbxItem;
+    TBXSubWin: TSpTbxSubmenuItem;
     ecMarkersClear: TAction;
-    TBXItemMarkClear: TTBXItem;
-    tbClipMap: TTBXToolbar;
-    TBXItemRightClip: TTBXItem;
-    TBXItemRightMap: TTBXItem;
+    TBXItemMarkClear: TSpTbxItem;
+    tbClipMap: TSpTbxToolbar;
+    TBXItemRightClip: TSpTbxItem;
+    TBXItemRightMap: TSpTbxItem;
     ecToggleFocusMap: TAction;
-    TBXItemWinMap: TTBXItem;
+    TBXItemWinMap: TSpTbxItem;
     ecFindInTree: TAction;
     ecFindInTreeNext: TAction;
     ecFindInTreePrev: TAction;
     ecTreeNext: TAction;
     ecTreePrev: TAction;
     ecReduceBlanks: TAction;
-    TBXItemEReduceBlanks: TTBXItem;
+    TBXItemEReduceBlanks: TSpTbxItem;
     ecGotoNextBlank: TAction;
     ecGotoPrevBlank: TAction;
     ecSelPara: TAction;
-    TBXSeparatorItem63: TTBXSeparatorItem;
+    TBXSeparatorItem63: TSpTbxSeparatorItem;
     ecSplitLeft: TAction;
     ecSplitRight: TAction;
     ecSelToWordEnd: TAction;
     ecJumpToWordEnd: TAction;
     ecFindNextWithExtend: TAction;
     ecFindPrevWithExtend: TAction;
-    TBXItemHKeyMap: TTBXItem;
+    TBXItemHKeyMap: TSpTbxItem;
     ecFindInList: TAction;
     ecFindInListNext: TAction;
     ecFindInListPrev: TAction;
-    TBXItemClipFind: TTBXItem;
-    TBXSeparatorItem64: TTBXSeparatorItem;
-    TBXSeparatorItem65: TTBXSeparatorItem;
-    TBXItemTreeFindFind: TTBXItem;
-    TBXSeparatorItem66: TTBXSeparatorItem;
-    TBXItemValFind: TTBXItem;
-    TBXSeparatorItem67: TTBXSeparatorItem;
-    TBXItemOFind: TTBXItem;
-    PopupTree: TTBXPopupMenu;
-    TBXItemTreeFind: TTBXItem;
-    TBXItemTreeExpand: TTBXItem;
-    TBXItemTreeCollapse: TTBXItem;
+    TBXItemClipFind: TSpTbxItem;
+    TBXSeparatorItem64: TSpTbxSeparatorItem;
+    TBXSeparatorItem65: TSpTbxSeparatorItem;
+    TBXItemTreeFindFind: TSpTbxItem;
+    TBXSeparatorItem66: TSpTbxSeparatorItem;
+    TBXItemValFind: TSpTbxItem;
+    TBXSeparatorItem67: TSpTbxSeparatorItem;
+    TBXItemOFind: TSpTbxItem;
+    PopupTree: TSpTbxPopupMenu;
+    TBXItemTreeFind: TSpTbxItem;
+    TBXItemTreeExpand: TSpTbxItem;
+    TBXItemTreeCollapse: TSpTbxItem;
     TimerAutoSave: TTimer;
-    TBXItemMacro29: TTBXItem;
-    TBXItemMacro28: TTBXItem;
-    TBXItemMacro27: TTBXItem;
-    TBXItemMacro26: TTBXItem;
-    TBXItemMacro25: TTBXItem;
-    TBXItemMacro24: TTBXItem;
-    TBXItemMacro23: TTBXItem;
-    TBXItemMacro22: TTBXItem;
-    TBXItemMacro21: TTBXItem;
-    TBXItemMacro20: TTBXItem;
-    TBXItemMacro19: TTBXItem;
-    TBXItemMacro18: TTBXItem;
-    TBXItemMacro17: TTBXItem;
-    TBXItemMacro16: TTBXItem;
-    TBXItemMacro15: TTBXItem;
-    TBXItemMacro14: TTBXItem;
-    TBXItemMacro13: TTBXItem;
-    TBXItemMacro12: TTBXItem;
-    TBXItemMacro11: TTBXItem;
-    TBXItemMacro10: TTBXItem;
-    TBXItemMacro30: TTBXItem;
+    TBXItemMacro29: TSpTbxItem;
+    TBXItemMacro28: TSpTbxItem;
+    TBXItemMacro27: TSpTbxItem;
+    TBXItemMacro26: TSpTbxItem;
+    TBXItemMacro25: TSpTbxItem;
+    TBXItemMacro24: TSpTbxItem;
+    TBXItemMacro23: TSpTbxItem;
+    TBXItemMacro22: TSpTbxItem;
+    TBXItemMacro21: TSpTbxItem;
+    TBXItemMacro20: TSpTbxItem;
+    TBXItemMacro19: TSpTbxItem;
+    TBXItemMacro18: TSpTbxItem;
+    TBXItemMacro17: TSpTbxItem;
+    TBXItemMacro16: TSpTbxItem;
+    TBXItemMacro15: TSpTbxItem;
+    TBXItemMacro14: TSpTbxItem;
+    TBXItemMacro13: TSpTbxItem;
+    TBXItemMacro12: TSpTbxItem;
+    TBXItemMacro11: TSpTbxItem;
+    TBXItemMacro10: TSpTbxItem;
+    TBXItemMacro30: TSpTbxItem;
     ecMacro10: TAction;
     ecMacro11: TAction;
     ecMacro12: TAction;
@@ -889,286 +880,320 @@ type
     ecMacro29: TAction;
     ecMacro30: TAction;
     TreeFind: TTntTreeView;
-    TBXItemTreeFindCopyToTab: TTBXItem;
-    TBXItemTreeFindClear: TTBXItem;
-    TBXItemTreeFindCopyToClip: TTBXItem;
-    TBXItemTreeFindCollapse: TTBXItem;
-    TBXItemTreeFindExpand: TTBXItem;
-    TBXSeparatorItem69: TTBXSeparatorItem;
-    TBXItemTreeFindExpandCur: TTBXItem;
-    TBXItemCtxFindID: TTBXItem;
+    TBXItemTreeFindCopyToTab: TSpTbxItem;
+    TBXItemTreeFindClear: TSpTbxItem;
+    TBXItemTreeFindCopyToClip: TSpTbxItem;
+    TBXItemTreeFindCollapse: TSpTbxItem;
+    TBXItemTreeFindExpand: TSpTbxItem;
+    TBXSeparatorItem69: TSpTbxSeparatorItem;
+    TBXItemTreeFindExpandCur: TSpTbxItem;
+    TBXItemCtxFindID: TSpTbxItem;
     ecJumpToLastMarker: TAction;
     ecTreeParent: TAction;
     ecTreeNextBrother: TAction;
     ecTreePrevBrother: TAction;
-    TBXItemMarkGoLast: TTBXItem;
-    TBXSeparatorItem70: TTBXSeparatorItem;
-    TBXItemRunOpenFile: TTBXItem;
-    TBXItemSSelToken: TTBXItem;
+    TBXItemMarkGoLast: TSpTbxItem;
+    TBXSeparatorItem70: TSpTbxSeparatorItem;
+    TBXItemRunOpenFile: TSpTbxItem;
+    TBXItemSSelToken: TSpTbxItem;
     ecSelToken: TAction;
-    TBXItemTreeFindCopyToClipNode: TTBXItem;
-    TBXItemFProps: TTBXItem;
+    TBXItemTreeFindCopyToClipNode: TSpTbxItem;
+    TBXItemFProps: TSpTbxItem;
     fProps: TAction;
     ecInsertColor: TAction;
-    TBXItemEColor: TTBXItem;
-    TBXSeparatorItem71: TTBXSeparatorItem;
+    TBXItemEColor: TSpTbxItem;
+    TBXSeparatorItem71: TSpTbxSeparatorItem;
     ecGotoSelEdge: TAction;
-    TBXItemClipCopyToEd: TTBXItem;
-    TBXItemClipCopyToClip: TTBXItem;
-    TBXSeparatorItem72: TTBXSeparatorItem;
+    TBXItemClipCopyToEd: TSpTbxItem;
+    TBXItemClipCopyToClip: TSpTbxItem;
+    TBXSeparatorItem72: TSpTbxSeparatorItem;
     ecReplaceSelFromClipAll: TAction;
     fRereadOut: TAction;
-    tbPlLeft: TTBXToolbar;
-    TBXItemLeftTree: TTBXItem;
-    TBXItemLeftProj: TTBXItem;
+    tbPlLeft: TSpTbxToolbar;
+    TBXItemLeftTree: TSpTbxItem;
+    TBXItemLeftProj: TSpTbxItem;
     ecToggleFocusProject: TAction;
-    TBXItemWinProj: TTBXItem;
+    TBXItemWinProj: TSpTbxItem;
     ecInsertImage: TAction;
-    TBXItemEImage: TTBXItem;
+    TBXItemEImage: TSpTbxItem;
     ecToggleFocusMasterSlave: TAction;
     ecToggleSlave: TAction;
-    TBXItemSplitCaption: TTBXItem;
-    TbxItemRunFindHtml4: TTBXItem;
-    TbxItemRunFindHtml5: TTBXItem;
-    TBXSeparatorItem73: TTBXSeparatorItem;
-    TBXSeparatorItem74: TTBXSeparatorItem;
+    TBXItemSplitCaption: TSpTbxItem;
+    TbxItemRunFindHtml4: TSpTbxItem;
+    TbxItemRunFindHtml5: TSpTbxItem;
+    TBXSeparatorItem73: TSpTbxSeparatorItem;
+    TBXSeparatorItem74: TSpTbxSeparatorItem;
     ecRuler: TAction;
-    TBXItemORuler: TTBXItem;
+    TBXItemORuler: TSpTbxItem;
     ecSplitViewsVertHorz: TAction;
     ecSplitSlaveVertHorz: TAction;
     ecGotoBk: TAction;
-    TBXItemBkGoto: TTBXItem;
-    TBXItemRunLoremIpsum: TTBXItem;
+    TBXItemBkGoto: TSpTbxItem;
+    TBXItemRunLoremIpsum: TSpTbxItem;
     ecLoremIpsum: TAction;
-    TBXSubmenuFav: TTBXSubmenuItem;
-    TBXItemFavAddFile: TTBXItem;
-    TBXItemFavManage: TTBXItem;
+    TBXSubmenuFav: TSpTbxSubmenuItem;
+    TBXItemFavAddFile: TSpTbxItem;
+    TBXItemFavManage: TSpTbxItem;
     fFavAddFile: TAction;
     fFavManage: TAction;
-    TbxSubmenuItemRecentColors: TTBXSubmenuItem;
+    TbxSubmenuItemRecentColors: TSpTbxSubmenuItem;
     ImageListColorRecent: TImageList;
-    TBXItemCtxAddColor: TTBXItem;
-    TBXItemFavAddProj: TTBXItem;
+    TBXItemCtxAddColor: TSpTbxItem;
+    TBXItemFavAddProj: TSpTbxItem;
     fFavAddProj: TAction;
-    TBXSeparatorItem75: TTBXSeparatorItem;
-    TBXItemTbAddToProj: TTBXItem;
-    TBXItemRightClips: TTBXItem;
+    TBXSeparatorItem75: TSpTbxSeparatorItem;
+    TBXItemTbAddToProj: TSpTbxItem;
+    TBXItemRightClips: TSpTbxItem;
     ecToggleFocusClips: TAction;
-    TbxItemWinClips: TTBXItem;
-    PopupClips: TTBXPopupMenu;
-    TBXItemClipsAddText: TTBXItem;
-    TBXItemClipsEdit: TTBXItem;
-    TBXSeparatorItem76: TTBXSeparatorItem;
-    TBXItemClipsAddFile: TTBXItem;
-    TBXItemClipsDir: TTBXItem;
+    TbxItemWinClips: TSpTbxItem;
+    PopupClips: TSpTbxPopupMenu;
+    TBXItemClipsAddText: TSpTbxItem;
+    TBXItemClipsEdit: TSpTbxItem;
+    TBXSeparatorItem76: TSpTbxSeparatorItem;
+    TBXItemClipsAddFile: TSpTbxItem;
+    TBXItemClipsDir: TSpTbxItem;
     OD_Swatch: TOpenDialog;
     SD_Swatch: TSaveDialog;
-    TBXTabColor: TTBXColorPalette;
-    TBXSubmenuTabColor: TTBXSubmenuItem;
-    TBXItemTabColorMisc: TTBXItem;
-    TBXSeparatorItem77: TTBXSeparatorItem;
-    TBXItemTabColorDef: TTBXItem;
-    TBXColors: TTBXColorSet;
-    TBXItemClipsDelText: TTBXItem;
+    TBXTabColor: TSpTbxColorPalette;
+    TBXSubmenuTabColor: TSpTbxSubmenuItem;
+    TBXItemTabColorMisc: TSpTbxItem;
+    TBXSeparatorItem77: TSpTbxSeparatorItem;
+    TBXItemTabColorDef: TSpTbxItem;
+    TBXItemClipsDelText: TSpTbxItem;
     ecSmartHl: TAction;
-    TBXItemBkDropPortable: TTBXItem;
+    TBXItemBkDropPortable: TSpTbxItem;
     ecDropPortableBk: TAction;
-    TBXSeparatorItem78: TTBXSeparatorItem;
+    TBXSeparatorItem78: TSpTbxSeparatorItem;
     ecGotoPortableBk: TAction;
-    TBXItemBkGotoPortable: TTBXItem;
+    TBXItemBkGotoPortable: TSpTbxItem;
     fRename: TAction;
-    TBXItemFRename: TTBXItem;
-    TBXItemRunNumConv: TTBXItem;
+    TBXItemFRename: TSpTbxItem;
+    TBXItemRunNumConv: TSpTbxItem;
     ecNumericConverter: TAction;
     ecIndentLike1st: TAction;
-    TBXSeparatorItem33: TTBXSeparatorItem;
-    TBXItemEIndentLike1st: TTBXItem;
-    TBXItemViewColMarkers: TTBXItem;
+    TBXSeparatorItem33: TSpTbxSeparatorItem;
+    TBXItemEIndentLike1st: TSpTbxItem;
+    TBXItemViewColMarkers: TSpTbxItem;
     fColumnMarkers: TAction;
     ecJumpColumnMarkerLeft: TAction;
     ecJumpColumnMarkerRight: TAction;
-    TBXSeparatorItem79: TTBXSeparatorItem;
+    TBXSeparatorItem79: TSpTbxSeparatorItem;
     ImageListFtp: TImageList;
     ListPLog: TTntListBox;
-    TBXItemOOPLog: TTBXItem;
-    PopupPluginsLog: TTBXPopupMenu;
-    TBXItemPLogCopySel: TTBXItem;
-    TBXItemPLogCopyAll: TTBXItem;
-    TBXSeparatorItem81: TTBXSeparatorItem;
-    TBXItemPLogDelete: TTBXItem;
-    TBXItemPLogClear: TTBXItem;
-    TBXSeparatorItem82: TTBXSeparatorItem;
-    TBXItemPLogFind: TTBXItem;
+    TBXItemOOPLog: TSpTbxItem;
+    PopupPluginsLog: TSpTbxPopupMenu;
+    TBXItemPLogCopySel: TSpTbxItem;
+    TBXItemPLogCopyAll: TSpTbxItem;
+    TBXSeparatorItem81: TSpTbxSeparatorItem;
+    TBXItemPLogDelete: TSpTbxItem;
+    TBXItemPLogClear: TSpTbxItem;
+    TBXSeparatorItem82: TSpTbxSeparatorItem;
+    TBXItemPLogFind: TSpTbxItem;
     ecPasteNoCurChange: TAction;
-    TBXItemCtxPasteNoCurChange: TTBXItem;
-    TBXSeparatorItem80: TTBXSeparatorItem;
-    TBXSubmenuItemAbbrev: TTBXSubmenuItem;
-    TBXItemEZenWrap: TTBXItem;
-    TBXItemEZenExpand: TTBXItem;
-    TBXSubmenuItemHelpAbbrev: TTBXSubmenuItem;
-    TBXItemHEmmet: TTBXItem;
+    TBXItemCtxPasteNoCurChange: TSpTbxItem;
+    TBXSeparatorItem80: TSpTbxSeparatorItem;
+    TBXSubmenuItemAbbrev: TSpTbxSubmenuItem;
+    TBXItemEZenWrap: TSpTbxItem;
+    TBXItemEZenExpand: TSpTbxItem;
+    TBXSubmenuItemHelpAbbrev: TSpTbxSubmenuItem;
+    TBXItemHEmmet: TSpTbxItem;
     PluginACP: TAutoCompletePopup;
     ecJumpMixedCaseLeft: TAction;
     ecJumpMixedCaseRight: TAction;
     ecCancelSelection: TAction;
     ecCenterLines: TAction;
-    TBXSeparatorItem83: TTBXSeparatorItem;
-    TBXItemECenterLines: TTBXItem;
+    TBXSeparatorItem83: TSpTbxSeparatorItem;
+    TBXItemECenterLines: TSpTbxItem;
     ListTabs: TTntListView;
-    TBXItemLeftTabs: TTBXItem;
+    TBXItemLeftTabs: TSpTbxItem;
     ecToggleFocusTabs: TAction;
-    TbxItemWinTabs: TTBXItem;
-    TBXSubmenuItemPlugins: TTBXSubmenuItem;
-    TBXSeparatorItem84: TTBXSeparatorItem;
-    TBXItemOEditSynPluginsIni: TTBXItem;
-    TBXItemPLogSaveAs: TTBXItem;
-    TBXItemTbMoveToWindow: TTBXItem;
-    TBXItemTbOpenInWindow: TTBXItem;
+    TbxItemWinTabs: TSpTbxItem;
+    TBXSubmenuItemPlugins: TSpTbxSubmenuItem;
+    TBXSeparatorItem84: TSpTbxSeparatorItem;
+    TBXItemOEditSynPluginsIni: TSpTbxItem;
+    TBXItemPLogSaveAs: TSpTbxItem;
+    TBXItemTbMoveToWindow: TSpTbxItem;
+    TBXItemTbOpenInWindow: TSpTbxItem;
     ecExtendSelByLine: TAction;
-    TBXItemRunEncodeHtml: TTBXItem;
+    TBXItemRunEncodeHtml: TSpTbxItem;
     ecEncodeHtmlChars: TAction;
     ecSortDialog: TAction;
-    TBXItemESortDialog: TTBXItem;
-    TBXSeparatorItem86: TTBXSeparatorItem;
-    TBXItemTbSortDialog: TTBXItem;
+    TBXItemESortDialog: TSpTbxItem;
+    TBXSeparatorItem86: TSpTbxSeparatorItem;
+    TBXItemTbSortDialog: TSpTbxItem;
     ecSelBrackets: TAction;
-    TBXItemSSelBrackets: TTBXItem;
+    TBXItemSSelBrackets: TSpTbxItem;
     PropsManagerPrint: TPropsManager;
     TimerTree: TTimer;
-    TBXSubmenuFolding: TTBXSubmenuItem;
-    TBXItemUnfoldLine: TTBXItem;
-    TBXItemUnfoldAll: TTBXItem;
-    TBXItemFoldAll: TTBXItem;
-    TBXItemFoldParent: TTBXItem;
+    TBXSubmenuFolding: TSpTbxSubmenuItem;
+    TBXItemUnfoldLine: TSpTbxItem;
+    TBXItemUnfoldAll: TSpTbxItem;
+    TBXItemFoldAll: TSpTbxItem;
+    TBXItemFoldParent: TSpTbxItem;
     ecCollapseParent: TAction;
     ecCollapseWithNested: TAction;
-    TBXItemFoldWithNested: TTBXItem;
-    TBXSeparatorItem87: TTBXSeparatorItem;
-    TBXSeparatorItem88: TTBXSeparatorItem;
-    TBXItemFoldNearestBlock: TTBXItem;
-    TBXItemFoldSelBlock: TTBXItem;
+    TBXItemFoldWithNested: TSpTbxItem;
+    TBXSeparatorItem87: TSpTbxSeparatorItem;
+    TBXSeparatorItem88: TSpTbxSeparatorItem;
+    TBXItemFoldNearestBlock: TSpTbxItem;
+    TBXItemFoldSelBlock: TSpTbxItem;
     ecSpToTabLeading: TAction;
-    TBXItemESpToTabLead: TTBXItem;
+    TBXItemESpToTabLead: TSpTbxItem;
     ecToggleLineCommentAlt: TAction;
-    TBXItemEToggleLineCommentAlt: TTBXItem;
+    TBXItemEToggleLineCommentAlt: TSpTbxItem;
     ecPasteToColumn1: TAction;
-    TBXItemCtxPasteToColumn1: TTBXItem;
-    TBXItemUnfoldRangesInSel: TTBXItem;
-    TBXItemFoldRangesInSel: TTBXItem;
-    TBXSeparatorItem89: TTBXSeparatorItem;
+    TBXItemCtxPasteToColumn1: TSpTbxItem;
+    TBXItemUnfoldRangesInSel: TSpTbxItem;
+    TBXItemFoldRangesInSel: TSpTbxItem;
+    TBXSeparatorItem89: TSpTbxSeparatorItem;
     ecCommandsList: TAction;
-    TBXItemECommandList: TTBXItem;
+    TBXItemECommandList: TSpTbxItem;
     ecScrollToSel: TAction;
     ecProjectList: TAction;
-    TBXItemSGotoFile: TTBXItem;
-    TBXSeparatorItem90: TTBXSeparatorItem;
-    TbxSubmenuCarets: TTBXSubmenuItem;
-    TBXItemCaretsRemove2: TTBXItem;
-    TBXItemCaretsRemove1: TTBXItem;
-    TBXSeparatorItem91: TTBXSeparatorItem;
-    TBXItemCaretsFromSelClear: TTBXItem;
-    TBXItemCaretsFromSelRight: TTBXItem;
-    TBXItemCaretsFromSelLeft: TTBXItem;
-    TBXSeparatorItem92: TTBXSeparatorItem;
-    TBXItemCaretsExtDownEnd: TTBXItem;
-    TBXItemCaretsExtUpEnd: TTBXItem;
-    TBXItemCaretsExtDownPage: TTBXItem;
-    TBXItemCaretsExtUpPage: TTBXItem;
-    TBXItemCaretsExtDownLine: TTBXItem;
-    TBXItemCaretsExtUpLine: TTBXItem;
-    TBXSeparatorItem93: TTBXSeparatorItem;
-    TBXItemCaretsFromMarksClear: TTBXItem;
-    TBXItemCaretsFromMarksRight: TTBXItem;
-    TBXItemCaretsFromMarksLeft: TTBXItem;
-    TBXItemEColumn: TTBXItem;
+    TBXItemSGotoFile: TSpTbxItem;
+    TBXSeparatorItem90: TSpTbxSeparatorItem;
+    TbxSubmenuCarets: TSpTbxSubmenuItem;
+    TBXItemCaretsRemove2: TSpTbxItem;
+    TBXItemCaretsRemove1: TSpTbxItem;
+    TBXSeparatorItem91: TSpTbxSeparatorItem;
+    TBXItemCaretsFromSelClear: TSpTbxItem;
+    TBXItemCaretsFromSelRight: TSpTbxItem;
+    TBXItemCaretsFromSelLeft: TSpTbxItem;
+    TBXSeparatorItem92: TSpTbxSeparatorItem;
+    TBXItemCaretsExtDownEnd: TSpTbxItem;
+    TBXItemCaretsExtUpEnd: TSpTbxItem;
+    TBXItemCaretsExtDownPage: TSpTbxItem;
+    TBXItemCaretsExtUpPage: TSpTbxItem;
+    TBXItemCaretsExtDownLine: TSpTbxItem;
+    TBXItemCaretsExtUpLine: TSpTbxItem;
+    TBXSeparatorItem93: TSpTbxSeparatorItem;
+    TBXItemCaretsFromMarksClear: TSpTbxItem;
+    TBXItemCaretsFromMarksRight: TSpTbxItem;
+    TBXItemCaretsFromMarksLeft: TSpTbxItem;
+    TBXItemEColumn: TSpTbxItem;
     ecEditColumn: TAction;
     ecDedupAll: TAction;
     ecDedupAdjacent: TAction;
-    TBXSeparatorItem94: TTBXSeparatorItem;
-    TBXItemEDedupAll: TTBXItem;
-    TBXSeparatorItem85: TTBXSeparatorItem;
-    TBXItemTbDedupAll: TTBXItem;
-    TBXSeparatorItem95: TTBXSeparatorItem;
-    TBXItemEAlignWithSep: TTBXItem;
+    TBXSeparatorItem94: TSpTbxSeparatorItem;
+    TBXItemEDedupAll: TSpTbxItem;
+    TBXSeparatorItem85: TSpTbxSeparatorItem;
+    TBXItemTbDedupAll: TSpTbxItem;
+    TBXSeparatorItem95: TSpTbxSeparatorItem;
+    TBXItemEAlignWithSep: TSpTbxItem;
     ecAlignWithSep: TAction;
-    TBXItemTbSplit: TTBXItem;
-    TBXItemTbToggleSplit: TTBXItem;
+    TBXItemTbSplit: TSpTbxItem;
+    TBXItemTbToggleSplit: TSpTbxItem;
     ecToggleView2: TAction;
     ecSelExtend: TAction;
     ecSelShrink: TAction;
-    TBXItemSSelExtend: TTBXItem;
-    TBXItemTreeCollapseAll: TTBXItem;
-    TBXItemTreeExpandAll: TTBXItem;
-    TBXItemTreeLevel2: TTBXItem;
-    TBXItemTreeLevel5: TTBXItem;
-    TBXItemTreeLevel4: TTBXItem;
-    TBXItemTreeLevel3: TTBXItem;
-    TBXSeparatorItem96: TTBXSeparatorItem;
-    TBXSubmenuTreeLevel: TTBXSubmenuItem;
-    TBXItemTreeLevel6: TTBXItem;
-    TBXItemTreeLevel9: TTBXItem;
-    TBXItemTreeLevel8: TTBXItem;
-    TBXItemTreeLevel7: TTBXItem;
+    TBXItemSSelExtend: TSpTbxItem;
+    TBXItemTreeCollapseAll: TSpTbxItem;
+    TBXItemTreeExpandAll: TSpTbxItem;
+    TBXItemTreeLevel2: TSpTbxItem;
+    TBXItemTreeLevel5: TSpTbxItem;
+    TBXItemTreeLevel4: TSpTbxItem;
+    TBXItemTreeLevel3: TSpTbxItem;
+    TBXSeparatorItem96: TSpTbxSeparatorItem;
+    TBXSubmenuTreeLevel: TSpTbxSubmenuItem;
+    TBXItemTreeLevel6: TSpTbxItem;
+    TBXItemTreeLevel9: TSpTbxItem;
+    TBXItemTreeLevel8: TSpTbxItem;
+    TBXItemTreeLevel7: TSpTbxItem;
     ecReverseLines: TAction;
-    TBXSeparatorItem68: TTBXSeparatorItem;
-    TBXItemEReverse: TTBXItem;
+    TBXSeparatorItem68: TSpTbxSeparatorItem;
+    TBXItemEReverse: TSpTbxItem;
     ecDeleteToFileBegin: TAction;
     ecDeleteToFileEnd: TAction;
     ecShuffleLines: TAction;
-    TBXItemEShuffle: TTBXItem;
-    TBXSubmenuIFoldLevel: TTBXSubmenuItem;
-    TBXItemFoldLevel9: TTBXItem;
-    TBXItemFoldLevel8: TTBXItem;
-    TBXItemFoldLevel7: TTBXItem;
-    TBXItemFoldLevel6: TTBXItem;
-    TBXItemFoldLevel5: TTBXItem;
-    TBXItemFoldLevel4: TTBXItem;
-    TBXItemFoldLevel3: TTBXItem;
-    TBXItemFoldLevel2: TTBXItem;
-    tbUser1: TTBXToolbar;
-    tbUser2: TTBXToolbar;
-    tbUser3: TTBXToolbar;
-    TBXSeparatorItem97: TTBXSeparatorItem;
-    TBXItemTUser3: TTBXItem;
-    TBXItemTUser2: TTBXItem;
-    TBXItemTUser1: TTBXItem;
-    TBXSubmenuToolbars: TTBXSubmenuItem;
-    TBXItemOToolbar3: TTBXItem;
-    TBXItemOToolbar2: TTBXItem;
-    TBXItemOToolbar1: TTBXItem;
-    ImageListUser1: TTBXImageList;
-    ImageListUser2: TTBXImageList;
-    ImageListUser3: TTBXImageList;
+    TBXItemEShuffle: TSpTbxItem;
+    TBXSubmenuIFoldLevel: TSpTbxSubmenuItem;
+    TBXItemFoldLevel9: TSpTbxItem;
+    TBXItemFoldLevel8: TSpTbxItem;
+    TBXItemFoldLevel7: TSpTbxItem;
+    TBXItemFoldLevel6: TSpTbxItem;
+    TBXItemFoldLevel5: TSpTbxItem;
+    TBXItemFoldLevel4: TSpTbxItem;
+    TBXItemFoldLevel3: TSpTbxItem;
+    TBXItemFoldLevel2: TSpTbxItem;
+    tbUser1: TSpTbxToolbar;
+    tbUser2: TSpTbxToolbar;
+    tbUser3: TSpTbxToolbar;
+    TBXSeparatorItem97: TSpTbxSeparatorItem;
+    TBXItemTUser3: TSpTbxItem;
+    TBXItemTUser2: TSpTbxItem;
+    TBXItemTUser1: TSpTbxItem;
+    TBXSubmenuToolbars: TSpTbxSubmenuItem;
+    TBXItemOToolbar3: TSpTbxItem;
+    TBXItemOToolbar2: TSpTbxItem;
+    TBXItemOToolbar1: TSpTbxItem;
     ecPasteAsColumnBlock: TAction;
     ecExtractDupsCase: TAction;
     ecExtractDupsNoCase: TAction;
-    TBXSeparatorItem7: TTBXSeparatorItem;
-    TBXItemEExtractDupNoCase: TTBXItem;
-    TBXItemEExtractDupCase: TTBXItem;
+    TBXSeparatorItem7: TSpTbxSeparatorItem;
+    TBXItemEExtractDupNoCase: TSpTbxItem;
+    TBXItemEExtractDupCase: TSpTbxItem;
     ecNonPrintOff: TAction;
     ecNonPrintSpaces: TAction;
     ecNonPrintEol: TAction;
     ecNonPrintBoth: TAction;
-    TBXSubmenuItemNonPrint: TTBXSubmenuItem;
-    TBXSeparatorItem98: TTBXSeparatorItem;
-    TBXItemONPrintAll: TTBXItem;
-    TBXItemONPrintEol: TTBXItem;
-    TBXItemONPrintSpaces: TTBXItem;
-    PopupUserTB1: TTBXPopupMenu;
-    TBXItemUserTb1: TTBXItem;
-    PopupUserTB2: TTBXPopupMenu;
-    TBXItemUserTB2: TTBXItem;
-    PopupUserTB3: TTBXPopupMenu;
-    TBXItemUserTB3: TTBXItem;
-    TBXItemCtxPasteBkmkLines: TTBXItem;
-    TBXItemCtxPasteAsColumn: TTBXItem;
-    TBXSeparatorItem99: TTBXSeparatorItem;
-    TBXItemONPrintEolDetails: TTBXItem;
+    TBXSubmenuItemNonPrint: TSpTbxSubmenuItem;
+    TBXSeparatorItem98: TSpTbxSeparatorItem;
+    TBXItemONPrintAll: TSpTbxItem;
+    TBXItemONPrintEol: TSpTbxItem;
+    TBXItemONPrintSpaces: TSpTbxItem;
+    PopupUserTB1: TSpTbxPopupMenu;
+    TBXItemUserTb1: TSpTbxItem;
+    PopupUserTB2: TSpTbxPopupMenu;
+    TBXItemUserTB2: TSpTbxItem;
+    PopupUserTB3: TSpTbxPopupMenu;
+    TBXItemUserTB3: TSpTbxItem;
+    TBXItemCtxPasteBkmkLines: TSpTbxItem;
+    TBXItemCtxPasteAsColumn: TSpTbxItem;
+    TBXSeparatorItem99: TSpTbxSeparatorItem;
+    TBXItemONPrintEolDetails: TSpTbxItem;
     ecNonPrintEolDetails: TAction;
-    TBXItemOHideItems: TTBXItem;
-    TBXSeparatorItem100: TTBXSeparatorItem;
-    TBXItemOEditSynIni: TTBXItem;
+    TBXItemOHideItems: TSpTbxItem;
+    TBXSeparatorItem100: TSpTbxSeparatorItem;
+    TBXItemOEditSynIni: TSpTbxItem;
     fOpenBySelection: TAction;
+    ImageListIconsTango22b: TPngImageList;
+    ImageListIconsTango16b: TPngImageList;
+    ImageListIconsFogue24b: TPngImageList;
+    ImageListIconsFogue16b: TPngImageList;
+    ImageListUser1: TPngImageList;
+    ImageListUser2: TPngImageList;
+    ImageListUser3: TPngImageList;
+    TBXDockLeft1: TSpTbxDock;
+    TBXDockRight1: TSpTbxDock;
+    TBXDockBottom1: TSpTbxDock;
+    SplitterLeft: TSpTBXSplitter;
+    SplitterRight: TSpTBXSplitter;
+    SplitterBottom: TSpTBXSplitter;
+    StatusItemLexer: TSpTBXLabelItem;
+    StatusItemEnds: TSpTBXLabelItem;
+    StatusItemEnc: TSpTBXLabelItem;
+    StatusItemCaret: TSpTBXLabelItem;
+    SpTBXSeparatorItem1: TSpTBXSeparatorItem;
+    SpTBXSeparatorItem2: TSpTBXSeparatorItem;
+    SpTBXSeparatorItem3: TSpTBXSeparatorItem;
+    SpTBXSeparatorItem4: TSpTBXSeparatorItem;
+    StatusItemChar: TSpTBXLabelItem;
+    SpTBXSeparatorItem5: TSpTBXSeparatorItem;
+    StatusItemRO: TSpTBXLabelItem;
+    SpTBXSeparatorItem6: TSpTBXSeparatorItem;
+    StatusItemWrap: TSpTBXLabelItem;
+    SpTBXSeparatorItem7: TSpTBXSeparatorItem;
+    StatusItemSelMode: TSpTBXLabelItem;
+    SpTBXSeparatorItem8: TSpTBXSeparatorItem;
+    StatusItemInsMode: TSpTBXLabelItem;
+    SpTBXSeparatorItem9: TSpTBXSeparatorItem;
+    StatusItemZoom: TSpTBXLabelItem;
+    SpTBXSeparatorItem10: TSpTBXSeparatorItem;
+    StatusItemBusy: TSpTBXLabelItem;
+    SpTBXSeparatorItem11: TSpTBXSeparatorItem;
+    StatusItemHint: TSpTBXLabelItem;
+    TBXMRUListItem1: TSpTBXMRUListItem;
+    TBXMRUListItem_Sess: TSpTBXMRUListItem;
     procedure fOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1187,12 +1212,7 @@ type
     procedure fSetupExecute(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure fExportRTFActionBeforeExecute(Sender: TObject);
-    procedure SBClick(Sender: TObject);
     procedure ecReadOnlyExecute(Sender: TObject);
-    procedure SBDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
-      const Rect: TRect);
-    procedure SBMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
     procedure ButtonOnSelect(Sender: TTBCustomItem; Viewer: TTBItemViewer;
       Selecting: Boolean);
     procedure plTreeResize(Sender: TObject);
@@ -1237,8 +1257,6 @@ type
     procedure ecACPListKeyDown(Sender: TObject;
       var key: Word; Shift: TShiftState);
     procedure fNewExecute(Sender: TObject);
-    procedure StatusPanelClick(Sender: TTBXCustomStatusBar;
-      Panel: TTBXStatusPanel);
     procedure TBXItemWPriorClick(Sender: TObject);
     procedure TBXItemWNextClick(Sender: TObject);
     procedure TBXItemFNextClick(Sender: TObject);
@@ -1707,8 +1725,6 @@ type
       FromLink: Boolean);
     procedure TBXItemTabColorMiscClick(Sender: TObject);
     procedure TBXItemTabColorDefClick(Sender: TObject);
-    procedure TBXColorsGetColorInfo(Sender: TTBXCustomColorSet; Col,
-      Row: Integer; var Color: TColor; var Name: String);
     procedure TBXItemClipsDelTextClick(Sender: TObject);
     procedure ecSmartHlExecute(Sender: TObject);
     procedure TBXItemBkDropPortableClick(Sender: TObject);
@@ -1908,6 +1924,31 @@ type
     procedure TBXItemOHideItemsClick(Sender: TObject);
     procedure TBXItemOEditSynIniClick(Sender: TObject);
     procedure fOpenBySelectionExecute(Sender: TObject);
+    procedure StatusItemCaretClick(Sender: TObject);
+    procedure StatusItemEncClick(Sender: TObject);
+    procedure StatusItemEndsClick(Sender: TObject);
+    procedure StatusItemLexerClick(Sender: TObject);
+    procedure StatusItemCharClick(Sender: TObject);
+    procedure StatusItemROClick(Sender: TObject);
+    procedure StatusItemWrapClick(Sender: TObject);
+    procedure StatusItemSelModeClick(Sender: TObject);
+    procedure StatusItemInsModeClick(Sender: TObject);
+    procedure StatusItemZoomClick(Sender: TObject);
+    procedure TBXTabColorGetColor(Sender: TObject; ACol, ARow: Integer;
+      var Color: TColor; var Name: WideString);
+    procedure TBXTabColorCellClick(Sender: TObject; ACol, ARow: Integer;
+      var Allow: Boolean);
+    procedure StatusItemCaretDrawHint(Sender: TObject;
+      AHintBitmap: TBitmap; var AHint: WideString;
+      var PaintDefault: Boolean);
+    procedure TBXSubmenuItemFRecentsPopup(Sender: TTBCustomItem;
+      FromLink: Boolean);
+    procedure TBXMRUListItem1Click(Sender: TObject;
+      const Filename: WideString);
+    procedure TBXMRUListItem_SessClick(Sender: TObject;
+      const Filename: WideString);
+    procedure TBXSubmenuItemSessPopup(Sender: TTBCustomItem;
+      FromLink: Boolean);
 
   private
     cStatLine,
@@ -2018,19 +2059,28 @@ type
     FTagClosing: boolean; //ACP called for closing tag </tag>
     FBrAdd: boolean; //Added '<' on ACP call
 
-    QuickView: boolean;    //QuickView mode
+    QuickView: boolean;    //QuickView mode for TotalCmd plugin
     QuickDestroy: boolean; //?? (inherited from Sepa)
-    FUpdatePluginsLang: boolean; //need update plugins' lang soon
-    FNeedRepaint: boolean;   //need full repaint soon
+    FUpdatePluginsLang: boolean; //need to update plugins' language ASAP
+    FNeedRepaint: boolean;   //need full repaint ASAP
     FEnableRepaint: boolean; //enable repaint, it's set after 500ms
+    
     FToolbarMoved: boolean;  //set when toolbars are moved
     FPopupUrl: string;       //current URL for editor popup menu
-    FPopupColor: integer;    //current color for editor popup menu
+    FPopupColor: integer;    //current color-id-in-text for editor popup menu
     FCurrTool: integer;      //number of last called ext-tool
     FCurrToolFN: Widestring; //filename for last called ext-tool
-    FCurrPluginAcpStartPos: TPoint; //ACP popup position, for cActionSuggestCompletion
+    FCurrPluginAcpStartPos: TPoint; //auto-complete popup position, for cActionSuggestCompletion
+    FCurrSelState: TSelState; //current selection state (stream, column, carets etc)
+    FCurrTheme: string;      //current SpTBX theme
     FClickedFrame: TEditorFrame;
-    FMenuItems: array of record Id: string; Item: TComponent; end;
+
+    FMenuItems: array of
+      record Id: string; Item: TComponent; end; //array of main-menu-items ids and objects
+    FMenuItem_Colors_Clear, //menu-items in "Recent colors" menu (4 items)
+    FMenuItem_Colors_Save,
+    FMenuItem_Colors_Open,
+    FMenuItem_Colors_Select: TSpTbxItem;
 
     FinderPro: TGauge;  //current TGauge for progress showing
     FinderProNum: integer; //previous "NN%" progress value
@@ -2341,6 +2391,8 @@ type
     function SynTidyIni: string;
     function SynPluginsIni: string;
     function SynPluginsSampleIni: string;
+    function SynSkinsDir: string;
+    function SynSkinFilename(const Name: string): string;
     function NoCursor(E: TSyntaxMemo): boolean;
     procedure LexListClick(Sender: TObject);
     procedure FinderInit(Sender: TObject);
@@ -2376,7 +2428,6 @@ type
     function ShFor(id: integer): TShortcut;
     procedure ShMacroGet(n: integer; var sh: TShortcut);
     procedure ShMacroSet(n: integer; const sh: TShortcut);
-    procedure SetHint(n: integer; const s: WideString);
     procedure FOnlineWordHelp(const url: string);
     procedure FOnlineFind(const site: string);
 
@@ -2391,13 +2442,13 @@ type
     procedure MarkAll(const s: Widestring);
 
     function GetIcons: integer;
-    function GetTheme: integer;
+    function GetTheme: string;
     procedure SetIcons(A: integer);
-    procedure SetTheme(A: integer);
+    procedure SetTheme(const S: string);
     procedure LoadTools;
     procedure SaveTools;
     procedure UpdTools;
-    procedure ToolEn(T: TTbxItem; n: integer; ForCtx: boolean = false);
+    procedure ToolEn(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
 
     procedure GetTag(var tagName, attri:string);
     procedure SaveState_(Sender: TObject);
@@ -2452,10 +2503,10 @@ type
     procedure DoTreeLevel(NLevel: Integer);
     procedure DoFoldLevel(NLevel: Integer);
     procedure DoToolbarCommentUncomment(AComment: boolean);
-    procedure LoadToolbarProp(Toolbar: TTbxToolbar; Ini: TCustomIniFile; const Id: string);
-    procedure SaveToolbarProp(Toolbar: TTbxToolbar; Ini: TCustomIniFile; const Id: string);
-    procedure SavePanelProp(Panel: TTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
-    procedure LoadPanelProp(Panel: TTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
+    procedure LoadToolbarProp(Toolbar: TSpTbxToolbar; Ini: TCustomIniFile; const Id: string);
+    procedure SaveToolbarProp(Toolbar: TSpTbxToolbar; Ini: TCustomIniFile; const Id: string);
+    procedure SavePanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
+    procedure LoadPanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
     procedure LoadToolbarContent(Toolbar: TObject; Id: string; AutoShow: boolean = false);
     function DoShowCmdList: Integer;
     function DoShowCmdListStr: string;
@@ -2466,6 +2517,7 @@ type
     procedure EditorNonPrintUpdate(Ed: TSyntaxMemo);
     procedure InitMenuItemsList;
     procedure DoOpenBySelection;
+    procedure FixSplitters;
     //end of private
 
   protected
@@ -2481,6 +2533,9 @@ type
     SynIsPortable: boolean;
     hLister: HWND;
     fmProgress: TfmProgress;
+
+    SynMruFiles: TSynMruList;
+    SynMruSessions: TSynMruList;
 
     //opt
     opNonPrint,
@@ -2709,7 +2764,6 @@ type
     procedure SaveSession(const fn: string);
     procedure OpenSession(const fn: string; Add: boolean = False);
     function LoadState(Frame: TEditorFrame; const FN: WideString): boolean;
-    property SHint[n: integer]: WideString write SetHint;
 
     //event handlers
     procedure SynKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -2734,10 +2788,11 @@ type
     //---------------------------------------------------------------------
 
     property Icons: integer read GetIcons write SetIcons;
-    property Theme: integer read GetTheme write SetTheme;
+    property Theme: string read GetTheme write SetTheme;
     //procedure TestApi;
     function IsPluginWindowActive(var HWnd: THandle): boolean;
     function opMarkDeletedAsModified: boolean;
+    procedure SetHint(const S: WideString);
     //end of public
   end;
 
@@ -2780,7 +2835,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.5.532';
+  cSynVer = '5.6.580a';
 
 implementation
 
@@ -2804,11 +2859,6 @@ uses
   {$endif}
 
   TB2Consts,
-  TBXThemes,
-  TBXOfficeXPTheme,
-  TBXAluminumTheme,
-  TBXStripesTheme,
-  TbxOffice2003Theme,
 
   ecExports,
   ecZRegExpr,
@@ -2827,16 +2877,22 @@ const
   cRegexColorName = '[a-z]{3,30}';
 
 const
-  cThemes: array[0..8] of string = (
-    'Default',
+  cThemeWindows = 'Windows';
+  cThemes: array[0..12] of string = (
+    cThemeWindows,
     'Aluminum',
-    'OfficeXP',
-    'Office Blue',
-    'Office Green',
-    'Office Metallic',
-    'Office Black',
-    'Office user-defined',
-    'Stripes'
+    'Athen',
+    'Dream',
+    'Eos',
+    'Human',
+    'Leopard',
+    'Xito',
+    'Office XP',
+    'Office 2003',
+    //'Office 2007',
+    'Office 2007 Blue',
+    'Office 2007 Black',
+    'Office 2007 Silver'
     );
 
 const    
@@ -2847,21 +2903,6 @@ const
   cp__UTF8_noBOM = -2;
   cp__Unicode    = -3;
   cp__UnicodeBE  = -4;
-
-const
-  //Status panels
-  cc0 = 0;
-  ccEnc = 1;
-  ccLE = 2;
-  ccLex = 3;
-  ccChar = 4;
-  ccRO = 5;
-  ccWrap = 6;
-  ccSelMode = 7;
-  ccIns = 8;
-  ccZoom = 9;
-  ccMacro = 10;
-  ccTxt = 11;
 
 function MsgConfirmFtp: boolean;
 begin
@@ -3327,7 +3368,7 @@ begin
           WideExtractFileDir(SD.FileName));
 
       Frame.SaveFile(SD.FileName);
-      MRU.Add(SD.FileName);
+      SynMruFiles.AddItem(SD.FileName);
 
       //update lexer
       if FCanUseLexer(SD.FileName) then
@@ -3645,7 +3686,7 @@ begin
     SaveState(Frame);
   if Frame.FileName<>'' then
     if not Frame.NotInRecents then
-      MRU.Add(Frame.FileName);
+      SynMruFiles.AddItem(Frame.FileName);
 
   CurrentEditor:= nil;
   ts:= Frame.Parent as TTntTabSheet;
@@ -3874,22 +3915,22 @@ begin
 
   if Assigned(Status) then
   if ro then
-    Status.Panels[ccRO].ImageIndex:= 0
+    StatusItemRO.ImageIndex:= 0
   else
-    Status.Panels[ccRO].ImageIndex:= 1;
+    StatusItemRO.ImageIndex:= 1;
 
   if Assigned(Status) then
     case ed.SelectModeDefault of
-      msColumn: Status.Panels[ccSelMode].ImageIndex:= 9;
-      msLine: Status.Panels[ccSelMode].ImageIndex:= 10;
-      else Status.Panels[ccSelMode].ImageIndex:= 8;
+      msColumn: StatusItemSelMode.ImageIndex:= 9;
+      msLine: StatusItemSelMode.ImageIndex:= 10;
+      else StatusItemSelMode.ImageIndex:= 8;
     end;
 
   if Assigned(Status) then
     if ed.WordWrap then
-      Status.Panels[ccWrap].ImageIndex:= 3
+      StatusItemWrap.ImageIndex:= 3
     else
-      Status.Panels[ccWrap].ImageIndex:= 4;
+      StatusItemWrap.ImageIndex:= 4;
 
   UpdateStatusbarEnc(frame);
   UpdateStatusbarLineEnds;
@@ -3957,19 +3998,19 @@ begin
 
   with ed do
   begin
-    SHint[cc0]:= SStatusText;
+    StatusItemCaret.Caption:= SStatusText;
 
     if ReplaceMode then
-      SHint[ccIns]:= DKLangConstW('sOvr')
+      StatusItemInsMode.Caption:= DKLangConstW('sOvr')
     else
-      SHint[ccIns]:= DKLangConstW('sIns');
+      StatusItemInsMode.Caption:= DKLangConstW('sIns');
 
-    SHint[ccZoom]:= IntToStr(Zoom) + '%';
+    StatusItemZoom.Caption:= IntToStr(Zoom) + '%';
 
     if opChInf and (TextLength>0) and (not NoCursor(ed)) then
-      SHint[ccChar]:= SStatusCharInfo
+      StatusItemChar.Caption:= SStatusCharInfo
     else
-      SHint[ccChar]:= '';
+      StatusItemChar.Caption:= '';
   end;
 end;
 
@@ -4005,12 +4046,11 @@ end;
 
 procedure TfmMain.UpdateCh;
 begin
-  if Assigned(Status) then
-  with Status.Panels[ccChar] do
+  with StatusItemChar do
     if opChInf then
-      begin Size:= 100; ImageIndex:= -1; end
+      begin CustomWidth:= 100; ImageIndex:= -1; end
     else
-      begin Size:= 20; ImageIndex:= 2; end;
+      begin CustomWidth:= 20; ImageIndex:= 2; end;
 end;
 
 procedure TfmMain.PageControl1Change(Sender: TObject);
@@ -4160,9 +4200,10 @@ begin
     opStatusText[selStream]:= ReadString('View', 'StatusStreamSel', '{LineNum} : {ColNum} ({SelLines}/{TotalLines})');
     opStatusText[selColumn]:= ReadString('View', 'StatusColumnSel', '{LineNum} : {ColNum} ({SelLines}x{SelCols}/{TotalLines})');
     opStatusText[selCarets]:= ReadString('View', 'StatusCarets', '#={Carets} ({TotalLines})');
-    with Status.Panels[cc0] do
+
+    with StatusItemCaret do
     begin
-      Size:= ReadInteger('View', 'StatusWidth', Size);
+      MinWidth:= ReadInteger('View', 'StatusWidth', 155);
       case ReadInteger('View', 'StatusAlign', 0) of
         0: Alignment:= taCenter;
         1: Alignment:= taLeftJustify;
@@ -4239,7 +4280,7 @@ begin
     opTabsWidths:= ReadString('Win', 'TabWdt', '100,400,');
 
     opMapVScroll:= ReadBool('View', 'MapVSc', true);
-    opMapZoom:= ReadInteger('View', 'MapZoom', 30);
+    opMapZoom:= ReadInteger('View', 'MapZoom', 25);
     opMicroMap:= ReadBool('View', 'MicroMap', false);
     opColorMap:= ReadInteger('View', 'MapColor', clSkyBlue);
     opShowCurrentColumn:= ReadBool('View', 'CurrCol', false);
@@ -4299,31 +4340,31 @@ begin
     opUTF8:= ReadString('Setup', 'UTF8', '');
 
     if not QuickView then
-      Theme:= ReadInteger('Setup', 'ThemeN', 1{0:Default, 1:Aluminum});
+      Theme:= ReadString('Setup', 'Theme', 'Aluminum');
     Icons:= ReadInteger('Setup', 'Icons', 2{Fogue 24x24});
 
     //MRU
     if SynExe or opMruForPlugin then
     begin
       //load recent files
-      MRU.MaxItems:= opSaveState;
+      SynMruFiles.MaxCount:= opSaveState;
       NCount:= Min(ReadInteger('MRU', 'Num', 0), opSaveState);
       for i:= Pred(NCount) downto 0 do
       begin
         S:= UTF8Decode(ReadString('MRU', IntToStr(i), ''));
         if S = '' then Continue;
         if opMruCheck and IsFilenameFixed(S) and not IsFileExist(S) then Continue;
-        MRU.Add(S);
+        SynMruFiles.AddItem(S);
       end;
       //load recent sessions
-      MRU_Sess.MaxItems:= opSaveState;
+      SynMruSessions.MaxCount:= opSaveState;
       NCount:= Min(ReadInteger('MRU_Sess', 'Num', 0), opSaveState);
       for i:= Pred(NCount) downto 0 do
       begin
         S:= UTF8Decode(ReadString('MRU_Sess', IntToStr(i), ''));
         if S = '' then Continue;
         if opMruCheck and IsFilenameFixed(S) and not IsFileExist(S) then Continue;
-        MRU_Sess.Add(S);
+        SynMruSessions.AddItem(S);
       end;
       //load recent project
       if opHistProjectLoad then
@@ -4437,14 +4478,14 @@ begin
     if SynExe or opMruForPlugin then
     begin
       //save recent files list
-      with MRU do
+      with SynMruFiles do
       begin
         WriteInteger('MRU', 'Num', Items.Count);
         for i:= 0 to Items.Count - 1 do
           WriteString('MRU', IntToStr(i), UTF8Encode(Items[i]));
       end;
       //save recent session list
-      with MRU_Sess do
+      with SynMruSessions do
       begin
         WriteInteger('MRU_Sess', 'Num', Items.Count);
         for i:= 0 to Items.Count - 1 do
@@ -4664,7 +4705,7 @@ begin
     WriteBool('Setup', 'InitRO' + c_exe[SynExe], opStartRO);
     WriteString('Setup', 'Oem', opOem);
     WriteString('Setup', 'UTF8', opUTF8);
-    WriteInteger('Setup', 'ThemeN', Theme);
+    WriteString('Setup', 'Theme', Theme);
     WriteInteger('Setup', 'Icons', Icons);
   finally
     Free;
@@ -5779,17 +5820,17 @@ begin
 
     sm_MenuEnc:
       begin
-      p:= Status.ClientToScreen(Point(Status.Panels[cc0].Size, 0));
+      p:= Mouse.CursorPos;
       PopupCP.Popup(p.x, p.y);
       end;
     sm_MenuLex:
       begin
-      p:= Status.ClientToScreen(Point(Status.Panels[cc0].Size+Status.Panels[ccEnc].Size+Status.Panels[ccLE].Size, 0));
+      p:= Mouse.CursorPos;
       PopupLex.Popup(p.x, p.y);
       end;
     sm_MenuLE:
       begin
-      p:= Status.ClientToScreen(Point(Status.Panels[cc0].Size+Status.Panels[ccEnc].Size, 0));
+      p:= Mouse.CursorPos;
       PopupLE.Popup(p.x, p.y);
       end;
     sm_QS:
@@ -5967,15 +6008,15 @@ begin
         if Command = sm_ZoomOut then n:= -n;
         Ed.Zoom:= Ed.Zoom + n;
         TemplateEditor.Zoom:= Ed.Zoom;
-        SHint[ccZoom]:= IntToStr(Ed.Zoom) + '%';
-        SHint[ccTxt]:= WideFormat(DKLangConstW('Zoom'), [Ed.Zoom]);
+        StatusItemZoom.Caption:= IntToStr(Ed.Zoom) + '%';
+        StatusItemHint.Caption:= WideFormat(DKLangConstW('Zoom'), [Ed.Zoom]);
       end;
     sm_Zoom0:
       begin
         Ed.Zoom:= 100;
         TemplateEditor.Zoom:= Ed.Zoom;
-        SHint[ccZoom]:= IntToStr(Ed.Zoom) + '%';
-        SHint[ccTxt]:= WideFormat(DKLangConstW('Zoom'), [Ed.Zoom]);
+        StatusItemZoom.Caption:= IntToStr(Ed.Zoom) + '%';
+        StatusItemHint.Caption:= WideFormat(DKLangConstW('Zoom'), [Ed.Zoom]);
       end;
 
     sm_ONonPrintOff: ecNonPrintOff.Execute;
@@ -6040,15 +6081,15 @@ end;
 procedure TfmMain.UpdateLexList;
 var
   i: integer;
-  but: TTBXItem;
-  menu: TTBXSubmenuItem;
+  but: TSpTbxItem;
+  menu: TSpTbxSubmenuItem;
   s: TStringList;
   ch: char;
 begin
  PopupLex.Items.Clear;
  if (SyntaxManager.AnalyzerCount>0) then
  begin
-   but:= TTBXItem.Create(Self);
+   but:= TSpTbxItem.Create(Self);
    but.Caption:= DKLangConstW('None');
    but.Tag:= -1;
    but.OnClick:= LexListClick;
@@ -6065,14 +6106,14 @@ begin
 
   if opLexerCat then
    for ch:='A' to 'Z' do begin
-     menu:=TTBXSubmenuItem.Create(Self);
+     menu:=TSpTbxSubmenuItem.Create(Self);
      menu.Caption:=ch;
      PopupLex.Items.Add(menu);
 
      for i:=0 to s.Count-1 do
        if (UpCase(s[i][1]) = UpCase(ch)) then begin
          if SyntaxManager.Analyzers[integer(s.Objects[i])].Internal then Continue;
-         but:=TTBXItem.Create(Self);
+         but:=TSpTbxItem.Create(Self);
          but.Caption:=s[i];
          but.Tag:=integer(s.Objects[i]);
          but.OnClick:=LexListClick;
@@ -6089,7 +6130,7 @@ begin
      for i:=0 to s.Count-1 do
      begin
        if SyntaxManager.Analyzers[integer(s.Objects[i])].Internal then Continue;
-       but:=TTBXItem.Create(Self);
+       but:=TSpTbxItem.Create(Self);
        but.Caption:=s[i];
        but.Tag:=integer(s.Objects[i]);
        but.OnClick:=LexListClick;
@@ -6149,7 +6190,7 @@ begin
 
     //add to MRU old name
     if F.FileName<>'' then
-      MRU.Add(F.FileName);
+      SynMruFiles.AddItem(F.FileName);
     //save-as
     SaveFrame(F, True);
   end;
@@ -6162,7 +6203,7 @@ begin
   else
   begin
     MsgNoFile(S);
-    MRU.Remove(S);
+    SynMruFiles.DeleteItem(S);
   end;
 end;
 
@@ -6175,7 +6216,7 @@ begin
   else
   begin
     MsgNoFile(S);
-    MRU_Sess.Remove(S);
+    SynMruSessions.DeleteItem(S);
   end;
 end;
 
@@ -6185,7 +6226,9 @@ begin
 end;
 
 procedure TfmMain.fSetupExecute(Sender: TObject);
-var i:Integer;
+var
+  i: Integer;
+  L: TTntStringList;
 begin
   UpdateMacroKeynames;
 
@@ -6214,6 +6257,17 @@ begin
       cbTheme.Items.Clear;
       for i:= Low(cThemes) to High(cThemes) do
         cbTheme.Items.Add(cThemes[i]);
+
+      L:= TTntStringList.Create;
+      try
+        FFindToList(L, SynSkinsDir, '*.skn', '',
+          false{SubDirs}, false, false, false);
+        for i:= 0 to L.Count-1 do
+          cbTheme.Items.Add('*'+ ChangeFileExt(ExtractFileName(L[i]), ''));
+      finally
+        FreeAndNil(L);
+      end;
+
       ShowModal;
     finally
       Release;
@@ -6314,6 +6368,7 @@ begin
   if FNeedRepaint then
   begin
     FNeedRepaint:= false;
+
     //Repaint TBs
     with plOut do begin Width:= Width+2; Width:= Width-2; end;
     with plTree do begin Height:= Height+2; Height:= Height-2; end;
@@ -6322,9 +6377,9 @@ begin
     tbView.Invalidate;
     tbQS.Invalidate;
     edQs.Invalidate;
+    Status.Invalidate;
+
     //Repaint editor
-    if CurrentFrame<>nil then
-      CurrentFrame.Splitter2.Invalidate;
     if CurrentEditor<>nil then
       with CurrentEditor do
         begin Width:= Width+2; Width:= Width-2; end;
@@ -6338,40 +6393,6 @@ begin
   else
     fExportRTFAction.ExportType:= etAllText;
 end;
-
-procedure TfmMain.SBClick(Sender: TObject);
-begin ; end;
-(*
-var
-  p: TPoint;
-  t1, t2, t3, tro: boolean;
-  c1, c2, c3, c4, c5, c6: integer;
-begin
-  with SB.Panels do begin
-    c1:= Items[0].Width;
-    c2:= c1 + Items[1].Width;
-    c3:= c2 + Items[2].Width;
-    c4:= c3 + Items[3].Width;
-    c5:= c4 + Items[4].Width;
-    c6:= c5 + Items[5].Width;
-  end;
-
-  p.X:= 0;
-  p.Y:= SB.Top;
-  p:= ClientToScreen(p);
-  with Mouse.CursorPos do
-  begin
-    t1:= (X > (p.x + c1)) and (X < (p.x + c2));
-    t2:= (X > (p.x + c2)) and (X < (p.x + c3));
-    t3:= (X > (p.x + c3)) and (X < (p.x + c4));
-    tro:= (X > (p.x + c5)) and (X < (p.x + c6));
-  end;
-  if t1 then PopupCP.Popup(p.X + c1, p.Y) else
-  if t2 then PopupLE.Popup(p.X + c2, p.Y - 65) else
-  if t3 then PopupLex.Popup(p.X + c3, p.Y) else
-  if tro then ecReadOnly.Execute;
-end;
-*)
 
 procedure TfmMain.ecReadOnlyExecute(Sender: TObject);
 begin
@@ -6398,77 +6419,6 @@ begin
   end;
   FocusEditor;
 end;
-
-procedure TfmMain.SBDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
-  const Rect: TRect);
-begin
-end;
-(*
-var
-  r: TRect;
-begin
-   //char code
-   if Panel = StatusBar.Panels[ccChar] then
-   with StatusBar.Canvas do begin
-     if (not opChInf) or NoCursor then
-       FillRect(Rect)
-     else begin
-       Font.Name:= 'Lucida Console';
-       Font.Size:= 8;
-       r:= Rect;
-       r.Bottom:= r.Bottom-1;
-       r.Right:= r.Right-2;
-       TextRect(r, r.Left + 1, r.Top + 2, Panel.Text);
-     end;
-   end
-   else
-   //RO
-   if Panel = StatusBar.Panels[ccRO] then begin
-     if CurrentFrame.TextSource.ReadOnly then
-       ImageListRO.Draw(StatusBar.Canvas, Rect.Left, 2, 0{Index})
-     else
-       StatusBar.Canvas.FillRect(Rect);
-   end;
-end;
-*)
-
-procedure TfmMain.SBMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-begin
-end;
-(*
-var
-  i,j: integer;
-  s: string;
-begin
-  if (y=0) or (y>16) or (x=0) or (x>(SB.Width-16)) then begin
-    SB.Panels[ccTxt].Text:='';
-    Exit;
-  end;
-
-  j:=0;
-  for i:=0 to SB.Panels.Count-1 do begin
-    if (X>j)and
-       (X<(j+SB.Panels[i].Width)) then begin
-        case i of
-          0: s:='Line:Column (selection length/lines)';
-          1: s:='Encoding (click to change)';
-          2: s:='Line endings (click to change)';
-          3: s:='Lexer (click to change)';
-          4: s:='"Char at cursor" info (click for Character Table)';
-          5: s:='Read-only (click to change)';
-          6: s:='';
-        end;
-        if SB.Hint <> s then begin
-          SB.Panels[6].Text:=s;
-          //SB.Hint:=s;
-          //Application.ActivateHint(Mouse.CursorPos);
-        end;
-        exit;
-    end;
-    Inc(j,SB.Panels[i].Width);
-  end;
-end;
-*)
 
 procedure TfmMain.UpdateGutter(F: TEditorFrame; AUpdateCur: boolean = true);
 var
@@ -6504,7 +6454,7 @@ end;
 
 procedure TfmMain.ButtonOnSelect(Sender: TTBCustomItem; Viewer: TTBItemViewer; Selecting: Boolean);
 begin
-  SHint[ccTxt]:= Sender.Hint;
+  SetHint(Sender.Hint);
 end;
 
 procedure TfmMain.SynScroll(Sender: TObject);
@@ -6536,14 +6486,14 @@ end;
 procedure TfmMain.plTreeResize(Sender: TObject);
 begin
   plTree.Invalidate;
-  tbViewMove(Self);
+  tbPlLeft.Invalidate;
   DoResizePlugins;
 end;
 
 procedure TfmMain.FinderInit(Sender: TObject);
 begin
   Finder.Control:= CurrentEditor;
-  SHint[ccTxt]:= '';
+  SetHint('');
 end;
 
 procedure TfmMain.FinderFail(Sender: TObject);
@@ -6553,7 +6503,7 @@ begin
   HideProgress;
 
   s:= WideFormat(DKLangConstW('MNFound2'), [Finder.FindText]);
-  SHint[ccTxt]:= s;
+  SetHint(s);
   if opSrShowMsg and not (Assigned(fmSR) and fmSR.Visible) then
     MsgWarn(s)
   else
@@ -6582,6 +6532,8 @@ end;
 
 procedure TfmMain.FormShow(Sender: TObject);
 begin
+  FixSplitters;
+
   //scale sizes for 150% DPI
   if PixelsPerInch<>96 then
   begin
@@ -6589,12 +6541,15 @@ begin
     with Status do
     begin
       Height:= ScaleFontSize(Height, Self);
+      //X
+      {
       with Panels[cc0] do Size:= ScaleFontSize(Size, Self);
       with Panels[ccEnc] do Size:= ScaleFontSize(Size, Self);
       with Panels[ccLE] do Size:= ScaleFontSize(Size, Self);
       with Panels[ccLex] do Size:= ScaleFontSize(Size, Self);
       with Panels[ccIns] do Size:= ScaleFontSize(Size, Self);
       with Panels[ccZoom] do Size:= ScaleFontSize(Size, Self);
+      }
     end;
   end;
 
@@ -6763,6 +6718,7 @@ end;
 
 procedure TfmMain.plTreeVisibleChanged(Sender: TObject);
 begin
+  FixSplitters;
   ecShowTree.Checked:= plTree.Visible;
 end;
 
@@ -6774,21 +6730,7 @@ begin
     FocusEditor;
 
   DoRepaintTBs;
-  {
-  tbMenu.Invalidate;
-  tbFile.Invalidate;
-  tbEdit.Invalidate;
-  tbView.Invalidate;
-  tbQS.Invalidate;
-  edQs.Invalidate;
-  tbUser1.Invalidate;
-  tbUser2.Invalidate;
-  tbUser3.Invalidate;
-  }
 end;
-
-type
-  TSpCrack = class(TSplitter);
 
 const
   cDefColors: array[0..Pred(cTabColors)] of TColor =
@@ -6803,11 +6745,18 @@ begin
   SynDir:= ExtractFilePath(GetModuleName(HInstance));
   SynIsPortable:= IsFileExist(SynDir + 'Portable.ini');
 
+  SynMruFiles:= TSynMruList.Create;
+  SynMruSessions:= TSynMruList.Create;
+
+  //make panels font non-bold
+  plTree.Options.RightAlignSpacer.FontSettings.Style:= [];
+  plClip.Options.RightAlignSpacer.FontSettings.Style:= [];
+  plOut.Options.RightAlignSpacer.FontSettings.Style:= [];
+
   InitMenuItemsList;
   LangManager.ScanForLangFiles(SynDir + 'Lang', '*.lng', False);
-  TSpCrack(Splitter1).PopupMenu:= PopupSplitter;
+  Splitter1.PopupMenu:= PopupSplitter;
   ecOnSavingLexer:= DoSaveStyles;
-  TbxHiContrast:= true;
 
   ListOut.Align:= alClient;
   ListVal.Align:= alClient;
@@ -6862,8 +6811,6 @@ begin
   FLockUpdate:= false;
   FPagesNTab:= -1;
   FPagesNTabCtx:= -1;
-  MRU.OnClick:= MRUClick;
-  MRU_Sess.OnClick:= MRU_SessClick;
   FToolbarMoved:= false;
   FNeedRepaint:= true;
   FEnableRepaint:= false;
@@ -6933,9 +6880,9 @@ end;
 procedure TfmMain.UpdateStatusbarLineEnds;
 begin
   case CurrentFrame.TextSource.Lines.TextFormat of
-    tfCR: SHint[ccLE]:= 'Mac';
-    tfNL: SHint[ccLE]:= 'Unix';
-    else SHint[ccLE]:= 'Win';
+    tfCR: StatusItemEnds.Caption:= 'Mac';
+    tfNL: StatusItemEnds.Caption:= 'Unix';
+    else StatusItemEnds.Caption:= 'Win';
   end;
 end;
 
@@ -7066,6 +7013,9 @@ end;
 
 procedure TfmMain.FormDestroy(Sender: TObject);
 begin
+  FreeAndNil(SynMruFiles);
+  FreeAndNil(SynMruSessions);
+
   FreeAndNil(FUserToolbarCommands);
 
   FreeAndNil(TabSwitcher2);
@@ -7148,7 +7098,7 @@ begin
       if IsImageHint(s, sFileName, sResult) then
       begin
         HintText:= sResult;
-        SHint[-1]:= sResult;
+        SetHint(sResult);
         Exit
       end;
 
@@ -7213,7 +7163,7 @@ begin
     on E: Exception do
     begin
       HintText:= '';
-      SHint[-1]:= 'Exception on reading hint: '+E.Message;
+      SetHint('Exception on reading hint: '+E.Message);
     end;
   end;
 end;
@@ -7665,18 +7615,18 @@ begin
   //update status hint
   en:= SyntaxManager.AnalyzerCount > 0;
   TbxSubmenuItemLexer.Enabled:= en;
-  if Assigned(Status) then
-    Status.Panels[ccLex].Enabled:= en;
+  StatusItemLexer.Enabled:= en;
+  
   if not en then
   begin
-    SHint[ccLex]:= DKLangConstW('nlex');
+    StatusItemLexer.Caption:= DKLangConstW('nlex');
   end
   else
   begin
     if (CurrentFrame<>nil) and (CurrentFrame.TextSource.SyntaxAnalyzer<>nil) then
-      SHint[ccLex]:= CurrentFrame.TextSource.SyntaxAnalyzer.LexerName
+      StatusItemLexer.Caption:= CurrentFrame.TextSource.SyntaxAnalyzer.LexerName
     else
-      SHint[ccLex]:= DKLangConstW('None');
+      StatusItemLexer.Caption:= DKLangConstW('None');
   end;
 
   //Update ACP regex
@@ -7798,6 +7748,7 @@ begin
   plTree.Invalidate;
   plOut.Invalidate;
   plClip.Invalidate;
+
   Tree.Invalidate;
   TreeFind.Invalidate;
   ListOut.Invalidate;
@@ -7822,12 +7773,18 @@ procedure TfmMain.DoRepaintTBs2;
 begin
   if Assigned(fmClip) then
     with fmClip.ListClip do
-      begin width:= width+2; width:= width-2; end;
+      begin Width:= Width+2; Width:= Width-2; end;
+
   if Assigned(fmMap) then
     with fmMap.edMap do
       begin Width:= Width+2; Width:= Width-2; end;
+
   with Tree do
     begin Width:= Width+2; Width:= Width-2; end;
+
+  if CurrentEditor<>nil then
+    with CurrentEditor do
+      begin Width:= Width+2; Width:= Width-2; end;
 end;
 
 procedure TfmMain.FormResize(Sender: TObject);
@@ -7875,15 +7832,15 @@ end;
 
 procedure TfmMain.SetEncoding(Sender: TObject);
 begin
-  if Sender is TTbxItem then
-    if not (Sender as TTbxItem).Checked then
+  if Sender is TSpTbxItem then
+    if not (Sender as TSpTbxItem).Checked then
       ChangeEncoding(CurrentFrame, (Sender as TComponent).Tag);
 end;
 
 procedure TfmMain.ConvEncoding(Sender: TObject);
 begin
-  if Sender is TTbxItem then
-    if not (Sender as TTbxItem).Checked then
+  if Sender is TSpTbxItem then
+    if not (Sender as TSpTbxItem).Checked then
       ChangeEncoding(CurrentFrame, (Sender as TComponent).Tag, False{ACanReload});
 end;
 
@@ -7987,25 +7944,25 @@ begin
     begin
       case Textsource.Lines.Codepage of
       CP_ACP:
-        SHint[ccEnc]:= 'ANSI';
+        StatusItemEnc.Caption:= 'ANSI';
       CP_OEMCP:
-        SHint[ccEnc]:= 'OEM';
+        StatusItemEnc.Caption:= 'OEM';
       CP_MACCP:
-        SHint[ccEnc]:= 'Mac';
+        StatusItemEnc.Caption:= 'Mac';
       else
-        SHint[ccEnc]:= IntToStr(Textsource.Lines.Codepage);
+        StatusItemEnc.Caption:= IntToStr(Textsource.Lines.Codepage);
       end;
     end;
     tcUnicode:
-      SHint[ccEnc]:= 'UTF-16';
+      StatusItemEnc.Caption:= 'UTF-16';
     tcSwapUnicode:
-      SHint[ccEnc]:= 'UTF-16 BE';
+      StatusItemEnc.Caption:= 'UTF-16 BE';
     tcUTF8:
     begin
       if SkipSign then
-        SHint[ccEnc]:= DKLangConstW('cpUTF8no')
+        StatusItemEnc.Caption:= DKLangConstW('cpUTF8no')
       else
-        SHint[ccEnc]:= 'UTF-8';
+        StatusItemEnc.Caption:= 'UTF-8';
     end;
   end;
 end;
@@ -8470,7 +8427,7 @@ begin
   if Finder.Matches > 0 then
   begin
     S:= WideFormat(DKLangConstW('Found'), [Finder.Matches]) + ' ' + Sfiles;
-    SHint[-1]:= S;
+    SetHint(S);
     if act in [arCount, arFindAll, arReplaceAll, arReplaceAllInAll] then
       fmSR.ShowStatus(S);
   end;
@@ -8745,7 +8702,7 @@ end;
 procedure TfmMain.TBXItemClrClick(Sender: TObject);
 begin
   DeleteFile(PChar(SynStateIni));
-  MRU.Items.Clear;
+  SynMruFiles.Items.Clear;
   with TIniFile.Create(SynIni) do
   try
     EraseSection('MRU');
@@ -8768,15 +8725,13 @@ function tfmMain.GetIcons: integer;
 begin
   if tbFile.Images = ImageListIconsStd then Result:= 0
   else
-  if tbFile.Images = ImageListIconsFogue16 then Result:= 1
+  if tbFile.Images = ImageListIconsFogue16b then Result:= 1
   else
-  if tbFile.Images = ImageListIconsFogue24 then Result:= 2
+  if tbFile.Images = ImageListIconsFogue24b then Result:= 2
   else
-  if tbFile.Images = ImageListIconsTango16 then Result:= 3
+  if tbFile.Images = ImageListIconsTango16b then Result:= 3
   else
-  if tbFile.Images = ImageListIconsTango22 then Result:= 4
-  else
-  if tbFile.Images = ImageListIconsGnome then Result:= 5
+  if tbFile.Images = ImageListIconsTango22b then Result:= 4
   else
     Result:= -1;
 end;
@@ -8786,11 +8741,10 @@ var L: TCustomImageList;
 begin
   case A of
     0: L:= ImageListIconsStd;
-    1: L:= ImageListIconsFogue16;
-    2: L:= ImageListIconsFogue24;
-    3: L:= ImageListIconsTango16;
-    4: L:= ImageListIconsTango22;
-    5: L:= ImageListIconsGnome;
+    1: L:= ImageListIconsFogue16b;
+    2: L:= ImageListIconsFogue24b;
+    3: L:= ImageListIconsTango16b;
+    4: L:= ImageListIconsTango22b;
     else L:= nil;
   end;
   tbFile.Images:= L;
@@ -8922,66 +8876,11 @@ begin
   UpdateColorHint;
 end;
 
-procedure TfmMain.SetHint(n: integer; const s: WideString);
+procedure TfmMain.SetHint(const S: WideString);
 begin
-  if n<0 then n:= ccTxt;
-  if Assigned(Status) then
-    Status.Panels[n].Caption:= s;
+  StatusItemHint.Caption:= S;
   TimerHint.Enabled:= false;
   TimerHint.Enabled:= true;
-end;
-
-procedure TfmMain.StatusPanelClick(Sender: TTBXCustomStatusBar;
-  Panel: TTBXStatusPanel);
-var
-  p: TPoint;
-begin
-  if CurrentEditor=nil then Exit;
-  p:= Sender.ClientToScreen(Point(0, 0));
-  with Sender do
-    if Panel = Panels[cc0] then
-      ecGoto.Execute
-    else
-    if Panel = Panels[ccIns] then
-      CurrentEditor.ReplaceMode:= not CurrentEditor.ReplaceMode
-    else
-    if Panel = Panels[ccEnc] then
-      PopupCP.Popup(p.X + Panels[0].Size, p.Y)
-    else
-    if Panel = Panels[ccLE] then
-      PopupLE.Popup(p.X + Panels[0].Size + Panels[1].Size, p.Y)
-    else
-    if Panel = Panels[ccLex] then
-      PopupLex.Popup(p.X + Panels[0].Size + Panels[1].Size + Panels[2].Size, p.Y)
-    else
-    if Panel = Panels[ccChar] then
-    begin
-      with CurrentEditor do
-        if not ReadOnly then ExecCommand(smSelCharacter);
-    end
-    else
-    if Panel = Panels[ccRO] then
-      ecReadOnly.Execute
-    else
-    if Panel = Panels[ccWrap] then
-      ecWrap.Execute
-    else
-    if Panel = Panels[ccSelMode] then
-    begin
-      with CurrentEditor do
-        case SelectModeDefault of
-          msNone,
-          msNormal: SelectModeDefault:= msColumn;
-          msColumn: SelectModeDefault:= msLine;
-          msLine: SelectModeDefault:= msNormal;
-        end;  
-    end
-    else
-    if Panel = Panels[ccZoom] then
-      PopupZoom.Popup(p.X
-         + Panels[0].Size + Panels[1].Size + Panels[2].Size
-         + Panels[3].Size + Panels[4].Size + Panels[5].Size
-         + Panels[6].Size + Panels[7].Size, p.Y)
 end;
 
 procedure TfmMain.TBXItemWPriorClick(Sender: TObject);
@@ -9062,7 +8961,7 @@ var
   s: string;
   N: integer;
 begin
-  s:= (Sender as TTbxItem).Caption;
+  s:= (Sender as TSpTbxItem).Caption;
   N:= StrToInt(s[1]);
   CurrentEditor.ExecCommand(smGotoBookmark0 + N);
   CenterMemoPos(CurrentEditor, true{GotoMode});
@@ -9144,7 +9043,7 @@ end;
 procedure TfmMain.bbg0Click(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smSetBookmark0 +
-    StrToInt((Sender as TTbxItem).Caption));
+    StrToInt((Sender as TSpTbxItem).Caption));
 end;
 
 procedure TfmMain.TBXSubmenuItem8Popup(Sender: TTBCustomItem;
@@ -9382,12 +9281,12 @@ end;
 
 procedure TfmMain.UpdateShortcuts;
   //for main menu items
-  procedure K(item: TTbxItem; id: integer);
+  procedure K(item: TSpTbxItem; id: integer);
   begin
     item.ShortCut:= ShFor(id);
   end;
   //for popup menu items (this doesn't use Shortcut property)
-  procedure K2str(item: TTbxItem; const cmd: string);
+  procedure K2str(item: TSpTbxItem; const cmd: string);
   var
     S: Widestring;
   begin
@@ -9397,7 +9296,7 @@ procedure TfmMain.UpdateShortcuts;
       S:= S + #9 + cmd;
     item.Caption:= S;
   end;
-  procedure K2(item: TTbxItem; id: integer);
+  procedure K2(item: TSpTbxItem; id: integer);
   begin
     K2str(item, ShortcutToText(ShFor(id)));
   end;
@@ -9824,17 +9723,17 @@ end;
 procedure TfmMain.TBXSubmenuItemLexerPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var i, j: integer;
-  item: TTbxItem;
-  isub: TTbxSubmenuItem;
+  item: TSpTbxItem;
+  isub: TSpTbxSubmenuItem;
 begin
   UpdateLexList;
   with TbxSubmenuitemLexer do
   begin
     Clear;
     for i:= 0 to PopupLex.Items.Count-1 do
-      if PopupLex.Items[i] is TTbxItem then
+      if PopupLex.Items[i] is TSpTbxItem then
       begin
-        Item:= TTbxItem.Create(Self);
+        Item:= TSpTbxItem.Create(Self);
         Item.Caption:= PopupLex.Items[i].Caption;
         Item.OnClick:= PopupLex.Items[i].OnClick;
         Item.RadioItem:= PopupLex.Items[i].RadioItem;
@@ -9844,13 +9743,13 @@ begin
       end
       else
       begin
-        isub:= TTbxSubmenuItem.Create(Self);
+        isub:= TSpTbxSubmenuItem.Create(Self);
         isub.Caption:= PopupLex.Items[i].Caption;
-        isub.LinkSubitems:= (PopupLex.Items[i] as TTbxSubmenuItem).LinkSubitems;
-        for j:= 0 to (PopupLex.Items[i] as TTbxSubmenuItem).Count-1 do
-          with (PopupLex.Items[i] as TTbxSubmenuItem).Items[j] do
+        isub.LinkSubitems:= (PopupLex.Items[i] as TSpTbxSubmenuItem).LinkSubitems;
+        for j:= 0 to (PopupLex.Items[i] as TSpTbxSubmenuItem).Count-1 do
+          with (PopupLex.Items[i] as TSpTbxSubmenuItem).Items[j] do
           begin
-            Item:= TTbxItem.Create(Self);
+            Item:= TSpTbxItem.Create(Self);
             Item.Caption:= Caption;
             Item.OnClick:= OnClick;
             Item.RadioItem:= RadioItem;
@@ -9868,18 +9767,34 @@ begin
   CurrentEditor.ExecCommand(smDuplicateLine);
 end;
 
-function TfmMain.GetTheme: integer;
-var i:Integer;
+function TfmMain.GetTheme: string;
 begin
-  Result:= 0;
-  for i:= Low(cThemes) to High(cThemes) do
-    if cThemes[i] = TBXSwitcher.Theme then
-      begin Result:= i; Break end;
+  Result:= FCurrTheme;
+  {
+  if FCurrTheme<>'' then
+    Result:= FCurrTheme
+  else
+  if SkinManager.IsDefaultSkin then
+    Result:= cThemeWindows
+  else
+    Result:= SkinManager.CurrentSkinName;
+    }
 end;
 
-procedure TfmMain.SetTheme(A: integer);
+procedure TfmMain.SetTheme(const S: string);
 begin
-  TBXSwitcher.Theme:= cThemes[A];
+  FCurrTheme:= S;
+  if S=cThemeWindows then
+    SkinManager.SetToDefaultSkin
+  else
+  if Pos('*', S)=1 then
+  begin
+    SkinManager.SetToDefaultSkin;
+    SkinManager.LoadFromFile(SynSkinFilename(S))
+  end  
+  else
+    SkinManager.SetSkin(S);
+
   PageControl1.Invalidate;
   PageControl2.Invalidate;
 end;
@@ -9917,7 +9832,7 @@ begin
   UpdTools;
 end;
 
-procedure TfmMain.ToolEn(T: TTbxItem; n: integer; ForCtx: boolean = false);
+procedure TfmMain.ToolEn(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
 begin
   if CurrentFrame <> nil then
   with CurrentFrame.TextSource do
@@ -10081,8 +9996,7 @@ end;
 procedure TfmMain.TimerHintTimer(Sender: TObject);
 begin
   TimerHint.Enabled:= false;
-  if Assigned(Status) then
-    Status.Panels[ccTxt].Caption:= '';
+  StatusItemHint.Caption:= '';
   PageControl1.Hint:= '';
   PageControl2.Hint:= '';
 end;
@@ -10098,10 +10012,10 @@ begin
   UpdateStatusBar;
 
   //other
-  Status.Panels[ccMacro].Hint:= DKLangConstW('MBusyIco');
+  StatusItemBusy.Hint:= DKLangConstW('MBusyIco');
   TbxItemSplitCaption.Caption:= DKLangConstW('Split_Vw');
   if SyntaxManager.CurrentLexer = nil then
-    SHint[ccLex]:= DKLangConstW('None');
+    StatusItemLexer.Caption:= DKLangConstW('None');
 
   //Project items:
   SMsgProjNew:= DKLangConstW('Untitled');
@@ -10785,7 +10699,7 @@ begin
   SetEdModified(CurrentFrame.EditorMaster);
 end;
 
-//X button rect
+//tab [X] button rect
 procedure TabCtrl_GetXRect(H: THandle; TabIndex, BtnSize: Integer; var R: TRect);
 begin
   TabCtrl_GetItemRect(H, TabIndex, R);
@@ -10800,9 +10714,8 @@ procedure TfmMain.PageControl1DrawTab(Control: TCustomTabControl;
 var
   F: TEditorFrame;
   R, RLine: TRect;
-  s, sCap: Widestring;
+  sCap: Widestring;
   c, ColorMisc: TColor;
-  t: TTbxTheme;
   PageControl: TTntPageControl;
   AFtp: boolean;
 begin
@@ -10843,12 +10756,9 @@ begin
       //if you hover over X button of last tab, theme BG drawn little over last tab
 
     if R.Left<=R.Right then
-    begin
-      S:= TbxSwitcher.Theme;
-      t:= GetTbxTheme(S);
-      t.PaintDock(PageControl.Canvas.Handle, R, R, 0);
-      ReleaseTBXTheme(t);
-    end;
+      CurrentSkin.PaintBackground(
+        PageControl.Canvas, R,
+        skncDock, sknsNormal, true{BG}, false{Borders});
   end;
 
   //Paint tab
@@ -10991,16 +10901,15 @@ procedure TfmMain.PageControl1MouseMove(Sender: TObject; Shift: TShiftState;
   procedure ShowFN(const fn: Widestring);
   var
     bmp: TBitmap;
-    i, size: integer;
+    size: integer;
   begin
-    if not Assigned(Status) then Exit;
-    size:= Status.ClientWidth - 8;
-    for i:= 0 to ccTxt-1 do
-      Dec(size, Status.Panels[i].Size);
+    //width of last panel
+    size:= Status.ClientWidth - 8 - Status.View.Find(StatusItemHint).BoundsRect.Left;
+     
     bmp:= TBitmap.Create;
     try
       bmp.Canvas.Font.Assign(Status.Font);
-      SHint[-1]:= WideMinimizeName(fn, bmp.Canvas, size);
+      SetHint(WideMinimizeName(fn, bmp.Canvas, size));
     finally
       FreeAndNil(bmp);
     end;
@@ -11202,7 +11111,7 @@ begin
     begin
       SaveLastDirSession(FileName);
       SaveSession(FileName);
-      MRU_Sess.Add(FileName);
+      SynMruSessions.AddItem(FileName);
       UpdateTitle(CurrentFrame);
     end;
   end;
@@ -11283,7 +11192,7 @@ begin
 
       SaveLastDirSession(FileName);
       OpenSession(FileName);
-      MRU_Sess.Add(FileName);
+      SynMruSessions.AddItem(FileName);
     end;
   end;
 end;
@@ -11431,8 +11340,8 @@ procedure TfmMain.tbxWinPopup(Sender: TTBCustomItem; FromLink: Boolean);
   end;
 var
   i: integer;
-  b: TTbxItem;
-  bSep: TTbxSeparatorItem;
+  b: TSpTbxItem;
+  bSep: TSpTbxSeparatorItem;
 begin
   //clear
   with tbxWin do
@@ -11444,11 +11353,11 @@ begin
   begin
     if i = PageControl1.PageCount then
     begin
-      bSep:= TTBXSeparatorItem.Create(Self);
+      bSep:= TSpTbxSeparatorItem.Create(Self);
       bSep.Tag:= 1;
       tbxWin.Add(bSep);
     end;
-    b:= TTBXItem.Create(Self);
+    b:= TSpTbxItem.Create(Self);
     b.Caption:= FramesAll[i].Title + Sh(i);
     if i < 9 then
       b.Caption:= WideFormat('&%d   ', [i+1]) + b.Caption
@@ -11853,7 +11762,7 @@ begin
     FClose.Execute;
     if not FDeleteToRecycle(Handle, fn, true) then
       MsgError(WideFormat(DKLangConstW('mdeln'), [WideExtractFileName(fn)]));
-    MRU.Remove(fn);
+    SynMruFiles.DeleteItem(fn);
     DoRefreshPluginsFiles(fn);
   end;
 end;
@@ -12682,13 +12591,10 @@ end;
 
 procedure TfmMain.plOutVisibleChanged(Sender: TObject);
 begin
+  FixSplitters;
   ecShowOut.Checked:= plOut.Visible;
   if not plOut.Visible then //Apply when X icon pressed
-  begin
     FOutVisible:= false;
-    DoRepaintTBs;
-    DoRepaintTBs2;//test
-  end;
   SyncMapPos;
 end;
 
@@ -13453,27 +13359,30 @@ end;
 procedure TfmMain.UpdateCPMenu(M: TObject; AConvEnc: boolean = false);
   procedure Add(const S: Widestring; Tag: Integer);
   var
-    I: TTbCustomItem;
+    Item: TTbCustomItem;
+    MI: TSpTbxItem;
   begin
     if S = '-' then
-      I:= TTbxSeparatorItem.Create(Self)
+      Item:= TSpTbxSeparatorItem.Create(Self)
     else
     begin
-      I:= TTbxItem.Create(Self);
-      I.Caption:= S;
-      I.Tag:= Tag;
+      MI:= TSpTbxItem.Create(Self);
+      Item:= MI;
+      MI.Caption:= S;
+      MI.Tag:= Tag;
       if AConvEnc then
-        I.OnClick:= ConvEncoding
+        MI.OnClick:= ConvEncoding
       else
-        I.OnClick:= SetEncoding;
-      I.RadioItem:= true;
-      I.Checked:= GetCP(CurrentFrame) = Tag;
+        MI.OnClick:= SetEncoding;
+      MI.RadioItem:= true;
+      MI.Checked:= GetCP(CurrentFrame) = Tag;
     end;
-    if M is TTbxPopupMenu then
-      (M as TTbxPopupMenu).Items.Add(I)
+    
+    if M is TSpTbxPopupMenu then
+      (M as TSpTbxPopupMenu).Items.Add(Item)
     else
-    if M is TTbxSubmenuItem then
-      (M as TTbxSubmenuItem).Add(I);
+    if M is TSpTbxSubmenuItem then
+      (M as TSpTbxSubmenuItem).Add(Item);
   end;
 
   function EncOK(n: integer): boolean;
@@ -13486,46 +13395,46 @@ procedure TfmMain.UpdateCPMenu(M: TObject; AConvEnc: boolean = false);
       nil, 0) > 0;
   end;
 
-  procedure Add2(M: TTbxSubmenuItem; const S: Widestring; Tag: Integer;
+  procedure Add2(M: TSpTbxSubmenuItem; const S: Widestring; Tag: Integer;
     IsUnicode: boolean = false);
   var
-    I: TTbCustomItem;
+    MI: TSpTbxItem;
   begin
     if S = '-' then
-      I:= TTbxSeparatorItem.Create(Self)
+      M.Add(TSpTbxSeparatorItem.Create(Self))
     else
     begin
-      I:= TTbxItem.Create(Self);
-      I.Caption:= S;
-      I.Tag:= Tag;
+      MI:= TSpTbxItem.Create(Self);
+      MI.Caption:= S;
+      MI.Tag:= Tag;
       if Tag > 0 then
-        I.Hint:= WideFormat(DKLangConstW('cpN'), [Tag]);
-      I.OnSelect:= ButtonOnSelect;
+        MI.Hint:= WideFormat(DKLangConstW('cpN'), [Tag]);
+      MI.OnSelect:= ButtonOnSelect;
       if AConvEnc then
-        I.OnClick:= ConvEncoding
+        MI.OnClick:= ConvEncoding
       else
-        I.OnClick:= SetEncoding;
-      I.RadioItem:= true;
-      I.Checked:= GetCP(CurrentFrame) = Tag;
+        MI.OnClick:= SetEncoding;
+      MI.RadioItem:= true;
+      MI.Checked:= GetCP(CurrentFrame) = Tag;
       if not IsUnicode then
-        I.Enabled:= EncOK(Tag);
+        MI.Enabled:= EncOK(Tag);
+      M.Add(MI);
     end;
-    M.Add(I);
   end;
 
-  function AddSub(const s: Widestring): TTbxSubmenuItem;
+  function AddSub(const s: Widestring): TSpTbxSubmenuItem;
   begin
-    Result:= TTbxSubmenuItem.Create(Self);
+    Result:= TSpTbxSubmenuItem.Create(Self);
     Result.Caption:= EncLocal(S);
-    if M is TTbxPopupMenu then
-      (M as TTbxPopupMenu).Items.Add(Result)
+    if M is TSpTbxPopupMenu then
+      (M as TSpTbxPopupMenu).Items.Add(Result)
     else
-    if M is TTbxSubmenuItem then
-      (M as TTbxSubmenuItem).Add(Result);
+    if M is TSpTbxSubmenuItem then
+      (M as TSpTbxSubmenuItem).Add(Result);
   end;
 
   procedure AddUni;
-  var MSub: TTbxSubmenuItem;
+  var MSub: TSpTbxSubmenuItem;
   begin
     MSub:= AddSub(DKLangConstW('cpUnicode'));
     Add2(MSub, 'UTF-16', cp__Unicode, true);
@@ -13539,16 +13448,16 @@ var
   SS, SK: TStringlist;
   Ini: TMemIniFile;
   i, j: Integer;
-  MSub: TTbxSubmenuItem;
+  MSub: TSpTbxSubmenuItem;
   Main: boolean;
 begin
-  if M is TTbxPopupMenu then
-    (M as TTbxPopupMenu).Items.Clear
+  if M is TSpTbxPopupMenu then
+    (M as TSpTbxPopupMenu).Items.Clear
   else
-  if M is TTbxSubmenuItem then
-    (M as TTbxSubmenuItem).Clear;
+  if M is TSpTbxSubmenuItem then
+    (M as TSpTbxSubmenuItem).Clear;
 
-  Main:= M is TTbxPopupMenu;
+  Main:= M is TSpTbxPopupMenu;
   if not Main then
   begin
     Add('ANSI (Windows)', CP_ACP);
@@ -13632,9 +13541,9 @@ end;
 
 procedure TfmMain.TBXItemZSetClick(Sender: TObject);
 begin
-  CurrentEditor.Zoom:= (Sender as TTbxItem).Tag;
+  CurrentEditor.Zoom:= (Sender as TSpTbxItem).Tag;
   TemplateEditor.Zoom:= CurrentEditor.Zoom;
-  SHint[ccZoom]:= IntToStr(CurrentEditor.Zoom) + '%';
+  StatusItemZoom.Caption:= IntToStr(CurrentEditor.Zoom) + '%';
 end;
 
 procedure TfmMain.TBXItemZOtherClick(Sender: TObject);
@@ -13650,7 +13559,7 @@ begin
     begin
       CurrentEditor.Zoom:= n;
       TemplateEditor.Zoom:= CurrentEditor.Zoom;
-      SHint[ccZoom]:= IntToStr(CurrentEditor.Zoom) + '%';
+      StatusItemZoom.Caption:= IntToStr(CurrentEditor.Zoom) + '%';
     end;
   end;
 end;
@@ -13780,30 +13689,20 @@ end;
 
 procedure TfmMain.plClipVisibleChanged(Sender: TObject);
 begin
+  FixSplitters;
   ecShowClip.Checked:= plClip.Visible;
+  {with plClip do
+    begin Width:= Width+1; Width:= Width-1 end;} //test
 end;
 
 procedure TfmMain.ecShowClipExecute(Sender: TObject);
 begin
   with plClip do
     Visible:= not Visible;
-  with plClip do
-    begin Width:= Width+2; Width:= Width-2; end;
   if not plClip.Visible then
     FocusEditor;
-    
-  DoRepaintTBs;  
-  {
-  tbMenu.Invalidate;
-  tbFile.Invalidate;
-  tbEdit.Invalidate;
-  tbView.Invalidate;
-  tbQS.Invalidate;
-  edQs.Invalidate;
-  tbUser1.Invalidate;
-  tbUser2.Invalidate;
-  tbUser3.Invalidate;
-  }
+  DoRepaintTBs;
+  DoRepaintTBs2;
 end;
 
 procedure TfmMain.TBXItemClipClrClick(Sender: TObject);
@@ -13823,7 +13722,7 @@ end;
 
 procedure TfmMain.DoJumpToNextSearchResult(ANext: boolean);
 var
-  Node, NodeChild: TTntTreeNode;
+  Node: TTntTreeNode;
 begin
   with TreeFind do
   begin
@@ -13840,12 +13739,16 @@ begin
         begin MsgBeep; Exit end;
 
       //allow to stop only on leaf nodes
-      NodeChild:= Node.GetFirstChild;
-      if NodeChild<>nil then
-        Node:= NodeChild;
+      if Node.GetFirstChild<>nil then
+      begin
+        if ANext then
+          Node:= Node.GetNext
+        else
+          Node:= Node.GetPrev;
+      end;
       if Node=nil then
         begin MsgBeep; Exit end;
-        
+
       Selected:= Node;
     until Selected.Data<>nil;
 
@@ -13960,7 +13863,7 @@ begin
     begin
       SaveLastDirSession(FileName);
       OpenSession(FileName, True);
-      MRU_Sess.Add(FileName);
+      SynMruSessions.AddItem(FileName);
     end;
   end;
 end;
@@ -14019,7 +13922,7 @@ begin
 
   if (Result<>'') and not IsDirExist(Result) then
   begin
-    SHint[-1]:= DKLangConstW('MNFoundFold')+': '+Result;
+    SetHint(DKLangConstW('MNFoundFold')+': '+Result);
     MsgBeep;
     Result:= 'C:\';
   end;
@@ -15272,7 +15175,7 @@ begin
     end;
   finally
     FreeAndNil(LL);
-    SHint[-1]:= '';
+    SetHint('');
   end;
 end;
 
@@ -16822,7 +16725,7 @@ begin
 
     for i:= 0 to L.Count-1 do
     begin
-      MI:= TTbxItem.Create(Self);
+      MI:= TSpTbxItem.Create(Self);
       MI.Caption:= L[i];
       MI.Tag:= 1;
       MI.OnClick:= TidyClick;
@@ -17037,7 +16940,7 @@ end;
 
 procedure TfmMain.TBXItemSessClrClick(Sender: TObject);
 begin
-  MRU_Sess.Items.Clear;
+  SynMruSessions.Items.Clear;
   with TIniFile.Create(SynIni) do
   try
     EraseSection('MRU_Sess');
@@ -17076,7 +16979,7 @@ begin
     else
       fn:= FSessionFN;
     SaveSession(fn);
-    MRU_Sess.Add(fn);
+    SynMruSessions.AddItem(fn);
     Exit
   end;
 
@@ -17084,7 +16987,7 @@ begin
   if opHistSessionSave then
   begin
     SaveSession(FSessionFN);
-    MRU_Sess.Add(FSessionFN);
+    SynMruSessions.AddItem(FSessionFN);
     Exit
   end;
 
@@ -17099,7 +17002,7 @@ begin
     mrYes:
       begin
         SaveSession(FSessionFN);
-        MRU_Sess.Add(FSessionFN);
+        SynMruSessions.AddItem(FSessionFN);
       end;
     mrCancel:
       Result:= false;
@@ -17153,8 +17056,8 @@ procedure TfmMain.TBXSubmenuItemFNewPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
   i:Integer;
-  mi: TTbxItem;
-  miSub: TTbxSubmenuItem;
+  mi: TSpTbxItem;
+  miSub: TSpTbxSubmenuItem;
   Names: TStringList;
   ch: char;
   NeedSub: boolean;
@@ -17190,7 +17093,7 @@ begin
           begin NeedSub:= true; Break end;
       if not NeedSub then Continue;
       //add submenu
-      miSub:= TTbxSubmenuItem.Create(Self);
+      miSub:= TSpTbxSubmenuItem.Create(Self);
       miSub.Caption:= ch;
       miSub.Tag:= 1;
       TbxSubmenuItemFNew.Add(miSub);
@@ -17198,7 +17101,7 @@ begin
       for i:= 0 to Names.Count-1 do
         if UpCase(Names[i][1]) = ch then
         begin
-          mi:= TTbxItem.Create(Self);
+          mi:= TSpTbxItem.Create(Self);
           mi.OnClick:= NewDocClick;
           mi.Caption:= Names[i];
           mi.Tag:= Integer(Names.Objects[i]) + 1;
@@ -17207,8 +17110,8 @@ begin
     end;
 
   //add "Browse folder"
-  TbxSubmenuItemFNew.Add(TTbxSeparatorItem.Create(Self));
-  mi:= TTbxItem.Create(Self);
+  TbxSubmenuItemFNew.Add(TSpTbxSeparatorItem.Create(Self));
+  mi:= TSpTbxItem.Create(Self);
   mi.OnClick:= NewDocFolderClick;
   mi.Caption:= DKLangConstW('OpNew');
   mi.Tag:= 1;
@@ -17327,7 +17230,7 @@ begin
   SDeleteFromW(s, #13);
   SDeleteFromW(s, #10);
 
-  SHint[ccTxt]:= '';
+  SetHint('');
   Finder.FindText:= s;
   Finder.Flags:= Finder.Flags-[ftRegularExpr];
   if Next then
@@ -17463,42 +17366,42 @@ procedure TfmMain.SpellPopupCreateMenu(Sender: TObject;
 var
   MenuItem: TTbCustomItem;
 begin
-	PopupMenu:= TTbxPopupMenu.Create(Owner);
-	TTbxPopupMenu(PopupMenu).AutoHotkeys:= maManual;
+	PopupMenu:= TSpTbxPopupMenu.Create(Owner);
+	TSpTbxPopupMenu(PopupMenu).AutoHotkeys:= maManual;
 
   //info item
-	MenuItem:= TTbxItem.Create(TComponent(PopupMenu));
+	MenuItem:= TSpTbxItem.Create(TComponent(PopupMenu));
 	MenuItem.Caption:= DKLangConstW('zMSpell');
   MenuItem.Enabled:= false;
-	TTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
+	TSpTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
   //cut
-	MenuItem:= TTbxItem.Create(TComponent(PopupMenu));
+	MenuItem:= TSpTbxItem.Create(TComponent(PopupMenu));
 	MenuItem.Caption:= TbxItemCtxCut.Caption;
   MenuItem.Enabled:= CurrentEditor.HaveSelection;
   MenuItem.OnClick:= SpellCutClick;
-	TTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
+	TSpTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
   //copy
-	MenuItem:= TTbxItem.Create(TComponent(PopupMenu));
+	MenuItem:= TSpTbxItem.Create(TComponent(PopupMenu));
 	MenuItem.Caption:= TbxItemCtxCopy.Caption;
   MenuItem.Enabled:= CurrentEditor.HaveSelection;
   MenuItem.OnClick:= SpellCopyClick;
-	TTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
+	TSpTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
   //paste
-	MenuItem:= TTbxItem.Create(TComponent(PopupMenu));
+	MenuItem:= TSpTbxItem.Create(TComponent(PopupMenu));
 	MenuItem.Caption:= TbxItemCtxPaste.Caption;
   MenuItem.OnClick:= SpellPasteClick;
-	TTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
+	TSpTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
   //sep
-  MenuItem:= TTbxSeparatorItem.Create(TComponent(PopupMenu));
+  MenuItem:= TSpTbxSeparatorItem.Create(TComponent(PopupMenu));
   MenuItem.Caption:= '-';
-  TTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
+  TSpTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
 end;
 
 //same Menu demo
 procedure TfmMain.SpellPopupDoMenu (Sender, Menu: TObject; XPos,
      YPos: Integer; var PopupAction: Integer; var PopupWord: string);
 begin
-  TTbxPopupMenu(Menu).Popup(XPos, YPos);
+  TSpTbxPopupMenu(Menu).Popup(XPos, YPos);
   Application.ProcessMessages;
 
   PopupWord:= FSpellMenuCaption;
@@ -17508,7 +17411,7 @@ end;
 
 procedure TfmMain.SpellItemClick (Sender: TObject);
 begin
-  FSpellMenuCaption:= TTbxItem (Sender).Caption;
+  FSpellMenuCaption:= TSpTbxItem (Sender).Caption;
   FSpellMenuTag:= TComponent (Sender).Tag;
 end;
 
@@ -17536,8 +17439,8 @@ begin
      FSpellMenuTag:= 0; // New Item
      if HasChildren then
      begin
-    		vMenuItem:= TTbxItem.Create (TComponent (Menu));
-    		TTbxPopupMenu (Menu).Items.Add (vMenuItem);
+    		vMenuItem:= TSpTbxItem.Create (TComponent (Menu));
+    		TSpTbxPopupMenu (Menu).Items.Add (vMenuItem);
     		vMenuItem.Caption:= Caption;
     		vMenuItem.Enabled:= Enabled;
     		vMenuItem.Tag:= Tag;
@@ -17547,16 +17450,16 @@ begin
      begin
     		if Assigned (SubMenu) then
           begin
-               vMenuItem:= TTbxItem.Create (TComponent (SubMenu));
-               TTbxItem (SubMenu).Add (vMenuItem);
+               vMenuItem:= TSpTbxItem.Create (TComponent (SubMenu));
+               TSpTbxItem (SubMenu).Add (vMenuItem);
           end
           else
           begin
                if Caption='-' then
-                 vMenuItem:= TTbxSeparatorItem.Create(TComponent (Menu))
+                 vMenuItem:= TSpTbxSeparatorItem.Create(TComponent (Menu))
                else
-                 vMenuItem:= TTbxItem.Create (TComponent (Menu));
-               TTbxPopupMenu (Menu).Items.Add (vMenuItem);
+                 vMenuItem:= TSpTbxItem.Create (TComponent (Menu));
+               TSpTbxPopupMenu (Menu).Items.Add (vMenuItem);
           end;
 
           vMenuItem.Caption:= Caption;
@@ -17757,7 +17660,7 @@ begin
   else
     s:= '';
   s:= WideFormat(DKLangConstW('MNFound2'), [s]);
-  SHint[ccTxt]:= s;
+  SetHint(s);
   if opSrShowMsg then
     MsgWarn(s)
   else
@@ -18344,7 +18247,7 @@ procedure TfmMain.DoAutoSave;
       F.FileName:= fn;
       SaveFrame(F, false);
       UpdateTitle(F);
-      MRU.Add(fn);
+      SynMruFiles.AddItem(fn);
     end;
   end;
 var
@@ -19049,17 +18952,17 @@ end;
 
 procedure TfmMain.MsgDelLines(N: integer);
 begin
-  SHint[-1]:= WideFormat(DKLangConstW('zDelLn'), [N]);
+  SetHint(WideFormat(DKLangConstW('zDelLn'), [N]));
 end;
 
 procedure TfmMain.MsgDoneLines(N: integer);
 begin
-  SHint[-1]:= WideFormat(DKLangConstW('zDoneLn'), [N]);
+  SetHint(WideFormat(DKLangConstW('zDoneLn'), [N]));
 end;
 
 procedure TfmMain.MsgTabbing(const s: Widestring);
 begin
-  SHint[-1]:= '[SmartTagTabbing] ' + s;
+  SetHint('[SmartTagTabbing] ' + s);
 end;
 
 {
@@ -19584,12 +19487,12 @@ end;
 
 procedure TfmMain.MsgColorBad;
 begin
-  SHint[-1]:= DKLangConstW('MColorBad')+' "'+s+'"';
+  SetHint(DKLangConstW('MColorBad')+' "'+s+'"');
 end;
 
 procedure TfmMain.MsgColorOK;
 begin
-  SHint[-1]:= WideFormat(DKLangConstW('MColorOk'), ['#'+s]);
+  SetHint(WideFormat(DKLangConstW('MColorOk'), ['#'+s]));
 end;
 
 
@@ -19695,7 +19598,7 @@ end;
 procedure TfmMain.UpdateColorHint(AClearHint: boolean = true);
 begin
   if AClearHint then
-    SHint[-1]:= '';
+    SetHint('');
 end;
 
 procedure TfmMain.ecInsertColorExecute(Sender: TObject);
@@ -19769,7 +19672,7 @@ const
 
 procedure TfmMain.DoAddRecentColor(N: Integer);
 var
-  Item: TTbxItem;
+  Item: TSpTbxItem;
 begin
   DoInitRecentColorsMenu;
   DoAddColorToImageList(ImageListColorRecent, N);
@@ -19779,7 +19682,7 @@ begin
   DoDeleteRecentColor(N);
 
   //add new menuitem
-  Item:= TTbxItem.Create(Self);
+  Item:= TSpTbxItem.Create(Self);
   Item.Caption:= Color2str(N);
   Item.Tag:= N;
   Item.OnClick:= RecentColorClick;
@@ -20047,6 +19950,7 @@ begin
     end;
   end;
 
+  FCurrSelState:= state;
   Result:= opStatusText[state];
 
   FillChar(NTime, SizeOf(NTime), 0);
@@ -20087,9 +19991,6 @@ begin
     SReplaceAllW(Result, '{FileDate2}', '?');
     SReplaceAllW(Result, '{FileDateOp}', '?');
   end;
-
-  //update statusbar hint  
-  Status.Panels[cc0].Hint:= SStatusHint(state);
 end;
 
 function TfmMain.SStatusHint(state: TSelState): Widestring;
@@ -20161,7 +20062,7 @@ begin
   n:= Finder.Matches;
   if n>0 then
     //if (n>1) or AllowOne then
-      SHint[-1]:= WideFormat(DKLangConstW('Found'), [n]);
+      SetHint(WideFormat(DKLangConstW('Found'), [n]));
 end;
 
 procedure TfmMain.UpdateOutFromList(List: TWideStringList);
@@ -20270,7 +20171,7 @@ begin
         if STag='' then Exit;
 
         if not IsStringRegex(STag, cOpenTagRegex) then
-          begin SHint[-1]:= 'Auto-closing failed for tag: '+STag; Exit end;
+          begin SetHint('Auto-closing failed for tag: '+STag); Exit end;
 
         //get closing tag
         i:= 2;
@@ -20444,7 +20345,7 @@ begin
     with FramesAll[i] do
       if FileName<>'' then
         if not NotInRecents then
-          MRU.Add(FileName);
+          SynMruFiles.AddItem(FileName);
 end;
 
 procedure TfmMain.DoRangeJump(Ed: TSyntaxMemo);
@@ -20643,7 +20544,7 @@ begin
     end;
 
     if L.Count=0 then
-      begin SHint[-1]:= DKlangConstW('zMNoBookmk'); MsgBeep; Exit end;
+      begin SetHint(DKlangConstW('zMNoBookmk')); MsgBeep; Exit end;
 
     with TfmGotoBkmk.Create(nil) do
     try
@@ -20839,7 +20740,7 @@ begin
       ShowMap:= opMicroMap;
       MapColor:= opColorMap;
       //apply splitter color
-      Splitter2.Invalidate;
+      SplitterEds.Invalidate;
       //apply tab caption options
       DoTitleChanged;
     end;
@@ -20883,38 +20784,42 @@ end;
 
 procedure TfmMain.DoInitRecentColorsMenu;
 var
-  Item: TTbxItem;
-  ItemSep: TTbxSeparatorItem;
+  Item: TSpTbxItem;
+  ItemSep: TSpTbxSeparatorItem;
 begin
   //add menu items and separator
   with TbxSubmenuItemRecentColors do
     if Count=0 then
     begin
-      Item:= TTbxItem.Create(Self);
-      Item.Caption:= 'Select color...'; //localized in OnPopup
+      Item:= TSpTbxItem.Create(Self);
+      Item.Caption:= 'Select color...';
       Item.Tag:= -1;
       Item.Action:= ecInsertColor;
       Add(Item);
+      FMenuItem_Colors_Select:= Item;
 
-      Item:= TTbxItem.Create(Self);
-      Item.Caption:= 'Clear'; //localized in OnPopup
+      Item:= TSpTbxItem.Create(Self);
+      Item.Caption:= 'Clear list';
       Item.Tag:= -1;
       Item.OnClick:= RecentColorClick;
       Add(Item);
+      FMenuItem_Colors_Clear:= Item;
 
-      Item:= TTbxItem.Create(Self);
-      Item.Caption:= 'Open...'; //localized in OnPopup
+      Item:= TSpTbxItem.Create(Self);
+      Item.Caption:= 'Open...';
       Item.Tag:= -1;
       Item.OnClick:= RecentColorOpen;
       Add(Item);
+      FMenuItem_Colors_Open:= Item;
 
-      Item:= TTbxItem.Create(Self);
-      Item.Caption:= 'Save...'; //localized in OnPopup
+      Item:= TSpTbxItem.Create(Self);
+      Item.Caption:= 'Save as...';
       Item.Tag:= -1;
       Item.OnClick:= RecentColorSave;
       Add(Item);
+      FMenuItem_Colors_Save:= Item;
 
-      ItemSep:= TTbxSeparatorItem.Create(Self);
+      ItemSep:= TSpTbxSeparatorItem.Create(Self);
       Add(ItemSep);
     end;
 end;
@@ -20925,18 +20830,18 @@ var
   en: boolean;
 begin
   DoInitRecentColorsMenu;
-  with TbxSubmenuItemRecentColors do
-    if Count>0 then
+  if TbxSubmenuItemRecentColors.Count>0 then
+    if FMenuItem_Colors_Clear<>nil then
     begin
-      Items[0].Caption:= TBXItemEColor.Caption;
-      Items[1].Caption:= TBXItemFClr.Caption;
-      Items[2].Caption:= TBXItemFOpen.Caption;
-      Items[3].Caption:= TBXItemFSaveAs.Caption;
+      FMenuItem_Colors_Clear.Caption:= TBXItemFClr.Caption;
+      FMenuItem_Colors_Save.Caption:= TBXItemFSaveAs.Caption;
+      FMenuItem_Colors_Open.Caption:= TBXItemFOpen.Caption;
+      FMenuItem_Colors_Select.Caption:= TBXItemEColor.Caption;
 
       en:= ImageListColorRecent.Count>1;
-      Items[0].Enabled:= not CurrentEditor.ReadOnly;
-      Items[1].Enabled:= en;
-      Items[3].Enabled:= en;
+      FMenuItem_Colors_Select.Enabled:= not CurrentEditor.ReadOnly;
+      FMenuItem_Colors_Save.Enabled:= en;
+      FMenuItem_Colors_Clear.Enabled:= en;
     end;
 end;
 
@@ -21337,7 +21242,7 @@ procedure TfmMain.MsgCloseHint(panelType: TPanelType);
 const
   Cmd: array[TPanelType] of integer = (sm_OShowTree, sm_OShowClip, sm_OShowOut);
 begin
-  SHint[-1]:= DKLangConstW('zMCloseHint') + ' ' + ShortcutToText(ShFor(Cmd[panelType]));
+  SetHint(DKLangConstW('zMCloseHint') + ' ' + ShortcutToText(ShFor(Cmd[panelType])));
 end;
 
 procedure TfmMain.plTreeContextPopup(Sender: TObject; MousePos: TPoint;
@@ -21461,16 +21366,6 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXColorsGetColorInfo(Sender: TTBXCustomColorSet; Col,
-  Row: Integer; var Color: TColor; var Name: String);
-var
-  n: Integer;
-begin
-  n:= Col + Row*TbxColors.ColCount;
-  Color:= opTabColors[n];
-  Name:= Color2Str(Color);
-end;
-
 procedure TfmMain.ClipsInsPress;
 begin
   TBXItemClipsAddText.Click;
@@ -21584,7 +21479,7 @@ begin
   end
   else
   begin
-    MRU.Remove(fn);
+    SynMruFiles.DeleteItem(fn);
     OpnFile(fn_new);
     DoRefreshPluginsFiles(fn_new);
   end;
@@ -21935,7 +21830,7 @@ end;
 procedure TfmMain.LoadPluginsInfo;
 var
   i: Integer;
-  Item: TTbxItem;
+  Item: TSpTbxItem;
 begin
   //disable plugins in WLX
   if not SynExe then Exit;
@@ -21945,7 +21840,7 @@ begin
     with FPlugins[i] do
       if SCaption<>'' then
       begin
-        Item:= TTbxItem.Create(Self);
+        Item:= TSpTbxItem.Create(Self);
         Item.Caption:= SCaption;
         Item.Tag:= i;
         Item.OnClick:= PluginPanelItemClick;
@@ -22047,13 +21942,17 @@ end;
 procedure TfmMain.DoResizePlugins;
 var
   i: Integer;
+  X, Y, XSize, YSize: Integer;
 begin
+  X:= 0;
+  Y:= plTree.CaptionPanelSize.Y;
+  XSize:= plTree.ClientWidth;
+  YSize:= plTree.ClientHeight - Y - tbPlLeft.Height;
+
   for i:= Low(FPlugins) to High(FPlugins) do
     with FPlugins[i] do
       if FWindow<>0 then
-        SetWindowPos(FWindow, 0, 0, 0,
-          plTree.ClientWidth,
-          plTree.ClientHeight-tbPlLeft.Height, 0);
+        SetWindowPos(FWindow, 0, X, Y, XSize, YSize, 0);
 end;
 
 procedure TfmMain.DoClosePlugins;
@@ -22464,7 +22363,7 @@ end;
 
 function TfmMain.PluginAction_ShowHint(const AMsg: Widestring): Integer;
 begin
-  SHint[-1]:= AMsg;
+  SetHint(AMsg);
   Result:= cSynOK;
 end;
 
@@ -23113,34 +23012,34 @@ begin
     begin
       Item:= FMenuItems[i].Item;
 
-      if Item is TTbxSubmenuItem then
+      if Item is TSpTbxSubmenuItem then
       begin
         if NIndex<0 then
-          (Item as TTbxSubmenuItem).Visible:= false
+          (Item as TSpTbxSubmenuItem).Visible:= false
         else
-        if NIndex<(Item as TTbxSubmenuItem).Count then
-          (Item as TTbxSubmenuItem).Items[NIndex].Visible:= false
-        else
-          MsgError('[SynHide.ini] Bad index: '+Str);
-      end
-      else
-      if Item is TTbxItem then
-      begin
-        (Item as TTbxItem).Visible:= false;
-      end
-      else
-      if Item is TTBXPopupMenu then
-      begin
-        if (NIndex>=0) and (NIndex<(Item as TTbxPopupMenu).Items.Count) then
-          (Item as TTbxPopupMenu).Items[NIndex].Visible:= false
+        if NIndex<(Item as TSpTbxSubmenuItem).Count then
+          (Item as TSpTbxSubmenuItem).Items[NIndex].Visible:= false
         else
           MsgError('[SynHide.ini] Bad index: '+Str);
       end
       else
-      if Item is TTBXToolbar then
+      if Item is TSpTbxItem then
       begin
-        if (NIndex>=0) and (NIndex<(Item as TTbxToolbar).Items.Count) then
-          (Item as TTbxToolbar).Items[NIndex].Visible:= false
+        (Item as TSpTbxItem).Visible:= false;
+      end
+      else
+      if Item is TSpTbxPopupMenu then
+      begin
+        if (NIndex>=0) and (NIndex<(Item as TSpTbxPopupMenu).Items.Count) then
+          (Item as TSpTbxPopupMenu).Items[NIndex].Visible:= false
+        else
+          MsgError('[SynHide.ini] Bad index: '+Str);
+      end
+      else
+      if Item is TSpTbxToolbar then
+      begin
+        if (NIndex>=0) and (NIndex<(Item as TSpTbxToolbar).Items.Count) then
+          (Item as TSpTbxToolbar).Items[NIndex].Visible:= false
         else
           MsgError('[SynHide.ini] Bad index: '+Str);
       end
@@ -23188,11 +23087,11 @@ begin
     with FPluginsAcp[i] do
       if IsLexerListed(CurrentLexer, SLexers) then
       begin
-        SHint[-1]:= DKLangConstW('zMTryAcp')+' '+ExtractFileName(SFileName);
+        SetHint(DKLangConstW('zMTryAcp')+' '+ExtractFileName(SFileName));
         Result:= DoLoadPlugin_GetString(
           SFilename,
           AAction);
-        SHint[-1]:= '';
+        SetHint('');
         if Result<>'' then Exit;
       end;
 end;
@@ -23318,7 +23217,7 @@ begin
 
     if (SLexers<>'') and not IsLexerListed(CurrentLexer, SLexers) then
     begin
-      SHint[-1]:= WideFormat(DKLangConstW('zMNoneLexer'), [SLexers]);
+      SetHint(WideFormat(DKLangConstW('zMNoneLexer'), [SLexers]));
       MsgBeep;
       Exit;
     end;
@@ -23336,8 +23235,8 @@ end;
 
 procedure TfmMain.DoAddPluginMenuItem(const SKey, SShortcut: Widestring; NIndex: Integer);
 var
-  ItemSub: TTbxSubmenuItem;
-  Item: TTbxItem;
+  ItemSub: TSpTbxSubmenuItem;
+  Item: TSpTbxItem;
   S, CapMenu, CapItem: Widestring;
   N, i: Integer;
 begin
@@ -23356,14 +23255,14 @@ begin
 
     if N<0 then
     begin
-      ItemSub:= TTbxSubmenuItem.Create(Self);
+      ItemSub:= TSpTbxSubmenuItem.Create(Self);
       ItemSub.Caption:= CapMenu;
       Add(ItemSub);
     end
     else
-      ItemSub:= (Items[N] as TTbxSubmenuItem);
+      ItemSub:= (Items[N] as TSpTbxSubmenuItem);
 
-    Item:= TTbxItem.Create(Self);
+    Item:= TSpTbxItem.Create(Self);
     Item.Caption:= CapItem;
     Item.Tag:= NIndex;
     Item.ShortCut:= TextToShortcut(SShortcut);
@@ -24419,14 +24318,13 @@ end;
 
 procedure TfmMain.UpdateBusyIco;
 begin
-  if Assigned(Status) then
-    if ecMacroRecorder1.Recording then
-      Status.Panels[ccMacro].ImageIndex:= 7
-    else
-    if FSpellChecking then
-      Status.Panels[ccMacro].ImageIndex:= 11
-    else
-      Status.Panels[ccMacro].ImageIndex:= 6;
+  if ecMacroRecorder1.Recording then
+    StatusItemBusy.ImageIndex:= 7
+  else
+  if FSpellChecking then
+    StatusItemBusy.ImageIndex:= 11
+  else
+    StatusItemBusy.ImageIndex:= 6;
 end;
 
 procedure TfmMain.UpdateSaveIco;
@@ -25249,7 +25147,7 @@ begin
   if Assigned(Ed) then
     An:= Ed.SyntObj;
   if An=nil then
-    begin SHint[-1]:= 'Extend selection: no lexer active'; MsgBeep; Exit end;
+    begin SetHint('Extend selection: no lexer active'); MsgBeep; Exit end;
 
   //we have two variants of code: for usual code (Pascal/C/PHP/etc) and for HTML,
   //HTML case is special, need precise jumps considering "<" and ">"
@@ -25267,11 +25165,11 @@ begin
 
     R:= An.NearestRangeAtPos(Ed.CaretStrPos);
     if (R=nil) or not R.IsClosed then
-      begin SHint[-1]:= 'Extend selection: no range at caret'; MsgBeep; DoRestoreSel(Ed, SelSave); Exit end;
+      begin SetHint('Extend selection: no range at caret'); MsgBeep; DoRestoreSel(Ed, SelSave); Exit end;
 
     EndPos:= R.EndIdx;
     if not ((EndPos>=0) and (EndPos<An.TagCount)) then
-      begin SHint[-1]:= 'Extend selection: no closed range'; MsgBeep; Exit end;
+      begin SetHint('Extend selection: no closed range'); MsgBeep; Exit end;
 
     EndPos:= An.Tags[EndPos].EndPos;
     Ed.SetSelection(R.StartPos, EndPos-R.StartPos);
@@ -25431,7 +25329,7 @@ begin
   Ed:= CurrentEditor;
   An:= Ed.SyntObj;
   if An=nil then
-    begin SHint[-1]:= 'Fold level: no lexer active'; MsgBeep; Exit end;
+    begin SetHint('Fold level: no lexer active'); MsgBeep; Exit end;
 
   Ed.BeginUpdate;
   try
@@ -25529,27 +25427,38 @@ end;
 }
 
 procedure TfmMain.LoadToolbarProp(
-  Toolbar: TTbxToolbar;
+  Toolbar: TSpTbxToolbar;
   Ini: TCustomIniFile;
   const Id: string);
 var
-  DockStr: string;
+  ADockStr: string;
+  ADock: TTBDock;
 begin
   Toolbar.Visible:= Ini.ReadBool('Menu', 'tb'+Id+'Vis', Toolbar.Visible);
-  
-  if Toolbar.CurrentDock<>nil then
-    DockStr:= Toolbar.CurrentDock.Name
-  else
-    DockStr:= '';
-  DockStr:= Ini.ReadString('Menu', 'tb'+Id, DockStr);
-  Toolbar.CurrentDock:= Self.FindComponent(DockStr) as TTBDock;
 
-  Toolbar.DockPos:= Ini.ReadInteger('Menu', 'tb'+Id+'Pos', Toolbar.DockPos);
-  Toolbar.DockRow:= Ini.ReadInteger('Menu', 'tb'+Id+'Row', Toolbar.DockRow);
+  if Toolbar.CurrentDock<>nil then
+    ADockStr:= Toolbar.CurrentDock.Name
+  else
+    ADockStr:= '';
+  ADockStr:= Ini.ReadString('Menu', 'tb'+Id, ADockStr);
+
+  try
+    ADock:= Self.FindComponent(ADockStr) as TTBDock;
+    //work for incorrect ini setting (cannot place toolbar on MultiDock)
+    if ADock=TbxDockLeft then ADock:= TbxDockLeft1 else
+     if ADock=TbxDockRight then ADock:= TbxDockRight1 else
+      if ADock=TbxDockBottom then ADock:= TbxDockBottom1;
+
+    Toolbar.CurrentDock:= ADock;
+    Toolbar.DockPos:= Ini.ReadInteger('Menu', 'tb'+Id+'Pos', Toolbar.DockPos);
+    Toolbar.DockRow:= Ini.ReadInteger('Menu', 'tb'+Id+'Row', Toolbar.DockRow);
+  except
+    MsgWarn(WideFormat('Cannot dock toolbar "%s" on "%s"', [Id, ADockStr]));
+  end;
 end;
 
 procedure TfmMain.SaveToolbarProp(
-  Toolbar: TTbxToolbar;
+  Toolbar: TSpTbxToolbar;
   Ini: TCustomIniFile;
   const Id: string);
 begin
@@ -25561,7 +25470,7 @@ begin
 end;
 
 procedure TfmMain.SavePanelProp(
-  Panel: TTbxDockablePanel;
+  Panel: TSpTbxDockablePanel;
   Ini: TCustomIniFile;
   const Id: string);
 begin
@@ -25570,25 +25479,27 @@ begin
     Ini.WriteBool('pl'+Id, 'Vis', Visible);
     if CurrentDock<>nil then
       Ini.WriteString('pl'+Id, 'Dock', CurrentDock.Name);
-    Ini.WriteInteger('pl'+Id, 'DW', DockedWidth);
-    Ini.WriteInteger('pl'+Id, 'DH', DockedHeight);
+
+    Ini.WriteInteger('pl'+Id, 'DW', Width);
+    Ini.WriteInteger('pl'+Id, 'DH', Height);
     Ini.WriteInteger('pl'+Id, 'DPos', DockPos);
     Ini.WriteInteger('pl'+Id, 'DRow', DockRow);
     Ini.WriteBool('pl'+Id, 'Fl', Floating);
-    Ini.WriteInteger('pl'+Id, 'FlW', FloatingWidth);
-    Ini.WriteInteger('pl'+Id, 'FlH', FloatingHeight);
+    Ini.WriteInteger('pl'+Id, 'FlW', FloatingClientWidth);
+    Ini.WriteInteger('pl'+Id, 'FlH', FloatingClientHeight);
     Ini.WriteInteger('pl'+Id, 'FlX', FloatingPosition.X);
     Ini.WriteInteger('pl'+Id, 'FlY', FloatingPosition.Y);
   end;
 end;
 
 procedure TfmMain.LoadPanelProp(
-  Panel: TTbxDockablePanel;
+  Panel: TSpTbxDockablePanel;
   Ini: TCustomIniFile;
   const Id: string);
 var
   p: TPoint;
-  DockStr: string;
+  ADockStr: string;
+  ADock: TTBDock;
 begin
   with Panel do
   begin
@@ -25596,22 +25507,29 @@ begin
     begin
       Visible:= Ini.ReadBool('pl'+Id, 'Vis', Visible);
       Panel.OnVisibleChanged(Self);
-    end;  
+    end;
 
     if CurrentDock<>nil then
-      DockStr:= CurrentDock.Name
+      ADockStr:= CurrentDock.Name
     else
-      DockStr:= '';
-    DockStr:= Ini.ReadString('pl'+Id, 'Dock', DockStr);
-    CurrentDock:= Self.FindComponent(DockStr) as TTBDock;
+      ADockStr:= '';
+    ADockStr:= Ini.ReadString('pl'+Id, 'Dock', ADockStr);
+
+    try
+      ADock:= Self.FindComponent(ADockStr) as TTBDock;
+      CurrentDock:= ADock;
+    except
+      MsgWarn(WideFormat('Cannot dock panel "%s" on "%s"', [Id, ADockStr]));
+    end;
 
     DockPos:= Ini.ReadInteger('pl'+Id, 'DPos', DockPos);
     DockRow:= Ini.ReadInteger('pl'+Id, 'DRow', DockRow);
-    DockedWidth:= Ini.ReadInteger('pl'+Id, 'DW', DockedWidth);
-    DockedHeight:= Ini.ReadInteger('pl'+Id, 'DH', DockedHeight);
+
+    Width:= Ini.ReadInteger('pl'+Id, 'DW', Width);
+    Height:= Ini.ReadInteger('pl'+Id, 'DH', Height);
     Floating:= Ini.ReadBool('pl'+Id, 'Fl', false);
-    FloatingWidth:= Ini.ReadInteger('pl'+Id, 'FlW', FloatingWidth);
-    FloatingHeight:= Ini.ReadInteger('pl'+Id, 'FlH', FloatingHeight);
+    FloatingClientWidth:= Ini.ReadInteger('pl'+Id, 'FlW', FloatingClientWidth);
+    FloatingClientHeight:= Ini.ReadInteger('pl'+Id, 'FlH', FloatingClientHeight);
     p.X:= Ini.ReadInteger('pl'+Id, 'FlX', 0);
     p.Y:= Ini.ReadInteger('pl'+Id, 'FlY', 0);
     FloatingPosition:= p;
@@ -25715,18 +25633,18 @@ var
   i: Integer;
   SCmd, SHint, SIcoFN, SIni, S: Widestring;
   IcoLoaded, IsSubmenu, IsEmpty, IsSep: boolean;
-  ImgList: TTbxImageList;
+  ImgList: TPngImageList;
 begin
-  if Toolbar is TTbxToolbar then
+  if Toolbar is TSpTbxToolbar then
   begin
-    (Toolbar as TTbxToolbar).Items.Clear;
-    ImgList:= (Toolbar as TTbxToolbar).Images as TTbxImageList;
+    (Toolbar as TSpTbxToolbar).Items.Clear;
+    ImgList:= (Toolbar as TSpTbxToolbar).Images as TPngImageList;
   end
   else
-  if Toolbar is TTbxSubmenuItem then
+  if Toolbar is TSpTbxSubmenuItem then
   begin
-    (Toolbar as TTbxSubmenuItem).Clear;
-    ImgList:= (Toolbar as TTbxSubmenuItem).Images as TTbxImageList;
+    (Toolbar as TSpTbxSubmenuItem).Clear;
+    ImgList:= (Toolbar as TSpTbxSubmenuItem).Images as TPngImageList;
   end
   else
     raise Exception.Create('Unknown toolbar class');
@@ -25735,7 +25653,7 @@ begin
   with TIniFile.Create(SIni) do
   try
     //Toolbar.Caption:= UTF8Decode(ReadString(IntToStr(NIndex), 'cap', ''));
-    if Toolbar is TTbxToolbar then
+    if Toolbar is TSpTbxToolbar then
     begin
       ImgList.Width:= ReadInteger(Id, 'ix', 32);
       ImgList.Height:= ReadInteger(Id, 'iy', 32);
@@ -25756,13 +25674,13 @@ begin
       if IsSep then
       //create separator
       begin
-        Item:= TTBXSeparatorItem.Create(Self);
+        Item:= TSpTbxSeparatorItem.Create(Self);
       end
       else
       //create submenu
       if IsSubmenu then
       begin
-        Item:= TTbxSubmenuItem.Create(Self);
+        Item:= TSpTbxSubmenuItem.Create(Self);
         if SCmd='m:{recent}' then
         begin
           Item.LinkSubitems:= TBXSubmenuItemFRecents;
@@ -25820,18 +25738,18 @@ begin
         Item.Images:= ImgList; //inherit ImageList
         Item.Options:= [tboDropdownArrow];
         Item.OnSelect:= ButtonOnSelect;
-        IcoLoaded:= LoadPngIcon(ImgList, SIcoFN);
+        IcoLoaded:= LoadPngIconEx(ImgList, SIcoFN);
       end
       else
       //create usual command item
       begin
-        Item:= TTbxItem.Create(Self);
+        Item:= TSpTbxItem.Create(Self);
         FUserToolbarCommands.Add(SCmd);
         Item.Enabled:= SCmd<>'';
         Item.Tag:= FUserToolbarCommands.Count-1;
         Item.OnClick:= ToolbarUserClick;
         Item.OnSelect:= ButtonOnSelect;
-        IcoLoaded:= LoadPngIcon(ImgList, SIcoFN);
+        IcoLoaded:= LoadPngIconEx(ImgList, SIcoFN);
 
         //add Action to "options" buttons, so toggling will check/uncheck these buttons
         S:= SCmd;
@@ -25870,21 +25788,22 @@ begin
       end;
       //set caption and hint last
       Item.Hint:= SHint;
-      Item.Caption:= SHint;
+      if Item is TSpTbxItem then
+        (Item as TSpTbxItem).Caption:= SHint;
 
       //now add ready button to toolbar or submenu
-      if Toolbar is TTbxToolbar then
+      if Toolbar is TSpTbxToolbar then
       begin
-        (Toolbar as TTbxToolbar).Items.Add(Item);
+        (Toolbar as TSpTbxToolbar).Items.Add(Item);
         if IcoLoaded then
-          (Toolbar as TTbxToolbar).Items[(Toolbar as TTbxToolbar).Items.Count-1].ImageIndex:= ImgList.Count-1;
+          (Toolbar as TSpTbxToolbar).Items[(Toolbar as TSpTbxToolbar).Items.Count-1].ImageIndex:= ImgList.Count-1;
       end
       else
-      if Toolbar is TTbxSubmenuItem then
+      if Toolbar is TSpTbxSubmenuItem then
       begin
-        (Toolbar as TTbxSubmenuItem).Add(Item);
+        (Toolbar as TSpTbxSubmenuItem).Add(Item);
         if IcoLoaded then
-          (Toolbar as TTbxSubmenuItem).Items[(Toolbar as TTbxSubmenuItem).Count-1].ImageIndex:= ImgList.Count-1;
+          (Toolbar as TSpTbxSubmenuItem).Items[(Toolbar as TSpTbxSubmenuItem).Count-1].ImageIndex:= ImgList.Count-1;
       end;
 
       //load submenu contents
@@ -25895,12 +25814,12 @@ begin
     Free
   end;
 
-  if Toolbar is TTbxToolbar then
-    IsEmpty:= (Toolbar as TTbxToolbar).Items.Count=0
+  if Toolbar is TSpTbxToolbar then
+    IsEmpty:= (Toolbar as TSpTbxToolbar).Items.Count=0
   else
   {
-  if Toolbar is TTbxSubmenuItem then
-    IsEmpty:= (Toolbar as TTbxSubmenuItem).Count=0
+  if Toolbar is TSpTbxSubmenuItem then
+    IsEmpty:= (Toolbar as TSpTbxSubmenuItem).Count=0
   else
     }
     IsEmpty:= false;
@@ -25921,7 +25840,7 @@ var
   Cmd: Widestring;
   NCmd, i: Integer;
 begin
-  NCmd:= (Sender as TTbxItem).Tag;
+  NCmd:= (Sender as TSpTbxItem).Tag;
   if not ((NCmd>=0) and (NCmd<FUserToolbarCommands.Count)) then
     begin MsgBeep; Exit end;
   Cmd:= FUserToolbarCommands[NCmd];  
@@ -26085,53 +26004,53 @@ begin
     begin
       Item:= FMenuItems[i].Item;
       Id:= FMenuItems[i].Id;
-      if Item is TTbxItem then
+      if Item is TSpTbxItem then
       begin
         List.Items.Add('['+Id+']');
       end
       else
-      if Item is TTbxToolbar then
+      if Item is TSpTbxToolbar then
       begin
-        for j:= 0 to (Item as TTbxToolbar).Items.Count-1 do
+        for j:= 0 to (Item as TSpTbxToolbar).Items.Count-1 do
         begin
-          S:= (Item as TTbxToolbar).Items[j].Caption;
-          if (Item as TTbxToolbar).Items[j] is TTBXSeparatorItem then
+          S:= (Item as TSpTbxToolbar).Items[j].Caption;
+          if (Item as TSpTbxToolbar).Items[j] is TSpTbxSeparatorItem then
             S:= cSep;
-          if (Item as TTbxToolbar).Items[j] is TTBXSubmenuItem then
+          if (Item as TSpTbxToolbar).Items[j] is TSpTbxSubmenuItem then
             S:= S+cSub;
           List.Items.Add('['+id+' '+IntToStr(j)+']  '+S);
         end;
       end
       else
-      if Item is TTbxPopupMenu then
+      if Item is TSpTbxPopupMenu then
       begin
         for j:= 0 to 14{max index is "More..." item} do
         begin
-          S:= (Item as TTbxPopupMenu).Items[j].Caption;
+          S:= (Item as TSpTbxPopupMenu).Items[j].Caption;
           SDeleteFromW(S, #9);
-          if (Item as TTbxPopupMenu).Items[j] is TTBXSeparatorItem then
+          if (Item as TSpTbxPopupMenu).Items[j] is TSpTbxSeparatorItem then
             S:= cSep;
-          if (Item as TTbxPopupMenu).Items[j] is TTBXSubmenuItem then
+          if (Item as TSpTbxPopupMenu).Items[j] is TSpTbxSubmenuItem then
             S:= S+cSub;
           List.Items.Add('['+id+' '+IntToStr(j)+']  '+S);
         end;
       end
       else
-      if Item is TTbxSubmenuItem then
+      if Item is TSpTbxSubmenuItem then
       begin
         //menu item
-        S:= (Item as TTbxSubmenuItem).Caption;
+        S:= (Item as TSpTbxSubmenuItem).Caption;
         SReplaceAllW(S, '&', '');
         List.Items.Add('['+id+']  '+S);
         //subitems (not for "window" item)
         if id<>'window' then
-        for j:= 0 to (Item as TTbxSubmenuItem).Count-1 do
+        for j:= 0 to (Item as TSpTbxSubmenuItem).Count-1 do
         begin
-          S:= (Item as TTbxSubmenuItem).Items[j].Caption;
+          S:= (Item as TSpTbxSubmenuItem).Items[j].Caption;
           SReplaceAllW(S, '&', '');
-          if (Item as TTbxSubmenuItem).Items[j] is TTBXSeparatorItem then
+          if (Item as TSpTbxSubmenuItem).Items[j] is TSpTbxSeparatorItem then
             S:= cSep;
-          if (Item as TTbxSubmenuItem).Items[j] is TTBXSubmenuItem then
+          if (Item as TSpTbxSubmenuItem).Items[j] is TSpTbxSubmenuItem then
             S:= S+cSub;
           List.Items.Add('    '+'['+id+' '+IntToStr(j)+']  '+S);
         end;
@@ -26187,6 +26106,150 @@ begin
   PageControl1.TabPosition:= Pos;
   PageControl2.TabPosition:= Pos;
 end;
+
+procedure TfmMain.FixSplitters;
+begin
+  SplitterBottom.Top:= 0;
+  SplitterLeft.Left:= ClientWidth;
+  SplitterRight.Left:= 0;
+
+  SplitterBottom.Visible:= TbxDockBottom.Height>0;
+  SplitterLeft.Visible:= TbxDockLeft.Width>0;
+  SplitterRight.Visible:= TbxDockRight.Width>0;
+end;
+
+procedure TfmMain.StatusItemCaretClick(Sender: TObject);
+begin
+  ecGoto.Execute;
+end;
+
+procedure TfmMain.StatusItemEncClick(Sender: TObject);
+begin
+  with Mouse.CursorPos do
+    PopupCP.Popup(X, Y);
+end;
+
+procedure TfmMain.StatusItemEndsClick(Sender: TObject);
+begin
+  with Mouse.CursorPos do
+    PopupLE.Popup(X, Y);
+end;
+
+procedure TfmMain.StatusItemLexerClick(Sender: TObject);
+begin
+  with Mouse.CursorPos do
+    PopupLex.Popup(X, Y);
+end;
+
+procedure TfmMain.StatusItemCharClick(Sender: TObject);
+begin
+   with CurrentEditor do
+     if not ReadOnly then
+       ExecCommand(smSelCharacter);
+end;
+
+procedure TfmMain.StatusItemROClick(Sender: TObject);
+begin
+  ecReadOnly.Execute;
+end;
+
+procedure TfmMain.StatusItemWrapClick(Sender: TObject);
+begin
+  ecWrap.Execute;
+end;
+
+procedure TfmMain.StatusItemSelModeClick(Sender: TObject);
+begin
+  with CurrentEditor do
+    case SelectModeDefault of
+      msNone,
+      msNormal: SelectModeDefault:= msColumn;
+      msColumn: SelectModeDefault:= msLine;
+      msLine: SelectModeDefault:= msNormal;
+    end;
+end;
+
+procedure TfmMain.StatusItemInsModeClick(Sender: TObject);
+begin
+  with CurrentEditor do
+    ReplaceMode:= not ReplaceMode;
+end;
+
+procedure TfmMain.StatusItemZoomClick(Sender: TObject);
+begin
+  with Mouse.CursorPos do
+    PopupZoom.Popup(X, Y);
+end;
+
+procedure TfmMain.TBXTabColorGetColor(Sender: TObject; ACol, ARow: Integer;
+  var Color: TColor; var Name: WideString);
+begin
+  Color:= opTabColors[ACol + ARow * 5];
+  Name:= Color2Str(Color);
+end;
+
+procedure TfmMain.TBXTabColorCellClick(Sender: TObject; ACol,
+  ARow: Integer; var Allow: Boolean);
+begin
+  DoSetTabColorIndex(ACol + ARow * 5 + 1);
+end;
+
+procedure TfmMain.StatusItemCaretDrawHint(Sender: TObject;
+  AHintBitmap: TBitmap; var AHint: WideString; var PaintDefault: Boolean);
+begin
+  //update statusbar hint
+  AHint:= SStatusHint(FCurrSelState);
+  ecTextOut(AHintBitmap.Canvas, 2, 2, AHint);
+end;
+
+procedure TfmMain.TBXSubmenuItemFRecentsPopup(Sender: TTBCustomItem;
+  FromLink: Boolean);
+var
+  i: Integer;
+begin
+  with TBXMRUListItem1 do
+  begin
+    Clear;
+    for i:= SynMruFiles.Items.Count-1 downto 0 do
+      MRUAdd(SynMruFiles.Items[i]);
+  end;
+end;
+
+procedure TfmMain.TBXMRUListItem1Click(Sender: TObject;
+  const Filename: WideString);
+begin
+  OpnFile(FileName);
+end;
+
+procedure TfmMain.TBXMRUListItem_SessClick(Sender: TObject;
+  const Filename: WideString);
+begin
+  OpenSession(FileName);
+end;
+
+procedure TfmMain.TBXSubmenuItemSessPopup(Sender: TTBCustomItem;
+  FromLink: Boolean);
+var
+  i: Integer;
+begin
+  with TBXMRUListItem_Sess do
+  begin
+    Clear;
+    for i:= SynMruSessions.Items.Count-1 downto 0 do
+      MRUAdd(SynMruSessions.Items[i]);
+  end;
+end;
+
+function TfmMain.SynSkinsDir: string;
+begin
+  Result:= SynDir+'template\skins';
+end;  
+
+function TfmMain.SynSkinFilename(const Name: string): string;
+begin
+  Result:= SynSkinsDir + '\' + Copy(Name, 2, MaxInt) + '.skn';
+end;
+
 
 end.
 

@@ -30,7 +30,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabEd2
+    ActivePage = tabColors
     Style = tsButtons
     TabOrder = 0
     object tabIntf: TTntTabSheet
@@ -221,48 +221,47 @@ object fmSetup: TfmSetup
         Top = 1
         Width = 529
         Height = 100
-        Caption = 'Toolbar'
+        Caption = 'Interface'
         TabOrder = 0
         object Label2: TTntLabel
           Left = 8
           Top = 16
-          Width = 73
+          Width = 23
           Height = 13
-          Caption = 'Toolbar theme:'
+          Caption = 'Skin:'
         end
         object Label12: TTntLabel
           Left = 8
           Top = 56
-          Width = 67
+          Width = 30
           Height = 13
-          Caption = 'Toolbar icons:'
+          Caption = 'Icons:'
         end
         object cbTheme: TTntComboBox
           Left = 8
           Top = 32
-          Width = 240
+          Width = 249
           Height = 21
           Style = csDropDownList
-          DropDownCount = 20
+          DropDownCount = 40
           ItemHeight = 13
           TabOrder = 0
         end
         object cbIcons: TTntComboBox
           Left = 8
           Top = 72
-          Width = 240
+          Width = 249
           Height = 21
           Style = csDropDownList
           DropDownCount = 20
           ItemHeight = 13
           TabOrder = 1
           Items.Strings = (
-            'Standard'
+            'Simple'
             'Fogue 16x16'
             'Fogue 24x24'
             'Tango 16x16'
-            'Tango 22x22'
-            'Gnome 24x24')
+            'Tango 22x22')
         end
       end
       object gColors: TTntGroupBox
@@ -324,7 +323,7 @@ object fmSetup: TfmSetup
         object bColorLoad: TTntButton
           Left = 8
           Top = 196
-          Width = 242
+          Width = 249
           Height = 21
           Caption = 'Load color preset...'
           TabOrder = 3
@@ -333,7 +332,7 @@ object fmSetup: TfmSetup
         object bColorSave: TTntButton
           Left = 8
           Top = 220
-          Width = 242
+          Width = 249
           Height = 21
           Caption = 'Save color preset...'
           TabOrder = 4

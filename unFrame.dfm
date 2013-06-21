@@ -29,19 +29,16 @@ object EditorFrame: TEditorFrame
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    object Splitter2: TSplitter
+    object SplitterEds: TSpTBXSplitter
       Left = 371
       Top = 0
-      Width = 5
       Height = 270
+      Cursor = crSizeWE
       Align = alRight
-      AutoSnap = False
       Color = clBtnFace
-      MinSize = 70
       ParentColor = False
-      ResizeStyle = rsUpdate
-      OnMoved = Splitter2Moved
-      OnPaint = Splitter2Paint
+      MinSize = 70
+      OnMoved = SplitterEdsMoved
     end
     object EditorMaster: TSyntaxMemo
       Left = 0
@@ -115,10 +112,8 @@ object EditorFrame: TEditorFrame
       HintProps.TimeCollapsed = 100000
       HintProps.TimeTokens = 100000
       HintProps.CollapsedLines = 10
-      HintProps.Styles = fmMain.SyntStyles
       HintProps.Formated = True
       HintProps.ShowFirstLine = True
-      KeyMapping = fmMain.SyntKeyMapping
       UserRanges = <>
       Animation.BookmarkAnim = atNone
       TabMode = tmSmartTab
@@ -319,9 +314,7 @@ object EditorFrame: TEditorFrame
       HintProps.TimeCollapsed = 100000
       HintProps.TimeTokens = 100000
       HintProps.CollapsedLines = 10
-      HintProps.Styles = fmMain.SyntStyles
       HintProps.Formated = True
-      KeyMapping = fmMain.SyntKeyMapping
       UserRanges = <>
       Animation.BookmarkAnim = atNone
       TabMode = tmSmartTab
@@ -501,67 +494,53 @@ object EditorFrame: TEditorFrame
     Left = 276
     Top = 156
   end
-  object PopupSplitter: TTBXPopupMenu
+  object PopupSplitter: TSpTBXPopupMenu
     OnPopup = PopupSplitterPopup
     Left = 208
     Top = 188
-    object TBXItemSplitCaption: TTBXItem
-      Enabled = False
+    object TBXItemSplitCaption: TSpTBXItem
       Caption = '--- Editor splitter ---'
-      Hint = ''
+      Enabled = False
     end
-    object TBXItemSplit20_80: TTBXItem
-      OnClick = TBXItemSplit20_80Click
+    object TBXItemSplit20_80: TSpTBXItem
       Caption = '20/80'
-      Hint = ''
+      OnClick = TBXItemSplit20_80Click
     end
-    object TBXItemSplit30_70: TTBXItem
-      OnClick = TBXItemSplit30_70Click
+    object TBXItemSplit30_70: TSpTBXItem
       Caption = '30/70'
-      Hint = ''
+      OnClick = TBXItemSplit30_70Click
     end
-    object TBXItemSplit40_60: TTBXItem
-      OnClick = TBXItemSplit40_60Click
+    object TBXItemSplit40_60: TSpTBXItem
       Caption = '40/60'
-      Hint = ''
+      OnClick = TBXItemSplit40_60Click
     end
-    object TBXItemSplit50_50: TTBXItem
-      OnClick = TBXItemSplit50_50Click
+    object TBXItemSplit50_50: TSpTBXItem
       Caption = '50/50'
-      Hint = ''
+      OnClick = TBXItemSplit50_50Click
     end
-    object TBXItemSplit60_40: TTBXItem
-      OnClick = TBXItemSplit60_40Click
+    object TBXItemSplit60_40: TSpTBXItem
       Caption = '60/40'
-      Hint = ''
+      OnClick = TBXItemSplit60_40Click
     end
-    object TBXItemSplit70_30: TTBXItem
-      OnClick = TBXItemSplit70_30Click
+    object TBXItemSplit70_30: TSpTBXItem
       Caption = '70/30'
-      Hint = ''
+      OnClick = TBXItemSplit70_30Click
     end
-    object TBXItemSplit80_20: TTBXItem
-      OnClick = TBXItemSplit80_20Click
+    object TBXItemSplit80_20: TSpTBXItem
       Caption = '80/20'
-      Hint = ''
+      OnClick = TBXItemSplit80_20Click
     end
-    object TBXSeparatorItem1: TTBXSeparatorItem
-      Caption = ''
-      Hint = ''
+    object TBXSeparatorItem1: TSpTBXSeparatorItem
     end
-    object TBXItemSplitHorz: TTBXItem
-      OnClick = TBXItemSplitHorzClick
+    object TBXItemSplitHorz: TSpTBXItem
       Caption = 'Split horozintally'
-      Hint = ''
+      OnClick = TBXItemSplitHorzClick
     end
-    object TBXSeparatorItem2: TTBXSeparatorItem
-      Caption = ''
-      Hint = ''
+    object TBXSeparatorItem2: TSpTBXSeparatorItem
     end
-    object TBXItemSplitCancel: TTBXItem
-      OnClick = TBXItemSplitCancelClick
+    object TBXItemSplitCancel: TSpTBXItem
       Caption = 'Cancel split mode'
-      Hint = ''
+      OnClick = TBXItemSplitCancelClick
     end
   end
   object TimerMap: TTimer

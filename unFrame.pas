@@ -12,10 +12,10 @@ uses
   Menus, Math,
 
   ecSyntMemo, ecSyntAnal, ecActns, ecExtHighlight, ecOleDrag, ecEmbObj, ecSpell,
-  TB2Item, TBX,
+  TB2Item, SpTBXItem,
 
   ATFileNotificationSimple,
-  ATSyntMemo; //this will replace TSyntaxMemo
+  ATSyntMemo, SpTBXDkPanels; //this will replace TSyntaxMemo
 
 const
   cMaxBk = 1*1000*1000; //max bookmarks count
@@ -28,25 +28,25 @@ type
     ecSpellChecker: TecSpellChecker;
     HyperlinkHighlighter: THyperlinkHighlighter;
     TextSource: TecEmbeddedObjects;
-    PopupSplitter: TTBXPopupMenu;
-    TBXItemSplitHorz: TTBXItem;
-    TBXItemSplit70_30: TTBXItem;
-    TBXItemSplit60_40: TTBXItem;
-    TBXItemSplit50_50: TTBXItem;
-    TBXItemSplit40_60: TTBXItem;
-    TBXItemSplit30_70: TTBXItem;
-    TBXItemSplit20_80: TTBXItem;
-    TBXItemSplit80_20: TTBXItem;
-    TBXSeparatorItem1: TTBXSeparatorItem;
-    TBXItemSplitCaption: TTBXItem;
+    PopupSplitter: TSpTbxPopupMenu;
+    TBXItemSplitHorz: TSpTbxItem;
+    TBXItemSplit70_30: TSpTbxItem;
+    TBXItemSplit60_40: TSpTbxItem;
+    TBXItemSplit50_50: TSpTbxItem;
+    TBXItemSplit40_60: TSpTbxItem;
+    TBXItemSplit30_70: TSpTbxItem;
+    TBXItemSplit20_80: TSpTbxItem;
+    TBXItemSplit80_20: TSpTbxItem;
+    TBXSeparatorItem1: TSpTbxSeparatorItem;
+    TBXItemSplitCaption: TSpTbxItem;
     PanelMap: TPaintBox;
     Panel1: TPanel;
     EditorMaster: TSyntaxMemo;
-    Splitter2: TSplitter;
+    SplitterEds: TSpTBXSplitter;
     EditorSlave: TSyntaxMemo;
     TimerMap: TTimer;
-    TBXSeparatorItem2: TTBXSeparatorItem;
-    TBXItemSplitCancel: TTBXItem;
+    TBXSeparatorItem2: TSpTbxSeparatorItem;
+    TBXItemSplitCancel: TSpTbxItem;
     procedure EditorMasterEnter(Sender: TObject);
     procedure EditorMasterSetBookmark(Snder: TObject; Bookmark: TBookmark;
       var Accept: Boolean);
@@ -73,10 +73,10 @@ type
       Buton: TMouseButton; Shift: TShiftState; XY: TPoint);
     procedure EditorMasterGetTokenHint(Sender: TObject;
       TokenIndex: Integer; var HintText: String);
-    procedure Splitter2Paint(Sender: TObject);
+    procedure SplitterEdsPaint(Sender: TObject);
     procedure EditorMasterSelectionChanged(Sender: TObject);
     procedure EditorMasterZoom(Sender: TObject);
-    procedure Splitter2Moved(Sender: TObject);
+    procedure SplitterEdsMoved(Sender: TObject);
     procedure TBXItemSplitHorzClick(Sender: TObject);
     procedure PopupSplitterPopup(Sender: TObject);
     procedure TBXItemSplit20_80Click(Sender: TObject);
@@ -232,8 +232,8 @@ uses
 {$R *.dfm}
 
 
-type
-  TControlHack = class(TControl);
+//type
+//  TControlHack = class(TControl);
 
 procedure TEditorFrame.FrameResize(Sender: TObject);
 begin
@@ -268,7 +268,7 @@ begin
     TimerMap.Enabled:= true;
 end;
 
-procedure TEditorFrame.Splitter2Paint(Sender: TObject);
+procedure TEditorFrame.SplitterEdsPaint(Sender: TObject);
 {
 const
   cc = 18; //width of drag-hint rect
@@ -346,8 +346,8 @@ begin
   EditorMaster.OnCtrlClick:= EditorCtrlClick;
   EditorSlave.OnCtrlClick:= EditorCtrlClick;
 
-  TControlHack(Splitter2).PopupMenu:= PopupSplitter;
-  TControlHack(Splitter2).OnDblClick:= SplitterDblClick;
+  SplitterEds.PopupMenu:= PopupSplitter;
+  SplitterEds.OnDblClick:= SplitterDblClick;
 end;
 
 procedure TEditorFrame.EditorMasterEnter(Sender: TObject);
@@ -1005,16 +1005,16 @@ begin
   if (F < 100.0) then
   begin
     FSplitPos:= F;
-    Splitter2.Visible:= F>1.0;
+    SplitterEds.Visible:= F>1.0;
     if FSplitHorz then
     begin
-      Splitter2.Top:= 0;
-      EditorSlave.Height:= Abs(Trunc((Self.Height - Splitter2.Height) * F / 100.0));
+      SplitterEds.Top:= 0;
+      EditorSlave.Height:= Abs(Trunc((Self.Height - SplitterEds.Height) * F / 100.0));
     end
     else
     begin
-      Splitter2.Left:= 0;
-      EditorSlave.Width:= Abs(Trunc((Self.Width - Splitter2.Width) * F / 100.0));
+      SplitterEds.Left:= 0;
+      EditorSlave.Width:= Abs(Trunc((Self.Width - SplitterEds.Width) * F / 100.0));
     end;
   end;
 end;
@@ -1025,33 +1025,33 @@ begin
   if FSplitHorz then
   begin
     EditorSlave.Align:= alBottom;
-    Splitter2.Align:= alBottom;
-    Splitter2.Top:= 0;
+    SplitterEds.Align:= alBottom;
+    SplitterEds.Top:= 0;
   end
   else
   begin
     EditorSlave.Align:= alRight;
-    Splitter2.Align:= alRight;
-    Splitter2.Left:= 0;
+    SplitterEds.Align:= alRight;
+    SplitterEds.Left:= 0;
   end;
   SplitPos:= SplitPos;
 end;
 
-procedure TEditorFrame.Splitter2Moved(Sender: TObject);
+procedure TEditorFrame.SplitterEdsMoved(Sender: TObject);
 begin
   if FSplitHorz then
-    FSplitPos:= EditorSlave.Height * 100 / (Self.Height - Splitter2.Height)
+    FSplitPos:= EditorSlave.Height * 100 / (Self.Height - SplitterEds.Height)
   else
-    FSplitPos:= EditorSlave.Width * 100 / (Self.Width - Splitter2.Width);
+    FSplitPos:= EditorSlave.Width * 100 / (Self.Width - SplitterEds.Width);
 end;
 
 function TEditorFrame.IsSplitted: boolean;
 begin
   {
   if SplitHorz then
-    Result:= Splitter2.Top > 0
+    Result:= SplitterEds.Top > 0
   else
-    Result:= Splitter2.Left > 1; //minimal Left is 0 and 1
+    Result:= SplitterEds.Left > 1; //minimal Left is 0 and 1
     }
   Result:= FSplitPos>1.0;  
 end;
@@ -1301,7 +1301,7 @@ var
   N: Integer;
 begin
   N:= GetMapLine(X, Y);
-  TfmMain(Owner).SHint[-1]:= WideFormat(DKLangConstW('zMLine'), [N+1]);
+  TfmMain(Owner).SetHint(WideFormat(DKLangConstW('zMLine'), [N+1]));
   if ssLeft in Shift then
     PanelMapMouseDown(Self, mbLeft, Shift, X, Y);
 end;

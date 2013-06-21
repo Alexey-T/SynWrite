@@ -6,7 +6,6 @@ uses
   Windows,
   Graphics,
   Controls,
-  TbxGraphics,
   PngImage;
 
 procedure FixImageList32Bit(ImageList: TImageList);
@@ -16,11 +15,11 @@ procedure GetIcon(const FileName: Widestring;
 //load from BMP 32bpp
 procedure LoadImageListFromFile(IL: TImageList; SizeX, SizeY: integer; const fn: string);
 //load from PNG
-procedure LoadTbxImageListFromFile(IL: TTbxImageList; SizeX, SizeY: integer; const fn: string);
+//procedure LoadTbxImageListFromFile(IL: TTbxImageList; SizeX, SizeY: integer; const fn: string);
 //load from DLL
 procedure LoadImageListFromDLL(ImageList16, ImageList32: TImageList; const FN: Widestring);
 //load/add 1 icon from PNG
-procedure AddPngToTbxImageList(IL: TTbxImageList; const fn: string);
+//procedure AddPngToTbxImageList(IL: TTbxImageList; const fn: string);
 //save to PNG
 procedure SaveImageListToFile(Img: TImageList; const fn: string);
 
@@ -43,10 +42,10 @@ uses
   ComObj, ActiveX, ShlObj, //for GetIcon
   Dialogs,
   Types,
-  ImgList,
-  TbxImgListEdit;
+  ImgList;
 
 
+(*
 procedure LoadTbxImageListFromFile(IL: TTbxImageList; SizeX, SizeY: integer; const fn: string);
 var
   i: integer;
@@ -68,7 +67,7 @@ begin
     FreeAndNil(DibList);
   end;  
 end;
-
+*)
 
 procedure LoadImageListFromFile(IL: TImageList; SizeX, SizeY: integer;
   const fn: string);
@@ -145,16 +144,10 @@ begin
   Result:= nil;
   if bmp.PixelFormat<>pf32bit then
     Exit;
-    {
-    это если раскомментить (вместо Exit)- не работает, дает прозрачную пустую png
-  if bmp.PixelFormat<>pf32bit then
-  begin
-    Result:= TPngObject.CreateBlank(COLOR_RGB, 8, bmp.Width, bmp.Height);
-    Result.Canvas.Draw(0, 0, bmp);
-    Exit;
-  end;
-  }
 
+  //CreateBlank exists only in standalone PngImage,
+  //not in PngComponents's pngimage.
+  //
   Result:= TPngObject.CreateBlank(COLOR_RGBALPHA, 8, bmp.Width, bmp.Height);
   Result.Canvas.Draw(0, 0, bmp);
   for y:= 0 to bmp.Height-1 do begin
@@ -231,6 +224,7 @@ begin
 end;
 
 //------------
+(*
 procedure AddPngToTbxImageList(IL: TTbxImageList; const fn: string);
   procedure AddNone;
   var
@@ -268,6 +262,7 @@ begin
     AddNone;
   end;
 end;
+*)
 
 //------------
 procedure SaveIconFromDllToPng(const fn_dll: string; AIndex: integer;

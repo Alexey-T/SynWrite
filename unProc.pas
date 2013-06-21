@@ -16,7 +16,7 @@ uses
   ecMemoStrings,
   ecSyntDlg,
   ecSyntTree,
-  TbxGraphics;
+  PngImageList;
 
 function GetEditHandle(Target: TObject): THandle;
 procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
@@ -24,7 +24,19 @@ procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
 function FHelpLangSuffix: string;
 function FHelpFilename(const SynDir: string): string;
 
-function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
+type
+  TSynMruList = class
+  public
+    Items: TTntStringList;
+    MaxCount: Integer;
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure AddItem(const S: Widestring);
+    procedure DeleteItem(const S: Widestring);
+  end;
+
+//function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
+function LoadPngIconEx(ImageList: TPngImageList; const fn: string): boolean;
 function EditorWordLength(Ed: TSyntaxMemo): Integer;
 function DoInputFilename(const dkmsg: string; var S: Widestring): boolean;
 function DoInputString(const dkmsg: string; var S: Widestring): boolean;
@@ -213,6 +225,8 @@ uses
   Dialogs,
   TntClipbrd,
   TntSysUtils,
+  PngImage,
+  CommCtrl,
   unSRTree, unRename;
 
 function WinHandle: THandle;
@@ -1597,7 +1611,7 @@ begin
   until false;
 end;
 
-
+(*
 function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
 var
   FileHandle: THandle;
@@ -1621,6 +1635,27 @@ begin
     end;
   end;
 end;
+*)
+
+function LoadPngIconEx(ImageList: TPngImageList; const fn: string): boolean;
+var
+  AImage: TPngObject;
+begin
+  if not FileExists(fn) then
+    Result:= false
+  else
+  begin
+    AImage:= TPngObject.Create;
+    try
+      AImage.LoadFromFile(fn);
+      ImageList.PngImages.Add.PngImage:= AImage;
+      Result:= true;
+    finally
+      FreeAndNil(AImage);
+    end;
+  end;
+end;
+
 
 {
 function SHAutoComplete(H: THandle; Flags: DWord): HResult; stdcall; external 'shlwapi.dll';
@@ -1686,6 +1721,42 @@ begin
     Ed.SelStart:= n1;
     Key:= #0;
   end;
+end;
+
+
+{ TSynMruList }
+
+constructor TSynMruList.Create;
+begin
+  inherited;
+  Items:= TTntStringList.Create;
+  MaxCount:= 10;
+end;
+
+destructor TSynMruList.Destroy;
+begin
+  FreeAndNil(Items);
+  inherited;
+end;
+
+procedure TSynMruList.AddItem(const S: Widestring);
+begin
+  if S<>'' then
+  begin
+    DeleteItem(S);
+    Items.Insert(0, S);
+    while Items.Count>MaxCount do
+      Items.Delete(Items.Count-1);
+  end;
+end;
+
+procedure TSynMruList.DeleteItem(const S: Widestring);
+var
+  N: Integer;
+begin
+  N:= Items.IndexOf(S);
+  if N>=0 then
+    Items.Delete(N);
 end;
 
 

@@ -516,7 +516,7 @@ const
   );
 
 const
-  cColorsOrder: array[0..cColorsNum-5] of integer = (
+  cColorsOrder: array[0..cColorsNum-7] of integer = (
   0,
   1,
   9,
@@ -556,8 +556,8 @@ const
   33,
   34,
   35,
-  36,
-  47,
+  //36,
+  //47,
   38,
   39,
   40,
@@ -789,7 +789,7 @@ begin
   //colors
   if tabColors.Tag<>0 then
   begin
-    Theme:=cbTheme.ItemIndex;
+    Theme:=cbTheme.Text;
     Icons:=cbIcons.ItemIndex;
     ApplyIntf;
 
@@ -1170,7 +1170,7 @@ begin
 
   with fmMain do
   begin
-    cbTheme.ItemIndex:= Theme;
+    cbTheme.ItemIndex:= cbTheme.Items.IndexOf(Theme);
     cbIcons.ItemIndex:= Icons;
 
     Colors[0]:= TemplateEditor.Font.Color;

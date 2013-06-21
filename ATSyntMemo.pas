@@ -1288,7 +1288,7 @@ var
 begin
   NDefWidth:= IfThen(Caret.Insert.Width<0, cDefCaretWidth, FTextExt.cx * Caret.Insert.Width div 100);
   NSize.cx:= IfThen(ReplaceMode, FTextExt.cx, NDefWidth);
-  NSize.cy:= IfThen(ReplaceMode, FTextExt.cy + LineSpacing, FTextExt.cy * Caret.Insert.Height div 100);
+  NSize.cy:= IfThen(ReplaceMode, FTextExt.cy + LineSpacing, (FTextExt.cy + LineSpacing) * Caret.Insert.Height div 100);
 
   RClient:= ClientRect;
   Inc(RClient.Left, Gutter.Width);

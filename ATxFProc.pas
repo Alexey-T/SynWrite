@@ -20,7 +20,7 @@ function FormatFileTimeFmt(const ft: TFileTime; const Fmt: string): string;
 
 procedure MsgBeep(Err: boolean = false);
 
-function FFilenameMatchesMaskList(const fn, masks: Widestring): boolean;
+function FFilenameMatchesMaskList(const fn, masks: Widestring; folders: boolean): boolean;
 function FReadString(const fn: string): string;
 function FFindInSubdirs(const sname, sdir: Widestring; var fn: Widestring): boolean;
 function FAppDataPath: string;
@@ -782,15 +782,24 @@ end;
 function PathMatchSpecW(const pszFileParam, pszSpec: PWideChar): Bool;
   stdcall; external 'shlwapi.dll';
 
-function FFilenameMatchesMaskList(const fn, masks: Widestring): boolean;
+function FFilenameMatchesMaskList(const fn, masks: Widestring; folders: boolean): boolean;
 var
   s, msk: Widestring;
+  ch: WideChar;
+  IsFolder: boolean;
 begin
   Result:= false;
   s:= Trim(masks);
   repeat
     msk:= SGetMask(s);
     if msk='' then Break;
+
+    ch:= msk[Length(msk)];
+    IsFolder:= (ch='\') or (ch='/');
+    if IsFolder then
+      Delete(msk, Length(msk), 1);
+    if folders<>IsFolder then Continue;  
+
     Result:= PathMatchSpecW(PWChar(fn), PWChar(msk));
     if Result then Break;
   until false;
@@ -820,10 +829,10 @@ begin
   begin
     repeat
       //test include-mask
-      if not FFilenameMatchesMaskList(F.Name, AMasksInclude) then
+      if not FFilenameMatchesMaskList(F.Name, AMasksInclude, false) then
         Continue;
       //test exclude-mask
-      if FFilenameMatchesMaskList(F.Name, AMasksExclude) then
+      if FFilenameMatchesMaskList(F.Name, AMasksExclude, false) then
         Continue;
       //test R/O here
       if ANoRO and ((F.Attr and faReadOnly) <> 0) then
@@ -845,7 +854,7 @@ begin
     repeat
       if (F.Name<>'.') and (F.Name<>'..') and IsDirExist(ADir+'\'+F.Name) then
         //test exclude-mask for folders
-        if not FFilenameMatchesMaskList(F.Name, AMasksExclude) then
+        if not FFilenameMatchesMaskList(F.Name, AMasksExclude, true) then
         begin
           //Messagebox(0, PChar(string(SDir+'\'+F.Name)), '', 0);
           FFindToList(List, ADir+'\'+F.Name, AMasksInclude, AMasksExclude, ASubDir,
