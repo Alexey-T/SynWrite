@@ -41,6 +41,7 @@ function EditorWordLength(Ed: TSyntaxMemo): Integer;
 function DoInputFilename(const dkmsg: string; var S: Widestring): boolean;
 function DoInputString(const dkmsg: string; var S: Widestring): boolean;
 
+procedure EditorSetModified(Ed: TSyntaxMemo);
 function EditorShortSelText(Ed: TSyntaxMemo): Widestring;
 function EditorGetCollapsedRanges(Ed: TSyntaxMemo): string;
 procedure EditorSetCollapsedRanges(Ed: TSyntaxMemo; S: Widestring);
@@ -59,6 +60,7 @@ function IsEditorLineCollapsed(Ed: TCustomSyntaxMemo; Line: Integer): boolean;
 procedure SFindBrackets(const S: Widestring; const FromPos: Integer; var Pos1, Pos2: Integer);
 function SFindOpeningBracket(const S: Widestring; nFromPos: Integer): Integer;
 
+procedure FixDraw(Ctl: TWinControl; SizeX: boolean = true);
 procedure FixFPU;
 procedure FixLineEnds(var S: Widestring; const ATextFormat: TTextFormat);
 procedure FixFilenamePath(var S: Widestring);
@@ -1757,6 +1759,31 @@ begin
   N:= Items.IndexOf(S);
   if N>=0 then
     Items.Delete(N);
+end;
+
+procedure FixDraw(Ctl: TWinControl; SizeX: boolean = true);
+begin
+  with Ctl do
+    if SizeX then
+      begin Width:= Width+2; Width:= Width-2; end
+    else
+      begin Height:= Height+2; Height:= Height-2; end;
+end;
+
+
+procedure EditorSetModified(Ed: TSyntaxMemo);
+var
+  p: TPoint;
+begin
+  with Ed do
+  begin
+    BeginUpdate;
+    p:= CaretPos;
+    InsertText(' ');
+    CaretPos:= p;
+    DeleteText(1);
+    EndUpdate;
+  end;
 end;
 
 

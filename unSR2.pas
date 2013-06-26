@@ -40,7 +40,7 @@ type
     bRAll: TTntButton;
     cbSubDir: TTntCheckBox;
     TntLabel2: TTntLabel;
-    edFile: TTntComboBox;
+    edFileInc: TTntComboBox;
     bFAll: TTntButton;
     bCurrDir: TTntButton;
     DKLanguageController1: TDKLanguageController;
@@ -74,7 +74,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure edFileChange(Sender: TObject);
+    procedure edFileIncChange(Sender: TObject);
     procedure bCurrDirClick(Sender: TObject);
     procedure bBrowseDirClick(Sender: TObject);
     procedure edDirChange(Sender: TObject);
@@ -92,7 +92,7 @@ type
       Shift: TShiftState);
     procedure ed2KeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure edFileKeyDown(Sender: TObject; var Key: Word;
+    procedure edFileIncKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure edDirKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -116,6 +116,15 @@ type
     SRTextR: WideString; //sugg. replace text 
     ShFind, //shortcuts for Find/Replace dialogs
     ShReplace: TShortcut;
+
+    SR_LastFind,
+    SR_LastReplace,
+    SR_LastMaskInc,
+    SR_LastMaskExc,
+    SR_LastDir: Widestring;
+    SR_LastLeft,
+    SR_LastTop: Integer;
+
     procedure ShowErr(const s: Widestring);
   end;
 
@@ -219,12 +228,12 @@ begin
 
   SLoadCombo(ed1, SRIniS, 'SearchText');
   SLoadCombo(ed2, SRIni, 'RHist', False);
-  SLoadCombo(edFile, SRIni, 'IncHist');
+  SLoadCombo(edFileInc, SRIni, 'IncHist');
   SLoadCombo(edFileExc, SRIni, 'ExcHist');
   SLoadCombo(edDir, SRIni, 'DirHist'{, False});
 
-  if edFile.Text='' then
-    edFile.Text:= '*.*';
+  if edFileInc.Text='' then
+    edFileInc.Text:= '*.*';
 
   if bExcludeEmpty then
     edFileExc.Text:= '';  
@@ -236,7 +245,19 @@ begin
     DoCopyToEdit(ed1, cbSpec.Checked, cbRE.Checked, SRSel);
 
   if SRTextR<>'' then
-    ed2.Text:= SRTextR;  
+    ed2.Text:= SRTextR;
+
+  //use last values of fields (if not empty passed from main form)  
+  if SR_LastFind<>'' then
+  begin
+    ed1.Text:= SR_LastFind;
+    ed2.Text:= SR_LastReplace;
+    edFileInc.Text:= SR_LastMaskInc;
+    edFileExc.Text:= SR_LastMaskExc;
+    edDir.Text:= SR_LastDir;
+    Left:= SR_LastLeft;
+    Top:= SR_LastTop;
+  end;
 
   ed1Change(Self);
   cbREClick(Self);
@@ -247,7 +268,7 @@ procedure TfmSRFiles.ed1Change(Sender: TObject);
 begin
   bFAll.Enabled:=
     (ed1.Text <> '') and
-    (edFile.Text <> '') and
+    (edFileInc.Text <> '') and
     (edDir.Text <> '') and
     IsDirExist(edDir.Text);
   bRAll.Enabled:= bFAll.Enabled;
@@ -291,18 +312,18 @@ begin
 
   SSave(ed1, SRCount);
   SSave(ed2, SRCount);
-  SSave(edFile, SRCount);
+  SSave(edFileInc, SRCount);
   SSave(edFileExc, SRCount);
   SSave(edDir, SRCount);
 
   SSaveCombo(ed1, SRIniS, 'SearchText');
   SSaveCombo(ed2, SRIni, 'RHist');
-  SSaveCombo(edFile, SRIni, 'IncHist');
+  SSaveCombo(edFileInc, SRIni, 'IncHist');
   SSaveCombo(edFileExc, SRIni, 'ExcHist');
   SSaveCombo(edDir, SRIni, 'DirHist');
 end;
 
-procedure TfmSRFiles.edFileChange(Sender: TObject);
+procedure TfmSRFiles.edFileIncChange(Sender: TObject);
 begin
   ed1Change(Self);
 end;
@@ -375,8 +396,8 @@ procedure TfmSRFiles.bCurFileClick(Sender: TObject);
 begin
   edDir.Text:= SRCurrentDir;
   edDirChange(Self);
-  edFile.Text:= '"'+SRCurrentFile+'"';
-  edFileChange(Self);
+  edFileInc.Text:= '"'+SRCurrentFile+'"';
+  edFileIncChange(Self);
   cbSubDir.Checked:= false;
 end;
 
@@ -391,7 +412,7 @@ begin
     FileName:= '';
     if not Execute then Exit;
 
-    if edFile.Text<>'' then
+    if edFileInc.Text<>'' then
       CfmAppend:= MessageBoxW(Self.Handle, PWChar(DKLangConstW('zMAddMask')), 'SynWrite',
         mb_iconquestion or mb_yesno) = id_yes
     else
@@ -399,16 +420,16 @@ begin
 
     if CfmAppend then
     begin
-      edFile.Text:= edFile.Text+ ' "'+WideExtractFileName(FileName)+'"';
+      edFileInc.Text:= edFileInc.Text+ ' "'+WideExtractFileName(FileName)+'"';
     end
     else
     begin
       edDir.Text:= WideExtractFileDir(FileName);
       edDirChange(Self);
-      edFile.Text:= '"'+WideExtractFileName(FileName)+'"';
+      edFileInc.Text:= '"'+WideExtractFileName(FileName)+'"';
     end;
 
-    edFileChange(Self);
+    edFileIncChange(Self);
     cbSubDir.Checked:= false;
   end;
 end;
@@ -499,12 +520,12 @@ begin
   end;
 end;
 
-procedure TfmSRFiles.edFileKeyDown(Sender: TObject; var Key: Word;
+procedure TfmSRFiles.edFileIncKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key=vk_delete) and (Shift=[ssAlt]) then
   begin
-    DoDeleteComboItem(edFile);
+    DoDeleteComboItem(edFileInc);
     Key:= 0;
     Exit
   end;

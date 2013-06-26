@@ -248,7 +248,6 @@ type
     cbProjSave: TTntCheckBox;
     TntGroupBox1: TTntGroupBox;
     TntLabel26: TTntLabel;
-    cbMapVScroll: TTntCheckBox;
     edMapZoom: TSpinEdit;
     boxFGroup: TTntGroupBox;
     TntLabel1: TTntLabel;
@@ -767,7 +766,7 @@ begin
     Tree.AutoSynchronize:=cbTreeSync.Checked;
     Tree.UpdateDelay:= cbTreeDelay.Value;
 
-    opMapVScroll:= cbMapVScroll.Checked;
+    //opMapVScroll:= cbMapVScroll.Checked;
     opMapZoom:= edMapZoom.Value;
     ApplyMap;
   end;
@@ -2245,7 +2244,7 @@ begin
     cbTreeSync.Checked:=Tree.AutoSynchronize;
     cbTreeDelay.Value:= Tree.UpdateDelay;
 
-    cbMapVScroll.Checked:= opMapVScroll;
+    //cbMapVScroll.Checked:= opMapVScroll;
     edMapZoom.Value:= opMapZoom;
   end;
 

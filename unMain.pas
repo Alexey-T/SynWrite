@@ -2,8 +2,8 @@
 // SynWrite
 // Main form class
 //-------------------------------------------------------
+//
 //{$define TabOrder} //Show tabs switch-order in caption
-//{$define P} //Disable projects
 //SPELL word must be defined in project options (if spell lib available)
 {$Q-} //Disable to avoid integer exception in TabCtrl_GetXRect (can't find)
 
@@ -110,7 +110,7 @@ type
   TPluginList_Panel = array[0..7] of record
     SCaption: string;
     SFileName: string;
-    FToolButton: TSpTbxItem;
+    FToolButton: TSpTbxTabItem;
     FDll: THandle;
     FWindow: THandle;
     FForm: Pointer;
@@ -526,9 +526,6 @@ type
     ImageListStatus: TImageList;
     TBXItemODel: TSpTbxItem;
     TBXItemODelN: TSpTbxItem;
-    tbPlOut: TSpTbxToolbar;
-    TBXItemOOOut: TSpTbxItem;
-    TBXItemOOFind: TSpTbxItem;
     PopupFind: TSpTbxPopupMenu;
     TBXItemTreeFindNav: TSpTbxItem;
     TBXSeparatorItem36: TSpTbxSeparatorItem;
@@ -722,7 +719,6 @@ type
     TBXItemTidyVal: TSpTbxItem;
     TBXSeparatorItem55: TSpTbxSeparatorItem;
     ListVal: TTntListBox;
-    TBXItemOOVal: TSpTbxItem;
     PopupValidate: TSpTbxPopupMenu;
     TBXItemValNav: TSpTbxItem;
     TBXSeparatorItem56: TSpTbxSeparatorItem;
@@ -798,9 +794,6 @@ type
     TBXSubWin: TSpTbxSubmenuItem;
     ecMarkersClear: TAction;
     TBXItemMarkClear: TSpTbxItem;
-    tbClipMap: TSpTbxToolbar;
-    TBXItemRightClip: TSpTbxItem;
-    TBXItemRightMap: TSpTbxItem;
     ecToggleFocusMap: TAction;
     TBXItemWinMap: TSpTbxItem;
     ecFindInTree: TAction;
@@ -909,9 +902,6 @@ type
     TBXSeparatorItem72: TSpTbxSeparatorItem;
     ecReplaceSelFromClipAll: TAction;
     fRereadOut: TAction;
-    tbPlLeft: TSpTbxToolbar;
-    TBXItemLeftTree: TSpTbxItem;
-    TBXItemLeftProj: TSpTbxItem;
     ecToggleFocusProject: TAction;
     TBXItemWinProj: TSpTbxItem;
     ecInsertImage: TAction;
@@ -943,7 +933,6 @@ type
     fFavAddProj: TAction;
     TBXSeparatorItem75: TSpTbxSeparatorItem;
     TBXItemTbAddToProj: TSpTbxItem;
-    TBXItemRightClips: TSpTbxItem;
     ecToggleFocusClips: TAction;
     TbxItemWinClips: TSpTbxItem;
     PopupClips: TSpTbxPopupMenu;
@@ -980,7 +969,6 @@ type
     TBXSeparatorItem79: TSpTbxSeparatorItem;
     ImageListFtp: TImageList;
     ListPLog: TTntListBox;
-    TBXItemOOPLog: TSpTbxItem;
     PopupPluginsLog: TSpTbxPopupMenu;
     TBXItemPLogCopySel: TSpTbxItem;
     TBXItemPLogCopyAll: TSpTbxItem;
@@ -1005,7 +993,6 @@ type
     TBXSeparatorItem83: TSpTbxSeparatorItem;
     TBXItemECenterLines: TSpTbxItem;
     ListTabs: TTntListView;
-    TBXItemLeftTabs: TSpTbxItem;
     ecToggleFocusTabs: TAction;
     TbxItemWinTabs: TSpTbxItem;
     TBXSubmenuItemPlugins: TSpTbxSubmenuItem;
@@ -1194,6 +1181,21 @@ type
     StatusItemHint: TSpTBXLabelItem;
     TBXMRUListItem1: TSpTBXMRUListItem;
     TBXMRUListItem_Sess: TSpTBXMRUListItem;
+    tbTabsRight: TSpTBXTabSet;
+    TbxTabMinimap: TSpTBXTabItem;
+    TbxTabClips: TSpTBXTabItem;
+    TbxTabClipboard: TSpTBXTabItem;
+    tbTabsOut: TSpTBXTabSet;
+    TbxTabPlugins: TSpTBXTabItem;
+    TbxTabTidy: TSpTBXTabItem;
+    TbxTabResults: TSpTBXTabItem;
+    TbxTabOutput: TSpTBXTabItem;
+    tbTabsLeft: TSpTBXTabSet;
+    TbxTabTabs: TSpTBXTabItem;
+    TbxTabProject: TSpTBXTabItem;
+    TbxTabTree: TSpTBXTabItem;
+    SpTBXSeparatorItem12: TSpTBXSeparatorItem;
+    SpTBXSeparatorItem13: TSpTBXSeparatorItem;
     procedure fOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1943,10 +1945,6 @@ type
       var PaintDefault: Boolean);
     procedure TBXSubmenuItemFRecentsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
-    procedure TBXMRUListItem1Click(Sender: TObject;
-      const Filename: WideString);
-    procedure TBXMRUListItem_SessClick(Sender: TObject;
-      const Filename: WideString);
     procedure TBXSubmenuItemSessPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
 
@@ -2073,11 +2071,18 @@ type
     FCurrPluginAcpStartPos: TPoint; //auto-complete popup position, for cActionSuggestCompletion
     FCurrSelState: TSelState; //current selection state (stream, column, carets etc)
     FCurrTheme: string;      //current SpTBX theme
-    FClickedFrame: TEditorFrame;
 
-    FMenuItems: array of
-      record Id: string; Item: TComponent; end; //array of main-menu-items ids and objects
-    FMenuItem_Colors_Clear, //menu-items in "Recent colors" menu (4 items)
+    FDialogFFiles_Find,       //last values of "Find in files" dialog fields
+    FDialogFFiles_Replace,
+    FDialogFFiles_MaskInc,
+    FDialogFFiles_MaskExc,
+    FDialogFFiles_Dir: Widestring;
+    FDialogFFiles_Left,
+    FDialogFFiles_Top: Integer;
+
+    FMenuItems: array of  //array of menu-items ids for SynHide.ini
+      record Id: string; Item: TComponent; end;
+    FMenuItem_Colors_Clear, //menu-items (4) in "Recent colors" menu
     FMenuItem_Colors_Save,
     FMenuItem_Colors_Open,
     FMenuItem_Colors_Select: TSpTbxItem;
@@ -2087,6 +2092,7 @@ type
 
     //frame related-----------------------------------------
     FCurrentEditor: TSyntaxMemo;
+    FClickedFrame: TEditorFrame;
     function FrameOfEditor(Ed: TSyntaxMemo): TEditorFrame;
     function BrotherEditor(Ed: TSyntaxMemo): TSyntaxMemo;
     procedure SetCurrentEditor(Value: TSyntaxMemo);
@@ -2338,7 +2344,6 @@ type
     procedure UpdateClickedFrame;
     function CloseAll(CanCancel, CanClose: Boolean; FExcept: TEditorFrame = nil): boolean;
     procedure CloseOth(F: TEditorFrame);
-    procedure SetEdModified(Ed: TSyntaxMemo);
     procedure SetSplitter(const F: Double);
     function PagesEmpty(P: TTntPageControl): boolean;
     procedure DoMoveTabToOtherView(NTab: integer);
@@ -2597,7 +2602,6 @@ type
     opASaveMaxSizeKb: integer;
     opASaveUnnamed: integer; //0: ignore, 1: prompt for fn, 2: save to dir
     opASaveUnnamedDir: string;
-    opMapVScroll: boolean;
     opMapZoom: integer;
     opMicroMap: boolean;
     opColorMap: integer;
@@ -2835,15 +2839,15 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.6.580a';
+  cSynVer = '5.6.602';
 
 implementation
 
 uses
   Clipbrd, Registry, CommCtrl,
-  StrUtils, Types, Math,
+  StrUtils, Types, Math, ShellApi,
+
   TntSysUtils, TntClipbrd, TntFileCtrl,
-  ShellApi,
 
   ATxFProc, ATxSProc, ATxUtilMail,
   ATxColorCodes,
@@ -4279,7 +4283,7 @@ begin
     opTabsSortMode:= ReadInteger('Win', 'TabSort', 0);
     opTabsWidths:= ReadString('Win', 'TabWdt', '100,400,');
 
-    opMapVScroll:= ReadBool('View', 'MapVSc', true);
+    //opMapVScroll:= ReadBool('View', 'MapVSc', true);
     opMapZoom:= ReadInteger('View', 'MapZoom', 25);
     opMicroMap:= ReadBool('View', 'MicroMap', false);
     opColorMap:= ReadInteger('View', 'MapColor', clSkyBlue);
@@ -4533,7 +4537,7 @@ begin
     PropsManager.SaveProps(f);
 
     //view
-    WriteBool('View', 'MapVSc', opMapVScroll);
+    //WriteBool('View', 'MapVSc', opMapVScroll);
     WriteInteger('View', 'MapZoom', opMapZoom);
     WriteInteger('View', 'MapColor', opColorMap);
     WriteBool('View', 'MicroMap', opMicroMap);
@@ -6369,10 +6373,11 @@ begin
   begin
     FNeedRepaint:= false;
 
+    FixDraw(plOut, true);
+    FixDraw(plTree, false);
+    FixDraw(plClip, false);
+
     //Repaint TBs
-    with plOut do begin Width:= Width+2; Width:= Width-2; end;
-    with plTree do begin Height:= Height+2; Height:= Height-2; end;
-    with plClip do begin Height:= Height+2; Height:= Height-2; end;
     tbMenu.Invalidate;
     tbView.Invalidate;
     tbQS.Invalidate;
@@ -6381,8 +6386,7 @@ begin
 
     //Repaint editor
     if CurrentEditor<>nil then
-      with CurrentEditor do
-        begin Width:= Width+2; Width:= Width-2; end;
+      FixDraw(CurrentEditor, true);
   end;
 end;
 
@@ -6486,7 +6490,7 @@ end;
 procedure TfmMain.plTreeResize(Sender: TObject);
 begin
   plTree.Invalidate;
-  tbPlLeft.Invalidate;
+  tbTabsLeft.Invalidate;
   DoResizePlugins;
 end;
 
@@ -6534,6 +6538,13 @@ procedure TfmMain.FormShow(Sender: TObject);
 begin
   FixSplitters;
 
+  tbTabsLeft.TabAutofit:= true;
+  tbTabsRight.TabAutofit:= true;
+  tbTabsOut.TabAutofit:= true;
+  tbTabsLeft.TabAutofitMaxSize:= 150;
+  tbTabsRight.TabAutofitMaxSize:= 150;
+  tbTabsOut.TabAutofitMaxSize:= 150;
+
   //scale sizes for 150% DPI
   if PixelsPerInch<>96 then
   begin
@@ -6552,11 +6563,6 @@ begin
       }
     end;
   end;
-
-  {$ifdef P}
-  tbPlLeft.Hide;
-  TbxItemWinProj.Visible:= false;
-  {$endif}
 
   {$ifndef SPELL}
   TbxItemTbSpellLive.Enabled:= false;
@@ -7764,27 +7770,23 @@ begin
     fmClips.List.Invalidate;
   DoPluginsRepaint;
 
-  tbPlLeft.Invalidate;
-  tbPlOut.Invalidate;
-  tbClipMap.Invalidate;
+  tbTabsLeft.Invalidate;
+  tbTabsOut.Invalidate;
+  tbTabsRight.Invalidate;
 end;
 
 procedure TfmMain.DoRepaintTBs2;
 begin
   if Assigned(fmClip) then
-    with fmClip.ListClip do
-      begin Width:= Width+2; Width:= Width-2; end;
+    FixDraw(fmClip.ListClip, true);
 
   if Assigned(fmMap) then
-    with fmMap.edMap do
-      begin Width:= Width+2; Width:= Width-2; end;
+    FixDraw(fmMap.edMap, true);
 
-  with Tree do
-    begin Width:= Width+2; Width:= Width-2; end;
+  FixDraw(Tree);
 
   if CurrentEditor<>nil then
-    with CurrentEditor do
-      begin Width:= Width+2; Width:= Width-2; end;
+    FixDraw(CurrentEditor, true);
 end;
 
 procedure TfmMain.FormResize(Sender: TObject);
@@ -7842,20 +7844,6 @@ begin
   if Sender is TSpTbxItem then
     if not (Sender as TSpTbxItem).Checked then
       ChangeEncoding(CurrentFrame, (Sender as TComponent).Tag, False{ACanReload});
-end;
-
-procedure TfmMain.SetEdModified(Ed: TSyntaxMemo);
-var p: TPoint;
-begin
-  with Ed do
-  begin
-    BeginUpdate;
-    p:= CaretPos;
-    InsertText(' ');
-    CaretPos:= p;
-    DeleteText(1);
-    EndUpdate;
-  end;
 end;
 
 procedure TfmMain.SetCP(Frame: TEditorFrame; enc: Integer);
@@ -7918,7 +7906,7 @@ begin
        end;
 
     if not ACanReload then
-      SetEdModified(Frame.EditorMaster);
+      EditorSetModified(Frame.EditorMaster);
   end; //with Frame
   UpdateStatusBar;
 end;
@@ -8930,7 +8918,8 @@ begin
   {$endif}  
 
   //unset clip hook
-  fmClip.Close;
+  if Assigned(fmClip) then
+    fmClip.Close;
   //clear find results
   ClearTreeFind;
   //close plugins
@@ -9722,44 +9711,9 @@ end;
 
 procedure TfmMain.TBXSubmenuItemLexerPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
-var i, j: integer;
-  item: TSpTbxItem;
-  isub: TSpTbxSubmenuItem;
 begin
   UpdateLexList;
-  with TbxSubmenuitemLexer do
-  begin
-    Clear;
-    for i:= 0 to PopupLex.Items.Count-1 do
-      if PopupLex.Items[i] is TSpTbxItem then
-      begin
-        Item:= TSpTbxItem.Create(Self);
-        Item.Caption:= PopupLex.Items[i].Caption;
-        Item.OnClick:= PopupLex.Items[i].OnClick;
-        Item.RadioItem:= PopupLex.Items[i].RadioItem;
-        Item.Checked:= PopupLex.Items[i].Checked;
-        Item.Tag:= PopupLex.Items[i].Tag;
-        Add(Item);
-      end
-      else
-      begin
-        isub:= TSpTbxSubmenuItem.Create(Self);
-        isub.Caption:= PopupLex.Items[i].Caption;
-        isub.LinkSubitems:= (PopupLex.Items[i] as TSpTbxSubmenuItem).LinkSubitems;
-        for j:= 0 to (PopupLex.Items[i] as TSpTbxSubmenuItem).Count-1 do
-          with (PopupLex.Items[i] as TSpTbxSubmenuItem).Items[j] do
-          begin
-            Item:= TSpTbxItem.Create(Self);
-            Item.Caption:= Caption;
-            Item.OnClick:= OnClick;
-            Item.RadioItem:= RadioItem;
-            Item.Checked:= Checked;
-            Item.Tag:= Tag;
-            isub.Add(Item);
-          end;
-        Add(isub);
-      end;
-  end;
+  TbxSubmenuItemLexer.LinkSubitems:= PopupLex.Items;
 end;
 
 procedure TfmMain.TBXItemEDupClick(Sender: TObject);
@@ -9770,15 +9724,6 @@ end;
 function TfmMain.GetTheme: string;
 begin
   Result:= FCurrTheme;
-  {
-  if FCurrTheme<>'' then
-    Result:= FCurrTheme
-  else
-  if SkinManager.IsDefaultSkin then
-    Result:= cThemeWindows
-  else
-    Result:= SkinManager.CurrentSkinName;
-    }
 end;
 
 procedure TfmMain.SetTheme(const S: string);
@@ -9790,7 +9735,7 @@ begin
   if Pos('*', S)=1 then
   begin
     SkinManager.SetToDefaultSkin;
-    SkinManager.LoadFromFile(SynSkinFilename(S))
+    SkinManager.LoadFromFile(SynSkinFilename(S));
   end  
   else
     SkinManager.SetSkin(S);
@@ -10025,9 +9970,9 @@ begin
   tbFile.ChevronHint:= tbQS.ChevronHint;
   tbEdit.ChevronHint:= tbQS.ChevronHint;
   tbView.ChevronHint:= tbQS.ChevronHint;
-  tbPlLeft.ChevronHint:= tbQS.ChevronHint;
-  tbClipMap.ChevronHint:= tbQS.ChevronHint;
-  tbPlOut.ChevronHint:= tbQS.ChevronHint;
+  //tbTabsLeft.ChevronHint:= tbQS.ChevronHint;
+  //tbTabsRight.ChevronHint:= tbQS.ChevronHint;
+  //tbTabsOut.ChevronHint:= tbQS.ChevronHint;
   tbUser1.ChevronHint:= tbQS.ChevronHint;
   tbUser2.ChevronHint:= tbQS.ChevronHint;
   tbUser3.ChevronHint:= tbQS.ChevronHint;
@@ -10696,7 +10641,7 @@ begin
   SyntaxManagerChange(Self);
 
   ChangeEncoding(CurrentFrame, Enc);
-  SetEdModified(CurrentFrame.EditorMaster);
+  EditorSetModified(CurrentFrame.EditorMaster);
 end;
 
 //tab [X] button rect
@@ -10756,6 +10701,11 @@ begin
       //if you hover over X button of last tab, theme BG drawn little over last tab
 
     if R.Left<=R.Right then
+      (*
+      CurrentSkin.PaintThemedElementBackground(
+        PageControl.Canvas, R,
+        skncTab, true, false{Pushed}, false{Hottrack}, false{Checked}, false, false, false);
+        *)
       CurrentSkin.PaintBackground(
         PageControl.Canvas, R,
         skncDock, sknsNormal, true{BG}, false{Borders});
@@ -12031,6 +11981,15 @@ begin
     end;
     AErrorMode:= 0;
 
+    //use last values of fields
+    SR_LastLeft:= FDialogFFiles_Left;
+    SR_LastTop:= FDialogFFiles_Top;
+    SR_LastFind:= FDialogFFiles_Find;
+    SR_LastReplace:= FDialogFFiles_Replace;
+    SR_LastMaskInc:= FDialogFFiles_MaskInc;
+    SR_LastMaskExc:= FDialogFFiles_MaskExc;
+    SR_LastDir:= FDialogFFiles_Dir;
+
     //center form
     Left:= Self.Monitor.Left + (Self.Monitor.Width - Width) div 2;
     Top:= Self.Monitor.Top + (Self.Monitor.Height - Height) div 2;
@@ -12080,8 +12039,17 @@ begin
 
     //confirm mass replace
     if AShowResult = resReplaceAll then
-      if not MsgConfirm(WideFormat(DKLangConstW('FFCfm'), [edDir.Text, edFile.Text])) then
+      if not MsgConfirm(WideFormat(DKLangConstW('FFCfm'), [edDir.Text, edFileInc.Text])) then
         begin RestoreFinder; Exit end;
+
+    //save last dialog field values
+    FDialogFFiles_Find:= ed1.Text;
+    FDialogFFiles_Replace:= ed2.Text;
+    FDialogFFiles_MaskInc:= edFileInc.Text;
+    FDialogFFiles_MaskExc:= edFileExc.Text;
+    FDialogFFiles_Dir:= edDir.Text;
+    FDialogFFiles_Left:= Left;
+    FDialogFFiles_Top:= Top;
 
     //find files to StringList
     FListFiles.Clear;
@@ -12094,7 +12062,7 @@ begin
 
     ShowProgress(proFindFiles);
     try
-      FFindToList(FListFiles, edDir.Text, edFile.Text, edFileExc.Text,
+      FFindToList(FListFiles, edDir.Text, edFileInc.Text, edFileExc.Text,
         cbSubDir.Checked, cbNoRO.Checked, cbNoHid.Checked, cbNoHid2.Checked);
       if StopFind then
       begin
@@ -13098,10 +13066,18 @@ begin
   ListVal.Visible:= n=tbVal;
   TreeFind.Visible:= n=tbFind;
   ListPLog.Visible:= n=tbPluginsLog;
-  TbxItemOOOut.Checked:= n=tbOut;
-  TbxItemOOFind.Checked:= n=tbFind;
-  TbxItemOOVal.Checked:= n=tbVal;
-  TbxItemOOPLog.Checked:= n=tbPluginsLog;
+
+  if n=tbOut then
+    tbTabsOut.ActiveTabIndex:= 0
+  else
+  if n=tbFind then
+    tbTabsOut.ActiveTabIndex:= 1
+  else
+  if n=tbVal then
+    tbTabsOut.ActiveTabIndex:= 2
+  else
+  if n=tbPluginsLog then
+    tbTabsOut.ActiveTabIndex:= 3;
 end;
 
 procedure TfmMain.UpdLeft(n: TLeftTab);
@@ -13109,10 +13085,6 @@ var
   IsTree, IsProj, IsTabs: boolean;
   i: Integer;
 begin
-  {$ifdef P}
-  n:= tbTree;
-  {$endif}
-
   //is it plugin tab?
   if n>tbProj then
   begin
@@ -13165,9 +13137,14 @@ end;
 
 procedure TfmMain.UpdateCheckLeftTabs(IsTree, IsProj, IsTabs: boolean);
 begin
-  TBXItemLeftTree.Checked:= IsTree;
-  TBXItemLeftProj.Checked:= IsProj;
-  TbxItemLeftTabs.Checked:= IsTabs;
+  if IsTree then
+    tbTabsLeft.ActiveTabIndex:= 0
+  else
+  if IsProj then
+    tbTabsLeft.ActiveTabIndex:= 1
+  else
+  if IsTabs then
+    tbTabsLeft.ActiveTabIndex:= 2;
 end;
 
 procedure TfmMain.UpdRight(n: TRightTab);
@@ -13197,9 +13174,14 @@ begin
     SyncMapPos;
   end;
 
-  TbxItemRightClip.Checked:= IsClip;
-  TbxItemRightMap.Checked:= IsMap;
-  TbxItemRightClips.Checked:= IsClips;
+  if IsClip then
+    tbTabsRight.ActiveTabIndex:= 0
+  else
+  if IsMap then
+    tbTabsRight.ActiveTabIndex:= 1
+  else
+  if IsClips then
+    tbTabsRight.ActiveTabIndex:= 2;
 
   if IsMap then
     plClip.Caption:= DKLangConstW('capMap')
@@ -13570,7 +13552,18 @@ begin
 end;
 
 procedure TfmMain.LoadClip;
+//var
+//  i: Integer;
 begin
+  {
+  //handle command-line parameter /noclip
+  if SynExe then
+  begin
+    for i:= 1 to ParamCount do
+      if ParamStr(i) = '/noclip' then Exit;
+  end;
+  }
+
   if Assigned(fmClip) then Exit;
   fmClip:= TfmClip.Create(Self);
   with fmClip do
@@ -13636,8 +13629,6 @@ end;
 
 procedure TfmMain.LoadProj;
 begin
-  {$ifdef P} Exit; {$endif}
-
   if Assigned(fmProj) then Exit;
   fmProj:= TfmProj.Create(Self);
   with fmProj do
@@ -13691,8 +13682,6 @@ procedure TfmMain.plClipVisibleChanged(Sender: TObject);
 begin
   FixSplitters;
   ecShowClip.Checked:= plClip.Visible;
-  {with plClip do
-    begin Width:= Width+1; Width:= Width-1 end;} //test
 end;
 
 procedure TfmMain.ecShowClipExecute(Sender: TObject);
@@ -14033,7 +14022,7 @@ begin
     AddLineToEnd(Ed);
     Ed.DuplicateLine(Ed.CaretPos.Y);
     Ed.ExecCommand(smDown);
-    SetEdModified(Ed);
+    EditorSetModified(Ed);
   finally
     Ed.EndUpdate;
   end;
@@ -15306,7 +15295,7 @@ begin
     with CurrentEditor do
     begin
       //Need separ. action in Undo list (after typing text)
-      SetEdModified(CurrentEditor);
+      EditorSetModified(CurrentEditor);
       InsertText(s);
     end;
 end;
@@ -16703,7 +16692,7 @@ procedure TfmMain.TBXSubmenuItemTidyPopup(Sender: TTBCustomItem;
 var
   i: Integer;
   L: TStringList;
-  MI: TTbCustomItem;
+  MI: TSpTbxItem;
   en: boolean;
 begin
   en:= CurrentFrame.FileName<>'';
@@ -17364,37 +17353,37 @@ Menu demo
 procedure TfmMain.SpellPopupCreateMenu(Sender: TObject;
      Owner: TComponent; var PopupMenu: TObject);
 var
-  MenuItem: TTbCustomItem;
+  AMenu: TSpTbxPopupMenu;
+  AMenuItem: TSpTbxItem;
 begin
-	PopupMenu:= TSpTbxPopupMenu.Create(Owner);
-	TSpTbxPopupMenu(PopupMenu).AutoHotkeys:= maManual;
+  AMenu:= TSpTbxPopupMenu.Create(Owner);
+	AMenu.AutoHotkeys:= maManual;
+	PopupMenu:= AMenu;
 
   //info item
-	MenuItem:= TSpTbxItem.Create(TComponent(PopupMenu));
-	MenuItem.Caption:= DKLangConstW('zMSpell');
-  MenuItem.Enabled:= false;
-	TSpTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
+	AMenuItem:= TSpTbxItem.Create(AMenu);
+	AMenuItem.Caption:= DKLangConstW('zMSpell');
+  AMenuItem.Enabled:= false;
+	AMenu.Items.Add(AMenuItem);
   //cut
-	MenuItem:= TSpTbxItem.Create(TComponent(PopupMenu));
-	MenuItem.Caption:= TbxItemCtxCut.Caption;
-  MenuItem.Enabled:= CurrentEditor.HaveSelection;
-  MenuItem.OnClick:= SpellCutClick;
-	TSpTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
+	AMenuItem:= TSpTbxItem.Create(AMenu);
+	AMenuItem.Caption:= TbxItemCtxCut.Caption;
+  AMenuItem.Enabled:= CurrentEditor.HaveSelection;
+  AMenuItem.OnClick:= SpellCutClick;
+	AMenu.Items.Add(AMenuItem);
   //copy
-	MenuItem:= TSpTbxItem.Create(TComponent(PopupMenu));
-	MenuItem.Caption:= TbxItemCtxCopy.Caption;
-  MenuItem.Enabled:= CurrentEditor.HaveSelection;
-  MenuItem.OnClick:= SpellCopyClick;
-	TSpTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
+	AMenuItem:= TSpTbxItem.Create(AMenu);
+	AMenuItem.Caption:= TbxItemCtxCopy.Caption;
+  AMenuItem.Enabled:= CurrentEditor.HaveSelection;
+  AMenuItem.OnClick:= SpellCopyClick;
+	AMenu.Items.Add(AMenuItem);
   //paste
-	MenuItem:= TSpTbxItem.Create(TComponent(PopupMenu));
-	MenuItem.Caption:= TbxItemCtxPaste.Caption;
-  MenuItem.OnClick:= SpellPasteClick;
-	TSpTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
+	AMenuItem:= TSpTbxItem.Create(AMenu);
+	AMenuItem.Caption:= TbxItemCtxPaste.Caption;
+  AMenuItem.OnClick:= SpellPasteClick;
+	AMenu.Items.Add(AMenuItem);
   //sep
-  MenuItem:= TSpTbxSeparatorItem.Create(TComponent(PopupMenu));
-  MenuItem.Caption:= '-';
-  TSpTbxPopupMenu(PopupMenu).Items.Add(MenuItem);
+  AMenu.Items.Add(TSpTbxSeparatorItem.Create(AMenu));
 end;
 
 //same Menu demo
@@ -17441,7 +17430,7 @@ begin
      begin
     		vMenuItem:= TSpTbxItem.Create (TComponent (Menu));
     		TSpTbxPopupMenu (Menu).Items.Add (vMenuItem);
-    		vMenuItem.Caption:= Caption;
+    		(vMenuItem as TSpTbxItem).Caption:= Caption;
     		vMenuItem.Enabled:= Enabled;
     		vMenuItem.Tag:= Tag;
         MenuItem:= vMenuItem;
@@ -17462,7 +17451,8 @@ begin
                TSpTbxPopupMenu (Menu).Items.Add (vMenuItem);
           end;
 
-          vMenuItem.Caption:= Caption;
+          if (vMenuItem is TSpTbxItem) then
+            (vMenuItem as TSpTbxItem).Caption:= Caption;
           vMenuItem.Enabled:= Enabled;
           if (Tag > 0) then
           begin
@@ -17597,7 +17587,7 @@ begin
   if Assigned(fmMap) then
     with fmMap do
     begin
-      SetMapScrollBars(false, opMapVScroll);
+      //SetMapScrollBars(false, opMapVScroll);
       SetMapZoom(opMapZoom);
       SetMapColor(opColorMap);
     end;
@@ -18801,7 +18791,7 @@ begin
     begin
       fNew.Execute;
       CurrentEditor.Lines.AddStrings(L);
-      SetEdModified(CurrentEditor);
+      EditorSetModified(CurrentEditor);
     end;
   finally
     FreeAndNil(L);
@@ -19800,7 +19790,7 @@ begin
         begin
           FNew.Execute;
           CurrentEditor.Lines.AddStrings(List);
-          SetEdModified(CurrentEditor);
+          EditorSetModified(CurrentEditor);
         end;
 
       outReplaceSel:
@@ -20051,7 +20041,10 @@ begin
   //replace
   NLine:= Ed.TopLine;
   Finder.ReplaceAll;
+  if Finder.Matches>0 then
+    EditorSetModified(Ed);
   Ed.TopLine:= NLine;
+
   MsgFound;
 end;
 
@@ -21830,7 +21823,7 @@ end;
 procedure TfmMain.LoadPluginsInfo;
 var
   i: Integer;
-  Item: TSpTbxItem;
+  Item: TSpTbxTabItem;
 begin
   //disable plugins in WLX
   if not SynExe then Exit;
@@ -21840,12 +21833,12 @@ begin
     with FPlugins[i] do
       if SCaption<>'' then
       begin
-        Item:= TSpTbxItem.Create(Self);
+        Item:= TSpTbxTabItem.Create(Self);
         Item.Caption:= SCaption;
         Item.Tag:= i;
         Item.OnClick:= PluginPanelItemClick;
         FToolButton:= Item;
-        tbPlLeft.Items.Add(Item);
+        tbTabsLeft.Items.Add(Item);
       end;
 end;
 
@@ -21947,7 +21940,7 @@ begin
   X:= 0;
   Y:= plTree.CaptionPanelSize.Y;
   XSize:= plTree.ClientWidth;
-  YSize:= plTree.ClientHeight - Y - tbPlLeft.Height;
+  YSize:= plTree.ClientHeight - Y - tbTabsLeft.Height;
 
   for i:= Low(FPlugins) to High(FPlugins) do
     with FPlugins[i] do
@@ -22375,12 +22368,12 @@ begin
   case ACmd of
     cSynLogCmdHide:
       begin
-        TBXItemOOPLog.Visible:= false;
+        TbxTabPlugins.Visible:= false;
         UpdOut(tbOut);
       end;
     cSynLogCmdShow:
       begin
-        TBXItemOOPLog.Visible:= true;
+        TbxTabPlugins.Visible:= true;
         UpdOut(tbPluginsLog);
         plOut.Show;
       end;
@@ -22396,7 +22389,7 @@ begin
     cSynLogCmdClear:
       ListPLog.Items.Clear;
     cSynLogCmdSetCaption:
-      TBXItemOOPLog.Caption:= AMsg;
+      TbxTabPlugins.Caption:= AMsg;
     else
       Result:= cSynBadCmd;
   end;
@@ -23543,7 +23536,7 @@ begin
     Options:= Options+[ofOverwritePrompt];
     Filter:= '*.log;*.txt|*.log;*.txt';
     InitialDir:= '';
-    FileName:= TBXItemOOPLog.Caption;
+    FileName:= TbxTabPlugins.Caption;
     if Execute then
     begin
       if ExtractFileExt(FileName)='' then
@@ -26215,18 +26208,6 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXMRUListItem1Click(Sender: TObject;
-  const Filename: WideString);
-begin
-  OpnFile(FileName);
-end;
-
-procedure TfmMain.TBXMRUListItem_SessClick(Sender: TObject;
-  const Filename: WideString);
-begin
-  OpenSession(FileName);
-end;
-
 procedure TfmMain.TBXSubmenuItemSessPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
@@ -26242,14 +26223,13 @@ end;
 
 function TfmMain.SynSkinsDir: string;
 begin
-  Result:= SynDir+'template\skins';
+  Result:= SynDir + 'template\skins';
 end;  
 
 function TfmMain.SynSkinFilename(const Name: string): string;
 begin
   Result:= SynSkinsDir + '\' + Copy(Name, 2, MaxInt) + '.skn';
 end;
-
 
 end.
 

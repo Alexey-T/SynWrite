@@ -57,7 +57,7 @@ begin
   edMap.Gutter.Visible:= false;
   edMap.DefaultStyles.SearchMark.Font.Color:= clNone;
   edMap.DefaultStyles.SearchMark.BgColor:= $F4F0F6;
-  edMap.Scrollbars:= ssNone;
+  //edMap.Scrollbars:= ssNone;
   edMap.Zoom:= 30;
 end;
 
@@ -186,6 +186,7 @@ end;
 
 procedure TfmMap.SetMapScrollBars(SHorz, SVert: boolean);
 begin
+  (*
   if SHorz and SVert then
     edMap.ScrollBars:= ssBoth
   else
@@ -196,6 +197,7 @@ begin
     edMap.ScrollBars:= ssVertical
   else
     edMap.ScrollBars:= ssNone;
+    *)
 end;
 
 end.
