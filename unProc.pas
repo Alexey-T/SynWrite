@@ -4,20 +4,24 @@ interface
 
 uses
   ExtCtrls, Types, Forms, SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  StdCtrls,
+  Classes, Graphics, Controls, StdCtrls,
   Messages,
-  TntComCtrls, TntStdCtrls, TntClasses,
+
+  TntComCtrls,
+  TntStdCtrls,
+  TntClasses,
+
   ecSyntMemo,
   ecKeyMap,
   ecStrUtils,
   ecMemoStrings,
   ecSyntDlg,
   ecSyntTree,
+  ecSyntAnal,
+
   PngImageList;
 
+function SyntaxManagerFilesFilter(M: TSyntaxManager; SAllText: Widestring): Widestring;
 function GetEditHandle(Target: TObject): THandle;
 procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
 
@@ -168,7 +172,7 @@ type
 function FFreeFN(const Name, ext, Dir: Widestring): Widestring;
 function SFilterNum(const s: string): integer;
 function SFilterIdxToExt(const Filter: string; Index: integer): string;
-function SFilterNameToIdx(const Filter, name: string): integer;
+function SFilterNameToIdx(const AFilter, ALexerName: string): integer;
 
 procedure MsgInfo(const S: WideString);
 procedure MsgWarn(const S: WideString);
@@ -218,7 +222,6 @@ uses
   Windows,
   ecZRegExpr,
   ecUnicode,
-  ecSyntAnal,
   ATxFProc,
   ATxSProc,
   IniFiles,
@@ -457,23 +460,25 @@ end;
 
 // 'Text files (*.txt)|*.TXT|Pascal files (*.pas)|*.PAS'
 // 'Text files' - 1, 'Pascal files' - 2
-function SFilterNameToIdx(const Filter, name: string): integer;
+function SFilterNameToIdx(const AFilter, ALexerName: string): integer;
 var
-  s, ss: string;
-  i:Integer;
+  s, sLexer: string;
+  i: Integer;
 begin
-  Result:= 1;
-  s:= Filter;
+  Result:= 0;
+  s:= AFilter;
   repeat
-    i:= Pos('|', s); if i=0 then Exit;
-    ss:= Copy(s, 1, i-1);
-    SDeleteFrom(ss, '(*.');
-    ss:= Trim(ss);
-    //msg(Format('"%s" "%s" %d', [ss, Name, Result]));
-    if LowerCase(ss)=LowerCase(Name) then Exit;
-    SDeleteTo(s, '|');
-    SDeleteTo(s, '|');
     Inc(Result);
+    i:= Pos('|', s);
+    if i=0 then //ALexerName not found in AFilter - return last index
+      begin Dec(Result); Exit end;
+    sLexer:= Copy(s, 1, i-1);
+    SDeleteFrom(sLexer, '(*.');
+    sLexer:= Trim(sLexer);
+    //msg(Format('"%s" "%s" %d', [ss, Name, Result]));
+    if LowerCase(sLexer)=LowerCase(ALexerName) then Exit;
+    SDeleteTo(s, '|');
+    SDeleteTo(s, '|');
   until false;
 end;
 
@@ -1784,6 +1789,57 @@ begin
     DeleteText(1);
     EndUpdate;
   end;
+end;
+
+
+function SyntaxManagerFilesFilter(M: TSyntaxManager; SAllText: Widestring): Widestring;
+  function GetExtStr(const Extentions: string): string;
+  var i: integer;
+      st: TzStringList;
+  begin
+    st := TzStringList.Create;
+    st.Delimiter := ' ';
+    st.DelimitedText := Extentions;
+    Result := '';
+    for i := 0 to st.Count - 1 do
+     if i = 0 then Result := '*.' + st[0]
+      else Result := Result + ';*.' + st[i];
+    st.Free;
+  end;
+var
+  i, j: integer;
+  s: string;
+  o: TStringList;
+begin
+ Result := '';
+ o:= TStringList.Create;
+ try
+   o.Duplicates:= dupIgnore;
+   o.Sorted:= True;
+
+   for i := 0 to M.AnalyzerCount - 1 do
+    if not M.Analyzers[i].Internal then
+      with M.Analyzers[i] do
+       o.Add(LexerName);
+
+    for j := 0 to o.Count - 1 do
+      for i := 0 to M.AnalyzerCount - 1 do
+        if not M.Analyzers[i].Internal then
+          with M.Analyzers[i] do
+           if LexerName=o[j] then
+           begin
+            s := GetExtStr(Extentions);
+            if s <> '' then
+              if Pos('/', s) = 0 then //skip "Makefiles" lexer
+                Result := Result + Format('%s (%s)|%1:s|', [LexerName, s]);
+           end;
+  finally
+    FreeAndNil(o);
+  end;  
+
+  if SAllText = '' then
+    SAllText:= 'All files';
+  Result := Result + SAllText + ' (*.*)|*.*';
 end;
 
 

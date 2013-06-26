@@ -2523,6 +2523,7 @@ type
     procedure InitMenuItemsList;
     procedure DoOpenBySelection;
     procedure FixSplitters;
+    function SynFilesFilter: Widestring;
     //end of private
 
   protected
@@ -2839,7 +2840,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.6.602';
+  cSynVer = '5.6.604';
 
 implementation
 
@@ -3193,7 +3194,12 @@ end;
 //file too big
 function FBigSized(const fn: WideString): boolean;
 begin
-  Result:= FGetFileSize(fn) >= 200 * 1024 * 1024;
+  Result:= FGetFileSize(fn) >= 120 * 1024 * 1024;
+end;
+
+function TfmMain.SynFilesFilter: Widestring;
+begin
+  Result:= SyntaxManagerFilesFilter(SyntaxManager, DKLangConstW('AllF'));
 end;
 
 procedure TfmMain.fOpenExecute(Sender: TObject);
@@ -3201,11 +3207,7 @@ var
   i: Integer;
   s: Widestring;
 begin
-//debug MadExcept
-//i:= 0;
-//if 2/i>0 then begin end;
-
-  OD.Filter:= SyntaxManager.GetFilesFilter(DKLangConstW('AllF'));
+  OD.Filter:= SynFilesFilter;
   if (opLastDir=1) and (opHistFilter>0) then
     OD.FilterIndex:= opHistFilter
   else
@@ -3349,7 +3351,7 @@ begin
   if PromtDialog then
   begin
     SD.InitialDir:= LastDir;
-    SD.Filter:= SyntaxManager.GetFilesFilter(DKLangConstW('AllF'));
+    SD.Filter:= SynFilesFilter;
 
     if Frame.TextSource.SyntaxAnalyzer<>nil then
       SD.FilterIndex:= SFilterNameToIdx(SD.Filter, Frame.TextSource.SyntaxAnalyzer.LexerName)
@@ -25997,11 +25999,7 @@ begin
     begin
       Item:= FMenuItems[i].Item;
       Id:= FMenuItems[i].Id;
-      if Item is TSpTbxItem then
-      begin
-        List.Items.Add('['+Id+']');
-      end
-      else
+
       if Item is TSpTbxToolbar then
       begin
         for j:= 0 to (Item as TSpTbxToolbar).Items.Count-1 do
@@ -26049,10 +26047,15 @@ begin
         end;
       end
       else
+      if Item is TSpTbxItem then
+      begin
+        List.Items.Add('['+Id+']');
+      end
+      else
       begin
         MsgError('Unknown item type: '+Id);
         Exit
-      end;  
+      end;
       //separator
       List.Items.Add('');
     end;
