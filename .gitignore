@@ -4,6 +4,7 @@
 *.local
 *.identcache
 __history
+*.syn
 *.drc
 *.ddp
 *.dof

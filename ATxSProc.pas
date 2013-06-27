@@ -111,6 +111,7 @@ procedure I64LimitMax(var N: Int64; const Value: Int64);
 
 function SFileExtensionMatch(const FileName: WideString; const ExtList: AnsiString): Boolean;
 function IsFileProject(const fn: Widestring): boolean;
+function IsFileSession(const fn: Widestring): boolean;
 
 
 implementation
@@ -959,6 +960,12 @@ function IsFileProject(const fn: Widestring): boolean;
 begin
   Result:= SFileExtensionMatch(fn, 'synwproj,synw-proj'); 
 end;
+
+function IsFileSession(const fn: Widestring): boolean;
+begin
+  Result:= SFileExtensionMatch(fn, 'syn'); 
+end;
+
 
 function IsUpperChar(Ch: WideChar): boolean;
 begin

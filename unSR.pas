@@ -175,9 +175,9 @@ type
     SRCount: integer;
     SRIniS,
     SRIni: string;
-    SRSel: WideString;
-    SRSelEn,
-    SRSelScope: boolean;
+    SR_SuggestedSel: WideString;
+    SR_SuggestedSelEn,
+    SR_SuggestedSelScope: boolean;
     function TextOptions: Widestring;
     property Text1: Widestring read GetText1 write SetText1;
     property Text2: Widestring read GetText2 write SetText2;

@@ -111,11 +111,12 @@ type
     SRCount: integer;
     SRIniS,
     SRIni: string;
-    SRSel, //suggested selection text
-    SRTextS, //suggested search text
-    SRTextR: WideString; //sugg. replace text 
     ShFind, //shortcuts for Find/Replace dialogs
     ShReplace: TShortcut;
+
+    SR_SuggestedSel, //suggested selection text
+    SR_SuggestedFind, //suggested search text
+    SR_SuggestedReplace: WideString; //sugg. replace text
 
     SR_LastFind,
     SR_LastReplace,
@@ -236,18 +237,9 @@ begin
     edFileInc.Text:= '*.*';
 
   if bExcludeEmpty then
-    edFileExc.Text:= '';  
+    edFileExc.Text:= '';
 
-  if SRTextS<>'' then
-    ed1.Text:= SRTextS
-  else
-  if SRSel<>'' then
-    DoCopyToEdit(ed1, cbSpec.Checked, cbRE.Checked, SRSel);
-
-  if SRTextR<>'' then
-    ed2.Text:= SRTextR;
-
-  //use last values of fields (if not empty passed from main form)  
+  //use last values of fields (if not empty passed from main form)
   if SR_LastFind<>'' then
   begin
     ed1.Text:= SR_LastFind;
@@ -258,6 +250,17 @@ begin
     Left:= SR_LastLeft;
     Top:= SR_LastTop;
   end;
+
+  //use suggested text (current selection or curr word)
+  if SR_SuggestedFind<>'' then
+    ed1.Text:= SR_SuggestedFind
+  else
+  if SR_SuggestedSel<>'' then
+    DoCopyToEdit(ed1, cbSpec.Checked, cbRE.Checked, SR_SuggestedSel);
+
+  if SR_SuggestedReplace<>'' then
+    ed2.Text:= SR_SuggestedReplace;
+
 
   ed1Change(Self);
   cbREClick(Self);

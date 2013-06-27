@@ -38,29 +38,29 @@ uses
 
   TB2Item, TB2Dock, TB2Toolbar,
   TB2MDI, TB2ExtItems,
+
   SpTBXItem, SpTbxMDIMRU, SpTBXDkPanels, SpTBXSkins,
-  SpTBXControls,
+  SpTBXControls, SpTBXTabs, SpTBXEditors, 
 
   ecActns, ecPrint, ecSyntMemo, ecKeyMap, ecPropManager, ecSyntAnal,
   ecSyntTree, ecStrUtils, ecPopupCtrl, ecUnicode,
 
-  TntDialogs,
-  TntStdCtrls,
-  TntComCtrls,
+  TntDialogs, TntStdCtrls, TntComCtrls,
   DKLang,
-
+  PngImageList,
+  
   unProc,
   ATSynPlugins,
   ecMacroRec,
   ecExtHighlight,
-  ecSpell,
-  PngImageList, SpTBXTabs, SpTBXEditors;
+  ecSpell;
 
 const
-  opMruForPlugin = false;
+  opMruForPlugin = false; //use MRU list for Lister-plugin
   cTabColors = 10; //number of misc tab colors (user-defined)
-  cFixedLeftTabs = 3; //number of fixed tabs on left panel
-  cMaxTreeLen = 400; //find in files result: max node length
+  cFixedLeftTabs = 3; //number of fixed tabs on left panel (Tree; Project; Tabs)
+  cMaxTreeLen = 400; //"find in files" result tree: max node length
+  SynDefaultSyn = '(default).syn';
 
 type
   TSynDock = (sdockTop, sdockLeft, sdockRight, sdockBottom);
@@ -2834,13 +2834,12 @@ procedure WndCenter(H: THandle; fm: TCustomForm);
 function MsgConfirmBinary(const fn: WideString): boolean;
 function MsgConfirmCreate(const fn: Widestring): boolean;
 function SAppDir: string;
-function SDefSessionFN: string;
 
 var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.6.604';
+  cSynVer = '5.6.615';
 
 implementation
 
@@ -4733,11 +4732,6 @@ end;
 function SAppDir: string;
 begin
   Result:= FAppDataPath + 'SynWrite';
-end;
-
-function SDefSessionFN: string;
-begin
-  Result:= SAppDir + '\(default).syn';
 end;
 
 {
@@ -8112,24 +8106,24 @@ begin
 
   with fmSR do
   begin
-    SRSel:= '';
-    SRSelEn:= Ed.HaveSelection;
-    SRSelScope:= SRSelEn and IsMultilineSelection(Ed);
+    SR_SuggestedSel:= '';
+    SR_SuggestedSelEn:= Ed.HaveSelection;
+    SR_SuggestedSelScope:= SR_SuggestedSelEn and IsMultilineSelection(Ed);
 
-    if (not SRSelScope){careful} then
+    if (not SR_SuggestedSelScope){careful} then
     begin
       if opSrSuggestSel and (Ed.SelLength>0) then
-        SRSel:= Ed.SelText
+        SR_SuggestedSel:= Ed.SelText
       else
       if opSrSuggestWord then
-        SRSel:= Ed.WordAtPos(Ed.CaretPos);
+        SR_SuggestedSel:= Ed.WordAtPos(Ed.CaretPos);
     end;
 
-    cbSel.Checked:= SRSelScope;
-    cbSel.Enabled:= SRSelEn;
+    cbSel.Enabled:= SR_SuggestedSelEn;
+    cbSel.Checked:= SR_SuggestedSelScope;
 
-    if SRSel<>'' then
-      DoCopyToEdit(ed1, cbSpec.Checked, cbRE.Checked, SRSel);
+    if SR_SuggestedSel<>'' then
+      DoCopyToEdit(ed1, cbSpec.Checked, cbRE.Checked, SR_SuggestedSel);
     ed1Change(Self);
 
     if IsMultiline then
@@ -11961,20 +11955,20 @@ begin
     SRCount:= opSaveSRHist;
     SRIni:= SynIni;
     SRIniS:= SynIni;
-    SRSel:= '';
+    SR_SuggestedSel:= '';
     ShFind:= ShFor(smFindDialog);
     ShReplace:= ShFor(smReplaceDialog);
-    SRTextS:= ATextSearch;
-    SRTextR:= ATextReplace;
+    SR_SuggestedFind:= ATextSearch;
+    SR_SuggestedReplace:= ATextReplace;
 
     if (AErrorMode = 0) then //Only suggest text for 1st search
       with CurrentEditor do
       begin
         if opSrSuggestSel and (SelLength>0) then
-          SRSel:= SelText
+          SR_SuggestedSel:= SelText
         else
         if opSrSuggestWord then
-          SRSel:= WordAtPos(CaretPos);
+          SR_SuggestedSel:= WordAtPos(CaretPos);
       end;
 
     case AErrorMode of
@@ -16966,7 +16960,7 @@ begin
   if ExitCmd and opHistSessionSave then
   begin
     if (FSessionFN='') or opHistSessionDef then
-      fn:= SDefSessionFN
+      fn:= SynIniDir + SynDefaultSyn
     else
       fn:= FSessionFN;
     SaveSession(fn);

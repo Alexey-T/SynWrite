@@ -21,6 +21,7 @@ type
     TntLabel1: TTntLabel;
     bUn: TTntButton;
     cbProj: TTntCheckBox;
+    cbSession: TTntCheckBox;
     procedure FormShow(Sender: TObject);
     procedure cbShellClick(Sender: TObject);
     procedure cbTxtClick(Sender: TObject);
@@ -31,6 +32,7 @@ type
     procedure ListClickCheck(Sender: TObject);
     procedure bUnClick(Sender: TObject);
     procedure cbProjClick(Sender: TObject);
+    procedure cbSessionClick(Sender: TObject);
   private
     { Private declarations }
     FLock: boolean;
@@ -59,6 +61,7 @@ begin
   cbTxt.Checked:= IsFileAssocEnabled('txt');
   cbIni.Checked:= IsFileAssocEnabled('ini');
   cbProj.Checked:= IsFileAssocEnabled('synwproj') or IsFileAssocEnabled('synw-proj');
+  cbSession.Checked:= IsFileAssocEnabled('syn');
 
   for i:= 0 to FLex.Count-1 do
     ed.Items.Add(Copy(FLex[i], 1, Pos('=', FLex[i])-1));
@@ -105,6 +108,11 @@ begin
   FLex:= TStringList.Create;
   FLex.Sorted:= true;
   FLex.Duplicates:= dupIgnore;
+
+  cbTxt.Caption:= WideFormat(DKLangConstW('ZMAssoc'), ['TXT']);
+  cbIni.Caption:= WideFormat(DKLangConstW('ZMAssoc'), ['INI']);
+  cbProj.Caption:= WideFormat(DKLangConstW('ZMAssoc'), ['Synw-proj']);
+  cbSession.Caption:= WideFormat(DKLangConstW('ZMAssoc'), ['Syn']);
 end;
 
 procedure TfmShell.FormDestroy(Sender: TObject);
@@ -159,9 +167,15 @@ begin
   cbTxt.Checked:= IsFileAssocEnabled('txt');
   cbIni.Checked:= IsFileAssocEnabled('ini');
   cbProj.Checked:= IsFileAssocEnabled('synwproj') or IsFileAssocEnabled('synw-proj');
+  cbSession.Checked:= IsFileAssocEnabled('syn');
   edChange(Self);
   FLock:= false;
 end;
 
+
+procedure TfmShell.cbSessionClick(Sender: TObject);
+begin
+  DoAssoc('syn', cbSession.Checked);
+end;
 
 end.

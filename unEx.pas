@@ -52,14 +52,15 @@ uses
 {$R *.dfm}
 
 var
+  SynIsPortable: boolean;
   SynIni: string = '';
 
-function GetSynIni: string;
+function GetSynIniDir: string;
 begin
-  if IsFileExist(ExtractFilePath(ParamStr(0)) + 'Portable.ini') then
-    Result:= ExtractFilePath(ParamStr(0)) + 'Syn.ini'
+  if SynIsPortable then
+    Result:= ExtractFilePath(ParamStr(0))
   else
-    Result:= SAppDir + '\' + 'Syn.ini';
+    Result:= SAppDir + '\';
 end;
 
 function GetPassedLineNumber: integer;
@@ -220,7 +221,7 @@ end;
 
 function TfmSynEx.GetSessionFN: string;
 begin
-  Result:= SDefSessionFN;
+  Result:= GetSynIniDir + SynDefaultSyn;
   with TIniFile.Create(SynIni) do
   try
     Result:= UTF8Decode(ReadString('MRU_Sess', '0', Result));
@@ -261,6 +262,11 @@ begin
       if IsFileProject(S) then
       begin
         fmMain.OpnProject(S);
+      end
+      else
+      if IsFileSession(S) then
+      begin
+        fmMain.OpenSession(S);
       end
       else
       begin
@@ -472,7 +478,8 @@ begin
 end;
 
 initialization
-  SynIni:= GetSynIni;
+  SynIsPortable:= IsFileExist(ExtractFilePath(ParamStr(0)) + 'Portable.ini');
+  SynIni:= GetSynIniDir + 'Syn.ini';
   _SynActionProc:= @PluginAction;
 
 end.
