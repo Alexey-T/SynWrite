@@ -34,7 +34,7 @@ object fmShell: TfmShell
     end
     object cbShell: TTntCheckBox
       Left = 8
-      Top = 14
+      Top = 10
       Width = 345
       Height = 19
       Caption = 'Add "SynWrite" item to Explorer context menu'
@@ -44,7 +44,7 @@ object fmShell: TfmShell
     end
     object cbTxt: TTntCheckBox
       Left = 8
-      Top = 40
+      Top = 36
       Width = 345
       Height = 17
       Caption = '-'
@@ -53,7 +53,7 @@ object fmShell: TfmShell
     end
     object cbIni: TTntCheckBox
       Left = 8
-      Top = 56
+      Top = 52
       Width = 345
       Height = 17
       Caption = '-'
@@ -91,7 +91,7 @@ object fmShell: TfmShell
     end
     object cbProj: TTntCheckBox
       Left = 8
-      Top = 72
+      Top = 68
       Width = 345
       Height = 17
       Caption = '-'
@@ -99,8 +99,8 @@ object fmShell: TfmShell
       OnClick = cbProjClick
     end
     object cbSession: TTntCheckBox
-      Left = 7
-      Top = 88
+      Left = 8
+      Top = 84
       Width = 345
       Height = 17
       Caption = '-'

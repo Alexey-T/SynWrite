@@ -368,11 +368,7 @@ begin
   begin
     //Esc in QSearch
     if fmMain.edQs.Focused then
-      case fmMain.opQsEsc of
-        0: fmMain.TBXItemTQsClick(Self);
-        1: fmMain.fExit.Execute;
-        else fmMain.FocusEditor;
-      end
+      fmMain.DoHandleQuickSearchEscape
     else
     //Esc in progress form
     if Assigned(fmMain.fmProgress) and (fmMain.fmProgress.Visible) then

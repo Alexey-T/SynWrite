@@ -171,6 +171,11 @@ type
     FCaretPos: TPoint;
   end;
 
+const
+  cColorsNum = 54;
+type
+  TSynColors = array[0..cColorsNum-1] of TColor;
+
 type
   TfmMain = class(TTntForm)
     ActionList: TActionList;
@@ -2349,8 +2354,10 @@ type
     procedure DoMoveTabToOtherView(NTab: integer);
     procedure DoMoveTabToWindow(NTab: integer; AndClose: boolean);
     function LastDir: Widestring;
+    function LastDir_UntitledFile: Widestring;
     procedure SaveLastDir(const FN, Filter: Widestring; FilterIndex: integer);
-    procedure SaveLastDirSession(const FN: Widestring);
+    procedure SaveLastDir_Session(const FN: Widestring);
+    procedure SaveLastDir_UntitledFile(const FN: Widestring);
     procedure SetFS(AValue: boolean);
     procedure SetOnTop(V: boolean);
     procedure AddLineToEnd(E: TSyntaxMemo);
@@ -2746,6 +2753,8 @@ type
     procedure ApplyEd2;
     procedure ApplyFonts;
     procedure ApplyColors;
+    procedure ApplyColorsArrayToEditor(var C: TSynColors; Ed: TSyntaxMemo);
+    procedure InitColorsArray(var C: TSynColors);
     procedure ApplyACP;
     procedure ApplyOut;
     procedure ApplyMap;
@@ -2798,6 +2807,8 @@ type
     function IsPluginWindowActive(var HWnd: THandle): boolean;
     function opMarkDeletedAsModified: boolean;
     procedure SetHint(const S: WideString);
+    procedure DoHandleQuickSearchEscape;
+    function DoHandleEscapeActions: boolean;
     //end of public
   end;
 
@@ -2839,7 +2850,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.6.615';
+  cSynVer = '5.6.620';
 
 implementation
 
@@ -3338,6 +3349,8 @@ end;
 
 //Save specified frame
 function TfmMain.SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
+var
+  AUntitled: boolean;
 begin
   Result:= true;
   if Frame=nil then Exit;
@@ -3345,11 +3358,16 @@ begin
 
   DoCheckUnicodeNeeded(Frame);
 
+  AUntitled:= Frame.IsNewFile;
   if not PromtDialog then
-    PromtDialog:= Frame.IsNewFile;
+    PromtDialog:= AUntitled;
+
   if PromtDialog then
   begin
-    SD.InitialDir:= LastDir;
+    if AUntitled then
+      SD.InitialDir:= LastDir_UntitledFile
+    else
+      SD.InitialDir:= LastDir;
     SD.Filter:= SynFilesFilter;
 
     if Frame.TextSource.SyntaxAnalyzer<>nil then
@@ -3384,7 +3402,10 @@ begin
       SyntaxManagerChange(Self);
 
       //save last dir
-      SaveLastDir(SD.FileName, SD.Filter, SD.FilterIndex);
+      if AUntitled then
+        SaveLastDir_UntitledFile(SD.FileName)
+      else
+        SaveLastDir(SD.FileName, SD.Filter, SD.FilterIndex);
       //spell
       UpdateSpell(Frame);
     end;
@@ -6534,12 +6555,15 @@ procedure TfmMain.FormShow(Sender: TObject);
 begin
   FixSplitters;
 
+  {
+  //gives exception in SpTBX
   tbTabsLeft.TabAutofit:= true;
   tbTabsRight.TabAutofit:= true;
   tbTabsOut.TabAutofit:= true;
   tbTabsLeft.TabAutofitMaxSize:= 150;
   tbTabsRight.TabAutofitMaxSize:= 150;
   tbTabsOut.TabAutofitMaxSize:= 150;
+  }
 
   //scale sizes for 150% DPI
   if PixelsPerInch<>96 then
@@ -8473,11 +8497,7 @@ begin
     begin
       //Esc in QSearch
       if edQs.Focused then
-        case opQsEsc of
-          0: TbxItemTQsClick(Self);
-          1: PostMessage(hLister, WM_CLOSE, 0, 0);
-          else FocusEditor;
-        end
+        DoHandleQuickSearchEscape
       else
       {
       //Esc in File/Replace
@@ -11055,7 +11075,7 @@ begin
       FileName:= '';
     if Execute then
     begin
-      SaveLastDirSession(FileName);
+      SaveLastDir_Session(FileName);
       SaveSession(FileName);
       SynMruSessions.AddItem(FileName);
       UpdateTitle(CurrentFrame);
@@ -11136,7 +11156,7 @@ begin
         end;
       end;
 
-      SaveLastDirSession(FileName);
+      SaveLastDir_Session(FileName);
       OpenSession(FileName);
       SynMruSessions.AddItem(FileName);
     end;
@@ -11664,7 +11684,6 @@ end;
 procedure TfmMain.fExitExecute(Sender: TObject);
 begin
   if SynExe then
-    //PostMessage(Application.MainForm.Handle, wm_close, 0, 0)
     Application.MainForm.Close
   else
     PostMessage(hLister, WM_CLOSE, 0, 0);
@@ -13846,7 +13865,7 @@ begin
     InitialDir:= opLastDirSession;
     if Execute then
     begin
-      SaveLastDirSession(FileName);
+      SaveLastDir_Session(FileName);
       OpenSession(FileName, True);
       SynMruSessions.AddItem(FileName);
     end;
@@ -13913,6 +13932,35 @@ begin
   end;
 end;
 
+function TfmMain.LastDir_UntitledFile: Widestring;
+begin
+  with TIniFile.Create(SynIni) do
+  try
+    Result:= UTF8Decode(ReadString('Hist', 'DirUntitled', ''));
+  finally
+    Free
+  end;
+
+  if Result='' then
+    Result:= opLastDirPath;
+  if (Result<>'') and not IsDirExist(Result) then
+  begin
+    SetHint(DKLangConstW('MNFoundFold')+': '+Result);
+    MsgBeep;
+    Result:= 'C:\';
+  end;
+end;
+
+procedure TfmMain.SaveLastDir_UntitledFile(const FN: Widestring);
+begin
+  with TIniFile.Create(SynIni) do
+  try
+    WriteString('Hist', 'DirUntitled', UTF8Encode(WideExtractFileDir(FN)));
+  finally
+    Free
+  end;
+end;
+
 procedure TfmMain.SaveLastDir(const FN, Filter: Widestring; FilterIndex: integer);
 begin
   if opLastDir<>1 then Exit;
@@ -13930,7 +13978,7 @@ begin
   end;
 end;
 
-procedure TfmMain.SaveLastDirSession(const FN: Widestring);
+procedure TfmMain.SaveLastDir_Session(const FN: Widestring);
 begin
   opLastDirSession:= WideExtractFileDir(FN);
   //
@@ -22829,7 +22877,7 @@ begin
           if Length(s)<RightMargin then
           begin
             s:= StringOfChar(' ', (RightMargin-Length(s)) div 2) + s;
-            DoReplaceLine(Ed, i, s);
+            DoReplaceLine(Ed, i, s, true{ForceUndo});
           end;
         end;
       finally
@@ -24694,12 +24742,14 @@ end;
 
 procedure TfmMain.TBXItemCaretsRemove1Click(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_CaretsRemoveLeaveFirst);
+  if not DoHandleEscapeActions then
+    CurrentEditor.ExecCommand(sm_CaretsRemoveLeaveFirst);
 end;
 
 procedure TfmMain.TBXItemCaretsRemove2Click(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_CaretsRemoveLeaveLast);
+  if not DoHandleEscapeActions then
+    CurrentEditor.ExecCommand(sm_CaretsRemoveLeaveLast);
 end;
 
 procedure TfmMain.TBXItemCaretsFromSelLeftClick(Sender: TObject);
@@ -26221,12 +26271,165 @@ end;
 function TfmMain.SynSkinsDir: string;
 begin
   Result:= SynDir + 'template\skins';
-end;  
+end;
 
 function TfmMain.SynSkinFilename(const Name: string): string;
 begin
   Result:= SynSkinsDir + '\' + Copy(Name, 2, MaxInt) + '.skn';
 end;
+
+procedure TfmMain.ApplyColorsArrayToEditor(var C: TSynColors; Ed: TSyntaxMemo);
+begin
+  Ed.Font.Color:= C[0];
+  Ed.Color:= C[1];
+  Ed.DefaultStyles.CurrentLine.BgColor:= C[2];
+  Ed.LineNumbers.Font.Color:= C[3];
+  Ed.LineNumbers.UnderColor:= C[3];
+  Ed.Gutter.Bands[1].Color:= C[4];
+  Ed.Gutter.Bands[0].Color:= C[4];
+  Ed.CollapseBreakColor:= C[5];
+  Ed.Gutter.CollapsePen.Color:= C[6];
+  Ed.Gutter.Bands[3].Color:= C[7];
+  //Ed.Gutter.SeparatorColor:= C[8];
+  Ed.DefaultStyles.SelectioMark.Font.Color:= C[9];
+  Ed.DefaultStyles.SelectioMark.BgColor:= C[10];
+  Ed.RightMarginColor:= C[11];
+  //Ed.HintProps.Font.Color:= C[12];
+  //Ed.HintProps.Color:= C[13];
+  Ed.NonPrinted.Color:= C[14];
+  Ed.StaplePen.Color:= C[15];
+  //Ed.Gutter.Bands[1].GradientRight:= C[16];
+  Ed.Gutter.Bands[2].Color:= C[16];
+  Tree.Font.Color:= C[17];
+  Tree.Color:= C[18];
+  Ed.HorzRuler.Font.Color:= C[19];
+  Ed.HorzRuler.Color:= C[20];
+  opColorTab1:= C[21];
+  opColorTab2:= C[22];
+  opColorTab3:= C[23];
+  Ed.DefaultStyles.SearchMark.Font.Color:= C[24];
+  Ed.DefaultStyles.SearchMark.BgColor:= C[25];
+  ListOut.Font.Color:= C[26];
+  ListOut.Color:= C[27];
+  TreeFind.Font.Color:= ListOut.Font.Color;
+  TreeFind.Color:= ListOut.Color;
+  opColorOutSelText:= C[28];
+  opColorOutSelBk:= C[29];
+  opColorOutRedText:= C[30];
+  opColorOutRedSelText:= C[31];
+  opColorOutHi:= C[32];
+  opColorBracket:= C[33];
+  opColorBracketBg:= C[34];
+  opColorLink:= C[35];
+  opColorSplitViews:= C[36];
+  Ed.DefaultStyles.CurrentLine.Font.Color:= C[37];
+  Ed.LineStateDisplay.ModifiedColor:= C[38];
+  Ed.LineStateDisplay.NewColor:= C[39];
+  Ed.LineStateDisplay.SavedColor:= C[40];
+  Ed.LineStateDisplay.UnchangedColor:= C[41];
+  opColorTabFont1:= C[42];
+  opColorTabFont2:= C[43];
+  opColorBkmk:= C[44];
+  opColorMap:= C[45];
+  Ed.DefaultStyles.CollapseMark.Font.Color:= C[46];
+  opColorSplitSlave:= C[47];
+  Ed.Gutter.Bands[2].Color:= C[48];
+  opColorNonPrintedBG:= C[49];
+  Ed.DefaultStyles.CollapseMark.BgColor:= C[50];
+  Ed.SyncEditing.SyncRangeStyle.BgColor:= C[51];
+  opColorMapMarks:= C[52];
+  opColorCaretsGutter:= C[53];
+end;
+
+procedure TfmMain.InitColorsArray(var C: TSynColors);
+begin
+  C[0]:= TemplateEditor.Font.Color;
+  C[1]:= TemplateEditor.Color;
+  C[2]:= TemplateEditor.DefaultStyles.CurrentLine.BgColor;
+  C[3]:= TemplateEditor.LineNumbers.Font.Color;
+  C[4]:= TemplateEditor.Gutter.Bands[1].Color;
+  C[5]:= TemplateEditor.CollapseBreakColor;
+  C[6]:= TemplateEditor.Gutter.CollapsePen.Color;
+  C[7]:= TemplateEditor.Gutter.Bands[3].Color;
+  //C[8]:= TemplateEditor.Gutter.SeparatorColor;
+  C[9]:= TemplateEditor.DefaultStyles.SelectioMark.Font.Color;
+  C[10]:= TemplateEditor.DefaultStyles.SelectioMark.BgColor;
+  C[11]:= TemplateEditor.RightMarginColor;
+  C[12]:= TemplateEditor.HintProps.Font.Color;
+  C[13]:= TemplateEditor.HintProps.Color;
+  C[14]:= TemplateEditor.NonPrinted.Color;
+  C[15]:= TemplateEditor.StaplePen.Color;
+  //C[16]:= TemplateEditor.Gutter.Bands[1].GradientRight;
+  C[17]:= Tree.Font.Color;
+  C[18]:= Tree.Color;
+  C[19]:= TemplateEditor.HorzRuler.Font.Color;
+  C[20]:= TemplateEditor.HorzRuler.Color;
+  C[21]:= opColorTab1;
+  C[22]:= opColorTab2;
+  C[23]:= opColorTab3;
+  C[24]:= TemplateEditor.DefaultStyles.SearchMark.Font.Color;
+  C[25]:= TemplateEditor.DefaultStyles.SearchMark.BgColor;
+  C[26]:= ListOut.Font.Color;
+  C[27]:= ListOut.Color;
+  C[28]:= opColorOutSelText;
+  C[29]:= opColorOutSelBk;
+  C[30]:= opColorOutRedText;
+  C[31]:= opColorOutRedSelText;
+  C[32]:= opColorOutHi;
+  C[33]:= opColorBracket;
+  C[34]:= opColorBracketBg;
+  C[35]:= opColorLink;
+  C[36]:= opColorSplitViews;
+  C[37]:= TemplateEditor.DefaultStyles.CurrentLine.Font.Color;
+  C[38]:= TemplateEditor.LineStateDisplay.ModifiedColor;
+  C[39]:= TemplateEditor.LineStateDisplay.NewColor;
+  C[40]:= TemplateEditor.LineStateDisplay.SavedColor;
+  C[41]:= TemplateEditor.LineStateDisplay.UnchangedColor;
+  C[42]:= opColorTabFont1;
+  C[43]:= opColorTabFont2;
+  C[44]:= opColorBkmk;
+  C[45]:= opColorMap;
+  C[46]:= TemplateEditor.DefaultStyles.CollapseMark.Font.Color;
+  C[47]:= opColorSplitSlave;
+  C[48]:= TemplateEditor.Gutter.Bands[2].Color;
+  C[49]:= opColorNonPrintedBG;
+  C[50]:= TemplateEditor.DefaultStyles.CollapseMark.BgColor;
+  C[51]:= TemplateEditor.SyncEditing.SyncRangeStyle.BgColor;
+  C[52]:= opColorMapMarks;
+  C[53]:= opColorCaretsGutter;
+end;
+
+procedure TfmMain.DoHandleQuickSearchEscape;
+begin
+  case opQsEsc of
+    0:
+      TBXItemTQsClick(Self);
+    1:
+      fExit.Execute;
+    else
+      FocusEditor;
+  end;
+end;
+
+function TfmMain.DoHandleEscapeActions: boolean;
+begin
+  Result:= false;
+  if GetKeyState(vk_escape)<0 then
+  begin
+    if edQS.Focused then
+    begin
+      DoHandleQuickSearchEscape;
+      Result:= true;
+    end
+    else
+    if ecACP.Visible then
+    begin
+      ecACP.CloseUp(false);
+      Result:= true;
+    end;
+  end;  
+end;
+
 
 end.
 

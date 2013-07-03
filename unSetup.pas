@@ -15,9 +15,6 @@ uses
   TntStdCtrls, TntComCtrls, TntForms, TntGrids,
   unSetupOvr;
 
-const
-  cColorsNum = 54;
-
 type
   TfmSetup = class(TTntForm)
     Tabs: TTntPageControl;
@@ -346,6 +343,7 @@ type
     cbNPrintSp: TTntCheckBox;
     cbNPrintEol: TTntCheckBox;
     cbNPrintEolEx: TTntCheckBox;
+    labAcpHelp: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure tabEdShow(Sender: TObject);
@@ -390,7 +388,6 @@ type
     procedure bColorLoadClick(Sender: TObject);
     procedure bDirLastClick(Sender: TObject);
     procedure tabHistShow(Sender: TObject);
-    procedure cbDirLastChange(Sender: TObject);
     procedure cbKeyCatChange(Sender: TObject);
     procedure labDateClick(Sender: TObject);
     procedure tabSearchShow(Sender: TObject);
@@ -441,10 +438,11 @@ type
     procedure labEmmetClick(Sender: TObject);
     procedure tabCaretsShow(Sender: TObject);
     procedure labCaretHelpClick(Sender: TObject);
+    procedure labAcpHelpClick(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
-    Colors: array[0..cColorsNum-1] of TColor;
+    Colors: TSynColors;
     ColorsOfTabs: array[0..Pred(cTabColors)] of TColor;
     FLangChanged: boolean;
     procedure ListKeys;
@@ -791,66 +789,7 @@ begin
     Theme:=cbTheme.Text;
     Icons:=cbIcons.ItemIndex;
     ApplyIntf;
-
-    TemplateEditor.Font.Color:=Colors[0];
-    TemplateEditor.Color:=Colors[1];
-    TemplateEditor.DefaultStyles.CurrentLine.BgColor:=Colors[2];
-    TemplateEditor.LineNumbers.Font.Color:=Colors[3];
-    TemplateEditor.LineNumbers.UnderColor:=Colors[3];
-    TemplateEditor.Gutter.Bands[1].Color:=Colors[4];
-    TemplateEditor.Gutter.Bands[0].Color:=Colors[4];
-    TemplateEditor.CollapseBreakColor:=Colors[5];
-    TemplateEditor.Gutter.CollapsePen.Color:=Colors[6];
-    TemplateEditor.Gutter.Bands[3].Color:=Colors[7];
-    //TemplateEditor.Gutter.SeparatorColor:=Colors[8];
-    TemplateEditor.DefaultStyles.SelectioMark.Font.Color:=Colors[9];
-    TemplateEditor.DefaultStyles.SelectioMark.BgColor:=Colors[10];
-    TemplateEditor.RightMarginColor:=Colors[11];
-    //TemplateEditor.HintProps.Font.Color:=Colors[12];
-    //TemplateEditor.HintProps.Color:=Colors[13];
-    TemplateEditor.NonPrinted.Color:=Colors[14];
-    TemplateEditor.StaplePen.Color:=Colors[15];
-    //TemplateEditor.Gutter.Bands[1].GradientRight:=Colors[16];
-    TemplateEditor.Gutter.Bands[2].Color:=Colors[16];
-    Tree.Font.Color:=Colors[17];
-    Tree.Color:=Colors[18];
-    TemplateEditor.HorzRuler.Font.Color:=Colors[19];
-    TemplateEditor.HorzRuler.Color:=Colors[20];
-    opColorTab1:=Colors[21];
-    opColorTab2:=Colors[22];
-    opColorTab3:=Colors[23];
-    TemplateEditor.DefaultStyles.SearchMark.Font.Color:= Colors[24];
-    TemplateEditor.DefaultStyles.SearchMark.BgColor:= Colors[25];
-    ListOut.Font.Color:= Colors[26];
-    ListOut.Color:= Colors[27];
-    TreeFind.Font.Color:= ListOut.Font.Color;
-    TreeFind.Color:= ListOut.Color;
-    opColorOutSelText:= Colors[28];
-    opColorOutSelBk:= Colors[29];
-    opColorOutRedText:= Colors[30];
-    opColorOutRedSelText:= Colors[31];
-    opColorOutHi:= Colors[32];
-    opColorBracket:= Colors[33];
-    opColorBracketBg:= Colors[34];
-    opColorLink:= Colors[35];
-    opColorSplitViews:= Colors[36];
-    TemplateEditor.DefaultStyles.CurrentLine.Font.Color:= Colors[37];
-    TemplateEditor.LineStateDisplay.ModifiedColor:= Colors[38];
-    TemplateEditor.LineStateDisplay.NewColor:= Colors[39];
-    TemplateEditor.LineStateDisplay.SavedColor:= Colors[40];
-    TemplateEditor.LineStateDisplay.UnchangedColor:= Colors[41];
-    opColorTabFont1:= Colors[42];
-    opColorTabFont2:= Colors[43];
-    opColorBkmk:= Colors[44];
-    opColorMap:= Colors[45];
-    TemplateEditor.DefaultStyles.CollapseMark.Font.Color:= Colors[46];
-    opColorSplitSlave:= Colors[47];
-    TemplateEditor.Gutter.Bands[2].Color:= Colors[48];
-    opColorNonPrintedBG:= Colors[49];
-    TemplateEditor.DefaultStyles.CollapseMark.BgColor:= Colors[50];
-    TemplateEditor.SyncEditing.SyncRangeStyle.BgColor:= Colors[51];
-    opColorMapMarks:= Colors[52];
-    opColorCaretsGutter:= Colors[53];
+    ApplyColorsArrayToEditor(Colors, TemplateEditor);
     ApplyColors;
     ApplyOut;
     ApplyMap;
@@ -1171,61 +1110,7 @@ begin
   begin
     cbTheme.ItemIndex:= cbTheme.Items.IndexOf(Theme);
     cbIcons.ItemIndex:= Icons;
-
-    Colors[0]:= TemplateEditor.Font.Color;
-    Colors[1]:= TemplateEditor.Color;
-    Colors[2]:= TemplateEditor.DefaultStyles.CurrentLine.BgColor;
-    Colors[3]:= TemplateEditor.LineNumbers.Font.Color;
-    Colors[4]:= TemplateEditor.Gutter.Bands[1].Color;
-    Colors[5]:= TemplateEditor.CollapseBreakColor;
-    Colors[6]:= TemplateEditor.Gutter.CollapsePen.Color;
-    Colors[7]:= TemplateEditor.Gutter.Bands[3].Color;
-    //Colors[8]:= TemplateEditor.Gutter.SeparatorColor;
-    Colors[9]:= TemplateEditor.DefaultStyles.SelectioMark.Font.Color;
-    Colors[10]:= TemplateEditor.DefaultStyles.SelectioMark.BgColor;
-    Colors[11]:= TemplateEditor.RightMarginColor;
-    Colors[12]:= TemplateEditor.HintProps.Font.Color;
-    Colors[13]:= TemplateEditor.HintProps.Color;
-    Colors[14]:= TemplateEditor.NonPrinted.Color;
-    Colors[15]:= TemplateEditor.StaplePen.Color;
-    //Colors[16]:= TemplateEditor.Gutter.Bands[1].GradientRight;
-    Colors[17]:= Tree.Font.Color;
-    Colors[18]:= Tree.Color;
-    Colors[19]:= TemplateEditor.HorzRuler.Font.Color;
-    Colors[20]:= TemplateEditor.HorzRuler.Color;
-    Colors[21]:= opColorTab1;
-    Colors[22]:= opColorTab2;
-    Colors[23]:= opColorTab3;
-    Colors[24]:= TemplateEditor.DefaultStyles.SearchMark.Font.Color;
-    Colors[25]:= TemplateEditor.DefaultStyles.SearchMark.BgColor;
-    Colors[26]:= ListOut.Font.Color;
-    Colors[27]:= ListOut.Color;
-    Colors[28]:= opColorOutSelText;
-    Colors[29]:= opColorOutSelBk;
-    Colors[30]:= opColorOutRedText;
-    Colors[31]:= opColorOutRedSelText;
-    Colors[32]:= opColorOutHi;
-    Colors[33]:= opColorBracket;
-    Colors[34]:= opColorBracketBg;
-    Colors[35]:= opColorLink;
-    Colors[36]:= opColorSplitViews;
-    Colors[37]:= TemplateEditor.DefaultStyles.CurrentLine.Font.Color;
-    Colors[38]:= TemplateEditor.LineStateDisplay.ModifiedColor;
-    Colors[39]:= TemplateEditor.LineStateDisplay.NewColor;
-    Colors[40]:= TemplateEditor.LineStateDisplay.SavedColor;
-    Colors[41]:= TemplateEditor.LineStateDisplay.UnchangedColor;
-    Colors[42]:= opColorTabFont1;
-    Colors[43]:= opColorTabFont2;
-    Colors[44]:= opColorBkmk;
-    Colors[45]:= opColorMap;
-    Colors[46]:= TemplateEditor.DefaultStyles.CollapseMark.Font.Color;
-    Colors[47]:= opColorSplitSlave;
-    Colors[48]:= TemplateEditor.Gutter.Bands[2].Color;
-    Colors[49]:= opColorNonPrintedBG;
-    Colors[50]:= TemplateEditor.DefaultStyles.CollapseMark.BgColor;
-    Colors[51]:= TemplateEditor.SyncEditing.SyncRangeStyle.BgColor;
-    Colors[52]:= opColorMapMarks;
-    Colors[53]:= opColorCaretsGutter;
+    InitColorsArray(Colors);
   end;
   
   tabColors.Tag:= 1;
@@ -1909,22 +1794,11 @@ begin
     cbMru.Checked:=opMruCheck;
     cbSavePos.Checked:=opSavePos;
     cbDirLast.ItemIndex:= opLastDir;
-    cbDirLastChange(Self);
     edDirLast.Text:= opLastDirPath;
     cbBak.ItemIndex:= opBak;
   end;
 
   tabHist.Tag:=1;
-end;
-
-procedure TfmSetup.cbDirLastChange(Sender: TObject);
-//var en: boolean;
-begin
-  {
-  en:= cbDirLast.ItemIndex=2;
-  edDirLast.Enabled:= en;
-  bDirLast.Enabled:= en;
-  }
 end;
 
 procedure TfmSetup.cbKeyCatChange(Sender: TObject);
@@ -2479,6 +2353,11 @@ end;
 procedure TfmSetup.labCaretHelpClick(Sender: TObject);
 begin
   ShowHelp(fmMain.SynDir, helpCarets, Handle);
+end;
+
+procedure TfmSetup.labAcpHelpClick(Sender: TObject);
+begin
+  ShowHelp(fmMain.SynDir, helpAcp, Handle);
 end;
 
 end.

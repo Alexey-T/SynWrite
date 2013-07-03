@@ -30,7 +30,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabHist
+    ActivePage = tabACP
     Style = tsButtons
     TabOrder = 0
     object tabIntf: TTntTabSheet
@@ -1973,21 +1973,20 @@ object fmSetup: TfmSetup
           Style = csDropDownList
           ItemHeight = 13
           TabOrder = 10
-          OnChange = cbDirLastChange
           Items.Strings = (
             'Follow current file'
             'Remember last folder'
             'Custom folder')
         end
         object edDirLast: TTntEdit
-          Left = 24
+          Left = 56
           Top = 244
           Width = 329
           Height = 21
           TabOrder = 11
         end
         object bDirLast: TTntButton
-          Left = 360
+          Left = 392
           Top = 244
           Width = 41
           Height = 21
@@ -2241,7 +2240,7 @@ object fmSetup: TfmSetup
         Caption = 'Special auto-completion features'
         TabOrder = 0
         object labSmTabHelp: TTntLabel
-          Left = 424
+          Left = 440
           Top = 48
           Width = 29
           Height = 13
@@ -2256,7 +2255,7 @@ object fmSetup: TfmSetup
           OnClick = labSmTabHelpClick
         end
         object labTplHelp: TTntLabel
-          Left = 424
+          Left = 440
           Top = 98
           Width = 29
           Height = 13
@@ -2271,7 +2270,7 @@ object fmSetup: TfmSetup
           OnClick = labTplHelpClick
         end
         object labAutoCloseHelp: TTntLabel
-          Left = 424
+          Left = 440
           Top = 62
           Width = 29
           Height = 13
@@ -2293,10 +2292,25 @@ object fmSetup: TfmSetup
           Alignment = taRightJustify
           Caption = 'Except for these file extensions:'
         end
+        object labAcpHelp: TTntLabel
+          Left = 440
+          Top = 12
+          Width = 29
+          Height = 13
+          Cursor = crHandPoint
+          Caption = '(Help)'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlue
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsUnderline]
+          ParentFont = False
+          OnClick = labAcpHelpClick
+        end
         object cbAcpHtm: TTntCheckBox
           Left = 8
           Top = 16
-          Width = 450
+          Width = 430
           Height = 17
           Caption = 'Use special HTML auto-completion'
           TabOrder = 0
@@ -2304,7 +2318,7 @@ object fmSetup: TfmSetup
         object cbAcpTabbing: TTntCheckBox
           Left = 8
           Top = 48
-          Width = 409
+          Width = 430
           Height = 17
           Caption = 'Use special HTML feature - SmartTagTabbing'
           TabOrder = 2
@@ -2312,7 +2326,7 @@ object fmSetup: TfmSetup
         object cbAcpCss: TTntCheckBox
           Left = 8
           Top = 32
-          Width = 450
+          Width = 430
           Height = 17
           Caption = 'Use special CSS auto-completion'
           TabOrder = 1
@@ -2945,7 +2959,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0145010000
+      0700666D5365747570010100000001000000070043617074696F6E0146010000
       040054616273000005007461624564010100000002000000070043617074696F
       6E000500674564697400000600426576656C31000007006362424F7665720102
       00000004000000070043617074696F6E03000000040048696E74000700636242
@@ -3230,7 +3244,8 @@ object fmSetup: TfmSetup
       63624E5072696E7453686F7701010000000B020000070043617074696F6E000A
       0063624E5072696E74537001010000000D020000070043617074696F6E000B00
       63624E5072696E74456F6C01010000000F020000070043617074696F6E000D00
-      63624E5072696E74456F6C4578010100000011020000070043617074696F6E00}
+      63624E5072696E74456F6C4578010100000011020000070043617074696F6E00
+      0A006C616241637048656C70010100000012020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

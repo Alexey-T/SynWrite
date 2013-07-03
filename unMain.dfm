@@ -96,7 +96,7 @@ object fmMain: TfmMain
       object TbxSubmenuItemTblFind: TSpTBXSubmenuItem
         Tag = 600
         Caption = 'Find'
-        Hint = 'Show "Find" dialog'
+        Hint = 'Dialog "Find"'
         Action = ecFind
         OnSelect = ButtonOnSelect
         DropdownCombo = True
@@ -114,13 +114,13 @@ object fmMain: TfmMain
         end
         object TBXItem8: TSpTBXItem
           Caption = 'Replace...'
-          Hint = 'Show "Replace" dialog'
+          Hint = 'Dialog "Replace"'
           Action = ecReplace
           OnSelect = ButtonOnSelect
         end
         object TBXItemRFiles: TSpTBXItem
           Caption = 'Find/replace in files...'
-          Hint = 'Show "Find/replace in files" dialog'
+          Hint = 'Dialog "Find/replace in files"'
           Action = ecReplaceInFiles
           OnSelect = ButtonOnSelect
         end
@@ -149,7 +149,7 @@ object fmMain: TfmMain
       end
       object TBXItemTbGoto: TSpTBXItem
         Caption = 'Go to line'
-        Hint = 'Show "Go to" dialog'
+        Hint = 'Dialog "Go to"'
         Action = ecGoto
         ImageIndex = 26
         OnSelect = ButtonOnSelect
@@ -159,7 +159,7 @@ object fmMain: TfmMain
       object TBXSubmenuItemTbSetup: TSpTBXSubmenuItem
         Tag = 709
         Caption = 'Setup'
-        Hint = 'Show options dialog'
+        Hint = 'Dialog "Options"'
         Action = fSetup
         OnSelect = ButtonOnSelect
         DropdownCombo = True
@@ -246,7 +246,7 @@ object fmMain: TfmMain
       end
       object TBXSubmenuItemSort: TSpTBXSubmenuItem
         Caption = 'Sort'
-        Hint = 'Show "Sort lines" dialog'
+        Hint = 'Dialog "Sort lines"'
         Action = ecSortDialog
         ImageIndex = 16
         Options = [tboDropdownArrow]
@@ -254,7 +254,7 @@ object fmMain: TfmMain
         DropdownCombo = True
         object TBXItemTbSortDialog: TSpTBXItem
           Caption = 'Sort dialog...'
-          Hint = 'Show "Sort lines" dialog'
+          Hint = 'Dialog "Sort lines"'
           OnClick = TBXItemTbSortDialogClick
           OnSelect = ButtonOnSelect
         end
@@ -1374,7 +1374,7 @@ object fmMain: TfmMain
           OnSelect = ButtonOnSelect
           object TBXItemESortDialog: TSpTBXItem
             Caption = '&Sort dialog...'
-            Hint = 'Show "Sort lines" dialog'
+            Hint = 'Dialog "Sort lines"'
             OnClick = TBXItemESortDialogClick
             OnSelect = ButtonOnSelect
           end
@@ -1525,19 +1525,19 @@ object fmMain: TfmMain
         end
         object TBXItemETable: TSpTBXItem
           Caption = 'Insert character'
-          Hint = 'Show "Character Table" dialog'
+          Hint = 'Dialog "Character Table"'
           OnClick = TBXItemETableClick
           OnSelect = ButtonOnSelect
         end
         object TBXItemEInsText: TSpTBXItem
           Caption = 'Insert text...'
-          Hint = 'Show "Insert text" dialog'
+          Hint = 'Dialog "Insert text"'
           OnClick = TBXItemEInsTextClick
           OnSelect = ButtonOnSelect
         end
         object TBXItemEColor: TSpTBXItem
           Caption = 'Insert color...'
-          Hint = 'Show "Color picker" dialog'
+          Hint = 'Dialog "Color picker"'
           Action = ecInsertColor
           OnSelect = ButtonOnSelect
         end
@@ -1584,7 +1584,7 @@ object fmMain: TfmMain
         Caption = '&Search'
         object TBXItemSFind: TSpTBXItem
           Caption = '&Find...'
-          Hint = 'Show "Find" dialog'
+          Hint = 'Dialog "Find"'
           Action = ecFind
           OnSelect = ButtonOnSelect
         end
@@ -1608,19 +1608,19 @@ object fmMain: TfmMain
         end
         object TBXItemSRep: TSpTBXItem
           Caption = '&Replace...'
-          Hint = 'Show "Replace" dialog'
+          Hint = 'Dialog "Replace"'
           Action = ecReplace
           OnSelect = ButtonOnSelect
         end
         object TBXItemSRepFiles: TSpTBXItem
           Caption = 'Find/replace in fil&es...'
-          Hint = 'Show "Find/replace in files" dialog'
+          Hint = 'Dialog "Find/replace in files"'
           Action = ecReplaceInFiles
           OnSelect = ButtonOnSelect
         end
         object TBXItemEExtr: TSpTBXItem
           Caption = 'E&xtract strings...'
-          Hint = 'Show "Extract strings" dialog'
+          Hint = 'Dialog "Extract strings"'
           OnClick = TBXItemEExtrClick
           OnSelect = ButtonOnSelect
         end
@@ -1706,19 +1706,19 @@ object fmMain: TfmMain
         end
         object TBXItemSGoto: TSpTBXItem
           Caption = '&Go to line...'
-          Hint = 'Show "Go to" dialog'
+          Hint = 'Dialog "Go to"'
           Action = ecGoto
           OnSelect = ButtonOnSelect
         end
         object TBXItemSGotoFile: TSpTBXItem
           Caption = 'Go to project file...'
-          Hint = 'Show "Project files list" dialog'
+          Hint = 'Dialog "Project files list"'
           Action = ecProjectList
           OnSelect = ButtonOnSelect
         end
         object TBXItemECommandList: TSpTBXItem
           Caption = 'Show commands list'
-          Hint = 'Show "Commands list" dialog'
+          Hint = 'Dialog "Commands list"'
           Action = ecCommandsList
           OnSelect = ButtonOnSelect
         end
@@ -1948,7 +1948,7 @@ object fmMain: TfmMain
         end
         object TBXItemBkGoto: TSpTBXItem
           Caption = 'Go to bookmark...'
-          Hint = 'Show "Go to bookmark" dialog'
+          Hint = 'Dialog "Go to bookmark"'
           OnClick = TBXItemBkGotoClick
           OnSelect = ButtonOnSelect
         end
@@ -1962,7 +1962,7 @@ object fmMain: TfmMain
         end
         object TBXItemBkGotoPortable: TSpTBXItem
           Caption = 'Go to portable bookmark...'
-          Hint = 'Show "Go to portable bookmark" dialog'
+          Hint = 'Dialog "Go to portable bookmark"'
           Action = ecGotoPortableBk
           OnSelect = ButtonOnSelect
         end
@@ -2279,7 +2279,7 @@ object fmMain: TfmMain
         Caption = '&Options'
         object TBXItemOSetup: TSpTBXItem
           Caption = '&Customize...'
-          Hint = 'Show options dialog'
+          Hint = 'Dialog "Options"'
           Action = fSetup
           OnSelect = ButtonOnSelect
         end
@@ -2528,13 +2528,13 @@ object fmMain: TfmMain
         end
         object TBXItemRunNumConv: TSpTBXItem
           Caption = 'Numeric converter...'
-          Hint = 'Show "Numeric converter" dialog'
+          Hint = 'Dialog "Numeric converter"'
           OnClick = TBXItemRunNumConvClick
           OnSelect = ButtonOnSelect
         end
         object TBXItemRunLoremIpsum: TSpTBXItem
           Caption = 'Lorem Ipsum generator...'
-          Hint = 'Show "Lorem Ipsum generator" dialog'
+          Hint = 'Dialog "Lorem Ipsum generator"'
           OnClick = TBXItemRunLoremIpsumClick
           OnSelect = ButtonOnSelect
         end
@@ -2756,7 +2756,7 @@ object fmMain: TfmMain
         end
         object TBXItemMacroDlg: TSpTBXItem
           Caption = 'R&un/customize macros...'
-          Hint = 'Show macros customization dialog'
+          Hint = 'Dialog "Run/customize macros"'
           Action = ecMacroDlg
           OnSelect = ButtonOnSelect
         end
@@ -2850,7 +2850,7 @@ object fmMain: TfmMain
         end
         object TBXItemHAbout: TSpTBXItem
           Caption = '&About...'
-          Hint = 'Show About dialog'
+          Hint = 'Dialog "About"'
           OnClick = TBXItemAbClick
           OnSelect = ButtonOnSelect
         end
@@ -3369,7 +3369,7 @@ object fmMain: TfmMain
       Tag = 709
       Category = 'File'
       Caption = 'Setup...'
-      Hint = 'Show options dialog'
+      Hint = 'Dialog "Options"'
       ImageIndex = 4
       OnExecute = fSetupExecute
     end
@@ -3392,12 +3392,12 @@ object fmMain: TfmMain
     end
     object ecReplaceInFiles: TAction
       Category = 'Find'
-      Hint = 'Show "Find/replace in files" dialog'
+      Hint = 'Dialog "Find/replace in files"'
       OnExecute = ecReplaceInFilesExecute
     end
     object ecReplace: TAction
       Category = 'Find'
-      Hint = 'Show Replace dialog'
+      Hint = 'Dialog "Replace"'
       OnExecute = ecReplaceExecute
     end
     object ecCopy: TecCopy
@@ -3563,7 +3563,7 @@ object fmMain: TfmMain
     end
     object ecFind: TAction
       Category = 'Find'
-      Hint = 'Show Find dialog'
+      Hint = 'Dialog "Find"'
       ImageIndex = 32
       ShortCut = 16454
       OnExecute = ecFindExecute
@@ -5442,20 +5442,20 @@ object fmMain: TfmMain
           end>
         Caption = 'Options'
         Category = 'Options'
-        DisplayName = 'Options dialog'
+        DisplayName = 'Dialog "Options"'
       end
       item
         Command = 710
         KeyStrokes = <>
         Caption = 'Edit Lexer'
         Category = 'Options'
-        DisplayName = '"Customize lexer" dialog'
+        DisplayName = 'Dialog "Customize lexer"'
       end
       item
         Command = 711
         KeyStrokes = <>
         Category = 'Options'
-        DisplayName = '"Customize lexers library" dialog'
+        DisplayName = 'Dialog "Customize lexers library"'
       end
       item
         Command = 565
@@ -5709,9 +5709,9 @@ object fmMain: TfmMain
                 ShortCut = 16455
               end>
           end>
-        Caption = 'Show "Go to" dialog'
+        Caption = 'Dialog "Go to"'
         Category = 'Go to'
-        DisplayName = '"Go to" dialog'
+        DisplayName = 'Dialog "Go to"'
       end
       item
         Command = 608
@@ -5781,9 +5781,9 @@ object fmMain: TfmMain
                 ShortCut = 16454
               end>
           end>
-        Caption = 'Find Dialog'
+        Caption = 'Dialog "Find"'
         Category = 'Search & Replace'
-        DisplayName = '"Find" dialog'
+        DisplayName = 'Dialog "Find"'
       end
       item
         Command = 641
@@ -7653,7 +7653,7 @@ object fmMain: TfmMain
               end>
           end>
         Category = 'Search & Replace'
-        DisplayName = '"Replace" dialog'
+        DisplayName = 'Dialog "Replace"'
       end
       item
         Command = 838
@@ -7683,7 +7683,7 @@ object fmMain: TfmMain
               end>
           end>
         Category = 'Search & Replace'
-        DisplayName = '"Find/Replace in files" dialog'
+        DisplayName = 'Dialog "Find/Replace in files"'
       end
       item
         Command = 309
@@ -7728,7 +7728,7 @@ object fmMain: TfmMain
               end>
           end>
         Category = 'Search & Replace'
-        DisplayName = '"Extract strings" dialog'
+        DisplayName = 'Dialog "Extract strings"'
       end
       item
         Command = 369
@@ -7836,13 +7836,13 @@ object fmMain: TfmMain
         Command = 824
         KeyStrokes = <>
         Category = 'Miscellaneous'
-        DisplayName = '"Fill block" dialog'
+        DisplayName = 'Dialog "Fill block"'
       end
       item
         Command = 825
         KeyStrokes = <>
         Category = 'Miscellaneous'
-        DisplayName = '"Insert text" dialog'
+        DisplayName = 'Dialog "Insert text"'
       end
       item
         Command = 734
@@ -8010,7 +8010,7 @@ object fmMain: TfmMain
         Command = 839
         KeyStrokes = <>
         Category = 'Macros'
-        DisplayName = '"Customize macros" dialog'
+        DisplayName = 'Dialog "Run/customize macros"'
       end
       item
         Command = 840
@@ -8760,7 +8760,7 @@ object fmMain: TfmMain
               end>
           end>
         Category = 'Miscellaneous'
-        DisplayName = '"Color picker" dialog'
+        DisplayName = 'Dialog "Color picker"'
       end
       item
         Command = 881
@@ -8850,13 +8850,13 @@ object fmMain: TfmMain
         Command = 772
         KeyStrokes = <>
         Category = 'Bookmarks'
-        DisplayName = '"Go to bookmark" dialog'
+        DisplayName = 'Dialog "Go to bookmark"'
       end
       item
         Command = 888
         KeyStrokes = <>
         Category = 'Miscellaneous'
-        DisplayName = '"Lorem Ipsum generator" dialog'
+        DisplayName = 'Dialog "Lorem Ipsum generator"'
       end
       item
         Command = 773
@@ -8892,7 +8892,7 @@ object fmMain: TfmMain
         Command = 779
         KeyStrokes = <>
         Category = 'Bookmarks'
-        DisplayName = '"Go to portable bookmark" dialog'
+        DisplayName = 'Dialog "Go to portable bookmark"'
       end
       item
         Command = 748
@@ -8910,7 +8910,7 @@ object fmMain: TfmMain
         Command = 889
         KeyStrokes = <>
         Category = 'Miscellaneous'
-        DisplayName = '"Numeric converter" dialog'
+        DisplayName = 'Dialog "Numeric converter"'
       end
       item
         Command = 780
@@ -8994,7 +8994,7 @@ object fmMain: TfmMain
         Command = 891
         KeyStrokes = <>
         Category = 'Sorting'
-        DisplayName = 'Show "Sort lines" dialog'
+        DisplayName = 'Dialog "Sort lines"'
       end
       item
         Command = 789
@@ -9060,7 +9060,7 @@ object fmMain: TfmMain
               end>
           end>
         Category = 'Go to'
-        DisplayName = '"Project files list" dialog'
+        DisplayName = 'Dialog "Project files list"'
       end
       item
         Command = 2000
@@ -13807,7 +13807,7 @@ object fmMain: TfmMain
     Left = 305
     Top = 245
     Bitmap = {
-      494C01010400090004000E000E00FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      494C01010400090004000E000E00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000380000002A0000000100200000000000C024
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -14044,7 +14044,7 @@ object fmMain: TfmMain
       0000004080000040800000408000004080000040800000000000000000000000
       0000000000000000000000408000000000000000000000000000004080000040
       8000004080000040800000408000000000000000000000000000004080000000
-      0000000000000000000000408000000000000000000000000000004080000040
+      0000000000000040800000408000000000000000000000000000004080000040
       8000004080000040800000408000000000000000000000000000000000000000
       0000004080000040800000000000000000000040800000408000000000000000
       0000004080000040800000000000000000000000000000000000000000000000
@@ -14079,14 +14079,14 @@ object fmMain: TfmMain
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000408000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000004080000000
-      0000000000000000000000408000004080000000000000408000004080000040
+      0000000000000040800000408000004080000000000000408000004080000040
       8000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000040800000408000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000408000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000004080000000
-      0000000000000000000000408000000000000000000000000000004080000040
+      0000000000000040800000408000000000000000000000000000004080000040
       8000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000040800000408000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -14113,9 +14113,10 @@ object fmMain: TfmMain
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000FFFE003FFFFFFF00FFFDFFDF9CFF3F00
-      FFFDFFDF88FF3F00E73D9CDFC1FF3F00E23D88DFE3FB3700F07DC1DDC1F33300
+      FFFDFFDF88FF3F00E73D9CDFC1FF3F00E23D88DFE3FB3700F07DC1D9C1F33300
       F8FDE3D888E00100F07DC1DC1CF33300E23D88DE3FFB3700E73D9CDC1FFF3F00
-      FFFDFFDC8FFF3F00FFFDFFDDCFFF3F00FFFE003FFFFFFF00FFFFFFFFFFFFFF00}
+      FFFDFFD88FFF3F00FFFDFFD9CFFF3F00FFFE003FFFFFFF00FFFFFFFFFFFFFF00
+      00000000000000000000000000000000000000000000}
   end
   object OD_Session: TTntOpenDialog
     DefaultExt = 'syn'
