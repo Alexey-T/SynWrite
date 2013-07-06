@@ -19,6 +19,7 @@ uses
   ecSyntTree,
   ecSyntAnal,
 
+  IniFiles,
   PngImageList;
 
 function SyntaxManagerFilesFilter(M: TSyntaxManager; SAllText: Widestring): Widestring;
@@ -39,6 +40,10 @@ type
     procedure DeleteItem(const S: Widestring);
   end;
 
+procedure LoadMruList(List: TSynMruList; Ini: TCustomIniFile; const Section: string;
+  MaxCount: Integer; CheckExist: boolean);
+procedure SaveMruList(List: TSynMruList; Ini: TCustomIniFile; const Section: string);
+  
 //function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
 function LoadPngIconEx(ImageList: TPngImageList; const fn: string): boolean;
 function EditorWordLength(Ed: TSyntaxMemo): Integer;
@@ -226,7 +231,6 @@ uses
   ecUnicode,
   ATxFProc,
   ATxSProc,
-  IniFiles,
   DKLang,
   Math,
   Dialogs,
@@ -1842,6 +1846,38 @@ begin
   if SAllText = '' then
     SAllText:= 'All files';
   Result := Result + SAllText + ' (*.*)|*.*';
+end;
+
+
+procedure LoadMruList(List: TSynMruList; Ini: TCustomIniFile; const Section: string;
+  MaxCount: Integer; CheckExist: boolean);
+var
+  i, NCount: Integer;
+  S: Widestring;
+begin
+  List.MaxCount:= MaxCount;
+  NCount:= Ini.ReadInteger(Section, 'Num', 0);
+  if NCount>MaxCount then
+    NCount:= MaxCount;
+
+  for i:= Pred(NCount) downto 0 do
+  begin
+    S:= UTF8Decode(Ini.ReadString(Section, IntToStr(i), ''));
+    if S='' then Continue;
+    if CheckExist then
+      if IsFilenameFixed(S) and not IsFileExist(S) then
+        Continue;
+    List.AddItem(S);
+  end;
+end;
+
+procedure SaveMruList(List: TSynMruList; Ini: TCustomIniFile; const Section: string);
+var
+  i: Integer;
+begin
+  Ini.WriteInteger(Section, 'Num', List.Items.Count);
+  for i:= 0 to List.Items.Count-1 do
+    Ini.WriteString(Section, IntToStr(i), UTF8Encode(List.Items[i]));
 end;
 
 

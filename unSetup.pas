@@ -391,8 +391,6 @@ type
     procedure cbKeyCatChange(Sender: TObject);
     procedure labDateClick(Sender: TObject);
     procedure tabSearchShow(Sender: TObject);
-    procedure KeyListKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
     procedure cbSessSaveClick(Sender: TObject);
     procedure edFilterChange(Sender: TObject);
     procedure TimerFiltTimer(Sender: TObject);
@@ -1035,7 +1033,7 @@ begin
     UpdateGutter(Frames[i]);
 
   //save
-  opTabOpLast:= Tabs.ActivePageIndex;
+  opTabOptionsLast:= Tabs.ActivePageIndex;
   SaveIni;
 end;
 end;
@@ -1469,7 +1467,10 @@ begin
     ListCat.Items.Add(' '+(Tabs.Pages[i] as TTntTabSheet).Caption);
   end;
 
-  ListCat.ItemIndex:= fmMain.opTabOpLast;
+  if fmMain.opTabOptionsIndex<0 then
+    ListCat.ItemIndex:= fmMain.opTabOptionsLast
+  else
+    ListCat.ItemIndex:= fmMain.opTabOptionsIndex;
   ListCatClick(Self);
 
   n:= KeyList.RowHeights[0];
@@ -1852,18 +1853,6 @@ begin
   end;
 
   tabSearch.Tag:=1;
-end;
-
-procedure TfmSetup.KeyListKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-var n:Integer;
-begin
-  if (Key=vk_f1) and (Shift=[]) then
-  begin
-    n:= KeyMapping.Items[ strtoint(KeyList.Cells[0, KeyList.Selection.Top]) ].Command;
-    MsgInfo(WideFormat(DKLangConstW('cmdNum'), [n]));
-    Key:= 0;
-  end;
 end;
 
 procedure TfmSetup.cbSessSaveClick(Sender: TObject);

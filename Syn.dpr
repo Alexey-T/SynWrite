@@ -65,11 +65,11 @@ uses
 {$R *.dkl_const.res}
 
 begin
-  if not CheckInst then Exit;
+  if not SynInstanceNeeded then Exit;
   Application.Initialize;
   Application.Title := 'SynWrite';
   Application.HintHidePause := 5000;
   Application.CreateForm(TfmSynEx, fmSynEx);
-  if not CheckIni then Exit;
+  if not SynParamsOK then Exit;
   Application.Run;
 end.

@@ -63,7 +63,12 @@ const
   SynDefaultSyn = '(default).syn';
 
 type
-  TSynDock = (sdockTop, sdockLeft, sdockRight, sdockBottom);
+  TSynDock = (
+    sdockTop,
+    sdockLeft,
+    sdockRight,
+    sdockBottom
+    );
 
 type
   TSynLineCmd = (
@@ -1201,6 +1206,8 @@ type
     TbxTabTree: TSpTBXTabItem;
     SpTBXSeparatorItem12: TSpTBXSeparatorItem;
     SpTBXSeparatorItem13: TSpTBXSeparatorItem;
+    SpTBXSeparatorItem14: TSpTBXSeparatorItem;
+    TbxItemMruNewdoc: TSpTBXMRUListItem;
     procedure fOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1952,6 +1959,9 @@ type
       FromLink: Boolean);
     procedure TBXSubmenuItemSessPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
+    procedure TbxItemMruNewdocClick(Sender: TObject;
+      const Filename: WideString);
+    procedure StatusResize(Sender: TObject);
 
   private
     cStatLine,
@@ -2173,8 +2183,8 @@ type
     function CurrentProjectFN: Widestring;
     function CurrentProjectMainFN: Widestring;
     function CurrentProjectWorkDir: Widestring;
-    procedure ProjLoadMRU(Sender: TObject; L: TTntStrings);
-    procedure ProjUpdateMRU(Sender: TObject; L: TTntStrings);
+    procedure ProjLoadMRU(List: TSynMruList);
+    procedure ProjUpdateMRU(List: TSynMruList);
     procedure ProjFileOpen(Sender: TObject; Files: TTntStrings);
     procedure ProjAddEditorFile(Sender: TObject; Files: TTntStrings);
     procedure ProjAddEditorFiles(Sender: TObject; Files: TTntStrings);
@@ -2531,6 +2541,8 @@ type
     procedure DoOpenBySelection;
     procedure FixSplitters;
     function SynFilesFilter: Widestring;
+    procedure DoOptionsDialog(tabId: Integer);
+    procedure DoTreeFocus;
     //end of private
 
   protected
@@ -2549,6 +2561,7 @@ type
 
     SynMruFiles: TSynMruList;
     SynMruSessions: TSynMruList;
+    SynMruNewdoc: TSynMruList;
 
     //opt
     opNonPrint,
@@ -2582,7 +2595,8 @@ type
     opTabAtBottom: boolean;
     opTabNums: boolean; //show numbers on tabs
     opTabBtn: boolean; //show [x] button on tabs
-    opTabOpLast: integer; //index of last closed tab on Options dialog
+    opTabOptionsIndex: integer; //id of active tab in Options dialog
+    opTabOptionsLast: integer; //index of last closed tab in Options dialog
     opTabMaxLen: integer; //max length of tabs captions
     opTabDblClick: boolean; //close tabs by Dbl-click
     opTabDragDrop: boolean; //allow D&D of tabs
@@ -2850,7 +2864,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.6.620';
+  cSynVer = '5.6.640';
 
 implementation
 
@@ -3204,7 +3218,7 @@ end;
 //file too big
 function FBigSized(const fn: WideString): boolean;
 begin
-  Result:= FGetFileSize(fn) >= 120 * 1024 * 1024;
+  Result:= FGetFileSize(fn) >= 200 * 1024 * 1024;
 end;
 
 function TfmMain.SynFilesFilter: Widestring;
@@ -4301,7 +4315,7 @@ begin
     opSrHistTC:= ReadBool('SR', 'HistTC', false);
     opMaxTreeMatches:= ReadInteger('SR', 'MaxTreeMatches', 100);
 
-    opTabOpLast:= ReadInteger('View', 'TabLast', 0);
+    opTabOptionsLast:= ReadInteger('View', 'TabLast', 0);
     opTabsSortMode:= ReadInteger('Win', 'TabSort', 0);
     opTabsWidths:= ReadString('Win', 'TabWdt', '100,400,');
 
@@ -4373,25 +4387,11 @@ begin
     if SynExe or opMruForPlugin then
     begin
       //load recent files
-      SynMruFiles.MaxCount:= opSaveState;
-      NCount:= Min(ReadInteger('MRU', 'Num', 0), opSaveState);
-      for i:= Pred(NCount) downto 0 do
-      begin
-        S:= UTF8Decode(ReadString('MRU', IntToStr(i), ''));
-        if S = '' then Continue;
-        if opMruCheck and IsFilenameFixed(S) and not IsFileExist(S) then Continue;
-        SynMruFiles.AddItem(S);
-      end;
+      LoadMruList(SynMruFiles, Ini, 'MRU', opSaveState, opMruCheck);
+
       //load recent sessions
-      SynMruSessions.MaxCount:= opSaveState;
-      NCount:= Min(ReadInteger('MRU_Sess', 'Num', 0), opSaveState);
-      for i:= Pred(NCount) downto 0 do
-      begin
-        S:= UTF8Decode(ReadString('MRU_Sess', IntToStr(i), ''));
-        if S = '' then Continue;
-        if opMruCheck and IsFilenameFixed(S) and not IsFileExist(S) then Continue;
-        SynMruSessions.AddItem(S);
-      end;
+      LoadMruList(SynMruSessions, Ini, 'MRU_Sess', opSaveState, opMruCheck);
+
       //load recent project
       if opHistProjectLoad then
       begin
@@ -4403,6 +4403,7 @@ begin
             fmProj.ProjectFN:= S;
         end;
       end;
+      
       //load recent colors
       RecentColorsStr:= ReadString('MRU', 'Col', '');
     end;
@@ -4458,7 +4459,6 @@ const
   S: array[boolean] of string = ('False', 'True');
 var
   Ini: TIniFile;
-  i: integer;
 begin
   Ini:= TIniFile.Create(SynIni);
   with Ini do
@@ -4504,22 +4504,15 @@ begin
     if SynExe or opMruForPlugin then
     begin
       //save recent files list
-      with SynMruFiles do
-      begin
-        WriteInteger('MRU', 'Num', Items.Count);
-        for i:= 0 to Items.Count - 1 do
-          WriteString('MRU', IntToStr(i), UTF8Encode(Items[i]));
-      end;
+      SaveMruList(SynMruFiles, Ini, 'MRU');
+
       //save recent session list
-      with SynMruSessions do
-      begin
-        WriteInteger('MRU_Sess', 'Num', Items.Count);
-        for i:= 0 to Items.Count - 1 do
-          WriteString('MRU_Sess', IntToStr(i), UTF8Encode(Items[i]));
-      end;
+      SaveMruList(SynMruSessions, Ini, 'MRU_Sess');
+
       //save project name
       if Assigned(fmProj) then
         WriteString('MRU', 'Proj', UTF8Encode(fmProj.ProjectFN));
+        
       //save recent colors
       WriteString('MRU', 'Col', RecentColorsStr);
     end;
@@ -4703,7 +4696,7 @@ begin
     WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
 
     WriteBool('View', 'Tips', opTipsToken);
-    WriteInteger('View', 'TabLast', opTabOpLast);
+    WriteInteger('View', 'TabLast', opTabOptionsLast);
     WriteBool('View', 'TabNum', opTabNums);
     WriteBool('View', 'TabBtn', opTabBtn);
     WriteBool('View', 'TabMul', opTabMultiLine);
@@ -5008,8 +5001,11 @@ begin
       if QuickView then
         TextSource.ReadOnly:= true;
 
-      EditorSlave.WordWrap:=tmp.Wrap;
       EditorMaster.WordWrap:=tmp.Wrap;
+      EditorSlave.WordWrap:=tmp.Wrap;
+
+      EditorMaster.ScrollPosX:= 0;
+      EditorSlave.ScrollPosX:= 0;
 
       SplitPos:= tmp.SplitPos;
       SplitHorz:= not tmp.SplitVert;
@@ -5755,13 +5751,6 @@ begin
     sm_ExtractDupsCase: ecExtractDupsCase.Execute;
     sm_ExtractDupsNoCase: ecExtractDupsNoCase.Execute;
 
-    //tree
-    sm_TreeNext: ecTreeNext.Execute;
-    sm_TreePrev: ecTreePrev.Execute;
-    sm_TreeParent: ecTreeParent.Execute;
-    sm_TreeNextBrother: ecTreeNextBrother.Execute;
-    sm_TreePrevBrother: ecTreePrevBrother.Execute;
-
     //macros 1-9
     sm_MacroRepeat: ecMacroRepeat.Execute;
     sm_Macro1: ecMacro1.Execute;
@@ -6075,6 +6064,47 @@ begin
     sm_OEditSynIni: TBXItemOEditSynIni.Click;
     sm_OEditSynPluginsIni: TBXItemOEditSynPluginsIni.Click;
     sm_OpenBySelection: fOpenBySelection.Execute;
+    sm_OCustomizeStyles: fCustomizeHi.Execute;
+
+    //Options dialog tabs
+    sm_Options_Interface: DoOptionsDialog(0);
+    sm_Options_Colors: DoOptionsDialog(1);
+    sm_Options_Fonts: DoOptionsDialog(2);
+    sm_Options_Tabs: DoOptionsDialog(3);
+    sm_Options_Editor: DoOptionsDialog(4);
+    sm_Options_Editor2: DoOptionsDialog(5);
+    sm_Options_EditorCarets: DoOptionsDialog(6);
+    sm_Options_EditorOverrides: DoOptionsDialog(7);
+    sm_Options_Keys: DoOptionsDialog(8);
+    sm_Options_Files: DoOptionsDialog(9);
+    sm_Options_Search: DoOptionsDialog(10);
+    sm_Options_TreeMap: DoOptionsDialog(11);
+    sm_Options_History: DoOptionsDialog(12);
+    sm_Options_SessionsProject: DoOptionsDialog(13);
+    sm_Options_AutoComplete: DoOptionsDialog(14);
+    sm_Options_AutoSave: DoOptionsDialog(15);
+    sm_Options_SpellChecker: DoOptionsDialog(16);
+    sm_Options_SearchFolders: DoOptionsDialog(17);
+    sm_Options_Misc: DoOptionsDialog(18);
+
+    //tree
+    sm_TreeNext: ecTreeNext.Execute;
+    sm_TreePrev: ecTreePrev.Execute;
+    sm_TreeParent: ecTreeParent.Execute;
+    sm_TreeNextBrother: ecTreeNextBrother.Execute;
+    sm_TreePrevBrother: ecTreePrevBrother.Execute;
+
+    sm_TreeCollapseAll: TBXItemTreeCollapseAll.Click;
+    sm_TreeExpandAll: TBXItemTreeExpandAll.Click;
+
+    sm_TreeLevel2: DoTreeLevel(2);
+    sm_TreeLevel3: DoTreeLevel(3);
+    sm_TreeLevel4: DoTreeLevel(4);
+    sm_TreeLevel5: DoTreeLevel(5);
+    sm_TreeLevel6: DoTreeLevel(6);
+    sm_TreeLevel7: DoTreeLevel(7);
+    sm_TreeLevel8: DoTreeLevel(8);
+    sm_TreeLevel9: DoTreeLevel(9);
 
     //end of commands list
     else
@@ -6247,11 +6277,17 @@ begin
 end;
 
 procedure TfmMain.fSetupExecute(Sender: TObject);
+begin
+  DoOptionsDialog(-1);
+end;
+
+procedure TfmMain.DoOptionsDialog(tabId: Integer);
 var
   i: Integer;
   L: TTntStringList;
 begin
   UpdateMacroKeynames;
+  opTabOptionsIndex:= tabId;
 
   with TfmSetup.Create(Self) do
     try
@@ -6773,6 +6809,7 @@ begin
 
   SynMruFiles:= TSynMruList.Create;
   SynMruSessions:= TSynMruList.Create;
+  SynMruNewdoc:= TSynMruList.Create;
 
   //make panels font non-bold
   plTree.Options.RightAlignSpacer.FontSettings.Style:= [];
@@ -7041,6 +7078,7 @@ procedure TfmMain.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(SynMruFiles);
   FreeAndNil(SynMruSessions);
+  FreeAndNil(SynMruNewdoc);
 
   FreeAndNil(FUserToolbarCommands);
 
@@ -7619,7 +7657,7 @@ procedure TfmMain.SyntaxManagerChange(Sender: TObject);
 var
   en: boolean;
   Lexer: string;
-  ATabStop, ATabMode, AWrap, AMargin, ASpacing: string;
+  ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill: string;
 begin
   UpdTools;
   fCustomizeHi.Enabled:= SyntaxManager.CurrentLexer<>nil;
@@ -7685,21 +7723,12 @@ begin
       EditorMaster.TabMode:= TemplateEditor.TabMode;
       EditorSlave.TabMode:= TemplateEditor.TabMode;
 
-      EditorMaster.RightMargin:= TemplateEditor.RightMargin;
-      EditorSlave.RightMargin:= TemplateEditor.RightMargin;
-
       EditorMaster.LineSpacing:= TemplateEditor.LineSpacing;
       EditorSlave.LineSpacing:= TemplateEditor.LineSpacing;
 
-      if soBreakOnRightMargin in TemplateEditor.Options then
-        EditorMaster.Options:= EditorMaster.Options + [soBreakOnRightMargin]
-      else
-        EditorMaster.Options:= EditorMaster.Options - [soBreakOnRightMargin];
-      EditorSlave.Options:= EditorMaster.Options;
-
       //optional overrides
       if SGetLexerOverride(opLexersOverride, Lexer,
-        ATabStop, ATabMode, AWrap, AMargin, ASpacing) then
+        ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill) then
       begin
         //1) override TabStops
         EditorMaster.TabList.AsString:= ATabStop;
@@ -7713,33 +7742,47 @@ begin
         end;
         EditorSlave.TabMode:= EditorMaster.TabMode;
 
-        //3) override WordWrap
+        //3) override "word wrap"
         case StrToIntDef(AWrap, 0) of
           0: //as is
             begin end;
           1: //wrap off
             EditorMaster.WordWrap:= false;
-          2: //wrap on, by window edge
+          2: //wrap by window edge
             begin
             EditorMaster.WordWrap:= true;
             EditorMaster.Options:= EditorMaster.Options - [soBreakOnRightMargin];
             end;
-          3: //wrap on, by margin
+          3: //wrap by right margin
             begin
             EditorMaster.WordWrap:= true;
             EditorMaster.Options:= EditorMaster.Options + [soBreakOnRightMargin];
             end;
         end;
         EditorSlave.WordWrap:= EditorMaster.WordWrap;
-        EditorSlave.Options:= EditorMaster.Options;    
+        EditorSlave.Options:= EditorMaster.Options;
 
-        //4) override RightMargin
+        //4) override "Right margin"
         EditorMaster.RightMargin:= StrToIntDef(AMargin, TemplateEditor.RightMargin);
         EditorSlave.RightMargin:= EditorMaster.RightMargin;
 
-        //5) override LineSpacing
+        //5) override "Line spacing"
         EditorMaster.LineSpacing:= StrToIntDef(ASpacing, TemplateEditor.LineSpacing);
         EditorSlave.LineSpacing:= EditorMaster.LineSpacing;
+
+        //6) override "Optimal fill"
+        case StrToIntDef(AOptFill, 0) of
+          1:
+          begin
+            EditorMaster.Options:= EditorMaster.Options - [soOptimalFill];
+            EditorSlave.Options:= EditorSlave.Options - [soOptimalFill];
+          end;
+          2:
+          begin
+            EditorMaster.Options:= EditorMaster.Options + [soOptimalFill];
+            EditorSlave.Options:= EditorSlave.Options + [soOptimalFill];
+          end
+        end;
       end;
 
       //overrides for "NFO files"
@@ -10642,8 +10685,19 @@ end;
 procedure TfmMain.DoNewDoc(const fn: Widestring);
 var
   Enc: Integer;
+  Ini: TIniFile;
 begin
   if not IsFileExist(fn) then Exit;
+
+  //add template to MRU list
+  Ini:= TIniFile.Create(SynIni);
+  try
+    SynMruNewdoc.AddItem(fn);
+    SaveMruList(SynMruNewdoc, Ini, 'MRU_Newdoc');
+  finally
+    FreeAndNil(Ini);
+  end;
+
   Enc:= CP_ACP;
   if Pos('_UTF8', ExtractFileName(fn))>0 then
     Enc:= cp__UTF8_noBOM;
@@ -14509,28 +14563,8 @@ begin
 end;
 
 procedure TfmMain.Panel1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-{var
-  R: TRect;
-  Ac:boolean;}
 begin
   FPagesNTab:= -1;
-  {
-  if opTabBtn then
-  begin
-    TabCtrl_GetXRect(PageControl.Handle, PageControl.PageCount-1, ImageListTb.Width, R);
-    ImageListTb.Draw(PageControl.Canvas, R.Left, R.Top, 0);
-  end;
-  }
-  {
-  SetRectEmpty(R);
-  Ac:= false;
-  try
-    FPanelDrawBusy:= true;
-    PageControl1DrawTab(PageControl, PageControl.PageCount-1, R, Ac);
-  finally
-    FPanelDrawBusy:= false;
-  end;
-  }
 end;
 
 procedure TfmMain.TBXItemOShellClick(Sender: TObject);
@@ -15338,7 +15372,7 @@ begin
   if s<>'' then
     with CurrentEditor do
     begin
-      //Need separ. action in Undo list (after typing text)
+      //Need separate action in Undo list (after typing text)
       EditorSetModified(CurrentEditor);
       InsertText(s);
     end;
@@ -15371,24 +15405,25 @@ begin
   HandleKeyActive(Key, Shift);
 end;
 
+procedure TfmMain.DoTreeFocus;
+begin
+  UpdLeft(tbTree);
+  if Self.Enabled and Tree.CanFocus then
+    Tree.SetFocus;
+end;
+
 procedure TfmMain.ecToggleFocusTreeExecute(Sender: TObject);
 begin
   if not plTree.Visible then
   begin
     ecShowTree.Execute;
-    UpdLeft(tbTree);
-    if Self.Enabled and Tree.CanFocus then
-      Tree.SetFocus
+    DoTreeFocus;
   end
   else
   if Tree.Focused then
     FocusEditor
   else
-  begin
-    UpdLeft(tbTree);
-    if Self.Enabled and Tree.CanFocus then
-      Tree.SetFocus
-  end;
+    DoTreeFocus;
 end;
 
 procedure TfmMain.ecToggleFocusClipExecute(Sender: TObject);
@@ -17088,12 +17123,13 @@ end;
 procedure TfmMain.TBXSubmenuItemFNewPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
-  i:Integer;
+  i: Integer;
   mi: TSpTbxItem;
   miSub: TSpTbxSubmenuItem;
   Names: TStringList;
   ch: char;
   NeedSub: boolean;
+  Ini: TIniFile;
 const
   chSet = ['A'..'Z', '?'];
 begin
@@ -17109,6 +17145,21 @@ begin
   for i:= 0 to FListNewDocs.Count-1 do
     Names.AddObject(SNewDocName(FListNewDocs[i]), Pointer(i));
   Names.Sort;
+
+  //fill MRU items
+  Ini:= TIniFile.Create(SynIni);
+  try
+    LoadMruList(SynMruNewdoc, Ini, 'MRU_Newdoc', 5{MaxCount}, true);
+  finally
+    FreeAndNil(Ini);
+  end;
+
+  with TBXItemMruNewdoc do
+  begin
+    Clear;
+    for i:= SynMruNewdoc.Items.Count-1 downto 0 do
+      MRUAdd(SynMruNewdoc.Items[i]);
+  end;
 
   //del items
   with TbxSubmenuItemFNew do
@@ -21080,7 +21131,10 @@ procedure TfmMain.ClipsClick(Sender: TObject; const S: Widestring);
 begin
   with CurrentEditor do
     if not ReadOnly then
+    begin
       InsertText(S);
+      FocusEditor;
+    end;  
 end;
 
 procedure TfmMain.ecToggleFocusClipsExecute(Sender: TObject);
@@ -23691,43 +23745,29 @@ begin
   F.SyncMap;
 end;
 
-procedure TfmMain.ProjLoadMRU(Sender: TObject; L: TTntStrings);
+procedure TfmMain.ProjLoadMRU(List: TSynMruList);
 var
-  NCount, i: Integer;
-  S: Widestring;
+  Ini: TIniFile;
 begin
-  with TIniFile.Create(SynIni) do
+  Ini:= TIniFile.Create(SynIni);
   try
-    NCount:= Min(ReadInteger('MRU_Proj', 'Num', 0), opSaveState);
-    for i:= 0 to Pred(NCount) do
-    begin
-      S:= UTF8Decode(ReadString('MRU_Proj', IntToStr(i), ''));
-      if S = '' then Continue;
-      if opMruCheck and IsFilenameFixed(S) and not IsFileExist(S) then Continue;
-      L.Add(S);
-    end;
+    LoadMruList(List, Ini, 'MRU_Proj', opSaveState, opMruCheck);
   finally
-    Free
+    FreeAndNil(Ini);
   end;
 end;
 
-procedure TfmMain.ProjUpdateMRU(Sender: TObject; L: TTntStrings);
+procedure TfmMain.ProjUpdateMRU(List: TSynMruList);
 var
-  NCount, i: Integer;
+  Ini: TIniFile;
 begin
-  with TIniFile.Create(SynIni) do
+  Ini:= TIniFile.Create(SynIni);
   try
-    NCount:= L.Count;
-    WriteInteger('MRU_Proj', 'Num', NCount);
-    for i:= 0 to Pred(NCount) do
-    begin
-      WriteString('MRU_Proj', IntToStr(i), UTF8Encode(L[i]));
-    end;
+    SaveMruList(List, Ini, 'MRU_Proj');
   finally
-    Free
+    FreeAndNil(Ini);
   end;
 end;
-
 
 procedure TfmMain.TBXItemRunEncodeHtmlClick(Sender: TObject);
 begin
@@ -25264,17 +25304,20 @@ procedure TfmMain.DoTreeLevel(NLevel: Integer);
 var
   i: Integer;
 begin
+  DoTreeFocus;
   with Tree do
   begin
     Items.BeginUpdate;
     try
       FullExpand;
       if Items.Count>0 then
+      begin
         for i:= 0 to Items.Count-1 do
           if Items[i].Level >= NLevel then
             Items[i].Collapse(true);
-      Selected:= Items[0];
-      Selected.MakeVisible;
+        Selected:= Items[0];
+        Selected.MakeVisible;
+      end;  
     finally
       Items.EndUpdate;
     end;  
@@ -26153,6 +26196,9 @@ begin
   SplitterLeft.Left:= ClientWidth;
   SplitterRight.Left:= 0;
 
+  TbxDockLeft1.Left:= ClientWidth;
+  TbxDockRight1.Left:= 0;
+
   SplitterBottom.Visible:= TbxDockBottom.Height>0;
   SplitterLeft.Visible:= TbxDockLeft.Width>0;
   SplitterRight.Visible:= TbxDockRight.Width>0;
@@ -26430,6 +26476,17 @@ begin
   end;  
 end;
 
+
+procedure TfmMain.TbxItemMruNewdocClick(Sender: TObject;
+  const Filename: WideString);
+begin
+  DoNewDoc(Filename);
+end;
+
+procedure TfmMain.StatusResize(Sender: TObject);
+begin
+  Status.InvalidateBackground();
+end;
 
 end.
 

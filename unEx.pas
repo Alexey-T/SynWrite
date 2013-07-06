@@ -38,8 +38,8 @@ var
   fmMain: TfmMain;
   fmSynEx: TfmSynEx;
 
-function CheckIni: boolean;
-function CheckInst: boolean;
+function SynParamsOK: boolean;
+function SynInstanceNeeded: boolean;
 
 implementation
 
@@ -90,21 +90,35 @@ begin
     FixFilenamePath(S);
 end;
 
-function CheckInst: boolean;
+function SynInstanceNeeded: boolean;
 var
+  Force: boolean;
   Data: TCopyDataStruct;
   f: THandle;
   S: Widestring;
   i, NParams: integer;
 begin
   Result:= true;
-  with TIniFile.Create(SynIni) do
-  try
-    if not ReadBool('Setup', 'Inst', false) then Exit;
-  finally
-    Free;
-  end;
+  Force:= false;
 
+  //check command-line for "/S" key (force "single instance")
+  for i:= 1 to ParamCount do
+    if ParamStr(i)='/S' then
+    begin
+      Force:= true;
+      Break
+    end;
+
+  //check ini option, if false - exit
+  if not Force then
+    with TIniFile.Create(SynIni) do
+    try
+      if not ReadBool('Setup', 'Inst', false) then Exit;
+    finally
+      Free;
+    end;
+
+  //check other Syn instances  
   f:= FindWindowW('TfmSynEx.UnicodeClass', nil);
   if f = 0 then Exit;
   Result:= false;
@@ -193,7 +207,7 @@ begin
       Result:= false;
 end;
 
-function CheckIni: boolean;
+function SynParamsOK: boolean;
 var
   i: integer;
   S: Widestring;

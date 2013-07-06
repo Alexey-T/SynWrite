@@ -347,8 +347,23 @@ const
   sm_OEditSynPluginsIni = 1011;
   sm_OEditSynIni = 1012;
   sm_OpenBySelection = 1013;
+  sm_OCustomizeStyles = 1014;
   //free
 
+  //Tree commands
+  sm_TreeCollapseAll = 1090;
+  sm_TreeExpandAll = 1091;
+  
+  sm_TreeLevel2 = 1092;
+  sm_TreeLevel3 = 1093;
+  sm_TreeLevel4 = 1094;
+  sm_TreeLevel5 = 1095;
+  sm_TreeLevel6 = 1096;
+  sm_TreeLevel7 = 1097;
+  sm_TreeLevel8 = 1098;
+  sm_TreeLevel9 = 1099;
+
+  //Tab colors
   sm_TabColorDefault = 1100;
   sm_TabColor1 = 1101;
   sm_TabColor2 = 1102;
@@ -361,6 +376,28 @@ const
   sm_TabColor9 = 1109;
   sm_TabColor10 = 1110;
   sm_TabColorCustom = 1111;
+
+  //Options dialog tabs
+  sm_Options_Interface = 1115;
+  sm_Options_Colors = 1116;
+  sm_Options_Fonts = 1117;
+  sm_Options_Tabs = 1118;
+  sm_Options_Editor = 1119;
+  sm_Options_Editor2 = 1120;
+  sm_Options_EditorCarets = 1121;
+  sm_Options_EditorOverrides = 1122;
+  sm_Options_Keys = 1123;
+  sm_Options_Files = 1124;
+  sm_Options_Search = 1125;
+  sm_Options_TreeMap = 1126;
+  sm_Options_History = 1127;
+  sm_Options_SessionsProject = 1128;
+  sm_Options_AutoComplete = 1129;
+  sm_Options_AutoSave = 1130;
+  sm_Options_SpellChecker = 1131;
+  sm_Options_SearchFolders = 1132;
+  sm_Options_Misc = 1133;
+
 
 implementation
 

@@ -30,7 +30,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabACP
+    ActivePage = tabCarets
     Style = tsButtons
     TabOrder = 0
     object tabIntf: TTntTabSheet
@@ -1399,7 +1399,6 @@ object fmSetup: TfmSetup
         TabOrder = 3
         OnClick = KeyListClick
         OnDrawCell = KeyListDrawCell
-        OnKeyDown = KeyListKeyDown
         OnMouseMove = KeyListMouseMove
         OnMouseWheelDown = KeyListMouseWheelDown
         OnMouseWheelUp = KeyListMouseWheelUp

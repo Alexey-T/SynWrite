@@ -37,6 +37,8 @@ object EditorFrame: TEditorFrame
       Align = alRight
       Color = clBtnFace
       ParentColor = False
+      PopupMenu = fmMain.PopupSplitter
+      OnDblClick = SplitterDblClick
       MinSize = 70
       OnMoved = SplitterEdsMoved
     end

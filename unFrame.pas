@@ -101,6 +101,7 @@ type
     procedure EditorMasterFinishAnalysis(Sender: TObject);
     procedure EditorSlaveFinishAnalysis(Sender: TObject);
     procedure TBXItemSplitCancelClick(Sender: TObject);
+    procedure SplitterDblClick(Sender: TObject);
   private
     FNotifAllYes,
     FNotifAllNo: boolean;
@@ -131,7 +132,6 @@ type
     procedure EditorShowHint(Sender: TObject; const HintStr: string; var HintObj: THintWindow);
     function GetColMarkers: string;
     procedure SetColmarkers(const S: string);
-    procedure SplitterDblClick(Sender: TObject);
     procedure SetSplitPos(const F: Double);
     procedure SetSplitHorz(Value: boolean);
     function GetModified: boolean;
@@ -345,9 +345,6 @@ begin
   EditorSlave.OnShowHint:= EditorShowHint;
   EditorMaster.OnCtrlClick:= EditorCtrlClick;
   EditorSlave.OnCtrlClick:= EditorCtrlClick;
-
-  SplitterEds.PopupMenu:= PopupSplitter;
-  SplitterEds.OnDblClick:= SplitterDblClick;
 end;
 
 procedure TEditorFrame.EditorMasterEnter(Sender: TObject);

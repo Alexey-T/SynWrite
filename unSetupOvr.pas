@@ -24,6 +24,8 @@ type
     edMargin: TSpinEdit;
     LabelSp: TTntLabel;
     edSpacing: TSpinEdit;
+    edOptFill: TTntComboBox;
+    LabelOptFill: TTntLabel;
     procedure cbOvrClick(Sender: TObject);
     procedure ListLexClick(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
@@ -38,7 +40,8 @@ type
     FDefTabStop: string;
     FDefTabMode,
     FDefMargin,
-    FDefSpacing: integer;
+    FDefSpacing,
+    FDefOptFill: integer;
   end;
 
 implementation
@@ -57,20 +60,23 @@ begin
   edWrap.Enabled:= en;
   edMargin.Enabled:= en;
   edSpacing.Enabled:= en;
+  edOptFill.Enabled:= en;
   LabelTabStop.Enabled:= en;
   LabelTabMode.Enabled:= en;
   LabelWrap.Enabled:= en;
   LabelMargin.Enabled:= en;
-  labelSp.Enabled:= en;
+  LabelOptFill.Enabled:= en;
+  LabelSp.Enabled:= en;
   if not en then
   begin
     if ListLex.ItemIndex>=0 then
-      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '');
+      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '');
     edTab.Text:= FDefTabStop;
     edTabMode.ItemIndex:= FDefTabMode;
     edWrap.ItemIndex:= 0;
     edMargin.Value:= FDefMargin;
     edSpacing.Value:= FDefSpacing;
+    edOptFill.ItemIndex:= 0;
     edText.Text:= FString;
   end;
 end;
@@ -78,12 +84,12 @@ end;
 procedure TfmSetupOvr.ListLexClick(Sender: TObject);
 var
   Ovr: boolean;
-  ATabStops, ATabMode, AWrap, AMargin, ASpacing: string;
+  ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill: string;
 begin
   if ListLex.ItemIndex>=0 then
   begin
     Ovr:= SGetLexerOverride(FString, ListLex.Items[ListLex.ItemIndex],
-      ATabStops, ATabMode, AWrap, AMargin, ASpacing);
+      ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill);
     cbOvr.Enabled:= true;
   end  
   else
@@ -102,6 +108,7 @@ begin
     edWrap.ItemIndex:= StrToIntDef(AWrap, 0);
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
     edSpacing.Value:= StrToIntDef(ASpacing, FDefSpacing);
+    edOptFill.ItemIndex:= StrToIntDef(AOptFill, 0);
   end
   else
   begin
@@ -110,6 +117,7 @@ begin
     edWrap.ItemIndex:= 0;
     edMargin.Value:= FDefMargin;
     edSpacing.Value:= FDefSpacing;
+    edOptFill.ItemIndex:= 0;
   end;
 
   FUpdLock:= false;
@@ -123,6 +131,7 @@ begin
   edWrap.ItemIndex:= 0;
   edMargin.Value:= FDefMargin;
   edSpacing.Value:= FDefSpacing;
+  edOptFill.ItemIndex:= 0;
   edText.Text:= FString;
   ListLex.ItemIndex:= 0;
   ListLexClick(Self);
@@ -145,7 +154,8 @@ begin
       {Op2}IntToStr(edTabMode.ItemIndex),
       {Op3}IntToStr(edWrap.ItemIndex),
       {Op4}IntToStr(edMargin.Value),
-      {Op5}IntToStr(edSpacing.Value)
+      {Op5}IntToStr(edSpacing.Value),
+      {Op6}IntToStr(edOptFill.ItemIndex)
       );
     edText.Text:= FString;
   end;

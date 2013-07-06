@@ -26,6 +26,7 @@ var
 
 type
   TListProc = procedure(Sender: TObject; Files: TTntStrings) of object;
+  TMruListProc = procedure(MruList: TSynMruList) of object;
   TProjSort = (srNone, srName, srExt, srDate, srSize, srDateDesc, srSizeDesc);
 
 type
@@ -159,8 +160,8 @@ type
     FPathList: TTntStringList;
     FOldItemsCount: integer;
     FOnFileOpen: TListProc;
-    FOnUpdateMRU: TListProc;
-    FOnLoadMRU: TListProc;
+    FOnUpdateMRU: TMruListProc;
+    FOnLoadMRU: TMruListProc;
     FOnAddEditorFile: TListProc;
     FOnAddEditorFilesAll: TListProc;
     FOnGetLexers: TListProc;
@@ -220,8 +221,8 @@ type
     property ProjectFN: Widestring read FProjectFN write DoLoadProjectFromFile;
     property Modified: boolean read FModified;
     property OnFileOpen: TListProc read FOnFileOpen write FOnFileOpen;
-    property OnUpdateMRU: TListProc read FOnUpdateMRU write FOnUpdateMRU;
-    property OnLoadMRU: TListProc read FOnLoadMRU write FOnLoadMRU;
+    property OnUpdateMRU: TMruListProc read FOnUpdateMRU write FOnUpdateMRU;
+    property OnLoadMRU: TMruListProc read FOnLoadMRU write FOnLoadMRU;
     property OnAddEditorFile: TListProc read FOnAddEditorFile write FOnAddEditorFile;
     property OnAddEditorFilesAll: TListProc read FOnAddEditorFilesAll write FOnAddEditorFilesAll;
     property OnGetLexers: TListProc read FOnGetLexers write FOnGetLexers;
@@ -1743,13 +1744,13 @@ end;
 procedure TfmProj.DoUpdateMRU;
 begin
   if Assigned(FOnUpdateMRU) then
-    FOnUpdateMRU(Self, FMruList.Items);
+    FOnUpdateMRU(FMruList);
 end;
 
 procedure TfmProj.DoLoadMRU;
 begin
   if Assigned(FOnLoadMRU) then
-    FOnLoadMRU(Self, FMruList.Items);
+    FOnLoadMRU(FMruList);
 end;
 
 procedure TfmProj.TBXItemProjClearRecentClick(Sender: TObject);
