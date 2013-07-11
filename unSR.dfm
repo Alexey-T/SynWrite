@@ -342,7 +342,7 @@ object fmSR: TfmSR
       Top = 16
       Width = 160
       Height = 17
-      Caption = 'Search in selec&tion'
+      Caption = 'Search in selection'
       TabOrder = 0
       OnClick = cbSelClick
     end
@@ -351,7 +351,7 @@ object fmSR: TfmSR
       Top = 34
       Width = 160
       Height = 17
-      Caption = 'Search from c&ursor'
+      Caption = 'Search from care&t'
       TabOrder = 1
       OnClick = cbFromCurClick
     end

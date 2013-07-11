@@ -103,7 +103,7 @@ begin
 
   //check command-line for "/S" key (force "single instance")
   for i:= 1 to ParamCount do
-    if ParamStr(i)='/S' then
+    if ParamStr(i)=cSynParamSingleInst then
     begin
       Force:= true;
       Break

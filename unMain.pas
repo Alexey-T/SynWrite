@@ -2866,6 +2866,12 @@ var
 const
   cSynVer = '5.6.640';
 
+const  
+  cSynParamRO = '/RO';
+  cSynParamSingleInst = '/S';
+  cSynParamLineNum = '/N=';
+  cSynParamReg = '/reg';
+
 implementation
 
 uses
@@ -6627,7 +6633,7 @@ begin
   {$endif}
 
   if SynExe then
-    if ParamStr(1) = '/reg' then
+    if ParamStr(1)=cSynParamReg then
     begin
       LoadLexLib;
       TBXItemOShellClick(Self);
@@ -14623,15 +14629,17 @@ begin
     for i:= 1 to ParamCount do
     begin
       s:= ParamStr(i);
-      if s = '/RO' then
+      if s=cSynParamRO then
       begin
         RO;
         Continue
       end;
-      if Copy(s, 1, 3) = '/N=' then
+      if SBegin(s, cSynParamLineNum) then
       begin
-        N:= StrToIntDef(Copy(s, 4, MaxInt), 1);
-        CurrentEditor.CaretPos:= Point(0, N-1);
+        Delete(s, 1, Length(cSynParamLineNum));
+        N:= StrToIntDef(s, -1)-1;
+        if N>=0 then
+          CurrentEditor.CaretPos:= Point(0, N);
       end;
     end;
   end;
@@ -25287,6 +25295,7 @@ end;
 
 procedure TfmMain.TBXItemTreeExpandAllClick(Sender: TObject);
 begin
+  DoTreeFocus;
   Tree.FullExpand;
   if Tree.Items.Count>0 then
   begin
@@ -25297,6 +25306,7 @@ end;
 
 procedure TfmMain.TBXItemTreeCollapseAllClick(Sender: TObject);
 begin
+  DoTreeFocus;
   Tree.FullCollapse;
 end;
 
