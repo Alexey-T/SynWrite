@@ -69,8 +69,8 @@ object fmSRFiles: TfmSRFiles
     Visible = False
   end
   object labFind: TTntLabel
-    Left = 392
-    Top = 132
+    Left = 384
+    Top = 148
     Width = 26
     Height = 13
     Cursor = crHandPoint
@@ -84,8 +84,8 @@ object fmSRFiles: TfmSRFiles
     OnClick = labFindClick
   end
   object labFindRep: TTntLabel
-    Left = 392
-    Top = 148
+    Left = 384
+    Top = 164
     Width = 26
     Height = 13
     Cursor = crHandPoint
@@ -105,6 +105,29 @@ object fmSRFiles: TfmSRFiles
     Height = 13
     Caption = 'File and "folder\" mask(s) to exclude, space separated:'
     FocusControl = edFileExc
+  end
+  object labFav: TTntLabel
+    Left = 384
+    Top = 112
+    Width = 59
+    Height = 13
+    Cursor = crHandPoint
+    Caption = 'Presets (F3)'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlue
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsUnderline]
+    ParentFont = False
+    OnClick = labFavClick
+  end
+  object labPreset: TTntLabel
+    Left = 384
+    Top = 126
+    Width = 12
+    Height = 13
+    Caption = '    '
+    FocusControl = edDir
   end
   object ed1: TTntComboBox
     Left = 8
@@ -212,7 +235,7 @@ object fmSRFiles: TfmSRFiles
       Top = 104
       Width = 198
       Height = 17
-      Caption = 'Search also in UTF-&8'
+      Caption = 'Search also in UTF-8'
       TabOrder = 5
     end
     object cbInUTF16: TTntCheckBox
@@ -220,7 +243,7 @@ object fmSRFiles: TfmSRFiles
       Top = 120
       Width = 198
       Height = 17
-      Caption = 'Search also in UTF-1&6'
+      Caption = 'Search also in UTF-16'
       TabOrder = 6
     end
   end
@@ -427,10 +450,10 @@ object fmSRFiles: TfmSRFiles
   object DKLanguageController1: TDKLanguageController
     IgnoreList.Strings = (
       'labFind*.*')
-    Left = 448
-    Top = 140
+    Left = 368
+    Top = 200
     LangData = {
-      0900666D535246696C6573010100000001000000070043617074696F6E012D00
+      0900666D535246696C6573010100000001000000070043617074696F6E014A00
       000006004C6162656C32010100000002000000070043617074696F6E0006004C
       6162656C34010100000003000000070043617074696F6E000900546E744C6162
       656C31010100000004000000070043617074696F6E000900546E744C6162656C
@@ -453,29 +476,163 @@ object fmSRFiles: TfmSRFiles
       74696F6E00040067526573010100000017000000070043617074696F6E000800
       6362466E4F6E6C79010100000018000000070043617074696F6E00080063624F
       7574546162010100000019000000070043617074696F6E0008004C6162656C45
-      72720000060054696D657231000008006243757246696C6501010000001A0000
-      00070043617074696F6E0007006362496E4F454D01010000001B000000070043
-      617074696F6E000600426576656C31000008006362496E555446380101000000
-      1C000000070043617074696F6E0009006362496E555446313601010000001D00
-      0000070043617074696F6E000B006242726F77736546696C6501010000001E00
-      0000070043617074696F6E000E00546E744F70656E4469616C6F673100000700
-      6C616246696E6400000A006C616246696E6452657000000B0063624F75744170
-      70656E6401010000001F000000070043617074696F6E000900546E744C616265
-      6C33010100000020000000070043617074696F6E0006006564536F727400000C
-      006362436C6F73654166746572010100000021000000070043617074696F6E00
-      0900546E744C6162656C34010100000022000000070043617074696F6E000900
-      656446696C654578630000}
+      72720000080054696D6572457272000008006243757246696C6501010000001A
+      000000070043617074696F6E0007006362496E4F454D01010000001B00000007
+      0043617074696F6E000600426576656C31000008006362496E55544638010100
+      00001C000000070043617074696F6E0009006362496E55544631360101000000
+      1D000000070043617074696F6E000B006242726F77736546696C650101000000
+      1E000000070043617074696F6E000E00546E744F70656E4469616C6F67310000
+      07006C616246696E6400000A006C616246696E6452657000000B0063624F7574
+      417070656E6401010000001F000000070043617074696F6E000900546E744C61
+      62656C33010100000020000000070043617074696F6E0006006564536F727400
+      000C006362436C6F73654166746572010100000021000000070043617074696F
+      6E000900546E744C6162656C34010100000022000000070043617074696F6E00
+      0900656446696C65457863000006006C61624661760101000000230000000700
+      43617074696F6E000800506F707570466176000002004E3100000A006D6E7546
+      617653617665010100000024000000070043617074696F6E000D005361766544
+      69616C6F6746617600000C006D6E754661764669656C64730101000000250000
+      00070043617074696F6E0014006D6E754C6F6164536B697048696464656E4469
+      72010100000026000000070043617074696F6E0011006D6E754C6F6164536B69
+      7048696464656E010100000027000000070043617074696F6E000D006D6E754C
+      6F6164536B6970524F010100000028000000070043617074696F6E0011006D6E
+      754C6F6164536B697042696E617279010100000029000000070043617074696F
+      6E000E006D6E754C6F6164496E555446313601010000002A0000000700436170
+      74696F6E000D006D6E754C6F6164496E5554463801010000002B000000070043
+      617074696F6E000C006D6E754C6F6164496E4F454D01010000002C0000000700
+      43617074696F6E000B006D6E754C6F61645370656301010000002D0000000700
+      43617074696F6E000C006D6E754C6F6164526567657801010000002E00000007
+      0043617074696F6E000C006D6E754C6F6164576F72647301010000002F000000
+      070043617074696F6E000B006D6E754C6F616443617365010100000030000000
+      070043617074696F6E000E006D6E754C6F616453756264697273010100000031
+      000000070043617074696F6E000D006D6E754C6F6164466F6C64657201010000
+      0032000000070043617074696F6E000E006D6E754C6F61644D61736B45786301
+      0100000033000000070043617074696F6E000E006D6E754C6F61644D61736B49
+      6E63010100000034000000070043617074696F6E000C006D6E754C6F61645465
+      787452010100000035000000070043617074696F6E000C006D6E754C6F616454
+      65787453010100000036000000070043617074696F6E0002004E32000002004E
+      33000002004E34000009006C616250726573657400000B0054696D6572507265
+      73657400000B006D6E754C6F6164536F72740101000000370000000700436170
+      74696F6E00}
   end
-  object Timer1: TTimer
+  object TimerErr: TTimer
     Enabled = False
     Interval = 5000
-    OnTimer = Timer1Timer
-    Left = 448
-    Top = 168
+    OnTimer = TimerErrTimer
+    Left = 392
+    Top = 200
   end
   object TntOpenDialog1: TTntOpenDialog
     Filter = '*.*|*.*'
-    Left = 416
-    Top = 140
+    Left = 336
+    Top = 200
+  end
+  object PopupFav: TTntPopupMenu
+    AutoHotkeys = maManual
+    OnPopup = PopupFavPopup
+    Left = 336
+    Top = 232
+    object mnuFavSave: TTntMenuItem
+      Caption = 'Save preset...'
+      OnClick = mnuFavSaveClick
+    end
+    object mnuFavFields: TTntMenuItem
+      Caption = 'Fields'
+      object mnuLoadTextS: TTntMenuItem
+        Caption = 'search for'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadTextR: TTntMenuItem
+        Caption = 'replace with'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadMaskInc: TTntMenuItem
+        Caption = 'file masks to include'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadMaskExc: TTntMenuItem
+        Caption = 'file masks to exclude'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadFolder: TTntMenuItem
+        Caption = 'search in folder'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadSubdirs: TTntMenuItem
+        Caption = 'with subfolders'
+        OnClick = mnuLoadTextSClick
+      end
+      object N4: TTntMenuItem
+        Caption = '-'
+      end
+      object mnuLoadCase: TTntMenuItem
+        Caption = 'case-sensitive'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadWords: TTntMenuItem
+        Caption = 'whole words'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadRegex: TTntMenuItem
+        Caption = 'reg ex'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadSpec: TTntMenuItem
+        Caption = 'special chars'
+        OnClick = mnuLoadTextSClick
+      end
+      object N3: TTntMenuItem
+        Caption = '-'
+      end
+      object mnuLoadInOEM: TTntMenuItem
+        Caption = 'search also in OEM'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadInUTF8: TTntMenuItem
+        Caption = 'search also in UTF-8'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadInUTF16: TTntMenuItem
+        Caption = 'search also in UTF-16'
+        OnClick = mnuLoadTextSClick
+      end
+      object N2: TTntMenuItem
+        Caption = '-'
+      end
+      object mnuLoadSkipBinary: TTntMenuItem
+        Caption = 'skip binary files'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadSkipRO: TTntMenuItem
+        Caption = 'skip read-only files'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadSkipHidden: TTntMenuItem
+        Caption = 'skip hidden files'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadSkipHiddenDir: TTntMenuItem
+        Caption = 'skip hidden folders'
+        OnClick = mnuLoadTextSClick
+      end
+      object mnuLoadSort: TTntMenuItem
+        Caption = 'sort files'
+        OnClick = mnuLoadTextSClick
+      end
+    end
+    object N1: TTntMenuItem
+      Caption = '-'
+    end
+  end
+  object SaveDialogFav: TTntSaveDialog
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
+    Left = 360
+    Top = 232
+  end
+  object TimerPreset: TTimer
+    Enabled = False
+    Interval = 10000
+    OnTimer = TimerPresetTimer
+    Left = 392
+    Top = 228
   end
 end

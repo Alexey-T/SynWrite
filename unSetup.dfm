@@ -30,7 +30,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabCarets
+    ActivePage = tabFolders
     Style = tsButtons
     TabOrder = 0
     object tabIntf: TTntTabSheet
@@ -2640,12 +2640,12 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 237
+        Height = 269
         Caption = 'Search folders'
         TabOrder = 0
         object TntLabel14: TTntLabel
           Left = 8
-          Top = 216
+          Top = 244
           Width = 283
           Height = 13
           Caption = 'Hint: add * after folder name to search in all its subfolders.'
@@ -2653,7 +2653,7 @@ object fmSetup: TfmSetup
         object TntLabel15: TTntLabel
           Left = 8
           Top = 16
-          Width = 345
+          Width = 425
           Height = 29
           AutoSize = False
           Caption = 
@@ -2663,17 +2663,17 @@ object fmSetup: TfmSetup
         end
         object edFolders: TTntMemo
           Left = 8
-          Top = 48
-          Width = 345
-          Height = 133
+          Top = 52
+          Width = 425
+          Height = 157
           ScrollBars = ssBoth
           TabOrder = 0
           OnKeyDown = edFoldersKeyDown
         end
         object bAddFolder: TTntButton
           Left = 8
-          Top = 188
-          Width = 129
+          Top = 216
+          Width = 137
           Height = 23
           Caption = 'Add folder...'
           TabOrder = 1

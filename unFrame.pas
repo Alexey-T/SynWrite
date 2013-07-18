@@ -379,15 +379,15 @@ end;
 procedure TEditorFrame.SaveFile(AFileName: Widestring);
   procedure ErrorWritable;
   begin
-    MsgError(WideFormat(DKLangConstW('MAtt'), [AFileName]));
+    MsgError(WideFormat(DKLangConstW('MAtt'), [AFileName]), Handle);
   end;
   procedure ErrorCantSave;
   begin
-    MsgError(WideFormat(DKLangConstW('zMCantSave'), [AFileName]));
+    MsgError(WideFormat(DKLangConstW('zMCantSave'), [AFileName]), Handle);
   end;
   function MsgConfirmOverwrite: boolean;
   begin
-    Result:= MsgConfirm(WideFormat(DKLangConstW('MOver'), [WideExtractFileName(AFileName)]));
+    Result:= MsgConfirm(WideFormat(DKLangConstW('MOver'), [WideExtractFileName(AFileName)]), Handle);
   end;
 var
   attr: integer;
@@ -873,7 +873,7 @@ begin
   //special confirm on modified
   if Modified then
   begin
-    Cfm:= MsgConfirm(WideFormat(DKLangConstW('MRelMod'), [WideExtractFileName(FileName)]));
+    Cfm:= MsgConfirm(WideFormat(DKLangConstW('MRelMod'), [WideExtractFileName(FileName)]), Handle);
   end
   else
   //normal confirm
@@ -881,7 +881,7 @@ begin
   if not TfmMain(Owner).SynExe then
   begin
     Cfm:= (TfmMain(Owner).opNotif = 1) or
-      MsgConfirm(WideFormat(DKLangConstW('MRel'), [WideExtractFileName(FileName)]));
+      MsgConfirm(WideFormat(DKLangConstW('MRel'), [WideExtractFileName(FileName)]), Handle);
   end
   else
   begin
@@ -1161,8 +1161,8 @@ var
   p: TPoint;
   i, X: Integer;
 const
-  cLineWidthMargin = 1; //1px line for column markers
-  cLineWidthColumn = 2; //2px thicker line for current column
+  cLineWidthMargin = 1; //line for column markers
+  cLineWidthColumn = 1; //thicker line for current column
 begin
   Ed:= Sender as TSyntaxMemo;
   C:= Ed.Canvas;

@@ -114,7 +114,7 @@ begin
   with f do
   begin
     fCloseAll.Execute;
-    OpnFile(S);
+    DoOpenFile(S);
     UpdateRO;
     UpdateQVTree(S);
     Result:= LISTPLUGIN_OK;

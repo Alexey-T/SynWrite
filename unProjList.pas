@@ -48,6 +48,7 @@ uses
   TntSysUtils,
   TntWideStrings,
   Math,
+  ecUnicode,
   ecStrUtils,
   unProc,
   ATxSProc;
@@ -95,22 +96,50 @@ begin
 end;
 
 procedure TfmProjList.DoFilter;
-  function SFiltered(const S: Widestring): boolean;
+  //----------------
+  function SFiltered(const fn: Widestring): boolean;
   var
-    S1, S2, SFilter, SFilterFN, SFilterDir: Widestring;
+    SFilter, SContent,
+    SRealDir, SRealFN,
+    SFilterDir, SFilterFN: Widestring;
+    N: Integer;
+    IsCaseIgnore, IsFuzzy: boolean;
   begin
-    S1:= WideExtractFileName(S);
-    S2:= WideExtractFileDir(S);
-
     SFilter:= Edit.Text;
+    SContent:= '';
+    IsCaseIgnore:= false;
+    IsFuzzy:= cbFuzzy.Checked;
+
+    // "@Word" starts case-sensitive content search,
+    // "@@Word" starts case-insensitive
+    N:= Pos('@', SFilter);
+    if N>0 then
+    begin
+      SContent:= Copy(SFilter, N+1, MaxInt);
+      IsCaseIgnore:= (SContent<>'') and (SContent[1]='@');
+      if IsCaseIgnore then
+        Delete(SContent, 1, 1);
+
+      Delete(SFilter, N, MaxInt);
+      SFilter:= WideTrim(SFilter);
+    end;
+
+    SRealDir:= WideExtractFileDir(fn);
+    SRealFN:= WideExtractFileName(fn);
+
     SFilterDir:= WideExtractFileDir(SFilter);
     SFilterFN:= WideExtractFileName(SFilter);
 
-    if cbFuzzy.Checked then
-      Result:= SFuzzyMatch(S1, SFilterFN) and SFuzzyMatch(S2, SFilterDir)
+    if IsFuzzy then
+      Result:= SFuzzyMatch(SRealFN, SFilterFN) and SFuzzyMatch(SRealDir, SFilterDir)
     else
-      Result:= SSubstringMatch(S1, SFilterFN) and SSubstringMatch(S2, SFilterDir);
+      Result:= SSubstringMatch(SRealFN, SFilterFN) and SSubstringMatch(SRealDir, SFilterDir);
+
+    if Result then
+      if SContent<>'' then
+        Result:= FFindStringInFile(fn, SContent, IsCaseIgnore);
   end;
+  //----------------
 var
   i: Integer;
   S: Widestring;
@@ -119,6 +148,7 @@ begin
     raise Exception.Create('File list not passed to form');
 
   List.Items.BeginUpdate;
+  Screen.Cursor:= crHourGlass;
   try
     List.Items.Clear;
     for i:= 0 to FListFiles.Count-1 do
@@ -128,6 +158,7 @@ begin
         List.Items.AddObject(S, Pointer(i));
     end;
   finally
+    Screen.Cursor:= crDefault;
     List.Items.EndUpdate;
   end;
 

@@ -13,7 +13,11 @@ type
     bCan: TTntButton;
     TntLabel1: TTntLabel;
     DKLanguageController1: TDKLanguageController;
+    TntLabel2: TTntLabel;
     procedure ListDblClick(Sender: TObject);
+    procedure ListClick(Sender: TObject);
+    procedure TntFormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -27,6 +31,24 @@ implementation
 procedure TfmGotoBkmk.ListDblClick(Sender: TObject);
 begin
   ModalResult:= mrOk;
+end;
+
+procedure TfmGotoBkmk.ListClick(Sender: TObject);
+begin
+  //Shift+click must close dialog, it's handled
+  if GetKeyState(vk_shift)<0 then
+    bOk.Click;
+end;
+
+procedure TfmGotoBkmk.TntFormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=vk_return) and (Shift=[ssShift]) then
+  begin
+    bOk.Click;
+    Key:= 0;
+    Exit
+  end;  
 end;
 
 end.

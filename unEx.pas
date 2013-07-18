@@ -101,7 +101,7 @@ begin
   Result:= true;
   Force:= false;
 
-  //check command-line for "/S" key (force "single instance")
+  //check command-line for "force single instance" key
   for i:= 1 to ParamCount do
     if ParamStr(i)=cSynParamSingleInst then
     begin
@@ -161,7 +161,7 @@ begin
       CloseHandle(h)
     else
     begin
-      MsgError(DKLangConstW('MNCreate')+#13 + S);
+      MsgError(DKLangConstW('MNCreate')+#13 + S, 0);
       Result:= false;
     end;
   end;
@@ -197,7 +197,7 @@ begin
 
   if (SF <> '') and FBigSized(SF) then
   begin
-    MsgError(WideFormat(DKLangConstW('MBig'), [WideExtractFileName(SF)]));
+    MsgError(WideFormat(DKLangConstW('MBig'), [WideExtractFileName(SF)]), 0);
     Result:= false;
     Exit
   end;
@@ -262,7 +262,7 @@ begin
     if fmMain.opHistSessionLoad then
     begin
       S:= GetSessionFN;
-      fmMain.OpenSession(S);
+      fmMain.DoOpenSession(S);
     end;
   end
   else
@@ -275,16 +275,16 @@ begin
       //now open file or project
       if IsFileProject(S) then
       begin
-        fmMain.OpnProject(S);
+        fmMain.DoOpenProject(S);
       end
       else
       if IsFileSession(S) then
       begin
-        fmMain.OpenSession(S);
+        fmMain.DoOpenSession(S);
       end
       else
       begin
-        fmMain.OpnFile(S);
+        fmMain.DoOpenFile(S);
         fmMain.UpdateRO;
         //Is file new?
         if FGetFileSize(S)=0 then
@@ -450,7 +450,7 @@ begin
 
   if (S <> '') and CheckFile(S) then
   begin
-    fmMain.OpnFile(S);
+    fmMain.DoOpenFile(S);
     if N > 0 then
       fmMain.CurrentEditor.CaretPos:= Point(0, N-1);
     fmMain.DoRepaint;

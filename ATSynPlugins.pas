@@ -36,6 +36,7 @@ const
   cSynIdSelectedLines = -3;
   cSynIdCurrentLine = -4;
   cSynIdSearchPaths = -5;
+  cSynIdFavoritesText = -6;
 
 //log command id, for cActionControlLog
 const

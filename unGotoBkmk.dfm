@@ -13,8 +13,10 @@ object fmGotoBkmk: TfmGotoBkmk
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
+  OnKeyDown = TntFormKeyDown
   DesignSize = (
     483
     305)
@@ -27,6 +29,14 @@ object fmGotoBkmk: TfmGotoBkmk
     Height = 13
     Caption = 'Bookmarks list:'
   end
+  object TntLabel2: TTntLabel
+    Left = 8
+    Top = 280
+    Width = 200
+    Height = 13
+    Anchors = [akLeft, akBottom]
+    Caption = 'Shift+click selects from caret to bookmark'
+  end
   object List: TTntListBox
     Left = 8
     Top = 24
@@ -35,6 +45,7 @@ object fmGotoBkmk: TfmGotoBkmk
     Anchors = [akLeft, akTop, akRight, akBottom]
     ItemHeight = 13
     TabOrder = 0
+    OnClick = ListClick
     OnDblClick = ListDblClick
   end
   object bOk: TTntButton
@@ -63,9 +74,10 @@ object fmGotoBkmk: TfmGotoBkmk
     Left = 424
     Top = 144
     LangData = {
-      0A00666D476F746F426B6D6B010100000001000000070043617074696F6E0104
+      0A00666D476F746F426B6D6B010100000001000000070043617074696F6E0105
       0000000900546E744C6162656C31010100000002000000070043617074696F6E
       0004004C69737400000300624F6B010100000003000000070043617074696F6E
-      0004006243616E010100000004000000070043617074696F6E00}
+      0004006243616E010100000004000000070043617074696F6E000900546E744C
+      6162656C32010100000005000000070043617074696F6E00}
   end
 end

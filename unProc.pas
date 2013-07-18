@@ -22,6 +22,7 @@ uses
   IniFiles,
   PngImageList;
 
+procedure DoEditorSelectToPosition(Ed: TSyntaxMemo; NTo: Integer);
 function SyntaxManagerFilesFilter(M: TSyntaxManager; SAllText: Widestring): Widestring;
 function GetEditHandle(Target: TObject): THandle;
 procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
@@ -88,6 +89,10 @@ procedure SParseOut(const SStr, SRegex: Widestring;
   num_fn, num_line, num_col: integer; //1-based
   var res_fn: Widestring; var res_line, res_col: integer);
 
+function FFindStringInFile(const fn: Widestring;
+  const Str: Widestring;
+  IgnoreCase: boolean): boolean;
+  
 procedure SReadFileIntoSomeLists(const fn: string;
   const section1, section2: string;
   L1, L2: TStringList);
@@ -105,7 +110,8 @@ type
     helpExtTools,
     helpFindDlg,
     helpCmdListDlg,
-    helpEmmet
+    helpEmmet,
+    helpProjOpts
   );
 const
   cSynHelpId: array[TSynHelpId] of string = (
@@ -120,7 +126,8 @@ const
     'ExternalTools.html',
     'DialogFind.html',
     'DialogCmdList.html',
-    'HelperZenCoding.html'
+    'HelperZenCoding.html',
+    'ProjMan.html#prop'
   );
 
 procedure FixTcIni(var fnTC: string; const section: string);
@@ -181,11 +188,11 @@ function SFilterNum(const s: string): integer;
 function SFilterIdxToExt(const Filter: string; Index: integer): string;
 function SFilterNameToIdx(const AFilter, ALexerName: string): integer;
 
-procedure MsgInfo(const S: WideString);
-procedure MsgWarn(const S: WideString);
-procedure MsgError(const S: WideString);
-procedure MsgExcept(const S: Widestring; E: Exception);
-function MsgConfirm(const S: Widestring): boolean;
+procedure MsgInfo(const S: WideString; H: THandle);
+procedure MsgWarn(const S: WideString; H: THandle);
+procedure MsgError(const S: WideString; H: THandle);
+function MsgConfirm(const S: Widestring; H: THandle): boolean;
+procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);
 
 procedure SetFormStyle(Form: TForm; Value: Boolean);
 procedure SetFormOnTop(H: THandle; V: boolean);
@@ -240,41 +247,33 @@ uses
   CommCtrl,
   unSRTree, unRename;
 
-function WinHandle: THandle;
+procedure MsgInfo(const S: WideString; H: THandle);
 begin
-  if Assigned(Application) and Assigned(Application.MainForm) then
-    Result:= Application.MainForm.Handle
-  else
-    Result:= 0;  
-end;
-
-procedure MsgInfo(const S: WideString);
-begin
-  MessageBoxW(WinHandle, PWChar(S), 'SynWrite',
+  MessageBoxW(H, PWChar(S), 'SynWrite',
     mb_ok or mb_iconinformation or mb_taskmodal);
 end;
 
-procedure MsgWarn(const S: WideString);
+procedure MsgWarn(const S: WideString; H: THandle);
 begin
-  MessageBoxW(WinHandle, PWChar(S), 'SynWrite',
+  MessageBoxW(H, PWChar(S), 'SynWrite',
     mb_ok or mb_iconwarning or mb_taskmodal);
 end;
 
-procedure MsgError(const S: WideString);
+procedure MsgError(const S: WideString; H: THandle);
 begin
-  MessageBoxW(WinHandle, PWChar(S), 'SynWrite',
+  MessageBoxW(H, PWChar(S), 'SynWrite',
     mb_ok or mb_iconerror or mb_taskmodal);
 end;
 
-function MsgConfirm(const S: Widestring): boolean;
+function MsgConfirm(const S: Widestring; H: THandle): boolean;
 begin
-  Result:= MessageBoxW(WinHandle, PWChar(S), 'SynWrite',
+  Result:= MessageBoxW(H, PWChar(S), 'SynWrite',
     MB_okcancel or MB_iconwarning) = id_ok;
 end;
 
-procedure MsgExcept(const S: Widestring; E: Exception);
+procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);
 begin
-  MsgError(S + #13#13 + E.ClassName + #13 + E.Message);
+  MsgError(S + #13#13 + E.ClassName + #13 + E.Message, H);
 end;
 
 procedure TTntPageControl.AdjustClientRect(var Rect: TRect);
@@ -1880,5 +1879,59 @@ begin
     Ini.WriteString(Section, IntToStr(i), UTF8Encode(List.Items[i]));
 end;
 
+
+//returns string from file, which contains Str
+function FFindStringInFile(const fn: Widestring; const Str: Widestring; IgnoreCase: boolean): boolean;
+const
+  cMaxSize = 2 * 1024 * 1024; //max file size
+var
+  Ed: TSyntaxMemo;
+  NPos: Integer;
+  AllText: Widestring;
+  //P: TPoint;
+begin
+  Result:= false;
+
+  if not IsFileExist(fn) then Exit;
+  if not IsFileText(fn) then Exit;
+  if FGetFileSize(fn)>cMaxSize then Exit;
+
+  Ed:= TSyntaxMemo.Create(nil);
+  try
+    Ed.Lines.Clear;
+    Ed.Lines.LoadFromFile(fn);
+    AllText:= Ed.Lines.FText;
+
+    if IgnoreCase then
+      NPos:= Pos(WideUpperCase(Str), WideUpperCase(AllText))
+    else
+      NPos:= Pos(Str, AllText);
+      
+    if NPos>0 then
+    begin
+      Result:= true;
+      {
+      P:= Ed.StrPosToCaretPos(NPos);
+      if P.Y>=0 then
+        S:= Ed.Lines[P.Y];
+      }
+    end;
+    Ed.Lines.Clear;
+  finally
+    FreeAndNil(Ed);
+  end;
+end;
+
+procedure DoEditorSelectToPosition(Ed: TSyntaxMemo; NTo: Integer);
+var
+  N1, N2, NFrom: Integer;
+begin
+  NFrom:= Ed.CaretStrPos;
+  if NFrom<=NTo then
+    begin N1:= NFrom; N2:= NTo end
+  else
+    begin N2:= NFrom; N1:= NTo end;
+  Ed.SetSelection(N1, N2-N1);    
+end;
 
 end.

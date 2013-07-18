@@ -499,7 +499,7 @@ begin
     with List.Items[i] do
       if (Caption='') and (SubItems[0]<>'') then
       begin
-        MsgWarn(WideFormat(DKLangConstW('MNCap'), [SubItems[0]]));
+        MsgWarn(WideFormat(DKLangConstW('MNCap'), [SubItems[0]]), Handle);
         CanClose:= false;
         Exit
       end;

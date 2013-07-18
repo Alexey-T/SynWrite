@@ -38,6 +38,7 @@ type
     DefEnc: integer;
     SortType: TProjSort;
     SearchDirs: Widestring;
+    UserVars: Widestring;
   end;
 
 type
@@ -216,6 +217,10 @@ type
   public
     { Public declarations }
     FOpts: TProjectOpts;
+    FSynDir: string;
+    procedure ReplaceUserVars(var SValue: Widestring;
+      const AVarName: Widestring; var AVarValue: Widestring);
+    function GetUserVarValue(const AVarName: Widestring): Widestring;
     function GetFN(Node: TTntTreeNode): Widestring;
     function GetImageIndex(const fn: Widestring): integer;
     property ProjectFN: Widestring read FProjectFN write DoLoadProjectFromFile;
@@ -337,6 +342,7 @@ begin
   FOpts.DefEnc:= 0;
   FOpts.SortType:= srExt;
   FOpts.SearchDirs:= '';
+  FOpts.UserVars:= '';
 
   FPathList.Clear;
   UpdateTitle;
@@ -1053,6 +1059,7 @@ begin
     FOpts.DefEnc:= ReadInteger('Ini', 'DefEnc', 0);
     FOpts.SortType:= TProjSort(ReadInteger('Ini', 'SortType', Ord(srExt)));
     FOpts.SearchDirs:= UTF8Decode(ReadString('Ini', 'SearchDirs', ''));
+    FOpts.UserVars:= UTF8Decode(ReadString('Ini', 'UserVars', ''));
     SFolded:= ReadString('Ini', 'Folded', '');
     SelItem:= ReadInteger('Ini', 'SelItem', 0);
   finally
@@ -1173,6 +1180,7 @@ begin
     Write('DefEnc', IntToStr(FOpts.DefEnc));
     Write('SortType', IntToStr(Ord(FOpts.SortType)));
     Write('SearchDirs', UTF8Encode(FOpts.SearchDirs));
+    Write('UserVars', UTF8Encode(FOpts.UserVars));
     Write('Folded', GetCollapsedList);
     if TreeProj.Selected<>nil then
       Write('SelItem', IntToStr(TreeProj.Selected.AbsoluteIndex))
@@ -1289,6 +1297,7 @@ var
 begin
   with TfmProjProps.Create(nil) do
   try
+    FSynDir:= Self.FSynDir;
     SMsgProjDefault:= DKLangConstW('zDefault');
     cbEnc.Items.Insert(0, SMsgProjDefault);
     cbEnds.Items.Insert(0, SMsgProjDefault);
@@ -1314,6 +1323,7 @@ begin
     edMainFN.Text:= FOpts.MainFN;
     cbSort.ItemIndex:= Ord(FOpts.SortType);
     SStringToList(FOpts.SearchDirs, edDirs.Lines);
+    SStringToList(FOpts.UserVars, edVars.Lines);
 
     if ShowModal=mrOk then
     begin
@@ -1327,6 +1337,7 @@ begin
       FOpts.WorkDir:= edWorkDir.Text;
       FOpts.SortType:= TProjSort(cbSort.ItemIndex);
       SListToString(edDirs.Lines, FOpts.SearchDirs);
+      SListToString(edVars.Lines, FOpts.UserVars);
     end;
   finally
     Free;
@@ -1813,7 +1824,37 @@ end;
 procedure TfmProj.TBXItemProjMRUClick(Sender: TObject;
   const Filename: WideString);
 begin
-  DoLoadProjectFromFile(Filename);
+  if IsFileExist(Filename) then
+    DoLoadProjectFromFile(Filename)
+  else
+    MessageBeep(mb_iconerror);  
+end;
+
+procedure TfmProj.ReplaceUserVars(var SValue: Widestring;
+  const AVarName: Widestring; var AVarValue: Widestring);
+var
+  S, SOption, SVarId, SVarValue: Widestring;
+begin
+  SOption:= FOpts.UserVars;
+  AVarValue:= '';
+  repeat
+    S:= SGetItem(SOption, ';');
+    if S='' then Break;
+    SVarId:= SGetItem(S, '=');
+    SVarValue:= SGetItem(S, '=');
+    if SVarId='' then Continue;
+    SReplaceAllW(SValue, '{'+SVarId+'}', SVarValue);
+    if SVarId=AVarName then
+      AVarValue:= SVarValue;
+  until false;
+end;
+
+function TfmProj.GetUserVarValue(const AVarName: Widestring): Widestring;
+var
+  S: Widestring;
+begin
+  S:= '';
+  ReplaceUserVars(S, AVarName, Result);
 end;
 
 end.

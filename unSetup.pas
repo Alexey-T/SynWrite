@@ -601,7 +601,7 @@ begin
   //lang can't be applied
   if tabIntf.Tag<>0 then
     if FLangChanged then 
-      MsgInfo(DKLangConstW('MLnApply'));
+      MsgInfo(DKLangConstW('MLnApply'), Handle);
 
   Apply;
 end;

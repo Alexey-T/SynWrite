@@ -17,7 +17,7 @@ object fmProjProps: TfmProjProps
   PixelsPerInch = 96
   TextHeight = 13
   object btnOk: TTntButton
-    Left = 296
+    Left = 200
     Top = 296
     Width = 91
     Height = 23
@@ -34,14 +34,14 @@ object fmProjProps: TfmProjProps
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
-    TabOrder = 2
+    TabOrder = 3
   end
   object Pages: TTntPageControl
     Left = 8
     Top = 4
     Width = 473
     Height = 285
-    ActivePage = TntTabSheet1
+    ActivePage = TntTabSheet3
     TabOrder = 0
     object TntTabSheet1: TTntTabSheet
       Caption = 'General'
@@ -97,21 +97,21 @@ object fmProjProps: TfmProjProps
       object edWorkDir: TTntEdit
         Left = 8
         Top = 92
-        Width = 321
+        Width = 353
         Height = 21
         TabOrder = 3
       end
       object edMainFN: TTntEdit
         Left = 8
         Top = 132
-        Width = 321
+        Width = 353
         Height = 21
         ParentColor = True
         ReadOnly = True
         TabOrder = 5
       end
       object btnWorkDir: TTntButton
-        Left = 336
+        Left = 368
         Top = 92
         Width = 91
         Height = 23
@@ -181,7 +181,7 @@ object fmProjProps: TfmProjProps
       Caption = 'Search folders'
       object TntLabel2: TTntLabel
         Left = 8
-        Top = 168
+        Top = 220
         Width = 441
         Height = 33
         AutoSize = False
@@ -193,15 +193,15 @@ object fmProjProps: TfmProjProps
       object edDirs: TTntMemo
         Left = 8
         Top = 8
-        Width = 409
-        Height = 125
+        Width = 449
+        Height = 177
         ScrollBars = ssBoth
         TabOrder = 0
         OnKeyDown = edDirsKeyDown
       end
       object btnDirAdd: TTntButton
         Left = 8
-        Top = 140
+        Top = 192
         Width = 137
         Height = 23
         Caption = 'Add folder...'
@@ -209,13 +209,46 @@ object fmProjProps: TfmProjProps
         OnClick = btnDirAddClick
       end
     end
+    object TntTabSheet3: TTntTabSheet
+      Caption = 'User variables'
+      object TntLabel5: TTntLabel
+        Left = 8
+        Top = 192
+        Width = 441
+        Height = 33
+        AutoSize = False
+        Caption = 
+          'Enter lines in the form "VarName=some text". These lines will de' +
+          'fine variables which can be used in external tools properties as' +
+          ' "{VarName}".'
+        WordWrap = True
+      end
+      object edVars: TTntMemo
+        Left = 8
+        Top = 8
+        Width = 449
+        Height = 177
+        ScrollBars = ssBoth
+        TabOrder = 0
+        OnKeyDown = edDirsKeyDown
+      end
+    end
+  end
+  object btnHelp: TTntButton
+    Left = 296
+    Top = 296
+    Width = 91
+    Height = 23
+    Caption = 'Help'
+    TabOrder = 2
+    OnClick = btnHelpClick
   end
   object DKLanguageController1: TDKLanguageController
-    Left = 252
-    Top = 288
+    Left = 220
+    Top = 228
     LangData = {
       0B00666D50726F6A50726F7073010100000001000000070043617074696F6E01
-      16000000050062746E4F6B010100000002000000070043617074696F6E000600
+      1A000000050062746E4F6B010100000002000000070043617074696F6E000600
       62746E43616E010100000003000000070043617074696F6E0005005061676573
       00000C00546E7454616253686565743101010000000400000007004361707469
       6F6E0006004C6162656C34010100000005000000070043617074696F6E000900
@@ -231,6 +264,10 @@ object fmProjProps: TfmProjProps
       0900546E744C6162656C32010100000010000000070043617074696F6E000600
       6564446972730000090062746E44697241646401010000001100000007004361
       7074696F6E000900546E744C6162656C34010100000012000000070043617074
-      696F6E0006006362536F727401010000001300000005004974656D7300}
+      696F6E0006006362536F727401010000001300000005004974656D73000C0054
+      6E74546162536865657433010100000014000000070043617074696F6E000600
+      65645661727300000900546E744C6162656C3501010000001500000007004361
+      7074696F6E00070062746E48656C70010100000016000000070043617074696F
+      6E00}
   end
 end

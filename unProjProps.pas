@@ -32,20 +32,27 @@ type
     DKLanguageController1: TDKLanguageController;
     TntLabel4: TTntLabel;
     cbSort: TTntComboBox;
+    TntTabSheet3: TTntTabSheet;
+    edVars: TTntMemo;
+    TntLabel5: TTntLabel;
+    btnHelp: TTntButton;
     procedure btnWorkDirClick(Sender: TObject);
     procedure btnDirAddClick(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
     procedure edDirsKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure btnHelpClick(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
+    FSynDir: string;
   end;
 
 implementation
 
 uses
+  unProc,
   TntFileCtrl;
 
 {$R *.dfm}
@@ -76,7 +83,17 @@ end;
 procedure TfmProjProps.edDirsKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if (Key=vk_escape) then btnCan.Click;
+  if (Key=vk_escape) then
+  begin
+    btnCan.Click;
+    Key:= 0;
+    Exit
+  end;  
+end;
+
+procedure TfmProjProps.btnHelpClick(Sender: TObject);
+begin
+  ShowHelp(FSynDir, helpProjOpts, Handle);
 end;
 
 end.

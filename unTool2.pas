@@ -78,16 +78,19 @@ end;
 procedure TfmToolOutput.bTestClick(Sender: TObject);
 var
   fn: Widestring;
-  n_line, n_col:Integer;
+  n_line, n_col: Integer;
 begin
   fn:= '';
   SParseOut(edTest.Text, edRE.Text,
     edFN.ItemIndex, edLn.ItemIndex, edCol.ItemIndex, fn, n_line, n_col);
 
-  if fn='' then begin MsgError(DKLangConstW('O_fn')); Exit end;
-  if n_line<=0 then begin MsgError(DKLangConstW('O_l')); Exit end;
-
-  MsgInfo(WideFormat(DKLangConstW('O_ok'), [fn, n_line, n_col]));
+  if fn='' then
+    MsgError(DKLangConstW('O_fn'), Handle)
+  else
+  if n_line<=0 then
+    MsgError(DKLangConstW('O_l'), Handle)
+  else
+    MsgInfo(WideFormat(DKLangConstW('O_ok'), [fn, n_line, n_col]), Handle);
 end;
 
 procedure TfmToolOutput.bPreLoadClick(Sender: TObject);

@@ -9,7 +9,7 @@ uses
   TntClasses,
   TntDialogs,
   TntForms,
-  DKLang;
+  DKLang, Menus, TntMenus;
 
 type
    TTntCombobox = class(TntStdCtrls.TTntComboBox)
@@ -53,7 +53,7 @@ type
     cbFnOnly: TTntCheckBox;
     cbOutTab: TTntCheckBox;
     LabelErr: TTntLabel;
-    Timer1: TTimer;
+    TimerErr: TTimer;
     bCurFile: TTntButton;
     cbInOEM: TTntCheckBox;
     Bevel1: TBevel;
@@ -69,6 +69,35 @@ type
     cbCloseAfter: TTntCheckBox;
     TntLabel4: TTntLabel;
     edFileExc: TTntComboBox;
+    labFav: TTntLabel;
+    PopupFav: TTntPopupMenu;
+    mnuFavSave: TTntMenuItem;
+    N1: TTntMenuItem;
+    SaveDialogFav: TTntSaveDialog;
+    mnuFavFields: TTntMenuItem;
+    mnuLoadTextS: TTntMenuItem;
+    mnuLoadTextR: TTntMenuItem;
+    mnuLoadMaskInc: TTntMenuItem;
+    mnuLoadMaskExc: TTntMenuItem;
+    mnuLoadFolder: TTntMenuItem;
+    mnuLoadSubdirs: TTntMenuItem;
+    mnuLoadCase: TTntMenuItem;
+    mnuLoadWords: TTntMenuItem;
+    mnuLoadRegex: TTntMenuItem;
+    mnuLoadSpec: TTntMenuItem;
+    mnuLoadInOEM: TTntMenuItem;
+    mnuLoadInUTF8: TTntMenuItem;
+    mnuLoadInUTF16: TTntMenuItem;
+    mnuLoadSkipBinary: TTntMenuItem;
+    mnuLoadSkipRO: TTntMenuItem;
+    mnuLoadSkipHidden: TTntMenuItem;
+    mnuLoadSkipHiddenDir: TTntMenuItem;
+    N2: TTntMenuItem;
+    N3: TTntMenuItem;
+    N4: TTntMenuItem;
+    labPreset: TTntLabel;
+    TimerPreset: TTimer;
+    mnuLoadSort: TTntMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -80,7 +109,7 @@ type
     procedure edDirChange(Sender: TObject);
     procedure cbREClick(Sender: TObject);
     procedure cbSpecClick(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
+    procedure TimerErrTimer(Sender: TObject);
     procedure bCurFileClick(Sender: TObject);
     procedure bBrowseFileClick(Sender: TObject);
     procedure labFindClick(Sender: TObject);
@@ -99,13 +128,25 @@ type
     procedure ed1KeyPress(Sender: TObject; var Key: Char);
     procedure edFileExcKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure mnuFavSaveClick(Sender: TObject);
+    procedure labFavClick(Sender: TObject);
+    procedure PopupFavPopup(Sender: TObject);
+    procedure TimerPresetTimer(Sender: TObject);
+    procedure mnuLoadTextSClick(Sender: TObject);
   private
     { Private declarations }
     procedure DoCopyToEdit(ed: TTntCombobox;
       IsSpec, IsRegex: boolean; const Str: Widestring);
+    procedure FavClick(Sender: TObject);
+    procedure DoLoadFav(const fn: string);
+    procedure DoSaveFav(const fn: string);
+    procedure DoLoadFavIndex(N: Integer);
+    function FavDir: string;
+    procedure FindFavs(L: TTntStringList);
   public
     { Public declarations }
     SynDir,
+    SynIniDir,
     SRCurrentDir,
     SRCurrentFile: Widestring;
     SRCount: integer;
@@ -141,18 +182,24 @@ const
 implementation
 
 uses
-  Menus,
-  unSR, iniFiles, unProc,
+  IniFiles, 
+  unSR, unProc,
   TntFileCtrl, TntSysUtils,
   ATxFProc,
   ATxSProc;
 
 {$R *.dfm}
 
-const cc = 50;//Max items in history
+const
+  cSecSR = 'Search'; //ini section
+  cSecPre = 'preset'; //ini section
+  cPresetExt = 'synw-findpreset'; //file ext
 
 procedure TfmSRFiles.FormCreate(Sender: TObject);
 begin
+  SaveDialogFav.DefaultExt:= cPresetExt;
+  SaveDialogFav.Filter:= Format('*.%s|*.%s|', [cPresetExt, cPresetExt]);
+
   bFAll.ModalResult:= resFindAll;
   bRAll.ModalResult:= resReplaceAll;
 
@@ -202,27 +249,46 @@ begin
 
   with TIniFile.Create(SRIni) do
   try
-    Left:= ReadInteger('Search', 'WLeftFiles', Self.Monitor.Left + (Self.Monitor.Width - Width) div 2);
-    Top:= ReadInteger('Search', 'WTopFiles', Self.Monitor.Top + (Self.Monitor.Height - Height) div 2);
+    Left:= ReadInteger(cSecSR, 'WLeftFiles', Self.Monitor.Left + (Self.Monitor.Width - Width) div 2);
+    Top:= ReadInteger(cSecSR, 'WTopFiles', Self.Monitor.Top + (Self.Monitor.Height - Height) div 2);
 
-    edSort.ItemIndex:= ReadInteger('Search', 'Sort', 0);
-    cbCloseAfter.Checked:= ReadBool('Search', 'CloseAfter', true);
-    cbOutAppend.Checked:= ReadBool('Search', 'OutAdd', true);
-    cbOutTab.Checked:= ReadBool('Search', 'OutTab', false);
-    cbFnOnly.Checked:= ReadBool('Search', 'FnOnly', false);
-    cbNoBin.Checked:= ReadBool('Search', 'NoBin', true);
-    cbNoRO.Checked:= ReadBool('Search', 'NoRO', true);
-    cbNoHid.Checked:= ReadBool('Search', 'NoHid', true);
-    cbNoHid2.Checked:= ReadBool('Search', 'NoHid2', true);
-    cbSubDir.Checked:= ReadBool('Search', 'SubDir', false);
-    cbRE.Checked:= ReadBool('Search', 'RegExp', false);
-    cbCase.Checked:= ReadBool('Search', 'Case', false);
-    cbWords.Checked:= ReadBool('Search', 'Words', false);
-    cbSpec.Checked:= ReadBool('Search', 'Spec', false);
-    cbInOEM.Checked:= ReadBool('Search', 'InOEM', false);
-    cbInUTF8.Checked:= ReadBool('Search', 'InUTF8', false);
-    cbInUTF16.Checked:= ReadBool('Search', 'InUTF16', false);
-    bExcludeEmpty:= ReadBool('Search', 'Exc_em', true);
+    edSort.ItemIndex:= ReadInteger(cSecSR, 'Sort', 0);
+    cbCloseAfter.Checked:= ReadBool(cSecSR, 'CloseAfter', true);
+    cbOutAppend.Checked:= ReadBool(cSecSR, 'OutAdd', true);
+    cbOutTab.Checked:= ReadBool(cSecSR, 'OutTab', false);
+    cbFnOnly.Checked:= ReadBool(cSecSR, 'FnOnly', false);
+    cbNoBin.Checked:= ReadBool(cSecSR, 'NoBin', true);
+    cbNoRO.Checked:= ReadBool(cSecSR, 'NoRO', true);
+    cbNoHid.Checked:= ReadBool(cSecSR, 'NoHid', true);
+    cbNoHid2.Checked:= ReadBool(cSecSR, 'NoHid2', true);
+    cbSubDir.Checked:= ReadBool(cSecSR, 'SubDir', false);
+    cbRE.Checked:= ReadBool(cSecSR, 'RegExp', false);
+    cbCase.Checked:= ReadBool(cSecSR, 'Case', false);
+    cbWords.Checked:= ReadBool(cSecSR, 'Words', false);
+    cbSpec.Checked:= ReadBool(cSecSR, 'Spec', false);
+    cbInOEM.Checked:= ReadBool(cSecSR, 'InOEM', false);
+    cbInUTF8.Checked:= ReadBool(cSecSR, 'InUTF8', false);
+    cbInUTF16.Checked:= ReadBool(cSecSR, 'InUTF16', false);
+    bExcludeEmpty:= ReadBool(cSecSR, 'Exc_em', true);
+
+    mnuLoadTextS.Checked:= ReadBool(cSecSR, 'l_search', true);
+    mnuLoadTextR.Checked:= ReadBool(cSecSR, 'l_replace', true);
+    mnuLoadMaskInc.Checked:= ReadBool(cSecSR, 'l_maskInc', true);
+    mnuLoadMaskExc.Checked:= ReadBool(cSecSR, 'l_maskExc', true);
+    mnuLoadFolder.Checked:= ReadBool(cSecSR, 'l_folder', true);
+    mnuLoadSubdirs.Checked:= ReadBool(cSecSR, 'l_subdirs', true);
+    mnuLoadCase.Checked:= ReadBool(cSecSR, 'l_case', true);
+    mnuLoadWords.Checked:= ReadBool(cSecSR, 'l_words', true);
+    mnuLoadRegex.Checked:= ReadBool(cSecSR, 'l_regex', true);
+    mnuLoadSpec.Checked:= ReadBool(cSecSR, 'l_spec', true);
+    mnuLoadInOEM.Checked:= ReadBool(cSecSR, 'l_inOem', true);
+    mnuLoadInUTF8.Checked:= ReadBool(cSecSR, 'l_inUtf8', true);
+    mnuLoadInUTF16.Checked:= ReadBool(cSecSR, 'l_inUtf16', true);
+    mnuLoadSkipBinary.Checked:= ReadBool(cSecSR, 'l_nobin', true);
+    mnuLoadSkipRO.Checked:= ReadBool(cSecSR, 'l_noro', true);
+    mnuLoadSkipHidden.Checked:= ReadBool(cSecSR, 'l_nohid', true);
+    mnuLoadSkipHiddenDir.Checked:= ReadBool(cSecSR, 'l_nohiddir', true);
+    mnuLoadSort.Checked:= ReadBool(cSecSR, 'l_sort', true);
   finally
     Free;
   end;
@@ -281,34 +347,53 @@ procedure TfmSRFiles.FormDestroy(Sender: TObject);
 begin
   with TIniFile.Create(SRIni) do
   try
-    WriteInteger('Search', 'WLeftFiles', Left);
-    WriteInteger('Search', 'WTopFiles', Top);
+    WriteInteger(cSecSR, 'WLeftFiles', Left);
+    WriteInteger(cSecSR, 'WTopFiles', Top);
   finally
     Free
   end;    
 
-  if ModalResult = mrCancel then Exit;
+  //if ModalResult = mrCancel then Exit;
 
   with TIniFile.Create(SRIni) do
   try
-    WriteInteger('Search', 'Sort', edSort.ItemIndex);
-    WriteBool('Search', 'CloseAfter', cbCloseAfter.Checked);
-    WriteBool('Search', 'OutAdd', cbOutAppend.Checked);
-    WriteBool('Search', 'OutTab', cbOutTab.Checked);
-    WriteBool('Search', 'FnOnly', cbFnOnly.Checked);
-    WriteBool('Search', 'NoBin', cbNoBin.Checked);
-    WriteBool('Search', 'NoRO', cbNoRO.Checked);
-    WriteBool('Search', 'NoHid', cbNoHid.Checked);
-    WriteBool('Search', 'NoHid2', cbNoHid2.Checked);
-    WriteBool('Search', 'SubDir', cbSubDir.Checked);
-    WriteBool('Search', 'RegExp', cbRE.Checked);
-    WriteBool('Search', 'Case', cbCase.Checked);
-    WriteBool('Search', 'Words', cbWords.Checked);
-    WriteBool('Search', 'Spec', cbSpec.Checked);
-    WriteBool('Search', 'InOEM', cbInOEM.Checked);
-    WriteBool('Search', 'InUTF8', cbInUTF8.Checked);
-    WriteBool('Search', 'InUTF16', cbInUTF16.Checked);
-    WriteBool('Search', 'Exc_em', edFileExc.Text='');
+    WriteInteger(cSecSR, 'Sort', edSort.ItemIndex);
+    WriteBool(cSecSR, 'CloseAfter', cbCloseAfter.Checked);
+    WriteBool(cSecSR, 'OutAdd', cbOutAppend.Checked);
+    WriteBool(cSecSR, 'OutTab', cbOutTab.Checked);
+    WriteBool(cSecSR, 'FnOnly', cbFnOnly.Checked);
+    WriteBool(cSecSR, 'NoBin', cbNoBin.Checked);
+    WriteBool(cSecSR, 'NoRO', cbNoRO.Checked);
+    WriteBool(cSecSR, 'NoHid', cbNoHid.Checked);
+    WriteBool(cSecSR, 'NoHid2', cbNoHid2.Checked);
+    WriteBool(cSecSR, 'SubDir', cbSubDir.Checked);
+    WriteBool(cSecSR, 'RegExp', cbRE.Checked);
+    WriteBool(cSecSR, 'Case', cbCase.Checked);
+    WriteBool(cSecSR, 'Words', cbWords.Checked);
+    WriteBool(cSecSR, 'Spec', cbSpec.Checked);
+    WriteBool(cSecSR, 'InOEM', cbInOEM.Checked);
+    WriteBool(cSecSR, 'InUTF8', cbInUTF8.Checked);
+    WriteBool(cSecSR, 'InUTF16', cbInUTF16.Checked);
+    WriteBool(cSecSR, 'Exc_em', edFileExc.Text='');
+
+    WriteBool(cSecSR, 'l_search', mnuLoadTextS.Checked);
+    WriteBool(cSecSR, 'l_replace', mnuLoadTextR.Checked);
+    WriteBool(cSecSR, 'l_maskInc', mnuLoadMaskInc.Checked);
+    WriteBool(cSecSR, 'l_maskExc', mnuLoadMaskExc.Checked);
+    WriteBool(cSecSR, 'l_folder', mnuLoadFolder.Checked);
+    WriteBool(cSecSR, 'l_subdirs', mnuLoadSubdirs.Checked);
+    WriteBool(cSecSR, 'l_case', mnuLoadCase.Checked);
+    WriteBool(cSecSR, 'l_words', mnuLoadWords.Checked);
+    WriteBool(cSecSR, 'l_regex', mnuLoadRegex.Checked);
+    WriteBool(cSecSR, 'l_spec', mnuLoadSpec.Checked);
+    WriteBool(cSecSR, 'l_inOem', mnuLoadInOEM.Checked);
+    WriteBool(cSecSR, 'l_inUtf8', mnuLoadInUTF8.Checked);
+    WriteBool(cSecSR, 'l_inUtf16', mnuLoadInUTF16.Checked);
+    WriteBool(cSecSR, 'l_nobin', mnuLoadSkipBinary.Checked);
+    WriteBool(cSecSR, 'l_noro', mnuLoadSkipRO.Checked);
+    WriteBool(cSecSR, 'l_nohid', mnuLoadSkipHidden.Checked);
+    WriteBool(cSecSR, 'l_nohiddir', mnuLoadSkipHiddenDir.Checked);
+    WriteBool(cSecSR, 'l_sort', mnuLoadSort.Checked);
   finally
     Free;
   end;
@@ -381,9 +466,9 @@ begin
     cbRe.Checked:= false;
 end;
 
-procedure TfmSRFiles.Timer1Timer(Sender: TObject);
+procedure TfmSRFiles.TimerErrTimer(Sender: TObject);
 begin
-  Timer1.Enabled:= false;
+  TimerErr.Enabled:= false;
   LabelErr.Hide;
   LabelErr.Caption:= '--';
 end;
@@ -392,7 +477,7 @@ procedure TfmSRFIles.ShowErr(const s: Widestring);
 begin
   LabelErr.Caption:= s;
   LabelErr.Show;
-  Timer1.Enabled:= true;
+  TimerErr.Enabled:= true;
 end;
 
 procedure TfmSRFiles.bCurFileClick(Sender: TObject);
@@ -450,11 +535,26 @@ end;
 procedure TfmSRFiles.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
+  //Alt+1..Alt+9
+  if ((Key>=Ord('1')) and (Key<=Ord('9'))) and (Shift=[ssAlt]) then
+  begin
+    DoLoadFavIndex(Key-Ord('1'));
+    Key:= 0;
+    Exit
+  end;
+
   //Ctrl+Down
   if (Key=vk_down) and (Shift=[ssCtrl]) then
   begin
     if ed1.Focused or ed2.Focused then
       ed2.Text:= ed1.Text;
+    key:= 0;
+    Exit;
+  end;
+  //F3
+  if (key=vk_f3) and (Shift=[]) then
+  begin
+    labFavClick(Self);
     key:= 0;
     Exit;
   end;
@@ -559,6 +659,190 @@ begin
     Key:= 0;
     Exit
   end;
+end;
+
+procedure TfmSRFiles.mnuFavSaveClick(Sender: TObject);
+begin
+  CreateDir(FavDir);
+  with SaveDialogFav do
+  begin
+    InitialDir:= FavDir;
+    FileName:= '';
+    if Execute then
+      DoSaveFav(FileName);
+  end;
+end;
+
+procedure TfmSRFiles.labFavClick(Sender: TObject);
+var
+  P: TPoint;
+begin
+  P:= labFav.ClientToScreen(Point(0, labFav.Height));
+  PopupFav.Popup(P.X, P.Y);
+end;
+
+procedure TfmSRFiles.FindFavs(L: TTntStringList);
+begin
+  FFindToList(L, FavDir, '*.'+cPresetExt, '',
+    false{SubDir}, false, false, false);
+end;
+
+procedure TfmSRFiles.PopupFavPopup(Sender: TObject);
+var
+  L: TTntStringList;
+  i: Integer;
+  MI: TTntMenuItem;
+begin
+  with PopupFav do
+    while Items.Count>3 do
+      Items.Delete(Items.Count-1);
+
+  L:= TTntStringList.Create;
+  try
+    FindFavs(L);
+    for i:= 0 to L.Count-1 do
+    begin
+      MI:= TTntMenuItem.Create(Self);
+      MI.Caption:= ChangeFileExt(ExtractFileName(L[i]), '');
+      MI.OnClick:= FavClick;
+      PopupFav.Items.Add(MI);
+    end;
+  finally
+    FreeAndNil(L);
+  end;
+end;
+
+procedure TfmSRFiles.FavClick(Sender: TObject);
+var
+  fn: string;
+begin
+  fn:= (Sender as TTntMenuItem).Caption;
+  fn:= FavDir + '\' + fn + '.' + cPresetExt;
+  DoLoadFav(fn);
+end;
+
+
+procedure TfmSRFiles.DoSaveFav(const fn: string);
+begin
+  with TIniFile.Create(fn) do
+  try
+    WriteString(cSecPre, 'search',  '"'+UTF8Encode(ed1.Text)+'"');
+    WriteString(cSecPre, 'replace', '"'+UTF8Encode(ed2.Text)+'"');
+    WriteString(cSecPre, 'maskInc', '"'+UTF8Encode(edFileInc.Text)+'"');
+    WriteString(cSecPre, 'maskExc', '"'+UTF8Encode(edFileExc.Text)+'"');
+    WriteString(cSecPre, 'dir',     '"'+UTF8Encode(edDir.Text)+'"');
+    WriteBool(cSecPre, 'subdir', cbSubDir.Checked);
+    WriteBool(cSecPre, 'case', cbCase.Checked);
+    WriteBool(cSecPre, 'words', cbWords.Checked);
+    WriteBool(cSecPre, 're', cbRE.Checked);
+    WriteBool(cSecPre, 'spec', cbSpec.Checked);
+    WriteBool(cSecPre, 'inOem', cbInOEM.Checked);
+    WriteBool(cSecPre, 'inUTF8', cbInUTF8.Checked);
+    WriteBool(cSecPre, 'inUTF16', cbInUTF16.Checked);
+    WriteBool(cSecPre, 'noBin', cbNoBin.Checked);
+    WriteBool(cSecPre, 'noRO', cbNoRO.Checked);
+    WriteBool(cSecPre, 'noHid', cbNoHid.Checked);
+    WriteBool(cSecPre, 'noHid2', cbNoHid2.Checked);
+    {
+    WriteBool(cSecPre, 'outTab', cbOutTab.Checked);
+    WriteBool(cSecPre, 'fnOnly', cbFnOnly.Checked);
+    WriteBool(cSecPre, 'outAppend', cbOutAppend.Checked);
+    WriteBool(cSecPre, 'close', cbCloseAfter.Checked);
+    }
+    WriteInteger(cSecPre, 'sort', edSort.ItemIndex);
+  finally
+    Free
+  end;
+end;
+
+procedure TfmSRFiles.DoLoadFav(const fn: string);
+begin
+  TimerPreset.Enabled:= false;
+  TimerPreset.Enabled:= true;
+  labPreset.Caption:= ChangeFileExt(ExtractFileName(fn), '');
+
+  with TIniFile.Create(fn) do
+  try
+    if mnuLoadTextS.Checked then
+      ed1.Text:=       UTF8Decode(ReadString(cSecPre, 'search', ''));
+    if mnuLoadTextR.Checked then
+      ed2.Text:=       UTF8Decode(ReadString(cSecPre, 'replace', ''));
+    if mnuLoadMaskInc.Checked then
+      edFileInc.Text:= UTF8Decode(ReadString(cSecPre, 'maskInc', ''));
+    if mnuLoadMaskExc.Checked then
+      edFileExc.Text:= UTF8Decode(ReadString(cSecPre, 'maskExc', ''));
+    if mnuLoadFolder.Checked then
+      edDir.Text:=     UTF8Decode(ReadString(cSecPre, 'dir', ''));
+    if mnuLoadSubdirs.Checked then
+      with cbSubDir do     Checked:= ReadBool(cSecPre, 'subdir', Checked);
+    if mnuLoadCase.Checked then
+      with cbCase do       Checked:= ReadBool(cSecPre, 'case', Checked);
+    if mnuLoadWords.Checked then
+      with cbWords do      Checked:= ReadBool(cSecPre, 'words', Checked);
+    if mnuLoadRegex.Checked then
+      with cbRE do         Checked:= ReadBool(cSecPre, 're', Checked);
+    if mnuLoadSpec.Checked then
+      with cbSpec do       Checked:= ReadBool(cSecPre, 'spec', Checked);
+    if mnuLoadInOEM.Checked then
+      with cbInOEM do      Checked:= ReadBool(cSecPre, 'inOem', Checked);
+    if mnuLoadInUTF8.Checked then
+      with cbInUTF8 do     Checked:= ReadBool(cSecPre, 'inUTF8', Checked);
+    if mnuLoadInUTF16.Checked then
+      with cbInUTF16 do    Checked:= ReadBool(cSecPre, 'inUTF16', Checked);
+    if mnuLoadSkipBinary.Checked then
+      with cbNoBin do      Checked:= ReadBool(cSecPre, 'noBin', Checked);
+    if mnuLoadSkipRO.Checked then
+      with cbNoRO do       Checked:= ReadBool(cSecPre, 'noRO', Checked);
+    if mnuLoadSkipHidden.Checked then
+      with cbNoHid do      Checked:= ReadBool(cSecPre, 'noHid', Checked);
+    if mnuLoadSkipHiddenDir.Checked then
+      with cbNoHid2 do     Checked:= ReadBool(cSecPre, 'noHid2', Checked);
+    {
+    with cbOutTab do     Checked:= ReadBool(cSecPre, 'outTab', Checked);
+    with cbFnOnly do     Checked:= ReadBool(cSecPre, 'fnOnly', Checked);
+    with cbOutAppend do  Checked:= ReadBool(cSecPre, 'outAppend', Checked);
+    with cbCloseAfter do Checked:= ReadBool(cSecPre, 'close', Checked);
+    }
+    if mnuLoadSort.Checked then
+      with edSort do ItemIndex:= ReadInteger(cSecPre, 'sort', ItemIndex);
+  finally
+    Free
+  end;
+  edDirChange(Self);
+end;
+
+function TfmSRFiles.FavDir: string;
+begin
+  Result:= SynIniDir + 'IniPresets';
+end;
+
+procedure TfmSRFIles.DoLoadFavIndex(N: Integer);
+var
+  L: TTntStringList;
+begin
+  L:= TTntStringList.Create;
+  try
+    FindFavs(L);
+    if (N>=0) and (N<L.Count) then
+      DoLoadFav(L[N])
+    else
+      MessageBeep(mb_iconwarning);  
+  finally
+    FreeAndNil(L);
+  end;
+end;
+
+
+procedure TfmSRFiles.TimerPresetTimer(Sender: TObject);
+begin
+  TimerPreset.Enabled:= false;
+  labPreset.Caption:= '';
+end;
+
+procedure TfmSRFiles.mnuLoadTextSClick(Sender: TObject);
+begin
+  with (Sender as TTntMenuItem) do
+    Checked:= not Checked;
 end;
 
 end.

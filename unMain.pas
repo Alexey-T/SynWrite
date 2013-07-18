@@ -224,7 +224,7 @@ type
     ecUnCommentLines: TecUnCommentLines;
     ecSortAscending: TAction;
     ecSortDescending: TAction;
-    fCustomizeLexerLib: TecCustomizeLexerLib;
+    fCustomizeLexerLib: TAction;
     Timer1: TTimer;
     TBXItem11: TSpTbxItem;
     TBXItem15: TSpTbxItem;
@@ -1292,7 +1292,6 @@ type
     procedure ecSelCharPopup1Show(Sender: TObject);
     procedure ecACPShow(Sender: TObject);
     procedure fCustomizeLexerExecuteOK(Sender: TObject);
-    procedure fCustomizeLexerLibAfterExecute(Sender: TObject);
     procedure TBXItemHReadClick(Sender: TObject);
     procedure TBXSubmenuLineEndsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
@@ -1962,6 +1961,7 @@ type
     procedure TbxItemMruNewdocClick(Sender: TObject;
       const Filename: WideString);
     procedure StatusResize(Sender: TObject);
+    procedure fCustomizeLexerLibExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -2041,7 +2041,6 @@ type
     orig_TabsWidths: string;
 
     //Auto-complete
-    //slINTdesc, //Htm.acp: section [HTML.Attributes]
     slINTatr, //Htm.acp: section [HTML]
     slINTcss, //Htm.acp: section [CSS]
     slACPdisp, //ACP: display list (in form "\s1\...\s2\...")
@@ -2066,7 +2065,7 @@ type
     FPagesNTabCtx: Integer; //PageControl context-menu tab index
     FPrevCaretPos: Integer; //saved caret pos before executing "Select brackets"
 
-    FLexerACP: string; //lexer for which ACP was called
+    FLexerACP: string; //ACP list was loaded for this lexer
     FTagList: boolean; //ACP shows tags, not attribs
     FTagCss: boolean; //ACP called for CSS
     FTagClosing: boolean; //ACP called for closing tag </tag>
@@ -2086,6 +2085,7 @@ type
     FCurrPluginAcpStartPos: TPoint; //auto-complete popup position, for cActionSuggestCompletion
     FCurrSelState: TSelState; //current selection state (stream, column, carets etc)
     FCurrTheme: string;      //current SpTBX theme
+    FCurrDiffScrollY: Integer; //diff between 1st view editor TopLine and 2nd view editor TopLine
 
     FDialogFFiles_Find,       //last values of "Find in files" dialog fields
     FDialogFFiles_Replace,
@@ -2343,9 +2343,9 @@ type
     procedure DoClipItemCopy;
     procedure DoClipItemIns;
     procedure DoSaveStyles(Sender: TObject);
-    procedure DoAcpCss(List, Display: TWideStrings);
-    procedure DoAcpHtm(List, Display: TWideStrings);
-    procedure DoAcpFromFile(List, Display: TWideStrings);
+    procedure DoAcpCss(List, Display: ecUnicode.TWideStrings);
+    procedure DoAcpHtm(List, Display: ecUnicode.TWideStrings);
+    procedure DoAcpFromFile(List, Display: ecUnicode.TWideStrings);
     procedure DoAcpCommand;
     function DoAcpFromPlugins(const AAction: PWideChar): Widestring;
     procedure DoInsertTextDialog;
@@ -2354,7 +2354,7 @@ type
     procedure DoRepaintTBs;
     procedure DoRepaintTBs2;
     procedure DoRepaintTabCaptions;
-    procedure DoSyncScroll(Src: TSyntaxMemo);
+    procedure DoSyncScroll(EdSrc: TSyntaxMemo);
     function GetPageControl: TTntPageControl;
     procedure UpdateClickedFrame;
     function CloseAll(CanCancel, CanClose: Boolean; FExcept: TEditorFrame = nil): boolean;
@@ -2390,7 +2390,7 @@ type
     procedure FinderCanAccept(Sender: TObject;
       StartPos, EndPos: integer;
       var Accept: Boolean);
-    procedure HandleKeyActive(var Key: Word; Shift: TShiftState);
+    procedure DoHandleKeysInPanels(var Key: Word; Shift: TShiftState);
     procedure ListOutNav(const s: Widestring);
     procedure ListValNav(const s: Widestring);
     function IsNavigatableLine(const s: Widestring): boolean;
@@ -2400,6 +2400,7 @@ type
     procedure RunMacro(n: Integer);
     procedure AppException(Sender: TObject; E: Exception);
     function MsgEncReload: boolean;
+    function MsgConfirmFtp: boolean;
     function SynLexLib: string;
     function SynPluginIni(const SCaption: string): string;
     function SynIni: string;
@@ -2491,6 +2492,7 @@ type
     procedure SaveMacros;
     procedure SavePrintOptions;
     procedure SaveLexLib;
+    procedure SaveLexLibFilename;
     procedure SaveToolbarsProps;
     function ReadTCHist: Widestring;
 
@@ -2543,6 +2545,13 @@ type
     function SynFilesFilter: Widestring;
     procedure DoOptionsDialog(tabId: Integer);
     procedure DoTreeFocus;
+    function DoGetFavList: Widestring;
+    procedure DoGetOppositeEditor(
+      EdSrc: TSyntaxMemo;
+      var EdOther: TSyntaxMemo;
+      var DiffY: Integer;
+      var View1st: boolean);
+    procedure LoadAcpFromFile(const fn, Lexer: string);
     //end of private
 
   protected
@@ -2608,7 +2617,6 @@ type
     opTipsPanels: boolean;
     opTipsToken: boolean;
     opFollowTail: boolean;
-    //opSrShowFilename: boolean; //Show filename on progress form (find in files)
     opSrExpand: boolean; //Expand results tree on progress
     opSrOnTop: boolean; //Find dlg on top
     opSrUseDlg: boolean; //Use custom search dlg
@@ -2785,12 +2793,12 @@ type
     function IsMouseInProj: boolean;
 
     constructor CreateParented(hWindow: HWND);
-    procedure OpnProject(const fn: Widestring);
-    function OpnFile(const AFileName: WideString): TEditorFrame;
+    function DoOpenFile(const AFileName: WideString): TEditorFrame;
+    procedure DoOpenProject(const fn: Widestring);
+    procedure DoOpenSession(const fn: string; Add: boolean = False);
     procedure SaveIni;
     procedure SaveState(F: TEditorFrame);
     procedure SaveSession(const fn: string);
-    procedure OpenSession(const fn: string; Add: boolean = False);
     function LoadState(Frame: TEditorFrame; const FN: WideString): boolean;
 
     //event handlers
@@ -2864,7 +2872,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.6.640';
+  cSynVer = '5.7.682';
 
 const  
   cSynParamRO = '/RO';
@@ -2902,7 +2910,8 @@ uses
   unSetup, unAb, unEnc, unTool, unSR2, unExtr, unShell, unInsTxt,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
-  unCmdList, unProjList, unToolbarProp, unHideItems;
+  unCmdList, unProjList, unToolbarProp, unHideItems, TntWideStrings,
+  unLexerLib;
 
 {$R *.dfm}
 {$R Cur.res}
@@ -2939,24 +2948,19 @@ const
   cp__Unicode    = -3;
   cp__UnicodeBE  = -4;
 
-function MsgConfirmFtp: boolean;
-begin
-  Result:= MsgConfirm(DKLangConstW('zMFtpOp'));
-end;
-
 function MsgConfirmBinary(const fn: Widestring): boolean;
 begin
-  Result:= MsgConfirm(WideFormat(DKLangConstW('MNText'), [WideExtractFileName(fn)]));
+  Result:= MsgConfirm(WideFormat(DKLangConstW('MNText'), [WideExtractFileName(fn)]), 0);
 end;
 
 function MsgConfirmCreate(const fn: Widestring): boolean;
 begin
-  Result:= MsgConfirm(WideFormat(DKLangConstW('MCre'), [WideExtractFileName(fn)]));
+  Result:= MsgConfirm(WideFormat(DKLangConstW('MCre'), [WideExtractFileName(fn)]), 0);
 end;
 
 function MsgConfirmManyOpen(N: Integer): boolean;
 begin
-  Result:= MsgConfirm(WideFormat(DKLangConstW('zMOpenFiles'), [N]));
+  Result:= MsgConfirm(WideFormat(DKLangConstW('zMOpenFiles'), [N]), 0);
 end;
 
 const
@@ -3138,7 +3142,7 @@ begin
     Dispose(p);
   except
     on E: Exception do
-      MsgExcept('Exception on plugin unhooking', E);
+      MsgExcept('Exception on plugin unhooking', E, 0);
   end;
 
   i:= GetWindowLong(hWin, GWL_USERDATA);
@@ -3153,7 +3157,7 @@ begin
     p^.PlugForm.Free;
   except
     on E: Exception do
-      MsgExcept('Exception on plugin closing', E);
+      MsgExcept('Exception on plugin closing', E, 0);
   end;
 end;
 
@@ -3188,7 +3192,7 @@ begin
 
       QuickDestroy:= False;
       Show;
-      OpnFile(FileToLoad);
+      DoOpenFile(FileToLoad);
       UpdateRO;
       Result:= Handle;
 
@@ -3207,13 +3211,13 @@ begin
     end; //with fmMain
   except
     on E: Exception do
-      MsgExcept('Exception on plugin opening', E);
+      MsgExcept('Exception on plugin opening', E, 0);
   end;
 end;
 
 procedure TfmMain.AppException(Sender: TObject; E: Exception);
 begin
-  MsgExcept('Exception in plugin', E);
+  MsgExcept('Exception in plugin', E, 0);
 end;
 
 procedure TfmMain.ecTitleCaseExecute(Sender: TObject);
@@ -3262,9 +3266,9 @@ begin
   begin
     S:= OD.Files[i];
     if FBigSized(S) then
-      MsgError(WideFormat(DKLangConstW('MBig'), [WideExtractFileName(S)]))
+      MsgError(WideFormat(DKLangConstW('MBig'), [WideExtractFileName(S)]), Handle)
     else
-      OpnFile(S);
+      DoOpenFile(S);
   end;
 
   //save last dir
@@ -3277,7 +3281,7 @@ begin
 end;
 
 
-function TfmMain.OpnFile(const AFileName: WideString): TEditorFrame;
+function TfmMain.DoOpenFile(const AFileName: WideString): TEditorFrame;
 var
   i: Integer;
   F: TEditorFrame;
@@ -4736,7 +4740,7 @@ begin
     Free;
   end;
  except
-   MsgError(DKLangConstW('Appn'));
+   MsgError(DKLangConstW('Appn'), Handle);
  end;
 end;
 
@@ -5196,18 +5200,27 @@ begin
   SyntaxManager.SaveToFile(SyntaxManager.FileName);
 end;
 
-function TfmMain.AskLexer;
+function TfmMain.AskLexer(CanCancel: boolean = false): boolean;
 var
   buttons: TMsgDlgButtons;
 begin
   Result:= True;
-  if SyntaxManager.Modified then begin
+  if SyntaxManager.Modified then
+  begin
     buttons:= [mbYes, mbNo];
-    if CanCancel then Include(buttons, mbCancel);
+    if CanCancel then
+      Include(buttons, mbCancel);
+      
     case WideMessageDlg(DKLangConstW('MSavLex'), mtConfirmation, buttons, 0) of
-      mrYes: SaveLexLib;
-      mrNo: SyntaxManager.Modified:= False;
-      mrCancel: Result:= False;
+      mrYes:
+        begin
+          SaveLexLib;
+          SyntaxManager.Modified:= False;
+        end;
+      mrNo:
+        SyntaxManager.Modified:= False;
+      mrCancel:
+        Result:= False;
     end;
   end;
 end;
@@ -5317,7 +5330,7 @@ begin
         if (ch='>') then
           Handled:= DoAutoCloseTag
         else
-        if Pos(ch, '([{"''')>0 then
+        if Pos(ch, '()[]{}"''')>0 then
           Handled:= DoAutoCloseBracket(ch)
         else
         if IsWordChar(ch) then
@@ -6256,7 +6269,7 @@ end;
 procedure TfmMain.MRUClick(Sender: TObject; const S: WideString);
 begin
   if IsFileExist(S) then
-    OpnFile(S)
+    DoOpenFile(S)
   else
   begin
     MsgNoFile(S);
@@ -6269,7 +6282,7 @@ begin
   if not AskSession(true) then
     Exit;
   if IsFileExist(S) then
-    OpenSession(S)
+    DoOpenSession(S)
   else
   begin
     MsgNoFile(S);
@@ -6568,7 +6581,7 @@ begin
   s:= WideFormat(DKLangConstW('MNFound2'), [Finder.FindText]);
   SetHint(s);
   if opSrShowMsg and not (Assigned(fmSR) and fmSR.Visible) then
-    MsgWarn(s)
+    MsgWarn(s, Handle)
   else
     MsgBeep;
 end;
@@ -6890,7 +6903,6 @@ begin
   slACPitem:= TStringList.Create;
   slACPHint:= TStringList.Create;
   slACPdesc:= TStringList.Create;
-  //slINTdesc:= TStringList.Create;
   slINTatr:= TStringList.Create;
   slINTcss:= TStringList.Create;
 
@@ -6966,26 +6978,25 @@ end;
 function TfmMain.GetHtmlAcpFN: string;
 begin
   Result:= GetAcpFN('Htm');
-end;  
+end;
 
 procedure TfmMain.RefreshACP(const Lexer: string);
 var
-  i, a, b, c: integer;
-  tmp, fn, s: string;
-  acp: TStringList;
-  IsPas, IsBracketSep: boolean;
+  fn: Widestring;
 begin
   FLexerACP:= Lexer;
-  ecACP.Tag:= 0; //not loaded any list
   if not Assigned(slACPdisp) then Exit;
   slACPdisp.Clear;
   slACPitem.Clear;
   slACPHint.Clear;
   slACPdesc.Clear;
-  //slINTdesc.Clear;
   slINTatr.Clear;
   slINTcss.Clear;
-  IsPas:= IsLexerPas(Lexer);
+
+  ecACP.Tag:= 0; //not loaded any list
+  ecACP.Items.Clear;
+  ecACP.DisplayItems.Clear;
+
   if Lexer='' then Exit;
 
   //read special HTML/CSS ACP
@@ -6995,89 +7006,109 @@ begin
        (IsLexerCSS(Lexer, false) and opAcpCss) then
   begin
     SReadFileIntoSomeLists(fn,
-      //'[HTML.Attributes]',
-      '[HTML]',
-      '[CSS]',
-      //slINTdesc,
-      slINTatr,
-      slINTcss);
+      '[HTML]', '[CSS]',
+      slINTatr, slINTcss);
   end;
 
-  //read <Lexer>.ACP if exists
+  //load default ACP file
   fn:= GetAcpFN(Lexer);
-  if (Lexer='') or (not IsFileExist(fn)) then
+  if IsFileExist(fn) then
   begin
-    ecACP.DisplayItems.Clear;
-    ecACP.Items.Clear;
-    Exit;
-  end;
+    opAcpChars:= '';
+    LoadAcpFromFile(fn, Lexer);
+  end;  
 
-  opAcpChars:= '';
+  //load user ACP file (specified in project)
+  if Assigned(fmProj) then
+  begin
+    fn:= fmProj.GetUserVarValue('AC['+Lexer+']');
+    if fn<>'' then
+    begin
+      if ExtractFilePath(fn)='' then
+        fn:= ExtractFilePath(fmProj.ProjectFN)+fn;
+      if IsFileExist(fn) then
+        LoadAcpFromFile(fn, Lexer);
+    end;    
+  end;
+end;
+
+
+procedure TfmMain.LoadAcpFromFile(const fn, Lexer: string);
+var
+  acp: TStringList;
+  i, a, b, c: Integer;
+  s, tmp: string;
+  IsPas, IsBracketSep: boolean;
+begin
+  IsPas:= IsLexerPas(Lexer);
   IsBracketSep:= true;
 
   acp:= TStringList.Create;
-  acp.LoadFromFile(fn);
-  if acp.Count>0 then
-  for i:=0 to acp.Count-1 do
-  begin
-    s:= acp[i];
-    if Trim(s)='' then Continue;
-    if s[1]='#' then
+  try
+    acp.LoadFromFile(fn);
+    if acp.Count>0 then
+    for i:=0 to acp.Count-1 do
     begin
-      a:= Pos(' ',s);
-      if a=0 then Continue;
-      if Copy(s,1,a-1)='#chars' then
+      s:= acp[i];
+      if Trim(s)='' then Continue;
+      if s[1]='#' then
       begin
-        opAcpChars:= Copy(s, a+1, MaxInt);
-        IsBracketSep:= Pos('(', opAcpChars)=0;
+        a:= Pos(' ',s);
+        if a=0 then Continue;
+        if Copy(s,1,a-1)='#chars' then
+        begin
+          opAcpChars:= Copy(s, a+1, MaxInt);
+          IsBracketSep:= Pos('(', opAcpChars)=0;
+        end;
+        Continue;
       end;
-      Continue;
-    end;
 
-    //parse ACP
-    a:= PosEx(' ',s,1);
-    b:= PosEx(' ',s,a+1);
-    if b=0 then b:= Length(s)+1;
-    if IsBracketSep then
-      c:= PosEx('(',s,a+1)
-    else
-      c:= 0;
-    //item has '('
-    if IsBracketSep and (c<b) and (c<>0) then
-    begin
-      b:=c;
-      c:=PosEx(')',s,b+1);
-      if (b+1=c) then tmp:='void'
-      else tmp:='( '+copy(s,b+1,c-b-1)+' )';
+      //parse ACP
+      a:= PosEx(' ',s,1);
+      b:= PosEx(' ',s,a+1);
+      if b=0 then b:= Length(s)+1;
+      if IsBracketSep then
+        c:= PosEx('(',s,a+1)
+      else
+        c:= 0;
+      //item has '('
+      if IsBracketSep and (c<b) and (c<>0) then
+      begin
+        b:=c;
+        c:=PosEx(')',s,b+1);
+        if (b+1=c) then tmp:='void'
+        else tmp:='( '+copy(s,b+1,c-b-1)+' )';
+        if IsPas then
+          tmp:=StringReplace(tmp, ';', ',', [rfReplaceAll]);
+        tmp:=StringReplace(tmp, '[,', ',[', [rfReplaceAll]);
+        slACPHint.Add(tmp);
+      end
+      else
+      begin
+        slACPHint.Add('');
+      end;
+      s:=Copy(acp[i],a+1,b-a-1);
+
+      //strip type for Pascal funcs
       if IsPas then
-        tmp:=StringReplace(tmp, ';', ',', [rfReplaceAll]);
-      tmp:=StringReplace(tmp, '[,', ',[', [rfReplaceAll]);
-      slACPHint.Add(tmp);
-    end
-    else
-    begin
-      slACPHint.Add('');
+        SDeleteFrom(s, ':');
+      //insert text with "(" if params not empty
+      if Pos('(', acp[i])>0 then
+        s:= s+'(';
+      slACPitem.Add(s);
+
+      c:=PosEx('|',acp[i],b);
+      if c=0 then c:= MaxInt div 2;
+      slACPdisp.Add('\s1\'+
+        copy(acp[i],1,a-1) + '\t\\s2\' +
+        copy(acp[i],a+1,b-a-1) + '\t\\s0\' +
+        copy(acp[i],b,c-b) + '\s3\ '+
+        copy(acp[i],c+1,100) );
+      slACPdesc.Add(copy(acp[i],c+1,MaxInt));
     end;
-    s:=Copy(acp[i],a+1,b-a-1);
-
-    //strip type for Pascal funcs
-    if IsPas then
-      SDeleteFrom(s, ':');
-    //insert text with "(" if params not empty  
-    if Pos('(', acp[i])>0 then
-      s:= s+'(';
-    slACPitem.Add(s);
-
-    c:=PosEx('|',acp[i],b);
-    if c=0 then c:= MaxInt div 2;
-    slACPdisp.Add('\s1\'+
-      copy(acp[i],1,a-1) + '\t\\s2\' +
-      copy(acp[i],a+1,b-a-1) + '\t\\s0\' +
-      copy(acp[i],b,c-b) + '\s3\ '+
-      copy(acp[i],c+1,100) );
-    slACPdesc.Add(copy(acp[i],c+1,MaxInt));
+  finally
+    FreeAndNil(acp);
   end;
-  acp.Free;
 end;
 
 procedure TfmMain.FormDestroy(Sender: TObject);
@@ -7095,7 +7126,6 @@ begin
   FreeAndNil(slACPitem);
   FreeAndNil(slACPHint);
   FreeAndNil(slACPdesc);
-  //FreeAndNil(slINTdesc);
   FreeAndNil(slINTatr);
   FreeAndNil(slINTcss);
 
@@ -7270,7 +7300,7 @@ begin
   Result:= IsWordChar(ch) or (Pos(ch, '-.') > 0);
 end;
 
-procedure TfmMain.DoAcpCss(List, Display: TWideStrings);
+procedure TfmMain.DoAcpCss(List, Display: ecUnicode.TWideStrings);
 var
   i,j,sx:Integer;
   t,ins: string;
@@ -7330,7 +7360,7 @@ begin
     end;//CSS
 end;
 
-procedure TfmMain.DoAcpHtm(List, Display: TWideStrings);
+procedure TfmMain.DoAcpHtm(List, Display: ecUnicode.TWideStrings);
 var
   t, atr: string;
   i,sx,j,k,a: integer;
@@ -7441,7 +7471,7 @@ begin
 end;
 
 procedure TfmMain.ecACPGetAutoCompleteList(Sender: TObject; PosX: TPoint;
-  List, Display: TWideStrings);
+  List, Display: ecUnicode.TWideStrings);
 var
   Lexer: string;
 begin
@@ -7967,7 +7997,7 @@ begin
       if (not Modified) or MsgEncReload then
       begin
         if IsFileWithBOM(FileName) then
-          MsgWarn(WideFormat(DKLangConstW('cpBOM'), [WideExtractFileName(FileName)]));
+          MsgWarn(WideFormat(DKLangConstW('cpBOM'), [WideExtractFileName(FileName)]), Handle);
         Modified:= False;
         TextSource.Lines.SkipSignature:= True;
         DoFileReopen;
@@ -7978,6 +8008,11 @@ begin
       EditorSetModified(Frame.EditorMaster);
   end; //with Frame
   UpdateStatusBar;
+end;
+
+function TfmMain.MsgConfirmFtp: boolean;
+begin
+  Result:= MsgConfirm(DKLangConstW('zMFtpOp'), Handle);
 end;
 
 function TfmMain.MsgEncReload: boolean;
@@ -8229,7 +8264,7 @@ end;
       end;
     except
       on E: Exception do
-        MsgExcept('Error on msg processing', E);
+        MsgExcept('Error on msg processing', E, Handle);
     end;
   end;
 
@@ -8470,7 +8505,7 @@ begin
     //
     arReplaceAllInAll:
       if FrameAllCount<2 then
-        MsgWarn(DKLangConstW('fnMul'))
+        MsgWarn(DKLangConstW('fnMul'), Handle)
       else
       begin
         ReplaceInAllTabs(n, nf);
@@ -8973,7 +9008,7 @@ begin
   try
     SaveIni2;
   except
-    MsgError(DKLangConstW('Appn'));
+    MsgError(DKLangConstW('Appn'), Handle);
   end;
 
   //close Spell dialog
@@ -9259,7 +9294,7 @@ begin
   AskLexer(True);
 end;
 
-procedure TfmMain.fCustomizeLexerLibAfterExecute(Sender: TObject);
+procedure TfmMain.SaveLexLibFilename;
 var
   fn: string;
 begin
@@ -9273,8 +9308,6 @@ begin
   finally
     Free
   end;
-  
-  AskLexer(True);
 end;
 
   //1st shortcut for command
@@ -10161,7 +10194,7 @@ end;
 procedure TfmMain.RunTool(NTool: Integer);
   function HandleParams(const s, dir: WideString): WideString;
   var
-    fn: Widestring;
+    fn, SVarValue: Widestring;
   begin
     Result:= S;
     //
@@ -10223,6 +10256,9 @@ procedure TfmMain.RunTool(NTool: Integer);
       SReplaceW(Result, '{InteractiveDir}', fn);
     end;
     //
+    //user variables (from project)
+    if Assigned(fmProj) then
+      fmProj.ReplaceUserVars(Result, '', SVarValue);
   end;
 var
   ft, fcmd, fpar, frun, fexe, fdir,
@@ -10233,7 +10269,7 @@ begin
   begin
     //check correctness of tool params
     if (Pos('{File', SPar)>0) and (CurrentFrame.FileName='') then
-      begin MsgWarn(DKLangConstW('NSaved')); Exit end;
+      begin MsgWarn(DKLangConstW('NSaved'), Handle); Exit end;
 
     if (Pos('{Select', SPar)>0) and not CurrentEditor.HaveSelection then
       begin MsgNoSelection; Exit end;
@@ -11190,7 +11226,7 @@ begin
       Free;
     end;
   except
-    MsgError(WideFormat(DKLangConstW('AppNSes'), [fn]));
+    MsgError(WideFormat(DKLangConstW('AppNSes'), [fn]), Handle);
   end;
 end;
 
@@ -11217,13 +11253,13 @@ begin
       end;
 
       SaveLastDir_Session(FileName);
-      OpenSession(FileName);
+      DoOpenSession(FileName);
       SynMruSessions.AddItem(FileName);
     end;
   end;
 end;
 
-procedure TfmMain.OpenSession(const fn: string; Add: boolean = False);
+procedure TfmMain.DoOpenSession(const fn: string; Add: boolean = False);
 var
   F: TEditorFrame;
   NFiles, NPage1, NPage2, NPageCount: integer;
@@ -11285,7 +11321,7 @@ begin
           PageControl:= PageControl1
         else
           PageControl:= PageControl2;
-        OpnFile(s);
+        DoOpenFile(s);
         UpdatePages;
 
         F:= CurrentFrame;
@@ -11329,7 +11365,7 @@ begin
       N:= PageControl.ActivePageIndex;
       if N<0 then N:= 0;
       if (N>=FrameCount) then
-        MsgError('Incorrect tab index to set')
+        MsgError('Incorrect tab index to set', Handle)
       else
         CurrentFrame:= Frames[N];
 
@@ -11781,12 +11817,12 @@ var
   fn: Widestring;
 begin
   if CurrentFrame.FileName <> '' then
-  if MsgConfirm(DKLangConstW('mdel')) then
+  if MsgConfirm(DKLangConstW('mdel'), Handle) then
   begin
     fn:= CurrentFrame.FileName;
     FClose.Execute;
     if not FDeleteToRecycle(Handle, fn, true) then
-      MsgError(WideFormat(DKLangConstW('mdeln'), [WideExtractFileName(fn)]));
+      MsgError(WideFormat(DKLangConstW('mdeln'), [WideExtractFileName(fn)]), Handle);
     SynMruFiles.DeleteItem(fn);
     DoRefreshPluginsFiles(fn);
   end;
@@ -11816,7 +11852,7 @@ begin
   except
     on E: Exception do
     begin
-      MsgExcept('Error on loading file'#13+fn, E);
+      MsgExcept('Error on loading file'#13+fn, E, Handle);
       Exit;
     end;
   end;
@@ -11827,7 +11863,7 @@ begin
     except
       on E: Exception do
       begin
-        MsgExcept('Error on replacing in file'#13+fn, E);
+        MsgExcept('Error on replacing in file'#13+fn, E, Handle);
         Exit;
       end;
     end;
@@ -11845,7 +11881,7 @@ begin
         SetFileAttributesW(PWChar(fn), Attr);
     except
       on E: Exception do
-        MsgExcept('Error on saving file'#13+fn, E);
+        MsgExcept('Error on saving file'#13+fn, E, Handle);
     end;
   finally
     TemplateEditor.Lines.Clear;
@@ -11903,7 +11939,7 @@ begin
   except
     on E: Exception do
     begin
-      MsgExcept('Error on loading file'#13+fn, E);
+      MsgExcept('Error on loading file'#13+fn, E, Handle);
       ClearEditor;
       Exit;
     end;
@@ -11925,7 +11961,7 @@ begin
     end;
   except
     on E: Exception do
-      MsgExcept('Error on counting matches in file'#13+fn, E);
+      MsgExcept('Error on counting matches in file'#13+fn, E, Handle);
   end;
 end;
 
@@ -11959,7 +11995,7 @@ var
   procedure MsgNoFiles;
   begin
     if opSrShowMsg2 then
-      MsgWarn(DKLangConstW('FF0'))
+      MsgWarn(DKLangConstW('FF0'), Handle)
     else
       AErrorMode:= 1;
   end;
@@ -11967,7 +12003,7 @@ var
   procedure MsgNoLines;
   begin
     if opSrShowMsg2 then
-      MsgWarn(DKLangConstW('FF0_'))
+      MsgWarn(DKLangConstW('FF0_'), Handle)
     else
       AErrorMode:= 2;
   end;
@@ -12014,21 +12050,12 @@ begin
     ATextReplace:= '';
   end;
 
-  //this is 'hidden' option
-  {
-  with TIniFile.Create(SynIni) do
-  try
-    opSrShowFilename:= ReadBool('SR', 'ShowFN', true);
-  finally
-    Free
-  end;
-  }
-
   _Show:
   ANeedFocusResult:= false;
   with TfmSRFiles.Create(Self) do
   try
     SynDir:= Self.SynDir;
+    SynIniDir:= Self.SynIniDir;
     SRCurrentDir:= SExtractFileDir(CurrentFrame.FileName);
     SRCurrentFile:= SExtractFileName(CurrentFrame.FileName);
     SRCount:= opSaveSRHist;
@@ -12114,7 +12141,7 @@ begin
 
     //confirm mass replace
     if AShowResult = resReplaceAll then
-      if not MsgConfirm(WideFormat(DKLangConstW('FFCfm'), [edDir.Text, edFileInc.Text])) then
+      if not MsgConfirm(WideFormat(DKLangConstW('FFCfm'), [edDir.Text, edFileInc.Text]), Handle) then
         begin RestoreFinder; Exit end;
 
     //save last dialog field values
@@ -12148,7 +12175,7 @@ begin
     except
       on E: Exception do
       begin
-        MsgExcept('Error on searching for files', E);
+        MsgExcept('Error on searching for files', E, Handle);
         HideProgress;
         Exit;
       end;
@@ -12173,7 +12200,7 @@ begin
     except
       on E: Exception do
       begin
-        MsgExcept('Error on excluding binary files', E);
+        MsgExcept('Error on excluding binary files', E, Handle);
         HideProgress;
         Exit;
       end;
@@ -12276,7 +12303,7 @@ begin
           end;
         except
           on E: Exception do
-            MsgExcept('Error on finding in file'#13+FListFiles[i], E);
+            MsgExcept('Error on finding in file'#13+FListFiles[i], E, Handle);
         end;
 
         Inc(NDoneSize, DWORD(FListFiles.Objects[i]));
@@ -12291,7 +12318,7 @@ begin
       on E: Exception do
       begin
         HideProgress;
-        MsgExcept('Error on finding in files', E);
+        MsgExcept('Error on finding in files', E, Handle);
         Exit
       end;
     end;
@@ -12356,7 +12383,7 @@ begin
           ReplaceInFile(FListFiles[i]);
         except
           on E: Exception do
-            MsgExcept('Error on replacing in file'#13+FListFiles[i], E);
+            MsgExcept('Error on replacing in file'#13+FListFiles[i], E, Handle);
         end;
 
         try
@@ -12374,7 +12401,7 @@ begin
           end;
         except
           on E: Exception do
-            MsgExcept('Error on adding result'#13+FListFiles[i], E);
+            MsgExcept('Error on adding result'#13+FListFiles[i], E, Handle);
         end;    
 
         //if "Replace in files" stopped
@@ -12389,7 +12416,7 @@ begin
       on E: Exception do
       begin
         HideProgress;
-        MsgExcept('Error on replacing in files', E);
+        MsgExcept('Error on replacing in files', E, Handle);
         Exit;
       end;
     end;
@@ -12667,20 +12694,21 @@ begin
   if (SExtractFilePath(fn)='') and (CurrentFrame.FileName<>'') then
     fn:= SExtractFilePath(CurrentFrame.FileName)+fn;
   if not IsFileExist(fn) then
-    begin MsgError(WideFormat(DKLangConstW('O_fne'), [fn])); Exit end;
+    begin MsgError(WideFormat(DKLangConstW('O_fne'), [fn]), Handle); Exit end;
 
-  OpnFile(fn); //must activate tab too
+  DoOpenFile(fn); //must activate tab too
   FocusEditor;
   CurrentEditor.CaretPos:= Point(n_col-1, n_line-1);
 end;
 
-procedure TfmMain.HandleKeyActive(var Key: Word; Shift: TShiftState);
+procedure TfmMain.DoHandleKeysInPanels(var Key: Word; Shift: TShiftState);
 var
   sh: TShortcut;
   i: integer;
 begin
   sh:= Shortcut(Key, Shift);
   if sh=0 then Exit;
+
   //Next/prev mass search result
   if IsSh(sh, sm_GotoNextFindResult) then
   begin
@@ -12694,56 +12722,57 @@ begin
     Key:= 0;
     Exit
   end;
-  //Ctrl+F12
+
+  //Focus commands
   if IsSh(sh, sm_ToggleFocusTree) then
   begin
     ecToggleFocusTree.Execute;
     Key:= 0;
     Exit
   end;
-  //Ctrl+F5
+  //
   if IsSh(sh, sm_ToggleFocusValidate) then
   begin
     ecToggleFocusValidate.Execute;
     Key:= 0;
     Exit
   end;
-  //Ctrl+F11
+  //
   if IsSh(sh, sm_ToggleFocusProj) then
   begin
     ecToggleFocusProject.Execute;
     Key:= 0;
     Exit
   end;
-  //Ctrl+F10
+  //
   if IsSh(sh, sm_ToggleFocusMap) then
   begin
     ecToggleFocusMap.Execute;
     Key:= 0;
     Exit
   end;
-  //Ctrl+F6
+  //
   if IsSh(sh, sm_ToggleFocusClip) then
   begin
     ecToggleFocusClip.Execute;
     Key:= 0;
     Exit
   end;
-  //Ctrl+??
+  //
   if IsSh(sh, sm_ToggleFocusClips) then
   begin
     ecToggleFocusClips.Execute;
     Key:= 0;
     Exit
   end;
-  //Ctrl+F7
+  //
   if IsSh(sh, sm_ToggleFocusFindRes) then
   begin
     ecToggleFocusFindRes.Execute;
     Key:= 0;
     Exit
   end;
-  //Ctrl+F8
+  //
   if IsSh(sh, sm_ToggleFocusOutput) then
   begin
     ecToggleFocusOutput.Execute;
@@ -12790,11 +12819,20 @@ begin
     Exit
   end;
 
-  //Alt+1..9
+  //sm_Tab0..sm_Tab9
   for i:= 0 to 9 do
     if IsSh(sh, sm_Tab0+i) then
     begin
       TabClickN(i);
+      Key:= 0;
+      Exit
+    end;
+
+  //sm_TreeLevel2..sm_TreeLevel9
+  for i:= 2 to 9 do
+    if IsSh(sh, sm_TreeLevel2+i-2) then
+    begin
+      DoTreeLevel(i);
       Key:= 0;
       Exit
     end;
@@ -12809,7 +12847,7 @@ begin
     begin TbxItemOClrClick(Self); Key:= 0 end;
   if (Key=Ord('C')) and (Shift=[ssCtrl]) then
     begin TbxItemOCpClick(Self); Key:= 0 end;
-  HandleKeyActive(Key, Shift);
+  DoHandleKeysInPanels(Key, Shift);
 end;
 
 procedure TfmMain.TBXItemOClrClick(Sender: TObject);
@@ -13711,6 +13749,7 @@ begin
     Parent:= plTree;
     Align:= alClient;
     BorderStyle:= bsNone;
+    FSynDir:= Self.SynDir;
     //
     TreeProj.Font.Assign(Tree.Font);
     TreeProj.Color:= Tree.Color;
@@ -13926,7 +13965,7 @@ begin
     if Execute then
     begin
       SaveLastDir_Session(FileName);
-      OpenSession(FileName, True);
+      DoOpenSession(FileName, True);
       SynMruSessions.AddItem(FileName);
     end;
   end;
@@ -13934,11 +13973,11 @@ end;
 
   procedure TfmMain.MsgBakEr(const fn: Widestring);
   begin
-    MsgError(WideFormat(DKLangConstW('MBakEr'), [fn]));
+    MsgError(WideFormat(DKLangConstW('MBakEr'), [fn]), Handle);
   end;
   procedure TfmMain.MsgBakOk(const fn: Widestring);
   begin
-    MsgInfo(WideFormat(DKLangConstW('MBakOk'), [fn]));
+    MsgInfo(WideFormat(DKLangConstW('MBakOk'), [fn]), Handle);
   end;
 
 procedure TfmMain.DoBackup(const AFilename: Widestring);
@@ -14534,38 +14573,70 @@ begin
 end;
 
 procedure TfmMain.ecSyncScrollVExecute(Sender: TObject);
+var
+  EdOther: TSyntaxMemo;
+  View1st: boolean;
 begin
   with ecSyncScrollV do
+  begin
     Checked:= not Checked;
+    if Checked then
+      DoGetOppositeEditor(CurrentEditor, EdOther, FCurrDiffScrollY, View1st);
+  end;
 end;
 
-procedure TfmMain.DoSyncScroll(Src: TSyntaxMemo);
+procedure TfmMain.DoGetOppositeEditor(
+  EdSrc: TSyntaxMemo;
+  var EdOther: TSyntaxMemo;
+  var DiffY: Integer;
+  var View1st: boolean);
 var
-  Oth: TSyntaxMemo;
-  P1, P: TTntPageControl;
+  PagesSrc, PagesOther: TTntPageControl;
   F: TEditorFrame;
 begin
-  if not (ecSyncScrollV.Checked or ecSyncScrollH.Checked) then Exit;
-  if (Src=nil) then Exit;
+  EdOther:= nil;
+  DiffY:= 0;
 
- //parents are:
- //Editor->Panel1->Frame->TabSheet->PageControl
-  P1:= (((Src.Parent.Parent as TEditorFrame).Parent as TTntTabSheet).Parent as TTntPageControl);
+  //parents are:
+  //Editor->Panel1->Frame->TabSheet->PageControl
+  PagesSrc:= (((EdSrc.Parent.Parent as TEditorFrame).Parent as TTntTabSheet).Parent as TTntPageControl);
+  View1st:= PagesSrc=PageControl1;
 
-  if P1=PageControl2 then
-    P:= PageControl1
+  if View1st then
+    PagesOther:= PageControl2
   else
-    P:= PageControl2;
+    PagesOther:= PageControl1;
 
-  F:= PagesToFrame(P, P.ActivePageIndex);
+  F:= PagesToFrame(PagesOther, PagesOther.ActivePageIndex);
   if F=nil then Exit;
-  Oth:= F.EditorMaster;
-  if Oth.Lines.Count=0 then Exit;
+
+  EdOther:= F.EditorMaster;
+  DiffY:= EdOther.TopLine - EdSrc.TopLine;
+  if not View1st then
+    DiffY:= -DiffY;
+end;
+
+procedure TfmMain.DoSyncScroll(EdSrc: TSyntaxMemo);
+var
+  EdOther: TSyntaxMemo;
+  DiffY: Integer;
+  View1st: boolean;
+begin
+  if not (ecSyncScrollV.Checked or ecSyncScrollH.Checked) then Exit;
+  if EdSrc=nil then Exit;
+
+  DoGetOppositeEditor(EdSrc, EdOther, DiffY, View1st);
+  if EdOther=nil then Exit;
+  if EdOther.Lines.Count=0 then Exit;
+
+  DiffY:= FCurrDiffScrollY;
+  if not View1st then
+    DiffY:= -DiffY;
 
   if ecSyncScrollV.Checked then
-    Oth.TopLine:= Src.TopLine;
+    EdOther.TopLine:= EdSrc.TopLine + DiffY;
   if ecSyncScrollH.Checked then
-    Oth.ScrollPosX:= Src.ScrollPosX;
+    EdOther.ScrollPosX:= EdSrc.ScrollPosX;
 end;
 
 procedure TfmMain.Panel1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -14694,7 +14765,7 @@ begin
     if ReadOnly then Exit;
     if not HaveSelection then Exit;
     if SelectMode <> msColumn then
-      begin MsgWarn(DKLangConstW('vert')); Exit end;
+      begin MsgWarn(DKLangConstW('vert'), Handle); Exit end;
 
     with TfmFillBlock.Create(Self) do
     try
@@ -15073,7 +15144,7 @@ begin
     //open with warning about non-text content
     if IsFileText(fn) or MsgConfirmBinary(fn) then
     begin
-      OpnFile(fn);
+      DoOpenFile(fn);
       if LnNum > 0 then
         CurrentEditor.CaretPos:= Point(0, LnNum-1);
     end;
@@ -15181,7 +15252,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoAcpFromFile(List, Display: TWideStrings);
+procedure TfmMain.DoAcpFromFile(List, Display: ecUnicode.TWideStrings);
 var
   S, SWord: Widestring;
   LL: TTntStringList;
@@ -15290,7 +15361,7 @@ begin
             S:= S + List.Items[i] + #13;
           end
           else
-            MsgWarn(WideFormat(DKLangConstW('MNLex'), [List.Items[i]]));
+            MsgWarn(WideFormat(DKLangConstW('MNLex'), [List.Items[i]]), Handle);
         end;
       SaveLexLib;
       //MsgInfo(S);
@@ -15351,7 +15422,7 @@ begin
     Key:= 0;
     Exit;
   end;
-  HandleKeyActive(Key, Shift);
+  DoHandleKeysInPanels(Key, Shift);
 end;
 
 function TfmMain.DoClipItem: Widestring;
@@ -15410,7 +15481,7 @@ begin
     Key:= 0;
     Exit
   end;
-  HandleKeyActive(Key, Shift);
+  DoHandleKeysInPanels(Key, Shift);
 end;
 
 procedure TfmMain.DoTreeFocus;
@@ -15576,7 +15647,7 @@ begin
     if FExecProcess(fcmd, SExtractFileDir(fn), sw_hide, true{DoWait})<>exOk then
       begin MsgNoRun(fr); Exit end;
     if (not IsFileExist(ft)) or (FGetFileSize(ft)=0) then
-      begin MsgError(WideFormat(DKLangConstW('MZen'), [s])); Exit end;
+      begin MsgError(WideFormat(DKLangConstW('MZen'), [s]), Handle); Exit end;
 
     L:= TStringList.Create;
     try
@@ -15608,7 +15679,7 @@ begin
     if abbr='' then Exit;
     i:= Pos('|', abbr);
     if i=0 then
-      begin MsgWarn(DKLangConstW('zenCur')); Exit; end;
+      begin MsgWarn(DKLangConstW('zenCur'), Handle); Exit; end;
     SReplaceAllW(abbr, '|', '');
 
     s:= SelText;
@@ -15758,7 +15829,7 @@ begin
     if UseDefault then
       begin sStart:= DefStart; sEnd:= DefEnd; end
     else
-      MsgWarn(WideFormat(DKLangConstW('MNCmt'), [Lexer]));
+      MsgWarn(WideFormat(DKLangConstW('MNCmt'), [Lexer]), Handle);
     Exit;
   end;
 
@@ -15995,7 +16066,7 @@ begin
         Ed.ResetSelection;
         F.ecSpellChecker.Active:= false;
         F.ecSpellChecker.Active:= true;
-        MsgInfo(DKLangConstW('zMSpellDone'));
+        MsgInfo(DKLangConstW('zMSpellDone'), Handle);
         Exit
       end;
 
@@ -16414,7 +16485,7 @@ end;
 
 procedure TfmMain.ecBkClearAllExecute(Sender: TObject);
 begin
-  if MsgConfirm(DKLangConstW('MBk')) then
+  if MsgConfirm(DKLangConstW('MBk'), Handle) then
   begin
     DoBkClear(CurrentFrame.EditorMaster);
     DoBkClear(CurrentFrame.EditorSlave);
@@ -16815,7 +16886,7 @@ end;
 
 procedure TfmMain.TBXItemTidyCfgClick(Sender: TObject);
 begin
-  OpnFile(SynTidyIni);
+  DoOpenFile(SynTidyIni);
 end;
 
 procedure TfmMain.TidyClick(Sender: TObject);
@@ -16850,8 +16921,8 @@ begin
     FreeAndNil(L);
 
     if (not IsFileExist(fn_cfg)) or (FGetFileSize(fn_cfg)=0) then
-      begin MsgError('Tidy configuration empty: "'+Cfg+'"'); Exit end;
-    //OpnFile(fn_cfg); exit;
+      begin MsgError('Tidy configuration empty:'#13+Cfg, Handle); Exit end;
+    //DoOpenFile(fn_cfg); exit;
 
     fcmd:= WideFormat('"%s" -output "%s" -config "%s" -file "%s" -quiet "%s"',
       [SynDir + 'Tools\tidy.exe',
@@ -16937,7 +17008,7 @@ begin
   sCol:= SGetItem(ss, ' ');
   Ln:= StrToIntDef(sLn, 1)-1;
   Col:= StrToIntDef(sCol, 1)-1;
-  OpnFile(FListValFN);
+  DoOpenFile(FListValFN);
   CurrentEditor.CaretPos:= Point(Col, Ln);
   FocusEditor;
 end;
@@ -16985,7 +17056,7 @@ begin
     begin TbxItemValClrClick(Self); Key:= 0 end;
   if (Key=Ord('C')) and (Shift=[ssCtrl]) then
     begin TbxItemValCpClick(Self); Key:= 0 end;
-  HandleKeyActive(Key, Shift);
+  DoHandleKeysInPanels(Key, Shift);
 end;
 
 procedure TfmMain.ecToggleFocusValidateExecute(Sender: TObject);
@@ -17755,7 +17826,7 @@ begin
   s:= WideFormat(DKLangConstW('MNFound2'), [s]);
   SetHint(s);
   if opSrShowMsg then
-    MsgWarn(s)
+    MsgWarn(s, Handle)
   else
     MsgBeep;
 end;
@@ -18118,8 +18189,8 @@ procedure TfmMain.TBXItemHKeyMapClick(Sender: TObject);
 var
   fn: string;
 begin
-  UpdateMacroKeynames;
   fn:= SExpandVars('%temp%\SynWriteKeys.html');
+  UpdateMacroKeynames;
   DoListKeys(SyntKeyMapping, fn);
   FExecute(fn, '', '', Handle);
 end;
@@ -18731,13 +18802,13 @@ begin
     if n=0 then Exit;
     Delete(fn, n, MaxInt);
     if not IsFileExist(fn) then Exit;
-    OpnFile(fn);
+    DoOpenFile(fn);
     Exit;
   end;
 
   //clicked on Find result line (with Info)
   if IsFileExist(Info.FN) then
-    OpnFile(Info.FN)
+    DoOpenFile(Info.FN)
   else
   begin
     n:= SGetFrameIndexFromPrefixedStr(Info.FN);
@@ -18818,7 +18889,7 @@ begin
     Key:= 0;
     Exit
   end;
-  HandleKeyActive(Key, Shift);
+  DoHandleKeysInPanels(Key, Shift);
 end;
 
 procedure TfmMain.UpdateTreeReplace(const ANodeText: Widestring; ANumFiles, ANumItems: integer; AStopped: boolean);
@@ -19015,32 +19086,32 @@ end;
 
 procedure TfmMain.MsgNoRun(const fn: Widestring);
 begin
-  MsgError(WideFormat(DKLangConstW('MRun'), [fn]));
+  MsgError(WideFormat(DKLangConstW('MRun'), [fn]), Handle);
 end;
 
 procedure TfmMain.MsgNoSelection;
 begin
-  MsgWarn(DKLangConstW('MNSel2'));
+  MsgWarn(DKLangConstW('MNSel2'), Handle);
 end;
 
 procedure TfmMain.MsgNoSelectionForHelp;
 begin
-  MsgWarn(DKLangConstW('MNSel'));
+  MsgWarn(DKLangConstW('MNSel'), Handle);
 end;
 
 procedure TfmMain.MsgNoFile(const fn: Widestring);
 begin
-  MsgError(DKLangConstW('MNFound')+#13+fn);
+  MsgError(DKLangConstW('MNFound')+#13+fn, Handle);
 end;
 
 procedure TfmMain.MsgNoDir(const fn: Widestring);
 begin
-  MsgWarn(DKLangConstW('MNFoundFold')+#13+fn);
+  MsgWarn(DKLangConstW('MNFoundFold')+#13+fn, Handle);
 end;
 
 procedure TfmMain.MsgEmptyMacro(const s: Widestring);
 begin
-  MsgWarn(WideFormat(DKLangConstW('zMNoMacro'), [s]));
+  MsgWarn(WideFormat(DKLangConstW('zMNoMacro'), [s]), Handle);
 end;
 
 procedure TfmMain.MsgDelLines(N: integer);
@@ -19858,8 +19929,13 @@ var
   AType: TOutputType;
   N1, N2: Integer;
 begin
+  ListOut.Items.Clear;
   if not (IsFileExist(ft) and (FGetFileSize(ft)>0)) then
-    begin MsgBeep; Exit end;
+  begin
+    SetHint(WideFormat(DKLangConstW('MRun0'), [opTools[NTool].SCap]));
+    MsgBeep;
+    Exit
+  end;
 
   List:= TWideStringList.Create;
   with opTools[NTool] do
@@ -20294,19 +20370,32 @@ begin
   Result:= false;
   Ed:= CurrentEditor;
   if Ed.ReadOnly then Exit;
+  NStart:= Ed.CaretStrPos;
 
   //options enabled?
-  if (Pos(ch, '([{')>0) and not opAutoCloseBrackets then Exit;
+  if (Pos(ch, '()[]{}')>0) and not opAutoCloseBrackets then Exit;
   if (Pos(ch, '"''')>0) and not opAutoCloseQuotes then Exit;
+
+  //bracket is escaped?
   if opAutoCloseBracketsNoEsc then
-    with Ed do
-    if (CaretStrPos>0) and (Lines.FText[CaretStrPos]='\') then Exit;
+    if (NStart>0) and (Ed.Lines.FText[NStart]='\') then Exit;
+
+  //closing bracket is already under caret?
+  if (Pos(ch, ')]}')>0) then
+    if (NStart+1<=Length(Ed.Lines.FText)) and (Ed.Lines.FText[NStart+1]=ch) then
+    begin
+      //right 1 char
+      Ed.CaretPos:= Point(Ed.CaretPos.X+1, Ed.CaretPos.Y);
+      Result:= true;
+      Exit
+    end;
 
   case ch of
     '(': ch2:= ')';
     '[': ch2:= ']';
     '{': ch2:= '}';
-    '"', '''': ch2:= ch;
+    '"',
+    '''': ch2:= ch;
     else Exit
   end;
 
@@ -20538,7 +20627,12 @@ begin
         i:= List.ItemIndex;
         if i>=0 then
         begin
-          ed.GotoBookmark(Integer(L[i]));
+          //Shift pressed?
+          if GetKeyState(vk_shift)<0 then
+            DoEditorSelectToPosition(ed, ed.Bookmarks[Integer(L[i])])
+          else
+            ed.GotoBookmark(Integer(L[i]));
+            
           CenterMemoPos(ed, true{GotoMode});
         end;
       end;
@@ -20678,7 +20772,12 @@ begin
         i:= List.ItemIndex;
         if i>=0 then
         begin
-          ed.CaretPos:= Point(0, Integer(L[i]));
+          //Shift pressed?
+          if GetKeyState(vk_shift)<0 then
+            DoEditorSelectToPosition(ed, ed.CaretPosToStrPos(Point(0, Integer(L[i]))))
+          else
+            ed.CaretPos:= Point(0, Integer(L[i]));
+
           CenterMemoPos(ed, true{GotoMode});
         end;
       end;
@@ -20810,9 +20909,9 @@ begin
         if IsFileExist(FCurrentFileName) then
         begin
           if IsFileProject(FCurrentFileName) then
-            OpnProject(FCurrentFileName)
+            DoOpenProject(FCurrentFileName)
           else
-            OpnFile(FCurrentFileName);
+            DoOpenFile(FCurrentFileName);
         end
         else
         if not DoOpenPluginFavorite(FCurrentFileName) then
@@ -20968,7 +21067,7 @@ begin
   if not IsFileText(fn) and not MsgConfirmBinary(fn) then
     Exit
   else
-    OpnFile(fn);
+    DoOpenFile(fn);
 end;
 
 procedure TfmMain.ProjAddEditorFile(Sender: TObject;
@@ -21009,7 +21108,7 @@ begin
       if IsFileExist(fn) then
       begin
         if IsFileText(fn) or MsgConfirmBinary(fn) then
-          OpnFile(fn);
+          DoOpenFile(fn);
       end
       else
         Bads.Add(fn);
@@ -21063,7 +21162,7 @@ begin
     Result:= fmProj.ProjectFN;
 end;
 
-procedure TfmMain.OpnProject(const fn: Widestring);
+procedure TfmMain.DoOpenProject(const fn: Widestring);
 begin
   if IsFileExist(fn) then
   begin
@@ -21207,7 +21306,7 @@ end;
 procedure TfmMain.TBXItemClipsEditClick(Sender: TObject);
 begin
   if Assigned(fmClips) then
-    OpnFile(fmClips.GetCurrentFN);
+    DoOpenFile(fmClips.GetCurrentFN);
 end;
 
 procedure TfmMain.TBXItemClipsAddFileClick(Sender: TObject);
@@ -21533,9 +21632,7 @@ begin
 
   with CurrentEditor do
   begin
-    ExecCommand(smLineStart);
-    ExecCommand(smInsertLine);
-    SPadding:= StringOfChar(' ', 2);
+    SPadding:= ''; //StringOfChar(' ', 2);
     InsertText(SPadding+s1+'NOTE: '+s+' '+s2);
   end;
 end;
@@ -21573,13 +21670,13 @@ begin
   fClose.Execute;
   if not MoveFileW(PWChar(fn), PWChar(fn_new)) then
   begin
-    MsgError(DKLangConstW('zMRenameErr')+#13+fn+#13'-->'#13+fn_new);
-    OpnFile(fn);
+    MsgError(DKLangConstW('zMRenameErr')+#13+fn+#13'-->'#13+fn_new, Handle);
+    DoOpenFile(fn);
   end
   else
   begin
     SynMruFiles.DeleteItem(fn);
-    OpnFile(fn_new);
+    DoOpenFile(fn_new);
     DoRefreshPluginsFiles(fn_new);
   end;
 
@@ -21679,7 +21776,7 @@ begin
 
   DoGetSelLines(ed, Ln1, Ln2);
   if Ln2=Ln1 then
-    begin MsgWarn(DKLangConstW('zMSelMulLine')); Exit end;
+    begin MsgWarn(DKLangConstW('zMSelMulLine'), Handle); Exit end;
 
   with ed do
   begin
@@ -21994,35 +22091,35 @@ begin
     FDll:= LoadLibrary(PChar(string(SFileName)));
     if FDll=0 then
     begin
-      MsgError('Can''t load dll:'#13+SFileName);
+      MsgError('Can''t load dll:'#13+SFileName, Handle);
       Exit
     end;
 
     FSynInit:= GetProcAddress(FDll, 'SynInit');
     if @FSynInit=nil then
     begin
-      MsgError('Can''t find SynInit'#13+SFileName);
+      MsgError('Can''t find SynInit'#13+SFileName, Handle);
       Exit
     end;
 
     FSynOpenForm:= GetProcAddress(FDll, 'SynOpenForm');
     if @FSynOpenForm=nil then
     begin
-      MsgError('Can''t find SynOpenForm'#13+SFileName);
+      MsgError('Can''t find SynOpenForm'#13+SFileName, Handle);
       Exit
     end;
 
     FSynCloseForm:= GetProcAddress(FDll, 'SynCloseForm');
     if @FSynCloseForm=nil then
     begin
-      MsgError('Can''t find SynCloseForm'#13+SFileName);
+      MsgError('Can''t find SynCloseForm'#13+SFileName, Handle);
       Exit
     end;
 
     FSynAction:= GetProcAddress(FDll, 'SynAction');
     if @FSynAction=nil then
     begin
-      MsgError('Can''t find SynAction'#13+SFileName);
+      MsgError('Can''t find SynAction'#13+SFileName, Handle);
       Exit
     end;
 
@@ -22116,7 +22213,7 @@ begin
     cfm:= true;
   if cfm then
   begin
-    OpnFile(fn);
+    DoOpenFile(fn);
     Result:= cSynOK;
   end
   else
@@ -22540,7 +22637,7 @@ begin
     begin TbxItemPLogClearClick(Self); Key:= 0 end;
   if (Key=Ord('C')) and (Shift=[ssCtrl]) then
     begin TbxItemPLogCopySelClick(Self); Key:= 0 end;
-  HandleKeyActive(Key, Shift);
+  DoHandleKeysInPanels(Key, Shift);
 end;
 
 procedure TfmMain.ListPLogDrawItem(Control: TWinControl; Index: Integer;
@@ -22640,7 +22737,7 @@ begin
   except
     on E: Exception do
     begin
-      MsgExcept('Error on searching in tabs', E);
+      MsgExcept('Error on searching in tabs', E, Handle);
       HideProgress;
       Exit;
     end;
@@ -22754,7 +22851,7 @@ function TfmMain.PluginAction_SuggestCompletion(
   ShowPopup: boolean): Integer;
 var
   P: TPoint;
-  L: TWideStrings;
+  L: ecUnicode.TWideStrings;
   i: Integer;
   S, S_id, S_type, S_param: Widestring;
 begin
@@ -23000,7 +23097,7 @@ begin
     Exit;
   end;
 
-  HandleKeyActive(Key, Shift);
+  DoHandleKeysInPanels(Key, Shift);
 end;
 
 procedure TfmMain.ListTabsColumnClick(Sender: TObject;
@@ -23119,7 +23216,7 @@ begin
         if NIndex<(Item as TSpTbxSubmenuItem).Count then
           (Item as TSpTbxSubmenuItem).Items[NIndex].Visible:= false
         else
-          MsgError('[SynHide.ini] Bad index: '+Str);
+          MsgError('[SynHide.ini] Bad index: '+Str, Handle);
       end
       else
       if Item is TSpTbxItem then
@@ -23132,7 +23229,7 @@ begin
         if (NIndex>=0) and (NIndex<(Item as TSpTbxPopupMenu).Items.Count) then
           (Item as TSpTbxPopupMenu).Items[NIndex].Visible:= false
         else
-          MsgError('[SynHide.ini] Bad index: '+Str);
+          MsgError('[SynHide.ini] Bad index: '+Str, Handle);
       end
       else
       if Item is TSpTbxToolbar then
@@ -23140,14 +23237,14 @@ begin
         if (NIndex>=0) and (NIndex<(Item as TSpTbxToolbar).Items.Count) then
           (Item as TSpTbxToolbar).Items[NIndex].Visible:= false
         else
-          MsgError('[SynHide.ini] Bad index: '+Str);
+          MsgError('[SynHide.ini] Bad index: '+Str, Handle);
       end
       else
-        MsgError('[SynHide.ini] Unknown item type: '+Str);
+        MsgError('[SynHide.ini] Unknown item type: '+Str, Handle);
       Exit;
     end;
 
-  MsgError('[SynHide.ini] Unknown item id: '+Str);
+  MsgError('[SynHide.ini] Unknown item id: '+Str, Handle);
 end;
 
 function TfmMain.IsLexerFindID(const Lex: string): boolean;
@@ -23223,21 +23320,21 @@ begin
   FDll:= LoadLibrary(PChar(string(AFileName)));
   if FDll=0 then
   begin
-    MsgError('Can''t load dll:'#13+AFileName);
+    MsgError('Can''t load dll:'#13+AFileName, Handle);
     Exit
   end;
 
   FSynInit:= GetProcAddress(FDll, 'SynInit');
   if @FSynInit=nil then
   begin
-    MsgError('Can''t find SynInit'#13+AFileName);
+    MsgError('Can''t find SynInit'#13+AFileName, Handle);
     Exit
   end;
 
   FSynAction:= GetProcAddress(FDll, 'SynAction');
   if @FSynAction=nil then
   begin
-    MsgError('Can''t find SynAction'#13+AFileName);
+    MsgError('Can''t find SynAction'#13+AFileName, Handle);
     Exit
   end;
 
@@ -23269,21 +23366,21 @@ begin
   FDll:= LoadLibrary(PChar(string(AFileName)));
   if FDll=0 then
   begin
-    MsgError('Can''t load dll:'#13+AFileName);
+    MsgError('Can''t load dll:'#13+AFileName, Handle);
     Exit
   end;
 
   FSynInit:= GetProcAddress(FDll, 'SynInit');
   if @FSynInit=nil then
   begin
-    MsgError('Can''t find SynInit'#13+AFileName);
+    MsgError('Can''t find SynInit'#13+AFileName, Handle);
     Exit
   end;
 
   FSynAction:= GetProcAddress(FDll, 'SynAction');
   if @FSynAction=nil then
   begin
-    MsgError('Can''t find SynAction'#13+AFileName);
+    MsgError('Can''t find SynAction'#13+AFileName, Handle);
     Exit
   end;
 
@@ -23377,7 +23474,7 @@ end;
 
 procedure TfmMain.TBXItemOEditSynPluginsIniClick(Sender: TObject);
 begin
-  OpnFile(SynPluginsIni);
+  DoOpenFile(SynPluginsIni);
 end;
 
 function TfmMain.PluginAction_GetText(const id: Integer; BufferPtr: Pointer; var BufferSize: Integer): Integer;
@@ -23403,35 +23500,39 @@ begin
     cSynIdSelectedText:
       s:= Ed.SelText;
     cSynIdSelectedLines:
-    begin
-      if Ed.SelLength>0 then
       begin
-        DoGetSelLines(Ed, Ln1, Ln2);
-        for i:= Ln1 to Ln2 do
-          s:= s+Ed.Lines[i]+sCR;
+        if Ed.SelLength>0 then
+        begin
+          DoGetSelLines(Ed, Ln1, Ln2);
+          for i:= Ln1 to Ln2 do
+            s:= s+Ed.Lines[i]+sCR;
+        end;
       end;
-    end;
     cSynIdCurrentLine:
-    begin
-      i:= Ed.CaretPos.Y;
-      if (i>=0) and (i<Ed.Lines.Count) then
-        s:= Ed.Lines[i]
-      else
-        begin Result:= cSynError; Exit end;
-    end;
+      begin
+        i:= Ed.CaretPos.Y;
+        if (i>=0) and (i<Ed.Lines.Count) then
+          s:= Ed.Lines[i]
+        else
+          begin Result:= cSynError; Exit end;
+      end;
     cSynIdSearchPaths:
-    begin
-      s:= opProjPaths;
-      if Assigned(fmProj) then
-        s:= s + fmProj.FOpts.SearchDirs;
-    end
+      begin
+        s:= opProjPaths;
+        if Assigned(fmProj) then
+          s:= s + fmProj.FOpts.SearchDirs;
+      end;
+    cSynIdFavoritesText:
+      begin
+        s:= DoGetFavList;
+      end;
     else
-    begin
-      if (id>=0) and (id<Ed.Lines.Count) then
-        s:= Ed.Lines[id]
-      else
-        begin Result:= cSynError; Exit end;
-    end;
+      begin
+        if (id>=0) and (id<Ed.Lines.Count) then
+          s:= Ed.Lines[id]
+        else
+          begin Result:= cSynError; Exit end;
+      end;
   end;
 
   NeededSize:= Length(s)+1;
@@ -24235,7 +24336,7 @@ procedure TfmMain.DoCheckUnicodeNeeded(Frame: TEditorFrame);
   //
   function Cfm(const SEnc: Widestring): boolean;
   begin
-    Result:= MsgConfirm(WideFormat(DKLangConstW('zMUniNeed'), [SEnc]));
+    Result:= MsgConfirm(WideFormat(DKLangConstW('zMUniNeed'), [SEnc]), Handle);
   end;
   //
 begin
@@ -24519,12 +24620,12 @@ begin
   case Act of
     arFindNext: Finder.FindNext;
     arFindAll: Finder.FindAll;
-    arFindInTabs: MsgError('Command "Find in all tabs" not supported in macros yet');
+    arFindInTabs: MsgError('Command "Find in all tabs" not supported in macros yet', Handle);
     arCount: Finder.CountAll;
     arSkip: Finder.FindNext;
     arReplaceNext: Finder.ReplaceAgain;
     arReplaceAll: Finder.ReplaceAll;
-    arReplaceAllInAll: MsgError('Command "Replace in all tabs" not supported in macros yet');
+    arReplaceAllInAll: MsgError('Command "Replace in all tabs" not supported in macros yet', Handle);
   end;
 
   //restote Finder
@@ -24756,7 +24857,7 @@ begin
     if IsFileExist(fn) then
     begin
       if IsFileText(fn) or MsgConfirmBinary(fn) then
-        OpnFile(fn);
+        DoOpenFile(fn);
     end;
 end;
 
@@ -24870,7 +24971,7 @@ begin
   with CurrentEditor do
     if HaveSelection then
       if SelectMode <> msColumn then
-        MsgWarn(DKLangConstW('vert'))
+        MsgWarn(DKLangConstW('vert'), Handle)
       else
         ExecCommand(sm_CaretsFromSelClear);
 end;
@@ -25545,7 +25646,7 @@ begin
     Toolbar.DockPos:= Ini.ReadInteger('Menu', 'tb'+Id+'Pos', Toolbar.DockPos);
     Toolbar.DockRow:= Ini.ReadInteger('Menu', 'tb'+Id+'Row', Toolbar.DockRow);
   except
-    MsgWarn(WideFormat('Cannot dock toolbar "%s" on "%s"', [Id, ADockStr]));
+    MsgWarn(WideFormat('Cannot dock toolbar "%s" on "%s"', [Id, ADockStr]), Handle);
   end;
 end;
 
@@ -25611,7 +25712,7 @@ begin
       ADock:= Self.FindComponent(ADockStr) as TTBDock;
       CurrentDock:= ADock;
     except
-      MsgWarn(WideFormat('Cannot dock panel "%s" on "%s"', [Id, ADockStr]));
+      MsgWarn(WideFormat('Cannot dock panel "%s" on "%s"', [Id, ADockStr]), Handle);
     end;
 
     DockPos:= Ini.ReadInteger('pl'+Id, 'DPos', DockPos);
@@ -25956,7 +26057,7 @@ begin
         RunTool(i);
         Exit
       end;
-    MsgError(WideFormat(DKLangConstW('MRun'), [Cmd]));
+    MsgError(WideFormat(DKLangConstW('MRun'), [Cmd]), Handle);
   end;
 end;
 
@@ -26150,7 +26251,7 @@ begin
       end
       else
       begin
-        MsgError('Unknown item type: '+Id);
+        MsgError('Unknown item type: '+Id, Handle);
         Exit
       end;
       //separator
@@ -26166,7 +26267,7 @@ end;
 
 procedure TfmMain.TBXItemOEditSynIniClick(Sender: TObject);
 begin
-  OpnFile(SynIni);
+  DoOpenFile(SynIni);
 end;
 
 procedure TfmMain.fOpenBySelectionExecute(Sender: TObject);
@@ -26497,6 +26598,33 @@ procedure TfmMain.StatusResize(Sender: TObject);
 begin
   Status.InvalidateBackground();
 end;
+
+function TfmMain.DoGetFavList: Widestring;
+var
+  fn: string;
+  L: TTntStringList;
+begin
+  Result:= '';
+
+  fn:= SynFavIni;
+  if not IsFileExist(fn) then Exit;
+
+  L:= TTntStringList.Create;
+  try
+    L.LoadFromFile(fn);
+    Result:= L.Text;
+  finally
+    FreeAndNil(L);
+  end;
+end;
+
+procedure TfmMain.fCustomizeLexerLibExecute(Sender: TObject);
+begin
+  DoCustomizeLexerLibrary(SyntaxManager);
+  SaveLexLibFilename; //always save lexer filename
+  AskLexer(True); //save lexer file, if modified
+end;
+
 
 end.
 

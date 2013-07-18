@@ -59,7 +59,8 @@ uses
   unToolbarProp in 'unToolbarProp.pas' {fmToolbarProp: TTntForm},
   unToolbarIcon in 'unToolbarIcon.pas' {fmToolbarIcon: TTntForm},
   unToolbarSize in 'unToolbarSize.pas' {fmToolbarSize: TTntForm},
-  unHideItems in 'unHideItems.pas' {fmHideItems};
+  unHideItems in 'unHideItems.pas' {fmHideItems},
+  unLexerLib in 'unLexerLib.pas' {fmLexerLibrary};
 
 {$R *.res}
 {$R *.dkl_const.res}

@@ -3388,14 +3388,13 @@ object fmMain: TfmMain
       ImageIndex = 5
       OnExecuteOK = fCustomizeLexerExecuteOK
     end
-    object fCustomizeLexerLib: TecCustomizeLexerLib
+    object fCustomizeLexerLib: TAction
       Tag = 711
       Category = 'File'
       Caption = 'Customize lexer library...'
       Hint = 'Customize lexers library'
       ImageIndex = 6
-      AfterExecute = fCustomizeLexerLibAfterExecute
-      SyntaxManager = SyntaxManager
+      OnExecute = fCustomizeLexerLibExecute
     end
     object ecReplaceInFiles: TAction
       Category = 'Find'
