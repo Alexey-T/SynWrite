@@ -198,30 +198,30 @@ procedure SetFormStyle(Form: TForm; Value: Boolean);
 procedure SetFormOnTop(H: THandle; V: boolean);
 
 type
-  TToolSave = (svNone, svCurrent, svAll);
-
-procedure _Log(const s: string);
-procedure __1; //start time test
-procedure __2; //end time test
+  TSynToolSave = (
+    svNone, svCurrent, svAll
+    );
 
 type
-  TOutputType = (
+  TSynOutputType = (
     outIgnore, outToPanel, outToNewDoc,
     outReplaceSel, outReplaceDoc, outReplaceWord, outReplaceSelOrDoc,
-    outToClip );
+    outToClip
+    );
+    
 const
-  cOutputTypeString: array[TOutputType] of string = (
+  cOutputTypeString: array[TSynOutputType] of string = (
     'ignore', 'toPanel', 'toNewDoc',
     'repSel', 'repDoc', 'repWord', 'repSelOrDoc',
     'toClip' );
-  cOutputTypeOrder: array[0..Ord(High(TOutputType))] of TOutputType = (
+  cOutputTypeOrder: array[0..Ord(High(TSynOutputType))] of TSynOutputType = (
     outIgnore,
     outToPanel, outToNewDoc, outToClip,
     outReplaceWord,
     outReplaceSel, outReplaceDoc, outReplaceSelOrDoc);
 
-function OutputTypeLangID(n: TOutputType): Widestring;
-function OutputTypeStrToType(const s: string): TOutputType;
+function OutputTypeLangID(n: TSynOutputType): Widestring;
+function OutputTypeStrToType(const s: string): TSynOutputType;
 function OutputTypeStrToOrder(const s: string): integer;
 
 type
@@ -280,20 +280,6 @@ procedure TTntPageControl.AdjustClientRect(var Rect: TRect);
 begin
   Rect:= DisplayRect;
   Rect:= Types.Rect(Rect.Left-4, Rect.Top-4, Rect.Right+4, Rect.Bottom+4);
-end;
-
-var
-  tick: Dword;
-
-procedure __1;
-begin
-  tick:= GetTickCount;
-end;
-
-procedure __2;
-begin
-  Application.MessageBox(PChar('Time: '+Inttostr(GetTickCount-tick)),
-    'Test', 0);
 end;
 
 function IsStringRegex(const S, Regex: ecString): boolean;
@@ -1020,24 +1006,24 @@ begin
 end;
 
 //-----------------------
-function OutputTypeLangID(n: TOutputType): Widestring;
+function OutputTypeLangID(n: TSynOutputType): Widestring;
 begin
   Result:= 'zztyp_' + cOutputTypeString[n];
 end;
 
-function OutputTypeStrToType(const s: string): TOutputType;
+function OutputTypeStrToType(const s: string): TSynOutputType;
 var
-  i: TOutputType;
+  i: TSynOutputType;
 begin
-  Result:= Low(TOutputType);
-  for i:= Low(TOutputType) to High(TOutputType) do
+  Result:= Low(TSynOutputType);
+  for i:= Low(TSynOutputType) to High(TSynOutputType) do
     if s = cOutputTypeString[i] then
       begin Result:= i; Exit end;
 end;
 
 function OutputTypeStrToOrder(const s: string): integer;
 var
-  t: TOutputType;
+  t: TSynOutputType;
   n: integer;
 begin
   Result:= 0;

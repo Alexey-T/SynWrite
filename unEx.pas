@@ -53,7 +53,7 @@ uses
 
 var
   SynIsPortable: boolean;
-  SynIni: string = '';
+  SynIni: string;
 
 function GetSynIniDir: string;
 begin

@@ -394,14 +394,16 @@ object fmMain: TfmMain
         OnClick = TBXItemFFPrevClick
       end
       object cbCase: TSpTBXItem
-        Caption = 'Case sensitive'
+        Caption = 'Case'
         Hint = 'Case sensitive'
+        DisplayMode = nbdmTextOnly
         ImageIndex = 38
         OnClick = cbCaseClick
       end
       object cbWord: TSpTBXItem
-        Caption = 'Whole words'
+        Caption = 'Words'
         Hint = 'Whole words only'
+        DisplayMode = nbdmTextOnly
         ImageIndex = 39
         OnClick = cbWordClick
       end

@@ -63,14 +63,6 @@ const
   SynDefaultSyn = '(default).syn';
 
 type
-  TSynDock = (
-    sdockTop,
-    sdockLeft,
-    sdockRight,
-    sdockBottom
-    );
-
-type
   TSynLineCmd = (
     scmdSortAsc,
     scmdSortDesc,
@@ -126,50 +118,48 @@ type
   end;
 
 type  
-  TPanelType = (
-    plTypeTree,
-    plTypeClip,
-    plTypeOut
-    );
-
-  TUserTool = record
-    SCap,
-    SExe,
-    SDir,
-    SPar,
-    SLexer,
-    SKey: WideString;
-    OUse: boolean;
-    OType: string;
-    OEnc: TOutputEnc;
-    ORe: string;
-    OutNum_fn,
-    OutNum_line,
-    OutNum_col: integer;
-    SSave: TToolSave;
-    NoTag: boolean;
-    InCtx: boolean;
+  TSynTool = record
+    ToolCaption,
+    ToolCommand,
+    ToolDir,
+    ToolParams,
+    ToolLexer,
+    ToolKeys: WideString;
+    ToolOutCapture: boolean;
+    ToolOutType: string;
+    ToolOutEncoding: TOutputEnc;
+    ToolOutRegex: string;
+    ToolOutNum_fn,
+    ToolOutNum_line,
+    ToolOutNum_col: integer;
+    ToolSaveMode: TSynToolSave;
+    ToolNoTags: boolean;
+    ToolContextItem: boolean;
   end;
 
-  TFindInfo = class
+  TSynFindInfo = class
     FN: Widestring;
     LineNum, ColNum, Len: integer;
     constructor Create;
   end;
 
-  TFindCount = class
+  TSynFindCount = class
     Matches: integer;
-  end;  
+  end;
 
-  TFileSort = (sortNone, sortDate, sortDateDesc);
-  TSelState = (selNone, selSmall, selStream, selColumn, selCarets);
-  TGotoTree = (tgoNext, tgoPrev, tgoParent, tgoNextBro, tgoPrevBro);
-  TGotoMode = (goLine, goPrevBk, goNextBk, goNumBk);
-  TOutTab = (tbOut, tbFind, tbVal, tbPluginsLog);
-  TRightTab = (tbClip, tbMap, tbTextClips);
-  TLeftTab = (tbTree, tbProj, tbTabs, tbPugin1, tbPugin2, tbPugin3, tbPugin4, tbPugin5);
-  TCpOverride = (cp_sr_Def, cp_sr_OEM, cp_sr_UTF8, cp_sr_UTF16);
-  TSelSave = record
+type
+  TSynDock = (sdockTop, sdockLeft, sdockRight, sdockBottom);
+  TSynPanelType = (plTypeTree, plTypeClip, plTypeOut);
+  TSynFileSort = (sortNone, sortDate, sortDateDesc);
+  TSynSelState = (selNone, selSmall, selStream, selColumn, selCarets);
+  TSynGotoTree = (tgoNext, tgoPrev, tgoParent, tgoNextBro, tgoPrevBro);
+  TSynGotoMode = (goLine, goPrevBk, goNextBk, goNumBk);
+  TSynTabOut = (tbOut, tbFind, tbVal, tbPluginsLog);
+  TSynTabRight = (tbClip, tbMap, tbTextClips);
+  TSynTabLeft = (tbTree, tbProj, tbTabs, tbPugin1, tbPugin2, tbPugin3, tbPugin4, tbPugin5);
+  TSynCpOverride = (cp_sr_Def, cp_sr_OEM, cp_sr_UTF8, cp_sr_UTF16);
+
+  TSynSelSave = record
     FSelStream: boolean;
     FSelStart, FSelEnd: TPoint;
     FSelRect: TRect;
@@ -2035,8 +2025,8 @@ type
     orig_LNum,
     orig_NPrint,
     orig_Ruler: boolean;
-    orig_TabRight: TRightTab;
-    orig_TabLeft: TLeftTab;
+    orig_TabRight: TSynTabRight;
+    orig_TabLeft: TSynTabLeft;
     orig_TabsSort: integer;
     orig_TabsWidths: string;
 
@@ -2050,9 +2040,9 @@ type
                TStringList;
 
     FLockUpdate: boolean;
-    FTabOut: TOutTab;
-    FTabRight: TRightTab;
-    FTabLeft: TLeftTab;
+    FTabOut: TSynTabOut;
+    FTabRight: TSynTabRight;
+    FTabLeft: TSynTabLeft;
     FTreeRoot: TTntTreeNode; //root tree node of last find result
     FListResFN,              //current filename for mass search/replace operation
     FListResFN_Prev: Widestring; //previous filename for mass search/replace
@@ -2083,7 +2073,7 @@ type
     FCurrTool: integer;      //number of last called ext-tool
     FCurrToolFN: Widestring; //filename for last called ext-tool
     FCurrPluginAcpStartPos: TPoint; //auto-complete popup position, for cActionSuggestCompletion
-    FCurrSelState: TSelState; //current selection state (stream, column, carets etc)
+    FCurrSelState: TSynSelState; //current selection state (stream, column, carets etc)
     FCurrTheme: string;      //current SpTBX theme
     FCurrDiffScrollY: Integer; //diff between 1st view editor TopLine and 2nd view editor TopLine
 
@@ -2210,7 +2200,7 @@ type
     function DoAutoCloseTag: boolean;
     procedure UpdateOutFromList(List: TWideStringList);
     function SStatusText: Widestring;
-    function SStatusHint(state: TSelState): Widestring;
+    function SStatusHint(state: TSynSelState): Widestring;
     function SStatusCharInfo: Widestring;
     procedure HandleToolOutput(const ft: Widestring; NTool: integer);
     procedure GetColorRange(var NStart, NEnd: integer; var NColor: integer);
@@ -2236,7 +2226,7 @@ type
     function DoSmartTagTabbing: boolean;
     procedure DoHandleLastCmd(Command: integer; Data: pointer);
     function MsgInput(const dkmsg: string; var S: Widestring): boolean;
-    procedure MsgCloseHint(panelType: TPanelType);
+    procedure MsgCloseHint(panelType: TSynPanelType);
     procedure MsgFound;
     procedure MsgColorBad(const s: string);
     procedure MsgColorOK(const s: string);
@@ -2282,7 +2272,7 @@ type
     function ShowGotoForm(
       var ALine, ACol: integer;
       var AExtSel: boolean;
-      var AMode: TGotoMode;
+      var AMode: TSynGotoMode;
       var ABkNum: integer): Boolean;
     procedure DoExtendSelection(Ed: TSyntaxMemo;
       AOldStart, AOldLength,
@@ -2290,7 +2280,7 @@ type
     procedure DoGotoBlank(ANext: boolean);
     function IsSearchEditFocused: boolean;
     function IsNumConvEditFocused: boolean;
-    procedure DoTreeJump(Mode: TGotoTree);
+    procedure DoTreeJump(Mode: TSynGotoTree);
     procedure FinderTreeFound(Sender: TObject; StartPos, EndPos: integer; Accept: Boolean);
     procedure FinderTreeNotFound(Sender: TObject);
     procedure SyncTree;
@@ -2298,8 +2288,8 @@ type
     procedure SyncMapPos;
     procedure MapClick(Sender: TObject);
     procedure DoFixReplaceCaret(Ed: TSyntaxMemo);
-    procedure DoSaveSel(Ed: TSyntaxMemo; var Sel: TSelSave);
-    procedure DoRestoreSel(Ed: TSyntaxMemo; const Sel: TSelSave);
+    procedure DoSaveSel(Ed: TSyntaxMemo; var Sel: TSynSelSave);
+    procedure DoRestoreSel(Ed: TSyntaxMemo; const Sel: TSynSelSave);
     function FCanUseLexer(const fn: Widestring): boolean;
     procedure SpellCopyClick(Sender: TObject);
     procedure SpellCutClick(Sender: TObject);
@@ -2430,9 +2420,9 @@ type
     procedure UpdateNPrint(E: TSyntaxMemo);
     procedure UpdateTitle(Sender: TFrame);
     procedure DoReplaceTabsToSpaces(F: TEditorFrame);
-    procedure UpdOut(n: TOutTab);
-    procedure UpdLeft(n: TLeftTab);
-    procedure UpdRight(n: TRightTab);
+    procedure UpdOut(n: TSynTabOut);
+    procedure UpdLeft(n: TSynTabLeft);
+    procedure UpdRight(n: TSynTabRight);
     procedure UpdateCheckLeftTabs(IsTree, IsProj, IsTabs: boolean);
     procedure UpdateCPMenu(M: TObject; AConvEnc: boolean = false);
     procedure UpdateSpell(Frame: TEditorFrame; UpdFlag: boolean = true);
@@ -2458,7 +2448,7 @@ type
     procedure FindActionWrapper(act: TSRAction);
     procedure FindFocusEditor(Sender: TObject);
     procedure FindDialog(ARep: boolean);
-    procedure FindInFile(const fn: Widestring; InCodepage: TCpOverride = cp_sr_Def);
+    procedure FindInFile(const fn: Widestring; InCodepage: TSynCpOverride = cp_sr_Def);
     procedure FindInFrame(F: TEditorFrame);
     procedure ReplaceInFile(const fn: Widestring);
     procedure ReplaceInAllTabs(var nRep, nFiles: integer);
@@ -2619,12 +2609,8 @@ type
     opFollowTail: boolean;
     opSrExpand: boolean; //Expand results tree on progress
     opSrOnTop: boolean; //Find dlg on top
-    opSrUseDlg: boolean; //Use custom search dlg
     opSrSuggestSel: boolean; //Suggest selection
     opSrSuggestWord: boolean; //Suggest current word
-    opSrShowMsg: boolean; //Show search error msgbox
-    opSrShowMsg2: boolean; //-""- for "Find in files"
-    opSrHistTC: boolean; //Use TC [SearchText] section
     opASaveOnTimer,
     opASaveOnFocus,
     opASaveAllFiles: boolean;
@@ -2647,8 +2633,8 @@ type
     opColorOutRedText,
     opColorOutRedSelText,
     opColorOutHi: integer;
-    opTools: array[1..12] of TUserTool;
-    opStatusText: array[TSelState] of string;
+    opTools: array[1..12] of TSynTool;
+    opStatusText: array[TSynSelState] of string;
     opSpellEn: boolean;
     opSpellExt: string;
     opFixBlocks: boolean;
@@ -2683,8 +2669,6 @@ type
     opAcpNum: integer; //Num of chars that starts ACP
     opSingleInstance: boolean; //single instance
     opLang: integer;
-    opQV: string; //list of toolbars in QuickView: "Menu,File,Edit,View,QS"
-    opQVTree: string;
     opLexerCat: boolean; //group lexers
     opNotif: integer; //0: none, 1: reload, 2: ask to reload
     opLink: boolean;
@@ -2700,10 +2684,9 @@ type
     opSaveCaret,
     opSaveEnc: boolean;
     opAskOverwrite: boolean;
-    opTxOnly: integer; //dont open/open/prompt
+    opTextOnly: integer; //dont open/open/prompt
     opTitleFull: boolean;
     opQsCap: boolean; //captions in QSearch
-    opQsEsc: integer; //0: close QS, 1: close editor, 2: focus editor
     opColorSplitViews,
     opColorSplitSlave: integer;
     opColorTab1,
@@ -2858,6 +2841,12 @@ type
 
 var
   LsIni: string = '';
+  opListerSynDialog: boolean;
+  opListerTcHistory: boolean;
+  opListerQVReadOnly: boolean;
+  opListerQVToolbars,
+  opListerQVTree: string;
+  opListerTextOnly: integer;
 
 function StartSyn(ListerWin: HWND; const FileToLoad: WideString): HWND;
 procedure StopSyn(hWin: HWND);
@@ -2872,7 +2861,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.7.682';
+  cSynVer = '5.7.690';
 
 const  
   cSynParamRO = '/RO';
@@ -4123,16 +4112,6 @@ var
   s: Widestring;
   ini: TMemIniFile;
 begin
-  //get plugin-related options from LSPlugin.ini
-  if not SynExe then
-    with TIniFile.Create(LsIni) do
-    try
-      opQV:= ReadString('Syn2', 'QViewToolbars', '');
-      opQVTree:= ReadString('Syn2', 'QViewTree', '');
-    finally
-      Free;
-    end;
-
   //get all options from Syn.ini
   ini:= TMemIniFile.Create(SynIni);
   with ini do
@@ -4155,13 +4134,13 @@ begin
     end
     else
     begin
-      tbFile.Visible:= Pos('File', opQV)>0;
-      tbEdit.Visible:= Pos('Edit', opQV)>0;
-      tbView.Visible:= Pos('View', opQV)>0;
-      tbMenu.Visible:= Pos('Menu', opQV)>0;
-      tbQS.Visible:=   Pos('QS', opQV)>0;
-      plTree.Visible:= Pos('Tree', opQV)>0;
-      plClip.Visible:= Pos('Clip', opQV)>0;
+      tbFile.Visible:= Pos('File', opListerQVToolbars)>0;
+      tbEdit.Visible:= Pos('Edit', opListerQVToolbars)>0;
+      tbView.Visible:= Pos('View', opListerQVToolbars)>0;
+      tbMenu.Visible:= Pos('Menu', opListerQVToolbars)>0;
+      tbQS.Visible:=   Pos('QS', opListerQVToolbars)>0;
+      plTree.Visible:= Pos('Tree', opListerQVToolbars)>0;
+      plClip.Visible:= Pos('Clip', opListerQVToolbars)>0;
     end;
 
     //auto-save
@@ -4226,7 +4205,6 @@ begin
     opSingleInstance:= ReadBool('Setup', 'Inst', false);
     ApplyInst;
     opQsCap:= ReadBool('Setup', 'QsCap', false);
-    opQsEsc:= ReadInteger('Setup', 'QsEsc', 2);
     ApplyQs;
     opLink:= ReadBool('Setup', 'Link', true);
     opColorLink:= ReadInteger('Setup', 'LinkCl', clBlue);
@@ -4237,7 +4215,7 @@ begin
     ApplyEd2;
 
     opShowWrapMark:= ReadBool('Setup', 'WrapMk', true);
-    opTxOnly:= ReadInteger('Setup', 'TxOnly', 0);
+    opTextOnly:= ReadInteger('Setup', 'TxOnly', 0);
     opSaveSRHist:= ReadInteger('Setup', 'SaveSRHist', 10);
     opSaveState:= ReadInteger('Setup', 'SaveState', 10);
     opSaveCaret:= ReadBool('Setup', 'SaveCaret', true);
@@ -4317,12 +4295,8 @@ begin
     opSrOffsetY:= ReadInteger('SR', 'OffY', 6);
     opSrExpand:= ReadBool('SR', 'Expand', false);
     opSrOnTop:= ReadBool('SR', 'OnTop' + c_exe[SynExe], SynExe);
-    opSrUseDlg:= ReadBool('SR', 'NewDlg', true);
     opSrSuggestSel:= ReadBool('SR', 'SugSel', false);
     opSrSuggestWord:= ReadBool('SR', 'SugWord', false);
-    opSrShowMsg:= ReadBool('SR', 'Msg', true);
-    opSrShowMsg2:= ReadBool('SR', 'Msg2', true);
-    opSrHistTC:= ReadBool('SR', 'HistTC', false);
     opMaxTreeMatches:= ReadInteger('SR', 'MaxTreeMatches', 100);
 
     opTabOptionsLast:= ReadInteger('View', 'TabLast', 0);
@@ -4422,8 +4396,8 @@ begin
     LoadPanelProp(plOut, Ini, 'Out');
     LoadPanelProp(plClip, Ini, 'Clip');
     FOutVisible:= plOut.Visible;
-    FTabLeft:= TLeftTab(ReadInteger('plTree', 'Tab', 0));
-    FTabRight:= TRightTab(ReadInteger('plClip', 'Tab', 0));
+    FTabLeft:= TSynTabLeft(ReadInteger('plTree', 'Tab', 0));
+    FTabRight:= TSynTabRight(ReadInteger('plClip', 'Tab', 0));
 
     //opt
     ApplyDefaultFonts;
@@ -4549,7 +4523,7 @@ begin
   if not SynExe then
     with TIniFile.Create(LsIni) do
     try
-      WriteInteger('Syn2', 'TxOnly', opTxOnly);
+      WriteInteger('Syn2', 'TxOnly', opTextOnly);
     finally
       Free;
     end;
@@ -4630,14 +4604,13 @@ begin
     WriteString('Setup', 'LexOvr', opLexersOverride);
     WriteBool('Setup', 'Inst', opSingleInstance);
     WriteBool('Setup', 'QsCap', opQsCap);
-    WriteInteger('Setup', 'QsEsc', opQsEsc);
     WriteBool('Setup', 'LexCat', opLexerCat);
     WriteBool('Setup', 'Link', opLink);
     WriteInteger('Setup', 'LinkCl', opColorLink);
     WriteBool('Setup', 'FixBl', opFixBlocks);
     WriteBool('Setup', 'KeepScr', opKeepScr);
     WriteBool('Setup', 'WrapMk', opShowWrapMark);
-    WriteInteger('Setup', 'TxOnly', opTxOnly);
+    WriteInteger('Setup', 'TxOnly', opTextOnly);
 
     WriteInteger('Setup', 'SaveSRHist', opSaveSRHist);
     WriteInteger('Setup', 'SaveState', opSaveState);
@@ -4697,12 +4670,8 @@ begin
     WriteInteger('SR', 'OffY', opSrOffsetY);
     WriteBool('SR', 'Expand', opSrExpand);
     WriteBool('SR', 'OnTop' + c_exe[SynExe], opSrOnTop);
-    WriteBool('SR', 'NewDlg', opSrUseDlg);
     WriteBool('SR', 'SugSel', opSrSuggestSel);
     WriteBool('SR', 'SugWord', opSrSuggestWord);
-    WriteBool('SR', 'Msg', opSrShowMsg);
-    WriteBool('SR', 'Msg2', opSrShowMsg2);
-    WriteBool('SR', 'HistTC', opSrHistTC);
     WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
 
     WriteBool('View', 'Tips', opTipsToken);
@@ -5307,7 +5276,7 @@ var
   p: TPoint;
   n: integer;
   Ed: TSyntaxMemo;
-  Sel: TSelSave;
+  Sel: TSynSelSave;
 begin
   //remember last edit cmd
   DoHandleLastCmd(Command, Data);
@@ -6327,8 +6296,6 @@ begin
       cbSessLoad.Enabled:= SynExe;
       cbInst.Enabled:= SynExe;
       cbFullTitle.Enabled:= SynExe;
-      cbSrDlg.Enabled:= not SynExe;
-      cbSrHistTC.Enabled:= not SynExe;
 
       cbTheme.Items.Clear;
       for i:= Low(cThemes) to High(cThemes) do
@@ -6580,9 +6547,9 @@ begin
 
   s:= WideFormat(DKLangConstW('MNFound2'), [Finder.FindText]);
   SetHint(s);
-  if opSrShowMsg and not (Assigned(fmSR) and fmSR.Visible) then
+  {if opSrShowMsg and not (Assigned(fmSR) and fmSR.Visible) then
     MsgWarn(s, Handle)
-  else
+  else}
     MsgBeep;
 end;
 
@@ -8134,7 +8101,7 @@ var
   SA: Ansistring;
 begin
   fnTC:= SExpandVars('%Commander_ini%');
-  if opSrHistTC and (not SynExe) and SExpanded(fnTC) then
+  if opListerTcHistory and (not SynExe) and SExpanded(fnTC) then
   begin
     //handle RedirectSection
     FixTcIni(fnTC, 'SearchText');
@@ -8192,7 +8159,7 @@ begin
     with fmSR do
     begin
       SynDir:= Self.SynDir;
-      SRHistTC:= opSrHistTC and not SynExe;
+      SRHistTC:= opListerTcHistory and not SynExe;
       SRCount:= opSaveSRHist;
       SRIni:= SynIni;
       SRIniS:= SynIni;
@@ -8375,7 +8342,7 @@ var
   S, Sfiles: Widestring;
   n, nf: Integer;
   Ok, OkSel: boolean;
-  Sel: TSelSave;
+  Sel: TSynSelSave;
   OldScrollPosY: integer;
 begin
   with fmSR do
@@ -8662,9 +8629,9 @@ begin
   for i:= Low(opTools) to High(opTools) do
    with opTools[i] do
     with CurrentFrame.TextSource do
-     if (SCap<>'') and (SExe<>'') and (S=SKey) and
-      ((SLexer='') or
-       ((SyntaxAnalyzer<>nil) and (SLexer=SyntaxAnalyzer.LexerName))) then
+     if (ToolCaption<>'') and (ToolCommand<>'') and (S=ToolKeys) and
+      ((ToolLexer='') or
+       ((SyntaxAnalyzer<>nil) and (ToolLexer=SyntaxAnalyzer.LexerName))) then
     begin
       RunTool(i);
       Key:= 0;
@@ -9850,24 +9817,24 @@ begin
   try
     for i:= Low(opTools) to High(opTools) do
     with opTools[i] do begin
-      SCap:= UTF8Decode(ReadString('Tool', 'C'+IntToStr(i), ''));
-      SExe:= UTF8Decode(ReadString('Tool', 'Ex'+IntToStr(i), ''));
-      SDir:= UTF8Decode(ReadString('Tool', 'Dir'+IntToStr(i), ''));
-      SPar:= UTF8Decode(ReadString('Tool', 'Par'+IntToStr(i), ''));
-      SLexer:= ReadString('Tool', 'Lex'+IntToStr(i), '');
-      SKey:= ReadString('Tool', 'Key'+IntToStr(i), '');
-      ORe:= ReadString('Tool', 'Re'+IntToStr(i), '');
+      ToolCaption:= UTF8Decode(ReadString('Tool', 'C'+IntToStr(i), ''));
+      ToolCommand:= UTF8Decode(ReadString('Tool', 'Ex'+IntToStr(i), ''));
+      ToolDir:= UTF8Decode(ReadString('Tool', 'Dir'+IntToStr(i), ''));
+      ToolParams:= UTF8Decode(ReadString('Tool', 'Par'+IntToStr(i), ''));
+      ToolLexer:= ReadString('Tool', 'Lex'+IntToStr(i), '');
+      ToolKeys:= ReadString('Tool', 'Key'+IntToStr(i), '');
+      ToolOutRegex:= ReadString('Tool', 'Re'+IntToStr(i), '');
       S:= ReadString('Tool', 'S'+IntToStr(i), '');
-      OUse:= Boolean(StrToIntDef(SGetItem(S), 0));
-      OutNum_fn:= StrToIntDef(SGetItem(S), 0);
-      OutNum_line:= StrToIntDef(SGetItem(S), 0);
-      OutNum_col:= StrToIntDef(SGetItem(S), 0);
-      SSave:= TToolSave(StrToIntDef(SGetItem(S), 0));
-      NoTag:= Boolean(StrToIntDef(SGetItem(S), 0));
-      InCtx:= Boolean(StrToIntDef(SGetItem(S), 0));
-      OType:= SGetItem(S);
-      if OType='' then OType:= cOutputTypeString[outToPanel];
-      OEnc:= TOutputEnc(StrToIntDef(SGetItem(S), Ord(encOem)));
+      ToolOutCapture:= Boolean(StrToIntDef(SGetItem(S), 0));
+      ToolOutNum_fn:= StrToIntDef(SGetItem(S), 0);
+      ToolOutNum_line:= StrToIntDef(SGetItem(S), 0);
+      ToolOutNum_col:= StrToIntDef(SGetItem(S), 0);
+      ToolSaveMode:= TSynToolSave(StrToIntDef(SGetItem(S), 0));
+      ToolNoTags:= Boolean(StrToIntDef(SGetItem(S), 0));
+      ToolContextItem:= Boolean(StrToIntDef(SGetItem(S), 0));
+      ToolOutType:= SGetItem(S);
+      if ToolOutType='' then ToolOutType:= cOutputTypeString[outToPanel];
+      ToolOutEncoding:= TOutputEnc(StrToIntDef(SGetItem(S), Ord(encOem)));
     end;
   finally
     Free;
@@ -9880,17 +9847,17 @@ begin
   if CurrentFrame <> nil then
   with CurrentFrame.TextSource do
   with opTools[n] do
-   if not ForCtx or InCtx then
+   if not ForCtx or ToolContextItem then
    begin
-     T.Caption:= SCap;
-     T.Enabled:= (SCap <> '') and (SExe <> '') and
-       ((SLexer = '') or ((SyntaxAnalyzer <> nil) and (SyntaxAnalyzer.LexerName = SLexer)));
+     T.Caption:= ToolCaption;
+     T.Enabled:= (ToolCaption <> '') and (ToolCommand <> '') and
+       ((ToolLexer = '') or ((SyntaxAnalyzer <> nil) and (SyntaxAnalyzer.LexerName = ToolLexer)));
      if T.Enabled and not ForCtx then
-       T.ShortCut:= TextToShortcut(SKey)
+       T.ShortCut:= TextToShortcut(ToolKeys)
      else
        T.ShortCut:= 0;
      T.Visible:= T.Enabled;
-     T.Hint:= SExe;
+     T.Hint:= ToolCommand;
      T.OnSelect:= ButtonOnSelect;
    end
    else
@@ -9938,15 +9905,15 @@ begin
     for i:= Low(opTools) to High(opTools) do
     with opTools[i] do
     begin
-      WriteString('Tool', 'C'+IntToStr(i), '"'+UTF8Encode(SCap)+'"');
-      WriteString('Tool', 'Ex'+IntToStr(i), '"'+UTF8Encode(SExe)+'"');
-      WriteString('Tool', 'Dir'+IntToStr(i), '"'+UTF8Encode(SDir)+'"');
-      WriteString('Tool', 'Par'+IntToStr(i), '"'+UTF8Encode(SPar)+'"');
-      WriteString('Tool', 'Lex'+IntToStr(i), SLexer);
-      WriteString('Tool', 'Key'+IntToStr(i), SKey);
-      WriteString('Tool', 'Re'+IntToStr(i), '"'+ORe+'"');
+      WriteString('Tool', 'C'+IntToStr(i), '"'+UTF8Encode(ToolCaption)+'"');
+      WriteString('Tool', 'Ex'+IntToStr(i), '"'+UTF8Encode(ToolCommand)+'"');
+      WriteString('Tool', 'Dir'+IntToStr(i), '"'+UTF8Encode(ToolDir)+'"');
+      WriteString('Tool', 'Par'+IntToStr(i), '"'+UTF8Encode(ToolParams)+'"');
+      WriteString('Tool', 'Lex'+IntToStr(i), ToolLexer);
+      WriteString('Tool', 'Key'+IntToStr(i), ToolKeys);
+      WriteString('Tool', 'Re'+IntToStr(i), '"'+ToolOutRegex+'"');
       WriteString('Tool', 'S'+IntToStr(i), Format('%d,%d,%d,%d,%d,%d,%d,%s,%d',
-        [Ord(OUse), OutNum_fn, OutNum_line, OutNum_col, Ord(SSave), Ord(NoTag), Ord(InCtx), OType, Ord(OEnc)]));
+        [Ord(ToolOutCapture), ToolOutNum_fn, ToolOutNum_line, ToolOutNum_col, Ord(ToolSaveMode), Ord(ToolNoTags), Ord(ToolContextItem), ToolOutType, Ord(ToolOutEncoding)]));
     end;
   finally
     Free;
@@ -9975,20 +9942,20 @@ begin
       with List.Items.Add do
        with opTools[i] do
       begin
-        Caption:= SCap;
-        SubItems.Add(SExe);
-        SubItems.Add(SPar);
-        SubItems.Add(SDir);
-        SubItems.Add(Inttostr(Ord(OUse)));
-        SubItems.Add(ORe);
-        SubItems.Add(Format('%d,%d,%d', [OutNum_fn, OutNum_line, OutNum_col]));
-        SubItems.Add(SLexer);
-        SubItems.Add(SKey);
-        SubItems.Add(Inttostr(Ord(SSave)));
-        SubItems.Add(Inttostr(Ord(NoTag)));
-        SubItems.Add(Inttostr(Ord(InCtx)));
-        SubItems.Add(OType);
-        SubItems.Add(Inttostr(Ord(OEnc)));
+        Caption:= ToolCaption;
+        SubItems.Add(ToolCommand);
+        SubItems.Add(ToolParams);
+        SubItems.Add(ToolDir);
+        SubItems.Add(Inttostr(Ord(ToolOutCapture)));
+        SubItems.Add(ToolOutRegex);
+        SubItems.Add(Format('%d,%d,%d', [ToolOutNum_fn, ToolOutNum_line, ToolOutNum_col]));
+        SubItems.Add(ToolLexer);
+        SubItems.Add(ToolKeys);
+        SubItems.Add(Inttostr(Ord(ToolSaveMode)));
+        SubItems.Add(Inttostr(Ord(ToolNoTags)));
+        SubItems.Add(Inttostr(Ord(ToolContextItem)));
+        SubItems.Add(ToolOutType);
+        SubItems.Add(Inttostr(Ord(ToolOutEncoding)));
         {
         Note: when adding SubItems, correct const cc in unTool.pas
         }
@@ -10008,23 +9975,23 @@ begin
        with opTools[i] do
         with List.Items[i-1] do
         begin
-          SCap:= Caption;
-          SExe:= SubItems[0];
-          SPar:= SubItems[1];
-          SDir:= SubItems[2];
-          OUse:= Bool(StrToIntDef(SubItems[3], 0));
-          ORe:= SubItems[4];
+          ToolCaption:= Caption;
+          ToolCommand:= SubItems[0];
+          ToolParams:= SubItems[1];
+          ToolDir:= SubItems[2];
+          ToolOutCapture:= Bool(StrToIntDef(SubItems[3], 0));
+          ToolOutRegex:= SubItems[4];
           S:= SubItems[5];
-          OutNum_fn:= StrToIntDef(SGetItem(S), 0);
-          OutNum_line:= StrToIntDef(SGetItem(S), 0);
-          OutNum_col:= StrToIntDef(SGetItem(S), 0);
-          SLexer:= SubItems[6];
-          SKey:= SubItems[7];
-          SSave:= TToolSave(StrToIntDef(SubItems[8], 0));
-          NoTag:= Boolean(StrToIntDef(SubItems[9], 0));
-          InCtx:= Boolean(StrToIntDef(SubItems[10], 0));
-          OType:= SubItems[11];
-          OEnc:= TOutputEnc(StrToIntDef(SubItems[12], 0));
+          ToolOutNum_fn:= StrToIntDef(SGetItem(S), 0);
+          ToolOutNum_line:= StrToIntDef(SGetItem(S), 0);
+          ToolOutNum_col:= StrToIntDef(SGetItem(S), 0);
+          ToolLexer:= SubItems[6];
+          ToolKeys:= SubItems[7];
+          ToolSaveMode:= TSynToolSave(StrToIntDef(SubItems[8], 0));
+          ToolNoTags:= Boolean(StrToIntDef(SubItems[9], 0));
+          ToolContextItem:= Boolean(StrToIntDef(SubItems[10], 0));
+          ToolOutType:= SubItems[11];
+          ToolOutEncoding:= TOutputEnc(StrToIntDef(SubItems[12], 0));
         end;
       Application.ProcessMessages;
       SaveTools;
@@ -10268,33 +10235,33 @@ begin
   with opTools[NTool] do
   begin
     //check correctness of tool params
-    if (Pos('{File', SPar)>0) and (CurrentFrame.FileName='') then
+    if (Pos('{File', ToolParams)>0) and (CurrentFrame.FileName='') then
       begin MsgWarn(DKLangConstW('NSaved'), Handle); Exit end;
 
-    if (Pos('{Select', SPar)>0) and not CurrentEditor.HaveSelection then
+    if (Pos('{Select', ToolParams)>0) and not CurrentEditor.HaveSelection then
       begin MsgNoSelection; Exit end;
 
-    if (Pos('{ProjectWorkDir}', SPar)>0) and (CurrentProjectWorkDir='') then
+    if (Pos('{ProjectWorkDir}', ToolParams)>0) and (CurrentProjectWorkDir='') then
       begin MsgEmptyMacro('{ProjectWorkDir}'); Exit end;
-    if (Pos('{ProjectMainFileName}', SPar)>0) and (CurrentProjectMainFN='') then
+    if (Pos('{ProjectMainFileName}', ToolParams)>0) and (CurrentProjectMainFN='') then
       begin MsgEmptyMacro('{ProjectMainFileName}'); Exit end;
-    if (Pos('{ProjectMainFileDir}', SPar)>0) and (CurrentProjectMainFN='') then
+    if (Pos('{ProjectMainFileDir}', ToolParams)>0) and (CurrentProjectMainFN='') then
       begin MsgEmptyMacro('{ProjectMainFileDir}'); Exit end;
 
-    if SExe = '' then
+    if ToolCommand = '' then
       begin MsgBeep; Exit end;
 
     //expand macros in "File name", "Initial dir" fields  
-    fexe:= SExe;
+    fexe:= ToolCommand;
     SReplaceW(fexe, '{SynDir}', ExtractFileDir(SynDir));
     SReplaceW(fexe, '{SynIniDir}', ExtractFileDir(SynIni));
 
-    fdir:= SDir;
+    fdir:= ToolDir;
     SReplaceW(fdir, '{SynDir}', ExtractFileDir(SynDir));
     SReplaceW(fdir, '{SynIniDir}', ExtractFileDir(SynIni));
 
     //save files if needed
-    case SSave of
+    case ToolSaveMode of
       svCurrent:
         if CurrentFrame.Modified then
           FSave.Execute;
@@ -10350,7 +10317,7 @@ begin
       Exit;
     end;
 
-    if not OUse then
+    if not ToolOutCapture then
     //don't handle output
     begin
       frun:= SExpandVars(fexe);
@@ -10359,7 +10326,7 @@ begin
         fdir:= SExtractFileDir(CurrentFrame.FileName);
 
       try
-        fpar:= SExpandVars(SPar);
+        fpar:= SExpandVars(ToolParams);
         fpar:= HandleParams(fpar, fdir);
       except
         Exit
@@ -10379,7 +10346,7 @@ begin
       if fdir='' then
         fdir:= SExpandVars('%temp%');
       try
-        fpar:= SExpandVars(SPar);
+        fpar:= SExpandVars(ToolParams);
         fpar:= HandleParams(fpar, fdir);
       except
         Exit
@@ -10517,8 +10484,6 @@ begin
 end;
 
 procedure TfmMain.TBXItemFFPrevClick(Sender: TObject);
-var
-  op: boolean;
 begin
   if Finder.FindText <> '' then
   begin
@@ -10526,16 +10491,11 @@ begin
     Finder.Flags:= [ftWrapSearch];
     if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSensitive];
     if cbWord.Checked then Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
-    op:= opSrShowMsg;
-    opSrShowMsg:= false;
     Finder.FindPrev;
-    opSrShowMsg:= op;
   end;
 end;
 
 procedure TfmMain.TBXItemFFNextClick(Sender: TObject);
-var
-  op: boolean;
 begin
   if Finder.FindText <> '' then
   begin
@@ -10543,10 +10503,7 @@ begin
     Finder.Flags:= [ftWrapSearch];
     if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSensitive];
     if cbWord.Checked then Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
-    op:= opSrShowMsg;
-    opSrShowMsg:= false;
     Finder.FindNext;
-    opSrShowMsg:= op;
   end;
 end;
 
@@ -10557,8 +10514,6 @@ begin
 end;
 
 procedure TfmMain.edQsChange(Sender: TObject);
-var
-  op: boolean;
 begin
   TBXItemFFNext.Enabled:= edQs.Text <> '';
   TBXItemFFPrev.Enabled:= TBXItemFFNext.Enabled;
@@ -10568,10 +10523,7 @@ begin
   Finder.Flags:= [ftEntireScope, ftWrapSearch];
   if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSensitive];
   if cbWord.Checked then Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
-  op:= opSrShowMsg;
-  opSrShowMsg:= false;
   Finder.FindAgain;
-  opSrShowMsg:= op;
 end;
 
 procedure TfmMain.TBXItemQsClick(Sender: TObject);
@@ -10598,11 +10550,14 @@ end;
 
 procedure TfmMain.ApplyQs;
 begin
+  //find next/prev
   if opQsCap then
     TbxItemFFNext.DisplayMode:= nbdmImageAndText
   else
     TbxItemFFNext.DisplayMode:= nbdmDefault;
   TbxItemFFPrev.DisplayMode:= TbxItemFFNext.DisplayMode;
+
+  //case/words
   if opQsCap then
     cbCase.DisplayMode:= nbdmTextOnly
   else
@@ -10771,7 +10726,7 @@ procedure TfmMain.PageControl1DrawTab(Control: TCustomTabControl;
 var
   F: TEditorFrame;
   R, RLine: TRect;
-  sCap: Widestring;
+  SCaption: Widestring;
   c, ColorMisc: TColor;
   PageControl: TTntPageControl;
   AFtp: boolean;
@@ -10790,15 +10745,15 @@ begin
   end;
 
   //get title string
-  sCap:= (PageControl.Pages[TabIndex] as TTntTabSheet).Caption;
+  SCaption:= (PageControl.Pages[TabIndex] as TTntTabSheet).Caption;
   if opTabNums then
   begin
     //Title has 3 lead spaces, replace em:
-    Delete(sCap, 1, cTabNumPrefix);
-    sCap:= Format('%d.', [TabIndex+1]) + sCap;
+    Delete(SCaption, 1, cTabNumPrefix);
+    SCaption:= Format('%d.', [TabIndex+1]) + SCaption;
   end;
   if AFtp then
-    sCap:= '  ' + IfThen(opTabNums, ' ') + sCap; //add 2+1 spaces
+    SCaption:= '  ' + IfThen(opTabNums, ' ') + SCaption; //add 2+1 spaces
 
   //paint theme on PageControl
   if not FPanelDrawBusy then
@@ -10852,7 +10807,7 @@ begin
   end;
   {
   else
-  if (opColorTab4<>clNone) and (Pos('*', sCap)>0) then
+  if (opColorTab4<>clNone) and (Pos('*', SCaption)>0) then
   begin
     c:= Control.Canvas.Brush.Color;
     Control.Canvas.Brush.Color:= opColorTab4;
@@ -10862,11 +10817,11 @@ begin
   }
 
   //tab caption
-  if Pos('*', sCap)>0 then
+  if Pos('*', SCaption)>0 then
     Control.Canvas.Font.Color:= opColorTabFont2
   else
     Control.Canvas.Font.Color:= opColorTabFont1;
-  TextOutW(Control.Canvas.Handle, R.Left+6, R.Top+3, PWChar(sCap), Length(sCap));
+  TextOutW(Control.Canvas.Handle, R.Left+6, R.Top+3, PWChar(SCaption), Length(SCaption));
 
   //tab ftp icon
   if AFtp then
@@ -11888,7 +11843,7 @@ begin
   end;
 end;
 
-procedure TfmMain.FindInFile(const fn: Widestring; InCodepage: TCpOverride = cp_sr_Def);
+procedure TfmMain.FindInFile(const fn: Widestring; InCodepage: TSynCpOverride = cp_sr_Def);
 var
   Op: TSyntaxMemoOptions;
   OpWrap: boolean;
@@ -11994,23 +11949,23 @@ var
   //-------------
   procedure MsgNoFiles;
   begin
-    if opSrShowMsg2 then
+    {if opSrShowMsg2 then
       MsgWarn(DKLangConstW('FF0'), Handle)
-    else
+    else}
       AErrorMode:= 1;
   end;
   //-------------
   procedure MsgNoLines;
   begin
-    if opSrShowMsg2 then
+    {if opSrShowMsg2 then
       MsgWarn(DKLangConstW('FF0_'), Handle)
-    else
+    else}
       AErrorMode:= 2;
   end;
   //-------------
 var
   AShowResult: TModalResult;
-  ASortMode: TFileSort;
+  ASortMode: TSynFileSort;
   ANeedFocusResult: boolean;
   AFnOnly, AToTab, AOutAppend, ACloseAfter: boolean;
   InOEM, InUTF8, InUTF16, ThisInUTF8: boolean;
@@ -12160,7 +12115,7 @@ begin
     AToTab:= cbOutTab.Checked;
     AOutAppend:= cbOutAppend.Checked;
     ACloseAfter:= cbCloseAfter.Checked;
-    ASortMode:= TFileSort(edSort.ItemIndex);
+    ASortMode:= TSynFileSort(edSort.ItemIndex);
 
     ShowProgress(proFindFiles);
     try
@@ -12684,7 +12639,7 @@ begin
 
   fn:= FCurrToolFN;
   with opTools[FCurrTool] do
-    SParseOut(s, ORe, OutNum_fn, OutNum_line, OutNum_col, fn, n_line, n_col);
+    SParseOut(s, ToolOutRegex, ToolOutNum_fn, ToolOutNum_line, ToolOutNum_col, fn, n_line, n_col);
 
   if fn='' then Exit;
   if n_line<=0 then Exit;
@@ -12988,7 +12943,7 @@ begin
 
   fn:= FCurrToolFN;
   with opTools[FCurrTool] do
-    SParseOut(s, ORe, OutNum_fn, OutNum_line, OutNum_col, fn, n_line, n_col);
+    SParseOut(s, ToolOutRegex, ToolOutNum_fn, ToolOutNum_line, ToolOutNum_col, fn, n_line, n_col);
 
   Result:= (fn<>'') and (n_line>0);
 end;
@@ -13104,23 +13059,23 @@ var
   ColNum, LineNum: integer;
   S: Widestring;
   Node, NodeFile: TTntTreeNode;
-  Info: TFindInfo;
+  Info: TSynFindInfo;
 begin
   //find NodeFile: note with filename
   Node:= TreeFind.Items[TreeFind.Items.Count-1];
   if Node=FTreeRoot then
-    NodeFile:= TreeFind.Items.AddChildObject(Node, FListResFN, TFindCount.Create)
+    NodeFile:= TreeFind.Items.AddChildObject(Node, FListResFN, TSynFindCount.Create)
   else
   begin
-    if Assigned(Node.Data) and (TObject(Node.Data) is TFindInfo) and (TFindInfo(Node.Data).FN<>FListResFN) then
-      NodeFile:= TreeFind.Items.AddChildObject(FTreeRoot, FListResFN, TFindCount.Create)
+    if Assigned(Node.Data) and (TObject(Node.Data) is TSynFindInfo) and (TSynFindInfo(Node.Data).FN<>FListResFN) then
+      NodeFile:= TreeFind.Items.AddChildObject(FTreeRoot, FListResFN, TSynFindCount.Create)
     else
       NodeFile:= Node.Parent;
   end;
 
   //store Finder.Matches into (NodeFile.Data).Matches
-  if (TObject(NodeFile.Data) is TFindCount) then
-    TFindCount(NodeFile.Data).Matches:= Finder.Matches;
+  if (TObject(NodeFile.Data) is TSynFindCount) then
+    TSynFindCount(NodeFile.Data).Matches:= Finder.Matches;
 
   if (opMaxTreeMatches>0) then
     if (Finder.Matches>opMaxTreeMatches) then Exit;
@@ -13135,7 +13090,7 @@ begin
   S:= Copy(Ed.Lines[LineNum], 1, cMaxTreeLen); //cut so Treeview doesn't crash
   SReplaceAllW(S, #9, ' '); //replace tabs with 1 space (to not break BG hiliting) in Treeview
 
-  Info:= TFindInfo.Create;
+  Info:= TSynFindInfo.Create;
   Info.FN:= FListResFN;
   Info.LineNum:= LineNum; //LineNum - 0-based
   Info.ColNum:= ColNum-1; //ColNum - 1-based
@@ -13172,7 +13127,7 @@ begin
       CurrentFrame.DoBkToggle(Ed, LineNum);
 end;
 
-procedure TfmMain.UpdOut(n: TOutTab);
+procedure TfmMain.UpdOut(n: TSynTabOut);
 begin
   FTabOut:= n;
   ListOut.Visible:= n=tbOut;
@@ -13193,7 +13148,7 @@ begin
     tbTabsOut.ActiveTabIndex:= 3;
 end;
 
-procedure TfmMain.UpdLeft(n: TLeftTab);
+procedure TfmMain.UpdLeft(n: TSynTabLeft);
 var
   IsTree, IsProj, IsTabs: boolean;
   i: Integer;
@@ -13209,7 +13164,7 @@ begin
         Exit
       end
       else
-        n:= TLeftTab(0);
+        n:= TSynTabLeft(0);
   end;
 
   FTabLeft:= n;
@@ -13260,7 +13215,7 @@ begin
     tbTabsLeft.ActiveTabIndex:= 2;
 end;
 
-procedure TfmMain.UpdRight(n: TRightTab);
+procedure TfmMain.UpdRight(n: TSynTabRight);
 var
   IsMap, IsClip, IsClips: boolean;
 begin
@@ -14672,15 +14627,6 @@ procedure TfmMain.UpdateRO;
     if ecReadOnly.Checked then
       ecReadOnly.Execute;
   end;
-  function NeedQViewRO: boolean;
-  begin
-    with TIniFile.Create(LsIni) do
-    try
-      Result:= ReadBool('Syn2', 'QViewRO', true);
-    finally
-      Free
-    end;
-  end;
 var
   s: string;
   i, N: Integer;
@@ -14690,7 +14636,7 @@ begin
     if not QuickView then
       if opStartRO then RO;
     if QuickView then
-      if NeedQViewRO then RO else NoRO;
+      if opListerQVReadOnly then RO else NoRO;
   end
   else
   begin
@@ -15527,8 +15473,8 @@ end;
 
 procedure TfmMain.UpdateQVTree;
 begin
-  if opQVTree<>'' then
-    plTree.Visible:= SFileExtensionMatch(fn, opQVTree);
+  if opListerQVTree<>'' then
+    plTree.Visible:= SFileExtensionMatch(fn, opListerQVTree);
 end;
 
 {
@@ -16779,7 +16725,7 @@ var
   oldSelStart, oldSelLength,
   n, m: Integer;
   AExt: boolean;
-  AMode: TGotoMode;
+  AMode: TSynGotoMode;
   ABkNum: integer;
   Pnt: TPoint;
 begin
@@ -17665,7 +17611,7 @@ begin
   Result:= FGetFileSize(fn) <= opBigSize * 1024 * 1024;
 end;
 
-procedure TfmMain.DoSaveSel(Ed: TSyntaxMemo; var Sel: TSelSave);
+procedure TfmMain.DoSaveSel(Ed: TSyntaxMemo; var Sel: TSynSelSave);
 begin
   FillChar(Sel, SizeOf(Sel), 0);
   with Ed do
@@ -17682,7 +17628,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoRestoreSel(Ed: TSyntaxMemo; const Sel: TSelSave);
+procedure TfmMain.DoRestoreSel(Ed: TSyntaxMemo; const Sel: TSynSelSave);
 begin
   with Ed do
   begin
@@ -17825,9 +17771,9 @@ begin
     s:= '';
   s:= WideFormat(DKLangConstW('MNFound2'), [s]);
   SetHint(s);
-  if opSrShowMsg then
+  {if opSrShowMsg then
     MsgWarn(s, Handle)
-  else
+  else}
     MsgBeep;
 end;
 
@@ -17865,7 +17811,7 @@ begin
   FinderInTree.FindPrev;
 end;
 
-procedure TfmMain.DoTreeJump(Mode: TGotoTree);
+procedure TfmMain.DoTreeJump(Mode: TSynGotoTree);
 var
   tn, tn2: TTreeNode;
 begin
@@ -18031,7 +17977,7 @@ end;
 function TfmMain.ShowGotoForm(
   var ALine, ACol: integer;
   var AExtSel: boolean;
-  var AMode: TGotoMode;
+  var AMode: TSynGotoMode;
   var ABkNum: integer): Boolean;
 var
   i: integer;
@@ -18690,7 +18636,7 @@ begin
   ecMacro30.Execute;
 end;
 
-constructor TFindInfo.Create;
+constructor TSynFindInfo.Create;
 begin
   FN:= '';
   LineNum:= 0;
@@ -18731,8 +18677,8 @@ procedure TfmMain.UpdateTreeFind(const AStr, ADir: Widestring;
     }
     Result:= 0;
     Obj:= TObject(NodeFile.Data);
-    if Obj is TFindCount then
-      Result:= (Obj as TFindCount).Matches + 1;
+    if Obj is TSynFindCount then
+      Result:= (Obj as TSynFindCount).Matches + 1;
     NodeFile.Text:= NodeFile.Text+ Format(' (%d)', [Result]);
   end;
 var
@@ -18781,14 +18727,14 @@ end;
 procedure TfmMain.TreeFindDblClick(Sender: TObject);
 var
   Obj: TObject;
-  Info: TFindInfo;
+  Info: TSynFindInfo;
   fn: Widestring;
   n: integer;
 begin
   if TreeFind.Selected=nil then Exit;
   Obj:= TObject(TreeFind.Selected.Data);
-  if Obj is TFindInfo then
-    Info:= Obj as TFindInfo
+  if Obj is TSynFindInfo then
+    Info:= Obj as TSynFindInfo
   else
     Info:= nil;
       
@@ -18839,13 +18785,13 @@ procedure TfmMain.TreeFindAdvancedCustomDrawItem(Sender: TCustomTreeView;
 var
   r: TRect;
   Obj: TObject;
-  Info: TFindInfo;
+  Info: TSynFindInfo;
   sInf, s: Widestring;
   n: Integer;
 begin
   Obj:= TObject(Node.Data);
-  if Obj is TFindInfo then
-    Info:= Obj as TFindInfo
+  if Obj is TSynFindInfo then
+    Info:= Obj as TSynFindInfo
   else
     Exit;
 
@@ -18998,7 +18944,7 @@ procedure TfmMain.CopyFindResultToList(ARootNode: TTntTreeNode;
   L: TWideStringList; AFilesOnly: boolean);
 var
   Node, Node2: TTntTreeNode;
-  Info: TFindInfo;
+  Info: TSynFindInfo;
   n: integer;
 begin
   L.Clear;
@@ -19014,8 +18960,8 @@ begin
       Node2:= Node.GetFirstChild;
       if Node2<>nil then
         repeat
-          if TObject(Node2.Data) is TFindInfo then
-            Info:= TFindInfo(Node2.Data)
+          if TObject(Node2.Data) is TSynFindInfo then
+            Info:= TSynFindInfo(Node2.Data)
           else
             Info:= nil;
 
@@ -19926,13 +19872,13 @@ end;
 procedure TfmMain.HandleToolOutput(const ft: Widestring; NTool: integer);
 var
   List: TWideStringList;
-  AType: TOutputType;
+  AType: TSynOutputType;
   N1, N2: Integer;
 begin
   ListOut.Items.Clear;
   if not (IsFileExist(ft) and (FGetFileSize(ft)>0)) then
   begin
-    SetHint(WideFormat(DKLangConstW('MRun0'), [opTools[NTool].SCap]));
+    SetHint(WideFormat(DKLangConstW('MRun0'), [opTools[NTool].ToolCaption]));
     MsgBeep;
     Exit
   end;
@@ -19942,10 +19888,10 @@ begin
   try
     List.LoadFromFile(ft);
     FDelete(ft);
-    FixListOutput(List, NoTag, IsLexerPas(SLexer), OEnc,
+    FixListOutput(List, ToolNoTags, IsLexerPas(ToolLexer), ToolOutEncoding,
       CurrentTabExpansion(CurrentEditor));
 
-    AType:= OutputTypeStrToType(OType);
+    AType:= OutputTypeStrToType(ToolOutType);
     if AType=outReplaceSelOrDoc then
       if CurrentEditor.SelLength=0 then
         AType:= outReplaceDoc
@@ -20034,7 +19980,7 @@ begin
         end;
         
       else
-        raise Exception.Create('Unknown tool type: '+OType);
+        raise Exception.Create('Unknown tool type: '+ToolOutType);
     end;
   finally
     FreeAndNil(List);
@@ -20065,7 +20011,7 @@ end;
 
 function TfmMain.SStatusText: Widestring;
 var
-  state: TSelState;
+  state: TSynSelState;
   p1, p2: TPoint;
   NLine, NCol,
   NSelLines, NSelCols, NSelChars: integer;
@@ -20162,7 +20108,7 @@ begin
   end;
 end;
 
-function TfmMain.SStatusHint(state: TSelState): Widestring;
+function TfmMain.SStatusHint(state: TSynSelState): Widestring;
 begin
   Result:= opStatusText[state];
   
@@ -20263,7 +20209,7 @@ begin
     begin MsgNoFile(ft); Exit end;
 
   if FCurrTool>0 then
-    Enc:= opTools[FCurrTool].OEnc
+    Enc:= opTools[FCurrTool].ToolOutEncoding
   else
     Enc:= encOem;
 
@@ -21436,9 +21382,9 @@ begin
   Result:= DoInputString(dkmsg, S);
 end;
 
-procedure TfmMain.MsgCloseHint(panelType: TPanelType);
+procedure TfmMain.MsgCloseHint(panelType: TSynPanelType);
 const
-  Cmd: array[TPanelType] of integer = (sm_OShowTree, sm_OShowClip, sm_OShowOut);
+  Cmd: array[TSynPanelType] of integer = (sm_OShowTree, sm_OShowClip, sm_OShowOut);
 begin
   SetHint(DKLangConstW('zMCloseHint') + ' ' + ShortcutToText(ShFor(Cmd[panelType])));
 end;
@@ -22054,7 +22000,7 @@ begin
   if FPlugins[N].SCaption='' then Exit;
 
   plTree.Caption:= FPlugins[N].SCaption;
-  FTabLeft:= TLeftTab(N+cFixedLeftTabs);
+  FTabLeft:= TSynTabLeft(N+cFixedLeftTabs);
 
   Tree.Visible:= false;
   Tree.SyntaxMemo:= nil;
@@ -22207,7 +22153,7 @@ begin
     Result:= cSynError;
     Exit;
   end;
-  if (opTxOnly<>1) and (not IsFileText(fn)) then
+  if (opTextOnly<>1) and (not IsFileText(fn)) then
     cfm:= MsgConfirmBinary(fn)
   else
     cfm:= true;
@@ -24072,6 +24018,7 @@ begin
   try
     Ed.ReplaceText(Pos1, Pos2-Pos1, S);
     Ed.CaretStrPos:= Pos1+Length(S);
+    EditorSetModified(Ed);
   finally
     Ed.EndUpdate;
   end;
@@ -24777,7 +24724,7 @@ end;
 procedure TfmMain.ecScrollToSelExecute(Sender: TObject);
 var
   Ed: TSyntaxMemo;
-  Save: TSelSave;
+  Save: TSynSelSave;
 begin
   Ed:= CurrentEditor;
   with Ed do
@@ -25326,7 +25273,7 @@ var
   An: TClientSyntAnalyzer;
   R: TTextRange;
   i, StPos, EndPos, NCaret: Integer;
-  SelSave: TSelSave;
+  SelSave: TSynSelSave;
   Lex: string;
 begin
   Ed:= CurrentEditor;
@@ -26052,7 +25999,7 @@ begin
   begin
     SDeleteToW(Cmd, ':');
     for i:= Low(opTools) to High(opTools) do
-      if opTools[i].SCap=Cmd then
+      if opTools[i].ToolCaption=Cmd then
       begin
         RunTool(i);
         Exit
@@ -26067,8 +26014,8 @@ var
 begin
   for i:= Low(opTools) to High(opTools) do
     with opTools[i] do
-      if SCap<>'' then
-        L.Add(SCap);
+      if ToolCaption<>'' then
+        L.Add(ToolCaption);
 end;
 
 procedure TfmMain.ecPasteAsColumnBlockExecute(Sender: TObject);
@@ -26558,14 +26505,7 @@ end;
 
 procedure TfmMain.DoHandleQuickSearchEscape;
 begin
-  case opQsEsc of
-    0:
-      TBXItemTQsClick(Self);
-    1:
-      fExit.Execute;
-    else
-      FocusEditor;
-  end;
+  FocusEditor;
 end;
 
 function TfmMain.DoHandleEscapeActions: boolean;

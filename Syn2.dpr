@@ -70,15 +70,10 @@ end;
 //============================================================================
   function NotText(const s: Widestring): boolean;
   begin
-    with TIniFile.Create(LsIni) do
-    try
-      case ReadInteger('Syn2', 'TxOnly', 0) of
-        0: Result:= not IsFileText(S);
-        1: Result:= False;
-        else Result:= not IsFileText(S) and not MsgConfirmBinary(S);
-      end;
-    finally
-      Free;
+    case opListerTextOnly of
+      0: Result:= not IsFileText(S);
+      1: Result:= False;
+      else Result:= not IsFileText(S) and not MsgConfirmBinary(S);
     end;
   end;
 
@@ -271,7 +266,7 @@ begin
   f:= TfmMain(FindControl(ListWin));
   if f = nil then Exit;
   with f do begin
-    if opSrUseDlg then
+    if opListerSynDialog then
       Result := LISTPLUGIN_OK
     else
     begin
@@ -307,6 +302,17 @@ type
 procedure ListSetDefaultParams(dps: pListDefaultParamStruct); stdcall;
 begin
   LsIni:= AnsiString(dps.DefaultIniName);
+  with TIniFile.Create(LsIni) do
+  try
+    opListerSynDialog:= ReadBool('Syn2', 'SynDialog', true);
+    opListerTcHistory:= ReadBool('Syn2', 'TcHistory', false);
+    opListerQVToolbars:= ReadString('Syn2', 'QViewToolbars', '');
+    opListerQVTree:= ReadString('Syn2', 'QViewTree', '');
+    opListerQVReadOnly:= ReadBool('Syn2', 'QViewRO', true);
+    opListerTextOnly:= ReadInteger('Syn2', 'TxOnly', 0);
+  finally
+    Free;
+  end;
 end;
 
 

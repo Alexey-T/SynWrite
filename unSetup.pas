@@ -9,10 +9,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, StdCtrls, ExtCtrls, unMain, Grids, Spin,
+  Dialogs, ComCtrls, StdCtrls, ExtCtrls, Grids, Spin,
 
-  ecSyntMemo, ecKeyMap, ecHotKeyEdit, ecPopupCtrl, DKLang,
+  ecSyntMemo, ecKeyMap, ecHotKeyEdit, ecPopupCtrl,
   TntStdCtrls, TntComCtrls, TntForms, TntGrids,
+  DKLang,
+
+  unMain,
   unSetupOvr;
 
 type
@@ -149,18 +152,10 @@ type
     cbEsc: TTntComboBox;
     TntLabel21: TTntLabel;
     tabSearch: TTntTabSheet;
-    gSR: TTntGroupBox;
-    cbSrDlg: TTntCheckBox;
+    boxFind: TTntGroupBox;
     cbSrWord: TTntCheckBox;
-    cbSrHistTC: TTntCheckBox;
     cbSrOnTop: TTntCheckBox;
-    gQSr: TTntGroupBox;
-    TntLabel2: TTntLabel;
-    cbQsEsc: TTntComboBox;
-    cbQsCap: TTntCheckBox;
     TntLabel22: TTntLabel;
-    cbSrErr: TTntCheckBox;
-    cbSrErr2: TTntCheckBox;
     cbBkUndo: TTntCheckBox;
     edFilter: TTntEdit;
     TntLabel25: TTntLabel;
@@ -188,7 +183,6 @@ type
     cbASaveUnShowSave: TTntRadioButton;
     cbASaveUnSaveToDir: TTntRadioButton;
     bUnnamedBrowse: TTntButton;
-    cbSrExpand: TTntCheckBox;
     gAcpSp: TTntGroupBox;
     cbAcpHtm: TTntCheckBox;
     cbAcpTabbing: TTntCheckBox;
@@ -332,8 +326,6 @@ type
     edCaretGutterCol: TSpinEdit;
     labCaretHelp: TTntLabel;
     cbUrlClick: TTntCheckBox;
-    edSrMaxTreeMatches: TSpinEdit;
-    TntLabel17: TTntLabel;
     cbShowCol: TTntCheckBox;
     cbCaretWidth: TTrackBar;
     TntLabel40: TTntLabel;
@@ -344,6 +336,11 @@ type
     cbNPrintEol: TTntCheckBox;
     cbNPrintEolEx: TTntCheckBox;
     labAcpHelp: TTntLabel;
+    boxFindTree: TTntGroupBox;
+    cbSrExpand: TTntCheckBox;
+    edSrMaxTreeMatches: TSpinEdit;
+    TntLabel17: TTntLabel;
+    cbSrQsCap: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure tabEdShow(Sender: TObject);
@@ -744,15 +741,9 @@ begin
     opSrOffsetY:=edSrOffsetY.Value;
     opSrExpand:=cbSrExpand.Checked;
     opSrOnTop:=cbSrOnTop.Checked;
-    opSrShowMsg:=cbSrErr.Checked;
-    opSrShowMsg2:=cbSrErr2.Checked;
-    opSrUseDlg:=cbSrDlg.Checked;
     opSrSuggestWord:=cbSrWord.Checked;
     opSrSuggestSel:=cbSrSel.Checked;
-    opSrHistTC:=cbSrHistTC.Checked;
-
-    opQsCap:=cbQsCap.Checked;
-    opQsEsc:=cbQsEsc.ItemIndex;
+    opQsCap:=cbSrQsCap.Checked;
     ApplyQs;
   end;
 
@@ -906,7 +897,7 @@ begin
   begin
     opNotif:=cbNotif.ItemIndex;
     opAskOverwrite:=cbOverRO.Checked;
-    opTxOnly:=cbText_.ItemIndex;
+    opTextOnly:=cbText_.ItemIndex;
     opOem:=edOem.Text;
     opUTF8:=edUTF8.Text;
     opBigSize:= edBigSize.Value;
@@ -1431,7 +1422,7 @@ begin
   begin
     cbNotif.ItemIndex:= opNotif;
     cbOverRO.Checked:= opAskOverwrite;
-    cbText_.ItemIndex:= opTxOnly;
+    cbText_.ItemIndex:= opTextOnly;
     edOem.Text:= opOem;
     edUTF8.Text:= opUTF8;
     edBigSize.Value:= opBigSize;
@@ -1841,15 +1832,9 @@ begin
     edSrOffsetY.Value:=opSrOffsetY;
     cbSrExpand.Checked:=opSrExpand;
     cbSrOnTop.Checked:=opSrOnTop;
-    cbSrErr.Checked:=opSrShowMsg;
-    cbSrErr2.Checked:=opSrShowMsg2;
-    cbSrDlg.Checked:=opSrUseDlg;
     cbSrWord.Checked:=opSrSuggestWord;
     cbSrSel.Checked:=opSrSuggestSel;
-    cbSrHistTC.Checked:=opSrHistTC;
-
-    cbQsCap.Checked:=opQsCap;
-    cbQsEsc.ItemIndex:=opQsEsc;
+    cbSrQsCap.Checked:=opQsCap;
   end;
 
   tabSearch.Tag:=1;
