@@ -117,7 +117,7 @@ type
     FSynAction: TSynAction;
   end;
 
-type  
+type
   TSynTool = record
     ToolCaption,
     ToolCommand,
@@ -148,6 +148,7 @@ type
   end;
 
 type
+  TSynUserToolbarId = (synToolbar1, synToolbar2, synToolbar3);
   TSynDock = (sdockTop, sdockLeft, sdockRight, sdockBottom);
   TSynPanelType = (plTypeTree, plTypeClip, plTypeOut);
   TSynFileSort = (sortNone, sortDate, sortDateDesc);
@@ -1717,12 +1718,6 @@ type
     procedure TBXItemClipsEditClick(Sender: TObject);
     procedure TBXItemClipsAddFileClick(Sender: TObject);
     procedure TBXItemClipsDirClick(Sender: TObject);
-    procedure plTreeContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
-    procedure plClipContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
-    procedure plOutContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
     procedure TBXTabColorChange(Sender: TObject);
     procedure TBXSubmenuTabColorPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
@@ -2226,7 +2221,6 @@ type
     function DoSmartTagTabbing: boolean;
     procedure DoHandleLastCmd(Command: integer; Data: pointer);
     function MsgInput(const dkmsg: string; var S: Widestring): boolean;
-    procedure MsgCloseHint(panelType: TSynPanelType);
     procedure MsgFound;
     procedure MsgColorBad(const s: string);
     procedure MsgColorOK(const s: string);
@@ -2525,7 +2519,8 @@ type
     function DoShowCmdList: Integer;
     function DoShowCmdListStr: string;
     function DoShowCmdHint(Cmd: Widestring): Widestring;
-    procedure DoCustomizeToolbar(NIndex: Integer);
+    function DoCustomizeToolbar(const Id: string): boolean;
+    procedure DoCustomizeAndReloadToolbar(Id: TSynUserToolbarId);
     procedure ToolbarUserClick(Sender: TObject);
     procedure DoExtToolsList(L: TTntStringList);
     procedure EditorNonPrintUpdate(Ed: TSyntaxMemo);
@@ -2861,7 +2856,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.7.690';
+  cSynVer = '5.7.700';
 
 const  
   cSynParamRO = '/RO';
@@ -6540,17 +6535,10 @@ begin
 end;
 
 procedure TfmMain.FinderFail(Sender: TObject);
-var
-  s: WideString;
 begin
   HideProgress;
-
-  s:= WideFormat(DKLangConstW('MNFound2'), [Finder.FindText]);
-  SetHint(s);
-  {if opSrShowMsg and not (Assigned(fmSR) and fmSR.Visible) then
-    MsgWarn(s, Handle)
-  else}
-    MsgBeep;
+  SetHint(WideFormat(DKLangConstW('MNFound2'), [Finder.FindText]));
+  MsgBeep;
 end;
 
 {
@@ -10044,6 +10032,10 @@ begin
   if Assigned(fmProj) then
     fmProj.tbProject.ChevronHint:= tbQS.ChevronHint;
 
+  plTree.Options.CloseButton.Hint:= {DKLangConstW('zMCloseHint') + ' ' +} ShortcutToText(ShFor(sm_OShowTree));
+  plClip.Options.CloseButton.Hint:= {DKLangConstW('zMCloseHint') + ' ' +} ShortcutToText(ShFor(sm_OShowClip));
+  plOut.Options.CloseButton.Hint:= {DKLangConstW('zMCloseHint') + ' ' +} ShortcutToText(ShFor(sm_OShowOut));
+
   //TNT Controls:
   _SMsgDlgWarning:= DKLangConstW('sWarn');
   _SMsgDlgConfirm:= DKLangConstW('sCf');
@@ -11949,18 +11941,12 @@ var
   //-------------
   procedure MsgNoFiles;
   begin
-    {if opSrShowMsg2 then
-      MsgWarn(DKLangConstW('FF0'), Handle)
-    else}
-      AErrorMode:= 1;
+    AErrorMode:= 1;
   end;
   //-------------
   procedure MsgNoLines;
   begin
-    {if opSrShowMsg2 then
-      MsgWarn(DKLangConstW('FF0_'), Handle)
-    else}
-      AErrorMode:= 2;
+    AErrorMode:= 2;
   end;
   //-------------
 var
@@ -17771,10 +17757,7 @@ begin
     s:= '';
   s:= WideFormat(DKLangConstW('MNFound2'), [s]);
   SetHint(s);
-  {if opSrShowMsg then
-    MsgWarn(s, Handle)
-  else}
-    MsgBeep;
+  MsgBeep;
 end;
 
 procedure TfmMain.ecFindInTreeExecute(Sender: TObject);
@@ -21380,31 +21363,6 @@ function TfmMain.MsgInput(const dkmsg: string; var S: Widestring): boolean;
 begin
   //Result:= WideInputQuery('SynWrite', DKLangConstW(dkmsg), S);
   Result:= DoInputString(dkmsg, S);
-end;
-
-procedure TfmMain.MsgCloseHint(panelType: TSynPanelType);
-const
-  Cmd: array[TSynPanelType] of integer = (sm_OShowTree, sm_OShowClip, sm_OShowOut);
-begin
-  SetHint(DKLangConstW('zMCloseHint') + ' ' + ShortcutToText(ShFor(Cmd[panelType])));
-end;
-
-procedure TfmMain.plTreeContextPopup(Sender: TObject; MousePos: TPoint;
-  var Handled: Boolean);
-begin
-  MsgCloseHint(plTypeTree);
-end;
-
-procedure TfmMain.plClipContextPopup(Sender: TObject; MousePos: TPoint;
-  var Handled: Boolean);
-begin
-  MsgCloseHint(plTypeClip);
-end;
-
-procedure TfmMain.plOutContextPopup(Sender: TObject; MousePos: TPoint;
-  var Handled: Boolean);
-begin
-  MsgCloseHint(plTypeOut);
 end;
 
 procedure TfmMain.TBXTabColorChange(Sender: TObject);
@@ -25700,37 +25658,52 @@ begin
   SaveToolbarsProps;
 end;
 
+procedure TfmMain.DoCustomizeAndReloadToolbar(Id: TSynUserToolbarId);
+var
+  ToolbarObj: TComponent;
+  ToolbarId: string;
+begin
+  case Id of
+    synToolbar1: begin ToolbarObj:= tbUser1; ToolbarId:= '1'; end;
+    synToolbar2: begin ToolbarObj:= tbUser2; ToolbarId:= '2'; end;
+    synToolbar3: begin ToolbarObj:= tbUser3; ToolbarId:= '3'; end;
+    else
+      raise Exception.Create('Unknown toolbar id: '+IntToStr(Ord(Id)));
+  end;
+
+  if DoCustomizeToolbar(ToolbarId) then
+  begin
+    LoadToolbarContent(ToolbarObj, ToolbarId, true);
+    UpdateStatusbar;
+    DoRepaint;
+  end;
+end;
+
 procedure TfmMain.TBXItemOToolbar1Click(Sender: TObject);
 begin
-  DoCustomizeToolbar(1);
-  LoadToolbarContent(tbUser1, '1', true);
-  UpdateStatusbar;
+  DoCustomizeAndReloadToolbar(synToolbar1);
 end;
 
 procedure TfmMain.TBXItemOToolbar2Click(Sender: TObject);
 begin
-  DoCustomizeToolbar(2);
-  LoadToolbarContent(tbUser2, '2', true);
-  UpdateStatusbar;
+  DoCustomizeAndReloadToolbar(synToolbar2);
 end;
 
 procedure TfmMain.TBXItemOToolbar3Click(Sender: TObject);
 begin
-  DoCustomizeToolbar(3);
-  LoadToolbarContent(tbUser3, '3', true);
-  UpdateStatusbar;
+  DoCustomizeAndReloadToolbar(synToolbar3);
 end;
 
-procedure TfmMain.DoCustomizeToolbar(NIndex: Integer);
+function TfmMain.DoCustomizeToolbar(const Id: string): boolean;
 var
   Dir: string;
 begin
   with TIniFile.Create(SynIni) do
   try
     Dir:= ReadString('Win', 'ImagesDir', '');
-    DoShowToolbarProp(
+    Result:= DoShowToolbarProp(
       SynToolbarsIni,
-      IntToStr(NIndex),
+      Id,
       DoShowCmdListStr,
       DoShowCmdHint,
       DoExtToolsList,
@@ -25739,7 +25712,7 @@ begin
     WriteString('Win', 'ImagesDir', Dir);
   finally
     Free
-  end;  
+  end;
 end;
 
 function TfmMain.DoShowCmdHint(Cmd: Widestring): Widestring;

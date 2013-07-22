@@ -558,14 +558,14 @@ object fmSRFiles: TfmSRFiles
         OnClick = mnuLoadTextSClick
       end
       object mnuLoadSubdirs: TTntMenuItem
-        Caption = 'with subfolders'
+        Caption = 'with all subfolders'
         OnClick = mnuLoadTextSClick
       end
       object N4: TTntMenuItem
         Caption = '-'
       end
       object mnuLoadCase: TTntMenuItem
-        Caption = 'case-sensitive'
+        Caption = 'case sensitive'
         OnClick = mnuLoadTextSClick
       end
       object mnuLoadWords: TTntMenuItem
@@ -573,7 +573,7 @@ object fmSRFiles: TfmSRFiles
         OnClick = mnuLoadTextSClick
       end
       object mnuLoadRegex: TTntMenuItem
-        Caption = 'reg ex'
+        Caption = 'regular expressions'
         OnClick = mnuLoadTextSClick
       end
       object mnuLoadSpec: TTntMenuItem

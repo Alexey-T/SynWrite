@@ -268,7 +268,7 @@ end;
 function MsgConfirm(const S: Widestring; H: THandle): boolean;
 begin
   Result:= MessageBoxW(H, PWChar(S), 'SynWrite',
-    MB_okcancel or MB_iconwarning) = id_ok;
+    MB_okcancel or MB_iconwarning or mb_taskmodal) = id_ok;
 end;
 
 procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);

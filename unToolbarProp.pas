@@ -13,14 +13,14 @@ type
   TShowCmdHintProc = function(Cmd: Widestring): Widestring of object;
   TGetExtToolsProc = procedure(List: TTntStringList) of object;
 
-procedure DoShowToolbarProp(
+function DoShowToolbarProp(
   const AIni, AId: string;
   AShowCmdList: TShowCmdListProc;
   AShowCmdHint: TShowCmdHintProc;
   AGetExtTools: TGetExtToolsProc;
   AForceSizeX,
   AForceSizeY: Integer;
-  var AImageDir: string);
+  var AImageDir: string): boolean;
 
 type
   TToolbarProp = record
@@ -614,14 +614,14 @@ begin
 end;
 
 
-procedure DoShowToolbarProp(
+function DoShowToolbarProp(
   const AIni, AId: string;
   AShowCmdList: TShowCmdListProc;
   AShowCmdHint: TShowCmdHintProc;
   AGetExtTools: TGetExtToolsProc;
   AForceSizeX,
   AForceSizeY: Integer;
-  var AImageDir: string);
+  var AImageDir: string): boolean;
 begin
   with TfmToolbarProp.Create(nil) do
   try
@@ -643,7 +643,8 @@ begin
     FGetExtTools:= AGetExtTools;
     FImagesDir:= AImageDir;
 
-    if ShowModal=mrOk then
+    Result:= ShowModal=mrOk;
+    if Result then
       AImageDir:= FImagesDir;
   finally
     Free;
