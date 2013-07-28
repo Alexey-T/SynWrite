@@ -23,7 +23,6 @@ type
     Tabs: TTntPageControl;
     bApply: TTntButton;
     bCan: TTntButton;
-    tabEd: TTntTabSheet;
     tabColors: TTntTabSheet;
     tabKey: TTntTabSheet;
     bOk: TTntButton;
@@ -34,72 +33,19 @@ type
     bKeySet: TTntButton;
     bKeyClr: TTntButton;
     tabFiles: TTntTabSheet;
-    gEdit: TTntGroupBox;
-    cbBOver: TTntCheckBox;
-    cbBPers: TTntCheckBox;
-    cbDClick: TTntCheckBox;
-    cbGrSel: TTntCheckBox;
-    cbWrap: TTntCheckBox;
-    cbFold: TTntCheckBox;
-    cbDrag: TTntCheckBox;
-    cbCollap: TTntCheckBox;
-    cbFLine: TTntCheckBox;
-    Bevel1: TBevel;
-    cbAutoInd: TTntCheckBox;
-    cbBackInd: TTntCheckBox;
-    cbGrRedo: TTntCheckBox;
-    cbGrUndo: TTntCheckBox;
-    cbUndoSav: TTntCheckBox;
-    cbCopyRtf: TTntCheckBox;
-    cbSmCaret: TTntCheckBox;
-    cbKeepCaret: TTntCheckBox;
-    cbOptFill: TTntCheckBox;
-    cbFloatM: TTntCheckBox;
-    cbScrollLast: TTntCheckBox;
-    cbWrapMar: TTntCheckBox;
-    cbFixMove: TTntCheckBox;
-    cbVarHorz: TTntCheckBox;
-    cbUnindKeep: TTntCheckBox;
-    cbKeepBlank: TTntCheckBox;
     gColors: TTntGroupBox;
     Label4: TTntLabel;
     ListColors: TTntListBox;
     Label5: TTntLabel;
     StaticText1: TTntStaticText;
-    tabIntf: TTntTabSheet;
-    boxIntf: TTntGroupBox;
+    tabProgSett: TTntTabSheet;
+    boxProgSett: TTntGroupBox;
     cbChar: TTntCheckBox;
     Label11: TTntLabel;
     cbStat: TTntCheckBox;
     tabACP: TTntTabSheet;
-    tabEd2: TTntTabSheet;
-    gEditor: TTntGroupBox;
-    Label15: TTntLabel;
-    Label3: TTntLabel;
-    Label14: TTntLabel;
-    cbLink: TTntCheckBox;
-    cbDLBack: TTntCheckBox;
-    cbCaret: TTntCheckBox;
-    cbHideCur: TTntCheckBox;
-    edLSpace: TSpinEdit;
-    edMar: TSpinEdit;
-    cbMar: TTntCheckBox;
-    edNums: TTntComboBox;
-    GroupBox2: TTntGroupBox;
-    edInd: TSpinEdit;
-    Label1: TTntLabel;
-    edULimit: TSpinEdit;
-    Label13: TTntLabel;
-    Label6: TTntLabel;
-    edTabMode: TTntComboBox;
-    edTab_: TTntEdit;
-    Label16: TTntLabel;
-    cbDFocus: TTntCheckBox;
-    cbRuler: TTntCheckBox;
     bKeyFn: TTntButton;
     cbMenu: TTntCheckBox;
-    Label18: TTntLabel;
-    cbLang: TTntComboBox;
     DKLanguageController1: TDKLanguageController;
     ColorBox1: TColorBox;
     cbInst: TTntCheckBox;
@@ -107,21 +53,11 @@ type
     Label42: TTntLabel;
     cbAcpFilter: TTntComboBox;
     cbAcpNone: TTntCheckBox;
-    cbTabSp: TTntCheckBox;
-    boxNew: TTntGroupBox;
-    TntLabel4: TTntLabel;
-    edEnc: TTntComboBox;
-    TntLabel5: TTntLabel;
-    edLE: TTntComboBox;
-    TntLabel6: TTntLabel;
-    edLex: TTntComboBox;
-    cbSmHi: TTntCheckBox;
     edAcpDrop: TSpinEdit;
     bColorLoad: TTntButton;
     bColorSave: TTntButton;
     OpenDialogPre: TOpenDialog;
     SaveDialogPre: TSaveDialog;
-    cbBrHi: TTntCheckBox;
     tabHist: TTntTabSheet;
     boxHist: TTntGroupBox;
     Label8: TTntLabel;
@@ -137,7 +73,6 @@ type
     cbDirLast: TTntComboBox;
     edDirLast: TTntEdit;
     bDirLast: TTntButton;
-    cbSmHiCase: TTntCheckBox;
     TntLabel10: TTntLabel;
     cbBak: TTntComboBox;
     edAcpNum: TSpinEdit;
@@ -156,13 +91,9 @@ type
     cbSrWord: TTntCheckBox;
     cbSrOnTop: TTntCheckBox;
     TntLabel22: TTntLabel;
-    cbBkUndo: TTntCheckBox;
     edFilter: TTntEdit;
     TntLabel25: TTntLabel;
     TimerFilt: TTimer;
-    cbStaples: TComboBox;
-    TntLabel28: TTntLabel;
-    edStapleOffset: TSpinEdit;
     bFiltClear: TTntButton;
     cbSrSel: TTntCheckBox;
     tabASave: TTntTabSheet;
@@ -190,7 +121,6 @@ type
     labSmTabHelp: TTntLabel;
     cbHTemp: TTntCheckBox;
     cbAcpUseSingle: TTntCheckBox;
-    cbRoStart: TTntCheckBox;
     cbTplTabbing: TTntCheckBox;
     labTplHelp: TTntLabel;
     cbACloseTags: TTntCheckBox;
@@ -200,7 +130,6 @@ type
     cbACloseBr: TTntCheckBox;
     cbACloseBrEsc: TTntCheckBox;
     cbACloseQ: TTntCheckBox;
-    cbDWrapMark: TTntCheckBox;
     ListCat: TTntListBox;
     tabTabs: TTntTabSheet;
     boxTabs: TTntGroupBox;
@@ -227,7 +156,7 @@ type
     b5: TTntButton;
     b6: TTntButton;
     tabTree: TTntTabSheet;
-    gTree: TTntGroupBox;
+    boxTree: TTntGroupBox;
     cbTreeSync: TTntCheckBox;
     tabSess: TTntTabSheet;
     boxSess: TTntGroupBox;
@@ -237,7 +166,7 @@ type
     boxProj: TTntGroupBox;
     cbProjLoad: TTntCheckBox;
     cbProjSave: TTntCheckBox;
-    TntGroupBox1: TTntGroupBox;
+    boxMinimap: TTntGroupBox;
     TntLabel26: TTntLabel;
     edMapZoom: TSpinEdit;
     boxFGroup: TTntGroupBox;
@@ -255,22 +184,8 @@ type
     cbOverRO: TTntCheckBox;
     edBigSize: TSpinEdit;
     TntLabel23: TTntLabel;
-    tabMisc: TTntTabSheet;
-    boxMisc: TTntGroupBox;
-    labDate: TTntLabel;
-    TntLabel20: TTntLabel;
-    cbFullTitle: TTntCheckBox;
-    cbGroupLexers: TTntCheckBox;
-    cbMenuIcon: TTntCheckBox;
-    edDateFmt: TTntEdit;
-    cbBeep: TTntCheckBox;
-    cbTips: TTntCheckBox;
-    edMovX: TSpinEdit;
-    edMovY: TSpinEdit;
-    cbZenProfile: TTntComboBox;
     ListTabColors: TTntListBox;
     TntLabel13: TTntLabel;
-    cbStripBk: TTntCheckBox;
     tabFolders: TTntTabSheet;
     boxFolders: TTntGroupBox;
     TntLabel14: TTntLabel;
@@ -288,33 +203,16 @@ type
     TntLabel27: TTntLabel;
     labDictWww: TTntLabel;
     labDictDir: TTntLabel;
-    cbSavePos: TTntCheckBox;
     tabOvr: TTntTabSheet;
-    TntLabel18: TTntLabel;
     edSrOffsetY: TSpinEdit;
     TntLabel32: TTntLabel;
-    edDateFmtP: TTntEdit;
-    TntLabel33: TTntLabel;
-    cbColorOnEmpty: TTntCheckBox;
     cbTabVis: TTntComboBox;
     edTplTabEx: TEdit;
     TntLabel34: TTntLabel;
-    Bevel2: TBevel;
-    cbSelMode: TTntComboBox;
-    TntLabel35: TTntLabel;
-    cbKeepPaste: TTntCheckBox;
     TntLabel36: TTntLabel;
     cbUniNeed: TTntComboBox;
-    cbRecColors: TTntComboBox;
-    TntLabel37: TTntLabel;
-    cbCopyLineNSel: TTntCheckBox;
-    cbMicroMap: TTntCheckBox;
-    cbSortMode: TTntComboBox;
-    TntLabel38: TTntLabel;
-    labEmmet: TTntLabel;
     cbTreeDelay: TSpinEdit;
     TntLabel39: TTntLabel;
-    TntLabel29: TTntLabel;
     tabCarets: TTntTabSheet;
     boxCarets: TTntGroupBox;
     cbCaretMulti: TTntCheckBox;
@@ -325,25 +223,129 @@ type
     TntLabel31: TTntLabel;
     edCaretGutterCol: TSpinEdit;
     labCaretHelp: TTntLabel;
-    cbUrlClick: TTntCheckBox;
-    cbShowCol: TTntCheckBox;
-    cbCaretWidth: TTrackBar;
-    TntLabel40: TTntLabel;
-    edCaretType: TTntComboBox;
-    gNonPrint: TTntGroupBox;
-    cbNPrintShow: TTntCheckBox;
-    cbNPrintSp: TTntCheckBox;
-    cbNPrintEol: TTntCheckBox;
-    cbNPrintEolEx: TTntCheckBox;
     labAcpHelp: TTntLabel;
     boxFindTree: TTntGroupBox;
     cbSrExpand: TTntCheckBox;
     edSrMaxTreeMatches: TSpinEdit;
     TntLabel17: TTntLabel;
     cbSrQsCap: TTntCheckBox;
+    boxCarets2: TTntGroupBox;
+    edCaretType: TTntComboBox;
+    TntLabel40: TTntLabel;
+    cbCaretSmart: TTntCheckBox;
+    cbCaretInText: TTntCheckBox;
+    cbCaretKeepOnPaste: TTntCheckBox;
+    cbCaretInRO: TTntCheckBox;
+    edMovX: TSpinEdit;
+    edMovY: TSpinEdit;
+    TntLabel29: TTntLabel;
+    tabNewOpen: TTntTabSheet;
+    boxNew: TTntGroupBox;
+    TntLabel4: TTntLabel;
+    TntLabel5: TTntLabel;
+    TntLabel6: TTntLabel;
+    edEnc: TTntComboBox;
+    edLE: TTntComboBox;
+    edLex: TTntComboBox;
+    tabView: TTntTabSheet;
+    tabSelHL: TTntTabSheet;
+    tabInsertFormat: TTntTabSheet;
+    cbSavePos: TTntCheckBox;
+    boxMicromap: TTntGroupBox;
+    cbMicroMap: TTntCheckBox;
+    cbBeep: TTntCheckBox;
+    cbStripBk: TTntCheckBox;
+    cbTips: TTntCheckBox;
+    cbMenuIcon: TTntCheckBox;
+    cbFullTitle: TTntCheckBox;
+    cbGroupLexers: TTntCheckBox;
+    cbSortMode: TTntComboBox;
+    TntLabel38: TTntLabel;
+    TntLabel37: TTntLabel;
+    cbRecColors: TTntComboBox;
+    boxDateFormat: TTntGroupBox;
+    cbZenProfile: TTntComboBox;
+    labEmmet: TTntLabel;
+    TntLabel18: TTntLabel;
+    edDateFmt: TTntEdit;
+    labDate: TTntLabel;
+    TntLabel20: TTntLabel;
+    edDateFmtP: TTntEdit;
+    TntLabel33: TTntLabel;
+    boxIndent: TTntGroupBox;
+    Label1: TTntLabel;
+    edIndent: TSpinEdit;
+    boxSelFmt: TTntGroupBox;
+    cbLink: TTntCheckBox;
+    cbUrlClick: TTntCheckBox;
+    cbSmHi: TTntCheckBox;
+    cbSmHiCase: TTntCheckBox;
+    cbBrHi: TTntCheckBox;
+    cbCopyLineNSel: TTntCheckBox;
+    cbColorOnEmpty: TTntCheckBox;
+    boxView: TTntGroupBox;
+    Label15: TTntLabel;
+    Label3: TTntLabel;
+    Label14: TTntLabel;
+    TntLabel28: TTntLabel;
+    cbDrawLineBG: TTntCheckBox;
+    cbHideCursor: TTntCheckBox;
+    edLSpace: TSpinEdit;
+    edMargin: TSpinEdit;
+    cbMargin: TTntCheckBox;
+    edLineNums: TTntComboBox;
+    cbDrawFocus: TTntCheckBox;
+    cbRuler: TTntCheckBox;
+    cbStaples: TComboBox;
+    edStapleOffset: TSpinEdit;
+    cbDrawWrapMark: TTntCheckBox;
+    cbDrawCol: TTntCheckBox;
+    boxNonPrint: TTntGroupBox;
+    cbNPrintShow: TTntCheckBox;
+    cbNPrintSp: TTntCheckBox;
+    cbNPrintEol: TTntCheckBox;
+    cbNPrintEolEx: TTntCheckBox;
+    tabUndo: TTntTabSheet;
+    boxUndo: TTntGroupBox;
+    TntLabel2: TTntLabel;
+    edUndoLimit: TSpinEdit;
+    cbUndoMass: TTntCheckBox;
+    cbGroupRedo: TTntCheckBox;
+    cbGroupUndo: TTntCheckBox;
+    cbUndoAfterSave: TTntCheckBox;
+    cbAutoIndent: TTntCheckBox;
+    cbBackspUnindent: TTntCheckBox;
+    cbUnindentAlign: TTntCheckBox;
+    cbOptFill: TTntCheckBox;
+    cbKeepBlank: TTntCheckBox;
+    cbWrap: TTntCheckBox;
+    cbFold: TTntCheckBox;
+    cbFixLineSize: TTntCheckBox;
+    cbScrollLast: TTntCheckBox;
+    cbWrapMargin: TTntCheckBox;
+    cbFixColMove: TTntCheckBox;
+    cbVarHorzBar: TTntCheckBox;
+    cbSelMode: TTntComboBox;
+    TntLabel35: TTntLabel;
+    cbFloatM: TTntCheckBox;
+    cbCollap: TTntCheckBox;
+    cbDrag: TTntCheckBox;
+    cbCopyRtf: TTntCheckBox;
+    cbGrSel: TTntCheckBox;
+    cbDClick: TTntCheckBox;
+    cbBPers: TTntCheckBox;
+    cbBOver: TTntCheckBox;
+    boxTabs2: TTntGroupBox;
+    edTabStops: TTntEdit;
+    Label16: TTntLabel;
+    edTabMode: TTntComboBox;
+    Label6: TTntLabel;
+    cbReplaceTabs: TTntCheckBox;
+    boxLang: TTntGroupBox;
+    labLangInfo: TTntLabel;
+    cbLang: TTntComboBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
-    procedure tabEdShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Apply;
     procedure bOkClick(Sender: TObject);
@@ -371,11 +373,10 @@ type
     procedure b3Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FontDialogShow(Sender: TObject);
-    procedure tabIntfShow(Sender: TObject);
+    procedure tabProgSettShow(Sender: TObject);
     procedure tabACPShow(Sender: TObject);
     procedure bClrFSClick(Sender: TObject);
     procedure bClrSRClick(Sender: TObject);
-    procedure tabEd2Show(Sender: TObject);
     procedure bKeyFnClick(Sender: TObject);
     procedure b4Click(Sender: TObject);
     procedure b5Click(Sender: TObject);
@@ -393,7 +394,7 @@ type
     procedure TimerFiltTimer(Sender: TObject);
     procedure cbStaplesDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
-    procedure edIndKeyDown(Sender: TObject; var Key: Word;
+    procedure edIndentKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure bFiltClearClick(Sender: TObject);
     procedure tabASaveShow(Sender: TObject);
@@ -412,7 +413,6 @@ type
     procedure tabFontsShow(Sender: TObject);
     procedure tabTreeShow(Sender: TObject);
     procedure tabSessShow(Sender: TObject);
-    procedure tabMiscShow(Sender: TObject);
     procedure cbLangChange(Sender: TObject);
     procedure ListTabColorsDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
@@ -429,11 +429,15 @@ type
     procedure bSpellOptClick(Sender: TObject);
     procedure tabOvrShow(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
-    procedure TntFormDestroy(Sender: TObject);
     procedure labEmmetClick(Sender: TObject);
     procedure tabCaretsShow(Sender: TObject);
     procedure labCaretHelpClick(Sender: TObject);
     procedure labAcpHelpClick(Sender: TObject);
+    procedure tabNewOpenShow(Sender: TObject);
+    procedure tabViewShow(Sender: TObject);
+    procedure tabSelHLShow(Sender: TObject);
+    procedure tabInsertFormatShow(Sender: TObject);
+    procedure tabUndoShow(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
@@ -443,6 +447,53 @@ type
     procedure ListKeys;
     procedure FixWnd;
     function ColorPreFN(const Name: string): string;
+
+    procedure ApplyView;
+    procedure ApplySelHL;
+    procedure ApplyInsertFormat;
+    procedure ApplyLang;
+    procedure ApplyProgSett;
+    procedure ApplyColors;
+    procedure ApplyFonts;
+    procedure ApplyTabs;
+    procedure ApplyEditorCarets;
+    procedure ApplyEditorOverrides;
+    procedure ApplyKeys;
+    procedure ApplyFiles;
+    procedure ApplySearch;
+    procedure ApplyTree;
+    procedure ApplyHistory;
+    procedure ApplyUndo;
+    procedure ApplySessionsProjects;
+    procedure ApplyAutoComplete;
+    procedure ApplyAutoSave;
+    procedure ApplySpell;
+    procedure ApplySearchFolders;
+    procedure ApplyNewOpen;
+
+    procedure InitView;
+    procedure InitSelHL;
+    procedure InitInsertFormat;
+    procedure InitNewOpen;
+    procedure InitSidebar;
+    procedure InitLang;
+    procedure InitProgSett;
+    procedure InitColors;
+    procedure InitFonts;
+    procedure InitTabs;
+    procedure InitEditorCarets;
+    procedure InitEditorOverrides;
+    procedure InitKeys;
+    procedure InitFiles;
+    procedure InitSearch;
+    procedure InitTree;
+    procedure InitHistory;
+    procedure InitUndo;
+    procedure InitSessionsProjects;
+    procedure InitAutoComplete;
+    procedure InitAutoSave;
+    procedure InitSpell;
+    procedure InitSearchFolders;
   public
     { Public declarations }
     fmMain: TfmMain;
@@ -595,481 +646,45 @@ end;
 
 procedure TfmSetup.bApplyClick(Sender: TObject);
 begin
-  //lang can't be applied
-  if tabIntf.Tag<>0 then
-    if FLangChanged then 
-      MsgInfo(DKLangConstW('MLnApply'), Handle);
-
   Apply;
 end;
 
 procedure TfmSetup.Apply;
 var
   i: integer;
-const
-  cTp: array[boolean] of TTabPosition = (tpTop, tpBottom);
 begin
-  with fmMain do begin
-  if tabEd.Tag<>0 then
-  begin
-    if cbBOver.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soOverwriteBlocks]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soOverwriteBlocks];
-    if cbBPers.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soPersistentBlocks]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soPersistentBlocks];
-    if cbDClick.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soDoubleClickLine]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soDoubleClickLine];
-    if cbKeepCaret.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soKeepCaretInText]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soKeepCaretInText];
-    if cbCopyRtf.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soCopyAsRTF]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soCopyAsRTF];
-    if cbAutoInd.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soAutoIndentMode]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soAutoIndentMode];
-    if cbBackInd.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soBackUnindent]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soBackUnindent];
-    if cbGrUndo.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soGroupUndo]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soGroupUndo];
-    if cbGrRedo.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soGroupRedo]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soGroupRedo];
-    if cbFLine.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soFixedLineHeight]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soFixedLineHeight];
-    if cbDrag.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soDragText]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soDragText];
-    if cbCollap.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soCallapseEmptyLines]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soCallapseEmptyLines];
-    if cbKeepBlank.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soKeepTrailingBlanks]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soKeepTrailingBlanks];
-    if cbFloatM.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soFloatMarkers]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soFloatMarkers];
-    if cbUndoSav.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soUndoAfterSave]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soUndoAfterSave];
-    if cbScrollLast.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soScrollLastLine]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soScrollLastLine];
-    if cbGrSel.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soGreedySelect]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soGreedySelect];
-    if cbSmCaret.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soSmartCaret]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soSmartCaret];
-    if cbWrapMar.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soBreakOnRightMargin]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soBreakOnRightMargin];
-    if cbOptFill.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soOptimalFill]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soOptimalFill];
-    if cbFixMove.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soFixedColumnMove]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soFixedColumnMove];
-    if cbVarHorz.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soVariableHorzScrollBar]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soVariableHorzScrollBar];
-    if cbUnindKeep.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soUnindentKeepAlign]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soUnindentKeepAlign];
+  if tabCarets.Tag  <>0 then ApplyEditorCarets;
+  if tabOvr.Tag     <>0 then ApplyEditorOverrides;
+  if tabSearch.Tag  <>0 then ApplySearch;
+  if tabTree.Tag    <>0 then ApplyTree;
+  if tabFonts.Tag   <>0 then ApplyFonts;
+  if tabColors.Tag  <>0 then ApplyColors;
+  if tabKey.Tag     <>0 then ApplyKeys;
+  if tabFolders.Tag <>0 then ApplySearchFolders;
+  if tabSpell.Tag   <>0 then ApplySpell;
+  if tabFiles.Tag   <>0 then ApplyFiles;
+  if tabProgSett.Tag<>0 then ApplyProgSett;
+  if tabTabs.Tag    <>0 then ApplyTabs;
+  if tabACP.Tag     <>0 then ApplyAutoComplete;
+  if tabASave.Tag   <>0 then ApplyAutoSave;
+  if tabSess.Tag    <>0 then ApplySessionsProjects;
+  if tabHist.Tag    <>0 then ApplyHistory;
+  if tabUndo.Tag    <>0 then ApplyUndo;
+  if tabNewOpen.Tag <>0 then ApplyNewOpen;
+  if tabView.Tag    <>0 then ApplyView;
+  if tabSelHL.Tag   <>0 then ApplySelHL;
+  if tabInsertFormat.Tag<>0 then ApplyInsertFormat;
 
-    TemplateEditor.WordWrap:=cbWrap.Checked;
-    TemplateEditor.DisableFolding:=not cbFold.Checked;
-    case cbSelMode.ItemIndex of
-      0: TemplateEditor.SelectModeDefault:= msNormal;
-      1: TemplateEditor.SelectModeDefault:= msColumn;
-      2: TemplateEditor.SelectModeDefault:= msLine;
-    end;
-
-    if cbKeepPaste.Checked then
-      TemplateEditor.OptionsEx:=TemplateEditor.OptionsEx + [soKeepCaretPaste]
-    else
-      TemplateEditor.OptionsEx:=TemplateEditor.OptionsEx - [soKeepCaretPaste];
-  end;
-
-  //auto-save
-  if tabASave.Tag<>0 then
-  begin
-    opASaveOnTimer:= cbASaveTimer.Checked;
-    opASaveOnFocus:= cbASaveFocus.Checked;
-    opASaveTimeMin:= edASaveTime.Value;
-    opASaveAllFiles:= cbASaveAllFiles.Checked;
-    opASaveMaxSizeKb:= edASaveMaxSize.Value;
-    if cbASaveUnIgnore.Checked then opASaveUnnamed:= 0 else
-     if cbASaveUnShowSave.Checked then opASaveUnnamed:= 1 else
-      if cbASaveUnSaveToDir.Checked then opASaveUnnamed:= 2;
-    opASaveUnnamedDir:= edASaveUnnamedDir.Text;
-    ApplyAutoSave;
-  end;
-
-  //search/tree
-  if tabSearch.Tag<>0 then
-  begin
-    opMaxTreeMatches:=edSrMaxTreeMatches.Value;
-    opSrOffsetY:=edSrOffsetY.Value;
-    opSrExpand:=cbSrExpand.Checked;
-    opSrOnTop:=cbSrOnTop.Checked;
-    opSrSuggestWord:=cbSrWord.Checked;
-    opSrSuggestSel:=cbSrSel.Checked;
-    opQsCap:=cbSrQsCap.Checked;
-    ApplyQs;
-  end;
-
-  //tree
-  if tabTree.Tag<>0 then
-  begin
-    Tree.AutoSynchronize:=cbTreeSync.Checked;
-    Tree.UpdateDelay:= cbTreeDelay.Value;
-
-    //opMapVScroll:= cbMapVScroll.Checked;
-    opMapZoom:= edMapZoom.Value;
-    ApplyMap;
-  end;
-
-  //fonts
-  if tabFonts.Tag<>0 then
-  begin
-    TemplateEditor.Font:=b1.Font;
-    TemplateEditor.LineNumbers.Font:=b2.Font;
-    Tree.Font:=b3.Font;
-    TemplateEditor.HorzRuler.Font:=b4.Font;
-    ecACP.Font:=b5.Font;
-    ApplyACP;
-    ListOut.Font:=b6.Font;
-    ApplyOut;
-    ApplyFonts;
-  end;
-
-  //colors
-  if tabColors.Tag<>0 then
-  begin
-    Theme:=cbTheme.Text;
-    Icons:=cbIcons.ItemIndex;
-    ApplyIntf;
-    ApplyColorsArrayToEditor(Colors, TemplateEditor);
-    ApplyColors;
-    ApplyOut;
-    ApplyMap;
-    ApplyCarets;
-  end;
-
-  if tabEd2.Tag<>0 then
-  begin
-    if cbCaret.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soAlwaysShowCaret]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soAlwaysShowCaret];
-    TemplateEditor.HorzRuler.Visible:=cbRuler.Checked;
-    if cbDFocus.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soDrawCurLineFocus]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soDrawCurLineFocus];
-    TemplateEditor.DefaultStyles.CurrentLine.Enabled:= cbDLBack.Checked;
-    if cbHideCur.Checked then
-      TemplateEditor.Options:=TemplateEditor.Options + [soHideCursorOnType]
-    else
-      TemplateEditor.Options:=TemplateEditor.Options - [soHideCursorOnType];
-
-    if cbColorOnEmpty.Checked then
-      TemplateEditor.OptionsEx:=TemplateEditor.OptionsEx - [soNormalSelToLineEnd]
-    else
-      TemplateEditor.OptionsEx:=TemplateEditor.OptionsEx + [soNormalSelToLineEnd];
-
-    TemplateEditor.LineSpacing:=edLSpace.Value;
-    TemplateEditor.ShowRightMargin:=cbMar.Checked;
-    TemplateEditor.RightMargin:=edMar.Value;
-    TemplateEditor.LineNumbers.NumberingStyle:=TLineNumberingStyle(edNums.ItemIndex);
-    TemplateEditor.StapleOffset:=edStapleOffset.Value;
-    TemplateEditor.StaplePen.Style:=TPenStyle(cbStaples.ItemIndex);
-
-    opNonPrint:=cbNPrintShow.Checked;
-    opNonPrintSpaces:=cbNPrintSp.Checked;
-    opNonPrintEol:=cbNPrintEol.Checked;
-    opNonPrintEolDetail:=cbNPrintEolEx.Checked;
-
-    opLink:= cbLink.Checked;
-    opSingleClickURL:= cbUrlClick.Checked;
-    ApplyUrlClick;
-
-    opShowWrapMark:=cbDWrapMark.Checked;
-    opCopyLineIfNoSel:=cbCopyLineNSel.Checked;
-    opSmartHi:=cbSmHi.Checked;
-    opSmartHiCase:=cbSmHiCase.Checked;
-    opBracketHi:=cbBrHi.Checked;
-    opBkUndo:=cbBkUndo.Checked;
-    opShowCurrentColumn:= cbShowCol.Checked;
-    ApplyEd2;
-    ApplyFrames;
-
-    TemplateEditor.BlockIndent:=edInd.Value;
-    TemplateEditor.TabList.AsString:=edTab_.Text;
-    TemplateEditor.UndoLimit:=edULimit.Value;
-    case edTabMode.ItemIndex of
-      0: TemplateEditor.TabMode:=tmSpaces;
-      1: TemplateEditor.TabMode:=tmTabChar;
-      2: TemplateEditor.TabMode:=tmSmartTab;
-    end;
-    opTabsReplace:=cbTabSp.Checked;
-  end;
-
-  //editor overrides
-  if tabOvr.Tag<>0 then
-  begin
-    fmMain.opLexersOverride:= fmOvr.FString;
-  end;
-
-  //keys
-  if tabKey.Tag<>0 then
-  begin
-    fmMain.SyntKeyMapping.Assign(Self.KeyMapping);
-  end;
-
-  //folders
-  if tabFolders.Tag<>0 then
-  begin
-    SListToString(edFolders.Lines, opProjPaths);
-  end;
-
-  //spell
-  if tabSpell.Tag<>0 then
-  begin
-    opSpellEn:= cbSpellEn.Checked;
-    opSpellExt:= edSpellExt.Text;
-    ApplySpell;
-  end;
-
-  //misc2
-  if tabMisc.Tag<>0 then
-  begin
-    opCaretMoveX:= edMovX.Value;
-    opCaretMoveY:= edMovY.Value;
-    opDateFmt:= edDateFmt.Text;
-    opDateFmtPLog:= edDateFmtP.Text;
-    opZenProfile:= cbZenProfile.Text;
-    opShowRecentColors:= cbRecColors.ItemIndex;
-    opSortMode:= TSynSortMode(cbSortMode.ItemIndex);
-    ApplyShowRecentColors;
-    opLexerCat:= cbGroupLexers.Checked;
-    opStripBkmk:= cbStripBk.Checked;
-    opMenuIcon:= cbMenuIcon.Checked;
-    Icons:= Icons; //update menu
-    opTitleFull:=cbFullTitle.Checked;
-    opBeep:= cbBeep.Checked;
-    opTipsToken:= cbTips.Checked;
-    opTipsPanels:= opTipsToken;
-    ApplyTips;
-  end;
-
-  //misc
-  if tabFiles.Tag<>0 then
-  begin
-    opNotif:=cbNotif.ItemIndex;
-    opAskOverwrite:=cbOverRO.Checked;
-    opTextOnly:=cbText_.ItemIndex;
-    opOem:=edOem.Text;
-    opUTF8:=edUTF8.Text;
-    opBigSize:= edBigSize.Value;
-    opFollowTail:= cbTail.Checked;
-    opUnicodeNeeded:= cbUniNeed.ItemIndex;
-  end;
-
-  //intf
-  if tabIntf.Tag<>0 then
-  begin
-    opLang:=LangManager.LanguageIDs[cbLang.ItemIndex];
-    opChInf:=cbChar.Checked;
-    UpdateCh;
-
-    opMicroMap:=cbMicroMap.Checked;
-    ApplyFrames;
-
-    Menu.Visible:=cbMenu.Checked;
-    Status.Visible:=cbStat.Checked;
-    opEsc:=cbEsc.ItemIndex;
-    opSingleInstance:=cbInst.Checked;
-    ApplyInst;
-
-    opStartRO:=cbRoStart.Checked;
-
-    //redraw
-    tbFile.Invalidate;
-    tbEdit.Invalidate;
-    tbView.Invalidate;
-    plTree.Invalidate;
-    //
-    opNewEnc:=edEnc.ItemIndex;
-    opNewLineEnds:=edLE.ItemIndex;
-    if edLex.ItemIndex=0 then
-      opNewLex:= ''
-    else
-      opNewLex:=edLex.Text;
-  end;
-
-  //Tabs
-  if tabTabs.Tag<>0 then
-  begin
-    opTabVisible:=cbTabVis.ItemIndex;
-    opTabBtn:=cbTabBtn.Checked;
-    opTabNums:=cbTabNums.Checked;
-    opTabSwitcher:=cbTabSw.Checked;
-    opTabDragDrop:=cbTabDnD.Checked;
-    opTabDblClick:=cbTabDbl.Checked;
-    opTabMaxLen:=edTabMaxLen.Value;
-    opTabMultiLine:=cbTabMul.Checked;
-    opTabAtBottom:=cbTabDown.Checked;
-
-    for i:= 0 to High(ColorsOfTabs) do
-      opTabColors[i]:= ColorsOfTabs[i];
-
-    ApplyTabOptions;
-    ApplyFrames;
-  end;
-
-  //Carets
-  if tabCarets.Tag<>0 then
-  begin
-    opCaretsEnabled:= cbCaretMulti.Checked;
-    if cbCaretIndNone.Checked then opCaretsIndicator:= 0 else
-     if cbCaretIndLine.Checked then opCaretsIndicator:= 1 else
-      if cbCaretIndGutter.Checked then opCaretsIndicator:= 2;
-    opCaretsGutterBand:= edCaretGutterCol.Value;
-    opCaretType:= edCaretType.ItemIndex; //cbCaretWidth.Position;
-    ApplyCarets;
-  end;
-
-  //Misc2
-  if tabACP.Tag<>0 then
-  begin
-    opAcpHtm:=cbAcpHtm.Checked;
-    opAcpCss:=cbAcpCss.Checked;
-    opAcpTabbing:=cbAcpTabbing.Checked;
-    opTemplateTabbing:=cbTplTabbing.Checked;
-    opTemplateTabbingExcept:= edTplTabEx.Text;
-    opAutoCloseTags:=cbACloseTags.Checked;
-    opAutoCloseBrackets:=cbACloseBr.Checked;
-    opAutoCloseBracketsNoEsc:=cbACloseBrEsc.Checked;
-    opAutoCloseQuotes:=cbACloseQ.Checked;
-    opAcpNum:= edAcpNum.Value;
-    opAcpUseSingle:= cbAcpUseSingle.Checked;
-    SyntaxManagerChange(nil);
-    ecACP.DropDownCount:=edAcpDrop.Value;
-    ecACP.ShowWhenNone:=cbAcpNone.Checked;
-    ecACP.FilterType:=TAutoCompleteFilter(cbAcpFilter.ItemIndex);
-    ApplyACP;
-    opAcpFile:= cbAcpFile.Checked;
-    opAcpFileChars:= edAcpFileChars.Value;
-    opAcpFileSize:= edAcpFileSize.Value;
-  end;
-
-  //sess/proj
-  if tabSess.Tag<>0 then
-  begin
-    opHistSessionSave:=cbSessSave.Checked;
-    opHistSessionLoad:=cbSessLoad.Checked;
-    opHistSessionDef:=cbSessDef.Checked;
-    opHistProjectSave:=cbProjSave.Checked;
-    opHistProjectLoad:=cbProjLoad.Checked;
-  end;
-
-  //history
-  if tabHist.Tag<>0 then
-  begin
-    opMruCheck:=cbMru.Checked;
-    opSavePos:=cbSavePos.Checked;
-    opSaveState:=edFS.Value;
-    opSaveSRHist:=edSR.Value;
-    opSaveCaret:=cbHCaret.Checked;
-    opSaveEnc:=cbHEnc.Checked;
-    opStateForTemp:= cbHTemp.Checked;
-    opLastDir:=cbDirLast.ItemIndex;
-    opLastDirPath:=edDirLast.Text;
-    opBak:=cbBak.ItemIndex;
-  end;
-
-  //update from template
-  PropsManager.UpdateAll;
-  for i:= 0 to FrameCount-1 do
-    UpdateGutter(Frames[i]);
-
-  //save
-  opTabOptionsLast:= Tabs.ActivePageIndex;
-  SaveIni;
-end;
-end;
-
-//editor
-procedure TfmSetup.tabEdShow(Sender: TObject);
-begin
-  if tabEd.Tag<>0 then Exit;
   with fmMain do
   begin
-    cbBOver.Checked:=sooverwriteBlocks in TemplateEditor.Options;
-    cbBPers.Checked:=soPersistentBlocks in TemplateEditor.Options;
-    cbDClick.Checked:=soDoubleClickLine in TemplateEditor.Options;
-    cbKeepCaret.Checked:=soKeepCaretInText in TemplateEditor.Options;
-    cbCopyRtf.Checked:=soCopyAsRTF in TemplateEditor.Options;
-    cbAutoInd.Checked:=soAutoIndentMode in TemplateEditor.Options;
-    cbBackInd.Checked:=soBackUnindent in TemplateEditor.Options;
-    cbGrUndo.Checked:=soGroupUndo in TemplateEditor.Options;
-    cbGrRedo.Checked:=soGroupRedo in TemplateEditor.Options;
-    cbFLine.Checked:=soFixedLineHeight in TemplateEditor.Options;
-    cbDrag.Checked:=soDragText in TemplateEditor.Options;
-    cbCollap.Checked:=soCallapseEmptyLines in TemplateEditor.Options;
-    cbKeepBlank.Checked:=soKeepTrailingBlanks in TemplateEditor.Options;
-    cbFloatM.Checked:=soFloatMarkers in TemplateEditor.Options;
-    cbUndoSav.Checked:=soUndoAfterSave in TemplateEditor.Options;
-    cbScrollLast.Checked:=soScrollLastLine in TemplateEditor.Options;
-    cbGrSel.Checked:=soGreedySelect in TemplateEditor.Options;
-    cbSmCaret.Checked:=soSmartCaret in TemplateEditor.Options;
-    cbWrapMar.Checked:=soBreakOnRightMargin in TemplateEditor.Options;
-    cbOptFill.Checked:=soOptimalFill in TemplateEditor.Options;
-    cbFixMove.Checked:=soFixedColumnMove in TemplateEditor.Options;
-    cbVarHorz.Checked:=soVariableHorzScrollBar in TemplateEditor.Options;
-    cbUnindKeep.Checked:=soUnindentKeepAlign in TemplateEditor.Options;
-    cbWrap.Checked:=TemplateEditor.WordWrap;
-    cbFold.Checked:=not TemplateEditor.DisableFolding;
-    cbKeepPaste.Checked:= soKeepCaretPaste in TemplateEditor.OptionsEx;
+    //update from template
+    PropsManager.UpdateAll;
+    for i:= 0 to FrameAllCount-1 do
+      UpdateGutter(FramesAll[i]);
 
-    case TemplateEditor.SelectModeDefault of
-      msNone,
-      msNormal: cbSelMode.ItemIndex:= 0;
-      msColumn: cbSelMode.ItemIndex:= 1;
-      msLine: cbSelMode.ItemIndex:= 2;
-    end;
-
-    tabEd.Tag:=1;
+    //save
+    opTabOptionsLast:= ListCat.ItemIndex;
+    SaveIni;
   end;
 end;
 
@@ -1086,24 +701,10 @@ end;
 
 //view
 procedure TfmSetup.tabColorsShow(Sender: TObject);
-var
-  i: integer;
 begin
   if tabColors.Tag<>0 then Exit;
-
-  for i:= Low(cColorsOrder) to High(cColorsOrder) do
-    ListColors.Items.Add(DKLangConstW(ColorNumToLngId(cColorsOrder[i])));
-  ListColors.Selected[0]:= true;
-
-  with fmMain do
-  begin
-    cbTheme.ItemIndex:= cbTheme.Items.IndexOf(Theme);
-    cbIcons.ItemIndex:= Icons;
-    InitColorsArray(Colors);
-  end;
-  
   tabColors.Tag:= 1;
-  ListColorsClick(Self);
+  InitColors;
 end;
 
 procedure TfmSetup.ListColorsClick(Sender: TObject);
@@ -1121,34 +722,15 @@ end;
 
 procedure TfmSetup.b1Click(Sender: TObject);
 begin
-  FontDialog.Font:=b1.Font;
-  if FontDialog.Execute then b1.Font:=FontDialog.Font;
+  FontDialog.Font:= b1.Font;
+  if FontDialog.Execute then b1.Font:= FontDialog.Font;
 end;
 
-//keys
 procedure TfmSetup.tabKeyShow(Sender: TObject);
-var
-  L: TStringList;
-  i: integer;
 begin
   if tabKey.Tag<>0 then Exit;
-  tabKey.Tag:=1;
-  KeyMapping.Assign(fmMain.SyntKeyMapping);
-
-  //list categories
-  L:= TStringList.Create;
-  for i:=0 to KeyMapping.Items.Count-1 do
-    if KeyMapping.Items[i].Customizable then
-      if L.IndexOf(KeyMapping.Items[i].Category)<0 then
-        L.Add(KeyMapping.Items[i].Category);
-
-  cbKeyCat.Items.AddStrings(L);
-  cbKeyCat.ItemIndex:= 0;
-  FreeandNil(L);
-
-  //list keys
-  ListKeys;
-  KeyList.SetFocus;
+  tabKey.Tag:= 1;
+  InitKeys;
 end;
 
 function SKeysOf(c: TecCommandItem): string;
@@ -1175,11 +757,11 @@ begin
     Cells[2,0]:= DKLangConstW('Key1');
     Cells[3,0]:= DKLangConstW('Key2');
     RowCount:= 2;
-    j:=1;
-    old:='';
+    j:= 1;
+    old:= '';
 
-    for k:=0 to cbKeyCat.Items.Count-1 do //categories
-    for i:=0 to KeyMapping.Items.Count-1 do //items
+    for k:= 0 to cbKeyCat.Items.Count-1 do //categories
+    for i:= 0 to KeyMapping.Items.Count-1 do //items
     //item filtered?
     if SSubstringMatch(KeyMapping.Items[i].DisplayName, edFilter.Text) or
       SSubstringMatch(SKeysOf(KeyMapping.Items[i]), edFilter.Text) then
@@ -1189,27 +771,27 @@ begin
       if KeyMapping.Items[i].Command = -1 then //unused items
         begin KeyMapping.Items[i].KeyStrokes.Clear; Continue; end;
 
-      RowCount:=j+1;
+      RowCount:= j+1;
       KeyList.RowHeights[KeyList.RowCount-1]:= KeyList.RowHeights[0];
 
       //add category
       if old<>KeyMapping.Items[i].Category then
       begin
-        Cells[0,j]:='-';
-        Cells[1,j]:=KeyMapping.Items[i].Category;
+        Cells[0,j]:= '-';
+        Cells[1,j]:= KeyMapping.Items[i].Category;
         Cells[2,j]:= '';
         Cells[3,j]:= '';
-        old:=Cells[1,j];
+        old:= Cells[1,j];
         inc(j);
-        RowCount:=j+1;
+        RowCount:= j+1;
       end;
       //add item
-      Cells[0,j]:=IntToStr(i);
-      Cells[1,j]:=KeyMapping.Items[i].DisplayName;
+      Cells[0,j]:= IntToStr(i);
+      Cells[1,j]:= KeyMapping.Items[i].DisplayName;
       Cells[2,j]:= '';
       Cells[3,j]:= '';
-      if KeyMapping.Items[i].KeyStrokes.Count>0 then Cells[2,j]:=KeyMapping.Items[i].KeyStrokes.Items[0].AsString;
-      if KeyMapping.Items[i].KeyStrokes.Count>1 then Cells[3,j]:=KeyMapping.Items[i].KeyStrokes.Items[1].AsString;
+      if KeyMapping.Items[i].KeyStrokes.Count>0 then Cells[2,j]:= KeyMapping.Items[i].KeyStrokes.Items[0].AsString;
+      if KeyMapping.Items[i].KeyStrokes.Count>1 then Cells[3,j]:= KeyMapping.Items[i].KeyStrokes.Items[1].AsString;
       inc(j);
     end;
   end;
@@ -1228,8 +810,8 @@ begin
   end;
   SetScrollInfo(KeyList.Handle, SB_VERT, info, True);}
 
-  g.Left:=2; g.Top:=2; g.Right:=2; g.Bottom:=2;
-  KeyList.Selection:=g;
+  g.Left:= 2; g.Top:= 2; g.Right:= 2; g.Bottom:= 2;
+  KeyList.Selection:= g;
 end;
 
 procedure TfmSetup.KeyListMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -1240,10 +822,10 @@ var
 begin
   KeyList.MouseToCell(x,y,c,r);
   if (c<0)or(r<0)then exit
-  else if (r=0)or(c=0) then KeyList.Hint:=''
-  else KeyList.Hint:=KeyList.Cells[c,r];
-  //p:=KeyList.CellRect(c,r-1).TopLeft;
-  p:=Point(x,y);
+  else if (r=0)or(c=0) then KeyList.Hint:= ''
+  else KeyList.Hint:= KeyList.Cells[c,r];
+  //p:= KeyList.CellRect(c,r-1).TopLeft;
+  p:= Point(x,y);
   Application.ActivateHint( KeyList.ClientToScreen(p) );
 end;
 
@@ -1255,21 +837,21 @@ begin
   if ARow=0 then exit;
   if KeyList.Cells[0,ARow]='-' then begin
     inc(ARow);
-    ACol:=0;
+    ACol:= 0;
   end;
   if (ACol<2) then begin
-    r.Left:=2;
-    r.Top:=ARow;
-    r.Right:=2;
-    r.Bottom:=ARow;
-    KeyList.Selection:=r;
-    CanSelect:=false;
-    ACol:=2;
+    r.Left:= 2;
+    r.Top:= ARow;
+    r.Right:= 2;
+    r.Bottom:= ARow;
+    KeyList.Selection:= r;
+    CanSelect:= false;
+    ACol:= 2;
   end;
   if KeyList.Cells[ACol,ARow]<>'' then
-    ecHotKey.Text:=KeyMapping.Items[StrToInt(KeyList.Cells[0,ARow])].KeyStrokes[ACol-2].AsString
+    ecHotKey.Text:= KeyMapping.Items[StrToInt(KeyList.Cells[0,ARow])].KeyStrokes[ACol-2].AsString
   else
-    ecHotKey.Text:='';
+    ecHotKey.Text:= '';
   ecHotKeyChange(Self);
 end;
 
@@ -1282,20 +864,20 @@ begin
   if (ARow=0) or (ACol=0) then Exit;
   //category
   if KeyList.Cells[0,ARow]='-' then begin
-    r:=Rect;
+    r:= Rect;
     Inc(r.Right);
     KeyList.Canvas.FillRect(r);
-    KeyList.Canvas.Font.Color:=clNavy;
-    KeyList.Canvas.Font.Style:=KeyList.Canvas.Font.Style+[fsBold];
+    KeyList.Canvas.Font.Color:= clNavy;
+    KeyList.Canvas.Font.Style:= KeyList.Canvas.Font.Style+[fsBold];
     s:= KeyList.Cells[ACol, ARow];
     TextOutW(KeyList.Canvas.Handle, Rect.Left+2, Rect.Top+2, PWChar(s), Length(s));
   end;
   //selection line
   if ARow=KeyList.Selection.Top then begin
     if ACol=KeyList.Selection.Left then
-      KeyList.Canvas.Brush.Color:=clHighlight
+      KeyList.Canvas.Brush.Color:= clHighlight
     else
-      KeyList.Canvas.Brush.Color:=clMedGray;
+      KeyList.Canvas.Brush.Color:= clMedGray;
     KeyList.Canvas.FillRect(Rect);
     s:= KeyList.Cells[ACol, ARow];
     TextOutW(KeyList.Canvas.Handle, Rect.Left+2, Rect.Top+2, PWChar(s), Length(s));
@@ -1311,21 +893,21 @@ end;
 procedure TfmSetup.KeyListMouseWheelUp(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 begin
-  Handled:=true;
+  Handled:= true;
   with KeyList do
   if TopRow>Mouse.WheelScrollLines then
-    TopRow:=TopRow-Mouse.WheelScrollLines
+    TopRow:= TopRow-Mouse.WheelScrollLines
   else
-    TopRow:=1;
+    TopRow:= 1;
 end;
 
 procedure TfmSetup.KeyListMouseWheelDown(Sender: TObject;
   Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
 begin
-  Handled:=true;
+  Handled:= true;
   with KeyList do
   if TopRow<RowCount-VisibleRowCount then
-    TopRow:=TopRow+Mouse.WheelScrollLines;
+    TopRow:= TopRow+Mouse.WheelScrollLines;
 end;
 
 //set
@@ -1343,8 +925,8 @@ begin
   ovr_j:= -1;
 
   with KeyMapping do
-   for i:=0 to Items.Count-1 do
-    for j:=0 to Items[i].KeyStrokes.Count-1 do
+   for i:= 0 to Items.Count-1 do
+    for j:= 0 to Items[i].KeyStrokes.Count-1 do
       if Items[i].KeyStrokes[j].AsString=ecHotKey.Text then
       begin
         s:= DKLangConstW('KeyUsed')+#13 + Items[i].Category + ' / ' + Items[i].DisplayName;
@@ -1366,14 +948,14 @@ begin
         KeyList.Cells[ovr_j+2, i]:= '';
         if ovr_j=0 then
         begin
-          KeyList.Cells[2, i]:=KeyList.Cells[3, i];
-          KeyList.Cells[3, i]:='';
+          KeyList.Cells[2, i]:= KeyList.Cells[3, i];
+          KeyList.Cells[3, i]:= '';
         end;
       end;
   end;
 
   //set new key
-  i:=StrToIntDef(KeyList.Cells[0,r], -1);
+  i:= StrToIntDef(KeyList.Cells[0,r], -1);
   if i<0 then Exit;
   if KeyMapping.Items[i].KeyStrokes.Count>(c-2) then
   begin
@@ -1385,7 +967,7 @@ begin
     KeyMapping.Items[i].KeyStrokes.Add.KeyDefs.Add.ShortCut:= ecHotKey.HotKey;
     KeyList.Cells[ KeyMapping.Items[i].KeyStrokes.Count+1 ,r]:= ecHotKey.Text;
   end;
-  bKeyClr.Enabled:=true;
+  bKeyClr.Enabled:= true;
 end;
 
 //clear
@@ -1393,12 +975,12 @@ procedure TfmSetup.bKeyClrClick(Sender: TObject);
 var
  c,r: integer;
 begin
-  c:=KeyList.Selection.Left;
-  r:=KeyList.Selection.Top;
-  if c=2 then KeyList.Cells[2, r]:=KeyList.Cells[3, r];
-  KeyList.Cells[3, r]:='';
+  c:= KeyList.Selection.Left;
+  r:= KeyList.Selection.Top;
+  if c=2 then KeyList.Cells[2, r]:= KeyList.Cells[3, r];
+  KeyList.Cells[3, r]:= '';
   KeyMapping.Items[ strtoint(KeyList.Cells[0, r]) ].KeyStrokes.Delete(c-2);
-  ecHotKey.Text:='';
+  ecHotKey.Text:= '';
   ecHotKeyChange(Self);
 end;
 
@@ -1417,32 +999,69 @@ end;
 procedure TfmSetup.tabFilesShow(Sender: TObject);
 begin
   if tabFiles.Tag<>0 then Exit;
-
-  with fmMain do
-  begin
-    cbNotif.ItemIndex:= opNotif;
-    cbOverRO.Checked:= opAskOverwrite;
-    cbText_.ItemIndex:= opTextOnly;
-    edOem.Text:= opOem;
-    edUTF8.Text:= opUTF8;
-    edBigSize.Value:= opBigSize;
-    cbTail.Checked:= opFollowTail;
-    cbUniNeed.ItemIndex:= opUnicodeNeeded;
-  end;
-
   tabFiles.Tag:= 1;
+  InitFiles;
 end;
 
 procedure TfmSetup.b2Click(Sender: TObject);
 begin
-  FontDialog.Font:=b2.Font;
-  if FontDialog.Execute then b2.Font:=FontDialog.Font;
+  FontDialog.Font:= b2.Font;
+  if FontDialog.Execute then b2.Font:= FontDialog.Font;
 end;
 
 procedure TfmSetup.b3Click(Sender: TObject);
 begin
-  FontDialog.Font:=b3.Font;
-  if FontDialog.Execute then b3.Font:=FontDialog.Font;
+  FontDialog.Font:= b3.Font;
+  if FontDialog.Execute then b3.Font:= FontDialog.Font;
+end;
+
+procedure TfmSetup.InitSidebar;
+  //----
+  procedure AddTab(tab: TTntTabSheet);
+  const
+    SPad = '    ';
+  begin
+    ListCat.Items.AddObject(SPad+tab.Caption, tab);
+  end;
+var
+  i: Integer;
+begin
+  for i:= 0 to Tabs.PageCount-1 do
+    Tabs.Pages[i].TabVisible:= false;
+
+  ListCat.Items.Clear;
+  ListCat.Items.Add(DKLangConstW('zMOp_Intf'));
+  AddTab(tabProgSett);
+  AddTab(tabKey);
+  AddTab(tabColors);
+  AddTab(tabFonts);
+  AddTab(tabTabs);
+  AddTab(tabSearch);
+  AddTab(tabTree);
+
+  ListCat.Items.Add(DKLangConstW('zMOp_Editor'));
+  AddTab(tabView);
+  AddTab(tabSelHL);
+  AddTab(tabCarets);
+  AddTab(tabUndo);
+  AddTab(tabInsertFormat);
+  AddTab(tabOvr);
+  AddTab(tabACP);
+  AddTab(tabSpell);
+
+  ListCat.Items.Add(DKLangConstW('zMOp_Files'));
+  AddTab(tabNewOpen);
+  AddTab(tabASave);
+  AddTab(tabHist);
+  AddTab(tabSess);
+  AddTab(tabFolders);
+
+  //activate last used category
+  if fmMain.opTabOptionsIndex<0 then
+    ListCat.ItemIndex:= fmMain.opTabOptionsLast
+  else
+    ListCat.ItemIndex:= fmMain.opTabOptionsIndex;
+  ListCatClick(Self);
 end;
 
 procedure TfmSetup.FormShow(Sender: TObject);
@@ -1450,19 +1069,7 @@ var
   i, n: Integer;
 begin
   FLangChanged:= false;
-
-  ListCat.Items.Clear;
-  for i:= 0 to Tabs.PageCount-1 do
-  begin
-    Tabs.Pages[i].TabVisible:= false;
-    ListCat.Items.Add(' '+(Tabs.Pages[i] as TTntTabSheet).Caption);
-  end;
-
-  if fmMain.opTabOptionsIndex<0 then
-    ListCat.ItemIndex:= fmMain.opTabOptionsLast
-  else
-    ListCat.ItemIndex:= fmMain.opTabOptionsIndex;
-  ListCatClick(Self);
+  InitSidebar;
 
   n:= KeyList.RowHeights[0];
   n:= ScaleFontSize(n, Self);
@@ -1475,74 +1082,18 @@ begin
   WndCenter(FontDialog.Handle, Self);
 end;
 
-procedure TfmSetup.tabIntfShow(Sender: TObject);
-var i: integer;
+procedure TfmSetup.tabProgSettShow(Sender: TObject);
 begin
-  if tabIntf.Tag<>0 then Exit;
-  with fmMain do
-  begin
-    cbMenu.Checked:=Menu.Visible;
-    cbStat.Checked:=Status.Visible;
-    cbChar.Checked:=opChInf;
-    cbMicroMap.Checked:=opMicroMap;
-    cbRoStart.Checked:=opStartRO;
-
-    cbEsc.ItemIndex:=opEsc;
-    cbInst.Checked:=opSingleInstance;
-
-    //Fill lexers
-    edLex.Items.Add(' '+DKLangConstW('None'));
-    with SyntaxManager do
-      for i:= 0 to AnalyzerCount-1 do
-        if not Analyzers[i].Internal then
-          edLex.Items.Add(Analyzers[i].LexerName);
-    with edLex do
-      if opNewLex='' then
-        ItemIndex:= 0
-      else
-        ItemIndex:= Items.IndexOf(opNewLex);
-    edEnc.ItemIndex:= opNewEnc;
-    edLE.ItemIndex:= opNewLineEnds;
-  end;
-  tabIntf.Tag:=1;
-
-  //lang
-  with cbLang do begin
-    Items.Clear;
-    for i:= 0 to LangManager.LanguageCount-1 do
-      Items.Add(LangManager.LanguageNames[i]);
-    ItemIndex:= LangManager.LanguageIndex;
-  end;
+  if tabProgSett.Tag<>0 then Exit;
+  tabProgSett.Tag:= 1;
+  InitProgSett;
 end;
 
 procedure TfmSetup.tabACPShow(Sender: TObject);
 begin
   if tabACP.Tag<>0 then Exit;
-  with fmMain do
-  begin
-    cbAcpHtm.Checked:= opAcpHtm;
-    cbAcpCss.Checked:= opAcpCss;
-    cbAcpTabbing.Checked:= opAcpTabbing;
-    cbTplTabbing.Checked:= opTemplateTabbing;
-    edTplTabEx.Text:= opTemplateTabbingExcept; 
-    cbACloseTags.Checked:= opAutoCloseTags;
-
-    cbACloseBr.Checked:= opAutoCloseBrackets;
-    cbACloseBrEsc.Checked:= opAutoCloseBracketsNoEsc;
-    cbACloseQ.Checked:= opAutoCloseQuotes;
-    cbACloseBrClick(Self);
-
-    cbAcpUseSingle.Checked:= opAcpUseSingle;
-    edAcpNum.Value:= opAcpNum;
-    cbAcpNone.Checked:= ecACP.ShowWhenNone;
-    cbAcpFilter.ItemIndex:= integer(ecACP.FilterType);
-    cbAcpFile.Checked:= opAcpFile;
-    cbAcpFileClick(Self);
-    edAcpFileChars.Value:= opAcpFileChars;
-    edAcpFileSize.Value:= opAcpFileSize;
-    edAcpDrop.Value:= ecACP.DropDownCount;
-  end;
-  tabACP.Tag:=1;
+  tabACP.Tag:= 1;
+  InitAutoComplete;
 end;
 
 procedure TfmSetup.bClrFSClick(Sender: TObject);
@@ -1557,75 +1108,24 @@ begin
   bClrSR.Enabled:= false;
 end;
 
-procedure TfmSetup.tabEd2Show(Sender: TObject);
-var
-  i: Integer;
-begin
-  if tabEd2.Tag<>0 then Exit;
-
-  cbStaples.Items.Clear;
-  for i:= 0 to Ord(psClear) do
-    cbStaples.Items.Add('-'); //empty items for line styles
-
-  with fmMain do
-  begin
-    edInd.Value:=TemplateEditor.BlockIndent;
-    edTab_.Text:=TemplateEditor.TabList.AsString;
-    edULimit.Value:=TemplateEditor.UndoLimit;
-    case TemplateEditor.TabMode of
-      tmSpaces:   edTabMode.ItemIndex:=0;
-      tmTabChar:  edTabMode.ItemIndex:=1;
-      tmSmartTab: edTabMode.ItemIndex:=2;
-    end;
-    cbTabSp.Checked:=opTabsReplace;
-    edTabModeChange(Self);
-
-    cbLink.Checked:=opLink;
-    cbUrlClick.Checked:=opSingleClickURL;
-    cbCaret.Checked:=soAlwaysShowCaret in TemplateEditor.Options;
-    cbRuler.Checked:=TemplateEditor.HorzRuler.Visible;
-    cbHideCur.Checked:=soHideCursorOnType in TemplateEditor.Options;
-    cbDFocus.Checked:=soDrawCurLineFocus in TemplateEditor.Options;
-    cbDLBack.Checked:=TemplateEditor.DefaultStyles.CurrentLine.Enabled;
-    cbMar.Checked:=TemplateEditor.ShowRightMargin;
-    edMar.Value:=TemplateEditor.RightMargin;
-    edLSpace.Value:=TemplateEditor.LineSpacing;
-    edNums.ItemIndex:=Ord(TemplateEditor.LineNumbers.NumberingStyle);
-    cbColorOnEmpty.Checked:= not (soNormalSelToLineEnd in TemplateEditor.OptionsEx);
-    edStapleOffset.Value:=TemplateEditor.StapleOffset;
-    cbStaples.ItemIndex:= Ord(TemplateEditor.StaplePen.Style);
-    cbCopyLineNSel.Checked:= opCopyLineIfNoSel;
-    cbDWrapMark.Checked:= opShowWrapMark;
-    cbSmHi.Checked:=opSmartHi;
-    cbSmHiCase.Checked:=opSmartHiCase;
-    cbBrHi.Checked:=opBracketHi;
-    cbBkUndo.Checked:=opBkUndo;
-    cbShowCol.Checked:= opShowCurrentColumn;
-
-    cbNPrintShow.Checked:= opNonPrint;
-    cbNPrintSp.Checked:= opNonPrintSpaces;
-    cbNPrintEol.Checked:= opNonPrintEol;
-    cbNPrintEolEx.Checked:= opNonPrintEolDetail;
-  end;
-  tabEd2.Tag:=1;
-end;
-
 procedure TfmSetup.bKeyFnClick(Sender: TObject);
-var i,j,k:Integer; g:TGridRect;
+var
+  i, j, k: Integer;
+  g: TGridRect;
 begin
   if ecHotKey.Text='' then Exit;
   for i:= 1 to KeyList.RowCount-1 do
     for j:= 2 to 3 do
       if (KeyList.Cells[j,i]=ecHotKey.Text) then begin
-        g.Left:=j; g.Top:=i; g.Right:=g.Left; g.Bottom:=g.Top;
-        k:=i-2;
-        if k<1 then k:=1;
+        g.Left:= j; g.Top:= i; g.Right:= g.Left; g.Bottom:= g.Top;
+        k:= i-2;
+        if k<1 then k:= 1;
         if k>KeyList.RowCount-KeyList.VisibleRowCount then
-          k:=KeyList.RowCount-KeyList.VisibleRowCount;
-        KeyList.TopRow:=k;
-        KeyList.Selection:=g;
+          k:= KeyList.RowCount-KeyList.VisibleRowCount;
+        KeyList.TopRow:= k;
+        KeyList.Selection:= g;
         KeyList.Repaint;
-        bKeyClr.Enabled:=true;
+        bKeyClr.Enabled:= true;
         Exit;
       end;
   MessageBoxW(Handle, PWChar(DKLangConstW('KeyNUsed')), 'SynWrite', MB_OK or mb_iconinformation);
@@ -1633,21 +1133,21 @@ end;
 
 procedure TfmSetup.b4Click(Sender: TObject);
 begin
-  FontDialog.Font:=b4.Font;
+  FontDialog.Font:= b4.Font;
   if FontDialog.Execute then
-    b4.Font:=FontDialog.Font;
+    b4.Font:= FontDialog.Font;
 end;
 
 procedure TfmSetup.b5Click(Sender: TObject);
 begin
-  FontDialog.Font:=b5.Font;
+  FontDialog.Font:= b5.Font;
   if FontDialog.Execute then
-    b5.Font:=FontDialog.Font;
+    b5.Font:= FontDialog.Font;
 end;
 
 procedure TfmSetup.edTabModeChange(Sender: TObject);
 begin
-  cbTabSp.Enabled:= edTabMode.ItemIndex=0;
+  cbReplaceTabs.Enabled:= edTabMode.ItemIndex=0;
 end;
 
 (*
@@ -1689,9 +1189,9 @@ end;
 
 procedure TfmSetup.b6Click(Sender: TObject);
 begin
-  FontDialog.Font:=b6.Font;
+  FontDialog.Font:= b6.Font;
   if FontDialog.Execute then
-    b6.Font:=FontDialog.Font;
+    b6.Font:= FontDialog.Font;
 end;
 
 procedure TfmSetup.bColorSaveClick(Sender: TObject);
@@ -1775,22 +1275,8 @@ end;
 procedure TfmSetup.tabHistShow(Sender: TObject);
 begin
   if tabHist.Tag<>0 then Exit;
-
-  with fmMain do
-  begin
-    edFS.Value:=opSaveState;
-    edSR.Value:=opSaveSRHist;
-    cbHCaret.Checked:=opSaveCaret;
-    cbHEnc.Checked:=opSaveEnc;
-    cbHTemp.Checked:=opStateForTemp;
-    cbMru.Checked:=opMruCheck;
-    cbSavePos.Checked:=opSavePos;
-    cbDirLast.ItemIndex:= opLastDir;
-    edDirLast.Text:= opLastDirPath;
-    cbBak.ItemIndex:= opBak;
-  end;
-
-  tabHist.Tag:=1;
+  tabHist.Tag:= 1;
+  InitHistory;
 end;
 
 procedure TfmSetup.cbKeyCatChange(Sender: TObject);
@@ -1825,19 +1311,8 @@ end;
 procedure TfmSetup.tabSearchShow(Sender: TObject);
 begin
   if tabSearch.Tag<>0 then Exit;
-
-  with fmMain do
-  begin
-    edSrMaxTreeMatches.Value:=opMaxTreeMatches;
-    edSrOffsetY.Value:=opSrOffsetY;
-    cbSrExpand.Checked:=opSrExpand;
-    cbSrOnTop.Checked:=opSrOnTop;
-    cbSrWord.Checked:=opSrSuggestWord;
-    cbSrSel.Checked:=opSrSuggestSel;
-    cbSrQsCap.Checked:=opQsCap;
-  end;
-
-  tabSearch.Tag:=1;
+  tabSearch.Tag:= 1;
+  InitSearch;
 end;
 
 procedure TfmSetup.cbSessSaveClick(Sender: TObject);
@@ -1882,7 +1357,7 @@ begin
   end;
 end;
 
-procedure TfmSetup.edIndKeyDown(Sender: TObject; var Key: Word;
+procedure TfmSetup.edIndentKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if key=VK_ESCAPE then
@@ -1909,22 +1384,8 @@ end;
 procedure TfmSetup.tabASaveShow(Sender: TObject);
 begin
   if tabASave.Tag<>0 then Exit;
-  with fmMain do
-  begin
-    cbASaveTimer.Checked:= opASaveOnTimer;
-    cbASaveFocus.Checked:= opASaveOnFocus;
-    edASaveTime.Value:= opASaveTimeMin;
-    cbASaveAllFiles.Checked:= opASaveAllFiles;
-    cbASaveCurrFile.Checked:= not opASaveAllFiles;
-    edASaveMaxSize.Value:= opASaveMaxSizeKb;
-    cbASaveUnIgnore.Checked:= opASaveUnnamed=0;
-    cbASaveUnShowSave.Checked:= opASaveUnnamed=1;
-    cbASaveUnSaveToDir.Checked:= opASaveUnnamed=2;
-    edASaveUnnamedDir.Text:= opASaveUnnamedDir;
-    cbASaveTimerClick(Self);
-    cbASaveUnnamedClick(Self);
-  end;
   tabASave.Tag:= 1;
+  InitAutoSave;
 end;
 
 procedure TfmSetup.bUnnamedBrowseClick(Sender: TObject);
@@ -2033,122 +1494,55 @@ begin
 end;
 
 procedure TfmSetup.ListCatClick(Sender: TObject);
+var
+  TabObj: TTntTabSheet;
 begin
-  Tabs.ActivePageIndex:= ListCat.ItemIndex;
+  if ListCat.ItemIndex>=0 then
+  begin
+    TabObj:= ListCat.Items.Objects[ListCat.ItemIndex] as TTntTabSheet;
+    if Assigned(TabObj) then
+      Tabs.ActivePage:= TabObj
+    else
+    begin
+      ListCat.ItemIndex:= ListCat.ItemIndex+1;
+      ListCatClick(Self);
+    end;
+  end;
 end;
 
 procedure TfmSetup.tabTabsShow(Sender: TObject);
-var
-  i: Integer;
 begin
   if tabTabs.Tag<>0 then Exit;
-
-  with fmMain do
-  begin
-    cbTabBtn.Checked:=opTabBtn;
-    cbTabVis.ItemIndex:=opTabVisible;
-    cbTabNums.Checked:=opTabNums;
-    cbTabMul.Checked:=opTabMultiLine;
-    cbTabDown.Checked:=opTabAtBottom;
-    cbTabSw.Checked:=opTabSwitcher;
-    cbTabDnD.Checked:=opTabDragDrop;
-    cbTabDbl.Checked:=opTabDblClick;
-    edTabMaxLen.Value:=opTabMaxLen;
-
-    ListTabColors.Items.Clear;
-    for i:= 0 to High(ColorsOfTabs) do
-    begin
-      ColorsOfTabs[i]:= opTabColors[i];
-      ListTabColors.Items.Add(IntToStr(i));
-    end;
-  end;
-
   tabTabs.Tag:= 1;
+  InitTabs;
 end;
 
 procedure TfmSetup.tabFontsShow(Sender: TObject);
 begin
   if tabFonts.Tag<>0 then Exit;
-
-  with fmMain do
-  begin
-    b1.Font:= TemplateEditor.Font;
-    b2.Font:= TemplateEditor.LineNumbers.Font;
-    b3.Font:= Tree.Font;
-    b4.Font:= TemplateEditor.HorzRuler.Font;
-    b5.Font:= ecACP.Font;
-    b6.Font:= ListOut.Font;
-  end;
-
   tabFonts.Tag:= 1;
+  InitFonts;
 end;
 
 procedure TfmSetup.tabTreeShow(Sender: TObject);
 begin
   if tabTree.Tag<>0 then Exit;
-
-  with fmMain do
-  begin
-    cbTreeSync.Checked:=Tree.AutoSynchronize;
-    cbTreeDelay.Value:= Tree.UpdateDelay;
-
-    //cbMapVScroll.Checked:= opMapVScroll;
-    edMapZoom.Value:= opMapZoom;
-  end;
-
   tabTree.Tag:= 1;
+  InitTree;
 end;
 
 procedure TfmSetup.tabSessShow(Sender: TObject);
 begin
   if tabSess.Tag<>0 then Exit;
-
-  with fmMain do
-  begin
-    cbSessSave.Checked:=opHistSessionSave;
-    cbSessLoad.Checked:=opHistSessionLoad;
-    cbSessDef.Checked:=opHistSessionDef;
-    cbSessSaveClick(Self);
-    cbProjSave.Checked:=opHistProjectSave;
-    cbProjLoad.Checked:=opHistProjectLoad;
-  end;
-
   tabSess.Tag:= 1;
-end;
-
-procedure TfmSetup.tabMiscShow(Sender: TObject);
-begin
-  if tabMisc.Tag<>0 then Exit;
-
-  with fmMain do
-  begin
-    edMovX.Value:= opCaretMoveX;
-    edMovY.Value:= opCaretMoveY;
-    edDateFmt.Text:= opDateFmt;
-    edDateFmtP.Text:= opDateFmtPLog;
-
-    with cbZenProfile do
-    begin
-      Items.LoadFromFile(SynDir + 'Tools\emmet.txt');
-      ItemIndex:= Items.IndexOf(opZenProfile);
-    end;
-
-    cbRecColors.ItemIndex:= opShowRecentColors;
-    cbSortMode.ItemIndex:= Ord(opSortMode);
-    cbGroupLexers.Checked:= opLexerCat;
-    cbStripBk.Checked:= opStripBkmk;
-    cbFullTitle.Checked:= opTitleFull;
-    cbMenuIcon.Checked:= opMenuIcon;
-    cbTips.Checked:= opTipsToken;
-    cbBeep.Checked:= opBeep;
-  end;
-
-  tabMisc.Tag:= 1;
+  InitSessionsProjects;
 end;
 
 procedure TfmSetup.cbLangChange(Sender: TObject);
 begin
   FLangChanged:= true;
+  labLangInfo.Caption:= DKLangConstW('MLnApply');
+  labLangInfo.Show;
 end;
 
 procedure TfmSetup.ListTabColorsDrawItem(Control: TWinControl;
@@ -2220,21 +1614,15 @@ end;
 procedure TfmSetup.tabFoldersShow(Sender: TObject);
 begin
   if tabFolders.Tag<>0 then Exit;
-  SStringToList(fmMain.opProjPaths, edFolders.Lines);
   tabFolders.Tag:= 1;
+  InitSearchFolders;
 end;
 
 procedure TfmSetup.tabSpellShow(Sender: TObject);
 begin
   if tabSpell.Tag<>0 then Exit;
-
-  with fmMain do
-  begin
-    cbSpellEn.Checked:= opSpellEn;
-    edSpellExt.Text:= opSpellExt;
-  end;
-
   tabSpell.Tag:= 1;
+  InitSpell;
 end;
 
 procedure TfmSetup.labDictWwwClick(Sender: TObject);
@@ -2253,11 +1641,436 @@ begin
 end;
 
 procedure TfmSetup.tabOvrShow(Sender: TObject);
+begin
+  if tabOvr.Tag<>0 then Exit;
+  tabOvr.Tag:= 1;
+  InitEditorOverrides;
+end;
+
+procedure TfmSetup.TntFormCreate(Sender: TObject);
+begin
+  fmOvr:= nil;
+  with ListTabColors do
+    ItemHeight:= ScaleFontSize(ItemHeight, Self);
+  with ListColors do
+    ItemHeight:= ScaleFontSize(ItemHeight, Self);
+
+  OpenDialogPre.Filter:= cColorFilter;
+  SaveDialogPre.Filter:= cColorFilter;
+end;
+
+procedure TfmSetup.labEmmetClick(Sender: TObject);
+begin
+  ShowHelp(fmMain.SynDir, helpEmmet, Handle);
+end;
+
+procedure TfmSetup.tabCaretsShow(Sender: TObject);
+begin
+  if tabCarets.Tag<>0 then Exit;
+  tabCarets.Tag:= 1;
+  InitEditorCarets;
+end;
+
+procedure TfmSetup.labCaretHelpClick(Sender: TObject);
+begin
+  ShowHelp(fmMain.SynDir, helpCarets, Handle);
+end;
+
+procedure TfmSetup.labAcpHelpClick(Sender: TObject);
+begin
+  ShowHelp(fmMain.SynDir, helpAcp, Handle);
+end;
+
+procedure TfmSetup.ApplyFiles;
+begin
+  with fmMain do
+  begin
+    opNotif:= cbNotif.ItemIndex;
+    opAskOverwrite:= cbOverRO.Checked;
+    opTextOnly:= cbText_.ItemIndex;
+    opOem:= edOem.Text;
+    opUTF8:= edUTF8.Text;
+    opBigSize:= edBigSize.Value;
+    opFollowTail:= cbTail.Checked;
+    opUnicodeNeeded:= cbUniNeed.ItemIndex;
+  end;
+end;
+
+procedure TfmSetup.ApplyAutoComplete;
+begin
+  with fmMain do
+  begin
+    opAcpHtm:= cbAcpHtm.Checked;
+    opAcpCss:= cbAcpCss.Checked;
+    opAcpTabbing:= cbAcpTabbing.Checked;
+    opTemplateTabbing:= cbTplTabbing.Checked;
+    opTemplateTabbingExcept:= edTplTabEx.Text;
+    opAutoCloseTags:= cbACloseTags.Checked;
+    opAutoCloseBrackets:= cbACloseBr.Checked;
+    opAutoCloseBracketsNoEsc:= cbACloseBrEsc.Checked;
+    opAutoCloseQuotes:= cbACloseQ.Checked;
+    opAcpNum:= edAcpNum.Value;
+    opAcpUseSingle:= cbAcpUseSingle.Checked;
+    SyntaxManagerChange(nil);
+    ecACP.DropDownCount:= edAcpDrop.Value;
+    ecACP.ShowWhenNone:= cbAcpNone.Checked;
+    ecACP.FilterType:= TAutoCompleteFilter(cbAcpFilter.ItemIndex);
+    ApplyACP;
+    opAcpFile:= cbAcpFile.Checked;
+    opAcpFileChars:= edAcpFileChars.Value;
+    opAcpFileSize:= edAcpFileSize.Value;
+  end;
+end;
+
+procedure TfmSetup.ApplyAutoSave;
+begin
+  with fmMain do
+  begin
+    opASaveOnTimer:= cbASaveTimer.Checked;
+    opASaveOnFocus:= cbASaveFocus.Checked;
+    opASaveTimeMin:= edASaveTime.Value;
+    opASaveAllFiles:= cbASaveAllFiles.Checked;
+    opASaveMaxSizeKb:= edASaveMaxSize.Value;
+    if cbASaveUnIgnore.Checked then opASaveUnnamed:= 0 else
+     if cbASaveUnShowSave.Checked then opASaveUnnamed:= 1 else
+      if cbASaveUnSaveToDir.Checked then opASaveUnnamed:= 2;
+    opASaveUnnamedDir:= edASaveUnnamedDir.Text;
+    ApplyAutoSave;
+  end;  
+end;
+
+procedure TfmSetup.ApplyColors;
+begin
+  with fmMain do
+  begin
+    Theme:= cbTheme.Text;
+    Icons:= cbIcons.ItemIndex;
+    ApplyIntf;
+    ApplyColorsArrayToEditor(Colors, TemplateEditor);
+    ApplyColors;
+    ApplyOut;
+    ApplyMap;
+    ApplyCarets;
+  end;
+end;
+
+procedure TfmSetup.ApplyEditorCarets;
+begin
+  with fmMain do
+  begin
+    opCaretsEnabled:= cbCaretMulti.Checked;
+    if cbCaretIndNone.Checked then opCaretsIndicator:= 0 else
+     if cbCaretIndLine.Checked then opCaretsIndicator:= 1 else
+      if cbCaretIndGutter.Checked then opCaretsIndicator:= 2;
+    opCaretsGutterBand:= edCaretGutterCol.Value;
+    opCaretType:= edCaretType.ItemIndex; //cbCaretWidth.Position;
+
+    opCaretMoveX:= edMovX.Value;
+    opCaretMoveY:= edMovY.Value;
+
+    if cbCaretSmart.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soSmartCaret]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soSmartCaret];
+
+    if cbCaretInText.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soKeepCaretInText]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soKeepCaretInText];
+
+    if cbCaretKeepOnPaste.Checked then
+      TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx + [soKeepCaretPaste]
+    else
+      TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx - [soKeepCaretPaste];
+
+    if cbCaretInRO.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soAlwaysShowCaret]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soAlwaysShowCaret];
+
+    ApplyCarets;
+  end;
+end;
+
+procedure TfmSetup.ApplyEditorOverrides;
+begin
+  fmMain.opLexersOverride:= fmOvr.FString;
+end;
+
+procedure TfmSetup.ApplyFonts;
+begin
+  with fmMain do
+  begin
+    TemplateEditor.Font:= b1.Font;
+    TemplateEditor.LineNumbers.Font:= b2.Font;
+    Tree.Font:= b3.Font;
+    TemplateEditor.HorzRuler.Font:= b4.Font;
+    ecACP.Font:= b5.Font;
+    ApplyACP;
+    ListOut.Font:= b6.Font;
+    ApplyOut;
+    ApplyFonts;
+  end;
+end;
+
+procedure TfmSetup.ApplyHistory;
+begin
+  with fmMain do
+  begin
+    opMruCheck:= cbMru.Checked;
+    opSaveState:= edFS.Value;
+    opSaveSRHist:= edSR.Value;
+    opSaveCaret:= cbHCaret.Checked;
+    opSaveEnc:= cbHEnc.Checked;
+    opStateForTemp:= cbHTemp.Checked;
+    opLastDir:= cbDirLast.ItemIndex;
+    opLastDirPath:= edDirLast.Text;
+    opBak:= cbBak.ItemIndex;
+  end;
+end;
+
+procedure TfmSetup.ApplyUndo;
+begin
+  with fmMain do
+  begin
+    TemplateEditor.UndoLimit:= edUndoLimit.Value;
+    opBkUndo:= cbUndoMass.Checked;
+
+    if cbGroupUndo.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soGroupUndo]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soGroupUndo];
+
+    if cbGroupRedo.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soGroupRedo]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soGroupRedo];
+
+    if cbUndoAfterSave.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soUndoAfterSave]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soUndoAfterSave];
+  end;
+end;
+
+
+procedure TfmSetup.ApplyProgSett;
+begin
+  ApplyLang;
+  
+  with fmMain do
+  begin
+    opChInf:= cbChar.Checked;
+    UpdateCh;
+
+    Menu.Visible:= cbMenu.Checked;
+    Status.Visible:= cbStat.Checked;
+    opEsc:= cbEsc.ItemIndex;
+    opSingleInstance:= cbInst.Checked;
+    ApplyInst;
+
+    opSavePos:= cbSavePos.Checked;
+    opShowRecentColors:= cbRecColors.ItemIndex;
+    opSortMode:= TSynSortMode(cbSortMode.ItemIndex);
+    ApplyShowRecentColors;
+    opLexerCat:= cbGroupLexers.Checked;
+    opStripBkmk:= cbStripBk.Checked;
+    opMenuIcon:= cbMenuIcon.Checked;
+    Icons:= Icons; //update menu
+    opTitleFull:= cbFullTitle.Checked;
+    opBeep:= cbBeep.Checked;
+    opTipsToken:= cbTips.Checked;
+    opTipsPanels:= opTipsToken;
+    ApplyTips;
+
+    //redraw
+    tbFile.Invalidate;
+    tbEdit.Invalidate;
+    tbView.Invalidate;
+    plTree.Invalidate;
+    //
+  end;
+end;
+
+procedure TfmSetup.ApplyKeys;
+begin
+  fmMain.SyntKeyMapping.Assign(Self.KeyMapping);
+end;
+
+procedure TfmSetup.ApplySearch;
+begin
+  with fmMain do
+  begin
+    opMaxTreeMatches:= edSrMaxTreeMatches.Value;
+    opSrOffsetY:= edSrOffsetY.Value;
+    opSrExpand:= cbSrExpand.Checked;
+    opSrOnTop:= cbSrOnTop.Checked;
+    opSrSuggestWord:= cbSrWord.Checked;
+    opSrSuggestSel:= cbSrSel.Checked;
+    opQsCap:= cbSrQsCap.Checked;
+    ApplyQs;
+  end;
+end;
+
+procedure TfmSetup.ApplySearchFolders;
+begin
+  with fmMain do
+  begin
+    SListToString(edFolders.Lines, opProjPaths);
+  end;
+end;
+
+procedure TfmSetup.ApplySessionsProjects;
+begin
+  with fmMain do
+  begin
+    opHistSessionSave:= cbSessSave.Checked;
+    opHistSessionLoad:= cbSessLoad.Checked;
+    opHistSessionDef:= cbSessDef.Checked;
+    opHistProjectSave:= cbProjSave.Checked;
+    opHistProjectLoad:= cbProjLoad.Checked;
+  end;
+end;
+
+procedure TfmSetup.ApplySpell;
+begin
+  with fmMain do
+  begin
+    opSpellEn:= cbSpellEn.Checked;
+    opSpellExt:= edSpellExt.Text;
+    ApplySpell;
+  end;
+end;
+
+procedure TfmSetup.ApplyTabs;
 var
   i: Integer;
 begin
-  if tabOvr.Tag<>0 then Exit;
+  with fmMain do
+  begin
+    opTabVisible:= cbTabVis.ItemIndex;
+    opTabBtn:= cbTabBtn.Checked;
+    opTabNums:= cbTabNums.Checked;
+    opTabSwitcher:= cbTabSw.Checked;
+    opTabDragDrop:= cbTabDnD.Checked;
+    opTabDblClick:= cbTabDbl.Checked;
+    opTabMaxLen:= edTabMaxLen.Value;
+    opTabMultiLine:= cbTabMul.Checked;
+    opTabAtBottom:= cbTabDown.Checked;
 
+    for i:= 0 to High(ColorsOfTabs) do
+      opTabColors[i]:= ColorsOfTabs[i];
+
+    ApplyTabOptions;
+    ApplyFrames;
+  end;
+end;
+
+procedure TfmSetup.ApplyTree;
+begin
+  with fmMain do
+  begin
+    Tree.AutoSynchronize:= cbTreeSync.Checked;
+    Tree.UpdateDelay:= cbTreeDelay.Value;
+
+    opMapZoom:= edMapZoom.Value;
+    ApplyMap;
+
+    opMicroMap:= cbMicroMap.Checked;
+    ApplyFrames;
+  end;
+end;
+
+procedure TfmSetup.InitAutoComplete;
+begin
+  with fmMain do
+  begin
+    cbAcpHtm.Checked:= opAcpHtm;
+    cbAcpCss.Checked:= opAcpCss;
+    cbAcpTabbing.Checked:= opAcpTabbing;
+    cbTplTabbing.Checked:= opTemplateTabbing;
+    edTplTabEx.Text:= opTemplateTabbingExcept;
+    cbACloseTags.Checked:= opAutoCloseTags;
+
+    cbACloseBr.Checked:= opAutoCloseBrackets;
+    cbACloseBrEsc.Checked:= opAutoCloseBracketsNoEsc;
+    cbACloseQ.Checked:= opAutoCloseQuotes;
+    cbACloseBrClick(Self);
+
+    cbAcpUseSingle.Checked:= opAcpUseSingle;
+    edAcpNum.Value:= opAcpNum;
+    cbAcpNone.Checked:= ecACP.ShowWhenNone;
+    cbAcpFilter.ItemIndex:= integer(ecACP.FilterType);
+    cbAcpFile.Checked:= opAcpFile;
+    cbAcpFileClick(Self);
+    edAcpFileChars.Value:= opAcpFileChars;
+    edAcpFileSize.Value:= opAcpFileSize;
+    edAcpDrop.Value:= ecACP.DropDownCount;
+  end;
+end;
+
+procedure TfmSetup.InitAutoSave;
+begin
+  with fmMain do
+  begin
+    cbASaveTimer.Checked:= opASaveOnTimer;
+    cbASaveFocus.Checked:= opASaveOnFocus;
+    edASaveTime.Value:= opASaveTimeMin;
+    cbASaveAllFiles.Checked:= opASaveAllFiles;
+    cbASaveCurrFile.Checked:= not opASaveAllFiles;
+    edASaveMaxSize.Value:= opASaveMaxSizeKb;
+    cbASaveUnIgnore.Checked:= opASaveUnnamed=0;
+    cbASaveUnShowSave.Checked:= opASaveUnnamed=1;
+    cbASaveUnSaveToDir.Checked:= opASaveUnnamed=2;
+    edASaveUnnamedDir.Text:= opASaveUnnamedDir;
+    cbASaveTimerClick(Self);
+    cbASaveUnnamedClick(Self);
+  end;
+end;
+
+procedure TfmSetup.InitColors;
+var
+  i: Integer;
+begin
+  for i:= Low(cColorsOrder) to High(cColorsOrder) do
+    ListColors.Items.Add(DKLangConstW(ColorNumToLngId(cColorsOrder[i])));
+  ListColors.Selected[0]:= true;
+
+  with fmMain do
+  begin
+    cbTheme.ItemIndex:= cbTheme.Items.IndexOf(Theme);
+    cbIcons.ItemIndex:= Icons;
+    InitColorsArray(Colors);
+  end;
+
+  ListColorsClick(Self);
+end;
+
+procedure TfmSetup.InitEditorCarets;
+begin
+  with fmMain do
+  begin
+    cbCaretMulti.Checked:= opCaretsEnabled;
+    cbCaretIndNone.Checked:= opCaretsIndicator=0;
+    cbCaretIndLine.Checked:= opCaretsIndicator=1;
+    cbCaretIndGutter.Checked:= opCaretsIndicator=2;
+    edCaretGutterCol.Value:= opCaretsGutterBand;
+    edCaretType.ItemIndex:= opCaretType;
+
+    edMovX.Value:= opCaretMoveX;
+    edMovY.Value:= opCaretMoveY;
+
+    cbCaretSmart.Checked:= soSmartCaret in TemplateEditor.Options;
+    cbCaretInText.Checked:= soKeepCaretInText in TemplateEditor.Options;
+    cbCaretKeepOnPaste.Checked:= soKeepCaretPaste in TemplateEditor.OptionsEx;
+    cbCaretInRO.Checked:= soAlwaysShowCaret in TemplateEditor.Options;
+  end;
+end;
+
+procedure TfmSetup.InitEditorOverrides;
+var
+  i: Integer;
+begin
   fmOvr:= TfmSetupOvr.Create(Self);
   fmOvr.Parent:= tabOvr;
   fmOvr.Align:= alClient;
@@ -2281,57 +2094,557 @@ begin
           ListLex.Items.Add(Analyzers[i].LexerName);
   end;
   fmOvr.Show;
-
-  tabOvr.Tag:= 1;
 end;
 
-procedure TfmSetup.TntFormCreate(Sender: TObject);
+procedure TfmSetup.InitFiles;
 begin
-  fmOvr:= nil;
-  with ListTabColors do
-    ItemHeight:= ScaleFontSize(ItemHeight, Self);
-  with ListColors do
-    ItemHeight:= ScaleFontSize(ItemHeight, Self);
-
-  OpenDialogPre.Filter:= cColorFilter;
-  SaveDialogPre.Filter:= cColorFilter;
+  with fmMain do
+  begin
+    cbNotif.ItemIndex:= opNotif;
+    cbOverRO.Checked:= opAskOverwrite;
+    cbText_.ItemIndex:= opTextOnly;
+    edOem.Text:= opOem;
+    edUTF8.Text:= opUTF8;
+    edBigSize.Value:= opBigSize;
+    cbTail.Checked:= opFollowTail;
+    cbUniNeed.ItemIndex:= opUnicodeNeeded;
+  end;
 end;
 
-procedure TfmSetup.TntFormDestroy(Sender: TObject);
+procedure TfmSetup.InitFonts;
 begin
-  FreeAndNil(fmOvr);
+  with fmMain do
+  begin
+    b1.Font:= TemplateEditor.Font;
+    b2.Font:= TemplateEditor.LineNumbers.Font;
+    b3.Font:= Tree.Font;
+    b4.Font:= TemplateEditor.HorzRuler.Font;
+    b5.Font:= ecACP.Font;
+    b6.Font:= ListOut.Font;
+  end;
 end;
 
-procedure TfmSetup.labEmmetClick(Sender: TObject);
+procedure TfmSetup.InitHistory;
 begin
-  ShowHelp(fmMain.SynDir, helpEmmet, Handle);
+  with fmMain do
+  begin
+    edFS.Value:= opSaveState;
+    edSR.Value:= opSaveSRHist;
+    cbHCaret.Checked:= opSaveCaret;
+    cbHEnc.Checked:= opSaveEnc;
+    cbHTemp.Checked:= opStateForTemp;
+    cbMru.Checked:= opMruCheck;
+    cbDirLast.ItemIndex:= opLastDir;
+    edDirLast.Text:= opLastDirPath;
+    cbBak.ItemIndex:= opBak;
+  end;
 end;
 
-procedure TfmSetup.tabCaretsShow(Sender: TObject);
+
+procedure TfmSetup.InitUndo;
 begin
-  if tabCarets.Tag<>0 then Exit;
+  with fmMain do
+  begin
+    edUndoLimit.Value:= TemplateEditor.UndoLimit;
+    cbGroupUndo.Checked:= soGroupUndo in TemplateEditor.Options;
+    cbGroupRedo.Checked:= soGroupRedo in TemplateEditor.Options;
+    cbUndoAfterSave.Checked:= soUndoAfterSave in TemplateEditor.Options;
+    cbUndoMass.Checked:= opBkUndo;
+  end;
+end;
+
+
+procedure TfmSetup.InitProgSett;
+begin
+  InitLang;
 
   with fmMain do
   begin
-    cbCaretMulti.Checked:= opCaretsEnabled;
-    cbCaretIndNone.Checked:= opCaretsIndicator=0;
-    cbCaretIndLine.Checked:= opCaretsIndicator=1;
-    cbCaretIndGutter.Checked:= opCaretsIndicator=2;
-    edCaretGutterCol.Value:= opCaretsGutterBand;
-    //cbCaretWidth.Position:= opCaretType;
-    edCaretType.ItemIndex:= opCaretType;
+    cbMenu.Checked:= Menu.Visible;
+    cbStat.Checked:= Status.Visible;
+    cbChar.Checked:= opChInf;
+
+    cbEsc.ItemIndex:= opEsc;
+    cbInst.Checked:= opSingleInstance;
+
+    cbSavePos.Checked:= opSavePos;
+    cbRecColors.ItemIndex:= opShowRecentColors;
+    cbSortMode.ItemIndex:= Ord(opSortMode);
+    cbGroupLexers.Checked:= opLexerCat;
+    cbStripBk.Checked:= opStripBkmk;
+    cbFullTitle.Checked:= opTitleFull;
+    cbMenuIcon.Checked:= opMenuIcon;
+    cbTips.Checked:= opTipsToken;
+    cbBeep.Checked:= opBeep;
   end;
-  tabCarets.Tag:= 1;
 end;
 
-procedure TfmSetup.labCaretHelpClick(Sender: TObject);
+procedure TfmSetup.InitKeys;
+var
+  L: TStringList;
+  i: Integer;
 begin
-  ShowHelp(fmMain.SynDir, helpCarets, Handle);
+  KeyMapping.Assign(fmMain.SyntKeyMapping);
+
+  //list categories
+  L:= TStringList.Create;
+  try
+    for i:= 0 to KeyMapping.Items.Count-1 do
+      if KeyMapping.Items[i].Customizable then
+        if L.IndexOf(KeyMapping.Items[i].Category)<0 then
+          L.Add(KeyMapping.Items[i].Category);
+
+    cbKeyCat.Items.AddStrings(L);
+    cbKeyCat.ItemIndex:= 0;
+  finally
+    FreeandNil(L);
+  end;  
+
+  //list keys
+  ListKeys;
+  KeyList.SetFocus;
 end;
 
-procedure TfmSetup.labAcpHelpClick(Sender: TObject);
+procedure TfmSetup.InitSearch;
 begin
-  ShowHelp(fmMain.SynDir, helpAcp, Handle);
+  with fmMain do
+  begin
+    edSrMaxTreeMatches.Value:= opMaxTreeMatches;
+    edSrOffsetY.Value:= opSrOffsetY;
+    cbSrExpand.Checked:= opSrExpand;
+    cbSrOnTop.Checked:= opSrOnTop;
+    cbSrWord.Checked:= opSrSuggestWord;
+    cbSrSel.Checked:= opSrSuggestSel;
+    cbSrQsCap.Checked:= opQsCap;
+  end;
+end;
+
+procedure TfmSetup.InitSearchFolders;
+begin
+  SStringToList(fmMain.opProjPaths, edFolders.Lines);
+end;
+
+procedure TfmSetup.InitSessionsProjects;
+begin
+  with fmMain do
+  begin
+    cbSessSave.Checked:= opHistSessionSave;
+    cbSessLoad.Checked:= opHistSessionLoad;
+    cbSessDef.Checked:= opHistSessionDef;
+    cbSessSaveClick(Self);
+    cbProjSave.Checked:= opHistProjectSave;
+    cbProjLoad.Checked:= opHistProjectLoad;
+  end;
+end;
+
+procedure TfmSetup.InitSpell;
+begin
+  with fmMain do
+  begin
+    cbSpellEn.Checked:= opSpellEn;
+    edSpellExt.Text:= opSpellExt;
+  end;
+end;
+
+procedure TfmSetup.InitTabs;
+var
+  i: Integer;
+begin
+  with fmMain do
+  begin
+    cbTabBtn.Checked:= opTabBtn;
+    cbTabVis.ItemIndex:= opTabVisible;
+    cbTabNums.Checked:= opTabNums;
+    cbTabMul.Checked:= opTabMultiLine;
+    cbTabDown.Checked:= opTabAtBottom;
+    cbTabSw.Checked:= opTabSwitcher;
+    cbTabDnD.Checked:= opTabDragDrop;
+    cbTabDbl.Checked:= opTabDblClick;
+    edTabMaxLen.Value:= opTabMaxLen;
+
+    ListTabColors.Items.Clear;
+    for i:= 0 to High(ColorsOfTabs) do
+    begin
+      ColorsOfTabs[i]:= opTabColors[i];
+      ListTabColors.Items.Add(IntToStr(i));
+    end;
+  end;
+end;
+
+procedure TfmSetup.InitTree;
+begin
+  with fmMain do
+  begin
+    cbTreeSync.Checked:= Tree.AutoSynchronize;
+    cbTreeDelay.Value:= Tree.UpdateDelay;
+    edMapZoom.Value:= opMapZoom;
+    cbMicroMap.Checked:= opMicroMap;
+  end;
+end;
+
+procedure TfmSetup.ApplyLang;
+begin
+  with fmMain do
+    opLang:= LangManager.LanguageIDs[cbLang.ItemIndex];
+end;
+
+procedure TfmSetup.InitLang;
+var
+  i: Integer;
+begin
+  with cbLang do begin
+    Items.Clear;
+    for i:= 0 to LangManager.LanguageCount-1 do
+      Items.Add(LangManager.LanguageNames[i]);
+    ItemIndex:= LangManager.LanguageIndex;
+  end;
+end;
+
+procedure TfmSetup.tabNewOpenShow(Sender: TObject);
+begin
+  if tabNewOpen.Tag<>0 then Exit;
+  tabNewOpen.Tag:= 1;
+  InitNewOpen;
+end;
+
+procedure TfmSetup.ApplyNewOpen;
+begin
+  with fmMain do
+  begin
+    opNewEnc:= edEnc.ItemIndex;
+    opNewLineEnds:= edLE.ItemIndex;
+    if edLex.ItemIndex=0 then
+      opNewLex:= ''
+    else
+      opNewLex:= edLex.Text;
+  end;
+end;
+
+procedure TfmSetup.InitNewOpen;
+var
+  i: Integer;
+begin
+  with fmMain do
+  begin
+    edLex.Items.Add(' '+DKLangConstW('None'));
+    with SyntaxManager do
+      for i:= 0 to AnalyzerCount-1 do
+        if not Analyzers[i].Internal then
+          edLex.Items.Add(Analyzers[i].LexerName);
+    with edLex do
+      if opNewLex='' then
+        ItemIndex:= 0
+      else
+        ItemIndex:= Items.IndexOf(opNewLex);
+    edEnc.ItemIndex:= opNewEnc;
+    edLE.ItemIndex:= opNewLineEnds;
+  end;
+end;
+
+procedure TfmSetup.tabViewShow(Sender: TObject);
+begin
+  if tabView.Tag<>0 then Exit;
+  tabView.Tag:= 1;
+  InitView;
+end;
+
+procedure TfmSetup.tabSelHLShow(Sender: TObject);
+begin
+  if tabSelHL.Tag<>0 then Exit;
+  tabSelHL.Tag:= 1;
+  InitSelHL;
+end;
+
+procedure TfmSetup.tabInsertFormatShow(Sender: TObject);
+begin
+  if tabInsertFormat.Tag<>0 then Exit;
+  tabInsertFormat.Tag:= 1;
+  InitInsertFormat;
+end;
+
+procedure TfmSetup.ApplyInsertFormat;
+begin
+  with fmMain do
+  begin
+    TemplateEditor.BlockIndent:= edIndent.Value;
+    TemplateEditor.TabList.AsString:= edTabStops.Text;
+    case edTabMode.ItemIndex of
+      0: TemplateEditor.TabMode:= tmSpaces;
+      1: TemplateEditor.TabMode:= tmTabChar;
+      2: TemplateEditor.TabMode:= tmSmartTab;
+    end;
+    opTabsReplace:= cbReplaceTabs.Checked;
+
+    if cbAutoIndent.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soAutoIndentMode]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soAutoIndentMode];
+
+    if cbBackspUnindent.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soBackUnindent]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soBackUnindent];
+
+    if cbUnindentAlign.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soUnindentKeepAlign]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soUnindentKeepAlign];
+
+    if cbOptFill.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soOptimalFill]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soOptimalFill];
+
+    if cbKeepBlank.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soKeepTrailingBlanks]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soKeepTrailingBlanks];
+
+    ApplyFrames;
+
+    opDateFmt:= edDateFmt.Text;
+    opDateFmtPLog:= edDateFmtP.Text;
+    opZenProfile:= cbZenProfile.Text;
+  end;
+end;
+
+procedure TfmSetup.ApplySelHL;
+begin
+  with fmMain do
+  begin
+    opLink:= cbLink.Checked;
+    opSingleClickURL:= cbUrlClick.Checked;
+    ApplyUrlClick;
+
+    opSmartHi:= cbSmHi.Checked;
+    opSmartHiCase:= cbSmHiCase.Checked;
+    opBracketHi:= cbBrHi.Checked;
+    opCopyLineIfNoSel:= cbCopyLineNSel.Checked;
+
+    if cbColorOnEmpty.Checked then
+      TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx - [soNormalSelToLineEnd]
+    else
+      TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx + [soNormalSelToLineEnd];
+
+    if cbBOver.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soOverwriteBlocks]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soOverwriteBlocks];
+
+    if cbBPers.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soPersistentBlocks]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soPersistentBlocks];
+
+    if cbDClick.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soDoubleClickLine]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soDoubleClickLine];
+
+    if cbCopyRtf.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soCopyAsRTF]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soCopyAsRTF];
+
+    if cbDrag.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soDragText]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soDragText];
+
+    if cbCollap.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soCallapseEmptyLines]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soCallapseEmptyLines];
+
+    if cbFloatM.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soFloatMarkers]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soFloatMarkers];
+
+    if cbGrSel.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soGreedySelect]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soGreedySelect];
+
+    case cbSelMode.ItemIndex of
+      0: TemplateEditor.SelectModeDefault:= msNormal;
+      1: TemplateEditor.SelectModeDefault:= msColumn;
+      2: TemplateEditor.SelectModeDefault:= msLine;
+    end;
+
+    ApplyEdOptions;
+    ApplyFrames;
+  end;
+end;
+
+procedure TfmSetup.ApplyView;
+begin
+  with fmMain do
+  begin
+    TemplateEditor.WordWrap:= cbWrap.Checked;
+    TemplateEditor.DisableFolding:= not cbFold.Checked;
+    TemplateEditor.HorzRuler.Visible:= cbRuler.Checked;
+    TemplateEditor.DefaultStyles.CurrentLine.Enabled:= cbDrawLineBG.Checked;
+    TemplateEditor.LineSpacing:= edLSpace.Value;
+    TemplateEditor.ShowRightMargin:= cbMargin.Checked;
+    TemplateEditor.RightMargin:= edMargin.Value;
+    TemplateEditor.LineNumbers.NumberingStyle:= TLineNumberingStyle(edLineNums.ItemIndex);
+    TemplateEditor.StapleOffset:= edStapleOffset.Value;
+    TemplateEditor.StaplePen.Style:= TPenStyle(cbStaples.ItemIndex);
+
+    if cbDrawFocus.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soDrawCurLineFocus]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soDrawCurLineFocus];
+
+    if cbHideCursor.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soHideCursorOnType]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soHideCursorOnType];
+
+    if cbFixLineSize.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soFixedLineHeight]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soFixedLineHeight];
+
+    if cbScrollLast.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soScrollLastLine]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soScrollLastLine];
+
+    if cbWrapMargin.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soBreakOnRightMargin]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soBreakOnRightMargin];
+
+    if cbFixColMove.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soFixedColumnMove]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soFixedColumnMove];
+
+    if cbVarHorzBar.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soVariableHorzScrollBar]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soVariableHorzScrollBar];
+
+    opNonPrint:= cbNPrintShow.Checked;
+    opNonPrintSpaces:= cbNPrintSp.Checked;
+    opNonPrintEol:= cbNPrintEol.Checked;
+    opNonPrintEolDetail:= cbNPrintEolEx.Checked;
+
+    opShowWrapMark:= cbDrawWrapMark.Checked;
+    opShowCurrentColumn:= cbDrawCol.Checked;
+    ApplyEdOptions;
+    ApplyFrames;
+  end;
+end;
+
+procedure TfmSetup.InitInsertFormat;
+begin
+  with fmMain do
+  begin
+    edIndent.Value:= TemplateEditor.BlockIndent;
+    edTabStops.Text:= TemplateEditor.TabList.AsString;
+    case TemplateEditor.TabMode of
+      tmSpaces:   edTabMode.ItemIndex:= 0;
+      tmTabChar:  edTabMode.ItemIndex:= 1;
+      tmSmartTab: edTabMode.ItemIndex:= 2;
+    end;
+    cbReplaceTabs.Checked:= opTabsReplace;
+    edTabModeChange(Self);
+
+    cbAutoIndent.Checked:= soAutoIndentMode in TemplateEditor.Options;
+    cbBackspUnindent.Checked:= soBackUnindent in TemplateEditor.Options;
+    cbUnindentAlign.Checked:= soUnindentKeepAlign in TemplateEditor.Options;
+    cbOptFill.Checked:= soOptimalFill in TemplateEditor.Options;
+    cbKeepBlank.Checked:= soKeepTrailingBlanks in TemplateEditor.Options;
+
+    edDateFmt.Text:= opDateFmt;
+    edDateFmtP.Text:= opDateFmtPLog;
+
+    with cbZenProfile do
+    begin
+      Items.LoadFromFile(SynDir + 'Tools\emmet.txt');
+      ItemIndex:= Items.IndexOf(opZenProfile);
+    end;
+  end;
+end;
+
+procedure TfmSetup.InitSelHL;
+begin
+  with fmMain do
+  begin
+    cbLink.Checked:= opLink;
+    cbUrlClick.Checked:= opSingleClickURL;
+
+    cbSmHi.Checked:= opSmartHi;
+    cbSmHiCase.Checked:= opSmartHiCase;
+    cbBrHi.Checked:= opBracketHi;
+
+    cbCopyLineNSel.Checked:= opCopyLineIfNoSel;
+    cbColorOnEmpty.Checked:= not (soNormalSelToLineEnd in TemplateEditor.OptionsEx);
+
+    cbBOver.Checked:= sooverwriteBlocks in TemplateEditor.Options;
+    cbBPers.Checked:= soPersistentBlocks in TemplateEditor.Options;
+    cbDClick.Checked:= soDoubleClickLine in TemplateEditor.Options;
+    cbCopyRtf.Checked:= soCopyAsRTF in TemplateEditor.Options;
+    cbDrag.Checked:= soDragText in TemplateEditor.Options;
+    cbCollap.Checked:= soCallapseEmptyLines in TemplateEditor.Options;
+    cbFloatM.Checked:= soFloatMarkers in TemplateEditor.Options;
+    cbGrSel.Checked:= soGreedySelect in TemplateEditor.Options;
+
+    case TemplateEditor.SelectModeDefault of
+      msNone,
+      msNormal: cbSelMode.ItemIndex:= 0;
+      msColumn: cbSelMode.ItemIndex:= 1;
+      msLine: cbSelMode.ItemIndex:= 2;
+    end;
+  end;
+end;
+
+procedure TfmSetup.InitView;
+var
+  i: Integer;
+begin
+  cbStaples.Items.Clear;
+  for i:= 0 to Ord(psClear) do
+    cbStaples.Items.Add('-'); //empty items for line styles
+
+  with fmMain do
+  begin
+    cbRuler.Checked:= TemplateEditor.HorzRuler.Visible;
+    cbHideCursor.Checked:= soHideCursorOnType in TemplateEditor.Options;
+    cbDrawFocus.Checked:= soDrawCurLineFocus in TemplateEditor.Options;
+    cbDrawLineBG.Checked:= TemplateEditor.DefaultStyles.CurrentLine.Enabled;
+    cbMargin.Checked:= TemplateEditor.ShowRightMargin;
+    edMargin.Value:= TemplateEditor.RightMargin;
+    edLSpace.Value:= TemplateEditor.LineSpacing;
+    edLineNums.ItemIndex:= Ord(TemplateEditor.LineNumbers.NumberingStyle);
+    edStapleOffset.Value:= TemplateEditor.StapleOffset;
+    cbStaples.ItemIndex:= Ord(TemplateEditor.StaplePen.Style);
+    cbDrawWrapMark.Checked:= opShowWrapMark;
+    cbDrawCol.Checked:= opShowCurrentColumn;
+
+    cbWrap.Checked:= TemplateEditor.WordWrap;
+    cbWrapMargin.Checked:= soBreakOnRightMargin in TemplateEditor.Options;
+    cbFold.Checked:= not TemplateEditor.DisableFolding;
+    cbFixLineSize.Checked:= soFixedLineHeight in TemplateEditor.Options;
+    cbFixColMove.Checked:= soFixedColumnMove in TemplateEditor.Options;
+    cbScrollLast.Checked:= soScrollLastLine in TemplateEditor.Options;
+    cbVarHorzBar.Checked:= soVariableHorzScrollBar in TemplateEditor.Options;
+
+    cbNPrintShow.Checked:= opNonPrint;
+    cbNPrintSp.Checked:= opNonPrintSpaces;
+    cbNPrintEol.Checked:= opNonPrintEol;
+    cbNPrintEolEx.Checked:= opNonPrintEolDetail;
+  end;
+end;
+
+procedure TfmSetup.tabUndoShow(Sender: TObject);
+begin
+  if tabUndo.Tag<>0 then Exit;
+  tabUndo.Tag:= 1;
+  InitUndo;
 end;
 
 end.

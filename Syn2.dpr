@@ -310,6 +310,7 @@ begin
     opListerQVTree:= ReadString('Syn2', 'QViewTree', '');
     opListerQVReadOnly:= ReadBool('Syn2', 'QViewRO', true);
     opListerTextOnly:= ReadInteger('Syn2', 'TxOnly', 0);
+    opListerStartRO:= ReadBool('Syn2', 'RO', false);
   finally
     Free;
   end;

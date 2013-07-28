@@ -30,14 +30,15 @@ object EditorFrame: TEditorFrame
     BevelOuter = bvNone
     TabOrder = 0
     object SplitterEds: TSpTBXSplitter
-      Left = 371
-      Top = 0
-      Height = 270
-      Cursor = crSizeWE
-      Align = alRight
+      Left = 0
+      Top = 208
+      Width = 433
+      Height = 5
+      Cursor = crSizeNS
+      Align = alBottom
       Color = clBtnFace
       ParentColor = False
-      PopupMenu = fmMain.PopupSplitter
+      PopupMenu = PopupSplitEditors
       OnDblClick = SplitterDblClick
       MinSize = 70
       OnMoved = SplitterEdsMoved
@@ -45,8 +46,8 @@ object EditorFrame: TEditorFrame
     object EditorMaster: TSyntaxMemo
       Left = 0
       Top = 0
-      Width = 371
-      Height = 270
+      Width = 433
+      Height = 208
       TextSource = TextSource
       TabList.AsString = '4'
       NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -244,10 +245,10 @@ object EditorFrame: TEditorFrame
       OnKeyDown = EditorMasterKeyDown
     end
     object EditorSlave: TSyntaxMemo
-      Left = 376
-      Top = 0
-      Width = 57
-      Height = 270
+      Left = 0
+      Top = 213
+      Width = 433
+      Height = 57
       TextSource = TextSource
       TabList.AsString = '4'
       NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -407,7 +408,7 @@ object EditorFrame: TEditorFrame
       Caret.Custom.Width = -2
       Transparent = False
       Alignment = taLeftJustify
-      Align = alRight
+      Align = alBottom
       BevelInner = bvNone
       BevelOuter = bvNone
       Ctl3D = True
@@ -454,8 +455,8 @@ object EditorFrame: TEditorFrame
     Style.BorderColorBottom = clRed
     Editor = EditorMaster
     Active = False
-    Left = 244
-    Top = 156
+    Left = 172
+    Top = 32
   end
   object HyperlinkHighlighter: THyperlinkHighlighter
     Rules = <
@@ -489,17 +490,17 @@ object EditorFrame: TEditorFrame
     Style.Font.Height = -13
     Style.Font.Name = 'Courier New'
     Style.Font.Style = [fsUnderline]
-    Left = 212
-    Top = 156
+    Left = 140
+    Top = 32
   end
   object TextSource: TecEmbeddedObjects
-    Left = 276
-    Top = 156
+    Left = 204
+    Top = 32
   end
-  object PopupSplitter: TSpTBXPopupMenu
-    OnPopup = PopupSplitterPopup
-    Left = 208
-    Top = 188
+  object PopupSplitEditors: TSpTBXPopupMenu
+    OnPopup = PopupSplitEditorsPopup
+    Left = 136
+    Top = 64
     object TBXItemSplitCaption: TSpTBXItem
       Caption = '--- Editor splitter ---'
       Enabled = False
@@ -547,7 +548,7 @@ object EditorFrame: TEditorFrame
   end
   object TimerMap: TTimer
     OnTimer = TimerMapTimer
-    Left = 240
-    Top = 188
+    Left = 168
+    Top = 64
   end
 end

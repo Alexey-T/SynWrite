@@ -28,7 +28,7 @@ type
     ecSpellChecker: TecSpellChecker;
     HyperlinkHighlighter: THyperlinkHighlighter;
     TextSource: TecEmbeddedObjects;
-    PopupSplitter: TSpTbxPopupMenu;
+    PopupSplitEditors: TSpTBXPopupMenu;
     TBXItemSplitHorz: TSpTbxItem;
     TBXItemSplit70_30: TSpTbxItem;
     TBXItemSplit60_40: TSpTbxItem;
@@ -78,7 +78,7 @@ type
     procedure EditorMasterZoom(Sender: TObject);
     procedure SplitterEdsMoved(Sender: TObject);
     procedure TBXItemSplitHorzClick(Sender: TObject);
-    procedure PopupSplitterPopup(Sender: TObject);
+    procedure PopupSplitEditorsPopup(Sender: TObject);
     procedure TBXItemSplit20_80Click(Sender: TObject);
     procedure TBXItemSplit30_70Click(Sender: TObject);
     procedure TBXItemSplit40_60Click(Sender: TObject);
@@ -324,7 +324,7 @@ begin
   FSpell:= false;
   FLineEndsChg:= false;
   FModifiedClr:= false;
-  FSplitHorz:= false;
+  FSplitHorz:= true;
   FSplitPos:= 0;
   FNotInRecents:= false;
   FLockMapUpdate:= false;
@@ -1050,7 +1050,7 @@ begin
   else
     Result:= SplitterEds.Left > 1; //minimal Left is 0 and 1
     }
-  Result:= FSplitPos>1.0;  
+  Result:= FSplitPos > 1.0;  
 end;
 
 procedure TEditorFrame.ToggleSplitted;
@@ -1070,7 +1070,7 @@ begin
   SplitHorz:= not SplitHorz;
 end;
 
-procedure TEditorFrame.PopupSplitterPopup(Sender: TObject);
+procedure TEditorFrame.PopupSplitEditorsPopup(Sender: TObject);
 begin
   TbxItemSplitHorz.Checked:= SplitHorz;
   TbxItemSplitHorz.Caption:= TfmMain(Owner).TBXItemSpHorz.Caption;
@@ -1498,8 +1498,14 @@ end;
 procedure TEditorFrame.EditorMasterContextPopup(Sender: TObject;
   MousePos: TPoint; var Handled: Boolean);
 begin
+  //needed to show Gutter menu?
+  TfmMain(Owner).SynContextGutterPopup(Sender, MousePos, Handled);
+  if Handled then Exit;
+
+  //needed to show spell-check menu?
   if not FSpell then
     begin Handled:= false; Exit end;
+
   TfmMain(Owner).SynContextPopup(Self, MousePos, Handled);
   if Handled then
   begin

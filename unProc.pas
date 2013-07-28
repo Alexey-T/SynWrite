@@ -22,6 +22,7 @@ uses
   IniFiles,
   PngImageList;
 
+function EditorSelectedTextForWeb(Ed: TSyntaxMemo): Widestring;
 procedure DoEditorSelectToPosition(Ed: TSyntaxMemo; NTo: Integer);
 function SyntaxManagerFilesFilter(M: TSyntaxManager; SAllText: Widestring): Widestring;
 function GetEditHandle(Target: TObject): THandle;
@@ -1918,6 +1919,20 @@ begin
   else
     begin N2:= NFrom; N1:= NTo end;
   Ed.SetSelection(N1, N2-N1);    
+end;
+
+function EditorSelectedTextForWeb(Ed: TSyntaxMemo): Widestring;
+begin
+  with Ed do
+    if SelLength>0 then
+      Result:= SelText
+    else
+      Result:= WordAtPos(CaretPos);
+
+  SReplaceAllW(Result, #13, ' ');
+  SReplaceAllW(Result, #10, ' ');
+  SReplaceAllW(Result, '  ', ' ');
+  SReplaceAllW(Result, ' ', '+');
 end;
 
 end.

@@ -378,16 +378,16 @@ const
   sm_TabColorCustom = 1111;
 
   //Options dialog tabs
-  sm_Options_Interface = 1115;
+  sm_Options_ProgramOpt = 1115;
   sm_Options_Colors = 1116;
   sm_Options_Fonts = 1117;
   sm_Options_Tabs = 1118;
-  sm_Options_Editor = 1119;
-  sm_Options_Editor2 = 1120;
+  sm_Options_EditorView = 1119;
+  sm_Options_EditorSelect = 1120;
   sm_Options_EditorCarets = 1121;
   sm_Options_EditorOverrides = 1122;
   sm_Options_Keys = 1123;
-  sm_Options_Files = 1124;
+  //sm_Options_Files = 1124;
   sm_Options_Search = 1125;
   sm_Options_TreeMap = 1126;
   sm_Options_History = 1127;
@@ -395,9 +395,12 @@ const
   sm_Options_AutoComplete = 1129;
   sm_Options_AutoSave = 1130;
   sm_Options_SpellChecker = 1131;
-  sm_Options_SearchFolders = 1132;
-  sm_Options_Misc = 1133;
-
+  sm_Options_Paths = 1132;
+  //sm_Options_Misc = 1133;
+  //sm_Options_Lang = 1134;
+  sm_Options_EditorUndo = 1135;
+  sm_Options_EditorInsertFmt = 1136;
+  sm_Options_NewOpen = 1137;
 
 implementation
 
