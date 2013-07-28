@@ -178,9 +178,9 @@ type
     ActionList: TActionList;
     TBXDockTop: TSpTbxDock;
     tbFile: TSpTbxToolbar;
-    fOpen: TAction;
-    fSave: TAction;
-    fSaveAs: TAction;
+    acOpen: TAction;
+    acSave: TAction;
+    acSaveAs: TAction;
     TBXItem4: TSpTbxItem;
     SD: TTntSaveDialog;
     OD: TTntOpenDialog;
@@ -192,7 +192,7 @@ type
     TBXItemCtxCopy: TSpTbxItem;
     TBXSubmenuItemToolOpen: TSpTbxSubmenuItem;
     SyntKeyMapping: TSyntKeyMapping;
-    fCustomizeLexer: TecCustomizeLexerPropertiesAction;
+    acSetupLexer: TecCustomizeLexerPropertiesAction;
     ecCopy: TecCopy;
     ecCut: TecCut;
     ecPaste: TecPaste;
@@ -207,16 +207,16 @@ type
     TBXItemCtxCut: TSpTbxItem;
     TBXItemCtxPaste: TSpTbxItem;
     TBXItemCtxSelectAll: TSpTbxItem;
-    fSetup: TAction;
+    acSetup: TAction;
     TBXDockLeft: TSpTbxMultiDock;
     TBXSubmenuItemToolSave: TSpTbxSubmenuItem;
-    fExportRTFAction: TecExportRTFAction;
-    fExportHTMLAction: TecExportHTMLAction;
+    acExportRTF: TecExportRTFAction;
+    acExportHTML: TecExportHTMLAction;
     ecCommentLines: TecCommentLines;
     ecUnCommentLines: TecUnCommentLines;
     ecSortAscending: TAction;
     ecSortDescending: TAction;
-    fCustomizeLexerLib: TAction;
+    acSetupLexLib: TAction;
     Timer1: TTimer;
     TBXItem11: TSpTbxItem;
     TBXItem15: TSpTbxItem;
@@ -279,11 +279,11 @@ type
     ecLineNums: TAction;
     ecFolding: TAction;
     ecNonPrint: TAction;
-    fReread: TAction;
+    acReread: TAction;
     ImageListIconsStd: TImageList;
     TbxSubmenuItemTblFind: TSpTBXSubmenuItem;
     TBXItem2: TSpTbxItem;
-    fNew: TAction;
+    acNew: TAction;
     TBXItemToolNew: TSpTbxSubmenuItem;
     TBXItemCCInv: TSpTbxItem;
     TBXSeparatorItem10: TSpTbxSeparatorItem;
@@ -308,7 +308,7 @@ type
     TBXSubmenuItemEd: TSpTbxSubmenuItem;
     TBXSubmenuItemFile: TSpTbxSubmenuItem;
     TBXItemFOpen: TSpTbxItem;
-    fNewWin: TAction;
+    acNewWin: TAction;
     TBXItemFExit: TSpTbxItem;
     TBXItemFSaveAs: TSpTbxItem;
     TBXItemFSave: TSpTbxItem;
@@ -423,18 +423,18 @@ type
     TBXItemSMarkAll: TSpTbxItem;
     TBXItemHHelp: TSpTbxItem;
     TBXItemFClose: TSpTbxItem;
-    fClose: TAction;
+    acClose: TAction;
     PopupTb: TSpTbxPopupMenu;
     TBXItemTabCloseOthers: TSpTBXItem;
     TBXItemTabClose: TSpTBXItem;
     TBXItemTabNew: TSpTBXItem;
     TBXSeparatorItem28: TSpTbxSeparatorItem;
     ImageListCloseBtn: TImageList;
-    fSaveAll: TAction;
+    acSaveAll: TAction;
     TBXItemFSaveAll: TSpTbxItem;
-    fCloseAll: TAction;
+    acCloseAll: TAction;
     TBXItemFCloseAll: TSpTbxItem;
-    fCloseOth: TAction;
+    acCloseOthers: TAction;
     TBXItemFCloseOth: TSpTbxItem;
     TBXSeparatorItem29: TSpTbxSeparatorItem;
     TBXItemFSesOpen: TSpTbxItem;
@@ -453,10 +453,6 @@ type
     TBXItemT4: TSpTbxItem;
     TBXSeparatorItem31: TSpTbxSeparatorItem;
     TBXItemRunFindPhp: TSpTbxItem;
-    TBXItemRunMSIE: TSpTbxItem;
-    TBXItemRunFirefox: TSpTbxItem;
-    TBXItemRunChrome: TSpTbxItem;
-    TBXItemRunSafari: TSpTbxItem;
     TBXItemRunOpenDir: TSpTbxItem;
     TBXItemT5: TSpTbxItem;
     TBXItemT6: TSpTbxItem;
@@ -475,9 +471,9 @@ type
     TBXItemSRep: TSpTbxItem;
     TBXItemSFind: TSpTbxItem;
     TBXItem8: TSpTbxItem;
-    fExit: TAction;
+    acExit: TAction;
     TBXItemFCloseDel: TSpTbxItem;
-    fCloseDel: TAction;
+    acCloseAndDel: TAction;
     TBXItemRFiles: TSpTbxItem;
     ecReplaceInFiles: TAction;
     TBXItemSRepFiles: TSpTbxItem;
@@ -520,7 +516,7 @@ type
     TBXSeparatorItem36: TSpTbxSeparatorItem;
     TBXSeparatorItem37: TSpTbxSeparatorItem;
     ecCopyAsRTF: TAction;
-    fCustomizeHi: TAction;
+    acSetupLexHL: TAction;
     TBXItemOLexerHi: TSpTbxItem;
     TBXSeparatorItem38: TSpTbxSeparatorItem;
     TBXItemOOLexSt: TSpTbxItem;
@@ -610,7 +606,7 @@ type
     TBXItemEToggleLineComment: TSpTbxItem;
     ecToggleLineComment: TAction;
     ecToggleFocusOutput: TAction;
-    fMakeBak: TAction;
+    acBackup: TAction;
     ecToggleStreamComment: TAction;
     TBXItemEToggleStreamComment: TSpTbxItem;
     TBXSubmenuItem16: TSpTbxSubmenuItem;
@@ -651,7 +647,7 @@ type
     ecMacroPlay1: TecMacroPlay;
     ecMacroDlg: TAction;
     ecMacroRecorder1: TecMacroRecorder;
-    TBXItemRunPreview: TSpTbxItem;
+    TBXItemHtmlPreview: TSpTBXItem;
     TBXSeparatorItem52: TSpTbxSeparatorItem;
     ecMacro1: TAction;
     ecMacro2: TAction;
@@ -879,20 +875,20 @@ type
     ecSelToken: TAction;
     TBXItemTreeFindCopyToClipNode: TSpTbxItem;
     TBXItemFProps: TSpTbxItem;
-    fProps: TAction;
+    acProps: TAction;
     ecInsertColor: TAction;
-    TBXItemEColor: TSpTbxItem;
+    TBXItemHtmlInsColor: TSpTBXItem;
     TBXSeparatorItem71: TSpTbxSeparatorItem;
     ecGotoSelEdge: TAction;
     TBXItemClipCopyToEd: TSpTbxItem;
     TBXItemClipCopyToClip: TSpTbxItem;
     TBXSeparatorItem72: TSpTbxSeparatorItem;
     ecReplaceSelFromClipAll: TAction;
-    fRereadOut: TAction;
+    acRereadOut: TAction;
     ecToggleFocusProject: TAction;
     TBXItemWinProj: TSpTbxItem;
     ecInsertImage: TAction;
-    TBXItemEImage: TSpTbxItem;
+    TBXItemHtmlInsImage: TSpTBXItem;
     ecToggleFocusMasterSlave: TAction;
     ecToggleSlave: TAction;
     TBXItemSplitCaption: TSpTbxItem;
@@ -904,18 +900,18 @@ type
     ecSplitSlaveVertHorz: TAction;
     ecGotoBk: TAction;
     TBXItemBkGoto: TSpTbxItem;
-    TBXItemRunLoremIpsum: TSpTbxItem;
+    TBXItemHtmlLoremIpsum: TSpTBXItem;
     ecLoremIpsum: TAction;
     TBXSubmenuFav: TSpTbxSubmenuItem;
     TBXItemFavAddFile: TSpTbxItem;
     TBXItemFavManage: TSpTbxItem;
-    fFavAddFile: TAction;
-    fFavManage: TAction;
+    acFavAddFile: TAction;
+    acFavManage: TAction;
     TbxSubmenuItemRecentColors: TSpTbxSubmenuItem;
     ImageListColorRecent: TImageList;
     TBXItemCtxAddColor: TSpTbxItem;
     TBXItemFavAddProj: TSpTbxItem;
-    fFavAddProj: TAction;
+    acFavAddProj: TAction;
     TBXSeparatorItem75: TSpTbxSeparatorItem;
     TBXItemTabAddToProj: TSpTBXItem;
     ecToggleFocusClips: TAction;
@@ -940,7 +936,7 @@ type
     TBXSeparatorItem78: TSpTbxSeparatorItem;
     ecGotoPortableBk: TAction;
     TBXItemBkGotoPortable: TSpTbxItem;
-    fRename: TAction;
+    acRename: TAction;
     TBXItemFRename: TSpTbxItem;
     TBXItemRunNumConv: TSpTbxItem;
     ecNumericConverter: TAction;
@@ -948,7 +944,7 @@ type
     TBXSeparatorItem33: TSpTbxSeparatorItem;
     TBXItemEIndentLike1st: TSpTbxItem;
     TBXItemViewColMarkers: TSpTbxItem;
-    fColumnMarkers: TAction;
+    acColumnMarkers: TAction;
     ecJumpColumnMarkerLeft: TAction;
     ecJumpColumnMarkerRight: TAction;
     TBXSeparatorItem79: TSpTbxSeparatorItem;
@@ -966,10 +962,8 @@ type
     TBXItemCtxPasteNoCurChange: TSpTbxItem;
     TBXSeparatorItem80: TSpTbxSeparatorItem;
     TBXSubmenuItemEmmet: TSpTBXSubmenuItem;
-    TBXItemEZenWrap: TSpTbxItem;
-    TBXItemEZenExpand: TSpTbxItem;
-    TBXSubmenuItemHelpAbbrev: TSpTbxSubmenuItem;
-    TBXItemHEmmet: TSpTbxItem;
+    TBXItemHtmlEmmetWrap: TSpTBXItem;
+    TBXItemHtmlEmmetExpand: TSpTBXItem;
     PluginACP: TAutoCompletePopup;
     ecJumpMixedCaseLeft: TAction;
     ecJumpMixedCaseRight: TAction;
@@ -987,7 +981,7 @@ type
     TBXItemTabMoveToWindow: TSpTBXItem;
     TBXItemTabOpenInWindow: TSpTBXItem;
     ecExtendSelByLine: TAction;
-    TBXItemRunEncodeHtml: TSpTbxItem;
+    TBXItemHtmlEncode: TSpTBXItem;
     ecEncodeHtmlChars: TAction;
     ecSortDialog: TAction;
     TBXItemESortDialog: TSpTbxItem;
@@ -1105,7 +1099,7 @@ type
     TBXItemOHideItems: TSpTbxItem;
     TBXSeparatorItem100: TSpTbxSeparatorItem;
     TBXItemOEditSynIni: TSpTbxItem;
-    fOpenBySelection: TAction;
+    acOpenBySelection: TAction;
     ImageListIconsTango22b: TPngImageList;
     ImageListIconsTango16b: TPngImageList;
     ImageListIconsFogue24b: TPngImageList;
@@ -1169,10 +1163,8 @@ type
     TBXSubmenuBkOps: TSpTBXSubmenuItem;
     TBXSubmenuBkPortable: TSpTBXSubmenuItem;
     SpTBXSeparatorItem16: TSpTBXSeparatorItem;
-    SpTBXSeparatorItem18: TSpTBXSeparatorItem;
     TBXSubmenuItemHTML: TSpTBXSubmenuItem;
     SpTBXSeparatorItem19: TSpTBXSeparatorItem;
-    SpTBXSeparatorItem20: TSpTBXSeparatorItem;
     PopupFoldLevel: TSpTBXPopupMenu;
     SpTBXSeparatorItem23: TSpTBXSeparatorItem;
     TBXItemUnfoldAll: TSpTBXItem;
@@ -1197,7 +1189,10 @@ type
     TBXItemFoldLevel8: TSpTBXItem;
     TBXItemFoldLevel9: TSpTBXItem;
     TbxItemTabReload: TSpTBXItem;
-    procedure fOpenExecute(Sender: TObject);
+    TBXSubmenuHtmlHelp: TSpTBXSubmenuItem;
+    TBXItemHtmlEmmetHelp: TSpTBXItem;
+    SpTBXSeparatorItem17: TSpTBXSeparatorItem;
+    procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
 
@@ -1207,14 +1202,14 @@ type
     procedure UpdateCh;
 
     procedure PageControl1Change(Sender: TObject);
-    procedure fSaveExecute(Sender: TObject);
-    procedure fSaveAsExecute(Sender: TObject);
+    procedure acSaveExecute(Sender: TObject);
+    procedure acSaveAsExecute(Sender: TObject);
     procedure MRUClick(Sender: TObject; const S: WideString);
     procedure MRU_SessClick(Sender: TObject; const S: WideString);
     procedure PopupLexPopup(Sender: TObject);
-    procedure fSetupExecute(Sender: TObject);
+    procedure acSetupExecute(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure fExportRTFActionBeforeExecute(Sender: TObject);
+    procedure acExportRTFBeforeExecute(Sender: TObject);
     procedure ecReadOnlyExecute(Sender: TObject);
     procedure ButtonOnSelect(Sender: TTBCustomItem; Viewer: TTBItemViewer;
       Selecting: Boolean);
@@ -1249,7 +1244,7 @@ type
     procedure ecLineNumsExecute(Sender: TObject);
     procedure ecFoldingExecute(Sender: TObject);
     procedure ecNonPrintExecute(Sender: TObject);
-    procedure fRereadExecute(Sender: TObject);
+    procedure acRereadExecute(Sender: TObject);
     procedure TBXItemClrClick(Sender: TObject);
     procedure tbViewMove(Sender: TObject);
     procedure ecPrintActionBeforeExecute(Sender: TObject);
@@ -1259,7 +1254,7 @@ type
     procedure ecACPListClick(Sender: TObject);
     procedure ecACPListKeyDown(Sender: TObject;
       var key: Word; Shift: TShiftState);
-    procedure fNewExecute(Sender: TObject);
+    procedure acNewExecute(Sender: TObject);
     procedure TBXItemWPriorClick(Sender: TObject);
     procedure TBXItemWNextClick(Sender: TObject);
     procedure TBXItemFNextClick(Sender: TObject);
@@ -1275,12 +1270,12 @@ type
       FromLink: Boolean);
     procedure ODShow(Sender: TObject);
     procedure SDShow(Sender: TObject);
-    procedure fNewWinExecute(Sender: TObject);
+    procedure acNewWinExecute(Sender: TObject);
     procedure TBXItemFExitClick(Sender: TObject);
     procedure ecSelCharPopup1Change(Sender: TObject);
     procedure ecSelCharPopup1Show(Sender: TObject);
     procedure ecACPShow(Sender: TObject);
-    procedure fCustomizeLexerExecuteOK(Sender: TObject);
+    procedure acSetupLexerExecuteOK(Sender: TObject);
     procedure TBXItemHReadClick(Sender: TObject);
     procedure TBXSubmenuLineEndsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
@@ -1330,14 +1325,14 @@ type
       TabIndex: Integer; const Rect: TRect; Active: Boolean);
     procedure PageControl1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure fCloseExecute(Sender: TObject);
+    procedure acCloseExecute(Sender: TObject);
     procedure PageControl1MouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure PageControl1ContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
-    procedure fSaveAllExecute(Sender: TObject);
-    procedure fCloseAllExecute(Sender: TObject);
-    procedure fCloseOthExecute(Sender: TObject);
+    procedure acSaveAllExecute(Sender: TObject);
+    procedure acCloseAllExecute(Sender: TObject);
+    procedure acCloseOthersExecute(Sender: TObject);
     procedure TBXItemTabCloseOthersClick(Sender: TObject);
     procedure PopupTbPopup(Sender: TObject);
     procedure TBXItemFSesSaveAsClick(Sender: TObject);
@@ -1354,11 +1349,7 @@ type
     procedure TBXItemEUndoClick(Sender: TObject);
     procedure TBXItemRunFindPhpClick(Sender: TObject);
     procedure TBXItemRunFindGoogleClick(Sender: TObject);
-    procedure TBXItemRunFirefoxClick(Sender: TObject);
-    procedure TBXItemRunMSIEClick(Sender: TObject);
     procedure TBXItemRunFindWikiClick(Sender: TObject);
-    procedure TBXItemRunChromeClick(Sender: TObject);
-    procedure TBXItemRunSafariClick(Sender: TObject);
     procedure TBXItemRunOpenDirClick(Sender: TObject);
     procedure TBXItemT5Click(Sender: TObject);
     procedure TBXItemT6Click(Sender: TObject);
@@ -1368,8 +1359,8 @@ type
     procedure TBXItemTbCloseClick(Sender: TObject);
     procedure ecReplaceExecute(Sender: TObject);
     procedure TBXItemRunFindMSDNClick(Sender: TObject);
-    procedure fExitExecute(Sender: TObject);
-    procedure fCloseDelExecute(Sender: TObject);
+    procedure acExitExecute(Sender: TObject);
+    procedure acCloseAndDelExecute(Sender: TObject);
     procedure ecReplaceInFilesExecute(Sender: TObject);
     procedure TimerSelTimer(Sender: TObject);
     procedure TBXItemCtxCopyAppendClick(Sender: TObject);
@@ -1407,7 +1398,7 @@ type
     procedure TBXItemOOFindClick(Sender: TObject);
     procedure PopupFindPopup(Sender: TObject);
     procedure ecCopyAsRTFExecute(Sender: TObject);
-    procedure fCustomizeHiExecute(Sender: TObject);
+    procedure acSetupLexHLExecute(Sender: TObject);
     procedure TBXItemEExtrClick(Sender: TObject);
     procedure PopupCPPopup(Sender: TObject);
     procedure ecSentCaseExecute(Sender: TObject);
@@ -1472,7 +1463,7 @@ type
     procedure TBXItemFReopenClick(Sender: TObject);
     procedure ecToggleLineCommentExecute(Sender: TObject);
     procedure ecToggleFocusOutputExecute(Sender: TObject);
-    procedure fMakeBakExecute(Sender: TObject);
+    procedure acBackupExecute(Sender: TObject);
     procedure ecToggleStreamCommentExecute(Sender: TObject);
     procedure TBXItemEMoveUpClick(Sender: TObject);
     procedure TBXItemEMoveDnClick(Sender: TObject);
@@ -1489,9 +1480,6 @@ type
     procedure ecJoinLinesExecute(Sender: TObject);
     procedure ecSplitLinesExecute(Sender: TObject);
     procedure ecMacroDlgExecute(Sender: TObject);
-    procedure TBXItemRunPreviewClick(Sender: TObject);
-    procedure TBXSubmenuItemBrPopup(Sender: TTBCustomItem;
-      FromLink: Boolean);
     procedure ecMacro1Execute(Sender: TObject);
     procedure ecMacro2Execute(Sender: TObject);
     procedure ecMacro3Execute(Sender: TObject);
@@ -1673,14 +1661,14 @@ type
     procedure ecSelTokenExecute(Sender: TObject);
     procedure TBXItemTreeFindCopyToClipNodeClick(Sender: TObject);
     procedure TBXItemFPropsClick(Sender: TObject);
-    procedure fPropsExecute(Sender: TObject);
+    procedure acPropsExecute(Sender: TObject);
     procedure TemplatePopupShow(Sender: TObject);
     procedure ecInsertColorExecute(Sender: TObject);
     procedure ecGotoSelEdgeExecute(Sender: TObject);
     procedure TBXItemClipCopyToEdClick(Sender: TObject);
     procedure TBXItemClipCopyToClipClick(Sender: TObject);
     procedure ecReplaceSelFromClipAllExecute(Sender: TObject);
-    procedure fRereadOutExecute(Sender: TObject);
+    procedure acRereadOutExecute(Sender: TObject);
     procedure TBXItemLeftTreeClick(Sender: TObject);
     procedure TBXItemLeftProjClick(Sender: TObject);
     procedure ecToggleFocusProjectExecute(Sender: TObject);
@@ -1695,17 +1683,17 @@ type
     procedure ecSplitSlaveVertHorzExecute(Sender: TObject);
     procedure ecGotoBkExecute(Sender: TObject);
     procedure TBXItemBkGotoClick(Sender: TObject);
-    procedure TBXItemRunLoremIpsumClick(Sender: TObject);
+    procedure TBXItemHtmlLoremIpsumClick(Sender: TObject);
     procedure ecLoremIpsumExecute(Sender: TObject);
     procedure TBXItemFavAddFileClick(Sender: TObject);
     procedure TBXItemFavManageClick(Sender: TObject);
-    procedure fFavManageExecute(Sender: TObject);
+    procedure acFavManageExecute(Sender: TObject);
     procedure TBXItemCtxAddColorClick(Sender: TObject);
     procedure TbxSubmenuItemRecentColorsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemFavAddProjClick(Sender: TObject);
-    procedure fFavAddFileExecute(Sender: TObject);
-    procedure fFavAddProjExecute(Sender: TObject);
+    procedure acFavAddFileExecute(Sender: TObject);
+    procedure acFavAddProjExecute(Sender: TObject);
     procedure TBXSubmenuFavPopup(Sender: TTBCustomItem; FromLink: Boolean);
     procedure TBXItemTabAddToProjClick(Sender: TObject);
     procedure TreeContextPopup(Sender: TObject; MousePos: TPoint;
@@ -1726,12 +1714,12 @@ type
     procedure TBXItemBkDropPortableClick(Sender: TObject);
     procedure ecDropPortableBkExecute(Sender: TObject);
     procedure ecGotoPortableBkExecute(Sender: TObject);
-    procedure fRenameExecute(Sender: TObject);
+    procedure acRenameExecute(Sender: TObject);
     procedure TBXItemRunNumConvClick(Sender: TObject);
     procedure ecNumericConverterExecute(Sender: TObject);
     procedure TBXItemEUnindentClick(Sender: TObject);
     procedure ecIndentLike1stExecute(Sender: TObject);
-    procedure fColumnMarkersExecute(Sender: TObject);
+    procedure acColumnMarkersExecute(Sender: TObject);
     procedure ecJumpColumnMarkerLeftExecute(Sender: TObject);
     procedure ecJumpColumnMarkerRightExecute(Sender: TObject);
     procedure TBXItemEToggleLineCommentClick(Sender: TObject);
@@ -1747,7 +1735,7 @@ type
     procedure ListPLogDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
     procedure ecPasteNoCurChangeExecute(Sender: TObject);
-    procedure TBXItemHEmmetClick(Sender: TObject);
+    procedure TBXItemHtmlEmmetHelpClick(Sender: TObject);
     procedure ecZenExpandExecute(Sender: TObject);
     procedure ecZenWrapExecute(Sender: TObject);
     procedure ecJumpMixedCaseLeftExecute(Sender: TObject);
@@ -1767,7 +1755,7 @@ type
     procedure TBXItemTabMoveToWindowClick(Sender: TObject);
     procedure TBXItemTabOpenInWindowClick(Sender: TObject);
     procedure ecExtendSelByLineExecute(Sender: TObject);
-    procedure TBXItemRunEncodeHtmlClick(Sender: TObject);
+    procedure TBXItemHtmlEncodeClick(Sender: TObject);
     procedure ecEncodeHtmlCharsExecute(Sender: TObject);
     procedure ecSortDialogExecute(Sender: TObject);
     procedure ecSelBracketsExecute(Sender: TObject);
@@ -1859,8 +1847,8 @@ type
     procedure TBXItemEIndentLike1stClick(Sender: TObject);
     procedure TBXItemECommClick(Sender: TObject);
     procedure TBXItemEUncommClick(Sender: TObject);
-    procedure TBXItemEZenExpandClick(Sender: TObject);
-    procedure TBXItemEZenWrapClick(Sender: TObject);
+    procedure TBXItemHtmlEmmetExpandClick(Sender: TObject);
+    procedure TBXItemHtmlEmmetWrapClick(Sender: TObject);
     procedure TBXItemTbSplitClick(Sender: TObject);
     procedure TBXItemTabToggleSplitClick(Sender: TObject);
     procedure TBXItemCtxCopyClick(Sender: TObject);
@@ -1919,7 +1907,7 @@ type
     procedure ecNonPrintEolDetailsExecute(Sender: TObject);
     procedure TBXItemOHideItemsClick(Sender: TObject);
     procedure TBXItemOEditSynIniClick(Sender: TObject);
-    procedure fOpenBySelectionExecute(Sender: TObject);
+    procedure acOpenBySelectionExecute(Sender: TObject);
     procedure StatusItemCaretClick(Sender: TObject);
     procedure StatusItemEncClick(Sender: TObject);
     procedure StatusItemEndsClick(Sender: TObject);
@@ -1944,8 +1932,9 @@ type
     procedure TbxItemMruNewdocClick(Sender: TObject;
       const Filename: WideString);
     procedure StatusResize(Sender: TObject);
-    procedure fCustomizeLexerLibExecute(Sender: TObject);
+    procedure acSetupLexLibExecute(Sender: TObject);
     procedure TbxItemTabReloadClick(Sender: TObject);
+    procedure TBXItemHtmlPreviewClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2254,7 +2243,7 @@ type
     function CurrentListbox: TCustomListbox;
     function CurrentTreeview: TCustomTreeView;
     procedure DoFrameReloadInt(F: TEditorFrame);
-    procedure DoFrameReload(F: TEditorFrame);
+    procedure DoFrameReloadWrapper(F: TEditorFrame);
     procedure UpdateZoom(F: TEditorFrame);
     procedure DoFindExtSel(ANext: boolean);
     procedure DoJumpMixedCase(ARight: boolean);
@@ -2379,7 +2368,7 @@ type
     procedure ListValNav(const s: Widestring);
     function IsNavigatableLine(const s: Widestring): boolean;
     procedure DoNewDoc(const fn: Widestring);
-    procedure RunIn(const fn: Widestring);
+    procedure RunBrowser(const fn: Widestring);
     procedure RunTool(NTool: Integer);
     procedure RunMacro(n: Integer);
     procedure AppException(Sender: TObject; E: Exception);
@@ -2435,8 +2424,8 @@ type
     function ShFor(id: integer): TShortcut;
     procedure ShMacroGet(n: integer; var sh: TShortcut);
     procedure ShMacroSet(n: integer; const sh: TShortcut);
-    procedure FOnlineWordHelp(const url: string);
-    procedure FOnlineFind(const site: string);
+    procedure DoOnlineWordHelp(const url: string);
+    procedure DoOnlineFind(const site: string);
 
     procedure FindAction(act: TSRAction);
     procedure FindActionWrapper(act: TSRAction);
@@ -2537,6 +2526,10 @@ type
       var DiffY: Integer;
       var View1st: boolean);
     procedure LoadAcpFromFile(const fn, Lexer: string);
+    procedure DoOpenBrowserPreview;
+    procedure DoOpenCurrentFile;
+    procedure DoOpenCurrentDir;
+    function SynHiddenOption(const S: string): Integer;
     //end of private
 
   protected
@@ -2579,7 +2572,6 @@ type
     opShowRecentColors: integer; //0: auto-hide, 1: always show, 2: always hide
     opUnicodeNeeded: integer;
     opTabColors: array[0..Pred(cTabColors)] of integer;
-    opStripBkmk: boolean;
     opColorCaretsGutter: integer;
     opColorMapMarks: integer;
     opColorBkmk: integer;
@@ -2857,7 +2849,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.7.730';
+  cSynVer = '5.7.740';
 
 const  
   cSynParamRO = '/RO';
@@ -3219,7 +3211,7 @@ begin
   Result:= SyntaxManagerFilesFilter(SyntaxManager, DKLangConstW('AllF'));
 end;
 
-procedure TfmMain.fOpenExecute(Sender: TObject);
+procedure TfmMain.acOpenExecute(Sender: TObject);
 var
   i: Integer;
   s: Widestring;
@@ -3273,7 +3265,7 @@ begin
 
   if AFileName = '' then
   begin
-    fNew.Execute;
+    acNew.Execute;
     Result:= CurrentFrame;
     Exit
   end;
@@ -3833,7 +3825,7 @@ begin
     if (ActionList.Actions[i] is TecBaseMemoAction) then
       (ActionList.Actions[i] as TecBaseMemoAction).SyntMemo:= Value;
 
-  fCustomizeLexer.SyntMemo:= Value;
+  acSetupLexer.SyntMemo:= Value;
   ecACP.SyntMemo:= Value;
   PluginACP.SyntMemo:= Value;
   ParamCompletion.SyntMemo:= Value;
@@ -3902,9 +3894,9 @@ begin
   en_lex:= SyntaxManager.CurrentLexer<>nil;
 
   if frame.Modified then
-    fSave.ImageIndex:= 1
+    acSave.ImageIndex:= 1
   else
-    fSave.ImageIndex:= 2;
+    acSave.ImageIndex:= 2;
 
   //Hilite brackets
   TimerBrackets.Enabled:= true;
@@ -3968,12 +3960,12 @@ begin
   UpdateStatusbarEnc(frame);
   UpdateStatusbarLineEnds;
 
-  fSave.Enabled:= not ro;
-  fNew.Enabled:= not Quickview;
-  fClose.Enabled:= not Quickview;
-  fOpen.Enabled:= not Quickview;
-  fNewWin.Enabled:= SynExe;
-  fCustomizeHi.Enabled:= en_lex;
+  acSave.Enabled:= not ro;
+  acNew.Enabled:= not Quickview;
+  acClose.Enabled:= not Quickview;
+  acOpen.Enabled:= not Quickview;
+  acNewWin.Enabled:= SynExe;
+  acSetupLexHL.Enabled:= en_lex;
   ecFullScr.Enabled:= SynExe;
   ecOnTop.Enabled:= SynExe;
 
@@ -4344,7 +4336,6 @@ begin
     opColorTabFont1:= ReadInteger('View', 'TabCF1', clBlack);
     opColorTabFont2:= ReadInteger('View', 'TabCF2', clNavy);
     TabColorsString:= ReadString('View', 'TabMisc', '');
-    opStripBkmk:= ReadBool('View', 'BkStrip', false);
 
     opChInf:= ReadBool('Setup', 'ChInf', false);
     UpdateCh;
@@ -4686,7 +4677,6 @@ begin
     WriteInteger('View', 'SplitC', opColorSplitViews);
     WriteInteger('View', 'SplitS', opColorSplitSlave);
     WriteString('View', 'TabMisc', TabColorsString);
-    WriteBool('View', 'BkStrip', opStripBkmk);
 
     WriteBool('Setup', 'ChInf', opChInf);
     WriteInteger('Setup', 'Lang', opLang);
@@ -5644,33 +5634,35 @@ begin
       ecSortDescending.Execute;
 
     //tools
-    sm_OpenFirefox: TbxItemRunFirefoxClick(Self);
-    sm_OpenMSIE: TbxItemRunMSIEClick(Self);
-    sm_OpenChrome: TbxItemRunChromeClick(Self);
-    sm_OpenSafari: TbxItemRunSafariClick(Self);
-    sm_OpenCurrentFile: TbxItemRunOpenFileClick(Self);
-    sm_OpenCurrentFolder: TbxItemRunOpenDirClick(Self);
-    sm_OpenPhp: TbxItemRunFindPhpClick(Self);
-    sm_OpenGoogle: TbxItemRunFindGoogleClick(Self);
-    sm_OpenWiki: TbxItemRunFindWikiClick(Self);
-    sm_OpenMsdn: TbxItemRunFindMSDNClick(Self);
-    sm_OpenHTML4Help: TbxItemRunFindHtml4Click(Self);
-    sm_OpenHTML5Help: TbxItemRunFindHtml5Click(Self);
-    sm_OpenPreview: TbxItemRunPreviewClick(Self);
+    sm_OpenFirefox: RunBrowser('firefox.exe');
+    sm_OpenMSIE: RunBrowser('iexplore.exe');
+    sm_OpenChrome: RunBrowser('chrome.exe');
+    sm_OpenSafari: RunBrowser('safari.exe');
+    sm_OpenPreview: DoOpenBrowserPreview;
+    sm_OpenCurrentFile: DoOpenCurrentFile;
+    sm_OpenCurrentFolder: DoOpenCurrentDir;
+
+    sm_OpenPhp: DoOnlineWordHelp('http://www.php.net/%s');
+    sm_OpenHTML4Help: DoOnlineWordHelp('http://www.w3schools.com/tags/tag_%s.asp');
+    sm_OpenHTML5Help: DoOnlineWordHelp('http://dev.w3.org/html5/markup/%s.html');
+    sm_OpenGoogle: DoOnlineFind('http://www.google.com/search?q=');
+    sm_OpenWiki: DoOnlineFind('http://en.wikipedia.org/w/index.php?title=Special:Search&search=');
+    sm_OpenMsdn: DoOnlineFind('http://social.msdn.microsoft.com/Search/en-US?query=');
+    sm_TidyValidate: DoTidy('');
+    sm_TidyConfig: DoOpenFile(SynTidyIni);
+
     sm_LoremIpsum: ecLoremIpsum.Execute;
     sm_NumericConverter: ecNumericConverter.Execute;
     sm_EncodeHtmlChars: ecEncodeHtmlChars.Execute;
     sm_SortDialog: ecSortDialog.Execute;
     sm_ToggleLineCommentAlt: ecToggleLineCommentAlt.Execute;
 
-    sm_TidyValidate: TbxItemTidyValClick(Self);
-    sm_TidyConfig: TbxItemTidyCfgClick(Self);
     sm_InsertColor: ecInsertColor.Execute;
     sm_InsertImage: ecInsertImage.Execute;
     sm_GotoSelEdge: ecGotoSelEdge.Execute;
     sm_GotoBookmkDialog: ecGotoBk.Execute;
     sm_ReplaceFromClipAll: ecReplaceSelFromClipAll.Execute;
-    sm_RereadOutPanel: fRereadOut.Execute;
+    sm_RereadOutPanel: acRereadOut.Execute;
     sm_DropPortableBk: ecDropPortableBk.Execute;
     sm_GotoPortableBk: ecGotoPortableBk.Execute;
     sm_IndentLike1st: ecIndentLike1st.Execute;
@@ -5876,17 +5868,17 @@ begin
       DoCommentLines(Command = smCommentLines);
 
     //file
-    sm_FNew: fNew.Execute;
-    sm_FNewWin: fNewWin.Execute;
-    sm_FOpen: fOpen.Execute;
-    sm_FReopen: fReread.Execute;
-    sm_FSave: if fSave.Enabled then fSave.Execute;
-    sm_FSaveAs: if fSaveAs.Enabled then fSaveAs.Execute;
-    sm_FSaveAll: fSaveAll.Execute;
-    sm_FProps: fProps.Execute;
-    sm_FavAddFile: fFavAddFile.Execute;
-    sm_FavAddProj: fFavAddProj.Execute;
-    sm_FavOrganize: fFavManage.Execute;
+    sm_FNew: acNew.Execute;
+    sm_FNewWin: acNewWin.Execute;
+    sm_FOpen: acOpen.Execute;
+    sm_FReopen: acReread.Execute;
+    sm_FSave: if acSave.Enabled then acSave.Execute;
+    sm_FSaveAs: if acSaveAs.Enabled then acSaveAs.Execute;
+    sm_FSaveAll: acSaveAll.Execute;
+    sm_FProps: acProps.Execute;
+    sm_FavAddFile: acFavAddFile.Execute;
+    sm_FavAddProj: acFavAddProj.Execute;
+    sm_FavOrganize: acFavManage.Execute;
 
     //Closing handling is special
     sm_FClose,
@@ -5902,7 +5894,7 @@ begin
       DoMoveTabToOtherView(-1);
 
     sm_FExit:
-      fExit.Execute;
+      acExit.Execute;
     sm_FSaveSession:
       TBXItemFSesSaveClick(Self);
     sm_FSaveSessionAs:
@@ -5914,12 +5906,12 @@ begin
     sm_FCloseSession:
       TBXItemFSesCloseClick(Self);
 
-    sm_FExpRtf: fExportRTFAction.Execute;
-    sm_FExpHtml: fExportHTMLAction.Execute;
+    sm_FExpRtf: acExportRTF.Execute;
+    sm_FExpHtml: acExportHTML.Execute;
 
-    sm_OSetup: fSetup.Execute;
-    sm_OSetupLexer: fCustomizeLexer.Execute;
-    sm_OSetupLexerLib: fCustomizeLexerLib.Execute;
+    sm_OSetup: acSetup.Execute;
+    sm_OSetupLexer: acSetupLexer.Execute;
+    sm_OSetupLexerLib: acSetupLexLib.Execute;
     sm_OReadOnly: ecReadOnly.Execute;
     sm_OShowTree: ecShowTree.Execute;
     sm_OShowClip: ecShowClip.Execute;
@@ -5954,9 +5946,9 @@ begin
     sm_ToggleStreamComment:
       ecToggleStreamComment.Execute;
     sm_MakeBak:
-      fMakeBak.Execute;
+      acBackup.Execute;
     sm_ColumnMarkers:
-      fColumnMarkers.Execute;
+      acColumnMarkers.Execute;
 
     //copy path
     sm_CopyFN:
@@ -6043,8 +6035,8 @@ begin
     sm_OExplorerIntegration: TbxItemOShell.Click;
     sm_OEditSynIni: TBXItemOEditSynIni.Click;
     sm_OEditSynPluginsIni: TBXItemOEditSynPluginsIni.Click;
-    sm_OpenBySelection: fOpenBySelection.Execute;
-    sm_OCustomizeStyles: fCustomizeHi.Execute;
+    sm_OpenBySelection: acOpenBySelection.Execute;
+    sm_OCustomizeStyles: acSetupLexHL.Execute;
 
     //Options dialog tabs
     sm_Options_ProgramOpt: DoOptionsDialog(1);
@@ -6201,13 +6193,13 @@ begin
   end;
 end;
 
-procedure TfmMain.fSaveExecute(Sender: TObject);
+procedure TfmMain.acSaveExecute(Sender: TObject);
 begin
   if CurrentFrame <> nil then
     SaveFrame(CurrentFrame, False);
 end;
 
-procedure TfmMain.fSaveAsExecute(Sender: TObject);
+procedure TfmMain.acSaveAsExecute(Sender: TObject);
 var
   F: TEditorFrame;
 begin
@@ -6257,7 +6249,7 @@ begin
   UpdateLexList;
 end;
 
-procedure TfmMain.fSetupExecute(Sender: TObject);
+procedure TfmMain.acSetupExecute(Sender: TObject);
 begin
   DoOptionsDialog(-1);
 end;
@@ -6370,9 +6362,9 @@ begin
 
   P:= PageControl;
   PageControl:= PageControl2;
-  if FrameCount = 0 then FNew.Execute;
+  if FrameCount = 0 then acNew.Execute;
   PageControl:= PageControl1;
-  if FrameCount = 0 then FNew.Execute;
+  if FrameCount = 0 then acNew.Execute;
   PageControl:= P;
   FocusEditor;
 
@@ -6421,12 +6413,12 @@ begin
   end;
 end;
 
-procedure TfmMain.fExportRTFActionBeforeExecute(Sender: TObject);
+procedure TfmMain.acExportRTFBeforeExecute(Sender: TObject);
 begin
   if CurrentEditor.HaveSelection then
-    fExportRTFAction.ExportType:= etSelection
+    acExportRTF.ExportType:= etSelection
   else
-    fExportRTFAction.ExportType:= etAllText;
+    acExportRTF.ExportType:= etAllText;
 end;
 
 procedure TfmMain.ecReadOnlyExecute(Sender: TObject);
@@ -6637,7 +6629,7 @@ begin
   if PageControl2.PageCount=0 then
   begin
     PageControl:= PageControl2;
-    FNew.Execute;
+    acNew.Execute;
     PageControl:= PageControl1;
   end;
 
@@ -7647,7 +7639,7 @@ var
   ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill: string;
 begin
   UpdTools;
-  fCustomizeHi.Enabled:= SyntaxManager.CurrentLexer<>nil;
+  acSetupLexHL.Enabled:= SyntaxManager.CurrentLexer<>nil;
   Lexer:= '';
 
   if SyntaxManager.CurrentLexer<>nil then
@@ -8548,13 +8540,13 @@ begin
         //0: do nothing, 1: close app, 2: close tab,
         //3: close tab or app, 4: minimize app
         case opEsc of
-          1: fExit.Execute;
-          2: fClose.Execute;
+          1: acExit.Execute;
+          2: acClose.Execute;
           3: begin
                if FrameAllCount=1 then
-                 fExit.Execute
+                 acExit.Execute
                else
-                 fClose.Execute;
+                 acClose.Execute;
              end;
           4: begin
                if SynExe then
@@ -8690,12 +8682,12 @@ begin
   UpdateStatusbar;
 end;
 
-procedure TfmMain.fRereadExecute(Sender: TObject);
+procedure TfmMain.acRereadExecute(Sender: TObject);
 begin
-  DoFrameReload(CurrentFrame);
+  DoFrameReloadWrapper(CurrentFrame);
 end;
 
-procedure TfmMain.DoFrameReload(F: TEditorFrame);
+procedure TfmMain.DoFrameReloadWrapper(F: TEditorFrame);
 begin
   if (F=nil) or (F.FileName='') then
   begin
@@ -8915,7 +8907,7 @@ begin
   }
 end;
 
-procedure TfmMain.fNewExecute(Sender: TObject);
+procedure TfmMain.acNewExecute(Sender: TObject);
 begin
   CreateFrame;
   UpdateCur(CurrentEditor);
@@ -9121,7 +9113,7 @@ begin
   WndCenter(SD.Handle, Self);
 end;
 
-procedure TfmMain.fNewWinExecute(Sender: TObject);
+procedure TfmMain.acNewWinExecute(Sender: TObject);
 begin
   if SynExe then
     FExecute(Application.ExeName, '', '', 0);
@@ -9130,7 +9122,7 @@ end;
 procedure TfmMain.TBXItemFExitClick(Sender: TObject);
 begin
   if DoCloseAllTabs(True, False) then
-    fExit.Execute;
+    acExit.Execute;
 end;
 
 procedure TfmMain.ecSelCharPopup1Change(Sender: TObject);
@@ -9247,7 +9239,7 @@ begin
   SaveState(Sender as TEditorFrame);
 end;
 
-procedure TfmMain.fCustomizeLexerExecuteOK(Sender: TObject);
+procedure TfmMain.acSetupLexerExecuteOK(Sender: TObject);
 begin
   SyntaxManager.Modified:= True;
   AskLexer(True);
@@ -9505,8 +9497,8 @@ begin
   K(TbxItemEToggleLineComment, sm_ToggleLineComment);
   K(TbxItemEToggleLineCommentAlt, sm_ToggleLineCommentAlt);
 
-  K(TbxItemEZenWrap, sm_ZenWrap);
-  K(TbxItemEZenExpand, sm_ZenExpand);
+  K(TbxItemHtmlEmmetExpand, sm_ZenExpand);
+  K(TbxItemHtmlEmmetWrap, sm_ZenWrap);
 
   K(TBXItemEInsText, sm_InsText);
   K(TBXItemEFillBlock, sm_FillBlock);
@@ -9517,8 +9509,8 @@ begin
   K(TBXItemESyncEd, sm_SyncEdit);
   K(TbxItemEExtr, sm_ExStr);
   K(TbxItemETime, sm_DateTime);
-  K(TbxItemEColor, sm_InsertColor);
-  K(TbxItemEImage, sm_InsertImage);
+  K(TbxItemHtmlInsColor, sm_InsertColor);
+  K(TbxItemHtmlInsImage, sm_InsertImage);
 
   K(TBXItemFExit, sm_FExit);
   K(TBXItemFClr, sm_ClrHist);
@@ -9543,24 +9535,17 @@ begin
   K(tbxItemMarkSwap, smSwapMarker);
   K(tbxItemZIn, sm_ZoomIn);
   K(tbxItemZOut, sm_ZoomOut);
-  //K(tbxItemZ0, sm_Zoom0);
-  //
-  K(TbxItemRunPreview, sm_OpenPreview);
-  K(TbxItemRunFirefox, sm_OpenFirefox);
-  K(TbxItemRunMSIE, sm_OpenMSIE);
-  K(TbxItemRunChrome, sm_OpenChrome);
-  K(TbxItemRunSafari, sm_OpenSafari);
+
+  K(TbxItemHtmlPreview, sm_OpenPreview);
+  K(TbxItemHtmlEncode, sm_EncodeHtmlChars);
+  K(TbxItemHtmlLoremIpsum, sm_LoremIpsum);
+
   K(TbxItemRunOpenFile, sm_OpenCurrentFile);
   K(TbxItemRunOpenDir, sm_OpenCurrentFolder);
   K(TbxItemRunFindPhp, sm_OpenPhp);
-  //K(TbxItemRunFindGoogle, sm_OpenGoogle);
-  //K(TbxItemRunFindWiki, sm_OpenWiki);
-  //K(TbxItemRunFindMSDN, sm_OpenMsdn);
   K(TbxItemRunFindHtml4, sm_OpenHtml4Help);
   K(TbxItemRunFindHtml5, sm_OpenHtml5Help);
-  K(TbxItemRunLoremIpsum, sm_LoremIpsum);
   K(TbxItemRunNumConv, sm_NumericConverter);
-  K(TbxItemRunEncodeHtml, sm_EncodeHtmlChars);
 
   //file
   K(tbxItemFPrint, smPrint);
@@ -10269,9 +10254,9 @@ begin
     case ToolSaveMode of
       svCurrent:
         if CurrentFrame.Modified then
-          FSave.Execute;
+          acSave.Execute;
       svAll:
-        FSaveAll.Execute;
+        acSaveAll.Execute;
     end;
 
     //CHM file
@@ -10585,7 +10570,7 @@ end;
 procedure TfmMain.CloseFrameWithCfm(F: TEditorFrame);
 var
   n: integer;
-  FNew: TEditorFrame;
+  acNew: TEditorFrame;
 begin
   UpdateColorHint;
   if QuickView then Exit;
@@ -10623,26 +10608,26 @@ begin
     if n >= 0 then
     begin
       ActivePageIndex:= n;
-      FNew:= Frames[ActivePageIndex];
+      acNew:= Frames[ActivePageIndex];
     end
     else
-      FNew:= nil;
+      acNew:= nil;
   end
   else
-    FNew:= CurrentFrame;
+    acNew:= CurrentFrame;
 
   //If it is last tab
   if FrameCount = 1 then
   begin
     CreateFrame;
-    FNew:= CurrentFrame;
+    acNew:= CurrentFrame;
   end;
 
   CloseFrame(F);
   FPagesNTab:= -1;
-  if Assigned(FNew) then
+  if Assigned(acNew) then
   begin
-    CurrentFrame:= FNew;
+    CurrentFrame:= acNew;
     FocusEditor;
   end;
   //If all closed
@@ -10666,7 +10651,7 @@ end;
 
 procedure TfmMain.TBXItemTabNewClick(Sender: TObject);
 begin
-  fNew.Execute;
+  acNew.Execute;
 end;
 
 function TfmMain.SNewDocName(const fn: Widestring): string;
@@ -10705,7 +10690,7 @@ begin
     Enc:= cp__UTF8_noBOM;
 
   if (CurrentFrame.FileName<>'') or (CurrentEditor.Lines.Count>0) then
-    fNew.Execute;
+    acNew.Execute;
   CurrentEditor.LoadFromFile(fn);
 
   CurrentFrame.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(fn);
@@ -10875,7 +10860,7 @@ begin
       end;
     end;
     //double click, but not on tabs -> create new tab
-    fNew.Execute;
+    acNew.Execute;
     Exit
   end;
 
@@ -10910,7 +10895,7 @@ begin
   end;
 end;
 
-procedure TfmMain.fCloseExecute(Sender: TObject);
+procedure TfmMain.acCloseExecute(Sender: TObject);
 begin
   if CurrentFrame=nil then Exit;
   CloseFrameWithCfm(CurrentFrame);
@@ -11008,7 +10993,7 @@ begin
   end;
 end;
 
-procedure TfmMain.fSaveAllExecute(Sender: TObject);
+procedure TfmMain.acSaveAllExecute(Sender: TObject);
 var
   i: Integer;
   F: TEditorFrame;
@@ -11024,13 +11009,13 @@ begin
   end;
 end;
 
-procedure TfmMain.fCloseAllExecute(Sender: TObject);
+procedure TfmMain.acCloseAllExecute(Sender: TObject);
 begin
   DoCloseAllTabs(True, True);
   UpdatePages;
 end;
 
-procedure TfmMain.fCloseOthExecute(Sender: TObject);
+procedure TfmMain.acCloseOthersExecute(Sender: TObject);
 begin
   DoCloseOtherTabs(CurrentFrame);
   UpdatePages;
@@ -11240,7 +11225,7 @@ begin
   begin
     NTabCount1:= 0;
     NTabCount2:= 0;
-    fCloseAll.Execute;
+    acCloseAll.Execute;
   end;
 
   with TIniFile.Create(fn) do
@@ -11612,10 +11597,10 @@ end;
 
 procedure TfmMain.TBXItemRunFindPhpClick(Sender: TObject);
 begin
-  FOnlineWordHelp('http://www.php.net/%s');
+  CurrentEditor.ExecCommand(sm_OpenPhp);
 end;
 
-procedure TfmMain.FOnlineWordHelp(const url: string);
+procedure TfmMain.DoOnlineWordHelp(const url: string);
 var
   s: ecString;
 begin
@@ -11627,7 +11612,7 @@ begin
   FOpenURL(s, Handle);
 end;
 
-procedure TfmMain.FOnlineFind(const Site: string);
+procedure TfmMain.DoOnlineFind(const Site: string);
 var
   S: WideString;
 begin
@@ -11640,51 +11625,36 @@ end;
 
 procedure TfmMain.TBXItemRunFindGoogleClick(Sender: TObject);
 begin
-  FOnlineFind('http://www.google.com/search?q=');
+  CurrentEditor.ExecCommand(sm_OpenGoogle);
 end;
 
 procedure TfmMain.TBXItemRunFindWikiClick(Sender: TObject);
 begin
-  FOnlineFind('http://en.wikipedia.org/w/index.php?title=Special:Search&search=');
+  CurrentEditor.ExecCommand(sm_OpenWiki);
 end;
 
 procedure TfmMain.TBXItemRunFindMSDNClick(Sender: TObject);
 begin
-  FOnlineFind('http://social.msdn.microsoft.com/Search/en-US?query=');
+  CurrentEditor.ExecCommand(sm_OpenMsdn);
 end;
 
-procedure TfmMain.RunIn(const fn: Widestring);
+procedure TfmMain.RunBrowser(const fn: Widestring);
 begin
   if CurrentFrame.FileName <> '' then
   begin
     if CurrentFrame.Modified then
-      FSave.Execute;
+      acSave.Execute;
     if not FExecute(fn, '"' + CurrentFrame.FileName + '"', '', Handle) then
       MsgNoRun(fn);
   end;
 end;
 
-procedure TfmMain.TBXItemRunFirefoxClick(Sender: TObject);
-begin
-  RunIn('firefox.exe');
-end;
-
-procedure TfmMain.TBXItemRunMSIEClick(Sender: TObject);
-begin
-  RunIn('iexplore.exe');
-end;
-
-procedure TfmMain.TBXItemRunChromeClick(Sender: TObject);
-begin
-  RunIn('chrome.exe');
-end;
-
-procedure TfmMain.TBXItemRunSafariClick(Sender: TObject);
-begin
-  RunIn('safari.exe');
-end;
-
 procedure TfmMain.TBXItemRunOpenFileClick(Sender: TObject);
+begin
+  DoOpenCurrentFile;
+end;
+
+procedure TfmMain.DoOpenCurrentFile;
 begin
   if CurrentFrame.FileName<>'' then
   begin
@@ -11697,6 +11667,11 @@ begin
 end;
 
 procedure TfmMain.TBXItemRunOpenDirClick(Sender: TObject);
+begin
+  DoOpenCurrentDir;
+end;
+
+procedure TfmMain.DoOpenCurrentDir;
 begin
   if CurrentFrame.FileName<>'' then
     FOpenURL(WideExtractFileDir(CurrentFrame.FileName), Handle);
@@ -11730,11 +11705,11 @@ end;
 
 procedure TfmMain.TBXItemTbCloseClick(Sender: TObject);
 begin
-  fClose.Execute;
+  acClose.Execute;
 end;
 
 
-procedure TfmMain.fExitExecute(Sender: TObject);
+procedure TfmMain.acExitExecute(Sender: TObject);
 begin
   if SynExe then
     Application.MainForm.Close
@@ -11769,7 +11744,7 @@ begin
   Finder.OnNotFound:= FinderFail;
 end;
 
-procedure TfmMain.fCloseDelExecute(Sender: TObject);
+procedure TfmMain.acCloseAndDelExecute(Sender: TObject);
 var
   fn: Widestring;
 begin
@@ -11777,7 +11752,7 @@ begin
   if MsgConfirm(DKLangConstW('mdel'), Handle) then
   begin
     fn:= CurrentFrame.FileName;
-    FClose.Execute;
+    acClose.Execute;
     if not FDeleteToRecycle(Handle, fn, true) then
       MsgError(WideFormat(DKLangConstW('mdeln'), [WideExtractFileName(fn)]), Handle);
     SynMruFiles.DeleteItem(fn);
@@ -11788,11 +11763,11 @@ end;
 procedure TfmMain.WM2(var m: TMessage);
 begin
   case m.WParam of
-    sm_FClose:   FClose.Execute;
-    sm_FCloseDel: FCloseDel.Execute;
-    sm_FCloseAll: FCloseAll.Execute;
-    sm_FCloseOth: FCloseOth.Execute;
-    sm_FileRename: FRename.Execute;
+    sm_FClose:   acClose.Execute;
+    sm_FCloseDel: acCloseAndDel.Execute;
+    sm_FCloseAll: acCloseAll.Execute;
+    sm_FCloseOth: acCloseOthers.Execute;
+    sm_FileRename: acRename.Execute;
   end;
   m.Result:= 1;
 end;
@@ -12560,8 +12535,8 @@ begin
   TBXItemEFillBlock.Enabled:= en and not ro;
   TBXItemEColumn.Enabled:= en and not ro;
   TBXItemEInsText.Enabled:= not ro;
-  TbxItemEZenExpand.Enabled:= not ro;
-  TbxItemEZenWrap.Enabled:= not ro;
+  TbxItemHtmlEmmetExpand.Enabled:= not ro;
+  TbxItemHtmlEmmetWrap.Enabled:= not ro;
   TbxItemEToggleLineComment.Enabled:= not ro;
   TbxItemEToggleStreamComment.Enabled:= not ro;
 end;
@@ -13361,7 +13336,7 @@ begin
   end;
 end;
 
-procedure TfmMain.fCustomizeHiExecute(Sender: TObject);
+procedure TfmMain.acSetupLexHLExecute(Sender: TObject);
 begin
   with SyntaxManager do
     if CurrentLexer<>nil then
@@ -13388,7 +13363,7 @@ begin
     case ShowModal of
       mrYes:
       begin
-        FNew.Execute;
+        acNew.Execute;
         Frames[FrameCount-1].EditorMaster.Text:= List.Items.Text;
       end;
     end;
@@ -14424,7 +14399,7 @@ begin
 
   Page_S.Pages[NTab].Free;
   if Page_S.PageCount=0 then
-    FNew.Execute;
+    acNew.Execute;
   Page_S.Invalidate; //To draw themed bkgnd
 
   PageControl:= Page_D;
@@ -14478,7 +14453,7 @@ end;
 
 procedure TfmMain.TBXItemTbCloseAllClick(Sender: TObject);
 begin
-  fCloseAll.Execute;
+  acCloseAll.Execute;
 end;
 
 function TfmMain.GetPageControl: TTntPageControl;
@@ -14982,7 +14957,7 @@ end;
 
 procedure TfmMain.TBXItemCtxOpenSelClick(Sender: TObject);
 begin
-  fOpenBySelection.Execute;
+  acOpenBySelection.Execute;
 end;
 
 procedure TfmMain.DoOpenBySelection;
@@ -15313,11 +15288,11 @@ end;
 
 procedure TfmMain.TBXItemCtxCustomizeClick(Sender: TObject);
 begin
-  fSetup.Execute;
+  acSetup.Execute;
 end;
 
 type
-  TTrCrk = class(TCustomSyntaxTreeview);
+  TTreeCrack = class(TCustomSyntaxTreeview);
 
 procedure TfmMain.TreeKeyPress(Sender: TObject; var Key: Char);
 begin
@@ -15334,7 +15309,7 @@ begin
   //Enter in tree
   if (Key=vk_return) and (Shift=[]) then
   begin
-    TTrCrk(Tree).DblClick;
+    TTreeCrack(Tree).DblClick;
     Key:= 0;
     Exit
   end;
@@ -15643,7 +15618,7 @@ end;
 
 procedure TfmMain.TBXItemFReopenClick(Sender: TObject);
 begin
-  fReread.Execute;
+  acReread.Execute;
 end;
 
 procedure TfmMain.ecToggleLineCommentExecute(Sender: TObject);
@@ -15712,7 +15687,7 @@ begin
   end;
 end;
 
-procedure TfmMain.fMakeBakExecute(Sender: TObject);
+procedure TfmMain.acBackupExecute(Sender: TObject);
 var Dest:Widestring;
 begin
   with CurrentFrame do
@@ -16186,7 +16161,7 @@ begin
   PropsManagerKeys.SaveProps;
 end;
 
-procedure TfmMain.TBXItemRunPreviewClick(Sender: TObject);
+procedure TfmMain.DoOpenBrowserPreview;
 var
   s: AnsiString;
   fn: string;
@@ -16210,17 +16185,6 @@ begin
       end;
       FExecute(fn, '', '', Handle);
     end;
-end;
-
-procedure TfmMain.TBXSubmenuItemBrPopup(Sender: TTBCustomItem;
-  FromLink: Boolean);
-var en:boolean;
-begin
-  en:= CurrentFrame.Filename <> '';
-  TbxItemRunFirefox.Enabled:= en;
-  TbxItemRunMSIE.Enabled:= en;
-  TbxItemRunSafari.Enabled:= en;
-  TbxItemRunChrome.Enabled:= en;
 end;
 
 procedure TfmMain.RunMacro(n: Integer);
@@ -16826,7 +16790,7 @@ end;
 
 procedure TfmMain.TBXItemTidyCfgClick(Sender: TObject);
 begin
-  DoOpenFile(SynTidyIni);
+  CurrentEditor.ExecCommand(sm_TidyConfig);
 end;
 
 procedure TfmMain.TidyClick(Sender: TObject);
@@ -16843,7 +16807,7 @@ var
 begin
   if CurrentFrame.FileName='' then Exit;
   if CurrentFrame.Modified then
-    FSave.Execute;
+    acSave.Execute;
   FListValFN:= CurrentFrame.FileName;
 
   fn_cfg:= SExpandVars('%Temp%\SynTidyCfg.txt');
@@ -16920,7 +16884,7 @@ end;
 
 procedure TfmMain.TBXItemTidyValClick(Sender: TObject);
 begin
-  DoTidy('');
+  CurrentEditor.ExecCommand(sm_TidyValidate);
 end;
 
 procedure TfmMain.TBXItemOOValClick(Sender: TObject);
@@ -18900,7 +18864,7 @@ begin
     end
     else
     begin
-      fNew.Execute;
+      acNew.Execute;
       CurrentEditor.Lines.AddStrings(L);
       EditorSetModified(CurrentEditor);
     end;
@@ -19075,7 +19039,7 @@ end;
 
 procedure TfmMain.TBXItemFNewClick(Sender: TObject);
 begin
-  fNew.Execute;
+  acNew.Execute;
 end;
 
 procedure TfmMain.TBXItemTreeFindExpandCurClick(Sender: TObject);
@@ -19512,10 +19476,10 @@ end;
 
 procedure TfmMain.TBXItemFPropsClick(Sender: TObject);
 begin
-  fProps.Execute;
+  acProps.Execute;
 end;
 
-procedure TfmMain.fPropsExecute(Sender: TObject);
+procedure TfmMain.acPropsExecute(Sender: TObject);
 var
   fn: WideString;
   NSize: Int64;
@@ -19904,7 +19868,7 @@ begin
 
       outToNewDoc:
         begin
-          FNew.Execute;
+          acNew.Execute;
           CurrentEditor.Lines.AddStrings(List);
           EditorSetModified(CurrentEditor);
         end;
@@ -20189,7 +20153,7 @@ begin
   end;
 end;
 
-procedure TfmMain.fRereadOutExecute(Sender: TObject);
+procedure TfmMain.acRereadOutExecute(Sender: TObject);
 var
   ft: Widestring;
   List: TWideStringList;
@@ -20441,12 +20405,12 @@ end;
 
 procedure TfmMain.TbxItemRunFindHtml4Click(Sender: TObject);
 begin
-  FOnlineWordHelp('http://www.w3schools.com/tags/tag_%s.asp');
+  CurrentEditor.ExecCommand(sm_OpenHTML4Help);
 end;
 
 procedure TfmMain.TbxItemRunFindHtml5Click(Sender: TObject);
 begin
-  FOnlineWordHelp('http://dev.w3.org/html5/markup/%s.html');
+  CurrentEditor.ExecCommand(sm_OpenHTML5Help);
 end;
 
 procedure TfmMain.ecRulerExecute(Sender: TObject);
@@ -20585,6 +20549,7 @@ procedure TfmMain.ecGotoPortableBkExecute(Sender: TObject);
 var
   CmtBegin, CmtEnd,
   CmtBegin1, CmtBegin2: string;
+  StripBkmk: boolean;
   //
   function BkStr(const S: Widestring; NLine: Integer): Widestring;
   var
@@ -20594,7 +20559,7 @@ var
     SReplaceAllW(Result, #9, CurrentTabExpansion(CurrentEditor));
 
     try
-      if not opStripBkmk then Exit;
+      if not StripBkmk then Exit;
 
       n:= Pos(CmtBegin, Result);
       if n=0 then Exit;
@@ -20644,6 +20609,7 @@ begin
   CmtBegin1:= '';
   CmtBegin2:= '';
   SLastLexer:= '?';
+  StripBkmk:= Bool(SynHiddenOption('BkStrip'));
 
   try
     //create bookmarks list
@@ -20733,7 +20699,7 @@ begin
   CurrentEditor.ExecCommand(sm_GotoBookmkDialog);
 end;
 
-procedure TfmMain.TBXItemRunLoremIpsumClick(Sender: TObject);
+procedure TfmMain.TBXItemHtmlLoremIpsumClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_LoremIpsum);
 end;
@@ -20834,7 +20800,7 @@ begin
   end;
 end;
 
-procedure TfmMain.fFavManageExecute(Sender: TObject);
+procedure TfmMain.acFavManageExecute(Sender: TObject);
 begin
   with TfmFav.Create(nil) do
   try
@@ -20966,7 +20932,7 @@ begin
       FMenuItem_Colors_Clear.Caption:= TBXItemFClr.Caption;
       FMenuItem_Colors_Save.Caption:= TBXItemFSaveAs.Caption;
       FMenuItem_Colors_Open.Caption:= TBXItemFOpen.Caption;
-      FMenuItem_Colors_Select.Caption:= TBXItemEColor.Caption;
+      FMenuItem_Colors_Select.Caption:= TBXItemHtmlInsColor.Caption;
 
       en:= ImageListColorRecent.Count>1;
       FMenuItem_Colors_Select.Enabled:= not CurrentEditor.ReadOnly;
@@ -21080,12 +21046,12 @@ begin
   CurrentEditor.ExecCommand(sm_FavAddProj);
 end;
 
-procedure TfmMain.fFavAddFileExecute(Sender: TObject);
+procedure TfmMain.acFavAddFileExecute(Sender: TObject);
 begin
   DoAddFav(CurrentFrame.FileName);
 end;
 
-procedure TfmMain.fFavAddProjExecute(Sender: TObject);
+procedure TfmMain.acFavAddProjExecute(Sender: TObject);
 begin
   DoAddFav(CurrentProjectFN);
 end;
@@ -21548,7 +21514,7 @@ begin
 end;
 
 
-procedure TfmMain.fRenameExecute(Sender: TObject);
+procedure TfmMain.acRenameExecute(Sender: TObject);
 var
   F: TEditorFrame;
   fn, fn_new, sName: Widestring;
@@ -21577,7 +21543,7 @@ begin
       MsgBeep;
   until false;
 
-  fClose.Execute;
+  acClose.Execute;
   if not MoveFileW(PWChar(fn), PWChar(fn_new)) then
   begin
     MsgError(DKLangConstW('zMRenameErr')+#13+fn+#13'-->'#13+fn_new, Handle);
@@ -21718,7 +21684,7 @@ begin
   FocusEditor;
 end;
 
-procedure TfmMain.fColumnMarkersExecute(Sender: TObject);
+procedure TfmMain.acColumnMarkersExecute(Sender: TObject);
 var
   S: Widestring;
 begin
@@ -22732,7 +22698,7 @@ begin
     end;
 end;
 
-procedure TfmMain.TBXItemHEmmetClick(Sender: TObject);
+procedure TfmMain.TBXItemHtmlEmmetHelpClick(Sender: TObject);
 begin
 {
   fn:= SynDir + 'Readme\ZenCodingCheatSheet.pdf';
@@ -22997,7 +22963,7 @@ begin
     begin
       CloseFrameWithCfm(FramesAll[N]);
       if FrameAllCount=0 then
-        fNew.Execute;
+        acNew.Execute;
       UpdatePages;
       
       if ListTabs.CanFocus then
@@ -23788,7 +23754,7 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXItemRunEncodeHtmlClick(Sender: TObject);
+procedure TfmMain.TBXItemHtmlEncodeClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_EncodeHtmlChars);
 end;
@@ -23938,7 +23904,7 @@ begin
           ok:= false;
           if i>0 then
           begin
-            FNew.Execute;
+            acNew.Execute;
             CurrentEditor.InsertText(L.Text);
           end;  
           MsgDoneLines(i);
@@ -24453,9 +24419,9 @@ begin
   F:= CurrentFrame;
   if F<>nil then
     if F.Modified then
-      fSave.ImageIndex:= 1
+      acSave.ImageIndex:= 1
     else
-      fSave.ImageIndex:= 2;
+      acSave.ImageIndex:= 2;
 end;
 
 procedure TfmMain.TBXItemFoldAllClick(Sender: TObject);
@@ -25131,12 +25097,12 @@ begin
   CurrentEditor.ExecCommand(smUncommentLines);
 end;
 
-procedure TfmMain.TBXItemEZenExpandClick(Sender: TObject);
+procedure TfmMain.TBXItemHtmlEmmetExpandClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_ZenExpand);
 end;
 
-procedure TfmMain.TBXItemEZenWrapClick(Sender: TObject);
+procedure TfmMain.TBXItemHtmlEmmetWrapClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_ZenWrap);
 end;
@@ -26221,7 +26187,7 @@ begin
   DoOpenFile(SynIni);
 end;
 
-procedure TfmMain.fOpenBySelectionExecute(Sender: TObject);
+procedure TfmMain.acOpenBySelectionExecute(Sender: TObject);
 begin
   DoOpenBySelection;
 end;
@@ -26562,17 +26528,31 @@ begin
   end;
 end;
 
-procedure TfmMain.fCustomizeLexerLibExecute(Sender: TObject);
+procedure TfmMain.acSetupLexLibExecute(Sender: TObject);
 begin
   DoCustomizeLexerLibrary(SyntaxManager);
   SaveLexLibFilename; //always save lexer filename
   AskLexer(True); //save lexer file, if modified
 end;
 
-
 procedure TfmMain.TbxItemTabReloadClick(Sender: TObject);
 begin
-  DoFrameReload(FClickedFrame);
+  DoFrameReloadWrapper(FClickedFrame);
+end;
+
+procedure TfmMain.TBXItemHtmlPreviewClick(Sender: TObject);
+begin
+  DoOpenBrowserPreview;
+end;
+
+function TfmMain.SynHiddenOption(const S: string): Integer;
+begin
+  with TIniFile.Create(SynIni) do
+  try
+    Result:= ReadInteger('Setup', S, 0);
+  finally
+    Free
+  end;
 end;
 
 end.

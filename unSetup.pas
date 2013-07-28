@@ -254,7 +254,6 @@ type
     boxMicromap: TTntGroupBox;
     cbMicroMap: TTntCheckBox;
     cbBeep: TTntCheckBox;
-    cbStripBk: TTntCheckBox;
     cbTips: TTntCheckBox;
     cbMenuIcon: TTntCheckBox;
     cbFullTitle: TTntCheckBox;
@@ -1874,7 +1873,6 @@ begin
     opSortMode:= TSynSortMode(cbSortMode.ItemIndex);
     ApplyShowRecentColors;
     opLexerCat:= cbGroupLexers.Checked;
-    opStripBkmk:= cbStripBk.Checked;
     opMenuIcon:= cbMenuIcon.Checked;
     Icons:= Icons; //update menu
     opTitleFull:= cbFullTitle.Checked;
@@ -2171,7 +2169,6 @@ begin
     cbRecColors.ItemIndex:= opShowRecentColors;
     cbSortMode.ItemIndex:= Ord(opSortMode);
     cbGroupLexers.Checked:= opLexerCat;
-    cbStripBk.Checked:= opStripBkmk;
     cbFullTitle.Checked:= opTitleFull;
     cbMenuIcon.Checked:= opMenuIcon;
     cbTips.Checked:= opTipsToken;

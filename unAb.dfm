@@ -67,9 +67,9 @@ object fmAb: TfmAb
     object LabelWn: TTntLabel
       Left = 88
       Top = 16
-      Width = 46
+      Width = 52
       Height = 13
-      Caption = 'Alexey T.'
+      Caption = 'Alexey Tor'
     end
     object Labelw2: TTntLabel
       Left = 160
@@ -200,8 +200,8 @@ object fmAb: TfmAb
     IgnoreList.Strings = (
       '*.Hint'
       'Labelw*')
-    Left = 296
-    Top = 88
+    Left = 216
+    Top = 8
     LangData = {
       0400666D4162010100000001000000070043617074696F6E011000000007004C
       6162656C57300000090047726F7570426F783401010000000400000007004361

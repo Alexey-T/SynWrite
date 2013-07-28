@@ -108,7 +108,7 @@ begin
   if f <> nil then
   with f do
   begin
-    fCloseAll.Execute;
+    acCloseAll.Execute;
     DoOpenFile(S);
     UpdateRO;
     UpdateQVTree(S);

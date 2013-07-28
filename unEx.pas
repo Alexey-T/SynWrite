@@ -251,7 +251,7 @@ var
 begin
   fmMain.hLister:= Handle;
   fmMain.Show;
-  fmMain.fNew.Execute;
+  fmMain.acNew.Execute;
 
   LoadPos;
   DragAcceptFiles(Handle, True);
@@ -396,8 +396,8 @@ begin
       //0: do nothing, 1: close app, 2: close tab, 3: close tab or app, 4: minimize app
       case fmMain.opEsc of
         1: Close;
-        2: fmMain.fClose.Execute;
-        3: if fmMain.FrameAllCount=1 then Close else fmMain.fClose.Execute;
+        2: fmMain.acClose.Execute;
+        3: if fmMain.FrameAllCount=1 then Close else fmMain.acClose.Execute;
         4: Application.Minimize;
       end;
     Key:= 0;
