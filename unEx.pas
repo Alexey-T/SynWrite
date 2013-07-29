@@ -397,7 +397,13 @@ begin
       case fmMain.opEsc of
         1: Close;
         2: fmMain.acClose.Execute;
-        3: if fmMain.FrameAllCount=1 then Close else fmMain.acClose.Execute;
+        3:
+          begin
+            if fmMain.FrameAllCount=1 then
+              Close
+            else
+              fmMain.acClose.Execute;
+          end;    
         4: Application.Minimize;
       end;
     Key:= 0;

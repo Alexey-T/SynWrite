@@ -90,6 +90,7 @@ procedure SParseOut(const SStr, SRegex: Widestring;
   num_fn, num_line, num_col: integer; //1-based
   var res_fn: Widestring; var res_line, res_col: integer);
 
+procedure FWriteStringToFile(const fn: string; const S: AnsiString);
 function FFindStringInFile(const fn: Widestring;
   const Str: Widestring;
   IgnoreCase: boolean): boolean;
@@ -1934,5 +1935,17 @@ begin
   SReplaceAllW(Result, '  ', ' ');
   SReplaceAllW(Result, ' ', '+');
 end;
+
+procedure FWriteStringToFile(const fn: string; const S: AnsiString);
+begin
+  if S<>'' then
+  with TFileStream.Create(fn, fmCreate) do
+  try
+    WriteBuffer(S[1], Length(S)*SizeOf(AnsiChar));
+  finally
+    Free
+  end;
+end;
+
 
 end.

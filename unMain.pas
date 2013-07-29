@@ -1950,6 +1950,7 @@ type
     cStatCaretsTopLn,
     cStatCaretsBotLn: Widestring;
 
+    FTempFilenames: TTntStringList;
     FUserToolbarCommands: TTntStringList;
     FInitialDir: Widestring;
     FLastOnContinueCheck: DWORD;
@@ -2530,6 +2531,8 @@ type
     procedure DoOpenCurrentFile;
     procedure DoOpenCurrentDir;
     function SynHiddenOption(const S: string): Integer;
+    procedure DoRememberTempFile(const fn: Widestring);
+    procedure DoDeleteTempFiles;
     //end of private
 
   protected
@@ -2849,7 +2852,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.7.740';
+  cSynVer = '5.8.740';
 
 const  
   cSynParamRO = '/RO';
@@ -6869,7 +6872,8 @@ begin
     Screen.Cursors[1]:= Cur;
 
   //others
-  FUserToolbarCommands:= TTntStringList.Create;  
+  FUserToolbarCommands:= TTntStringList.Create;
+  FTempFilenames:= TTntStringList.Create;  
 end;
 
 procedure TfmMain.ecPrinterSetupExecute(Sender: TObject);
@@ -7060,6 +7064,8 @@ begin
   FreeAndNil(SynMruSessions);
   FreeAndNil(SynMruNewdoc);
 
+  DoDeleteTempFiles;
+  FreeAndNil(FTempFilenames);
   FreeAndNil(FUserToolbarCommands);
 
   FreeAndNil(TabSwitcher2);
@@ -16163,28 +16169,36 @@ end;
 
 procedure TfmMain.DoOpenBrowserPreview;
 var
+  Ed: TSyntaxMemo;
   s: AnsiString;
-  fn: string;
+  fn, dir: Widestring;
 begin
-  if CurrentEditor<>nil then
-    with CurrentEditor do
-    begin
-      if SelLength>0 then
-        s:= SelText
-      else
-        s:= Lines.FText;
-      if Trim(s)='' then
-        begin MsgNoSelection; Exit end;
-      fn:= SExpandVars('%Temp%\SynPreview.html');
-      FDelete(fn);
-      with TFileStream.Create(fn, fmCreate) do
-      try
-        WriteBuffer(s[1], Length(s)*SizeOf(AnsiChar));
-      finally
-        Free
-      end;
-      FExecute(fn, '', '', Handle);
-    end;
+  Ed:= CurrentEditor;
+  if Ed=nil then Exit;
+
+  if Ed.SelLength>0 then
+    s:= Ed.SelText
+  else
+    s:= Ed.Lines.FText;
+  if Trim(s)='' then
+    begin MsgNoSelection; Exit end;
+
+  if CurrentFrame.FileName='' then
+    dir:= SExpandVars('%temp%')
+  else
+    dir:= ExtractFileDir(CurrentFrame.FileName);
+  fn:= dir+'\_synwrite_preview.html';
+
+  FDelete(fn);
+  FWriteStringToFile(fn, s);
+
+  if IsFileExist(fn) then
+  begin
+    DoRememberTempFile(fn);
+    FExecute(fn, '', '', Handle);
+  end
+  else
+    MsgBeep;
 end;
 
 procedure TfmMain.RunMacro(n: Integer);
@@ -26552,6 +26566,23 @@ begin
     Result:= ReadInteger('Setup', S, 0);
   finally
     Free
+  end;
+end;
+
+procedure TfmMain.DoRememberTempFile(const fn: Widestring);
+begin
+  if FTempFilenames.IndexOf(fn)<0 then
+    FTempFilenames.Add(fn);
+end;
+
+procedure TfmMain.DoDeleteTempFiles;
+var
+  i: Integer;
+begin
+  for i:= FTempFilenames.Count-1 downto 0 do
+  begin
+    FDelete(FTempFilenames[i]);
+    FTempFilenames.Delete(i);
   end;
 end;
 
