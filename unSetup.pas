@@ -620,6 +620,7 @@ uses
 
   unHints,
   unProc,
+  unProcHelp,
   unProj,
   unProcSort,
 
@@ -1304,7 +1305,7 @@ end;
 
 procedure TfmSetup.labDateClick(Sender: TObject);
 begin
-  ShowHelp(fmMain.SynDir, helpDateFmt, Handle);
+  FHelpShow(fmMain.SynDir, helpDateFmt, Handle);
 end;
 
 procedure TfmSetup.tabSearchShow(Sender: TObject);
@@ -1414,17 +1415,17 @@ end;
 
 procedure TfmSetup.labSmTabHelpClick(Sender: TObject);
 begin
-  ShowHelp(fmMain.SynDir, helpSmartTabbing, Handle);
+  FHelpShow(fmMain.SynDir, helpSmartTabbing, Handle);
 end;
 
 procedure TfmSetup.labTplHelpClick(Sender: TObject);
 begin
-  ShowHelp(fmMain.SynDir, helpCodeTpl, Handle);
+  FHelpShow(fmMain.SynDir, helpCodeTpl, Handle);
 end;
 
 procedure TfmSetup.labAutoCloseHelpClick(Sender: TObject);
 begin
-  ShowHelp(fmMain.SynDir, helpAutoClose, Handle);
+  FHelpShow(fmMain.SynDir, helpAutoClose, Handle);
 end;
 
 procedure TfmSetup.cbACloseBrClick(Sender: TObject);
@@ -1660,7 +1661,7 @@ end;
 
 procedure TfmSetup.labEmmetClick(Sender: TObject);
 begin
-  ShowHelp(fmMain.SynDir, helpEmmet, Handle);
+  FHelpShow(fmMain.SynDir, helpEmmet, Handle);
 end;
 
 procedure TfmSetup.tabCaretsShow(Sender: TObject);
@@ -1672,12 +1673,12 @@ end;
 
 procedure TfmSetup.labCaretHelpClick(Sender: TObject);
 begin
-  ShowHelp(fmMain.SynDir, helpCarets, Handle);
+  FHelpShow(fmMain.SynDir, helpCarets, Handle);
 end;
 
 procedure TfmSetup.labAcpHelpClick(Sender: TObject);
 begin
-  ShowHelp(fmMain.SynDir, helpAcp, Handle);
+  FHelpShow(fmMain.SynDir, helpAcp, Handle);
 end;
 
 procedure TfmSetup.ApplyFiles;

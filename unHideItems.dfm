@@ -25,9 +25,8 @@ object fmHideItems: TfmHideItems
     AutoSize = False
     Caption = 
       'This dialog allows to hide all predefined menus and toolbars ite' +
-      'ms, using SynHide.ini file (see help topic in Misc section). Che' +
-      'ck items to hide. Program must be restarted to apply these setti' +
-      'ngs.'
+      'ms, using SynHide.ini file. Check items to hide. Note: program m' +
+      'ust be restarted to apply these settings.'
     WordWrap = True
   end
   object List: TTntCheckListBox

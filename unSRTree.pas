@@ -69,7 +69,7 @@ begin
     Free;
   end;
 
-  SLoadCombo(edText, FIniFN, 'SearchTreeText');
+  ComboLoadFromFile(edText, FIniFN, 'SearchTreeText');
   edText.Text:= FSearchFor;
   edTextChange(Self);
 end;
@@ -94,8 +94,8 @@ begin
     Free;
   end;
   
-  SSave(edText, 10);
-  SSaveCombo(edText, FIniFN, 'SearchTreeText');
+  ComboUpdate(edText, 10);
+  ComboSaveToFile(edText, FIniFN, 'SearchTreeText');
 end;
 
 end.

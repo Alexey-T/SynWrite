@@ -199,7 +199,8 @@ uses
   IniFiles, ShellApi,
   Math, StrUtils,
   ATxFProc, ATxSProc,
-  unProc;
+  unProc,
+  unProcHelp;
 
 {$R *.dfm}
 
@@ -316,9 +317,9 @@ begin
   end
   else
     //Read from Syn ini
-    SLoadCombo(ed1, SRIniS, 'SearchText');
+    ComboLoadFromFile(ed1, SRIniS, 'SearchText');
 
-  SLoadCombo(ed2, SRIni, 'RHist', false);
+  ComboLoadFromFile(ed2, SRIni, 'RHist', false);
   ed1Change(Self);
 end;
 
@@ -382,9 +383,9 @@ begin
   end
   else
     //Write Syn ini
-    SSaveCombo(ed1, SRIniS, 'SearchText');
+    ComboSaveToFile(ed1, SRIniS, 'SearchText');
 
-  SSaveCombo(ed2, SRIni, 'RHist');
+  ComboSaveToFile(ed2, SRIni, 'RHist');
 end;
 
 procedure TfmSR.ed1Change(Sender: TObject);
@@ -404,7 +405,7 @@ end;
 
 procedure TfmSR.bHelpClick(Sender: TObject);
 begin
-  ShowHelp(SynDir, helpFindDlg, Handle);
+  FHelpShow(SynDir, helpFindDlg, Handle);
 end;
 
 procedure TfmSR.cbREClick(Sender: TObject);
@@ -496,8 +497,8 @@ begin
     ed2.Text:= ed2Memo.Text;
   end;
 
-  SSave(ed1, SRCount);
-  SSave(ed2, SRCount);
+  ComboUpdate(ed1, SRCount);
+  ComboUpdate(ed2, SRCount);
 
   if Assigned(SRProc) then
     SRProc(act);

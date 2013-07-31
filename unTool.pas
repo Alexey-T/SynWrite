@@ -120,8 +120,14 @@ var
 
 implementation
 
-uses tntSysUtils, TntFileCtrl, unTool2,
-  atxSProc, atxFProc, unProc;
+uses
+  TntSysUtils,
+  TntFileCtrl,
+  atxSProc,
+  atxFProc,
+  unTool2,
+  unProc,
+  unProcHelp;
 
 {$R *.dfm}
 
@@ -517,7 +523,7 @@ end;
 
 procedure TfmTools.bHelpClick(Sender: TObject);
 begin
-  ShowHelp(SynDir, helpExtTools, Handle);
+  FHelpShow(SynDir, helpExtTools, Handle);
 end;
 
 procedure TfmTools.edOutTypeChange(Sender: TObject);

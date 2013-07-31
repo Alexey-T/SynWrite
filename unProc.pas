@@ -22,14 +22,12 @@ uses
   IniFiles,
   PngImageList;
 
+procedure EditorSearchMarksToList(Ed: TSyntaxmemo; List: TTntStrings);
 function EditorSelectedTextForWeb(Ed: TSyntaxMemo): Widestring;
 procedure DoEditorSelectToPosition(Ed: TSyntaxMemo; NTo: Integer);
 function SyntaxManagerFilesFilter(M: TSyntaxManager; SAllText: Widestring): Widestring;
 function GetEditHandle(Target: TObject): THandle;
 procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
-
-function FHelpLangSuffix: string;
-function FHelpFilename(const SynDir: string): string;
 
 type
   TSynMruList = class
@@ -90,7 +88,7 @@ procedure SParseOut(const SStr, SRegex: Widestring;
   num_fn, num_line, num_col: integer; //1-based
   var res_fn: Widestring; var res_line, res_col: integer);
 
-procedure FWriteStringToFile(const fn: string; const S: AnsiString);
+procedure FWriteStringToFile(const fn: string; const S: WideString; UseUTF8: boolean);
 function FFindStringInFile(const fn: Widestring;
   const Str: Widestring;
   IgnoreCase: boolean): boolean;
@@ -98,39 +96,6 @@ function FFindStringInFile(const fn: Widestring;
 procedure SReadFileIntoSomeLists(const fn: string;
   const section1, section2: string;
   L1, L2: TStringList);
-
-type
-  TSynHelpId = (
-    helpDonate,
-    helpRegex,
-    helpCarets,
-    helpDateFmt,
-    helpACP,
-    helpSmartTabbing,
-    helpCodeTpl,
-    helpAutoClose,
-    helpExtTools,
-    helpFindDlg,
-    helpCmdListDlg,
-    helpEmmet,
-    helpProjOpts
-  );
-const
-  cSynHelpId: array[TSynHelpId] of string = (
-    'Donate.html',
-    'RegEx.html',
-    'MultiCarets.html',
-    'MiscDateFormat.html',
-    'HelperACP.html',
-    'HelperSmartTagTabbing.html',
-    'HelperCodeTpl.html',
-    'HelperAClose.html',
-    'ExternalTools.html',
-    'DialogFind.html',
-    'DialogCmdList.html',
-    'HelperZenCoding.html',
-    'ProjMan.html#prop'
-  );
 
 procedure FixTcIni(var fnTC: string; const section: string);
 
@@ -158,14 +123,15 @@ procedure DoPasteToEdit(ed: TTntCombobox;
 function Min2(N, M: integer): integer;
 function Max2(N, M: integer): integer;
 
-procedure CountWords(L: TSyntMemoStrings; var NWords, NChars: Int64);
 function WideMinimizeName(const Filename: WideString; Canvas: TCanvas;
   MaxLen: Integer): WideString;
-procedure ShowHelp(const SynDir: string; ID: TSynHelpId; Handle: THandle);
-procedure CenterMemoPos(Ed: TCustomSyntaxMemo; AGotoMode: boolean);
-procedure SSave(ed: TTntCombobox; SRCount: integer);
-procedure SSaveCombo(ed: TTntCombobox; const fn, section: string);
-procedure SLoadCombo(ed: TTntCombobox; const fn, section: string; UseLast: boolean = true);
+
+procedure EditorCountWords(L: TSyntMemoStrings; var NWords, NChars: Int64);
+procedure EditorCenterPos(Ed: TCustomSyntaxMemo; AGotoMode: boolean);
+
+procedure ComboUpdate(ed: TTntCombobox; SRCount: integer);
+procedure ComboSaveToFile(ed: TTntCombobox; const fn, section: string);
+procedure ComboLoadFromFile(ed: TTntCombobox; const fn, section: string; UseLast: boolean = true);
 
 type
   TFinderInTree = class(TecFindInTreeDialog)
@@ -521,7 +487,7 @@ const
   SRCount = 50;
   SR_EOL = '<<SW_EOL>>';
 
-procedure SSaveCombo(ed: TTntCombobox; const fn, section: string);
+procedure ComboSaveToFile(ed: TTntCombobox; const fn, section: string);
 var
   i: Integer;
   S: Ansistring;
@@ -544,7 +510,7 @@ begin
   end;
 end;
 
-procedure SLoadCombo(ed: TTntCombobox; const fn, section: string;
+procedure ComboLoadFromFile(ed: TTntCombobox; const fn, section: string;
   UseLast: boolean = true);
 var
   i: Integer;
@@ -570,7 +536,7 @@ begin
   end;
 end;
 
-procedure SSave(ed: TTntCombobox; SRCount: integer);
+procedure ComboUpdate(ed: TTntCombobox; SRCount: integer);
 var
   idx: integer;
   S: Widestring;
@@ -589,7 +555,7 @@ begin
   end;
 end;
 
-procedure CenterMemoPos(Ed: TCustomSyntaxMemo; AGotoMode: boolean);
+procedure EditorCenterPos(Ed: TCustomSyntaxMemo; AGotoMode: boolean);
 var
   p: TPoint;
   ext: TSize;
@@ -640,43 +606,6 @@ begin
   end;
 end;
 
-function FHelpLangSuffix: string;
-begin
-  //see contents of SynWrite LNG files - string "LANGID="
-  case LangManager.LanguageID of
-    1049: Result:= 'Ru';
-    1029: Result:= 'Cz';
-    1031: Result:= 'De';
-    1036: Result:= 'Fr';
-    1040: Result:= 'It';
-    1041: Result:= 'Jp';
-    2052: Result:= 'Chs';
-    3082: Result:= 'Sp';
-    else Result:= 'En';
-  end;
-end;
-
-function FHelpFilename(const SynDir: string): string;
-var
-  Suffix, HelpEn, HelpLocal: string;
-begin
-  Suffix:= FHelpLangSuffix;
-  HelpEn:= SynDir + 'Readme\SynWrite.chm';
-  HelpLocal:= SynDir + 'Readme\SynWrite.' + Suffix + '.chm';
-
-  if Suffix='En' then
-    Result:= HelpEn
-  else
-    if FileExists(HelpLocal) then
-      Result:= HelpLocal
-    else
-      Result:= HelpEn;
-end;
-
-procedure ShowHelp(const SynDir: string; ID: TSynHelpId; Handle: THandle);
-begin
-  FExecute('hh.exe', '"' + FHelpFilename(SynDir) + '::/' + cSynHelpId[ID] + '"', '', Handle);
-end;
 
 { TFinderInTree }
 
@@ -920,7 +849,7 @@ begin
 end;
 
 
-procedure CountWords(L: TSyntMemoStrings; var NWords, NChars: Int64);
+procedure EditorCountWords(L: TSyntMemoStrings; var NWords, NChars: Int64);
 var
   s: Widestring;
   i, j: integer;
@@ -1936,16 +1865,38 @@ begin
   SReplaceAllW(Result, ' ', '+');
 end;
 
-procedure FWriteStringToFile(const fn: string; const S: AnsiString);
+procedure FWriteStringToFile(const fn: string; const S: WideString; UseUTF8: boolean);
+const
+  cSign: array[0..2] of byte = ($EF, $BB, $BF);
+var
+  SData: AnsiString;
 begin
   if S<>'' then
-  with TFileStream.Create(fn, fmCreate) do
-  try
-    WriteBuffer(S[1], Length(S)*SizeOf(AnsiChar));
-  finally
-    Free
+  begin
+    if UseUTF8 then
+      SData:= UTF8Encode(S)
+    else
+      SData:= S;
+
+    with TFileStream.Create(fn, fmCreate) do
+    try
+      if UseUTF8 then
+        WriteBuffer(cSign, Sizeof(cSign));
+      WriteBuffer(SData[1], Length(SData)*SizeOf(AnsiChar));
+    finally
+      Free
+    end;
   end;
 end;
 
+procedure EditorSearchMarksToList(Ed: TSyntaxmemo; List: TTntStrings);
+var
+  i: Integer;
+begin
+  List.Clear;
+  with Ed.SearchMarks do
+    for i:= 0 to Count-1 do
+      List.Add(Copy(Ed.Text, Items[i].StartPos+1, Items[i].Size));
+end;
 
 end.

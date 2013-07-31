@@ -51,6 +51,7 @@ uses
   ecUnicode,
   ecStrUtils,
   unProc,
+  unProcHelp,
   ATxSProc;
 
 {$R *.dfm}
@@ -271,7 +272,7 @@ end;
 
 procedure TfmProjList.labHelpClick(Sender: TObject);
 begin
-  ShowHelp(SynDir, helpCmdListDlg, Handle);
+  FHelpShow(SynDir, helpCmdListDlg, Handle);
 end;
 
 procedure TfmProjList.cbFuzzyClick(Sender: TObject);

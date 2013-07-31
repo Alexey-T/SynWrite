@@ -53,6 +53,7 @@ implementation
 
 uses
   unProc,
+  unProcHelp,
   TntFileCtrl;
 
 {$R *.dfm}
@@ -93,7 +94,7 @@ end;
 
 procedure TfmProjProps.btnHelpClick(Sender: TObject);
 begin
-  ShowHelp(FSynDir, helpProjOpts, Handle);
+  FHelpShow(FSynDir, helpProjOpts, Handle);
 end;
 
 end.

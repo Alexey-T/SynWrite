@@ -48,6 +48,7 @@ uses
   Math,
   ecStrUtils,
   unProc,
+  unProcHelp,
   ATxSProc;
 
 {$R *.dfm}
@@ -228,7 +229,7 @@ end;
 
 procedure TfmCmdList.labHelpClick(Sender: TObject);
 begin
-  ShowHelp(SynDir, helpCmdListDlg, Handle);
+  FHelpShow(SynDir, helpCmdListDlg, Handle);
 end;
 
 procedure TfmCmdList.cbFuzzyClick(Sender: TObject);

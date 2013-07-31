@@ -306,7 +306,7 @@ end;
 function TSynFindReplace.Search(StrtPos, EndPos: integer;
   ToBack, ToAll, Replace, CntOnly: boolean): Boolean;
 var
-  st, en, N, RepLen, ACfm: integer;
+  st, en, RepLen, ACfm: integer;
   s: WideString;
 begin
   Result:= (FFindText <> '') and Assigned(FControl);
@@ -335,31 +335,36 @@ begin
        not Find(FControl.Lines.FText, st, en, ToBack) then
        Break;
 
-     N:= en - st;
-     RepLen:= N;
+     RepLen:= en - st;
      if CanAccept(st, en) then
      begin
        Inc(FMatches);
-       FMatchLen:= N;
+       FMatchLen:= RepLen;
        if not Replace then
+       //show find result
        begin
-         //show find result
          if not CntOnly then
-           ShowRes(st - 1, N, ToBack)
+           ShowRes(st - 1, FMatchLen, ToBack)
        end
        else
        //show replace result
        begin
-         ACfm:= RepCfm(st - 1, N, ToBack, ToAll);
+         ACfm:= RepCfm(st - 1, FMatchLen, ToBack, ToAll);
          case ACfm of
            mrYes, mrAll:
            begin
              S:= StrReplaceWith;
-             FControl.ReplaceText(st - 1, N, S);
+             FControl.ReplaceText(st - 1, FMatchLen, S);
              RepLen:= Length(S);
-             Inc(EndPos, RepLen - N); //text may become longer
+             Inc(EndPos, RepLen - FMatchLen); //text may become longer
+
              if not ToAll then
                ShowRes(st - 1, RepLen, ToBack);
+
+             //workaround for replacing regex ".*?" with some string
+             if (not ToBack) and (ftRegularExpr in FFlags) then
+               if (FMatchLen=0) then
+                 Inc(RepLen);
            end;
            mrNo:
              RepLen:= 1;
@@ -379,12 +384,14 @@ begin
      else
      begin
        StrtPos:= st + RepLen;
+
        //workaround for inf-looping on replacing regex '$':
        if IsSpecialCase1 then
          case FControl.Lines.TextFormat of
            tfCR_NL: Inc(StrtPos, 2);
            else Inc(StrtPos);
          end;
+
        //workaround for replacing regex "^www" with empty sting:
        if IsSpecialCase2 then
          Inc(StrtPos);
@@ -687,7 +694,7 @@ end;
 
 procedure TSynFindReplace.CenterPos;
 begin
-  CenterMemoPos(FControl, false{GotoMode});
+  EditorCenterPos(FControl, false{GotoMode});
 end;
 
 constructor TSynFindReplace.Create(AOwner: TComponent);

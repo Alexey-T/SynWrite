@@ -6,25 +6,28 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls,
   TntStdCtrls, TntForms,
-  ecSyntMemo, unSearch, DKLang;
+  ecSyntMemo, unSearch, DKLang, ExtCtrls;
 
 type
   TfmExtract = class(TTntForm)
-    b1: TTntGroupBox;
+    DKLanguageController1: TDKLanguageController;
+    PanelRt: TPanel;
     bFind: TTntButton;
     bCopy: TTntButton;
+    bTab: TTntButton;
+    bHelp: TTntButton;
+    bCan: TTntButton;
+    PanelMid: TPanel;
+    b1: TTntGroupBox;
+    TntLabel1: TTntLabel;
+    labNot: TTntLabel;
+    ed: TTntComboBox;
+    bCase: TTntCheckBox;
+    bSel: TTntCheckBox;
+    bCur: TTntCheckBox;
     b2: TTntGroupBox;
     List: TTntListBox;
-    ed: TTntComboBox;
-    TntLabel1: TTntLabel;
-    bCan: TTntButton;
-    bHelp: TTntButton;
-    bCase: TTntCheckBox;
-    DKLanguageController1: TDKLanguageController;
-    bSel: TTntCheckBox;
-    bTab: TTntButton;
-    bCur: TTntCheckBox;
-    labNot: TTntLabel;
+    PanelLeft: TPanel;
     procedure bCopyClick(Sender: TObject);
     procedure bFindClick(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
@@ -56,14 +59,14 @@ var
 
 implementation
 
-uses TntClipbrd,
-  Inifiles, ATxSProc,
-  unSR, unProc, ecStrUtils, ecCmdConst;
+uses
+  TntClipbrd,
+  Inifiles,
+  ATxSProc,
+  unSR, unProc, unProcHelp,
+  ecStrUtils, ecCmdConst;
 
 {$R *.dfm}
-
-const
-  cc = 30; //Max items in history
 
 procedure TfmExtract.bCopyClick(Sender: TObject);
 begin
@@ -77,9 +80,8 @@ begin
 end;
 
 procedure TfmExtract.bFindClick(Sender: TObject);
-var i:Integer;
 begin
-  SSave(ed, SRCount);
+  ComboUpdate(ed, SRCount);
 
   Clr;
   with Finder do
@@ -97,21 +99,17 @@ begin
     labNot.Visible:= Matches=0;
   end;
 
-  List.Items.Clear;
   bCopy.Enabled:= false;
   bTab.Enabled:= false;
-  with Memo.SearchMarks do
-    for i:= 0 to Count-1 do
-    begin
-      List.Items.Add(Copy(Memo.Text, Items[i].StartPos+1, Items[i].Size));
-    end;
+  EditorSearchMarksToList(Memo, List.Items);
+
   bCopy.Enabled:= List.Items.Count>0;
   bTab.Enabled:= bCopy.Enabled;
 end;
 
 procedure TfmExtract.bHelpClick(Sender: TObject);
 begin
-  ShowHelp(SynDir, helpRegex, Handle);
+  FHelpShow(SynDir, helpRegex, Handle);
 end;
 
 procedure TfmExtract.FormCreate(Sender: TObject);
@@ -133,7 +131,7 @@ begin
     Free;
   end;
 
-  SLoadCombo(ed, SynIni, 'ExHist');
+  ComboLoadFromFile(ed, SynIni, 'ExHist');
 end;
 
 procedure TfmExtract.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -155,7 +153,7 @@ begin
     Free;
   end;
 
-  SSaveCombo(ed, SynIni, 'ExHist');
+  ComboSaveToFile(ed, SynIni, 'ExHist');
 end;
 
 procedure TfmExtract.FormShow(Sender: TObject);

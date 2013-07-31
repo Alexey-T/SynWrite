@@ -84,11 +84,11 @@ const
 
 procedure TfmInsTxt.FormShow(Sender: TObject);
 begin
-  SLoadCombo(ed1, SIni, 'Ins_Ed1Hist');
-  SLoadCombo(ed2, SIni, 'Ins_Ed2Hist');
-  SLoadCombo(edBegin, SIni, 'Ins_EdBeginHist');
-  SLoadCombo(edTail, SIni, 'Ins_EdTailHist');
-  SLoadCombo(edStrAfter, SIni, 'Ins_EdStrHist');
+  ComboLoadFromFile(ed1, SIni, 'Ins_Ed1Hist');
+  ComboLoadFromFile(ed2, SIni, 'Ins_Ed2Hist');
+  ComboLoadFromFile(edBegin, SIni, 'Ins_EdBeginHist');
+  ComboLoadFromFile(edTail, SIni, 'Ins_EdTailHist');
+  ComboLoadFromFile(edStrAfter, SIni, 'Ins_EdStrHist');
 
   {if edTail.Text='' then
     edTail.Text:= '. ';}
@@ -128,17 +128,17 @@ var n: Integer;
 begin
   if ModalResult<>mrOk then Exit;
 
-  SSave(ed1, SRCount);
-  SSave(ed2, SRCount);
-  SSave(edTail, SRCount);
-  SSave(edBegin, SRCount);
-  SSave(edStrAfter, SRCount);
+  ComboUpdate(ed1, SRCount);
+  ComboUpdate(ed2, SRCount);
+  ComboUpdate(edTail, SRCount);
+  ComboUpdate(edBegin, SRCount);
+  ComboUpdate(edStrAfter, SRCount);
 
-  SSaveCombo(ed1, SIni, 'Ins_Ed1Hist');
-  SSaveCombo(ed2, SIni, 'Ins_Ed2Hist');
-  SSaveCombo(edBegin, SIni, 'Ins_EdBeginHist');
-  SSaveCombo(edTail, SIni, 'Ins_EdTailHist');
-  SSaveCombo(edStrAfter, SIni, 'Ins_EdStrHist');
+  ComboSaveToFile(ed1, SIni, 'Ins_Ed1Hist');
+  ComboSaveToFile(ed2, SIni, 'Ins_Ed2Hist');
+  ComboSaveToFile(edBegin, SIni, 'Ins_EdBeginHist');
+  ComboSaveToFile(edTail, SIni, 'Ins_EdTailHist');
+  ComboSaveToFile(edStrAfter, SIni, 'Ins_EdStrHist');
 
   with TIniFile.Create(SIni) do
   try

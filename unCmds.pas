@@ -350,6 +350,9 @@ const
   sm_OCustomizeStyles = 1014;
   //free
 
+  sm_CopySearchMarks = 1020;
+  //free
+
   //Tree commands
   sm_TreeCollapseAll = 1090;
   sm_TreeExpandAll = 1091;
@@ -401,6 +404,8 @@ const
   sm_Options_EditorUndo = 1135;
   sm_Options_EditorInsertFmt = 1136;
   sm_Options_NewOpen = 1137;
+
+  //end of list
 
 implementation
 

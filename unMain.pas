@@ -50,6 +50,7 @@ uses
   PngImageList,
   
   unProc,
+  unProcHelp,
   ATSynPlugins,
   ecMacroRec,
   ecExtHighlight,
@@ -1935,6 +1936,8 @@ type
     procedure acSetupLexLibExecute(Sender: TObject);
     procedure TbxItemTabReloadClick(Sender: TObject);
     procedure TBXItemHtmlPreviewClick(Sender: TObject);
+    procedure TBXSubmenuItemToolbarsPopup(Sender: TTBCustomItem;
+      FromLink: Boolean);
 
   private
     cStatLine,
@@ -2425,8 +2428,8 @@ type
     function ShFor(id: integer): TShortcut;
     procedure ShMacroGet(n: integer; var sh: TShortcut);
     procedure ShMacroSet(n: integer; const sh: TShortcut);
-    procedure DoOnlineWordHelp(const url: string);
-    procedure DoOnlineFind(const site: string);
+    procedure DoOnlineWordHelp(const url: Widestring);
+    procedure DoOnlineFind(const site: Widestring);
 
     procedure FindAction(act: TSRAction);
     procedure FindActionWrapper(act: TSRAction);
@@ -2533,6 +2536,7 @@ type
     function SynHiddenOption(const S: string): Integer;
     procedure DoRememberTempFile(const fn: Widestring);
     procedure DoDeleteTempFiles;
+    procedure DoCopySearchMarks(Ed: TSyntaxMemo);
     //end of private
 
   protected
@@ -2852,7 +2856,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.8.740';
+  cSynVer = '5.8.750';
 
 const  
   cSynParamRO = '/RO';
@@ -3904,18 +3908,6 @@ begin
   //Hilite brackets
   TimerBrackets.Enabled:= true;
 
-  TbxItemTFile.Checked:= tbFile.Visible;
-  TbxItemTEdit.Checked:= tbEdit.Visible;
-  TbxItemTView.Checked:= tbView.Visible;
-  TbxItemTQs.Checked:= tbQs.Visible;
-
-  TbxItemTUser1.Checked:= tbUser1.Visible;
-  TbxItemTUser2.Checked:= tbUser2.Visible;
-  TbxItemTUser3.Checked:= tbUser3.Visible;
-  TbxItemTUser1.Visible:= tbUser1.Items.Count>0;
-  TbxItemTUser2.Visible:= tbUser2.Items.Count>0;
-  TbxItemTUser3.Visible:= tbUser3.Items.Count>0;
-
   ecReadOnly.Checked:= ro;
   ecWrap.Checked:= ed.WordWrap;
   ecLineNums.Checked:= ed.LineNumbers.Visible;
@@ -4371,7 +4363,8 @@ begin
         begin
           S:= UTF8Decode(ReadString('MRU', 'Proj', ''));
           if S<>'' then
-            fmProj.ProjectFN:= S;
+            if IsFileExist(S) then
+              fmProj.ProjectFN:= S;
         end;
       end;
       
@@ -5958,22 +5951,18 @@ begin
       DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFileName);
     sm_CopyFullPath:
       DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFullName);
-    sm_CopyDirPath: 
+    sm_CopyDirPath:
       DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFilePath);
 
     //move caret
-    sm_CaretIncX:
-      DoMoveCaretXY(opCaretMoveX, 0);
-    sm_CaretDecX:
-      DoMoveCaretXY(-opCaretMoveX, 0);
-    sm_CaretIncY:
-      DoMoveCaretXY(0, opCaretMoveY);
-    sm_CaretDecY:
-      DoMoveCaretXY(0, -opCaretMoveY);
+    sm_CaretIncX:  DoMoveCaretXY(opCaretMoveX, 0);
+    sm_CaretDecX:  DoMoveCaretXY(-opCaretMoveX, 0);
+    sm_CaretIncY:  DoMoveCaretXY(0, opCaretMoveY);
+    sm_CaretDecY:  DoMoveCaretXY(0, -opCaretMoveY);
 
-    //goto bracket
-    smChangeRangeSide:
-      DoRangeJump(Ed);
+    //misc
+    smChangeRangeSide: DoRangeJump(Ed);
+    sm_CopySearchMarks: DoCopySearchMarks(Ed);
 
     //Macros
     {
@@ -9010,7 +8999,7 @@ begin
   s:= (Sender as TSpTbxItem).Caption;
   N:= StrToInt(s[1]);
   CurrentEditor.ExecCommand(smGotoBookmark0 + N);
-  CenterMemoPos(CurrentEditor, true{GotoMode});
+  EditorCenterPos(CurrentEditor, true{GotoMode});
 end;
 
 procedure TfmMain.TBXSubmenuItem3Popup(Sender: TTBCustomItem;
@@ -11606,25 +11595,26 @@ begin
   CurrentEditor.ExecCommand(sm_OpenPhp);
 end;
 
-procedure TfmMain.DoOnlineWordHelp(const url: string);
+procedure TfmMain.DoOnlineWordHelp(const url: Widestring);
 var
-  s: ecString;
+  s: Widestring;
 begin
   with CurrentEditor do
-    s:= WordAtPos(CaretPos);
+    s:= WideTrim(WordAtPos(CaretPos));
   if s='' then
-    begin MsgBeep; Exit; end;
-  s:= Format(url, [s]);
+    begin MsgNoSelection; Exit; end;
+
+  s:= WideFormat(url, [s]);
   FOpenURL(s, Handle);
 end;
 
-procedure TfmMain.DoOnlineFind(const Site: string);
+procedure TfmMain.DoOnlineFind(const Site: Widestring);
 var
   S: WideString;
 begin
   S:= EditorSelectedTextForWeb(CurrentEditor);
   if S='' then
-    MsgBeep
+    MsgNoSelection
   else
     FOpenURL(Site + S, Handle);
 end;
@@ -15848,7 +15838,7 @@ end;
 
 procedure TfmMain.TBXItemHDonateClick(Sender: TObject);
 begin
-  ShowHelp(SynDir, helpDonate, Handle);
+  FHelpShow(SynDir, helpDonate, Handle);
 end;
 
 procedure TfmMain.TBXItemECpFNClick(Sender: TObject);
@@ -16170,7 +16160,7 @@ end;
 procedure TfmMain.DoOpenBrowserPreview;
 var
   Ed: TSyntaxMemo;
-  s: AnsiString;
+  s: Widestring;
   fn, dir: Widestring;
 begin
   Ed:= CurrentEditor;
@@ -16190,7 +16180,7 @@ begin
   fn:= dir+'\_synwrite_preview.html';
 
   FDelete(fn);
-  FWriteStringToFile(fn, s);
+  FWriteStringToFile(fn, s, Ed.Lines.TextCoding<>tcAnsi);
 
   if IsFileExist(fn) then
   begin
@@ -16500,7 +16490,7 @@ begin
   end;
 
   e.GotoBookmark(n);
-  CenterMemoPos(e, true{GotoMode});
+  EditorCenterPos(e, true{GotoMode});
   //Msg(Inttostr(n));
 end;
 
@@ -16730,7 +16720,7 @@ begin
           oldSelStart, oldSelLength,
           CaretStrPos, 0);
 
-      CenterMemoPos(CurrentEditor, true{GotoMode});
+      EditorCenterPos(CurrentEditor, true{GotoMode});
       FocusEditor;
     end;
   end;
@@ -17876,7 +17866,7 @@ begin
     until false;
 
     CaretPos:= Point(0, n);
-    CenterMemoPos(CurrentEditor, true);
+    EditorCenterPos(CurrentEditor, true);
   end;
 end;
 
@@ -18738,7 +18728,7 @@ begin
     CaretPos:= Point(Info.ColNum, Info.LineNum);
     SetSelection(CaretPosToStrPos(CaretPos), Info.Len);
   end;
-  CenterMemoPos(CurrentEditor, false);
+  EditorCenterPos(CurrentEditor, false);
   FocusEditor;
 end;
 
@@ -19511,7 +19501,7 @@ begin
   if (CurrentFrame<>nil) and (CurrentFrame.TextSource<>nil) then
   try
     Screen.Cursor:= crHourGlass;
-    CountWords(CurrentFrame.TextSource.Lines, NWords, NChars);
+    EditorCountWords(CurrentFrame.TextSource.Lines, NWords, NChars);
     NLines:= CurrentFrame.TextSource.Lines.Count;
   finally
     Screen.Cursor:= crDefault;
@@ -20353,8 +20343,8 @@ var
   fn: string;
 begin
   if CurrentEditor.ReadOnly then Exit;
-  if not IsLexerWithImages(CurrentLexer) then
-    begin MsgBeep; Exit end;
+  //if not IsLexerWithImages(CurrentLexer) then
+  //  begin MsgBeep; Exit end;
 
   fn:= '';
   if PromptForFileName(fn, filter, '', '', ExtractFileDir(CurrentFrame.FileName)) then
@@ -20367,8 +20357,8 @@ var
   IsCss: boolean;
 begin
   if CurrentEditor.ReadOnly then Exit;
-  if not IsLexerWithImages(CurrentLexer) then
-    begin MsgBeep; Exit end;
+  //if not IsLexerWithImages(CurrentLexer) then
+  //  begin MsgBeep; Exit end;
 
   fn_wdx:= SynImagesDll;
   if not IsFileExist(fn_wdx) then
@@ -20377,7 +20367,7 @@ begin
   IsCss:= IsLexerCss(CurrentLexer);
   s:= SGetImageTag(fn, fn_wdx, IsCss);
   if s='' then
-    begin MsgBeep; Exit end;
+    begin SetHint('Cannot insert tag'); MsgBeep; Exit end;
     
   with CurrentEditor do
   begin
@@ -20548,7 +20538,7 @@ begin
           else
             ed.GotoBookmark(Integer(L[i]));
             
-          CenterMemoPos(ed, true{GotoMode});
+          EditorCenterPos(ed, true{GotoMode});
         end;
       end;
     finally
@@ -20695,7 +20685,7 @@ begin
           else
             ed.CaretPos:= Point(0, Integer(L[i]));
 
-          CenterMemoPos(ed, true{GotoMode});
+          EditorCenterPos(ed, true{GotoMode});
         end;
       end;
     finally
@@ -24702,7 +24692,7 @@ begin
         CaretStrPos:= SelStart
       else
         CaretPos:= Point(SelRect.Left, SelRect.Top);
-      CenterMemoPos(Ed, true{GotoMode});
+      EditorCenterPos(Ed, true{GotoMode});
       DoRestoreSel(Ed, Save);
     end;
 end;
@@ -24715,7 +24705,10 @@ var
   i: Integer;
 begin
   if (fmProj=nil) or (fmProj.TreeProj.Items.Count<=1) then
-    begin MsgBeep; Exit end;
+  begin
+    MsgWarn(DKLangConstW('zMProjEmpty'), Handle);
+    Exit
+  end;
 
   Ini:= TIniFile.Create(SynIni);
   Files:= TTntStringList.Create;
@@ -24728,7 +24721,10 @@ begin
         Files.Add(fn);
     end;
     if Files.Count=0 then
-      begin MsgBeep; Exit end;
+    begin
+      MsgWarn(DKLangConstW('zMProjEmpty'), Handle);
+      Exit
+    end;
 
     fn:= '';
     with TfmProjList.Create(Self) do
@@ -26583,6 +26579,38 @@ begin
   begin
     FDelete(FTempFilenames[i]);
     FTempFilenames.Delete(i);
+  end;
+end;
+
+procedure TfmMain.TBXSubmenuItemToolbarsPopup(Sender: TTBCustomItem;
+  FromLink: Boolean);
+begin
+  TbxItemTFile.Checked:= tbFile.Visible;
+  TbxItemTEdit.Checked:= tbEdit.Visible;
+  TbxItemTView.Checked:= tbView.Visible;
+  TbxItemTQs.Checked:= tbQs.Visible;
+
+  TbxItemTUser1.Checked:= tbUser1.Visible;
+  TbxItemTUser2.Checked:= tbUser2.Visible;
+  TbxItemTUser3.Checked:= tbUser3.Visible;
+  TbxItemTUser1.Visible:= tbUser1.Items.Count>0;
+  TbxItemTUser2.Visible:= tbUser2.Items.Count>0;
+  TbxItemTUser3.Visible:= tbUser3.Items.Count>0;
+end;
+
+procedure TfmMain.DoCopySearchMarks(Ed: TSyntaxMemo);
+var
+  L: TTntStringList;
+begin
+  L:= TTntStringList.Create;
+  try
+    EditorSearchMarksToList(Ed, L);
+    if L.Count=0 then
+      MsgBeep
+    else
+      TntClipboard.AsWideText:= L.Text;
+  finally
+    FreeAndNil(L)
   end;
 end;
 

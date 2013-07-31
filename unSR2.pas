@@ -293,11 +293,11 @@ begin
     Free;
   end;
 
-  SLoadCombo(ed1, SRIniS, 'SearchText');
-  SLoadCombo(ed2, SRIni, 'RHist', False);
-  SLoadCombo(edFileInc, SRIni, 'IncHist');
-  SLoadCombo(edFileExc, SRIni, 'ExcHist');
-  SLoadCombo(edDir, SRIni, 'DirHist'{, False});
+  ComboLoadFromFile(ed1, SRIniS, 'SearchText');
+  ComboLoadFromFile(ed2, SRIni, 'RHist', False);
+  ComboLoadFromFile(edFileInc, SRIni, 'IncHist');
+  ComboLoadFromFile(edFileExc, SRIni, 'ExcHist');
+  ComboLoadFromFile(edDir, SRIni, 'DirHist'{, False});
 
   if edFileInc.Text='' then
     edFileInc.Text:= '*.*';
@@ -398,17 +398,17 @@ begin
     Free;
   end;
 
-  SSave(ed1, SRCount);
-  SSave(ed2, SRCount);
-  SSave(edFileInc, SRCount);
-  SSave(edFileExc, SRCount);
-  SSave(edDir, SRCount);
+  ComboUpdate(ed1, SRCount);
+  ComboUpdate(ed2, SRCount);
+  ComboUpdate(edFileInc, SRCount);
+  ComboUpdate(edFileExc, SRCount);
+  ComboUpdate(edDir, SRCount);
 
-  SSaveCombo(ed1, SRIniS, 'SearchText');
-  SSaveCombo(ed2, SRIni, 'RHist');
-  SSaveCombo(edFileInc, SRIni, 'IncHist');
-  SSaveCombo(edFileExc, SRIni, 'ExcHist');
-  SSaveCombo(edDir, SRIni, 'DirHist');
+  ComboSaveToFile(ed1, SRIniS, 'SearchText');
+  ComboSaveToFile(ed2, SRIni, 'RHist');
+  ComboSaveToFile(edFileInc, SRIni, 'IncHist');
+  ComboSaveToFile(edFileExc, SRIni, 'ExcHist');
+  ComboSaveToFile(edDir, SRIni, 'DirHist');
 end;
 
 procedure TfmSRFiles.edFileIncChange(Sender: TObject);
