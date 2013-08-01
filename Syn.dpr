@@ -60,7 +60,8 @@ uses
   unToolbarIcon in 'unToolbarIcon.pas' {fmToolbarIcon: TTntForm},
   unToolbarSize in 'unToolbarSize.pas' {fmToolbarSize: TTntForm},
   unHideItems in 'unHideItems.pas' {fmHideItems},
-  unLexerLib in 'unLexerLib.pas' {fmLexerLibrary};
+  unLexerLib in 'unLexerLib.pas' {fmLexerLibrary},
+  unProcEditor in 'unProcEditor.pas';
 
 {$R *.res}
 {$R *.dkl_const.res}

@@ -220,9 +220,10 @@ implementation
 uses
   ecStrUtils, ecCmdConst, ecMemoStrings,
   Types,
-  unMain, unProc,
-  ATxFProc, ATxSProc,
-  ATxImgHint,
+  unMain,
+  unProc,
+  unProcEditor,
+  ATxFProc, ATxSProc, ATxImgHint,
   DKLang,
 
   TntComCtrls,

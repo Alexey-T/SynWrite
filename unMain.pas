@@ -51,6 +51,7 @@ uses
   
   unProc,
   unProcHelp,
+  unProcEditor,
   ATSynPlugins,
   ecMacroRec,
   ecExtHighlight,
@@ -8999,7 +9000,7 @@ begin
   s:= (Sender as TSpTbxItem).Caption;
   N:= StrToInt(s[1]);
   CurrentEditor.ExecCommand(smGotoBookmark0 + N);
-  EditorCenterPos(CurrentEditor, true{GotoMode});
+  EditorCenterPos(CurrentEditor, true{GotoMode}, opSrOffsetY);
 end;
 
 procedure TfmMain.TBXSubmenuItem3Popup(Sender: TTBCustomItem;
@@ -13867,6 +13868,7 @@ begin
         if opColorBracketBg<>clNone then
           SelAttributes.BgColor:= opColorBracketBg;
         SelAttributes.Bold:= true;
+        SelAttributes.Underline:= true;
 
         ResetSelection;
       finally
@@ -16490,7 +16492,7 @@ begin
   end;
 
   e.GotoBookmark(n);
-  EditorCenterPos(e, true{GotoMode});
+  EditorCenterPos(e, true{GotoMode}, opSrOffsetY);
   //Msg(Inttostr(n));
 end;
 
@@ -16720,7 +16722,7 @@ begin
           oldSelStart, oldSelLength,
           CaretStrPos, 0);
 
-      EditorCenterPos(CurrentEditor, true{GotoMode});
+      EditorCenterPos(CurrentEditor, true{GotoMode}, opSrOffsetY);
       FocusEditor;
     end;
   end;
@@ -17866,7 +17868,7 @@ begin
     until false;
 
     CaretPos:= Point(0, n);
-    EditorCenterPos(CurrentEditor, true);
+    EditorCenterPos(CurrentEditor, true, opSrOffsetY);
   end;
 end;
 
@@ -18728,7 +18730,7 @@ begin
     CaretPos:= Point(Info.ColNum, Info.LineNum);
     SetSelection(CaretPosToStrPos(CaretPos), Info.Len);
   end;
-  EditorCenterPos(CurrentEditor, false);
+  EditorCenterPos(CurrentEditor, false, opSrOffsetY);
   FocusEditor;
 end;
 
@@ -20538,7 +20540,7 @@ begin
           else
             ed.GotoBookmark(Integer(L[i]));
             
-          EditorCenterPos(ed, true{GotoMode});
+          EditorCenterPos(ed, true{GotoMode}, opSrOffsetY);
         end;
       end;
     finally
@@ -20685,7 +20687,7 @@ begin
           else
             ed.CaretPos:= Point(0, Integer(L[i]));
 
-          EditorCenterPos(ed, true{GotoMode});
+          EditorCenterPos(ed, true{GotoMode}, opSrOffsetY);
         end;
       end;
     finally
@@ -24692,7 +24694,7 @@ begin
         CaretStrPos:= SelStart
       else
         CaretPos:= Point(SelRect.Left, SelRect.Top);
-      EditorCenterPos(Ed, true{GotoMode});
+      EditorCenterPos(Ed, true{GotoMode}, opSrOffsetY);
       DoRestoreSel(Ed, Save);
     end;
 end;

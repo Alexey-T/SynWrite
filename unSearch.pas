@@ -131,7 +131,8 @@ uses
   ATxFProc,
   ATxSProc,
   cStrings, //Fundamentals
-  unProc;
+  unProc,
+  unProcEditor;
 
 { TTextFinder }
 
@@ -694,7 +695,7 @@ end;
 
 procedure TSynFindReplace.CenterPos;
 begin
-  EditorCenterPos(FControl, false{GotoMode});
+  EditorCenterPos(FControl, false{GotoMode}, opSrOffsetY);
 end;
 
 constructor TSynFindReplace.Create(AOwner: TComponent);

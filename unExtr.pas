@@ -63,7 +63,10 @@ uses
   TntClipbrd,
   Inifiles,
   ATxSProc,
-  unSR, unProc, unProcHelp,
+  unSR,
+  unProc,
+  unProcHelp,
+  unProcEditor,
   ecStrUtils, ecCmdConst;
 
 {$R *.dfm}
