@@ -62,6 +62,7 @@ const
   cTabColors = 10; //number of misc tab colors (user-defined)
   cFixedLeftTabs = 3; //number of fixed tabs on left panel (Tree; Project; Tabs)
   cMaxTreeLen = 400; //"find in files" result tree: max node length
+  cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
   cBandFolding = 3; //3rd gutter band if for folding
   SynDefaultSyn = '(default).syn';
 
@@ -219,7 +220,7 @@ type
     ecSortAscending: TAction;
     ecSortDescending: TAction;
     acSetupLexLib: TAction;
-    Timer1: TTimer;
+    TimerTick: TTimer;
     TBXItem11: TSpTbxItem;
     TBXItem15: TSpTbxItem;
     PopupCP: TSpTbxPopupMenu;
@@ -1194,6 +1195,8 @@ type
     TBXSubmenuHtmlHelp: TSpTBXSubmenuItem;
     TBXItemHtmlEmmetHelp: TSpTBXItem;
     SpTBXSeparatorItem17: TSpTBXSeparatorItem;
+    TimerMinimap: TTimer;
+    TBXSubmenuItemConv: TSpTBXSubmenuItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1210,7 +1213,7 @@ type
     procedure MRU_SessClick(Sender: TObject; const S: WideString);
     procedure PopupLexPopup(Sender: TObject);
     procedure acSetupExecute(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
+    procedure TimerTickTimer(Sender: TObject);
     procedure acExportRTFBeforeExecute(Sender: TObject);
     procedure ecReadOnlyExecute(Sender: TObject);
     procedure ButtonOnSelect(Sender: TTBCustomItem; Viewer: TTBItemViewer;
@@ -1939,6 +1942,9 @@ type
     procedure TBXItemHtmlPreviewClick(Sender: TObject);
     procedure TBXSubmenuItemToolbarsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
+    procedure TimerMinimapTimer(Sender: TObject);
+    procedure TBXSubmenuItemConvPopup(Sender: TTBCustomItem;
+      FromLink: Boolean);
 
   private
     cStatLine,
@@ -1983,6 +1989,7 @@ type
     FSplitter: Double; //views splitter position (%)
     FPageControl: TTntPageControl; //current TPageControl: PageControl1 or PageControl2
     FListNewDocs: TTntStringList; //filenames list of templates (template\newdoc)
+    FListConv: TTntStringList; //filenames of text converters (template\conv)
     FListFiles: TTntStringList; //filenames list of mass search/replace operation
     FListValFN: Widestring; //filename for which HTML Tidy is called
     FSelBlank: boolean; //selection is blank (for Smart Hilite)
@@ -2394,6 +2401,7 @@ type
     function SynPluginsSampleIni: string;
     function SynSkinsDir: string;
     function SynSkinFilename(const Name: string): string;
+    function SynConverterFilename(const Name: string): string;
     function NoCursor(E: TSyntaxMemo): boolean;
     procedure LexListClick(Sender: TObject);
     procedure FinderInit(Sender: TObject);
@@ -2538,6 +2546,9 @@ type
     procedure DoRememberTempFile(const fn: Widestring);
     procedure DoDeleteTempFiles;
     procedure DoCopySearchMarks(Ed: TSyntaxMemo);
+    function SEncodeHtmlChars(const SData, fn: WideString; ToBack: boolean): WideString;
+    procedure ConvClick(Sender: TObject);
+    procedure DoTextConverter(const fn: Widestring; ToBack: boolean);
     //end of private
 
   protected
@@ -2857,7 +2868,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.8.750';
+  cSynVer = '5.8.770';
 
 const  
   cSynParamRO = '/RO';
@@ -4784,6 +4795,11 @@ begin
   Result:= SynDir + 'SynPlugins.sample.ini';
 end;
 
+function TfmMain.SynConverterFilename(const Name: string): string;
+begin
+  Result:= SynDir + 'Template\conv\' + Name + '.txt';
+end;  
+
 //------------
 function EncodeBkmkPos(Ed: TSyntaxMemo; NPos: Integer): Integer;
 begin
@@ -6366,7 +6382,7 @@ begin
     ClearTabList;
 end;
 
-procedure TfmMain.Timer1Timer(Sender: TObject);
+procedure TfmMain.TimerTickTimer(Sender: TObject);
 begin
   if QuickDestroy then Exit;
 
@@ -6478,28 +6494,39 @@ end;
 
 procedure TfmMain.SynScroll(Sender: TObject);
 var
-  n: integer;
+  Ed: TSyntaxMemo;
+  N: integer;
 begin
+  Ed:= Sender as TSyntaxMemo;
+
   //Send info to Lister
   if not SynExe then
-    with (Sender as TSyntaxMemo) do
+    with Ed do
     begin
-      if Lines.Count = 0 then n:= 0
-      else n:= (TopLine * 100) div Lines.Count;
-      PostMessage(hLister, WM_COMMAND, MAKELONG(n, itm_percent), Handle);
+      if Lines.Count = 0 then
+        N:= 0
+      else
+        N:= (TopLine * 100) div Lines.Count;
+      PostMessage(hLister, WM_COMMAND, MAKELONG(N, itm_percent), Handle);
     end;
 
   //sync scroll views
   if not FSyncBusy then
   try
     FSyncBusy:= true;
-    DoSyncScroll(Sender as TSyntaxMemo);
+    DoSyncScroll(Ed);
   finally
     FSyncBusy:= false;
   end;
 
   //update map
-  SyncMapPos;
+  if Ed.Lines.Count<=cMaxLinesInstantMinimap then
+    SyncMapPos
+  else
+  begin
+    TimerMinimap.Enabled:= false;
+    TimerMinimap.Enabled:= true;
+  end;  
 end;
 
 procedure TfmMain.plTreeResize(Sender: TObject);
@@ -6805,6 +6832,7 @@ begin
   FPageControl:= PageControl1;
   FSplitter:= 50.0;
   FListNewDocs:= TTntStringList.Create;
+  FListConv:= TTntStringList.Create;
   FListFiles:= TTntStringList.Create;
 
   FTabOut:= tbOut;
@@ -7071,6 +7099,7 @@ begin
   FreeAndNil(Finder);
   FreeAndNil(FListFiles);
   FreeAndNil(FListNewDocs);
+  FreeAndNil(FListConv);
 
   if Assigned(FListCommentStyles) then
     FreeAndNil(FListCommentStyles);
@@ -23766,16 +23795,30 @@ begin
 end;
 
 procedure TfmMain.ecEncodeHtmlCharsExecute(Sender: TObject);
+begin
+  DoTextConverter(SynConverterFilename('HTML entities'), false);
+end;
+
+procedure TfmMain.DoTextConverter(const fn: Widestring; ToBack: boolean);
 var
   Ed: TSyntaxMemo;
-  S: Widestring;
+  SFrom, S: Widestring;
+  NStart, NLen: Integer;
 begin
   Ed:= CurrentEditor;
   if Ed.ReadOnly then Exit;
   if Ed.SelLength=0 then
     begin MsgNoSelection; Exit end;
-  S:= SEncodeHtmlChars(Ed.SelText);
+
+  SFrom:= Ed.SelText;
+  S:= SEncodeHtmlChars(SFrom, fn, ToBack);
+  if S=SFrom then
+    begin MsgDoneLines(0); MsgBeep; Exit end;
+  NStart:= Ed.SelStart;
+  NLen:= Length(S);
+
   Ed.ReplaceText(Ed.SelStart, Ed.SelLength, S);
+  Ed.SetSelection(NStart, NLen);
 end;
 
 procedure TfmMain.ecSortDialogExecute(Sender: TObject);
@@ -26614,6 +26657,83 @@ begin
   finally
     FreeAndNil(L)
   end;
+end;
+
+procedure TfmMain.TimerMinimapTimer(Sender: TObject);
+begin
+  TimerMinimap.Enabled:= false;
+  SyncMapPos;
+end;
+
+function TfmMain.SEncodeHtmlChars(const SData, fn: WideString; ToBack: boolean): WideString;
+begin
+  if not IsFileExist(fn) then
+  begin
+    MsgNoFile(fn);
+    Result:= SData;
+  end
+  else
+    Result:= SDecodeUsingFileTable(SData, fn, ToBack);
+end;
+
+
+procedure TfmMain.TBXSubmenuItemConvPopup(Sender: TTBCustomItem;
+  FromLink: Boolean);
+  //-----
+  procedure AddMI(const AConvIndex: Integer; AConvBack: boolean);
+  const
+    cGap = 1000;
+  var
+    MI: TSpTbxItem;
+  begin
+    MI:= TSpTbxItem.Create(Self);
+    MI.Caption:=
+      WideChangeFileExt(WideExtractFileName(FListConv[AConvIndex]), '') + ' '#151' ' +
+      IfThen(AConvBack, DKLangConstW('zMConvDecode'), DKLangConstW('zMConvEncode'));
+    MI.Tag:= AConvIndex + IfThen(AConvBack, cGap);
+    MI.OnClick:= ConvClick;
+    TBXSubmenuItemConv.Add(MI);
+  end;
+  //-----
+var
+  i: Integer;
+begin
+  FListConv.Clear;
+  FFindToList(FListConv,
+    SynDir + 'Template\conv',
+    '*.txt', '',
+    false{SubDirs}, false, false, false);
+
+  with TbxSubmenuItemConv do
+  begin
+    Clear;
+    for i:= 0 to FListConv.Count-1 do
+    begin
+      AddMI(i, false);
+      AddMI(i, true);
+      Add(TSpTBXSeparatorItem.Create(Self));
+    end;
+  end;
+end;
+
+procedure TfmMain.ConvClick(Sender: TObject);
+const
+  cGap = 1000;
+var
+  N: Integer;
+  ToBack: boolean;
+begin
+  N:= (Sender as TComponent).Tag;
+  ToBack:= N>=cGap;
+  if ToBack then Dec(N, cGap);
+
+  if (N>=0) and (N<FListConv.Count) then
+  begin
+    DoTextConverter(FListConv[N], ToBack);
+    //MsgInfo(FListConv[N]+#13+IntToStr(Ord(ToBack)), Handle);
+  end
+  else
+    MsgError('Invalid text converter index: '+IntToStr(N), Handle);
 end;
 
 end.

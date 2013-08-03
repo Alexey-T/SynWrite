@@ -12,7 +12,6 @@ function SFuzzyMatch(S, Filter: Widestring): boolean;
 
 function SUntab(const S: Widestring; TabSize: Integer): Widestring;
 function SDecodeSpecChars(const s: WideString): WideString;
-function SEncodeHtmlChars(const S: WideString): WideString;
 function IsUpperChar(Ch: WideChar): boolean;
 
 procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3, Val4: Widestring);
@@ -53,9 +52,6 @@ procedure SReplaceAllW(var S: WideString; const SFrom, STo: WideString);
 procedure SReplaceIAll(var S: string; const SFrom, STo: string);
 
 type
-{  TStringDecodeRec = record
-    SFrom, STo: AnsiString;
-  end;}
   TStringDecodeRecW = record
     SFrom, STo: WideString;
   end;
@@ -1008,18 +1004,6 @@ begin
   end;  
 end;
 
-
-function SEncodeHtmlChars(const S: WideString): WideString;
-const
-  Decode: array[0..3] of TStringDecodeRecW = (
-    (SFrom: '&'; STo: '&amp;'),
-    (SFrom: '<'; STo: '&lt;'),
-    (SFrom: '>'; STo: '&gt;'),
-    (SFrom: '"'; STo: '&quot;')
-    );
-begin
-  Result:= SDecodeW(S, Decode);
-end;
 
 function SDecodeSpecChars(const s: WideString): WideString;
 const

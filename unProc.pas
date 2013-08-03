@@ -20,6 +20,7 @@ uses
   IniFiles,
   PngImageList;
 
+function SDecodeUsingFileTable(const SData, fn: Widestring; ToBack: boolean): Widestring;
 function GetEditHandle(Target: TObject): THandle;
 procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
 
@@ -181,6 +182,7 @@ implementation
 uses
   Windows,
   ecZRegExpr,
+  ecUnicode,
   ATxFProc, ATxSProc,
   Math, Dialogs, CommCtrl,
   TntClipbrd,
@@ -1453,6 +1455,51 @@ begin
     finally
       Free
     end;
+  end;
+end;
+
+
+function SDecodeUsingFileTable(const SData, fn: Widestring; ToBack: boolean): Widestring;
+var
+  L: TTntStringList;
+  S1, S2: Widestring;
+  Decode: array of TStringDecodeRecW;
+  i: Integer;
+begin
+  Result:= SData;
+  if not IsFileExist(fn) then Exit;
+
+  L:= TTntStringList.Create;
+  try
+    L.LoadFromFile(fn);
+    //delete empty/commented lines
+    for i:= L.Count-1 downto 0 do
+      if (L[i]='') or (L[i][1]=';') then
+        L.Delete(i);
+    if L.Count=0 then Exit;
+    
+    SetLength(Decode, L.Count);
+    for i:= 0 to L.Count-1 do
+    begin
+      S1:= WideTrim(L[i]);
+      S2:= S1;
+      SDeleteFromW(S1, ' ');
+      SDeleteToW(S2, ' ');
+      if not ToBack then
+      begin
+        Decode[i].SFrom:= S1;
+        Decode[i].STo:= S2;
+      end
+      else
+      begin
+        Decode[i].SFrom:= S2;
+        Decode[i].STo:= S1;
+      end;
+    end;
+
+    Result:= SDecodeW(SData, Decode);
+  finally
+    FreeAndNil(L)
   end;
 end;
 
