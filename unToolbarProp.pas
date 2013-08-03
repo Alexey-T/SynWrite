@@ -72,6 +72,7 @@ type
     mnuFoldLevel: TTntMenuItem;
     mnuNonPrint: TTntMenuItem;
     labInfo: TTntLabel;
+    mnuConv: TTntMenuItem;
     procedure FormShow(Sender: TObject);
     procedure btnIconSizeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -102,6 +103,7 @@ type
     procedure mnuFoldingClick(Sender: TObject);
     procedure mnuFoldLevelClick(Sender: TObject);
     procedure mnuNonPrintClick(Sender: TObject);
+    procedure mnuConvClick(Sender: TObject);
   private
     { Private declarations }
     procedure DoMenuSys(const Cmd, Hint: Widestring);
@@ -752,6 +754,11 @@ end;
 procedure TfmToolbarProp.mnuNonPrintClick(Sender: TObject);
 begin
   DoMenuSys('m:{nonprint}', mnuNonPrint.Caption);
+end;
+
+procedure TfmToolbarProp.mnuConvClick(Sender: TObject);
+begin
+  DoMenuSys('m:{conv}', mnuConv.Caption);
 end;
 
 end.

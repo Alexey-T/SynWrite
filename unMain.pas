@@ -25895,6 +25895,11 @@ begin
           Item.LinkSubitems:= TBXSubmenuItemTidy;
         end
         else
+        if SCmd='m:{conv}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuItemConv;
+        end
+        else
         begin
           FUserToolbarCommands.Add(SCmd);
           Item.Tag:= FUserToolbarCommands.Count-1;
@@ -26683,12 +26688,23 @@ procedure TfmMain.TBXSubmenuItemConvPopup(Sender: TTBCustomItem;
   procedure AddMI(const AConvIndex: Integer; AConvBack: boolean);
   const
     cGap = 1000;
+    cNoBack: Widechar = '_';
   var
+    Cap: Widestring;
+    NoBack: boolean;
     MI: TSpTbxItem;
   begin
+    Cap:= WideChangeFileExt(WideExtractFileName(FListConv[AConvIndex]), '');
+    NoBack:= Cap[Length(Cap)]=cNoBack;
+    if NoBack then
+    begin
+      Delete(Cap, Length(Cap), 1);
+      if AConvBack then Exit;
+    end;  
+
     MI:= TSpTbxItem.Create(Self);
     MI.Caption:=
-      WideChangeFileExt(WideExtractFileName(FListConv[AConvIndex]), '') + ' '#151' ' +
+      Cap + ' '#151' ' +
       IfThen(AConvBack, DKLangConstW('zMConvDecode'), DKLangConstW('zMConvEncode'));
     MI.Tag:= AConvIndex + IfThen(AConvBack, cGap);
     MI.OnClick:= ConvClick;
