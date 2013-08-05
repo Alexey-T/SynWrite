@@ -242,7 +242,7 @@ const
   sm_DeleteToFileBegin = 896;
   sm_DeleteToFileEnd = 897;
   sm_ShuffleLines = 898;
-  //free
+  sm_EncodeHtmlChars2 = 899;
 
   sm_MacroRepeat = 900;
   sm_Macro1 = 901;

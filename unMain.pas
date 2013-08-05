@@ -984,7 +984,6 @@ type
     TBXItemTabMoveToWindow: TSpTBXItem;
     TBXItemTabOpenInWindow: TSpTBXItem;
     ecExtendSelByLine: TAction;
-    TBXItemHtmlEncode: TSpTBXItem;
     ecEncodeHtmlChars: TAction;
     ecSortDialog: TAction;
     TBXItemESortDialog: TSpTbxItem;
@@ -1197,6 +1196,10 @@ type
     SpTBXSeparatorItem17: TSpTBXSeparatorItem;
     TimerMinimap: TTimer;
     TBXSubmenuItemConv: TSpTBXSubmenuItem;
+    TBXSubmenuItemHtmlEncode: TSpTBXSubmenuItem;
+    TBXItemEncodeHtmlNoBrackets: TSpTBXItem;
+    TBXItemEncodeHtmlAll: TSpTBXItem;
+    ecEncodeHtmlChars2: TAction;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1760,7 +1763,6 @@ type
     procedure TBXItemTabMoveToWindowClick(Sender: TObject);
     procedure TBXItemTabOpenInWindowClick(Sender: TObject);
     procedure ecExtendSelByLineExecute(Sender: TObject);
-    procedure TBXItemHtmlEncodeClick(Sender: TObject);
     procedure ecEncodeHtmlCharsExecute(Sender: TObject);
     procedure ecSortDialogExecute(Sender: TObject);
     procedure ecSelBracketsExecute(Sender: TObject);
@@ -1945,6 +1947,9 @@ type
     procedure TimerMinimapTimer(Sender: TObject);
     procedure TBXSubmenuItemConvPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
+    procedure TBXItemEncodeHtmlAllClick(Sender: TObject);
+    procedure TBXItemEncodeHtmlNoBracketsClick(Sender: TObject);
+    procedure ecEncodeHtmlChars2Execute(Sender: TObject);
 
   private
     cStatLine,
@@ -5667,6 +5672,7 @@ begin
     sm_LoremIpsum: ecLoremIpsum.Execute;
     sm_NumericConverter: ecNumericConverter.Execute;
     sm_EncodeHtmlChars: ecEncodeHtmlChars.Execute;
+    sm_EncodeHtmlChars2: ecEncodeHtmlChars2.Execute;
     sm_SortDialog: ecSortDialog.Execute;
     sm_ToggleLineCommentAlt: ecToggleLineCommentAlt.Execute;
 
@@ -9562,7 +9568,6 @@ begin
   K(tbxItemZOut, sm_ZoomOut);
 
   K(TbxItemHtmlPreview, sm_OpenPreview);
-  K(TbxItemHtmlEncode, sm_EncodeHtmlChars);
   K(TbxItemHtmlLoremIpsum, sm_LoremIpsum);
 
   K(TbxItemRunOpenFile, sm_OpenCurrentFile);
@@ -23789,38 +23794,6 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXItemHtmlEncodeClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_EncodeHtmlChars);
-end;
-
-procedure TfmMain.ecEncodeHtmlCharsExecute(Sender: TObject);
-begin
-  DoTextConverter(SynConverterFilename('HTML entities'), false);
-end;
-
-procedure TfmMain.DoTextConverter(const fn: Widestring; ToBack: boolean);
-var
-  Ed: TSyntaxMemo;
-  SFrom, S: Widestring;
-  NStart, NLen: Integer;
-begin
-  Ed:= CurrentEditor;
-  if Ed.ReadOnly then Exit;
-  if Ed.SelLength=0 then
-    begin MsgNoSelection; Exit end;
-
-  SFrom:= Ed.SelText;
-  S:= SEncodeHtmlChars(SFrom, fn, ToBack);
-  if S=SFrom then
-    begin MsgDoneLines(0); MsgBeep; Exit end;
-  NStart:= Ed.SelStart;
-  NLen:= Length(S);
-
-  Ed.ReplaceText(Ed.SelStart, Ed.SelLength, S);
-  Ed.SetSelection(NStart, NLen);
-end;
-
 procedure TfmMain.ecSortDialogExecute(Sender: TObject);
 begin
   DoLinesCommand(scmdSortDialog);
@@ -26687,7 +26660,7 @@ procedure TfmMain.TBXSubmenuItemConvPopup(Sender: TTBCustomItem;
   //-----
   procedure AddMI(const AConvIndex: Integer; AConvBack: boolean);
   const
-    cGap = 1000;
+    cConvGap = 1000;
     cNoBack: Widechar = '_';
   var
     Cap: Widestring;
@@ -26706,7 +26679,7 @@ procedure TfmMain.TBXSubmenuItemConvPopup(Sender: TTBCustomItem;
     MI.Caption:=
       Cap + ' '#151' ' +
       IfThen(AConvBack, DKLangConstW('zMConvDecode'), DKLangConstW('zMConvEncode'));
-    MI.Tag:= AConvIndex + IfThen(AConvBack, cGap);
+    MI.Tag:= AConvIndex + IfThen(AConvBack, cConvGap);
     MI.OnClick:= ConvClick;
     TBXSubmenuItemConv.Add(MI);
   end;
@@ -26734,14 +26707,15 @@ end;
 
 procedure TfmMain.ConvClick(Sender: TObject);
 const
-  cGap = 1000;
+  cConvGap = 1000;
 var
   N: Integer;
   ToBack: boolean;
 begin
   N:= (Sender as TComponent).Tag;
-  ToBack:= N>=cGap;
-  if ToBack then Dec(N, cGap);
+  ToBack:= N>=cConvGap;
+  if ToBack then
+    Dec(N, cConvGap);
 
   if (N>=0) and (N<FListConv.Count) then
   begin
@@ -26749,7 +26723,60 @@ begin
     //MsgInfo(FListConv[N]+#13+IntToStr(Ord(ToBack)), Handle);
   end
   else
-    MsgError('Invalid text converter index: '+IntToStr(N), Handle);
+    MsgError(WideFormat('Invalid text converter index: %d', [N]), Handle);
+end;
+
+procedure TfmMain.DoTextConverter(const fn: Widestring; ToBack: boolean);
+var
+  Ed: TSyntaxMemo;
+  SFrom, STo: Widestring;
+  NStart, NLen: Integer;
+  ToAll: boolean;
+begin
+  Ed:= CurrentEditor;
+  if Ed.ReadOnly then Exit;
+
+  ToAll:= Ed.SelLength=0;
+  if ToAll then
+  begin
+    SFrom:= Ed.Lines.FText;
+    NStart:= 0;
+    NLen:= Length(SFrom);
+  end
+  else
+  begin
+    SFrom:= Ed.SelText;
+    NStart:= Ed.SelStart;
+    NLen:= Ed.SelLength;
+  end;
+
+  STo:= SEncodeHtmlChars(SFrom, fn, ToBack);
+  if STo=SFrom then
+    begin MsgDoneLines(0); MsgBeep; Exit end;
+
+  Ed.ReplaceText(NStart, NLen, STo);
+  if not ToAll then
+    Ed.SetSelection(NStart, Length(STo));
+end;
+
+procedure TfmMain.TBXItemEncodeHtmlAllClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_EncodeHtmlChars);
+end;
+
+procedure TfmMain.TBXItemEncodeHtmlNoBracketsClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_EncodeHtmlChars2);
+end;
+
+procedure TfmMain.ecEncodeHtmlCharsExecute(Sender: TObject);
+begin
+  DoTextConverter(SynConverterFilename('HTML - all entities'), false);
+end;
+
+procedure TfmMain.ecEncodeHtmlChars2Execute(Sender: TObject);
+begin
+  DoTextConverter(SynConverterFilename('HTML - entities except brackets'), false);
 end;
 
 end.

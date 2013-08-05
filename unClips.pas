@@ -44,6 +44,8 @@ implementation
 uses
   StrUtils,
   ATxSProc,
+  ATxFProc,
+  TntSysUtils,
   TntClipbrd;
 
 {$R *.dfm}
@@ -113,19 +115,24 @@ end;
 
 procedure TfmClips.LoadClips;
 var
-  Rec: TSearchRec;
+  L: TTntStringList;
+  i: Integer;
 begin
   if FClipsDir='' then
     raise Exception.Create('Clips dir nil');
   Combo.Items.Clear;
 
-  if FindFirst(GetClipsFN('*'), faAnyFile, Rec)=0 then
-  begin
-    repeat
-      Combo.Items.Add(ChangeFileExt(Rec.Name, ''));
-    until FindNext(Rec)<>0;
-    FindClose(Rec);
-    Combo.ItemIndex:= 0;
+  L:= TTntStringList.Create;
+  try
+    FFindToList(L, FClipsDir, '*.txt', '',
+      false{SubDir}, false, false, false);
+
+    for i:= 0 to L.Count-1 do
+      Combo.Items.Add(WideChangeFileExt(WideExtractFileName(L[i]), ''));
+    if L.Count>0 then
+      Combo.ItemIndex:= 0;
+  finally
+    FreeAndNil(L);
   end;
 end;
 
