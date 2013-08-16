@@ -2873,7 +2873,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.8.770';
+  cSynVer = '5.8.780';
 
 const  
   cSynParamRO = '/RO';
@@ -20389,23 +20389,26 @@ end;
 
 procedure TfmMain.DoInsertImageTag(const fn: string);
 var
-  fn_wdx, s: string;
+  fn_wdx, dir, s: string;
   IsCss: boolean;
+  Ed: TSyntaxMemo;
+  Frame: TEditorFrame;
 begin
-  if CurrentEditor.ReadOnly then Exit;
-  //if not IsLexerWithImages(CurrentLexer) then
-  //  begin MsgBeep; Exit end;
+  Ed:= CurrentEditor;
+  Frame:= CurrentFrame;
+  if Ed.ReadOnly then Exit;
 
   fn_wdx:= SynImagesDll;
   if not IsFileExist(fn_wdx) then
     begin MsgNoFile(fn_wdx); Exit end;
 
   IsCss:= IsLexerCss(CurrentLexer);
-  s:= SGetImageTag(fn, fn_wdx, IsCss);
+  dir:= ExtractFileDir(Frame.FileName);
+  s:= SGetImageTag(fn, fn_wdx, dir, IsCss, CurrentCR(Ed));
   if s='' then
-    begin SetHint('Cannot insert tag'); MsgBeep; Exit end;
-    
-  with CurrentEditor do
+    begin SetHint('Cannot insert tag: '+fn); MsgBeep; Exit end;
+
+  with Ed do
   begin
     InsertText(s);
     CaretStrPos:= CaretStrPos - Length(s) +

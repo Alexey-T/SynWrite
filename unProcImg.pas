@@ -6,7 +6,7 @@ interface
 // http://totalcmd.net/plugring/wdx_image_info.html
 // If other WDX used, correct also wdx_W_field/wdx_H_field .
 //
-function SGetImageTag(const fn, fn_wdx: string; IsCss: boolean): string;
+function SGetImageTag(const fn_image, fn_wdx, dir: string; IsCss: boolean; const Eol: string): string;
 
 implementation
 
@@ -16,28 +16,38 @@ uses
   ATxSProc;
 
 const
+  //constants for WDX plugin: indexes of Width and Height fields
   wdx_W_field = 0;
   wdx_H_field = 1;
 
-function SGetImageTag(const fn, fn_wdx: string; IsCss: boolean): string;
+function SGetImageTag(const fn_image, fn_wdx, dir: string;
+  IsCss: boolean; const Eol: string): string;
 var
-  fn_ini, sw, sh: string;
+  fn_ini, fn_dir, fn_insert,
+  str_width, str_height: string;
 begin
+  Result:= '';
+
   fn_ini:= SExpandVars('%temp%\lsplugin.ini');
+  str_width:= SGetWdxField(fn_wdx, fn_image, fn_ini, false, wdx_W_field);
+  str_height:= SGetWdxField(fn_wdx, fn_image, fn_ini, false, wdx_H_field);
+  if StrToIntDef(str_width, 0)<=0 then Exit;
+  if StrToIntDef(str_height, 0)<=0 then Exit;
 
-  sw:= SGetWdxField(fn_wdx, fn, fn_ini, false, wdx_W_field);
-  sh:= SGetWdxField(fn_wdx, fn, fn_ini, false, wdx_H_field);
-
-  if (StrToIntDef(sw, -1)<=0) or
-    (StrToIntDef(sh, -1)<=0) then
-    begin Result:= ''; Exit end;
+  fn_dir:= ''; //relative folder path to image
+  if (dir<>'') and (Pos(UpperCase(dir+'\'), UpperCase(fn_image))=1) then
+  begin
+    fn_dir:= ExtractFilePath(Copy(fn_image, Length(dir)+2, MaxInt));
+    SReplaceAll(fn_dir, '\', '/');
+  end;
+  fn_insert:= fn_dir + ExtractFileName(fn_image);
 
   if IsCss then
-    Result:= Format('  background: url("./%s");'#13#10'  width: %spx;'#13#10'  height: %spx;'#13#10,
-      [ExtractFileName(fn), sw, sh])
+    Result:= Format('  background: url("%s");' + Eol + '  width: %spx;' + Eol + '  height: %spx;' + Eol,
+      [fn_insert, str_width, str_height])
   else
-    Result:= Format('<img src="./%s" width="%s" height="%s" alt="untitled" />',
-      [ExtractFileName(fn), sw, sh]);
+    Result:= Format('<img src="%s" width="%s" height="%s" alt="untitled" />',
+      [fn_insert, str_width, str_height]);
 end;
 
 end.
