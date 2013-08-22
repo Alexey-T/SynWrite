@@ -320,12 +320,11 @@ type
     TBXItemFNew: TSpTbxItem;
     TBXSeparatorItem15: TSpTbxSeparatorItem;
     TBXSubmenuItemFNew: TSpTbxSubmenuItem;
-    TBXSeparatorItem16: TSpTbxSeparatorItem;
     TBXItemFPreview: TSpTbxItem;
     TBXItemFPrint: TSpTbxItem;
     TBXItemFPageSetup: TSpTbxItem;
     TBXItemFPrinterSetup: TSpTbxItem;
-    TBXSubmenuItem12: TSpTbxSubmenuItem;
+    TBXSubmenuItemExport: TSpTBXSubmenuItem;
     TBXItemFExpRtf: TSpTbxItem;
     TBXItemFExpHtml: TSpTbxItem;
     Panel1: TPanel;
@@ -469,7 +468,6 @@ type
     TBXSubmenuEnc: TSpTbxSubmenuItem;
     TBXSubmenuEnc2: TSpTbxSubmenuItem;
     TimerLoad: TTimer;
-    TBXItemTbClose: TSpTbxItem;
     ecReplace: TAction;
     TBXItemSRep: TSpTbxItem;
     TBXItemSFind: TSpTbxItem;
@@ -563,7 +561,6 @@ type
     TBXSeparatorItem42: TSpTbxSeparatorItem;
     TBXItemTabMoveToView: TSpTBXItem;
     PopupSplitter: TSpTbxPopupMenu;
-    TBXItemTbCloseAll: TSpTbxItem;
     TBXItemSpHorz: TSpTbxItem;
     TBXSeparatorItem43: TSpTbxSeparatorItem;
     TBXSeparatorItem44: TSpTbxSeparatorItem;
@@ -1005,7 +1002,6 @@ type
     TBXItemECommandList: TSpTbxItem;
     ecScrollToSel: TAction;
     ecProjectList: TAction;
-    TBXItemSGotoFile: TSpTbxItem;
     TBXSeparatorItem90: TSpTbxSeparatorItem;
     TbxSubmenuCarets: TSpTbxSubmenuItem;
     TBXItemCaretsRemove2: TSpTbxItem;
@@ -1200,6 +1196,9 @@ type
     TBXItemEncodeHtmlNoBrackets: TSpTBXItem;
     TBXItemEncodeHtmlAll: TSpTBXItem;
     ecEncodeHtmlChars2: TAction;
+    SpTBXSeparatorItem18: TSpTBXSeparatorItem;
+    SpTBXSeparatorItem20: TSpTBXSeparatorItem;
+    TBXSubmenuItemPrint: TSpTBXSubmenuItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2173,6 +2172,7 @@ type
     function CurrentProjectFN: Widestring;
     function CurrentProjectMainFN: Widestring;
     function CurrentProjectWorkDir: Widestring;
+    procedure ProjGotoFile(Sender: TObject);
     procedure ProjLoadMRU(List: TSynMruList);
     procedure ProjUpdateMRU(List: TSynMruList);
     procedure ProjFileOpen(Sender: TObject; Files: TTntStrings);
@@ -2195,6 +2195,7 @@ type
     procedure DoDeleteRecentColor(N: Integer);
     procedure AddBookmarksToSortedList(ed: TSyntaxMemo; L: TList);
     procedure UpdateRecentsOnClose;
+    function SynBorderStyle: TBorderStyle;
     function SynImagesDll: string;
     function DoAutoCloseBracket(const ch: Widechar): boolean;
     function DoAutoCloseTag: boolean;
@@ -2343,7 +2344,7 @@ type
     procedure DoCommentLines(Comm: boolean);
     procedure DoRepaintTBs;
     procedure DoRepaintTBs2;
-    procedure DoRepaintTabCaptions;
+    procedure DoRepaintTabCaptions(Pages: TTntPageControl);
     procedure DoSyncScroll(EdSrc: TSyntaxMemo);
     function GetPageControl: TTntPageControl;
     procedure UpdateClickedFrame;
@@ -2575,6 +2576,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     //opt
+    opShowBorders: boolean;
     opNonPrint,
     opNonPrintSpaces,
     opNonPrintEol,
@@ -2636,7 +2638,7 @@ type
     opBkUndo: boolean;
     opZenProfile: string;
     opProjPaths: Widestring;
-    opBracketHi: boolean;
+    opHiliteBrackets: boolean;
     opColorBracket,
     opColorBracketBg,
     opColorOutSelBk,
@@ -2650,8 +2652,8 @@ type
     opSpellExt: string;
     opFixBlocks: boolean;
     opMenuIcon: boolean;
-    opSmartHi: boolean;
-    opSmartHiCase: boolean;
+    opHiliteSmart: boolean;
+    opHiliteSmartCase: boolean;
     opDateFmt,
     opDateFmtPLog: string;
     opBak: integer; //0: None, 1: AppData, 2: same folder
@@ -2682,7 +2684,7 @@ type
     opLang: integer;
     opLexerCat: boolean; //group lexers
     opNotif: integer; //0: none, 1: reload, 2: ask to reload
-    opLink: boolean;
+    opHiliteUrls: boolean;
     opColorLink: integer;
     opKeepScr: boolean;
     opLastDir: integer; //0: of current file, 1: remember last, 2: custom folder
@@ -2773,6 +2775,7 @@ type
     procedure ApplyACP;
     procedure ApplyOut;
     procedure ApplyMap;
+    procedure ApplyBorders;
 
     procedure DoSpellCfg(Sender: TObject);
     procedure DoAutoSave;
@@ -2873,13 +2876,17 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.8.780';
+  cSynVer = '5.8.800';
 
-const  
+const
   cSynParamRO = '/RO';
   cSynParamSingleInst = '/S';
   cSynParamLineNum = '/N=';
   cSynParamReg = '/reg';
+
+const
+  cConverterHtml1 = 'HTML - all entities';
+  cConverterHtml2 = 'HTML - entities except brackets';
 
 implementation
 
@@ -3573,9 +3580,11 @@ begin
   Result.OnTitleChanged:= UpdateTitle;
   Result.OnSaveState:= SaveState_;
 
+  Result.EditorMaster.BorderStyle:= SynBorderStyle;
+  Result.EditorSlave.BorderStyle:= SynBorderStyle;
   Result.EditorMaster.KeyMapping:= SyntKeyMapping;
   Result.EditorSlave.KeyMapping:= SyntKeyMapping;
-  Result.HyperlinkHighlighter.Active:= opLink;
+  Result.HyperlinkHighlighter.Active:= opHiliteUrls;
   Result.HyperlinkHighlighter.Style.Font.Color:= opColorLink;
   Result.HyperlinkHighlighter.SingleClick:= opSingleClickURL;
 
@@ -3930,7 +3939,7 @@ begin
   ecLineNums.Checked:= ed.LineNumbers.Visible;
   ecFolding.Checked:= not ed.DisableFolding;
   ecRuler.Checked:= ed.HorzRuler.Visible;
-  ecSmartHl.Checked:= opSmartHi;
+  ecSmartHl.Checked:= opHiliteSmart;
   ecFullScr.Checked:= FullScr;
 
   ecNonPrint.Checked:= ed.NonPrinted.Visible;
@@ -4204,7 +4213,7 @@ begin
     ApplyInst;
     opQsCap:= ReadBool('Setup', 'QsCap', false);
     ApplyQs;
-    opLink:= ReadBool('Setup', 'Link', true);
+    opHiliteUrls:= ReadBool('Setup', 'Link', true);
     opColorLink:= ReadInteger('Setup', 'LinkCl', clBlue);
       //opFixBlocks:= ReadBool('Setup', 'FixBl', true);
       //opKeepScr:= ReadBool('Setup', 'KeepScr', false);
@@ -4240,8 +4249,8 @@ begin
     opUtf8BufferSizeKb:= ReadInteger('Setup', 'Utf8Buffer', 32);
     opMenuIcon:= ReadBool('Setup', 'MenuIcon', true);
     opBeep:= ReadBool('Setup', 'Beep', true);
-    opSmartHi:= ReadBool('Setup', 'SmHi', false);
-    opSmartHiCase:= ReadBool('Setup', 'SmHiCase', false);
+    opHiliteSmart:= ReadBool('Setup', 'SmHi', false);
+    opHiliteSmartCase:= ReadBool('Setup', 'SmHiCase', false);
     opDateFmt:= ReadString('Setup', 'DateFmt', 'h:mm dd.mm.yyyy');
     opDateFmtPLog:= ReadString('Setup', 'DateFmtP', 'hh:mm:ss');
     opBak:= ReadInteger('Setup', 'Back', 0);
@@ -4267,7 +4276,10 @@ begin
     opNotif:= ReadInteger('Setup', 'Notif', 2);
     ApplyIntf;
 
-    opTipsToken:= ReadBool('View', 'Tips', true);
+    opShowBorders:= ReadBool('Setup', 'Borders', true);
+    ApplyBorders;
+    
+    opTipsToken:= ReadBool('Setup', 'Tooltips', true);
     opTipsPanels:= opTipsToken;
     ApplyTips;
 
@@ -4318,7 +4330,7 @@ begin
     opBkUndo:= ReadBool('Setup', 'BkUndo', false);
     opZenProfile:= ReadString('Setup', 'ZenPr', 'html');
     opProjPaths:= UTF8Decode(ReadString('Setup', 'Paths', ''));
-    opBracketHi:= ReadBool('Setup', 'BrHi', true);
+    opHiliteBrackets:= ReadBool('Setup', 'BrHi', true);
 
     opColorBracket:= ReadInteger('Setup', 'BrCl', clYellow);
     opColorBracketBg:= ReadInteger('Setup', 'BrClBg', clGreen);
@@ -4558,7 +4570,7 @@ begin
     WriteInteger('Setup', 'BigSize', opBigSize);
     WriteBool('Setup', 'BkUndo', opBkUndo);
     WriteString('Setup', 'ZenPr', opZenProfile);
-    WriteBool('Setup', 'BrHi', opBracketHi);
+    WriteBool('Setup', 'BrHi', opHiliteBrackets);
 
     WriteString('Setup', 'Paths', UTF8Encode(opProjPaths));
     WriteBool('Setup', 'SpellEn', opSpellEn);
@@ -4602,7 +4614,7 @@ begin
     WriteBool('Setup', 'Inst', opSingleInstance);
     WriteBool('Setup', 'QsCap', opQsCap);
     WriteBool('Setup', 'LexCat', opLexerCat);
-    WriteBool('Setup', 'Link', opLink);
+    WriteBool('Setup', 'Link', opHiliteUrls);
     WriteInteger('Setup', 'LinkCl', opColorLink);
     WriteBool('Setup', 'FixBl', opFixBlocks);
     WriteBool('Setup', 'KeepScr', opKeepScr);
@@ -4622,8 +4634,8 @@ begin
 
     WriteBool('Setup', 'MenuIcon', opMenuIcon);
     WriteBool('Setup', 'Beep', opBeep);
-    WriteBool('Setup', 'SmHi', opSmartHi);
-    WriteBool('Setup', 'SmHiCase', opSmartHiCase);
+    WriteBool('Setup', 'SmHi', opHiliteSmart);
+    WriteBool('Setup', 'SmHiCase', opHiliteSmartCase);
     WriteString('Setup', 'DateFmt', opDateFmt);
     WriteString('Setup', 'DateFmtP', opDateFmtPLog);
     WriteInteger('Setup', 'Back', opBak);
@@ -4671,7 +4683,8 @@ begin
     WriteBool('SR', 'SugWord', opSrSuggestWord);
     WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
 
-    WriteBool('View', 'Tips', opTipsToken);
+    //WriteBool('Setup', 'Borders', opShowBorders);
+    //WriteBool('Setup', 'Tooltips', opTipsToken);
     WriteInteger('View', 'TabLast', opTabOptionsLast);
     WriteBool('View', 'TabNum', opTabNums);
     WriteBool('View', 'TabBtn', opTabBtn);
@@ -5306,7 +5319,7 @@ begin
           DoCheckAutoShowACP(Ed);
       end;
 
-    //case
+    //case changing
     smUpperCaseBlock,
     smLowerCaseBlock,
     smToggleCaseBlock,
@@ -5315,6 +5328,7 @@ begin
       begin
         DoSaveSel(Ed, Sel);
         Ed.SelChangeCase(TChangeCase(Command - smUpperCaseBlock + 1));
+        EditorSetModified(Ed);
         DoRestoreSel(Ed, Sel);
       end;
 
@@ -5324,7 +5338,7 @@ begin
         if Ed.HaveSelection and IsMultilineSelection(Ed) then
         begin
           Ed.ExecCommand(smBlockIndent);
-          Exit;//don't record Tab cmd
+          Exit; //don't record Tab cmd
         end
         else
         if DoSmartTagTabbing then
@@ -6555,25 +6569,23 @@ begin
   MsgBeep;
 end;
 
-{
-procedure TfmMain.Replace;
-var
-  R: TecRegExpr;
+function TfmMain.SynBorderStyle: TBorderStyle;
 begin
-  if Finder.FindAgain then
-   if CurrentEditor.HaveSelection then
-    if ftRegularExpr in Finder.Flags then
-    begin
-      R:= TecRegExpr.Create;
-      R.Expression:= Finder.FindText;
-      R.ModifierI:= not (ftCaseSensitive in Finder.Flags);
-      CurrentEditor.SelText:= R.Substitute(CurrentEditor.Lines.FText, Finder.ReplaceText);
-      R.Free;
-    end
-    else
-      CurrentEditor.SelText:= Finder.ReplaceText;
+  if opShowBorders then
+    Result:= bsSingle
+  else
+    Result:= bsNone;
 end;
-}
+
+procedure TfmMain.ApplyBorders;
+begin
+  Tree.BorderStyle:= SynBorderStyle;
+  ListTabs.BorderStyle:= SynBorderStyle;
+  ListOut.BorderStyle:= SynBorderStyle;
+  ListVal.BorderStyle:= SynBorderStyle;
+  ListPLog.BorderStyle:= SynBorderStyle;
+  TreeFind.BorderStyle:= SynBorderStyle;
+end;
 
 procedure TfmMain.FormShow(Sender: TObject);
 begin
@@ -9451,7 +9463,6 @@ begin
   K(TbxItemMarkClear, sm_MarkersClear);
   K(TbxItemMarkGoLast, sm_JumpToLastMarker);
 
-  K(TBXItemSGotoFile, sm_ProjectList);
   K(TbxItemECommandList, sm_CommandsList);
   K(TbxItemERepeatCmd, sm_RepeatCmd);
   K(TbxItemSSelToken, sm_SelectToken);
@@ -10731,13 +10742,15 @@ begin
   EditorSetModified(CurrentFrame.EditorMaster);
 end;
 
-//tab [X] button rect
-procedure TabCtrl_GetXRect(H: THandle; TabIndex, BtnSize: Integer; var R: TRect);
+//tab X button rect
+procedure TabCtrl_GetXRect(H: THandle; TabIndex: Integer; var R: TRect);
+const
+  BtnSize = 15; //X button size in SpTbx
 begin
   TabCtrl_GetItemRect(H, TabIndex, R);
   Dec(R.Right, 4);
-  R.Left:= R.Right-BtnSize;
-  R.Top:= (R.Bottom + R.Top - BtnSize) div 2;
+  R.Left:= R.Right - BtnSize;
+  R.Top:= (R.Bottom + R.Top - BtnSize) div 2 + 1;
   R.Bottom:= R.Top + BtnSize;
 end;
 
@@ -10753,7 +10766,6 @@ var
 begin
   PageControl:= Control as TTntPageControl;
 
-  //AT --todo
   //get frame properties
   ColorMisc:= clNone;
   AFtp:= false;
@@ -10847,11 +10859,21 @@ begin
   if AFtp then
     ImageListFtp.Draw(Control.Canvas, R.Left+3, R.Top+5, 0);
 
-  //tab X btn
+  //tab X button
+  {
   if opTabBtn then
   begin
     TabCtrl_GetXRect(PageControl.Handle, TabIndex, ImageListCloseBtn.Width, R);
     ImageListCloseBtn.Draw(Control.Canvas, R.Left, R.Top, Ord(FPagesNTab=TabIndex));
+  end;
+  }
+  if opTabBtn then
+  begin
+    TabCtrl_GetXRect({Page}Control.Handle, TabIndex, R);
+    if FPagesNTab=TabIndex then
+      SpDrawXPToolbarButton(Control.Canvas, R, sknsHotTrack, cpNone);
+    SpDrawGlyphPattern(Control.Canvas, R, 0{0 is X icon index},
+      CurrentSkin.GetTextColor(skncToolbarItem, sknsNormal));
   end;
 end;
 
@@ -10902,7 +10924,7 @@ begin
   if opTabBtn and (Button = mbLeft) then
   for i:= 0 to PageControl.PageCount-1 do
   begin
-    TabCtrl_GetXRect(PageControl.Handle, i, ImageListCloseBtn.Width, R);
+    TabCtrl_GetXRect(PageControl.Handle, i, R);
     if PtInRect(R, Point(x, y)) then
     begin
       CloseFrameWithCfm(Frames[i]);
@@ -10967,7 +10989,7 @@ begin
       ShowFN(PagesToFrame(PageControl, i).FileName);
 
     //handle X btn mouse-over
-    TabCtrl_GetXRect(PageControl.Handle, i, ImageListCloseBtn.Width, R);
+    TabCtrl_GetXRect(PageControl.Handle, i, R);
     if PtInRect(R, Point(x, y)) then
     begin
       FPagesNTab:= i;
@@ -10978,7 +11000,7 @@ begin
   //redraw X btn
   if (n<>FPagesNTab) then
     //PageControl.Invalidate;
-    DoRepaintTabCaptions;
+    DoRepaintTabCaptions(PageControl);
 end;
 
 type
@@ -12441,7 +12463,7 @@ begin
   Finder.FindText:= s;
   Finder.ReplaceText:= '';
   Finder.Flags:= [ftEntireScope, ftWholeWordOnly];
-  if opSmartHiCase then
+  if opHiliteSmartCase then
     Finder.Flags:= Finder.Flags + [ftCaseSensitive];
   Finder.OnAfterExecute:= nil;
   Finder.OnBeforeExecute:= nil;
@@ -12489,7 +12511,7 @@ end;
 procedure TfmMain.TimerSelTimer(Sender: TObject);
 begin
   TimerSel.Enabled:= false;
-  if opSmartHi then
+  if opHiliteSmart then
     HiliteSmart;
 end;
 
@@ -13645,6 +13667,7 @@ begin
     ListClip.OnMouseMove:= ListOutMouseMove;
     ListClip.PopupMenu:= PopupClip;
     ListClip.OnKeyDown:= ListClipKeyDown;
+    ListClip.BorderStyle:= SynBorderStyle;
     ApplyOut;
     Show;
     Set_;
@@ -13676,6 +13699,7 @@ begin
     OnInsPress:= ClipsInsPress;
     List.OnMouseMove:= ListOutMouseMove;
     List.PopupMenu:= PopupClips;
+    List.BorderStyle:= SynBorderStyle;
     ApplyOut;
 
     //load clips
@@ -13707,7 +13731,9 @@ begin
     Align:= alClient;
     BorderStyle:= bsNone;
     FSynDir:= Self.SynDir;
+    FShortcutGoto:= ShFor(sm_ProjectList);
     //
+    TreeProj.BorderStyle:= SynBorderStyle;
     TreeProj.Font.Assign(Tree.Font);
     TreeProj.Color:= Tree.Color;
     tbProject.ChevronHint:= tbQS.ChevronHint;
@@ -13719,6 +13745,7 @@ begin
     OnGetWorkDir:= ProjGetWorkDir;
     OnGetProjDir:= ProjGetProjDir;
     OnSetProjDir:= ProjSetProjDir;
+    OnGotoProjFile:= ProjGotoFile;
     OnLoadMRU:= ProjLoadMRU;
     OnUpdateMRU:= ProjUpdateMRU;
     //
@@ -13736,6 +13763,7 @@ begin
     Align:= alClient;
     BorderStyle:= bsNone;
     FOnMapClick:= MapClick;
+    edMap.BorderStyle:= SynBorderStyle;
     ApplyMap;
     Show;
   end;
@@ -13872,8 +13900,8 @@ begin
   if CurrentEditor<>nil then
     with CurrentEditor do
     begin
-      SelAttributes.Enabled:= opBracketHi;
-      if not opBracketHi then
+      SelAttributes.Enabled:= opHiliteBrackets;
+      if not opHiliteBrackets then
       begin
         //Invalidate needed to prevent bug: "Current line hiliting" leaves on multiple lines,
         //with SelectModeDefault=msColumn
@@ -15348,6 +15376,7 @@ begin
 
   sh:= Shortcut(Key, Shift);
   if sh=0 then Exit;
+
   //Ctrl+F in tree
   if IsSh(sh, smFindDialog) then
   begin
@@ -21527,7 +21556,7 @@ end;
 
 procedure TfmMain.ecSmartHlExecute(Sender: TObject);
 begin
-  opSmartHi:= not opSmartHi;
+  opHiliteSmart:= not opHiliteSmart;
   UpdateStatusBar;
 end;
 
@@ -22581,12 +22610,12 @@ begin
   end;
 end;
 
-procedure TfmMain.DoRepaintTabCaptions;
+procedure TfmMain.DoRepaintTabCaptions(Pages: TTntPageControl);
 var
   i: Integer;
 begin
-  for i:= 0 to PageControl.PageCount-1 do
-    PageControl1DrawTab(PageControl, i, Rect(0, 0, 0, 0), false);
+  for i:= 0 to Pages.PageCount-1 do
+    PageControl1DrawTab(Pages, i, Rect(0, 0, 0, 0), false);
 end;
 
 //--------------------
@@ -24799,7 +24828,7 @@ var
 begin
   for i:= 0 to FrameAllCount-1 do
   begin
-    FramesAll[i].HyperlinkHighlighter.Active:= opLink;
+    FramesAll[i].HyperlinkHighlighter.Active:= opHiliteUrls;
     FramesAll[i].HyperlinkHighlighter.SingleClick:= opSingleClickURL;
   end;
 end;
@@ -26109,7 +26138,7 @@ end;
 
 procedure TfmMain.InitMenuItemsList;
 begin
-  SetLength(FMenuItems, 20);
+  SetLength(FMenuItems, 18);
   with FMenuItems[0] do begin Id:= 'file'; Item:= TbxSubmenuItemFile; end;
   with FMenuItems[1] do begin Id:= 'edit'; Item:= TbxSubmenuItemEd; end;
   with FMenuItems[2] do begin Id:= 'search'; Item:= TbxSubmenuItemSr; end;
@@ -26124,14 +26153,12 @@ begin
   with FMenuItems[11] do begin Id:= 'window'; Item:= TbxWin; end;
   with FMenuItems[12] do begin Id:= 'help'; Item:= TbxSubmenuItemHelp; end;
   with FMenuItems[13] do begin Id:= 'split'; Item:= TbxItemTbSplit; end;
-  with FMenuItems[14] do begin Id:= 'x'; Item:= TBXItemTbClose; end;
-  with FMenuItems[15] do begin Id:= 'xx'; Item:= TBXItemTbCloseAll; end;
 
-  with FMenuItems[16] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
-  with FMenuItems[17] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
-  with FMenuItems[18] do begin Id:= 'toolbar-view'; Item:= tbView; end;
+  with FMenuItems[14] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
+  with FMenuItems[15] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
+  with FMenuItems[16] do begin Id:= 'toolbar-view'; Item:= tbView; end;
 
-  with FMenuItems[19] do begin Id:= 'context'; Item:= PopupEditor; end;
+  with FMenuItems[17] do begin Id:= 'context'; Item:= PopupEditor; end;
 end;
 
 procedure TfmMain.TBXItemOHideItemsClick(Sender: TObject);
@@ -26774,12 +26801,17 @@ end;
 
 procedure TfmMain.ecEncodeHtmlCharsExecute(Sender: TObject);
 begin
-  DoTextConverter(SynConverterFilename('HTML - all entities'), false);
+  DoTextConverter(SynConverterFilename(cConverterHtml1), false);
 end;
 
 procedure TfmMain.ecEncodeHtmlChars2Execute(Sender: TObject);
 begin
-  DoTextConverter(SynConverterFilename('HTML - entities except brackets'), false);
+  DoTextConverter(SynConverterFilename(cConverterHtml2), false);
+end;
+
+procedure TfmMain.ProjGotoFile(Sender: TObject);
+begin
+  ecProjectList.Execute;
 end;
 
 end.

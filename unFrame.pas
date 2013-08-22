@@ -965,7 +965,7 @@ begin
   EditorMasterCaretPosChanged(Sender);
 
   Ed:= Sender as TSyntaxMemo;
-  if TfmMain(Owner).opSmartHi then
+  if TfmMain(Owner).opHiliteSmart then
   begin
     if Ed.HaveSelection then
       TfmMain(Owner).TimerSel.Enabled:= true

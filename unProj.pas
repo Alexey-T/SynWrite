@@ -95,6 +95,7 @@ type
     TBXItemProjClearRecent: TSpTbxItem;
     TBXItemProjMRU: TSpTbxMRUListItem;
     SpTBXDock1: TSpTBXDock;
+    TBXItemMnuProjGoto: TSpTBXItem;
     procedure TBXItemProjAddVirtDirClick(Sender: TObject);
     procedure TBXItemProjDelFilesClick(Sender: TObject);
     procedure TBXItemProjAddFilesClick(Sender: TObject);
@@ -152,6 +153,7 @@ type
       FromLink: Boolean);
     procedure TBXItemProjMRUClick(Sender: TObject;
       const Filename: WideString);
+    procedure TBXItemMnuProjGotoClick(Sender: TObject);
   private
     { Private declarations }
     FProjectFN: Widestring;
@@ -160,6 +162,7 @@ type
     FIcoList: TStringList;
     FPathList: TTntStringList;
     FOldItemsCount: integer;
+    FOnGotoProj: TNotifyEvent;
     FOnFileOpen: TListProc;
     FOnUpdateMRU: TMruListProc;
     FOnLoadMRU: TMruListProc;
@@ -218,6 +221,7 @@ type
     { Public declarations }
     FOpts: TProjectOpts;
     FSynDir: string;
+    FShortcutGoto: TShortcut;
     procedure ReplaceUserVars(var SValue: Widestring;
       const AVarName: Widestring; var AVarValue: Widestring);
     function GetUserVarValue(const AVarName: Widestring): Widestring;
@@ -234,6 +238,7 @@ type
     property OnGetWorkDir: TListProc read FOnGetWorkDir write FOnGetWorkDir;
     property OnGetProjDir: TListProc read FOnGetProjDir write FOnGetProjDir;
     property OnSetProjDir: TListProc read FOnSetProjDir write FOnSetProjDir;
+    property OnGotoProjFile: TNotifyEvent read FOnGotoProj write FOnGotoProj;
     //
     procedure CheckModified(ClearModified: boolean = false);
     procedure UpdateTitle;
@@ -479,6 +484,12 @@ end;
 procedure TfmProj.TreeProjKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
+  if (FShortcutGoto<>0) and (Shortcut(Key, Shift) = FShortcutGoto) then
+  begin
+    TBXItemMnuProjGoto.Click;
+    Key:= 0;
+    Exit
+  end;
   if (Key=VK_F2) and (Shift=[]) then
   begin
     DoRename;
@@ -1855,6 +1866,12 @@ var
 begin
   S:= '';
   ReplaceUserVars(S, AVarName, Result);
+end;
+
+procedure TfmProj.TBXItemMnuProjGotoClick(Sender: TObject);
+begin
+  if Assigned(FOnGotoProj) then
+    FOnGotoProj(Self);
 end;
 
 end.

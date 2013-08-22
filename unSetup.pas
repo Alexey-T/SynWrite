@@ -254,7 +254,6 @@ type
     boxMicromap: TTntGroupBox;
     cbMicroMap: TTntCheckBox;
     cbBeep: TTntCheckBox;
-    cbTips: TTntCheckBox;
     cbMenuIcon: TTntCheckBox;
     cbFullTitle: TTntCheckBox;
     cbGroupLexers: TTntCheckBox;
@@ -275,11 +274,11 @@ type
     Label1: TTntLabel;
     edIndent: TSpinEdit;
     boxSelFmt: TTntGroupBox;
-    cbLink: TTntCheckBox;
+    cbUrlHilite: TTntCheckBox;
     cbUrlClick: TTntCheckBox;
-    cbSmHi: TTntCheckBox;
-    cbSmHiCase: TTntCheckBox;
-    cbBrHi: TTntCheckBox;
+    cbHiliteSmart: TTntCheckBox;
+    cbHiliteSmartCase: TTntCheckBox;
+    cbHiliteBrackets: TTntCheckBox;
     cbCopyLineNSel: TTntCheckBox;
     cbColorOnEmpty: TTntCheckBox;
     boxView: TTntGroupBox;
@@ -1878,9 +1877,6 @@ begin
     Icons:= Icons; //update menu
     opTitleFull:= cbFullTitle.Checked;
     opBeep:= cbBeep.Checked;
-    opTipsToken:= cbTips.Checked;
-    opTipsPanels:= opTipsToken;
-    ApplyTips;
 
     //redraw
     tbFile.Invalidate;
@@ -2172,7 +2168,6 @@ begin
     cbGroupLexers.Checked:= opLexerCat;
     cbFullTitle.Checked:= opTitleFull;
     cbMenuIcon.Checked:= opMenuIcon;
-    cbTips.Checked:= opTipsToken;
     cbBeep.Checked:= opBeep;
   end;
 end;
@@ -2410,13 +2405,13 @@ procedure TfmSetup.ApplySelHL;
 begin
   with fmMain do
   begin
-    opLink:= cbLink.Checked;
+    opHiliteUrls:= cbUrlHilite.Checked;
     opSingleClickURL:= cbUrlClick.Checked;
     ApplyUrlClick;
 
-    opSmartHi:= cbSmHi.Checked;
-    opSmartHiCase:= cbSmHiCase.Checked;
-    opBracketHi:= cbBrHi.Checked;
+    opHiliteSmart:= cbHiliteSmart.Checked;
+    opHiliteSmartCase:= cbHiliteSmartCase.Checked;
+    opHiliteBrackets:= cbHiliteBrackets.Checked;
     opCopyLineIfNoSel:= cbCopyLineNSel.Checked;
 
     if cbColorOnEmpty.Checked then
@@ -2572,12 +2567,12 @@ procedure TfmSetup.InitSelHL;
 begin
   with fmMain do
   begin
-    cbLink.Checked:= opLink;
+    cbUrlHilite.Checked:= opHiliteUrls;
     cbUrlClick.Checked:= opSingleClickURL;
 
-    cbSmHi.Checked:= opSmartHi;
-    cbSmHiCase.Checked:= opSmartHiCase;
-    cbBrHi.Checked:= opBracketHi;
+    cbHiliteSmart.Checked:= opHiliteSmart;
+    cbHiliteSmartCase.Checked:= opHiliteSmartCase;
+    cbHiliteBrackets.Checked:= opHiliteBrackets;
 
     cbCopyLineNSel.Checked:= opCopyLineIfNoSel;
     cbColorOnEmpty.Checked:= not (soNormalSelToLineEnd in TemplateEditor.OptionsEx);
