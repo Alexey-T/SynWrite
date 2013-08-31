@@ -191,10 +191,7 @@ type
     procedure DoAddDirDlg(const SDir: Widestring);
     procedure DoSortBy(Mode: TProjSort);
     procedure DoSortDir(Node: TTntTreeNode; Subdirs: boolean; SortType: TProjSort);
-    procedure DoAddEditorFiles(All: boolean);
     function CanRename(Node: TTntTreeNode): boolean;
-    procedure DoOpenProject;
-    procedure DoSaveProject;
     procedure DoSaveProjectAs;
     procedure DoConfigProject;
     procedure DoLoadProjectFromFile(const fn: Widestring);
@@ -216,12 +213,15 @@ type
     procedure DoRename;
     procedure DoRemove;
     procedure DoOpenFiles;
-    procedure DoNewProject;
   public
     { Public declarations }
     FOpts: TProjectOpts;
     FSynDir: string;
     FShortcutGoto: TShortcut;
+    procedure DoOpenProject;
+    procedure DoNewProject;
+    procedure DoSaveProject;
+    procedure DoAddEditorFiles(All: boolean);
     procedure ReplaceUserVars(var SValue: Widestring;
       const AVarName: Widestring; var AVarValue: Widestring);
     function GetUserVarValue(const AVarName: Widestring): Widestring;

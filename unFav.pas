@@ -7,6 +7,10 @@ uses
   Dialogs, StdCtrls,
   TntForms, TntStdCtrls, TntClasses, DKLang, ComCtrls, TntComCtrls;
 
+const
+  cSynFavTabFiles = 0;
+  cSynFavTabProjects = 1;
+  
 type
   TfmFav = class(TTntForm)
     btnOk: TTntButton;
@@ -47,6 +51,7 @@ type
     FIniFN: string;
     FOptFN: string;
     FCurrentFileName: Widestring;
+    FFavTab: Integer;
   end;
 
 implementation
@@ -152,6 +157,9 @@ begin
     Free
   end;
 
+  if FFavTab>=0 then
+    N:= FFavTab;
+
   if (N>=0) and (N<Tabs.Tabs.Count) then
     Tabs.TabIndex:= N
   else
@@ -162,6 +170,7 @@ end;
 procedure TfmFav.TntFormCreate(Sender: TObject);
 begin
   FFileNames:= TTntStringList.Create;
+  FFavTab:= -1;
 end;
 
 procedure TfmFav.TntFormDestroy(Sender: TObject);

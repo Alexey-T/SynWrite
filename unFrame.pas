@@ -102,6 +102,8 @@ type
     procedure EditorSlaveFinishAnalysis(Sender: TObject);
     procedure TBXItemSplitCancelClick(Sender: TObject);
     procedure SplitterDblClick(Sender: TObject);
+    procedure EditorMasterCheckChar(Sender: TObject; C: Word;
+      var IsWord: Boolean);
   private
     FNotifAllYes,
     FNotifAllNo: boolean;
@@ -579,8 +581,7 @@ end;
 
 procedure TEditorFrame.EditorMasterCaretPosChanged(Sender: TObject);
 begin
-  TfmMain(Owner).UpdateStatusBar;
-  TfmMain(Owner).UpdateLexer;
+  TfmMain(Owner).SynCaretPosChanged(Self);
 end;
 
 procedure TEditorFrame.EditorMasterGetGutterImage(Sender: TObject; const Line: Integer; List: TList);
@@ -1652,6 +1653,12 @@ begin
   ToggleSplitted;
 end;
 
+procedure TEditorFrame.EditorMasterCheckChar(Sender: TObject; C: Word;
+  var IsWord: Boolean);
+begin
+  if not IsWord then
+    IsWord:= Pos(WideChar(C), TfmMain(Owner).opWordChars)>0;
+end;
 
 initialization
   CF_DRAGCOLOR:= RegisterClipboardFormat(CFSTR_DRAGCOLOR);

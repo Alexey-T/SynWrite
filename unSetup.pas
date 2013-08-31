@@ -342,6 +342,10 @@ type
     boxLang: TTntGroupBox;
     labLangInfo: TTntLabel;
     cbLang: TTntComboBox;
+    edWordChars: TTntEdit;
+    labWordChars: TTntLabel;
+    cbTabStyle: TTntComboBox;
+    cbAcpParamHints: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -557,7 +561,7 @@ const
   );
 
 const
-  cColorsOrder: array[0..cColorsNum-7] of integer = (
+  cColorsOrder: array[0..cColorsNum-9] of integer = (
   0,
   1,
   9,
@@ -594,8 +598,8 @@ const
   30,
   31,
   32,
-  33,
-  34,
+  //33,
+  //34,
   35,
   //36,
   //47,
@@ -1052,6 +1056,7 @@ begin
   AddTab(tabNewOpen);
   AddTab(tabASave);
   AddTab(tabHist);
+  AddTab(tabFiles);
   AddTab(tabSess);
   AddTab(tabFolders);
 
@@ -1710,6 +1715,7 @@ begin
     opAutoCloseQuotes:= cbACloseQ.Checked;
     opAcpNum:= edAcpNum.Value;
     opAcpUseSingle:= cbAcpUseSingle.Checked;
+    ParamCompletion.Enabled:= cbAcpParamHints.Checked;
     SyntaxManagerChange(nil);
     ecACP.DropDownCount:= edAcpDrop.Value;
     ecACP.ShowWhenNone:= cbAcpNone.Checked;
@@ -1944,6 +1950,7 @@ begin
   with fmMain do
   begin
     opTabVisible:= cbTabVis.ItemIndex;
+    opTabStyle:= cbTabStyle.ItemIndex;
     opTabBtn:= cbTabBtn.Checked;
     opTabNums:= cbTabNums.Checked;
     opTabSwitcher:= cbTabSw.Checked;
@@ -1992,6 +1999,7 @@ begin
     cbACloseQ.Checked:= opAutoCloseQuotes;
     cbACloseBrClick(Self);
 
+    cbAcpParamHints.Checked:= ParamCompletion.Enabled;
     cbAcpUseSingle.Checked:= opAcpUseSingle;
     edAcpNum.Value:= opAcpNum;
     cbAcpNone.Checked:= ecACP.ShowWhenNone;
@@ -2247,6 +2255,7 @@ begin
   begin
     cbTabBtn.Checked:= opTabBtn;
     cbTabVis.ItemIndex:= opTabVisible;
+    cbTabStyle.ItemIndex:= opTabStyle;
     cbTabNums.Checked:= opTabNums;
     cbTabMul.Checked:= opTabMultiLine;
     cbTabDown.Checked:= opTabAtBottom;
@@ -2464,6 +2473,7 @@ begin
       1: TemplateEditor.SelectModeDefault:= msColumn;
       2: TemplateEditor.SelectModeDefault:= msLine;
     end;
+    opWordChars:= edWordChars.Text;
 
     ApplyEdOptions;
     ApplyFrames;
@@ -2592,6 +2602,7 @@ begin
       msColumn: cbSelMode.ItemIndex:= 1;
       msLine: cbSelMode.ItemIndex:= 2;
     end;
+    edWordChars.Text:= opWordChars;
   end;
 end;
 

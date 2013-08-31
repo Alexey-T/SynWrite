@@ -348,9 +348,13 @@ const
   sm_OEditSynIni = 1012;
   sm_OpenBySelection = 1013;
   sm_OCustomizeStyles = 1014;
-  //free
+  //free for options categories
 
   sm_CopySearchMarks = 1020;
+  sm_OpenProject = 1021;
+  sm_AddFileToProject = 1022;
+  sm_FavoriteProjects = 1023;
+  sm_NewProject = 1024;
   //free
 
   //Tree commands
@@ -390,7 +394,7 @@ const
   sm_Options_EditorCarets = 1121;
   sm_Options_EditorOverrides = 1122;
   sm_Options_Keys = 1123;
-  //sm_Options_Files = 1124;
+  sm_Options_FormatsReload = 1124;
   sm_Options_Search = 1125;
   sm_Options_TreeMap = 1126;
   sm_Options_History = 1127;

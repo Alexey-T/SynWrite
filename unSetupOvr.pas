@@ -26,6 +26,8 @@ type
     edSpacing: TSpinEdit;
     edOptFill: TTntComboBox;
     LabelOptFill: TTntLabel;
+    edWordChars: TTntEdit;
+    LabelWordChars: TTntLabel;
     procedure cbOvrClick(Sender: TObject);
     procedure ListLexClick(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
@@ -61,22 +63,26 @@ begin
   edMargin.Enabled:= en;
   edSpacing.Enabled:= en;
   edOptFill.Enabled:= en;
+  edWordChars.Enabled:= en;
   LabelTabStop.Enabled:= en;
   LabelTabMode.Enabled:= en;
   LabelWrap.Enabled:= en;
   LabelMargin.Enabled:= en;
   LabelOptFill.Enabled:= en;
   LabelSp.Enabled:= en;
+  LabelWordChars.Enabled:= en;
+
   if not en then
   begin
     if ListLex.ItemIndex>=0 then
-      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '');
+      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '');
     edTab.Text:= FDefTabStop;
     edTabMode.ItemIndex:= FDefTabMode;
     edWrap.ItemIndex:= 0;
     edMargin.Value:= FDefMargin;
     edSpacing.Value:= FDefSpacing;
     edOptFill.ItemIndex:= 0;
+    edWordChars.Text:= '';
     edText.Text:= FString;
   end;
 end;
@@ -84,20 +90,19 @@ end;
 procedure TfmSetupOvr.ListLexClick(Sender: TObject);
 var
   Ovr: boolean;
-  ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill: string;
+  ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill, AOptWordChars: string;
 begin
   if ListLex.ItemIndex>=0 then
   begin
     Ovr:= SGetLexerOverride(FString, ListLex.Items[ListLex.ItemIndex],
-      ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill);
+      ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill, AOptWordChars);
     cbOvr.Enabled:= true;
-  end  
+  end
   else
   begin
     Ovr:= false;
     cbOvr.Enabled:= false;
   end;
-
 
   FUpdLock:= true;
   cbOvr.Checked:= Ovr;
@@ -109,6 +114,7 @@ begin
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
     edSpacing.Value:= StrToIntDef(ASpacing, FDefSpacing);
     edOptFill.ItemIndex:= StrToIntDef(AOptFill, 0);
+    edWordChars.Text:= AOptWordChars;
   end
   else
   begin
@@ -118,6 +124,7 @@ begin
     edMargin.Value:= FDefMargin;
     edSpacing.Value:= FDefSpacing;
     edOptFill.ItemIndex:= 0;
+    edWordChars.Text:= '';
   end;
 
   FUpdLock:= false;
@@ -132,6 +139,7 @@ begin
   edMargin.Value:= FDefMargin;
   edSpacing.Value:= FDefSpacing;
   edOptFill.ItemIndex:= 0;
+  edWordChars.Text:= '';
   edText.Text:= FString;
   ListLex.ItemIndex:= 0;
   ListLexClick(Self);
@@ -143,22 +151,36 @@ begin
 end;
 
 procedure TfmSetupOvr.edTabChange(Sender: TObject);
+var
+  S: Widestring;
 begin
   if FUpdLock then Exit;
   if cbOvr.Checked then
-  if ListLex.ItemIndex>=0 then
-  begin
-    SSetLexerOverride(true, FString,
-      ListLex.Items[ListLex.ItemIndex],
-      {Op1}edTab.Text,
-      {Op2}IntToStr(edTabMode.ItemIndex),
-      {Op3}IntToStr(edWrap.ItemIndex),
-      {Op4}IntToStr(edMargin.Value),
-      {Op5}IntToStr(edSpacing.Value),
-      {Op6}IntToStr(edOptFill.ItemIndex)
-      );
-    edText.Text:= FString;
-  end;
+    if ListLex.ItemIndex>=0 then
+    begin
+      //don't allow to enter ',' or ';' into edit fields
+      if (Pos(',', edWordChars.Text)>0) or
+        (Pos(';', edWordChars.Text)>0) then
+      begin
+        MessageBeep(mb_iconwarning);
+        S:= edWordChars.Text;
+        SReplaceAllW(S, ',', '');
+        SReplaceAllW(S, ';', '');
+        edWordChars.Text:= S;
+      end;
+
+      SSetLexerOverride(true, FString,
+        ListLex.Items[ListLex.ItemIndex],
+        {Op1}edTab.Text,
+        {Op2}IntToStr(edTabMode.ItemIndex),
+        {Op3}IntToStr(edWrap.ItemIndex),
+        {Op4}IntToStr(edMargin.Value),
+        {Op5}IntToStr(edSpacing.Value),
+        {Op6}IntToStr(edOptFill.ItemIndex),
+        {Op7}edWordChars.Text
+        );
+      edText.Text:= FString;
+    end;
 end;
 
 end.

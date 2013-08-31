@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabSelHL
+    ActivePage = tabACP
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -420,12 +420,12 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 217
+        Height = 229
         Caption = 'Tabs'
         TabOrder = 0
         object TntLabel3: TTntLabel
           Left = 56
-          Top = 144
+          Top = 168
           Width = 109
           Height = 13
           Caption = 'Maximal caption length'
@@ -440,70 +440,70 @@ object fmSetup: TfmSetup
         end
         object cbTabBtn: TTntCheckBox
           Left = 8
-          Top = 72
+          Top = 96
           Width = 380
           Height = 17
           Caption = 'Show close buttons on tabs'
-          TabOrder = 3
+          TabOrder = 4
         end
         object cbTabMul: TTntCheckBox
           Left = 8
-          Top = 88
+          Top = 112
           Width = 380
           Height = 17
           Caption = 'Show multiple tab lines'
-          TabOrder = 4
+          TabOrder = 5
         end
         object cbTabDown: TTntCheckBox
           Left = 8
-          Top = 40
+          Top = 64
           Width = 380
           Height = 17
           Caption = 'Show tabs at bottom'
-          TabOrder = 1
+          TabOrder = 2
         end
         object cbTabNums: TTntCheckBox
           Left = 8
-          Top = 56
+          Top = 80
           Width = 380
           Height = 17
           Caption = 'Show numbers on tabs'
-          TabOrder = 2
+          TabOrder = 3
         end
         object cbTabSw: TTntCheckBox
           Left = 8
-          Top = 176
+          Top = 200
           Width = 433
           Height = 17
           Caption = 'Use modern tab switcher (Ctrl+Tab)'
-          TabOrder = 8
+          TabOrder = 9
         end
         object cbTabDnD: TTntCheckBox
           Left = 8
-          Top = 120
+          Top = 144
           Width = 380
           Height = 17
           Caption = 'Allow drag&&drop'
-          TabOrder = 6
+          TabOrder = 7
         end
         object edTabMaxLen: TSpinEdit
           Left = 8
-          Top = 140
+          Top = 164
           Width = 43
           Height = 22
           MaxValue = 200
           MinValue = 0
-          TabOrder = 7
+          TabOrder = 8
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
         object cbTabDbl: TTntCheckBox
           Left = 8
-          Top = 104
+          Top = 128
           Width = 380
           Height = 17
           Caption = 'Allow closing by double-click'
-          TabOrder = 5
+          TabOrder = 6
         end
         object ListTabColors: TTntListBox
           Left = 448
@@ -512,7 +512,7 @@ object fmSetup: TfmSetup
           Height = 181
           Style = lbOwnerDrawFixed
           ItemHeight = 16
-          TabOrder = 9
+          TabOrder = 10
           OnDblClick = ListTabColorsDblClick
           OnDrawItem = ListTabColorsDrawItem
           OnKeyDown = ListTabColorsKeyDown
@@ -520,7 +520,7 @@ object fmSetup: TfmSetup
         object cbTabVis: TTntComboBox
           Left = 8
           Top = 16
-          Width = 321
+          Width = 281
           Height = 21
           Style = csDropDownList
           ItemHeight = 13
@@ -529,6 +529,19 @@ object fmSetup: TfmSetup
             'Always show tabs'
             'Never show tabs'
             'Show tabs when 2 or more')
+        end
+        object cbTabStyle: TTntComboBox
+          Left = 8
+          Top = 40
+          Width = 281
+          Height = 21
+          Style = csDropDownList
+          ItemHeight = 13
+          TabOrder = 1
+          Items.Strings = (
+            'Tabs style'
+            'Buttons style'
+            'Flat buttons style')
         end
       end
     end
@@ -837,7 +850,7 @@ object fmSetup: TfmSetup
       end
     end
     object tabFiles: TTntTabSheet
-      Caption = 'Files'
+      Caption = 'Formats/Reload'
       ImageIndex = 3
       TabVisible = False
       OnShow = tabFilesShow
@@ -908,7 +921,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 92
         Width = 529
-        Height = 125
+        Height = 109
         Caption = 'Misc'
         TabOrder = 1
         object Label9: TTntLabel
@@ -920,7 +933,7 @@ object fmSetup: TfmSetup
         end
         object TntLabel23: TTntLabel
           Left = 64
-          Top = 100
+          Top = 84
           Width = 208
           Height = 13
           Caption = 'Disable lexer if file size is bigger than ... Mb'
@@ -936,22 +949,23 @@ object fmSetup: TfmSetup
         object cbTail: TTntCheckBox
           Left = 8
           Top = 60
-          Width = 481
+          Width = 313
           Height = 17
           Caption = 'Follow tail on reload'
           TabOrder = 2
         end
         object cbOverRO: TTntCheckBox
-          Left = 8
-          Top = 76
+          Left = 352
+          Top = 60
           Width = 489
           Height = 17
           Caption = 'Ask to overwrite read-only files'
           TabOrder = 3
+          Visible = False
         end
         object edBigSize: TSpinEdit
           Left = 8
-          Top = 95
+          Top = 79
           Width = 49
           Height = 22
           MaxValue = 200
@@ -1417,7 +1431,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 148
         Width = 529
-        Height = 105
+        Height = 121
         Caption = 'Common auto-completion options'
         TabOrder = 1
         object Label42: TTntLabel
@@ -1429,14 +1443,14 @@ object fmSetup: TfmSetup
         end
         object TntLabel7: TTntLabel
           Left = 64
-          Top = 80
+          Top = 96
           Width = 90
           Height = 13
           Caption = 'Drop-down list size'
         end
         object TntLabel12: TTntLabel
           Left = 64
-          Top = 52
+          Top = 68
           Width = 233
           Height = 29
           AutoSize = False
@@ -1450,7 +1464,7 @@ object fmSetup: TfmSetup
           Height = 21
           Style = csDropDownList
           ItemHeight = 13
-          TabOrder = 4
+          TabOrder = 5
           Items.Strings = (
             'No filtration'
             'Start of string'
@@ -1467,23 +1481,23 @@ object fmSetup: TfmSetup
         end
         object edAcpDrop: TSpinEdit
           Left = 8
-          Top = 76
+          Top = 92
           Width = 49
           Height = 22
           MaxValue = 30
           MinValue = 3
-          TabOrder = 3
+          TabOrder = 4
           Value = 3
           OnKeyDown = edIndentKeyDown
         end
         object edAcpNum: TSpinEdit
           Left = 8
-          Top = 52
+          Top = 68
           Width = 49
           Height = 22
           MaxValue = 30
           MinValue = 0
-          TabOrder = 2
+          TabOrder = 3
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
@@ -1495,10 +1509,18 @@ object fmSetup: TfmSetup
           Caption = 'Auto insert single matching item into text'
           TabOrder = 1
         end
+        object cbAcpParamHints: TTntCheckBox
+          Left = 8
+          Top = 48
+          Width = 289
+          Height = 17
+          Caption = 'Auto show parameters hints'
+          TabOrder = 2
+        end
       end
       object gAcp2: TTntGroupBox
         Left = 8
-        Top = 256
+        Top = 272
         Width = 529
         Height = 89
         Caption = 'Auto-completion from current file'
@@ -2356,14 +2378,22 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 325
+        Height = 265
         TabOrder = 0
         object TntLabel35: TTntLabel
           Left = 112
-          Top = 296
+          Top = 236
           Width = 100
           Height = 13
           Caption = 'Initial selection mode'
+        end
+        object labWordChars: TTntLabel
+          Left = 272
+          Top = 220
+          Width = 107
+          Height = 13
+          Caption = 'Additional word chars:'
+          Visible = False
         end
         object cbUrlHilite: TTntCheckBox
           Left = 8
@@ -2438,7 +2468,7 @@ object fmSetup: TfmSetup
         end
         object cbSelMode: TTntComboBox
           Left = 8
-          Top = 292
+          Top = 232
           Width = 97
           Height = 21
           Style = csDropDownList
@@ -2450,9 +2480,9 @@ object fmSetup: TfmSetup
             'Lines')
         end
         object cbFloatM: TTntCheckBox
-          Left = 8
-          Top = 268
-          Width = 256
+          Left = 272
+          Top = 192
+          Width = 254
           Height = 17
           Hint = 
             'If it is set markers are linked to text, so they will move with ' +
@@ -2462,9 +2492,9 @@ object fmSetup: TfmSetup
           TabOrder = 14
         end
         object cbCollap: TTntCheckBox
-          Left = 8
-          Top = 252
-          Width = 256
+          Left = 272
+          Top = 176
+          Width = 254
           Height = 17
           Hint = 
             'Collapse empty lines after text range when this rang have been c' +
@@ -2473,9 +2503,9 @@ object fmSetup: TfmSetup
           TabOrder = 13
         end
         object cbDrag: TTntCheckBox
-          Left = 8
-          Top = 236
-          Width = 256
+          Left = 272
+          Top = 160
+          Width = 254
           Height = 17
           Hint = 'Enables drag&drop operation for text movement.'
           Caption = 'Text dragging'
@@ -2531,6 +2561,14 @@ object fmSetup: TfmSetup
           Hint = 'Replaces marked block of text with whatever is typed next.'
           Caption = 'Overwrite selection'
           TabOrder = 8
+        end
+        object edWordChars: TTntEdit
+          Left = 272
+          Top = 236
+          Width = 225
+          Height = 21
+          TabOrder = 16
+          Visible = False
         end
       end
     end
@@ -2897,7 +2935,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0141010000
+      0700666D5365747570010100000001000000070043617074696F6E0145010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -2913,7 +2951,7 @@ object fmSetup: TfmSetup
       4B657900000700624B657953657401010000008A000000070043617074696F6E
       000700624B6579436C7201010000008B000000070043617074696F6E00060062
       4B6579466E01010000008C000000070043617074696F6E00080074616246696C
-      65730101000000CC010000070043617074696F6E000600746162414350010100
+      65730101000000BE020000070043617074696F6E000600746162414350010100
       00009C000000070043617074696F6E000600624170706C790101000000A40000
       00070043617074696F6E0004006243616E0101000000A5000000070043617074
       696F6E000300624F6B0101000000A6000000070043617074696F6E000A00466F
@@ -3186,7 +3224,11 @@ object fmSetup: TfmSetup
       6162656C360101000000B6020000070043617074696F6E000D0063625265706C
       616365546162730102000000B8020000070043617074696F6EB7020000040048
       696E74000700626F784C616E670101000000BB020000070043617074696F6E00
-      0B006C61624C616E67496E666F0000060063624C616E670000}
+      0B006C61624C616E67496E666F0000060063624C616E6700000B006564576F72
+      64436861727300000C006C6162576F726443686172730101000000BC02000007
+      0043617074696F6E000A0063625461625374796C650101000000BD0200000500
+      4974656D73000F006362416370506172616D48696E74730101000000BF020000
+      070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

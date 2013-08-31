@@ -14,6 +14,7 @@ object fmSetupOvr: TfmSetupOvr
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  ShowHint = True
   OnCreate = TntFormCreate
   OnShow = TntFormShow
   PixelsPerInch = 96
@@ -67,6 +68,13 @@ object fmSetupOvr: TfmSetupOvr
     Height = 13
     Caption = 'Optimal fill:'
   end
+  object LabelWordChars: TTntLabel
+    Left = 184
+    Top = 184
+    Width = 116
+    Height = 13
+    Caption = 'Word chars (additional):'
+  end
   object ListLex: TListBox
     Left = 8
     Top = 20
@@ -78,7 +86,7 @@ object fmSetupOvr: TfmSetupOvr
     OnClick = ListLexClick
   end
   object edTab: TTntEdit
-    Left = 336
+    Left = 376
     Top = 36
     Width = 153
     Height = 21
@@ -86,7 +94,7 @@ object fmSetupOvr: TfmSetupOvr
     OnChange = edTabChange
   end
   object edTabMode: TTntComboBox
-    Left = 336
+    Left = 376
     Top = 60
     Width = 153
     Height = 21
@@ -107,7 +115,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 21
     ParentColor = True
     ReadOnly = True
-    TabOrder = 8
+    TabOrder = 9
   end
   object cbOvr: TTntCheckBox
     Left = 184
@@ -120,7 +128,7 @@ object fmSetupOvr: TfmSetupOvr
     OnClick = cbOvrClick
   end
   object edWrap: TTntComboBox
-    Left = 336
+    Left = 376
     Top = 84
     Width = 153
     Height = 21
@@ -136,7 +144,7 @@ object fmSetupOvr: TfmSetupOvr
       'On, at right margin')
   end
   object edMargin: TSpinEdit
-    Left = 336
+    Left = 376
     Top = 132
     Width = 57
     Height = 22
@@ -147,7 +155,7 @@ object fmSetupOvr: TfmSetupOvr
     OnChange = edTabChange
   end
   object edSpacing: TSpinEdit
-    Left = 336
+    Left = 376
     Top = 156
     Width = 57
     Height = 22
@@ -158,7 +166,7 @@ object fmSetupOvr: TfmSetupOvr
     OnChange = edTabChange
   end
   object edOptFill: TTntComboBox
-    Left = 336
+    Left = 376
     Top = 108
     Width = 153
     Height = 21
@@ -172,11 +180,22 @@ object fmSetupOvr: TfmSetupOvr
       'Off'
       'On')
   end
+  object edWordChars: TTntEdit
+    Left = 376
+    Top = 180
+    Width = 153
+    Height = 21
+    Hint = 
+      'Additional chars, which will be treated as part of words, by wor' +
+      'd double-clicking, smart highlighting, etc.'
+    TabOrder = 8
+    OnChange = edTabChange
+  end
   object DKLanguageController1: TDKLanguageController
     Left = 144
     Top = 192
     LangData = {
-      0A00666D53657475704F7672010100000001000000070043617074696F6E0110
+      0A00666D53657475704F7672010100000001000000070043617074696F6E0112
       00000006004C6162656C31010100000002000000070043617074696F6E000C00
       4C6162656C54616253746F70010100000003000000070043617074696F6E000C
       004C6162656C5461624D6F6465010100000004000000070043617074696F6E00
@@ -188,6 +207,8 @@ object fmSetupOvr: TfmSetupOvr
       00070043617074696F6E00080065644D617267696E000007004C6162656C5370
       01010000000E000000070043617074696F6E000900656453706163696E670000
       090065644F707446696C6C01010000000F00000005004974656D73000C004C61
-      62656C4F707446696C6C010100000010000000070043617074696F6E00}
+      62656C4F707446696C6C010100000010000000070043617074696F6E000B0065
+      64576F72644368617273010100000012000000040048696E74000E004C616265
+      6C576F72644368617273010100000011000000070043617074696F6E00}
   end
 end
