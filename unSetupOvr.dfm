@@ -49,14 +49,14 @@ object fmSetupOvr: TfmSetupOvr
   end
   object LabelMargin: TTntLabel
     Left = 184
-    Top = 136
+    Top = 160
     Width = 64
     Height = 13
     Caption = 'Right margin:'
   end
   object LabelSp: TTntLabel
     Left = 184
-    Top = 160
+    Top = 184
     Width = 62
     Height = 13
     Caption = 'Line spacing:'
@@ -70,10 +70,26 @@ object fmSetupOvr: TfmSetupOvr
   end
   object LabelWordChars: TTntLabel
     Left = 184
-    Top = 184
+    Top = 208
     Width = 116
     Height = 13
     Caption = 'Word chars (additional):'
+  end
+  object LabelBlanks: TTntLabel
+    Left = 184
+    Top = 136
+    Width = 96
+    Height = 13
+    Caption = 'Keep trailing blanks:'
+  end
+  object LabelTextShow: TLabel
+    Left = 520
+    Top = 352
+    Width = 8
+    Height = 13
+    Cursor = crHandPoint
+    Caption = '+'
+    OnClick = LabelTextShowClick
   end
   object ListLex: TListBox
     Left = 8
@@ -111,11 +127,12 @@ object fmSetupOvr: TfmSetupOvr
   object edText: TEdit
     Left = 8
     Top = 348
-    Width = 521
+    Width = 505
     Height = 21
     ParentColor = True
     ReadOnly = True
-    TabOrder = 9
+    TabOrder = 10
+    Visible = False
   end
   object cbOvr: TTntCheckBox
     Left = 184
@@ -145,23 +162,23 @@ object fmSetupOvr: TfmSetupOvr
   end
   object edMargin: TSpinEdit
     Left = 376
-    Top = 132
+    Top = 156
     Width = 57
     Height = 22
     MaxValue = 300
     MinValue = 1
-    TabOrder = 6
+    TabOrder = 7
     Value = 1
     OnChange = edTabChange
   end
   object edSpacing: TSpinEdit
     Left = 376
-    Top = 156
+    Top = 180
     Width = 57
     Height = 22
     MaxValue = 10
     MinValue = 0
-    TabOrder = 7
+    TabOrder = 8
     Value = 0
     OnChange = edTabChange
   end
@@ -182,20 +199,35 @@ object fmSetupOvr: TfmSetupOvr
   end
   object edWordChars: TTntEdit
     Left = 376
-    Top = 180
+    Top = 204
     Width = 153
     Height = 21
     Hint = 
       'Additional chars, which will be treated as part of words, by wor' +
       'd double-clicking, smart highlighting, etc.'
-    TabOrder = 8
+    TabOrder = 9
     OnChange = edTabChange
+  end
+  object edKeepBlanks: TTntComboBox
+    Left = 376
+    Top = 132
+    Width = 153
+    Height = 21
+    AutoDropDown = True
+    Style = csDropDownList
+    ItemHeight = 13
+    TabOrder = 6
+    OnChange = edTabChange
+    Items.Strings = (
+      'Don'#39't change'
+      'Off'
+      'On')
   end
   object DKLanguageController1: TDKLanguageController
     Left = 144
     Top = 192
     LangData = {
-      0A00666D53657475704F7672010100000001000000070043617074696F6E0112
+      0A00666D53657475704F7672010100000001000000070043617074696F6E0115
       00000006004C6162656C31010100000002000000070043617074696F6E000C00
       4C6162656C54616253746F70010100000003000000070043617074696F6E000C
       004C6162656C5461624D6F6465010100000004000000070043617074696F6E00
@@ -209,6 +241,9 @@ object fmSetupOvr: TfmSetupOvr
       090065644F707446696C6C01010000000F00000005004974656D73000C004C61
       62656C4F707446696C6C010100000010000000070043617074696F6E000B0065
       64576F72644368617273010100000012000000040048696E74000E004C616265
-      6C576F72644368617273010100000011000000070043617074696F6E00}
+      6C576F72644368617273010100000011000000070043617074696F6E000B004C
+      6162656C426C616E6B73010100000013000000070043617074696F6E000C0065
+      644B656570426C616E6B7301010000001400000005004974656D73000D004C61
+      62656C5465787453686F770000}
   end
 end

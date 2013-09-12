@@ -11,6 +11,7 @@ uses
   ecSyntMemo,
   ecMemoStrings;
 
+function EditorSelectWord(Ed: TSyntaxMemo): boolean;
 procedure EditorSearchMarksToList(Ed: TSyntaxmemo; List: TTntStrings);
 function EditorSelectedTextForWeb(Ed: TSyntaxMemo): Widestring;
 
@@ -20,7 +21,7 @@ function SyntaxManagerFilesFilter(M: TSyntaxManager; SAllText: Widestring): Wide
 
 function EditorWordLength(Ed: TSyntaxMemo): Integer;
 procedure EditorSetModified(Ed: TSyntaxMemo);
-function EditorShortSelText(Ed: TSyntaxMemo): Widestring;
+function EditorShortSelText(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
 function EditorGetCollapsedRanges(Ed: TSyntaxMemo): string;
 procedure EditorSetCollapsedRanges(Ed: TSyntaxMemo; S: Widestring);
 function EditorTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
@@ -189,27 +190,34 @@ begin
 end;
 
 procedure EditorSetModified(Ed: TSyntaxMemo);
+const
+  S: Widestring = ' ';
 var
   p: TPoint;
 begin
   with Ed do
   begin
     BeginUpdate;
-    p:= CaretPos;
-    InsertText(' ');
-    CaretPos:= p;
-    DeleteText(1);
-    EndUpdate;
+    try
+      p:= CaretPos;
+      if HaveSelection then
+        ResetSelection;
+      InsertText(S);
+      CaretPos:= p;
+      DeleteText(Length(S));
+    finally
+      EndUpdate;
+    end;
   end;
 end;
 
-function EditorShortSelText(Ed: TSyntaxMemo): Widestring;
+function EditorShortSelText(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
 begin
   Result:= Ed.SelText;
   SDeleteFromW(Result, #13);
   SDeleteFromW(Result, #10);
-  if Length(Result)>80 then
-    SetLength(Result, 80);
+  if Length(Result)>MaxLen then
+    SetLength(Result, MaxLen);
 end;
 
 function EditorGetCollapsedRanges(Ed: TSyntaxMemo): string;
@@ -454,5 +462,27 @@ begin
   end;
 end;
 
+
+function EditorSelectWord(Ed: TSyntaxMemo): boolean;
+var
+  NPos: integer;
+begin
+  Result:= false;
+  NPos:= Ed.CaretStrPos;
+  if (NPos>=0) then
+  begin
+    if (NPos=Ed.TextLength) //caret at EOF
+      or not IsWordChar(Ed.Text[NPos+1]) then //caret not under wordchar
+    begin
+      //previous char is wordchar?
+      if (NPos>=1) and IsWordChar(Ed.Text[NPos]) then
+        Ed.CaretStrPos:= NPos-1
+      else
+        Exit;
+    end;
+    Ed.SelectWord;
+    Result:= true;
+  end;
+end;
 
 end.

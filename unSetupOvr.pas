@@ -28,11 +28,15 @@ type
     LabelOptFill: TTntLabel;
     edWordChars: TTntEdit;
     LabelWordChars: TTntLabel;
+    LabelBlanks: TTntLabel;
+    edKeepBlanks: TTntComboBox;
+    LabelTextShow: TLabel;
     procedure cbOvrClick(Sender: TObject);
     procedure ListLexClick(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
     procedure edTabChange(Sender: TObject);
+    procedure LabelTextShowClick(Sender: TObject);
   private
     { Private declarations }
     FUpdLock: boolean;
@@ -64,6 +68,7 @@ begin
   edSpacing.Enabled:= en;
   edOptFill.Enabled:= en;
   edWordChars.Enabled:= en;
+  edKeepBlanks.Enabled:= en;
   LabelTabStop.Enabled:= en;
   LabelTabMode.Enabled:= en;
   LabelWrap.Enabled:= en;
@@ -71,11 +76,12 @@ begin
   LabelOptFill.Enabled:= en;
   LabelSp.Enabled:= en;
   LabelWordChars.Enabled:= en;
+  LabelBlanks.Enabled:= en;
 
   if not en then
   begin
     if ListLex.ItemIndex>=0 then
-      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '');
+      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '', '');
     edTab.Text:= FDefTabStop;
     edTabMode.ItemIndex:= FDefTabMode;
     edWrap.ItemIndex:= 0;
@@ -90,12 +96,14 @@ end;
 procedure TfmSetupOvr.ListLexClick(Sender: TObject);
 var
   Ovr: boolean;
-  ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill, AOptWordChars: string;
+  ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
+  AOptWordChars, AKeepBlanks: string;
 begin
   if ListLex.ItemIndex>=0 then
   begin
     Ovr:= SGetLexerOverride(FString, ListLex.Items[ListLex.ItemIndex],
-      ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill, AOptWordChars);
+      ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
+      AOptWordChars, AKeepBlanks);
     cbOvr.Enabled:= true;
   end
   else
@@ -114,6 +122,7 @@ begin
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
     edSpacing.Value:= StrToIntDef(ASpacing, FDefSpacing);
     edOptFill.ItemIndex:= StrToIntDef(AOptFill, 0);
+    edKeepBlanks.ItemIndex:= StrToIntDef(AKeepBlanks, 0);
     edWordChars.Text:= AOptWordChars;
   end
   else
@@ -124,6 +133,7 @@ begin
     edMargin.Value:= FDefMargin;
     edSpacing.Value:= FDefSpacing;
     edOptFill.ItemIndex:= 0;
+    edKeepBlanks.ItemIndex:= 0;
     edWordChars.Text:= '';
   end;
 
@@ -177,10 +187,17 @@ begin
         {Op4}IntToStr(edMargin.Value),
         {Op5}IntToStr(edSpacing.Value),
         {Op6}IntToStr(edOptFill.ItemIndex),
-        {Op7}edWordChars.Text
+        {Op7}edWordChars.Text,
+        {Op8}IntToStr(edKeepBlanks.ItemIndex)
         );
       edText.Text:= FString;
     end;
+end;
+
+procedure TfmSetupOvr.LabelTextShowClick(Sender: TObject);
+begin
+  with edText do
+    Visible:= not Visible; 
 end;
 
 end.

@@ -2572,7 +2572,7 @@ type
     procedure DoOpenBrowserPreview;
     procedure DoOpenCurrentFile;
     procedure DoOpenCurrentDir;
-    function SynHiddenOption(const S: string): Integer;
+    function SynHiddenOption(const Id: string; Default: integer): Integer;
     procedure DoRememberTempFile(const fn: Widestring);
     procedure DoDeleteTempFiles;
     procedure DoCopySearchMarks(Ed: TSyntaxMemo);
@@ -2586,6 +2586,7 @@ type
     procedure DoNewProject;
     procedure DoFavoriteProjects;
     procedure DoFavoritesDialog(ATab: Integer = -1);
+    procedure DoPasteAndSelect;
     //end of private
 
   protected
@@ -2608,6 +2609,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     //opt
+    opTabFontSize: integer;
     opWordChars: Widestring;
     opShowBorders: boolean;
     opNonPrint,
@@ -2673,8 +2675,6 @@ type
     opZenProfile: string;
     opProjPaths: Widestring;
     opHiliteBrackets: boolean;
-    //opColorBracket,
-    //opColorBracketBg,
     opColorOutSelBk,
     opColorOutSelText,
     opColorOutRedText,
@@ -2788,6 +2788,7 @@ type
     property FullScr: boolean read FFullScr write SetFS;
     property OnTop: boolean read FOnTop write SetOnTop;
 
+    procedure ApplyTabFontSize;
     procedure ApplyTabOptions;
     procedure ApplyCarets;
     procedure ApplyUrlClick;
@@ -2912,7 +2913,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.8.820';
+  cSynVer = '5.8.845';
 
 const
   cSynParamRO = '/RO';
@@ -3945,7 +3946,7 @@ end;
 
 procedure TfmMain.UpdateStatusBar;
 var
-  bk, ro, sel, sel2, en_lex: boolean;
+  bk, ro, {sel,} sel2, en_lex: boolean;
   ed: TSyntaxMemo;
   frame: TEditorFrame;
 begin
@@ -3959,7 +3960,7 @@ begin
 
   bk:= ed.BookmarkObj.Count>0;
   ro:= ed.ReadOnly;
-  sel:= ed.SelLength>0;
+  //sel:= ed.SelLength>0;
   sel2:= ed.HaveSelection;
   en_lex:= SyntaxManager.CurrentLexer<>nil;
 
@@ -4058,7 +4059,7 @@ begin
 
   TBXItemVComm.Enabled:= (ed.Lines.Count>0) and not ro and en_lex;
   TBXItemVUncom.Enabled:= TBXItemVComm.Enabled;
-  TbxSubmenuCase.Enabled:= sel and not ro;
+  TbxSubmenuCase.Enabled:= not ro;
 
   ecSpellLive.Checked:= Frame.SpellLive;
   ecSyncScrollV.Enabled:= PageControl2.Visible;
@@ -4223,6 +4224,9 @@ begin
     opSavePos:= ReadBool('Hist', 'SavePos', true);
 
     //setup
+    opTabFontSize:= ReadInteger('Setup', 'TabFontSize', 0);
+    ApplyTabFontSize;
+
     opNewEnc:= ReadInteger('Setup', 'NEnc', 0);
     opNewLineEnds:= ReadInteger('Setup', 'NLe', 0);
     opNewLex:= ReadString('Setup', 'NLex', '');
@@ -5332,6 +5336,7 @@ var
   n: integer;
   Ed: TSyntaxMemo;
   Sel: TSynSelSave;
+  en: boolean;
 begin
   //remember last edit cmd
   DoHandleLastCmd(Command, Data);
@@ -5369,8 +5374,16 @@ begin
     smSentCaseBlock:
       begin
         DoSaveSel(Ed, Sel);
-        Ed.SelChangeCase(TChangeCase(Command - smUpperCaseBlock + 1));
-        EditorSetModified(Ed);
+        en:= true;
+        //select current word, if no selection
+        if not Ed.HaveSelection then
+          en:= EditorSelectWord(Ed);
+        //change case  
+        if en then
+        begin
+          Ed.SelChangeCase(TChangeCase(Command - smUpperCaseBlock + 1));
+          EditorSetModified(Ed);
+        end;  
         DoRestoreSel(Ed, Sel);
       end;
 
@@ -6156,6 +6169,7 @@ begin
     sm_OpenProject: DoOpenProject;
     sm_AddFileToProject: DoAddFileToProject;
     sm_FavoriteProjects: DoFavoriteProjects;
+    sm_PasteAndSelect: DoPasteAndSelect;
 
     //end of commands list
     else
@@ -6783,7 +6797,7 @@ end;
 
 procedure TfmMain.FindCurrentWord(Next: boolean);
 var
-  wStart, wEnd: integer;
+  NStart, NEnd, NMaxLen: integer;
 begin
   if CurrentEditor=nil then Exit;
   with CurrentEditor do
@@ -6791,15 +6805,16 @@ begin
     if SelLength>0 then
     begin
       //search for selection
-      Finder.FindText:= EditorShortSelText(CurrentEditor);
-      wStart:= SelStart;
-      wEnd:= wStart+SelLength;
+      NMaxLen:= SynHiddenOption('MaxWordLen', 100);
+      Finder.FindText:= EditorShortSelText(CurrentEditor, NMaxLen);
+      NStart:= SelStart;
+      NEnd:= NStart+SelLength;
     end
     else
     begin
       //search for curr word
-      WordRangeAtPos(CaretPos, wStart, wEnd);
-      if wEnd > wStart then
+      WordRangeAtPos(CaretPos, NStart, NEnd);
+      if NEnd > NStart then
         Finder.FindText:= WordAtPos(CaretPos)
       else
         Exit;
@@ -6810,18 +6825,22 @@ begin
     //search
     if Next then
     begin
-      CaretStrPos:= wEnd;
-       //repeat selection as caret moving may clear it
-       SelStart:= wStart;
-       SelLength:= wEnd-wStart;
+      CaretStrPos:= NEnd;
+      
+        //repeat selection as caret moving may clear it
+        SelStart:= NStart;
+        SelLength:= NEnd-NStart;
+
       Finder.FindNext;
     end
     else
     begin
-      CaretStrPos:= wStart;
-       //repeat selection
-       SelStart:= wStart;
-       SelLength:= wEnd-wStart;
+      CaretStrPos:= NStart;
+
+        //repeat selection
+        SelStart:= NStart;
+        SelLength:= NEnd-NStart;
+
       Finder.FindPrev;
     end;
   end;
@@ -7730,7 +7749,8 @@ procedure TfmMain.SyntaxManagerChange(Sender: TObject);
 var
   en: boolean;
   Lexer: string;
-  ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill, AOptWordChars: string;
+  ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
+  AOptWordChars, AKeepBlanks: string;
 begin
   UpdTools;
   acSetupLexHL.Enabled:= SyntaxManager.CurrentLexer<>nil;
@@ -7802,7 +7822,8 @@ begin
 
       //optional overrides
       if SGetLexerOverride(opLexersOverride, Lexer,
-        ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill, AOptWordChars) then
+        ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
+        AOptWordChars, AKeepBlanks) then
       begin
         //1) override TabStops
         EditorMaster.TabList.AsString:= ATabStop;
@@ -7860,6 +7881,20 @@ begin
 
         //7) override "Word chars"
         opWordChars:= AOptWordChars;
+
+        //8) override "Keep trailing blanks"
+        case StrToIntDef(AKeepBlanks, 0) of
+          1:
+          begin
+            EditorMaster.Options:= EditorMaster.Options - [soKeepTrailingBlanks];
+            EditorSlave.Options:= EditorSlave.Options - [soKeepTrailingBlanks];
+          end;
+          2:
+          begin
+            EditorMaster.Options:= EditorMaster.Options + [soKeepTrailingBlanks];
+            EditorSlave.Options:= EditorSlave.Options + [soKeepTrailingBlanks];
+          end
+        end;
       end;
 
       //overrides for "NFO files"
@@ -20741,7 +20776,7 @@ begin
   CmtBegin1:= '';
   CmtBegin2:= '';
   SLastLexer:= '?';
-  StripBkmk:= Bool(SynHiddenOption('BkStrip'));
+  StripBkmk:= Bool(SynHiddenOption('BkStrip', 0));
 
   try
     //create bookmarks list
@@ -23909,11 +23944,15 @@ var
 begin
   Ed:= CurrentEditor;
   if not Ed.HaveSelection then
-    begin Ln1:= 0; Ln2:= Ed.Lines.Count-1; end
+  begin
+    Ln1:= 0;
+    Ln2:= Ed.Lines.Count-1;
+  end
   else
     DoGetSelLines(Ed, Ln1, Ln2);
-  if (Ln2-Ln1)<1 then
-    begin MsgBeep; Exit end;
+
+  //if (Ln2-Ln1)<1 then
+  //  begin MsgNoSelection; Exit end;
 
   Pos1:= Ed.CaretPosToStrPos(Point(0, Ln1));
   if Ln2>=Ed.Lines.Count-1 then
@@ -24053,7 +24092,10 @@ begin
       else
         ok:= false;
     end;
-    if not ok then Exit;
+
+    //are lines processed
+    if not ok then
+      begin MsgDoneLines(0); MsgBeep; Exit end;
 
     //get resulting string
     S:= L.Text;
@@ -26684,11 +26726,11 @@ begin
   DoOpenBrowserPreview;
 end;
 
-function TfmMain.SynHiddenOption(const S: string): Integer;
+function TfmMain.SynHiddenOption(const Id: string; Default: integer): Integer;
 begin
   with TIniFile.Create(SynIni) do
   try
-    Result:= ReadInteger('Setup', S, 0);
+    Result:= ReadInteger('Setup', Id, Default);
   finally
     Free
   end;
@@ -27007,16 +27049,75 @@ begin
 end;
 
 procedure TfmMain.SynCaretPosChanged(Sender: TObject);
+var
+  Ed: TSyntaxMemo;
+  NeedDraw: boolean;
 begin
+  Ed:= CurrentEditor;
+  if Ed=nil then Exit;
+  NeedDraw:= false;
+
   if FBracketsHilited then
   begin
     FBracketsHilited:= false;
-    CurrentEditor.SearchMarks.Clear;
-    CurrentEditor.Invalidate;
+    Ed.SearchMarks.Clear;
+    NeedDraw:= true;
   end;
+
+  if opShowCurrentColumn then
+    NeedDraw:= true;
+  if NeedDraw then
+    Ed.Invalidate;
 
   UpdateLexer;
   UpdateStatusBar;
+end;
+
+procedure TfmMain.ApplyTabFontSize;
+begin
+  if opTabFontSize>0 then
+  begin
+    PageControl1.Font.Size:= opTabFontSize;
+    PageControl2.Font.Size:= opTabFontSize;
+  end;
+end;
+
+procedure TfmMain.DoPasteAndSelect;
+var
+  Ed: TSyntaxMemo;
+  ins_text: Widestring;
+  NStart, NLen: Integer;
+begin
+  Ed:= CurrentEditor;
+
+  if Ed.ReadOnly then Exit;
+  if not Clipboard.HasFormat(CF_TEXT) then
+    begin MsgBeep; Exit end;
+
+  //column block?  
+  if (GetClipboardBlockType <> 2) then
+  begin
+    //part copied from ecSyntMemo.PasteFromClipboard
+    //yes, not DRY
+    if soSmartPaste in Ed.OptionsEx then
+      ins_text:= GetClipboardTextEx(Ed.Charset)
+    else
+      ins_text:= GetClipboardText(Ed.Charset);
+
+    case Ed.Lines.TextFormat of
+      tfCR: ReplaceStr(ins_text, #13#10, #13);
+      tfNL: ReplaceStr(ins_text, #13#10, #10);
+    end;
+
+    Ed.InsertText(''); //fix CaretStrPos when caret is after EOL
+    NStart:= Ed.CaretStrPos;
+    NLen:= Length(ins_text);
+
+    Ed.InsertText(ins_text);
+    Ed.SetSelection(NStart, NLen);
+  end
+  else
+    Ed.PasteFromClipboard();
 end;
 
 end.

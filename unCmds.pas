@@ -355,6 +355,7 @@ const
   sm_AddFileToProject = 1022;
   sm_FavoriteProjects = 1023;
   sm_NewProject = 1024;
+  sm_PasteAndSelect = 1025;
   //free
 
   //Tree commands
