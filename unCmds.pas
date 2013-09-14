@@ -356,6 +356,9 @@ const
   sm_FavoriteProjects = 1023;
   sm_NewProject = 1024;
   sm_PasteAndSelect = 1025;
+  sm_InsertBlankLineAbove = 1026;
+  sm_InsertBlankLineBelow = 1027;
+  sm_OpenCmdPrompt = 1028;
   //free
 
   //Tree commands

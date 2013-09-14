@@ -638,9 +638,11 @@ procedure DoListKeys(SyntKeymapping: TSyntKeyMapping;
   const fn: string);
 var
   i, j, k: integer;
-  old, sname: string;
+  old, sname, s: string;
   f: TextFile;
   LCat: TStringList;
+  LKeys: TStringList;
+  LKeysText: TStringList;
 begin
   AssignFile(f, fn);
   Rewrite(f);
@@ -648,62 +650,98 @@ begin
     '<body>');
   Writeln(f, _CssDoc);
 
-  old:='';
   LCat:= TStringList.Create;
-  for i:=0 to SyntKeyMapping.Items.Count-1 do
-    if SyntKeyMapping.Items[i].Customizable then
-      if LCat.IndexOf(SyntKeyMapping.Items[i].Category)<0 then
-        LCat.Add(SyntKeyMapping.Items[i].Category);
+  LKeys:= TStringList.Create;
+  LKeysText:= TStringList.Create;
+  old:='';
 
-  //list categories
-  Writeln(f, '<table><tr>');
-  for i:= 1 to 3 do
-  begin
-    Writeln(f, '<td>');
-    for j:= 1 to Ceil(LCat.Count/3) do //categories
+  try
+    for i:=0 to SyntKeyMapping.Items.Count-1 do
+      if SyntKeyMapping.Items[i].Customizable then
+        if LCat.IndexOf(SyntKeyMapping.Items[i].Category)<0 then
+          LCat.Add(SyntKeyMapping.Items[i].Category);
+
+    //list categories
+    Writeln(f, '<table><tr>');
+    for i:= 1 to 3 do
     begin
-      k:= (i-1)*Ceil(LCat.Count/3) + j-1;
-      if k<= LCat.Count-1 then
-        Writeln(f, '<li><a href="#c'+IntToStr(k)+'">'+LCat[k]+'</a><br>');
-    end;
-    Writeln(f, '</td>');
-  end;
-  Writeln(f, '</tr></table>');
-
-  //list keys
-  Writeln(f, '<p><table class="sample">');
-  for k:=0 to LCat.Count-1 do //categories
-   for i:=0 to SyntKeyMapping.Items.Count-1 do //items
-    if SyntKeyMapping.Items[i].Category = LCat[k] then
-    begin
-      if not SyntKeyMapping.Items[i].Customizable then Continue;
-      if SyntKeyMapping.Items[i].Command = -1 then Continue;
-
-      if old<>SyntKeyMapping.Items[i].Category then
+      Writeln(f, '<td>');
+      for j:= 1 to Ceil(LCat.Count/3) do //categories
       begin
-        old:= SyntKeyMapping.Items[i].Category;
-        Writeln(f, '<tr><td colspan=2 align="center"><font color="DarkBlue"><b>');
-        Writeln(f, '<a name="c'+IntToStr(k)+'">'+old);
-        Writeln(f, '</b></font></td></tr>');
+        k:= (i-1)*Ceil(LCat.Count/3) + j-1;
+        if k<= LCat.Count-1 then
+          Writeln(f, '<li><a href="#c'+IntToStr(k)+'">'+LCat[k]+'</a><br>');
       end;
+      Writeln(f, '</td>');
+    end;
+    Writeln(f, '</tr></table>');
 
-      sname:= SyntKeyMapping.Items[i].DisplayName;
-      SReplaceAll(sname, '<', '&lt;');
-      SReplaceAll(sname, '>', '&gt;');
+    //list keys
+    Writeln(f, '<p><table class="sample">');
+    for k:=0 to LCat.Count-1 do //categories
+     for i:=0 to SyntKeyMapping.Items.Count-1 do //items
+      if SyntKeyMapping.Items[i].Category = LCat[k] then
+      begin
+        if not SyntKeyMapping.Items[i].Customizable then Continue;
+        if SyntKeyMapping.Items[i].Command = -1 then Continue;
 
-      Writeln(f, '<tr><td>');
-      Write(f, '  '+sname);
-      Writeln(f, '</td><td><font color="DarkBlue">');
-      if SyntKeyMapping.Items[i].KeyStrokes.Count>0 then
-        Write(f, '  '+SyntKeyMapping.Items[i].KeyStrokes.Items[0].AsString+'  ');
-      if SyntKeyMapping.Items[i].KeyStrokes.Count>1 then
-        Write(f, '<br>'+SyntKeyMapping.Items[i].KeyStrokes.Items[1].AsString+'  ');
-      Writeln(f, '</font></td></tr>');
-  end;
+        if old<>SyntKeyMapping.Items[i].Category then
+        begin
+          old:= SyntKeyMapping.Items[i].Category;
+          Writeln(f, '<tr><td colspan=2 align="center"><font color="DarkBlue"><b>');
+          Writeln(f, '<a name="c'+IntToStr(k)+'">'+old);
+          Writeln(f, '</b></font></td></tr>');
+        end;
 
-  Writeln(f, '</table></body></html>');
-  CloseFile(f);
-  FreeAndNil(LCat);
+        sname:= SyntKeyMapping.Items[i].DisplayName;
+        SReplaceAll(sname, '<', '&lt;');
+        SReplaceAll(sname, '>', '&gt;');
+
+        Writeln(f, '<tr><td>');
+        Write(f, '&nbsp;'+sname);
+        Writeln(f, '</td><td><font color="DarkBlue">');
+
+        if SyntKeyMapping.Items[i].KeyStrokes.Count>0 then
+        begin
+          S:= SyntKeyMapping.Items[i].KeyStrokes.Items[0].AsString;
+          Write(f, '&nbsp;'+S);
+          if S<>'' then
+            if LKeys.IndexOf(S)>=0 then
+              LKeysText.Add(sname + ': ' + S)
+            else
+              LKeys.Add(S);
+        end;
+        if SyntKeyMapping.Items[i].KeyStrokes.Count>1 then
+        begin
+          S:= SyntKeyMapping.Items[i].KeyStrokes.Items[1].AsString;
+          Write(f, '<br>&nbsp;'+S);
+          if S<>'' then
+            if LKeys.IndexOf(S)>=0 then
+              LKeysText.Add(sname + ': ' + S)
+            else
+              LKeys.Add(S);
+        end;
+        Writeln(f, '</font></td></tr>');
+    end;
+
+    Writeln(f, '</table>');
+
+    if LKeysText.Count>0 then
+    begin
+      Writeln(f, '<p>Duplicate shortcuts:');
+      Writeln(f, '<ul>');
+      for i:= 0 to LKeysText.Count-1 do
+        Writeln(f, '<li>'+LKeysText[i]);
+      Writeln(f, '</ul></p>');
+    end;
+
+    Writeln(f, '</body></html>');
+    CloseFile(f);
+  finally
+    FreeAndNil(LCat);
+    FreeAndNil(LKeys);
+    FreeAndNil(LKeysText);
+  end;  
 end;
 
 

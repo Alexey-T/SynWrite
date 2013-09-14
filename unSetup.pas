@@ -915,6 +915,8 @@ end;
 
 //set
 procedure TfmSetup.bKeySetClick(Sender: TObject);
+const
+  cCheckDupKeys = true;
 var
   i,j,c,r: integer;
   s: string;
@@ -927,34 +929,38 @@ begin
   ovr_i:= -1;
   ovr_j:= -1;
 
-  with KeyMapping do
-   for i:= 0 to Items.Count-1 do
-    for j:= 0 to Items[i].KeyStrokes.Count-1 do
-      if Items[i].KeyStrokes[j].AsString=ecHotKey.Text then
-      begin
-        s:= DKLangConstW('KeyUsed')+#13 + Items[i].Category + ' / ' + Items[i].DisplayName;
-        cfm:= MessageBoxW(Handle, PWChar(s + #13#13 + DKLangConstW('KeyOvr')),
-          'SynWrite', mb_okcancel or mb_iconwarning) = id_ok;
-        if cfm then
-          begin ovr_i:= i; ovr_j:= j; Break; end
-        else
-          Exit;
-      end;
-
-  //delete duplicate key
-  if (ovr_i>=0) and (ovr_j>=0) then
+  if cCheckDupKeys then
   begin
-    KeyMapping.Items[ovr_i].KeyStrokes.Delete(ovr_j);
-    for i:= 0 to KeyList.RowCount-1 do
-      if StrToIntDef(KeyList.Cells[0, i], -1)=ovr_i then
-      begin
-        KeyList.Cells[ovr_j+2, i]:= '';
-        if ovr_j=0 then
+    //find dup keys
+    with KeyMapping do
+     for i:= 0 to Items.Count-1 do
+      for j:= 0 to Items[i].KeyStrokes.Count-1 do
+        if Items[i].KeyStrokes[j].AsString=ecHotKey.Text then
         begin
-          KeyList.Cells[2, i]:= KeyList.Cells[3, i];
-          KeyList.Cells[3, i]:= '';
+          s:= DKLangConstW('KeyUsed')+#13 + Items[i].Category + ' / ' + Items[i].DisplayName;
+          cfm:= MessageBoxW(Handle, PWChar(s + #13#13 + DKLangConstW('KeyOvr')),
+            'SynWrite', mb_okcancel or mb_iconwarning) = id_ok;
+          if cfm then
+            begin ovr_i:= i; ovr_j:= j; Break; end
+          else
+            Exit;
         end;
-      end;
+
+    //delete duplicate key
+    if (ovr_i>=0) and (ovr_j>=0) then
+    begin
+      KeyMapping.Items[ovr_i].KeyStrokes.Delete(ovr_j);
+      for i:= 0 to KeyList.RowCount-1 do
+        if StrToIntDef(KeyList.Cells[0, i], -1)=ovr_i then
+        begin
+          KeyList.Cells[ovr_j+2, i]:= '';
+          if ovr_j=0 then
+          begin
+            KeyList.Cells[2, i]:= KeyList.Cells[3, i];
+            KeyList.Cells[3, i]:= '';
+          end;
+        end;
+    end;
   end;
 
   //set new key

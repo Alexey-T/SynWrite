@@ -2572,6 +2572,7 @@ type
     procedure DoOpenBrowserPreview;
     procedure DoOpenCurrentFile;
     procedure DoOpenCurrentDir;
+    procedure DoOpenCmdPrompt;
     function SynHiddenOption(const Id: string; Default: integer): Integer;
     procedure DoRememberTempFile(const fn: Widestring);
     procedure DoDeleteTempFiles;
@@ -2587,6 +2588,7 @@ type
     procedure DoFavoriteProjects;
     procedure DoFavoritesDialog(ATab: Integer = -1);
     procedure DoPasteAndSelect;
+    procedure DoInsertBlankLineAboveBelow(ABelow: boolean);
     //end of private
 
   protected
@@ -2913,7 +2915,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.8.845';
+  cSynVer = '5.8.850';
 
 const
   cSynParamRO = '/RO';
@@ -4056,10 +4058,10 @@ begin
   ecSortDescending.Enabled:= ecSortDialog.Enabled;
   ecDedupAll.Enabled:= ecSortDialog.Enabled;
   ecDedupAdjacent.Enabled:= ecSortDialog.Enabled;
+  TbxSubmenuCase.Enabled:= ecSortDialog.Enabled;
 
   TBXItemVComm.Enabled:= (ed.Lines.Count>0) and not ro and en_lex;
   TBXItemVUncom.Enabled:= TBXItemVComm.Enabled;
-  TbxSubmenuCase.Enabled:= not ro;
 
   ecSpellLive.Checked:= Frame.SpellLive;
   ecSyncScrollV.Enabled:= PageControl2.Visible;
@@ -5728,6 +5730,7 @@ begin
     sm_OpenPreview: DoOpenBrowserPreview;
     sm_OpenCurrentFile: DoOpenCurrentFile;
     sm_OpenCurrentFolder: DoOpenCurrentDir;
+    sm_OpenCmdPrompt: DoOpenCmdPrompt;
 
     sm_OpenPhp: DoOnlineWordHelp('http://www.php.net/%s');
     sm_OpenHTML4Help: DoOnlineWordHelp('http://www.w3schools.com/tags/tag_%s.asp');
@@ -6170,6 +6173,8 @@ begin
     sm_AddFileToProject: DoAddFileToProject;
     sm_FavoriteProjects: DoFavoriteProjects;
     sm_PasteAndSelect: DoPasteAndSelect;
+    sm_InsertBlankLineAbove: DoInsertBlankLineAboveBelow(false);
+    sm_InsertBlankLineBelow: DoInsertBlankLineAboveBelow(true);
 
     //end of commands list
     else
@@ -11811,6 +11816,17 @@ procedure TfmMain.DoOpenCurrentDir;
 begin
   if CurrentFrame.FileName<>'' then
     FOpenURL(WideExtractFileDir(CurrentFrame.FileName), Handle);
+end;
+
+procedure TfmMain.DoOpenCmdPrompt;
+var
+  SDir: Widestring;
+begin
+  if CurrentFrame.FileName<>'' then
+    SDir:= WideExtractFileDir(CurrentFrame.FileName)
+  else
+    SDir:= GetCurrentDir;
+  FExecute('cmd.exe', '', SDir, Handle);  
 end;
 
 procedure TfmMain.TBXItemT5Click(Sender: TObject);
@@ -27118,6 +27134,33 @@ begin
   end
   else
     Ed.PasteFromClipboard();
+end;
+
+procedure TfmMain.DoInsertBlankLineAboveBelow(ABelow: boolean);
+var
+  Ed: TSyntaxMemo;
+begin
+  Ed:= CurrentEditor;
+  if Ed.ReadOnly then Exit;
+
+  if ABelow then
+  begin
+    if Ed.CaretPos.Y < Ed.Lines.Count-1 then
+    begin
+      Ed.CaretPos:= Point(0, Ed.CaretPos.Y+1);
+      Ed.InsertNewLine(0, true{DoNotMoveCaret}, false);
+    end
+    else
+    begin
+      Ed.ExecCommand(smEditorBottom);
+      Ed.InsertNewLine(0, false{DoNotMoveCaret}, false);
+    end;
+  end
+  else
+  begin
+    Ed.CaretPos:= Point(0, Ed.CaretPos.Y);
+    Ed.InsertNewLine(0, true{DoNotMoveCaret}, false);
+  end;  
 end;
 
 end.
