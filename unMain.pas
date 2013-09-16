@@ -2589,6 +2589,9 @@ type
     procedure DoFavoritesDialog(ATab: Integer = -1);
     procedure DoPasteAndSelect;
     procedure DoInsertBlankLineAboveBelow(ABelow: boolean);
+    procedure DoCopyURL;
+    procedure DoOpenURL;
+    procedure DoFindId;
     //end of private
 
   protected
@@ -2915,7 +2918,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.8.850';
+  cSynVer = '5.8.854';
 
 const
   cSynParamRO = '/RO';
@@ -6175,6 +6178,9 @@ begin
     sm_PasteAndSelect: DoPasteAndSelect;
     sm_InsertBlankLineAbove: DoInsertBlankLineAboveBelow(false);
     sm_InsertBlankLineBelow: DoInsertBlankLineAboveBelow(true);
+    sm_CopyCurrentURL: DoCopyURL;
+    sm_OpenCurrentURL: DoOpenURL;
+    sm_FindId: DoFindId;
 
     //end of commands list
     else
@@ -23327,6 +23333,11 @@ begin
 end;
 
 procedure TfmMain.TBXItemCtxFindIDClick(Sender: TObject);
+begin
+  DoFindId;
+end;
+
+procedure TfmMain.DoFindId;
 var
   i: Integer;
 begin
@@ -26388,12 +26399,7 @@ end;
 
 function TfmMain.opMarkDeletedAsModified: boolean;
 begin
-  with TIniFile.Create(SynIni) do
-  try
-    Result:= ReadBool('Setup', 'MarkDeletedModified', true);
-  finally
-    Free
-  end;
+  Result:= Bool(SynHiddenOption('MarkDeletedModified', 1));
 end;
 
 procedure TfmMain.ApplyTabOptions;
@@ -27161,6 +27167,28 @@ begin
     Ed.CaretPos:= Point(0, Ed.CaretPos.Y);
     Ed.InsertNewLine(0, true{DoNotMoveCaret}, false);
   end;  
+end;
+
+procedure TfmMain.DoCopyURL;
+var
+  S: Widestring;
+begin
+  S:= CurrentFrame.SUrlAt(CurrentEditor.CaretPos);
+  if S<>'' then
+    Clipboard.AsText:= S
+  else
+    MsgBeep;  
+end;
+
+procedure TfmMain.DoOpenURL;
+var
+  S: Widestring;
+begin
+  S:= CurrentFrame.SUrlAt(CurrentEditor.CaretPos);
+  if S<>'' then
+    FOpenURL(S, Handle)
+  else
+    MsgBeep;
 end;
 
 end.

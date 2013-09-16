@@ -359,6 +359,9 @@ const
   sm_InsertBlankLineAbove = 1026;
   sm_InsertBlankLineBelow = 1027;
   sm_OpenCmdPrompt = 1028;
+  sm_CopyCurrentURL = 1029;
+  sm_OpenCurrentURL = 1030;
+  sm_FindId = 1031;
   //free
 
   //Tree commands
