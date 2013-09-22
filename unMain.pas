@@ -1972,6 +1972,7 @@ type
     procedure TBXItemProjRecentClearClick(Sender: TObject);
     procedure TBXItemProjGotoClick(Sender: TObject);
     procedure TBXItemProjNewClick(Sender: TObject);
+    procedure PluginACPShow(Sender: TObject);
 
   private
     cStatLine,
@@ -2141,6 +2142,8 @@ type
     //frame related------------------------------
 
     //private methods
+    procedure DoDelayedCommand(Command: Integer);
+    procedure DoDelayedCommand2(Command: Integer);
     function ListTab_FrameIndex: integer;
     function GetTabsWidths: Widestring;
     procedure SetTabsWidths(const S: Widestring);
@@ -2424,6 +2427,7 @@ type
     function SynIniDir: string;
     function SynStylesIni: string;
     function SynStateIni: string;
+    function SynFoldStatesIni: string;
     function SynMacrosIni: string;
     function SynHideIni: string;
     function SynTidyIni: string;
@@ -2592,6 +2596,10 @@ type
     procedure DoCopyURL;
     procedure DoOpenURL;
     procedure DoFindId;
+    function UpdateCurrentColorCode(var AColor: Integer): boolean;
+    procedure DoAddCurrentColorCodeToRecents;
+    procedure DoSaveFolding;
+    procedure DoLoadFolding;
     //end of private
 
   protected
@@ -2866,10 +2874,11 @@ type
     //procedure TestApi;
     function IsPluginWindowActive(var HWnd: THandle): boolean;
     function opMarkDeletedAsModified: boolean;
-    procedure SetHint(const S: WideString);
+    procedure SetHint(S: WideString);
     procedure DoHandleQuickSearchEscape;
     function DoHandleEscapeActions: boolean;
     function IsWordChar(ch: WideChar): boolean;
+    procedure DoFindIdDelayed;
     //end of public
   end;
 
@@ -2918,7 +2927,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.8.854';
+  cSynVer = '5.8.860';
 
 const
   cSynParamRO = '/RO';
@@ -4839,6 +4848,11 @@ begin
   Result:= SynIniDir + 'SynState.ini';
 end;
 
+function TfmMain.SynFoldStatesIni: string;
+begin
+  Result:= SynIniDir + 'SynFoldStates.ini';
+end;
+
 function TfmMain.SynMacrosIni: string;
 begin
   Result:= SynIniDir + 'SynMacros.ini';
@@ -5295,8 +5309,9 @@ begin
     Exit
   end;
 
+  //handle Tab key if auto-completion popup is shown
   if not CurrentEditor.ReadOnly and (Key = vk_tab) and (Shift = []) then
-    if ecACP.Visible then
+    if ecACP.Visible or PluginACP.Visible then
     begin
       Key:= 0;
       Exit;
@@ -5332,6 +5347,17 @@ begin
   if not IsEdit then
     FLastCmdBreak:= true;
 end;
+
+procedure TfmMain.DoDelayedCommand(Command: Integer);
+begin
+  PostMessage(Handle, WM_USER + 1, Command, 0);
+end;
+
+procedure TfmMain.DoDelayedCommand2(Command: Integer);
+begin
+  PostMessage(Handle, WM_USER + 2, Command, 0);
+end;
+
 
 procedure TfmMain.SynExecuteCommand(Sender: TObject; Command: Integer;
   Data: Pointer; var Handled: Boolean);
@@ -5980,9 +6006,7 @@ begin
     sm_FCloseAll,
     sm_FCloseOth,
     sm_FileRename:
-    begin
-      PostMessage(Handle, WM_USER+2, Command, 0);
-    end;
+      DoDelayedCommand2(Command);
 
     sm_FMoveTab:
       DoMoveTabToOtherView(-1);
@@ -6181,6 +6205,9 @@ begin
     sm_CopyCurrentURL: DoCopyURL;
     sm_OpenCurrentURL: DoOpenURL;
     sm_FindId: DoFindId;
+    sm_AddRecentColorCode: DoAddCurrentColorCodeToRecents;
+    sm_SaveFolding: DoSaveFolding;
+    sm_LoadFolding: DoLoadFolding;
 
     //end of commands list
     else
@@ -7659,7 +7686,6 @@ const
 var
   Ed: TSyntaxMemo;
   s: Widestring;
-  nStart, nEnd, nColor: integer;
 begin
   Ed:= CurrentEditor;
   if Ed.TextLength=0 then
@@ -7694,33 +7720,7 @@ begin
   TBXItemCtxCopyUrl.Enabled:= FPopupUrl<>'';
 
   //update "Add to recent colors"
-  s:= Ed.SelText;
-  if (s<>'') and IsStringRegex(s, cRegexColorCode) then
-  begin
-    Delete(s, 1, 1);
-    TbxItemCtxAddColor.Enabled:= IsHexColorString(s);
-    if TbxItemCtxAddColor.Enabled then
-      FPopupColor:= Hex2color(s);
-  end
-  else
-  if (s<>'') and IsStringRegex(s, cRegexColorName) then
-  begin
-    s:= SGetColorNameValue(s);
-    TbxItemCtxAddColor.Enabled:= s<>'';
-    if TbxItemCtxAddColor.Enabled then
-    begin
-      Delete(s, 1, 1);
-      TbxItemCtxAddColor.Enabled:= IsHexColorString(s);
-      if TbxItemCtxAddColor.Enabled then
-        FPopupColor:= Hex2color(s);
-    end;
-  end
-  else
-  begin
-    GetColorRange(nStart, nEnd, nColor);
-    TbxItemCtxAddColor.Enabled:= nEnd>nStart;
-    FPopupColor:= nColor;
-  end;
+  TbxItemCtxAddColor.Enabled:= UpdateCurrentColorCode(FPopupColor);
 
   //update "Open selection"
   s:= Ed.SelText;
@@ -8740,7 +8740,7 @@ begin
         if ((KeyStrokes.Count > 0) and (KeyStrokes[0].AsString = S)) or
           ((KeyStrokes.Count > 1) and (KeyStrokes[1].AsString = S)) then
         begin
-          PostMessage(Handle, WM_user+1, Command, 0);
+          DoDelayedCommand(Command);
           Key:= 0;
           Exit
         end;
@@ -8994,12 +8994,12 @@ end;
 
 procedure TfmMain.DoACP;
 begin
-  PostMessage(Handle, WM_USER + 1, 650{ecACP.CommandID}, 0);
+  DoDelayedCommand(ecACP.CommandID{650});
 end;
 
 procedure TfmMain.DoACPHint;
 begin
-  PostMessage(Handle, WM_USER + 1, 652{ParamCompletion.CommandID}, 0);
+  DoDelayedCommand(ParamCompletion.CommandID{652});
 end;
 
 procedure TfmMain.ecACPListClick;
@@ -9059,8 +9059,10 @@ begin
   UpdateColorHint;
 end;
 
-procedure TfmMain.SetHint(const S: WideString);
+procedure TfmMain.SetHint(S: WideString);
 begin
+  SDeleteFromW(S, #10);
+  SDeleteFromW(S, #13);
   StatusItemHint.Caption:= S;
   TimerHint.Enabled:= false;
   TimerHint.Enabled:= true;
@@ -9136,7 +9138,7 @@ end;
 
 procedure TfmMain.WM1(var m: TMessage);
 begin
-  if CurrentEditor <> nil then
+  if CurrentEditor<>nil then
     CurrentEditor.ExecCommand(m.wParam);
 end;
 
@@ -23348,6 +23350,8 @@ begin
         DoLoadPlugin_FindID(i);
         Exit
       end;
+  //no FindId plugins found
+  SetHint(DKLangConstW('zMFindIdNone'));
 end;
 
 function TfmMain.DoAcpFromPlugins(const AAction: PWideChar): Widestring;
@@ -25413,7 +25417,8 @@ procedure TfmMain.PluginACPAfterComplete(Sender: TObject;
   const Item: WideString);
 begin
   //need to force parameter hint, it doesn't appear auto on plugin ACP
-  ParamCompletion.Execute;
+  if ParamCompletion.Enabled then
+    ParamCompletion.Execute;
 end;
 
 procedure TfmMain.ecSelExtendExecute(Sender: TObject);
@@ -26278,29 +26283,29 @@ end;
 
 procedure TfmMain.InitMenuItemsList;
 begin
-  SetLength(FMenuItems, 20);
+  SetLength(FMenuItems, 19);
   with FMenuItems[0] do begin Id:= 'file'; Item:= TbxSubmenuItemFile; end;
   with FMenuItems[1] do begin Id:= 'edit'; Item:= TbxSubmenuItemEd; end;
   with FMenuItems[2] do begin Id:= 'search'; Item:= TbxSubmenuItemSr; end;
   with FMenuItems[3] do begin Id:= 'encoding'; Item:= TbxSubmenuItemEnc; end;
-  with FMenuItems[4] do begin Id:= 'lexer'; Item:= TbxSubmenuItemLexer; end;
-  with FMenuItems[5] do begin Id:= 'bookmarks'; Item:= TbxSubmenuItemBk; end;
-  with FMenuItems[6] do begin Id:= 'run'; Item:= TbxSubmenuItemRun; end;
-  with FMenuItems[7] do begin Id:= 'html'; Item:= TbxSubmenuItemHTML; end;
-  with FMenuItems[8] do begin Id:= 'macros'; Item:= TbxSubmenuItemMacros; end;
-  with FMenuItems[9] do begin Id:= 'options'; Item:= TbxSubmenuItemOpt; end;
-  with FMenuItems[10] do begin Id:= 'view'; Item:= TbxSubmenuItemView; end;
-  with FMenuItems[11] do begin Id:= 'window'; Item:= TbxWin; end;
-  with FMenuItems[12] do begin Id:= 'help'; Item:= TbxSubmenuItemHelp; end;
+  //with FMenuItems[4] do begin Id:= 'lexer'; Item:= TbxSubmenuItemLexer; end;
+  with FMenuItems[4] do begin Id:= 'bookmarks'; Item:= TbxSubmenuItemBk; end;
+  with FMenuItems[5] do begin Id:= 'run'; Item:= TbxSubmenuItemRun; end;
+  with FMenuItems[6] do begin Id:= 'html'; Item:= TbxSubmenuItemHTML; end;
+  with FMenuItems[7] do begin Id:= 'macros'; Item:= TbxSubmenuItemMacros; end;
+  with FMenuItems[8] do begin Id:= 'options'; Item:= TbxSubmenuItemOpt; end;
+  with FMenuItems[9] do begin Id:= 'view'; Item:= TbxSubmenuItemView; end;
+  with FMenuItems[10] do begin Id:= 'window'; Item:= TbxWin; end;
+  with FMenuItems[11] do begin Id:= 'help'; Item:= TbxSubmenuItemHelp; end;
 
-  with FMenuItems[13] do begin Id:= 'split'; Item:= TbxItemMenuSplit; end;
-  with FMenuItems[14] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
-  with FMenuItems[15] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
+  with FMenuItems[12] do begin Id:= 'split'; Item:= TbxItemMenuSplit; end;
+  with FMenuItems[13] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
+  with FMenuItems[14] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
 
-  with FMenuItems[16] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
-  with FMenuItems[17] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
-  with FMenuItems[18] do begin Id:= 'toolbar-view'; Item:= tbView; end;
-  with FMenuItems[19] do begin Id:= 'context'; Item:= PopupEditor; end;
+  with FMenuItems[15] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
+  with FMenuItems[16] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
+  with FMenuItems[17] do begin Id:= 'toolbar-view'; Item:= tbView; end;
+  with FMenuItems[18] do begin Id:= 'context'; Item:= PopupEditor; end;
 end;
 
 procedure TfmMain.TBXItemOHideItemsClick(Sender: TObject);
@@ -27189,6 +27194,146 @@ begin
     FOpenURL(S, Handle)
   else
     MsgBeep;
+end;
+
+//updates TbxItemCtxAddColor.Enabled
+function TfmMain.UpdateCurrentColorCode(var AColor: Integer): boolean;
+var
+  Ed: TSyntaxMemo;
+  s: Widestring;
+  nStart, nEnd: Integer;
+begin
+  Ed:= CurrentEditor;
+  s:= Ed.SelText;
+  if (s<>'') and IsStringRegex(s, cRegexColorCode) then
+  begin
+    Delete(s, 1, 1);
+    Result:= IsHexColorString(s);
+    if Result then
+      AColor:= Hex2color(s);
+  end
+  else
+  if (s<>'') and IsStringRegex(s, cRegexColorName) then
+  begin
+    s:= SGetColorNameValue(s);
+    Result:= s<>'';
+    if Result then
+    begin
+      Delete(s, 1, 1);
+      Result:= IsHexColorString(s);
+      if Result then
+        AColor:= Hex2color(s);
+    end;
+  end
+  else
+  begin
+    GetColorRange(nStart, nEnd, AColor);
+    Result:= nEnd>nStart;
+  end;
+end;
+
+procedure TfmMain.DoAddCurrentColorCodeToRecents;
+var
+  nColor: Integer;
+begin
+  if UpdateCurrentColorCode(nColor) then
+    DoAddRecentColor(nColor)
+  else
+    MsgBeep;
+end;
+
+procedure TfmMain.DoFindIdDelayed;
+begin
+  DoDelayedCommand(sm_FindId);
+end;
+
+procedure TfmMain.DoSaveFolding;
+var
+  Ed: TSyntaxMemo;
+  F: TEditorFrame;
+  SFold: string;
+begin
+  Ed:= CurrentEditor;
+  F:= CurrentFrame;
+
+  if F.FileName='' then
+  begin
+    SetHint('Cannot save folding for unnamed tab');
+    MsgBeep;
+    Exit
+  end;
+
+  if Ed.DisableFolding then
+  begin
+    SetHint('Cannot save folding when it''s disabled');
+    MsgBeep;
+    Exit
+  end;
+
+  SFold:= EditorGetCollapsedRanges(Ed);
+  if SFold='' then
+  begin
+    SetHint('Cannot save empty folding state');
+    MsgBeep;
+    Exit
+  end;
+
+  with TIniFile.Create(SynFoldStatesIni) do
+  try
+    WriteString('Fold', UTF8Encode(F.FileName), SFold);
+  finally
+    Free
+  end;
+
+  SetHint('Folding saved to file');
+end;
+
+procedure TfmMain.DoLoadFolding;
+var
+  Ed: TSyntaxMemo;
+  F: TEditorFrame;
+  SFold: string;
+begin
+  Ed:= CurrentEditor;
+  F:= CurrentFrame;
+
+  if F.FileName='' then
+  begin
+    SetHint('Cannot load folding for unnamed tab');
+    MsgBeep;
+    Exit
+  end;
+
+  if Ed.DisableFolding then
+    ecFolding.Execute;
+
+  with TIniFile.Create(SynFoldStatesIni) do
+  try
+    SFold:= ReadString('Fold', UTF8Encode(F.FileName), '');
+  finally
+    Free
+  end;
+
+  if SFold='' then
+  begin
+    SetHint('Cannot load empty folding state');
+    MsgBeep;
+    Exit
+  end;
+
+  EditorSetCollapsedRanges(Ed, SFold);
+  SetHint('Folding loaded from file');
+end;
+
+procedure TfmMain.PluginACPShow(Sender: TObject);
+begin
+  if opAcpUseSingle then
+    with PluginACP do
+      if ListBox.Items.Count=1 then
+      begin
+        CloseUp(true);
+        Exit
+      end;
 end;
 
 end.

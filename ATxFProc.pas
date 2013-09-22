@@ -20,7 +20,7 @@ function FormatFileTimeFmt(const ft: TFileTime; const Fmt: string): string;
 
 procedure MsgBeep(Err: boolean = false);
 
-function FFilenameMatchesMaskList(const fn, masks: Widestring; folders: boolean): boolean;
+function FFilenameMatchesMaskList(fn, masks: Widestring; folders: boolean): boolean;
 function FReadString(const fn: string): string;
 function FFindInSubdirs(const sname, sdir: Widestring; var fn: Widestring): boolean;
 function FAppDataPath: string;
@@ -782,7 +782,7 @@ end;
 function PathMatchSpecW(const pszFileParam, pszSpec: PWideChar): Bool;
   stdcall; external 'shlwapi.dll';
 
-function FFilenameMatchesMaskList(const fn, masks: Widestring; folders: boolean): boolean;
+function FFilenameMatchesMaskList(fn, masks: Widestring; folders: boolean): boolean;
 var
   s, msk: Widestring;
   ch: WideChar;
@@ -798,7 +798,12 @@ begin
     IsFolder:= (ch='\') or (ch='/');
     if IsFolder then
       Delete(msk, Length(msk), 1);
-    if folders<>IsFolder then Continue;  
+    if folders<>IsFolder then Continue;
+
+    //work-around for "*." mask: Win API function doesn't count that
+    //filename w/o extension matches such mask
+    if Pos('.', WideExtractFileName(fn))=0 then
+      fn:= fn+'.';
 
     Result:= PathMatchSpecW(PWChar(fn), PWChar(msk));
     if Result then Break;

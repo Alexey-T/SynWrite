@@ -352,7 +352,14 @@ end;
 
 procedure TEditorFrame.EditorMasterEnter(Sender: TObject);
 begin
-  TfmMain(Owner).CurrentEditor:= (Sender as TSyntaxMemo);
+  TfmMain(Owner).CurrentEditor:= Sender as TSyntaxMemo;
+
+  //Ctrl+Alt+click -- find id
+  //(if no line selection is made with Ctrl+Alt+drag)
+  if IsCtrlAltPressed then
+    if not (Sender as TSyntaxMemo).HaveSelection then
+      TfmMain(Owner).DoFindIdDelayed;
+
   SyncMap;
 end;
 
@@ -514,10 +521,24 @@ begin
 end;
 
 procedure TEditorFrame.DoTitleChanged;
+var
+  FTab: TTntTabSheet;
 begin
   if Parent<>nil then
     if Parent is TTntTabSheet then
-      (Parent as TTntTabSheet).Caption:= Title;
+    begin
+      FTab:= (Parent as TTntTabSheet);
+      FTab.Caption:= Title;
+      {
+      //trying to fix issue with tab header overlapped by [<] and [>] buttons
+      //(single line PageControl), but it's not nice code
+      if FTab.PageIndex = FTab.PageControl.ActivePageIndex then
+      begin
+        FTab.PageControl.ScrollTabs(FTab.PageControl.PageCount);
+      end;
+      }
+    end;
+
   if Assigned(FOnTitleChanged) then
     FOnTitleChanged(Self);
 end;

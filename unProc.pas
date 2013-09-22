@@ -92,6 +92,8 @@ function Hex2color(const s: string): TColor;
 function IsHexColorString(const s: Widestring): boolean;
 
 function IsCtrlPressed: boolean;
+function IsCtrlAltPressed: boolean;
+
 procedure DoAddColorToImageList(ImageList: TImageList;
   NColor: Integer; NColorText: Integer = -1);
 
@@ -918,6 +920,14 @@ end;
 function IsCtrlPressed: boolean;
 begin
   Result:= GetKeyState(vk_control) < 0;
+end;
+
+function IsCtrlAltPressed: boolean;
+begin
+  Result:=
+    (GetKeyState(vk_control) < 0) and
+    (GetKeyState(vk_menu) < 0) and
+    (GetKeyState(vk_shift) >= 0);
 end;
 
 

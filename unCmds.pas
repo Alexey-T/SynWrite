@@ -362,6 +362,9 @@ const
   sm_CopyCurrentURL = 1029;
   sm_OpenCurrentURL = 1030;
   sm_FindId = 1031;
+  sm_AddRecentColorCode = 1032;
+  sm_SaveFolding = 1033;
+  sm_LoadFolding = 1034;
   //free
 
   //Tree commands
