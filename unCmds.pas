@@ -365,6 +365,7 @@ const
   sm_AddRecentColorCode = 1032;
   sm_SaveFolding = 1033;
   sm_LoadFolding = 1034;
+  sm_OpenLastClosedFile = 1035;
   //free
 
   //Tree commands

@@ -543,8 +543,12 @@ end;
 
 procedure TfmSR.bRepInTabsClick(Sender: TObject);
 begin
-  if MessageboxW(Handle, PWChar(DKLangConstW('MCfmTb')),
-    'SynWrite', mb_okcancel or mb_iconwarning) <> idok then Exit;
+  //confirm mass replace
+  if not MsgConfirm(DKLangConstW('MCfmTb'), Handle) then Exit;
+
+  //uncheck "Search from caret" for mass replace
+  cbFromCur.Checked:= false;
+
   DoAct(arReplaceAllInAll);
   SetFocus;
 end;
@@ -1068,6 +1072,9 @@ end;
 
 procedure TfmSR.bFindInTabsClick(Sender: TObject);
 begin
+  //uncheck "Search from caret" for mass search
+  cbFromCur.Checked:= false;
+
   DoAct(arFindInTabs);
 end;
 

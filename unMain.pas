@@ -2600,6 +2600,7 @@ type
     procedure DoAddCurrentColorCodeToRecents;
     procedure DoSaveFolding;
     procedure DoLoadFolding;
+    procedure DoOpenLastClosedFile;
     //end of private
 
   protected
@@ -2624,7 +2625,6 @@ type
     //opt
     opTabFontSize: integer;
     opWordChars: Widestring;
-    opShowBorders: boolean;
     opNonPrint,
     opNonPrintSpaces,
     opNonPrintEol,
@@ -2927,7 +2927,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.8.860';
+  cSynVer = '5.8.880';
 
 const
   cSynParamRO = '/RO';
@@ -4332,9 +4332,6 @@ begin
 
     opNotif:= ReadInteger('Setup', 'Notif', 2);
     ApplyIntf;
-
-    //opShowBorders:= ReadBool('Setup', 'Borders', true);
-    opShowBorders:= false;
     ApplyBorders;
     
     opTipsToken:= ReadBool('Setup', 'Tooltips', true);
@@ -6208,7 +6205,8 @@ begin
     sm_AddRecentColorCode: DoAddCurrentColorCodeToRecents;
     sm_SaveFolding: DoSaveFolding;
     sm_LoadFolding: DoLoadFolding;
-
+    sm_OpenLastClosedFile: DoOpenLastClosedFile;
+    
     //end of commands list
     else
       Handled:= false;
@@ -9313,6 +9311,18 @@ begin
         CloseUp(true);
         Exit
       end;
+
+  //CSS: insert space if caret is after ":" char
+  if FTagCss then
+    with CurrentEditor do
+    begin
+      i:= CaretStrPos;
+      if (i>0) and (i<=Length(Lines.FText)) and (Lines.FText[i]=':') then
+      begin
+        InsertText(' ');
+        DoACP;
+      end;  
+    end;
 
   //HTML: insert "<" char, except cases:
   //we are at "<", we are at middle of a tag
@@ -27334,6 +27344,21 @@ begin
         CloseUp(true);
         Exit
       end;
+end;
+
+procedure TfmMain.DoOpenLastClosedFile;
+var
+  fn: Widestring;
+begin
+  fn:= '';
+  with SynMruFiles do
+    if Items.Count>0 then
+      fn:= Items[0];
+
+  if fn<>'' then
+    DoOpenFile(fn)
+  else
+    MsgBeep();
 end;
 
 end.

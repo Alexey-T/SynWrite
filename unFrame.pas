@@ -117,6 +117,7 @@ type
     FFtpInfoSize: Integer;
     FMapColor: TColor;
     FTabColor: TColor;
+    FSelPresent: boolean;
     FLineEndsChg,
     FSpell,
     FNoBOM: boolean;
@@ -983,15 +984,19 @@ end;
 procedure TEditorFrame.EditorMasterSelectionChanged(Sender: TObject);
 var
   Ed: TSyntaxMemo;
+  SelCleared: boolean;
 begin
+  Ed:= Sender as TSyntaxMemo;
   EditorMasterCaretPosChanged(Sender);
 
-  Ed:= Sender as TSyntaxMemo;
+  SelCleared:= FSelPresent and not Ed.HaveSelection;
+  FSelPresent:= Ed.HaveSelection;
+
   if TfmMain(Owner).opHiliteSmart then
   begin
     if Ed.HaveSelection then
-      TfmMain(Owner).TimerSel.Enabled:= true
-    else
+      TfmMain(Owner).TimerSel.Enabled:= true;
+    if SelCleared then
       Ed.ResetSearchMarks;
   end;    
 end;

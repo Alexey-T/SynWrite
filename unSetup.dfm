@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabACP
+    ActivePage = tabFolders
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -1980,12 +1980,12 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 269
+        Height = 297
         Caption = 'Folders'
         TabOrder = 0
         object TntLabel14: TTntLabel
           Left = 8
-          Top = 244
+          Top = 276
           Width = 286
           Height = 13
           Caption = 'Tip: add * after folder name to search also in all subfolders.'
@@ -1993,9 +1993,8 @@ object fmSetup: TfmSetup
         object TntLabel15: TTntLabel
           Left = 8
           Top = 16
-          Width = 513
-          Height = 29
-          AutoSize = False
+          Width = 400
+          Height = 13
           Caption = 
             'Folders, which are looked by command "Open <selection>" of edito' +
             'r context menu:'
@@ -2003,17 +2002,17 @@ object fmSetup: TfmSetup
         end
         object edFolders: TTntMemo
           Left = 8
-          Top = 52
-          Width = 481
-          Height = 157
+          Top = 36
+          Width = 497
+          Height = 205
           ScrollBars = ssBoth
           TabOrder = 0
           OnKeyDown = edFoldersKeyDown
         end
         object bAddFolder: TTntButton
           Left = 8
-          Top = 216
-          Width = 137
+          Top = 248
+          Width = 153
           Height = 23
           Caption = 'Add folder...'
           TabOrder = 1
@@ -2723,7 +2722,7 @@ object fmSetup: TfmSetup
           Hint = 
             'Begins every auto-indented line with the minimum number of chara' +
             'cters possible, using tabs and spaces as necessary.'
-          Caption = 'Optimal fill'
+          Caption = 'Optimal fill space with Tabs'
           TabOrder = 4
         end
         object cbKeepBlank: TTntCheckBox
