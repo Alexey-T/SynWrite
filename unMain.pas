@@ -2083,7 +2083,7 @@ type
     FTagList: boolean; //ACP shows tags, not attribs
     FTagCss: boolean; //ACP called for CSS
     FTagClosing: boolean; //ACP called for closing tag </tag>
-    FBrAdd: boolean; //Added '<' on ACP call
+    FTagBracketAdded: boolean; //Added '<' on ACP call
 
     QuickView: boolean;    //QuickView mode for TotalCmd plugin
     QuickDestroy: boolean; //?? (inherited from Sepa)
@@ -2490,8 +2490,8 @@ type
     procedure SetTheme(const S: string);
     procedure LoadTools;
     procedure SaveTools;
-    procedure UpdTools;
-    procedure ToolEn(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
+    procedure UpdateTools;
+    procedure DoEnableTool(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
 
     procedure GetTag(var tagName, attri:string);
     procedure SaveState_(Sender: TObject);
@@ -2623,6 +2623,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     //opt
+    opSyncEditIcon: boolean;
     opTabFontSize: integer;
     opWordChars: Widestring;
     opNonPrint,
@@ -2879,6 +2880,7 @@ type
     function DoHandleEscapeActions: boolean;
     function IsWordChar(ch: WideChar): boolean;
     procedure DoFindIdDelayed;
+    function FrameForFilename(const fn: Widestring): TEditorFrame;
     //end of public
   end;
 
@@ -2927,7 +2929,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.8.880';
+  cSynVer = '5.8.890';
 
 const
   cSynParamRO = '/RO';
@@ -2981,6 +2983,12 @@ const
   cRegexColorName = '[a-z]{3,30}';
 
 const
+  cAcpNone = 0;
+  cAcpLoadedAcpFile = 1;
+  cAcpLoadedHtmlList = 2;
+  cAcpDontShow = 3;
+
+const
   cThemeWindows = 'Windows';
   cThemes: array[0..12] of string = (
     cThemeWindows,
@@ -2993,20 +3001,25 @@ const
     'Xito',
     'Office XP',
     'Office 2003',
-    //'Office 2007',
     'Office 2007 Blue',
     'Office 2007 Black',
     'Office 2007 Silver'
     );
 
 const
-  cAcpCharsCss = '-#!@:.';
+  //don't include ':'
+  cAcpCharsCss = '-#!@.';
 
 const
   cp__UTF8       = -1;
   cp__UTF8_noBOM = -2;
   cp__Unicode    = -3;
   cp__UnicodeBE  = -4;
+
+function SAcpItem(const s1, s2: string): string;
+begin
+  Result:= '\s1\' + s1 + '\t\\s2\' + s2;
+end;
 
 function MsgConfirmBinary(const fn: Widestring): boolean;
 begin
@@ -3341,7 +3354,6 @@ end;
 
 function TfmMain.DoOpenFile(const AFileName: WideString): TEditorFrame;
 var
-  i: Integer;
   F: TEditorFrame;
 begin
   UpdateColorHint;
@@ -3353,16 +3365,13 @@ begin
     Exit
   end;
 
-  //If file is already opened?
-  for i:= 0 to FrameAllCount - 1 do
+  //is file is already opened?
+  F:= FrameForFilename(AFileName);
+  if F<>nil then
   begin
-    F:= FramesAll[i];
-    if F.IsTheFile(AFileName) then
-    begin
-      Result:= F;
-      CurrentFrame:= F;
-      Exit;
-    end;
+    Result:= F;
+    CurrentFrame:= F;
+    Exit;
   end;
 
   //Create new frame and load file
@@ -4238,6 +4247,7 @@ begin
     opSavePos:= ReadBool('Hist', 'SavePos', true);
 
     //setup
+    opSyncEditIcon:= ReadBool('Setup', 'SyncEditIcon', true);
     opTabFontSize:= ReadInteger('Setup', 'TabFontSize', 0);
     ApplyTabFontSize;
 
@@ -5372,8 +5382,8 @@ begin
   Handled:= True;
   Ed:= Sender as TSyntaxMemo;
 
-  ////debug
-  //Application.MainForm.Caption:= IntToStr(Command);
+  //debug
+  //Application.MainForm.Caption:= 'cmd '+IntToStr(Command);
 
   case Command of
     //auto-close tag
@@ -7081,7 +7091,7 @@ begin
   slINTatr.Clear;
   slINTcss.Clear;
 
-  ecACP.Tag:= 0; //not loaded any list
+  ecACP.Tag:= cAcpNone;
   ecACP.Items.Clear;
   ecACP.DisplayItems.Clear;
 
@@ -7122,6 +7132,11 @@ end;
 
 
 procedure TfmMain.LoadAcpFromFile(const fn, Lexer: string);
+  function AcpItem(const s1, s2, s3, s4: string): string;
+  begin
+    Result:= '\s1\' + s1 + '\t\\s2\' + s2 + '\t\\s0\' + s3 + '\s3\ '+ s4;
+  end;
+//
 var
   acp: TStringList;
   i, a, b, c: Integer;
@@ -7183,16 +7198,18 @@ begin
       //insert text with "(" if params not empty
       if Pos('(', acp[i])>0 then
         s:= s+'(';
-      slACPitem.Add(s);
-
       c:=PosEx('|',acp[i],b);
-      if c=0 then c:= MaxInt div 2;
-      slACPdisp.Add('\s1\'+
-        copy(acp[i],1,a-1) + '\t\\s2\' +
-        copy(acp[i],a+1,b-a-1) + '\t\\s0\' +
-        copy(acp[i],b,c-b) + '\s3\ '+
-        copy(acp[i],c+1,100) );
-      slACPdesc.Add(copy(acp[i],c+1,MaxInt));
+      if c=0 then
+        c:= MaxInt div 2;
+
+      slACPitem.Add(s);
+      slACPdisp.Add(AcpItem(
+        copy(acp[i],1,a-1),
+        copy(acp[i],a+1,b-a-1),
+        copy(acp[i],b,c-b),
+        copy(acp[i],c+1,100) ));
+      slACPdesc.Add(
+        copy(acp[i],c+1,MaxInt));
     end;
   finally
     FreeAndNil(acp);
@@ -7362,29 +7379,36 @@ end;
 
 procedure TfmMain.ecACPAfterComplete(Sender: TObject;
   const Item: WideString);
-//var
-//  n: integer;
 begin
- //Closing tag
- if FTagClosing then
-   with CurrentEditor do
-     InsertText('>')
- else
- //handle Ctrl+Enter pressing in ACP list
- if FTagList and (KeyboardStateToShiftState=[ssCtrl]) then
-   with CurrentEditor do
-     if (TextLength>0) and (CaretStrPos>=1) and (Lines.FText[CaretStrPos]=' ') then
-     begin
-       CaretStrPos:= CaretStrPos-1;
-       DeleteText(1);
-       InsertText('>');
-       ecACP.Tag:= 1;
-     end;
+  //close tag
+  if FTagClosing then
+    with CurrentEditor do
+      InsertText('>')
+  else
+  //handle Ctrl+Enter pressing in ACP list
+  if FTagList and IsCtrlPressed then
+    with CurrentEditor do
+      if (TextLength>0) and (CaretStrPos>=1) and (Lines.FText[CaretStrPos]=' ') then
+      begin
+        CaretStrPos:= CaretStrPos-1;
+        DeleteText(1);
+        InsertText('>');
+        ecACP.Tag:= cAcpLoadedAcpFile;
+      end;
 
- if ecACP.Tag=2 then
-   DoACP //ACP again
- else
-   DoACPHint; //func hint
+  //if CSS completion done, delete ":" after caret
+  //(it may left from old text, and we inserted ":" anyway)
+  if FTagCss then
+    with CurrentEditor do
+    begin
+      if (TextLength>0) and (CaretStrPos>=0) and (Lines.FText[CaretStrPos+1]=':') then
+        DeleteText(1);
+    end;
+
+  if ecACP.Tag=cAcpLoadedHtmlList then
+    DoACP //show ACP again
+  else
+    DoACPHint; //show func hint
 end;
 
 function _IsWordChar_Css(ch: WideChar): boolean;
@@ -7393,173 +7417,203 @@ begin
 end;
 
 procedure TfmMain.DoAcpCss(List, Display: ecUnicode.TWideStrings);
+//warning: unchecked code from old author Sepa
 var
-  i,j,sx:Integer;
-  t,ins: string;
+  i, j, sx: Integer;
+  t, ins: string;
 begin
   opAcpChars:= cAcpCharsCss;
+  FTagCss:= true;
+  ecACP.Tag:= cAcpLoadedHtmlList;
+
   with CurrentEditor do
   begin
-      FTagCss:= true;
-      //is there any property?
-      i:=CaretStrPos;
-      t:='';
-      while (i>0) and (i<=TextLength) do begin
-        case Lines.FText[i] of
-          ';','{','}','>','=': Break;
-          ':': begin
-                 j:=i-1;
-                 while(j>0)and _IsWordChar_Css(text[j]) do dec(j);
-                 if (j>0)and((i-j)>0)then t:=copy(text,j+1,i-j);
-                 break;
-               end;
-        end;
-        dec(i);
+    //is there any property?
+    i:= CaretStrPos;
+    t:= '';
+    while (i>0) and (i<=TextLength) do
+    begin
+      case Lines.FText[i] of
+        ';', '{', '}', '>', '=':
+          Break;
+        ':':
+          begin
+            j:= i-1;
+            while (j>0) and _IsWordChar_Css(Text[j]) do Dec(j);
+            if (j>0) and ((i-j)>0) then
+              t:= Copy(Text, j+1, i-j);
+            Break;
+          end;
       end;
-      //property found
-      if t<>'' then begin
-        i:=slINTcss.IndexOfName(t);
-        if i>=0 then begin
-          sx:=pos('=',slINTcss[i]);
-          while sx<length(slINTcss[i]) do begin
-            inc(sx);
-            j:=PosEx(',',slINTcss[i],sx);
-            if j=0 then j:=length(slINTcss[i])+1;
-            ins:=copy(slINTcss[i],sx,j-sx);
-            //color
-            if ins='color' then begin
-              ins:='#000000';
-              Display.Add('\s1\color\t\\s2\#000000');
-            end
-            else Display.Add('\s1\css\t\\s2\'+copy(slINTcss[i],sx,j-sx));
-            List.Add(ins);
-            sx:=j;
+      Dec(i);
+    end;
+
+    //property found
+    if t<>'' then
+    begin
+      i:= slINTcss.IndexOfName(t);
+      if i>=0 then
+      begin
+        sx:= Pos('=', slINTcss[i]);
+        while sx<Length(slINTcss[i]) do
+        begin
+          Inc(sx);
+          j:= PosEx(',', slINTcss[i], sx);
+          if j=0 then
+            j:= Length(slINTcss[i])+1;
+          ins:= Copy(slINTcss[i], sx, j-sx);
+          //color
+          if ins='color' then
+          begin
+            ins:= '#000000';
+            Display.Add(SAcpItem('color', ins));
           end
+          else
+            Display.Add(SAcpItem('css', ins));
+          List.Add(ins);
+          sx:= j;
         end
       end
-      //property not found
-      else begin
-        for i:=0 to slINTcss.Count-1 do begin
-          j:=pos('=',slINTcss[i]);
-          if j=0 then Continue;
-          List.Add(copy(slINTcss[i],1,j-1)+' ' );
-          Display.Add('\s1\css\t\\s2\'+copy(slINTcss[i],1,j-2) );
-        end
-      end;
-
-      ecACP.Tag:=2;
-      Exit;
-    end;//CSS
+    end
+    //property not found
+    else
+    begin
+      for i:= 0 to slINTcss.Count-1 do
+      begin
+        j:= Pos('=', slINTcss[i]);
+        if j=0 then Continue;
+        ins:= Copy(slINTcss[i], 1, j-1);
+        List.Add(ins+' ');
+        Display.Add(SAcpItem('css', ins));
+      end
+    end;
+  end;
 end;
 
 procedure TfmMain.DoAcpHtm(List, Display: ecUnicode.TWideStrings);
+//warning: unchecked code from old author Sepa
 var
-  t, atr: string;
-  i,sx,j,k,a: integer;
+  t, atr, str: string;
+  i, j, k, sx, a: integer;
   AddBr: boolean;
 begin
-    GetTag(t,atr); //get tag/attr
+  //get current HTML tag and attrib
+  GetTag(t, atr);
 
-    //CSS
-    if (atr='style') then
-    begin
-      DoAcpCss(List, Display);
-      Exit
-    end;
+  //are we inside CSS part style="...."?
+  if (atr='style') then
+  begin
+    DoAcpCss(List, Display);
+    Exit
+  end;
 
-    //search tag attributes
-    if t<>'' then begin
-      i:=slINTatr.IndexOfName(t);
-      if i>=0 then
+  //search tag attributes
+  if t<>'' then
+  begin
+    i:= slINTatr.IndexOfName(t);
+    if i>=0 then
       //attrib names needed
-      if atr='' then begin
-        sx:=pos('=',slINTatr[i]);
-        while sx<length(slINTatr[i]) do begin
+      if atr='' then
+      begin
+        sx:= Pos('=', slINTatr[i]);
+        while sx<Length(slINTatr[i]) do
+        begin
           inc(sx);
-          a:=PosEx(',',slINTatr[i],sx);
-          if a=0 then a:=length(slINTatr[i])+1;
-          k:=PosEx(':',slINTatr[i],sx);
-          if (k<>0)and(k<a)then j:=k
-          else j:=a;
-          List.Add( copy(slINTatr[i],sx,j-sx)+'="' ); //HTML quote
-          Display.Add( '\s1\attrib\t\\s2\'+copy(slINTatr[i],sx,j-sx) );
-          sx:=a;
+          a:= PosEx(',', slINTatr[i], sx);
+          if a=0 then
+            a:= Length(slINTatr[i])+1;
+          k:= PosEx(':', slINTatr[i], sx);
+          if (k<>0) and (k<a) then j:=k else j:=a;
+
+          str:= Copy(slINTatr[i], sx, j-sx);
+          List.Add(str+'="'); //with HTML quote
+          Display.Add(SAcpItem('attrib', str));
+          sx:= a;
         end;
-        ecACP.Tag:=2;
+        ecACP.Tag:= cAcpLoadedHtmlList;
         Exit;
       end
       //attrib params needed
-      else begin
-        j:=pos('='+atr+':',slINTatr[i]);
-        k:=pos(','+atr+':',slINTatr[i]);
-        if (j=0)and(k=0) then exit
-        else if k<>0 then j:=k;
-        j:=PosEx(':',slINTatr[i],j+1);
+      else
+      begin
+        j:= Pos('='+atr+':', slINTatr[i]);
+        k:= Pos(','+atr+':', slINTatr[i]);
+        if (j=0) and (k=0) then Exit else
+          if k<>0 then j:= k;
+        j:= PosEx(':', slINTatr[i], j+1);
         //color
-        if posex('color',slINTatr[i],j)=j+1 then begin
-          List.Add( '#000000' );
-          Display.Add('\s1\color\t\\s2\#000000');
-          exit;
-        end
-        // {var1|var2}
-        else if slINTatr[i][j+1]<>'{' then exit;
-        inc(j);
-        k:=PosEx('}',slINTatr[i],j);
-        t:=copy(slINTatr[i],j+1,k-j-1);
-        sx:=0;
-        while sx<length(t) do begin
-        inc(sx);
-          j:=posex('|',t,sx);
-          if j=0 then j:=length(t)+1;
-          List.Add( copy(t,sx,j-sx) );
-          Display.Add( '\s1\value\t\\s2\'+copy(t,sx,j-sx) );
-          sx:=j;
+        if PosEx('color', slINTatr[i], j)=j+1 then
+        begin
+          str:= '#000000';
+          List.Add(str);
+          Display.Add(SAcpItem('color', str));
+          Exit;
         end;
-        ecACP.Tag:=3;
-        exit;
+        // {var1|var2}
+        if slINTatr[i][j+1]<>'{' then Exit;
+        Inc(j);
+        k:= PosEx('}', slINTatr[i], j);
+        t:= Copy(slINTatr[i], j+1, k-j-1);
+        sx:= 0;
+        while sx<Length(t) do
+        begin
+          Inc(sx);
+          j:= PosEx('|', t, sx);
+          if j=0 then j:= Length(t)+1;
+          str:= Copy(t, sx, j-sx);
+          List.Add(str);
+          Display.Add(SAcpItem('value', str));
+          sx:= j;
+        end;
+        ecACP.Tag:= cAcpDontShow;
+        Exit;
       end;
     end
 
     //search tag names
-    else begin
+    else
+    begin
       with CurrentEditor do
         if TextLength>0 then
         begin
-          i:=CaretStrPos;
+          i:= CaretStrPos;
           while (i>0) and (i<=TextLength) and
             IsWordChar(Lines.FText[i]) do Dec(i);
-          FTagClosing:=(i>0) and (i<=TextLength) and (Lines.FText[i]='/');
+          FTagClosing:= (i>0) and (i<=TextLength) and (Lines.FText[i]='/');
         end;
-      if FTagClosing then begin
+      if FTagClosing then
+      begin
         //closing tag
-        for i:=0 to slINTatr.Count-1 do begin
-          j:=pos('=',slINTatr[i]);
+        for i:= 0 to slINTatr.Count-1 do
+        begin
+          j:= Pos('=', slINTatr[i]);
           if j=0 then Continue;
-          List.Add(copy(slINTatr[i],1,j-1));
-          Display.Add( '\s1\tag\t\\s2\</'+
-            copy(slINTatr[i],1,j-1)+'>' );
+          str:= Copy(slINTatr[i], 1, j-1);
+          List.Add(str);
+          Display.Add(SAcpItem('tag', '</'+str+'>'));
         end;
-        ecACP.Tag:=3;
+        ecACP.Tag:= cAcpDontShow;
         FTagList:= true;
       end
       else
       begin
         //opening tag
         AddBr:= false;
-        for i:=0 to slINTatr.Count-1 do
+        for i:= 0 to slINTatr.Count-1 do
         begin
-          j:=pos('=',slINTatr[i]);
-          if j=0 then continue;
-          if AddBr then List.Add( '<'+copy(slINTatr[i],1,j-1)+' ' )
-                       else List.Add( copy(slINTatr[i],1,j-1)+' ' );
-          Display.Add( '\s1\tag\t\\s2\<'+
-            copy(slINTatr[i],1,j-1)+'>' );
+          j:= Pos('=', slINTatr[i]);
+          if j=0 then Continue;
+          str:= Copy(slINTatr[i], 1, j-1);
+          if AddBr then
+            List.Add('<'+str+' ')
+          else
+            List.Add(str+' ');
+          Display.Add(SAcpItem('tag', '<'+str+'>'));
         end;
-        ecACP.Tag:=2;
+        ecACP.Tag:= cAcpLoadedHtmlList;
         FTagList:= true;
-        Exit;
       end;
-    end
+    end;
 end;
 
 procedure TfmMain.ecACPGetAutoCompleteList(Sender: TObject; PosX: TPoint;
@@ -7567,13 +7621,6 @@ procedure TfmMain.ecACPGetAutoCompleteList(Sender: TObject; PosX: TPoint;
 var
   Lexer: string;
 begin
-  {ecACP.Tag:
-  0: not loaded any list
-  1: list from .acp file
-  2,3: internal Html list (recalc each time for CursorPos)
-  3: don't show ACP again after success
-  }
-
   List.Clear;
   Display.Clear;
 
@@ -7599,7 +7646,7 @@ begin
   begin
     List.Assign(slACPitem);
     Display.Assign(slACPdisp);
-    ecACP.Tag:= 1;
+    ecACP.Tag:= cAcpLoadedAcpFile;
   end;
 
   //get words from file
@@ -7730,7 +7777,7 @@ begin
   TbxItemCtxOpenSel.Enabled:= s<>'';
 
   //update External Tools items
-  UpdTools;
+  UpdateTools;
 end;
 
 procedure TfmMain.TBXItemCtxCopyUrlClick(Sender: TObject);
@@ -7761,7 +7808,7 @@ var
   ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
   AOptWordChars, AKeepBlanks: string;
 begin
-  UpdTools;
+  UpdateTools;
   acSetupLexHL.Enabled:= SyntaxManager.CurrentLexer<>nil;
   Lexer:= '';
   opWordChars:= '';
@@ -9006,7 +9053,8 @@ begin
 end;
 
 procedure TfmMain.ecACPListKeyDown;
-//var d: integer;
+//var
+//  d: integer;
 begin
   {
   with ecACP.ListBox do
@@ -9329,11 +9377,11 @@ begin
   if FTagList then
     with CurrentEditor do
     begin
-      //FBrAdd must be true only when
+      //FTagBracketAdded must be true only when
       //- TextLength=0
       //- caret on space/tab/EOL
       //- caret prev char is not wordchar, not '<', '/'
-      FBrAdd:= true;
+      FTagBracketAdded:= true;
       if (TextLength>0) then
       begin
         i:= CaretStrPos;
@@ -9342,7 +9390,7 @@ begin
           ch:= Lines.FText[i];
           if IsWordChar(ch) or (ch='<') or (ch='/')
             or (ch=' ') {fix for unneeded "<" at text end} then
-            FBrAdd:= false;
+            FTagBracketAdded:= false;
           //else
           //  MsgError(WideFormat('%d %d %d', [i, TextLength, Ord(ch)])); ////
         end;
@@ -9350,10 +9398,10 @@ begin
         begin
           ch:= Lines.FText[i+1];
           if not ((ch=' ') or (ch=#13) or (ch=#10) or (ch=#9)) then
-            FBrAdd:= false;
+            FTagBracketAdded:= false;
         end;
       end; //if TextLength>0
-      if FBrAdd then
+      if FTagBracketAdded then
       begin
         InsertText('<');
       end;
@@ -9981,10 +10029,10 @@ begin
   finally
     Free;
   end;
-  UpdTools;
+  UpdateTools;
 end;
 
-procedure TfmMain.ToolEn(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
+procedure TfmMain.DoEnableTool(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
 begin
   if CurrentFrame <> nil then
   with CurrentFrame.TextSource do
@@ -10009,33 +10057,33 @@ begin
    end;
 end;
 
-procedure TfmMain.UpdTools;
+procedure TfmMain.UpdateTools;
 begin
-  ToolEn(TbxItemT1, 1);
-  ToolEn(TbxItemT2, 2);
-  ToolEn(TbxItemT3, 3);
-  ToolEn(TbxItemT4, 4);
-  ToolEn(TbxItemT5, 5);
-  ToolEn(TbxItemT6, 6);
-  ToolEn(TbxItemT7, 7);
-  ToolEn(TbxItemT8, 8);
-  ToolEn(TbxItemT9, 9);
-  ToolEn(TbxItemT10, 10);
-  ToolEn(TbxItemT11, 11);
-  ToolEn(TbxItemT12, 12);
+  DoEnableTool(TbxItemT1, 1);
+  DoEnableTool(TbxItemT2, 2);
+  DoEnableTool(TbxItemT3, 3);
+  DoEnableTool(TbxItemT4, 4);
+  DoEnableTool(TbxItemT5, 5);
+  DoEnableTool(TbxItemT6, 6);
+  DoEnableTool(TbxItemT7, 7);
+  DoEnableTool(TbxItemT8, 8);
+  DoEnableTool(TbxItemT9, 9);
+  DoEnableTool(TbxItemT10, 10);
+  DoEnableTool(TbxItemT11, 11);
+  DoEnableTool(TbxItemT12, 12);
 
-  ToolEn(TbxItemCC1, 1, true);
-  ToolEn(TbxItemCC2, 2, true);
-  ToolEn(TbxItemCC3, 3, true);
-  ToolEn(TbxItemCC4, 4, true);
-  ToolEn(TbxItemCC5, 5, true);
-  ToolEn(TbxItemCC6, 6, true);
-  ToolEn(TbxItemCC7, 7, true);
-  ToolEn(TbxItemCC8, 8, true);
-  ToolEn(TbxItemCC9, 9, true);
-  ToolEn(TbxItemCC10, 10, true);
-  ToolEn(TbxItemCC11, 11, true);
-  ToolEn(TbxItemCC12, 12, true);
+  DoEnableTool(TbxItemCC1, 1, true);
+  DoEnableTool(TbxItemCC2, 2, true);
+  DoEnableTool(TbxItemCC3, 3, true);
+  DoEnableTool(TbxItemCC4, 4, true);
+  DoEnableTool(TbxItemCC5, 5, true);
+  DoEnableTool(TbxItemCC6, 6, true);
+  DoEnableTool(TbxItemCC7, 7, true);
+  DoEnableTool(TbxItemCC8, 8, true);
+  DoEnableTool(TbxItemCC9, 9, true);
+  DoEnableTool(TbxItemCC10, 10, true);
+  DoEnableTool(TbxItemCC11, 11, true);
+  DoEnableTool(TbxItemCC12, 12, true);
 end;
 
 procedure TfmMain.SaveTools;
@@ -10061,7 +10109,7 @@ begin
     Free;
   end;
 
-  UpdTools;
+  UpdateTools;
 end;
 
 procedure TfmMain.TBXItemOToolsClick(Sender: TObject);
@@ -10233,7 +10281,7 @@ procedure TfmMain.ecACPCloseUp(Sender: TObject; var Accept: Boolean);
 begin
   //delete '<' if was added on ACP call
   if not Accept then
-    if FBrAdd then
+    if FTagBracketAdded then
       with CurrentEditor do
         if (CaretStrPos >= 1) and (CaretStrPos <= TextLength) then
           if Lines.FText[CaretStrPos] = '<' then
@@ -10535,7 +10583,7 @@ procedure TfmMain.TBXSubmenuItemRunPopup(Sender: TTBCustomItem; FromLink: Boolea
 begin
   TBXItemRunOpenDir.Enabled:= CurrentFrame.Filename <> '';
   TBXItemRunOpenFile.Enabled:= TBXItemRunOpenDir.Enabled;
-  UpdTools;
+  UpdateTools;
 end;
 
 procedure TfmMain.TBXItemZInClick(Sender: TObject);
@@ -15409,17 +15457,12 @@ begin
       end;
     end;
 
-    S:= '\s1\' + DKLangConstW('typed') + '\t\\s2\';
+    S:= SAcpItem(DKLangConstW('typed'), ''); //beginning of Display string
     for i:= 0 to LL.Count-1 do
     begin
-      //if i mod 10 = 0 then
-      //  MsgAcpFile('Adding items '+IntToStr(i*100 div LL.Count)+'%');
-
-      //if List.IndexOf(LL[i])<0 then //<-- Freeze on large file!!
-      //begin
-        List.Add(LL[i]);
-        Display.Add(S + LL[i]);
-      //end;
+      //if List.IndexOf(LL[i])<0 then //<-- don't use, it freezes on large file!!
+      List.Add(LL[i]);
+      Display.Add(S + LL[i]);
     end;
   finally
     FreeAndNil(LL);
@@ -27346,17 +27389,44 @@ begin
       end;
 end;
 
+function TfmMain.FrameForFilename(const fn: Widestring): TEditorFrame;
+var
+  i: Integer;
+  F: TEditorFrame;
+begin
+  Result:= nil;
+  for i:= 0 to FrameAllCount-1 do
+  begin
+    F:= FramesAll[i];
+    if F.IsTheFile(fn) then
+    begin
+      Result:= F;
+      Exit;
+    end;
+  end;
+end;
+
 procedure TfmMain.DoOpenLastClosedFile;
 var
   fn: Widestring;
+  i: Integer;
 begin
   fn:= '';
   with SynMruFiles do
-    if Items.Count>0 then
-      fn:= Items[0];
+    for i:= 0 to Items.Count-1 do
+      if FrameForFilename(Items[i])=nil then
+      begin
+        fn:= Items[i];
+        Break
+      end;  
 
   if fn<>'' then
-    DoOpenFile(fn)
+  begin
+    if IsFileExist(fn) then
+      DoOpenFile(fn)
+    else
+      MsgNoFile(fn);
+  end
   else
     MsgBeep();
 end;

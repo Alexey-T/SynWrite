@@ -606,11 +606,15 @@ begin
   TfmMain(Owner).SynCaretPosChanged(Self);
 end;
 
-procedure TEditorFrame.EditorMasterGetGutterImage(Sender: TObject; const Line: Integer; List: TList);
+procedure TEditorFrame.EditorMasterGetGutterImage(Sender: TObject;
+  const Line: Integer; List: TList);
 var
-  gi: TGutterObject;
   Memo: TSyntaxMemo;
+  gi: TGutterObject;
 begin
+  //SyncEdit icon enabled?
+  if not TfmMain(Owner).opSyncEditIcon then Exit;
+
   Memo:= Sender as TSyntaxMemo;
   if (Memo.SelLength > 0) and
      (Line = Memo.StrPosToCaretPos(Memo.SelStart + Memo.SelLength).Y) then
