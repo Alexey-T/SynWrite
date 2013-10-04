@@ -27,6 +27,7 @@ var
 type
   TListProc = procedure(Sender: TObject; Files: TTntStrings) of object;
   TMruListProc = procedure(MruList: TSynMruList) of object;
+  TProjPreviewProc = procedure(Sender: TObject; const fn: Widestring; Toggle: boolean) of object;
   TProjSort = (srNone, srName, srExt, srDate, srSize, srDateDesc, srSizeDesc);
 
 type
@@ -154,6 +155,7 @@ type
     procedure TBXItemProjMRUClick(Sender: TObject;
       const Filename: WideString);
     procedure TBXItemMnuProjGotoClick(Sender: TObject);
+    procedure TreeProjChange(Sender: TObject; Node: TTreeNode);
   private
     { Private declarations }
     FProjectFN: Widestring;
@@ -162,6 +164,7 @@ type
     FIcoList: TStringList;
     FPathList: TTntStringList;
     FOldItemsCount: integer;
+    FOnPreview: TProjPreviewProc;
     FOnGotoProj: TNotifyEvent;
     FOnFileOpen: TListProc;
     FOnUpdateMRU: TMruListProc;
@@ -174,6 +177,7 @@ type
     FOnSetProjDir: TListProc;
     FShellIcons: boolean;
     fmProgress: TfmProgress;
+    procedure DoPreview(Toggle: boolean);
     function GetCollapsedList: string;
     procedure SetCollapsedList(S: Widestring);
     function DoSortCfm: boolean;
@@ -229,6 +233,7 @@ type
     function GetImageIndex(const fn: Widestring): integer;
     property ProjectFN: Widestring read FProjectFN write DoLoadProjectFromFile;
     property Modified: boolean read FModified;
+    property OnPreview: TProjPreviewProc read FOnPreview write FOnPreview;
     property OnFileOpen: TListProc read FOnFileOpen write FOnFileOpen;
     property OnUpdateMRU: TMruListProc read FOnUpdateMRU write FOnUpdateMRU;
     property OnLoadMRU: TMruListProc read FOnLoadMRU write FOnLoadMRU;
@@ -511,6 +516,12 @@ begin
   if (Key=VK_insert) and (Shift=[]) then
   begin
     DoAddFiles;
+    Key:= 0;
+    Exit
+  end;
+  if (Key=VK_space) and (Shift=[]) then
+  begin
+    DoPreview(true);
     Key:= 0;
     Exit
   end;
@@ -1872,6 +1883,25 @@ procedure TfmProj.TBXItemMnuProjGotoClick(Sender: TObject);
 begin
   if Assigned(FOnGotoProj) then
     FOnGotoProj(Self);
+end;
+
+procedure TfmProj.DoPreview(Toggle: boolean);
+var
+  fn: Widestring;
+begin
+  fn:= '';
+  with TreeProj do
+    if Selected<>nil then
+      if not IsDir(Selected) then
+        fn:= GetFN(Selected);
+
+  if Assigned(FOnPreview) then
+    FOnPreview(Self, fn, Toggle);
+end;
+
+procedure TfmProj.TreeProjChange(Sender: TObject; Node: TTreeNode);
+begin
+  DoPreview(false);
 end;
 
 end.

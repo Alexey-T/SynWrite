@@ -1,9 +1,8 @@
-{///////////////////////////////////////////////////////////////////////////////
-  Text Finder class
-  Original code was by: EControl Ltd., Zaharov Michael
-  Modified by: Alexey T.
-///////////////////////////////////////////////////////////////////////////////}
-{$I ecSyntEdit.INC}
+{
+SynWrite text finder/replacer class
+Original code was by: EControl Ltd.
+Modifications by: Alexey (SynWrite)
+}
 unit unSearch;
 
 interface

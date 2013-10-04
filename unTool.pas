@@ -76,6 +76,8 @@ type
     N6: TMenuItem;
     pSynDir: TMenuItem;
     pSynIniDir: TMenuItem;
+    pContFN: TMenuItem;
+    pContFNAnsi: TMenuItem;
     procedure bBrClick(Sender: TObject);
     procedure bBr2Click(Sender: TObject);
     procedure ListClick(Sender: TObject);
@@ -132,7 +134,7 @@ uses
 {$R *.dfm}
 
 const
-  ccStr: array[0..22] of string = (
+  ccStr: array[0..24] of string = (
     '"{FileName}"',
     '"{FileDir}"',
     '"{FileNameOnly}"',
@@ -155,6 +157,8 @@ const
     '"{SelectedText}"',
     '"{SelectionFileName}"',
     '"{SelectionFileNameAnsi}"',
+    '"{ContentFileName}"',
+    '"{ContentFileNameAnsi}"',
     //
     '"{Interactive}"',
     '"{InteractiveFile}"',
@@ -364,13 +368,15 @@ begin
   s(pSelText, 15);
   s(pSelFN, 16);
   s(pSelFNAnsi, 17);
+  s(pContFN, 18);
+  s(pContFNAnsi, 19);
   //
-  s(pInter, 18);
-  s(pInterFile, 19);
-  s(pInterDir, 20);
+  s(pInter, 20);
+  s(pInterFile, 21);
+  s(pInterDir, 22);
   //
-  s(pSynDir, 21);
-  s(pSynIniDir, 22);
+  s(pSynDir, 23);
+  s(pSynIniDir, 24);
 
   with TntOpenDialog1 do
     Filter:= WideFormat(

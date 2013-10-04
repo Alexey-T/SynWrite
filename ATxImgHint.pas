@@ -5,6 +5,10 @@ interface
 uses
   Windows, Classes, Graphics, Controls;
 
+var
+  opImageHintColorFont: TColor = clBlue;
+  opImageHintColorBG: TColor = clLime;
+
 type
   TGraphicHintWindow = class(THintWindow)
     constructor Create(AOwner: TComponent); override;
@@ -81,7 +85,7 @@ begin
     Brush.Style:= bsClear;
     Font.Name:= 'Tahoma';
     Font.Size:= 8;
-    Font.Color:= clBlack;
+    Font.Color:= opImageHintColorFont;
     Font.Style:= [];
   end;
 
@@ -112,7 +116,7 @@ begin
     b_png.LoadFromFile(fn);
     b.Width:= b_png.Width;
     b.Height:= b_png.Height;
-    b.Canvas.Brush.Color:= clInfoBk;
+    b.Canvas.Brush.Color:= opImageHintColorBG;
     b.Canvas.FillRect(Types.Rect(0, 0, b.Width, b.Height));
     TPngBitmapCracker(b_png).Draw(b.Canvas, Types.Rect(0, 0, b.Width, b.Height));
   finally
@@ -279,7 +283,7 @@ procedure TColorHintWindow.Paint;
         Break
       end;
 
-    Canvas.Brush.Color:= Color;
+    Canvas.Brush.Color:= opImageHintColorBG;
     Canvas.TextOut(cGap, Top, S);
 
     if NColor=clNone then
@@ -291,7 +295,7 @@ procedure TColorHintWindow.Paint;
     R:= Rect(cGap, Top+cColorTextH, cGap+cColorW, Top+cColorTextH+cColorH);
     Canvas.Brush.Color:= NColor;
     Canvas.FillRect(R);
-    Canvas.Pen.Color:= clBlack;
+    Canvas.Pen.Color:= opImageHintColorFont;
     Canvas.Rectangle(R);
   end;
   //
@@ -309,10 +313,14 @@ begin
 
   with Canvas do
   begin
+    Brush.Style:= bsSolid;
+    Brush.Color:= opImageHintColorBG;
+    FillRect(Rect(0, 0, Width, Height));
+
     Brush.Style:= bsClear;
     Font.Name:= 'Tahoma';
     Font.Size:= 8;
-    Font.Color:= clBlack;
+    Font.Color:= opImageHintColorFont;
     Font.Style:= [];
   end;
 

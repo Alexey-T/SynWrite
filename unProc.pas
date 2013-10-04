@@ -155,19 +155,22 @@ type
   TSynOutputType = (
     outIgnore, outToPanel, outToNewDoc,
     outReplaceSel, outReplaceDoc, outReplaceWord, outReplaceSelOrDoc,
-    outToClip
+    outToClip, outInsAtLineStart
     );
-    
+
 const
   cOutputTypeString: array[TSynOutputType] of string = (
     'ignore', 'toPanel', 'toNewDoc',
     'repSel', 'repDoc', 'repWord', 'repSelOrDoc',
-    'toClip' );
+    'toClip', 'insLnStart'
+    );
   cOutputTypeOrder: array[0..Ord(High(TSynOutputType))] of TSynOutputType = (
     outIgnore,
     outToPanel, outToNewDoc, outToClip,
     outReplaceWord,
-    outReplaceSel, outReplaceDoc, outReplaceSelOrDoc);
+    outReplaceSel, outReplaceDoc, outReplaceSelOrDoc,
+    outInsAtLineStart
+    );
 
 function OutputTypeLangID(n: TSynOutputType): Widestring;
 function OutputTypeStrToType(const s: string): TSynOutputType;

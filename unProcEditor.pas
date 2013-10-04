@@ -11,6 +11,7 @@ uses
   ecSyntMemo,
   ecMemoStrings;
 
+function EditorSelectionForGotoCommand(Ed: TSyntaxMemo): Widestring;
 function EditorSelectWord(Ed: TSyntaxMemo): boolean;
 procedure EditorSearchMarksToList(Ed: TSyntaxmemo; List: TTntStrings);
 function EditorSelectedTextForWeb(Ed: TSyntaxMemo): Widestring;
@@ -484,5 +485,22 @@ begin
     Result:= true;
   end;
 end;
+
+function EditorSelectionForGotoCommand(Ed: TSyntaxMemo): Widestring;
+const
+  cMaxNameLen = 20; //max len of filename in popup menu
+begin
+  Result:= Ed.SelText;
+
+  //don't show multi-line selection here
+  if (Pos(#13, Result)>0) or
+     (Pos(#10, Result)>0) or
+     (Pos(#9, Result)>0) then
+    Result:= '';
+
+  if Length(Result)>cMaxNameLen then
+    Result:= Copy(Result, 1, cMaxNameLen) + '...';
+end;
+
 
 end.

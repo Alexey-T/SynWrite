@@ -32,6 +32,7 @@ object fmProj: TfmProj
     PopupMenu = PopupProj
     RowSelect = True
     TabOrder = 0
+    OnChange = TreeProjChange
     OnContextPopup = TreeProjContextPopup
     OnDblClick = TreeProjDblClick
     OnDragDrop = TreeProjDragDrop

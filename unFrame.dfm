@@ -441,6 +441,7 @@ object EditorFrame: TEditorFrame
       OnCheckChar = EditorMasterCheckChar
       OnZoom = EditorMasterZoom
       OnClick = EditorMasterEnter
+      OnContextPopup = EditorMasterContextPopup
       OnEnter = EditorMasterEnter
       OnKeyDown = EditorMasterKeyDown
     end

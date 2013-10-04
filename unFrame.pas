@@ -1,7 +1,7 @@
-{///////////////////////////////////////////////////////////////////////////////
-  SynWrite
-  Frame which contains actual editor
-///////////////////////////////////////////////////////////////////////////////}
+{
+SynWrite frame which contains actual editor.
+Created as a child of TfmMain form.
+}
 unit unFrame;
 
 interface
@@ -1496,17 +1496,20 @@ procedure TEditorFrame.EditorShowHint(Sender: TObject;
   const HintStr: string;
   var HintObj: THintWindow);
 begin
+  opImageHintColorFont:= EditorMaster.HintProps.Font.Color;
+  opImageHintColorBG:= EditorMaster.HintProps.Color;
+
   if IsImageHint(HintStr) then
   begin
     FileNameConverterImageToBmp:= ExtractFilePath(GetModuleName(HInstance)) + 'Tools\ImageToBmp.exe';
     HintObj:= TGraphicHintWindow.Create(Self);
-    HintObj.Color:= clInfoBk;
+    HintObj.Color:= opImageHintColorBG;
   end
   else
   if SBegin(HintStr, cColorPrefix) then
   begin
     HintObj:= TColorHintWindow.Create(Self);
-    HintObj.Color:= clInfoBk;
+    HintObj.Color:= opImageHintColorBG;
   end;
 end;
 

@@ -366,6 +366,8 @@ const
   sm_SaveFolding = 1033;
   sm_LoadFolding = 1034;
   sm_OpenLastClosedFile = 1035;
+  sm_AcpForceTextOn = 1036;
+  sm_AcpForceTextOff = 1037;
   //free
 
   //Tree commands

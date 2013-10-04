@@ -1,11 +1,9 @@
-//-------------------------------------------------------
-// SynWrite
-// Main form class
-//-------------------------------------------------------
-//
-//{$define TabOrder} //Show tabs switch-order in caption
+{
+SynWrite main UI form.
+}
+//{$define TabOrder} //Debug: show tabs switch-order in form caption
 //SPELL word must be defined in project options (if spell lib available)
-{$Q-} //Disable to avoid integer exception in TabCtrl_GetXRect (can't find)
+{$Q-} //Disable int-checks to avoid integer exception in TabCtrl_GetXRect
 
 unit unMain;
 
@@ -449,17 +447,17 @@ type
     tbxWin: TSpTbxSubmenuItem;
     TBXItemETime: TSpTbxItem;
     TBXSubmenuItemRun: TSpTbxSubmenuItem;
-    TBXItemT1: TSpTbxItem;
-    TBXItemT2: TSpTbxItem;
-    TBXItemT3: TSpTbxItem;
-    TBXItemT4: TSpTbxItem;
+    TBXItemTool1: TSpTBXItem;
+    TBXItemTool2: TSpTBXItem;
+    TBXItemTool3: TSpTBXItem;
+    TBXItemTool4: TSpTBXItem;
     TBXSeparatorItem31: TSpTbxSeparatorItem;
     TBXItemRunFindPhp: TSpTbxItem;
     TBXItemRunOpenDir: TSpTbxItem;
-    TBXItemT5: TSpTbxItem;
-    TBXItemT6: TSpTbxItem;
-    TBXItemT7: TSpTbxItem;
-    TBXItemT8: TSpTbxItem;
+    TBXItemTool5: TSpTBXItem;
+    TBXItemTool6: TSpTBXItem;
+    TBXItemTool7: TSpTBXItem;
+    TBXItemTool8: TSpTBXItem;
     TBXSubmenuItemEnc: TSpTbxSubmenuItem;
     TBXSubmenuLineEnds: TSpTbxSubmenuItem;
     TBXItemEndMWin: TSpTbxItem;
@@ -492,10 +490,10 @@ type
     TBXSeparatorItem35: TSpTbxSeparatorItem;
     TBXItemECutApp: TSpTbxItem;
     TBXItemECopyApp: TSpTbxItem;
-    TBXItemT9: TSpTbxItem;
-    TBXItemT10: TSpTbxItem;
-    TBXItemT11: TSpTbxItem;
-    TBXItemT12: TSpTbxItem;
+    TBXItemTool9: TSpTBXItem;
+    TBXItemTool10: TSpTBXItem;
+    TBXItemTool11: TSpTBXItem;
+    TBXItemTool12: TSpTBXItem;
     TBXItemSGoBracket: TSpTbxItem;
     plOut: TSpTbxDockablePanel;
     ListOut: TTntListBox;
@@ -556,7 +554,7 @@ type
     TBXItemTabCopyDir: TSpTBXItem;
     TBXItemTabCopyFull: TSpTBXItem;
     TBXItemTabCopyFN: TSpTBXItem;
-    Splitter1: TSpTBXSplitter;
+    SplitterMain: TSpTBXSplitter;
     PageControl2: TTntPageControl;
     TBXSeparatorItem42: TSpTbxSeparatorItem;
     TBXItemTabMoveToView: TSpTBXItem;
@@ -578,18 +576,18 @@ type
     TBXItemCtxOpenSel: TSpTbxItem;
     TBXItemFEmail: TSpTbxItem;
     TBXSeparatorItem45: TSpTbxSeparatorItem;
-    TBXItemCC12: TSpTbxItem;
-    TBXItemCC11: TSpTbxItem;
-    TBXItemCC10: TSpTbxItem;
-    TBXItemCC9: TSpTbxItem;
-    TBXItemCC8: TSpTbxItem;
-    TBXItemCC7: TSpTbxItem;
-    TBXItemCC6: TSpTbxItem;
-    TBXItemCC5: TSpTbxItem;
-    TBXItemCC4: TSpTbxItem;
-    TBXItemCC3: TSpTbxItem;
-    TBXItemCC2: TSpTbxItem;
-    TBXItemCC1: TSpTbxItem;
+    TBXItemCtxTool12: TSpTBXItem;
+    TBXItemCtxTool11: TSpTBXItem;
+    TBXItemCtxTool10: TSpTBXItem;
+    TBXItemCtxTool9: TSpTBXItem;
+    TBXItemCtxTool8: TSpTBXItem;
+    TBXItemCtxTool7: TSpTBXItem;
+    TBXItemCtxTool6: TSpTBXItem;
+    TBXItemCtxTool5: TSpTBXItem;
+    TBXItemCtxTool4: TSpTBXItem;
+    TBXItemCtxTool3: TSpTBXItem;
+    TBXItemCtxTool2: TSpTBXItem;
+    TBXItemCtxTool1: TSpTBXItem;
     TBXSeparatorItem13: TSpTbxSeparatorItem;
     TBXSeparatorItem24: TSpTbxSeparatorItem;
     TBXSubmenuItem10: TSpTbxSubmenuItem;
@@ -1211,6 +1209,14 @@ type
     SpTBXSeparatorItem21: TSpTBXSeparatorItem;
     TBXItemProjGoto: TSpTBXItem;
     TBXItemProjNew: TSpTBXItem;
+    TBXItemTool16: TSpTBXItem;
+    TBXItemTool15: TSpTBXItem;
+    TBXItemTool14: TSpTBXItem;
+    TBXItemTool13: TSpTBXItem;
+    TbxItemCtxTool16: TSpTBXItem;
+    TbxItemCtxTool15: TSpTBXItem;
+    TbxItemCtxTool14: TSpTBXItem;
+    TbxItemCtxTool13: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1310,10 +1316,10 @@ type
     procedure TimerHintTimer(Sender: TObject);
     procedure ecPageSetupActionExecuteOK(Sender: TObject);
     procedure ecACPCloseUp(Sender: TObject; var Accept: Boolean);
-    procedure fTool1Execute(Sender: TObject);
-    procedure fTool2Execute(Sender: TObject);
-    procedure fTool3Execute(Sender: TObject);
-    procedure fTool4Execute(Sender: TObject);
+    procedure TbxItemTool1Click(Sender: TObject);
+    procedure TbxItemTool2Click(Sender: TObject);
+    procedure TbxItemTool3Click(Sender: TObject);
+    procedure TbxItemTool4Click(Sender: TObject);
     procedure TBXSubmenuItemRunPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemZInClick(Sender: TObject);
@@ -1370,10 +1376,10 @@ type
     procedure TBXItemRunFindGoogleClick(Sender: TObject);
     procedure TBXItemRunFindWikiClick(Sender: TObject);
     procedure TBXItemRunOpenDirClick(Sender: TObject);
-    procedure TBXItemT5Click(Sender: TObject);
-    procedure TBXItemT6Click(Sender: TObject);
-    procedure TBXItemT7Click(Sender: TObject);
-    procedure TBXItemT8Click(Sender: TObject);
+    procedure TBXItemTool5Click(Sender: TObject);
+    procedure TBXItemTool6Click(Sender: TObject);
+    procedure TBXItemTool7Click(Sender: TObject);
+    procedure TBXItemTool8Click(Sender: TObject);
     procedure TimerLoadTimer(Sender: TObject);
     procedure TBXItemTbCloseClick(Sender: TObject);
     procedure ecReplaceExecute(Sender: TObject);
@@ -1389,10 +1395,10 @@ type
     procedure ecCutAppExecute(Sender: TObject);
     procedure TBXSubmenuItemEdPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
-    procedure TBXItemT9Click(Sender: TObject);
-    procedure TBXItemT10Click(Sender: TObject);
-    procedure TBXItemT11Click(Sender: TObject);
-    procedure TBXItemT12Click(Sender: TObject);
+    procedure TBXItemTool9Click(Sender: TObject);
+    procedure TBXItemTool10Click(Sender: TObject);
+    procedure TBXItemTool11Click(Sender: TObject);
+    procedure TBXItemTool12Click(Sender: TObject);
     procedure TBXItemSGoBracketClick(Sender: TObject);
     procedure plOutResize(Sender: TObject);
     procedure ecShowOutExecute(Sender: TObject);
@@ -1443,7 +1449,7 @@ type
     procedure PageControl1Enter(Sender: TObject);
     procedure Splitter1Paint(Sender: TObject);
     procedure TBXItemTabMoveToViewClick(Sender: TObject);
-    procedure Splitter1Moved(Sender: TObject);
+    procedure SplitterMainMoved(Sender: TObject);
     procedure TBXItemSp50Click(Sender: TObject);
     procedure TBXItemTbCloseAllClick(Sender: TObject);
     procedure TBXItemSpHorzClick(Sender: TObject);
@@ -1459,18 +1465,18 @@ type
     procedure TBXItemEInsTextClick(Sender: TObject);
     procedure TBXItemCtxOpenSelClick(Sender: TObject);
     procedure TBXItemFEmailClick(Sender: TObject);
-    procedure TBXItemCC1Click(Sender: TObject);
-    procedure TBXItemCC2Click(Sender: TObject);
-    procedure TBXItemCC3Click(Sender: TObject);
-    procedure TBXItemCC4Click(Sender: TObject);
-    procedure TBXItemCC5Click(Sender: TObject);
-    procedure TBXItemCC6Click(Sender: TObject);
-    procedure TBXItemCC7Click(Sender: TObject);
-    procedure TBXItemCC8Click(Sender: TObject);
-    procedure TBXItemCC9Click(Sender: TObject);
-    procedure TBXItemCC10Click(Sender: TObject);
-    procedure TBXItemCC11Click(Sender: TObject);
-    procedure TBXItemCC12Click(Sender: TObject);
+    procedure TBXItemCtxTool1Click(Sender: TObject);
+    procedure TBXItemCtxTool2Click(Sender: TObject);
+    procedure TBXItemCtxTool3Click(Sender: TObject);
+    procedure TBXItemCtxTool4Click(Sender: TObject);
+    procedure TBXItemCtxTool5Click(Sender: TObject);
+    procedure TBXItemCtxTool6Click(Sender: TObject);
+    procedure TBXItemCtxTool7Click(Sender: TObject);
+    procedure TBXItemCtxTool8Click(Sender: TObject);
+    procedure TBXItemCtxTool9Click(Sender: TObject);
+    procedure TBXItemCtxTool10Click(Sender: TObject);
+    procedure TBXItemCtxTool11Click(Sender: TObject);
+    procedure TBXItemCtxTool12Click(Sender: TObject);
     procedure TBXItemORestoreStylesClick(Sender: TObject);
     procedure TBXItemCtxCustomizeClick(Sender: TObject);
     procedure TreeKeyDown(Sender: TObject; var Key: Word;
@@ -1973,6 +1979,14 @@ type
     procedure TBXItemProjGotoClick(Sender: TObject);
     procedure TBXItemProjNewClick(Sender: TObject);
     procedure PluginACPShow(Sender: TObject);
+    procedure TBXItemTool13Click(Sender: TObject);
+    procedure TBXItemTool14Click(Sender: TObject);
+    procedure TBXItemTool15Click(Sender: TObject);
+    procedure TBXItemTool16Click(Sender: TObject);
+    procedure TbxItemCtxTool13Click(Sender: TObject);
+    procedure TbxItemCtxTool14Click(Sender: TObject);
+    procedure TbxItemCtxTool15Click(Sender: TObject);
+    procedure TbxItemCtxTool16Click(Sender: TObject);
 
   private
     cStatLine,
@@ -2036,6 +2050,9 @@ type
     fmProj: TfmProj;
     fmSR: TfmSR;
 
+    FProjPreview: TSpTBXDockablePanel;
+    FProjPreviewEditor: TSyntaxMemo;
+
     TabSwitcher,
     TabSwitcher2: TTabSwitcher;
 
@@ -2054,14 +2071,14 @@ type
     orig_TabsSort: integer;
     orig_TabsWidths: string;
 
-    //Auto-complete
-    slINTatr, //Htm.acp: section [HTML]
-    slINTcss, //Htm.acp: section [CSS]
-    slACPdisp, //ACP: display list (in form "\s1\...\s2\...")
-    slACPitem, //ACP: names with brackets+parameters
-    slACPHint, //ACP: hints (in form "(param1; param2)")
-    slACPdesc: //ACP: descriptions (text after "|")
-               TStringList;
+    //auto-complete lists
+    FAcpIntHtml, //Htm.acp: section [HTML]
+    FAcpIntCss, //Htm.acp: section [CSS]
+    FAcpList_Display, //ACP: display list (in form "\s1\...\s2\...")
+    FAcpList_Items, //ACP: names with brackets+parameters
+    FAcpList_Hints, //ACP: hints (in form "(param1; param2)")
+    FAcpList_Desc: //ACP: descriptions (text after "|")
+      TStringList;
 
     FLockUpdate: boolean;
     FTabOut: TSynTabOut;
@@ -2195,6 +2212,7 @@ type
     function IsProgressStopped(const NDoneSize, NTotalSize: Int64): boolean;
     procedure ShowProgress(AMode: TProgressType = proFindText);
     procedure HideProgress;
+    function CurrentContentFN(Unicode: boolean): Widestring;
     function CurrentSelectionFN(Unicode: boolean): Widestring;
     function CurrentProjectFN: Widestring;
     function CurrentProjectMainFN: Widestring;
@@ -2283,6 +2301,7 @@ type
     function MacroCmdName(n: integer): Widestring;
     procedure UpdateMacroKeynames;
     procedure SetLineEnds(Sender: TObject; AManual: boolean);
+    function IsProjPreviewFocused: boolean;
     function IsListboxFocused: boolean;
     function IsTreeviewFocused: boolean;
     function CurrentListbox: TCustomListbox;
@@ -2501,6 +2520,7 @@ type
 
     procedure LoadClip;
     procedure LoadProj;
+    procedure LoadProjPreview;
     procedure LoadMap;
     procedure LoadClips;
     procedure LoadIni;
@@ -2528,9 +2548,9 @@ type
     procedure MsgBakOk(const fn: Widestring);
     procedure DoDupLine(Ed: TSyntaxMemo);
     procedure DoDateTime;
-    procedure DoExtract;
-    procedure DoACP;
-    procedure DoACPHint;
+    procedure DoExtractText;
+    procedure DoAcpPopup;
+    procedure DoFuncHintPopup;
     procedure DoInsertImageTag(const fn: string);
     procedure DoCheckUnicodeNeeded(Frame: TEditorFrame);
 
@@ -2550,7 +2570,8 @@ type
     procedure LoadToolbarProp(Toolbar: TSpTbxToolbar; Ini: TCustomIniFile; const Id: string);
     procedure SaveToolbarProp(Toolbar: TSpTbxToolbar; Ini: TCustomIniFile; const Id: string);
     procedure SavePanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
-    procedure LoadPanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
+    procedure LoadPanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile;
+      const Id: string; DefFloating: boolean = false);
     procedure LoadToolbarContent(Toolbar: TObject; Id: string; AutoShow: boolean = false);
     function DoShowCmdList: Integer;
     function DoShowCmdListStr: string;
@@ -2601,6 +2622,11 @@ type
     procedure DoSaveFolding;
     procedure DoLoadFolding;
     procedure DoOpenLastClosedFile;
+    procedure ProjPreview(Sender: TObject; const AFilename: Widestring; AToggle: boolean);
+    procedure ProjPreviewClose(Sender: TObject);
+    procedure ProjPreviewKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure ProjPreviewButtonClick(Sender: TObject);
     //end of private
 
   protected
@@ -2694,7 +2720,12 @@ type
     opColorOutRedText,
     opColorOutRedSelText,
     opColorOutHi: integer;
-    opTools: array[1..12] of TSynTool;
+    opTools: array[1..16] of TSynTool;
+      //Note: if need to change max count of tools, also change these places:
+      //- in design time create more items in "Run" menu (at top)
+      //- in design time create more items in PopupEditor menu (at bottom)
+      //- fix procedure TfmMain.UpdateTools
+      //
     opStatusText: array[TSynSelState] of string;
     opSpellEn: boolean;
     opSpellExt: string;
@@ -2719,6 +2750,7 @@ type
     opTabsReplace: boolean; //replace tabs->spaces on reading
     opTemplateTabbing: boolean; //use Tab key for code templates
     opTemplateTabbingExcept: string; //exclution file-ext list for ^^
+    opAcpForceText: boolean; //enable to show only words from current file
     opAcpUseSingle: boolean; //auto insert single match
     opAcpChars: string; //additional word chars (lexer specific)
     opAcpHtm: boolean; //Special ACP for HTML
@@ -2834,6 +2866,7 @@ type
     procedure DoDropFile(const fn: Widestring; IntoProj: boolean = false);
     procedure DoTabSwitch(ANext: boolean);
     procedure FocusEditor;
+    procedure FocusProj;
     procedure FindInit(AKeepFlags: boolean = false);
     function IsMouseInProj: boolean;
 
@@ -2881,6 +2914,7 @@ type
     function IsWordChar(ch: WideChar): boolean;
     procedure DoFindIdDelayed;
     function FrameForFilename(const fn: Widestring): TEditorFrame;
+    function DoCheckCommandLineTwo: boolean;
     //end of public
   end;
 
@@ -2923,19 +2957,20 @@ procedure WndCenter(H: THandle; fm: TCustomForm);
 
 function MsgConfirmBinary(const fn: WideString): boolean;
 function MsgConfirmCreate(const fn: Widestring): boolean;
-function SAppDir: string;
+function SynAppdataDir: string;
 
 var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.8.890';
+  cSynVer = '5.9.920';
 
 const
-  cSynParamRO = '/RO';
-  cSynParamSingleInst = '/S';
-  cSynParamLineNum = '/N=';
+  cSynParamRO = '/ro';
+  cSynParamSingleInst = '/s';
+  cSynParamLineNum = '/n=';
   cSynParamReg = '/reg';
+  cSynParamTwo = '/two=';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -2947,7 +2982,8 @@ uses
   Clipbrd, Registry, CommCtrl,
   StrUtils, Types, Math, ShellApi,
 
-  TntSysUtils, TntClipbrd, TntFileCtrl,
+  TntSystem, TntSysUtils,
+  TntClipbrd, TntFileCtrl,
 
   ATxFProc, ATxSProc, ATxUtilMail,
   ATxColorCodes,
@@ -3769,12 +3805,12 @@ var
 begin
   v:= not PagesEmpty(PageControl2);
   PageControl2.Visible:= v;
-  Splitter1.Visible:= v;
+  SplitterMain.Visible:= v;
   //fix splitter
   if FSplitHorz then
-    Splitter1.Top:= 5
+    SplitterMain.Top:= 5
   else
-    Splitter1.Left:= 5;
+    SplitterMain.Left:= 5;
 
   if not v then
   begin
@@ -4224,8 +4260,8 @@ begin
     //hist
     opLastDir:= ReadInteger('Hist', 'DirVar', 1);
     opLastDirPath:= UTF8Decode(ReadString('Hist', 'Dir', ''));
-    opLastDirSession:= UTF8Decode(ReadString('Hist', 'DirSess', SAppDir));
-    opLastDirProject:= UTF8Decode(ReadString('Hist', 'DirProj', SAppDir));
+    opLastDirSession:= UTF8Decode(ReadString('Hist', 'DirSess', SynAppdataDir));
+    opLastDirProject:= UTF8Decode(ReadString('Hist', 'DirProj', SynAppdataDir));
     opHistFilter:= ReadInteger('Hist', 'Filter', 0);
 
     if SynExe then
@@ -4797,7 +4833,7 @@ begin
 end;
 *)
 
-function SAppDir: string;
+function SynAppdataDir: string;
 begin
   Result:= FAppDataPath + 'SynWrite';
 end;
@@ -4821,7 +4857,7 @@ begin
   else
     if SynExe then
     begin
-      Result:= SAppDir;
+      Result:= SynAppdataDir;
       if not IsDirExist(Result) then
         CreateDir(Result);
       Result:= Result + '\';
@@ -6216,7 +6252,9 @@ begin
     sm_SaveFolding: DoSaveFolding;
     sm_LoadFolding: DoLoadFolding;
     sm_OpenLastClosedFile: DoOpenLastClosedFile;
-    
+    sm_AcpForceTextOn: opAcpForceText:= true;
+    sm_AcpForceTextOff: opAcpForceText:= false;
+
     //end of commands list
     else
       Handled:= false;
@@ -6715,18 +6753,7 @@ begin
   begin
     Font.Size:= ScaleFontSize(Font.Size, Self);
     with Status do
-    begin
       Height:= ScaleFontSize(Height, Self);
-      //X
-      {
-      with Panels[cc0] do Size:= ScaleFontSize(Size, Self);
-      with Panels[ccEnc] do Size:= ScaleFontSize(Size, Self);
-      with Panels[ccLE] do Size:= ScaleFontSize(Size, Self);
-      with Panels[ccLex] do Size:= ScaleFontSize(Size, Self);
-      with Panels[ccIns] do Size:= ScaleFontSize(Size, Self);
-      with Panels[ccZoom] do Size:= ScaleFontSize(Size, Self);
-      }
-    end;
   end;
 
   {$ifndef SPELL}
@@ -6933,7 +6960,6 @@ begin
 
   InitMenuItemsList;
   LangManager.ScanForLangFiles(SynDir + 'Lang', '*.lng', False);
-  Splitter1.PopupMenu:= PopupSplitter;
   ecOnSavingLexer:= DoSaveStyles;
 
   ListOut.Align:= alClient;
@@ -6979,12 +7005,15 @@ begin
   fmProj:= nil;
   fmProgress:= nil;
   fmSR:= nil;
+  FProjPreview:= nil;
+  FProjPreviewEditor:= nil;
 
   TabSwitcher:= TTabSwitcher.Create(0);
   TabSwitcher2:= TTabSwitcher.Create(1);
   TabSwitcher.OnGetTab:= GetTabName;
   TabSwitcher2.OnGetTab:= GetTabName;
 
+  opAcpForceText:= false;
   FFullScr:= false;
   FOnTop:= false;
   FLockUpdate:= false;
@@ -6996,12 +7025,12 @@ begin
   FUpdatePluginsLang:= false;
 
   //ACP
-  slACPdisp:= TStringList.Create;
-  slACPitem:= TStringList.Create;
-  slACPHint:= TStringList.Create;
-  slACPdesc:= TStringList.Create;
-  slINTatr:= TStringList.Create;
-  slINTcss:= TStringList.Create;
+  FAcpList_Display:= TStringList.Create;
+  FAcpList_Items:= TStringList.Create;
+  FAcpList_Hints:= TStringList.Create;
+  FAcpList_Desc:= TStringList.Create;
+  FAcpIntHtml:= TStringList.Create;
+  FAcpIntCss:= TStringList.Create;
 
   //finder
   FinderPro:= nil;
@@ -7083,13 +7112,13 @@ var
   fn: Widestring;
 begin
   FLexerACP:= Lexer;
-  if not Assigned(slACPdisp) then Exit;
-  slACPdisp.Clear;
-  slACPitem.Clear;
-  slACPHint.Clear;
-  slACPdesc.Clear;
-  slINTatr.Clear;
-  slINTcss.Clear;
+  if not Assigned(FAcpList_Display) then Exit;
+  FAcpList_Display.Clear;
+  FAcpList_Items.Clear;
+  FAcpList_Hints.Clear;
+  FAcpList_Desc.Clear;
+  FAcpIntHtml.Clear;
+  FAcpIntCss.Clear;
 
   ecACP.Tag:= cAcpNone;
   ecACP.Items.Clear;
@@ -7105,7 +7134,7 @@ begin
   begin
     SReadFileIntoSomeLists(fn,
       '[HTML]', '[CSS]',
-      slINTatr, slINTcss);
+      FAcpIntHtml, FAcpIntCss);
   end;
 
   //load default ACP file
@@ -7184,11 +7213,11 @@ begin
         if IsPas then
           tmp:=StringReplace(tmp, ';', ',', [rfReplaceAll]);
         tmp:=StringReplace(tmp, '[,', ',[', [rfReplaceAll]);
-        slACPHint.Add(tmp);
+        FAcpList_Hints.Add(tmp);
       end
       else
       begin
-        slACPHint.Add('');
+        FAcpList_Hints.Add('');
       end;
       s:=Copy(acp[i],a+1,b-a-1);
 
@@ -7202,13 +7231,13 @@ begin
       if c=0 then
         c:= MaxInt div 2;
 
-      slACPitem.Add(s);
-      slACPdisp.Add(AcpItem(
+      FAcpList_Items.Add(s);
+      FAcpList_Display.Add(AcpItem(
         copy(acp[i],1,a-1),
         copy(acp[i],a+1,b-a-1),
         copy(acp[i],b,c-b),
         copy(acp[i],c+1,100) ));
-      slACPdesc.Add(
+      FAcpList_Desc.Add(
         copy(acp[i],c+1,MaxInt));
     end;
   finally
@@ -7230,12 +7259,12 @@ begin
   FreeAndNil(TabSwitcher2);
   FreeAndNil(TabSwitcher);
 
-  FreeAndNil(slACPdisp);
-  FreeAndNil(slACPitem);
-  FreeAndNil(slACPHint);
-  FreeAndNil(slACPdesc);
-  FreeAndNil(slINTatr);
-  FreeAndNil(slINTcss);
+  FreeAndNil(FAcpList_Display);
+  FreeAndNil(FAcpList_Items);
+  FreeAndNil(FAcpList_Hints);
+  FreeAndNil(FAcpList_Desc);
+  FreeAndNil(FAcpIntHtml);
+  FreeAndNil(FAcpIntCss);
 
   FreeAndNil(Finder);
   FreeAndNil(FListFiles);
@@ -7272,13 +7301,13 @@ begin
   else
   begin
     SText:= LowerCase(FuncName);
-    for i:= 0 to slACPitem.Count-1 do
+    for i:= 0 to FAcpList_Items.Count-1 do
     begin
-      S:= LowerCase(slACPitem[i]);
+      S:= LowerCase(FAcpList_Items[i]);
       S:= SAcpItemToId(S);
       if SText=S then
-        if slACPHint[i]<>'' then
-          ParamCompletion.Items.Add(slACPHint[i]);
+        if FAcpList_Hints[i]<>'' then
+          ParamCompletion.Items.Add(FAcpList_Hints[i]);
     end;
   end;
 end;
@@ -7357,16 +7386,16 @@ begin
 
       //show for strings their ACP hint/description
       n:= -1;
-      for i:= 0 to slACPitem.Count-1 do
-        if SAcpItemToId(slACPitem[i]) = s then
+      for i:= 0 to FAcpList_Items.Count-1 do
+        if SAcpItemToId(FAcpList_Items[i]) = s then
           begin n:= i; Break; end;
 
       if n>=0 then
-        if slACPHint[n]<>'' then
+        if FAcpList_Hints[n]<>'' then
           HintText:= Trim(
-            '\s4\'+SAcpItemToId(slACPitem[n])+' '+
-            '\s5\'+slACPHint[n]+sLineBreak+
-            '\s6\'+slACPdesc[n]);
+            '\s4\'+SAcpItemToId(FAcpList_Items[n])+' '+
+            '\s5\'+FAcpList_Hints[n]+sLineBreak+
+            '\s6\'+FAcpList_Desc[n]);
      end;
   except
     on E: Exception do
@@ -7406,9 +7435,9 @@ begin
     end;
 
   if ecACP.Tag=cAcpLoadedHtmlList then
-    DoACP //show ACP again
+    DoAcpPopup //show ACP again
   else
-    DoACPHint; //show func hint
+    DoFuncHintPopup; //show func hint
 end;
 
 function _IsWordChar_Css(ch: WideChar): boolean;
@@ -7451,17 +7480,17 @@ begin
     //property found
     if t<>'' then
     begin
-      i:= slINTcss.IndexOfName(t);
+      i:= FAcpIntCss.IndexOfName(t);
       if i>=0 then
       begin
-        sx:= Pos('=', slINTcss[i]);
-        while sx<Length(slINTcss[i]) do
+        sx:= Pos('=', FAcpIntCss[i]);
+        while sx<Length(FAcpIntCss[i]) do
         begin
           Inc(sx);
-          j:= PosEx(',', slINTcss[i], sx);
+          j:= PosEx(',', FAcpIntCss[i], sx);
           if j=0 then
-            j:= Length(slINTcss[i])+1;
-          ins:= Copy(slINTcss[i], sx, j-sx);
+            j:= Length(FAcpIntCss[i])+1;
+          ins:= Copy(FAcpIntCss[i], sx, j-sx);
           //color
           if ins='color' then
           begin
@@ -7478,11 +7507,11 @@ begin
     //property not found
     else
     begin
-      for i:= 0 to slINTcss.Count-1 do
+      for i:= 0 to FAcpIntCss.Count-1 do
       begin
-        j:= Pos('=', slINTcss[i]);
+        j:= Pos('=', FAcpIntCss[i]);
         if j=0 then Continue;
-        ins:= Copy(slINTcss[i], 1, j-1);
+        ins:= Copy(FAcpIntCss[i], 1, j-1);
         List.Add(ins+' ');
         Display.Add(SAcpItem('css', ins));
       end
@@ -7510,22 +7539,22 @@ begin
   //search tag attributes
   if t<>'' then
   begin
-    i:= slINTatr.IndexOfName(t);
+    i:= FAcpIntHtml.IndexOfName(t);
     if i>=0 then
       //attrib names needed
       if atr='' then
       begin
-        sx:= Pos('=', slINTatr[i]);
-        while sx<Length(slINTatr[i]) do
+        sx:= Pos('=', FAcpIntHtml[i]);
+        while sx<Length(FAcpIntHtml[i]) do
         begin
           inc(sx);
-          a:= PosEx(',', slINTatr[i], sx);
+          a:= PosEx(',', FAcpIntHtml[i], sx);
           if a=0 then
-            a:= Length(slINTatr[i])+1;
-          k:= PosEx(':', slINTatr[i], sx);
+            a:= Length(FAcpIntHtml[i])+1;
+          k:= PosEx(':', FAcpIntHtml[i], sx);
           if (k<>0) and (k<a) then j:=k else j:=a;
 
-          str:= Copy(slINTatr[i], sx, j-sx);
+          str:= Copy(FAcpIntHtml[i], sx, j-sx);
           List.Add(str+'="'); //with HTML quote
           Display.Add(SAcpItem('attrib', str));
           sx:= a;
@@ -7536,13 +7565,13 @@ begin
       //attrib params needed
       else
       begin
-        j:= Pos('='+atr+':', slINTatr[i]);
-        k:= Pos(','+atr+':', slINTatr[i]);
+        j:= Pos('='+atr+':', FAcpIntHtml[i]);
+        k:= Pos(','+atr+':', FAcpIntHtml[i]);
         if (j=0) and (k=0) then Exit else
           if k<>0 then j:= k;
-        j:= PosEx(':', slINTatr[i], j+1);
+        j:= PosEx(':', FAcpIntHtml[i], j+1);
         //color
-        if PosEx('color', slINTatr[i], j)=j+1 then
+        if PosEx('color', FAcpIntHtml[i], j)=j+1 then
         begin
           str:= '#000000';
           List.Add(str);
@@ -7550,10 +7579,10 @@ begin
           Exit;
         end;
         // {var1|var2}
-        if slINTatr[i][j+1]<>'{' then Exit;
+        if FAcpIntHtml[i][j+1]<>'{' then Exit;
         Inc(j);
-        k:= PosEx('}', slINTatr[i], j);
-        t:= Copy(slINTatr[i], j+1, k-j-1);
+        k:= PosEx('}', FAcpIntHtml[i], j);
+        t:= Copy(FAcpIntHtml[i], j+1, k-j-1);
         sx:= 0;
         while sx<Length(t) do
         begin
@@ -7584,11 +7613,11 @@ begin
       if FTagClosing then
       begin
         //closing tag
-        for i:= 0 to slINTatr.Count-1 do
+        for i:= 0 to FAcpIntHtml.Count-1 do
         begin
-          j:= Pos('=', slINTatr[i]);
+          j:= Pos('=', FAcpIntHtml[i]);
           if j=0 then Continue;
-          str:= Copy(slINTatr[i], 1, j-1);
+          str:= Copy(FAcpIntHtml[i], 1, j-1);
           List.Add(str);
           Display.Add(SAcpItem('tag', '</'+str+'>'));
         end;
@@ -7599,11 +7628,11 @@ begin
       begin
         //opening tag
         AddBr:= false;
-        for i:= 0 to slINTatr.Count-1 do
+        for i:= 0 to FAcpIntHtml.Count-1 do
         begin
-          j:= Pos('=', slINTatr[i]);
+          j:= Pos('=', FAcpIntHtml[i]);
           if j=0 then Continue;
-          str:= Copy(slINTatr[i], 1, j-1);
+          str:= Copy(FAcpIntHtml[i], 1, j-1);
           if AddBr then
             List.Add('<'+str+' ')
           else
@@ -7629,6 +7658,12 @@ begin
   FTagClosing:= false;
   Lexer:= CurrentLexer;
 
+  if opAcpForceText then
+  begin
+    DoAcpFromFile(List, Display);
+    Exit
+  end;
+
   if (opAcpHtm and IsLexerHTML(Lexer)) or
      (opAcpCss and IsLexerCSS(Lexer, false)) then
     begin
@@ -7642,10 +7677,10 @@ begin
 
   ParamCompletion.CloseUp(False); //or Stack overflow
 
-  if slAcpItem.Count>0 then
+  if FAcpList_Items.Count>0 then
   begin
-    List.Assign(slACPitem);
-    Display.Assign(slACPdisp);
+    List.Assign(FAcpList_Items);
+    Display.Assign(FAcpList_Display);
     ecACP.Tag:= cAcpLoadedAcpFile;
   end;
 
@@ -7726,8 +7761,6 @@ begin
 end;
 
 procedure TfmMain.PopupEditorPopup(Sender: TObject);
-const
-  cMaxNameLen = 20; //max len of filename in popup menu
 var
   Ed: TSyntaxMemo;
   s: Widestring;
@@ -7768,11 +7801,7 @@ begin
   TbxItemCtxAddColor.Enabled:= UpdateCurrentColorCode(FPopupColor);
 
   //update "Open selection"
-  s:= Ed.SelText;
-  if (Pos(#13, s)>0) or (Pos(#10, s)>0) or (Pos(#9, s)>0) then
-    s:= '';
-  if Length(s)>cMaxNameLen then
-    s:= Copy(s, 1, cMaxNameLen)+'...';
+  s:= EditorSelectionForGotoCommand(Ed);
   TbxItemCtxOpenSel.Caption:= WideFormat(DKLangConstW('opf'), [s]);
   TbxItemCtxOpenSel.Enabled:= s<>'';
 
@@ -8052,14 +8081,14 @@ begin
   if (i>=0) and (i<ecACP.Items.Count) then
   begin
     s:= ecACP.GetListItem(i);
-    i:= slACPitem.IndexOf(s);
+    i:= FAcpList_Items.IndexOf(s);
     if (i>=0) and
-      (i<slACPHint.Count) and
-      (i<slACPdesc.Count) then
+      (i<FAcpList_Hints.Count) and
+      (i<FAcpList_Desc.Count) then
       ecACP.ToolHint.Text:= Trim(
         '\s4\' + SAcpItemToId(s) + ' ' +
-        '\s5\' + WrapText(slACPHint[i], sLineBreak+'\s5\', sep, 70) + sLineBreak +
-        '\s6\' + WrapText(slACPdesc[i], sLineBreak+'\s6\', sep, 65));
+        '\s5\' + WrapText(FAcpList_Hints[i], sLineBreak+'\s5\', sep, 70) + sLineBreak +
+        '\s6\' + WrapText(FAcpList_Desc[i], sLineBreak+'\s6\', sep, 65));
   end;
 end;
 
@@ -9034,15 +9063,15 @@ begin
       ecACP.CloseUp(False);
   //closing tag
   if Key = '/' then
-    DoACP;
+    DoAcpPopup;
 end;
 
-procedure TfmMain.DoACP;
+procedure TfmMain.DoAcpPopup;
 begin
   DoDelayedCommand(ecACP.CommandID{650});
 end;
 
-procedure TfmMain.DoACPHint;
+procedure TfmMain.DoFuncHintPopup;
 begin
   DoDelayedCommand(ParamCompletion.CommandID{652});
 end;
@@ -9158,7 +9187,7 @@ begin
   {$ifdef SPELL}
   if Assigned(FSpell) and Assigned(FSpell.DialogForm) then
     FSpell.DialogForm.Close;
-  {$endif}  
+  {$endif}
 
   //unset clip hook
   if Assigned(fmClip) then
@@ -9167,6 +9196,9 @@ begin
   ClearTreeFind;
   //close plugins
   DoClosePlugins;
+
+  //close proj-preview
+  ProjPreviewClose(Self);
 end;
 
 procedure TfmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -9368,7 +9400,7 @@ begin
       if (i>0) and (i<=Length(Lines.FText)) and (Lines.FText[i]=':') then
       begin
         InsertText(' ');
-        DoACP;
+        DoAcpPopup;
       end;  
     end;
 
@@ -9416,7 +9448,7 @@ begin
       begin
         InsertText(' ');
         CaretStrPos:= CaretStrPos-1;
-        DoACP;
+        DoAcpPopup;
       end;
 end;
 
@@ -10059,31 +10091,39 @@ end;
 
 procedure TfmMain.UpdateTools;
 begin
-  DoEnableTool(TbxItemT1, 1);
-  DoEnableTool(TbxItemT2, 2);
-  DoEnableTool(TbxItemT3, 3);
-  DoEnableTool(TbxItemT4, 4);
-  DoEnableTool(TbxItemT5, 5);
-  DoEnableTool(TbxItemT6, 6);
-  DoEnableTool(TbxItemT7, 7);
-  DoEnableTool(TbxItemT8, 8);
-  DoEnableTool(TbxItemT9, 9);
-  DoEnableTool(TbxItemT10, 10);
-  DoEnableTool(TbxItemT11, 11);
-  DoEnableTool(TbxItemT12, 12);
+  DoEnableTool(TbxItemTool1, 1);
+  DoEnableTool(TbxItemTool2, 2);
+  DoEnableTool(TbxItemTool3, 3);
+  DoEnableTool(TbxItemTool4, 4);
+  DoEnableTool(TbxItemTool5, 5);
+  DoEnableTool(TbxItemTool6, 6);
+  DoEnableTool(TbxItemTool7, 7);
+  DoEnableTool(TbxItemTool8, 8);
+  DoEnableTool(TbxItemTool9, 9);
+  DoEnableTool(TbxItemTool10, 10);
+  DoEnableTool(TbxItemTool11, 11);
+  DoEnableTool(TbxItemTool12, 12);
+  DoEnableTool(TbxItemTool13, 13);
+  DoEnableTool(TbxItemTool14, 14);
+  DoEnableTool(TbxItemTool15, 15);
+  DoEnableTool(TbxItemTool16, 16);
 
-  DoEnableTool(TbxItemCC1, 1, true);
-  DoEnableTool(TbxItemCC2, 2, true);
-  DoEnableTool(TbxItemCC3, 3, true);
-  DoEnableTool(TbxItemCC4, 4, true);
-  DoEnableTool(TbxItemCC5, 5, true);
-  DoEnableTool(TbxItemCC6, 6, true);
-  DoEnableTool(TbxItemCC7, 7, true);
-  DoEnableTool(TbxItemCC8, 8, true);
-  DoEnableTool(TbxItemCC9, 9, true);
-  DoEnableTool(TbxItemCC10, 10, true);
-  DoEnableTool(TbxItemCC11, 11, true);
-  DoEnableTool(TbxItemCC12, 12, true);
+  DoEnableTool(TbxItemCtxTool1, 1, true);
+  DoEnableTool(TbxItemCtxTool2, 2, true);
+  DoEnableTool(TbxItemCtxTool3, 3, true);
+  DoEnableTool(TbxItemCtxTool4, 4, true);
+  DoEnableTool(TbxItemCtxTool5, 5, true);
+  DoEnableTool(TbxItemCtxTool6, 6, true);
+  DoEnableTool(TbxItemCtxTool7, 7, true);
+  DoEnableTool(TbxItemCtxTool8, 8, true);
+  DoEnableTool(TbxItemCtxTool9, 9, true);
+  DoEnableTool(TbxItemCtxTool10, 10, true);
+  DoEnableTool(TbxItemCtxTool11, 11, true);
+  DoEnableTool(TbxItemCtxTool12, 12, true);
+  DoEnableTool(TbxItemCtxTool13, 13, true);
+  DoEnableTool(TbxItemCtxTool14, 14, true);
+  DoEnableTool(TbxItemCtxTool15, 15, true);
+  DoEnableTool(TbxItemCtxTool16, 16, true);
 end;
 
 procedure TfmMain.SaveTools;
@@ -10379,6 +10419,11 @@ procedure TfmMain.RunTool(NTool: Integer);
     if Pos('{SelectedTextForWeb}', Result)>0 then
       SReplaceW(Result, '{SelectedTextForWeb}', EditorSelectedTextForWeb(CurrentEditor));
     //
+    if Pos('{ContentFileName}', Result)>0 then
+      SReplaceW(Result, '{ContentFileName}', CurrentContentFN(true));
+    if Pos('{ContentFileNameAnsi}', Result)>0 then
+      SReplaceW(Result, '{ContentFileNameAnsi}', CurrentContentFN(false));
+    //
     if Pos('{FileName2}', Result)>0 then
       SReplaceW(Result, '{FileName2}', OppositeFileName);
     if Pos('{FileDir2}', Result)>0 then
@@ -10559,22 +10604,22 @@ begin
   end;
 end;
 
-procedure TfmMain.fTool1Execute(Sender: TObject);
+procedure TfmMain.TbxItemTool1Click(Sender: TObject);
 begin
   RunTool(1);
 end;
 
-procedure TfmMain.fTool2Execute(Sender: TObject);
+procedure TfmMain.TbxItemTool2Click(Sender: TObject);
 begin
   RunTool(2);
 end;
 
-procedure TfmMain.fTool3Execute(Sender: TObject);
+procedure TfmMain.TbxItemTool3Click(Sender: TObject);
 begin
   RunTool(3);
 end;
 
-procedure TfmMain.fTool4Execute(Sender: TObject);
+procedure TfmMain.TbxItemTool4Click(Sender: TObject);
 begin
   RunTool(4);
 end;
@@ -11705,6 +11750,10 @@ begin
   if IsNumConvEditFocused then
     (fmNumConv.ActiveControl as TTntEdit).SelectAll
   else
+  if IsProjPreviewFocused then
+    FProjPreviewEditor.SelectAll
+  else
+  //reaction for current editor below
     CurrentEditor.ExecCommand(smSelectAll);
 end;
 
@@ -11760,6 +11809,10 @@ begin
   if ListPLog.Focused then
     TbxItemPLogCopySelClick(Self)
   else
+  if IsProjPreviewFocused then
+    FProjPreviewEditor.CopyToClipboard
+  else
+  //reaction for current editor below
   if CurrentFrame.CaretsCount>1 then
     CurrentEditor.ExecCommand(smCopy)
   else
@@ -11895,22 +11948,22 @@ begin
   FExecute('cmd.exe', '', SDir, Handle);  
 end;
 
-procedure TfmMain.TBXItemT5Click(Sender: TObject);
+procedure TfmMain.TBXItemTool5Click(Sender: TObject);
 begin
   RunTool(5);
 end;
 
-procedure TfmMain.TBXItemT6Click(Sender: TObject);
+procedure TfmMain.TBXItemTool6Click(Sender: TObject);
 begin
   RunTool(6);
 end;
 
-procedure TfmMain.TBXItemT7Click(Sender: TObject);
+procedure TfmMain.TBXItemTool7Click(Sender: TObject);
 begin
   RunTool(7);
 end;
 
-procedure TfmMain.TBXItemT8Click(Sender: TObject);
+procedure TfmMain.TBXItemTool8Click(Sender: TObject);
 begin
   RunTool(8);
 end;
@@ -12760,22 +12813,22 @@ begin
   TbxItemEToggleStreamComment.Enabled:= not ro;
 end;
 
-procedure TfmMain.TBXItemT9Click(Sender: TObject);
+procedure TfmMain.TBXItemTool9Click(Sender: TObject);
 begin
   RunTool(9);
 end;
 
-procedure TfmMain.TBXItemT10Click(Sender: TObject);
+procedure TfmMain.TBXItemTool10Click(Sender: TObject);
 begin
   RunTool(10);
 end;
 
-procedure TfmMain.TBXItemT11Click(Sender: TObject);
+procedure TfmMain.TBXItemTool11Click(Sender: TObject);
 begin
   RunTool(11);
 end;
 
-procedure TfmMain.TBXItemT12Click(Sender: TObject);
+procedure TfmMain.TBXItemTool12Click(Sender: TObject);
 begin
   RunTool(12);
 end;
@@ -13568,10 +13621,10 @@ end;
 
 procedure TfmMain.TBXItemEExtrClick(Sender: TObject);
 begin
-  DoExtract;
+  DoExtractText;
 end;
 
-procedure TfmMain.DoExtract;
+procedure TfmMain.DoExtractText;
 begin
   with TfmExtract.Create(Self) do
   try
@@ -13889,33 +13942,93 @@ end;
 
 procedure TfmMain.LoadProj;
 begin
-  if Assigned(fmProj) then Exit;
-  fmProj:= TfmProj.Create(Self);
-  with fmProj do
+  if not Assigned(fmProj) then
   begin
-    Parent:= plTree;
-    Align:= alClient;
-    BorderStyle:= bsNone;
-    FSynDir:= Self.SynDir;
-    FShortcutGoto:= ShFor(sm_ProjectList);
-    //
-    TreeProj.BorderStyle:= SynBorderStyle;
-    TreeProj.Font.Assign(Tree.Font);
-    TreeProj.Color:= Tree.Color;
-    tbProject.ChevronHint:= tbQS.ChevronHint;
-    //
-    OnFileOpen:= ProjFileOpen;
-    OnAddEditorFile:= ProjAddEditorFile;
-    OnAddEditorFilesAll:= ProjAddEditorFiles;
-    OnGetLexers:= ProjGetLexers;
-    OnGetWorkDir:= ProjGetWorkDir;
-    OnGetProjDir:= ProjGetProjDir;
-    OnSetProjDir:= ProjSetProjDir;
-    OnGotoProjFile:= ProjGotoFile;
-    OnLoadMRU:= ProjLoadMRU;
-    OnUpdateMRU:= ProjUpdateMRU;
-    //
-    Show;
+    fmProj:= TfmProj.Create(Self);
+    with fmProj do
+    begin
+      Parent:= plTree;
+      Align:= alClient;
+      BorderStyle:= bsNone;
+      FSynDir:= Self.SynDir;
+      FShortcutGoto:= ShFor(sm_ProjectList);
+      //
+      TreeProj.BorderStyle:= SynBorderStyle;
+      TreeProj.Font.Assign(Tree.Font);
+      TreeProj.Color:= Tree.Color;
+      tbProject.ChevronHint:= tbQS.ChevronHint;
+      //
+      OnPreview:= ProjPreview;
+      OnFileOpen:= ProjFileOpen;
+      OnAddEditorFile:= ProjAddEditorFile;
+      OnAddEditorFilesAll:= ProjAddEditorFiles;
+      OnGetLexers:= ProjGetLexers;
+      OnGetWorkDir:= ProjGetWorkDir;
+      OnGetProjDir:= ProjGetProjDir;
+      OnSetProjDir:= ProjSetProjDir;
+      OnGotoProjFile:= ProjGotoFile;
+      OnLoadMRU:= ProjLoadMRU;
+      OnUpdateMRU:= ProjUpdateMRU;
+      //
+      Show;
+    end;
+  end;
+
+  LoadProjPreview;
+end;
+
+procedure TfmMain.LoadProjPreview;
+var
+  Ini: TIniFile;
+  Btn: TSpTbxItem;
+begin
+  if not Assigned(FProjPreview) then
+  begin
+    FProjPreview:= TSpTbxDockablePanel.Create(Self);
+    with FProjPreview do
+    begin
+      Parent:= TBXDockRight;
+      Options.RightAlignSpacer.FontSettings.Style:= []; //make font non-bold
+      DockMode:= dmCanFloat;
+      HideWhenInactive:= false;
+      OnClose:= ProjPreviewClose;
+
+      ClientWidth:= 400;
+      ClientHeight:= 300;
+      FloatingClientWidth:= 600;
+      FloatingClientHeight:= 400;
+      FloatingPosition:= Point(200, 50);
+      Floating:= true;
+
+      FProjPreviewEditor:= TSyntaxMemo.Create(Self);
+      with FProjPreviewEditor do
+      begin
+        Parent:= FProjPreview;
+        Align:= alClient;
+        ReadOnly:= true;
+        Gutter.Visible:= false;
+        Options:= Options + [soAlwaysShowCaret];
+        Lines.Clear;
+        OnKeyDown:= ProjPreviewKeyDown;
+      end;
+
+      Btn:= TSpTbxItem.Create(Self);
+      with Btn do
+      begin
+        Caption:= StringOfChar(' ', 10) + DKLangConstW('zMOpenInEditor') + StringOfChar(' ', 10);
+        OnClick:= ProjPreviewButtonClick;
+      end;
+      FProjPreview.Items.Insert(1, Btn);
+
+      Ini:= TIniFile.Create(SynIni);
+      try
+        LoadPanelProp(FProjPreview, Ini, 'Pre', true{DefFloating});
+      finally
+        FreeAndNil(Ini);
+      end;
+
+      Hide;
+    end;
   end;
 end;
 
@@ -14289,7 +14402,7 @@ begin
   TreeFind.Invalidate;
   ListVal.Invalidate;
   ListPLog.Invalidate;
-  Splitter1.Invalidate;
+  SplitterMain.Invalidate;
 
   ApplyFrames;
 
@@ -14655,25 +14768,25 @@ begin
   UpdateTabList(PageControl.ActivePageIndex, -1, -1);
 end;
 
-procedure TfmMain.Splitter1Moved(Sender: TObject);
+procedure TfmMain.SplitterMainMoved(Sender: TObject);
 begin
   if FSplitHorz then
-    FSplitter:= PageControl2.Height * 100 / (Panel1.Height - Splitter1.Height)
+    FSplitter:= PageControl2.Height * 100 / (Panel1.Height - SplitterMain.Height)
   else
-    FSplitter:= PageControl2.Width * 100 / (Panel1.Width - Splitter1.Width);
+    FSplitter:= PageControl2.Width * 100 / (Panel1.Width - SplitterMain.Width);
 end;
 
 procedure TfmMain.SetSplitter(const F: Double);
 begin
   if FSplitHorz then
-    PageControl2.Height:= Trunc((Panel1.Height - Splitter1.Height) * F / 100.0)
+    PageControl2.Height:= Trunc((Panel1.Height - SplitterMain.Height) * F / 100.0)
   else
-    PageControl2.Width:= Trunc((Panel1.Width - Splitter1.Width) * F / 100.0);
+    PageControl2.Width:= Trunc((Panel1.Width - SplitterMain.Width) * F / 100.0);
 end;
 
 procedure TfmMain.DoSplitterPos(const Pos: Double);
 begin
-  if Splitter1.Visible then
+  if SplitterMain.Visible then
   begin
     FSplitter:= Pos;
     SetSplitter(FSplitter);
@@ -14710,14 +14823,14 @@ begin
   if FSplitHorz then
   begin
     PageControl2.Align:= alBottom;
-    Splitter1.Align:= alBottom;
-    Splitter1.Top:= 5;
+    SplitterMain.Align:= alBottom;
+    SplitterMain.Top:= 5;
   end
   else
   begin
     PageControl2.Align:= alRight;
-    Splitter1.Align:= alRight;
-    Splitter1.Left:= 5;
+    SplitterMain.Align:= alRight;
+    SplitterMain.Left:= 5;
   end;
   SetSplitter(FSplitter);
 end;
@@ -15310,62 +15423,62 @@ begin
       MsgBeep;
 end;
 
-procedure TfmMain.TBXItemCC1Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool1Click(Sender: TObject);
 begin
   RunTool(1);
 end;
 
-procedure TfmMain.TBXItemCC2Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool2Click(Sender: TObject);
 begin
   RunTool(2);
 end;
 
-procedure TfmMain.TBXItemCC3Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool3Click(Sender: TObject);
 begin
   RunTool(3);
 end;
 
-procedure TfmMain.TBXItemCC4Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool4Click(Sender: TObject);
 begin
   RunTool(4);
 end;
 
-procedure TfmMain.TBXItemCC5Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool5Click(Sender: TObject);
 begin
   RunTool(5);
 end;
 
-procedure TfmMain.TBXItemCC6Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool6Click(Sender: TObject);
 begin
   RunTool(6);
 end;
 
-procedure TfmMain.TBXItemCC7Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool7Click(Sender: TObject);
 begin
   RunTool(7);
 end;
 
-procedure TfmMain.TBXItemCC8Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool8Click(Sender: TObject);
 begin
   RunTool(8);
 end;
 
-procedure TfmMain.TBXItemCC9Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool9Click(Sender: TObject);
 begin
   RunTool(9);
 end;
 
-procedure TfmMain.TBXItemCC10Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool10Click(Sender: TObject);
 begin
   RunTool(10);
 end;
 
-procedure TfmMain.TBXItemCC11Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool11Click(Sender: TObject);
 begin
   RunTool(11);
 end;
 
-procedure TfmMain.TBXItemCC12Click(Sender: TObject);
+procedure TfmMain.TBXItemCtxTool12Click(Sender: TObject);
 begin
   RunTool(12);
 end;
@@ -17618,8 +17731,8 @@ var
   b: boolean;
 begin
   b:= (GetKeyState(vk_control) and 128)>0;
-  if b then Splitter1.ResizeStyle:= rsUpdate
-  else Splitter1.ResizeStyle:= rsPattern;
+  if b then SplitterMain.ResizeStyle:= rsUpdate
+  else SplitterMain.ResizeStyle:= rsPattern;
   if not b then Exit;
 
   n:= Panel1.Width div 10;
@@ -18145,7 +18258,7 @@ const
 procedure TfmMain.ecSplitLeftExecute(Sender: TObject);
 begin
   //Increase FSplitter
-  if Splitter1.Visible then
+  if SplitterMain.Visible then
   begin
     if FSplitter <= (100.0-cMinSplitter*2) then
       FSplitter:= Round(FSplitter) + cMinSplitter
@@ -18158,7 +18271,7 @@ end;
 procedure TfmMain.ecSplitRightExecute(Sender: TObject);
 begin
   //decrease FSplitter
-  if Splitter1.Visible then
+  if SplitterMain.Visible then
   begin
     if FSplitter >= cMinSplitter*2 then
       FSplitter:= Round(FSplitter) - cMinSplitter
@@ -20174,7 +20287,20 @@ begin
         begin
           TntClipboard.AsWideText:= List.Text;
         end;
-        
+
+      outInsAtLineStart:
+        begin
+          if CurrentEditor.ReadOnly then
+            MsgBeep
+          else
+            with CurrentEditor do
+            begin
+              ResetSelection;
+              CaretPos:= Point(0, CurrentLine);
+              InsertText(List.Text);
+            end;
+        end;
+
       else
         raise Exception.Create('Unknown tool type: '+ToolOutType);
     end;
@@ -21701,11 +21827,44 @@ begin
     fmClips.DoDeleteClip;
 end;
 
+function TfmMain.CurrentContentFN(Unicode: boolean): Widestring;
+var
+  S, Ext: Widestring;
+begin
+  Ext:= WideExtractFileExt(CurrentFrame.FileName);
+  if Ext='' then
+    Ext:= '.txt';
+
+  Result:= SExpandVars('%temp%\SynwText') + Ext;
+  FDelete(Result);
+
+  with CurrentEditor do
+    S:= Lines.FText;
+
+  if Unicode then
+    with TTntStringList.Create do
+    try
+      Text:= S;
+      SaveToFile(Result);
+    finally
+      Free
+    end
+  else
+    with TStringList.Create do
+    try
+      Text:= S;
+      SaveToFile(Result);
+    finally
+      Free
+    end;
+end;
+
+
 function TfmMain.CurrentSelectionFN(Unicode: boolean): Widestring;
 var
   S: Widestring;
 begin
-  Result:= SExpandVars('%temp%\SynWrSel.txt');
+  Result:= SExpandVars('%temp%\SynwSel.txt');
   FDelete(Result);
 
   with CurrentEditor do
@@ -24616,7 +24775,7 @@ begin
     Dec(i);
     if NLen>=opAcpNum then
     begin
-      DoACP;
+      DoAcpPopup;
       Break
     end;
   until false;
@@ -25456,14 +25615,18 @@ begin
   PluginACP.Items.Clear;
   PluginACP.DisplayItems.Clear;
 
-  SText:= DoAcpFromPlugins(cActionGetAutoComplete);
+  if not opAcpForceText then
+    SText:= DoAcpFromPlugins(cActionGetAutoComplete)
+  else
+    SText:= '';
+      
   if SText<>'' then
   begin
     Ed:= CurrentEditor;
     PluginAction_SuggestCompletion(PWChar(SText), EditorWordLength(Ed), true);
   end
   else
-    DoACP;
+    DoAcpPopup;
 end;
 
 procedure TfmMain.PluginACPAfterComplete(Sender: TObject;
@@ -25842,7 +26005,8 @@ end;
 procedure TfmMain.LoadPanelProp(
   Panel: TSpTbxDockablePanel;
   Ini: TCustomIniFile;
-  const Id: string);
+  const Id: string;
+  DefFloating: boolean = false);
 var
   p: TPoint;
   ADockStr: string;
@@ -25853,7 +26017,8 @@ begin
     if not QuickView then
     begin
       Visible:= Ini.ReadBool('pl'+Id, 'Vis', Visible);
-      Panel.OnVisibleChanged(Self);
+      if Assigned(Panel.OnVisibleChanged) then
+        Panel.OnVisibleChanged(Self);
     end;
 
     if CurrentDock<>nil then
@@ -25874,11 +26039,11 @@ begin
 
     Width:= Ini.ReadInteger('pl'+Id, 'DW', Width);
     Height:= Ini.ReadInteger('pl'+Id, 'DH', Height);
-    Floating:= Ini.ReadBool('pl'+Id, 'Fl', false);
+    Floating:= Ini.ReadBool('pl'+Id, 'Fl', DefFloating);
     FloatingClientWidth:= Ini.ReadInteger('pl'+Id, 'FlW', FloatingClientWidth);
     FloatingClientHeight:= Ini.ReadInteger('pl'+Id, 'FlH', FloatingClientHeight);
-    p.X:= Ini.ReadInteger('pl'+Id, 'FlX', 0);
-    p.Y:= Ini.ReadInteger('pl'+Id, 'FlY', 0);
+    p.X:= Ini.ReadInteger('pl'+Id, 'FlX', FloatingPosition.X);
+    p.Y:= Ini.ReadInteger('pl'+Id, 'FlY', FloatingPosition.Y);
     FloatingPosition:= p;
   end;
 end;
@@ -26629,8 +26794,8 @@ begin
   Ed.DefaultStyles.SelectioMark.Font.Color:= C[9];
   Ed.DefaultStyles.SelectioMark.BgColor:= C[10];
   Ed.RightMarginColor:= C[11];
-  //Ed.HintProps.Font.Color:= C[12];
-  //Ed.HintProps.Color:= C[13];
+  Ed.HintProps.Font.Color:= C[12];
+  Ed.HintProps.Color:= C[13];
   Ed.NonPrinted.Color:= C[14];
   Ed.StaplePen.Color:= C[15];
   //Ed.Gutter.Bands[1].GradientRight:= C[16];
@@ -27429,6 +27594,208 @@ begin
   end
   else
     MsgBeep();
+end;
+
+procedure TfmMain.ProjPreview(Sender: TObject; const AFilename: Widestring; AToggle: boolean);
+var
+  Ed: TSyntaxMemo;
+begin
+  if Assigned(FProjPreview) then
+    with FProjPreview do
+    begin
+      Caption:= DKLangConstW('Preview')+': '+WideExtractFilename(AFilename);
+      if AToggle then
+        Visible:= not Visible;
+
+      Ed:= FProjPreviewEditor;
+      Ed.Lines.Clear;
+      if not Visible then Exit;
+      if CurrentEditor=nil then Exit;
+      if not IsFileExist(AFilename) then Exit;
+
+      //don't use Ed.Assign(CurrentEditor), it gives error on exit
+      Ed.Font.Assign(CurrentEditor.Font);
+      Ed.Color:= CurrentEditor.Color;
+      Ed.RightMargin:= CurrentEditor.RightMargin;
+
+      //detect UTF8-no-bom
+      if IsFileUTF8NoBOM(AFilename) then
+      begin
+        Ed.Lines.SkipSignature:= true;
+        Ed.Lines.TextCoding:= tcUTF8;
+        Ed.Lines.CodePage:= 0;
+      end;
+
+      Screen.Cursor:= crHourGlass;
+      try
+        Ed.LoadFromFile(AFilename);
+        Ed.TopLine:= 0;
+        Ed.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(AFilename);
+      finally
+        Screen.Cursor:= crDefault;
+      end;
+    end;
+end;
+
+procedure TfmMain.ProjPreviewClose(Sender: TObject);
+var
+  Ini: TIniFile;
+begin
+  Ini:= TIniFile.Create(SynIni);
+  try
+    if Assigned(FProjPreview) then
+      SavePanelProp(FProjPreview, Ini, 'Pre');
+  finally
+    FreeAndNil(Ini);
+  end;
+end;
+
+procedure TfmMain.FocusProj;
+begin
+  if Assigned(fmProj) and fmProj.TreeProj.CanFocus then
+    fmProj.TreeProj.SetFocus;
+end;
+
+procedure TfmMain.ProjPreviewKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=vk_escape) and (Shift=[]) then
+  begin
+    FProjPreview.Visible:= false;
+    FocusProj;
+    Key:= 0;
+    Exit
+  end;
+  {
+  if (Key=vk_space) and (Shift=[]) then
+  begin
+    ProjPreviewButtonClick(Self);
+    Key:= 0;
+    Exit
+  end;
+  }
+end;
+
+function TfmMain.IsProjPreviewFocused: boolean;
+begin
+  Result:=
+    Assigned(FProjPreview) and FProjPreview.Visible and
+    Assigned(FProjPreviewEditor) and FProjPreviewEditor.Focused;
+end;
+
+procedure TfmMain.ProjPreviewButtonClick(Sender: TObject);
+var
+  fn: Widestring;
+begin
+  fn:= '';
+  with fmProj do
+    if TreeProj.Selected<>nil then
+      fn:= GetFN(TreeProj.Selected);
+
+  if (fn<>'') and IsFileExist(fn) then
+  begin
+    FProjPreview.Hide;
+    DoOpenFile(fn);
+    FocusEditor;
+  end
+  else
+    MsgBeep;
+end;
+
+function TfmMain.DoCheckCommandLineTwo: boolean;
+var
+  i: Integer;
+  S, SName1, SName2,
+  SLine1, SLine2, SCol1, SCol2: Widestring;
+  NLine1, NLine2, NCol1, NCol2: Integer;
+  F: TEditorFrame;
+begin
+  Result:= false;
+  for i:= 1 to WideParamCount do
+  begin
+    S:= WideParamStr(i);
+    if SBegin(S, cSynParamTwo) then
+    begin
+      Result:= true;
+      Delete(S, 1, Length(cSynParamTwo));
+
+      SName1:= SGetItem(S, ';');
+      SName2:= SGetItem(S, ';');
+      SLine1:= SGetItem(S, ';');
+      SLine2:= SGetItem(S, ';');
+      SCol1:= SGetItem(S, ';');
+      SCol2:= SGetItem(S, ';');
+
+      NLine1:= StrToIntDef(SLine1, 1)-1;
+      NLine2:= StrToIntDef(SLine2, 1)-1;
+      NCol1:= StrToIntDef(SCol1, 1)-1;
+      NCol2:= StrToIntDef(SCol2, 1)-1;
+
+      if not IsFileExist(SName1) then
+        begin MsgNoFile(SName1); Exit end;
+      if not IsFileExist(SName2) then
+        begin MsgNoFile(SName2); Exit end;
+
+      //close all tabs
+      acCloseAll.Execute;
+
+      //open 1st file
+      DoOpenFile(SName1);
+      F:= CurrentFrame;
+      F.EditorMaster.TopLine:= NLine1 - opSrOffsetY;
+      F.EditorMaster.CaretPos:= Point(NCol1, NLine1);
+
+      //open 2nd file
+      DoOpenFile(SName2);
+      F:= CurrentFrame;
+      F.EditorMaster.TopLine:= NLine2 - opSrOffsetY;
+      F.EditorMaster.CaretPos:= Point(NCol2, NLine2);
+
+      //update state
+      ecToggleView2.Execute; //move tab to 2nd view
+      CurrentFrame:= FramesAll[0]; //activate 1st view
+    end;
+  end;
+end;
+
+procedure TfmMain.TBXItemTool13Click(Sender: TObject);
+begin
+  RunTool(13);
+end;
+
+procedure TfmMain.TBXItemTool14Click(Sender: TObject);
+begin
+  RunTool(14);
+end;
+
+procedure TfmMain.TBXItemTool15Click(Sender: TObject);
+begin
+  RunTool(15);
+end;
+
+procedure TfmMain.TBXItemTool16Click(Sender: TObject);
+begin
+  RunTool(16);
+end;
+
+procedure TfmMain.TbxItemCtxTool13Click(Sender: TObject);
+begin
+  RunTool(13);
+end;
+
+procedure TfmMain.TbxItemCtxTool14Click(Sender: TObject);
+begin
+  RunTool(14);
+end;
+
+procedure TfmMain.TbxItemCtxTool15Click(Sender: TObject);
+begin
+  RunTool(15);
+end;
+
+procedure TfmMain.TbxItemCtxTool16Click(Sender: TObject);
+begin
+  RunTool(16);
 end;
 
 end.

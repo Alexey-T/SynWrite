@@ -790,11 +790,13 @@ begin
         begin
           N:= IfThen(soAutoIndentMode in Options,
             GetIndent(P.Y, LinesPosToLog(P).X + 1), 0);
-          S:= SEol(Cmd=smLineBreakSoft) + StringOfChar(' ', N);
+          S:= GetIndentString(N, false);
+          N:= Length(S); //indent size
+          S:= SEol(Cmd=smLineBreakSoft) + S; //CR + indent
           if ReplaceText(CaretPosToStrPos(P), 0, S) then
           begin
             Inc(P.Y);
-            P.X:= N;
+            P.X:= N; //indent size
             NShiftY:= 1;
             NShiftX:= cShiftToHome - N;
           end;

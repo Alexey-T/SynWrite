@@ -1,3 +1,6 @@
+{
+SynWrite exe project.
+}
 program Syn;
 
 uses

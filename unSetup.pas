@@ -1,3 +1,6 @@
+{
+SynWrite main Options dialog.
+}
 unit unSetup;
 
 interface
@@ -556,7 +559,7 @@ const
   );
 
 const
-  cColorsOrder: array[0..cColorsNum-9] of integer = (
+  cColorsOrder: array[0..cColorsNum-7] of integer = (
   0,
   1,
   9,
@@ -606,7 +609,9 @@ const
   45,
   52,
   51,
-  53
+  53,
+  12,
+  13
   );
 
 implementation
@@ -616,7 +621,9 @@ uses
   ecSyntTree, ecSyntAnal, ecStrUtils,
   ATxShell, ATxFProc, ATxSProc,
 
-  unHints,
+  //unHints, //seems no effect for SpTbx hints, for editor hints. 
+             //only effect for project tree (hints loose shadow). poor.
+  
   unProc,
   unProcHelp,
   unProj,

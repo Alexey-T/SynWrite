@@ -1,9 +1,7 @@
-{///////////////////////////////////////////////////////////////////////////////
-  Syn
-  Popup hints without shadow
-  (WinXP shadow has bug when hint disappears on taskbar)
-///////////////////////////////////////////////////////////////////////////////}
-
+{
+SynWrite popup hints without shadow
+(WinXP shadow has bug when hint disappears on taskbar)
+}
 unit unHints;
 
 interface
@@ -20,10 +18,11 @@ type
 implementation
 
 procedure TNonShadowedHintWindow.CreateParams(var Params: TCreateParams);
-const CS_DROPSHADOW = $00020000;
+const
+  CS_DROPSHADOW = $00020000;
 begin
   inherited;
-  { Disable drop shadow effect on Windows XP and later }
+  //Disable drop shadow effect on Windows XP and later
   if (Win32Platform = VER_PLATFORM_WIN32_NT) and
      ((Win32MajorVersion > 5) or
       ((Win32MajorVersion = 5) and (Win32MinorVersion >= 1))) then
@@ -31,7 +30,9 @@ begin
 end;
 
 procedure TNonShadowedHintWindow.NCPaint(DC: HDC);
-var R: TRect; BC: TColor;
+var
+  R: TRect;
+  BC: TColor;
 begin
   R := Rect(0, 0, Width, Height);
   BC := Brush.Color;

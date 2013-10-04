@@ -1,3 +1,7 @@
+{
+SynWrite main form, for exe version.
+The UI form is TfmMain, it's created as a child of this form.
+}
 unit unEx;
 
 interface
@@ -60,7 +64,7 @@ begin
   if SynIsPortable then
     Result:= ExtractFilePath(ParamStr(0))
   else
-    Result:= SAppDir + '\';
+    Result:= SynAppdataDir + '\';
 end;
 
 function GetPassedLineNumber: integer;
@@ -252,6 +256,7 @@ begin
   fmMain.hLister:= Handle;
   fmMain.Show;
   fmMain.acNew.Execute;
+  fmMain.DoCheckCommandLineTwo;
 
   LoadPos;
   DragAcceptFiles(Handle, True);

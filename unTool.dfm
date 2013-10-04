@@ -191,6 +191,7 @@ object fmTools: TfmTools
       Width = 240
       Height = 21
       Style = csDropDownList
+      DropDownCount = 20
       ItemHeight = 13
       TabOrder = 7
       OnChange = edLexerChange
@@ -242,6 +243,7 @@ object fmTools: TfmTools
       Width = 240
       Height = 21
       Style = csDropDownList
+      DropDownCount = 20
       ItemHeight = 13
       TabOrder = 14
       OnChange = edOutTypeChange
@@ -252,6 +254,7 @@ object fmTools: TfmTools
       Width = 240
       Height = 21
       Style = csDropDownList
+      DropDownCount = 20
       ItemHeight = 13
       TabOrder = 15
       OnChange = edOutEncChange
@@ -381,7 +384,7 @@ object fmTools: TfmTools
     Left = 224
     Top = 116
     LangData = {
-      0700666D546F6F6C73010100000001000000070043617074696F6E0142000000
+      0700666D546F6F6C73010100000001000000070043617074696F6E0144000000
       0C00546E7447726F7570426F783101010000000B000000070043617074696F6E
       000900546E744C6162656C31010100000002000000070043617074696F6E0009
       00546E744C6162656C32010100000003000000070043617074696F6E00090054
@@ -419,7 +422,8 @@ object fmTools: TfmTools
       726F6A31000002004E34000006007053656C464E00000A007053656C464E416E
       7369000009007046696C6545787432000009007046696C654469723200000A00
       7046696C654E616D6532000002004E3500000A007053796E496E694469720000
-      07007053796E446972000002004E360000}
+      07007053796E446972000002004E3600000B0070436F6E74464E416E73690000
+      070070436F6E74464E0000}
   end
   object mnuPar: TPopupMenu
     Left = 248
@@ -471,6 +475,10 @@ object fmTools: TfmTools
     object pSelFN: TMenuItem
     end
     object pSelFNAnsi: TMenuItem
+    end
+    object pContFN: TMenuItem
+    end
+    object pContFNAnsi: TMenuItem
     end
     object N3: TMenuItem
       Caption = '-'
