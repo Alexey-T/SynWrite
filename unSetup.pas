@@ -728,7 +728,8 @@ end;
 procedure TfmSetup.b1Click(Sender: TObject);
 begin
   FontDialog.Font:= b1.Font;
-  if FontDialog.Execute then b1.Font:= FontDialog.Font;
+  if FontDialog.Execute then
+    b1.Font:= FontDialog.Font;
 end;
 
 procedure TfmSetup.tabKeyShow(Sender: TObject);
@@ -1017,13 +1018,15 @@ end;
 procedure TfmSetup.b2Click(Sender: TObject);
 begin
   FontDialog.Font:= b2.Font;
-  if FontDialog.Execute then b2.Font:= FontDialog.Font;
+  if FontDialog.Execute then
+    b2.Font:= FontDialog.Font;
 end;
 
 procedure TfmSetup.b3Click(Sender: TObject);
 begin
   FontDialog.Font:= b3.Font;
-  if FontDialog.Execute then b3.Font:= FontDialog.Font;
+  if FontDialog.Execute then
+    b3.Font:= FontDialog.Font;
 end;
 
 procedure TfmSetup.InitSidebar;
@@ -1697,7 +1700,7 @@ procedure TfmSetup.ApplyFiles;
 begin
   with fmMain do
   begin
-    opNotif:= cbNotif.ItemIndex;
+    opNotif:= TSynReloadMode(cbNotif.ItemIndex);
     opAskOverwrite:= cbOverRO.Checked;
     opTextOnly:= cbText_.ItemIndex;
     opOem:= edOem.Text;
@@ -1744,9 +1747,9 @@ begin
     opASaveTimeMin:= edASaveTime.Value;
     opASaveAllFiles:= cbASaveAllFiles.Checked;
     opASaveMaxSizeKb:= edASaveMaxSize.Value;
-    if cbASaveUnIgnore.Checked then opASaveUnnamed:= 0 else
-     if cbASaveUnShowSave.Checked then opASaveUnnamed:= 1 else
-      if cbASaveUnSaveToDir.Checked then opASaveUnnamed:= 2;
+    if cbASaveUnIgnore.Checked then opASaveUnnamed:= cAutoSaveIgnore else
+     if cbASaveUnShowSave.Checked then opASaveUnnamed:= cAutoSavePromptFN else
+      if cbASaveUnSaveToDir.Checked then opASaveUnnamed:= cAutoSaveSaveToDir;
     opASaveUnnamedDir:= edASaveUnnamedDir.Text;
     ApplyAutoSave;
   end;  
@@ -1814,14 +1817,21 @@ procedure TfmSetup.ApplyFonts;
 begin
   with fmMain do
   begin
+    //editor
     TemplateEditor.Font:= b1.Font;
+    //line nums
     TemplateEditor.LineNumbers.Font:= b2.Font;
+    //tree
     Tree.Font:= b3.Font;
+    //ruler
     TemplateEditor.HorzRuler.Font:= b4.Font;
+    //auto-complete
     ecACP.Font:= b5.Font;
     ApplyACP;
+    //output panel
     ListOut.Font:= b6.Font;
     ApplyOut;
+    
     ApplyFonts;
   end;
 end;
@@ -1836,9 +1846,9 @@ begin
     opSaveCaret:= cbHCaret.Checked;
     opSaveEnc:= cbHEnc.Checked;
     opStateForTemp:= cbHTemp.Checked;
-    opLastDir:= cbDirLast.ItemIndex;
+    opLastDir:= TSynLastDirMode(cbDirLast.ItemIndex);
     opLastDirPath:= edDirLast.Text;
-    opBak:= cbBak.ItemIndex;
+    opFileBackup:= TSynBackup(cbBak.ItemIndex);
   end;
 end;
 
@@ -1874,16 +1884,16 @@ begin
   with fmMain do
   begin
     opChInf:= cbChar.Checked;
-    UpdateCh;
+    UpdateStatusbar;
 
     Menu.Visible:= cbMenu.Checked;
     Status.Visible:= cbStat.Checked;
-    opEsc:= cbEsc.ItemIndex;
+    opEsc:= TSynEscMode(cbEsc.ItemIndex);
     opSingleInstance:= cbInst.Checked;
     ApplyInst;
 
     opSavePos:= cbSavePos.Checked;
-    opShowRecentColors:= cbRecColors.ItemIndex;
+    opShowRecentColors:= TSynRecentColors(cbRecColors.ItemIndex);
     opSortMode:= TSynSortMode(cbSortMode.ItemIndex);
     ApplyShowRecentColors;
     opLexerCat:= cbGroupLexers.Checked;
@@ -2030,9 +2040,9 @@ begin
     cbASaveAllFiles.Checked:= opASaveAllFiles;
     cbASaveCurrFile.Checked:= not opASaveAllFiles;
     edASaveMaxSize.Value:= opASaveMaxSizeKb;
-    cbASaveUnIgnore.Checked:= opASaveUnnamed=0;
-    cbASaveUnShowSave.Checked:= opASaveUnnamed=1;
-    cbASaveUnSaveToDir.Checked:= opASaveUnnamed=2;
+    cbASaveUnIgnore.Checked:= opASaveUnnamed=cAutoSaveIgnore;
+    cbASaveUnShowSave.Checked:= opASaveUnnamed=cAutoSavePromptFN;
+    cbASaveUnSaveToDir.Checked:= opASaveUnnamed=cAutoSaveSaveToDir;
     edASaveUnnamedDir.Text:= opASaveUnnamedDir;
     cbASaveTimerClick(Self);
     cbASaveUnnamedClick(Self);
@@ -2111,7 +2121,7 @@ procedure TfmSetup.InitFiles;
 begin
   with fmMain do
   begin
-    cbNotif.ItemIndex:= opNotif;
+    cbNotif.ItemIndex:= Ord(opNotif);
     cbOverRO.Checked:= opAskOverwrite;
     cbText_.ItemIndex:= opTextOnly;
     edOem.Text:= opOem;
@@ -2145,9 +2155,9 @@ begin
     cbHEnc.Checked:= opSaveEnc;
     cbHTemp.Checked:= opStateForTemp;
     cbMru.Checked:= opMruCheck;
-    cbDirLast.ItemIndex:= opLastDir;
+    cbDirLast.ItemIndex:= Ord(opLastDir);
     edDirLast.Text:= opLastDirPath;
-    cbBak.ItemIndex:= opBak;
+    cbBak.ItemIndex:= Ord(opFileBackup);
   end;
 end;
 
@@ -2175,11 +2185,11 @@ begin
     cbStat.Checked:= Status.Visible;
     cbChar.Checked:= opChInf;
 
-    cbEsc.ItemIndex:= opEsc;
+    cbEsc.ItemIndex:= Ord(opEsc);
     cbInst.Checked:= opSingleInstance;
 
     cbSavePos.Checked:= opSavePos;
-    cbRecColors.ItemIndex:= opShowRecentColors;
+    cbRecColors.ItemIndex:= Ord(opShowRecentColors);
     cbSortMode.ItemIndex:= Ord(opSortMode);
     cbGroupLexers.Checked:= opLexerCat;
     cbFullTitle.Checked:= opTitleFull;

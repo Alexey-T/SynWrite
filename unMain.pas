@@ -65,6 +65,44 @@ const
   SynDefaultSyn = '(default).syn';
 
 type
+  TSynEscMode = (
+    cEscNothing,
+    cEscCloseApp,
+    cEscCloseTab,
+    cEscCloseTabOrApp,
+    cEscMinimizeApp
+    );
+
+  TSynBackup = (
+    cBakNone,
+    cBakAppdata,
+    cBakSameDir
+    );
+
+  TSynLastDirMode = (
+    cLastDirCurrentFile,
+    cLastDirRemember,
+    cLastDirCustom
+    );
+
+  TSynReloadMode = (
+    cReloadNone,
+    cReloadAuto,
+    cReloadAsk
+    );
+
+  TSynAutoSaveUnnamed = (
+    cAutoSaveIgnore,
+    cAutoSavePromptFN,
+    cAutoSaveSaveToDir
+    );
+
+  TSynRecentColors = (
+    cRecColorsAutoHide,
+    cRecColorsShow,
+    cRecColorsHide
+    );
+
   TSynLineCmd = (
     scmdSortAsc,
     scmdSortDesc,
@@ -1221,11 +1259,6 @@ type
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
 
-    procedure UpdateMicroMap(F: TEditorFrame);
-    procedure UpdateStatusBar;
-    procedure UpdateGutter(F: TEditorFrame; AUpdateCur: boolean = true);
-    procedure UpdateCh;
-
     procedure PageControl1Change(Sender: TObject);
     procedure acSaveExecute(Sender: TObject);
     procedure acSaveAsExecute(Sender: TObject);
@@ -2052,6 +2085,7 @@ type
 
     FProjPreview: TSpTBXDockablePanel;
     FProjPreviewEditor: TSyntaxMemo;
+    FProjPreviewButton: TSpTbxItem;
 
     TabSwitcher,
     TabSwitcher2: TTabSwitcher;
@@ -2096,11 +2130,13 @@ type
     FPagesNTabCtx: Integer; //PageControl context-menu tab index
     FPrevCaretPos: Integer; //saved caret pos before executing "Select brackets"
 
-    FLexerACP: string; //ACP list was loaded for this lexer
-    FTagList: boolean; //ACP shows tags, not attribs
+    FAcpLexer: string; //ACP list was loaded for this lexer
+    FAcpAgain: boolean; //ACP need to show again after closing (for html/css)
+    FTagList: boolean; //ACP shows html tags, not attribs
     FTagCss: boolean; //ACP called for CSS
-    FTagClosing: boolean; //ACP called for closing tag </tag>
-    FTagBracketAdded: boolean; //Added '<' on ACP call
+    FTagClosing: boolean; //ACP called for html closing tag </tag>
+    FTagBracketAdded: boolean; //added '<' on ACP call
+    FTagSpaceAdded: boolean; //added space on ACP call
 
     QuickView: boolean;    //QuickView mode for TotalCmd plugin
     QuickDestroy: boolean; //?? (inherited from Sepa)
@@ -2239,24 +2275,63 @@ type
     procedure DoInitRecentColorsMenu;
     procedure DoDeleteRecentColor(N: Integer);
     procedure AddBookmarksToSortedList(ed: TSyntaxMemo; L: TList);
-    procedure UpdateRecentsOnClose;
     function SynBorderStyle: TBorderStyle;
     function SynImagesDll: string;
     function DoAutoCloseBracket(const ch: Widechar): boolean;
     function DoAutoCloseTag: boolean;
+
+    //private UpdateNNN
+    procedure UpdateTitle(Sender: TFrame);
+    procedure UpdateAcp(const Lexer: string);
+    procedure UpdateTools;
+    procedure UpdatePages;
+    procedure UpdateTabs(P: TTntPageControl);
+    procedure UpdateNonPrinted(E: TSyntaxMemo);
+    procedure UpdatePanelOut(n: TSynTabOut);
+    procedure UpdatePanelLeft(n: TSynTabLeft);
+    procedure UpdatePanelRight(n: TSynTabRight);
+    procedure UpdateCheckLeftTabs(IsTree, IsProj, IsTabs: boolean);
+    procedure UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
+    procedure UpdateBookmarkMenus;
+    procedure UpdateShortcuts;
+    procedure UpdateLang;
+    procedure UpdateSpellLang;
+    procedure UpdateEditorCaret(Ed: TSyntaxMemo);
+    procedure UpdateLexList;
+    procedure UpdateStatusbarLineEnds;
+    procedure UpdateStatusbarEnc(F: TEditorFrame);
+
+    procedure UpdateNewFrame;
+    procedure UpdateFrameEnc(Frame: TEditorFrame);
+    procedure UpdateFrameSpell(Frame: TEditorFrame; UpdFlag: boolean = true);
+    procedure UpdateFrameZoom(F: TEditorFrame);
+    procedure UpdateClickedFrame;
+
+    procedure UpdateLexer;
+    procedure UpdateFormEnabled(En: boolean);
+    procedure UpdateMicroMap(F: TEditorFrame);
     procedure UpdateOutFromList(List: TWideStringList);
-    function SStatusText: Widestring;
-    function SStatusHint(state: TSynSelState): Widestring;
-    function SStatusCharInfo: Widestring;
-    procedure HandleToolOutput(const ft: Widestring; NTool: integer);
-    procedure GetColorRange(var NStart, NEnd: integer; var NColor: integer);
+    procedure UpdateRecentsOnClose;
     procedure UpdateColorHint(AClearHint: boolean = true);
+    procedure UpdateListTabs;
+    procedure UpdateTabList(TopItem, NewItem, DelItem: integer);
+    procedure UpdateSaveIco;
+    procedure UpdateBusyIco;
+    procedure UpdateTreeInit(const AStr, ADir: Widestring; AInTabs: boolean = false);
+    procedure UpdateTreeFind(const AStr, ADir: Widestring; AStopped: boolean; AInTabs: boolean = false);
+    procedure UpdateTreeReplace(const ANodeText: Widestring; ANumFiles, ANumItems: integer; AStopped: boolean);
+    procedure UpdateMacroKeynames;
+
+    function SStatusText(Ed: TSyntaxMemo): Widestring;
+    function SStatusCharInfo(Ed: TSyntaxMemo): Widestring;
+    function SStatusHint(state: TSynSelState): Widestring;
+
+    procedure DoHandleToolOutput(const ft: Widestring; NTool: integer);
+    procedure GetColorRange(var NStart, NEnd: integer; var NColor: integer);
     function IsShowColor(s: string; var NColor, NColorText: TColor): boolean;
     procedure GetTabName(APagesNumber, ATabIndex: Integer; var AName, AFN, ALex: Widestring);
     procedure ClearTabList;
     procedure MoveTabInList(FromN, ToN: integer);
-    procedure UpdateListTabs;
-    procedure UpdateTabList(TopItem, NewItem, DelItem: integer);
     procedure DoMoveCaretXY(DX, DY: integer);
     function GetHtmlAcpFN: string;
     function GetAcpFN(const LexerName: string): string;
@@ -2284,8 +2359,6 @@ type
     procedure MsgDelLines(N: integer);
     procedure MsgDoneLines(N: integer);
     procedure MsgTabbing(const s: Widestring);
-    procedure UpdateSaveIco;
-    procedure UpdateBusyIco;
     //procedure MsgID(const s: Widestring);
     procedure ClearTreeFind;
     procedure CopyFindResultToTab(ALastSearch, AFilesOnly: boolean;
@@ -2294,12 +2367,8 @@ type
       L: TWideStringList; AFilesOnly: boolean);
     procedure CopyFindResultNode;
     function SFindResPrefix(const FN: Widestring; LineNum: integer): Widestring;
-    procedure UpdateTreeInit(const AStr, ADir: Widestring; AInTabs: boolean = false);
-    procedure UpdateTreeFind(const AStr, ADir: Widestring; AStopped: boolean; AInTabs: boolean = false);
-    procedure UpdateTreeReplace(const ANodeText: Widestring; ANumFiles, ANumItems: integer; AStopped: boolean);
     function MacroName(n: integer): Widestring;
     function MacroCmdName(n: integer): Widestring;
-    procedure UpdateMacroKeynames;
     procedure SetLineEnds(Sender: TObject; AManual: boolean);
     function IsProjPreviewFocused: boolean;
     function IsListboxFocused: boolean;
@@ -2308,7 +2377,6 @@ type
     function CurrentTreeview: TCustomTreeView;
     procedure DoFrameReloadInt(F: TEditorFrame);
     procedure DoFrameReloadWrapper(F: TEditorFrame);
-    procedure UpdateZoom(F: TEditorFrame);
     procedure DoFindExtSel(ANext: boolean);
     procedure DoJumpMixedCase(ARight: boolean);
     procedure DoJumpToWordEnd(ASel: boolean);
@@ -2393,7 +2461,6 @@ type
     procedure DoRepaintTabCaptions(Pages: TTntPageControl);
     procedure DoSyncScroll(EdSrc: TSyntaxMemo);
     function GetPageControl: TTntPageControl;
-    procedure UpdateClickedFrame;
     function DoCloseAllTabs(CanCancel, CanClose: Boolean; FExcept: TEditorFrame = nil): boolean;
     procedure DoCloseOtherTabs(F: TEditorFrame);
     procedure SetSplitter(const F: Double);
@@ -2438,6 +2505,7 @@ type
     procedure AppException(Sender: TObject; E: Exception);
     function MsgEncReload: boolean;
     function MsgConfirmFtp: boolean;
+
     function SynLexLib: string;
     function SynPluginIni(const SCaption: string): string;
     function SynIni: string;
@@ -2455,41 +2523,21 @@ type
     function SynSkinsDir: string;
     function SynSkinFilename(const Name: string): string;
     function SynConverterFilename(const Name: string): string;
-    function NoCursor(E: TSyntaxMemo): boolean;
+
+    function IsNoCursor(E: TSyntaxMemo): boolean;
     procedure LexListClick(Sender: TObject);
     procedure FinderInit(Sender: TObject);
     procedure FinderFail(Sender: TObject);
     procedure FinderProgress(CurPos, MaxPos: integer);
     procedure FindCurrentWord(Next: boolean);
-    procedure RefreshACP(const Lexer: string);
     function EncLocal(const s: Widestring): Widestring;
-
-    procedure UpdateTabs(P: TTntPageControl);
-    procedure UpdatePages;
-    procedure UpdateNPrint(E: TSyntaxMemo);
-    procedure UpdateTitle(Sender: TFrame);
-    procedure DoReplaceTabsToSpaces(F: TEditorFrame);
-    procedure UpdOut(n: TSynTabOut);
-    procedure UpdLeft(n: TSynTabLeft);
-    procedure UpdRight(n: TSynTabRight);
-    procedure UpdateCheckLeftTabs(IsTree, IsProj, IsTabs: boolean);
-    procedure UpdateCPMenu(M: TObject; AConvEnc: boolean = false);
-    procedure UpdateSpell(Frame: TEditorFrame; UpdFlag: boolean = true);
-    procedure UpdateNew;
-    procedure UpdateBookmk;
-    procedure UpdateShortcuts;
-    procedure UpdateLang;
-    procedure UpdateSpellLang;
-    procedure UpdateCur(Ed: TSyntaxMemo);
-    procedure UpdateLexList;
-    procedure UpdateEnc(Frame: TEditorFrame);
-    procedure UpdateStatusbarLineEnds;
-    procedure UpdateStatusbarEnc(F: TEditorFrame);
 
     function IsSh(sh: TShortcut; cmd: integer): boolean;
     function ShFor(id: integer): TShortcut;
     procedure ShMacroGet(n: integer; var sh: TShortcut);
     procedure ShMacroSet(n: integer; const sh: TShortcut);
+
+    procedure DoReplaceTabsToSpaces(F: TEditorFrame);
     procedure DoOnlineWordHelp(const url: Widestring);
     procedure DoOnlineFind(const site: Widestring);
 
@@ -2509,11 +2557,10 @@ type
     procedure SetTheme(const S: string);
     procedure LoadTools;
     procedure SaveTools;
-    procedure UpdateTools;
     procedure DoEnableTool(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
 
-    procedure GetTag(var tagName, attri:string);
-    procedure SaveState_(Sender: TObject);
+    procedure GetTag(var tagName, attri: string);
+    procedure FrameSaveState(Sender: TObject);
 
     function AskClose(CanCancel: boolean= false): boolean;
     function AskLexer(CanCancel: boolean= false): boolean;
@@ -2534,7 +2581,7 @@ type
     procedure SaveLexLib;
     procedure SaveLexLibFilename;
     procedure SaveToolbarsProps;
-    function ReadTCHist: Widestring;
+    function DoReadTotalHistory: Widestring;
 
     procedure InitStyleLists;
     function IsPositionMatchesTokens(Ed: TSyntaxMemo; StartPos, EndPos: Integer;
@@ -2563,7 +2610,6 @@ type
     procedure DoToggleLineComment(Alt: boolean);
     procedure DoCopyFilenameToClipboard(F: TEditorFrame; Cmd: TSynCopyNameCmd);
     function IsCommandAllowedInMacro(Cmd: Integer): boolean;
-    procedure UpdateFormEnabled(En: boolean);
     procedure DoTreeLevel(NLevel: Integer);
     procedure DoFoldLevel(NLevel: Integer);
     procedure DoToolbarCommentUncomment(AComment: boolean);
@@ -2670,7 +2716,7 @@ type
     opAutoCloseBracketsNoEsc: boolean;
     opAutoCloseQuotes: boolean;
     opLexersOverride: string;
-    opShowRecentColors: integer; //0: auto-hide, 1: always show, 2: always hide
+    opShowRecentColors: TSynRecentColors;
     opUnicodeNeeded: integer;
     opTabColors: array[0..Pred(cTabColors)] of integer;
     opColorCaretsGutter: integer;
@@ -2705,7 +2751,7 @@ type
     opASaveAllFiles: boolean;
     opASaveTimeMin: integer;
     opASaveMaxSizeKb: integer;
-    opASaveUnnamed: integer; //0: ignore, 1: prompt for fn, 2: save to dir
+    opASaveUnnamed: TSynAutoSaveUnnamed;
     opASaveUnnamedDir: string;
     opMapZoom: integer;
     opMicroMap: boolean;
@@ -2735,8 +2781,8 @@ type
     opHiliteSmartCase: boolean;
     opDateFmt,
     opDateFmtPLog: string;
-    opBak: integer; //0: None, 1: AppData, 2: same folder
-    opEsc: integer; //0: do nothing, 1: close app, 2: close tab, 3: close tab or app, 4: minimize app
+    opFileBackup: TSynBackup;
+    opEsc: TSynEscMode;
     opHistProjectSave,
     opHistProjectLoad: boolean;
     opHistFilter: integer;
@@ -2763,11 +2809,11 @@ type
     opSingleInstance: boolean; //single instance
     opLang: integer;
     opLexerCat: boolean; //group lexers
-    opNotif: integer; //0: none, 1: reload, 2: ask to reload
+    opNotif: TSynReloadMode;
     opHiliteUrls: boolean;
     opColorLink: integer;
     opKeepScr: boolean;
-    opLastDir: integer; //0: of current file, 1: remember last, 2: custom folder
+    opLastDir: TSynLastDirMode;
     opLastDirPath,
     opLastDirSession,
     opLastDirProject: Widestring;
@@ -2794,7 +2840,7 @@ type
     FFinderTotalSize: Int64;
     FFinderDoneSize: Int64;
 
-    Finder: TSynFindReplace;
+    Finder: TSynFinderReplacer;
     FinderInTree: TFinderInTree;
     FinderInList: TFinderInList;
 
@@ -2826,13 +2872,15 @@ type
     function SynClipsDir: string;
     function SynDictDir: string;
 
-    procedure UpdateLexer;
-    procedure UpdateQVTree(const fn: Widestring);
     procedure UpdateRO;
+    procedure UpdateGutter(F: TEditorFrame; AUpdateCur: boolean = true);
+    procedure UpdateQVTree(const fn: Widestring);
+    procedure UpdateStatusBar;
+
     property opTabsWidths: Widestring read GetTabsWidths write SetTabsWidths;
     property PageControl: TTntPageControl read GetPageControl write FPageControl;
-    property FullScr: boolean read FFullScr write SetFS;
-    property OnTop: boolean read FOnTop write SetOnTop;
+    property ShowFullScreen: boolean read FFullScr write SetFS;
+    property ShowOnTop: boolean read FOnTop write SetOnTop;
 
     procedure ApplyTabFontSize;
     procedure ApplyTabOptions;
@@ -2963,7 +3011,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.9.920';
+  cSynVer = '5.9.940';
 
 const
   cSynParamRO = '/ro';
@@ -3019,12 +3067,6 @@ const
   cRegexColorName = '[a-z]{3,30}';
 
 const
-  cAcpNone = 0;
-  cAcpLoadedAcpFile = 1;
-  cAcpLoadedHtmlList = 2;
-  cAcpDontShow = 3;
-
-const
   cThemeWindows = 'Windows';
   cThemes: array[0..12] of string = (
     cThemeWindows,
@@ -3043,8 +3085,8 @@ const
     );
 
 const
-  //don't include ':'
-  cAcpCharsCss = '-#!@.';
+  cAcpCharsCss = '-#!@.'; //don't include ':'
+  cAcpCharsPhp = '$'; //include '$'
 
 const
   cp__UTF8       = -1;
@@ -3349,7 +3391,7 @@ var
   s: Widestring;
 begin
   OD.Filter:= SynFilesFilter;
-  if (opLastDir=1) and (opHistFilter>0) then
+  if (opLastDir=cLastDirRemember) and (opHistFilter>0) then
     OD.FilterIndex:= opHistFilter
   else
     OD.FilterIndex:= SFilterNum(OD.Filter);
@@ -3431,9 +3473,9 @@ begin
   Result.DoStartNotif;
 
   FrameChanged;
-  UpdateEnc(Result);
-  UpdateSpell(Result);
-  UpdateZoom(Result);
+  UpdateFrameEnc(Result);
+  UpdateFrameSpell(Result);
+  UpdateFrameZoom(Result);
 
   //maybe set opened editor R/O for Lister plugin
   if not SynExe then
@@ -3446,7 +3488,7 @@ begin
     DoReplaceTabsToSpaces(Result);
 end;
 
-procedure TfmMain.UpdateEnc(Frame: TEditorFrame);
+procedure TfmMain.UpdateFrameEnc(Frame: TEditorFrame);
 var
   IsBE: boolean;
 begin
@@ -3534,7 +3576,7 @@ begin
       else
         SaveLastDir(SD.FileName, SD.Filter, SD.FilterIndex);
       //spell
-      UpdateSpell(Frame);
+      UpdateFrameSpell(Frame);
     end;
   end
   else
@@ -3570,7 +3612,7 @@ begin
   begin
     Frame.LineEndsChg:= false;
     DoFrameReloadInt(Frame);
-    UpdateEnc(Frame);
+    UpdateFrameEnc(Frame);
   end;
 end;
 
@@ -3675,10 +3717,11 @@ begin
   Result:= TEditorFrame.Create(Self);
   Result.Name:= '';
   Result.OnTitleChanged:= UpdateTitle;
-  Result.OnSaveState:= SaveState_;
+  Result.OnSaveState:= FrameSaveState;
 
-  //Result.EditorMaster.BorderStyle:= SynBorderStyle;
-  //Result.EditorSlave.BorderStyle:= SynBorderStyle;
+  Result.EditorMaster.BorderStyle:= SynBorderStyle;
+  Result.EditorSlave.BorderStyle:= SynBorderStyle;
+  
   Result.EditorMaster.KeyMapping:= SyntKeyMapping;
   Result.EditorSlave.KeyMapping:= SyntKeyMapping;
   Result.HyperlinkHighlighter.Active:= opHiliteUrls;
@@ -3709,11 +3752,11 @@ begin
   CreateBind(Result);
   UpdateGutter(Result, False);
   CurrentFrame:= Result;
-  UpdateNew;
+  UpdateNewFrame;
   UpdateTabList(PageControl.PageCount-1, -1, -1);
 end;
 
-procedure TfmMain.UpdateNew;
+procedure TfmMain.UpdateNewFrame;
 var
   F: TEditorFrame;
   Val: integer;
@@ -3829,7 +3872,7 @@ begin
   tab.Caption:= Frame.Title;
   Frame.Parent:= tab;
   UpdateTabs(PageControl);
-  UpdateSpell(Frame);
+  UpdateFrameSpell(Frame);
 end;
 
 procedure TfmMain.CloseFrame(Frame: TEditorFrame);
@@ -3887,8 +3930,8 @@ begin
        SetImages;
        UpdateTitle(CurrentFrame);
        UpdateStatusbar;
-       UpdateNPrint(EditorMaster);
-       UpdateNPrint(EditorSlave);
+       UpdateNonPrinted(EditorMaster);
+       UpdateNonPrinted(EditorSlave);
        SynScroll(CurrentEditor);
        UpdateTabList(-1, -1, -1);
     end
@@ -4037,7 +4080,7 @@ begin
   ecFolding.Checked:= not ed.DisableFolding;
   ecRuler.Checked:= ed.HorzRuler.Visible;
   ecSmartHl.Checked:= opHiliteSmart;
-  ecFullScr.Checked:= FullScr;
+  ecFullScr.Checked:= ShowFullScreen;
 
   ecNonPrint.Checked:= ed.NonPrinted.Visible;
   ecNonPrintOff.Checked:= not ed.NonPrinted.Visible;
@@ -4139,61 +4182,65 @@ begin
   ecBkPaste.Enabled:= bk and not ro;
   TBXItemBkGoto.Enabled:= bk;
 
-  with ed do
   begin
-    StatusItemCaret.Caption:= SStatusText;
+    StatusItemCaret.Caption:= SStatusText(Ed);
 
-    if ReplaceMode then
+    if Ed.ReplaceMode then
       StatusItemInsMode.Caption:= DKLangConstW('sOvr')
     else
       StatusItemInsMode.Caption:= DKLangConstW('sIns');
 
-    StatusItemZoom.Caption:= IntToStr(Zoom) + '%';
+    StatusItemZoom.Caption:= IntToStr(Ed.Zoom) + '%';
 
-    if opChInf and (TextLength>0) and (not NoCursor(ed)) then
-      StatusItemChar.Caption:= SStatusCharInfo
-    else
-      StatusItemChar.Caption:= '';
+    with StatusItemChar do
+    begin
+      if opChInf then
+      begin
+        CustomWidth:= 100;
+        ImageIndex:= -1;
+      end
+      else
+      begin
+        CustomWidth:= 20;
+        ImageIndex:= 2;
+      end;
+
+      if opChInf and (Ed.TextLength>0) and (not IsNoCursor(Ed)) then
+        Caption:= SStatusCharInfo(Ed)
+      else
+        Caption:= '';
+    end;
   end;
 end;
 
-function TfmMain.SStatusCharInfo: Widestring;
+function TfmMain.SStatusCharInfo(Ed: TSyntaxMemo): Widestring;
 var
   ch: Widechar;
   sAnsi: string;
 begin
   Result:= '';
-  with CurrentEditor do
-  if TextLength>0 then
-  begin
-    ch:= Lines.Chars[CaretStrPos+1];
-    if Ord(ch)<32 then
-      Result:= ''
-    else
-      Result:= '"' + WideString(ch) + '" ';
-      
-    if Lines.TextCoding <> tcAnsi then
+  with Ed do
+    if TextLength>0 then
     begin
-      //Unicode encoding active
-      Result:= Result + Format('#%d 0x%x', [Ord(ch), Ord(ch)]);
-    end
-    else
-    begin
-      //Some codepage active
-      sAnsi:= UnicodeToAnsiCP(WideString(ch), Lines.Codepage);
-      if sAnsi='' then sAnsi:= #0;
-      Result:= Result + Format('#%d 0x%2.2x', [Ord(sAnsi[1]), Ord(sAnsi[1])]);
-    end;
-  end;
-end;
+      ch:= Lines.Chars[CaretStrPos+1];
+      if Ord(ch)<32 then
+        Result:= ''
+      else
+        Result:= '"' + WideString(ch) + '" ';
 
-procedure TfmMain.UpdateCh;
-begin
-  with StatusItemChar do
-    if opChInf then
-      begin CustomWidth:= 100; ImageIndex:= -1; end
-    else
-      begin CustomWidth:= 20; ImageIndex:= 2; end;
+      if Lines.TextCoding <> tcAnsi then
+      begin
+        //Unicode encoding active
+        Result:= Result + Format('#%d 0x%x', [Ord(ch), Ord(ch)]);
+      end
+      else
+      begin
+        //Some codepage active
+        sAnsi:= UnicodeToAnsiCP(WideString(ch), Lines.Codepage);
+        if sAnsi='' then sAnsi:= #0;
+        Result:= Result + Format('#%d 0x%2.2x', [Ord(sAnsi[1]), Ord(sAnsi[1])]);
+      end;
+    end;
 end;
 
 procedure TfmMain.PageControl1Change(Sender: TObject);
@@ -4253,12 +4300,12 @@ begin
     opASaveTimeMin:= ReadInteger('ASave', 'Time', 5);
     opASaveAllFiles:= ReadBool('ASave', 'AllF', true);
     opASaveMaxSizeKb:= ReadInteger('ASave', 'MaxSize', 0);
-    opASaveUnnamed:= ReadInteger('ASave', 'Unnm', 0);
+    opASaveUnnamed:= TSynAutoSaveUnnamed(ReadInteger('ASave', 'Unnm', 0));
     opASaveUnnamedDir:= ReadString('ASave', 'UnnmDir', '%AppData%\SynWrite\AutoSave');
     ApplyAutoSave;
 
     //hist
-    opLastDir:= ReadInteger('Hist', 'DirVar', 1);
+    opLastDir:= TSynLastDirMode(ReadInteger('Hist', 'DirVar', Ord(cLastDirRemember)));
     opLastDirPath:= UTF8Decode(ReadString('Hist', 'Dir', ''));
     opLastDirSession:= UTF8Decode(ReadString('Hist', 'DirSess', SynAppdataDir));
     opLastDirProject:= UTF8Decode(ReadString('Hist', 'DirProj', SynAppdataDir));
@@ -4348,15 +4395,15 @@ begin
       end;
     end;
 
-    opUtf8BufferSizeKb:= ReadInteger('Setup', 'Utf8Buffer', 32);
+    opUtf8BufferSizeKb:= ReadInteger('Setup', 'Utf8Buffer', 64);
     opMenuIcon:= ReadBool('Setup', 'MenuIcon', true);
     opBeep:= ReadBool('Setup', 'Beep', true);
     opHiliteSmart:= ReadBool('Setup', 'SmHi', false);
     opHiliteSmartCase:= ReadBool('Setup', 'SmHiCase', false);
     opDateFmt:= ReadString('Setup', 'DateFmt', 'h:mm dd.mm.yyyy');
-    opDateFmtPLog:= ReadString('Setup', 'DateFmtP', 'hh:mm:ss');
-    opBak:= ReadInteger('Setup', 'Back', 0);
-    opEsc:= ReadInteger('Setup', 'Esc' + c_exe[SynExe], 1);
+    opDateFmtPLog:= ReadString('Setup', 'DateFmtP', 'hh:mm');
+    opFileBackup:= TSynBackup(ReadInteger('Setup', 'Back', 0));
+    opEsc:= TSynEscMode(ReadInteger('Setup', 'Esc' + c_exe[SynExe], Ord(cEscCloseApp)));
     opMruCheck:= ReadBool('Setup', 'MruCheck', false);
     opTabsReplace:= ReadBool('Setup', 'TabSp', false);
 
@@ -4376,7 +4423,7 @@ begin
     opTemplateTabbingExcept:= ReadString('ACP', 'TplTabEx', 'txt,nfo,diz');
     ParamCompletion.Enabled:= ReadBool('ACP', 'ParamHints', true);
 
-    opNotif:= ReadInteger('Setup', 'Notif', 2);
+    opNotif:= TSynReloadMode(ReadInteger('Setup', 'Notif', Ord(cReloadAsk)));
     ApplyIntf;
     ApplyBorders;
     
@@ -4389,7 +4436,7 @@ begin
 
     opSortMode:= TSynSortMode(ReadInteger('Setup', 'SortM', 0));
     opCopyLineIfNoSel:= ReadBool('Setup', 'CopyLnNoSel', false);
-    opShowRecentColors:= ReadInteger('Setup', 'RecColors', 0);
+    opShowRecentColors:= TSynRecentColors(ReadInteger('Setup', 'RecColors', 0));
     opUnicodeNeeded:= ReadInteger('Setup', 'UnNeed', 0{don't suggest});
     opFollowTail:= ReadBool('Setup', 'Tail', false);
     opCaretMoveX:= ReadInteger('Setup', 'MovX', 5);
@@ -4405,7 +4452,7 @@ begin
 
     opSrOffsetY:= ReadInteger('SR', 'OffY', 6);
     opSrExpand:= ReadBool('SR', 'Expand', false);
-    opSrOnTop:= ReadBool('SR', 'OnTop' + c_exe[SynExe], SynExe);
+    opSrOnTop:= ReadBool('SR', 'ShowOnTop' + c_exe[SynExe], SynExe);
     opSrSuggestSel:= ReadBool('SR', 'SugSel', false);
     opSrSuggestWord:= ReadBool('SR', 'SugWord', false);
     opMaxTreeMatches:= ReadInteger('SR', 'MaxTreeMatches', 100);
@@ -4463,8 +4510,6 @@ begin
     TabColorsString:= ReadString('View', 'TabMisc', '');
 
     opChInf:= ReadBool('Setup', 'ChInf', false);
-    UpdateCh;
-
     opLang:= ReadInteger('Setup', 'Lang', 0);
     Status.Visible:= ReadBool('Setup', 'Stat', true);
     if not QuickView then
@@ -4612,7 +4657,7 @@ begin
     end;
 
     //save toolbars and panels
-    if not FullScr then
+    if not ShowFullScreen then
       if FToolbarMoved then
       begin
         SaveToolbarsProps;
@@ -4664,7 +4709,7 @@ begin
     WriteInteger('ASave', 'Time', opASaveTimeMin);
     WriteBool('ASave', 'AllF', opASaveAllFiles);
     WriteInteger('ASave', 'MaxSize', opASaveMaxSizeKb);
-    WriteInteger('ASave', 'Unnm', opASaveUnnamed);
+    WriteInteger('ASave', 'Unnm', Ord(opASaveUnnamed));
     WriteString('ASave', 'UnnmDir', opASaveUnnamedDir);
 
     //setup
@@ -4730,8 +4775,8 @@ begin
     WriteBool('Setup', 'AskRO', opAskOverwrite);
     WriteBool('Setup', 'TitleFull', opTitleFull);
 
-    WriteInteger('Hist', 'DirVar', opLastDir);
-    if opLastDir=2 then
+    WriteInteger('Hist', 'DirVar', Ord(opLastDir));
+    if opLastDir=cLastDirCustom then
       WriteString('Hist', 'Dir', UTF8Encode(opLastDirPath));
 
     WriteBool('Setup', 'MenuIcon', opMenuIcon);
@@ -4740,17 +4785,17 @@ begin
     WriteBool('Setup', 'SmHiCase', opHiliteSmartCase);
     WriteString('Setup', 'DateFmt', opDateFmt);
     WriteString('Setup', 'DateFmtP', opDateFmtPLog);
-    WriteInteger('Setup', 'Back', opBak);
-    WriteInteger('Setup', 'Esc' + c_exe[SynExe], opEsc);
+    WriteInteger('Setup', 'Back', Ord(opFileBackup));
+    WriteInteger('Setup', 'Esc' + c_exe[SynExe], Ord(opEsc));
     WriteBool('Setup', 'MruCheck', opMruCheck);
     WriteBool('Setup', 'TabSp', opTabsReplace);
-    WriteInteger('Setup', 'Notif', opNotif);
+    WriteInteger('Setup', 'Notif', Ord(opNotif));
 
     WriteInteger('Setup', 'MovX', opCaretMoveX);
     WriteInteger('Setup', 'MovY', opCaretMoveY);
     WriteBool('Setup', 'Tail', opFollowTail);
     WriteInteger('Setup', 'UnNeed', opUnicodeNeeded);
-    WriteInteger('Setup', 'RecColors', opShowRecentColors);
+    WriteInteger('Setup', 'RecColors', Ord(opShowRecentColors));
     WriteBool('Setup', 'CopyLnNoSel', opCopyLineIfNoSel);
     WriteInteger('Setup', 'SortM', Ord(opSortMode));
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
@@ -4781,7 +4826,7 @@ begin
 
     WriteInteger('SR', 'OffY', opSrOffsetY);
     WriteBool('SR', 'Expand', opSrExpand);
-    WriteBool('SR', 'OnTop' + c_exe[SynExe], opSrOnTop);
+    WriteBool('SR', 'ShowOnTop' + c_exe[SynExe], opSrOnTop);
     WriteBool('SR', 'SugSel', opSrSuggestSel);
     WriteBool('SR', 'SugWord', opSrSuggestWord);
     WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
@@ -5361,7 +5406,7 @@ begin
     end;
 end;
 
-function TfmMain.NoCursor(E: TSyntaxMemo): boolean;
+function TfmMain.IsNoCursor(E: TSyntaxMemo): boolean;
 begin
   with E do
     Result:= ReadOnly and not (soAlwaysShowCaret in Options);
@@ -5509,7 +5554,7 @@ begin
       with Ed do
       begin
         Handled:= False;
-        if opKeepScr and not NoCursor(Ed) then
+        if opKeepScr and not IsNoCursor(Ed) then
         begin
           p:= CaretPos;
           n:= TopLine + 1;
@@ -5576,7 +5621,7 @@ begin
     //scroll
     smLeft:
     begin
-      if NoCursor(Ed) then
+      if IsNoCursor(Ed) then
         Ed.ExecCommand(smScrollLeft)
       else
       if (Ed.SelLength>0) and not (soPersistentBlocks in Ed.Options) then
@@ -5591,7 +5636,7 @@ begin
 
     smRight:
     begin
-      if NoCursor(Ed) then
+      if IsNoCursor(Ed) then
         Ed.ExecCommand(smScrollRight)
       else
       if (Ed.SelLength>0) and not (soPersistentBlocks in Ed.Options) then
@@ -5605,27 +5650,27 @@ begin
     end;
 
     smUp:
-      if NoCursor(Ed) then Ed.ExecCommand(smScrollUp)
+      if IsNoCursor(Ed) then Ed.ExecCommand(smScrollUp)
       else Handled:= False;
     smDown:
-      if NoCursor(Ed) then Ed.ExecCommand(smScrollDown)
+      if IsNoCursor(Ed) then Ed.ExecCommand(smScrollDown)
       else Handled:= False;
     smPageUp:
-      if NoCursor(Ed) then Ed.ExecCommand(smScrollPageUp)
+      if IsNoCursor(Ed) then Ed.ExecCommand(smScrollPageUp)
       else Handled:= False;
     smPageDown:
-      if NoCursor(Ed) then Ed.ExecCommand(smScrollPageDown)
+      if IsNoCursor(Ed) then Ed.ExecCommand(smScrollPageDown)
       else Handled:= False;
     smFirstLetter{home}:
-      if NoCursor(Ed) then Ed.ExecCommand(smEditorTop{smScrollPageLeft})
+      if IsNoCursor(Ed) then Ed.ExecCommand(smEditorTop{smScrollPageLeft})
       else Handled:= False;
     smLastLetter{end}:
-      if NoCursor(Ed) then Ed.ExecCommand(smEditorBottom{smScrollPageRight})
+      if IsNoCursor(Ed) then Ed.ExecCommand(smEditorBottom{smScrollPageRight})
       else Handled:= False;
 
     //Shift+
     smSelLeft..smSelDown:
-      Handled:= NoCursor(Ed);
+      Handled:= IsNoCursor(Ed);
 
     //search
     smFindDialog:
@@ -6601,12 +6646,12 @@ procedure TfmMain.ecReadOnlyExecute(Sender: TObject);
 begin
   CurrentEditor.ReadOnly:= not CurrentEditor.ReadOnly;
   UpdateStatusbar;
-  UpdateCur(CurrentEditor);
+  UpdateEditorCaret(CurrentEditor);
   UpdateTitle(CurrentFrame);
 end;
 
 //fix for missing EC's cursor hiding
-procedure TfmMain.UpdateCur(Ed: TSyntaxMemo);
+procedure TfmMain.UpdateEditorCaret(Ed: TSyntaxMemo);
 begin
   if QuickView then Exit;
   if not Ed.ReadOnly then Exit;
@@ -6651,7 +6696,7 @@ begin
   end;
 
   if AUpdateCur then
-    UpdateCur(F.EditorMaster);
+    UpdateEditorCaret(F.EditorMaster);
 end;
 
 procedure TfmMain.ButtonOnSelect(Sender: TTBCustomItem; Viewer: TTBItemViewer; Selecting: Boolean);
@@ -6808,9 +6853,9 @@ begin
   end;
 
   //update panels
-  UpdOut(FTabOut);
-  UpdRight(FTabRight);
-  UpdLeft(FTabLeft);
+  UpdatePanelOut(FTabOut);
+  UpdatePanelRight(FTabRight);
+  UpdatePanelLeft(FTabLeft);
 end;
 
 procedure TfmMain.LoadLexLib;
@@ -7036,7 +7081,7 @@ begin
   FinderPro:= nil;
   FinderInTree:= nil;
   FinderInList:= nil;
-  Finder:= TSynFindReplace.Create(Self);
+  Finder:= TSynFinderReplacer.Create(Self);
   Finder.OnBeforeExecute:= FinderInit;
   Finder.OnNotFound:= FinderFail;
   Finder.SkipInit:= False;
@@ -7107,11 +7152,11 @@ begin
   Result:= GetAcpFN('Htm');
 end;
 
-procedure TfmMain.RefreshACP(const Lexer: string);
+procedure TfmMain.UpdateAcp(const Lexer: string);
 var
   fn: Widestring;
 begin
-  FLexerACP:= Lexer;
+  FAcpLexer:= Lexer;
   if not Assigned(FAcpList_Display) then Exit;
   FAcpList_Display.Clear;
   FAcpList_Items.Clear;
@@ -7120,7 +7165,7 @@ begin
   FAcpIntHtml.Clear;
   FAcpIntCss.Clear;
 
-  ecACP.Tag:= cAcpNone;
+  FAcpAgain:= false;
   ecACP.Items.Clear;
   ecACP.DisplayItems.Clear;
 
@@ -7422,7 +7467,7 @@ begin
         CaretStrPos:= CaretStrPos-1;
         DeleteText(1);
         InsertText('>');
-        ecACP.Tag:= cAcpLoadedAcpFile;
+        FAcpAgain:= false;
       end;
 
   //if CSS completion done, delete ":" after caret
@@ -7434,7 +7479,7 @@ begin
         DeleteText(1);
     end;
 
-  if ecACP.Tag=cAcpLoadedHtmlList then
+  if FAcpAgain then
     DoAcpPopup //show ACP again
   else
     DoFuncHintPopup; //show func hint
@@ -7453,7 +7498,7 @@ var
 begin
   opAcpChars:= cAcpCharsCss;
   FTagCss:= true;
-  ecACP.Tag:= cAcpLoadedHtmlList;
+  FAcpAgain:= true;
 
   with CurrentEditor do
   begin
@@ -7559,7 +7604,7 @@ begin
           Display.Add(SAcpItem('attrib', str));
           sx:= a;
         end;
-        ecACP.Tag:= cAcpLoadedHtmlList;
+        FAcpAgain:= true;
         Exit;
       end
       //attrib params needed
@@ -7594,7 +7639,7 @@ begin
           Display.Add(SAcpItem('value', str));
           sx:= j;
         end;
-        ecACP.Tag:= cAcpDontShow;
+        FAcpAgain:= false;
         Exit;
       end;
     end
@@ -7621,7 +7666,7 @@ begin
           List.Add(str);
           Display.Add(SAcpItem('tag', '</'+str+'>'));
         end;
-        ecACP.Tag:= cAcpDontShow;
+        FAcpAgain:= false;
         FTagList:= true;
       end
       else
@@ -7639,7 +7684,7 @@ begin
             List.Add(str+' ');
           Display.Add(SAcpItem('tag', '<'+str+'>'));
         end;
-        ecACP.Tag:= cAcpLoadedHtmlList;
+        FAcpAgain:= true;
         FTagList:= true;
       end;
     end;
@@ -7681,7 +7726,7 @@ begin
   begin
     List.Assign(FAcpList_Items);
     Display.Assign(FAcpList_Display);
-    ecACP.Tag:= cAcpLoadedAcpFile;
+    FAcpAgain:= false;
   end;
 
   //get words from file
@@ -7845,13 +7890,26 @@ begin
   if SyntaxManager.CurrentLexer<>nil then
   begin
     Lexer:= SyntaxManager.CurrentLexer.LexerName;
+
+    //some overrides for few lexers
     if IsLexerCSS(Lexer) then
+    begin
       opAcpChars:= cAcpCharsCss;
-    RefreshACP(Lexer);
+      opWordChars:= cAcpCharsCss;
+    end
+    else
+    if IsLexerPHP(Lexer) then
+    begin
+      opAcpChars:= cAcpCharsPhp;
+      opWordChars:= cAcpCharsPhp;
+    end;
+
+    //load external ACP file
+    UpdateAcp(Lexer);
   end
   else
   begin
-    RefreshACP('');
+    UpdateAcp('');
     opAcpChars:= '.'; //default ACP chars for curr-file
   end;
 
@@ -8151,8 +8209,8 @@ begin
   with Frame do
   begin
     SetCP(Frame, ATag);
-    UpdateNPrint(EditorMaster);
-    UpdateNPrint(EditorSlave);
+    UpdateNonPrinted(EditorMaster);
+    UpdateNonPrinted(EditorSlave);
 
     if ACanReload and (FileName <> '') then
       if (not Modified) or MsgEncReload then
@@ -8250,7 +8308,7 @@ begin
   else
   with TIniFile.Create(SynIni) do
   try
-    SText:= ReadTCHist;
+    SText:= DoReadTotalHistory;
     IsSel:= false; //ReadBool('Search', 'SelOnly', false); //not saved
     IsForw:= ReadBool('Search', 'Forw', true);
     IsRE:= ReadBool('Search', 'RegExp', false);
@@ -8289,7 +8347,7 @@ begin
 end;
 
 
-function TfmMain.ReadTCHist: Widestring;
+function TfmMain.DoReadTotalHistory: Widestring;
 var
   fnTC: string;
   SA: Ansistring;
@@ -8362,9 +8420,9 @@ begin
       cbTokens.Enabled:= SyntaxManager.AnalyzerCount>0;
       LoadIni;
 
-      if not OnTop then
+      if not ShowOnTop then
       begin
-        //Seems it OK sets OnTop style, only for app
+        //Seems it OK sets ShowOnTop style, only for app
         if opSrOnTop then
           FormStyle:= fsStayOnTop
         else
@@ -8755,23 +8813,25 @@ begin
         FocusEditor
       else
         //Esc in editor
-        //0: do nothing, 1: close app, 2: close tab,
-        //3: close tab or app, 4: minimize app
         case opEsc of
-          1: acExit.Execute;
-          2: acClose.Execute;
-          3: begin
-               if FrameAllCount=1 then
-                 acExit.Execute
-               else
-                 acClose.Execute;
-             end;
-          4: begin
-               if SynExe then
-                 Application.Minimize
-               else
-                 SendMessage(hLister, WM_SYSCOMMAND, SC_MINIMIZE, 0);
-             end;
+          cEscCloseApp:
+            acExit.Execute;
+          cEscCloseTab:
+            acClose.Execute;
+          cEscCloseTabOrApp:
+            begin
+              if FrameAllCount=1 then
+                acExit.Execute
+              else
+                acClose.Execute;
+            end;
+          cEscMinimizeApp:
+            begin
+              if SynExe then
+                Application.Minimize
+              else
+                SendMessage(hLister, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+            end;
         end;
       Key:= 0;
       Exit
@@ -8920,7 +8980,7 @@ begin
   end;
 
   DoFrameReloadInt(F);
-  UpdateEnc(F); //calls DoFrameReloadInt
+  UpdateFrameEnc(F); //calls DoFrameReloadInt
 
   F.EditorMaster.Lines.ResetLineStates;
   F.EditorSlave.Lines.ResetLineStates;
@@ -9129,8 +9189,8 @@ end;
 procedure TfmMain.acNewExecute(Sender: TObject);
 begin
   CreateFrame;
-  UpdateCur(CurrentEditor);
-  UpdateZoom(CurrentFrame);
+  UpdateEditorCaret(CurrentEditor);
+  UpdateFrameZoom(CurrentFrame);
   UpdateColorHint;
 end;
 
@@ -9234,7 +9294,7 @@ end;
 procedure TfmMain.TBXSubmenuItem3Popup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
-  UpdateBookmk;
+  UpdateBookmarkMenus;
 end;
 
   function TfmMain.BookmarkDesc(i: integer;
@@ -9265,7 +9325,7 @@ end;
       Result:= WideFormat('%d: %s', [i, Result]);
   end;
 
-procedure TfmMain.UpdateBookmk;
+procedure TfmMain.UpdateBookmarkMenus;
 begin
   with CurrentEditor do
   begin
@@ -9313,7 +9373,7 @@ end;
 procedure TfmMain.TBXSubmenuItem8Popup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
-  UpdateBookmk;
+  UpdateBookmarkMenus;
 end;
 
 procedure WndCenter(h: THandle; fm: TCustomForm);
@@ -9449,10 +9509,11 @@ begin
         InsertText(' ');
         CaretStrPos:= CaretStrPos-1;
         DoAcpPopup;
+        FTagSpaceAdded:= true;
       end;
 end;
 
-procedure TfmMain.UpdateNPrint(E: TSyntaxMemo);
+procedure TfmMain.UpdateNonPrinted(E: TSyntaxMemo);
 begin
   with E do
     {
@@ -9470,7 +9531,7 @@ begin
     end;
 end;
 
-procedure TfmMain.SaveState_(Sender: TObject);
+procedure TfmMain.FrameSaveState(Sender: TObject);
 begin
   SaveState(Sender as TEditorFrame);
 end;
@@ -9978,7 +10039,7 @@ end;
 procedure TfmMain.TBXSubmenuEncPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
-  UpdateCPMenu(TbxSubmenuEnc);
+  UpdateEncMenu(TbxSubmenuEnc);
 end;
 
 procedure TfmMain.TBXItemSMarkNextClick(Sender: TObject);
@@ -10293,9 +10354,9 @@ begin
   cStatSelChars:= ' '+DKLangConstW('stat_selchars')+' ';
   cStatTLines:=   ' '+DKLangConstW('stat_tlines')+' ';
   cStatTChars:=   ' '+DKLangConstW('stat_tchars')+' ';
-  cStatFSize:=   ' '+DKLangConstW('stat_fsize')+' ';
-  cStatFDate:=   ' '+DKLangConstW('stat_fdate')+' ';
-  cStatCarets:=  ' '+DKLangConstW('stat_carets')+' ';
+  cStatFSize:=    ' '+DKLangConstW('stat_fsize')+' ';
+  cStatFDate:=    ' '+DKLangConstW('stat_fdate')+' ';
+  cStatCarets:=   ' '+DKLangConstW('stat_carets')+' ';
   cStatCaretsTopLn:= ' '+DKLangConstW('stat_carets_top')+' ';
   cStatCaretsBotLn:= ' '+DKLangConstW('stat_carets_btm')+' ';
 
@@ -10319,8 +10380,9 @@ end;
 
 procedure TfmMain.ecACPCloseUp(Sender: TObject; var Accept: Boolean);
 begin
-  //delete '<' if was added on ACP call
   if not Accept then
+  begin
+    //delete '<' if was added on ACP call
     if FTagBracketAdded then
       with CurrentEditor do
         if (CaretStrPos >= 1) and (CaretStrPos <= TextLength) then
@@ -10329,6 +10391,16 @@ begin
             CaretStrPos:= CaretStrPos - 1;
             DeleteText(1);
           end;
+
+    //delete space if added on ACP call
+    if FTagSpaceAdded then
+      with CurrentEditor do
+        if Lines.FText[CaretStrPos+1] = ' ' then
+          DeleteText(1);
+  end;
+
+  FTagBracketAdded:= false;
+  FTagSpaceAdded:= false;
 end;
 
 
@@ -10599,7 +10671,7 @@ begin
         Screen.Cursor:= crDefault;
       end;
 
-      HandleToolOutput(ft, NTool);
+      DoHandleToolOutput(ft, NTool);
     end;
   end;
 end;
@@ -10699,7 +10771,7 @@ procedure TfmMain.SaveToolbarsProps;
 var
   Ini: TIniFile;
 begin
-  if FullScr then Exit;
+  if ShowFullScreen then Exit;
   Ini:= TIniFile.Create(SynIni);
   try
     SaveToolbarProp(tbFile, Ini, 'File');
@@ -11686,7 +11758,7 @@ end;
 procedure TfmMain.TBXSubmenuEnc2Popup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
-  UpdateCPMenu(TbxSubmenuEnc2, True{AConvEnc});
+  UpdateEncMenu(TbxSubmenuEnc2, True{AConvEnc});
 end;
 
 procedure TfmMain.TBXItemETimeClick(Sender: TObject);
@@ -12453,7 +12525,7 @@ begin
     if not AOutAppend then
       ClearTreeFind;
     UpdateTreeInit(Finder.FindText, ADir);
-    UpdOut(tbFind);
+    UpdatePanelOut(tbFind);
     plOut.Show;
 
     fmProgress.SetMode(proFindText);
@@ -12545,7 +12617,7 @@ begin
       else
       begin
         ANeedFocusResult:= true;
-        UpdOut(tbFind);
+        UpdatePanelOut(tbFind);
         plOut.Show;
       end;
     end;
@@ -12565,7 +12637,7 @@ begin
         [Finder.FindText, Finder.ReplaceText, ADir]);
     FTreeRoot:= TreeFind.Items.Add(nil, ANodeText);
 
-    UpdOut(tbFind);
+    UpdatePanelOut(tbFind);
     plOut.Show;
 
     ACountFiles:= 0;
@@ -12632,7 +12704,7 @@ begin
       else
       begin
         ANeedFocusResult:= true;
-        UpdOut(tbFind);
+        UpdatePanelOut(tbFind);
         plOut.Show;
       end;
     end;
@@ -13113,11 +13185,17 @@ procedure TfmMain.ApplyACP;
 begin
   with ecACP do
   begin
-    ItemHeight:= Trunc(Abs(Font.Height) * 1.36);
+    ItemHeight:= FontHeightToItemHeight(Font);
     Height:= ItemHeight * (DropDownCount+1);
   end;
+
+  PluginACP.Font:= ecACP.Font;
   PluginACP.ItemHeight:= ecACP.ItemHeight;
   PluginACP.Height:= ecACP.Height;
+
+  TemplatePopup.Font:= ecACP.Font;
+  TemplatePopup.ListBox.Font:= ecACP.Font;
+  TemplatePopup.ListBox.ItemHeight:= ecACP.ItemHeight;
 end;
 
 procedure TfmMain.ApplyOut;
@@ -13134,7 +13212,7 @@ begin
   ListPLog.Color:= ListOut.Color;
   ListPLog.Font:= ListOut.Font;
 
-  ListOut.ItemHeight:= Trunc(Abs(ListOut.Font.Height) * 1.36);
+  ListOut.ItemHeight:= FontHeightToItemHeight(ListOut.Font);
   ListVal.ItemHeight:= ListOut.ItemHeight;
   ListPLog.ItemHeight:= ListOut.ItemHeight;
 
@@ -13324,7 +13402,7 @@ begin
     if (Finder.Matches>opMaxTreeMatches) then Exit;
 
   //get info about match and store it into Info
-  Ed:= (Sender as TTextFinder).Control;
+  Ed:= (Sender as TSynFinder).Control;
   p:= Ed.StrPosToCaretPos(StartPos);
   if not ((p.y >= 0) and (p.y < Ed.Lines.Count)) then Exit;
   ColNum:= p.X;
@@ -13363,14 +13441,14 @@ var
   Ed: TCustomSyntaxMemo;
   LineNum: integer;
 begin
-  Ed:= (Sender as TTextFinder).Control;
+  Ed:= (Sender as TSynFinder).Control;
   LineNum:= Ed.StrPosToCaretPos(StartPos).Y;
   if (LineNum>=0) and (LineNum<Ed.Lines.Count) then
     if Ed.BookmarkForLine(LineNum)<0 then
       CurrentFrame.DoBkToggle(Ed, LineNum);
 end;
 
-procedure TfmMain.UpdOut(n: TSynTabOut);
+procedure TfmMain.UpdatePanelOut(n: TSynTabOut);
 begin
   FTabOut:= n;
   ListOut.Visible:= n=tbOut;
@@ -13391,7 +13469,7 @@ begin
     tbTabsOut.ActiveTabIndex:= 3;
 end;
 
-procedure TfmMain.UpdLeft(n: TSynTabLeft);
+procedure TfmMain.UpdatePanelLeft(n: TSynTabLeft);
 var
   IsTree, IsProj, IsTabs: boolean;
   i: Integer;
@@ -13458,7 +13536,7 @@ begin
     tbTabsLeft.ActiveTabIndex:= 2;
 end;
 
-procedure TfmMain.UpdRight(n: TSynTabRight);
+procedure TfmMain.UpdatePanelRight(n: TSynTabRight);
 var
   IsMap, IsClip, IsClips: boolean;
 begin
@@ -13508,12 +13586,12 @@ end;
 
 procedure TfmMain.TBXItemOOOutClick(Sender: TObject);
 begin
-  UpdOut(tbOut);
+  UpdatePanelOut(tbOut);
 end;
 
 procedure TfmMain.TBXItemOOFindClick(Sender: TObject);
 begin
-  UpdOut(tbFind);
+  UpdatePanelOut(tbFind);
 end;
 
 (*
@@ -13646,10 +13724,10 @@ end;
 
 procedure TfmMain.PopupCPPopup(Sender: TObject);
 begin
-  UpdateCPMenu(PopupCP);
+  UpdateEncMenu(PopupCP);
 end;
 
-procedure TfmMain.UpdateCPMenu(M: TObject; AConvEnc: boolean = false);
+procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
   procedure Add(const S: Widestring; Tag: Integer);
   var
     Item: TTbCustomItem;
@@ -13980,7 +14058,6 @@ end;
 procedure TfmMain.LoadProjPreview;
 var
   Ini: TIniFile;
-  Btn: TSpTbxItem;
 begin
   if not Assigned(FProjPreview) then
   begin
@@ -14012,13 +14089,13 @@ begin
         OnKeyDown:= ProjPreviewKeyDown;
       end;
 
-      Btn:= TSpTbxItem.Create(Self);
-      with Btn do
+      FProjPreviewButton:= TSpTbxItem.Create(Self);
+      with FProjPreviewButton do
       begin
-        Caption:= StringOfChar(' ', 10) + DKLangConstW('zMOpenInEditor') + StringOfChar(' ', 10);
+        Caption:= 'Open in editor';
         OnClick:= ProjPreviewButtonClick;
       end;
-      FProjPreview.Items.Insert(1, Btn);
+      FProjPreview.Items.Insert(1, FProjPreviewButton);
 
       Ini:= TIniFile.Create(SynIni);
       try
@@ -14260,14 +14337,14 @@ var
 const
   ROMask = FILE_ATTRIBUTE_READONLY or FILE_ATTRIBUTE_HIDDEN or FILE_ATTRIBUTE_SYSTEM;
 begin
-  case opBak of
-    1:
+  case opFileBackup of
+    cBakAppdata:
       begin
       Dest:= FAppDataPath + 'SynWrite\Backup';
       WideForceDirectories(Dest);
       Dest:= Dest+'\'+WideExtractFileName(AFileName);
       end;
-    2:
+    cBakSameDir:
       Dest:= AFileName+'.bak';
     else
       Exit;
@@ -14287,7 +14364,7 @@ end;
 function TfmMain.LastDir: Widestring;
 begin
   case opLastDir of
-    0:
+    cLastDirCurrentFile:
     begin
       if (CurrentFrame<>nil) and (CurrentFrame.FileName<>'') then
         Result:= WideExtractFileDir(CurrentFrame.FileName)
@@ -14336,7 +14413,8 @@ end;
 
 procedure TfmMain.SaveLastDir(const FN, Filter: Widestring; FilterIndex: integer);
 begin
-  if opLastDir<>1 then Exit;
+  if opLastDir<>cLastDirRemember then Exit;
+  
   opLastDirPath:= WideExtractFileDir(FN);
   opHistFilter:= FilterIndex;
   if FilterIndex >= SFilterNum(Filter) then
@@ -14492,7 +14570,7 @@ end;
 
 procedure TfmMain.ecFullScrExecute(Sender: TObject);
 begin
-  FullScr:= not FullScr;
+  ShowFullScreen:= not ShowFullScreen;
   UpdateStatusbar;
 end;
 
@@ -14528,7 +14606,7 @@ end;
 
 procedure TfmMain.edQsExit(Sender: TObject);
 begin
-  if FullScr then
+  if ShowFullScreen then
     if tbQs.CurrentDock= TBXDockTop then
     begin
       TBXDockTop.Hide;
@@ -14981,8 +15059,8 @@ end;
 
 procedure TfmMain.ecOnTopExecute(Sender: TObject);
 begin
-  OnTop:= not OnTop;
-  ecOnTop.Checked:= OnTop;
+  ShowOnTop:= not ShowOnTop;
+  ecOnTop.Checked:= ShowOnTop;
 end;
 
 procedure TfmMain.tbMenuShortCut(var Msg: TWMKey; var Handled: Boolean);
@@ -15745,7 +15823,7 @@ end;
 
 procedure TfmMain.DoTreeFocus;
 begin
-  UpdLeft(tbTree);
+  UpdatePanelLeft(tbTree);
   if Self.Enabled and Tree.CanFocus then
     Tree.SetFocus;
 end;
@@ -15769,7 +15847,7 @@ begin
   if not plClip.Visible then
   begin
     ecShowClip.Execute;
-    UpdRight(tbClip);
+    UpdatePanelRight(tbClip);
     if fmClip.ListClip.CanFocus then
       fmClip.ListClip.SetFocus;
   end
@@ -15778,7 +15856,7 @@ begin
     FocusEditor
   else
   begin
-    UpdRight(tbClip);
+    UpdatePanelRight(tbClip);
     if fmClip.ListClip.CanFocus then
       fmClip.ListClip.SetFocus
   end;
@@ -15956,8 +16034,8 @@ var
   Lexer: string;
 begin
   Lexer:= CurrentLexer;
-  if Lexer<>FLexerACP then
-    RefreshACP(Lexer);
+  if Lexer<>FAcpLexer then
+    UpdateAcp(Lexer);
 end;
 
 procedure TfmMain.TBXItemFReopenClick(Sender: TObject);
@@ -16016,7 +16094,7 @@ begin
   if not plOut.Visible then
   begin
     ecShowOut.Execute;
-    UpdOut(tbOut);
+    UpdatePanelOut(tbOut);
     if Self.Enabled and ListOut.CanFocus then
       ListOut.SetFocus;
   end
@@ -16025,7 +16103,7 @@ begin
     FocusEditor
   else
   begin
-    UpdOut(tbOut);
+    UpdatePanelOut(tbOut);
     if Self.Enabled and ListOut.CanFocus then
       ListOut.SetFocus
   end;
@@ -16209,7 +16287,7 @@ begin
   if not plOut.Visible then
   begin
     ecShowOut.Execute;
-    UpdOut(tbFind);
+    UpdatePanelOut(tbFind);
     if Self.Enabled and TreeFind.CanFocus then
       TreeFind.SetFocus;
   end
@@ -16218,7 +16296,7 @@ begin
     FocusEditor
   else
   begin
-    UpdOut(tbFind);
+    UpdatePanelOut(tbFind);
     if Self.Enabled and TreeFind.CanFocus then
       TreeFind.SetFocus
   end;
@@ -16266,7 +16344,7 @@ begin
   {$endif}
 end;
 
-procedure TfmMain.UpdateSpell(Frame: TEditorFrame; UpdFlag: boolean = true);
+procedure TfmMain.UpdateFrameSpell(Frame: TEditorFrame; UpdFlag: boolean = true);
 begin
   {$ifdef SPELL}
   if Assigned(FSpell) then
@@ -16368,7 +16446,7 @@ procedure TfmMain.ecSpellLiveExecute(Sender: TObject);
 begin
   with CurrentFrame do
     SpellLive:= not SpellLive;
-  UpdateSpell(CurrentFrame, false);
+  UpdateFrameSpell(CurrentFrame, false);
 end;
 
 procedure TfmMain.TBXItemSpellLiveClick(Sender: TObject);
@@ -17204,7 +17282,7 @@ begin
   if IsFileExist(fn_err) and (FGetFileSize(fn_err)>0) then
   begin
     ListVal.Items.LoadFromFile(fn_err);
-    UpdOut(tbVal);
+    UpdatePanelOut(tbVal);
     plOut.Show;
   end
   else
@@ -17241,7 +17319,7 @@ end;
 
 procedure TfmMain.TBXItemOOValClick(Sender: TObject);
 begin
-  UpdOut(tbVal);
+  UpdatePanelOut(tbVal);
 end;
 
 procedure TfmMain.ListValDblClick(Sender: TObject);
@@ -17320,7 +17398,7 @@ begin
   if not plOut.Visible then
   begin
     ecShowOut.Execute;
-    UpdOut(tbVal);
+    UpdatePanelOut(tbVal);
     if Self.Enabled and ListVal.CanFocus then
       ListVal.SetFocus;
   end
@@ -17329,7 +17407,7 @@ begin
     FocusEditor
   else
   begin
-    UpdOut(tbVal);
+    UpdatePanelOut(tbVal);
     if Self.Enabled and ListVal.CanFocus then
       ListVal.SetFocus
   end;
@@ -17994,12 +18072,12 @@ end;
 
 procedure TfmMain.TBXItemRightClipClick(Sender: TObject);
 begin
-  UpdRight(tbClip);
+  UpdatePanelRight(tbClip);
 end;
 
 procedure TfmMain.TBXItemRightMapClick(Sender: TObject);
 begin
-  UpdRight(tbMap);
+  UpdatePanelRight(tbMap);
 end;
 
 procedure TfmMain.MapClick(Sender: TObject);
@@ -18045,7 +18123,7 @@ begin
   if not plClip.Visible then
   begin
     ecShowClip.Execute;
-    UpdRight(tbMap);
+    UpdatePanelRight(tbMap);
     if Assigned(fmMap) and fmMap.edMap.CanFocus then
       fmMap.edMap.SetFocus;
   end
@@ -18054,7 +18132,7 @@ begin
     FocusEditor
   else
   begin
-    UpdRight(tbMap);
+    UpdatePanelRight(tbMap);
     if Assigned(fmMap) and fmMap.edMap.CanFocus then
       fmMap.edMap.SetFocus
   end;
@@ -18428,7 +18506,7 @@ begin
   DoFindExtSel(false);
 end;
 
-procedure TfmMain.UpdateZoom(F: TEditorFrame);
+procedure TfmMain.UpdateFrameZoom(F: TEditorFrame);
 begin
   //update ruler height
   with F do
@@ -18627,7 +18705,7 @@ procedure TfmMain.DoAutoSave;
   begin
     Result:= (F<>nil) and
       F.Modified and
-      ((F.FileName<>'') or (opASaveUnnamed<>0)) and
+      ((F.FileName<>'') or (opASaveUnnamed<>cAutoSaveIgnore)) and
       SizeOk(F);
   end;
   //
@@ -18638,12 +18716,13 @@ procedure TfmMain.DoAutoSave;
     if F.FileName<>'' then
       SaveFrame(F, false)
     else
-    if opASaveUnnamed=0 then
+    if opASaveUnnamed=cAutoSaveIgnore then
       Exit
     else
-    if opASaveUnnamed=1 then
+    if opASaveUnnamed=cAutoSavePromptFN then
       SaveFrame(F, true)
     else
+    if opASaveUnnamed=cAutoSaveSaveToDir then
     begin
       //get save dir
       dir:= SExpandVars(opASaveUnnamedDir);
@@ -20067,9 +20146,12 @@ end;
 procedure TfmMain.ApplyShowRecentColors;
 begin
   case opShowRecentColors of
-    0: TbxSubmenuItemRecentColors.Visible:= ImageListColorRecent.Count>1;
-    1: TbxSubmenuItemRecentColors.Visible:= true;
-    2: TbxSubmenuItemRecentColors.Visible:= false;
+    cRecColorsAutoHide:
+      TbxSubmenuItemRecentColors.Visible:= ImageListColorRecent.Count>1;
+    cRecColorsShow:
+      TbxSubmenuItemRecentColors.Visible:= true;
+    cRecColorsHide:
+      TbxSubmenuItemRecentColors.Visible:= false;
   end;
 end;
 
@@ -20178,7 +20260,7 @@ begin
 end;
 
 
-procedure TfmMain.HandleToolOutput(const ft: Widestring; NTool: integer);
+procedure TfmMain.DoHandleToolOutput(const ft: Widestring; NTool: integer);
 var
   List: TWideStringList;
   AType: TSynOutputType;
@@ -20216,7 +20298,7 @@ begin
           UpdateOutFromList(List);
           FCurrTool:= NTool;
           FCurrToolFN:= CurrentFrame.FileName;
-          UpdOut(tbOut);
+          UpdatePanelOut(tbOut);
           plOut.Show;
         end;
 
@@ -20331,8 +20413,9 @@ begin
 end;
 
 
-function TfmMain.SStatusText: Widestring;
+function TfmMain.SStatusText(Ed: TSyntaxMemo): Widestring;
 var
+  Frame: TEditorFrame;
   state: TSynSelState;
   p1, p2: TPoint;
   NLine, NCol,
@@ -20342,15 +20425,13 @@ var
   NSize: Int64;
 begin
   Result:= '';
-  if CurrentEditor=nil then Exit;
+  if Ed=nil then Exit;
 
-  with CurrentFrame do
-  begin
-    NCarets:= CaretsCount;
-    CaretsProps(NTopLine, NBottomLine);
-  end;
+  Frame:= FrameOfEditor(Ed);
+  NCarets:= Frame.CaretsCount;
+  Frame.CaretsProps(NTopLine, NBottomLine);
 
-  with CurrentEditor do
+  with Ed do
   begin
     state:= selNone;
     NLine:= CaretPos.Y+1;
@@ -20392,9 +20473,9 @@ begin
 
   FillChar(NTime, SizeOf(NTime), 0);
   NSize:= 0;
-  if (CurrentFrame.FileName<>'') then
+  if Frame.FileName<>'' then
     if Pos('{File', Result)>0 then
-      if FGetFileInfo(CurrentFrame.FileName, NSize, NTime) then begin end;
+      FGetFileInfo(Frame.FileName, NSize, NTime);
 
   SReplaceAllW(Result, '{LineNum}', IntToStr(NLine));
   SReplaceAllW(Result, '{ColNum}', IntToStr(NCol));
@@ -20402,15 +20483,15 @@ begin
   SReplaceAllW(Result, '{SelCols}', IntToStr(NSelCols));
   SReplaceAllW(Result, '{SelChars}', IntToStr(NSelChars));
 
-  SReplaceAllW(Result, '{TotalLines}', IntToStr(CurrentEditor.Lines.Count));
+  SReplaceAllW(Result, '{TotalLines}', IntToStr(Ed.Lines.Count));
   if Pos('{TotalChars}', Result)>0 then
-    SReplaceAllW(Result, '{TotalChars}', IntToStr(CurrentEditor.Lines.TextLength));
+    SReplaceAllW(Result, '{TotalChars}', IntToStr(Ed.Lines.TextLength));
 
   SReplaceAllW(Result, '{Carets}', IntToStr(NCarets));
   SReplaceAllW(Result, '{CaretsTopLine}', IntToStr(NTopLine+1));
   SReplaceAllW(Result, '{CaretsBottomLine}', IntToStr(NBottomLine+1));
 
-  if CurrentFrame.FileName<>'' then
+  if Frame.FileName<>'' then
   begin
     //if Pos('{FileSize}', Result)>0 then
     //  SReplaceAllW(Result, '{FileSize}', FormatSize(NSize, true));
@@ -20433,7 +20514,7 @@ end;
 function TfmMain.SStatusHint(state: TSynSelState): Widestring;
 begin
   Result:= opStatusText[state];
-  
+
   SReplaceAllW(Result, '{LineNum}', cStatLine);
   SReplaceAllW(Result, '{ColNum}', cStatCol);
   SReplaceAllW(Result, '{SelLines}', cStatSelLines);
@@ -20541,7 +20622,7 @@ begin
     FixListOutput(List, false{NoTags}, false{NoDups}, Enc,
       CurrentTabExpansion(CurrentEditor));
     UpdateOutFromList(List);
-    UpdOut(tbOut);
+    UpdatePanelOut(tbOut);
     plOut.Show;
   finally
     FreeAndNil(List);
@@ -20550,12 +20631,12 @@ end;
 
 procedure TfmMain.TBXItemLeftTreeClick(Sender: TObject);
 begin
-  UpdLeft(tbTree);
+  UpdatePanelLeft(tbTree);
 end;
 
 procedure TfmMain.TBXItemLeftProjClick(Sender: TObject);
 begin
-  UpdLeft(tbProj);
+  UpdatePanelLeft(tbProj);
 end;
 
 procedure TfmMain.ecToggleFocusProjectExecute(Sender: TObject);
@@ -20563,7 +20644,7 @@ begin
   if not plTree.Visible then
   begin
     ecShowTree.Execute;
-    UpdLeft(tbProj);
+    UpdatePanelLeft(tbProj);
     if Assigned(fmProj) then
       if fmProj.TreeProj.CanFocus then
         fmProj.TreeProj.SetFocus
@@ -20573,7 +20654,7 @@ begin
     FocusEditor
   else
   begin
-    UpdLeft(tbProj);
+    UpdatePanelLeft(tbProj);
     if Assigned(fmProj) then
       if fmProj.TreeProj.CanFocus then
         fmProj.TreeProj.SetFocus
@@ -20581,11 +20662,20 @@ begin
 end;
 
 function TfmMain.DoAutoCloseTag: boolean;
+  //
   function IsNoPairTag(const s: string): boolean;
-  const cList = 'area base basefont br col command embed frame hr img input keygen link meta param source track wbr';
+  const
+    cList = 'area,base,basefont,br,col,command,embed,frame,hr,img,input,keygen,link,meta,param,source,track,wbr';
   begin
-    Result:= Pos(' '+LowerCase(s)+' ', ' '+cList+' ')>0;
+    Result:= IsLexerListed(s, cList);
   end;
+  //
+  function IsTagChar(ch: Widechar): boolean;
+  begin
+    //count ":" char as part of xml tag name
+    Result:= IsWordChar(ch) or (ch=':');
+  end;
+  //
 const
   cOpenTagRegex = '\<\w+[ \w''"=\.,;\#\-\+:/]*'; //opening tag w/o ending '>'
 var
@@ -20615,7 +20705,7 @@ begin
 
         //get closing tag
         i:= 2;
-        while (i<Length(STag)) and IsWordChar(STag[i+1]) do Inc(i);
+        while (i<Length(STag)) and IsTagChar(STag[i+1]) do Inc(i);
         STag:= Copy(STag, 2, i-1);
         if IsNoPairTag(STag) then Exit;
         STag:= '></'+STag+'>';
@@ -21508,7 +21598,7 @@ end;
 
 procedure TfmMain.TBXItemRightClipsClick(Sender: TObject);
 begin
-  UpdRight(tbTextClips);
+  UpdatePanelRight(tbTextClips);
 end;
 
 procedure TfmMain.ClipsClick(Sender: TObject; const S: Widestring);
@@ -21526,7 +21616,7 @@ begin
   if not plClip.Visible then
   begin
     ecShowClip.Execute;
-    UpdRight(tbTextClips);
+    UpdatePanelRight(tbTextClips);
     if Assigned(fmClips) then
       if fmClips.List.CanFocus then
         fmClips.List.SetFocus;
@@ -21536,7 +21626,7 @@ begin
     FocusEditor
   else
   begin
-    UpdRight(tbTextClips);
+    UpdatePanelRight(tbTextClips);
     if Assigned(fmClips) then
       if fmClips.List.CanFocus then
         fmClips.List.SetFocus
@@ -21973,7 +22063,7 @@ var
   i: Integer;
 begin
   for i:= 0 to FrameAllCount-1 do
-    UpdateSpell(FramesAll[i]);
+    UpdateFrameSpell(FramesAll[i]);
 end;
 
 
@@ -22839,7 +22929,7 @@ end;
 
 procedure TfmMain.TBXItemOOPLogClick(Sender: TObject);
 begin
-  UpdOut(tbPluginsLog);
+  UpdatePanelOut(tbPluginsLog);
 end;
 
 function TfmMain.PluginAction_ShowHint(const AMsg: Widestring): Integer;
@@ -22857,12 +22947,12 @@ begin
     cSynLogCmdHide:
       begin
         TbxTabPlugins.Visible:= false;
-        UpdOut(tbOut);
+        UpdatePanelOut(tbOut);
       end;
     cSynLogCmdShow:
       begin
         TbxTabPlugins.Visible:= true;
-        UpdOut(tbPluginsLog);
+        UpdatePanelOut(tbPluginsLog);
         plOut.Show;
       end;
     cSynLogCmdAddLine:
@@ -22987,7 +23077,7 @@ begin
 
   //Init TreeRoot, show pane
   UpdateTreeInit(Finder.FindText, ADir, true);
-  UpdOut(tbFind);
+  UpdatePanelOut(tbFind);
   plOut.Show;
 
   ShowProgress(proFindText);
@@ -23044,7 +23134,7 @@ begin
   else
   begin
     UpdateTreeFind(Finder.FindText, ADir, false, true);
-    UpdOut(tbFind);
+    UpdatePanelOut(tbFind);
     plOut.Show;
   end;
 end;
@@ -23332,7 +23422,7 @@ end;
 
 procedure TfmMain.TBXItemLeftTabsClick(Sender: TObject);
 begin
-  UpdLeft(tbTabs);
+  UpdatePanelLeft(tbTabs);
 end;
 
 function TfmMain.ListTab_FrameIndex: integer;
@@ -23441,7 +23531,7 @@ begin
   if not plTree.Visible then
   begin
     ecShowTree.Execute;
-    UpdLeft(tbTabs);
+    UpdatePanelLeft(tbTabs);
     if ListTabs.CanFocus then
       ListTabs.SetFocus
   end
@@ -23450,7 +23540,7 @@ begin
     FocusEditor
   else
   begin
-    UpdLeft(tbTabs);
+    UpdatePanelLeft(tbTabs);
     if ListTabs.CanFocus then
       ListTabs.SetFocus
   end;
@@ -24494,9 +24584,9 @@ var
   Tokens: TSearchTokens;
   p: TPoint;
 begin
-  Ed:= (Sender as TTextFinder).Control as TSyntaxMemo;
-  Flags:= (Sender as TTextFinder).Flags;
-  Tokens:= (Sender as TTextFinder).Tokens;
+  Ed:= (Sender as TSynFinder).Control as TSyntaxMemo;
+  Flags:= (Sender as TSynFinder).Flags;
+  Tokens:= (Sender as TSynFinder).Tokens;
 
   if ftSkipCollapsed in Flags then
   begin
@@ -27597,13 +27687,18 @@ begin
 end;
 
 procedure TfmMain.ProjPreview(Sender: TObject; const AFilename: Widestring; AToggle: boolean);
+const
+  cBtnIndent = '          ';
 var
   Ed: TSyntaxMemo;
 begin
   if Assigned(FProjPreview) then
     with FProjPreview do
     begin
-      Caption:= DKLangConstW('Preview')+': '+WideExtractFilename(AFilename);
+      Caption:= DKLangConstW('MPre')+': '+WideExtractFilename(AFilename);
+      if Assigned(FProjPreviewButton) then
+        FProjPreviewButton.Caption:= cBtnIndent + DKLangConstW('MPreButton') + cBtnIndent;
+
       if AToggle then
         Visible:= not Visible;
 
@@ -27706,8 +27801,8 @@ function TfmMain.DoCheckCommandLineTwo: boolean;
 var
   i: Integer;
   S, SName1, SName2,
-  SLine1, SLine2, SCol1, SCol2: Widestring;
-  NLine1, NLine2, NCol1, NCol2: Integer;
+  SLine1, SLine2, SCol1, SCol2, SDelta: Widestring;
+  NLine1, NLine2, NCol1, NCol2, NDelta: Integer;
   F: TEditorFrame;
 begin
   Result:= false;
@@ -27719,22 +27814,24 @@ begin
       Result:= true;
       Delete(S, 1, Length(cSynParamTwo));
 
-      SName1:= SGetItem(S, ';');
-      SName2:= SGetItem(S, ';');
-      SLine1:= SGetItem(S, ';');
-      SLine2:= SGetItem(S, ';');
-      SCol1:= SGetItem(S, ';');
-      SCol2:= SGetItem(S, ';');
+      SName1:= SGetItem(S, '|');
+      SName2:= SGetItem(S, '|');
+      SLine1:= SGetItem(S, '|');
+      SLine2:= SGetItem(S, '|');
+      SCol1:= SGetItem(S, '|');
+      SCol2:= SGetItem(S, '|');
+      SDelta:= SGetItem(S, '|');
 
       NLine1:= StrToIntDef(SLine1, 1)-1;
       NLine2:= StrToIntDef(SLine2, 1)-1;
       NCol1:= StrToIntDef(SCol1, 1)-1;
       NCol2:= StrToIntDef(SCol2, 1)-1;
+      NDelta:= StrToIntDef(SDelta, 0);
 
       if not IsFileExist(SName1) then
         begin MsgNoFile(SName1); Exit end;
-      if not IsFileExist(SName2) then
-        begin MsgNoFile(SName2); Exit end;
+      //if not IsFileExist(SName2) then
+      //  begin MsgNoFile(SName2); Exit end;
 
       //close all tabs
       acCloseAll.Execute;
@@ -27742,14 +27839,24 @@ begin
       //open 1st file
       DoOpenFile(SName1);
       F:= CurrentFrame;
-      F.EditorMaster.TopLine:= NLine1 - opSrOffsetY;
+      F.EditorMaster.TopLine:= NLine1 - NDelta;
       F.EditorMaster.CaretPos:= Point(NCol1, NLine1);
 
       //open 2nd file
-      DoOpenFile(SName2);
-      F:= CurrentFrame;
-      F.EditorMaster.TopLine:= NLine2 - opSrOffsetY;
-      F.EditorMaster.CaretPos:= Point(NCol2, NLine2);
+      if IsFileExist(SName2) then
+      begin
+        DoOpenFile(SName2);
+        F:= CurrentFrame;
+        F.EditorMaster.TopLine:= NLine2 - NDelta;
+        F.EditorMaster.CaretPos:= Point(NCol2, NLine2);
+      end
+      else
+      begin
+        acNew.Execute;
+        F:= CurrentFrame;
+        F.EditorMaster.Lines.Text:= DKLangConstW('MNFound')+' '+SName2;
+        EditorSetModified(F.EditorMaster);
+      end;
 
       //update state
       ecToggleView2.Execute; //move tab to 2nd view

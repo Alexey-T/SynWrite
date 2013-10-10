@@ -343,9 +343,9 @@ begin
   try
     with TIniFile.Create(SynIni) do
     try
-      //WriteBool('Win', 'FScr', fmMain.FullScr);
-      WriteBool('Win', 'OnTop', fmMain.OnTop);
-      if fmMain.FullScr then Exit;
+      //WriteBool('Win', 'FScr', fmMain.ShowFullScreen); //don't save full-screen
+      WriteBool('Win', 'OnTop', fmMain.ShowOnTop);
+      if fmMain.ShowFullScreen then Exit;
       if not fmMain.opSavePos then Exit;
       if WindowState <> wsMaximized then
       begin
@@ -398,18 +398,20 @@ begin
       fmMain.FocusEditor
     else
       //Esc in editor
-      //0: do nothing, 1: close app, 2: close tab, 3: close tab or app, 4: minimize app
       case fmMain.opEsc of
-        1: Close;
-        2: fmMain.acClose.Execute;
-        3:
+        cEscCloseApp:
+          Close;
+        cEscCloseTab:
+          fmMain.acClose.Execute;
+        cEscCloseTabOrApp:
           begin
             if fmMain.FrameAllCount=1 then
               Close
             else
               fmMain.acClose.Execute;
           end;    
-        4: Application.Minimize;
+        cEscMinimizeApp:
+          Application.Minimize;
       end;
     Key:= 0;
     Exit

@@ -854,7 +854,7 @@ end;
 procedure TEditorFrame.DoStartNotif;
 begin
   FNotif.FileName:= FileName;
-  FNotif.Timer.Enabled:= (FileName <> '') and (TfmMain(Owner).opNotif > 0);
+  FNotif.Timer.Enabled:= (FileName <> '') and (TfmMain(Owner).opNotif <> cReloadNone);
 end;
 
 procedure TEditorFrame.DoStopNotif;
@@ -908,17 +908,19 @@ begin
   //use MsgBox for plugin, MsgDlg for exe
   if not TfmMain(Owner).SynExe then
   begin
-    Cfm:= (TfmMain(Owner).opNotif = 1) or
+    Cfm:= (TfmMain(Owner).opNotif = cReloadAuto) or
       MsgConfirm(WideFormat(DKLangConstW('MRel'), [WideExtractFileName(FileName)]), Handle);
   end
   else
   begin
-    if FNotifAllYes then Cfm:= true
+    if FNotifAllYes then
+      Cfm:= true
     else
-    if FNotifAllNo then Cfm:= false
+    if FNotifAllNo then
+      Cfm:= false
     else
     begin
-      Cfm:= (TfmMain(Owner).opNotif = 1);
+      Cfm:= (TfmMain(Owner).opNotif = cReloadAuto);
       if not Cfm then
       begin
         MsgBeep;

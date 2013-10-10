@@ -6,8 +6,10 @@ uses
   Windows, Classes, Graphics, Controls;
 
 var
-  opImageHintColorFont: TColor = clBlue;
-  opImageHintColorBG: TColor = clLime;
+  opImageHintColorFont: TColor = clBlack;
+  opImageHintColorBG: TColor = clInfoBk;
+  opImageHintFontName: string = 'Tahoma';
+  opImageHintFontSize: integer = 8;
 
 type
   TGraphicHintWindow = class(THintWindow)
@@ -83,8 +85,8 @@ begin
   with Canvas do
   begin
     Brush.Style:= bsClear;
-    Font.Name:= 'Tahoma';
-    Font.Size:= 8;
+    Font.Name:= opImageHintFontName;
+    Font.Size:= opImageHintFontSize;
     Font.Color:= opImageHintColorFont;
     Font.Style:= [];
   end;
@@ -318,8 +320,8 @@ begin
     FillRect(Rect(0, 0, Width, Height));
 
     Brush.Style:= bsClear;
-    Font.Name:= 'Tahoma';
-    Font.Size:= 8;
+    Font.Name:= opImageHintFontName;
+    Font.Size:= opImageHintFontSize;
     Font.Color:= opImageHintColorFont;
     Font.Style:= [];
   end;

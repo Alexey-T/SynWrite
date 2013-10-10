@@ -3,8 +3,8 @@ object fmLoadLex: TfmLoadLex
   Top = 253
   BorderStyle = bsDialog
   Caption = 'Restore lexer styles'
-  ClientHeight = 273
-  ClientWidth = 458
+  ClientHeight = 307
+  ClientWidth = 505
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,8 +18,8 @@ object fmLoadLex: TfmLoadLex
   TextHeight = 13
   object Label1: TTntLabel
     Left = 8
-    Top = 8
-    Width = 441
+    Top = 4
+    Width = 489
     Height = 73
     AutoSize = False
     Caption = 
@@ -29,22 +29,21 @@ object fmLoadLex: TfmLoadLex
       'ach OK button pressing in Lexer properties dialog(s). Then you c' +
       'an reinstall SynWrite (with "LexLib.lxl" library replacement), a' +
       'nd call this dialog. Here you can restore backed up styles from ' +
-      '"SynStyles.ini" file back to the "LexLib.lxl" lexer library file' +
-      '.'
+      '"SynStyles.ini" file back to the lexer library file.'
     WordWrap = True
   end
   object TntGroupBox1: TTntGroupBox
-    Left = 48
+    Left = 72
     Top = 80
     Width = 353
-    Height = 157
+    Height = 189
     Caption = 'Choose which saved styles you want to restore'
     TabOrder = 0
     object List: TCheckListBox
       Left = 8
       Top = 20
       Width = 201
-      Height = 129
+      Height = 161
       OnClickCheck = ListClickCheck
       ItemHeight = 13
       TabOrder = 0
@@ -69,7 +68,7 @@ object fmLoadLex: TfmLoadLex
     end
     object bRem: TTntButton
       Left = 216
-      Top = 96
+      Top = 128
       Width = 129
       Height = 23
       Caption = 'Remove selected'
@@ -78,8 +77,8 @@ object fmLoadLex: TfmLoadLex
     end
   end
   object bOk: TTntButton
-    Left = 136
-    Top = 244
+    Left = 160
+    Top = 276
     Width = 90
     Height = 23
     Caption = 'OK'
@@ -88,8 +87,8 @@ object fmLoadLex: TfmLoadLex
     TabOrder = 1
   end
   object bCan: TTntButton
-    Left = 232
-    Top = 244
+    Left = 256
+    Top = 276
     Width = 90
     Height = 23
     Cancel = True

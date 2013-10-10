@@ -20,6 +20,7 @@ uses
   IniFiles,
   PngImageList;
 
+function FontHeightToItemHeight(Font: TFont): Integer;
 function SDecodeUsingFileTable(const SData, fn: Widestring; ToBack: boolean): Widestring;
 function GetEditHandle(Target: TObject): THandle;
 procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
@@ -1552,6 +1553,13 @@ begin
   finally
     FreeAndNil(L)
   end;
+end;
+
+function FontHeightToItemHeight(Font: TFont): Integer;
+begin
+  //don't remember where i got this formula,
+  //maybe just calculated const
+  Result:= Trunc(Abs(Font.Height) * 1.36);
 end;
 
 end.

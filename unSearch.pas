@@ -40,7 +40,7 @@ type
     var Accept: Boolean) of object;
   TOnFindContinue = procedure(Sender: TObject; var ACanContinue: boolean) of object;
 
-  TTextFinder = class(TComponent)
+  TSynFinder = class(TComponent)
   private
     FFlags: TSearchOptions;
     FTokens: TSearchTokens;
@@ -73,7 +73,7 @@ type
     property Control: TCustomSyntaxMemo read FControl write SetControl;
   end;
 
-  TSynFindReplace = class(TTextFinder)
+  TSynFinderReplacer = class(TSynFinder)
   private
     FReplaceText: WideString;
     FSelectResult: Boolean;
@@ -133,9 +133,9 @@ uses
   unProc,
   unProcEditor;
 
-{ TTextFinder }
+{ TSynFinder }
 
-function TTextFinder.MatchAtPos(const Text: WideString; StrtPos: integer; var mLen: integer): Boolean;
+function TSynFinder.MatchAtPos(const Text: WideString; StrtPos: integer; var mLen: integer): Boolean;
 var cmp_fl, L2: integer;
 begin
   if Assigned(FOnProgress) then
@@ -172,7 +172,7 @@ begin
 end;
 
 
-function TTextFinder.Find(const Text: WideString; var StrtPos, EndPos: integer; ToBack: Boolean): Boolean;
+function TSynFinder.Find(const Text: WideString; var StrtPos, EndPos: integer; ToBack: Boolean): Boolean;
 var
   i, L: integer;
 begin
@@ -242,7 +242,7 @@ begin
     end;
 end;
 
-procedure TTextFinder.SetControl(Value: TCustomSyntaxMemo);
+procedure TSynFinder.SetControl(Value: TCustomSyntaxMemo);
 begin
   if FControl <> Value then
     begin
@@ -254,7 +254,7 @@ begin
     end;
 end;
 
-constructor TTextFinder.Create(AOwner: TComponent);
+constructor TSynFinder.Create(AOwner: TComponent);
 begin
   inherited;
   FRegExpr:= TecRegExpr.Create;
@@ -263,13 +263,13 @@ begin
   FTokens:= tokensAll;
 end;
 
-destructor TTextFinder.Destroy;
+destructor TSynFinder.Destroy;
 begin
   FreeAndNil(FRegExpr);
   inherited;
 end;
 
-procedure TTextFinder.Notification(AComponent: TComponent;
+procedure TSynFinder.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
   inherited;
@@ -277,7 +277,7 @@ begin
     FControl:= nil;
 end;
 
-function TTextFinder.CanAccept(StrtPos, EndPos: integer): Boolean;
+function TSynFinder.CanAccept(StrtPos, EndPos: integer): Boolean;
 begin
   Result:= True;
 
@@ -294,7 +294,7 @@ begin
   end;  
 end;
 
-function TTextFinder.CanContinue: boolean;
+function TSynFinder.CanContinue: boolean;
 begin
   Result:= true;
   if Assigned(FOnContinue) then
@@ -303,7 +303,7 @@ end;
 
 {TSyntFindReplace}
 
-function TSynFindReplace.Search(StrtPos, EndPos: integer;
+function TSynFinderReplacer.Search(StrtPos, EndPos: integer;
   ToBack, ToAll, Replace, CntOnly: boolean): Boolean;
 var
   st, en, RepLen, ACfm: integer;
@@ -403,7 +403,7 @@ begin
   if Result then FControl.Invalidate;
 end;
 
-function TSynFindReplace.DoSearch(
+function TSynFinderReplacer.DoSearch(
   ToAll, ToBack, FromCur: Boolean;
   Replace: Boolean = False;
   CntOnly: boolean = false): Boolean;
@@ -550,7 +550,7 @@ begin
   DoAfterExec;
 end;
 
-procedure TSynFindReplace.ShowRes(Pos, Count: integer; ToBack: Boolean);
+procedure TSynFinderReplacer.ShowRes(Pos, Count: integer; ToBack: Boolean);
 var
   NPos: Integer;
   P: TPoint;
@@ -578,25 +578,25 @@ begin
       SetSearchMark(Pos, Count, true);
 end;
 
-procedure TSynFindReplace.DoBeforeExec;
+procedure TSynFinderReplacer.DoBeforeExec;
 begin
   if Assigned(FOnBeforeExecute) then
     FOnBeforeExecute(Self);
 end;
 
-procedure TSynFindReplace.DoAfterExec;
+procedure TSynFinderReplacer.DoAfterExec;
 begin
   if Assigned(FOnAfterExecute) then
     FOnAfterExecute(Self);
 end;
 
-procedure TSynFindReplace.DoNotFound;
+procedure TSynFinderReplacer.DoNotFound;
 begin
   if Assigned(FOnNotFound) then
     FOnNotFound(Self);
 end;
 
-function TSynFindReplace.FindAgain: Boolean;
+function TSynFinderReplacer.FindAgain: Boolean;
 var st, len: integer;
 begin
   DoBeforeExec;
@@ -608,7 +608,7 @@ begin
     Result:= DoSearch(False, ftBackward in Flags, not (ftEntireScope in Flags));
 end;
 
-function TSynFindReplace.FindNext: Boolean;
+function TSynFinderReplacer.FindNext: Boolean;
 var st, len: integer;
 begin
   DoBeforeExec;
@@ -620,7 +620,7 @@ begin
     Result:= DoSearch(False, False, True); //skip the string found by FindPrev
 end;
 
-function TSynFindReplace.FindPrev: Boolean;
+function TSynFinderReplacer.FindPrev: Boolean;
 var st, len: integer;
 begin
   DoBeforeExec;
@@ -632,32 +632,32 @@ begin
     Result:= DoSearch(False, True, True);
 end;
 
-function TSynFindReplace.FindAll_(Cnt: boolean): Boolean;
+function TSynFinderReplacer.FindAll_(Cnt: boolean): Boolean;
 begin
   Result:= DoSearch(True, False, not (ftEntireScope in Flags), False, Cnt);
 end;
 
-function TSynFindReplace.FindAll: Boolean;
+function TSynFinderReplacer.FindAll: Boolean;
 begin
   Result:= FindAll_(False);
 end;
 
-function TSynFindReplace.CountAll: Boolean;
+function TSynFinderReplacer.CountAll: Boolean;
 begin
   Result:= FindAll_(True);
 end;
 
-function TSynFindReplace.ReplaceAll: Boolean;
+function TSynFinderReplacer.ReplaceAll: Boolean;
 begin
   Result:= DoSearch(True, ftBackward in Flags, not (ftEntireScope in Flags), True);
 end;
 
-function TSynFindReplace.ReplaceAgain: Boolean;
+function TSynFinderReplacer.ReplaceAgain: Boolean;
 begin
   Result:= DoSearch(False, ftBackward in Flags, not (ftEntireScope in Flags), True);
 end;
 
-function TSynFindReplace.StrReplaceWith: WideString;
+function TSynFinderReplacer.StrReplaceWith: WideString;
 begin
   if (ftRegularExpr in FFlags) then
     Result:= FRegExpr.Substitute(FControl.Lines.FText, FReplaceText)
@@ -665,7 +665,7 @@ begin
     Result:= FReplaceText;
 end;
 
-function TSynFindReplace.RepCfm;
+function TSynFinderReplacer.RepCfm;
 var b: TMsgDlgButtons;
 begin
   if not (ftPromtOnReplace in FFlags) then
@@ -692,12 +692,12 @@ begin
   FCfmAll:= Result = mrAll;
 end;
 
-procedure TSynFindReplace.CenterPos;
+procedure TSynFinderReplacer.CenterPos;
 begin
   EditorCenterPos(FControl, false{GotoMode}, opSrOffsetY);
 end;
 
-constructor TSynFindReplace.Create(AOwner: TComponent);
+constructor TSynFinderReplacer.Create(AOwner: TComponent);
 begin
   inherited;
   FCfmReset:= true;
@@ -725,7 +725,7 @@ begin
   SReplaceAllW(Result, cc, SEnd);
 end;
 
-procedure TSynFindReplace.FixTextEOL;
+procedure TSynFinderReplacer.FixTextEOL;
 begin
   if Assigned(FControl) then
   begin
@@ -736,7 +736,7 @@ begin
   end;  
 end;
 
-function TSynFindReplace.IsSpecialCase1: boolean;
+function TSynFinderReplacer.IsSpecialCase1: boolean;
 begin
   Result:=
     (ftRegularExpr in FFlags) and
@@ -744,7 +744,7 @@ begin
     (FFindText[Length(FFindText)] = '$');
 end;
 
-function TSynFindReplace.IsSpecialCase2: boolean;
+function TSynFinderReplacer.IsSpecialCase2: boolean;
 begin
   Result:=
     (ftRegularExpr in FFlags) and

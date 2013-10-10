@@ -42,7 +42,7 @@ type
     procedure edKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
-    Finder: TSynFindReplace;
+    Finder: TSynFinderReplacer;
     procedure Clr;
     procedure ReadIni;
     procedure SaveIni;
@@ -117,7 +117,7 @@ end;
 
 procedure TfmExtract.FormCreate(Sender: TObject);
 begin
-  Finder:= TSynFindReplace.Create(Self);
+  Finder:= TSynFinderReplacer.Create(Self);
   List.ItemHeight:= ScaleFontSize(List.ItemHeight, Self);
 end;
 
