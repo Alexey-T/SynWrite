@@ -210,8 +210,6 @@ object EditorFrame: TEditorFrame
       Transparent = False
       Alignment = taLeftJustify
       Align = alClient
-      BevelInner = bvNone
-      BevelOuter = bvNone
       Ctl3D = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -410,8 +408,6 @@ object EditorFrame: TEditorFrame
       Transparent = False
       Alignment = taLeftJustify
       Align = alBottom
-      BevelInner = bvNone
-      BevelOuter = bvNone
       Ctl3D = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText

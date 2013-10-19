@@ -3,8 +3,8 @@ object fmInsTxt: TfmInsTxt
   Top = 208
   BorderStyle = bsDialog
   Caption = 'Insert text'
-  ClientHeight = 417
-  ClientWidth = 417
+  ClientHeight = 422
+  ClientWidth = 521
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,163 +18,10 @@ object fmInsTxt: TfmInsTxt
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object TntGroupBox1: TTntGroupBox
-    Left = 8
-    Top = 4
-    Width = 401
-    Height = 185
-    Caption = 'What to insert'
-    TabOrder = 0
-    object TntLabel1: TTntLabel
-      Left = 97
-      Top = 36
-      Width = 62
-      Height = 13
-      Alignment = taRightJustify
-      Caption = 'at line begin:'
-    end
-    object TntLabel2: TTntLabel
-      Left = 105
-      Top = 60
-      Width = 54
-      Height = 13
-      Alignment = taRightJustify
-      Caption = 'at line end:'
-    end
-    object TntLabel3: TTntLabel
-      Left = 168
-      Top = 96
-      Width = 51
-      Height = 13
-      Caption = 'Start num:'
-    end
-    object TntLabel4: TTntLabel
-      Left = 240
-      Top = 96
-      Width = 30
-      Height = 13
-      Caption = 'Digits:'
-    end
-    object lab1: TTntLabel
-      Left = 168
-      Top = 136
-      Width = 10
-      Height = 13
-      Caption = '1.'
-    end
-    object lab2: TTntLabel
-      Left = 168
-      Top = 148
-      Width = 10
-      Height = 13
-      Caption = '2.'
-    end
-    object TntLabel5: TTntLabel
-      Left = 312
-      Top = 96
-      Width = 32
-      Height = 13
-      Caption = 'Suffix:'
-    end
-    object TntLabel6: TTntLabel
-      Left = 88
-      Top = 96
-      Width = 32
-      Height = 13
-      Caption = 'Prefix:'
-    end
-    object bText: TTntRadioButton
-      Left = 8
-      Top = 16
-      Width = 161
-      Height = 17
-      Caption = 'Text'
-      Checked = True
-      TabOrder = 0
-      TabStop = True
-      OnClick = bTextClick
-    end
-    object bNumber: TTntRadioButton
-      Left = 8
-      Top = 80
-      Width = 161
-      Height = 17
-      Caption = 'Numbering'
-      TabOrder = 1
-      OnClick = bTextClick
-    end
-    object bBullets: TTntRadioButton
-      Left = 8
-      Top = 160
-      Width = 161
-      Height = 17
-      Caption = 'Bullets'
-      TabOrder = 2
-      OnClick = bTextClick
-    end
-    object ed1: TTntComboBox
-      Left = 168
-      Top = 32
-      Width = 161
-      Height = 21
-      ItemHeight = 13
-      TabOrder = 3
-    end
-    object ed2: TTntComboBox
-      Left = 168
-      Top = 56
-      Width = 161
-      Height = 21
-      ItemHeight = 13
-      TabOrder = 4
-    end
-    object edStart: TSpinEdit
-      Left = 168
-      Top = 112
-      Width = 65
-      Height = 22
-      MaxValue = 100000
-      MinValue = 0
-      TabOrder = 6
-      Value = 1
-      OnChange = edStartChange
-      OnKeyDown = edCounterKeyDown
-    end
-    object edDigits: TSpinEdit
-      Left = 240
-      Top = 112
-      Width = 65
-      Height = 22
-      MaxValue = 15
-      MinValue = 1
-      TabOrder = 7
-      Value = 1
-      OnChange = edStartChange
-      OnKeyDown = edCounterKeyDown
-    end
-    object edTail: TTntComboBox
-      Left = 312
-      Top = 112
-      Width = 73
-      Height = 21
-      ItemHeight = 13
-      TabOrder = 8
-      OnChange = edStartChange
-    end
-    object edBegin: TTntComboBox
-      Left = 88
-      Top = 112
-      Width = 73
-      Height = 21
-      ItemHeight = 13
-      TabOrder = 5
-      OnChange = edStartChange
-    end
-  end
   object TntGroupBox2: TTntGroupBox
     Left = 8
-    Top = 192
-    Width = 401
+    Top = 196
+    Width = 505
     Height = 125
     Caption = 'Options'
     TabOrder = 1
@@ -190,7 +37,7 @@ object fmInsTxt: TfmInsTxt
       Top = 32
       Width = 169
       Height = 17
-      Caption = 'at column:'
+      Caption = 'At column:'
       Checked = True
       TabOrder = 0
       TabStop = True
@@ -200,7 +47,7 @@ object fmInsTxt: TfmInsTxt
       Top = 52
       Width = 169
       Height = 17
-      Caption = 'after leading spaces'
+      Caption = 'After leading spaces'
       TabOrder = 1
     end
     object cbSkip: TTntCheckBox
@@ -214,7 +61,7 @@ object fmInsTxt: TfmInsTxt
     object edCol: TSpinEdit
       Left = 176
       Top = 31
-      Width = 65
+      Width = 81
       Height = 22
       MaxValue = 100000
       MinValue = 1
@@ -227,21 +74,21 @@ object fmInsTxt: TfmInsTxt
       Top = 72
       Width = 169
       Height = 17
-      Caption = 'after string:'
+      Caption = 'After string:'
       TabOrder = 2
     end
     object edStrAfter: TTntComboBox
       Left = 176
       Top = 72
-      Width = 161
+      Width = 220
       Height = 21
       ItemHeight = 13
       TabOrder = 4
     end
   end
   object bOk: TTntButton
-    Left = 224
-    Top = 388
+    Left = 328
+    Top = 392
     Width = 90
     Height = 23
     Caption = 'OK'
@@ -250,8 +97,8 @@ object fmInsTxt: TfmInsTxt
     TabOrder = 3
   end
   object bCan: TTntButton
-    Left = 320
-    Top = 388
+    Left = 424
+    Top = 392
     Width = 90
     Height = 23
     Cancel = True
@@ -261,8 +108,8 @@ object fmInsTxt: TfmInsTxt
   end
   object TntGroupBox3: TTntGroupBox
     Left = 8
-    Top = 320
-    Width = 401
+    Top = 324
+    Width = 505
     Height = 61
     Caption = 'Counter'
     TabOrder = 2
@@ -292,7 +139,7 @@ object fmInsTxt: TfmInsTxt
     object edCounter: TSpinEdit
       Left = 176
       Top = 31
-      Width = 65
+      Width = 81
       Height = 22
       MaxValue = 100000
       MinValue = 1
@@ -301,12 +148,165 @@ object fmInsTxt: TfmInsTxt
       OnKeyDown = edCounterKeyDown
     end
   end
+  object TntGroupBox1: TTntGroupBox
+    Left = 8
+    Top = 4
+    Width = 505
+    Height = 189
+    Caption = 'What to insert'
+    TabOrder = 0
+    object TntLabel1: TTntLabel
+      Left = 107
+      Top = 36
+      Width = 60
+      Height = 13
+      Alignment = taRightJustify
+      Caption = 'At line start:'
+    end
+    object TntLabel2: TTntLabel
+      Left = 112
+      Top = 60
+      Width = 55
+      Height = 13
+      Alignment = taRightJustify
+      Caption = 'At line end:'
+    end
+    object TntLabel3: TTntLabel
+      Left = 176
+      Top = 96
+      Width = 51
+      Height = 13
+      Caption = 'Start num:'
+    end
+    object TntLabel4: TTntLabel
+      Left = 264
+      Top = 96
+      Width = 30
+      Height = 13
+      Caption = 'Digits:'
+    end
+    object lab1: TTntLabel
+      Left = 176
+      Top = 136
+      Width = 10
+      Height = 13
+      Caption = '1.'
+    end
+    object lab2: TTntLabel
+      Left = 176
+      Top = 148
+      Width = 10
+      Height = 13
+      Caption = '2.'
+    end
+    object TntLabel5: TTntLabel
+      Left = 352
+      Top = 96
+      Width = 32
+      Height = 13
+      Caption = 'Suffix:'
+    end
+    object TntLabel6: TTntLabel
+      Left = 24
+      Top = 96
+      Width = 32
+      Height = 13
+      Caption = 'Prefix:'
+    end
+    object bText: TTntRadioButton
+      Left = 8
+      Top = 16
+      Width = 161
+      Height = 17
+      Caption = 'Text'
+      Checked = True
+      TabOrder = 0
+      TabStop = True
+      OnClick = bTextClick
+    end
+    object bNumber: TTntRadioButton
+      Left = 8
+      Top = 80
+      Width = 161
+      Height = 17
+      Caption = 'Numbering'
+      TabOrder = 1
+      OnClick = bTextClick
+    end
+    object bBullets: TTntRadioButton
+      Left = 8
+      Top = 164
+      Width = 161
+      Height = 17
+      Caption = 'Bullets'
+      TabOrder = 2
+      OnClick = bTextClick
+    end
+    object ed1: TTntComboBox
+      Left = 176
+      Top = 32
+      Width = 220
+      Height = 21
+      ItemHeight = 13
+      TabOrder = 3
+    end
+    object ed2: TTntComboBox
+      Left = 176
+      Top = 56
+      Width = 220
+      Height = 21
+      ItemHeight = 13
+      TabOrder = 4
+    end
+    object edStart: TSpinEdit
+      Left = 176
+      Top = 112
+      Width = 81
+      Height = 22
+      MaxValue = 100000
+      MinValue = 0
+      TabOrder = 6
+      Value = 1
+      OnChange = edStartChange
+      OnKeyDown = edCounterKeyDown
+    end
+    object edDigits: TSpinEdit
+      Left = 264
+      Top = 112
+      Width = 81
+      Height = 22
+      MaxValue = 15
+      MinValue = 1
+      TabOrder = 7
+      Value = 1
+      OnChange = edStartChange
+      OnKeyDown = edCounterKeyDown
+    end
+    object edTail: TTntComboBox
+      Left = 352
+      Top = 112
+      Width = 145
+      Height = 21
+      ItemHeight = 13
+      TabOrder = 8
+      OnChange = edStartChange
+    end
+    object edBegin: TTntComboBox
+      Left = 24
+      Top = 112
+      Width = 145
+      Height = 21
+      ItemHeight = 13
+      TabOrder = 5
+      OnChange = edStartChange
+    end
+  end
   object DKLanguageController1: TDKLanguageController
     IgnoreList.Strings = (
       'lab1.*'
       'lab2.*')
-    Left = 368
-    Top = 68
+    Left = 312
+    Top = 152
     LangData = {
       0800666D496E73547874010100000001000000070043617074696F6E01210000
       000C00546E7447726F7570426F7831010100000002000000070043617074696F

@@ -20,10 +20,19 @@ uses
   IniFiles,
   PngImageList;
 
+procedure SParseAcpString(const AcpStr, Atr: string; List: TStringList);
+function EditorStringBeforeCaret(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
+procedure EditorGetHtmlTag(Ed: TSyntaxMemo; var STag, SAttr: string);
+procedure EditorGetCssTag(Ed: TSyntaxMemo; var STag: string);
+
 function FontHeightToItemHeight(Font: TFont): Integer;
 function SDecodeUsingFileTable(const SData, fn: Widestring; ToBack: boolean): Widestring;
 function GetEditHandle(Target: TObject): THandle;
 procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
+
+//debug functions: _1 starts, _2 prints time since _1
+procedure _1;
+procedure _2;
 
 type
   TSynMruList = class
@@ -76,10 +85,6 @@ function FFindStringInFile(const fn: Widestring;
   const Str: Widestring;
   IgnoreCase: boolean): boolean;
   
-procedure SReadFileIntoSomeLists(const fn: string;
-  const section1, section2: string;
-  L1, L2: TStringList);
-
 procedure FixTcIni(var fnTC: string; const section: string);
 
 function SFindRegex(const S, Regex: ecString): ecString;
@@ -981,45 +986,9 @@ begin
         fnTC:= ExtractFilePath(fnTC) + S
       else
         fnTC:= S;
-    fnTC:= SExpandVars(fnTC);    
+    fnTC:= SExpandVars(fnTC);
   finally
     Free
-  end;
-end;
-
-procedure SReadFileIntoSomeLists(const fn: string;
-  const section1, section2: string;
-  L1, L2: TStringList);
-var
-  acp: TStringList;
-  i: Integer;
-begin
-  acp:= TStringList.Create;
-  try
-    acp.LoadFromFile(fn);
-    //the following reading of sections is by Sepa...
-    i:=0;
-    while i<acp.Count do
-    begin
-      if acp.Strings[i]='' then Continue;
-      if acp.Strings[i]=section1 then
-        while i< acp.Count-1 do
-        begin
-          inc(i);
-          if acp.Strings[i][1]='[' then Break;
-          L1.Add(acp.Strings[i])
-        end;
-      if acp.Strings[i]=section2 then
-        while i< acp.Count-1 do
-        begin
-          inc(i);
-          if acp.Strings[i][1]='[' then Break;
-          L2.Add(acp.Strings[i])
-        end;
-      inc(i);
-    end;
-  finally
-    FreeAndNil(acp);
   end;
 end;
 
@@ -1561,5 +1530,135 @@ begin
   //maybe just calculated const
   Result:= Trunc(Abs(Font.Height) * 1.36);
 end;
+
+var
+  _Time: DWORD;
+
+procedure _1;
+begin
+  _Time:= GetTickCount;
+end;
+
+procedure _2;
+begin
+  _Time:= GetTickCount - _Time;
+  Application.MessageBox(PChar('Time: '+IntToStr(_Time)+'ms'), 'Time', mb_ok);
+end;
+
+
+function EditorStringBeforeCaret(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
+var
+  N, NEnd: Integer;
+begin
+  Result:= '';
+  if Ed.TextLength=0 then Exit;
+  if Ed.CaretStrPos=0 then Exit;
+
+  //get last cMaxLen chars before caret
+  NEnd:= Ed.CaretStrPos+1;
+  N:= NEnd - MaxLen;
+  if N<1 then N:= 1;
+  Result:= Copy(Ed.Text, N, NEnd-N);
+end;
+
+procedure EditorGetHtmlTag(Ed: TSyntaxMemo; var STag, SAttr: string);
+//can't be placed into unProcEditor.pas, uses SFindRegex
+const
+  cMaxLen = 500;
+const
+  //regex to catch tag name at line start
+  cRegexTag = '^\w+\b';
+  //character class for all chars inside quotes
+  cRegexChars = '[\s\w,\.:;\-\+\*\?=\(\)\[\]\{\}/\\\|~`\^\$&%\#@!]';
+  //regex to catch attrib name, followed by "=" and not-closed quote, only at line end
+  cRegexAttr = '\b\w+(?=\s*\=\s*([''"]' + cRegexChars + '*)?\Z)';
+
+  //simpler, but gives exception in TecRegExpr when caret is at line and in test-app
+  //cRegexAttr = '\b\w+(?=\s*\=\s*(("[^"]*)?)$)';
+var
+  S: Widestring;
+  N: Integer;
+begin
+  STag:= '';
+  SAttr:= '';
+  S:= EditorStringBeforeCaret(Ed, cMaxLen);
+  if S='' then Exit;
+
+  //cut string before last "<" or ">" char
+  N:= Length(S);
+  while (N>0) and (S[N]<>'<') and (S[N]<>'>') do Dec(N);
+  if N=0 then Exit;
+  Delete(S, 1, N);
+
+  STag:= SFindRegex(S, cRegexTag);
+  if STag<>'' then
+    SAttr:= SFindRegex(S, cRegexAttr);
+end;
+
+
+procedure EditorGetCssTag(Ed: TSyntaxMemo; var STag: string);
+//can't be placed into unProcEditor.pas, uses SFindRegex
+const
+  cMaxLen = 300;
+const
+  //char class for all chars in css values
+  cRegexChars = '[''"\w\s\.,:/~&%@!=\#\$\^\-\+\(\)\?]';
+  //regex to catch css property name, before css attribs and before ":", at line end
+  cRegexProp = '\b[\w\-]+(?=:\s*' + cRegexChars + '*\Z)';
+var
+  S: Widestring;
+begin
+  STag:= '';
+  S:= EditorStringBeforeCaret(Ed, cMaxLen);
+  if S<>'' then
+    STag:= SFindRegex(S, cRegexProp);
+end;
+
+
+procedure SParseAcpString(const AcpStr, Atr: string; List: TStringList);
+{ example:
+  AcpStr = 'caption=align<bottom?left?right?top|class|dir<ltr?rtl|id|lang';
+  Atr = 'align' -> get list of attr values,
+  Atr = '' -> get list of all attrs
+}
+var
+  S, S1, S2: Widestring;
+begin
+  if List=nil then
+    raise Exception.Create('Parse list nil');
+  List.Clear;
+
+  S:= AcpStr;
+  SDeleteToW(S, '=');
+
+  if Atr='' then
+    //list all attribs
+    repeat
+      S1:= SGetItem(S, '|');
+      if S1='' then Break;
+      SDeleteFromW(S1, '<');
+      List.Add(S1);
+    until false
+  else
+    //list all values of attrib Atr
+    repeat
+      S1:= SGetItem(S, '|');
+      if S1='' then Break;
+      S2:= S1;
+      SDeleteFromW(S2, '<');
+      if S2=Atr then
+      begin
+        if Pos('<', S1)=0 then Exit;
+        SDeleteToW(S1, '<');
+        repeat
+          S2:= SGetItem(S1, '?');
+          if S2='' then Break;
+          List.Add(S2);
+        until false;
+        Exit;
+      end;
+    until false;
+end;
+
 
 end.

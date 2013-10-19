@@ -5,12 +5,39 @@ interface
 uses
   Classes,
   TntClasses,
+  Types,
   Forms,
 
   ecSyntAnal,
   ecSyntMemo,
   ecMemoStrings;
 
+procedure EditorDuplicateLine(Ed: TSyntaxMemo);
+procedure EditorDeleteLine(Ed: TSyntaxMemo; NLine: integer; AUndo: boolean);
+procedure EditorReplaceLine(Ed: TSyntaxMemo; NLine: integer;
+  const S: WideString; AUndo: boolean);
+procedure EditorAddBookmarksToSortedList(Ed: TSyntaxMemo; L: TList);
+function EditorCaretAfterUnclosedQuote(Ed: TSyntaxMemo; var QuoteChar: WideChar): boolean;
+
+function EditorHasNoCaret(Ed: TSyntaxMemo): boolean;
+function EditorTabSize(Ed: TSyntaxMemo): Integer;
+function EditorTabExpansion(Ed: TSyntaxMemo): Widestring;
+
+type
+  TSynSelSave = record
+    FSelStream: boolean;
+    FSelStart, FSelEnd: TPoint;
+    FSelRect: TRect;
+    FCaretPos: TPoint;
+  end;
+
+procedure EditorSaveSel(Ed: TSyntaxMemo; var Sel: TSynSelSave);
+procedure EditorRestoreSel(Ed: TSyntaxMemo; const Sel: TSynSelSave);
+
+
+procedure EditorGetSelLines(Ed: TSyntaxMemo; var Ln1, Ln2: Integer);
+function EditorHasMultilineSelection(Ed: TSyntaxMemo): boolean;
+procedure EditorAddLineToEnd(Ed: TSyntaxMemo);
 function EditorSelectionForGotoCommand(Ed: TSyntaxMemo): Widestring;
 function EditorSelectWord(Ed: TSyntaxMemo): boolean;
 procedure EditorSearchMarksToList(Ed: TSyntaxmemo; List: TTntStrings);
@@ -43,6 +70,7 @@ uses
   Math,
   SysUtils,
   ecStrUtils,
+  ecCmdConst,
   ATxSProc;
 
 procedure EditorSearchMarksToList(Ed: TSyntaxmemo; List: TTntStrings);
@@ -502,5 +530,239 @@ begin
     Result:= Copy(Result, 1, cMaxNameLen) + '...';
 end;
 
+procedure EditorAddLineToEnd(Ed: TSyntaxMemo);
+var
+  n: Integer;
+begin
+  //Fix: last line must be with EOL
+  with Ed do
+    if (CaretPos.Y = Lines.Count-1) and (Lines[Lines.Count-1]<>'') then
+    begin
+      n:= CaretStrPos;
+      CaretStrPos:= TextLength;
+      InsertNewLine(0, True, false);
+      CaretStrPos:= n;
+    end;
+end;
+
+//Get selected lines nums: from Ln1 to Ln2
+procedure EditorGetSelLines(Ed: TSyntaxMemo; var Ln1, Ln2: Integer);
+var
+  p: TPoint;
+begin
+  with Ed do
+    if HaveSelection then
+    begin
+      if SelLength>0 then
+      begin
+        Ln1:= StrPosToCaretPos(SelStart).Y;
+        p:= StrPosToCaretPos(SelStart+SelLength);
+        Ln2:= p.Y;
+        if p.X = 0 then
+          Dec(Ln2);
+      end
+      else
+      begin
+        Ln1:= SelRect.Top;
+        Ln2:= SelRect.Bottom;
+      end
+    end
+    else
+    begin
+      //no selection
+      Ln1:= CaretPos.Y;
+      Ln2:= Ln1;
+    end;
+end;
+
+
+function EditorHasMultilineSelection(Ed: TSyntaxMemo): boolean;
+var
+  Ln1, Ln2: integer;
+begin
+  if not Ed.HaveSelection then
+    Result:= false
+  else
+  begin
+    EditorGetSelLines(Ed, Ln1, Ln2);
+    Result:= Ln2 > Ln1;
+  end;
+end;
+
+
+function EditorTabSize(Ed: TSyntaxMemo): Integer;
+begin
+  if Ed.TabList.Count>0 then
+    Result:= Ed.TabList[0]
+  else
+    Result:= 8;
+end;
+
+function EditorTabExpansion(Ed: TSyntaxMemo): Widestring;
+begin
+  Result:= StringOfChar(' ', EditorTabSize(Ed));
+end;
+
+function EditorHasNoCaret(Ed: TSyntaxMemo): boolean;
+begin
+  with Ed do
+    Result:= ReadOnly and not (soAlwaysShowCaret in Options);
+end;
+
+
+procedure EditorSaveSel(Ed: TSyntaxMemo; var Sel: TSynSelSave);
+begin
+  FillChar(Sel, SizeOf(Sel), 0);
+  with Ed do
+  begin
+    Sel.FSelStream:= Ed.SelLength>0;
+    if Sel.FSelStream then
+    begin
+      Sel.FSelStart:= Ed.StrPosToCaretPos(Ed.SelStart);
+      Sel.FSelEnd:= Ed.StrPosToCaretPos(Ed.SelStart+Ed.SelLength);
+    end
+    else
+      Sel.FSelRect:= SelRect;
+    Sel.FCaretPos:= CaretPos;
+  end;
+end;
+
+procedure EditorRestoreSel(Ed: TSyntaxMemo; const Sel: TSynSelSave);
+begin
+  with Ed do
+  begin
+    BeginUpdate;
+    try
+      CaretPos:= Sel.FCaretPos;
+      if Sel.FSelStream then
+      begin
+        SelStart:= Ed.CaretPosToStrPos(Sel.FSelStart);
+        SelLength:= Ed.CaretPosToStrPos(Sel.FSelEnd) - SelStart;
+      end
+      else
+        SelRect:= Sel.FSelRect;
+    finally
+      EndUpdate;
+    end;
+  end;
+end;
+
+
+procedure EditorDuplicateLine(Ed: TSyntaxMemo);
+var
+  n, nn: Integer;
+  s: ecString;
+begin
+  with Ed do
+  if SelLength>0 then
+  begin
+    n:= SelStart;
+    nn:= SelLength;
+    s:= SelText;
+    SetSelection(n, 0);
+    InsertText(s);
+    SetSelection(n, nn);
+  end
+  else
+  try
+    Ed.BeginUpdate;
+    EditorAddLineToEnd(Ed);
+    Ed.DuplicateLine(Ed.CaretPos.Y);
+    Ed.ExecCommand(smDown);
+    EditorSetModified(Ed);
+  finally
+    Ed.EndUpdate;
+  end;
+end;
+
+
+procedure EditorDeleteLine(Ed: TSyntaxMemo; NLine: integer; AUndo: boolean);
+var
+  p: TPoint;
+begin
+  //save caret
+  p:= Ed.CaretPos;
+  if NLine <= p.Y then
+    Dec(p.Y); //fix caret pos
+
+  if AUndo then
+    with Ed do
+    begin
+      CaretPos:= Point(0, NLine);
+      DeleteText(Lines.LineSpace(NLine));
+    end
+  else
+  begin
+    Ed.ClearUndo;
+    Ed.Lines.Delete(NLine);
+    Ed.Modified:= true;
+  end;
+
+  //restore caret
+  Ed.CaretPos:= p;
+end;
+
+
+procedure EditorReplaceLine(Ed: TSyntaxMemo; NLine: integer;
+  const S: WideString; AUndo: boolean);
+var
+  p: TPoint;
+begin
+  if AUndo then
+    with Ed do
+    begin
+      p:= CaretPos;
+      CaretPos:= Point(0, NLine);
+      DeleteText(Lines.LineLength(NLine));
+      InsertText(S);
+      CaretPos:= p;
+    end
+  else
+  begin
+    Ed.Lines[NLine]:= S;
+    Ed.Modified:= true;
+  end;
+end;
+
+var
+  _CmpMemo: TCustomSyntaxMemo = nil;
+
+function _BookmarkCompare(N1, N2: Pointer): Integer;
+begin
+  if not Assigned(_CmpMemo) then
+    raise Exception.Create('CmpMemo nil');
+  with _CmpMemo do
+    Result:= Bookmarks[Integer(N1)] - Bookmarks[Integer(N2)];
+end;
+
+procedure EditorAddBookmarksToSortedList(Ed: TSyntaxMemo; L: TList);
+var
+  i: Integer;
+begin
+  with Ed.BookmarkObj do
+    for i:= 0 to Count-1 do
+      L.Add(Pointer(Items[i].BmIndex));
+
+  _CmpMemo:= Ed;
+  L.Sort(_BookmarkCompare);
+end;
+
+function EditorCaretAfterUnclosedQuote(Ed: TSyntaxMemo; var QuoteChar: WideChar): boolean;
+var
+  i: Integer;
+  ch: WideChar;
+begin
+  Result:= false;
+  QuoteChar:= #0;
+
+  if Ed.TextLength=0 then Exit;
+  i:= Ed.CaretStrPos;
+  if not IsWordChar(Ed.Lines.Chars[i]) then Exit;
+  while IsWordChar(Ed.Lines.Chars[i]) do Dec(i);
+  ch:= Ed.Lines.Chars[i];
+  Result:= IsQuoteChar(ch);
+  if Result then
+    QuoteChar:= ch;
+end;
 
 end.

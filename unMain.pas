@@ -200,15 +200,8 @@ type
   TSynTabLeft = (tbTree, tbProj, tbTabs, tbPugin1, tbPugin2, tbPugin3, tbPugin4, tbPugin5);
   TSynCpOverride = (cp_sr_Def, cp_sr_OEM, cp_sr_UTF8, cp_sr_UTF16);
 
-  TSynSelSave = record
-    FSelStream: boolean;
-    FSelStart, FSelEnd: TPoint;
-    FSelRect: TRect;
-    FCaretPos: TPoint;
-  end;
-
 const
-  cColorsNum = 54;
+  cColorsNum = 56;
 type
   TSynColors = array[0..cColorsNum-1] of TColor;
 
@@ -1255,6 +1248,7 @@ type
     TbxItemCtxTool15: TSpTBXItem;
     TbxItemCtxTool14: TSpTBXItem;
     TbxItemCtxTool13: TSpTBXItem;
+    ecSelTokenNoQuotes: TAction;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2020,6 +2014,8 @@ type
     procedure TbxItemCtxTool14Click(Sender: TObject);
     procedure TbxItemCtxTool15Click(Sender: TObject);
     procedure TbxItemCtxTool16Click(Sender: TObject);
+    procedure ecSelTokenNoQuotesExecute(Sender: TObject);
+    procedure plTreeDockChanged(Sender: TObject);
 
   private
     cStatLine,
@@ -2132,11 +2128,12 @@ type
 
     FAcpLexer: string; //ACP list was loaded for this lexer
     FAcpAgain: boolean; //ACP need to show again after closing (for html/css)
-    FTagList: boolean; //ACP shows html tags, not attribs
-    FTagCss: boolean; //ACP called for CSS
-    FTagClosing: boolean; //ACP called for html closing tag </tag>
-    FTagBracketAdded: boolean; //added '<' on ACP call
-    FTagSpaceAdded: boolean; //added space on ACP call
+    FAcpCss: boolean; //ACP called for CSS lexer
+    FAcpHtm: boolean; //ACP called for HTML lexer
+    FAcpHtmTags: boolean; //ACP shows html tags, not attribs
+    FAcpHtmClosing: boolean; //ACP called for html closing tag </tag>
+    FAcpHtmBracketAdded: boolean; //added '<' on ACP call
+    FAcpHtmSpaceAdded: boolean; //added space on ACP call
 
     QuickView: boolean;    //QuickView mode for TotalCmd plugin
     QuickDestroy: boolean; //?? (inherited from Sepa)
@@ -2186,6 +2183,7 @@ type
     procedure SetCurrentFrame(Value: TEditorFrame);
     function GetCurrentFrame: TEditorFrame;
     procedure FrameChanged;
+    procedure FrameSaveState(Sender: TObject);
     function PromtToSave(Frame: TEditorFrame; AllowAll: Boolean; AllowCancel: boolean=true): TModalResult;
     procedure CreateBind(Frame: TEditorFrame);
     function SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
@@ -2274,11 +2272,12 @@ type
     procedure DoAddRecentColor(N: Integer);
     procedure DoInitRecentColorsMenu;
     procedure DoDeleteRecentColor(N: Integer);
-    procedure AddBookmarksToSortedList(ed: TSyntaxMemo; L: TList);
     function SynBorderStyle: TBorderStyle;
+    function SynBorderStyleEditor: TBorderStyle;
     function SynImagesDll: string;
     function DoAutoCloseBracket(const ch: Widechar): boolean;
     function DoAutoCloseTag: boolean;
+    procedure DoSelectToken(SkipQuotes: boolean = false);
 
     //private UpdateNNN
     procedure UpdateTitle(Sender: TFrame);
@@ -2286,7 +2285,6 @@ type
     procedure UpdateTools;
     procedure UpdatePages;
     procedure UpdateTabs(P: TTntPageControl);
-    procedure UpdateNonPrinted(E: TSyntaxMemo);
     procedure UpdatePanelOut(n: TSynTabOut);
     procedure UpdatePanelLeft(n: TSynTabLeft);
     procedure UpdatePanelRight(n: TSynTabRight);
@@ -2297,6 +2295,7 @@ type
     procedure UpdateLang;
     procedure UpdateSpellLang;
     procedure UpdateEditorCaret(Ed: TSyntaxMemo);
+    procedure UpdateEditorNonPrinted(Ed: TSyntaxMemo);
     procedure UpdateLexList;
     procedure UpdateStatusbarLineEnds;
     procedure UpdateStatusbarEnc(F: TEditorFrame);
@@ -2305,11 +2304,11 @@ type
     procedure UpdateFrameEnc(Frame: TEditorFrame);
     procedure UpdateFrameSpell(Frame: TEditorFrame; UpdFlag: boolean = true);
     procedure UpdateFrameZoom(F: TEditorFrame);
+    procedure UpdateFrameMicroMap(F: TEditorFrame);
     procedure UpdateClickedFrame;
 
     procedure UpdateLexer;
     procedure UpdateFormEnabled(En: boolean);
-    procedure UpdateMicroMap(F: TEditorFrame);
     procedure UpdateOutFromList(List: TWideStringList);
     procedure UpdateRecentsOnClose;
     procedure UpdateColorHint(AClearHint: boolean = true);
@@ -2333,11 +2332,13 @@ type
     procedure ClearTabList;
     procedure MoveTabInList(FromN, ToN: integer);
     procedure DoMoveCaretXY(DX, DY: integer);
-    function GetHtmlAcpFN: string;
+
     function GetAcpFN(const LexerName: string): string;
-    function IsMultilineSelection(Ed: TSyntaxMemo): boolean;
-    function CurrentTabSize(Ed: TSyntaxMemo): Integer;
-    function CurrentTabExpansion(Ed: TSyntaxMemo): Widestring;
+    function GetSpecialHiliteFN(const Id: string): string;
+    function GetHtmlListFN: string;
+    function GetCssListFN: string;
+    function GetHtmlTabbingFN: string;
+
     function CurrentCR(Ed: TSyntaxMemo = nil): ecString;
     function CurrentLexer: string;
     function CurrentLexerForFile: string;
@@ -2345,6 +2346,8 @@ type
     function SLexerComment(const Lexer: string): string;
     function DoTemplateTabbing: boolean;
     function DoSmartTagTabbing: boolean;
+    procedure DoSmartHilite;
+    procedure DoSmartHiliteOnClick;
     procedure DoHandleLastCmd(Command: integer; Data: pointer);
     function MsgInput(const dkmsg: string; var S: Widestring): boolean;
     procedure MsgFound;
@@ -2403,8 +2406,6 @@ type
     procedure SyncMapPos;
     procedure MapClick(Sender: TObject);
     procedure DoFixReplaceCaret(Ed: TSyntaxMemo);
-    procedure DoSaveSel(Ed: TSyntaxMemo; var Sel: TSynSelSave);
-    procedure DoRestoreSel(Ed: TSyntaxMemo; const Sel: TSynSelSave);
     function FCanUseLexer(const fn: Widestring): boolean;
     procedure SpellCopyClick(Sender: TObject);
     procedure SpellCutClick(Sender: TObject);
@@ -2427,18 +2428,18 @@ type
     function SNewDocName(const fn: Widestring): string;
     procedure NewDocClick(Sender: TObject);
     procedure NewDocFolderClick(Sender: TObject);
-    //function EscapedAcpChars: string;
     function AskSession(CanCancel: boolean; ExitCmd: boolean = false): boolean;
     procedure TabClickN(n: integer);
     procedure TabRightClickN(n: integer);
     procedure DoTidy(const Cfg: string);
     procedure TidyClick(Sender: TObject);
-    procedure DoBkDelete(ed: TSyntaxMemo; DelUnmarked: boolean);
-    procedure DoDeleteLine(ed: TSyntaxMemo; N: integer; ForceUndo: boolean = false);
-    procedure DoReplaceLine(ed: TSyntaxMemo; N: integer; const S: ecString; ForceUndo: boolean = false);
-    procedure DoBkNext(e: TSyntaxMemo; Next: boolean);
-    procedure DoBkClear(ed: TSyntaxMemo);
-    procedure DoGetSelLines(Ed: TSyntaxMemo; var Ln1, Ln2: Integer);
+
+    procedure DoBkDelete(Ed: TSyntaxMemo; DelUnmarked: boolean);
+    procedure DoBkNext(Ed: TSyntaxMemo; Next: boolean);
+    procedure DoBkClear(Ed: TSyntaxMemo);
+    procedure DoDeleteLine(Ed: TSyntaxMemo; NLine: integer; ForceUndo: boolean = false);
+    procedure DoReplaceLine(Ed: TSyntaxMemo; NLine: integer; const S: ecString; ForceUndo: boolean = false);
+    
     procedure InitSpell;
     procedure DoZenExpand;
     procedure DoZenWrap;
@@ -2450,6 +2451,7 @@ type
     procedure DoSaveStyles(Sender: TObject);
     procedure DoAcpCss(List, Display: ecUnicode.TWideStrings);
     procedure DoAcpHtm(List, Display: ecUnicode.TWideStrings);
+    procedure DoAcpHtmForTag(const STag, SAtr: string; List, Display: ecUnicode.TWideStrings);
     procedure DoAcpFromFile(List, Display: ecUnicode.TWideStrings);
     procedure DoAcpCommand;
     function DoAcpFromPlugins(const AAction: PWideChar): Widestring;
@@ -2474,14 +2476,13 @@ type
     procedure SaveLastDir_UntitledFile(const FN: Widestring);
     procedure SetFS(AValue: boolean);
     procedure SetOnTop(V: boolean);
-    procedure AddLineToEnd(E: TSyntaxMemo);
     procedure ConvEncoding(Sender: TObject);
     procedure DoRangeJump(Ed: TSyntaxMemo);
     procedure DoBracketJump;
-    procedure DoFindBrackets(var Pos1, Pos2: Integer);
+    procedure DoBracketsFind(var Pos1, Pos2: Integer);
+    procedure DoBracketsHilite;
+    procedure DoBracketsSelect;
     function DoFindOpeningBracket: Integer;
-    procedure HiliteBrackets;
-    procedure HiliteSmart;
     procedure DoListCopy(Sender: TTntListbox);
     procedure DoListCopyAll(Sender: TTntListbox);
     procedure FinderContinue(Sender: TObject; var ACanContinue: boolean);
@@ -2524,7 +2525,6 @@ type
     function SynSkinFilename(const Name: string): string;
     function SynConverterFilename(const Name: string): string;
 
-    function IsNoCursor(E: TSyntaxMemo): boolean;
     procedure LexListClick(Sender: TObject);
     procedure FinderInit(Sender: TObject);
     procedure FinderFail(Sender: TObject);
@@ -2549,7 +2549,7 @@ type
     procedure FindInFrame(F: TEditorFrame);
     procedure ReplaceInFile(const fn: Widestring);
     procedure ReplaceInAllTabs(var nRep, nFiles: integer);
-    procedure MarkAll(const Str: Widestring);
+    procedure DoMarkAll(const Str: Widestring);
 
     function GetIcons: integer;
     function GetTheme: string;
@@ -2558,9 +2558,7 @@ type
     procedure LoadTools;
     procedure SaveTools;
     procedure DoEnableTool(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
-
-    procedure GetTag(var tagName, attri: string);
-    procedure FrameSaveState(Sender: TObject);
+    procedure LoadHtmlAndCssLists;
 
     function AskClose(CanCancel: boolean= false): boolean;
     function AskLexer(CanCancel: boolean= false): boolean;
@@ -2593,7 +2591,6 @@ type
 
     procedure MsgBakEr(const fn: Widestring);
     procedure MsgBakOk(const fn: Widestring);
-    procedure DoDupLine(Ed: TSyntaxMemo);
     procedure DoDateTime;
     procedure DoExtractText;
     procedure DoAcpPopup;
@@ -2601,8 +2598,8 @@ type
     procedure DoInsertImageTag(const fn: string);
     procedure DoCheckUnicodeNeeded(Frame: TEditorFrame);
 
-    function GetCP(F: TEditorFrame): integer;
-    procedure SetCP(Frame: TEditorFrame; enc: Integer);
+    function GetFrameEnc(F: TEditorFrame): integer;
+    procedure SetFrameEnc(Frame: TEditorFrame; enc: Integer);
     procedure ChangeEncoding(Frame: TEditorFrame; ATag: Integer;
       ACanReload: boolean = true);
     procedure DoCheckAutoShowACP(Ed: TSyntaxMemo);
@@ -2626,7 +2623,6 @@ type
     procedure DoCustomizeAndReloadToolbar(Id: TSynUserToolbarId);
     procedure ToolbarUserClick(Sender: TObject);
     procedure DoExtToolsList(L: TTntStringList);
-    procedure EditorNonPrintUpdate(Ed: TSyntaxMemo);
     procedure InitMenuItemsList;
     procedure DoOpenBySelection;
     procedure FixSplitters;
@@ -2719,6 +2715,8 @@ type
     opShowRecentColors: TSynRecentColors;
     opUnicodeNeeded: integer;
     opTabColors: array[0..Pred(cTabColors)] of integer;
+    opColorAcpText: integer;
+    opColorAcpBg: integer;
     opColorCaretsGutter: integer;
     opColorMapMarks: integer;
     opColorBkmk: integer;
@@ -2779,6 +2777,8 @@ type
     opMenuIcon: boolean;
     opHiliteSmart: boolean;
     opHiliteSmartCase: boolean;
+    opHiliteSmartWords: boolean;
+    opHiliteSmartOnClick: boolean;
     opDateFmt,
     opDateFmtPLog: string;
     opFileBackup: TSynBackup;
@@ -2902,6 +2902,7 @@ type
     procedure ApplyColorsArrayToEditor(var C: TSynColors; Ed: TSyntaxMemo);
     procedure InitColorsArray(var C: TSynColors);
     procedure ApplyACP;
+    procedure ApplyAcpColors;
     procedure ApplyOut;
     procedure ApplyMap;
     procedure ApplyBorders;
@@ -3011,7 +3012,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.9.940';
+  cSynVer = '5.9.980';
 
 const
   cSynParamRO = '/ro';
@@ -3459,7 +3460,7 @@ begin
   else
     Result:= CreateFrame;
   //reset encoding for new frame  
-  SetCP(Result, 0);
+  SetFrameEnc(Result, 0);
 
   if FCanUseLexer(AFileName) then
     Result.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(AFileName)
@@ -3671,12 +3672,15 @@ begin
   Result:= PagesToFrame(PageControl, PageControl.ActivePageIndex);
 end;
 
-procedure TfmMain.EditorNonPrintUpdate(Ed: TSyntaxMemo);
+procedure TfmMain.UpdateEditorNonPrinted(Ed: TSyntaxMemo);
 begin
   Ed.NonPrinted.Visible:= opNonPrint;
   Ed.NonPrintedSpaces:= opNonPrintSpaces;
   Ed.NonPrintedEol:= opNonPrintEol;
   Ed.NonPrintedEolDetails:= opNonPrintEolDetail;
+
+  Ed.NonPrinted.SpaceChar:= #183;
+  Ed.NonPrinted.TabChar:= #187;
 end;  
 
 procedure EditorCaretUpdate(Ed: TSyntaxMemo; Opt: Integer);
@@ -3719,17 +3723,16 @@ begin
   Result.OnTitleChanged:= UpdateTitle;
   Result.OnSaveState:= FrameSaveState;
 
-  Result.EditorMaster.BorderStyle:= SynBorderStyle;
-  Result.EditorSlave.BorderStyle:= SynBorderStyle;
-  
+  Result.EditorMaster.BorderStyle:= SynBorderStyleEditor;
+  Result.EditorSlave.BorderStyle:= SynBorderStyleEditor;
   Result.EditorMaster.KeyMapping:= SyntKeyMapping;
   Result.EditorSlave.KeyMapping:= SyntKeyMapping;
   Result.HyperlinkHighlighter.Active:= opHiliteUrls;
   Result.HyperlinkHighlighter.Style.Font.Color:= opColorLink;
   Result.HyperlinkHighlighter.SingleClick:= opSingleClickURL;
 
-  EditorNonPrintUpdate(Result.EditorMaster);
-  EditorNonPrintUpdate(Result.EditorSlave);
+  UpdateEditorNonPrinted(Result.EditorMaster);
+  UpdateEditorNonPrinted(Result.EditorSlave);
 
   Result.ShowMap:= opMicroMap;
   Result.MapColor:= opColorMap;
@@ -3930,8 +3933,8 @@ begin
        SetImages;
        UpdateTitle(CurrentFrame);
        UpdateStatusbar;
-       UpdateNonPrinted(EditorMaster);
-       UpdateNonPrinted(EditorSlave);
+       UpdateEditorNonPrinted(EditorMaster);
+       UpdateEditorNonPrinted(EditorSlave);
        SynScroll(CurrentEditor);
        UpdateTabList(-1, -1, -1);
     end
@@ -4205,7 +4208,7 @@ begin
         ImageIndex:= 2;
       end;
 
-      if opChInf and (Ed.TextLength>0) and (not IsNoCursor(Ed)) then
+      if opChInf and (Ed.TextLength>0) and (not EditorHasNoCaret(Ed)) then
         Caption:= SStatusCharInfo(Ed)
       else
         Caption:= '';
@@ -4255,13 +4258,13 @@ begin
 end;
 
 const
-  c_exe: array[boolean] of string = ('', 'Exe');
+  cExeSuffix: array[boolean] of string = ('', 'Exe');
 
 procedure TfmMain.LoadIni;
 var
-  i, NCount: integer;
-  s: Widestring;
   ini: TMemIniFile;
+  NCount: integer;
+  s: Widestring;
 begin
   //get all options from Syn.ini
   ini:= TMemIniFile.Create(SynIni);
@@ -4312,9 +4315,9 @@ begin
     opHistFilter:= ReadInteger('Hist', 'Filter', 0);
 
     if SynExe then
-    begin
-      opHistSessionSave:= ReadBool('Hist', 'Sess', false);
-      opHistSessionLoad:= ReadBool('Hist', 'SessLd', false);
+    begin                                       
+      opHistSessionSave:= ReadBool('Hist', 'SessSave', false);
+      opHistSessionLoad:= ReadBool('Hist', 'SessLoad', false);
       opHistSessionDef:= ReadBool('Hist', 'SessDef', false);
     end
     else
@@ -4398,12 +4401,16 @@ begin
     opUtf8BufferSizeKb:= ReadInteger('Setup', 'Utf8Buffer', 64);
     opMenuIcon:= ReadBool('Setup', 'MenuIcon', true);
     opBeep:= ReadBool('Setup', 'Beep', true);
+
     opHiliteSmart:= ReadBool('Setup', 'SmHi', false);
     opHiliteSmartCase:= ReadBool('Setup', 'SmHiCase', false);
+    opHiliteSmartWords:= ReadBool('Setup', 'SmHiWords', true);
+    opHiliteSmartOnClick:= ReadBool('Setup', 'SmHiClick', false);
+
     opDateFmt:= ReadString('Setup', 'DateFmt', 'h:mm dd.mm.yyyy');
     opDateFmtPLog:= ReadString('Setup', 'DateFmtP', 'hh:mm');
     opFileBackup:= TSynBackup(ReadInteger('Setup', 'Back', 0));
-    opEsc:= TSynEscMode(ReadInteger('Setup', 'Esc' + c_exe[SynExe], Ord(cEscCloseApp)));
+    opEsc:= TSynEscMode(ReadInteger('Setup', 'Esc' + cExeSuffix[SynExe], Ord(cEscCloseApp)));
     opMruCheck:= ReadBool('Setup', 'MruCheck', false);
     opTabsReplace:= ReadBool('Setup', 'TabSp', false);
 
@@ -4452,7 +4459,7 @@ begin
 
     opSrOffsetY:= ReadInteger('SR', 'OffY', 6);
     opSrExpand:= ReadBool('SR', 'Expand', false);
-    opSrOnTop:= ReadBool('SR', 'ShowOnTop' + c_exe[SynExe], SynExe);
+    opSrOnTop:= ReadBool('SR', 'ShowOnTop' + cExeSuffix[SynExe], SynExe);
     opSrSuggestSel:= ReadBool('SR', 'SugSel', false);
     opSrSuggestWord:= ReadBool('SR', 'SugWord', false);
     opMaxTreeMatches:= ReadInteger('SR', 'MaxTreeMatches', 100);
@@ -4480,22 +4487,19 @@ begin
     opProjPaths:= UTF8Decode(ReadString('Setup', 'Paths', ''));
     opHiliteBrackets:= ReadBool('Setup', 'BrHi', true);
 
-    //opColorBracket:= ReadInteger('Setup', 'BrCl', clYellow);
-    //opColorBracketBg:= ReadInteger('Setup', 'BrClBg', clGreen);
-
     opColorOutSelBk:= ReadInteger('Setup', 'OutCSelBk', clDkGray);
     opColorOutSelText:= ReadInteger('Setup', 'OutCSelT', clHighlighttext);
     opColorOutRedText:= ReadInteger('Setup', 'OutCRedT', clNavy);
     opColorOutRedSelText:= ReadInteger('Setup', 'OutCRedSelT', clYellow);
     opColorOutHi:= ReadInteger('Setup', 'OutCHi', clSkyBlue);
 
-    //Integer holds 3 options: enabled (1 bit), indicator (2 bits), gutter column (2 bits)
-    i:= ReadInteger('Setup', 'CaretsOpt', 1{Enabled} + 2 shl 1{Indicator=2});
-    opCaretsEnabled:= (i and 1)<>0;
-    opCaretsIndicator:= (i shr 1) and 3;
-    opCaretsGutterBand:= (i shr 3) and 3;
+    opCaretsEnabled:= ReadBool('View', 'CaretsEn', true);
+    opCaretsIndicator:= ReadInteger('View', 'CaretsInd', 2);
+    opCaretsGutterBand:= ReadInteger('View', 'CaretsGBand', 0);
     ApplyCarets;
 
+    opColorAcpText:= ReadInteger('View', 'AcpColorFg', clWindowText);
+    opColorAcpBg:= ReadInteger('View', 'AcpColorBg', clWindow);
     opColorCaretsGutter:= ReadInteger('View', 'CaretsGut', clLtGray);
     opColorMapMarks:= ReadInteger('View', 'MapMkC', clGreen);
     opColorBkmk:= ReadInteger('View', 'BkC', RGB(200, 240, 200));
@@ -4513,7 +4517,7 @@ begin
     opLang:= ReadInteger('Setup', 'Lang', 0);
     Status.Visible:= ReadBool('Setup', 'Stat', true);
     if not QuickView then
-      Menu.Visible:= ReadBool('Setup', 'Menu' + c_exe[SynExe], true);
+      Menu.Visible:= ReadBool('Setup', 'Menu' + cExeSuffix[SynExe], true);
     opOem:= ReadString('Setup', 'Oem', 'bat,cmd,nfo,diz');
     opUTF8:= ReadString('Setup', 'UTF8', '');
 
@@ -4556,7 +4560,8 @@ begin
 
     //opt
     ApplyDefaultFonts;
-    PropsManager.LoadProps(ini);
+    PropsManager.LoadProps(ini); //20ms
+
     //always set KeepSelMode (override old value)
     with TemplateEditor do
     begin
@@ -4732,8 +4737,8 @@ begin
 
     if SynExe then
     begin
-      WriteBool('Hist', 'Sess', opHistSessionSave);
-      WriteBool('Hist', 'SessLd', opHistSessionLoad);
+      WriteBool('Hist', 'SessSave', opHistSessionSave);
+      WriteBool('Hist', 'SessLoad', opHistSessionLoad);
       WriteBool('Hist', 'SessDef', opHistSessionDef);
     end;  
     WriteBool('Hist', 'TempFN', opStateForTemp);
@@ -4781,12 +4786,16 @@ begin
 
     WriteBool('Setup', 'MenuIcon', opMenuIcon);
     WriteBool('Setup', 'Beep', opBeep);
+
     WriteBool('Setup', 'SmHi', opHiliteSmart);
     WriteBool('Setup', 'SmHiCase', opHiliteSmartCase);
+    WriteBool('Setup', 'SmHiWords', opHiliteSmartWords);
+    WriteBool('Setup', 'SmHiClick', opHiliteSmartOnClick);
+
     WriteString('Setup', 'DateFmt', opDateFmt);
     WriteString('Setup', 'DateFmtP', opDateFmtPLog);
     WriteInteger('Setup', 'Back', Ord(opFileBackup));
-    WriteInteger('Setup', 'Esc' + c_exe[SynExe], Ord(opEsc));
+    WriteInteger('Setup', 'Esc' + cExeSuffix[SynExe], Ord(opEsc));
     WriteBool('Setup', 'MruCheck', opMruCheck);
     WriteBool('Setup', 'TabSp', opTabsReplace);
     WriteInteger('Setup', 'Notif', Ord(opNotif));
@@ -4800,8 +4809,9 @@ begin
     WriteInteger('Setup', 'SortM', Ord(opSortMode));
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
 
-    WriteInteger('Setup', 'CaretsOpt',
-      Ord(opCaretsEnabled) + (opCaretsIndicator shl 1) + (opCaretsGutterBand shl 3));
+    WriteBool('View', 'CaretsEn', opCaretsEnabled);
+    WriteInteger('View', 'CaretsInd', opCaretsIndicator);
+    WriteInteger('View', 'CaretsGBand', opCaretsGutterBand);
 
     WriteInteger('Tree', 'Click', Ord(Tree.ClickAction));
     WriteInteger('Tree', 'Color', Tree.Color);
@@ -4826,19 +4836,19 @@ begin
 
     WriteInteger('SR', 'OffY', opSrOffsetY);
     WriteBool('SR', 'Expand', opSrExpand);
-    WriteBool('SR', 'ShowOnTop' + c_exe[SynExe], opSrOnTop);
+    WriteBool('SR', 'ShowOnTop' + cExeSuffix[SynExe], opSrOnTop);
     WriteBool('SR', 'SugSel', opSrSuggestSel);
     WriteBool('SR', 'SugWord', opSrSuggestWord);
     WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
 
-    //WriteBool('Setup', 'Borders', opShowBorders);
-    //WriteBool('Setup', 'Tooltips', opTipsToken);
     WriteInteger('View', 'TabLast', opTabOptionsLast);
     WriteBool('View', 'TabNum', opTabNums);
     WriteBool('View', 'TabBtn', opTabBtn);
     WriteBool('View', 'TabMul', opTabMultiLine);
     WriteBool('View', 'TabDown', opTabAtBottom);
 
+    WriteInteger('View', 'AcpColorFg', opColorAcpText);
+    WriteInteger('View', 'AcpColorBg', opColorAcpBg);
     WriteInteger('View', 'CaretsGut', opColorCaretsGutter);
     WriteInteger('View', 'MapMkC', opColorMapMarks);
     WriteInteger('View', 'BkC', opColorBkmk);
@@ -4855,7 +4865,7 @@ begin
     WriteBool('Setup', 'ChInf', opChInf);
     WriteInteger('Setup', 'Lang', opLang);
     if not QuickView then
-      WriteBool('Setup', 'Menu' + c_exe[SynExe], Menu.Visible);
+      WriteBool('Setup', 'Menu' + cExeSuffix[SynExe], Menu.Visible);
     WriteBool('Setup', 'Stat', Status.Visible);
     WriteString('Setup', 'Oem', opOem);
     WriteString('Setup', 'UTF8', opUTF8);
@@ -5226,7 +5236,7 @@ begin
   tmp.Wrap:= F.EditorMaster.WordWrap;
   tmp.SplitPos:= byte(Round(F.SplitPos));
   tmp.SplitVert:= not F.SplitHorz;
-  tmp.CP:= GetCP(F);
+  tmp.CP:= GetFrameEnc(F);
 
   //fill master
   tmp.M.TopLine:= F.EditorMaster.TopLine;
@@ -5406,12 +5416,6 @@ begin
     end;
 end;
 
-function TfmMain.IsNoCursor(E: TSyntaxMemo): boolean;
-begin
-  with E do
-    Result:= ReadOnly and not (soAlwaysShowCaret in Options);
-end;
-
 procedure TfmMain.DoHandleLastCmd(Command: integer; Data: pointer);
 var
   IsEdit: boolean;
@@ -5478,7 +5482,7 @@ begin
         if (ch='>') then
           Handled:= DoAutoCloseTag
         else
-        if Pos(ch, '()[]{}"''')>0 then
+        if IsBracketChar(ch) or IsQuoteChar(ch) then
           Handled:= DoAutoCloseBracket(ch)
         else
         if IsWordChar(ch) then
@@ -5492,7 +5496,7 @@ begin
     smTitleCaseBlock,
     smSentCaseBlock:
       begin
-        DoSaveSel(Ed, Sel);
+        EditorSaveSel(Ed, Sel);
         en:= true;
         //select current word, if no selection
         if not Ed.HaveSelection then
@@ -5503,13 +5507,13 @@ begin
           Ed.SelChangeCase(TChangeCase(Command - smUpperCaseBlock + 1));
           EditorSetModified(Ed);
         end;  
-        DoRestoreSel(Ed, Sel);
+        EditorRestoreSel(Ed, Sel);
       end;
 
     //indent
     smTab:
       begin
-        if Ed.HaveSelection and IsMultilineSelection(Ed) then
+        if Ed.HaveSelection and EditorHasMultilineSelection(Ed) then
         begin
           Ed.ExecCommand(smBlockIndent);
           Exit; //don't record Tab cmd
@@ -5554,7 +5558,7 @@ begin
       with Ed do
       begin
         Handled:= False;
-        if opKeepScr and not IsNoCursor(Ed) then
+        if opKeepScr and not EditorHasNoCaret(Ed) then
         begin
           p:= CaretPos;
           n:= TopLine + 1;
@@ -5569,7 +5573,7 @@ begin
       end;
 
     smDuplicateLine:
-      DoDupLine(Ed);
+      EditorDuplicateLine(Ed);
 
     smGotoLine:
       ecGoto.Execute;
@@ -5621,7 +5625,7 @@ begin
     //scroll
     smLeft:
     begin
-      if IsNoCursor(Ed) then
+      if EditorHasNoCaret(Ed) then
         Ed.ExecCommand(smScrollLeft)
       else
       if (Ed.SelLength>0) and not (soPersistentBlocks in Ed.Options) then
@@ -5636,7 +5640,7 @@ begin
 
     smRight:
     begin
-      if IsNoCursor(Ed) then
+      if EditorHasNoCaret(Ed) then
         Ed.ExecCommand(smScrollRight)
       else
       if (Ed.SelLength>0) and not (soPersistentBlocks in Ed.Options) then
@@ -5650,27 +5654,27 @@ begin
     end;
 
     smUp:
-      if IsNoCursor(Ed) then Ed.ExecCommand(smScrollUp)
+      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smScrollUp)
       else Handled:= False;
     smDown:
-      if IsNoCursor(Ed) then Ed.ExecCommand(smScrollDown)
+      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smScrollDown)
       else Handled:= False;
     smPageUp:
-      if IsNoCursor(Ed) then Ed.ExecCommand(smScrollPageUp)
+      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smScrollPageUp)
       else Handled:= False;
     smPageDown:
-      if IsNoCursor(Ed) then Ed.ExecCommand(smScrollPageDown)
+      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smScrollPageDown)
       else Handled:= False;
     smFirstLetter{home}:
-      if IsNoCursor(Ed) then Ed.ExecCommand(smEditorTop{smScrollPageLeft})
+      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smEditorTop{smScrollPageLeft})
       else Handled:= False;
     smLastLetter{end}:
-      if IsNoCursor(Ed) then Ed.ExecCommand(smEditorBottom{smScrollPageRight})
+      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smEditorBottom{smScrollPageRight})
       else Handled:= False;
 
     //Shift+
     smSelLeft..smSelDown:
-      Handled:= IsNoCursor(Ed);
+      Handled:= EditorHasNoCaret(Ed);
 
     //search
     smFindDialog:
@@ -5737,7 +5741,7 @@ begin
         Finder.Flags:= Finder.Flags+[ftEntireScope];
         Finder.FindAll;
         MsgFound;
-        UpdateMicroMap(CurrentFrame);
+        UpdateFrameMicroMap(CurrentFrame);
       end;
     end;
 
@@ -6299,6 +6303,7 @@ begin
     sm_OpenLastClosedFile: DoOpenLastClosedFile;
     sm_AcpForceTextOn: opAcpForceText:= true;
     sm_AcpForceTextOff: opAcpForceText:= false;
+    sm_SelectTokenNoQuotes: ecSelTokenNoQuotes.Execute;
 
     //end of commands list
     else
@@ -6769,6 +6774,14 @@ begin
     Result:= bsNone;
 end;
 
+function TfmMain.SynBorderStyleEditor: TBorderStyle;
+begin
+  {if opShowBorders then
+    Result:= bsSingle
+  else}
+    Result:= bsNone;
+end;
+
 procedure TfmMain.ApplyBorders;
 begin
   Tree.BorderStyle:= SynBorderStyle;
@@ -6830,9 +6843,9 @@ begin
   LoadPluginsInfo;
 
   //init main
-  LoadIni; //300 msec
+  LoadIni; //230 msec
   PropsManager.UpdateAll;
-  LoadLexLib; //340 msec
+  LoadLexLib; //80 msec
   LoadMacros;
   LoadClip;
   LoadHideIni;
@@ -7147,9 +7160,43 @@ begin
   Result:= SynDir + 'HL\' + Result + '.acp';
 end;
 
-function TfmMain.GetHtmlAcpFN: string;
+function TfmMain.GetSpecialHiliteFN(const Id: string): string;
 begin
-  Result:= GetAcpFN('Htm');
+  Result:= SynDir + 'HL\' + Id + '.ini';
+end;
+
+function TfmMain.GetHtmlListFN: string;
+begin
+  Result:= GetSpecialHiliteFN('Html_List');
+end;
+
+function TfmMain.GetCssListFN: string;
+begin
+  Result:= GetSpecialHiliteFN('Css_List');
+end;
+
+function TfmMain.GetHtmlTabbingFN: string;
+begin
+  Result:= GetSpecialHiliteFN('Html_Tabbing');
+end;
+
+procedure TfmMain.LoadHtmlAndCssLists;
+var
+  fn: string;
+begin
+  if FAcpIntHtml.Count=0 then
+  begin
+    fn:= GetHtmlListFN;
+    if IsFileExist(fn) then
+      FAcpIntHtml.LoadFromFile(fn);
+  end;
+
+  if FAcpIntCss.Count=0 then
+  begin
+    fn:= GetCssListFN;
+    if IsFileExist(fn) then
+      FAcpIntCss.LoadFromFile(fn);
+  end;
 end;
 
 procedure TfmMain.UpdateAcp(const Lexer: string);
@@ -7157,30 +7204,15 @@ var
   fn: Widestring;
 begin
   FAcpLexer:= Lexer;
+  FAcpAgain:= false;
+
   if not Assigned(FAcpList_Display) then Exit;
   FAcpList_Display.Clear;
   FAcpList_Items.Clear;
   FAcpList_Hints.Clear;
   FAcpList_Desc.Clear;
-  FAcpIntHtml.Clear;
-  FAcpIntCss.Clear;
-
-  FAcpAgain:= false;
-  ecACP.Items.Clear;
-  ecACP.DisplayItems.Clear;
 
   if Lexer='' then Exit;
-
-  //read special HTML/CSS ACP
-  fn:= GetHtmlAcpFN;
-  if IsFileExist(fn) then
-    if (IsLexerHTML(Lexer) and opAcpHtm) or
-       (IsLexerCSS(Lexer, false) and opAcpCss) then
-  begin
-    SReadFileIntoSomeLists(fn,
-      '[HTML]', '[CSS]',
-      FAcpIntHtml, FAcpIntCss);
-  end;
 
   //load default ACP file
   fn:= GetAcpFN(Lexer);
@@ -7206,11 +7238,13 @@ end;
 
 
 procedure TfmMain.LoadAcpFromFile(const fn, Lexer: string);
+//warning: unchecked code from old author Sepa
+  //
   function AcpItem(const s1, s2, s3, s4: string): string;
   begin
     Result:= '\s1\' + s1 + '\t\\s2\' + s2 + '\t\\s0\' + s3 + '\s3\ '+ s4;
   end;
-//
+  //
 var
   acp: TStringList;
   i, a, b, c: Integer;
@@ -7453,16 +7487,20 @@ end;
 
 procedure TfmMain.ecACPAfterComplete(Sender: TObject;
   const Item: WideString);
+var
+  Ed: TSyntaxMemo;
+  QuoteChar: WideChar;
 begin
+  Ed:= CurrentEditor;
+
   //close tag
-  if FTagClosing then
-    with CurrentEditor do
-      InsertText('>')
+  if FAcpHtmClosing then
+    Ed.InsertText('>')
   else
   //handle Ctrl+Enter pressing in ACP list
-  if FTagList and IsCtrlPressed then
-    with CurrentEditor do
-      if (TextLength>0) and (CaretStrPos>=1) and (Lines.FText[CaretStrPos]=' ') then
+  if FAcpHtmTags and IsCtrlPressed then
+    with Ed do
+      if (CaretStrPos>0) and (Lines.Chars[CaretStrPos]=' ') then
       begin
         CaretStrPos:= CaretStrPos-1;
         DeleteText(1);
@@ -7470,12 +7508,19 @@ begin
         FAcpAgain:= false;
       end;
 
+  //add quote char after parameter value
+  if FAcpHtm and not FAcpHtmTags then
+  begin
+    if EditorCaretAfterUnclosedQuote(Ed, QuoteChar) then
+      Ed.InsertText(QuoteChar);
+  end;
+
   //if CSS completion done, delete ":" after caret
   //(it may left from old text, and we inserted ":" anyway)
-  if FTagCss then
-    with CurrentEditor do
+  if FAcpCss then
+    with Ed do
     begin
-      if (TextLength>0) and (CaretStrPos>=0) and (Lines.FText[CaretStrPos+1]=':') then
+      if (Lines.Chars[CaretStrPos+1]=':') then
         DeleteText(1);
     end;
 
@@ -7491,203 +7536,166 @@ begin
 end;
 
 procedure TfmMain.DoAcpCss(List, Display: ecUnicode.TWideStrings);
-//warning: unchecked code from old author Sepa
 var
-  i, j, sx: Integer;
-  t, ins: string;
+  SProp: string;
+  AcpStr, Str: Widestring;
+  i: Integer;
 begin
+  if FAcpIntCss.Count=0 then
+    begin MsgBeep; Exit end;
+
   opAcpChars:= cAcpCharsCss;
-  FTagCss:= true;
-  FAcpAgain:= true;
+  FAcpCss:= true;
 
-  with CurrentEditor do
+  //is there any css property before caret position and before ":"?
+  EditorGetCssTag(CurrentEditor, SProp);
+  //show popup again not always
+  FAcpAgain:= SProp='';
+
+  //css property found,
+  //return all values of property
+  if SProp<>'' then
   begin
-    //is there any property?
-    i:= CaretStrPos;
-    t:= '';
-    while (i>0) and (i<=TextLength) do
+    AcpStr:= FAcpIntCss.Values[SProp];
+    if AcpStr<>'' then
+    repeat
+      Str:= SGetItem(AcpStr, ',');
+      if Str='' then Break;
+      List.Add(Str);
+      Display.Add(SAcpItem(SProp+' value', Str)); //show prop name in purple column
+    until false;
+  end
+  //css property not found,
+  //return all properties
+  else
+  begin
+    for i:= 0 to FAcpIntCss.Count-1 do
     begin
-      case Lines.FText[i] of
-        ';', '{', '}', '>', '=':
-          Break;
-        ':':
-          begin
-            j:= i-1;
-            while (j>0) and _IsWordChar_Css(Text[j]) do Dec(j);
-            if (j>0) and ((i-j)>0) then
-              t:= Copy(Text, j+1, i-j);
-            Break;
-          end;
+      Str:= FAcpIntCss.Names[i];
+      if Str<>'' then
+      begin
+        List.Add(Str+': ');
+        Display.Add(SAcpItem('css', Str));
       end;
-      Dec(i);
-    end;
-
-    //property found
-    if t<>'' then
-    begin
-      i:= FAcpIntCss.IndexOfName(t);
-      if i>=0 then
-      begin
-        sx:= Pos('=', FAcpIntCss[i]);
-        while sx<Length(FAcpIntCss[i]) do
-        begin
-          Inc(sx);
-          j:= PosEx(',', FAcpIntCss[i], sx);
-          if j=0 then
-            j:= Length(FAcpIntCss[i])+1;
-          ins:= Copy(FAcpIntCss[i], sx, j-sx);
-          //color
-          if ins='color' then
-          begin
-            ins:= '#000000';
-            Display.Add(SAcpItem('color', ins));
-          end
-          else
-            Display.Add(SAcpItem('css', ins));
-          List.Add(ins);
-          sx:= j;
-        end
-      end
-    end
-    //property not found
-    else
-    begin
-      for i:= 0 to FAcpIntCss.Count-1 do
-      begin
-        j:= Pos('=', FAcpIntCss[i]);
-        if j=0 then Continue;
-        ins:= Copy(FAcpIntCss[i], 1, j-1);
-        List.Add(ins+' ');
-        Display.Add(SAcpItem('css', ins));
-      end
-    end;
+    end;  
   end;
 end;
 
 procedure TfmMain.DoAcpHtm(List, Display: ecUnicode.TWideStrings);
-//warning: unchecked code from old author Sepa
 var
-  t, atr, str: string;
-  i, j, k, sx, a: integer;
-  AddBr: boolean;
+  STag, SAtr: string;
 begin
+  if FAcpIntHtml.Count=0 then
+    begin MsgBeep; Exit end;
+
   //get current HTML tag and attrib
-  GetTag(t, atr);
+  EditorGetHtmlTag(CurrentEditor, STag, SAtr);
 
   //are we inside CSS part style="...."?
-  if (atr='style') then
-  begin
-    DoAcpCss(List, Display);
-    Exit
-  end;
+  if SAtr='style' then
+    DoAcpCss(List, Display)
+  else
+    DoAcpHtmForTag(STag, SAtr, List, Display);
+end;
 
-  //search tag attributes
-  if t<>'' then
+procedure TfmMain.DoAcpHtmForTag(const STag, SAtr: string;
+  List, Display: ecUnicode.TWideStrings);
+var
+  AcpStr, str: string;
+  AtrList: TStringList;
+  NTag, j: integer;
+  //AddBr: boolean;
+begin
+  FAcpHtm:= true;
+  AcpStr:= '';
+  if STag<>'' then
   begin
-    i:= FAcpIntHtml.IndexOfName(t);
-    if i>=0 then
-      //attrib names needed
-      if atr='' then
-      begin
-        sx:= Pos('=', FAcpIntHtml[i]);
-        while sx<Length(FAcpIntHtml[i]) do
-        begin
-          inc(sx);
-          a:= PosEx(',', FAcpIntHtml[i], sx);
-          if a=0 then
-            a:= Length(FAcpIntHtml[i])+1;
-          k:= PosEx(':', FAcpIntHtml[i], sx);
-          if (k<>0) and (k<a) then j:=k else j:=a;
+    NTag:= FAcpIntHtml.IndexOfName(STag);
+    if NTag>=0 then
+      AcpStr:= FAcpIntHtml[NTag];
 
-          str:= Copy(FAcpIntHtml[i], sx, j-sx);
-          List.Add(str+'="'); //with HTML quote
-          Display.Add(SAcpItem('attrib', str));
-          sx:= a;
-        end;
-        FAcpAgain:= true;
-        Exit;
-      end
-      //attrib params needed
-      else
-      begin
-        j:= Pos('='+atr+':', FAcpIntHtml[i]);
-        k:= Pos(','+atr+':', FAcpIntHtml[i]);
-        if (j=0) and (k=0) then Exit else
-          if k<>0 then j:= k;
-        j:= PosEx(':', FAcpIntHtml[i], j+1);
-        //color
-        if PosEx('color', FAcpIntHtml[i], j)=j+1 then
+    if AcpStr<>'' then
+    begin
+      AtrList:= TStringList.Create;
+      try
+        SParseAcpString(AcpStr, SAtr, AtrList);
+        if SAtr='' then
+        //-----------
+        //return list of all attribs of tag
         begin
-          str:= '#000000';
-          List.Add(str);
-          Display.Add(SAcpItem('color', str));
+          for j:= 0 to AtrList.Count-1 do
+          begin
+            str:= AtrList[j];
+            List.Add(str+'="'); //with HTML quote
+            Display.Add(SAcpItem('attrib', str));
+          end;
+          FAcpAgain:= true;
+          Exit;
+        end
+        else
+        //-----------
+        //return list of values of attrib
+        begin
+          for j:= 0 to AtrList.Count-1 do
+          begin
+            str:= AtrList[j];
+            List.Add(str);
+            Display.Add(SAcpItem('value', str));
+          end;
+          FAcpAgain:= false;
           Exit;
         end;
-        // {var1|var2}
-        if FAcpIntHtml[i][j+1]<>'{' then Exit;
-        Inc(j);
-        k:= PosEx('}', FAcpIntHtml[i], j);
-        t:= Copy(FAcpIntHtml[i], j+1, k-j-1);
-        sx:= 0;
-        while sx<Length(t) do
-        begin
-          Inc(sx);
-          j:= PosEx('|', t, sx);
-          if j=0 then j:= Length(t)+1;
-          str:= Copy(t, sx, j-sx);
-          List.Add(str);
-          Display.Add(SAcpItem('value', str));
-          sx:= j;
-        end;
-        FAcpAgain:= false;
-        Exit;
+      finally
+        FreeAndNil(AtrList);
       end;
-    end
-
-    //search tag names
-    else
-    begin
-      with CurrentEditor do
-        if TextLength>0 then
-        begin
-          i:= CaretStrPos;
-          while (i>0) and (i<=TextLength) and
-            IsWordChar(Lines.FText[i]) do Dec(i);
-          FTagClosing:= (i>0) and (i<=TextLength) and (Lines.FText[i]='/');
-        end;
-      if FTagClosing then
+    end; //if AcpStr<>''
+  end //if STag<>''
+  else
+  //------------------
+  //return list of tags
+  begin
+    //is it closing tag?
+    FAcpHtmClosing:= false;
+    with CurrentEditor do
+      if TextLength>0 then
       begin
-        //closing tag
-        for i:= 0 to FAcpIntHtml.Count-1 do
+        j:= CaretStrPos;
+        while IsWordChar(Lines.Chars[j]) do Dec(j);
+        FAcpHtmClosing:= Lines.Chars[j]='/';
+      end;
+
+    if FAcpHtmClosing then
+    begin
+      //return list of closing tags
+      for j:= 0 to FAcpIntHtml.Count-1 do
+      begin
+        str:= FAcpIntHtml.Names[j];
+        if str<>'' then
         begin
-          j:= Pos('=', FAcpIntHtml[i]);
-          if j=0 then Continue;
-          str:= Copy(FAcpIntHtml[i], 1, j-1);
           List.Add(str);
           Display.Add(SAcpItem('tag', '</'+str+'>'));
         end;
-        FAcpAgain:= false;
-        FTagList:= true;
-      end
-      else
+      end;
+      FAcpAgain:= false;
+      FAcpHtmTags:= true;
+    end
+    else
+    begin
+      //return list of opening tags
+      //AddBr:= false; //when is it good, not false?
+      for j:= 0 to FAcpIntHtml.Count-1 do
       begin
-        //opening tag
-        AddBr:= false;
-        for i:= 0 to FAcpIntHtml.Count-1 do
+        str:= FAcpIntHtml.Names[j];
+        if str<>'' then
         begin
-          j:= Pos('=', FAcpIntHtml[i]);
-          if j=0 then Continue;
-          str:= Copy(FAcpIntHtml[i], 1, j-1);
-          if AddBr then
-            List.Add('<'+str+' ')
-          else
-            List.Add(str+' ');
+          List.Add({IfThen(AddBr, '<')+}str+' ');
           Display.Add(SAcpItem('tag', '<'+str+'>'));
         end;
-        FAcpAgain:= true;
-        FTagList:= true;
       end;
+      FAcpAgain:= true;
+      FAcpHtmTags:= true;
     end;
+  end;
 end;
 
 procedure TfmMain.ecACPGetAutoCompleteList(Sender: TObject; PosX: TPoint;
@@ -7698,9 +7706,10 @@ begin
   List.Clear;
   Display.Clear;
 
-  FTagList:= false;
-  FTagCss:= false;
-  FTagClosing:= false;
+  FAcpCss:= false;
+  FAcpHtm:= false;
+  FAcpHtmTags:= false;
+  FAcpHtmClosing:= false;
   Lexer:= CurrentLexer;
 
   if opAcpForceText then
@@ -7712,6 +7721,7 @@ begin
   if (opAcpHtm and IsLexerHTML(Lexer)) or
      (opAcpCss and IsLexerCSS(Lexer, false)) then
     begin
+      LoadHtmlAndCssLists;
       if IsLexerCSS(Lexer) then
         DoAcpCss(List, Display)
       else
@@ -7731,71 +7741,6 @@ begin
 
   //get words from file
   DoAcpFromFile(List, Display);
-end;
-
-//-------------------------------------------------
-procedure TfmMain.GetTag(var tagName, attri: string);
-var
- i, j, k: integer;
- s: WideString;
-begin
-  tagName:= '';
-  attri:= '';
-  if CurrentEditor.TextLength=0 then Exit;
-  i:= 0;
-  with CurrentEditor do
-  begin
-    //if (CaretPos.X-1)>TextLength then exit;
-    if TextLength<500 then begin s:= Lines.FText; i:= CaretStrPos; end
-    else if CaretStrPos<500 then s:= Copy(Lines.FText, 1, CaretStrPos+1)
-    else s:= Copy(Lines.FText, CaretStrPos-500+1, 501);
-  end;
-  if i=0 then
-    i:= Length(s)-1;
-  k:=i;
-
-  //get first non whitespace char
-  while (i>0) and (s[i]=' ') do dec(i);
-  if i=0 then exit;
-  //is it attrib?
-  if (i>0) and (s[i]<>'=') then while (i>0) do begin
-    if (s[i]='>') or (s[i]='<') then break;
-    if (s[i]='"') or (s[i]='''') then begin
-      if (i>1) and (s[i-1]='=') then
-      begin dec(i); break; end
-      else
-      if (i>1) and (s[i-1]=' ') then begin
-        dec(i);
-        while (i>1) and (s[i]=' ') do dec(i);
-        if (i>0) and (s[i]='=') then break;
-      end
-      else break;
-    end;
-    dec(i);
-  end;
-  if (i>0) and (s[i]='=') then begin
-    j:= i-1;
-    dec(i);
-    while (i>0) and IsWordChar(s[i]) do dec(i);
-    attri:= LowerCase( copy(s,i+1,j-i) );
-  end;
-
-  //get tag name
-  while (i>0) do
-  begin
-    if (s[i]='>') then exit;
-    if (s[i]='<') then
-    begin
-      j:=i;
-      if j=length(s) then exit;
-      inc(i);
-      while (i<=length(s)) and IsWordChar(s[i]) do inc(i);
-      if (i>length(s)) or (i>k) then exit;
-      tagName:= LowerCase( copy(s,j+1,i-j-1) );
-      exit;
-    end;
-    dec(i);
-  end;
 end;
 
 procedure TfmMain.ecACPCheckChar(Sender: TObject; C: Word;
@@ -8164,7 +8109,7 @@ begin
       ChangeEncoding(CurrentFrame, (Sender as TComponent).Tag, False{ACanReload});
 end;
 
-procedure TfmMain.SetCP(Frame: TEditorFrame; enc: Integer);
+procedure TfmMain.SetFrameEnc(Frame: TEditorFrame; enc: Integer);
 begin
   if Frame<>nil then
   with Frame do
@@ -8208,9 +8153,9 @@ begin
   if Frame<>nil then
   with Frame do
   begin
-    SetCP(Frame, ATag);
-    UpdateNonPrinted(EditorMaster);
-    UpdateNonPrinted(EditorSlave);
+    SetFrameEnc(Frame, ATag);
+    UpdateEditorNonPrinted(EditorMaster);
+    UpdateEditorNonPrinted(EditorSlave);
 
     if ACanReload and (FileName <> '') then
       if (not Modified) or MsgEncReload then
@@ -8435,7 +8380,7 @@ begin
   begin
     SR_SuggestedSel:= '';
     SR_SuggestedSelEn:= Ed.HaveSelection;
-    SR_SuggestedSelScope:= SR_SuggestedSelEn and IsMultilineSelection(Ed);
+    SR_SuggestedSelScope:= SR_SuggestedSelEn and EditorHasMultilineSelection(Ed);
 
     if (not SR_SuggestedSelScope){careful} then
     begin
@@ -8683,7 +8628,7 @@ begin
         Finder.OnFind:= nil;
         fmSR.ShowError(Finder.Matches=0);
         UpdateStatusbar; //needed as Bkmk appear
-        UpdateMicroMap(CurrentFrame);
+        UpdateFrameMicroMap(CurrentFrame);
       end;
     //
     arCount:
@@ -8704,7 +8649,7 @@ begin
         if Ok then
           begin fmSR.Hide; s:= fmSR.Text1; end;
         if OkSel then
-          DoSaveSel(CurrentEditor, Sel);
+          EditorSaveSel(CurrentEditor, Sel);
         OldScrollPosY:= CurrentEditor.ScrollPosY;
         //
         Finder.ReplaceAll;
@@ -8713,7 +8658,7 @@ begin
         //
         CurrentEditor.ScrollPosY:= OldScrollPosY;
         if OkSel then
-          DoRestoreSel(CurrentEditor, Sel);
+          EditorRestoreSel(CurrentEditor, Sel);
         fmSR.ShowError(Finder.Matches=0);
         if Ok then
         begin
@@ -8987,7 +8932,7 @@ begin
 
   F.EditorMaster.ResetSearchMarks;
   F.EditorSlave.ResetSearchMarks;
-  UpdateMicroMap(F);
+  UpdateFrameMicroMap(F);
 end;
 
 procedure TfmMain.DoFrameReloadInt(F: TEditorFrame);
@@ -9111,7 +9056,7 @@ begin
   begin
     EditorMaster.ExecCommand(smSearchMarkReset);
     EditorSlave.ExecCommand(smSearchMarkReset);
-    UpdateMicroMap(CurrentFrame);
+    UpdateFrameMicroMap(CurrentFrame);
   end;
 end;
 
@@ -9314,7 +9259,7 @@ end;
         Result:= Lines[NLine];
       end;
 
-    SReplaceAllW(Result, #9, CurrentTabExpansion(CurrentEditor));
+    SReplaceAllW(Result, #9, EditorTabExpansion(CurrentEditor));
 
     if Length(Result)>ALenLimit then
       Result:= Copy(Result, 1, ALenLimit) + '...';
@@ -9418,21 +9363,24 @@ end;
 
 procedure TfmMain.ecSelCharPopup1Show(Sender: TObject);
 var
+  Ed: TSyntaxMemo;
   ch: WideChar;
   s: string;
 begin
-  with ecSelCharPopup1 do begin
-    Font:= CurrentEditor.Font;
-    if CurrentEditor.TextLength>0 then
-      if CurrentEditor.Lines.TextCoding=tcAnsi then
+  Ed:= CurrentEditor;
+  with ecSelCharPopup1 do
+  begin
+    Font:= Ed.Font;
+    if Ed.TextLength>0 then
+      if Ed.Lines.TextCoding=tcAnsi then
       begin
-        ch:= CurrentEditor.Lines.FText[CurrentEditor.CaretStrPos+1];
+        ch:= Ed.Lines.Chars[Ed.CaretStrPos+1];
         s:= UnicodeToAnsiCP(ch, CurrentFrame.TextSource.Lines.Codepage);
         if s<>'' then SelChar:= s[1];
       end
       else
       begin
-        ch:= CurrentEditor.Lines.FText[CurrentEditor.CaretStrPos+1];
+        ch:= Ed.Lines.Chars[Ed.CaretStrPos+1];
         SelChar:= Char(ch);
       end;
   end;
@@ -9453,47 +9401,44 @@ begin
       end;
 
   //CSS: insert space if caret is after ":" char
-  if FTagCss then
+  if FAcpCss then
     with CurrentEditor do
-    begin
-      i:= CaretStrPos;
-      if (i>0) and (i<=Length(Lines.FText)) and (Lines.FText[i]=':') then
+      if Lines.Chars[CaretStrPos]=':' then
       begin
         InsertText(' ');
         DoAcpPopup;
       end;  
-    end;
 
   //HTML: insert "<" char, except cases:
   //we are at "<", we are at middle of a tag
-  if FTagList then
+  if FAcpHtmTags then
     with CurrentEditor do
     begin
-      //FTagBracketAdded must be true only when
+      //FAcpHtmBracketAdded must be true only when
       //- TextLength=0
       //- caret on space/tab/EOL
       //- caret prev char is not wordchar, not '<', '/'
-      FTagBracketAdded:= true;
+      FAcpHtmBracketAdded:= true;
       if (TextLength>0) then
       begin
         i:= CaretStrPos;
         if (i<=TextLength) then
         begin
-          ch:= Lines.FText[i];
+          ch:= Lines.Chars[i];
           if IsWordChar(ch) or (ch='<') or (ch='/')
             or (ch=' ') {fix for unneeded "<" at text end} then
-            FTagBracketAdded:= false;
+            FAcpHtmBracketAdded:= false;
           //else
           //  MsgError(WideFormat('%d %d %d', [i, TextLength, Ord(ch)])); ////
         end;
         if (i+1<=TextLength) then
         begin
-          ch:= Lines.FText[i+1];
+          ch:= Lines.Chars[i+1];
           if not ((ch=' ') or (ch=#13) or (ch=#10) or (ch=#9)) then
-            FTagBracketAdded:= false;
+            FAcpHtmBracketAdded:= false;
         end;
       end; //if TextLength>0
-      if FTagBracketAdded then
+      if FAcpHtmBracketAdded then
       begin
         InsertText('<');
       end;
@@ -9504,31 +9449,13 @@ begin
   //Need to insert some char before text ID.
   with CurrentEditor do
     if (CaretStrPos<TextLength) then
-      if IsWordChar(Lines.FText[CaretStrPos+1]) then
+      if IsWordChar(Lines.Chars[CaretStrPos+1]) then
       begin
         InsertText(' ');
         CaretStrPos:= CaretStrPos-1;
         DoAcpPopup;
-        FTagSpaceAdded:= true;
+        FAcpHtmSpaceAdded:= true;
       end;
-end;
-
-procedure TfmMain.UpdateNonPrinted(E: TSyntaxMemo);
-begin
-  with E do
-    {
-    //not needed now
-    if (Lines.TextCoding=tcAnsi) and (Lines.Codepage=CP_OEMCP) then
-    begin
-      NonPrinted.SpaceChar:= '.';
-      NonPrinted.TabChar:= '>';
-    end
-    else
-    }
-    begin
-      NonPrinted.SpaceChar:= #183;
-      NonPrinted.TabChar:= #187;
-    end;
 end;
 
 procedure TfmMain.FrameSaveState(Sender: TObject);
@@ -10383,24 +10310,23 @@ begin
   if not Accept then
   begin
     //delete '<' if was added on ACP call
-    if FTagBracketAdded then
+    if FAcpHtmBracketAdded then
       with CurrentEditor do
-        if (CaretStrPos >= 1) and (CaretStrPos <= TextLength) then
-          if Lines.FText[CaretStrPos] = '<' then
-          begin
-            CaretStrPos:= CaretStrPos - 1;
-            DeleteText(1);
-          end;
+      if Lines.Chars[CaretStrPos] = '<' then
+      begin
+        CaretStrPos:= CaretStrPos-1;
+        DeleteText(1);
+      end;
 
     //delete space if added on ACP call
-    if FTagSpaceAdded then
+    if FAcpHtmSpaceAdded then
       with CurrentEditor do
-        if Lines.FText[CaretStrPos+1] = ' ' then
+        if Lines.Chars[CaretStrPos+1] = ' ' then
           DeleteText(1);
   end;
 
-  FTagBracketAdded:= false;
-  FTagSpaceAdded:= false;
+  FAcpHtmBracketAdded:= false;
+  FAcpHtmSpaceAdded:= false;
 end;
 
 
@@ -11919,7 +11845,7 @@ begin
   L:= TTntStringList.Create;
   try
     L.SetTextW(PWChar(F.EditorMaster.Text));
-    DoListCommand_Untab(L, CurrentTabSize(F.EditorMaster));
+    DoListCommand_Untab(L, EditorTabSize(F.EditorMaster));
     F.EditorMaster.Text:= L.Text;
   finally
     FreeAndNil(L);
@@ -12734,7 +12660,7 @@ begin
     FocusEditor;
 end;
 
-procedure TfmMain.MarkAll(const Str: Widestring);
+procedure TfmMain.DoMarkAll(const Str: Widestring);
 var
   OFl: TSearchOptions;
   OTxt, OTxt2: Widestring;
@@ -12752,9 +12678,12 @@ begin
   Finder.Control:= CurrentEditor;
   Finder.FindText:= Str;
   Finder.ReplaceText:= '';
-  Finder.Flags:= [ftEntireScope, ftWholeWordOnly];
+  Finder.Flags:= [ftEntireScope];
+  if opHiliteSmartWords then
+    Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
   if opHiliteSmartCase then
     Finder.Flags:= Finder.Flags + [ftCaseSensitive];
+
   Finder.OnAfterExecute:= nil;
   Finder.OnBeforeExecute:= nil;
   Finder.OnNotFound:= nil;
@@ -12772,7 +12701,7 @@ begin
   Finder.OnNotFound:= ON3;
 end;
 
-procedure TfmMain.HiliteSmart;
+procedure TfmMain.DoSmartHilite;
 var
   Ed: TSyntaxMemo;
   s: Widestring;
@@ -12785,31 +12714,28 @@ begin
   s:= Ed.SelText;
   FSelBlank:= Ed.SelLength=0;
 
-  {
-  //Selection must be whole word (like N++)
-  with Ed do
-    if WordAtPos(StrPosToCaretPos(SelStart)) <> s then Exit;
-  }
+  if opHiliteSmartWords then
+  begin
+    //Selection must be a word
+    for i:= 1 to Length(s) do
+      if not IsWordChar(s[i]) then Exit;
+  end;    
 
-  //Selection must be a word
-  for i:= 1 to Length(s) do
-    if not IsWordChar(s[i]) then Exit;
-
-  MarkAll(s);
-  UpdateMicroMap(CurrentFrame);
+  DoMarkAll(s);
+  UpdateFrameMicroMap(CurrentFrame);
 end;
 
 procedure TfmMain.TimerSelTimer(Sender: TObject);
 begin
   TimerSel.Enabled:= false;
   if opHiliteSmart then
-    HiliteSmart;
+    DoSmartHilite;
 end;
 
 procedure TfmMain.TimerBracketsTimer(Sender: TObject);
 begin
   TimerBrackets.Enabled:= false;
-  HiliteBrackets;
+  DoBracketsHilite;
 end;
 
 procedure TfmMain.TBXItemCtxCopyAppendClick(Sender: TObject);
@@ -13192,10 +13118,14 @@ begin
   PluginACP.Font:= ecACP.Font;
   PluginACP.ItemHeight:= ecACP.ItemHeight;
   PluginACP.Height:= ecACP.Height;
+  PluginACP.DropDownCount:= ecACP.DropDownCount;
 
   TemplatePopup.Font:= ecACP.Font;
   TemplatePopup.ListBox.Font:= ecACP.Font;
   TemplatePopup.ListBox.ItemHeight:= ecACP.ItemHeight;
+  TemplatePopup.DropDownCount:= ecACP.DropDownCount;
+
+  ApplyAcpColors;
 end;
 
 procedure TfmMain.ApplyOut;
@@ -13746,7 +13676,7 @@ procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
       else
         MI.OnClick:= SetEncoding;
       MI.RadioItem:= true;
-      MI.Checked:= GetCP(CurrentFrame) = Tag;
+      MI.Checked:= GetFrameEnc(CurrentFrame) = Tag;
     end;
     
     if M is TSpTbxPopupMenu then
@@ -13786,7 +13716,7 @@ procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
       else
         MI.OnClick:= SetEncoding;
       MI.RadioItem:= true;
-      MI.Checked:= GetCP(CurrentFrame) = Tag;
+      MI.Checked:= GetFrameEnc(CurrentFrame) = Tag;
       if not IsUnicode then
         MI.Enabled:= EncOK(Tag);
       M.Add(MI);
@@ -13870,7 +13800,7 @@ begin
   end;
 end;
 
-function TfmMain.GetCP(F: TEditorFrame): integer;
+function TfmMain.GetFrameEnc(F: TEditorFrame): integer;
 begin
   case F.TextSource.Lines.TextCoding of
     tcUTF8:
@@ -14222,7 +14152,7 @@ begin
 end;
 
 
-procedure TfmMain.DoFindBrackets(var Pos1, Pos2: Integer);
+procedure TfmMain.DoBracketsFind(var Pos1, Pos2: Integer);
 begin
   with CurrentEditor do
   begin
@@ -14242,14 +14172,14 @@ procedure TfmMain.DoBracketJump;
 var
   n1, n2: Integer;
 begin
-  DoFindBrackets(n1, n2);
+  DoBracketsFind(n1, n2);
   if n2>=0 then
     CurrentEditor.CaretStrPos:= n2
   else
     MsgBeep;
 end;
 
-procedure TfmMain.HiliteBrackets;
+procedure TfmMain.DoBracketsHilite;
 var
   n1, n2: Integer;
 begin
@@ -14267,7 +14197,7 @@ begin
 
       //SelAttributes.ClearFormat;
       if HaveSelection then Exit;
-      DoFindBrackets(n1, n2);
+      DoBracketsFind(n1, n2);
       if n2<0 then Exit;
 
       {
@@ -14455,8 +14385,8 @@ begin
       EditorMaster.Gutter.LineBreakObj:= IfThen(opShowWrapMark, 0, -1);
       EditorSlave.Gutter.LineBreakObj:= EditorMaster.Gutter.LineBreakObj;
       //apply non-printed
-      EditorNonPrintUpdate(EditorMaster);
-      EditorNonPrintUpdate(EditorSlave);
+      UpdateEditorNonPrinted(EditorMaster);
+      UpdateEditorNonPrinted(EditorSlave);
     end;
 end;
 
@@ -14483,6 +14413,7 @@ begin
   SplitterMain.Invalidate;
 
   ApplyFrames;
+  ApplyAcpColors;
 
   if Assigned(fmClip) then
   begin
@@ -14496,76 +14427,18 @@ begin
     fmProj.TreeProj.Color:= Tree.Color;
 end;
 
-procedure TfmMain.DoDupLine(Ed: TSyntaxMemo);
-var
-  n, nn: Integer;
-  s: ecString;
+procedure TfmMain.ApplyAcpColors;
 begin
-  with Ed do
-  if SelLength>0 then
-  begin
-    n:= SelStart;
-    nn:= SelLength;
-    s:= SelText;
-    SetSelection(n, 0);
-    InsertText(s);
-    SetSelection(n, nn);
-  end
-  else
-  try
-    Ed.BeginUpdate;
-    AddLineToEnd(Ed);
-    Ed.DuplicateLine(Ed.CaretPos.Y);
-    Ed.ExecCommand(smDown);
-    EditorSetModified(Ed);
-  finally
-    Ed.EndUpdate;
-  end;
-end;
+  ecACP.BgColor:= opColorAcpBg;
+  PluginACP.BgColor:= opColorAcpBg;
+  TemplatePopup.BgColor:= opColorAcpBg;
 
-(*
-procedure TfmMain.DoSelWordJump(ANext: boolean);
-var
-  n, Len, nn: Integer;
-  Rt: boolean;
-begin
-  with CurrentEditor do
-  begin
-    n:= SelStart;
-    Len:= SelLength;
-    Rt:= (Len=0) or (CaretStrPos<>n); //Move right edge of selection
-    DoWordJump(ANext);
-    nn:= CaretStrPos;
-    if Rt then
-    begin
-      if nn>=n then
-        SetSelection(n, nn-n, True)
-      else
-        SetSelection(nn, n-nn, True);
-    end
-    else
-    begin
-      if nn<=n+Len then
-        SetSelection(nn, n+Len-nn, True)
-      else
-        SetSelection(n+Len, nn-(n+Len), True);
-    end;
-  end;
-end;
-*)
+  ecACP.Font.Color:= opColorAcpText;
+  PluginACP.Font.Color:= opColorAcpText;
+  TemplatePopup.Font.Color:= opColorAcpText;
 
-procedure TfmMain.AddLineToEnd(E: TSyntaxMemo);
-var n:Integer;
-begin
-  //Fix: last line must be with EOL
-  with E do
-    if (CaretPos.Y = Lines.Count-1) and (Lines[Lines.Count-1]<>'') then
-    begin
-      n:= CaretStrPos;
-      CaretStrPos:= TextLength;
-      InsertNewLine(0, True, false);
-      CaretStrPos:= n;
-    end;
+  //ecACP uses style #1 from SyntStyles
+  SyntStyles.Styles[1].Font.Color:= opColorAcpText;
 end;
 
 procedure TfmMain.ecFullScrExecute(Sender: TObject);
@@ -15137,7 +15010,7 @@ begin
         //expand tabs to spaces
         if Pos(#9, s)>0 then
         begin
-          SReplaceAllW(s, #9, CurrentTabExpansion(Ed));
+          SReplaceAllW(s, #9, EditorTabExpansion(Ed));
           DoReplaceLine(Ed, i, s, true{ForceUndo});
         end;
 
@@ -15198,7 +15071,7 @@ begin
   Ed:= CurrentEditor;
   if Ed=nil then Exit;
   if Ed.ReadOnly then Exit;
-  DoGetSelLines(Ed, iFrom, iTo);
+  EditorGetSelLines(Ed, iFrom, iTo);
   IsSel:= iTo > iFrom;
 
   with TfmInsTxt.Create(nil) do
@@ -16489,35 +16362,6 @@ begin
     end;
 end;
 
-//Get selected lines nums: from Ln1 to Ln2
-procedure TfmMain.DoGetSelLines(Ed: TSyntaxMemo; var Ln1, Ln2: Integer);
-var p: TPoint;
-begin
-  with Ed do
-    if HaveSelection then
-    begin
-      if SelLength>0 then
-      begin
-        Ln1:= StrPosToCaretPos(SelStart).Y;
-        p:= StrPosToCaretPos(SelStart+SelLength);
-        Ln2:= p.Y;
-        if p.X = 0 then
-          Dec(Ln2);
-      end
-      else
-      begin
-        Ln1:= SelRect.Top;
-        Ln2:= SelRect.Bottom;
-      end
-    end
-    else
-    begin
-      //no selection
-      Ln1:= CaretPos.Y;
-      Ln2:= Ln1;
-    end;
-end;
-
 procedure TfmMain.ecSplitLinesExecute(Sender: TObject);
 var
   Ln1, Ln2, i, nLen, nCol: Integer;
@@ -16534,7 +16378,7 @@ begin
       nCol:= StrToIntDef(s, nCol);
       if nCol<3 then begin MsgBeep; Exit end;
 
-      DoGetSelLines(CurrentEditor, Ln1, Ln2);
+      EditorGetSelLines(CurrentEditor, Ln1, Ln2);
       BeginUpdate;
       try
         for i:= Ln2 downto Ln1 do
@@ -16808,7 +16652,7 @@ begin
   TbxItemMacro30.Caption:= MacroCmdName(29);
 end;
 
-procedure TfmMain.DoBkClear(ed: TSyntaxMemo);
+procedure TfmMain.DoBkClear(Ed: TSyntaxMemo);
 begin
   with Ed do
   begin
@@ -16845,56 +16689,33 @@ begin
   DoBkNext(CurrentEditor, false);
 end;
 
-var
-  _CmpMemo: TCustomSyntaxMemo;
-
-function BookmarkCompare(N1, N2: Pointer): Integer;
-begin
-  if not Assigned(_CmpMemo) then
-    raise Exception.Create('CmpMemo nil');
-  with _CmpMemo do
-    Result:= Bookmarks[Integer(N1)] - Bookmarks[Integer(N2)];
-end;
-
-procedure TfmMain.AddBookmarksToSortedList(ed: TSyntaxMemo; L: TList);
-var
-  i: Integer;
-begin
-  with ed.BookmarkObj do
-    for i:= 0 to Count-1 do
-      L.Add(Pointer(Items[i].BmIndex));
-
-  _CmpMemo:= ed;
-  L.Sort(BookmarkCompare);
-end;
-
-procedure TfmMain.DoBkNext(e: TSyntaxMemo; Next: boolean);
+procedure TfmMain.DoBkNext(Ed: TSyntaxMemo; Next: boolean);
 var
   i, n, nPos: Integer;
   L: TList;
 begin
-  nPos:= e.CaretStrPos;
+  nPos:= Ed.CaretStrPos;
   L:= TList.Create;
   try
     Screen.Cursor:= crHourGlass;
     try
-      AddBookmarksToSortedList(e, L);
+      EditorAddBookmarksToSortedList(Ed, L);
     finally
       Screen.Cursor:= crDefault;
-    end;    
+    end;
 
     //find bkmark which is near nPos
     n:= -1;
     if Next then
     begin
       for i:= 0 to L.Count-1 do
-        if e.Bookmarks[Integer(L[i])] > nPos then
+        if Ed.Bookmarks[Integer(L[i])] > nPos then
           begin n:= Integer(L[i]); Break end;
     end
     else
     begin
       for i:= L.Count-1 downto 0 do
-        if e.Bookmarks[Integer(L[i])] < nPos then
+        if Ed.Bookmarks[Integer(L[i])] < nPos then
           begin n:= Integer(L[i]); Break end;
     end;
     //we're after last bkmark
@@ -16915,8 +16736,8 @@ begin
     FreeAndNil(L);
   end;
 
-  e.GotoBookmark(n);
-  EditorCenterPos(e, true{GotoMode}, opSrOffsetY);
+  Ed.GotoBookmark(n);
+  EditorCenterPos(Ed, true{GotoMode}, opSrOffsetY);
   //Msg(Inttostr(n));
 end;
 
@@ -17016,45 +16837,16 @@ begin
   UpdateStatusbar;
 end;
 
-procedure TfmMain.DoDeleteLine(ed: TSyntaxMemo; N: integer;
+procedure TfmMain.DoDeleteLine(Ed: TSyntaxMemo; NLine: integer;
   ForceUndo: boolean = false);
-var p: TPoint;
 begin
-  p:= ed.CaretPos;
-  if N<=p.Y then Dec(p.Y); //fix caret pos
-  if opBkUndo or ForceUndo then
-    with ed do
-    begin
-      CaretPos:= Point(0, N);
-      DeleteText(Lines.LineSpace(N));
-    end
-  else
-  begin
-    ed.ClearUndo;
-    ed.Lines.Delete(N);
-    ed.Modified:= true;
-  end;
-  ed.CaretPos:= p;
+  EditorDeleteLine(Ed, NLine, opBkUndo or ForceUndo);
 end;
 
-procedure TfmMain.DoReplaceLine(ed: TSyntaxMemo; N: integer;
+procedure TfmMain.DoReplaceLine(Ed: TSyntaxMemo; NLine: integer;
   const S: ecString; ForceUndo: boolean = false);
-var p: TPoint;
 begin
-  if opBkUndo or ForceUndo then
-    with ed do
-    begin
-      p:= CaretPos;
-      CaretPos:= Point(0, N);
-      DeleteText(Lines.LineLength(N));
-      InsertText(S);
-      CaretPos:= p;
-    end
-  else
-  begin
-    ed.Lines[N]:= S;
-    ed.Modified:= true;
-  end;
+  EditorReplaceLine(Ed, NLine, S, opBkUndo or ForceUndo);
 end;
 
 procedure TfmMain.ecBkPasteExecute(Sender: TObject);
@@ -17641,7 +17433,7 @@ begin
   Ed:= CurrentEditor;
   if Ed.ReadOnly then Exit;
 
-  DoGetSelLines(Ed, Ln1, Ln2);
+  EditorGetSelLines(Ed, Ln1, Ln2);
   if Ln1=Ln2 then
     NCol:= Ed.CaretPos.X
   else
@@ -17661,19 +17453,6 @@ begin
   end;
 
   MsgDelLines(NDel);
-end;
-
-function TfmMain.CurrentTabSize(Ed: TSyntaxMemo): Integer;
-begin
-  if Ed.TabList.Count>0 then
-    Result:= Ed.TabList[0]
-  else
-    Result:= 8;
-end;
-
-function TfmMain.CurrentTabExpansion(Ed: TSyntaxMemo): Widestring;
-begin
-  Result:= StringOfChar(' ', CurrentTabSize(Ed));
 end;
 
 procedure TfmMain.ecTrimLeadExecute(Sender: TObject);
@@ -17999,45 +17778,9 @@ begin
   Result:= FGetFileSize(fn) <= opBigSize * 1024 * 1024;
 end;
 
-procedure TfmMain.DoSaveSel(Ed: TSyntaxMemo; var Sel: TSynSelSave);
-begin
-  FillChar(Sel, SizeOf(Sel), 0);
-  with Ed do
-  begin
-    Sel.FSelStream:= Ed.SelLength>0;
-    if Sel.FSelStream then
-    begin
-      Sel.FSelStart:= Ed.StrPosToCaretPos(Ed.SelStart);
-      Sel.FSelEnd:= Ed.StrPosToCaretPos(Ed.SelStart+Ed.SelLength);
-    end
-    else
-      Sel.FSelRect:= SelRect;
-    Sel.FCaretPos:= CaretPos;
-  end;
-end;
-
-procedure TfmMain.DoRestoreSel(Ed: TSyntaxMemo; const Sel: TSynSelSave);
-begin
-  with Ed do
-  begin
-    BeginUpdate;
-    try
-      CaretPos:= Sel.FCaretPos;
-      if Sel.FSelStream then
-      begin
-        SelStart:= Ed.CaretPosToStrPos(Sel.FSelStart);
-        SelLength:= Ed.CaretPosToStrPos(Sel.FSelEnd) - SelStart;
-      end
-      else
-        SelRect:= Sel.FSelRect;
-    finally
-      EndUpdate;
-    end;
-  end;
-end;
-
 procedure TfmMain.DoFixReplaceCaret(Ed: TSyntaxMemo);
-var n, nf: Integer;
+var
+  n, nf: Integer;
 begin
   with Ed do
   begin
@@ -19567,19 +19310,6 @@ begin
   end;
 end;
 
-function TfmMain.IsMultilineSelection(Ed: TSyntaxMemo): boolean;
-var
-  Ln1, Ln2: integer;
-begin
-  if not Ed.HaveSelection then
-    Result:= false
-  else
-  begin
-    DoGetSelLines(Ed, Ln1, Ln2);
-    Result:= Ln2 > Ln1;
-  end;
-end;
-
 function TfmMain.DoSmartTagTabbing: boolean;
 var
   s, sTag, sTagExp: Widestring;
@@ -19630,8 +19360,8 @@ begin
     if NTagSt=0 then Exit;
     sTag:= Copy(s, NTagSt, NCaret-NTagSt);
 
-    //read tag expansion from Html.Tabbing.acp
-    fn:= GetAcpFN('Html.Tabbing');
+    //read tag expansion from Html_Tabbing.ini
+    fn:= GetHtmlTabbingFN;
     if not IsFileExist(fn) then
     begin
       MsgTabbing('File not found: "'+fn+'"');
@@ -19739,21 +19469,47 @@ begin
 end;
 
 procedure TfmMain.ecSelTokenExecute(Sender: TObject);
+begin
+  DoSelectToken;
+end;
+
+procedure TfmMain.DoSelectToken(SkipQuotes: boolean = false);
 var
   Ed: TSyntaxMemo;
-  n: integer;
+  n, nStart, nLen: integer;
   t: TSyntToken;
 begin
   Ed:= CurrentEditor;
   if Ed.SyntObj=nil then
     begin MsgBeep; Exit end;
+
   n:= Ed.SyntObj.TokenAtPos(Ed.CaretStrPos);
   if n<0 then
     begin MsgBeep; Exit end;
+
   t:= Ed.SyntObj.Tags[n];
   if t=nil then
     begin MsgBeep; Exit end;
-  Ed.SetSelection(t.StartPos, t.EndPos - t.StartPos);
+
+  nStart:= t.StartPos;
+  nLen:= t.EndPos - t.StartPos;
+  if (nStart<0) or (nLen<=0) then
+    begin MsgBeep; Exit end;
+
+  if SkipQuotes then
+  begin
+    //skip ending quotes
+    while (nLen>0) and IsQuoteChar(Ed.Lines.Chars[nStart+nLen]) do
+      Dec(nLen);
+    //skip starting quotes
+    while (nLen>0) and IsQuoteChar(Ed.Lines.Chars[nStart+1]) do
+    begin
+      Inc(nStart);
+      Dec(nLen);
+    end;
+  end;
+
+  Ed.SetSelection(nStart, nLen);
 end;
 
 procedure TfmMain.TBXItemTreeFindCopyToClipNodeClick(Sender: TObject);
@@ -19975,7 +19731,7 @@ begin
   if not CurrentLexerHasTemplates then Exit;
   if Ed.Lines.Count=0 then Exit;
   if Ed.CaretStrPos=0 then Exit;
-  ch:= Ed.Lines.FText[Ed.CaretStrPos];
+  ch:= Ed.Lines.Chars[Ed.CaretStrPos];
   if not IsWordChar(ch) then Exit;
   Ed.ExecCommand(TemplatePopup.CommandID); //not smCodeTemplate!
   Result:= true;
@@ -20280,7 +20036,7 @@ begin
     List.LoadFromFile(ft);
     FDelete(ft);
     FixListOutput(List, ToolNoTags, IsLexerPas(ToolLexer), ToolOutEncoding,
-      CurrentTabExpansion(CurrentEditor));
+      EditorTabExpansion(CurrentEditor));
 
     AType:= OutputTypeStrToType(ToolOutType);
     if AType=outReplaceSelOrDoc then
@@ -20620,7 +20376,7 @@ begin
   try
     List.LoadFromFile(ft);
     FixListOutput(List, false{NoTags}, false{NoDups}, Enc,
-      CurrentTabExpansion(CurrentEditor));
+      EditorTabExpansion(CurrentEditor));
     UpdateOutFromList(List);
     UpdatePanelOut(tbOut);
     plOut.Show;
@@ -20663,11 +20419,11 @@ end;
 
 function TfmMain.DoAutoCloseTag: boolean;
   //
-  function IsNoPairTag(const s: string): boolean;
+  function IsNoPairTag(const STagName: string): boolean;
   const
-    cList = 'area,base,basefont,br,col,command,embed,frame,hr,img,input,keygen,link,meta,param,source,track,wbr';
+    cTagList = 'area,base,basefont,br,col,command,embed,frame,hr,img,input,keygen,link,meta,param,source,track,wbr';
   begin
-    Result:= IsLexerListed(s, cList);
+    Result:= IsLexerListed(STagName, cTagList);
   end;
   //
   function IsTagChar(ch: Widechar): boolean;
@@ -20687,8 +20443,8 @@ begin
     with CurrentEditor do
     begin
       nCaret:= CaretStrPos;
-      if (nCaret >= 1) and (nCaret <= Length(Lines.FText)) and
-        (Lines.FText[nCaret] <> '/') then
+      if (nCaret >= 1) and (nCaret <= TextLength) and
+        (Lines.Chars[nCaret] <> '/') then
       begin
         S:= Lines[CurrentLine];
 
@@ -20731,16 +20487,16 @@ begin
   NStart:= Ed.CaretStrPos;
 
   //options enabled?
-  if (Pos(ch, '()[]{}')>0) and not opAutoCloseBrackets then Exit;
-  if (Pos(ch, '"''')>0) and not opAutoCloseQuotes then Exit;
+  if IsBracketChar(ch) and not opAutoCloseBrackets then Exit;
+  if IsQuoteChar(ch) and not opAutoCloseQuotes then Exit;
 
   //bracket is escaped?
   if opAutoCloseBracketsNoEsc then
-    if (NStart>0) and (Ed.Lines.FText[NStart]='\') then Exit;
+    if (NStart>0) and (Ed.Lines.Chars[NStart]='\') then Exit;
 
   //closing bracket is already under caret?
   if (Pos(ch, ')]}')>0) then
-    if (NStart+1<=Length(Ed.Lines.FText)) and (Ed.Lines.FText[NStart+1]=ch) then
+    if Ed.Lines.Chars[NStart+1]=ch then
     begin
       //right 1 char
       Ed.CaretPos:= Point(Ed.CaretPos.X+1, Ed.CaretPos.Y);
@@ -20900,8 +20656,8 @@ var
   BrHere, BrLefter: boolean;
 begin
   n:= Ed.CaretStrPos;
-  BrHere:= (n >= 0) and (n < Ed.TextLength) and (Pos(Ed.Lines.FText[n+1], '()[]{}') > 0);
-  BrLefter:= (n > 0) and (n-1 < Ed.TextLength) and (Pos(Ed.Lines.FText[n], '()[]{}') > 0);
+  BrHere:= IsBracketChar(Ed.Lines.Chars[n+1]);
+  BrLefter:= IsBracketChar(Ed.Lines.Chars[n]);
 
   if BrHere then
     DoBracketJump
@@ -20943,7 +20699,7 @@ begin
     //create bookmarks list
     Screen.Cursor:= crHourGlass;
     try
-      AddBookmarksToSortedList(ed, L);
+      EditorAddBookmarksToSortedList(ed, L);
     finally
       Screen.Cursor:= crDefault;
     end;
@@ -21016,7 +20772,7 @@ var
     n: Integer;
   begin
     Result:= S;
-    SReplaceAllW(Result, #9, CurrentTabExpansion(CurrentEditor));
+    SReplaceAllW(Result, #9, EditorTabExpansion(CurrentEditor));
 
     try
       if not StripBkmk then Exit;
@@ -22149,7 +21905,7 @@ begin
   if ed.SelLength=0 then
     begin MsgNoSelection; Exit end;
 
-  DoGetSelLines(ed, Ln1, Ln2);
+  EditorGetSelLines(ed, Ln1, Ln2);
   if Ln2=Ln1 then
     begin MsgWarn(DKLangConstW('zMSelMulLine'), Handle); Exit end;
 
@@ -23402,7 +23158,7 @@ begin
   with Ed do
     if (not ReadOnly) and (Lines.Count>0) then
     begin
-      DoGetSelLines(Ed, Ln1, Ln2);
+      EditorGetSelLines(Ed, Ln1, Ln2);
       Ed.BeginUpdate;
       try
         for i:= Ln1 to Ln2 do
@@ -23885,7 +23641,7 @@ begin
       begin
         if Ed.SelLength>0 then
         begin
-          DoGetSelLines(Ed, Ln1, Ln2);
+          EditorGetSelLines(Ed, Ln1, Ln2);
           for i:= Ln1 to Ln2 do
             s:= s+Ed.Lines[i]+sCR;
         end;
@@ -23961,7 +23717,7 @@ begin
     begin
       if Ed.SelLength>0 then
       begin
-        DoGetSelLines(Ed, Ln1, Ln2);
+        EditorGetSelLines(Ed, Ln1, Ln2);
         for i:= Ln2 downto Ln1 do
           DoDeleteLine(Ed, i, true);
         dd
@@ -24231,7 +23987,7 @@ begin
       end;
 end;
 
-procedure TfmMain.UpdateMicroMap(F: TEditorFrame);
+procedure TfmMain.UpdateFrameMicroMap(F: TEditorFrame);
 begin
   F.SyncMap;
 end;
@@ -24282,7 +24038,7 @@ begin
     Ln2:= Ed.Lines.Count-1;
   end
   else
-    DoGetSelLines(Ed, Ln1, Ln2);
+    EditorGetSelLines(Ed, Ln1, Ln2);
 
   //if (Ln2-Ln1)<1 then
   //  begin MsgNoSelection; Exit end;
@@ -24362,18 +24118,18 @@ begin
 
       scmdUntab:
         begin
-          i:= DoListCommand_Untab(L, CurrentTabSize(Ed));
+          i:= DoListCommand_Untab(L, EditorTabSize(Ed));
           ok:= i>0;
           MsgDoneLines(i);
         end;
 
       scmdSpacesToTabs:
         begin
-          ok:= DoListCommand_Unspace(L, CurrentTabSize(Ed), false);
+          ok:= DoListCommand_Unspace(L, EditorTabSize(Ed), false);
         end;
       scmdSpacesToTabsLead:
         begin
-          ok:= DoListCommand_Unspace(L, CurrentTabSize(Ed), true);
+          ok:= DoListCommand_Unspace(L, EditorTabSize(Ed), true);
         end;
 
       scmdRemoveBlanks:
@@ -24417,7 +24173,7 @@ begin
           //do alignment
           if ok then
           begin
-            i:= DoListCommand_AlignWithSep(L, Sep, CurrentTabSize(Ed){, soOptimalFill in Ed.Options});
+            i:= DoListCommand_AlignWithSep(L, Sep, EditorTabSize(Ed){, soOptimalFill in Ed.Options});
             ok:= i>0;
             MsgDoneLines(i);
           end;
@@ -24450,6 +24206,11 @@ begin
 end;
 
 procedure TfmMain.ecSelBracketsExecute(Sender: TObject);
+begin
+  DoBracketsSelect;
+end;  
+
+procedure TfmMain.DoBracketsSelect;
 var
   Ed: TSyntaxMemo;
   //-----------------
@@ -24458,7 +24219,7 @@ var
     n1, n2: Integer;
     nn1, nn2: Integer;
   begin
-    DoFindBrackets(n1, n2);
+    DoBracketsFind(n1, n2);
     Result:= n2>=0;
     if Result then
     begin
@@ -24482,7 +24243,7 @@ begin
   nSelStartOld:= Ed.SelStart;
   nSelLenOld:= Ed.SelLength;
   
-  if Pos(Ed.Lines.FText[n1+1], '()[]{}')>0 then
+  if IsBracketChar(Ed.Lines.Chars[n1+1]) then
   begin
     DoSel;
   end
@@ -24854,13 +24615,13 @@ begin
   N:= Ed.CaretStrPos;
   if N>Length(Ed.Lines.FText) then Exit;
   //don't do Autocomplete if next char is wordchar
-  if (N<Length(Ed.Lines.FText)) and IsWordChar(Ed.Lines.FText[N+1]) then Exit;
+  if IsWordChar(Ed.Lines.Chars[N+1]) then Exit;
 
   //NLen is length of word before caret
   NLen:= 1;
   i:= N+1;
   repeat
-    if (i<=1) or not IsWordChar(Ed.Lines.FText[i-1]) then Break;
+    if (i<=1) or not IsWordChar(Ed.Lines.Chars[i-1]) then Break;
     Inc(NLen);
     Dec(i);
     if NLen>=opAcpNum then
@@ -25178,13 +24939,13 @@ begin
   with Ed do
     if HaveSelection then
     begin
-      DoSaveSel(Ed, Save);
+      EditorSaveSel(Ed, Save);
       if SelLength>0 then
         CaretStrPos:= SelStart
       else
         CaretPos:= Point(SelRect.Left, SelRect.Top);
       EditorCenterPos(Ed, true{GotoMode}, opSrOffsetY);
-      DoRestoreSel(Ed, Save);
+      EditorRestoreSel(Ed, Save);
     end;
 end;
 
@@ -25746,7 +25507,7 @@ begin
 
   //we have two variants of code: for usual code (Pascal/C/PHP/etc) and for HTML,
   //HTML case is special, need precise jumps considering "<" and ">"
-  DoSaveSel(Ed, SelSave);
+  EditorSaveSel(Ed, SelSave);
   Lex:= CurrentLexer;
   if not IsLexerHTML(Lex) and not IsLexerXML(Lex) then
   begin
@@ -25760,11 +25521,20 @@ begin
 
     R:= An.NearestRangeAtPos(Ed.CaretStrPos);
     if (R=nil) or not R.IsClosed then
-      begin SetHint('Extend selection: no range at caret'); MsgBeep; DoRestoreSel(Ed, SelSave); Exit end;
+    begin
+      SetHint('Extend selection: no range at caret');
+      MsgBeep;
+      EditorRestoreSel(Ed, SelSave);
+      Exit
+    end;
 
     EndPos:= R.EndIdx;
     if not ((EndPos>=0) and (EndPos<An.TagCount)) then
-      begin SetHint('Extend selection: no closed range'); MsgBeep; Exit end;
+    begin
+      SetHint('Extend selection: no closed range');
+      MsgBeep;
+      Exit
+    end;
 
     EndPos:= An.Tags[EndPos].EndPos;
     Ed.SetSelection(R.StartPos, EndPos-R.StartPos);
@@ -25784,7 +25554,7 @@ begin
       //take only range, which starts before NCaret, and ends after NCaret
       if (StPos<NCaret) and (EndPos>=NCaret) then
         //and not range which is from "<" to ">" - this is just tag
-        if not (Ed.Lines.FText[StPos+1]='<') then
+        if not (Ed.Lines.Chars[StPos+1]='<') then
         begin
           //correct StPos, EndPos coz they don't include "<" and ">" in HTML
           Dec(StPos);
@@ -26929,6 +26699,8 @@ begin
   Ed.SyncEditing.SyncRangeStyle.BgColor:= C[51];
   opColorMapMarks:= C[52];
   opColorCaretsGutter:= C[53];
+  opColorAcpText:= C[54];
+  opColorAcpBg:= C[55];
 end;
 
 procedure TfmMain.InitColorsArray(var C: TSynColors);
@@ -26987,6 +26759,8 @@ begin
   C[51]:= TemplateEditor.SyncEditing.SyncRangeStyle.BgColor;
   C[52]:= opColorMapMarks;
   C[53]:= opColorCaretsGutter;
+  C[54]:= opColorAcpText;
+  C[55]:= opColorAcpBg;
 end;
 
 procedure TfmMain.DoHandleQuickSearchEscape;
@@ -27404,8 +27178,43 @@ begin
   if NeedDraw then
     Ed.Invalidate;
 
+  DoSmartHiliteOnClick;
+
   UpdateLexer;
   UpdateStatusBar;
+end;
+
+procedure TfmMain.DoSmartHiliteOnClick;
+var
+  Ed: TSyntaxMemo;
+  NPos: Integer;
+  S: Widestring;
+  F: TEditorFrame;
+  MCarets: boolean;
+begin
+  Ed:= CurrentEditor;
+
+  //don't allow to work for many carets
+  F:= FrameOfEditor(Ed);
+  MCarets:= (F<>nil) and (F.CaretsCount>1);
+  if MCarets and opHiliteSmartOnClick then
+  begin
+    Ed.ResetSearchMarks;
+    Exit
+  end;  
+
+  if opHiliteSmartOnClick then
+  begin
+    Ed.ResetSearchMarks;
+    NPos:= Ed.CaretStrPos;
+    if not Ed.HaveSelection then
+	  if IsWordChar(Ed.Lines.Chars[NPos+1]) then
+	  begin
+		S:= Ed.WordAtPos(Ed.CaretPos);
+		if S<>'' then
+		  DoMarkAll(S);
+	  end;
+  end;
 end;
 
 procedure TfmMain.ApplyTabFontSize;
@@ -27903,6 +27712,18 @@ end;
 procedure TfmMain.TbxItemCtxTool16Click(Sender: TObject);
 begin
   RunTool(16);
+end;
+
+procedure TfmMain.ecSelTokenNoQuotesExecute(Sender: TObject);
+begin
+  DoSelectToken(true);
+end;
+
+procedure TfmMain.plTreeDockChanged(Sender: TObject);
+begin
+  //fix splitter position, it may be too right after
+  //docking the tree panel to left
+  SplitterLeft.Left:= 10;
 end;
 
 end.

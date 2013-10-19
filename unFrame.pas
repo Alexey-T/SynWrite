@@ -315,6 +315,19 @@ constructor TEditorFrame.Create(AOwner: TComponent);
 begin
   inherited;
 
+  with EditorMaster do
+  begin
+    BevelInner:= bvLowered;
+    BevelOuter:= bvNone;
+    BevelKind:= bkSoft;
+  end;
+  with EditorSlave do
+  begin
+    BevelInner:= bvLowered;
+    BevelOuter:= bvNone;
+    BevelKind:= bkSoft;
+  end;
+
   FNotif:= TATFileNotificationSimple.Create(Self);
   FNotif.Timer.Enabled:= False;
   FNotif.Timer.Interval:= 1000;

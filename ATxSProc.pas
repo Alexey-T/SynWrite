@@ -12,7 +12,10 @@ function SFuzzyMatch(S, Filter: Widestring): boolean;
 
 function SUntab(const S: Widestring; TabSize: Integer): Widestring;
 function SDecodeSpecChars(const s: WideString): WideString;
+
 function IsUpperChar(Ch: WideChar): boolean;
+function IsQuoteChar(ch: WideChar): boolean;
+function IsBracketChar(ch: WideChar): boolean;
 
 procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3, Val4: Widestring);
 function SBufferToString(BufPtr: Pointer; BufSize: Integer): Widestring;
@@ -1139,6 +1142,16 @@ begin
     Result[i]:= ' ';
     Insert(StringOfChar(' ', NSize-1), Result, i);
   until false;
+end;
+
+function IsQuoteChar(ch: WideChar): boolean;
+begin
+  Result:= (ch = '''') or (ch = '"');
+end;
+
+function IsBracketChar(ch: WideChar): boolean;
+begin
+  Result:= Pos(ch, '()[]{}') > 0;
 end;
 
 end.

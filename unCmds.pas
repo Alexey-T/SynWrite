@@ -368,6 +368,7 @@ const
   sm_OpenLastClosedFile = 1035;
   sm_AcpForceTextOn = 1036;
   sm_AcpForceTextOff = 1037;
+  sm_SelectTokenNoQuotes = 1038;
   //free
 
   //Tree commands

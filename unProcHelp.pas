@@ -51,13 +51,16 @@ function FHelpLangSuffix: string;
 begin
   //see contents of SynWrite LNG files - string "LANGID="
   case LangManager.LanguageID of
-    1049: Result:= 'Ru';
     1029: Result:= 'Cz';
     1031: Result:= 'De';
     1036: Result:= 'Fr';
+	1038: Result:= 'Hu';
     1040: Result:= 'It';
     1041: Result:= 'Jp';
+	1042: Result:= 'Ko';
+    1049: Result:= 'Ru';
     2052: Result:= 'Chs';
+	1028: Result:= 'Cht';
     3082: Result:= 'Sp';
     else Result:= 'En';
   end;

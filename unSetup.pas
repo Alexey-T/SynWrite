@@ -344,6 +344,8 @@ type
     labWordChars: TTntLabel;
     cbTabStyle: TTntComboBox;
     cbAcpParamHints: TTntCheckBox;
+    cbHiliteSmartClick: TTntCheckBox;
+    cbHiliteSmartWords: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -499,120 +501,123 @@ type
     fmMain: TfmMain;
   end;
 
-//=================================
 const
   cColors: array[0..cColorsNum-1] of string = (
-  'Text', //0
-  'Text-BG', //1
-  'Current-line-BG', //2
-  'Line-numbers-text', //3
-  'Line-numbers-BG', //4
-  'Collapse-line', //5
-  'Folding-lines', //6
-  'Folding-bar-BG', //7
-  'Gutter-separator', //8
-  'Selection-text', //9
-  'Selection-BG', //10
-  'Right-margin', //11
-  'Hints-text', //12
-  'Hints-BG', //13
-  'Non-printable-chars', //14
-  'Indentation-staples', //15
-  'Gutter-gradient-right', //16
-  'Tree-text', //17
-  'Tree-BG', //18
-  'Ruler-text', //19
-  'Ruler-BG', //20
-  'Passive-tabs', //21
-  'Active-tab', //22
-  'Active-tab-line', //23
-  'Search-marks-text', //24
-  'Search-marks-BG', //25
-  'Output-panel-text', //26
-  'Output-panel-BG', //27
-  'Output-panel-selection-text', //28
-  'Output-panel-selection-BG', //29
-  'Output-panel-active-text', //30
-  'Output-panel-active-selected-text', //31
-  'Output-panel-highlight-mask', //32
-  'Pair-brackets', //33
-  'Pair-brackets-BG', //34
-  'Links-highlighting', //35
-  'Views-splitter', //36
-  'Current-line-text', //37
-  'Line-state-modified', //38
-  'Line-state-new', //39
-  'Line-state-saved', //40
-  'Line-state-unchanged', //41
-  'Tab-caption', //42
-  'Tab-caption-unsaved', //43
-  'Bookmark-BG', //44
-  'Map-BG', //45
-  'Collapse-mark', //46
-  'Slave-splitter', //47
-  'Line-state-def', //48
-  'Non-printable-BG', //49
-  'Collapse-mark-BG', //50
-  'SyncEdit-BG', //51
-  'Map-marks-BG', //52
-  'Carets-gutter-BG' //53
-  );
+    'Text', //0
+    'Text-BG', //1
+    'Current-line-BG', //2
+    'Line-numbers-text', //3
+    'Line-numbers-BG', //4
+    'Collapse-line', //5
+    'Folding-lines', //6
+    'Folding-bar-BG', //7
+    'Gutter-separator', //8
+    'Selection-text', //9
+    'Selection-BG', //10
+    'Right-margin', //11
+    'Hints-text', //12
+    'Hints-BG', //13
+    'Non-printable-chars', //14
+    'Indentation-staples', //15
+    'Gutter-gradient-right', //16
+    'Tree-text', //17
+    'Tree-BG', //18
+    'Ruler-text', //19
+    'Ruler-BG', //20
+    'Passive-tabs', //21
+    'Active-tab', //22
+    'Active-tab-line', //23
+    'Search-marks-text', //24
+    'Search-marks-BG', //25
+    'Output-panel-text', //26
+    'Output-panel-BG', //27
+    'Output-panel-selection-text', //28
+    'Output-panel-selection-BG', //29
+    'Output-panel-active-text', //30
+    'Output-panel-active-selected-text', //31
+    'Output-panel-highlight-mask', //32
+    'Pair-brackets', //33
+    'Pair-brackets-BG', //34
+    'Links-highlighting', //35
+    'Views-splitter', //36
+    'Current-line-text', //37
+    'Line-state-modified', //38
+    'Line-state-new', //39
+    'Line-state-saved', //40
+    'Line-state-unchanged', //41
+    'Tab-caption', //42
+    'Tab-caption-unsaved', //43
+    'Bookmark-BG', //44
+    'Map-BG', //45
+    'Collapse-mark', //46
+    'Slave-splitter', //47
+    'Line-state-def', //48
+    'Non-printable-BG', //49
+    'Collapse-mark-BG', //50
+    'SyncEdit-BG', //51
+    'Map-marks-BG', //52
+    'Carets-gutter-BG', //53
+    'Auto-complete-text', //54
+    'Auto-complete-BG' //55
+    );
 
 const
   cColorsOrder: array[0..cColorsNum-7] of integer = (
-  0,
-  1,
-  9,
-  10,
-  37,
-  2,
-  3,
-  4,
-  6,
-  7,
-  5,
-  46,
-  50,
-  14,
-  49,
-  15,
-  11,
-  24,
-  25,
-  44,
-  42,
-  43,
-  21,
-  22,
-  23,
-  17,
-  18,
-  19,
-  20,
-  26,
-  27,
-  28,
-  29,
-  30,
-  31,
-  32,
-  //33,
-  //34,
-  35,
-  //36,
-  //47,
-  38,
-  39,
-  40,
-  41,
-  48,
-  45,
-  52,
-  51,
-  53,
-  12,
-  13
-  );
+    0,
+    1,
+    9,
+    10,
+    37,
+    2,
+    3,
+    4,
+    6,
+    7,
+    5,
+    46,
+    50,
+    14,
+    49,
+    15,
+    11,
+    24,
+    25,
+    44,
+    42,
+    43,
+    21,
+    22,
+    23,
+    17,
+    18,
+    19,
+    20,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    //33,
+    //34,
+    35,
+    //36,
+    //47,
+    38,
+    39,
+    40,
+    41,
+    48,
+    45,
+    52,
+    51,
+    53,
+    54,
+    55,
+    12,
+    13
+    );
 
 implementation
 
@@ -1557,6 +1562,7 @@ procedure TfmSetup.cbLangChange(Sender: TObject);
 begin
   FLangChanged:= true;
   labLangInfo.Caption:= DKLangConstW('MLnApply');
+  labLangInfo.Font.Color:= clBlue;
   labLangInfo.Show;
 end;
 
@@ -2437,7 +2443,9 @@ begin
     ApplyUrlClick;
 
     opHiliteSmart:= cbHiliteSmart.Checked;
+    opHiliteSmartOnClick:= cbHiliteSmartClick.Checked;
     opHiliteSmartCase:= cbHiliteSmartCase.Checked;
+    opHiliteSmartWords:= cbHiliteSmartWords.Checked;
     opHiliteBrackets:= cbHiliteBrackets.Checked;
     opCopyLineIfNoSel:= cbCopyLineNSel.Checked;
 
@@ -2599,7 +2607,9 @@ begin
     cbUrlClick.Checked:= opSingleClickURL;
 
     cbHiliteSmart.Checked:= opHiliteSmart;
+    cbHiliteSmartClick.Checked:= opHiliteSmartOnClick;
     cbHiliteSmartCase.Checked:= opHiliteSmartCase;
+    cbHiliteSmartWords.Checked:= opHiliteSmartWords;
     cbHiliteBrackets.Checked:= opHiliteBrackets;
 
     cbCopyLineNSel.Checked:= opCopyLineIfNoSel;
