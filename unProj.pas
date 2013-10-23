@@ -166,6 +166,8 @@ type
     FOldItemsCount: integer;
     FOnPreview: TProjPreviewProc;
     FOnGotoProj: TNotifyEvent;
+    FOnProjectOpen: TNotifyEvent;
+    FOnProjectClose: TNotifyEvent;
     FOnFileOpen: TListProc;
     FOnUpdateMRU: TMruListProc;
     FOnLoadMRU: TMruListProc;
@@ -235,6 +237,8 @@ type
     property Modified: boolean read FModified;
     property OnPreview: TProjPreviewProc read FOnPreview write FOnPreview;
     property OnFileOpen: TListProc read FOnFileOpen write FOnFileOpen;
+    property OnProjectOpen: TNotifyEvent read FOnProjectOpen write FOnProjectOpen;
+    property OnProjectClose: TNotifyEvent read FOnProjectClose write FOnProjectClose;
     property OnUpdateMRU: TMruListProc read FOnUpdateMRU write FOnUpdateMRU;
     property OnLoadMRU: TMruListProc read FOnLoadMRU write FOnLoadMRU;
     property OnAddEditorFile: TListProc read FOnAddEditorFile write FOnAddEditorFile;
@@ -331,6 +335,9 @@ end;
 procedure TfmProj.DoNewProject;
 begin
   CheckModified;
+
+  if Assigned(FOnProjectClose) then
+    FOnProjectClose(Self);
 
   with TreeProj do
   begin
@@ -1149,6 +1156,9 @@ begin
 
   FModified:= false;
   UpdateTitle;
+
+  if Assigned(FOnProjectOpen) then
+    FOnProjectOpen(Self);
 end;
 
 procedure TfmProj.DoSaveProjectIfNeeded;

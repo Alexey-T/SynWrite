@@ -369,6 +369,7 @@ const
   sm_AcpForceTextOn = 1036;
   sm_AcpForceTextOff = 1037;
   sm_SelectTokenNoQuotes = 1038;
+  sm_AddFilesToProject = 1039;
   //free
 
   //Tree commands

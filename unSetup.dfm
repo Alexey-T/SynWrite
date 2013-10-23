@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabProgSett
+    ActivePage = tabSess
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -1380,16 +1380,16 @@ object fmSetup: TfmSetup
         object cbSessLoad: TTntCheckBox
           Left = 8
           Top = 48
-          Width = 470
+          Width = 500
           Height = 17
-          Caption = 'Restore last session on startup'
+          Caption = 'Open last session on startup'
           TabOrder = 2
           OnClick = cbSessSaveClick
         end
         object cbSessSave: TTntCheckBox
           Left = 8
           Top = 16
-          Width = 470
+          Width = 500
           Height = 17
           Caption = 'Save last session on exit'
           TabOrder = 0
@@ -1400,25 +1400,49 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 76
         Width = 529
-        Height = 57
+        Height = 117
         Caption = 'Projects'
         TabOrder = 1
         object cbProjLoad: TTntCheckBox
           Left = 8
           Top = 32
-          Width = 470
+          Width = 500
           Height = 17
-          Caption = 'Restore last project on startup'
+          Caption = 'Open last project on startup'
           TabOrder = 1
           OnClick = cbSessSaveClick
         end
         object cbProjSave: TTntCheckBox
           Left = 8
           Top = 16
-          Width = 470
+          Width = 500
           Height = 17
           Caption = 'Save current project on exit'
           TabOrder = 0
+        end
+        object cbProjSessSave: TTntCheckBox
+          Left = 8
+          Top = 60
+          Width = 500
+          Height = 17
+          Caption = 'Save project-related session on project closing'
+          TabOrder = 2
+        end
+        object cbProjSessOpen: TTntCheckBox
+          Left = 8
+          Top = 76
+          Width = 500
+          Height = 17
+          Caption = 'Open project-related session on project opening'
+          TabOrder = 3
+        end
+        object cbProjCloseTabs: TTntCheckBox
+          Left = 8
+          Top = 92
+          Width = 500
+          Height = 17
+          Caption = 'Close all tabs on project closing'
+          TabOrder = 4
         end
       end
     end
@@ -2950,7 +2974,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0147010000
+      0700666D5365747570010100000001000000070043617074696F6E014A010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3245,7 +3269,11 @@ object fmSetup: TfmSetup
       416370506172616D48696E74730101000000BF020000070043617074696F6E00
       1200636248696C697465536D617274436C69636B0101000000C1020000070043
       617074696F6E001200636248696C697465536D617274576F7264730102000000
-      C3020000070043617074696F6EC2020000040048696E7400}
+      C3020000070043617074696F6EC2020000040048696E74000E00636250726F6A
+      53657373536176650101000000C4020000070043617074696F6E000E00636250
+      726F6A536573734F70656E0101000000C6020000070043617074696F6E000F00
+      636250726F6A436C6F7365546162730101000000C7020000070043617074696F
+      6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

@@ -1016,7 +1016,10 @@ begin
     if Ed.HaveSelection then
       TfmMain(Owner).TimerSel.Enabled:= true;
     if SelCleared then
+    begin
       Ed.ResetSearchMarks;
+      UpdateMap(Ed);
+    end;
   end;    
 end;
 

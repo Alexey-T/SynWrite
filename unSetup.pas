@@ -346,6 +346,9 @@ type
     cbAcpParamHints: TTntCheckBox;
     cbHiliteSmartClick: TTntCheckBox;
     cbHiliteSmartWords: TTntCheckBox;
+    cbProjSessSave: TTntCheckBox;
+    cbProjSessOpen: TTntCheckBox;
+    cbProjCloseTabs: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1951,9 +1954,12 @@ begin
   begin
     opHistSessionSave:= cbSessSave.Checked;
     opHistSessionLoad:= cbSessLoad.Checked;
+    opHistSessionProjSave:= cbProjSessSave.Checked;
+    opHistSessionProjLoad:= cbProjSessOpen.Checked;
     opHistSessionDef:= cbSessDef.Checked;
     opHistProjectSave:= cbProjSave.Checked;
     opHistProjectLoad:= cbProjLoad.Checked;
+    opHistProjectCloseTabs:= cbProjCloseTabs.Checked;
   end;
 end;
 
@@ -2255,10 +2261,13 @@ begin
   begin
     cbSessSave.Checked:= opHistSessionSave;
     cbSessLoad.Checked:= opHistSessionLoad;
+    cbProjSessSave.Checked:= opHistSessionProjSave;
+    cbProjSessOpen.Checked:= opHistSessionProjLoad;
     cbSessDef.Checked:= opHistSessionDef;
     cbSessSaveClick(Self);
     cbProjSave.Checked:= opHistProjectSave;
     cbProjLoad.Checked:= opHistProjectLoad;
+    cbProjCloseTabs.Checked:= opHistProjectCloseTabs;
   end;
 end;
 

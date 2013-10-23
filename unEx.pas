@@ -239,13 +239,25 @@ end;
 
 function TfmSynEx.GetSessionFN: string;
 begin
-  Result:= GetSynIniDir + SynDefaultSyn;
+  //first, check if project-session is set
+  Result:= fmMain.SynProjectSessionFN;
+  if Result<>'' then
+  begin
+    //MsgInfo('load project session', Handle);
+    Exit;
+  end;
+
+  //next check for last MRU session
   with TIniFile.Create(SynIni) do
   try
-    Result:= UTF8Decode(ReadString('MRU_Sess', '0', Result));
+    Result:= UTF8Decode(ReadString('MRU_Sess', '0', ''));
   finally
     Free;
   end;
+
+  //use default session
+  if Result='' then
+    Result:= GetSynIniDir + SynDefaultSyn;
 end;
 
 procedure TfmSynEx.FormShow(Sender: TObject);
@@ -267,7 +279,8 @@ begin
     if fmMain.opHistSessionLoad then
     begin
       S:= GetSessionFN;
-      fmMain.DoOpenSession(S);
+      if S<>'' then
+        fmMain.DoOpenSession(S);
     end;
   end
   else

@@ -17,7 +17,9 @@ procedure EditorDeleteLine(Ed: TSyntaxMemo; NLine: integer; AUndo: boolean);
 procedure EditorReplaceLine(Ed: TSyntaxMemo; NLine: integer;
   const S: WideString; AUndo: boolean);
 procedure EditorAddBookmarksToSortedList(Ed: TSyntaxMemo; L: TList);
+
 function EditorCaretAfterUnclosedQuote(Ed: TSyntaxMemo; var QuoteChar: WideChar): boolean;
+function EditorNeedsHtmlOpeningBracket(Ed: TSyntaxMemo): boolean;
 
 function EditorHasNoCaret(Ed: TSyntaxMemo): boolean;
 function EditorTabSize(Ed: TSyntaxMemo): Integer;
@@ -763,6 +765,39 @@ begin
   Result:= IsQuoteChar(ch);
   if Result then
     QuoteChar:= ch;
+end;
+
+//Result must be true only when
+//- TextLength=0
+//- caret on space/tab/EOL
+//- caret prev char is not wordchar, not '<', '/'
+function EditorNeedsHtmlOpeningBracket(Ed: TSyntaxMemo): boolean;
+var
+  i: Integer;
+  ch: Widechar;
+begin
+  Result:= true;
+  with Ed do
+    if (TextLength>0) then
+    begin
+      i:= CaretStrPos;
+      //check for previous char
+      if (i<=TextLength) then
+      begin
+        ch:= Lines.Chars[i];
+        if IsWordChar(ch) or (ch='<') or (ch='/')
+          //or (ch=' ') {fix for unneeded "<" at text end}
+          then
+            Result:= false;
+      end;
+      //check for current char
+      if (i+1<=TextLength) then
+      begin
+        ch:= Lines.Chars[i+1];
+        if not IsSpaceChar(ch) then
+          Result:= false;
+      end;
+    end;
 end;
 
 end.

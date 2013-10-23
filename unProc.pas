@@ -20,7 +20,17 @@ uses
   IniFiles,
   PngImageList;
 
-procedure SParseAcpString(const AcpStr, Atr: string; List: TStringList);
+procedure SParseString_AcpHtml(
+  const AcpStr, Atr: string; List: TStringList);
+procedure SParseString_AcpControlLine(
+  const s: string;
+  var AcpChars: string;
+  var IsBracketSep: boolean);
+procedure SParseString_AcpStd(
+  const S: string;
+  IsBracketSep: boolean;
+  var SType, SId, SPar, SHint: string);
+
 function EditorStringBeforeCaret(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
 procedure EditorGetHtmlTag(Ed: TSyntaxMemo; var STag, SAttr: string);
 procedure EditorGetCssTag(Ed: TSyntaxMemo; var STag: string);
@@ -195,9 +205,8 @@ uses
   ecZRegExpr,
   ecUnicode,
   ATxFProc, ATxSProc,
-  Math, Dialogs, CommCtrl,
-  TntClipbrd,
-  TntSysUtils,
+  Math, Dialogs, CommCtrl, StrUtils,
+  TntClipbrd, TntSysUtils,
   DKLang,
   PngImage,
   unSRTree, unRename;
@@ -1615,7 +1624,7 @@ begin
 end;
 
 
-procedure SParseAcpString(const AcpStr, Atr: string; List: TStringList);
+procedure SParseString_AcpHtml(const AcpStr, Atr: string; List: TStringList);
 { example:
   AcpStr = 'caption=align<bottom?left?right?top|class|dir<ltr?rtl|id|lang';
   Atr = 'align' -> get list of attr values,
@@ -1658,6 +1667,67 @@ begin
         Exit;
       end;
     until false;
+end;
+
+
+procedure SParseString_AcpControlLine(const s: string;
+  var AcpChars: string;
+  var IsBracketSep: boolean);
+var
+  n: Integer;
+begin
+  if SBegin(s, '#chars') then
+  begin
+    AcpChars:= '';
+    IsBracketSep:= true;
+    n:= Pos(' ', s);
+    if n>0 then
+    begin
+      AcpChars:= Copy(s, n+1, MaxInt);
+      IsBracketSep:= Pos('(', AcpChars)=0;
+    end;
+  end;
+end;
+
+//parse string from usual .ACP file
+procedure SParseString_AcpStd(
+  const S: string;
+  IsBracketSep: boolean;
+  var SType, SId, SPar, SHint: string);
+const
+  cMaxHintLen = 300;
+var
+  a, b, c: Integer;
+begin
+  SType:= '';
+  SId:= '';
+  SPar:= '';
+  SHint:= '';
+  if Trim(s)='' then Exit;
+
+  a:= PosEx(' ', s, 1);
+  b:= PosEx(' ', s, a+1);
+  if b=0 then
+    b:= Length(s)+1;
+
+  if IsBracketSep then
+  begin
+    c:= PosEx('(', s, a+1);
+    if (c<b) and (c<>0) then
+      b:= c;
+  end;
+
+  c:= PosEx('|', s, b);
+  if c=0 then
+    c:= MaxInt div 2;
+
+  SType:= Copy(s, 1, a-1);
+  SId:= Copy(s, a+1, b-a-1);
+  SPar:= Copy(s, b, c-b);
+  SHint:= Copy(s, c+1, cMaxHintLen);
+
+  SReplaceAll(SPar, ';', ','); //Pascal lexer has ";" param separator
+  SReplaceAll(SPar, '[,', ',['); //for optional params
 end;
 
 

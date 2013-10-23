@@ -323,7 +323,7 @@ type
     TBXSubmenuItemSort: TSpTbxSubmenuItem;
     TBXItemTbSortAsc: TSpTbxItem;
     TBXItemTbSortDesc: TSpTbxItem;
-    ecSelCharPopup1: TecSelCharPopup;
+    ecCharPopup: TecSelCharPopup;
     TBXItemWPrior: TSpTbxItem;
     TBXSeparatorItem9: TSpTbxSeparatorItem;
     TBXItemWNext: TSpTbxItem;
@@ -1249,6 +1249,7 @@ type
     TbxItemCtxTool14: TSpTBXItem;
     TbxItemCtxTool13: TSpTBXItem;
     ecSelTokenNoQuotes: TAction;
+    TBXItemProjAddAllFiles: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1324,8 +1325,8 @@ type
     procedure SDShow(Sender: TObject);
     procedure acNewWinExecute(Sender: TObject);
     procedure TBXItemFExitClick(Sender: TObject);
-    procedure ecSelCharPopup1Change(Sender: TObject);
-    procedure ecSelCharPopup1Show(Sender: TObject);
+    procedure ecCharPopupChange(Sender: TObject);
+    procedure ecCharPopupShow(Sender: TObject);
     procedure ecACPShow(Sender: TObject);
     procedure acSetupLexerExecuteOK(Sender: TObject);
     procedure TBXItemHReadClick(Sender: TObject);
@@ -2016,6 +2017,7 @@ type
     procedure TbxItemCtxTool16Click(Sender: TObject);
     procedure ecSelTokenNoQuotesExecute(Sender: TObject);
     procedure plTreeDockChanged(Sender: TObject);
+    procedure TBXItemProjAddAllFilesClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2043,6 +2045,9 @@ type
     FLastCmdBreak: boolean;
     FLastMacro: integer;
     FSessionFN: string;
+    FProjectIniting: boolean;
+    FProjectFreeing: boolean;
+
     FSpellMenuCaption: Widestring;
     FSpellMenuTag: integer;
     {$ifdef SPELL}
@@ -2132,11 +2137,9 @@ type
     FAcpHtm: boolean; //ACP called for HTML lexer
     FAcpHtmTags: boolean; //ACP shows html tags, not attribs
     FAcpHtmClosing: boolean; //ACP called for html closing tag </tag>
-    FAcpHtmBracketAdded: boolean; //added '<' on ACP call
     FAcpHtmSpaceAdded: boolean; //added space on ACP call
 
     QuickView: boolean;    //QuickView mode for TotalCmd plugin
-    QuickDestroy: boolean; //?? (inherited from Sepa)
     FUpdatePluginsLang: boolean; //need to update plugins' language ASAP
     FNeedRepaint: boolean;   //need full repaint ASAP
     FEnableRepaint: boolean; //enable repaint, it's set after 500ms
@@ -2249,8 +2252,12 @@ type
     function CurrentContentFN(Unicode: boolean): Widestring;
     function CurrentSelectionFN(Unicode: boolean): Widestring;
     function CurrentProjectFN: Widestring;
+    function CurrentProjectSessionFN: string;
     function CurrentProjectMainFN: Widestring;
     function CurrentProjectWorkDir: Widestring;
+
+    procedure ProjOpen(Sender: TObject);
+    procedure ProjClose(Sender: TObject);
     procedure ProjGotoFile(Sender: TObject);
     procedure ProjLoadMRU(List: TSynMruList);
     procedure ProjUpdateMRU(List: TSynMruList);
@@ -2261,6 +2268,7 @@ type
     procedure ProjGetWorkDir(Sender: TObject; Files: TTntStrings);
     procedure ProjGetProjDir(Sender: TObject; Files: TTntStrings);
     procedure ProjSetProjDir(Sender: TObject; Files: TTntStrings);
+
     function GetRecentColors: string;
     procedure SetRecentColors(const Str: string);
     property RecentColorsStr: string read GetRecentColors write SetRecentColors;
@@ -2339,7 +2347,7 @@ type
     function GetCssListFN: string;
     function GetHtmlTabbingFN: string;
 
-    function CurrentCR(Ed: TSyntaxMemo = nil): ecString;
+    function CurrentCR(Ed: TSyntaxMemo = nil): Widestring;
     function CurrentLexer: string;
     function CurrentLexerForFile: string;
     function CurrentLexerHasTemplates: boolean;
@@ -2438,7 +2446,7 @@ type
     procedure DoBkNext(Ed: TSyntaxMemo; Next: boolean);
     procedure DoBkClear(Ed: TSyntaxMemo);
     procedure DoDeleteLine(Ed: TSyntaxMemo; NLine: integer; ForceUndo: boolean = false);
-    procedure DoReplaceLine(Ed: TSyntaxMemo; NLine: integer; const S: ecString; ForceUndo: boolean = false);
+    procedure DoReplaceLine(Ed: TSyntaxMemo; NLine: integer; const S: Widestring; ForceUndo: boolean = false);
     
     procedure InitSpell;
     procedure DoZenExpand;
@@ -2651,6 +2659,7 @@ type
     procedure ShowProj;
     procedure DoOpenProject; overload;
     procedure DoAddFileToProject;
+    procedure DoAddFilesToProject;
     procedure DoNewProject;
     procedure DoFavoriteProjects;
     procedure DoFavoritesDialog(ATab: Integer = -1);
@@ -2669,6 +2678,7 @@ type
     procedure ProjPreviewKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure ProjPreviewButtonClick(Sender: TObject);
+    procedure DoCloseTabsOnProjectClosingIfNeeded;
     //end of private
 
   protected
@@ -2682,6 +2692,7 @@ type
     SynDir: string;
     SynExe: boolean;
     SynIsPortable: boolean;
+    SynProjectSessionFN: string;
     hLister: HWND;
     fmProgress: TfmProgress;
 
@@ -2785,9 +2796,12 @@ type
     opEsc: TSynEscMode;
     opHistProjectSave,
     opHistProjectLoad: boolean;
+    opHistProjectCloseTabs: boolean;
     opHistFilter: integer;
     opHistSessionSave,
     opHistSessionLoad,
+    opHistSessionProjSave,
+    opHistSessionProjLoad,
     opHistSessionDef: boolean;
     opNewEnc,
     opNewLineEnds: integer;
@@ -2922,12 +2936,20 @@ type
     constructor CreateParented(hWindow: HWND);
     function DoOpenFile(const AFileName: WideString): TEditorFrame;
     procedure DoOpenProject(const fn: Widestring); overload;
-    procedure DoOpenSession(const fn: string; Add: boolean = False);
     procedure SaveIni;
     procedure SaveState(F: TEditorFrame);
     procedure SaveSession(const fn: string);
+    procedure SaveProjectSession;
+    procedure DoOpenProjectSession;
     function LoadState(Frame: TEditorFrame; const FN: WideString): boolean;
 
+    procedure DoOpenSession(const fn: string; Add: boolean = False);
+    procedure DoCloseSession(PromptToSave: boolean);
+    procedure DoSaveSession;
+    procedure DoSaveSessionAs;
+    procedure DoSessionOpenDialog;
+    procedure DoSessionAddDialog;
+    
     //event handlers
     procedure SynCaretPosChanged(Sender: TObject);
     procedure SynKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -3012,7 +3034,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '5.9.980';
+  cSynVer = '6.0.010';
 
 const
   cSynParamRO = '/ro';
@@ -3088,6 +3110,7 @@ const
 const
   cAcpCharsCss = '-#!@.'; //don't include ':'
   cAcpCharsPhp = '$'; //include '$'
+  cAcpCharsHtm = ''; //empty?
 
 const
   cp__UTF8       = -1;
@@ -3262,7 +3285,6 @@ var p: ^TPlugInfo;
 begin
   p:= Pointer(GetWindowLong(hWin, GWL_USERDATA));
   if (Msg = WM_ACTIVATE) and (wParam<>0) and
-     (not p^.PlugForm.QuickDestroy) and
      (not p^.PlugForm.CurrentEditor.Focused) then begin
         p^.PlugForm.FocusEditor;
         Result:= 0;
@@ -3284,9 +3306,7 @@ begin
   if N<>0 then
   try
     p:= Pointer(N);
-    with p^.PlugForm do
-      if not QuickDestroy then
-        Close;
+    p^.PlugForm.Close;
     //restore callback function
     SetWindowLong(GetParent(hWin), GWL_WNDPROC, Integer(p^.PlugWinProc));
     Dispose(p);
@@ -3340,7 +3360,6 @@ begin
       p^.PlugForm:= fmMain;
       p^.PlugWinProc:= Pointer(SetWindowLong(hLister, GWL_WNDPROC, Integer(@HookList)));
 
-      QuickDestroy:= False;
       Show;
       DoOpenFile(FileToLoad);
       UpdateRO;
@@ -3995,7 +4014,7 @@ var
 begin
   if FCurrentEditor = Value then Exit;
   ecSyntPrinter.SyntMemo:= Value;
-  ecSelCharPopup1.SyntMemo:= Value;
+  ecCharPopup.SyntMemo:= Value;
 
   for i:= 0 to ActionList.ActionCount - 1 do
     if (ActionList.Actions[i] is TecBaseMemoAction) then
@@ -4055,7 +4074,6 @@ var
   ed: TSyntaxMemo;
   frame: TEditorFrame;
 begin
-  if QuickDestroy then Exit;
   if FLockUpdate then Exit;
 
   ed:= CurrentEditor;
@@ -4318,18 +4336,23 @@ begin
     begin                                       
       opHistSessionSave:= ReadBool('Hist', 'SessSave', false);
       opHistSessionLoad:= ReadBool('Hist', 'SessLoad', false);
+      opHistSessionProjSave:= ReadBool('Hist', 'SessProjSave', false);
+      opHistSessionProjLoad:= ReadBool('Hist', 'SessProjLoad', false);
       opHistSessionDef:= ReadBool('Hist', 'SessDef', false);
     end
     else
     begin
       opHistSessionSave:= false;
       opHistSessionLoad:= false;
+      opHistSessionProjSave:= false;
+      opHistSessionProjLoad:= false;
       opHistSessionDef:= false;
     end;
 
     opStateForTemp:= ReadBool('Hist', 'TempFN', false);
     opHistProjectSave:= ReadBool('Hist', 'ProjSv', false);
     opHistProjectLoad:= ReadBool('Hist', 'ProjLd', false);
+    opHistProjectCloseTabs:= ReadBool('Hist', 'ProjCloseTabs', false);
     opSavePos:= ReadBool('Hist', 'SavePos', true);
 
     //setup
@@ -4522,7 +4545,9 @@ begin
     opUTF8:= ReadString('Setup', 'UTF8', '');
 
     if not QuickView then
-      Theme:= ReadString('Setup', 'Theme', 'Aluminum');
+      Theme:= ReadString('Setup', 'Theme', 'Aluminum')
+	  else
+      Theme:= cThemeWindows;
     Icons:= ReadInteger('Setup', 'Icons', 2{Fogue 24x24});
 
     //MRU
@@ -4541,9 +4566,13 @@ begin
         if Assigned(fmProj) then
         begin
           S:= UTF8Decode(ReadString('MRU', 'Proj', ''));
-          if S<>'' then
-            if IsFileExist(S) then
+          if (S<>'') and IsFileExist(S) then
+            try
+              FProjectIniting:= true;
               fmProj.ProjectFN:= S;
+            finally
+              FProjectIniting:= false;
+            end;
         end;
       end;
       
@@ -4739,11 +4768,15 @@ begin
     begin
       WriteBool('Hist', 'SessSave', opHistSessionSave);
       WriteBool('Hist', 'SessLoad', opHistSessionLoad);
+      WriteBool('Hist', 'SessProjSave', opHistSessionProjSave);
+      WriteBool('Hist', 'SessProjLoad', opHistSessionProjLoad);
       WriteBool('Hist', 'SessDef', opHistSessionDef);
-    end;  
+    end;
+
     WriteBool('Hist', 'TempFN', opStateForTemp);
     WriteBool('Hist', 'ProjSv', opHistProjectSave);
     WriteBool('Hist', 'ProjLd', opHistProjectLoad);
+    WriteBool('Hist', 'ProjCloseTabs', opHistProjectCloseTabs);
     WriteBool('Hist', 'SavePos', opSavePos);
 
     WriteInteger('Setup', 'NEnc', opNewEnc);
@@ -6069,7 +6102,7 @@ begin
       ecSplitLines.Execute;
 
     smSelCharacter:
-      with ecSelCharPopup1 do
+      with ecCharPopup do
         if Visible then
           CloseUp(false)
         else
@@ -6103,18 +6136,12 @@ begin
     sm_FMoveTab:
       DoMoveTabToOtherView(-1);
 
-    sm_FExit:
-      acExit.Execute;
-    sm_FSaveSession:
-      TBXItemFSesSaveClick(Self);
-    sm_FSaveSessionAs:
-      TBXItemFSesSaveAsClick(Self);
-    sm_FOpenSession:
-      TBXItemFSesOpenClick(Self);
-    sm_FAddSession:
-      TBXItemFSesAddClick(Self);
-    sm_FCloseSession:
-      TBXItemFSesCloseClick(Self);
+    sm_FExit: acExit.Execute;
+    sm_FSaveSession: DoSaveSession;
+    sm_FSaveSessionAs: DoSaveSessionAs;
+    sm_FOpenSession: DoSessionOpenDialog;
+    sm_FAddSession: DoSessionAddDialog;
+    sm_FCloseSession: DoCloseSession(true);
 
     sm_FExpRtf: acExportRTF.Execute;
     sm_FExpHtml: acExportHTML.Execute;
@@ -6290,6 +6317,7 @@ begin
     sm_NewProject: DoNewProject;
     sm_OpenProject: DoOpenProject;
     sm_AddFileToProject: DoAddFileToProject;
+    sm_AddFilesToProject: DoAddFilesToProject;
     sm_FavoriteProjects: DoFavoriteProjects;
     sm_PasteAndSelect: DoPasteAndSelect;
     sm_InsertBlankLineAbove: DoInsertBlankLineAboveBelow(false);
@@ -6601,8 +6629,6 @@ end;
 
 procedure TfmMain.TimerTickTimer(Sender: TObject);
 begin
-  if QuickDestroy then Exit;
-
   //tree update
   if GetCurrentThreadId = MainThreadID then
     CheckSynchronize;
@@ -6850,14 +6876,14 @@ begin
   LoadClip;
   LoadHideIni;
 
-  //for proj tree
+  //init proj tree
   ApplyProj;
 
-  //spell
+  //init spell-checker
   InitSpell;
   UpdateSpellLang;
 
-  //Init other view
+  //init other view
   if PageControl2.PageCount=0 then
   begin
     PageControl:= PageControl2;
@@ -7238,7 +7264,6 @@ end;
 
 
 procedure TfmMain.LoadAcpFromFile(const fn, Lexer: string);
-//warning: unchecked code from old author Sepa
   //
   function AcpItem(const s1, s2, s3, s4: string): string;
   begin
@@ -7246,81 +7271,44 @@ procedure TfmMain.LoadAcpFromFile(const fn, Lexer: string);
   end;
   //
 var
-  acp: TStringList;
-  i, a, b, c: Integer;
-  s, tmp: string;
+  List: TStringList;
+  s, SType, SId, SPar, SHint: string;
+  i: Integer;
   IsPas, IsBracketSep: boolean;
 begin
   IsPas:= IsLexerPas(Lexer);
   IsBracketSep:= true;
 
-  acp:= TStringList.Create;
+  List:= TStringList.Create;
   try
-    acp.LoadFromFile(fn);
-    if acp.Count>0 then
-    for i:=0 to acp.Count-1 do
+    List.LoadFromFile(fn);
+    for i:=0 to List.Count-1 do
     begin
-      s:= acp[i];
-      if Trim(s)='' then Continue;
+      s:= List[i];
+      if s='' then
+        Continue;
       if s[1]='#' then
       begin
-        a:= Pos(' ',s);
-        if a=0 then Continue;
-        if Copy(s,1,a-1)='#chars' then
-        begin
-          opAcpChars:= Copy(s, a+1, MaxInt);
-          IsBracketSep:= Pos('(', opAcpChars)=0;
-        end;
+        SParseString_AcpControlLine(s, opAcpChars, IsBracketSep);
         Continue;
       end;
+      SParseString_AcpStd(s, IsBracketSep, SType, SId, SPar, SHint);
+      if SId<>'' then
+      begin
+        FAcpList_Items.Add(SId + IfThen(Pos('(', SPar)>0, '('));
+        FAcpList_Display.Add(AcpItem(SType, SId, SPar, ''{SHint}));
+        FAcpList_Desc.Add(SHint);
 
-      //parse ACP
-      a:= PosEx(' ',s,1);
-      b:= PosEx(' ',s,a+1);
-      if b=0 then b:= Length(s)+1;
-      if IsBracketSep then
-        c:= PosEx('(',s,a+1)
-      else
-        c:= 0;
-      //item has '('
-      if IsBracketSep and (c<b) and (c<>0) then
-      begin
-        b:=c;
-        c:=PosEx(')',s,b+1);
-        if (b+1=c) then tmp:='void'
-        else tmp:='( '+copy(s,b+1,c-b-1)+' )';
-        if IsPas then
-          tmp:=StringReplace(tmp, ';', ',', [rfReplaceAll]);
-        tmp:=StringReplace(tmp, '[,', ',[', [rfReplaceAll]);
-        FAcpList_Hints.Add(tmp);
-      end
-      else
-      begin
-        FAcpList_Hints.Add('');
+        if IsPas and (Pos('):', SPar)>0) then
+        begin
+          SDeleteFrom(SPar, '):');
+          SPar:= SPar+')';
+        end;
+        FAcpList_Hints.Add(SPar);
       end;
-      s:=Copy(acp[i],a+1,b-a-1);
-
-      //strip type for Pascal funcs
-      if IsPas then
-        SDeleteFrom(s, ':');
-      //insert text with "(" if params not empty
-      if Pos('(', acp[i])>0 then
-        s:= s+'(';
-      c:=PosEx('|',acp[i],b);
-      if c=0 then
-        c:= MaxInt div 2;
-
-      FAcpList_Items.Add(s);
-      FAcpList_Display.Add(AcpItem(
-        copy(acp[i],1,a-1),
-        copy(acp[i],a+1,b-a-1),
-        copy(acp[i],b,c-b),
-        copy(acp[i],c+1,100) ));
-      FAcpList_Desc.Add(
-        copy(acp[i],c+1,MaxInt));
     end;
   finally
-    FreeAndNil(acp);
+    FreeAndNil(List);
   end;
 end;
 
@@ -7547,7 +7535,7 @@ begin
   opAcpChars:= cAcpCharsCss;
   FAcpCss:= true;
 
-  //is there any css property before caret position and before ":"?
+  //is there any css property before caret and before ":"?
   EditorGetCssTag(CurrentEditor, SProp);
   //show popup again not always
   FAcpAgain:= SProp='';
@@ -7604,10 +7592,13 @@ var
   AcpStr, str: string;
   AtrList: TStringList;
   NTag, j: integer;
-  //AddBr: boolean;
+  AddBr: boolean;
 begin
   FAcpHtm:= true;
+  opAcpChars:= cAcpCharsHtm;
+  AddBr:= EditorNeedsHtmlOpeningBracket(CurrentEditor);
   AcpStr:= '';
+  
   if STag<>'' then
   begin
     NTag:= FAcpIntHtml.IndexOfName(STag);
@@ -7618,7 +7609,7 @@ begin
     begin
       AtrList:= TStringList.Create;
       try
-        SParseAcpString(AcpStr, SAtr, AtrList);
+        SParseString_AcpHtml(AcpStr, SAtr, AtrList);
         if SAtr='' then
         //-----------
         //return list of all attribs of tag
@@ -7682,13 +7673,12 @@ begin
     else
     begin
       //return list of opening tags
-      //AddBr:= false; //when is it good, not false?
       for j:= 0 to FAcpIntHtml.Count-1 do
       begin
         str:= FAcpIntHtml.Names[j];
         if str<>'' then
         begin
-          List.Add({IfThen(AddBr, '<')+}str+' ');
+          List.Add(IfThen(AddBr, '<') + str + ' ');
           Display.Add(SAcpItem('tag', '<'+str+'>'));
         end;
       end;
@@ -7841,6 +7831,12 @@ begin
     begin
       opAcpChars:= cAcpCharsCss;
       opWordChars:= cAcpCharsCss;
+    end
+    else
+    if IsLexerHTML(Lexer) then
+    begin
+      opAcpChars:= cAcpCharsHtm;
+      opWordChars:= cAcpCharsHtm;
     end
     else
     if IsLexerPHP(Lexer) then
@@ -8603,7 +8599,7 @@ begin
         //sel next match
         Finder.FindAgain;
         //workaround for Bug1
-        if (Finder.MatchLen=0) and (not Finder.IsSpecialCase1) then
+        if (Finder.Matches>0) and (Finder.MatchLen=0) and (not Finder.IsSpecialCase1) then
           with CurrentEditor do
             if CaretStrPos>0 then
               CaretStrPos:= CaretStrPos-1;
@@ -9202,8 +9198,14 @@ begin
   //close plugins
   DoClosePlugins;
 
-  //close proj-preview
+  //close proj and proj-preview
+  FProjectFreeing:= true;
   ProjPreviewClose(Self);
+  if Assigned(fmProj) then
+  begin
+    ProjClose(Self);
+    fmProj.Close;
+  end;
 end;
 
 procedure TfmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -9354,21 +9356,21 @@ begin
     acExit.Execute;
 end;
 
-procedure TfmMain.ecSelCharPopup1Change(Sender: TObject);
+procedure TfmMain.ecCharPopupChange(Sender: TObject);
 begin
-  with ecSelCharPopup1 do
+  with ecCharPopup do
     ToolHint.Text:= WideFormat(DKLangConstW('MSel'),
       [Byte(SelChar), Byte(SelChar)]);
 end;
 
-procedure TfmMain.ecSelCharPopup1Show(Sender: TObject);
+procedure TfmMain.ecCharPopupShow(Sender: TObject);
 var
   Ed: TSyntaxMemo;
   ch: WideChar;
   s: string;
 begin
   Ed:= CurrentEditor;
-  with ecSelCharPopup1 do
+  with ecCharPopup do
   begin
     Font:= Ed.Font;
     if Ed.TextLength>0 then
@@ -9387,9 +9389,6 @@ begin
 end;
 
 procedure TfmMain.ecACPShow(Sender: TObject);
-var
-  i: integer;
-  ch: ecChar;
 begin
   //if only single item matches the text, then insert this item w/o dialog
   if opAcpUseSingle then
@@ -9407,42 +9406,7 @@ begin
       begin
         InsertText(' ');
         DoAcpPopup;
-      end;  
-
-  //HTML: insert "<" char, except cases:
-  //we are at "<", we are at middle of a tag
-  if FAcpHtmTags then
-    with CurrentEditor do
-    begin
-      //FAcpHtmBracketAdded must be true only when
-      //- TextLength=0
-      //- caret on space/tab/EOL
-      //- caret prev char is not wordchar, not '<', '/'
-      FAcpHtmBracketAdded:= true;
-      if (TextLength>0) then
-      begin
-        i:= CaretStrPos;
-        if (i<=TextLength) then
-        begin
-          ch:= Lines.Chars[i];
-          if IsWordChar(ch) or (ch='<') or (ch='/')
-            or (ch=' ') {fix for unneeded "<" at text end} then
-            FAcpHtmBracketAdded:= false;
-          //else
-          //  MsgError(WideFormat('%d %d %d', [i, TextLength, Ord(ch)])); ////
-        end;
-        if (i+1<=TextLength) then
-        begin
-          ch:= Lines.Chars[i+1];
-          if not ((ch=' ') or (ch=#13) or (ch=#10) or (ch=#9)) then
-            FAcpHtmBracketAdded:= false;
-        end;
-      end; //if TextLength>0
-      if FAcpHtmBracketAdded then
-      begin
-        InsertText('<');
       end;
-    end;
 
   //Work-around for small problem:
   //when ACP called with caret on ID, this ID replaced then with the chosed ID.
@@ -10309,23 +10273,13 @@ procedure TfmMain.ecACPCloseUp(Sender: TObject; var Accept: Boolean);
 begin
   if not Accept then
   begin
-    //delete '<' if was added on ACP call
-    if FAcpHtmBracketAdded then
-      with CurrentEditor do
-      if Lines.Chars[CaretStrPos] = '<' then
-      begin
-        CaretStrPos:= CaretStrPos-1;
-        DeleteText(1);
-      end;
-
     //delete space if added on ACP call
-    if FAcpHtmSpaceAdded then
+    if FAcpHtm and FAcpHtmSpaceAdded then
       with CurrentEditor do
         if Lines.Chars[CaretStrPos+1] = ' ' then
           DeleteText(1);
   end;
 
-  FAcpHtmBracketAdded:= false;
   FAcpHtmSpaceAdded:= false;
 end;
 
@@ -11347,7 +11301,13 @@ begin
 end;
 
 procedure TfmMain.TBXItemFSesSaveAsClick(Sender: TObject);
-var i:Integer;
+begin
+  DoSaveSessionAs;
+end;
+
+procedure TfmMain.DoSaveSessionAs;
+var
+  i: Integer;
 begin
   for i:= 0 to FrameCount-1 do
     if Frames[i].FileName = '' then
@@ -11426,6 +11386,12 @@ begin
 end;
 
 procedure TfmMain.TBXItemFSesOpenClick(Sender: TObject);
+begin
+  DoSessionOpenDialog;
+end;  
+
+
+procedure TfmMain.DoSessionOpenDialog;
 begin
   if not AskSession(true) then
     Exit;
@@ -12691,6 +12657,10 @@ begin
   //find
   Finder.FindAll;
   MsgFound;
+
+  //hide search marks, if only one result found
+  if Finder.Matches=1 then
+    CurrentEditor.ResetSearchMarks;
 
   //restore finder
   Finder.Flags:= OFl;
@@ -13977,6 +13947,8 @@ begin
       OnGotoProjFile:= ProjGotoFile;
       OnLoadMRU:= ProjLoadMRU;
       OnUpdateMRU:= ProjUpdateMRU;
+      OnProjectOpen:= ProjOpen;
+      OnProjectClose:= ProjClose;
       //
       Show;
     end;
@@ -14236,6 +14208,11 @@ begin
 end;
 
 procedure TfmMain.TBXItemFSesAddClick(Sender: TObject);
+begin
+  DoSessionAddDialog;
+end;
+
+procedure TfmMain.DoSessionAddDialog;
 begin
   {//No need for "Add session":
   if not AskSession(true) then
@@ -15750,12 +15727,14 @@ end;
 <tag vv='100'>
 <tag vv=100>
 }
-function IsTagEnd(i: Integer; const s: ecString): boolean;
+function IsTagEnd(i: Integer; const s: Widestring): boolean;
 begin
   Result:= false;
   if (i<=1) or (s[i]<>'>') then Exit;
+
   if Pos(s[i-1], ' "''/')>0 then
     begin Result:= true; Exit end;
+
   if IsWordChar(s[i-1]) then
   begin
     while (i>1) and IsWordChar(s[i-1]) do Dec(i);
@@ -15764,12 +15743,12 @@ begin
   end;
 end;
 
-function ZenDoLeft(const s: ecString; iFrom: integer): integer;
+function DoZenFindLeft(const s: ecString; iFrom: integer): integer;
 const
-  sep = #13#10#9' ';
   brEnd = ']}';
   brBegin = '[{';
-var i, Br: Integer;
+var
+  i, Br: Integer;
 begin
   i:= iFrom;
   Br:= 0;
@@ -15779,7 +15758,7 @@ begin
     if i=1 then Break;
     if Pos(s[i], brEnd)>0 then Inc(Br);
     if Pos(s[i], brBegin)>0 then Dec(Br);
-    if (Pos(s[i-1], sep)>0) and (Br<=0) then Break;
+    if IsSpaceChar(s[i-1]) and (Br<=0) then Break;
     if IsTagEnd(i-1, s) then Break;
   until false;
   Result:= i;
@@ -15798,7 +15777,7 @@ begin
       begin MsgBeep; Exit end;
 
     i1:= CaretStrPos;
-    iSt:= ZenDoLeft(Lines.FText, i1+1)-1;
+    iSt:= DoZenFindLeft(Lines.FText, i1+1)-1;
     iLen:= i1-iSt;
     s:= WideTrim(Copy(Lines.FText, iSt+1, iLen));
     if s='' then
@@ -17224,16 +17203,27 @@ end;
 
 procedure TfmMain.TBXItemFSesSaveClick(Sender: TObject);
 begin
+  DoSaveSession;
+end;  
+
+procedure TfmMain.DoSaveSession;
+begin
   if FSessionFN<>'' then
     SaveSession(FSessionFN)
   else
-    TbxItemFSesSaveAsClick(Self);
+    DoSaveSessionAs;
 end;
 
 procedure TfmMain.TBXItemFSesCloseClick(Sender: TObject);
 begin
-  if not AskSession(true) then
-    Exit;
+  DoCloseSession(true);
+end;
+
+procedure TfmMain.DoCloseSession(PromptToSave: boolean);
+begin
+  if PromptToSave then
+    if not AskSession(true) then
+      Exit;
   FSessionFN:= '';
   UpdateTitle(CurrentFrame);
 end;
@@ -17247,15 +17237,17 @@ begin
 
   if ExitCmd and opHistSessionSave then
   begin
+    //save last session (named of default)
     if (FSessionFN='') or opHistSessionDef then
-      fn:= SynIniDir + SynDefaultSyn
+      fn:= SynIniDir + SynDefaultSyn //default
     else
-      fn:= FSessionFN;
+      fn:= FSessionFN; //named
     SaveSession(fn);
     SynMruSessions.AddItem(fn);
     Exit
   end;
 
+  //save last named session
   if FSessionFN='' then Exit;
   if opHistSessionSave then
   begin
@@ -17264,14 +17256,15 @@ begin
     Exit
   end;
 
+  //ask to save current named session
   sName:= WideChangeFileExt(WideExtractFileName(FSessionFN), '');
   Buttons:= [mbYes, mbNo];
   if CanCancel then
     Include(Buttons, mbCancel);
-  //MsgBeep;
+
   case WideMessageDlg(
-    WideFormat(DKLangConstW('MSessSav'), [sName]),
-    mtConfirmation, Buttons, 0) of
+         WideFormat(DKLangConstW('MSessSav'), [sName]),
+         mtConfirmation, Buttons, 0) of
     mrYes:
       begin
         SaveSession(FSessionFN);
@@ -24198,8 +24191,10 @@ begin
   Ed.BeginUpdate;
   try
     Ed.ReplaceText(Pos1, Pos2-Pos1, S);
-    Ed.CaretStrPos:= Pos1+Length(S);
     EditorSetModified(Ed);
+
+    //restore selection Ln1...Ln2
+    Ed.SetSelection(Pos1, Length(S));
   finally
     Ed.EndUpdate;
   end;
@@ -27087,6 +27082,12 @@ begin
   fmProj.DoAddEditorFiles(false);
 end;
 
+procedure TfmMain.DoAddFilesToProject;
+begin
+  ShowProj;
+  fmProj.DoAddEditorFiles(true);
+end;
+
 procedure TfmMain.DoNewProject;
 begin
   ShowProj;
@@ -27101,6 +27102,11 @@ end;
 procedure TfmMain.TBXItemProjAddFileClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_AddFileToProject);
+end;
+
+procedure TfmMain.TBXItemProjAddAllFilesClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_AddFilesToProject);
 end;
 
 procedure TfmMain.TBXSubmenuItemProjRecentsPopup(Sender: TTBCustomItem;
@@ -27725,6 +27731,91 @@ begin
   //docking the tree panel to left
   SplitterLeft.Left:= 10;
 end;
+
+function TfmMain.CurrentProjectSessionFN: string;
+begin
+  Result:= CurrentProjectFN;
+  if Result<>'' then
+    Result:= ChangeFileExt(Result, '.syn');
+end;
+
+procedure TfmMain.SaveProjectSession;
+var
+  fn: string;
+begin
+  fn:= CurrentProjectSessionFN;
+  if fn<>'' then
+  begin
+    SaveSession(fn);
+    SynMruSessions.AddItem(fn);
+  end;
+end;
+
+procedure TfmMain.DoOpenProjectSession;
+var
+  fn: string;
+begin
+  fn:= CurrentProjectSessionFN;
+  if fn<>'' then
+  begin
+    DoOpenSession(fn);
+  end;
+end;
+
+procedure TfmMain.ProjOpen;
+var
+  fn: string;
+begin
+  if not opHistSessionProjLoad then Exit;
+
+  fn:= CurrentProjectSessionFN;
+  if (fn<>'') and IsFileExist(fn) then
+  begin
+    if FProjectIniting then
+    begin
+      //if we are called from LoadIni, lexer lib isn't yet loaded,
+      //so bad to load session yet. So we save session name to SynProjectSessionFN
+      //to open later, in TfmEx.FormShow
+      //MsgInfo('open sess delayed '+fn, Handle);
+      SynProjectSessionFN:= fn;
+    end
+    else
+    begin
+      //usual project opening, load session now
+      //MsgInfo('open sess '+fn, Handle);
+      DoOpenSession(fn);
+    end;
+  end;
+end;
+
+procedure TfmMain.DoCloseTabsOnProjectClosingIfNeeded;
+begin
+  //make sure we don't close all tabs during form OnClose (this gives AV)
+  if not FProjectFreeing then
+    if opHistProjectCloseTabs then
+      acCloseAll.Execute;
+end;
+
+procedure TfmMain.ProjClose;
+var
+  fn: string;
+begin
+  if not opHistSessionProjSave then
+  begin
+    DoCloseTabsOnProjectClosingIfNeeded;
+    Exit;
+  end;
+
+  fn:= CurrentProjectSessionFN;
+  if fn<>'' then
+  begin
+    //MsgInfo('save sess '+fn, Handle);
+    SaveSession(fn);
+    DoCloseSession(false);
+    DoCloseTabsOnProjectClosingIfNeeded;
+  end;
+end;
+
 
 end.
 
