@@ -58,6 +58,7 @@ uses
 var
   SynIsPortable: boolean;
   SynIni: string;
+  SynTextOnly: integer;
 
 function GetSynIniDir: string;
 begin
@@ -171,19 +172,21 @@ begin
   end;
 end;
 
-//check filename
-function CheckFile(const SF: Widestring): boolean;
-var
-  TxOnly: integer;
+procedure InitSynTextOnly;
 begin
-  Result:= true;
   with TIniFile.Create(SynIni) do
   try
     LangManager.LanguageID:= ReadInteger('Setup', 'Lang', LangManager.LanguageID);
-    TxOnly:= ReadInteger('Setup', 'TxOnly', 0);
+    SynTextOnly:= ReadInteger('Setup', 'TxOnly', 0);
   finally
     Free;
   end;
+end;
+
+//check filename
+function CheckFile(const SF: Widestring): boolean;
+begin
+  Result:= true;
 
   if (SF <> '') and (not IsFileExist(SF)) then
   begin
@@ -206,7 +209,7 @@ begin
     Exit
   end;
 
-  if (SF <> '') and (TxOnly<>1) and (not IsFileText(SF)) then
+  if (SF <> '') and (SynTextOnly<>1) and (not IsFileText(SF)) then
     if not MsgConfirmBinary(SF) then
       Result:= false;
 end;
@@ -217,13 +220,31 @@ var
   S: Widestring;
 begin
   Result:= True;
+  InitSynTextOnly;
+
   for i:= 1 to WideParamCount do
   begin
     S:= WideParamStr(i);
-    if IsUnneededParam(S) then Continue;
+    if IsUnneededParam(S) then
+      Continue;
+
+    if IsFileProject(S) then
+    begin
+      SynCommandlineProjectFN:= S;
+      Exit;
+    end;
+
+    if IsFileSession(S) then
+    begin
+      SynCommandlineSessionFN:= S;
+      Exit;
+    end;    
 
     if not CheckFile(S) then
-      begin Result:= False; Exit end;
+    begin
+      Result:= False;
+      Exit
+    end;
   end;
 end;
 
@@ -243,7 +264,7 @@ begin
   Result:= fmMain.SynProjectSessionFN;
   if Result<>'' then
   begin
-    //MsgInfo('load project session', Handle);
+    //MsgInfo('load project session', Handle);////////
     Exit;
   end;
 
@@ -276,40 +297,48 @@ begin
   if WideParamCount=0 then
   begin
     //reopen session (only when no params)
-    if fmMain.opHistSessionLoad then
+    if fmMain.opHistSessionLoad and (SynCommandlineSessionFN='') then
     begin
       S:= GetSessionFN;
       if S<>'' then
-        fmMain.DoOpenSession(S);
+        if IsFileExist(S) then
+          fmMain.DoOpenSession(S)
+        else
+        begin
+          fmMain.SetHint(DKLangConstW('MNFound')+' '+S);
+          MsgBeep;
+        end;
     end;
   end
   else
-    //open params
+  begin
+    if SynCommandlineProjectFN<>'' then
+    begin
+      //open cmd-line project
+      fmMain.DoOpenProject(SynCommandlineProjectFN);
+    end
+    else
+    if SynCommandlineSessionFN<>'' then
+    begin
+      //open cmd-line session
+      fmMain.DoOpenSession(SynCommandlineSessionFN);
+    end
+    else
     for i:= 1 to WideParamCount do
     begin
       S:= WideParamStr(i);
       if IsUnneededParam(S) then Continue;
 
-      //now open file or project
-      if IsFileProject(S) then
-      begin
-        fmMain.DoOpenProject(S);
-      end
-      else
-      if IsFileSession(S) then
-      begin
-        fmMain.DoOpenSession(S);
-      end
-      else
-      begin
-        fmMain.DoOpenFile(S);
-        fmMain.UpdateRO;
-        //Is file new?
-        if FGetFileSize(S)=0 then
-          if fmMain.ecReadOnly.Checked then
-            fmMain.ecReadOnly.Execute;
-      end;
+      //open cmd-line filename
+      fmMain.DoOpenFile(S);
+      fmMain.UpdateRO;
+
+      //if file empty (new), uncheck R/O
+      if FGetFileSize(S)=0 then
+        if fmMain.ecReadOnly.Checked then
+          fmMain.ecReadOnly.Execute;
     end;
+  end;
 end;
 
 

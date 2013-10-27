@@ -97,6 +97,7 @@ type
     TBXItemProjMRU: TSpTbxMRUListItem;
     SpTBXDock1: TSpTBXDock;
     TBXItemMnuProjGoto: TSpTBXItem;
+    TBXItemMnuTogglePaths: TSpTBXItem;
     procedure TBXItemProjAddVirtDirClick(Sender: TObject);
     procedure TBXItemProjDelFilesClick(Sender: TObject);
     procedure TBXItemProjAddFilesClick(Sender: TObject);
@@ -156,10 +157,12 @@ type
       const Filename: WideString);
     procedure TBXItemMnuProjGotoClick(Sender: TObject);
     procedure TreeProjChange(Sender: TObject; Node: TTreeNode);
+    procedure TBXItemMnuTogglePathsClick(Sender: TObject);
   private
     { Private declarations }
     FProjectFN: Widestring;
     FModified: boolean;
+    FShowPaths: boolean;
     FMruList: TSynMruList;
     FIcoList: TStringList;
     FPathList: TTntStringList;
@@ -179,6 +182,8 @@ type
     FOnSetProjDir: TListProc;
     FShellIcons: boolean;
     fmProgress: TfmProgress;
+    function GetFileNodeCaption(const fn: Widestring): Widestring;
+    procedure DoToggleShowPaths;
     procedure DoPreview(Toggle: boolean);
     function GetCollapsedList: string;
     procedure SetCollapsedList(S: Widestring);
@@ -336,6 +341,7 @@ procedure TfmProj.DoNewProject;
 begin
   CheckModified;
 
+  if FProjectFN<>'' then /////?? chk
   if Assigned(FOnProjectClose) then
     FOnProjectClose(Self);
 
@@ -496,42 +502,56 @@ end;
 procedure TfmProj.TreeProjKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
+  //configured shortcut for "Go to project file"
   if (FShortcutGoto<>0) and (Shortcut(Key, Shift) = FShortcutGoto) then
   begin
     TBXItemMnuProjGoto.Click;
     Key:= 0;
     Exit
   end;
+  //F2 - rename folder
   if (Key=VK_F2) and (Shift=[]) then
   begin
     DoRename;
     Key:= 0;
     Exit
   end;
+  //F5 - refresh project
   if (Key=VK_F5) and (Shift=[]) then
   begin
     DoRefresh;
     Key:= 0;
     Exit
   end;
+  //Del
   if (Key=VK_delete) and (Shift=[]) and not TreeProj.IsEditing then
   begin
     DoRemove;
     Key:= 0;
     Exit
   end;
+  //Ins
   if (Key=VK_insert) and (Shift=[]) then
   begin
     DoAddFiles;
     Key:= 0;
     Exit
   end;
+  //Space - toggle preview pane
   if (Key=VK_space) and (Shift=[]) then
   begin
     DoPreview(true);
     Key:= 0;
     Exit
   end;
+  //Ctrl+Space - toggle "show paths"
+  if (Key=VK_space) and (Shift=[ssCtrl]) then
+  begin
+    DoToggleShowPaths;
+    Key:= 0;
+    Exit
+  end;
+  //Enter - open selected files
   if (Key=vk_return) and (Shift=[]) then
   begin
     if not IsDir(TreeProj.Selected) then
@@ -542,6 +562,8 @@ begin
 end;
 
 function TfmProj.DoAddFile(Sel: TTntTreeNode; const fn: Widestring): TTntTreeNode;
+var
+  SCaption: Widestring;
 begin
   Result:= nil;
   if Sel=nil then Exit;
@@ -549,10 +571,11 @@ begin
 
   with TreeProj do
     begin
+      SCaption:= GetFileNodeCaption(fn);
       if IsDir(Sel) then
-        Result:= Items.AddChild(Sel, WideExtractFileName(fn))
+        Result:= Items.AddChild(Sel, SCaption)
       else
-        Result:= Items.Add(Sel, WideExtractFileName(fn));
+        Result:= Items.Add(Sel, SCaption);
 
       with Result do
       begin
@@ -604,6 +627,7 @@ begin
   FixImageList32bit(ImageList1);
 
   FMruList:= TSynMruList.Create;
+  FShowPaths:= false;
   FShellIcons:= true; //todo
   FIcoList:= TStringList.Create;
   FPathList:= TTntStringList.Create;
@@ -658,6 +682,22 @@ procedure TfmProj.TreeProjDragDrop(Sender, Source: TObject; X, Y: Integer);
 var
   TargetNode, SourceNode: TTntTreeNode;
 begin
+  //drag-drop of a tab
+  if (Source is TTntPageControl) then
+  begin
+    TargetNode:= TreeProj.GetNodeAt(X, Y);
+    if (TargetNode=nil) then
+    begin
+      EndDrag(False);
+      MsgBeep;
+      Exit;
+    end;
+    TreeProj.Selected:= TargetNode;
+    DoAddEditorFiles(false);
+    Exit;
+  end;
+
+  //drag-drop of another tree node
   with TreeProj do
   begin
     TargetNode:= GetNodeAt(X, Y);
@@ -694,8 +734,11 @@ procedure TfmProj.TreeProjDragOver(Sender, Source: TObject; X, Y: Integer;
   Node: TTntTreeNode;
   P: TPoint;}
 begin
-  Accept:= (Sender = TreeProj)
-    and (Source = TreeProj);
+  Accept:=
+    ((Sender = TreeProj) and (Source = TreeProj))
+    or (Source is TTntPageControl);
+
+  //Application.MainForm.Caption:= (Source as TComponent).Name;
   {
   if Accept then
   begin
@@ -1912,6 +1955,38 @@ end;
 procedure TfmProj.TreeProjChange(Sender: TObject; Node: TTreeNode);
 begin
   DoPreview(false);
+end;
+
+function TfmProj.GetFileNodeCaption(const fn: Widestring): Widestring;
+var
+  SPath: Widestring;
+begin
+  if not FShowPaths then
+    Result:= WideExtractFileName(fn)
+  else
+  begin
+    Result:= fn;
+    //if file path begins with project's path, trim it
+    SPath:= WideExtractFilePath(FProjectFN);
+    if SBegin(Result, SPath) then
+      Delete(Result, 1, Length(SPath)-1);
+  end;
+end;
+
+procedure TfmProj.DoToggleShowPaths;
+var
+  i: Integer;
+begin
+  FShowPaths:= not FShowPaths;
+  with TreeProj do
+    for i:= 0 to Items.Count-1 do
+      if not IsDir(Items[i]) then
+        Items[i].Text:= GetFileNodeCaption(GetFN(Items[i]));
+end;
+
+procedure TfmProj.TBXItemMnuTogglePathsClick(Sender: TObject);
+begin
+  DoToggleShowPaths;
 end;
 
 end.

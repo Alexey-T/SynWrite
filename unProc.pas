@@ -62,7 +62,8 @@ procedure SaveMruList(List: TSynMruList; Ini: TCustomIniFile; const Section: str
 //function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
 function LoadPngIconEx(ImageList: TPngImageList; const fn: string): boolean;
 function DoInputFilename(const dkmsg: string; var S: Widestring): boolean;
-function DoInputString(const dkmsg: string; var S: Widestring): boolean;
+function DoInputString(const dkmsg: string; var S: Widestring;
+  const IniFN: string = ''; const IniSection: string = ''): boolean;
 
 procedure DoDeleteComboLastWord(ed: TTntCombobox);
 procedure DoDeleteComboItem(ed: TTntCombobox);
@@ -209,7 +210,7 @@ uses
   TntClipbrd, TntSysUtils,
   DKLang,
   PngImage,
-  unSRTree, unRename;
+  unSRTree, unRename, unRenameFN;
 
 procedure MsgInfo(const S: WideString; H: THandle);
 begin
@@ -488,6 +489,7 @@ var
   i: Integer;
   S: Ansistring;
 begin
+  if (fn='') or (section='') then Exit;
   with TIniFile.Create(fn) do
   try
     with ed do
@@ -512,6 +514,7 @@ var
   i: Integer;
   S: Widestring;
 begin
+  if (fn='') or (section='') then Exit;
   with TIniFile.Create(fn) do
   try
     with ed do
@@ -1197,7 +1200,7 @@ end;
 
 function DoInputFilename(const dkmsg: string; var S: Widestring): boolean;
 begin
-  with TfmRename.Create(nil) do
+  with TfmRenameFN.Create(nil) do
   try
     labRename.Caption:= DKLangConstW(dkmsg);
 
@@ -1212,20 +1215,24 @@ begin
   end;
 end;
 
-function DoInputString(const dkmsg: string; var S: Widestring): boolean;
+function DoInputString(const dkmsg: string; var S: Widestring;
+  const IniFN: string = ''; const IniSection: string = ''): boolean;
 begin
   with TfmRename.Create(nil) do
   try
     labRename.Caption:= DKLangConstW(dkmsg);
 
+    ComboLoadFromFile(edName, IniFN, IniSection);
     FEnablePrevValue:= true;
     edName.Text:= S;
-    edName.Width:= edExt.Left+edExt.Width-edName.Left;
-    edExt.Visible:= false;
 
     Result:= ShowModal=mrOk;
     if Result then
+    begin
       S:= edName.Text;
+      ComboUpdate(edName, 10);
+      ComboSaveToFile(edName, IniFN, IniSection);
+    end;
   finally
     Free
   end;

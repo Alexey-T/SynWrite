@@ -1,4 +1,4 @@
-unit unRename;
+unit unRenameFN;
 
 interface
 
@@ -7,11 +7,13 @@ uses
   StdCtrls, TntStdCtrls, TntForms;
 
 type
-  TfmRename = class(TTntForm)
+  TfmRenameFN = class(TTntForm)
     btnOK: TTntButton;
     btnCancel: TTntButton;
-    edName: TTntComboBox;
+    edName: TTntEdit;
     labRename: TTntLabel;
+    edExt: TTntEdit;
+    Label1: TTntLabel;
     procedure edNameChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
@@ -20,7 +22,7 @@ type
     FOldName: WideString;
   public
     { Public declarations }
-    FEnablePrevValue: boolean;
+    function GetFN: Widestring;
   end;
 
 implementation
@@ -31,21 +33,26 @@ uses
 
 {$R *.dfm}
 
-procedure TfmRename.edNameChange(Sender: TObject);
+procedure TfmRenameFN.edNameChange(Sender: TObject);
 begin
-  btnOK.Enabled:= FEnablePrevValue or ((edName.Text<>'') and (edName.Text<>FOldName));
+  btnOK.Enabled:= (edName.Text<>'') and (GetFN<>FOldName);
 end;
 
-procedure TfmRename.FormShow(Sender: TObject);
+procedure TfmRenameFN.FormShow(Sender: TObject);
 begin
-  FOldName:= edName.Text;
+  FOldName:= GetFN;
   edNameChange(Self);
 end;
 
-procedure TfmRename.TntFormCreate(Sender: TObject);
+function TfmRenameFN.GetFN: Widestring;
 begin
-  FEnablePrevValue:= false;
+  Result:= edName.Text;
+  if edExt.Text<>'' then
+    Result:= Result+'.'+edExt.Text;
+end;
 
+procedure TfmRenameFN.TntFormCreate(Sender: TObject);
+begin
   btnOK.Caption:= DKLangConstW('sOk');
   btnCancel.Caption:= DKLangConstW('sCan');
 end;

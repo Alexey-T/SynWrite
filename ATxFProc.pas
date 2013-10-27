@@ -789,6 +789,13 @@ var
   IsFolder: boolean;
 begin
   Result:= false;
+
+  //work-around for "*." mask: Win API function doesn't count that
+  //filename w/o extension matches such mask
+  fn:= WideExtractFileName(fn);
+  if Pos('.', fn)=0 then
+    fn:= fn+'.';
+
   s:= Trim(masks);
   repeat
     msk:= SGetMask(s);
@@ -800,10 +807,9 @@ begin
       Delete(msk, Length(msk), 1);
     if folders<>IsFolder then Continue;
 
-    //work-around for "*." mask: Win API function doesn't count that
-    //filename w/o extension matches such mask
-    if Pos('.', WideExtractFileName(fn))=0 then
-      fn:= fn+'.';
+    msk:= WideExtractFileName(msk);
+    if Pos('.', msk)=0 then
+      msk:= msk+'.';
 
     Result:= PathMatchSpecW(PWChar(fn), PWChar(msk));
     if Result then Break;

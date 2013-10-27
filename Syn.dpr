@@ -59,7 +59,8 @@ uses
   unToolbarSize in 'unToolbarSize.pas' {fmToolbarSize: TTntForm},
   unHideItems in 'unHideItems.pas' {fmHideItems},
   unLexerLib in 'unLexerLib.pas' {fmLexerLibrary},
-  unProcEditor in 'unProcEditor.pas';
+  unProcEditor in 'unProcEditor.pas',
+  unRenameFN in 'unRenameFN.pas' {fmRenameFN: TTntForm};
 
 {$R *.res}
 {$R *.dkl_const.res}

@@ -7,7 +7,7 @@ uses
   TntForms,
   Dialogs, StdCtrls, Buttons, ActnList, ImgList, ToolWin,
   CheckLst, ComCtrls,
-  ecSyntAnal, DKLang;
+  ecSyntAnal, DKLang, TntCheckLst;
 
 type
   TfmLexerLibrary = class(TTntForm)
@@ -45,7 +45,7 @@ type
     actClear: TAction;
     ToolButton17: TToolButton;
     DKLanguageController1: TDKLanguageController;
-    LV: TCheckListBox;
+    LV: TTntCheckListBox;
     procedure actLexerPropsUpdate(Sender: TObject);
     procedure actOpenLibExecute(Sender: TObject);
     procedure actSaveLibExecute(Sender: TObject);
@@ -72,6 +72,9 @@ type
 procedure DoCustomizeLexerLibrary(LexerLib: TSyntaxManager);
 
 implementation
+
+uses
+  StrUtils;
 
 {$R *.dfm}
 
@@ -101,6 +104,39 @@ begin
   (Sender as TAction).Enabled:= LV.ItemIndex>=0;
 end;
 
+function LexerNameWithLinks(an: TSyntAnalyzer): Widestring;
+var
+  sl: TStringList;
+  i: integer;
+begin
+  Result:= an.LexerName;
+
+  sl:= TStringList.Create;
+  try
+    sl.Duplicates:= dupIgnore;
+    sl.Sorted:= true;
+    
+    for i:= 0 to an.SubAnalyzers.Count-1 do
+    begin
+      if an.SubAnalyzers[i].SyntAnalyzer=nil then
+      begin
+        Result:= an.LexerName + '   (' + DKLangConstW('zMLexerLinkBroken') + ')';
+        Exit
+      end;
+      sl.Add(an.SubAnalyzers[i].SyntAnalyzer.LexerName);
+    end;
+
+    for i:= 0 to sl.Count-1 do
+    begin
+      if i=0 then
+        Result:= Result + '   ('+DKLangConstW('zMLexerLinks') + ': ';
+      Result:= Result + sl[i] + IfThen(i<sl.Count-1, ', ', ')');
+    end;
+  finally
+    FreeAndNil(sl);
+  end;    
+end;
+
 procedure TfmLexerLibrary.UpdateList;
 var
   i, cur: Integer;
@@ -122,7 +158,7 @@ begin
       for i:= 0 to sl.Count-1 do
       begin
         an:= sl.Objects[i] as TSyntAnalyzer;
-        LV.Items.AddObject(an.LexerName, an);
+        LV.Items.AddObject(LexerNameWithLinks(an), an);
         LV.Checked[LV.Items.Count-1]:= not an.Internal;
       end;
       //restore ItemIndex

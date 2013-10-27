@@ -205,6 +205,10 @@ const
 type
   TSynColors = array[0..cColorsNum-1] of TColor;
 
+var
+  SynCommandlineSessionFN: string;
+  SynCommandlineProjectFN: string;
+
 type
   TfmMain = class(TTntForm)
     ActionList: TActionList;
@@ -2693,6 +2697,7 @@ type
     SynExe: boolean;
     SynIsPortable: boolean;
     SynProjectSessionFN: string;
+
     hLister: HWND;
     fmProgress: TfmProgress;
 
@@ -3034,7 +3039,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '6.0.010';
+  cSynVer = '6.0.030';
 
 const
   cSynParamRO = '/ro';
@@ -3139,7 +3144,7 @@ begin
 end;
 
 const
-  cLexerHtmlList = 'HTML documents,HTML with scripts,PHP_dev_HTML';
+  cLexerHtmlList = 'HTML documents,HTML with scripts,PHP_dev_HTML,Razor';
   cLexerPhpList = 'PHP,PHP (dev)';
   cLexerCss = 'Style sheets';
   cLexerCssList = 'LESS,SASS,SCSS,Sass,Stylus';
@@ -4560,7 +4565,7 @@ begin
       LoadMruList(SynMruSessions, Ini, 'MRU_Sess', opSaveState, opMruCheck);
 
       //load recent project
-      if opHistProjectLoad then
+      if opHistProjectLoad and (SynCommandlineProjectFN='') then
       begin
         ecToggleFocusProject.Execute;
         if Assigned(fmProj) then
@@ -10389,8 +10394,8 @@ procedure TfmMain.RunTool(NTool: Integer);
 	  while Pos('{Interactive}', Result)>0 do
     begin
       fn:= '';
-      if not MsgInput('cmdInt', fn) then
-        raise Exception.Create('Cancel');
+      if not DoInputString('cmdInt', fn, SynIni, 'ExtToolParam') then
+        raise Exception.Create('Param input cancelled');
       SReplaceW(Result, '{Interactive}', fn);
     end;
     //
@@ -10399,7 +10404,7 @@ procedure TfmMain.RunTool(NTool: Integer);
       fn:= '';
       if not WidePromptForFileName(fn, '', '',
         DKLangConstW('cmdIFile'), dir) then
-        raise Exception.Create('Cancel');
+        raise Exception.Create('Filename input cancelled');
       SReplaceW(Result, '{InteractiveFile}', fn);
     end;
     //
@@ -10408,7 +10413,7 @@ procedure TfmMain.RunTool(NTool: Integer);
       fn:= dir;
       if not WideSelectDirectory(
         DKLangConstW('cmdIDir'), '', fn) then
-        raise Exception.Create('Cancel');
+        raise Exception.Create('Dir name input cancelled');
       SReplaceW(Result, '{InteractiveDir}', fn);
     end;
     //
@@ -21548,7 +21553,6 @@ end;
 
 function TfmMain.MsgInput(const dkmsg: string; var S: Widestring): boolean;
 begin
-  //Result:= WideInputQuery('SynWrite', DKLangConstW(dkmsg), S);
   Result:= DoInputString(dkmsg, S);
 end;
 

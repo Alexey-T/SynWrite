@@ -126,7 +126,7 @@ object fmLexerLibrary: TfmLexerLibrary
       Action = actClose
     end
   end
-  object LV: TCheckListBox
+  object LV: TTntCheckListBox
     Left = 0
     Top = 29
     Width = 364
