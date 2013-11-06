@@ -12,6 +12,53 @@ uses
   ecSyntMemo,
   ecMemoStrings;
 
+procedure EditorDoHomeKey(Ed: TSyntaxMemo);
+procedure EditorInsertBlankLineAboveOrBelow(Ed: TSyntaxMemo; ABelow: boolean);
+procedure EditorPasteAndSelect(Ed: TSyntaxMemo);
+
+procedure EditorExtendSelectionByLexer_All(Ed: TSyntaxMemo; var Err: string);
+procedure EditorExtendSelectionByLexer_HTML(Ed: TSyntaxMemo);
+procedure EditorExtendSelectionByOneLine(Ed: TSyntaxMemo);
+procedure EditorExtendSelectionByPosition(Ed: TSyntaxMemo;
+  AOldStart, AOldLength, ANewStart, ANewLength: integer);
+
+procedure EditorSplitLinesByPosition(Ed: TSyntaxMemo; nCol: Integer);
+procedure EditorScrollToSelection(Ed: TSyntaxMemo; NSearchOffsetY: Integer);
+procedure EditorCenterSelectedLines(Ed: TSyntaxMemo);
+function EditorDeleteSelectedLines(Ed: TSyntaxMemo): Integer;
+function EditorEOL(Ed: TSyntaxMemo): Widestring;
+procedure EditorToggleStreamComment(Ed: TSyntaxMemo; s1, s2: string; CmtMLine: boolean);
+procedure EditorFillBlockRect(Ed: TSyntaxMemo; SData: Widestring; bKeep: boolean);
+function EditorCurrentLexerForPos(Ed: TSyntaxMemo; NPos: integer): string;
+function EditorCurrentLexerHasTemplates(Ed: TSyntaxMemo): boolean;
+
+function EditorTokenString(Ed: TSyntaxMemo; TokenIndex: Integer): Widestring;
+function EditorTokenFullString(Ed: TSyntaxMemo; TokenIndex: Integer; IsDotNeeded: boolean): Widestring;
+procedure EditorFoldLevel(Ed: TSyntaxMemo; NLevel: Integer);
+function EditorSelectToken(Ed: TSyntaxMemo; SkipQuotes: boolean = false): boolean;
+procedure EditorMarkSelStart(Ed: TSyntaxMemo);
+procedure EditorMarkSelEnd(Ed: TSyntaxMemo);
+
+type
+  TSynEditorInsertMode = (mTxt, mNum, mBul);
+  TSynEditorInsertPos = (pCol, pAfterSp, pAfterStr);
+  TSynEditorInsertData = record
+    NStart, NDigits: integer;
+    NBegin, NTail: Widestring;
+    NCounter: integer;
+    SText1, SText2: Widestring;
+    InsMode: TSynEditorInsertMode;
+    InsPos: TSynEditorInsertPos;
+    InsCol: Integer;
+    InsStrAfter: Widestring;
+    SkipEmpty: boolean;
+  end;
+procedure EditorInsertTextData(Ed: TSyntaxMemo; const Data: TSynEditorInsertData);
+
+type
+  TSynScrollLineTo = (cScrollToTop, cScrollToBottom, cScrollToMiddle);
+procedure EditorScrollCurrentLineTo(Ed: TSyntaxMemo; Mode: TSynScrollLineTo);
+
 procedure EditorDuplicateLine(Ed: TSyntaxMemo);
 procedure EditorDeleteLine(Ed: TSyntaxMemo; NLine: integer; AUndo: boolean);
 procedure EditorReplaceLine(Ed: TSyntaxMemo; NLine: integer;
@@ -45,9 +92,9 @@ function EditorSelectWord(Ed: TSyntaxMemo): boolean;
 procedure EditorSearchMarksToList(Ed: TSyntaxmemo; List: TTntStrings);
 function EditorSelectedTextForWeb(Ed: TSyntaxMemo): Widestring;
 
-procedure DoEditorSelectToPosition(Ed: TSyntaxMemo; NTo: Integer);
-procedure DoCheckDialogOverlapsCaret(Ed: TCustomSyntaxMemo; Form: TForm);
-function SyntaxManagerFilesFilter(M: TSyntaxManager; SAllText: Widestring): Widestring;
+procedure EditorSelectToPosition(Ed: TSyntaxMemo; NTo: Integer);
+procedure EditorCheckCaretOverlappedByForm(Ed: TCustomSyntaxMemo; Form: TForm);
+function SyntaxManagerFilesFilter(M: TSyntaxManager; const SAllText: Widestring): Widestring;
 
 function EditorWordLength(Ed: TSyntaxMemo): Integer;
 procedure EditorSetModified(Ed: TSyntaxMemo);
@@ -70,7 +117,10 @@ implementation
 uses
   Windows,
   Math,
+  Clipbrd,
   SysUtils,
+  StrUtils,
+  TntSysUtils,
   ecStrUtils,
   ecCmdConst,
   ATxSProc;
@@ -99,7 +149,7 @@ begin
   SReplaceAllW(Result, ' ', '+');
 end;
 
-procedure DoEditorSelectToPosition(Ed: TSyntaxMemo; NTo: Integer);
+procedure EditorSelectToPosition(Ed: TSyntaxMemo; NTo: Integer);
 var
   N1, N2, NFrom: Integer;
 begin
@@ -108,10 +158,10 @@ begin
     begin N1:= NFrom; N2:= NTo end
   else
     begin N2:= NFrom; N1:= NTo end;
-  Ed.SetSelection(N1, N2-N1);    
+  Ed.SetSelection(N1, N2-N1);
 end;
 
-procedure DoCheckDialogOverlapsCaret(Ed: TCustomSyntaxMemo; Form: TForm);
+procedure EditorCheckCaretOverlappedByForm(Ed: TCustomSyntaxMemo; Form: TForm);
 const
   cDY = 35; //minimal offset from form's border to caret position
 var
@@ -147,54 +197,56 @@ begin
   end;
 end;
 
-function SyntaxManagerFilesFilter(M: TSyntaxManager; SAllText: Widestring): Widestring;
-  function GetExtStr(const Extentions: string): string;
-  var i: integer;
-      st: TzStringList;
+function SyntaxManagerFilesFilter(M: TSyntaxManager; const SAllText: Widestring): Widestring;
+  //
+  function GetExtString(const Extentions: string): string;
+  var
+    SAll, SItem: Widestring;
   begin
-    st := TzStringList.Create;
-    st.Delimiter := ' ';
-    st.DelimitedText := Extentions;
-    Result := '';
-    for i := 0 to st.Count - 1 do
-     if i = 0 then Result := '*.' + st[0]
-      else Result := Result + ';*.' + st[i];
-    st.Free;
+    Result:= '';
+    SAll:= Extentions;
+    repeat
+      SItem:= SGetItem(SAll, ' ');
+      if SItem='' then Break;
+      if Pos('/', SItem)=0 then //Makefiles lexer has "/mask"
+        SItem:= '*.' + SItem
+      else
+        SReplaceAllW(SItem, '/', '');
+      Result:= Result + IfThen(Result<>'', ';') + SItem;
+    until false;
   end;
+  //
 var
-  i, j: integer;
   s: string;
   o: TStringList;
+  i, j: integer;
 begin
- Result := '';
- o:= TStringList.Create;
- try
-   o.Duplicates:= dupIgnore;
-   o.Sorted:= True;
+  Result := '';
+  o:= TStringList.Create;
+  try
+    o.Duplicates:= dupIgnore;
+    o.Sorted:= True;
 
-   for i := 0 to M.AnalyzerCount - 1 do
-    if not M.Analyzers[i].Internal then
-      with M.Analyzers[i] do
-       o.Add(LexerName);
+    for i:= 0 to M.AnalyzerCount-1 do
+      if not M.Analyzers[i].Internal then
+        with M.Analyzers[i] do
+          o.Add(LexerName);
 
-    for j := 0 to o.Count - 1 do
-      for i := 0 to M.AnalyzerCount - 1 do
+    for j:= 0 to o.Count-1 do
+      for i:= 0 to M.AnalyzerCount-1 do
         if not M.Analyzers[i].Internal then
           with M.Analyzers[i] do
            if LexerName=o[j] then
            begin
-            s := GetExtStr(Extentions);
-            if s <> '' then
-              if Pos('/', s) = 0 then //skip "Makefiles" lexer
-                Result := Result + Format('%s (%s)|%1:s|', [LexerName, s]);
+             s:= GetExtString(Extentions);
+             if s<>'' then
+               Result:= Result + Format('%s (%s)|%1:s|', [LexerName, s]);
            end;
   finally
     FreeAndNil(o);
-  end;  
+  end;
 
-  if SAllText = '' then
-    SAllText:= 'All files';
-  Result := Result + SAllText + ' (*.*)|*.*';
+  Result:= Result + SAllText + ' (*.*)|*.*';
 end;
 
 function EditorWordLength(Ed: TSyntaxMemo): Integer;
@@ -798,6 +850,720 @@ begin
           Result:= false;
       end;
     end;
+end;
+
+procedure EditorMarkSelStart(Ed: TSyntaxMemo);
+begin
+  with Ed do
+    SelStartMarked:= CaretStrPos;
+end;
+
+procedure EditorMarkSelEnd(Ed: TSyntaxMemo);
+var
+  nFrom, nTo: Integer;
+  pFrom, pTo: TPoint;
+begin
+  with Ed do
+    if SelStartMarked>=0 then
+    begin
+      nTo:= CaretStrPos;
+      if SelStartMarked>nTo then
+      begin
+        nFrom:= nTo;
+        nTo:= SelStartMarked;
+      end
+      else
+        nFrom:= SelStartMarked;
+
+      if SelectModeDefault in [msNone, msNormal] then
+        //normal select mode
+        SetSelection(nFrom, nTo-nFrom)
+      else
+      begin
+        pFrom:= StrPosToCaretPos(nFrom);
+        pTo:= StrPosToCaretPos(nTo);
+        if SelectModeDefault = msColumn then
+          //column select mode
+          SelRect:= Rect(pFrom.X, pFrom.Y, pTo.X, pTo.Y)
+        else
+          //line select mode
+          SelectLines(pFrom.Y, pTo.Y);
+      end;
+    end;
+end;
+
+procedure EditorScrollCurrentLineTo(Ed: TSyntaxMemo; Mode: TSynScrollLineTo);
+var
+  p: TPoint;
+  dy, minY, newY, i: Integer;
+begin
+  if Ed.Lines.Count>1 then
+  case Mode of
+    cScrollToTop:
+      Ed.TopLine:= Ed.CaretPos.Y;
+
+    cScrollToBottom,
+    cScrollToMiddle:
+      begin
+        dy:= Ed.ClientHeight;
+        if Mode=cScrollToMiddle then
+          dy:= dy div 2;
+
+        p:= Ed.CaretPos;
+        Ed.TopLine:= p.Y;
+        minY:= Ed.ScrollPosY - dy;
+
+        newY:= Ed.ScrollPosY;
+        for i:= p.Y-1 downto 0 do
+        begin
+          Dec(newY, Ed.LineHeight(i));
+          if newY<minY then
+          begin
+            Ed.TopLine:= i+1;
+            Exit;
+          end;  
+        end;
+        Ed.TopLine:= 0;
+      end;
+    else
+      raise Exception.Create('Unknown scroll mode');
+  end;
+end;
+
+
+function EditorSelectToken(Ed: TSyntaxMemo; SkipQuotes: boolean = false): boolean;
+var
+  n, nStart, nLen: integer;
+  t: TSyntToken;
+begin
+  Result:= false;
+  if Ed.SyntObj=nil then Exit;
+
+  n:= Ed.SyntObj.TokenAtPos(Ed.CaretStrPos);
+  if n<0 then Exit;
+
+  t:= Ed.SyntObj.Tags[n];
+  if t=nil then Exit;
+
+  nStart:= t.StartPos;
+  nLen:= t.EndPos - t.StartPos;
+  if (nStart<0) or (nLen<=0) then Exit;
+
+  if SkipQuotes then
+  begin
+    //skip ending quotes
+    while (nLen>0) and IsQuoteChar(Ed.Lines.Chars[nStart+nLen]) do
+      Dec(nLen);
+    //skip starting quotes
+    while (nLen>0) and IsQuoteChar(Ed.Lines.Chars[nStart+1]) do
+    begin
+      Inc(nStart);
+      Dec(nLen);
+    end;
+  end;
+
+  Ed.SetSelection(nStart, nLen);
+  Result:= true;
+end;
+
+
+procedure EditorFoldLevel(Ed: TSyntaxMemo; NLevel: Integer);
+var
+  An: TClientSyntAnalyzer;
+  i: Integer;
+begin
+  An:= Ed.SyntObj;
+  if An=nil then Exit;
+
+  Ed.BeginUpdate;
+  try
+    Ed.FullExpand;
+    for i:= 0 to An.RangeCount-1 do
+      if An.Ranges[i].Level > NLevel then
+        Ed.CollapseRange(An.Ranges[i]);
+  finally
+    Ed.EndUpdate;
+  end;
+end;
+
+function EditorCurrentLexerHasTemplates(Ed: TSyntaxMemo): boolean;
+begin
+  Result:= false;
+  if Assigned(Ed) and
+     Assigned(Ed.SyntObj) and
+     Assigned(Ed.SyntObj.AnalyzerAtPos(Ed.CaretStrPos)) then
+    Result:= Ed.SyntObj.AnalyzerAtPos(Ed.CaretStrPos).CodeTemplates.Count > 0;
+end;
+
+function EditorCurrentLexerForPos(Ed: TSyntaxMemo; NPos: integer): string;
+var
+  An: TSyntAnalyzer;
+begin
+  Result:= '';
+  if Assigned(Ed) and Assigned(Ed.SyntObj) then
+  begin
+    An:= Ed.SyntObj.AnalyzerAtPos(NPos);
+    if An<>nil then
+      Result:= An.LexerName;
+  end;
+end;
+
+
+function EditorTokenString(Ed: TSyntaxMemo; TokenIndex: Integer): Widestring;
+begin
+  Result:= '';
+  if Ed.SyntObj<>nil then
+    with Ed.SyntObj do
+      Result:= TagStr[TokenIndex];
+end;
+
+function EditorTokenFullString(Ed: TSyntaxMemo; TokenIndex: Integer; IsDotNeeded: boolean): Widestring;
+var
+  i: Integer;
+begin
+  Result:= '';
+  if Ed.SyntObj<>nil then
+    with Ed.SyntObj do
+    begin
+      Result:= TagStr[TokenIndex];
+
+      //add lefter tokens
+      //(needed for complex id.id.id, e.g. for C#)
+      i:= TokenIndex;
+      while (i-2>=0) do
+      begin
+        if not ((TagStr[i-1]='.') and IsDotNeeded) then
+          Break;
+        Insert(TagStr[i-2]+TagStr[i-1], Result, 1);
+        Dec(i, 2);
+      end;
+
+      //add righter tokens
+      i:= TokenIndex;
+      while (i+2<=TagCount-1) do
+      begin
+        if not ((TagStr[i+1]='.') and IsDotNeeded) then
+          Break;
+        Result:= Result+TagStr[i+1]+TagStr[i+2];
+        Inc(i, 2);
+      end;
+    end;
+end;
+
+procedure EditorExtendSelectionByPosition(
+  Ed: TSyntaxMemo;
+  AOldStart, AOldLength,
+  ANewStart, ANewLength: integer);
+var
+  AOldEnd, ANewEnd: integer;
+begin
+  AOldEnd:= AOldStart+AOldLength;
+  ANewEnd:= ANewStart+ANewLength;
+  ANewStart:= Min(AOldStart, ANewStart);
+  ANewEnd:= Max(AOldEnd, ANewEnd);
+  ANewLength:= ANewEnd-ANewStart;
+  Ed.SetSelection(ANewStart, ANewLength, true);
+end;
+
+
+procedure EditorFillBlockRect(Ed: TSyntaxMemo; SData: Widestring; bKeep: boolean);
+var
+  R: TRect;
+  s: Widestring;
+  OldCaret: TPoint;
+  nLen, i: Integer;
+begin
+  with Ed do
+  begin
+    if not HaveSelection then Exit;
+    if SelectMode<>msColumn then Exit;
+    
+    R:= SelRect;
+    OldCaret:= CaretPos;
+    if bKeep then
+    begin
+      if Length(sData) > R.Right - R.Left then
+        SetLength(sData, R.Right - R.Left);
+      nLen:= Length(sData);
+    end
+    else
+      nLen:= R.Right - R.Left;
+
+    BeginUpdate;
+    try
+      for i:= R.Top to R.Bottom do
+      begin
+        s:= Lines[i];
+
+        //expand tabs to spaces
+        if Pos(#9, s)>0 then
+        begin
+          s:= SUntab(s, EditorTabSize(Ed));
+          EditorReplaceLine(Ed, i, s, true{ForceUndo});
+        end;
+
+        //fill line tail with spaces
+        if Length(s)<R.Right then
+        begin
+          CaretPos:= Point(Length(s), i);
+          InsertText(StringOfChar(' ', R.Right-Length(s)));
+        end;
+
+        //replace block line
+        ReplaceText(
+          CaretPosToStrPos(Point(R.Left, i)),
+          nLen, sData);
+      end;
+
+      if bKeep then
+        nLen:= R.Right - R.Left
+      else
+        nLen:= Length(sData);
+
+      CaretPos:= Point(R.Left + nLen, OldCaret.Y);
+      SelRect:= Rect(R.Left, R.Top, R.Left + nLen, R.Bottom);
+    finally
+      EndUpdate;
+    end;
+  end;
+end;
+
+function EditorEOL(Ed: TSyntaxMemo): Widestring;
+begin
+  case Ed.Lines.TextFormat of
+    tfCR: Result:= #13;
+    tfNL: Result:= #10;
+    else Result:= #13#10;
+  end;
+end;
+
+//s1 - comment start mark
+//s2 - comment end mark
+//CmtMLine - need to place comment marks on separate lines
+procedure EditorToggleStreamComment(Ed: TSyntaxMemo; s1, s2: string; CmtMLine: boolean);
+var
+  n, nLen: Integer;
+  Uncomm: boolean;
+  sCR: string;
+begin
+  with Ed do
+    begin
+      //msginfo(s1+#13+s2);
+      n:= SelStart;
+      nLen:= SelLength;
+      SetSelection(n, 0);
+
+      if CmtMLine then
+        Uncomm:= false
+      else
+        Uncomm:= (Copy(Lines.FText, n+1, Length(s1)) = s1) and
+               (Copy(Lines.FText, n+nLen-Length(s2)+1, Length(s2)) = s2);
+      if not Uncomm then
+      begin
+        //do comment
+        if CmtMLine then
+        begin
+          sCR:= EditorEOL(Ed);
+          if (n-Length(sCR)>=0) and
+            (Copy(Lines.FText, n-Length(sCR)+1, Length(sCR)) = sCR) then
+            s1:= s1+sCR
+          else
+            s1:= sCR+s1+sCR;
+          if Copy(Lines.FText, n+nLen-Length(sCR)+1, Length(sCR)) = sCR then
+            s2:= s2+sCR
+          else
+            s2:= sCR+s2+sCR;
+        end;
+        BeginUpdate;
+        try
+          CaretStrPos:= n;
+          InsertText(s1);
+          CaretStrPos:= n+nLen+Length(s1);
+          InsertText(s2);
+        finally
+          EndUpdate;
+        end;
+      end
+      else
+      begin
+        //do uncomment
+        BeginUpdate;
+        try
+          CaretStrPos:= n+nLen-Length(s2);
+          DeleteText(Length(s2));
+          CaretStrPos:= n;
+          DeleteText(Length(s1));
+        finally
+          EndUpdate;
+        end;
+      end;
+    end;
+end;
+
+
+function EditorDeleteSelectedLines(Ed: TSyntaxMemo): Integer;
+var
+  i, Ln1, Ln2, NCol: Integer;
+begin
+  Result:= 0;
+  if Ed.ReadOnly then Exit;
+
+  EditorGetSelLines(Ed, Ln1, Ln2);
+  if Ln1=Ln2 then
+    NCol:= Ed.CaretPos.X
+  else
+    NCol:= 0;
+
+  Ed.BeginUpdate;
+  try
+    for i:= Ln2 downto Ln1 do
+    begin
+      EditorDeleteLine(ed, i, true{ForceUndo});
+      Inc(Result);
+    end;
+    Ed.CaretPos:= Point(NCol, Ln1);
+  finally
+    Ed.EndUpdate;
+  end;
+end;
+
+
+procedure EditorCenterSelectedLines(Ed: TSyntaxMemo);
+var
+  Ln1, Ln2, i: Integer;
+  s: Widestring;
+begin
+  with Ed do
+    if (not ReadOnly) and (Lines.Count>0) then
+    begin
+      EditorGetSelLines(Ed, Ln1, Ln2);
+      Ed.BeginUpdate;
+      try
+        for i:= Ln1 to Ln2 do
+        begin
+          s:= Trim(Lines[i]);
+          if Length(s)<RightMargin then
+          begin
+            s:= StringOfChar(' ', (RightMargin-Length(s)) div 2) + s;
+            EditorReplaceLine(Ed, i, s, true{ForceUndo});
+          end;
+        end;
+      finally
+        Ed.EndUpdate;
+      end;
+    end;
+end;
+
+
+procedure EditorExtendSelectionByOneLine(Ed: TSyntaxMemo);
+var
+  DoNext: boolean;
+  NStart, NEnd: Integer;
+begin
+  NStart:= Ed.SelStart;
+  NEnd:= Ed.SelStart+Ed.SelLength;
+
+  DoNext:=
+    (Ed.SelLength>0) and
+    (Ed.CaretStrPos = NEnd) and
+    (Ed.StrPosToCaretPos(NStart).X = 0) and
+    ((Ed.StrPosToCaretPos(NEnd).X = 0) or (NEnd = Ed.TextLength));
+
+  if not DoNext then
+  begin
+    Ed.ResetSelection;
+    Ed.ExecCommand(smLineStart);
+  end;
+  Ed.ExecCommand(smSelDown);
+end;
+
+
+procedure EditorScrollToSelection(Ed: TSyntaxMemo; NSearchOffsetY: Integer);
+var
+  Save: TSynSelSave;
+begin
+  with Ed do
+    if HaveSelection then
+    begin
+      EditorSaveSel(Ed, Save);
+      if SelLength>0 then
+        CaretStrPos:= SelStart
+      else
+        CaretPos:= Point(SelRect.Left, SelRect.Top);
+      EditorCenterPos(Ed, true{GotoMode}, NSearchOffsetY);
+      EditorRestoreSel(Ed, Save);
+    end;
+end;
+
+
+procedure EditorExtendSelectionByLexer_All(Ed: TSyntaxMemo; var Err: string);
+var
+  An: TClientSyntAnalyzer;
+  R: TTextRange;
+  SelSave: TSynSelSave;
+  EndPos: Integer;
+begin
+  Err:= '';
+  An:= Ed.SyntObj;
+  if An=nil then
+    begin Err:= 'No lexer active'; Exit end;
+
+  EditorSaveSel(Ed, SelSave);
+
+  //if selection is made, it may be selection from prev ExtendSel call,
+  //so need to increment caret pos, to extend selection further
+  if Ed.HaveSelection then
+  begin
+    Ed.ResetSelection;
+    Ed.CaretStrPos:= Ed.CaretStrPos+2;
+  end;
+
+  R:= An.NearestRangeAtPos(Ed.CaretStrPos);
+  if (R=nil) or not R.IsClosed then
+  begin
+    Err:= 'Extend selection: no range at caret';
+    EditorRestoreSel(Ed, SelSave);
+    Exit
+  end;
+
+  EndPos:= R.EndIdx;
+  if not ((EndPos>=0) and (EndPos<An.TagCount)) then
+  begin
+    Err:= 'Extend selection: no closed range';
+    Exit
+  end;
+
+  EndPos:= An.Tags[EndPos].EndPos;
+  Ed.SetSelection(R.StartPos, EndPos-R.StartPos);
+end;
+
+
+procedure EditorExtendSelectionByLexer_HTML(Ed: TSyntaxMemo);
+var
+  An: TClientSyntAnalyzer;
+  i, StPos, EndPos, NCaret: Integer;
+begin
+  An:= Ed.SyntObj;
+  if An=nil then Exit;
+
+  NCaret:= Ed.CaretStrPos;
+  for i:= An.RangeCount-1 downto 0 do
+  begin
+    //get StPos start of range, EndPos end of range
+    StPos:= An.Ranges[i].StartPos;
+    EndPos:= An.Ranges[i].EndIdx;
+    if EndPos<0 then Continue;
+    EndPos:= An.Tags[EndPos].EndPos;
+
+    //take only range, which starts before NCaret, and ends after NCaret
+    if (StPos<NCaret) and (EndPos>=NCaret) then
+      //and not range which is from "<" to ">" - this is just tag
+      if not (Ed.Lines.Chars[StPos+1]='<') then
+      begin
+        //correct StPos, EndPos coz they don't include "<" and ">" in HTML
+        Dec(StPos);
+        Inc(EndPos);
+        Ed.SetSelection(StPos, EndPos-StPos);
+        Break
+      end;
+  end;
+end;
+
+procedure EditorSplitLinesByPosition(Ed: TSyntaxMemo; nCol: Integer);
+var
+  Ln1, Ln2, i: Integer;
+  s, sCR: Widestring;
+begin
+  EditorGetSelLines(Ed, Ln1, Ln2);
+  sCR:= EditorEOL(Ed);
+
+  Ed.BeginUpdate;
+  try
+    for i:= Ln2 downto Ln1 do
+    begin
+      s:= Ed.Lines[i];
+      s:= WideWrapText(s, sCR, [' ', '-', '+', #9], nCol);
+      EditorReplaceLine(Ed, i, s, true{Undo});
+    end;
+  finally
+    Ed.EndUpdate;
+  end;
+end;
+
+procedure EditorInsertTextData(Ed: TSyntaxMemo; const Data: TSynEditorInsertData);
+var
+  iFrom, iTo, iCnt, i, n: Integer;
+  IsSel: boolean;
+  S: Widestring;
+begin
+  if Ed.ReadOnly then Exit;
+  EditorGetSelLines(Ed, iFrom, iTo);
+  IsSel:= iTo > iFrom;
+
+  with Ed do
+  with Data do
+  begin
+    BeginUpdate;
+    ResetSelection;
+    try
+      iCnt:= 0;
+      if not IsSel then
+      begin
+        //----counter times inserting
+        for i:= 1 to NCounter do
+        begin
+          case InsMode of
+            mTxt: S:= SText1 + SText2;
+            mBul: S:= WideString(#$2022) + ' ';
+            mNum: S:= NBegin + SFormatNum(NStart+i-1, NDigits) + NTail;
+            else S:= '';
+          end;//case
+          InsertText(
+            StringOfChar(' ', InsCol-1)
+            + S + EditorEOL(Ed));
+        end;
+      end
+      else
+      //----insert into selection
+      for i:= iFrom to iTo do
+      begin
+        if (Lines[i]='') and SkipEmpty then
+          Continue;
+        Inc(iCnt);
+
+        //Put caret
+        case InsPos of
+          pCol:
+            begin
+              CaretPos:= Point(InsCol-1, i);
+              //handle "Keep caret in text"
+              if soKeepCaretInText in Ed.Options then
+                if CaretPos.X<InsCol-1 then
+                  InsertText(StringOfChar(' ', (InsCol-1)-CaretPos.X));
+            end;
+          pAfterSp:
+            begin
+              CaretPos:= Point(SNumLeadSpaces(Lines[i]), i);
+            end;
+          else
+            begin
+              n:= Pos(InsStrAfter, Lines[i]);
+              if n=0 then Continue;
+              CaretPos:= Point(n-1+Length(InsStrAfter), i);
+            end;
+        end;
+
+        case InsMode of
+        //Text
+        mTxt:
+          begin
+            if SText1<>'' then
+            begin
+              InsertText(SText1);
+            end;
+            if SText2<>'' then
+            begin
+              CaretPos:= Point(Length(Lines[i]), i);
+              InsertText(SText2);
+            end;
+          end;
+        //Bullets
+        mBul:
+          begin
+            InsertText(WideString(#$2022) + ' ');
+          end;
+        //Nums
+        mNum:
+          begin
+            s:= NBegin + SFormatNum(NStart+iCnt-1, NDigits) + NTail;
+            InsertText(s);
+          end;
+        end;//case
+      end;
+    finally
+      EndUpdate;
+    end;
+  end;
+end;
+
+
+procedure EditorPasteAndSelect(Ed: TSyntaxMemo);
+var
+  ins_text: Widestring;
+  NStart, NLen: Integer;
+begin
+  if Ed.ReadOnly then Exit;
+  if not Clipboard.HasFormat(CF_TEXT) then Exit;
+
+  //column block?
+  if (GetClipboardBlockType <> 2) then
+  begin
+    //part copied from ecSyntMemo.PasteFromClipboard
+    //yes, not DRY
+    if soSmartPaste in Ed.OptionsEx then
+      ins_text:= GetClipboardTextEx(Ed.Charset)
+    else
+      ins_text:= GetClipboardText(Ed.Charset);
+
+    case Ed.Lines.TextFormat of
+      tfCR: ReplaceStr(ins_text, #13#10, #13);
+      tfNL: ReplaceStr(ins_text, #13#10, #10);
+    end;
+
+    Ed.InsertText(''); //fix CaretStrPos when caret is after EOL
+    NStart:= Ed.CaretStrPos;
+    NLen:= Length(ins_text);
+
+    Ed.InsertText(ins_text);
+    Ed.SetSelection(NStart, NLen);
+  end
+  else
+    Ed.PasteFromClipboard();
+end;
+
+
+procedure EditorInsertBlankLineAboveOrBelow(Ed: TSyntaxMemo; ABelow: boolean);
+begin
+  if Ed.ReadOnly then Exit;
+  if ABelow then
+  begin
+    if Ed.CaretPos.Y < Ed.Lines.Count-1 then
+    begin
+      Ed.CaretPos:= Point(0, Ed.CaretPos.Y+1);
+      Ed.InsertNewLine(0, true{DoNotMoveCaret}, false);
+    end
+    else
+    begin
+      Ed.ExecCommand(smEditorBottom);
+      Ed.InsertNewLine(0, false{DoNotMoveCaret}, false);
+    end;
+  end
+  else
+  begin
+    Ed.CaretPos:= Point(0, Ed.CaretPos.Y);
+    Ed.InsertNewLine(0, true{DoNotMoveCaret}, false);
+  end;
+end;
+
+
+procedure EditorDoHomeKey(Ed: TSyntaxMemo);
+//do Eclipse/Sublime-like jump by Home key
+var
+  p: TPoint;
+  s: Widestring;
+  NIndent: Integer;
+begin
+  p:= Ed.CaretPos;
+  if (p.Y>=0) and (p.Y<Ed.Lines.Count) then
+  begin
+    s:= Ed.Lines[p.Y];
+    NIndent:= Length(SIndentOf(s));
+    if p.X = NIndent then
+      p.X:= 0
+    else
+      p.X:= NIndent;
+    Ed.CaretPos:= p;
+  end;
 end;
 
 end.

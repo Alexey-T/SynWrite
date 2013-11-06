@@ -28,7 +28,7 @@ type
   TListProc = procedure(Sender: TObject; Files: TTntStrings) of object;
   TMruListProc = procedure(MruList: TSynMruList) of object;
   TProjPreviewProc = procedure(Sender: TObject; const fn: Widestring; Toggle: boolean) of object;
-  TProjSort = (srNone, srName, srExt, srDate, srSize, srDateDesc, srSizeDesc);
+  TProjSort = (srNone, srName, srExt, srDate, srSize, srDateDesc, srSizeDesc, srFullPath);
 
 type
   TProjectOpts = record
@@ -98,12 +98,11 @@ type
     SpTBXDock1: TSpTBXDock;
     TBXItemMnuProjGoto: TSpTBXItem;
     TBXItemMnuTogglePaths: TSpTBXItem;
+    TBXItemMnuSortByPath: TSpTBXItem;
     procedure TBXItemProjAddVirtDirClick(Sender: TObject);
     procedure TBXItemProjDelFilesClick(Sender: TObject);
     procedure TBXItemProjAddFilesClick(Sender: TObject);
     procedure TBXItemProjRenameClick(Sender: TObject);
-    procedure TreeProjKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure TreeProjEditing(Sender: TObject; Node: TTreeNode;
@@ -158,6 +157,7 @@ type
     procedure TBXItemMnuProjGotoClick(Sender: TObject);
     procedure TreeProjChange(Sender: TObject; Node: TTreeNode);
     procedure TBXItemMnuTogglePathsClick(Sender: TObject);
+    procedure TBXItemMnuSortByPathClick(Sender: TObject);
   private
     { Private declarations }
     FProjectFN: Widestring;
@@ -183,8 +183,6 @@ type
     FShellIcons: boolean;
     fmProgress: TfmProgress;
     function GetFileNodeCaption(const fn: Widestring): Widestring;
-    procedure DoToggleShowPaths;
-    procedure DoPreview(Toggle: boolean);
     function GetCollapsedList: string;
     procedure SetCollapsedList(S: Widestring);
     function DoSortCfm: boolean;
@@ -214,21 +212,23 @@ type
     procedure AddFilesToList(L: TTntStringList; Node: TTntTreeNode);
     function IsRoot(Node: TTntTreeNode): boolean;
     function IsFilenameListed(Node: TTntTreeNode; const fn: Widestring): boolean;
-    procedure DoRefresh;
-    procedure DoAddFiles;
-    procedure DoAddFilesDir;
-    procedure DoAddVirtualDir;
     function DoAddFile(Sel: TTntTreeNode; const fn: Widestring): TTntTreeNode;
     function DoAddDir(Sel: TTntTreeNode; S: Widestring;
       DoExpand: boolean = true): TTntTreeNode;
-    procedure DoRename;
-    procedure DoRemove;
-    procedure DoOpenFiles;
   public
     { Public declarations }
     FOpts: TProjectOpts;
     FSynDir: string;
-    FShortcutGoto: TShortcut;
+    procedure DoAddFiles;
+    procedure DoAddFilesDir;
+    procedure DoAddVirtualDir;
+    procedure DoPreview(Toggle: boolean);
+    procedure DoToggleShowPaths;
+    function IsDirSelected: boolean;
+    procedure DoOpenFiles;
+    procedure DoRefresh;
+    procedure DoRename;
+    procedure DoRemove;
     procedure DoOpenProject;
     procedure DoNewProject;
     procedure DoSaveProject;
@@ -258,6 +258,7 @@ type
     procedure UpdateTitle;
     procedure DoDropItem(const fn: Widestring);
     procedure DoSaveProjectIfNeeded;
+    procedure DoRenameFile(const fn, fn_new: Widestring);
   end;
 
 procedure SStringToList(s: Widestring; L: TTntStrings);
@@ -499,68 +500,6 @@ begin
   Result:= (Node.Parent=nil);
 end;
 
-procedure TfmProj.TreeProjKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  //configured shortcut for "Go to project file"
-  if (FShortcutGoto<>0) and (Shortcut(Key, Shift) = FShortcutGoto) then
-  begin
-    TBXItemMnuProjGoto.Click;
-    Key:= 0;
-    Exit
-  end;
-  //F2 - rename folder
-  if (Key=VK_F2) and (Shift=[]) then
-  begin
-    DoRename;
-    Key:= 0;
-    Exit
-  end;
-  //F5 - refresh project
-  if (Key=VK_F5) and (Shift=[]) then
-  begin
-    DoRefresh;
-    Key:= 0;
-    Exit
-  end;
-  //Del
-  if (Key=VK_delete) and (Shift=[]) and not TreeProj.IsEditing then
-  begin
-    DoRemove;
-    Key:= 0;
-    Exit
-  end;
-  //Ins
-  if (Key=VK_insert) and (Shift=[]) then
-  begin
-    DoAddFiles;
-    Key:= 0;
-    Exit
-  end;
-  //Space - toggle preview pane
-  if (Key=VK_space) and (Shift=[]) then
-  begin
-    DoPreview(true);
-    Key:= 0;
-    Exit
-  end;
-  //Ctrl+Space - toggle "show paths"
-  if (Key=VK_space) and (Shift=[ssCtrl]) then
-  begin
-    DoToggleShowPaths;
-    Key:= 0;
-    Exit
-  end;
-  //Enter - open selected files
-  if (Key=vk_return) and (Shift=[]) then
-  begin
-    if not IsDir(TreeProj.Selected) then
-      DoOpenFiles;
-    Key:= 0;
-    Exit
-  end;
-end;
-
 function TfmProj.DoAddFile(Sel: TTntTreeNode; const fn: Widestring): TTntTreeNode;
 var
   SCaption: Widestring;
@@ -686,13 +625,8 @@ begin
   if (Source is TTntPageControl) then
   begin
     TargetNode:= TreeProj.GetNodeAt(X, Y);
-    if (TargetNode=nil) then
-    begin
-      EndDrag(False);
-      MsgBeep;
-      Exit;
-    end;
-    TreeProj.Selected:= TargetNode;
+    if TargetNode<>nil then
+      TreeProj.Selected:= TargetNode;
     DoAddEditorFiles(false);
     Exit;
   end;
@@ -793,7 +727,7 @@ begin
     if (N>=0) and (N<FPathList.Count) then
       Result:= FPathList[N]
     else
-      raise Exception.Create('Bad FN index');  
+      raise Exception.Create('Bad FN index');
   end;
 end;
 
@@ -1344,6 +1278,8 @@ begin
   TbxItemMnuProps.Enabled:= not dir;
   TbxItemMnuExpand.Enabled:= dir;
   TbxItemMnuCollapse.Enabled:= dir;
+
+  TBXItemMnuTogglePaths.Checked:= FShowPaths;
 end;
 
 procedure TfmProj.TreeProjContextPopup(Sender: TObject; MousePos: TPoint;
@@ -1577,13 +1513,27 @@ begin
         begin
           fn1:= _SortForm.GetFN(N1);
           fn2:= _SortForm.GetFN(N2);
-          date1:= FileDateToDateTime(WideFileAge(fn1));
-          date2:= FileDateToDateTime(WideFileAge(fn2));
+
+          if IsFileExist(fn1) then
+            date1:= FileDateToDateTime(WideFileAge(fn1))
+          else
+            date1:= 0;
+          if IsFileExist(fn2) then
+            date2:= FileDateToDateTime(WideFileAge(fn2))
+          else
+            date2:= 0;
+
           if date1<date2 then Result:= -1 else
            if date1>date2 then Result:= 1 else
             Result:= 0;
           if _SortMode=srDateDesc then
-            Result:= -Result;  
+            Result:= -Result;
+        end;
+      srFullPath:
+        begin
+          fn1:= _SortForm.GetFN(N1);
+          fn2:= _SortForm.GetFN(N2);
+          Result:= WStrIComp(PWChar(fn1), PWChar(fn2));
         end;
       else
         Result:= 0;
@@ -1645,9 +1595,10 @@ procedure TfmProj.DoSortBy(Mode: TProjSort);
 begin
   with TreeProj do
     if Selected<>nil then
-    begin
+    try
       Screen.Cursor:= crHourGlass;
       DoSortDir(DirForNode(Selected), false, Mode);
+    finally  
       Screen.Cursor:= crDefault;
       Selected.MakeVisible;
     end;
@@ -1820,11 +1771,19 @@ begin
 end;
 
 procedure TfmProj.TBXItemMnuPropsClick(Sender: TObject);
+var
+  fn: Widestring;
 begin
   with TreeProj do
     if Selected<>nil then
       if not IsDir(Selected) then
-        FShowProperties(GetFN(Selected), Self.Handle);
+      begin
+        fn:= GetFN(Selected);
+        if IsFileExist(fn) then
+          FShowProperties(fn, Self.Handle)
+        else
+          MsgBeep;  
+      end;
 end;
 
 procedure TfmProj.DoUpdateMRU;
@@ -1988,5 +1947,32 @@ procedure TfmProj.TBXItemMnuTogglePathsClick(Sender: TObject);
 begin
   DoToggleShowPaths;
 end;
+
+procedure TfmProj.TBXItemMnuSortByPathClick(Sender: TObject);
+begin
+  DoSortBy(srFullPath);
+end;
+
+procedure TfmProj.DoRenameFile(const fn, fn_new: Widestring);
+var
+  i: Integer;
+begin
+  with TreeProj do
+    for i:= 0 to Items.Count-1 do
+      if WideUpperCase(GetFN(Items[i])) = WideUpperCase(fn) then
+      begin
+        FPathList[Integer(Items[i].Data)]:= fn_new;
+        Items[i].Text:= GetFileNodeCaption(fn_new);
+        
+        FModified:= true;
+        UpdateTitle;
+      end;
+end;
+
+function TfmProj.IsDirSelected: boolean;
+begin
+  Result:= IsDir(TreeProj.Selected);
+end;  
+
 
 end.

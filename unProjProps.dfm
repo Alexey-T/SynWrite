@@ -41,7 +41,7 @@ object fmProjProps: TfmProjProps
     Top = 4
     Width = 473
     Height = 285
-    ActivePage = TntTabSheet3
+    ActivePage = TntTabSheet1
     TabOrder = 0
     object TntTabSheet1: TTntTabSheet
       Caption = 'General'
@@ -174,7 +174,8 @@ object fmProjProps: TfmProjProps
           'By date'
           'By size'
           'By date, descending'
-          'By size, descending')
+          'By size, descending'
+          'By full path')
       end
     end
     object TntTabSheet2: TTntTabSheet

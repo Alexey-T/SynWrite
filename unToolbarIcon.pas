@@ -187,7 +187,7 @@ procedure TfmToolbarIcon.bOkClick(Sender: TObject);
 var
   fn_png: string;
 begin
-  fn_png:= SExpandVars('%temp%\icon.png');
+  fn_png:= FTempDir + '\icon.png';
   DeleteFile(fn_png);
 
   if btnDLL.Checked then

@@ -18,6 +18,7 @@ object fmSR: TfmSR
   OnCreate = TntFormCreate
   OnDestroy = TntFormDestroy
   OnDeactivate = TntFormDeactivate
+  OnKeyDown = TntFormKeyDown
   OnShortCut = TntFormShortCut
   OnShow = FormShow
   PixelsPerInch = 96
@@ -498,7 +499,7 @@ object fmSR: TfmSR
     Left = 360
     Top = 99
     Width = 114
-    Height = 33
+    Height = 35
     Caption = 'Find in all tabs'
     TabOrder = 12
     WordWrap = True
@@ -508,7 +509,7 @@ object fmSR: TfmSR
     Left = 408
     Top = 99
     Width = 114
-    Height = 33
+    Height = 35
     Caption = 'Rep&lace all in all tabs'
     TabOrder = 10
     WordWrap = True

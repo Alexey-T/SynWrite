@@ -370,6 +370,9 @@ const
   sm_AcpForceTextOff = 1037;
   sm_SelectTokenNoQuotes = 1038;
   sm_AddFilesToProject = 1039;
+  sm_ScrollCurrentLineToTop = 1040;
+  sm_ScrollCurrentLineToBottom = 1041;
+  sm_ScrollCurrentLineToMiddle = 1042;
   //free
 
   //Tree commands

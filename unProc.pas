@@ -35,14 +35,16 @@ function EditorStringBeforeCaret(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
 procedure EditorGetHtmlTag(Ed: TSyntaxMemo; var STag, SAttr: string);
 procedure EditorGetCssTag(Ed: TSyntaxMemo; var STag: string);
 
+function FGetTempFilenameIndexed(Index: Integer): Widestring;
+function FGetTempFilenameDeleted(NMaxCount: Integer = 20): Widestring;
+
 function FontHeightToItemHeight(Font: TFont): Integer;
 function SDecodeUsingFileTable(const SData, fn: Widestring; ToBack: boolean): Widestring;
 function GetEditHandle(Target: TObject): THandle;
 procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
 
-//debug functions: _1 starts, _2 prints time since _1
-procedure _1;
-procedure _2;
+procedure _Time1;
+procedure _Time2;
 
 type
   TSynMruList = class
@@ -1547,22 +1549,24 @@ begin
   Result:= Trunc(Abs(Font.Height) * 1.36);
 end;
 
+//debug stuff
 var
   _Time: DWORD;
 
-procedure _1;
+procedure _Time1;
 begin
   _Time:= GetTickCount;
 end;
 
-procedure _2;
+procedure _Time2;
 begin
   _Time:= GetTickCount - _Time;
-  Application.MessageBox(PChar('Time: '+IntToStr(_Time)+'ms'), 'Time', mb_ok);
+  Application.MessageBox(PChar('Time: '+IntToStr(_Time)+' ms'), 'Time', mb_ok);
 end;
 
 
 function EditorStringBeforeCaret(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
+//get last MaxLen chars before caret
 var
   N, NEnd: Integer;
 begin
@@ -1570,7 +1574,6 @@ begin
   if Ed.TextLength=0 then Exit;
   if Ed.CaretStrPos=0 then Exit;
 
-  //get last cMaxLen chars before caret
   NEnd:= Ed.CaretStrPos+1;
   N:= NEnd - MaxLen;
   if N<1 then N:= 1;
@@ -1737,5 +1740,22 @@ begin
   SReplaceAll(SPar, '[,', ',['); //for optional params
 end;
 
+
+function FGetTempFilenameIndexed(Index: Integer): Widestring;
+begin
+  Result:= FTempDir + '\' + WideFormat('Synw$%d.txt', [Index]);
+end;
+
+function FGetTempFilenameDeleted(NMaxCount: Integer = 20): Widestring;
+var
+  i: Integer;
+begin
+  for i:= 0 to NMaxCount do
+  begin
+    Result:= FGetTempFilenameIndexed(i);
+    FDelete(Result);
+    if not IsFileExist(Result) then Break;
+  end;
+end;
 
 end.

@@ -40,6 +40,7 @@ uses
   SpTBXItem, SpTbxMDIMRU, SpTBXDkPanels, SpTBXSkins,
   SpTBXControls, SpTBXTabs, SpTBXEditors, 
 
+  ATSyntMemo, //before ecSyntMemo
   ecActns, ecPrint, ecSyntMemo, ecKeyMap, ecPropManager, ecSyntAnal,
   ecSyntTree, ecStrUtils, ecPopupCtrl, ecUnicode,
 
@@ -536,15 +537,15 @@ type
     ecShowOut: TAction;
     TBXItemOOut: TSpTbxItem;
     PopupOut: TSpTbxPopupMenu;
-    TBXItemOClr: TSpTbxItem;
-    TBXItemOCp: TSpTbxItem;
-    TBXItemONav: TSpTbxItem;
+    TBXItemOutClear: TSpTBXItem;
+    TBXItemOutCopySel: TSpTBXItem;
+    TBXItemOutNav: TSpTBXItem;
     TBXSeparatorItem18: TSpTbxSeparatorItem;
-    TBXItemOCpAll: TSpTbxItem;
+    TBXItemOutCopyAll: TSpTBXItem;
     TBXSeparatorItem32: TSpTbxSeparatorItem;
     ImageListStatus: TImageList;
-    TBXItemODel: TSpTbxItem;
-    TBXItemODelN: TSpTbxItem;
+    TBXItemOutDelSel: TSpTBXItem;
+    TBXItemOutDelNonparsed: TSpTBXItem;
     PopupFind: TSpTbxPopupMenu;
     TBXItemTreeFindNav: TSpTbxItem;
     TBXSeparatorItem36: TSpTbxSeparatorItem;
@@ -740,10 +741,10 @@ type
     PopupValidate: TSpTbxPopupMenu;
     TBXItemValNav: TSpTbxItem;
     TBXSeparatorItem56: TSpTbxSeparatorItem;
-    TBXItemValCp: TSpTbxItem;
-    TBXItemValCpAll: TSpTbxItem;
+    TBXItemValCopySel: TSpTBXItem;
+    TBXItemValCopyAll: TSpTBXItem;
     TBXSeparatorItem57: TSpTbxSeparatorItem;
-    TBXItemValClr: TSpTbxItem;
+    TBXItemValClear: TSpTBXItem;
     ecToggleFocusValidate: TAction;
     TBXItemEDedupAdjacent: TSpTbxItem;
     TBXItemTbDedupAdjacent: TSpTbxItem;
@@ -841,7 +842,7 @@ type
     TBXSeparatorItem66: TSpTbxSeparatorItem;
     TBXItemValFind: TSpTbxItem;
     TBXSeparatorItem67: TSpTbxSeparatorItem;
-    TBXItemOFind: TSpTbxItem;
+    TBXItemOutFind: TSpTBXItem;
     PopupTree: TSpTbxPopupMenu;
     TBXItemTreeFind: TSpTbxItem;
     TBXItemTreeExpand: TSpTbxItem;
@@ -1167,7 +1168,7 @@ type
     StatusItemBusy: TSpTBXLabelItem;
     SpTBXSeparatorItem11: TSpTBXSeparatorItem;
     StatusItemHint: TSpTBXLabelItem;
-    TBXMRUListItem1: TSpTBXMRUListItem;
+    TBXMRUListItemFRecents: TSpTBXMRUListItem;
     TBXMRUListItem_Sess: TSpTBXMRUListItem;
     tbTabsRight: TSpTBXTabSet;
     TbxTabMinimap: TSpTBXTabItem;
@@ -1185,7 +1186,7 @@ type
     SpTBXSeparatorItem12: TSpTBXSeparatorItem;
     SpTBXSeparatorItem13: TSpTBXSeparatorItem;
     SpTBXSeparatorItem14: TSpTBXSeparatorItem;
-    TbxItemMruNewdoc: TSpTBXMRUListItem;
+    TBXMRUListItemFNew: TSpTBXMRUListItem;
     TbxItemVPanelClip: TSpTBXItem;
     TBXItemZIn: TSpTBXItem;
     TBXItemZOut: TSpTBXItem;
@@ -1278,7 +1279,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure ecPrinterSetupExecute(Sender: TObject);
     procedure SetFormat(Sender: TObject);
-    procedure SetEncoding(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ParamCompletionGetParams(Sender: TObject;
       const FuncName: WideString; Pos: Integer);
@@ -1438,15 +1438,15 @@ type
     procedure ListOutDblClick(Sender: TObject);
     procedure ListOutKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure TBXItemOClrClick(Sender: TObject);
-    procedure TBXItemOCpClick(Sender: TObject);
-    procedure TBXItemONavClick(Sender: TObject);
+    procedure TBXItemOutClearClick(Sender: TObject);
+    procedure TBXItemOutCopySelClick(Sender: TObject);
+    procedure TBXItemOutNavClick(Sender: TObject);
     procedure PopupOutPopup(Sender: TObject);
-    procedure TBXItemOCpAllClick(Sender: TObject);
+    procedure TBXItemOutCopyAllClick(Sender: TObject);
     procedure ListOutDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
-    procedure TBXItemODelClick(Sender: TObject);
-    procedure TBXItemODelNClick(Sender: TObject);
+    procedure TBXItemOutDelSelClick(Sender: TObject);
+    procedure TBXItemOutDelNonparsedClick(Sender: TObject);
     procedure ListOutMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ListOutMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -1578,9 +1578,9 @@ type
     procedure TBXItemOOValClick(Sender: TObject);
     procedure ListValDblClick(Sender: TObject);
     procedure TBXItemValNavClick(Sender: TObject);
-    procedure TBXItemValCpClick(Sender: TObject);
-    procedure TBXItemValCpAllClick(Sender: TObject);
-    procedure TBXItemValClrClick(Sender: TObject);
+    procedure TBXItemValCopySelClick(Sender: TObject);
+    procedure TBXItemValCopyAllClick(Sender: TObject);
+    procedure TBXItemValClearClick(Sender: TObject);
     procedure PopupValidatePopup(Sender: TObject);
     procedure ListValKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -1641,7 +1641,7 @@ type
     procedure ecFindInListPrevExecute(Sender: TObject);
     procedure TBXItemClipFindClick(Sender: TObject);
     procedure TBXItemValFindClick(Sender: TObject);
-    procedure TBXItemOFindClick(Sender: TObject);
+    procedure TBXItemOutFindClick(Sender: TObject);
     procedure PopupClipPopup(Sender: TObject);
     procedure TBXItemTreeFindClick(Sender: TObject);
     procedure PopupTreePopup(Sender: TObject);
@@ -1985,7 +1985,7 @@ type
       FromLink: Boolean);
     procedure TBXSubmenuItemSessPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
-    procedure TbxItemMruNewdocClick(Sender: TObject;
+    procedure TBXMRUListItemFNewClick(Sender: TObject;
       const Filename: WideString);
     procedure StatusResize(Sender: TObject);
     procedure acSetupLexLibExecute(Sender: TObject);
@@ -2236,6 +2236,11 @@ type
     function SGetTabPrefix: Widestring;
     procedure DoFindCommandFromString(const S: Widestring);
     procedure DoFindInTabs;
+    procedure DoFindInClipPanel;
+    procedure DoFindInFindResults;
+    procedure DoFindInOutPanel;
+    procedure DoFindInValidatePanel;
+    procedure DoFindInPluginsLog;
     procedure DoAddFav(const fn: Widestring);
     procedure NumConvInsert(Sender: TObject; const S: string);
     procedure DoGetCommentProps(const Lexer: string;
@@ -2260,6 +2265,7 @@ type
     function CurrentProjectMainFN: Widestring;
     function CurrentProjectWorkDir: Widestring;
 
+    procedure ProjKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ProjOpen(Sender: TObject);
     procedure ProjClose(Sender: TObject);
     procedure ProjGotoFile(Sender: TObject);
@@ -2292,6 +2298,7 @@ type
     procedure DoSelectToken(SkipQuotes: boolean = false);
 
     //private UpdateNNN
+    procedure UpdateTreeImages;
     procedure UpdateTitle(Sender: TFrame);
     procedure UpdateAcp(const Lexer: string);
     procedure UpdateTools;
@@ -2351,7 +2358,6 @@ type
     function GetCssListFN: string;
     function GetHtmlTabbingFN: string;
 
-    function CurrentCR(Ed: TSyntaxMemo = nil): Widestring;
     function CurrentLexer: string;
     function CurrentLexerForFile: string;
     function CurrentLexerHasTemplates: boolean;
@@ -2362,6 +2368,7 @@ type
     procedure DoSmartHiliteOnClick;
     procedure DoHandleLastCmd(Command: integer; Data: pointer);
     function MsgInput(const dkmsg: string; var S: Widestring): boolean;
+
     procedure MsgFound;
     procedure MsgColorBad(const s: string);
     procedure MsgColorOK(const s: string);
@@ -2374,7 +2381,8 @@ type
     procedure MsgDelLines(N: integer);
     procedure MsgDoneLines(N: integer);
     procedure MsgTabbing(const s: Widestring);
-    //procedure MsgID(const s: Widestring);
+    procedure MsgRenameError(const fn, fn_new: Widestring);
+    
     procedure ClearTreeFind;
     procedure CopyFindResultToTab(ALastSearch, AFilesOnly: boolean;
       AToClip: boolean = false);
@@ -2404,9 +2412,6 @@ type
       var AExtSel: boolean;
       var AMode: TSynGotoMode;
       var ABkNum: integer): Boolean;
-    procedure DoExtendSelection(Ed: TSyntaxMemo;
-      AOldStart, AOldLength,
-      ANewStart, ANewLength: integer);
     procedure DoGotoBlank(ANext: boolean);
     function IsSearchEditFocused: boolean;
     function IsNumConvEditFocused: boolean;
@@ -2488,7 +2493,6 @@ type
     procedure SaveLastDir_UntitledFile(const FN: Widestring);
     procedure SetFS(AValue: boolean);
     procedure SetOnTop(V: boolean);
-    procedure ConvEncoding(Sender: TObject);
     procedure DoRangeJump(Ed: TSyntaxMemo);
     procedure DoBracketJump;
     procedure DoBracketsFind(var Pos1, Pos2: Integer);
@@ -2542,12 +2546,13 @@ type
     procedure FinderFail(Sender: TObject);
     procedure FinderProgress(CurPos, MaxPos: integer);
     procedure FindCurrentWord(Next: boolean);
-    function EncLocal(const s: Widestring): Widestring;
+    function LocalizedEncodingName(const s: Widestring): Widestring;
 
-    function IsSh(sh: TShortcut; cmd: integer): boolean;
-    function ShFor(id: integer): TShortcut;
-    procedure ShMacroGet(n: integer; var sh: TShortcut);
-    procedure ShMacroSet(n: integer; const sh: TShortcut);
+    function IsShortcutOfCmd(sh: TShortcut; cmd: integer): boolean;
+    function GetShortcutOfCmd(id: integer): TShortcut;
+    function GetShortcutTextOfCmd(id: integer): string;
+    procedure GetShortcutOfMacro(n: integer; var sh: TShortcut);
+    procedure SetShortcutOfMacro(n: integer; const sh: TShortcut);
 
     procedure DoReplaceTabsToSpaces(F: TEditorFrame);
     procedure DoOnlineWordHelp(const url: Widestring);
@@ -2556,7 +2561,7 @@ type
     procedure FindAction(act: TSRAction);
     procedure FindActionWrapper(act: TSRAction);
     procedure FindFocusEditor(Sender: TObject);
-    procedure FindDialog(ARep: boolean);
+    procedure FindDialog(AReplaceMode: boolean);
     procedure FindInFile(const fn: Widestring; InCodepage: TSynCpOverride = cp_sr_Def);
     procedure FindInFrame(F: TEditorFrame);
     procedure ReplaceInFile(const fn: Widestring);
@@ -2610,10 +2615,13 @@ type
     procedure DoInsertImageTag(const fn: string);
     procedure DoCheckUnicodeNeeded(Frame: TEditorFrame);
 
-    function GetFrameEnc(F: TEditorFrame): integer;
-    procedure SetFrameEnc(Frame: TEditorFrame; enc: Integer);
-    procedure ChangeEncoding(Frame: TEditorFrame; ATag: Integer;
+    function GetFrameEncoding(F: TEditorFrame): integer;
+    procedure ApplyFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
+    procedure ApplyFrameEncodingAndReload(Frame: TEditorFrame; AEnc: Integer;
       ACanReload: boolean = true);
+    procedure MenuitemSetEncoding(Sender: TObject);
+    procedure MenuitemConvertEncoding(Sender: TObject);
+    
     procedure DoCheckAutoShowACP(Ed: TSyntaxMemo);
     procedure DoLinesCommand(Cmd: TSynLineCmd);
     procedure DoToggleLineComment(Alt: boolean);
@@ -2637,6 +2645,8 @@ type
     procedure DoExtToolsList(L: TTntStringList);
     procedure InitMenuItemsList;
     procedure DoOpenBySelection;
+    procedure FixMenuBigImageList(Menu: TSpTbxSubmenuItem);
+    procedure FixMruBigImageList(Menu: TSpTbxMruListItem);
     procedure FixSplitters;
     function SynFilesFilter: Widestring;
     procedure DoOptionsDialog(tabId: Integer);
@@ -2683,6 +2693,9 @@ type
       Shift: TShiftState);
     procedure ProjPreviewButtonClick(Sender: TObject);
     procedure DoCloseTabsOnProjectClosingIfNeeded;
+    procedure DoProjectRenameFile(const fn, fn_new: Widestring);
+    procedure UpdKey_String(Item: TSpTbxItem; const Cmd: Widestring);
+    procedure UpdKey(Item: TSpTbxItem; CmdId: integer);
     //end of private
 
   protected
@@ -2715,7 +2728,6 @@ type
     opNonPrintEol,
     opNonPrintEolDetail: boolean;
     opCaretType: integer;
-    opShowCurrentColumn: boolean;
     opMaxTreeMatches: integer;
     opCaretsEnabled: boolean;
     opCaretsIndicator: integer;
@@ -2751,8 +2763,6 @@ type
     opTabsSortMode: integer; //sort mode for Tabs panel
     opTabSwitcher: boolean; //use modern tab switcher (Ctrl+Tab)
     opStateForTemp: boolean;
-    opCaretMoveX,
-    opCaretMoveY: integer;
     opTipsPanels: boolean;
     opTipsToken: boolean;
     opFollowTail: boolean;
@@ -2789,7 +2799,6 @@ type
     opStatusText: array[TSynSelState] of string;
     opSpellEn: boolean;
     opSpellExt: string;
-    opFixBlocks: boolean;
     opMenuIcon: boolean;
     opHiliteSmart: boolean;
     opHiliteSmartCase: boolean;
@@ -3039,7 +3048,7 @@ var
   _SynActionProc: TSynAction = nil;
 
 const
-  cSynVer = '6.0.030';
+  cSynVer = '6.0.080';
 
 const
   cSynParamRO = '/ro';
@@ -3484,7 +3493,7 @@ begin
   else
     Result:= CreateFrame;
   //reset encoding for new frame  
-  SetFrameEnc(Result, 0);
+  ApplyFrameEncoding(Result, 0);
 
   if FCanUseLexer(AFileName) then
     Result.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(AFileName)
@@ -3522,22 +3531,22 @@ begin
 
   if SFileExtensionMatch(Frame.FileName, opOem) then
   begin
-    ChangeEncoding(Frame, CP_OEMCP); //Reread as OEM
+    ApplyFrameEncodingAndReload(Frame, CP_OEMCP); //Reread as OEM
   end
   else
   if SFileExtensionMatch(Frame.FileName, opUTF8) or (opUTF8 = '*')
     or IsFileUTF8NoBOM(Frame.FileName)
     or IsFileXmlUTF8(Frame.FileName) then
   begin
-    ChangeEncoding(Frame, cp__UTF8_noBOM); //Reread as UTF8 no BOM
+    ApplyFrameEncodingAndReload(Frame, cp__UTF8_noBOM); //Reread as UTF8 no BOM
   end
   else
   if IsFileUnicodeNoBOM(Frame.FileName, IsBE) then
   begin
     if IsBE then
-      ChangeEncoding(Frame, cp__UnicodeBE) //UTF-16 BE
+      ApplyFrameEncodingAndReload(Frame, cp__UnicodeBE) //UTF-16 BE
     else
-      ChangeEncoding(Frame, cp__Unicode); //UTF-16 LE
+      ApplyFrameEncodingAndReload(Frame, cp__Unicode); //UTF-16 LE
   end;
 end;
 
@@ -3799,12 +3808,12 @@ begin
     Val:= opNewEnc;
 
   case Val of
-    0: ChangeEncoding(F, cp_ACP);
-    1: ChangeEncoding(F, cp_OEMCP);
-    2: ChangeEncoding(F, cp__UTF8);
-    3: ChangeEncoding(F, cp__UTF8_noBOM);
-    4: ChangeEncoding(F, cp__Unicode);
-    5: ChangeEncoding(F, cp__UnicodeBE);
+    0: ApplyFrameEncodingAndReload(F, cp_ACP);
+    1: ApplyFrameEncodingAndReload(F, cp_OEMCP);
+    2: ApplyFrameEncodingAndReload(F, cp__UTF8);
+    3: ApplyFrameEncodingAndReload(F, cp__UTF8_noBOM);
+    4: ApplyFrameEncodingAndReload(F, cp__Unicode);
+    5: ApplyFrameEncodingAndReload(F, cp__UnicodeBE);
   end;
 
   //upd line ends
@@ -3930,37 +3939,36 @@ begin
   UpdateTabList(PageControl.ActivePageIndex, -1, n);
 end;
 
-procedure TfmMain.FrameChanged;
-  //Checks tree images
-  procedure SetImages;
-  var i: integer;
-  begin
-    if (ImgListTree.Count > 0) and (CurrentFrame.TextSource.SyntaxAnalyzer <> nil) then
-     with CurrentFrame.TextSource.SyntaxAnalyzer do
+procedure TfmMain.UpdateTreeImages;
+var
+  i: integer;
+begin
+  if (ImgListTree.Count > 0) and (CurrentFrame.TextSource.SyntaxAnalyzer <> nil) then
+    with CurrentFrame.TextSource.SyntaxAnalyzer do
       for i:= 0 to BlockRules.Count - 1 do
-       if (BlockRules[i].TreeItemImage <> -1) or
-          (BlockRules[i].TreeGroupImage <> -1) then
+        if (BlockRules[i].TreeItemImage <> -1) or
+           (BlockRules[i].TreeGroupImage <> -1) then
         begin
           Tree.Images:= ImgListTree;
           Exit;
         end;
-    Tree.Images:= nil;
-  end;
+  Tree.Images:= nil;
+end;
+
+procedure TfmMain.FrameChanged;
 begin
-  if CurrentFrame <> nil then
+  if CurrentFrame<>nil then
     with CurrentFrame do
     begin
        SyntaxManager.CurrentLexer:= TextSource.SyntaxAnalyzer;
        SyntaxManagerChange(Self);
        CurrentEditor:= EditorMaster;
        ecSyntPrinter.Title:= WideExtractFileName(CurrentFrame.FileName);
-       SetImages;
        UpdateTitle(CurrentFrame);
        UpdateStatusbar;
-       UpdateEditorNonPrinted(EditorMaster);
-       UpdateEditorNonPrinted(EditorSlave);
        SynScroll(CurrentEditor);
        UpdateTabList(-1, -1, -1);
+       UpdateTreeImages;
     end
   else
     CurrentEditor:= nil;
@@ -4395,10 +4403,8 @@ begin
     ApplyQs;
     opHiliteUrls:= ReadBool('Setup', 'Link', true);
     opColorLink:= ReadInteger('Setup', 'LinkCl', clBlue);
-      //opFixBlocks:= ReadBool('Setup', 'FixBl', true);
-      //opKeepScr:= ReadBool('Setup', 'KeepScr', false);
-      opFixBlocks:= true;
-      opKeepScr:= true;
+    //opKeepScr:= ReadBool('Setup', 'KeepScr', false);
+    opKeepScr:= true;
     ApplyEdOptions;
 
     opShowWrapMark:= ReadBool('Setup', 'WrapMk', true);
@@ -4409,6 +4415,8 @@ begin
     opSaveEnc:= ReadBool('Setup', 'SaveEnc', true);
     opAskOverwrite:= true; //ReadBool('Setup', 'AskRO', true);
     opTitleFull:= ReadBool('Setup', 'TitleFull', false);
+
+    SyntKeyMapping.UseFirstControlKeys:= ReadBool('Setup', 'KeyComboIgnoreCtrl', true);
 
     opStatusText[selNone]:= ReadString('View', 'StatusNoSel', '{LineNum} : {ColNum} ({TotalLines})');
     opStatusText[selSmall]:= ReadString('View', 'StatusSmallSel', '{LineNum} : {ColNum} ({SelLines}x{SelCols}/{TotalLines})');
@@ -4474,8 +4482,6 @@ begin
     opShowRecentColors:= TSynRecentColors(ReadInteger('Setup', 'RecColors', 0));
     opUnicodeNeeded:= ReadInteger('Setup', 'UnNeed', 0{don't suggest});
     opFollowTail:= ReadBool('Setup', 'Tail', false);
-    opCaretMoveX:= ReadInteger('Setup', 'MovX', 5);
-    opCaretMoveY:= ReadInteger('Setup', 'MovY', 5);
 
     Tree.ClickAction:= TSyntaxTreeAction(ReadInteger('Tree', 'Click', Ord(Tree.ClickAction)));
     Tree.Color:= ReadInteger('Tree', 'Color', Tree.Color);
@@ -4806,7 +4812,6 @@ begin
     WriteBool('Setup', 'LexCat', opLexerCat);
     WriteBool('Setup', 'Link', opHiliteUrls);
     WriteInteger('Setup', 'LinkCl', opColorLink);
-    WriteBool('Setup', 'FixBl', opFixBlocks);
     WriteBool('Setup', 'KeepScr', opKeepScr);
     WriteBool('Setup', 'WrapMk', opShowWrapMark);
     WriteInteger('Setup', 'TxOnly', opTextOnly);
@@ -4838,8 +4843,6 @@ begin
     WriteBool('Setup', 'TabSp', opTabsReplace);
     WriteInteger('Setup', 'Notif', Ord(opNotif));
 
-    WriteInteger('Setup', 'MovX', opCaretMoveX);
-    WriteInteger('Setup', 'MovY', opCaretMoveY);
     WriteBool('Setup', 'Tail', opFollowTail);
     WriteInteger('Setup', 'UnNeed', opUnicodeNeeded);
     WriteInteger('Setup', 'RecColors', Ord(opShowRecentColors));
@@ -5126,7 +5129,7 @@ begin
 end;
 //------------
 
-function TfmMain.LoadState(Frame: TEditorFrame; const FN: WideString): boolean; //isFileLoaded
+function TfmMain.LoadState(Frame: TEditorFrame; const FN: WideString): boolean;
 var
   tmp: TFileState;
   f: file of TFileState;
@@ -5274,7 +5277,7 @@ begin
   tmp.Wrap:= F.EditorMaster.WordWrap;
   tmp.SplitPos:= byte(Round(F.SplitPos));
   tmp.SplitVert:= not F.SplitHorz;
-  tmp.CP:= GetFrameEnc(F);
+  tmp.CP:= GetFrameEncoding(F);
 
   //fill master
   tmp.M.TopLine:= F.EditorMaster.TopLine;
@@ -5544,7 +5547,7 @@ begin
         begin
           Ed.SelChangeCase(TChangeCase(Command - smUpperCaseBlock + 1));
           EditorSetModified(Ed);
-        end;  
+        end;
         EditorRestoreSel(Ed, Sel);
       end;
 
@@ -5692,23 +5695,49 @@ begin
     end;
 
     smUp:
-      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smScrollUp)
-      else Handled:= False;
+    begin
+      if EditorHasNoCaret(Ed) then
+        Ed.ExecCommand(smScrollUp)
+      else
+        Handled:= False;
+    end;
     smDown:
-      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smScrollDown)
-      else Handled:= False;
+    begin
+      if EditorHasNoCaret(Ed) then
+        Ed.ExecCommand(smScrollDown)
+      else
+        Handled:= False;
+    end;
     smPageUp:
-      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smScrollPageUp)
-      else Handled:= False;
+    begin
+      if EditorHasNoCaret(Ed) then
+        Ed.ExecCommand(smScrollPageUp)
+      else
+        Handled:= False;
+    end;
     smPageDown:
-      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smScrollPageDown)
-      else Handled:= False;
-    smFirstLetter{home}:
-      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smEditorTop{smScrollPageLeft})
-      else Handled:= False;
-    smLastLetter{end}:
-      if EditorHasNoCaret(Ed) then Ed.ExecCommand(smEditorBottom{smScrollPageRight})
-      else Handled:= False;
+    begin
+      if EditorHasNoCaret(Ed) then
+        Ed.ExecCommand(smScrollPageDown)
+      else
+        Handled:= False;
+    end;
+    //Home key
+    smFirstLetter:
+    begin
+      if EditorHasNoCaret(Ed) then
+        Ed.ExecCommand(smEditorTop{smScrollPageLeft})
+      else
+        EditorDoHomeKey(Ed);
+    end;
+    //End key
+    smLastLetter:
+    begin
+      if EditorHasNoCaret(Ed) then
+        Ed.ExecCommand(smEditorBottom{smScrollPageRight})
+      else
+        Handled:= False;
+    end;
 
     //Shift+
     smSelLeft..smSelDown:
@@ -5736,7 +5765,7 @@ begin
         begin
           Finder.FindNext;
           if Finder.Matches>0 then
-            DoCheckDialogOverlapsCaret(Finder.Control, fmSR);
+            EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
         end
         else
           ecFind.Execute;
@@ -5757,7 +5786,7 @@ begin
         begin
           Finder.FindPrev;
           if Finder.Matches>0 then
-            DoCheckDialogOverlapsCaret(Finder.Control, fmSR);
+            EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
         end
         else
           ecFind.Execute;
@@ -6041,14 +6070,14 @@ begin
     sm_SplitRight: ecSplitRight.Execute;
 
     //encoding
-    sm_EncAnsi: ChangeEncoding(CurrentFrame, cp_ACP);
-    sm_EncOem: ChangeEncoding(CurrentFrame, cp_OEMCP);
-    sm_EncUtf: ChangeEncoding(CurrentFrame, cp__UTF8);
-    sm_EncUtf2: ChangeEncoding(CurrentFrame, cp__UTF8_noBOM);
-    sm_EncUni: ChangeEncoding(CurrentFrame, cp__Unicode);
-    sm_EncUniBE: ChangeEncoding(CurrentFrame, cp__UnicodeBE);
-    sm_EncKoi: ChangeEncoding(CurrentFrame, 20866);
-    sm_EncMac: ChangeEncoding(CurrentFrame, cp_MACCP);
+    sm_EncAnsi: ApplyFrameEncodingAndReload(CurrentFrame, cp_ACP);
+    sm_EncOem: ApplyFrameEncodingAndReload(CurrentFrame, cp_OEMCP);
+    sm_EncUtf: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8);
+    sm_EncUtf2: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8_noBOM);
+    sm_EncUni: ApplyFrameEncodingAndReload(CurrentFrame, cp__Unicode);
+    sm_EncUniBE: ApplyFrameEncodingAndReload(CurrentFrame, cp__UnicodeBE);
+    sm_EncKoi: ApplyFrameEncodingAndReload(CurrentFrame, 20866);
+    sm_EncMac: ApplyFrameEncodingAndReload(CurrentFrame, cp_MACCP);
 
     sm_MenuEnc:
       begin
@@ -6201,10 +6230,10 @@ begin
       DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFilePath);
 
     //move caret
-    sm_CaretIncX:  DoMoveCaretXY(opCaretMoveX, 0);
-    sm_CaretDecX:  DoMoveCaretXY(-opCaretMoveX, 0);
-    sm_CaretIncY:  DoMoveCaretXY(0, opCaretMoveY);
-    sm_CaretDecY:  DoMoveCaretXY(0, -opCaretMoveY);
+    sm_CaretIncX:  DoMoveCaretXY(+SynHiddenOption('MovX', 20), 0);
+    sm_CaretDecX:  DoMoveCaretXY(-SynHiddenOption('MovX', 20), 0);
+    sm_CaretIncY:  DoMoveCaretXY(0, +SynHiddenOption('MovY', 10));
+    sm_CaretDecY:  DoMoveCaretXY(0, -SynHiddenOption('MovY', 10));
 
     //misc
     smChangeRangeSide: DoRangeJump(Ed);
@@ -6337,6 +6366,17 @@ begin
     sm_AcpForceTextOn: opAcpForceText:= true;
     sm_AcpForceTextOff: opAcpForceText:= false;
     sm_SelectTokenNoQuotes: ecSelTokenNoQuotes.Execute;
+
+    //select-mode commands
+    smNormalSelect: CurrentEditor.SelectModeDefault:= msNormal;
+    smColumnSelect: CurrentEditor.SelectModeDefault:= msColumn;
+    smLineSelect: CurrentEditor.SelectModeDefault:= msLine;
+    smMarkSelStart: EditorMarkSelStart(CurrentEditor);
+    smMarkSelEnd: EditorMarkSelEnd(CurrentEditor);
+
+    sm_ScrollCurrentLineToTop: EditorScrollCurrentLineTo(CurrentEditor, cScrollToTop);
+    sm_ScrollCurrentLineToBottom: EditorScrollCurrentLineTo(CurrentEditor, cScrollToBottom);
+    sm_ScrollCurrentLineToMiddle: EditorScrollCurrentLineTo(CurrentEditor, cScrollToMiddle);
 
     //end of commands list
     else
@@ -7131,11 +7171,12 @@ begin
   Finder.SkipInit:= False;
   Finder.OnProgress:= FinderProgress;
 
-  //clear actions hints Delphi7 bug
-  for i:= 0 to ActionList.ActionCount - 1 do
-    (ActionList.Actions[i] as TCustomAction).ShortCut:= 0;
+  //clear actions hints (Sepa's code)
+  with ActionList do
+    for i:= 0 to ActionCount-1 do
+       (Actions[i] as TCustomAction).ShortCut:= 0;
 
-  //new cursor for editor's gutter: 1
+  //new cursor for editor's gutter
   Cur:= LoadCursor(HInstance, 'GCURSOR');
   if Cur>0 then
     Screen.Cursors[1]:= Cur;
@@ -7386,89 +7427,62 @@ end;
 
 procedure TfmMain.SynGetTokenHint(Sender: TObject; TokenIndex: Integer; var HintText: String);
 var
-  p, p1: TPoint;
-  i, n: integer;
-  e: TSyntaxMemo;
+  Ed: TSyntaxMemo;
   Frame: TEditorFrame;
   s, sFilename, sResult: ecString;
   NColor1, NColor2: TColor;
+  i, n: integer;
 begin
   if not opTipsToken then
     begin HintText:= ''; Exit end;
 
-  e:= Sender as TSyntaxMemo;
-  Frame:= FrameOfEditor(e);
+  Ed:= Sender as TSyntaxMemo;
+  Frame:= FrameOfEditor(Ed);
   sFileName:= Frame.FileName;
 
-  if e.SyntObj<>nil then
-    with e.SyntObj do
-    begin
-      s:= TagStr[TokenIndex];
+  //no lexer active
+  if Ed.SyntObj=nil then
+    begin HintText:= ''; Exit end;
 
-      if IsImageHint(s, sFileName, sResult) then
-      begin
-        HintText:= sResult;
-        SetHint(sResult);
-        Exit
-      end;
+  s:= EditorTokenString(Ed, TokenIndex);
 
-      if IsShowColor(s, NColor1, NColor2) then
-      begin
-        HintText:= cColorPrefix + IntToStr(NColor1) + IfThen(NColor2<>clNone, ','+IntToStr(NColor2));
-        Exit
-      end;
-    end;
+  if IsImageHint(s, sFileName, sResult) then
+  begin
+    HintText:= sResult;
+    SetHint(sResult);
+    Exit
+  end;
 
+  if IsShowColor(s, NColor1, NColor2) then
+  begin
+    HintText:= cColorPrefix + IntToStr(NColor1) + IfThen(NColor2<>clNone, ','+IntToStr(NColor2));
+    Exit
+  end;
+
+  {
   //test mouse over editor
-  p:= e.ClientToScreen(e.BoundsRect.TopLeft);
-  p1:= e.ClientToScreen(e.BoundsRect.BottomRight);
-  if (Mouse.CursorPos.X<p.x) or (Mouse.CursorPos.y<p.Y) or
-     (Mouse.CursorPos.X>p1.x) or (Mouse.CursorPos.y>p1.Y) then
-    begin
-      HintText:= '';
-      Exit;
-    end;
+  if not PtInRect(Ed.BoundsRect, Ed.Parent.ScreenToClient(Mouse.CursorPos)) then
+  begin
+    HintText:= '';
+    Exit;
+  end;
+  }
 
   try
-    if e.SyntObj<>nil then
-    with e.SyntObj do
-    begin
-      s:= TagStr[TokenIndex];
+    s:= EditorTokenFullString(Ed, TokenIndex, Pos('.', opAcpChars)>0);
 
-      //add lefter tokens
-      //(needed for complex id.id.id, e.g. for C#)
-      i:= TokenIndex;
-      while (i-2>=0) do
-      begin
-        if not ((TagStr[i-1]='.') and (Pos('.', opAcpChars)>0)) then
-          Break;
-        Insert(TagStr[i-2]+TagStr[i-1], s, 1);
-        Dec(i, 2);
-      end;
+    //show for strings their ACP hint/description
+    n:= -1;
+    for i:= 0 to FAcpList_Items.Count-1 do
+      if SAcpItemToId(FAcpList_Items[i]) = s then
+        begin n:= i; Break; end;
 
-      //add righter tokens
-      i:= TokenIndex;
-      while (i+2<=TagCount-1) do
-      begin
-        if not ((TagStr[i+1]='.') and (Pos('.', opAcpChars)>0)) then
-          Break;
-        s:= s+TagStr[i+1]+TagStr[i+2];
-        Inc(i, 2);
-      end;
-
-      //show for strings their ACP hint/description
-      n:= -1;
-      for i:= 0 to FAcpList_Items.Count-1 do
-        if SAcpItemToId(FAcpList_Items[i]) = s then
-          begin n:= i; Break; end;
-
-      if n>=0 then
-        if FAcpList_Hints[n]<>'' then
-          HintText:= Trim(
-            '\s4\'+SAcpItemToId(FAcpList_Items[n])+' '+
-            '\s5\'+FAcpList_Hints[n]+sLineBreak+
-            '\s6\'+FAcpList_Desc[n]);
-     end;
+    if n>=0 then
+      if FAcpList_Hints[n]<>'' then
+        HintText:= Trim(
+          '\s4\'+SAcpItemToId(FAcpList_Items[n])+' '+
+          '\s5\'+FAcpList_Hints[n]+sLineBreak+
+          '\s6\'+FAcpList_Desc[n]);
   except
     on E: Exception do
     begin
@@ -8096,27 +8110,27 @@ begin
   end;
 end;
 
-procedure TfmMain.SetEncoding(Sender: TObject);
+procedure TfmMain.MenuitemSetEncoding(Sender: TObject);
 begin
   if Sender is TSpTbxItem then
     if not (Sender as TSpTbxItem).Checked then
-      ChangeEncoding(CurrentFrame, (Sender as TComponent).Tag);
+      ApplyFrameEncodingAndReload(CurrentFrame, (Sender as TComponent).Tag);
 end;
 
-procedure TfmMain.ConvEncoding(Sender: TObject);
+procedure TfmMain.MenuitemConvertEncoding(Sender: TObject);
 begin
   if Sender is TSpTbxItem then
     if not (Sender as TSpTbxItem).Checked then
-      ChangeEncoding(CurrentFrame, (Sender as TComponent).Tag, False{ACanReload});
+      ApplyFrameEncodingAndReload(CurrentFrame, (Sender as TComponent).Tag, false{ACanReload});
 end;
 
-procedure TfmMain.SetFrameEnc(Frame: TEditorFrame; enc: Integer);
+procedure TfmMain.ApplyFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
 begin
   if Frame<>nil then
   with Frame do
   begin
     SkipSign:= False;
-    case Enc of
+    case AEnc of
     cp__UTF8:
       begin
         TextSource.Lines.CodePage:= 0;
@@ -8141,37 +8155,36 @@ begin
     else
       begin
         TextSource.Lines.TextCoding:= tcANSI;
-        TextSource.Lines.CodePage:= Enc;
+        TextSource.Lines.CodePage:= AEnc;
       end;
     end;
   end;
 end;
 
 
-procedure TfmMain.ChangeEncoding(Frame: TEditorFrame; ATag: Integer;
+procedure TfmMain.ApplyFrameEncodingAndReload(Frame: TEditorFrame; AEnc: Integer;
   ACanReload: boolean = true);
 begin
   if Frame<>nil then
-  with Frame do
-  begin
-    SetFrameEnc(Frame, ATag);
-    UpdateEditorNonPrinted(EditorMaster);
-    UpdateEditorNonPrinted(EditorSlave);
+    with Frame do
+    begin
+      ApplyFrameEncoding(Frame, AEnc);
 
-    if ACanReload and (FileName <> '') then
-      if (not Modified) or MsgEncReload then
-      begin
-        if IsFileWithBOM(FileName) then
-          MsgWarn(WideFormat(DKLangConstW('cpBOM'), [WideExtractFileName(FileName)]), Handle);
-        Modified:= False;
-        TextSource.Lines.SkipSignature:= True;
-        DoFrameReloadInt(Frame);
-        TextSource.Lines.SkipSignature:= False;
-       end;
+      if ACanReload and (FileName <> '') then
+        if (not Modified) or MsgEncReload then
+        begin
+          if IsFileWithBOM(FileName) then
+            MsgWarn(WideFormat(DKLangConstW('cpBOM'), [WideExtractFileName(FileName)]), Handle);
+          Modified:= False;
+          TextSource.Lines.SkipSignature:= True;
+          DoFrameReloadInt(Frame);
+          TextSource.Lines.SkipSignature:= False;
+         end;
 
-    if not ACanReload then
-      EditorSetModified(Frame.EditorMaster);
-  end; //with Frame
+      if not ACanReload then
+        EditorSetModified(Frame.EditorMaster);
+    end;
+
   UpdateStatusBar;
 end;
 
@@ -8345,7 +8358,7 @@ begin
   FindDialog(true);
 end;
 
-procedure TfmMain.FindDialog;
+procedure TfmMain.FindDialog(AReplaceMode: boolean);
 var
   Ed: TSyntaxMemo;
 begin
@@ -8383,6 +8396,10 @@ begin
     SR_SuggestedSelEn:= Ed.HaveSelection;
     SR_SuggestedSelScope:= SR_SuggestedSelEn and EditorHasMultilineSelection(Ed);
 
+    Sh_FindNext:= GetShortcutOfCmd(smFindNext);
+    Sh_FindMode:= GetShortcutOfCmd(smFindDialog);
+    Sh_ReplaceMode:= GetShortcutOfCmd(smReplaceDialog);
+
     if (not SR_SuggestedSelScope){careful} then
     begin
       if opSrSuggestSel and (Ed.SelLength>0) then
@@ -8403,7 +8420,7 @@ begin
       ActiveControl:= ed1Memo
     else
       ActiveControl:= ed1;
-    IsReplace:= ARep;
+    IsReplace:= AReplaceMode;
     Show;
   end;
 end;
@@ -8530,7 +8547,7 @@ begin
   //extend selection
   if act in [arFindNext] then
   if Assigned(fmSR) and fmSR.cbExtSel.Checked then
-    DoExtendSelection(Ed,
+    EditorExtendSelectionByPosition(Ed,
       oldStart, oldLength,
       Ed.SelStart, Ed.SelLength);
 end;
@@ -8578,7 +8595,7 @@ begin
         Ok:= Finder.Matches>0;
         fmSR.ShowError(not Ok);
         if Ok then
-          DoCheckDialogOverlapsCaret(Finder.Control, fmSR);
+          EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
       end;
     //
     arReplaceNext,
@@ -8615,7 +8632,7 @@ begin
         if Ok and (CurrentEditor.SelLength>0) then
           DoFixReplaceCaret(CurrentEditor);
         if Ok then
-          DoCheckDialogOverlapsCaret(Finder.Control, fmSR);
+          EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
       end;
     //
     arFindAll:
@@ -8690,6 +8707,7 @@ begin
   end;
 end;
 
+//Reason of this:
 //1- Plugin doesnt handle some keys
 //2- QS focused doesnt handle keys
 procedure TfmMain.FormKeyDown(Sender: TObject; var Key: Word;
@@ -9455,7 +9473,7 @@ begin
 end;
 
   //1st shortcut for command
-  function TfmMain.ShFor(id: integer): TShortcut;
+  function TfmMain.GetShortcutOfCmd(id: integer): TShortcut;
   var
     c: TecCommandItem;
   begin
@@ -9467,8 +9485,20 @@ end;
       Result:= c.KeyStrokes[0].KeyDefs[0].Shortcut;
   end;
 
+  //text representation of command's shortcut
+  function TfmMain.GetShortcutTextOfCmd(id: integer): string;
+  var
+    c: TecCommandItem;
+  begin
+    c:= SyntKeyMapping.CommandByID(id);
+    if Assigned(c) and (c.KeyStrokes.Count>0) then
+      Result:= c.KeyStrokes[0].AsString
+    else
+      Result:= '';
+  end;
+
   //is shortcut assigned to cmd (1st or 2nd shortcut)
-  function TfmMain.IsSh(sh: TShortcut; cmd: integer): boolean;
+  function TfmMain.IsShortcutOfCmd(sh: TShortcut; cmd: integer): boolean;
   var
     c: TecCommandItem;
   begin
@@ -9478,24 +9508,24 @@ end;
     if Assigned(c) then
       Result:=
         ((c.KeyStrokes.Count>0) and
-         (c.KeyStrokes[0].KeyDefs.Count>0) and
+         (c.KeyStrokes[0].KeyDefs.Count = 1) and
          (c.KeyStrokes[0].KeyDefs[0].Shortcut = sh)) or
         ((c.KeyStrokes.Count>1) and
-         (c.KeyStrokes[1].KeyDefs.Count>0) and
+         (c.KeyStrokes[1].KeyDefs.Count = 1) and
          (c.KeyStrokes[1].KeyDefs[0].Shortcut = sh));
   end;
 
   //get macro's shortcut
-  procedure TfmMain.ShMacroGet(n: integer; var sh: TShortcut);
+  procedure TfmMain.GetShortcutOfMacro(n: integer; var sh: TShortcut);
   begin
     if n<=9 then
-      sh:= ShFor(sm_Macro1+n-1)
+      sh:= GetShortcutOfCmd(sm_Macro1+n-1)
     else
-      sh:= ShFor(sm_Macro10+n-10)
+      sh:= GetShortcutOfCmd(sm_Macro10+n-10)
   end;
 
   //set marco shortcut
-  procedure TfmMain.ShMacroSet(n: integer; const sh: TShortcut);
+  procedure TfmMain.SetShortcutOfMacro(n: integer; const sh: TShortcut);
   var
     c: TecCommandItem;
   begin
@@ -9510,416 +9540,407 @@ end;
     end;
   end;
 
-procedure TfmMain.UpdateShortcuts;
-  //-----------
-  //for main menu items
-  procedure K(item: TSpTbxItem; id: integer);
-  begin
-    item.ShortCut:= ShFor(id);
-  end;
-  //-----------
-  //for popup menu items (this doesn't use Shortcut property)
-  procedure K2str(item: TSpTbxItem; const cmd: string);
-  var
-    S: Widestring;
-  begin
-    S:= item.Caption;
-    SDeleteFromW(S, #9);
-    if cmd<>'' then
-      S:= S + #9 + cmd;
-    item.Caption:= S;
-  end;
-  //-----------
-  procedure K2(item: TSpTbxItem; id: integer);
-  begin
-    K2str(item, ShortcutToText(ShFor(id)));
-  end;
-  //-----------
+//set menuitem caption, so that it shows "shortcut" text after a tab char
+procedure TfmMain.UpdKey_String(Item: TSpTbxItem; const Cmd: Widestring);
 var
-  SCloseHint: Widestring;
+  S: Widestring;
 begin
-  SCloseHint:= ''; //DKLangConstW('zMCloseHint') + ' '
-  plTree.Options.CloseButton.Hint:= SCloseHint + ShortcutToText(ShFor(sm_OShowTree));
-  plClip.Options.CloseButton.Hint:= SCloseHint + ShortcutToText(ShFor(sm_OShowClip));
-  plOut.Options.CloseButton.Hint:= SCloseHint + ShortcutToText(ShFor(sm_OShowOut));
+  S:= Item.Caption;
+  SDeleteFromW(S, #9);
+  if Cmd<>'' then
+    S:= S + #9 + Cmd;
+  Item.Caption:= S;
+end;
 
-  K(TBXItemONPrintSpaces, sm_ONonPrintSpaces);
-  K(TBXItemONPrintEol, sm_ONonPrintEol);
-  K(TBXItemONPrintAll, sm_ONonPrintBoth);
-  K(TBXItemONPrintEolDetails, sm_ONonPrintEolDetails);
+//set menuitem caption, using Command id
+procedure TfmMain.UpdKey(Item: TSpTbxItem; CmdId: integer);
+begin
+  UpdKey_String(Item, GetShortcutTextOfCmd(CmdId));
+end;
 
-  K(TBXItemEExtractDupCase, sm_ExtractDupsCase);
-  K(TBXItemEExtractDupNoCase, sm_ExtractDupsNoCase);
-  K(TBXItemEReverse, sm_ReverseLines);
-  K(TBXItemEShuffle, sm_ShuffleLines);
-  K(TBXItemSSelExtend, sm_SelectionExtend);
+procedure TfmMain.UpdateShortcuts;
+begin
+  plTree.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OShowTree);
+  plClip.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OShowClip);
+  plOut.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OShowOut);
+
+  UpdKey(TBXItemONPrintSpaces, sm_ONonPrintSpaces);
+  UpdKey(TBXItemONPrintEol, sm_ONonPrintEol);
+  UpdKey(TBXItemONPrintAll, sm_ONonPrintBoth);
+  UpdKey(TBXItemONPrintEolDetails, sm_ONonPrintEolDetails);
+
+  UpdKey(TBXItemEExtractDupCase, sm_ExtractDupsCase);
+  UpdKey(TBXItemEExtractDupNoCase, sm_ExtractDupsNoCase);
+  UpdKey(TBXItemEReverse, sm_ReverseLines);
+  UpdKey(TBXItemEShuffle, sm_ShuffleLines);
+  UpdKey(TBXItemSSelExtend, sm_SelectionExtend);
 
   //multi-carets
-  K(TbxItemCaretsRemove1, sm_CaretsRemoveLeaveFirst);
-  K(TbxItemCaretsRemove2, sm_CaretsRemoveLeaveLast);
-  K(TbxItemCaretsFromSelLeft, sm_CaretsFromSelLeft);
-  K(TbxItemCaretsFromSelRight, sm_CaretsFromSelRight);
-  K(TbxItemCaretsFromSelClear, sm_CaretsFromSelClear);
-  K(TbxItemCaretsFromMarksLeft, sm_CaretsFromMarksLeft);
-  K(TbxItemCaretsFromMarksRight, sm_CaretsFromMarksRight);
-  K(TbxItemCaretsFromMarksClear, sm_CaretsFromMarksClear);
-  K(TbxItemCaretsExtUpLine, sm_CaretsExtendUpLine);
-  K(TbxItemCaretsExtDownLine, sm_CaretsExtendDownLine);
-  K(TbxItemCaretsExtUpPage, sm_CaretsExtendUpPage);
-  K(TbxItemCaretsExtDownPage, sm_CaretsExtendDownPage);
-  K(TbxItemCaretsExtUpEnd, sm_CaretsExtendUpEnd);
-  K(TbxItemCaretsExtDownEnd, sm_CaretsExtendDownEnd);
+  UpdKey(TbxItemCaretsRemove1, sm_CaretsRemoveLeaveFirst);
+  UpdKey(TbxItemCaretsRemove2, sm_CaretsRemoveLeaveLast);
+  UpdKey(TbxItemCaretsFromSelLeft, sm_CaretsFromSelLeft);
+  UpdKey(TbxItemCaretsFromSelRight, sm_CaretsFromSelRight);
+  UpdKey(TbxItemCaretsFromSelClear, sm_CaretsFromSelClear);
+  UpdKey(TbxItemCaretsFromMarksLeft, sm_CaretsFromMarksLeft);
+  UpdKey(TbxItemCaretsFromMarksRight, sm_CaretsFromMarksRight);
+  UpdKey(TbxItemCaretsFromMarksClear, sm_CaretsFromMarksClear);
+  UpdKey(TbxItemCaretsExtUpLine, sm_CaretsExtendUpLine);
+  UpdKey(TbxItemCaretsExtDownLine, sm_CaretsExtendDownLine);
+  UpdKey(TbxItemCaretsExtUpPage, sm_CaretsExtendUpPage);
+  UpdKey(TbxItemCaretsExtDownPage, sm_CaretsExtendDownPage);
+  UpdKey(TbxItemCaretsExtUpEnd, sm_CaretsExtendUpEnd);
+  UpdKey(TbxItemCaretsExtDownEnd, sm_CaretsExtendDownEnd);
 
   //folding
-  K(TbxItemFoldAll, smFullCollapse);
-  K(TbxItemUnFoldAll, smFullExpand);
+  UpdKey(TbxItemFoldAll, smFullCollapse);
+  UpdKey(TbxItemUnFoldAll, smFullExpand);
   //K(TbxItemUnFoldLine, sm_); //no sm command
-  K(TbxItemFoldNearestBlock, smToggleCollapseNearest);
-  K(TbxItemFoldSelBlock, smCollapseSelection);
-  K(TbxItemFoldRangesInSel, smInSelCollapse);
-  K(TbxItemUnFoldRangesInSel, smInSelExpand);
+  UpdKey(TbxItemFoldNearestBlock, smToggleCollapseNearest);
+  UpdKey(TbxItemFoldSelBlock, smCollapseSelection);
+  UpdKey(TbxItemFoldRangesInSel, smInSelCollapse);
+  UpdKey(TbxItemUnFoldRangesInSel, smInSelExpand);
 
   //win
-  K(TbxItemWinTree, sm_ToggleFocusTree);
-  K(TbxItemWinClip, sm_ToggleFocusClip);
-  K(TbxItemWinClips, sm_ToggleFocusClips);
-  K(TbxItemWinOut, sm_ToggleFocusOutput);
-  K(TbxItemWinFRes, sm_ToggleFocusFindRes);
-  K(TbxItemWinVal, sm_ToggleFocusValidate);
-  K(TbxItemWinMap, sm_ToggleFocusMap);
-  K(TbxItemWinProj, sm_ToggleFocusProj);
-  K(TbxItemWinTabs, sm_ToggleFocusTabs);
+  UpdKey(TbxItemWinTree, sm_ToggleFocusTree);
+  UpdKey(TbxItemWinClip, sm_ToggleFocusClip);
+  UpdKey(TbxItemWinClips, sm_ToggleFocusClips);
+  UpdKey(TbxItemWinOut, sm_ToggleFocusOutput);
+  UpdKey(TbxItemWinFRes, sm_ToggleFocusFindRes);
+  UpdKey(TbxItemWinVal, sm_ToggleFocusValidate);
+  UpdKey(TbxItemWinMap, sm_ToggleFocusMap);
+  UpdKey(TbxItemWinProj, sm_ToggleFocusProj);
+  UpdKey(TbxItemWinTabs, sm_ToggleFocusTabs);
 
   //sort
-  K(TBXItemEDedupAll, sm_RemoveDupsAll);
-  K(TBXItemEDedupAdjacent, sm_RemoveDupsAdjacent);
-  K(TbxItemESortDialog, sm_SortDialog);
-  K(tbxItemESortAsc, smSortAscending);
-  K(tbxItemESortDesc, smSortDescending);
+  UpdKey(TBXItemEDedupAll, sm_RemoveDupsAll);
+  UpdKey(TBXItemEDedupAdjacent, sm_RemoveDupsAdjacent);
+  UpdKey(TbxItemESortDialog, sm_SortDialog);
+  UpdKey(tbxItemESortAsc, smSortAscending);
+  UpdKey(tbxItemESortDesc, smSortDescending);
 
   //blank ops
-  K(TBXItemEAlignWithSep, sm_AlignWithSep);
-  K(TbxItemECenterLines, sm_CenterLines);
-  K(TbxItemETabToSp, sm_TabToSp);
-  K(TbxItemESpToTab, sm_SpToTab);
-  K(TBXItemERemDupSp, sm_RemoveDupSp);
-  K(TbxItemERemBlanks, sm_RemoveBlanks);
-  K(TbxItemEReduceBlanks, sm_ReduceBlanks);
-  K(TbxItemETrimLead, sm_TrimLead);
-  K(TbxItemETrimTrail, sm_TrimTrail);
-  K(TbxItemETrimAll, sm_TrimAll);
-  K(TbxItemEIndentLike1st, sm_IndentLike1st);
+  UpdKey(TBXItemEAlignWithSep, sm_AlignWithSep);
+  UpdKey(TbxItemECenterLines, sm_CenterLines);
+  UpdKey(TbxItemETabToSp, sm_TabToSp);
+  UpdKey(TbxItemESpToTab, sm_SpToTab);
+  UpdKey(TBXItemERemDupSp, sm_RemoveDupSp);
+  UpdKey(TbxItemERemBlanks, sm_RemoveBlanks);
+  UpdKey(TbxItemEReduceBlanks, sm_ReduceBlanks);
+  UpdKey(TbxItemETrimLead, sm_TrimLead);
+  UpdKey(TbxItemETrimTrail, sm_TrimTrail);
+  UpdKey(TbxItemETrimAll, sm_TrimAll);
+  UpdKey(TbxItemEIndentLike1st, sm_IndentLike1st);
 
-  K(TbxItemMarkClear, sm_MarkersClear);
-  K(TbxItemMarkGoLast, sm_JumpToLastMarker);
+  UpdKey(TbxItemMarkClear, sm_MarkersClear);
+  UpdKey(TbxItemMarkGoLast, sm_JumpToLastMarker);
 
-  K(TbxItemECommandList, sm_CommandsList);
-  K(TbxItemERepeatCmd, sm_RepeatCmd);
-  K(TbxItemSSelToken, sm_SelectToken);
+  UpdKey(TbxItemECommandList, sm_CommandsList);
+  UpdKey(TbxItemERepeatCmd, sm_RepeatCmd);
+  UpdKey(TbxItemSSelToken, sm_SelectToken);
 
-  K(TbxItemTidyVal, sm_TidyValidate);
-  K(TbxItemTidyCfg, sm_TidyConfig);
+  UpdKey(TbxItemTidyVal, sm_TidyValidate);
+  UpdKey(TbxItemTidyCfg, sm_TidyConfig);
 
   //macro
-  K(TbxItemMacroRepeat, sm_MacroRepeat);
-  K(TbxItemMacroRecord, smMacroRecStart);
-  K(TbxItemMacroStop, smMacroRecStop);
-  K(TbxItemMacroCancel, smMacroRecCancel);
-  K(TbxItemMacroPlay, smMacroPlay);
-  K(TbxItemMacroDlg, sm_MacroDlg);
+  UpdKey(TbxItemMacroRepeat, sm_MacroRepeat);
+  UpdKey(TbxItemMacroRecord, smMacroRecStart);
+  UpdKey(TbxItemMacroStop, smMacroRecStop);
+  UpdKey(TbxItemMacroCancel, smMacroRecCancel);
+  UpdKey(TbxItemMacroPlay, smMacroPlay);
+  UpdKey(TbxItemMacroDlg, sm_MacroDlg);
 
-  K(TbxItemMacro1, sm_Macro1);
-  K(TbxItemMacro2, sm_Macro2);
-  K(TbxItemMacro3, sm_Macro3);
-  K(TbxItemMacro4, sm_Macro4);
-  K(TbxItemMacro5, sm_Macro5);
-  K(TbxItemMacro6, sm_Macro6);
-  K(TbxItemMacro7, sm_Macro7);
-  K(TbxItemMacro8, sm_Macro8);
-  K(TbxItemMacro9, sm_Macro9);
-  K(TbxItemMacro10, sm_Macro10);
-  K(TbxItemMacro11, sm_Macro11);
-  K(TbxItemMacro12, sm_Macro12);
-  K(TbxItemMacro13, sm_Macro13);
-  K(TbxItemMacro14, sm_Macro14);
-  K(TbxItemMacro15, sm_Macro15);
-  K(TbxItemMacro16, sm_Macro16);
-  K(TbxItemMacro17, sm_Macro17);
-  K(TbxItemMacro18, sm_Macro18);
-  K(TbxItemMacro19, sm_Macro19);
-  K(TbxItemMacro20, sm_Macro20);
-  K(TbxItemMacro21, sm_Macro21);
-  K(TbxItemMacro22, sm_Macro22);
-  K(TbxItemMacro23, sm_Macro23);
-  K(TbxItemMacro24, sm_Macro24);
-  K(TbxItemMacro25, sm_Macro25);
-  K(TbxItemMacro26, sm_Macro26);
-  K(TbxItemMacro27, sm_Macro27);
-  K(TbxItemMacro28, sm_Macro28);
-  K(TbxItemMacro29, sm_Macro29);
-  K(TbxItemMacro30, sm_Macro30);
+  UpdKey(TbxItemMacro1, sm_Macro1);
+  UpdKey(TbxItemMacro2, sm_Macro2);
+  UpdKey(TbxItemMacro3, sm_Macro3);
+  UpdKey(TbxItemMacro4, sm_Macro4);
+  UpdKey(TbxItemMacro5, sm_Macro5);
+  UpdKey(TbxItemMacro6, sm_Macro6);
+  UpdKey(TbxItemMacro7, sm_Macro7);
+  UpdKey(TbxItemMacro8, sm_Macro8);
+  UpdKey(TbxItemMacro9, sm_Macro9);
+  UpdKey(TbxItemMacro10, sm_Macro10);
+  UpdKey(TbxItemMacro11, sm_Macro11);
+  UpdKey(TbxItemMacro12, sm_Macro12);
+  UpdKey(TbxItemMacro13, sm_Macro13);
+  UpdKey(TbxItemMacro14, sm_Macro14);
+  UpdKey(TbxItemMacro15, sm_Macro15);
+  UpdKey(TbxItemMacro16, sm_Macro16);
+  UpdKey(TbxItemMacro17, sm_Macro17);
+  UpdKey(TbxItemMacro18, sm_Macro18);
+  UpdKey(TbxItemMacro19, sm_Macro19);
+  UpdKey(TbxItemMacro20, sm_Macro20);
+  UpdKey(TbxItemMacro21, sm_Macro21);
+  UpdKey(TbxItemMacro22, sm_Macro22);
+  UpdKey(TbxItemMacro23, sm_Macro23);
+  UpdKey(TbxItemMacro24, sm_Macro24);
+  UpdKey(TbxItemMacro25, sm_Macro25);
+  UpdKey(TbxItemMacro26, sm_Macro26);
+  UpdKey(TbxItemMacro27, sm_Macro27);
+  UpdKey(TbxItemMacro28, sm_Macro28);
+  UpdKey(TbxItemMacro29, sm_Macro29);
+  UpdKey(TbxItemMacro30, sm_Macro30);
 
   //tabs
-  K(TbxItemWin0, sm_Tab0);
-  K(TbxItemWin1, sm_Tab1);
-  K(TbxItemWin2, sm_Tab2);
-  K(TbxItemWin3, sm_Tab3);
-  K(TbxItemWin4, sm_Tab4);
-  K(TbxItemWin5, sm_Tab5);
-  K(TbxItemWin6, sm_Tab6);
-  K(TbxItemWin7, sm_Tab7);
-  K(TbxItemWin8, sm_Tab8);
-  K(TbxItemWin9, sm_Tab9);
+  UpdKey(TbxItemWin0, sm_Tab0);
+  UpdKey(TbxItemWin1, sm_Tab1);
+  UpdKey(TbxItemWin2, sm_Tab2);
+  UpdKey(TbxItemWin3, sm_Tab3);
+  UpdKey(TbxItemWin4, sm_Tab4);
+  UpdKey(TbxItemWin5, sm_Tab5);
+  UpdKey(TbxItemWin6, sm_Tab6);
+  UpdKey(TbxItemWin7, sm_Tab7);
+  UpdKey(TbxItemWin8, sm_Tab8);
+  UpdKey(TbxItemWin9, sm_Tab9);
 
   //view
-  K(TbxItemVSyncHorz, sm_SyncScrollH);
-  K(TbxItemVSyncVert, sm_SyncScrollV);
-  K(TbxItemVSpellLive, sm_SpellLive);
-  K(TbxItemVSpellCheck, sm_SpellCheck);
+  UpdKey(TbxItemVSyncHorz, sm_SyncScrollH);
+  UpdKey(TbxItemVSyncVert, sm_SyncScrollV);
+  UpdKey(TbxItemVSpellLive, sm_SpellLive);
+  UpdKey(TbxItemVSpellCheck, sm_SpellCheck);
 
   //edit
-  K(TbxItemEJoin, sm_JoinLines);
-  K(TbxItemESplit, sm_SplitLines);
-  K(TbxItemECpFN, sm_CopyFN);
-  K(TbxItemECpFullPath, sm_CopyFullPath);
-  K(TbxItemECpDirPath, sm_CopyDirPath);
-  K(TbxItemEMoveUp, smMoveLinesUp);
-  K(TbxItemEMoveDn, smMoveLinesDown);
-  K(TbxItemEToggleStreamComment, sm_ToggleStreamComment);
-  K(TbxItemEToggleLineComment, sm_ToggleLineComment);
-  K(TbxItemEToggleLineCommentAlt, sm_ToggleLineCommentAlt);
+  UpdKey(TbxItemEJoin, sm_JoinLines);
+  UpdKey(TbxItemESplit, sm_SplitLines);
+  UpdKey(TbxItemECpFN, sm_CopyFN);
+  UpdKey(TbxItemECpFullPath, sm_CopyFullPath);
+  UpdKey(TbxItemECpDirPath, sm_CopyDirPath);
+  UpdKey(TbxItemEMoveUp, smMoveLinesUp);
+  UpdKey(TbxItemEMoveDn, smMoveLinesDown);
+  UpdKey(TbxItemEToggleStreamComment, sm_ToggleStreamComment);
+  UpdKey(TbxItemEToggleLineComment, sm_ToggleLineComment);
+  UpdKey(TbxItemEToggleLineCommentAlt, sm_ToggleLineCommentAlt);
 
-  K(TbxItemHtmlEmmetExpand, sm_ZenExpand);
-  K(TbxItemHtmlEmmetWrap, sm_ZenWrap);
+  UpdKey(TbxItemHtmlEmmetExpand, sm_ZenExpand);
+  UpdKey(TbxItemHtmlEmmetWrap, sm_ZenWrap);
 
-  K(TBXItemEInsText, sm_InsText);
-  K(TBXItemEFillBlock, sm_FillBlock);
-  K(TBXItemOOnTop, sm_OnTop);
-  K(TBXItemOFullScr, sm_FullScr);
-  K(TBXItemViewColMarkers, sm_ColumnMarkers);
+  UpdKey(TBXItemEInsText, sm_InsText);
+  UpdKey(TBXItemEFillBlock, sm_FillBlock);
+  UpdKey(TBXItemOOnTop, sm_OnTop);
+  UpdKey(TBXItemOFullScr, sm_FullScr);
+  UpdKey(TBXItemViewColMarkers, sm_ColumnMarkers);
 
-  K(TBXItemESyncEd, sm_SyncEdit);
-  K(TbxItemEExtr, sm_ExStr);
-  K(TbxItemETime, sm_DateTime);
-  K(TbxItemHtmlInsColor, sm_InsertColor);
-  K(TbxItemHtmlInsImage, sm_InsertImage);
+  UpdKey(TBXItemESyncEd, sm_SyncEdit);
+  UpdKey(TbxItemEExtr, sm_ExStr);
+  UpdKey(TbxItemETime, sm_DateTime);
+  UpdKey(TbxItemHtmlInsColor, sm_InsertColor);
+  UpdKey(TbxItemHtmlInsImage, sm_InsertImage);
 
-  K(TBXItemFExit, sm_FExit);
-  K(TBXItemFClr, sm_ClrHist);
-  K(TbxItemFClose, sm_FClose);
-  K(TbxItemFCloseDel, sm_FCloseDel);
-  K(TbxItemFCloseAll, sm_FCloseAll);
-  K(TbxItemFCloseOth, sm_FCloseOth);
-  K(TbxItemFSaveAll, sm_FSaveAll);
-  K(TbxItemFRename, sm_FileRename);
+  UpdKey(TBXItemFExit, sm_FExit);
+  UpdKey(TBXItemFClr, sm_ClrHist);
+  UpdKey(TbxItemFClose, sm_FClose);
+  UpdKey(TbxItemFCloseDel, sm_FCloseDel);
+  UpdKey(TbxItemFCloseAll, sm_FCloseAll);
+  UpdKey(TbxItemFCloseOth, sm_FCloseOth);
+  UpdKey(TbxItemFSaveAll, sm_FSaveAll);
+  UpdKey(TbxItemFRename, sm_FileRename);
   //
-  K(TbxItemSResNext, sm_GotoNextFindResult);
-  K(TbxItemSResPrev, sm_GotoPrevFindResult);
+  UpdKey(TbxItemSResNext, sm_GotoNextFindResult);
+  UpdKey(TbxItemSResPrev, sm_GotoPrevFindResult);
 
-  K(TBXItemSMarkAll, smFindAll);
-  K(tbxItemSMarkNext, smSearchMarkNext);
-  K(tbxItemSMarkPrev, smSearchMarkPrev);
-  K(tbxItemSMarkClear, smSearchMarkReset);
+  UpdKey(TBXItemSMarkAll, smFindAll);
+  UpdKey(tbxItemSMarkNext, smSearchMarkNext);
+  UpdKey(tbxItemSMarkPrev, smSearchMarkPrev);
+  UpdKey(tbxItemSMarkClear, smSearchMarkReset);
 
-  K(TBXItemQs, sm_QS);
-  K(tbxItemMarkDrop, smDropMarker);
-  K(tbxItemMarkColl, smCollectMarker);
-  K(tbxItemMarkSwap, smSwapMarker);
-  K(tbxItemZIn, sm_ZoomIn);
-  K(tbxItemZOut, sm_ZoomOut);
+  UpdKey(TBXItemQs, sm_QS);
+  UpdKey(tbxItemMarkDrop, smDropMarker);
+  UpdKey(tbxItemMarkColl, smCollectMarker);
+  UpdKey(tbxItemMarkSwap, smSwapMarker);
+  UpdKey(tbxItemZIn, sm_ZoomIn);
+  UpdKey(tbxItemZOut, sm_ZoomOut);
 
-  K(TbxItemHtmlPreview, sm_OpenPreview);
-  K(TbxItemHtmlLoremIpsum, sm_LoremIpsum);
+  UpdKey(TbxItemHtmlPreview, sm_OpenPreview);
+  UpdKey(TbxItemHtmlLoremIpsum, sm_LoremIpsum);
 
-  K(TbxItemRunOpenFile, sm_OpenCurrentFile);
-  K(TbxItemRunOpenDir, sm_OpenCurrentFolder);
-  K(TbxItemRunFindPhp, sm_OpenPhp);
-  K(TbxItemRunFindHtml4, sm_OpenHtml4Help);
-  K(TbxItemRunFindHtml5, sm_OpenHtml5Help);
-  K(TbxItemRunNumConv, sm_NumericConverter);
+  UpdKey(TbxItemRunOpenFile, sm_OpenCurrentFile);
+  UpdKey(TbxItemRunOpenDir, sm_OpenCurrentFolder);
+  UpdKey(TbxItemRunFindPhp, sm_OpenPhp);
+  UpdKey(TbxItemRunFindHtml4, sm_OpenHtml4Help);
+  UpdKey(TbxItemRunFindHtml5, sm_OpenHtml5Help);
+  UpdKey(TbxItemRunNumConv, sm_NumericConverter);
 
   //file
-  K(tbxItemFPrint, smPrint);
-  K(tbxItemFPreview, smPrintPreview);
-  K(tbxItemFNew, sm_FNew);
-  K(tbxItemFNewWin, sm_FNewWin);
-  K(tbxItemFOpen, sm_FOpen);
-  K(tbxItemFReopen, sm_FReopen);
-  K(tbxItemFSave, sm_FSave);
-  K(tbxItemFSaveAs, sm_FSaveAs);
-  K(tbxItemFProps, sm_FProps);
+  UpdKey(tbxItemFPrint, smPrint);
+  UpdKey(tbxItemFPreview, smPrintPreview);
+  UpdKey(tbxItemFNew, sm_FNew);
+  UpdKey(tbxItemFNewWin, sm_FNewWin);
+  UpdKey(tbxItemFOpen, sm_FOpen);
+  UpdKey(tbxItemFReopen, sm_FReopen);
+  UpdKey(tbxItemFSave, sm_FSave);
+  UpdKey(tbxItemFSaveAs, sm_FSaveAs);
+  UpdKey(tbxItemFProps, sm_FProps);
 
-  K(tbxItemFavAddFile, sm_FavAddFile);
-  K(tbxItemFavAddProj, sm_FavAddProj);
-  K(tbxItemFavManage, sm_FavOrganize);
+  UpdKey(tbxItemFavAddFile, sm_FavAddFile);
+  UpdKey(tbxItemFavAddProj, sm_FavAddProj);
+  UpdKey(tbxItemFavManage, sm_FavOrganize);
 
-  K(TBXItemFSesOpen, sm_FOpenSession);
-  K(TBXItemFSesSave, sm_FSaveSession);
-  K(TBXItemFSesSaveAs, sm_FSaveSessionAs);
-  K(TBXItemFSesAdd, sm_FAddSession);
-  K(TBXItemFSesClose, sm_FCloseSession);
+  UpdKey(TBXItemFSesOpen, sm_FOpenSession);
+  UpdKey(TBXItemFSesSave, sm_FSaveSession);
+  UpdKey(TBXItemFSesSaveAs, sm_FSaveSessionAs);
+  UpdKey(TBXItemFSesAdd, sm_FAddSession);
+  UpdKey(TBXItemFSesClose, sm_FCloseSession);
 
-  K(tbxItemFExpHtml, sm_FExpHtml);
-  K(tbxItemFExpRtf, sm_FExpRtf);
-  K(tbxItemFPageSetup, smPageSetup);
-  K(tbxItemFPrinterSetup, sm_PrinterSetup);
+  UpdKey(tbxItemFExpHtml, sm_FExpHtml);
+  UpdKey(tbxItemFExpRtf, sm_FExpRtf);
+  UpdKey(tbxItemFPageSetup, smPageSetup);
+  UpdKey(tbxItemFPrinterSetup, sm_PrinterSetup);
 
   //edit
-  K(tbxItemEUndo, smUndo);
-  K(tbxItemERedo, smRedo);
-  K(tbxItemECut, smCut);
-  K(tbxItemECopy, smCopy);
-  K(tbxItemEPaste, smPaste);
-  K(tbxItemEDelete, smClearSelection);
-  K(tbxItemESelectAll, smSelectAll);
+  UpdKey(tbxItemEUndo, smUndo);
+  UpdKey(tbxItemERedo, smRedo);
+  UpdKey(tbxItemECut, smCut);
+  UpdKey(tbxItemECopy, smCopy);
+  UpdKey(tbxItemEPaste, smPaste);
+  UpdKey(tbxItemEDelete, smClearSelection);
+  UpdKey(tbxItemESelectAll, smSelectAll);
 
-  K(tbxItemECopyApp, sm_CopyAppend);
-  K(tbxItemECutApp, sm_CutAppend);
-  K(tbxItemECopyLine, sm_CopyLine);
-  K(tbxItemECutLine, sm_CutLine);
+  UpdKey(tbxItemECopyApp, sm_CopyAppend);
+  UpdKey(tbxItemECutApp, sm_CutAppend);
+  UpdKey(tbxItemECopyLine, sm_CopyLine);
+  UpdKey(tbxItemECutLine, sm_CutLine);
 
-  K(tbxItemEDup, smDuplicateLine);
-  K(tbxItemEDelLn, smDeleteLine);
-  K(tbxItemETable, smSelCharacter);
-  K(tbxItemEComm, smCommentLines);
-  K(tbxItemEUncomm, smUncommentLines);
-  K(tbxItemEIndent, smBlockIndent);
-  K(tbxItemEUnindent, smBlockUnindent);
-  K(tbxItemECaseUpper, smUpperCaseBlock);
-  K(tbxItemECaseLower, smLowerCaseBlock);
-  K(tbxItemECaseTitle, smTitleCaseBlock);
-  K(tbxItemECaseInvert, smToggleCaseBlock);
-  K(tbxItemECaseSent, smSentCaseBlock);
+  UpdKey(tbxItemEDup, smDuplicateLine);
+  UpdKey(tbxItemEDelLn, smDeleteLine);
+  UpdKey(tbxItemETable, smSelCharacter);
+  UpdKey(tbxItemEComm, smCommentLines);
+  UpdKey(tbxItemEUncomm, smUncommentLines);
+  UpdKey(tbxItemEIndent, smBlockIndent);
+  UpdKey(tbxItemEUnindent, smBlockUnindent);
+  UpdKey(tbxItemECaseUpper, smUpperCaseBlock);
+  UpdKey(tbxItemECaseLower, smLowerCaseBlock);
+  UpdKey(tbxItemECaseTitle, smTitleCaseBlock);
+  UpdKey(tbxItemECaseInvert, smToggleCaseBlock);
+  UpdKey(tbxItemECaseSent, smSentCaseBlock);
 
   //bookmk
-  K(tbxItemG0, smSetBookmark0);
-  K(tbxItemG1, smSetBookmark1);
-  K(tbxItemG2, smSetBookmark2);
-  K(tbxItemG3, smSetBookmark3);
-  K(tbxItemG4, smSetBookmark4);
-  K(tbxItemG5, smSetBookmark5);
-  K(tbxItemG6, smSetBookmark6);
-  K(tbxItemG7, smSetBookmark7);
-  K(tbxItemG8, smSetBookmark8);
-  K(tbxItemG9, smSetBookmark9);
+  UpdKey(tbxItemG0, smSetBookmark0);
+  UpdKey(tbxItemG1, smSetBookmark1);
+  UpdKey(tbxItemG2, smSetBookmark2);
+  UpdKey(tbxItemG3, smSetBookmark3);
+  UpdKey(tbxItemG4, smSetBookmark4);
+  UpdKey(tbxItemG5, smSetBookmark5);
+  UpdKey(tbxItemG6, smSetBookmark6);
+  UpdKey(tbxItemG7, smSetBookmark7);
+  UpdKey(tbxItemG8, smSetBookmark8);
+  UpdKey(tbxItemG9, smSetBookmark9);
 
-  K(tbxItemB0, smGotoBookmark0);
-  K(tbxItemB1, smGotoBookmark1);
-  K(tbxItemB2, smGotoBookmark2);
-  K(tbxItemB3, smGotoBookmark3);
-  K(tbxItemB4, smGotoBookmark4);
-  K(tbxItemB5, smGotoBookmark5);
-  K(tbxItemB6, smGotoBookmark6);
-  K(tbxItemB7, smGotoBookmark7);
-  K(tbxItemB8, smGotoBookmark8);
-  K(tbxItemB9, smGotoBookmark9);
+  UpdKey(tbxItemB0, smGotoBookmark0);
+  UpdKey(tbxItemB1, smGotoBookmark1);
+  UpdKey(tbxItemB2, smGotoBookmark2);
+  UpdKey(tbxItemB3, smGotoBookmark3);
+  UpdKey(tbxItemB4, smGotoBookmark4);
+  UpdKey(tbxItemB5, smGotoBookmark5);
+  UpdKey(tbxItemB6, smGotoBookmark6);
+  UpdKey(tbxItemB7, smGotoBookmark7);
+  UpdKey(tbxItemB8, smGotoBookmark8);
+  UpdKey(tbxItemB9, smGotoBookmark9);
 
-  K(TBXItemBkGotoPortable, sm_GotoPortableBk);
-  K(TBXItemBkDropPortable, sm_DropPortableBk);
-  K(TbxItemBkGoto, sm_GotoBookmkDialog);
-  K(tbxItemBkClear, sm_BkClear);
-  K(tbxItemBkToggle, sm_BkToggle);
-  K(tbxItemBkNext, sm_BkNext);
-  K(tbxItemBkPrev, sm_BkPrev);
-  K(tbxItemBkCopy, sm_BkCopy);
-  K(tbxItemBkCut, sm_BkCut);
-  K(tbxItemBkDel, sm_BkDelete);
-  K(tbxItemBkDelUnmk, sm_BkDeleteUnmk);
-  K(tbxItemBkPaste, sm_BkPaste);
-  K(tbxItemBkInverse, sm_BkInverse);
+  UpdKey(TBXItemBkGotoPortable, sm_GotoPortableBk);
+  UpdKey(TBXItemBkDropPortable, sm_DropPortableBk);
+  UpdKey(TbxItemBkGoto, sm_GotoBookmkDialog);
+  UpdKey(tbxItemBkClear, sm_BkClear);
+  UpdKey(tbxItemBkToggle, sm_BkToggle);
+  UpdKey(tbxItemBkNext, sm_BkNext);
+  UpdKey(tbxItemBkPrev, sm_BkPrev);
+  UpdKey(tbxItemBkCopy, sm_BkCopy);
+  UpdKey(tbxItemBkCut, sm_BkCut);
+  UpdKey(tbxItemBkDel, sm_BkDelete);
+  UpdKey(tbxItemBkDelUnmk, sm_BkDeleteUnmk);
+  UpdKey(tbxItemBkPaste, sm_BkPaste);
+  UpdKey(tbxItemBkInverse, sm_BkInverse);
 
   //opt
-  K(tbxItemOSetup, sm_OSetup);
-  K(tbxItemOLexer, sm_OSetupLexer);
-  K(tbxItemOLexerLib, sm_OSetupLexerLib);
+  UpdKey(tbxItemOSetup, sm_OSetup);
+  UpdKey(tbxItemOLexer, sm_OSetupLexer);
+  UpdKey(tbxItemOLexerLib, sm_OSetupLexerLib);
   //search
-  K(tbxItemSRep, smReplaceDialog);
-  K(tbxItemSRepFiles, sm_ReplaceInFiles);
-  K(tbxItemSFind, smFindDialog);
-  K(tbxItemSNext, smFindNext);
-  K(tbxItemSPrev, smFindPrev);
-  K(tbxItemSWordNext, smFindCurrentWordNext);
-  K(tbxItemSWordPrior, smFindCurrentWordPrior);
-  K(tbxItemSGoto, smGotoLine);
-  K(TBXItemSGoBracket, smChangeRangeSide);
-  K(TbxItemSSelBrackets, sm_SelectBrackets);
+  UpdKey(tbxItemSRep, smReplaceDialog);
+  UpdKey(tbxItemSRepFiles, sm_ReplaceInFiles);
+  UpdKey(tbxItemSFind, smFindDialog);
+  UpdKey(tbxItemSNext, smFindNext);
+  UpdKey(tbxItemSPrev, smFindPrev);
+  UpdKey(tbxItemSWordNext, smFindCurrentWordNext);
+  UpdKey(tbxItemSWordPrior, smFindCurrentWordPrior);
+  UpdKey(tbxItemSGoto, smGotoLine);
+  UpdKey(TBXItemSGoBracket, smChangeRangeSide);
+  UpdKey(TbxItemSSelBrackets, sm_SelectBrackets);
   //
-  K(tbxItemORO, sm_OReadOnly);
-  K(tbxItemOTree, sm_OShowTree);
-  K(tbxItemOOut, sm_OShowOut);
-  K(tbxItemOClip, sm_OShowClip);
-  K(tbxItemOFold, sm_OFolding);
-  K(tbxItemOWrap, sm_OWrap);
-  K(tbxItemONums, sm_OLineNums);
-  K(tbxItemONPrint, sm_ONonPrint);
-  K(tbxItemORuler, sm_ORuler);
+  UpdKey(tbxItemORO, sm_OReadOnly);
+  UpdKey(tbxItemOTree, sm_OShowTree);
+  UpdKey(tbxItemOOut, sm_OShowOut);
+  UpdKey(tbxItemOClip, sm_OShowClip);
+  UpdKey(tbxItemOFold, sm_OFolding);
+  UpdKey(tbxItemOWrap, sm_OWrap);
+  UpdKey(tbxItemONums, sm_OLineNums);
+  UpdKey(tbxItemONPrint, sm_ONonPrint);
+  UpdKey(tbxItemORuler, sm_ORuler);
 
   //=========popup menus
   //main popup
-  K2(TbxItemCtxUndo, smUndo);
-  K2(TbxItemCtxRedo, smRedo);
-  K2(TbxItemCtxCut, smCut);
-  K2(TbxItemCtxCopy, smCopy);
-  K2(TbxItemCtxPaste, smPaste);
-  K2(TbxItemCtxDel, smClearSelection);
-  K2(TbxItemCtxSelectAll, smSelectAll);
-  K2(TbxItemCtxCustomize, sm_OSetup);
-  K2(TbxItemCtxCopyAppend, sm_CopyAppend);
-  K2(TbxItemCtxCutAppend, sm_CutAppend);
-  K2(TbxItemCtxCopyHTML, sm_CopyAsHTML);
-  K2(TbxItemCtxCopyRTF, sm_CopyAsRTF);
-  K2(TbxItemCtxPasteNoCurChange, sm_PasteNoCursorChange);
-  K2(TBXItemCtxPasteToColumn1, sm_PasteToColumn1);
-  K2(TBXItemCtxPasteAsColumn, sm_PasteAsColumnBlock);
-  K2(TBXItemCtxPasteBkmkLines, sm_BkPaste);
+  UpdKey(TbxItemCtxUndo, smUndo);
+  UpdKey(TbxItemCtxRedo, smRedo);
+  UpdKey(TbxItemCtxCut, smCut);
+  UpdKey(TbxItemCtxCopy, smCopy);
+  UpdKey(TbxItemCtxPaste, smPaste);
+  UpdKey(TbxItemCtxDel, smClearSelection);
+  UpdKey(TbxItemCtxSelectAll, smSelectAll);
+  UpdKey(TbxItemCtxCustomize, sm_OSetup);
+  UpdKey(TbxItemCtxCopyAppend, sm_CopyAppend);
+  UpdKey(TbxItemCtxCutAppend, sm_CutAppend);
+  UpdKey(TbxItemCtxCopyHTML, sm_CopyAsHTML);
+  UpdKey(TbxItemCtxCopyRTF, sm_CopyAsRTF);
+  UpdKey(TbxItemCtxPasteNoCurChange, sm_PasteNoCursorChange);
+  UpdKey(TBXItemCtxPasteToColumn1, sm_PasteToColumn1);
+  UpdKey(TBXItemCtxPasteAsColumn, sm_PasteAsColumnBlock);
+  UpdKey(TBXItemCtxPasteBkmkLines, sm_BkPaste);
 
   //clip popup menu
-  K2(TBXItemClipFind, smFindDialog);
-  K2str(TBXItemClipCopyToEd, 'Enter');
-  K2str(TBXItemClipCopyToClip, 'Ctrl+C');
-  K2str(TBXItemClipClr, 'Shift+Delete');
+  UpdKey(TBXItemClipFind, smFindDialog);
+  UpdKey_String(TBXItemClipCopyToEd, 'Enter');
+  UpdKey_String(TBXItemClipCopyToClip, 'Ctrl+C');
+  UpdKey_String(TBXItemClipClr, 'Shift+Delete');
 
   //clips popup menu
-  K2str(TBXItemClipsAddText, 'Insert');
-  K2str(TBXItemClipsDelText, 'Shift+Delete');
+  UpdKey_String(TBXItemClipsAddText, 'Insert');
+  UpdKey_String(TBXItemClipsDelText, 'Shift+Delete');
 
   //output popup menu
-  K2str(TBXItemONav, 'Space');
-  K2str(TBXItemOClr, 'Delete');
-  K2(TBXItemOFind, smFindDialog);
+  UpdKey_String(TBXItemOutNav, 'Space');
+  UpdKey_String(TBXItemOutClear, 'Delete');
+  UpdKey(TBXItemOutFind, smFindDialog);
 
   //find results popup menu
-  K2str(TBXItemTreeFindNav, 'Space');
-  K2str(TBXItemTreeFindCopyToClipNode, 'Ctrl+C');
-  K2str(TBXItemTreeFindClear, 'Delete');
-  K2(TBXItemTreeFindFind, smFindDialog);
+  UpdKey_String(TBXItemTreeFindNav, 'Space');
+  UpdKey_String(TBXItemTreeFindCopyToClipNode, 'Ctrl+C');
+  UpdKey_String(TBXItemTreeFindClear, 'Delete');
+  UpdKey(TBXItemTreeFindFind, smFindDialog);
 
   //validate popup menu
-  K2str(TBXItemValNav, 'Space');
-  //K2str(TBXItemValCp, 'Ctrl+C');
-  K2str(TBXItemValClr, 'Delete');
-  K2(TBXItemValFind, smFindDialog);
+  UpdKey_String(TBXItemValNav, 'Space');
+  //UpdKey_String(TBXItemValCopySel, 'Ctrl+C');
+  UpdKey_String(TBXItemValClear, 'Delete');
+  UpdKey(TBXItemValFind, smFindDialog);
 
   //tree popup menu
-  K2(TBXItemTreeFind, smFindDialog);
+  UpdKey(TBXItemTreeFind, smFindDialog);
 
   //splitter popup menu
-  K2(TBXItemSp20, sm_Split2080);
-  K2(TBXItemSp30, sm_Split3070);
-  K2(TBXItemSp40, sm_Split4060);
-  K2(TBXItemSp50, sm_Split5050);
-  K2(TBXItemSp60, sm_Split6040);
-  K2(TBXItemSp70, sm_Split7030);
-  K2(TBXItemSp80, sm_Split8020);
+  UpdKey(TBXItemSp20, sm_Split2080);
+  UpdKey(TBXItemSp30, sm_Split3070);
+  UpdKey(TBXItemSp40, sm_Split4060);
+  UpdKey(TBXItemSp50, sm_Split5050);
+  UpdKey(TBXItemSp60, sm_Split6040);
+  UpdKey(TBXItemSp70, sm_Split7030);
+  UpdKey(TBXItemSp80, sm_Split8020);
 
   //tab popup menu
-  K2(TBXItemTabClose, sm_FClose);
-  K2(TBXItemTabCloseOthers, sm_FCloseOth);
-  K2(TBXItemTabNew, sm_FNew);
-  K2(TBXItemTabMoveToView, sm_FMoveTab);
-  K2(TBXItemTabCopyFN, sm_CopyFN);
-  K2(TBXItemTabCopyFull, sm_CopyFullPath);
-  K2(TBXItemTabCopyDir, sm_CopyDirPath);
+  UpdKey(TBXItemTabClose, sm_FClose);
+  UpdKey(TBXItemTabCloseOthers, sm_FCloseOth);
+  UpdKey(TBXItemTabNew, sm_FNew);
+  UpdKey(TBXItemTabMoveToView, sm_FMoveTab);
+  UpdKey(TBXItemTabCopyFN, sm_CopyFN);
+  UpdKey(TBXItemTabCopyFull, sm_CopyFullPath);
+  UpdKey(TBXItemTabCopyDir, sm_CopyDirPath);
 end;
 
 procedure TfmMain.TBXItemHReadClick(Sender: TObject);
@@ -10349,8 +10370,10 @@ procedure TfmMain.RunTool(NTool: Integer);
   function HandleParams(const s, dir: WideString): WideString;
   var
     fn, SVarValue: Widestring;
+	p: TPoint;
   begin
     Result:= S;
+	p:= CurrentEditor.CaretPos;
     //
     SReplaceW(Result, '{FileName}', CurrentFrame.FileName);
     SReplaceW(Result, '{FileNameOnly}', WideExtractFileName(CurrentFrame.FileName));
@@ -10361,12 +10384,12 @@ procedure TfmMain.RunTool(NTool: Integer);
     SReplaceW(Result, '{ProjectWorkDir}', CurrentProjectWorkDir);
     SReplaceW(Result, '{ProjectMainFileName}', CurrentProjectMainFN);
     SReplaceW(Result, '{ProjectMainFileDir}', WideExtractFileDir(CurrentProjectMainFN));
-    //
-    SReplaceW(Result, '{CurrentWord}', CurrentEditor.WordAtPos(CurrentEditor.CaretPos));
-    SReplaceW(Result, '{CurrentLineNum}', IntToStr(CurrentEditor.CaretPos.Y+1));
-    SReplaceW(Result, '{CurrentColumnNum}', IntToStr(CurrentEditor.CaretPos.X+1));
-    if CurrentEditor.CurrentLine < CurrentEditor.Lines.Count then
-      SReplaceW(Result, '{CurrentLine}', CurrentEditor.Lines[CurrentEditor.CurrentLine]);
+    //                                                                
+    SReplaceW(Result, '{CurrentWord}', CurrentEditor.WordAtPos(p));
+    SReplaceW(Result, '{CurrentLineNum}', IntToStr(p.Y+1));
+    SReplaceW(Result, '{CurrentColumnNum}', IntToStr(p.X+1));
+    if (p.Y >= 0) and (p.Y < CurrentEditor.Lines.Count) then
+      SReplaceW(Result, '{CurrentLine}', CurrentEditor.Lines[p.Y]);
     //
     SReplaceW(Result, '{SelectedText}', CurrentEditor.SelText);
     if Pos('{SelectionFileName}', Result)>0 then
@@ -10532,13 +10555,16 @@ begin
     else
     //handle output by running cmd.exe
     begin
-      ft:= SExpandVars('%temp%\SynWr$$.txt');
+      ft:= FGetTempFilenameDeleted();
+      if IsFileExist(ft) then
+        begin MsgError('Cannot delete temp file: '#13+ft, Handle); Exit end;
+
       frun:= SExpandVars(fexe);
       fdir:= SExpandVars(fdir);
       if fdir='' then
         fdir:= SExtractFileDir(CurrentFrame.FileName);
       if fdir='' then
-        fdir:= SExpandVars('%temp%');
+        fdir:= FTempDir;
       try
         fpar:= SExpandVars(ToolParams);
         fpar:= HandleParams(fpar, fdir);
@@ -10901,7 +10927,7 @@ begin
   SyntaxManager.CurrentLexer:= CurrentFrame.TextSource.SyntaxAnalyzer;
   SyntaxManagerChange(Self);
 
-  ChangeEncoding(CurrentFrame, Enc);
+  ApplyFrameEncodingAndReload(CurrentFrame, Enc);
   EditorSetModified(CurrentFrame.EditorMaster);
 end;
 
@@ -11378,7 +11404,7 @@ begin
         WriteInteger('SelMode', IntToStr(i), Ord(F.EditorMaster.SelectModeDefault));
         WriteInteger('SelMode2', IntToStr(i), Ord(F.EditorSlave.SelectModeDefault));
         WriteString('Color', IntToStr(i), ColorToString(F.TabColor));
-        WriteString('ColMarkers', IntToStr(i), F.ColMarkers);
+        WriteString('ColMarkers', IntToStr(i), F.EditorMaster.ColMarkersString);
         WriteString('Collapsed', IntToStr(i), EditorGetCollapsedRanges(F.EditorMaster));
         WriteString('Collapsed2', IntToStr(i), EditorGetCollapsedRanges(F.EditorSlave));
       end;
@@ -11507,7 +11533,7 @@ begin
         F.EditorMaster.SelectModeDefault:= TSyntSelectionMode(ReadInteger('SelMode', IntToStr(i), 0));
         F.EditorSlave.SelectModeDefault:= TSyntSelectionMode(ReadInteger('SelMode2', IntToStr(i), 0));
         F.TabColor:= StringToColor(ReadString('Color', IntToStr(i), ColorToString(clNone)));
-        F.ColMarkers:= ReadString('ColMarkers', IntToStr(i), '');
+        F.EditorMaster.ColMarkersString:= ReadString('ColMarkers', IntToStr(i), '');
         F.CollapsedString:= ReadString('Collapsed', IntToStr(i), '');
         F.CollapsedString2:= ReadString('Collapsed2', IntToStr(i), '');
       end;
@@ -11560,7 +11586,7 @@ procedure TfmMain.tbxWinPopup(Sender: TTBCustomItem; FromLink: Boolean);
   function Sh(i: integer): string;
   begin
     if (i>=0) and (i<=9) then
-      Result:= ShortCutToText(ShFor(sm_Tab0+i))
+      Result:= GetShortcutTextOfCmd(sm_Tab0+i)
     else
       Result:= '';
     if Result<>'' then
@@ -12228,8 +12254,8 @@ begin
     SRIni:= SynIni;
     SRIniS:= SynIni;
     SR_SuggestedSel:= '';
-    ShFind:= ShFor(smFindDialog);
-    ShReplace:= ShFor(smReplaceDialog);
+    ShFind:= GetShortcutOfCmd(smFindDialog);
+    ShReplace:= GetShortcutOfCmd(smReplaceDialog);
     SR_SuggestedFind:= ATextSearch;
     SR_SuggestedReplace:= ATextReplace;
 
@@ -12880,14 +12906,34 @@ begin
   sh:= Shortcut(Key, Shift);
   if sh=0 then Exit;
 
+  //Toggle panels
+  if IsShortcutOfCmd(sh, sm_OShowTree) then
+  begin
+    ecShowTree.Execute;
+    Key:= 0;
+    Exit
+  end;
+  if IsShortcutOfCmd(sh, sm_OShowOut) then
+  begin
+    ecShowOut.Execute;
+    Key:= 0;
+    Exit
+  end;
+  if IsShortcutOfCmd(sh, sm_OShowClip) then
+  begin
+    ecShowClip.Execute;
+    Key:= 0;
+    Exit
+  end;
+
   //Next/prev mass search result
-  if IsSh(sh, sm_GotoNextFindResult) then
+  if IsShortcutOfCmd(sh, sm_GotoNextFindResult) then
   begin
     ecGotoNextFindResult.Execute;
     Key:= 0;
     Exit
   end;
-  if IsSh(sh, sm_GotoPrevFindResult) then
+  if IsShortcutOfCmd(sh, sm_GotoPrevFindResult) then
   begin
     ecGotoPrevFindResult.Execute;
     Key:= 0;
@@ -12895,63 +12941,63 @@ begin
   end;
 
   //Focus commands
-  if IsSh(sh, sm_ToggleFocusTree) then
+  if IsShortcutOfCmd(sh, sm_ToggleFocusTree) then
   begin
     ecToggleFocusTree.Execute;
     Key:= 0;
     Exit
   end;
   //
-  if IsSh(sh, sm_ToggleFocusValidate) then
+  if IsShortcutOfCmd(sh, sm_ToggleFocusValidate) then
   begin
     ecToggleFocusValidate.Execute;
     Key:= 0;
     Exit
   end;
   //
-  if IsSh(sh, sm_ToggleFocusProj) then
+  if IsShortcutOfCmd(sh, sm_ToggleFocusProj) then
   begin
     ecToggleFocusProject.Execute;
     Key:= 0;
     Exit
   end;
   //
-  if IsSh(sh, sm_ToggleFocusMap) then
+  if IsShortcutOfCmd(sh, sm_ToggleFocusMap) then
   begin
     ecToggleFocusMap.Execute;
     Key:= 0;
     Exit
   end;
   //
-  if IsSh(sh, sm_ToggleFocusClip) then
+  if IsShortcutOfCmd(sh, sm_ToggleFocusClip) then
   begin
     ecToggleFocusClip.Execute;
     Key:= 0;
     Exit
   end;
   //
-  if IsSh(sh, sm_ToggleFocusClips) then
+  if IsShortcutOfCmd(sh, sm_ToggleFocusClips) then
   begin
     ecToggleFocusClips.Execute;
     Key:= 0;
     Exit
   end;
   //
-  if IsSh(sh, sm_ToggleFocusFindRes) then
+  if IsShortcutOfCmd(sh, sm_ToggleFocusFindRes) then
   begin
     ecToggleFocusFindRes.Execute;
     Key:= 0;
     Exit
   end;
   //
-  if IsSh(sh, sm_ToggleFocusOutput) then
+  if IsShortcutOfCmd(sh, sm_ToggleFocusOutput) then
   begin
     ecToggleFocusOutput.Execute;
     Key:= 0;
     Exit
   end;
   //
-  if IsSh(sh, sm_ToggleFocusTabs) then
+  if IsShortcutOfCmd(sh, sm_ToggleFocusTabs) then
   begin
     ecToggleFocusTabs.Execute;
     Key:= 0;
@@ -12959,31 +13005,31 @@ begin
   end;
 
   //Tree next/prev/parent/next-brother/prev-brother
-  if IsSh(sh, sm_TreeNext) then
+  if IsShortcutOfCmd(sh, sm_TreeNext) then
   begin
     ecTreeNext.Execute;
     Key:= 0;
     Exit
   end;
-  if IsSh(sh, sm_TreePrev) then
+  if IsShortcutOfCmd(sh, sm_TreePrev) then
   begin
     ecTreePrev.Execute;
     Key:= 0;
     Exit
   end;
-  if IsSh(sh, sm_TreeParent) then
+  if IsShortcutOfCmd(sh, sm_TreeParent) then
   begin
     ecTreeParent.Execute;
     Key:= 0;
     Exit
   end;
-  if IsSh(sh, sm_TreePrevBrother) then
+  if IsShortcutOfCmd(sh, sm_TreePrevBrother) then
   begin
     ecTreePrevBrother.Execute;
     Key:= 0;
     Exit
   end;
-  if IsSh(sh, sm_TreeNextBrother) then
+  if IsShortcutOfCmd(sh, sm_TreeNextBrother) then
   begin
     ecTreeNextBrother.Execute;
     Key:= 0;
@@ -12992,7 +13038,7 @@ begin
 
   //sm_Tab0..sm_Tab9
   for i:= 0 to 9 do
-    if IsSh(sh, sm_Tab0+i) then
+    if IsShortcutOfCmd(sh, sm_Tab0+i) then
     begin
       TabClickN(i);
       Key:= 0;
@@ -13001,7 +13047,7 @@ begin
 
   //sm_TreeLevel2..sm_TreeLevel9
   for i:= 2 to 9 do
-    if IsSh(sh, sm_TreeLevel2+i-2) then
+    if IsShortcutOfCmd(sh, sm_TreeLevel2+i-2) then
     begin
       DoTreeLevel(i);
       Key:= 0;
@@ -13013,21 +13059,39 @@ procedure TfmMain.ListOutKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if ((Key=vk_space) or (Key=vk_return)) and (Shift=[]) then
-    begin ListOutDblClick(Self); Key:= 0 end;
+  begin
+    ListOutDblClick(Self);
+    Key:= 0;
+    Exit
+  end;
   if (Key=vk_delete) and (Shift=[]) then
-    begin TbxItemOClrClick(Self); Key:= 0 end;
+  begin
+    TbxItemOutClearClick(Self);
+    Key:= 0;
+    Exit
+  end;
   if (Key=Ord('C')) and (Shift=[ssCtrl]) then
-    begin TbxItemOCpClick(Self); Key:= 0 end;
+  begin
+    TbxItemOutCopySelClick(Self);
+    Key:= 0;
+    Exit
+  end;
+  if IsShortcutOfCmd(Shortcut(Key, Shift), smFindDialog) then
+  begin
+    TBXItemOutFindClick(Self);
+    Key:= 0;
+    Exit
+  end;
   DoHandleKeysInPanels(Key, Shift);
 end;
 
-procedure TfmMain.TBXItemOClrClick(Sender: TObject);
+procedure TfmMain.TBXItemOutClearClick(Sender: TObject);
 begin
   ListOut.Clear;
   FocusEditor;
 end;
 
-procedure TfmMain.TBXItemOCpClick(Sender: TObject);
+procedure TfmMain.TBXItemOutCopySelClick(Sender: TObject);
 begin
   DoListCopy(ListOut);
 end;
@@ -13049,7 +13113,7 @@ begin
    end;
 end;
 
-procedure TfmMain.TBXItemONavClick(Sender: TObject);
+procedure TfmMain.TBXItemOutNavClick(Sender: TObject);
 begin
   with ListOut do
    if FOutItem>=0 then
@@ -13060,17 +13124,17 @@ procedure TfmMain.PopupOutPopup(Sender: TObject);
 begin
   with ListOut do
   begin
-    TbxItemONav.Enabled:= (FOutItem>=0) and (FOutItem<=Items.Count-1);
-    TbxItemOCp.Enabled:= SelCount>0;
-    TbxItemODel.Enabled:= SelCount>0;
-    TbxItemODelN.Enabled:= Items.Count>0;
-    TbxItemOClr.Enabled:= Items.Count>0;
-    TbxItemOCpAll.Enabled:= Items.Count>0;
-    TbxItemOFind.Enabled:= Items.Count>0;
+    TbxItemOutNav.Enabled:= (FOutItem>=0) and (FOutItem<=Items.Count-1);
+    TbxItemOutCopySel.Enabled:= SelCount>0;
+    TbxItemOutDelSel.Enabled:= SelCount>0;
+    TbxItemOutDelNonparsed.Enabled:= Items.Count>0;
+    TbxItemOutClear.Enabled:= Items.Count>0;
+    TbxItemOutCopyAll.Enabled:= Items.Count>0;
+    TbxItemOutFind.Enabled:= Items.Count>0;
   end;
 end;
 
-procedure TfmMain.TBXItemOCpAllClick(Sender: TObject);
+procedure TfmMain.TBXItemOutCopyAllClick(Sender: TObject);
 begin
   DoListCopyAll(ListOut);
 end;
@@ -13206,12 +13270,12 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXItemODelClick(Sender: TObject);
+procedure TfmMain.TBXItemOutDelSelClick(Sender: TObject);
 begin
   ListOut.DeleteSelected;
 end;
 
-procedure TfmMain.TBXItemODelNClick(Sender: TObject);
+procedure TfmMain.TBXItemOutDelNonparsedClick(Sender: TObject);
 var i:Integer;
 begin
   with ListOut do
@@ -13647,11 +13711,11 @@ procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
       MI.Caption:= S;
       MI.Tag:= Tag;
       if AConvEnc then
-        MI.OnClick:= ConvEncoding
+        MI.OnClick:= MenuitemConvertEncoding
       else
-        MI.OnClick:= SetEncoding;
+        MI.OnClick:= MenuitemSetEncoding;
       MI.RadioItem:= true;
-      MI.Checked:= GetFrameEnc(CurrentFrame) = Tag;
+      MI.Checked:= GetFrameEncoding(CurrentFrame) = Tag;
     end;
     
     if M is TSpTbxPopupMenu then
@@ -13687,11 +13751,11 @@ procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
         MI.Hint:= WideFormat(DKLangConstW('cpN'), [Tag]);
       MI.OnSelect:= ButtonOnSelect;
       if AConvEnc then
-        MI.OnClick:= ConvEncoding
+        MI.OnClick:= MenuitemConvertEncoding
       else
-        MI.OnClick:= SetEncoding;
+        MI.OnClick:= MenuitemSetEncoding;
       MI.RadioItem:= true;
-      MI.Checked:= GetFrameEnc(CurrentFrame) = Tag;
+      MI.Checked:= GetFrameEncoding(CurrentFrame) = Tag;
       if not IsUnicode then
         MI.Enabled:= EncOK(Tag);
       M.Add(MI);
@@ -13701,7 +13765,7 @@ procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
   function AddSub(const s: Widestring): TSpTbxSubmenuItem;
   begin
     Result:= TSpTbxSubmenuItem.Create(Self);
-    Result.Caption:= EncLocal(S);
+    Result.Caption:= LocalizedEncodingName(S);
     if M is TSpTbxPopupMenu then
       (M as TSpTbxPopupMenu).Items.Add(Result)
     else
@@ -13775,7 +13839,7 @@ begin
   end;
 end;
 
-function TfmMain.GetFrameEnc(F: TEditorFrame): integer;
+function TfmMain.GetFrameEncoding(F: TEditorFrame): integer;
 begin
   case F.TextSource.Lines.TextCoding of
     tcUTF8:
@@ -13796,13 +13860,15 @@ begin
   end;
 end;
 
-function TfmMain.EncLocal(const s: Widestring): Widestring;
+function TfmMain.LocalizedEncodingName(const s: Widestring): Widestring;
 var
   SL: Widestring;
-  n:Integer;
+  n: Integer;
 begin
   Result:= s;
+  //encoding translations are in DKLang resource
   SL:= DKLangConstW('cpLn');
+  
   n:= Pos(','+s+'=', SL);
   if n=0 then Exit;
   Delete(SL, 1, n+Length(s)+1);
@@ -13934,7 +14000,6 @@ begin
       Align:= alClient;
       BorderStyle:= bsNone;
       FSynDir:= Self.SynDir;
-      FShortcutGoto:= ShFor(sm_ProjectList);
       //
       TreeProj.BorderStyle:= SynBorderStyle;
       TreeProj.Font.Assign(Tree.Font);
@@ -13954,6 +14019,7 @@ begin
       OnUpdateMRU:= ProjUpdateMRU;
       OnProjectOpen:= ProjOpen;
       OnProjectClose:= ProjClose;
+      TreeProj.OnKeyDown:= ProjKeyDown;
       //
       Show;
     end;
@@ -14357,9 +14423,6 @@ procedure TfmMain.ApplyEdOptions;
 var
   i: Integer;
 begin
-  //must add code to ecExports unit
-  ecExports.ecCanFixBlocks:= opFixBlocks;
-
   for i:= 0 to FrameAllCount-1 do
     with FramesAll[i] do
     begin
@@ -14949,77 +15012,29 @@ end;
 procedure TfmMain.DoFillBlock;
 var
   Ed: TSyntaxMemo;
-  R: TRect;
-  OldCaret: TPoint;
-  i, nLen: Integer;
-  s, sData: ecString;
+  sData: Widestring;
   bKeep: boolean;
 begin
   Ed:= CurrentEditor;
-  with Ed do
+  if Ed.ReadOnly then Exit;
+  if not Ed.HaveSelection then Exit;
+  
+  if Ed.SelectMode <> msColumn then
   begin
-    if ReadOnly then Exit;
-    if not HaveSelection then Exit;
-    if SelectMode <> msColumn then
-      begin MsgWarn(DKLangConstW('vert'), Handle); Exit end;
-
-    with TfmFillBlock.Create(Self) do
-    try
-      if ShowModal<>mrOk then Exit;
-      sData:= edLine.Text;
-      bKeep:= cbKeepWidth.Checked;
-    finally
-      Free
-    end;
-
-    R:= SelRect;
-    OldCaret:= CaretPos;
-    if bKeep then
-    begin
-      if Length(sData) > R.Right - R.Left then
-        SetLength(sData, R.Right - R.Left);
-      nLen:= Length(sData);
-    end
-    else
-      nLen:= R.Right - R.Left;
-
-    BeginUpdate;
-    try
-      for i:= R.Top to R.Bottom do
-      begin
-        s:= Lines[i];
-
-        //expand tabs to spaces
-        if Pos(#9, s)>0 then
-        begin
-          SReplaceAllW(s, #9, EditorTabExpansion(Ed));
-          DoReplaceLine(Ed, i, s, true{ForceUndo});
-        end;
-
-        //fill line tail with spaces
-        if Length(s)<R.Right then
-        begin
-          CaretPos:= Point(Length(s), i);
-          InsertText(StringOfChar(' ', R.Right-Length(s)));
-        end;
-
-        //replace block line
-        ReplaceText(
-          CaretPosToStrPos(Point(R.Left, i)),
-          nLen, sData);
-      end;
-
-      if bKeep then
-        nLen:= R.Right - R.Left
-      else
-        nLen:= Length(sData);
-
-      CaretPos:= Point(R.Left + nLen, OldCaret.Y);
-      SelRect:= Rect(R.Left, R.Top, R.Left + nLen, R.Bottom);
-    finally
-      EndUpdate;
-    end;
+    MsgWarn(DKLangConstW('vert'), Handle);
+    Exit
   end;
+
+  with TfmFillBlock.Create(Self) do
+  try
+    if ShowModal<>mrOk then Exit;
+    sData:= edLine.Text;
+    bKeep:= cbKeepWidth.Checked;
+  finally
+    Free
+  end;
+
+  EditorFillBlockRect(Ed, sData, bKeep);
 end;
 
 procedure TfmMain.TBXItemEInsTextClick(Sender: TObject);
@@ -15028,161 +15043,47 @@ begin
 end;
 
 procedure TfmMain.DoInsertTextDialog;
-type
-  TMode=(mTxt, mNum, mBul);
-  TPos=(pCol, pAfterSp, pAfterStr);
 var
-  InsMode: TMode;
-  InsPos: TPos;
-  txt1, txt2, s: ecString;
-  InsCol: integer;
-  InsStrAfter: ecString;
-  SkipEmpty: boolean;
-  i, n, iFrom, iTo, iCnt: integer;
-  NStart, NDigits: integer;
-  NBegin, NTail: ecString;
-  IsSel: boolean;
-  NCounter: integer;
-  {
-  _SelStart, _SelLen: integer;
-  _SelRect: TRect;
-  _CaretPos: TPoint;
-  }
   Ed: TSyntaxMemo;
+  F: TEditorFrame;
+  Data: TSynEditorInsertData;
 begin
   Ed:= CurrentEditor;
-  if Ed=nil then Exit;
   if Ed.ReadOnly then Exit;
-  EditorGetSelLines(Ed, iFrom, iTo);
-  IsSel:= iTo > iFrom;
+  F:= FrameOfEditor(Ed);
+  FillChar(Data, SizeOf(Data), 0);
 
   with TfmInsTxt.Create(nil) do
   try
     SIni:= Self.SynIni;
-    SetMode(IsSel);
+    SetMode(EditorHasMultilineSelection(Ed));
     if ShowModal<>mrOk then Exit;
-    txt1:= ed1.Text;
-    txt2:= ed2.Text;
-    if bText.Checked then InsMode:= mTxt else
-     if bNumber.Checked then InsMode:= mNum else
-      InsMode:= mBul;
-    if bAtCol.Checked then InsPos:= pCol else
-     if bAfterSp.Checked then InsPos:= pAfterSp else
-      InsPos:= pAfterStr;
-    InsCol:= edCol.Value;
-    InsStrAfter:= edStrAfter.Text;
-    SkipEmpty:= cbSkip.Checked;
-    NStart:= edStart.Value;
-    NDigits:= edDigits.Value;
-    NTail:= edTail.Text;
-    NBegin:= edBegin.Text;
-    NCounter:= edCounter.Value;
+
+    Data.SText1:= ed1.Text;
+    Data.SText2:= ed2.Text;
+    if bText.Checked then Data.InsMode:= mTxt else
+     if bNumber.Checked then Data.InsMode:= mNum else
+      Data.InsMode:= mBul;
+    if bAtCol.Checked then Data.InsPos:= pCol else
+     if bAfterSp.Checked then Data.InsPos:= pAfterSp else
+      Data.InsPos:= pAfterStr;
+    Data.InsCol:= edCol.Value;
+    Data.InsStrAfter:= edStrAfter.Text;
+    Data.SkipEmpty:= cbSkip.Checked;
+    Data.NStart:= edStart.Value;
+    Data.NDigits:= edDigits.Value;
+    Data.NTail:= edTail.Text;
+    Data.NBegin:= edBegin.Text;
+    Data.NCounter:= edCounter.Value;
   finally
-    Release
+    Free
   end;
 
-  with Ed do
-  begin
-    {
-    //save sel
-    _SelStart:= SelStart;
-    _SelLen:= SelLength;
-    _SelRect:= SelRect;
-    _CaretPos:= CaretPos;
-    }
-    ResetSelection;
-
-    //msg(format('%d %d', [iFrom, iTo]));
-    BeginUpdate;
-    FrameOfEditor(Ed).LockMapUpdate:= true;
-    try
-      iCnt:= 0;
-      if not IsSel then
-      begin
-        //----counter times inserting
-        for i:= 1 to NCounter do
-        begin
-          case InsMode of
-            mTxt: S:= txt1 + txt2;
-            mBul: S:= WideString(#$2022) + ' ';
-            mNum: S:= NBegin + SFormatNum(NStart+i-1, NDigits) + NTail;
-            else S:= '';
-          end;//case
-          InsertText(
-            StringOfChar(' ', InsCol-1)
-            + S + CurrentCR);
-        end;
-      end
-      else
-      //----insert into selection
-      for i:= iFrom to iTo do
-      begin
-        if (Lines[i]='') and SkipEmpty then
-          Continue;
-        Inc(iCnt);
-
-        //Put caret
-        case InsPos of
-          pCol:
-            begin
-              CaretPos:= Point(InsCol-1, i);
-              //handle "Keep caret in text"
-              if soKeepCaretInText in Ed.Options then
-                if CaretPos.X<InsCol-1 then
-                  InsertText(StringOfChar(' ', (InsCol-1)-CaretPos.X));
-            end;
-          pAfterSp:
-            begin
-              CaretPos:= Point(SNumLeadSpaces(Lines[i]), i);
-            end;  
-          else
-            begin
-              n:= Pos(InsStrAfter, Lines[i]);
-              if n=0 then Continue;
-              CaretPos:= Point(n-1+Length(InsStrAfter), i);
-            end;
-        end;
-
-        case InsMode of
-        //Text
-        mTxt:
-          begin
-            if txt1<>'' then
-            begin
-              InsertText(txt1);
-            end;
-            if txt2<>'' then
-            begin
-              CaretPos:= Point(Length(Lines[i]), i);
-              InsertText(txt2);
-            end;
-          end;
-        //Bullets
-        mBul:
-          begin
-            InsertText(WideString(#$2022) + ' ');
-          end;
-        //Nums
-        mNum:
-          begin
-            s:= NBegin + SFormatNum(NStart+iCnt-1, NDigits) + NTail;
-            InsertText(s);
-          end;
-        end;//case
-      end;
-    finally
-      EndUpdate;
-      FrameOfEditor(Ed).LockMapUpdate:= false;
-    end;
-
-    {
-    //restore sel
-    CaretPos:= _CaretPos;
-    if _SelLen>0 then
-      SetSelection(_SelStart, _SelLen, true)
-    else
-      SelRect:= _SelRect;
-      }
+  F.LockMapUpdate:= true;
+  try
+    EditorInsertTextData(Ed, Data);
+  finally
+    F.LockMapUpdate:= false;
   end;
 end;
 
@@ -15594,26 +15495,27 @@ begin
   if sh=0 then Exit;
 
   //Ctrl+F in tree
-  if IsSh(sh, smFindDialog) then
+  if IsShortcutOfCmd(sh, smFindDialog) then
   begin
     ecFindInTree.Execute;
     Key:= 0;
     Exit;
   end;
   //F3 in tree
-  if IsSh(sh, smFindNext) then
+  if IsShortcutOfCmd(sh, smFindNext) then
   begin
     ecFindInTreeNext.Execute;
     Key:= 0;
     Exit;
   end;
   //Ctrl+F3 in tree
-  if IsSh(sh, smFindPrev) then
+  if IsShortcutOfCmd(sh, smFindPrev) then
   begin
     ecFindInTreePrev.Execute;
     Key:= 0;
     Exit;
   end;
+  
   DoHandleKeysInPanels(Key, Shift);
 end;
 
@@ -15663,6 +15565,13 @@ begin
   if (Key=Ord('C')) and (Shift=[ssCtrl]) then
   begin
     DoClipItemCopy;
+    Key:= 0;
+    Exit
+  end;
+  //Ctrl+F in clip
+  if IsShortcutOfCmd(Shortcut(Key, Shift), smFindDialog) then
+  begin
+    DoFindInClipPanel;
     Key:= 0;
     Exit
   end;
@@ -15831,7 +15740,7 @@ begin
     SReplaceAll(sAbr, '"', '%Q%'); //for cmdline. Script knows it.
 
     fn:= SynDir + fr;
-    ft:= SExpandVars('%temp%\SynWrZen$$.txt');
+    ft:= FTempDir + '\SynwEmmet.txt';
     fcmd:= WideFormat('cmd.exe /c""wscript.exe" "%s" "%s" "%s" "%s" "%s" >"%s""',
       [fn, sAbr, sType, opZenProfile, sPadding, ft]);
 
@@ -16034,9 +15943,8 @@ end;
 procedure TfmMain.ecToggleStreamCommentExecute(Sender: TObject);
 var
   Ed: TSyntaxMemo;
-  s1, s2, sCR, Lexer: string;
-  n, nLen: integer;
-  Uncomm, CmtMLine: boolean;
+  s1, s2, Lexer: string;
+  MLine: boolean;
 begin
   Ed:= CurrentEditor;
   Lexer:= CurrentLexer;
@@ -16047,61 +15955,9 @@ begin
   if Ed.SelLength=0 then
     begin MsgNoSelection; Exit end;
 
-  DoGetCommentProps(Lexer, false, s1, s2, CmtMLine);
-  if s1='' then Exit;
-
-  with Ed do
-    begin
-      //msginfo(s1+#13+s2);
-      n:= SelStart;
-      nLen:= SelLength;
-      SetSelection(n, 0);
-
-      if CmtMLine then
-        Uncomm:= false
-      else
-        Uncomm:= (Copy(Lines.FText, n+1, Length(s1)) = s1) and
-               (Copy(Lines.FText, n+nLen-Length(s2)+1, Length(s2)) = s2);
-      if not Uncomm then
-      begin
-        //do comment
-        if CmtMLine then
-        begin
-          sCR:= CurrentCR;
-          if (n-Length(sCR)>=0) and
-            (Copy(Lines.FText, n-Length(sCR)+1, Length(sCR)) = sCR) then
-            s1:= s1+sCR
-          else
-            s1:= sCR+s1+sCR;
-          if Copy(Lines.FText, n+nLen-Length(sCR)+1, Length(sCR)) = sCR then
-            s2:= s2+sCR
-          else
-            s2:= sCR+s2+sCR;
-        end;
-        BeginUpdate;
-        try
-          CaretStrPos:= n;
-          InsertText(s1);
-          CaretStrPos:= n+nLen+Length(s1);
-          InsertText(s2);
-        finally
-          EndUpdate;
-        end;    
-      end
-      else
-      begin
-        //do uncomment
-        BeginUpdate;
-        try
-          CaretStrPos:= n+nLen-Length(s2);
-          DeleteText(Length(s2));
-          CaretStrPos:= n;
-          DeleteText(Length(s1));
-        finally
-          EndUpdate;
-        end;
-      end;
-    end;
+  DoGetCommentProps(Lexer, false, s1, s2, MLine);
+  if s1<>'' then
+    EditorToggleStreamComment(Ed, s1, s2, MLine);
 end;
 
 procedure TfmMain.TBXItemEMoveUpClick(Sender: TObject);
@@ -16348,34 +16204,19 @@ end;
 
 procedure TfmMain.ecSplitLinesExecute(Sender: TObject);
 var
-  Ln1, Ln2, i, nLen, nCol: Integer;
-  s, sCR: ecString;
+  Ed: TSyntaxMemo;
+  s: Widestring;
+  nCol: Integer;
 begin
-  if CurrentEditor<>nil then
-    with CurrentEditor do
-    begin
-      sCR:= CurrentCR;
+  Ed:= CurrentEditor;
+  nCol:= Ed.RightMargin;
+  s:= IntToStr(nCol);
+  if not MsgInput('MRtMargin', s) then Exit;
+  nCol:= StrToIntDef(s, 0);
+  if nCol<3 then
+    begin MsgBeep; Exit end;
 
-      nCol:= RightMargin;
-      s:= IntToStr(nCol);
-      if not MsgInput('MRtMargin', s) then Exit;
-      nCol:= StrToIntDef(s, nCol);
-      if nCol<3 then begin MsgBeep; Exit end;
-
-      EditorGetSelLines(CurrentEditor, Ln1, Ln2);
-      BeginUpdate;
-      try
-        for i:= Ln2 downto Ln1 do
-        begin
-          s:= Lines[i];
-          nLen:= Lines.LineLength(i);
-          s:= WideWrapText(s, sCR, [' ', '-', '+', #9], nCol);
-          ReplaceText(CaretPosToStrPos(Point(0, i)), nLen, s);
-        end;
-      finally
-        EndUpdate;
-      end;
-    end;
+  EditorSplitLinesByPosition(Ed, nCol);
 end;
 
 procedure TfmMain.ecMacroDlgExecute(Sender: TObject);
@@ -16384,13 +16225,13 @@ var
   idx, i: Integer;
 begin
   for i:= Low(sh) to High(sh) do
-    ShMacroGet(i, sh[i]);
+    GetShortcutOfMacro(i, sh[i]);
   if EditMacro(ecMacroRecorder1, sh, idx) then
   begin
     if idx >= 0 then
       FLastMacro:= idx;
     for i:= Low(sh) to High(sh) do
-      ShMacroSet(i, sh[i]);
+      SetShortcutOfMacro(i, sh[i]);
     UpdateShortcuts;
     SaveMacros;
   end;
@@ -16428,7 +16269,7 @@ begin
     begin MsgNoSelection; Exit end;
 
   if CurrentFrame.FileName='' then
-    dir:= SExpandVars('%temp%')
+    dir:= FTempDir
   else
     dir:= ExtractFileDir(CurrentFrame.FileName);
   fn:= dir+'\_synwrite_preview.html';
@@ -16869,21 +16710,6 @@ begin
   UpdateStatusbar;
 end;
 
-procedure TfmMain.DoExtendSelection(
-  Ed: TSyntaxMemo;
-  AOldStart, AOldLength,
-  ANewStart, ANewLength: integer);
-var
-  AOldEnd, ANewEnd: integer;
-begin
-  AOldEnd:= AOldStart+AOldLength;
-  ANewEnd:= ANewStart+ANewLength;
-  ANewStart:= Min2(AOldStart, ANewStart);
-  ANewEnd:= Max2(AOldEnd, ANewEnd);
-  ANewLength:= ANewEnd-ANewStart;
-  Ed.SetSelection(ANewStart, ANewLength, true);
-end;
-
 procedure TfmMain.ecGotoExecute(Sender: TObject);
 var
   oldSelStart, oldSelLength,
@@ -16918,7 +16744,7 @@ begin
       end;
 
       if AExt then
-        DoExtendSelection(CurrentEditor,
+        EditorExtendSelectionByPosition(CurrentEditor,
           oldSelStart, oldSelLength,
           CaretStrPos, 0);
 
@@ -17016,9 +16842,9 @@ begin
     acSave.Execute;
   FListValFN:= CurrentFrame.FileName;
 
-  fn_cfg:= SExpandVars('%Temp%\SynTidyCfg.txt');
-  fn_out:= SExpandVars('%Temp%\SynTidyOut.txt');
-  fn_err:= SExpandVars('%Temp%\SynTidyErr.txt');
+  fn_cfg:= FTempDir + '\SynwTidyCfg.txt';
+  fn_out:= FTempDir + '\SynwTidyOut.txt';
+  fn_err:= FTempDir + '\SynwTidyErr.txt';
   FDelete(fn_cfg);
   FDelete(fn_out);
   FDelete(fn_err);
@@ -17128,17 +16954,17 @@ begin
   ListValDblClick(ListVal);
 end;
 
-procedure TfmMain.TBXItemValCpClick(Sender: TObject);
+procedure TfmMain.TBXItemValCopySelClick(Sender: TObject);
 begin
   DoListCopy(ListVal);
 end;
 
-procedure TfmMain.TBXItemValCpAllClick(Sender: TObject);
+procedure TfmMain.TBXItemValCopyAllClick(Sender: TObject);
 begin
   DoListCopyAll(ListVal);
 end;
 
-procedure TfmMain.TBXItemValClrClick(Sender: TObject);
+procedure TfmMain.TBXItemValClearClick(Sender: TObject);
 begin
   ListVal.Items.Clear;
   FocusEditor;
@@ -17150,9 +16976,9 @@ begin
   with ListVal do
   begin
     TbxItemValNav.Enabled:= (ItemIndex>=0) and (ItemIndex<=Items.Count-1);
-    TbxItemValCp.Enabled:= SelCount>0;
-    TbxItemValCpAll.Enabled:= Items.Count>0;
-    TbxItemValClr.Enabled:= Items.Count>0;
+    TbxItemValCopySel.Enabled:= SelCount>0;
+    TbxItemValCopyAll.Enabled:= Items.Count>0;
+    TbxItemValClear.Enabled:= Items.Count>0;
     TbxItemValFind.Enabled:= Items.Count>0;
   end;
 end;
@@ -17161,11 +16987,29 @@ procedure TfmMain.ListValKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if ((Key=vk_space) or (Key=vk_return)) and (Shift=[]) then
-    begin ListValDblClick(Self); Key:= 0 end;
+  begin
+    ListValDblClick(Self);
+    Key:= 0;
+    Exit
+  end;
   if (Key=vk_delete) and (Shift=[]) then
-    begin TbxItemValClrClick(Self); Key:= 0 end;
+  begin
+    TbxItemValClearClick(Self);
+    Key:= 0;
+    Exit
+  end;
   if (Key=Ord('C')) and (Shift=[ssCtrl]) then
-    begin TbxItemValCpClick(Self); Key:= 0 end;
+  begin
+    TbxItemValCopySelClick(Self);
+    Key:= 0;
+    Exit
+  end;
+  if IsShortcutOfCmd(Shortcut(Key, Shift), smFindDialog) then
+  begin
+    TBXItemValFindClick(Self);
+    Key:= 0;
+    Exit
+  end;
   DoHandleKeysInPanels(Key, Shift);
 end;
 
@@ -17357,7 +17201,7 @@ begin
     FreeAndNil(Ini);
   end;
 
-  with TBXItemMruNewdoc do
+  with TBXMRUListItemFNew do
   begin
     Clear;
     for i:= SynMruNewdoc.Items.Count-1 downto 0 do
@@ -17379,10 +17223,12 @@ begin
         if UpCase(Names[i][1]) = ch then
           begin NeedSub:= true; Break end;
       if not NeedSub then Continue;
+
       //add submenu
       miSub:= TSpTbxSubmenuItem.Create(Self);
       miSub.Caption:= ch;
       miSub.Tag:= 1;
+
       TbxSubmenuItemFNew.Add(miSub);
       //fill submenu
       for i:= 0 to Names.Count-1 do
@@ -17404,7 +17250,29 @@ begin
   mi.Tag:= 1;
   TbxSubmenuItemFNew.Add(mi);
 
+  //fix too big menuitems height
+  FixMruBigImageList(TBXMRUListItemFNew);
+  FixMenuBigImageList(TbxSubmenuItemFNew);
+
   FreeAndNil(Names);
+end;
+
+procedure TfmMain.FixMenuBigImageList(Menu: TSpTbxSubmenuItem);
+var
+  i: Integer;
+begin
+  with Menu do
+    for i:= 0 to Count-1 do
+      Items[i].Images:= ImageListStatus;
+end;
+
+procedure TfmMain.FixMruBigImageList(Menu: TSpTbxMruListItem);
+var
+  i: Integer;
+begin
+  with Menu do
+    for i:= 0 to Count-1 do
+      Items[i].Images:= ImageListStatus;
 end;
 
 procedure TfmMain.NewDocFolderClick(Sender: TObject);
@@ -17425,31 +17293,9 @@ end;
 
 procedure TfmMain.ecRemoveLinesExecute(Sender: TObject);
 var
-  Ed: TSyntaxMemo;
-  i, Ln1, Ln2, NDel, NCol: Integer;
+  NDel: integer;
 begin
-  Ed:= CurrentEditor;
-  if Ed.ReadOnly then Exit;
-
-  EditorGetSelLines(Ed, Ln1, Ln2);
-  if Ln1=Ln2 then
-    NCol:= Ed.CaretPos.X
-  else
-    NCol:= 0;
-
-  Ed.BeginUpdate;
-  try
-    NDel:= 0;
-    for i:= Ln2 downto Ln1 do
-    begin
-      DoDeleteLine(ed, i, true{ForceUndo});
-      Inc(NDel);
-    end;
-    Ed.CaretPos:= Point(NCol, Ln1);
-  finally
-    Ed.EndUpdate;
-  end;
-
+  NDel:= EditorDeleteSelectedLines(CurrentEditor);
   MsgDelLines(NDel);
 end;
 
@@ -18232,7 +18078,7 @@ begin
   else
     Finder.FindPrev;
   if Finder.Matches>0 then
-    DoExtendSelection(Ed,
+    EditorExtendSelectionByPosition(Ed,
       oldStart, oldLength,
       Ed.SelStart, Ed.SelLength);
 end;
@@ -18261,7 +18107,7 @@ procedure TfmMain.TBXItemHKeyMapClick(Sender: TObject);
 var
   fn: string;
 begin
-  fn:= SExpandVars('%temp%\SynWriteKeys.html');
+  fn:= FTempDir + '\SynWriteKeys.html';
   UpdateMacroKeynames;
   DoListKeys(SyntKeyMapping, fn);
   FExecute(fn, '', '', Handle);
@@ -18337,15 +18183,26 @@ end;
 
 procedure TfmMain.TBXItemClipFindClick(Sender: TObject);
 begin
-  with fmClip.ListClip do
-    if CanFocus then
-    begin
-      SetFocus;
-      ecFindInList.Execute;
-    end;
+  DoFindInClipPanel;
+end;  
+
+procedure TfmMain.DoFindInClipPanel;
+begin
+  if Assigned(fmClip) then
+    with fmClip.ListClip do
+      if CanFocus then
+      begin
+        SetFocus;
+        ecFindInList.Execute;
+      end;
 end;
 
 procedure TfmMain.TBXItemValFindClick(Sender: TObject);
+begin
+  DoFindInValidatePanel;
+end;
+
+procedure TfmMain.DoFindInValidatePanel;
 begin
   with ListVal do
     if CanFocus then
@@ -18355,7 +18212,12 @@ begin
     end;
 end;
 
-procedure TfmMain.TBXItemOFindClick(Sender: TObject);
+procedure TfmMain.TBXItemOutFindClick(Sender: TObject);
+begin
+  DoFindInOutPanel;
+end;
+
+procedure TfmMain.DoFindInOutPanel;
 begin
   with ListOut do
     if CanFocus then
@@ -18955,6 +18817,13 @@ begin
     Key:= 0;
     Exit
   end;
+  //Ctrl+F
+  if IsShortcutOfCmd(Shortcut(Key, Shift), smFindDialog) then
+  begin
+    TBXItemTreeFindFindClick(Self);
+    Key:= 0;
+    Exit
+  end;
   //Del, Ctrl+Del
   if (Key=vk_delete) and ((Shift=[]) or (Shift=[ssCtrl])) then
   begin
@@ -18988,6 +18857,11 @@ begin
 end;
 
 procedure TfmMain.TBXItemTreeFindFindClick(Sender: TObject);
+begin
+  DoFindInFindResults;
+end;  
+
+procedure TfmMain.DoFindInFindResults;
 begin
   with TreeFind do
     if CanFocus then
@@ -19202,6 +19076,13 @@ begin
   SetHint('[SmartTagTabbing] ' + s);
 end;
 
+procedure TfmMain.MsgRenameError(const fn, fn_new: Widestring);
+const
+  cArrow = #151'>';
+begin
+  MsgError(DKLangConstW('zMRenameErr')+#13+fn+#13+cArrow+#13+fn_new, Handle);
+end;
+
 {
 procedure TfmMain.MsgID(const s: Widestring);
 begin
@@ -19233,20 +19114,6 @@ begin
 end;
 
 
-function CurrentLexerForPos(Ed: TSyntaxMemo; NPos: integer): string;
-var
-  An: TSyntAnalyzer;
-begin
-  Result:= '';
-  if Assigned(Ed) and
-     Assigned(Ed.SyntObj) then
-  begin
-    An:= Ed.SyntObj.AnalyzerAtPos(NPos);
-    if An<>nil then
-      Result:= An.LexerName;
-  end;
-end;
-
 function CurrentLexerForLine(Ed: TSyntaxMemo; NLine: integer): string;
 var
   Pos: integer;
@@ -19254,7 +19121,7 @@ begin
   if Assigned(Ed) then
   begin
     Pos:= Ed.CaretPosToStrPos(Point(0, NLine));
-    Result:= CurrentLexerForPos(Ed, Pos);
+    Result:= EditorCurrentLexerForPos(Ed, Pos);
   end
   else
     Result:= '';
@@ -19266,7 +19133,7 @@ var
 begin
   Ed:= CurrentEditor;
   if Assigned(Ed) then
-    Result:= CurrentLexerForPos(Ed, Ed.CaretStrPos)
+    Result:= EditorCurrentLexerForPos(Ed, Ed.CaretStrPos)
   else
     Result:= '';  
 end;
@@ -19280,11 +19147,7 @@ end;
 
 function TfmMain.CurrentLexerHasTemplates: boolean;
 begin
-  Result:= false;
-  if Assigned(CurrentEditor) and
-     Assigned(CurrentEditor.SyntObj) and
-     Assigned(CurrentEditor.SyntObj.AnalyzerAtPos(CurrentEditor.CaretStrPos)) then
-    Result:= CurrentEditor.SyntObj.AnalyzerAtPos(CurrentEditor.CaretStrPos).CodeTemplates.Count > 0;
+  Result:= EditorCurrentLexerHasTemplates(CurrentEditor);
 end;
 
 function TfmMain.SLexerComment(const Lexer: string): string;
@@ -19297,21 +19160,11 @@ begin
     Result:= An.LineComment;
 end;
 
-function TfmMain.CurrentCR(Ed: TSyntaxMemo = nil): ecString;
-begin
-  if Ed = nil then
-    Ed:= CurrentEditor;
-  case Ed.Lines.TextFormat of
-    tfCR: Result:= #13;
-    tfNL: Result:= #10;
-    else Result:= #13#10;
-  end;
-end;
-
 function TfmMain.DoSmartTagTabbing: boolean;
 var
-  s, sTag, sTagExp: Widestring;
-  NTagSt, NTagLen, NCaret, NPos: integer;
+  Ed: TSyntaxMemo;
+  s, sTag, sTagExp, sIndent: Widestring;
+  NTagSt, NTagLen, NTagIndent, NCaret, NPos: integer;
   SelSt, SelLen: integer;
   fn: string;
   DoInitTab: boolean;
@@ -19320,33 +19173,34 @@ begin
   if not opAcpTabbing then Exit;
   if not IsLexerHTML(CurrentLexer) then Exit;
 
-  if CurrentEditor.CaretPos.Y >= CurrentEditor.Lines.Count then Exit;
-  if CurrentEditor.ReadOnly then Exit;
-  s:= CurrentEditor.Lines[CurrentEditor.CaretPos.Y];
+  Ed:= CurrentEditor;
+  if Ed.ReadOnly then Exit;
+  if Ed.CaretPos.Y >= Ed.Lines.Count then Exit;
+  s:= Ed.Lines[Ed.CaretPos.Y];
 
   //process tabbing inside <tagName ......>
-  NCaret:= CurrentEditor.CaretPos.X + 1;
+  NCaret:= Ed.CaretPos.X + 1;
   SGetTagBounds(s, NCaret, NTagSt, NTagLen);
   if (NTagSt>0) and (NTagLen>0) then
   begin
     sTag:= Copy(s, NTagSt, NTagLen);
     SelSt:= NCaret - NTagSt + 1;
-    SelLen:= CurrentEditor.SelLength;
+    SelLen:= Ed.SelLength;
 
     SGetTagTabbing(sTag, SelSt, SelLen);
     if SelSt > 0 then
     begin
-      CurrentEditor.CaretPos:= Point(NTagSt + SelSt - 2,
-        CurrentEditor.CaretPos.Y);
-      CurrentEditor.SetSelection(
-        CurrentEditor.CaretStrPos, SelLen);
+      Ed.CaretPos:= Point(NTagSt + SelSt - 2,
+        Ed.CaretPos.Y);
+      Ed.SetSelection(
+        Ed.CaretStrPos, SelLen);
       MsgTabbing(DKLangConstW('ztagMovedSelection'));
     end
     else
     begin
-      CurrentEditor.CaretPos:= Point(NTagSt + NTagLen - 1,
-        CurrentEditor.CaretPos.Y);
-      CurrentEditor.ResetSelection;
+      Ed.CaretPos:= Point(NTagSt + NTagLen - 1,
+        Ed.CaretPos.Y);
+      Ed.ResetSelection;
       MsgTabbing(DKLangConstW('ztagMovedOut'));
     end;
     Result:= true;
@@ -19389,19 +19243,28 @@ begin
       (Pos(' ', sTagExp) > 0);
 
     //replace '\n'
-    SReplaceAllW(sTagExp, '\n',
-      CurrentCR + StringOfChar(' ', NTagSt-1));
+    NTagIndent:= Ed.LinesPosToLogX(s, NTagSt);
+    sIndent:= StringOfChar(' ', NTagIndent-1);
+    SReplaceAllW(sTagExp, '\n', EditorEOL(Ed) + sIndent);
+
+    //replace spaces to tabs, if needed
+    if Ed.TabMode=tmTabChar then
+    begin
+      sIndent:= StringOfChar(' ', Ed.TabList[0]);
+      SReplaceAllW(sTagExp, sIndent, #9);
+    end;
+
     //replace '|', save 1st '|' position
     NCaret:= Pos('|', sTagExp);
     if NCaret=0 then NCaret:= 1;
     SReplaceAllW(sTagExp, '|', '');
 
-    CurrentEditor.BeginUpdate;
+    Ed.BeginUpdate;
     try
-      CurrentEditor.CaretPos:= Point(NTagSt-1, CurrentEditor.CaretPos.Y);
-      NPos:= CurrentEditor.CaretStrPos;
-      CurrentEditor.DeleteText(Length(sTag));
-      CurrentEditor.InsertText(sTagExp);
+      Ed.CaretPos:= Point(NTagSt-1, Ed.CaretPos.Y);
+      NPos:= Ed.CaretStrPos;
+      Ed.DeleteText(Length(sTag));
+      Ed.InsertText(sTagExp);
       if DoInitTab then
       begin
         //do TagTabbing 2 times to select inner range
@@ -19409,19 +19272,19 @@ begin
         SelLen:= 0;
         SGetTagTabbing(sTagExp, SelSt, SelLen);
         SGetTagTabbing(sTagExp, SelSt, SelLen);
-        CurrentEditor.CaretStrPos:= NPos + SelSt - 1;
-        CurrentEditor.SetSelection(
-          CurrentEditor.CaretStrPos, SelLen);
+        Ed.CaretStrPos:= NPos + SelSt - 1;
+        Ed.SetSelection(
+          Ed.CaretStrPos, SelLen);
         MsgTabbing(DKLangConstW('ztagExpandAndMove'));
       end
       else
       begin
         //NCaret holds '|' position in sTagExp
-        CurrentEditor.CaretStrPos:= NPos + NCaret - 1;
+        Ed.CaretStrPos:= NPos + NCaret - 1;
         MsgTabbing(DKLangConstW('ztagExpand'));
       end;
     finally
-      CurrentEditor.EndUpdate;
+      Ed.EndUpdate;
     end;
     Result:= true;
   end;
@@ -19472,42 +19335,9 @@ begin
 end;
 
 procedure TfmMain.DoSelectToken(SkipQuotes: boolean = false);
-var
-  Ed: TSyntaxMemo;
-  n, nStart, nLen: integer;
-  t: TSyntToken;
 begin
-  Ed:= CurrentEditor;
-  if Ed.SyntObj=nil then
-    begin MsgBeep; Exit end;
-
-  n:= Ed.SyntObj.TokenAtPos(Ed.CaretStrPos);
-  if n<0 then
-    begin MsgBeep; Exit end;
-
-  t:= Ed.SyntObj.Tags[n];
-  if t=nil then
-    begin MsgBeep; Exit end;
-
-  nStart:= t.StartPos;
-  nLen:= t.EndPos - t.StartPos;
-  if (nStart<0) or (nLen<=0) then
-    begin MsgBeep; Exit end;
-
-  if SkipQuotes then
-  begin
-    //skip ending quotes
-    while (nLen>0) and IsQuoteChar(Ed.Lines.Chars[nStart+nLen]) do
-      Dec(nLen);
-    //skip starting quotes
-    while (nLen>0) and IsQuoteChar(Ed.Lines.Chars[nStart+1]) do
-    begin
-      Inc(nStart);
-      Dec(nLen);
-    end;
-  end;
-
-  Ed.SetSelection(nStart, nLen);
+  if not EditorSelectToken(CurrentEditor, SkipQuotes) then
+    MsgBeep;
 end;
 
 procedure TfmMain.TBXItemTreeFindCopyToClipNodeClick(Sender: TObject);
@@ -20361,7 +20191,7 @@ var
   List: TWideStringList;
   Enc: TOutputEnc;
 begin
-  ft:= SExpandVars('%temp%\SynWr$$.txt');
+  ft:= FGetTempFilenameIndexed(0);
   if not (IsFileExist(ft) and (FGetFileSize(ft)>0)) then
     begin MsgNoFile(ft); Exit end;
 
@@ -20575,7 +20405,7 @@ begin
 
   IsCss:= IsLexerCss(CurrentLexer);
   dir:= ExtractFileDir(Frame.FileName);
-  s:= SGetImageTag(fn, fn_wdx, dir, IsCss, CurrentCR(Ed));
+  s:= SGetImageTag(fn, fn_wdx, dir, IsCss, EditorEOL(Ed));
   if s='' then
     begin SetHint('Cannot insert tag: '+fn); MsgBeep; Exit end;
 
@@ -20744,7 +20574,7 @@ begin
         begin
           //Shift pressed?
           if GetKeyState(vk_shift)<0 then
-            DoEditorSelectToPosition(ed, ed.Bookmarks[Integer(L[i])])
+            EditorSelectToPosition(ed, ed.Bookmarks[Integer(L[i])])
           else
             ed.GotoBookmark(Integer(L[i]));
             
@@ -20891,7 +20721,7 @@ begin
         begin
           //Shift pressed?
           if GetKeyState(vk_shift)<0 then
-            DoEditorSelectToPosition(ed, ed.CaretPosToStrPos(Point(0, Integer(L[i]))))
+            EditorSelectToPosition(ed, ed.CaretPosToStrPos(Point(0, Integer(L[i]))))
           else
             ed.CaretPos:= Point(0, Integer(L[i]));
 
@@ -20970,7 +20800,7 @@ begin
   List:= TStringList.Create;
   try
     List.LoadFromFile(fn);
-    s:= SLoremIpsum(List, AMode, ACnt, ATags, CurrentCR(CurrentEditor));
+    s:= SLoremIpsum(List, AMode, ACnt, ATags, EditorEOL(CurrentEditor));
   finally
     FreeAndNil(List);
   end;
@@ -21678,7 +21508,7 @@ begin
   if Ext='' then
     Ext:= '.txt';
 
-  Result:= SExpandVars('%temp%\SynwText') + Ext;
+  Result:= FTempDir + '\SynwText' + Ext;
   FDelete(Result);
 
   with CurrentEditor do
@@ -21707,7 +21537,7 @@ function TfmMain.CurrentSelectionFN(Unicode: boolean): Widestring;
 var
   S: Widestring;
 begin
-  Result:= SExpandVars('%temp%\SynwSel.txt');
+  Result:= FTempDir + '\SynwSel.txt';
   FDelete(Result);
 
   with CurrentEditor do
@@ -21789,23 +21619,32 @@ begin
     if not DoInputFilename('zMRename', sName) then Exit;
 
     fn_new:= WideExtractFilePath(fn) + sName;
+
+    //allow to rename to non-existent name
     if not IsFileExist(fn_new) then
       Break
     else
+    //allow to only change filename case
+    if WideUpperCase(fn_new) = WideUpperCase(fn) then
+      Break
+    else
+    //don't allow to overwrite existing file
       MsgBeep;
   until false;
 
   acClose.Execute;
   if not MoveFileW(PWChar(fn), PWChar(fn_new)) then
   begin
-    MsgError(DKLangConstW('zMRenameErr')+#13+fn+#13'-->'#13+fn_new, Handle);
+    MsgRenameError(fn, fn_new);
     DoOpenFile(fn);
   end
   else
   begin
+    //rename successful
     SynMruFiles.DeleteItem(fn);
     DoOpenFile(fn_new);
     DoRefreshPluginsFiles(fn_new);
+    DoProjectRenameFile(fn, fn_new);
   end;
 
   CurrentFrame.TabColor:= NColor;
@@ -21881,16 +21720,6 @@ begin
 end;
 
 procedure TfmMain.ecIndentLike1stExecute(Sender: TObject);
-  function SIndentOf(const s: Widestring): Widestring;
-  var
-    i: Integer;
-  begin
-    Result:= '';
-    for i:= 1 to Length(s) do
-      if not IsSpaceChar(s[i]) then
-        begin Result:= Copy(s, 1, i-1); Break end;
-  end;
-
 var
   ed: TSyntaxMemo;
   i, Ln1, Ln2: Integer;
@@ -21940,7 +21769,7 @@ procedure TfmMain.acColumnMarkersExecute(Sender: TObject);
 var
   S: Widestring;
 begin
-  S:= CurrentFrame.ColMarkers;
+  S:= CurrentFrame.EditorMaster.ColMarkersString;
   
   with TIniFile.Create(SynIni) do
   try
@@ -21953,7 +21782,8 @@ begin
     Free
   end;
 
-  CurrentFrame.ColMarkers:= S;
+  CurrentFrame.EditorMaster.ColMarkersString:= S;
+  CurrentFrame.EditorSlave.ColMarkersString:= S;
   CurrentFrame.EditorMaster.Invalidate;
   CurrentFrame.EditorSlave.Invalidate;
 end;
@@ -22729,6 +22559,11 @@ end;
 
 procedure TfmMain.TBXItemPLogFindClick(Sender: TObject);
 begin
+  DoFindInPluginsLog;
+end;
+
+procedure TfmMain.DoFindInPluginsLog;
+begin
   with ListPLog do
     if CanFocus then
     begin
@@ -22762,9 +22597,23 @@ procedure TfmMain.ListPLogKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key=vk_delete) and (Shift=[]) then
-    begin TbxItemPLogClearClick(Self); Key:= 0 end;
+  begin
+    TbxItemPLogClearClick(Self);
+    Key:= 0;
+    Exit
+  end;
   if (Key=Ord('C')) and (Shift=[ssCtrl]) then
-    begin TbxItemPLogCopySelClick(Self); Key:= 0 end;
+  begin
+    TbxItemPLogCopySelClick(Self);
+    Key:= 0;
+    Exit
+  end;
+  if IsShortcutOfCmd(Shortcut(Key, Shift), smFindDialog) then
+  begin
+    TBXItemPLogFindClick(Self);
+    Key:= 0;
+    Exit
+  end;
   DoHandleKeysInPanels(Key, Shift);
 end;
 
@@ -23146,31 +22995,8 @@ begin
 end;
 
 procedure TfmMain.ecCenterLinesExecute(Sender: TObject);
-var
-  Ed: TSyntaxMemo;
-  Ln1, Ln2, i: Integer;
-  s: ecString;
 begin
-  Ed:= CurrentEditor;
-  with Ed do
-    if (not ReadOnly) and (Lines.Count>0) then
-    begin
-      EditorGetSelLines(Ed, Ln1, Ln2);
-      Ed.BeginUpdate;
-      try
-        for i:= Ln1 to Ln2 do
-        begin
-          s:= WideTrim(Lines[i]);
-          if Length(s)<RightMargin then
-          begin
-            s:= StringOfChar(' ', (RightMargin-Length(s)) div 2) + s;
-            DoReplaceLine(Ed, i, s, true{ForceUndo});
-          end;
-        end;
-      finally
-        Ed.EndUpdate;
-      end;
-    end;
+  EditorCenterSelectedLines(CurrentEditor);
 end;
 
 procedure TfmMain.TBXItemLeftTabsClick(Sender: TObject);
@@ -23621,7 +23447,7 @@ var
 begin
   Ed:= CurrentEditor;
   s:= '';
-  sCR:= CurrentCR(Ed);
+  sCR:= EditorEOL(Ed);
 
   if (BufferPtr=nil) or (BufferSize<=0) then
   begin
@@ -23802,7 +23628,7 @@ begin
     cSynPropReadOnly: SetNum(Ord(Ed.ReadOnly));
     cSynPropLexer: SetStr(CurrentLexer);
     cSynPropLexerForFile: SetStr(CurrentLexerForFile);
-    cSynPropLineEnds: SetStr(CurrentCR(Ed));
+    cSynPropLineEnds: SetStr(EditorEOL(Ed));
     cSynPropRightMargin: SetNum(Ed.RightMargin);
     cSynPropTabSpaces: SetNum(Ord(Ed.TabMode=tmSpaces));
     cSynPropTabSize: SetNum(Ed.TabList[0]);
@@ -23932,27 +23758,8 @@ end;
 
 
 procedure TfmMain.ecExtendSelByLineExecute(Sender: TObject);
-var
-  Ed: TSyntaxMemo;
-  DoNext: boolean;
-  NStart, NEnd: Integer;
 begin
-  Ed:= CurrentEditor;
-  NStart:= Ed.SelStart;
-  NEnd:= Ed.SelStart+Ed.SelLength;
-
-  DoNext:=
-    (Ed.SelLength>0) and
-    (Ed.CaretStrPos = NEnd) and
-    (Ed.StrPosToCaretPos(NStart).X = 0) and
-    ((Ed.StrPosToCaretPos(NEnd).X = 0) or (NEnd = Ed.TextLength));
-    
-  if not DoNext then
-  begin
-    Ed.ResetSelection;
-    Ed.ExecCommand(smLineStart);
-  end;
-  Ed.ExecCommand(smSelDown);
+  EditorExtendSelectionByOneLine(CurrentEditor);
 end;
 
 function TfmMain.BrotherEditor(Ed: TSyntaxMemo): TSyntaxMemo;
@@ -24400,7 +24207,7 @@ begin
   Result:= true;
   if OptTokens=tokensAll then Exit;
 
-  Lexer:= CurrentLexerForPos(Ed, StartPos);
+  Lexer:= EditorCurrentLexerForPos(Ed, StartPos);
   if Lexer='' then Exit;
   Style:= EditorTokenName(Ed, StartPos, EndPos);
 
@@ -24480,31 +24287,31 @@ begin
     1:
       begin
         if Cfm('UTF-8') then
-          ChangeEncoding(Frame, cp__UTF8, False{ACanReload});
+          ApplyFrameEncodingAndReload(Frame, cp__UTF8, False{ACanReload});
       end;
     2:
       begin
         if Cfm(DKLangConstW('cpUTF8no')) then
-          ChangeEncoding(Frame, cp__UTF8_noBOM, False{ACanReload});
+          ApplyFrameEncodingAndReload(Frame, cp__UTF8_noBOM, False{ACanReload});
       end;
     3:
       begin
         if Cfm('UTF-16') then
-          ChangeEncoding(Frame, cp__Unicode, False{ACanReload});
+          ApplyFrameEncodingAndReload(Frame, cp__Unicode, False{ACanReload});
       end;
     4:
       begin
         if Cfm('UTF-16 BE') then
-          ChangeEncoding(Frame, cp__UnicodeBE, False{ACanReload});
+          ApplyFrameEncodingAndReload(Frame, cp__UnicodeBE, False{ACanReload});
       end;
     5:
-      ChangeEncoding(Frame, cp__UTF8, False{ACanReload});
+      ApplyFrameEncodingAndReload(Frame, cp__UTF8, False{ACanReload});
     6:
-      ChangeEncoding(Frame, cp__UTF8_noBOM, False{ACanReload});
+      ApplyFrameEncodingAndReload(Frame, cp__UTF8_noBOM, False{ACanReload});
     7:
-      ChangeEncoding(Frame, cp__Unicode, False{ACanReload});
+      ApplyFrameEncodingAndReload(Frame, cp__Unicode, False{ACanReload});
     8:
-      ChangeEncoding(Frame, cp__UnicodeBE, False{ACanReload});
+      ApplyFrameEncodingAndReload(Frame, cp__UnicodeBE, False{ACanReload});
   end;
 end;
 
@@ -24651,7 +24458,7 @@ begin
     F:= FSpell.DialogForm;
     F.Left:= (Screen.Width - F.Width) div 2;
     F.Top:= (Screen.Height - F.Height) div 2;
-    DoCheckDialogOverlapsCaret(CurrentFrame.EditorMaster, F);
+    EditorCheckCaretOverlappedByForm(CurrentFrame.EditorMaster, F);
   end;
   {$endif}
 end;
@@ -24793,12 +24600,12 @@ begin
   if Ok then
   begin
     if OptExtSel and (Act in [arFindNext]) then
-      DoExtendSelection(CurrentEditor,
+      EditorExtendSelectionByPosition(CurrentEditor,
         oldSelStart, oldSelLength,
         CurrentEditor.CaretStrPos, 0);
 
     if Assigned(fmSR) then
-      DoCheckDialogOverlapsCaret(Finder.Control, fmSR);
+      EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
   end
   else
   begin
@@ -24930,22 +24737,8 @@ begin
 end;
 
 procedure TfmMain.ecScrollToSelExecute(Sender: TObject);
-var
-  Ed: TSyntaxMemo;
-  Save: TSynSelSave;
 begin
-  Ed:= CurrentEditor;
-  with Ed do
-    if HaveSelection then
-    begin
-      EditorSaveSel(Ed, Save);
-      if SelLength>0 then
-        CaretStrPos:= SelStart
-      else
-        CaretPos:= Point(SelRect.Left, SelRect.Top);
-      EditorCenterPos(Ed, true{GotoMode}, opSrOffsetY);
-      EditorRestoreSel(Ed, Save);
-    end;
+  EditorScrollToSelection(CurrentEditor, opSrOffsetY);
 end;
 
 procedure TfmMain.ecProjectListExecute(Sender: TObject);
@@ -25490,79 +25283,26 @@ end;
 procedure TfmMain.ecSelExtendExecute(Sender: TObject);
 var
   Ed: TSyntaxMemo;
-  An: TClientSyntAnalyzer;
-  R: TTextRange;
-  i, StPos, EndPos, NCaret: Integer;
-  SelSave: TSynSelSave;
-  Lex: string;
+  Lex, Err: string;
 begin
   Ed:= CurrentEditor;
-  An:= nil;
-
-  if Assigned(Ed) then
-    An:= Ed.SyntObj;
-  if An=nil then
+  if Ed=nil then Exit;
+  if Ed.SyntObj=nil then
     begin SetHint('Extend selection: no lexer active'); MsgBeep; Exit end;
 
-  //we have two variants of code: for usual code (Pascal/C/PHP/etc) and for HTML,
-  //HTML case is special, need precise jumps considering "<" and ">"
-  EditorSaveSel(Ed, SelSave);
+  //we have two variants of code: for usual code (Pascal/C/PHP/etc) and for HTML/XML.
+  //HTML/XML case is special, need precise jumps considering "<" and ">".
   Lex:= CurrentLexer;
-  if not IsLexerHTML(Lex) and not IsLexerXML(Lex) then
+  if IsLexerHTML(Lex) or IsLexerXML(Lex) then
   begin
-    //if selection is made, it may be selection from prev ExtendSel call,
-    //so need to increment caret pos, to extend selection further
-    if Ed.HaveSelection then
-    begin
-      Ed.ResetSelection;
-      Ed.CaretStrPos:= Ed.CaretStrPos+2;
-    end;
-
-    R:= An.NearestRangeAtPos(Ed.CaretStrPos);
-    if (R=nil) or not R.IsClosed then
-    begin
-      SetHint('Extend selection: no range at caret');
-      MsgBeep;
-      EditorRestoreSel(Ed, SelSave);
-      Exit
-    end;
-
-    EndPos:= R.EndIdx;
-    if not ((EndPos>=0) and (EndPos<An.TagCount)) then
-    begin
-      SetHint('Extend selection: no closed range');
-      MsgBeep;
-      Exit
-    end;
-
-    EndPos:= An.Tags[EndPos].EndPos;
-    Ed.SetSelection(R.StartPos, EndPos-R.StartPos);
+    EditorExtendSelectionByLexer_HTML(Ed);
   end
   else
-  //code for HTML/XML
   begin
-    NCaret:= Ed.CaretStrPos;
-    for i:= An.RangeCount-1 downto 0 do
-    begin
-      //get StPos start of range, EndPos end of range
-      StPos:= An.Ranges[i].StartPos;
-      EndPos:= An.Ranges[i].EndIdx;
-      if EndPos<0 then Continue;
-      EndPos:= An.Tags[EndPos].EndPos;
-
-      //take only range, which starts before NCaret, and ends after NCaret
-      if (StPos<NCaret) and (EndPos>=NCaret) then
-        //and not range which is from "<" to ">" - this is just tag
-        if not (Ed.Lines.Chars[StPos+1]='<') then
-        begin
-          //correct StPos, EndPos coz they don't include "<" and ">" in HTML
-          Dec(StPos);
-          Inc(EndPos);
-          Ed.SetSelection(StPos, EndPos-StPos);
-          Break
-        end;
-    end;
-  end;
+    EditorExtendSelectionByLexer_All(Ed, Err);
+    if Err<>'' then
+      begin SetHint(Err); MsgBeep; end;
+  end
 end;
 
 procedure TfmMain.TBXItemSSelExtendClick(Sender: TObject);
@@ -25692,23 +25432,11 @@ end;
 procedure TfmMain.DoFoldLevel(NLevel: Integer);
 var
   Ed: TSyntaxMemo;
-  An: TClientSyntAnalyzer;
-  i: Integer;
 begin
   Ed:= CurrentEditor;
-  An:= Ed.SyntObj;
-  if An=nil then
+  if Ed.SyntObj=nil then
     begin SetHint('Fold level: no lexer active'); MsgBeep; Exit end;
-
-  Ed.BeginUpdate;
-  try
-    Ed.FullExpand;
-    for i:= 0 to An.RangeCount-1 do
-      if An.Ranges[i].Level > NLevel then
-        Ed.CollapseRange(An.Ranges[i]);
-  finally
-    Ed.EndUpdate;
-  end;
+  EditorFoldLevel(Ed, NLevel);
 end;
 
 
@@ -26606,12 +26334,16 @@ procedure TfmMain.TBXSubmenuItemFRecentsPopup(Sender: TTBCustomItem;
 var
   i: Integer;
 begin
-  with TBXMRUListItem1 do
+  with TBXMRUListItemFRecents do
   begin
     Clear;
     for i:= SynMruFiles.Items.Count-1 downto 0 do
       MRUAdd(SynMruFiles.Items[i]);
   end;
+
+  //fix too big menuitems height
+  FixMruBigImageList(TBXMRUListItemFRecents);
+  FixMenuBigImageList(TbxSubmenuItemFRecents);
 end;
 
 procedure TfmMain.TBXSubmenuItemSessPopup(Sender: TTBCustomItem;
@@ -26787,7 +26519,7 @@ begin
 end;
 
 
-procedure TfmMain.TbxItemMruNewdocClick(Sender: TObject;
+procedure TfmMain.TBXMRUListItemFNewClick(Sender: TObject;
   const Filename: WideString);
 begin
   DoNewDoc(Filename);
@@ -27237,68 +26969,13 @@ begin
 end;
 
 procedure TfmMain.DoPasteAndSelect;
-var
-  Ed: TSyntaxMemo;
-  ins_text: Widestring;
-  NStart, NLen: Integer;
 begin
-  Ed:= CurrentEditor;
-
-  if Ed.ReadOnly then Exit;
-  if not Clipboard.HasFormat(CF_TEXT) then
-    begin MsgBeep; Exit end;
-
-  //column block?  
-  if (GetClipboardBlockType <> 2) then
-  begin
-    //part copied from ecSyntMemo.PasteFromClipboard
-    //yes, not DRY
-    if soSmartPaste in Ed.OptionsEx then
-      ins_text:= GetClipboardTextEx(Ed.Charset)
-    else
-      ins_text:= GetClipboardText(Ed.Charset);
-
-    case Ed.Lines.TextFormat of
-      tfCR: ReplaceStr(ins_text, #13#10, #13);
-      tfNL: ReplaceStr(ins_text, #13#10, #10);
-    end;
-
-    Ed.InsertText(''); //fix CaretStrPos when caret is after EOL
-    NStart:= Ed.CaretStrPos;
-    NLen:= Length(ins_text);
-
-    Ed.InsertText(ins_text);
-    Ed.SetSelection(NStart, NLen);
-  end
-  else
-    Ed.PasteFromClipboard();
+  EditorPasteAndSelect(CurrentEditor);
 end;
 
 procedure TfmMain.DoInsertBlankLineAboveBelow(ABelow: boolean);
-var
-  Ed: TSyntaxMemo;
 begin
-  Ed:= CurrentEditor;
-  if Ed.ReadOnly then Exit;
-
-  if ABelow then
-  begin
-    if Ed.CaretPos.Y < Ed.Lines.Count-1 then
-    begin
-      Ed.CaretPos:= Point(0, Ed.CaretPos.Y+1);
-      Ed.InsertNewLine(0, true{DoNotMoveCaret}, false);
-    end
-    else
-    begin
-      Ed.ExecCommand(smEditorBottom);
-      Ed.InsertNewLine(0, false{DoNotMoveCaret}, false);
-    end;
-  end
-  else
-  begin
-    Ed.CaretPos:= Point(0, Ed.CaretPos.Y);
-    Ed.InsertNewLine(0, true{DoNotMoveCaret}, false);
-  end;  
+  EditorInsertBlankLineAboveOrBelow(CurrentEditor, ABelow);
 end;
 
 procedure TfmMain.DoCopyURL;
@@ -27818,6 +27495,80 @@ begin
     DoCloseSession(false);
     DoCloseTabsOnProjectClosingIfNeeded;
   end;
+end;
+
+procedure TfmMain.DoProjectRenameFile(const fn, fn_new: Widestring);
+begin
+  if Assigned(fmProj) then
+    fmProj.DoRenameFile(fn, fn_new);
+end;
+
+procedure TfmMain.ProjKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var
+  sh: TShortcut;
+begin
+  sh:= Shortcut(Key, Shift);
+  if sh=0 then Exit;
+
+  //configured shortcut for "Go to project file"
+  if IsShortcutOfCmd(sh, sm_ProjectList) then
+  begin
+    ProjGotoFile(Self);
+    Key:= 0;
+    Exit
+  end;
+  //F2 - rename folder
+  if (Key=VK_F2) and (Shift=[]) then
+  begin
+    fmProj.DoRename;
+    Key:= 0;
+    Exit
+  end;
+  //F5 - refresh project
+  if (Key=VK_F5) and (Shift=[]) then
+  begin
+    fmProj.DoRefresh;
+    Key:= 0;
+    Exit
+  end;
+  //Del
+  if (Key=VK_delete) and (Shift=[]) and not fmProj.TreeProj.IsEditing then
+  begin
+    fmProj.DoRemove;
+    Key:= 0;
+    Exit
+  end;
+  //Ins
+  if (Key=VK_insert) and (Shift=[]) and not fmProj.TreeProj.IsEditing then
+  begin
+    fmProj.DoAddFiles;
+    Key:= 0;
+    Exit
+  end;
+  //Space - toggle preview pane
+  if (Key=VK_space) and (Shift=[]) and not fmProj.TreeProj.IsEditing then
+  begin
+    fmProj.DoPreview(true);
+    Key:= 0;
+    Exit
+  end;
+  //Ctrl+Space - toggle "show paths"
+  if (Key=VK_space) and (Shift=[ssCtrl]) then
+  begin
+    fmProj.DoToggleShowPaths;
+    Key:= 0;
+    Exit
+  end;
+  //Enter - open selected files
+  if (Key=vk_return) and (Shift=[]) then
+  begin
+    if not fmProj.IsDirSelected then
+      fmProj.DoOpenFiles;
+    Key:= 0;
+    Exit
+  end;
+
+  DoHandleKeysInPanels(Key, Shift);
 end;
 
 

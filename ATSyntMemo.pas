@@ -52,8 +52,10 @@ uses
   Controls, ExtCtrls,
   ecSyntMemo;
 
+//global options for all editors  
 var
   opSeparateCopiedLines: boolean = false;
+  opShowCurrentColumn: boolean = false;
 
 type
   TCaretsColorIndicator = (cciNone, cciLineBg, cciGutterBg);
@@ -122,12 +124,17 @@ type
     procedure DoAddCaretInt(P: TPoint);
     function IsCtrlClickHandled(const P: TPoint): boolean;
     function CanSetCarets: boolean;
+    procedure DoAfterPaint;
+    function GetColMarkersString: string;
+    procedure SetColMarkersString(const S: string);
   protected
     procedure DoScroll; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure Paint; override;
   public
+    ColMarkers: array[0..20] of integer;
+    property ColMarkersString: string read GetColMarkersString write SetColMarkersString;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure AddCaret(const P: TPoint; AddDefaultPos: boolean = true);
@@ -141,6 +148,7 @@ type
     property CaretsGutterColor: TColor read FCaretsGutterColor write FCaretsGutterColor;
     procedure ExecCommand(Command: integer; Data: Pointer = nil); override;
     procedure DoShowInfo;
+    procedure DoDrawColumns;
     property OnCtrlClick: TOnCtrlClick read FOnCtrlClick write FOnCtrlClick;
   end;
 
@@ -173,6 +181,16 @@ uses
   ecStrUtils,
   ecCmdConst;
 
+function SGetItem(var S: string; const sep: Char = ','): string;
+var
+  i: integer;
+begin
+  i:= Pos(sep, s);
+  if i = 0 then i:= MaxInt;
+  Result:= Copy(s, 1, i-1);
+  Delete(s, 1, i);
+end;
+
 function SLineWidth(const S: Widestring): Integer;
 var n: Integer;
 begin
@@ -180,7 +198,7 @@ begin
   if n=0 then
     Result:= Length(S)
   else
-    Result:= n-1;  
+    Result:= n-1;
 end;
 
 function SLineHeight(const S: Widestring): Integer;
@@ -197,6 +215,8 @@ end;
 constructor TSyntaxMemo.Create(AOwner: TComponent);
 begin
   inherited;
+
+  FillChar(ColMarkers, SizeOf(ColMarkers), 0);
 
   FCarets:= TList.Create;
   FCaretsCoord:= TList.Create;
@@ -1341,10 +1361,11 @@ procedure TSyntaxMemo.Paint;
 begin
   inherited;
 
-  if not Focused and not (eoShowCaretWhenUnfocused in OptionsEx) then
-    Exit;
-  
-  DoDrawCarets;
+  if CaretsCount<=1 then
+    DoAfterPaint;
+
+  if Focused or (eoShowCaretWhenUnfocused in OptionsEx) then
+    DoDrawCarets;
 end;
 
 procedure TSyntaxMemo.EdBeforeLineDraw(Sender: TObject; Rect: TRect; Line: Integer);
@@ -1574,5 +1595,75 @@ begin
       NBottom:= P.Y;
   end;
 end;
+
+procedure TSyntaxMemo.DoDrawColumns;
+var
+  P: TPoint;
+  i: Integer;
+begin
+  //draw current column line
+  if opShowCurrentColumn then
+  begin
+    Canvas.Pen.Color:= RightMarginColor;
+    Canvas.Pen.Style:= psSolid;
+    Canvas.Pen.Width:= 1;
+
+    P:= CaretPos;
+    P:= CaretToMouse(P.X, P.Y);
+    Canvas.MoveTo(P.X, 0);
+    Canvas.LineTo(P.X, ClientHeight);
+  end;
+
+  //draw "column markers" lines
+  for i:= Low(ColMarkers) to High(ColMarkers) do
+    if ColMarkers[i]>0 then
+    begin
+      Canvas.Pen.Color:= RightMarginColor;
+      Canvas.Pen.Style:= psSolid;
+      Canvas.Pen.Width:= 1;
+
+      P:= CaretToMouse(ColMarkers[i], 0);
+      Canvas.MoveTo(P.X, 0);
+      Canvas.LineTo(P.X, ClientHeight);
+    end;
+end;
+
+procedure TSyntaxMemo.DoAfterPaint;
+begin
+  DoDrawColumns;
+end;
+
+function TSyntaxMemo.GetColMarkersString: string;
+var
+  i: integer;
+begin
+  Result:= '';
+  for i:= Low(Colmarkers) to High(Colmarkers) do
+    if Colmarkers[i]>0 then
+      Result:= Result + IntToStr(Colmarkers[i]) + ' ';
+  Result:= Trim(Result);
+end;
+
+procedure TSyntaxMemo.SetColMarkersString(const S: string);
+var
+  SItems, SItem: string;
+  N, Index: Integer;
+begin
+  FillChar(ColMarkers, SizeOf(ColMarkers), 0);
+  Index:= Low(ColMarkers);
+  SItems:= S;
+  repeat
+    SItem:= SGetItem(SItems, ' ');
+    if SItem='' then Exit;
+    N:= StrToIntDef(SItem, 0);
+    if N>0 then
+    begin
+      if Index>= High(ColMarkers) then Exit;
+      ColMarkers[Index]:= N;
+      Inc(Index);
+    end;
+  until false;
+end;
+
 
 end.

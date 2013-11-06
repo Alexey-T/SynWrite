@@ -800,7 +800,7 @@ begin
   repeat
     msk:= SGetMask(s);
     if msk='' then Break;
-
+    
     ch:= msk[Length(msk)];
     IsFolder:= (ch='\') or (ch='/');
     if IsFolder then
@@ -809,7 +809,8 @@ begin
 
     msk:= WideExtractFileName(msk);
     if Pos('.', msk)=0 then
-      msk:= msk+'.';
+      if (msk<>'') and (msk[Length(msk)]<>'*') then
+        msk:= msk+'.';
 
     Result:= PathMatchSpecW(PWChar(fn), PWChar(msk));
     if Result then Break;

@@ -164,9 +164,9 @@ begin
       //load others using converter
       try
         Screen.Cursor:= crHourGlass;
-        fn_png:= SExpandVars('%temp%\SynwPreview.png');
+        fn_png:= FTempDir + '\SynwPreview.png';
         cmdline:= Format('"%s" "%s" "%s"', [FileNameConverterImageToBmp, Caption, fn_png]);
-        if FExecProcess(cmdline, SExpandVars('%temp%'), sw_hide, true{Wait}) = exOk then
+        if FExecProcess(cmdline, FTempDir, sw_hide, true{Wait}) = exOk then
           if FileExists(fn_png) then
           begin
             LoadPngToBitmap(b, fn_png);

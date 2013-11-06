@@ -5,11 +5,14 @@ interface
 uses
   Windows, SysUtils;
 
+function FTempDir: string;
+
 type TSynCharArray = array[1..50] of Integer;
 procedure SGetCharArray(S, Filter: Widestring; var Arr: TSynCharArray);
 function SSubstringMatch(const Str, SFilter: Widestring): boolean;
 function SFuzzyMatch(S, Filter: Widestring): boolean;
 
+function SIndentOf(const s: Widestring): Widestring;
 function SUntab(const S: Widestring; TabSize: Integer): Widestring;
 function SDecodeSpecChars(const s: WideString): WideString;
 
@@ -780,11 +783,11 @@ begin
 end;
 
 function IsTempFN(const fn: Widestring): boolean;
-var t: Widestring;
+var
+  t: Widestring;
 begin
-  t:= SExpandVars('%temp%\');
-  Result:=
-    UpperCase(t) = UpperCase(Copy(fn, 1, Length(t)));
+  t:= FTempDir + '\';
+  Result:= UpperCase(t) = UpperCase(Copy(fn, 1, Length(t)));
 end;
 
 function SGetKeyValue(const s: string; var sKey, sVal: string): boolean;
@@ -1154,4 +1157,19 @@ begin
   Result:= Pos(ch, '()[]{}') > 0;
 end;
 
+function SIndentOf(const s: Widestring): Widestring;
+var
+  i: Integer;
+begin
+  Result:= '';
+  for i:= 1 to Length(s) do
+    if not IsSpaceChar(s[i]) then
+      begin Result:= Copy(s, 1, i-1); Break end;
+end;
+
+function FTempDir: string;
+begin
+  Result:= SExpandVars('%temp%');
+end;
+  
 end.

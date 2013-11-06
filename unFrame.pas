@@ -86,8 +86,6 @@ type
     procedure TBXItemSplit60_40Click(Sender: TObject);
     procedure TBXItemSplit70_30Click(Sender: TObject);
     procedure TBXItemSplit80_20Click(Sender: TObject);
-    procedure EditorMasterAfterLineDraw(Sender: TObject; Rect: TRect;
-      Line: Integer);
     procedure PanelMapMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure TimerMapTimer(Sender: TObject);
@@ -112,7 +110,6 @@ type
     FCollapsedString2: Widestring;
     FCollapsedRestored: boolean;
     FCollapsedRestored2: boolean;
-    FColMarkers: array[0..20] of integer;
     FFtpInfoPtr: Pointer;
     FFtpInfoSize: Integer;
     FMapColor: TColor;
@@ -133,8 +130,6 @@ type
     FSavingBusy: boolean;
 
     procedure EditorShowHint(Sender: TObject; const HintStr: string; var HintObj: THintWindow);
-    function GetColMarkers: string;
-    procedure SetColmarkers(const S: string);
     procedure SetSplitPos(const F: Double);
     procedure SetSplitHorz(Value: boolean);
     function GetModified: boolean;
@@ -181,7 +176,6 @@ type
     function DoSpellContinue(AFromPos: Integer): Integer;
     procedure SyncMap;
     procedure JumpToColumnMarker(ALeft: boolean);
-    property ColMarkers: string read GetColMarkers write SetColMarkers;
     property ShowMap: boolean read GetShowMap write SetShowMap;
     property MapColor: TColor read FMapColor write SetMapColor;
     property TabColor: TColor read FTabColor write FTabColor;
@@ -335,7 +329,6 @@ begin
 
   FFtpInfoPtr:= nil;
   FFtpInfoSize:= 0;
-  FillChar(FColMarkers, SizeOf(FColMarkers), 0);
   FMapColor:= clLtGray;
   FTabColor:= clNone;
   FSpell:= false;
@@ -476,8 +469,13 @@ begin
   if (AFileName = '') then
     TextSource.Lines.Clear
   else
-  if not TfmMain(Owner).LoadState(Self, AFileName) then
-    TextSource.Lines.LoadFromFile(AFileName);
+  try
+    Screen.Cursor:= crHourGlass;
+    if not TfmMain(Owner).LoadState(Self, AFileName) then
+      TextSource.Lines.LoadFromFile(AFileName);
+  finally
+    Screen.Cursor:= crDefault;
+  end;
 
   Modified:= False;
   ModifiedClr:= False;
@@ -609,7 +607,7 @@ begin
   TfmMain(Owner).UpdateStatusBar;
   TfmMain(Owner).SynChange(Sender);
   SyncMap;
-  
+
   //not good, may be slow
   //FixEditorCollapsed(Sender as TSyntaxMemo);
 end;
@@ -1171,75 +1169,6 @@ begin
     SplitPos:= 50.0;  
 end;
 
-function TEditorFrame.GetColMarkers: string;
-var
-  i: integer;
-begin
-  Result:= '';
-  for i:= Low(FColmarkers) to High(FColmarkers) do
-    if FColmarkers[i]>0 then
-      Result:= Result+IntToStr(FColmarkers[i])+ ' ';
-  Result:= Trim(Result);    
-end;
-
-procedure TEditorFrame.SetColmarkers(const S: string);
-var
-  SItems, SItem: Widestring;
-  N, Index: Integer;
-begin
-  FillChar(FColMarkers, SizeOf(FColMarkers), 0);
-  Index:= Low(FColMarkers);
-  SItems:= S;
-  repeat
-    SItem:= SGetItem(SItems, ' ');
-    if SItem='' then Exit;
-    N:= StrToIntDef(SItem, 0);
-    if N>0 then
-    begin
-      if Index>= High(FColMarkers) then Exit;
-      FColMarkers[Index]:= N;
-      Inc(Index);
-    end;
-  until false;
-end;
-
-procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
-  Rect: TRect; Line: Integer);
-var
-  Ed: TSyntaxMemo;
-  C: TCanvas;
-  p: TPoint;
-  i, X: Integer;
-const
-  cLineWidthMargin = 1; //line for column markers
-  cLineWidthColumn = 1; //thicker line for current column
-begin
-  Ed:= Sender as TSyntaxMemo;
-  C:= Ed.Canvas;
-  for i:= Low(FColMarkers) to High(FColMarkers) do
-    if FColMarkers[i]>0 then
-    begin
-      C.Pen.Color:= Ed.RightMarginColor;
-      C.Pen.Style:= psSolid;
-      C.Pen.Width:= cLineWidthMargin;
-      X:= Rect.Left + Ed.DefTextExt.cx * FColMarkers[i];
-      C.MoveTo(X, Rect.Top);
-      C.LineTo(X, Rect.Bottom);
-    end;
-
-  if TfmMain(Owner).opShowCurrentColumn then
-  begin
-    C.Pen.Color:= Ed.RightMarginColor;
-    C.Pen.Style:= psSolid;
-    C.Pen.Width:= cLineWidthColumn;
-    p:= Ed.CaretPos;
-    X:= Ed.CaretToMouse(p.x, p.y).X;
-    C.MoveTo(X, Rect.Top);
-    C.LineTo(X, Rect.Bottom);
-  end;
-end;
-
-
 function _CompareNums(P1, P2: Pointer): Integer;
 begin
   Result:= Integer(P1)-Integer(P2);
@@ -1267,9 +1196,9 @@ begin
       L.Add(Pointer(Ed.RightMargin));
 
     //make sorted markers list
-    for i:= Low(FColMarkers) to High(FColmarkers) do
-      if FColMarkers[i]>0 then
-        L.Add(Pointer(FColMarkers[i]));
+    for i:= Low(Ed.ColMarkers) to High(Ed.Colmarkers) do
+      if Ed.ColMarkers[i]>0 then
+        L.Add(Pointer(Ed.ColMarkers[i]));
     if L.Count<=1 then Exit;
     L.Sort(_CompareNums);
 

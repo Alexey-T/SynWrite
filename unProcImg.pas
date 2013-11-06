@@ -28,7 +28,7 @@ var
 begin
   Result:= '';
 
-  fn_ini:= SExpandVars('%temp%\lsplugin.ini');
+  fn_ini:= FTempDir + '\lsplugin.ini';
   str_width:= SGetWdxField(fn_wdx, fn_image, fn_ini, false, wdx_W_field);
   str_height:= SGetWdxField(fn_wdx, fn_image, fn_ini, false, wdx_H_field);
   if StrToIntDef(str_width, 0)<=0 then Exit;

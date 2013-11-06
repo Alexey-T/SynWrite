@@ -141,6 +141,8 @@ type
       Shift: TShiftState);
     procedure ed1KeyPress(Sender: TObject; var Key: Char);
     procedure ed2KeyPress(Sender: TObject; var Key: Char);
+    procedure TntFormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
     CurChecked: boolean;
@@ -178,6 +180,9 @@ type
     SR_SuggestedSel: WideString;
     SR_SuggestedSelEn,
     SR_SuggestedSelScope: boolean;
+    Sh_FindNext,
+    Sh_FindMode,
+    Sh_ReplaceMode: TShortcut;
     function TextOptions: Widestring;
     property Text1: Widestring read GetText1 write SetText1;
     property Text2: Widestring read GetText2 write SetText2;
@@ -848,7 +853,7 @@ begin
     Exit
   end;
 
-  //Tab, Ctrl+Tab
+  //Tab, Shift+Tab
   if (key = vk_tab) then
   begin
     if Shift=[ssShift] then
@@ -1442,6 +1447,30 @@ end;
 procedure TfmSR.ed2KeyPress(Sender: TObject; var Key: Char);
 begin
   DoHandleCtrlBkSp(ed2, Key);
+end;
+
+procedure TfmSR.TntFormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Shortcut(Key, Shift) = Sh_FindNext then
+  begin
+    if bFindNext.Visible then bFindNext.Click else
+     if bSkip.Visible then bSkip.Click;
+    Key:= 0;
+    Exit
+  end;
+  if Shortcut(Key, Shift) = Sh_FindMode then
+  begin
+    IsReplace:= false;
+    Key:= 0;
+    Exit;
+  end;
+  if Shortcut(Key, Shift) = Sh_ReplaceMode then
+  begin
+    IsReplace:= true;
+    Key:= 0;
+    Exit;
+  end;
 end;
 
 end.
