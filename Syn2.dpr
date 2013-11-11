@@ -58,20 +58,21 @@ begin
 end;
 
 //============================================================================
-  function NotText(const s: Widestring): boolean;
-  begin
-    case opListerTextOnly of
-      0: Result:= not IsFileText(S);
-      1: Result:= False;
-      else Result:= not IsFileText(S) and not MsgConfirmBinary(S);
-    end;
+function IsNotTextFile(const s: Widestring): boolean;
+begin
+  case opListerTextOnly of
+    0: Result:= not IsFileText(S);
+    1: Result:= False;
+    else Result:= not IsFileText(S) and not MsgConfirmBinary(S, 0);
   end;
+end;
 
+//============================================================================
 function ListLoadW(ListerWin: HWND; FileToLoad: PWideChar; ShowFlags: integer): HWND; stdcall;
 var S: WideString;
 begin
   S:= FileToLoad;
-  if (S <> '') and ((S[Length(S)] = '\') or FBigSized(S) or NotText(S)) then
+  if (S <> '') and ((S[Length(S)] = '\') or IsFileTooBig(S) or IsNotTextFile(S)) then
     Result:= 0
   else
     Result:= StartSyn(ListerWin, S);
@@ -92,7 +93,7 @@ var S: WideString;
 begin
   Result:= LISTPLUGIN_ERROR;
   S:= FileToLoad;
-  if (S = '') or (S[Length(S)] = '\') or FBigSized(S) or not IsFileText(S) then
+  if (S = '') or (S[Length(S)] = '\') or IsFileTooBig(S) or not IsFileText(S) then
     Exit;
   f:= TfmMain(FindControl(ListWin));
   if f <> nil then

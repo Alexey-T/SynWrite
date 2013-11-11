@@ -23,7 +23,6 @@ uses
   unFrame,
   unSearch,
   unSearchInList,
-
   unNumConv,
   unClip,
   unClips,
@@ -520,9 +519,6 @@ type
     TBXSeparatorItem34: TSpTbxSeparatorItem;
     TBXItemCtxCopyHTML: TSpTbxItem;
     TBXItemCtxCopyRTF: TSpTbxItem;
-    ecCopyAsHTML: TAction;
-    ecCopyApp: TAction;
-    ecCutApp: TAction;
     TBXSeparatorItem35: TSpTbxSeparatorItem;
     TBXItemECutApp: TSpTbxItem;
     TBXItemECopyApp: TSpTbxItem;
@@ -550,7 +546,6 @@ type
     TBXItemTreeFindNav: TSpTbxItem;
     TBXSeparatorItem36: TSpTbxSeparatorItem;
     TBXSeparatorItem37: TSpTbxSeparatorItem;
-    ecCopyAsRTF: TAction;
     acSetupLexHL: TAction;
     TBXItemOLexerHi: TSpTbxItem;
     TBXSeparatorItem38: TSpTbxSeparatorItem;
@@ -662,10 +657,8 @@ type
     TBXItemTbSpellLive: TSpTbxSubmenuItem;
     TBXItemVSpellCheck: TSpTbxItem;
     TBXItemVSpellLive: TSpTbxItem;
-    ecJoinLines: TAction;
     TBXSeparatorItem49: TSpTbxSeparatorItem;
     TBXItemEJoin: TSpTbxItem;
-    ecSplitLines: TAction;
     TBXItemESplit: TSpTbxItem;
     TBXSeparatorItem50: TSpTbxSeparatorItem;
     TBXSubmenuItemMacros: TSpTbxSubmenuItem;
@@ -728,8 +721,6 @@ type
     TBXItemVSyncVert: TSpTbxItem;
     TBXItemVSyncHorz: TSpTbxItem;
     ecToggleView: TAction;
-    ecCopyLine: TAction;
-    ecCutLine: TAction;
     TBXSeparatorItem54: TSpTbxSeparatorItem;
     TBXItemECutLine: TSpTbxItem;
     TBXItemECopyLine: TSpTbxItem;
@@ -1087,8 +1078,6 @@ type
     ecReverseLines: TAction;
     TBXSeparatorItem68: TSpTbxSeparatorItem;
     TBXItemEReverse: TSpTbxItem;
-    ecDeleteToFileBegin: TAction;
-    ecDeleteToFileEnd: TAction;
     ecShuffleLines: TAction;
     TBXItemEShuffle: TSpTbxItem;
     tbUser1: TSpTbxToolbar;
@@ -1422,9 +1411,6 @@ type
     procedure TimerSelTimer(Sender: TObject);
     procedure TBXItemCtxCopyAppendClick(Sender: TObject);
     procedure TBXItemCtxCutAppendClick(Sender: TObject);
-    procedure ecCopyAsHTMLExecute(Sender: TObject);
-    procedure ecCopyAppExecute(Sender: TObject);
-    procedure ecCutAppExecute(Sender: TObject);
     procedure TBXSubmenuItemEdPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemTool9Click(Sender: TObject);
@@ -1473,13 +1459,11 @@ type
     procedure ecFullScrExecute(Sender: TObject);
     procedure edQsExit(Sender: TObject);
     procedure TimerBracketsTimer(Sender: TObject);
-    //procedure SDTypeChange(Sender: TObject);
     procedure TBXItemTabCopyFNClick(Sender: TObject);
     procedure TBXItemTabCopyFullClick(Sender: TObject);
     procedure TBXItemTabCopyDirClick(Sender: TObject);
     procedure PageControl2Enter(Sender: TObject);
     procedure PageControl1Enter(Sender: TObject);
-    procedure Splitter1Paint(Sender: TObject);
     procedure TBXItemTabMoveToViewClick(Sender: TObject);
     procedure SplitterMainMoved(Sender: TObject);
     procedure TBXItemSp50Click(Sender: TObject);
@@ -1534,8 +1518,6 @@ type
     procedure ecSpellCheckExecute(Sender: TObject);
     procedure ecSpellLiveExecute(Sender: TObject);
     procedure TBXItemSpellLiveClick(Sender: TObject);
-    procedure ecJoinLinesExecute(Sender: TObject);
-    procedure ecSplitLinesExecute(Sender: TObject);
     procedure ecMacroDlgExecute(Sender: TObject);
     procedure ecMacro1Execute(Sender: TObject);
     procedure ecMacro2Execute(Sender: TObject);
@@ -1569,8 +1551,6 @@ type
     procedure ecBkPasteExecute(Sender: TObject);
     procedure ecGotoExecute(Sender: TObject);
     procedure ecToggleViewExecute(Sender: TObject);
-    procedure ecCopyLineExecute(Sender: TObject);
-    procedure ecCutLineExecute(Sender: TObject);
     procedure TBXSubmenuItemTidyPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemTidyCfgClick(Sender: TObject);
@@ -1930,8 +1910,6 @@ type
     procedure TBXItemTreeLevel9Click(Sender: TObject);
     procedure ecReverseLinesExecute(Sender: TObject);
     procedure TBXItemEReverseClick(Sender: TObject);
-    procedure ecDeleteToFileBeginExecute(Sender: TObject);
-    procedure ecDeleteToFileEndExecute(Sender: TObject);
     procedure ecShuffleLinesExecute(Sender: TObject);
     procedure TBXItemEShuffleClick(Sender: TObject);
     procedure TBXItemFoldLevel2Click(Sender: TObject);
@@ -2293,7 +2271,7 @@ type
     function SynBorderStyle: TBorderStyle;
     function SynBorderStyleEditor: TBorderStyle;
     function SynImagesDll: string;
-    function DoAutoCloseBracket(const ch: Widechar): boolean;
+    function DoAutoCloseBracket(ch: Widechar): boolean;
     function DoAutoCloseTag: boolean;
     procedure DoSelectToken(SkipQuotes: boolean = false);
 
@@ -2350,7 +2328,6 @@ type
     procedure GetTabName(APagesNumber, ATabIndex: Integer; var AName, AFN, ALex: Widestring);
     procedure ClearTabList;
     procedure MoveTabInList(FromN, ToN: integer);
-    procedure DoMoveCaretXY(DX, DY: integer);
 
     function GetAcpFN(const LexerName: string): string;
     function GetSpecialHiliteFN(const Id: string): string;
@@ -2367,7 +2344,6 @@ type
     procedure DoSmartHilite;
     procedure DoSmartHiliteOnClick;
     procedure DoHandleLastCmd(Command: integer; Data: pointer);
-    function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 
     procedure MsgFound;
     procedure MsgColorBad(const s: string);
@@ -2400,7 +2376,7 @@ type
     function CurrentTreeview: TCustomTreeView;
     procedure DoFrameReloadInt(F: TEditorFrame);
     procedure DoFrameReloadWrapper(F: TEditorFrame);
-    procedure DoFindExtSel(ANext: boolean);
+    procedure DoFindAndExtendSel(ANext: boolean);
     procedure DoJumpMixedCase(ARight: boolean);
     procedure DoJumpToWordEnd(ASel: boolean);
     function BookmarkDesc(i: integer;
@@ -2439,7 +2415,6 @@ type
     procedure SpellPositionDialog(Sender: TObject);
 
     procedure DoSplitterPos(const Pos: Double);
-    procedure DoBlockIndent(Ed: TSyntaxMemo; shift: boolean);
     procedure DoRecordToMacro(Cmd: integer; Data: PWChar);
     procedure DoFindClip(Next: boolean);
     function SNewDocName(const fn: Widestring): string;
@@ -2474,7 +2449,6 @@ type
     function DoAcpFromPlugins(const AAction: PWideChar): Widestring;
     procedure DoInsertTextDialog;
     procedure DoFillBlock;
-    procedure DoCommentLines(Comm: boolean);
     procedure DoRepaintTBs;
     procedure DoRepaintTBs2;
     procedure DoRepaintTabCaptions(Pages: TTntPageControl);
@@ -2678,7 +2652,6 @@ type
     procedure DoFavoriteProjects;
     procedure DoFavoritesDialog(ATab: Integer = -1);
     procedure DoPasteAndSelect;
-    procedure DoInsertBlankLineAboveBelow(ABelow: boolean);
     procedure DoCopyURL;
     procedure DoOpenURL;
     procedure DoFindId;
@@ -2696,6 +2669,10 @@ type
     procedure DoProjectRenameFile(const fn, fn_new: Widestring);
     procedure UpdKey_String(Item: TSpTbxItem; const Cmd: Widestring);
     procedure UpdKey(Item: TSpTbxItem; CmdId: integer);
+    procedure DoClearFilesHistory;
+    procedure DoToggleSyncEditing;
+    procedure DoZoomEditorInc(AInc: boolean);
+    procedure DoZoomEditor(NZoom: Integer);
     //end of private
 
   protected
@@ -2840,7 +2817,7 @@ type
     opNotif: TSynReloadMode;
     opHiliteUrls: boolean;
     opColorLink: integer;
-    opKeepScr: boolean;
+    opKeepCaretOnScreen: boolean;
     opLastDir: TSynLastDirMode;
     opLastDirPath,
     opLastDirSession,
@@ -2854,8 +2831,6 @@ type
     opTextOnly: integer; //dont open/open/prompt
     opTitleFull: boolean;
     opQsCap: boolean; //captions in QSearch
-    opColorSplitViews,
-    opColorSplitSlave: integer;
     opColorTab1,
     opColorTab2,
     opColorTab3,
@@ -2938,7 +2913,6 @@ type
     procedure DoSpellCfg(Sender: TObject);
     procedure DoAutoSave;
     procedure DoBackup(const AFilename: Widestring);
-    procedure DoClearHistory;
     procedure DoRepaint;
     procedure DoDropFile(const fn: Widestring; IntoProj: boolean = false);
     procedure DoTabSwitch(ANext: boolean);
@@ -3000,6 +2974,7 @@ type
     procedure DoFindIdDelayed;
     function FrameForFilename(const fn: Widestring): TEditorFrame;
     function DoCheckCommandLineTwo: boolean;
+    procedure DoClearSearchHistory;
     //end of public
   end;
 
@@ -3015,14 +2990,14 @@ type
 
   TFileState = packed record
     Name,            //last 100 chars of filename
-    HL: string[100]; //lexer
+    Lexer: string[100]; //lexer
     _NoneRO,         //(not used)
     Wrap: ByteBool;  //word wrap
     M, S: TEdState;  //master/slave states
     _None: Word;     //(not used)
     SplitPos: byte;  //splitter position in %
     SplitVert: ByteBool; //splitted vertically
-    CP: Longint;     //encoding
+    Enc: Longint;    //encoding
   end;
 
 var
@@ -3037,18 +3012,18 @@ var
 
 function StartSyn(ListerWin: HWND; const FileToLoad: WideString): HWND;
 procedure StopSyn(hWin: HWND);
-function FBigSized(const fn: WideString): boolean;
+function IsFileTooBig(const fn: WideString): boolean;
 procedure WndCenter(H: THandle; fm: TCustomForm);
 
-function MsgConfirmBinary(const fn: WideString): boolean;
-function MsgConfirmCreate(const fn: Widestring): boolean;
+function MsgConfirmBinary(const fn: WideString; H: THandle): boolean;
+function MsgConfirmCreate(const fn: Widestring; H: THandle): boolean;
+procedure MsgFileTooBig(const fn: Widestring; H: THandle);
+procedure MsgCannotCreate(const fn: Widestring; H: THandle);
+function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 var
   _SynActionProc: TSynAction = nil;
-
-const
-  cSynVer = '6.0.080';
 
 const
   cSynParamRO = '/ro';
@@ -3056,10 +3031,6 @@ const
   cSynParamLineNum = '/n=';
   cSynParamReg = '/reg';
   cSynParamTwo = '/two=';
-
-const
-  cConverterHtml1 = 'HTML - all entities';
-  cConverterHtml2 = 'HTML - entities except brackets';
 
 implementation
 
@@ -3069,13 +3040,11 @@ uses
 
   TntSystem, TntSysUtils,
   TntClipbrd, TntFileCtrl,
+  TntWideStrings,
 
   ATxFProc, ATxSProc, ATxUtilMail,
   ATxColorCodes,
   ATxLoremIpsum,
-
-  unSaveLex,
-  unProcImg,
 
   {$ifdef SPELL}
   ad3SpellBase,
@@ -3090,14 +3059,23 @@ uses
   ecCmdConst,
   ecLists,
 
+  unSaveLex,
+  unProcImg,
   unSetup, unAb, unEnc, unTool, unSR2, unExtr, unShell, unInsTxt,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
-  unCmdList, unProjList, unToolbarProp, unHideItems, TntWideStrings,
+  unCmdList, unProjList, unToolbarProp, unHideItems,
   unLexerLib;
 
 {$R *.dfm}
 {$R Cur.res}
+
+const
+  cSynVer = '6.0.100';
+
+const
+  cConverterHtml1 = 'HTML - all entities';
+  cConverterHtml2 = 'HTML - entities except brackets';
 
 const
   cRegexColorCode = '\#\w{3,6}';
@@ -3137,20 +3115,31 @@ begin
   Result:= '\s1\' + s1 + '\t\\s2\' + s2;
 end;
 
-function MsgConfirmBinary(const fn: Widestring): boolean;
+function MsgConfirmBinary(const fn: Widestring; H: THandle): boolean;
 begin
-  Result:= MsgConfirm(WideFormat(DKLangConstW('MNText'), [WideExtractFileName(fn)]), 0);
+  Result:= MsgConfirm(WideFormat(DKLangConstW('MNText'), [WideExtractFileName(fn)]), H);
 end;
 
-function MsgConfirmCreate(const fn: Widestring): boolean;
+function MsgConfirmCreate(const fn: Widestring; H: THandle): boolean;
 begin
-  Result:= MsgConfirm(WideFormat(DKLangConstW('MCre'), [WideExtractFileName(fn)]), 0);
+  Result:= MsgConfirm(WideFormat(DKLangConstW('MCre'), [WideExtractFileName(fn)]), H);
 end;
 
-function MsgConfirmManyOpen(N: Integer): boolean;
+function MsgConfirmManyOpen(N: Integer; H: THandle): boolean;
 begin
-  Result:= MsgConfirm(WideFormat(DKLangConstW('zMOpenFiles'), [N]), 0);
+  Result:= MsgConfirm(WideFormat(DKLangConstW('zMOpenFiles'), [N]), H);
 end;
+
+procedure MsgFileTooBig(const fn: Widestring; H: THandle);
+begin
+  MsgError(WideFormat(DKLangConstW('MBig'), [WideExtractFileName(fn)]), H)
+end;
+
+procedure MsgCannotCreate(const fn: Widestring; H: THandle);
+begin
+  MsgError(DKLangConstW('MNCreate') + #13 + fn, H);
+end;
+
 
 const
   cLexerHtmlList = 'HTML documents,HTML with scripts,PHP_dev_HTML,Razor';
@@ -3165,12 +3154,6 @@ const
   cLexerIni = 'Ini files';
   opPascal = 'Pascal,Pascal Ext,Pascal Script,PAX Pascal,BSScript';
 
-function IsStringListed(const Lexer, List: string): boolean;
-begin
-  Result:= (Lexer <> '') and
-    (Pos(','+Lexer+',', ','+List+',') > 0);
-end;
-
 function IsLexerListed(const Lexer, List: string): boolean;
 begin
   Result:= IsStringListed(
@@ -3180,7 +3163,9 @@ end;
 
 function IsLexerHTML(const s: string): boolean;
 begin
-  Result:= IsLexerListed(s, cLexerHtmlList);
+  //this will count all lexers with "HTML" substring, also
+  //custom user lexers with word "HTML".
+  Result:= Pos('HTML', s)>0;
 end;
 
 function IsLexerCSS(const s: string; CanBeLess: boolean = true): boolean;
@@ -3408,8 +3393,7 @@ begin
   CurrentEditor.ExecCommand(smTitleCaseBlock);
 end;
 
-//file too big
-function FBigSized(const fn: WideString): boolean;
+function IsFileTooBig(const fn: WideString): boolean;
 begin
   Result:= FGetFileSize(fn) >= 200 * 1024 * 1024;
 end;
@@ -3436,7 +3420,7 @@ begin
 
   if (OD.Files.Count=1) and not IsFileExist(OD.FileName) then
   begin
-    if not MsgConfirmCreate(OD.FileName) then Exit;
+    if not MsgConfirmCreate(OD.FileName, Handle) then Exit;
     with TStringList.Create do
     try
       SaveToFile(OD.FileName);
@@ -3448,8 +3432,8 @@ begin
   for i:= 0 to OD.Files.Count-1 do
   begin
     S:= OD.Files[i];
-    if FBigSized(S) then
-      MsgError(WideFormat(DKLangConstW('MBig'), [WideExtractFileName(S)]), Handle)
+    if IsFileTooBig(S) then
+      MsgFileTooBig(S, Handle)
     else
       DoOpenFile(S);
   end;
@@ -3462,7 +3446,6 @@ begin
   if CurrentEditor<>nil then
     CurrentEditor.Invalidate;
 end;
-
 
 function TfmMain.DoOpenFile(const AFileName: WideString): TEditorFrame;
 var
@@ -4165,7 +4148,6 @@ begin
   ecOnTop.Enabled:= SynExe;
 
   ecCopy.Update;
-  ecCopyAsRTF.Update;
   ecCut.Update;
   ecPaste.Update;
   ecClear.Update;
@@ -4403,8 +4385,7 @@ begin
     ApplyQs;
     opHiliteUrls:= ReadBool('Setup', 'Link', true);
     opColorLink:= ReadInteger('Setup', 'LinkCl', clBlue);
-    //opKeepScr:= ReadBool('Setup', 'KeepScr', false);
-    opKeepScr:= true;
+    opKeepCaretOnScreen:= ReadBool('Setup', 'KeepScr', true);
     ApplyEdOptions;
 
     opShowWrapMark:= ReadBool('Setup', 'WrapMk', true);
@@ -4538,8 +4519,6 @@ begin
     opColorMapMarks:= ReadInteger('View', 'MapMkC', clGreen);
     opColorBkmk:= ReadInteger('View', 'BkC', RGB(200, 240, 200));
     opColorNonPrintedBG:= ReadInteger('View', 'NPrintBG', clSilver);
-    opColorSplitViews:= ReadInteger('View', 'SplitC', clBtnFace);
-    opColorSplitSlave:= ReadInteger('View', 'SplitS', clBtnFace);
     opColorTab1:= ReadInteger('View', 'TabC1', clBtnFace);
     opColorTab2:= ReadInteger('View', 'TabC2', clBtnHighlight);
     opColorTab3:= ReadInteger('View', 'TabC3', $80DDDD);
@@ -4812,7 +4791,7 @@ begin
     WriteBool('Setup', 'LexCat', opLexerCat);
     WriteBool('Setup', 'Link', opHiliteUrls);
     WriteInteger('Setup', 'LinkCl', opColorLink);
-    WriteBool('Setup', 'KeepScr', opKeepScr);
+    WriteBool('Setup', 'KeepScr', opKeepCaretOnScreen);
     WriteBool('Setup', 'WrapMk', opShowWrapMark);
     WriteInteger('Setup', 'TxOnly', opTextOnly);
 
@@ -4899,8 +4878,6 @@ begin
     WriteInteger('View', 'TabC3', opColorTab3);
     WriteInteger('View', 'TabCF1', opColorTabFont1);
     WriteInteger('View', 'TabCF2', opColorTabFont2);
-    WriteInteger('View', 'SplitC', opColorSplitViews);
-    WriteInteger('View', 'SplitS', opColorSplitSlave);
     WriteString('View', 'TabMisc', TabColorsString);
 
     WriteBool('Setup', 'ChInf', opChInf);
@@ -5150,16 +5127,18 @@ begin
 
   AssignFile(f, SynStateIni);
   Reset(f);
-  while not Eof(f) do begin
+  while not Eof(f) do
+  begin
     Read(f, tmp);
     if tmp.Name=s then
-    with Frame do begin
+    with Frame do
+    begin
       Result:= True;
 
       //encoding
       if opSaveEnc then
       begin
-        case tmp.CP of
+        case tmp.Enc of
         cp__UTF8_noBOM:
         begin
           TextSource.Lines.TextCoding:= tcUTF8;
@@ -5177,7 +5156,7 @@ begin
         else
         begin
           TextSource.Lines.TextCoding:= tcAnsi;
-          TextSource.Lines.Codepage:= tmp.CP;
+          TextSource.Lines.Codepage:= tmp.Enc;
         end;
         end;
       end;
@@ -5187,8 +5166,8 @@ begin
       TextSource.Lines.SkipSignature:=false;
 
       //Lexer
-      if (tmp.HL<>'') and FCanUseLexer(FN) then
-        TextSource.SyntaxAnalyzer:=SyntaxManager.FindAnalyzer(tmp.HL)
+      if (tmp.Lexer<>'') and FCanUseLexer(FN) then
+        TextSource.SyntaxAnalyzer:=SyntaxManager.FindAnalyzer(tmp.Lexer)
       else
         TextSource.SyntaxAnalyzer:=nil;
       SyntaxManager.CurrentLexer:=TextSource.SyntaxAnalyzer;
@@ -5254,7 +5233,7 @@ var
   tmp: TFileState;
   a: array of TFileState;
   t: file of TFileState;
-  i,j: integer;
+  i, j: integer;
 begin
   if (opSaveState=0) or
    (F=nil) or
@@ -5270,14 +5249,14 @@ begin
   else
     tmp.Name:= Copy(F.FileName, i-100, 100);
   if F.TextSource.SyntaxAnalyzer<>nil then
-    tmp.HL:= F.TextSource.SyntaxAnalyzer.LexerName
+    tmp.Lexer:= F.TextSource.SyntaxAnalyzer.LexerName
   else
-    tmp.HL:= '';
+    tmp.Lexer:= '';
 
   tmp.Wrap:= F.EditorMaster.WordWrap;
   tmp.SplitPos:= byte(Round(F.SplitPos));
   tmp.SplitVert:= not F.SplitHorz;
-  tmp.CP:= GetFrameEncoding(F);
+  tmp.Enc:= GetFrameEncoding(F);
 
   //fill master
   tmp.M.TopLine:= F.EditorMaster.TopLine;
@@ -5319,29 +5298,35 @@ begin
   SaveStateBookmarks(tmp.M, F.EditorMaster);
   SaveStateBookmarks(tmp.S, F.EditorSlave);
 
-  //read old data
   AssignFile(t, SynStateIni);
-  if IsFileExist(SynStateIni) then begin
-    Reset(t);
-    i:=0;
-    while not Eof(t) do begin
-      SetLength(a, i+1);
-      Read(t, a[i]);
-      Inc(i);
+  try
+    //read old data
+    if IsFileExist(SynStateIni) then
+    begin
+      Reset(t);
+      i:= 0;
+      while not Eof(t) do
+      begin
+        SetLength(a, i+1);
+        Read(t, a[i]);
+        Inc(i);
+      end;
     end;
-  end;
 
-  //save history, new first
-  Rewrite(t);
-  Write(t, tmp);
-  if opSaveState>Length(a) then
-    j:=Length(a)-1
-  else
-    j:=opSaveState;
-  for i:=0 to j do
-    if a[i].Name<>tmp.Name then
-      Write(t, a[i]);
-  CloseFile(t);
+    //save history, new first
+    Rewrite(t);
+    Write(t, tmp);
+
+    j:= Length(a);
+    if j>opSaveState then
+      j:= opSaveState;
+
+    for i:= 0 to j-1 do
+      if a[i].Name<>tmp.Name then
+        Write(t, a[i]);
+  finally
+    CloseFile(t);
+  end;
 end;
 
 function TfmMain.GetModifiedCount(FExcept: TEditorFrame = nil): integer;
@@ -5491,16 +5476,27 @@ begin
   PostMessage(Handle, WM_USER + 2, Command, 0);
 end;
 
+procedure EditorSplitLinesWithDialog(Ed: TSyntaxMemo);
+var
+  s: Widestring;
+  n: Integer;
+begin
+  n:= Ed.RightMargin;
+  s:= IntToStr(n);
+  if not MsgInput('MRtMargin', s) then Exit;
+  n:= StrToIntDef(s, 0);
+  if n>=3 then
+    EditorSplitLinesByPosition(Ed, n)
+  else
+    MsgBeep;  
+end;
 
 procedure TfmMain.SynExecuteCommand(Sender: TObject; Command: Integer;
   Data: Pointer; var Handled: Boolean);
 var
+  Ed: TSyntaxMemo;
   ch: WideChar;
   p: TPoint;
-  n: integer;
-  Ed: TSyntaxMemo;
-  Sel: TSynSelSave;
-  en: boolean;
 begin
   //remember last edit cmd
   DoHandleLastCmd(Command, Data);
@@ -5509,7 +5505,7 @@ begin
   Ed:= Sender as TSyntaxMemo;
 
   //debug
-  //Application.MainForm.Caption:= 'cmd '+IntToStr(Command);
+  //Application.MainForm.Caption:= Format('cmd %d', [Command]);
 
   case Command of
     //auto-close tag
@@ -5520,6 +5516,11 @@ begin
           ch:= PWideChar(Data)^
         else
           ch:= #0;
+
+        //if current char is 2nd part of key-combination, don't handle it
+        if SyntKeyMapping.IsHandledCmd(Ed.KeyQueue)<>0 then
+          Handled:= true
+        else
         if (ch='>') then
           Handled:= DoAutoCloseTag
         else
@@ -5536,20 +5537,7 @@ begin
     smToggleCaseBlock,
     smTitleCaseBlock,
     smSentCaseBlock:
-      begin
-        EditorSaveSel(Ed, Sel);
-        en:= true;
-        //select current word, if no selection
-        if not Ed.HaveSelection then
-          en:= EditorSelectWord(Ed);
-        //change case  
-        if en then
-        begin
-          Ed.SelChangeCase(TChangeCase(Command - smUpperCaseBlock + 1));
-          EditorSetModified(Ed);
-        end;
-        EditorRestoreSel(Ed, Sel);
-      end;
+      EditorChangeBlockCase(Ed, TChangeCase(Command - smUpperCaseBlock + 1));
 
     //indent
     smTab:
@@ -5571,15 +5559,15 @@ begin
 
     smCopy:
       begin
-        if not CurrentEditor.HaveSelection and opCopyLineIfNoSel then
-          ecCopyLine.Execute
+        if not Ed.HaveSelection and opCopyLineIfNoSel then
+          EditorCopyOrCutCurrentLine(Ed, false)
         else
           Handled:= false;
       end;
     smCut:
       begin
-        if not CurrentEditor.HaveSelection and opCopyLineIfNoSel then
-          ecCutLine.Execute
+        if not Ed.HaveSelection and opCopyLineIfNoSel then
+          EditorCopyOrCutCurrentLine(Ed, true)
         else
           Handled:= false;
       end;
@@ -5587,30 +5575,18 @@ begin
     smBlockIndent,
     smBlockUnindent:
       begin
-        //if Ed.HaveSelection then
-        if Ed.SelLength>0 then
-          DoBlockIndent(Ed, Command=smBlockIndent)
+        if Ed.SelLength>0 then //only for stream blocks it works ok
+          EditorIndentBlock(Ed, Command=smBlockIndent)
         else
           Handled:= false;
       end;
 
     smScrollUp,
     smScrollDown:
-      with Ed do
       begin
-        Handled:= False;
-        if opKeepScr and not EditorHasNoCaret(Ed) then
-        begin
-          p:= CaretPos;
-          n:= TopLine + 1;
-          if p.Y < n then
-            CaretPos:= Point(p.X, n) else
-          begin
-            n:= TopLine + ClientHeight div LineHeight(0) - 2;
-            if p.Y > n then
-              CaretPos:= Point(p.X, n);
-          end;
-        end;
+        Handled:= false;
+        if opKeepCaretOnScreen and not EditorHasNoCaret(Ed) then
+          EditorKeepCaretOnScreen(Ed);
       end;
 
     smDuplicateLine:
@@ -5628,7 +5604,7 @@ begin
     smSetBookmark0 .. smSetBookmark9:
       begin
         BrotherEditor(Ed).Bookmarks[Command - smSetBookmark0]:= Ed.CaretStrPos;
-        Handled:= False;
+        Handled:= false;
       end;
 
     sm_AutoComplete:
@@ -5728,7 +5704,7 @@ begin
       if EditorHasNoCaret(Ed) then
         Ed.ExecCommand(smEditorTop{smScrollPageLeft})
       else
-        EditorDoHomeKey(Ed);
+        Handled:= false;
     end;
     //End key
     smLastLetter:
@@ -5833,8 +5809,8 @@ begin
       else
       begin
         Finder.Flags:= Finder.Flags-[ftEntireScope];
-        DoFixReplaceCaret(CurrentEditor);
-        if CurrentEditor.SelLength>0 then
+        DoFixReplaceCaret(Ed);
+        if Ed.SelLength>0 then
           Finder.ReplaceAgain;
         Finder.FindAgain;
       end;
@@ -5858,24 +5834,18 @@ begin
     sm_ListerFNext:
       PostMessage(hLister, WM_KEYDOWN, VK_F3, 0);
     sm_ListerFPrev:
-      begin
-        PostMessage(hLister, WM_KEYDOWN, VK_SHIFT, 0);
-        PostMessage(hLister, WM_KEYDOWN, VK_F3, 0);
-      end;
+    begin
+      PostMessage(hLister, WM_KEYDOWN, VK_SHIFT, 0);
+      PostMessage(hLister, WM_KEYDOWN, VK_F3, 0);
+    end;
 
     //clip
-    sm_CopyAsHTML:
-      ecCopyAsHTML.Execute;
-    sm_CopyAsRTF:
-      ecCopyAsRTF.Execute;
-    sm_CopyAppend:
-      ecCopyApp.Execute;
-    sm_CutAppend:
-      ecCutApp.Execute;
-    sm_CopyLine:
-      ecCopyLine.Execute;
-    sm_CutLine:
-      ecCutLine.Execute;
+    sm_CopyAsHTML:  EditorCopyAsHtml(Ed);
+    sm_CopyAsRTF:   EditorCopyAsRtf(Ed);
+    sm_CopyAppend:  EditorCopyOrCutAndAppend(Ed, false);
+    sm_CutAppend:   EditorCopyOrCutAndAppend(Ed, true);
+    sm_CopyLine:    EditorCopyOrCutCurrentLine(Ed, false);
+    sm_CutLine:     EditorCopyOrCutCurrentLine(Ed, true);
 
     //Del key
     smDeleteChar:
@@ -5964,8 +5934,8 @@ begin
     sm_SelectionShrink: ecSelShrink.Execute;
     sm_ReverseLines: ecReverseLines.Execute;
     sm_ShuffleLines: ecShuffleLines.Execute;
-    sm_DeleteToFileBegin: ecDeleteToFileBegin.Execute;
-    sm_DeleteToFileEnd: ecDeleteToFileEnd.Execute;
+    sm_DeleteToFileBegin: EditorDeleteToFileBegin(Ed);
+    sm_DeleteToFileEnd: EditorDeleteToFileEnd(Ed);
 
     //blank operations
     sm_RemoveBlanks: ecRemoveBlanks.Execute;
@@ -6081,39 +6051,42 @@ begin
 
     sm_MenuEnc:
       begin
-      p:= Mouse.CursorPos;
-      PopupCP.Popup(p.x, p.y);
+        p:= Mouse.CursorPos;
+        PopupCP.Popup(p.x, p.y);
       end;
     sm_MenuLex:
       begin
-      p:= Mouse.CursorPos;
-      PopupLex.Popup(p.x, p.y);
+        p:= Mouse.CursorPos;
+        PopupLex.Popup(p.x, p.y);
       end;
     sm_MenuLE:
       begin
-      p:= Mouse.CursorPos;
-      PopupLE.Popup(p.x, p.y);
+        p:= Mouse.CursorPos;
+        PopupLE.Popup(p.x, p.y);
       end;
+
     sm_QS:
       begin
-      if not tbQs.Visible then
-        TbxItemTQsClick(Self);
-      tbQs.CurrentDock.Show;
-      if Self.Enabled and edQs.CanFocus then
-        edQs.SetFocus;
+        if not tbQs.Visible then
+          TbxItemTQsClick(Self);
+        tbQs.CurrentDock.Show;
+        if Self.Enabled and edQs.CanFocus then
+          edQs.SetFocus;
       end;
+
     sm_DateTime:
       DoDateTime;
-    sm_ExStr:
-      TBXItemEExtrClick(Self);
+    sm_ExtractText:
+      DoExtractText;
     sm_GotoNextFindResult:
       ecGotoNextFindResult.Execute;
     sm_GotoPrevFindResult:
       ecGotoPrevFindResult.Execute;
-    sm_ClrHist:
-      TBXItemClrClick(Self);
+
+    sm_ClearFilesHistory:
+      DoClearFilesHistory;
     sm_SyncEdit:
-      TBXItemESyncEdClick(Self);
+      DoToggleSyncEditing;
     sm_FullScr:
       ecFullScr.Execute;
     sm_OnTop:
@@ -6131,20 +6104,26 @@ begin
     sm_SpellCheck:
       ecSpellCheck.Execute;
     sm_JoinLines:
-      ecJoinLines.Execute;
+      EditorJoinLines(Ed);
     sm_SplitLines:
-      ecSplitLines.Execute;
+      EditorSplitLinesWithDialog(Ed);
 
     smSelCharacter:
-      with ecCharPopup do
-        if Visible then
-          CloseUp(false)
-        else
-          Handled:= false;
+      begin
+        with ecCharPopup do
+          if Visible then
+            CloseUp(false)
+          else
+            Handled:= false;
+      end;
 
     smCommentLines,
     smUncommentLines:
-      DoCommentLines(Command = smCommentLines);
+      EditorCommentUncommentLines(Ed, Command = smCommentLines);
+    sm_ToggleLineComment:
+      ecToggleLineComment.Execute;
+    sm_ToggleStreamComment:
+      ecToggleStreamComment.Execute;
 
     //file
     sm_FNew: acNew.Execute;
@@ -6159,7 +6138,7 @@ begin
     sm_FavAddProj: acFavAddProj.Execute;
     sm_FavOrganize: acFavManage.Execute;
 
-    //Closing handling is special
+    //tab closing handling is special
     sm_FClose,
     sm_FCloseDel,
     sm_FCloseAll,
@@ -6212,36 +6191,29 @@ begin
     sm_ZenExpand: ecZenExpand.Execute;
     sm_ZenWrap: ecZenWrap.Execute;
 
-    sm_ToggleLineComment:
-      ecToggleLineComment.Execute;
-    sm_ToggleStreamComment:
-      ecToggleStreamComment.Execute;
     sm_MakeBak:
       acBackup.Execute;
     sm_ColumnMarkers:
       acColumnMarkers.Execute;
 
     //copy path
-    sm_CopyFN:
-      DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFileName);
-    sm_CopyFullPath:
-      DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFullName);
-    sm_CopyDirPath:
-      DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFilePath);
+    sm_CopyFN:       DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFileName);
+    sm_CopyFullPath: DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFullName);
+    sm_CopyDirPath:  DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFilePath);
 
     //move caret
-    sm_CaretIncX:  DoMoveCaretXY(+SynHiddenOption('MovX', 20), 0);
-    sm_CaretDecX:  DoMoveCaretXY(-SynHiddenOption('MovX', 20), 0);
-    sm_CaretIncY:  DoMoveCaretXY(0, +SynHiddenOption('MovY', 10));
-    sm_CaretDecY:  DoMoveCaretXY(0, -SynHiddenOption('MovY', 10));
+    sm_CaretIncX:  EditorMoveCaretByNChars(Ed, +SynHiddenOption('MovX', 20), 0);
+    sm_CaretDecX:  EditorMoveCaretByNChars(Ed, -SynHiddenOption('MovX', 20), 0);
+    sm_CaretIncY:  EditorMoveCaretByNChars(Ed, 0, +SynHiddenOption('MovY', 10));
+    sm_CaretDecY:  EditorMoveCaretByNChars(Ed, 0, -SynHiddenOption('MovY', 10));
 
     //misc
     smChangeRangeSide: DoRangeJump(Ed);
     sm_CopySearchMarks: DoCopySearchMarks(Ed);
 
-    //Macros
+    //macros
     {
-    //Disable! Or Stack-over.
+    //disable these! Or Stack-overflow.
     smMacroRecStart: ecMacroRecord1.Execute;
     smMacroRecStop:  ecMacroStop1.Execute;
     smMacroRecCancel: ecMacroCancel1.Execute;
@@ -6249,24 +6221,9 @@ begin
     }
     sm_MacroDlg:     ecMacroDlg.Execute;
 
-    //Zoom
-    sm_ZoomIn,
-    sm_ZoomOut:
-      begin
-        n:= 10;
-        if Command = sm_ZoomOut then n:= -n;
-        Ed.Zoom:= Ed.Zoom + n;
-        TemplateEditor.Zoom:= Ed.Zoom;
-        StatusItemZoom.Caption:= IntToStr(Ed.Zoom) + '%';
-        StatusItemHint.Caption:= WideFormat(DKLangConstW('Zoom'), [Ed.Zoom]);
-      end;
-    sm_Zoom0:
-      begin
-        Ed.Zoom:= 100;
-        TemplateEditor.Zoom:= Ed.Zoom;
-        StatusItemZoom.Caption:= IntToStr(Ed.Zoom) + '%';
-        StatusItemHint.Caption:= WideFormat(DKLangConstW('Zoom'), [Ed.Zoom]);
-      end;
+    sm_ZoomOrig: DoZoomEditor(100);
+    sm_ZoomIn:   DoZoomEditorInc(true);
+    sm_ZoomOut:  DoZoomEditorInc(false);
 
     sm_ONonPrintOff: ecNonPrintOff.Execute;
     sm_ONonPrintSpaces: ecNonPrintSpaces.Execute;
@@ -6354,8 +6311,8 @@ begin
     sm_AddFilesToProject: DoAddFilesToProject;
     sm_FavoriteProjects: DoFavoriteProjects;
     sm_PasteAndSelect: DoPasteAndSelect;
-    sm_InsertBlankLineAbove: DoInsertBlankLineAboveBelow(false);
-    sm_InsertBlankLineBelow: DoInsertBlankLineAboveBelow(true);
+    sm_InsertBlankLineAbove: EditorInsertBlankLineAboveOrBelow(Ed, false);
+    sm_InsertBlankLineBelow: EditorInsertBlankLineAboveOrBelow(Ed, true);
     sm_CopyCurrentURL: DoCopyURL;
     sm_OpenCurrentURL: DoOpenURL;
     sm_FindId: DoFindId;
@@ -6368,15 +6325,15 @@ begin
     sm_SelectTokenNoQuotes: ecSelTokenNoQuotes.Execute;
 
     //select-mode commands
-    smNormalSelect: CurrentEditor.SelectModeDefault:= msNormal;
-    smColumnSelect: CurrentEditor.SelectModeDefault:= msColumn;
-    smLineSelect: CurrentEditor.SelectModeDefault:= msLine;
-    smMarkSelStart: EditorMarkSelStart(CurrentEditor);
-    smMarkSelEnd: EditorMarkSelEnd(CurrentEditor);
+    smNormalSelect: Ed.SelectModeDefault:= msNormal;
+    smColumnSelect: Ed.SelectModeDefault:= msColumn;
+    smLineSelect: Ed.SelectModeDefault:= msLine;
+    smMarkSelStart: EditorMarkSelStart(Ed);
+    smMarkSelEnd: EditorMarkSelEnd(Ed);
 
-    sm_ScrollCurrentLineToTop: EditorScrollCurrentLineTo(CurrentEditor, cScrollToTop);
-    sm_ScrollCurrentLineToBottom: EditorScrollCurrentLineTo(CurrentEditor, cScrollToBottom);
-    sm_ScrollCurrentLineToMiddle: EditorScrollCurrentLineTo(CurrentEditor, cScrollToMiddle);
+    sm_ScrollCurrentLineToTop: EditorScrollCurrentLineTo(Ed, cScrollToTop);
+    sm_ScrollCurrentLineToBottom: EditorScrollCurrentLineTo(Ed, cScrollToBottom);
+    sm_ScrollCurrentLineToMiddle: EditorScrollCurrentLineTo(Ed, cScrollToMiddle);
 
     //end of commands list
     else
@@ -8982,8 +8939,14 @@ end;
 
 procedure TfmMain.TBXItemClrClick(Sender: TObject);
 begin
-  DeleteFile(PChar(SynStateIni));
+  DoClearFilesHistory;
+end;  
+
+procedure TfmMain.DoClearFilesHistory;
+begin
+  FDelete(SynStateIni);
   SynMruFiles.Items.Clear;
+  
   with TIniFile.Create(SynIni) do
   try
     EraseSection('MRU');
@@ -9720,13 +9683,13 @@ begin
   UpdKey(TBXItemViewColMarkers, sm_ColumnMarkers);
 
   UpdKey(TBXItemESyncEd, sm_SyncEdit);
-  UpdKey(TbxItemEExtr, sm_ExStr);
+  UpdKey(TbxItemEExtr, sm_ExtractText);
   UpdKey(TbxItemETime, sm_DateTime);
   UpdKey(TbxItemHtmlInsColor, sm_InsertColor);
   UpdKey(TbxItemHtmlInsImage, sm_InsertImage);
 
   UpdKey(TBXItemFExit, sm_FExit);
-  UpdKey(TBXItemFClr, sm_ClrHist);
+  UpdKey(TBXItemFClr, sm_ClearFilesHistory);
   UpdKey(TbxItemFClose, sm_FClose);
   UpdKey(TbxItemFCloseDel, sm_FCloseDel);
   UpdKey(TbxItemFCloseAll, sm_FCloseAll);
@@ -10626,7 +10589,7 @@ end;
 
 procedure TfmMain.TBXItemZ0Click(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_Zoom0);
+  CurrentEditor.ExecCommand(sm_ZoomOrig);
 end;
 
 procedure TfmMain.TBXItemMarkDropClick(Sender: TObject);
@@ -11434,7 +11397,7 @@ begin
       //confirm creation of new session
       if not IsFileExist(FileName) then
       begin
-        if not MsgConfirmCreate(FileName) then
+        if not MsgConfirmCreate(FileName, Handle) then
           Exit;
         with TStringList.Create do
         try
@@ -12741,37 +12704,12 @@ end;
 
 procedure TfmMain.TBXItemCtxCopyAppendClick(Sender: TObject);
 begin
-  ecCopyApp.Execute;
+  CurrentEditor.ExecCommand(sm_CopyAppend);
 end;
 
 procedure TfmMain.TBXItemCtxCutAppendClick(Sender: TObject);
 begin
-  ecCutApp.Execute;
-end;
-
-procedure TfmMain.ecCopyAsHTMLExecute(Sender: TObject);
-var Exp: THTMLSyntExport;
-begin
-  Exp:= THTMLSyntExport.Create(nil);
-  try
-   Exp.SyntMemo:= CurrentEditor;
-   Exp.ExportType:= etSelection;
-   Exp.SaveToClipboard;
-  finally
-   Exp.Free;
-  end;
-end;
-
-procedure TfmMain.ecCopyAppExecute(Sender: TObject);
-begin
-  with TntClipboard do
-    AsWideText:= AsWideText + CurrentEditor.SelText;
-end;
-
-procedure TfmMain.ecCutAppExecute(Sender: TObject);
-begin
-  ecCopyApp.Execute;
-  CurrentEditor.ClearSelection;
+  CurrentEditor.ExecCommand(sm_CutAppend);
 end;
 
 procedure TfmMain.TBXSubmenuItemEdPopup(Sender: TTBCustomItem;
@@ -12800,8 +12738,8 @@ begin
   TBXItemEDelLn.Enabled:= not ro;
   TBXItemETable.Enabled:= not ro;
   TBXItemETime.Enabled:= not ro;
-  ecJoinLines.Enabled:= en and not ro;
-  ecSplitLines.Enabled:= not ro;
+  TBXItemEJoin.Enabled:= en and not ro;
+  TBXItemESplit.Enabled:= not ro;
 
   TBXItemEFillBlock.Enabled:= en and not ro;
   TBXItemEColumn.Enabled:= en and not ro;
@@ -13881,11 +13819,16 @@ begin
   CurrentEditor.ExecCommand(smSentCaseBlock);
 end;
 
-procedure TfmMain.TBXItemZSetClick(Sender: TObject);
+procedure TfmMain.DoZoomEditor(NZoom: Integer);
 begin
-  CurrentEditor.Zoom:= (Sender as TSpTbxItem).Tag;
+  CurrentEditor.Zoom:= NZoom;
   TemplateEditor.Zoom:= CurrentEditor.Zoom;
   StatusItemZoom.Caption:= IntToStr(CurrentEditor.Zoom) + '%';
+end;
+
+procedure TfmMain.TBXItemZSetClick(Sender: TObject);
+begin
+  DoZoomEditor((Sender as TComponent).Tag);
 end;
 
 procedure TfmMain.TBXItemZOtherClick(Sender: TObject);
@@ -13898,11 +13841,7 @@ begin
   begin
     n:= StrToIntDef(S, 0);
     if (n >= 20) and (n <= 500) then
-    begin
-      CurrentEditor.Zoom:= n;
-      TemplateEditor.Zoom:= CurrentEditor.Zoom;
-      StatusItemZoom.Caption:= IntToStr(CurrentEditor.Zoom) + '%';
-    end;
+      DoZoomEditor(n);
   end;
 end;
 
@@ -14175,23 +14114,13 @@ end;
 
 procedure TfmMain.TBXItemESyncEdClick(Sender: TObject);
 begin
-  with CurrentEditor do
-    if SyncEditing.Count>0 then
-    begin
-      SyncEditing.Clear;
-      Invalidate;
-    end
-    else
-    begin
-      if SelLength>0 then
-      begin
-        SyncEditing.Clear;
-        SyncEditing.AddCurSelection;
-        SyncEditing.Enabled:= true;
-      end
-      else
-        MsgBeep;
-    end;
+  DoToggleSyncEditing;
+end;  
+
+procedure TfmMain.DoToggleSyncEditing;
+begin
+  if not EditorToggleSyncEditing(CurrentEditor) then
+    MsgBeep;
 end;
 
 
@@ -14564,7 +14493,7 @@ begin
       Ed.SetFocus;
 end;
 
-procedure TfmMain.DoClearHistory;
+procedure TfmMain.DoClearSearchHistory;
 begin
   with TIniFile.Create(SynIni) do
   try
@@ -14636,10 +14565,12 @@ begin
   PageControl2.Invalidate;
 end;
 
+(*
+//nice splitter paint. maybe good for future.
 procedure TfmMain.Splitter1Paint(Sender: TObject);
 const
-  c=3;//Size of dot
-  cc=8;//Num of dots
+  c=3; //Size of dot
+  cc=8; //Num of dots
   procedure D(Y: integer);
   begin
     with Sender as TSplitter do
@@ -14672,15 +14603,9 @@ begin
       for i:= 0 to cc-1 do
         D((Height - cc*(c+1)) div 2 + (c+1)*i);
     end;
-    {
-    Canvas.Brush.Color:= clBlack;
-    y:= 8;
-    Canvas.Polygon([Point(1+c, y), Point(1+c, y+c*2), Point(1, y+c)]);
-    y:= Height-12;
-    Canvas.Polygon([Point(1, y), Point(1, y+c*2), Point(1+c, y+c)]);
-    }
   end;
 end;
+*)
 
 procedure TfmMain.TBXItemTabMoveToViewClick(Sender: TObject);
 begin
@@ -14990,20 +14915,6 @@ begin
   end;
 end;
 
-//Do like Delphi: go down after
-procedure TfmMain.DoCommentLines(Comm: boolean);
-var
-  b: boolean;
-begin
-  with CurrentEditor do
-  begin
-    b:= HaveSelection;
-    LineComments(Comm);
-    if not b then
-      ExecCommand(smDown);
-  end;
-end;
-
 procedure TfmMain.TBXItemEFillBlockClick(Sender: TObject);
 begin
   DoFillBlock;
@@ -15239,7 +15150,7 @@ begin
   else
   begin
     //open with warning about non-text content
-    if IsFileText(fn) or MsgConfirmBinary(fn) then
+    if IsFileText(fn) or MsgConfirmBinary(fn, Handle) then
     begin
       DoOpenFile(fn);
       if LnNum > 0 then
@@ -16167,58 +16078,6 @@ begin
   ecSpellLive.Execute;
 end;
 
-procedure TfmMain.ecJoinLinesExecute(Sender: TObject);
-var
-  s: ecString;
-  nPos, nLen,
-  i, i1: Integer;
-begin
-  if CurrentEditor<>nil then
-    with CurrentEditor do
-    begin
-      s:= SelText;
-      nLen:= Length(s);
-      nPos:= SelStart;
-      repeat
-        //find CR/LF
-        i1:= 0;
-        for i:= 1 to Length(s) do
-          if IsLineBreakChar(s[i]) then
-            begin i1:= i; Break end;
-        if i1=0 then Break;
-        //delete CR/LF's here
-        i:= i1;
-        while (i<=Length(s)) and IsLineBreakChar(s[i]) do
-          Delete(s, i, 1);
-        //if spaces at this pos, continue
-        if (i-1>0) and (i-1<=Length(s)) and IsSpaceChar(s[i-1]) then Continue;
-        if (i>0) and (i<=Length(s)) and IsSpaceChar(s[i]) then Continue;
-        //insert space
-        Insert(' ', s, i);
-      until false;
-      CaretStrPos:= nPos;
-      DeleteText(nLen);
-      InsertText(s);
-    end;
-end;
-
-procedure TfmMain.ecSplitLinesExecute(Sender: TObject);
-var
-  Ed: TSyntaxMemo;
-  s: Widestring;
-  nCol: Integer;
-begin
-  Ed:= CurrentEditor;
-  nCol:= Ed.RightMargin;
-  s:= IntToStr(nCol);
-  if not MsgInput('MRtMargin', s) then Exit;
-  nCol:= StrToIntDef(s, 0);
-  if nCol<3 then
-    begin MsgBeep; Exit end;
-
-  EditorSplitLinesByPosition(Ed, nCol);
-end;
-
 procedure TfmMain.ecMacroDlgExecute(Sender: TObject);
 var
   sh: TShArray;
@@ -16766,19 +16625,6 @@ begin
   end
   else
     MsgBeep;
-end;
-
-procedure TfmMain.ecCopyLineExecute(Sender: TObject);
-begin
-  with CurrentEditor do
-    if CaretPos.Y < Lines.Count then
-      TntClipboard.AsWideText:= Lines[CaretPos.Y] + sLineBreak;
-end;
-
-procedure TfmMain.ecCutLineExecute(Sender: TObject);
-begin
-  ecCopyLine.Execute;
-  CurrentEditor.ExecCommand(smDeleteLine);
 end;
 
 procedure TfmMain.TBXSubmenuItemTidyPopup(Sender: TTBCustomItem;
@@ -17381,50 +17227,6 @@ begin
     TMacroHk(ecMacroRecorder1).BeforeCommand(Cmd, Data, h);
 end;
 
-procedure TfmMain.DoBlockIndent(Ed: TSyntaxMemo; shift: boolean);
-var
-  p, pp: TPoint;
-  n, i, Ln1, Ln2: integer;
-  R: TRect;
-  spaces: string;
-begin
-  if not Ed.HaveSelection then Exit;
-  if Ed.SelLength>0 then
-  begin
-    if Shift then
-      n:= Ed.BlockIndent
-    else
-      n:= -Ed.BlockIndent;
-    p:= Ed.StrPosToCaretPos(Ed.SelStart);
-    Ed.ShiftSelection(n, not (soUnindentKeepAlign in Ed.Options));
-    pp:= Ed.StrPosToCaretPos(Ed.SelStart+Ed.SelLength);
-    Ed.SelStart:= Ed.CaretPosToStrPos(p);
-    Ed.SelLength:= Ed.CaretPosToStrPos(pp)-Ed.SelStart;
-  end
-  else
-  begin
-  //Selrect.Left incorr for Tabs present at line begin.
-  //so bug like EC's
-    n:= Ed.SelRect.Left;
-    Ln1:= Ed.SelRect.Top;
-    Ln2:= Ed.SelRect.Bottom;
-    R:= Ed.SelRect;
-    p:= Ed.CaretPos;
-    spaces:= StringOfChar(' ', Ed.BlockIndent);
-
-    Ed.BeginUpdate;
-    for i:= Ln1 to Ln2 do
-    begin
-      Ed.CaretPos:= Point(n, i);
-      Ed.InsertText(spaces);
-    end;
-    Ed.EndUpdate;
-
-    Ed.CaretPos:= p;
-    Ed.SelRect:= R;
-  end;
-end;
-
 procedure TfmMain.Splitter1CanResize(Sender: TObject; var NewSize: Integer;
   var Accept: Boolean);
 var
@@ -17673,7 +17475,7 @@ begin
   with CurrentEditor do
   begin
     CaretPos:= (Sender as TSyntaxMemo).CaretPos;
-    TopLine:= CaretPos.Y - ClientHeight div DefLineHeight div 2;
+    TopLine:= CaretPos.Y - VisibleLines div 2;
   end;
 end;
 
@@ -18058,7 +17860,7 @@ begin
   DoJumpToWordEnd(false);
 end;
 
-procedure TfmMain.DoFindExtSel(ANext: boolean);
+procedure TfmMain.DoFindAndExtendSel(ANext: boolean);
 var
   Ed: TSyntaxMemo;
   oldStart, oldLength: Integer;
@@ -18085,12 +17887,12 @@ end;
 
 procedure TfmMain.ecFindNextWithExtendExecute(Sender: TObject);
 begin
-  DoFindExtSel(true);
+  DoFindAndExtendSel(true);
 end;
 
 procedure TfmMain.ecFindPrevWithExtendExecute(Sender: TObject);
 begin
-  DoFindExtSel(false);
+  DoFindAndExtendSel(false);
 end;
 
 procedure TfmMain.UpdateFrameZoom(F: TEditorFrame);
@@ -19290,16 +19092,6 @@ begin
   end;
 end;
 
-procedure TfmMain.DoMoveCaretXY(DX, DY: integer);
-begin
-  with CurrentEditor do
-    if DY <> 0 then
-      CaretPos:= Point(CaretPos.X, CaretPos.Y + DY)
-    else
-      //need to goto next/prev line if at edge
-      CaretStrPos:= CaretStrPos + DX;
-end;
-
 procedure TfmMain.ecJumpToLastMarkerExecute(Sender: TObject);
 begin
   with CurrentEditor do
@@ -20246,126 +20038,24 @@ begin
 end;
 
 function TfmMain.DoAutoCloseTag: boolean;
-  //
-  function IsNoPairTag(const STagName: string): boolean;
-  const
-    cTagList = 'area,base,basefont,br,col,command,embed,frame,hr,img,input,keygen,link,meta,param,source,track,wbr';
-  begin
-    Result:= IsLexerListed(STagName, cTagList);
-  end;
-  //
-  function IsTagChar(ch: Widechar): boolean;
-  begin
-    //count ":" char as part of xml tag name
-    Result:= IsWordChar(ch) or (ch=':');
-  end;
-  //
-const
-  cOpenTagRegex = '\<\w+[ \w''"=\.,;\#\-\+:/]*'; //opening tag w/o ending '>'
 var
-  S, STag: ecString;
-  nCaret, iEnd, i: integer;
+  Err: string;
 begin
   Result:= false;
   if opAutoCloseTags and IsLexerWithTags(CurrentLexer) then
-    with CurrentEditor do
-    begin
-      nCaret:= CaretStrPos;
-      if (nCaret >= 1) and (nCaret <= TextLength) and
-        (Lines.Chars[nCaret] <> '/') then
-      begin
-        S:= Lines[CurrentLine];
-
-        //get opening tag
-        iEnd:= StrPosToCaretPos(nCaret).X;
-        i:= iEnd;
-        while (i>0) and (S[i]<>'<') do Dec(i);
-        if i=0 then Exit;
-        STag:= Copy(S, i, iEnd-i+1);
-        if STag='' then Exit;
-
-        if not IsStringRegex(STag, cOpenTagRegex) then
-          begin SetHint('Auto-closing failed for tag: '+STag); Exit end;
-
-        //get closing tag
-        i:= 2;
-        while (i<Length(STag)) and IsTagChar(STag[i+1]) do Inc(i);
-        STag:= Copy(STag, 2, i-1);
-        if IsNoPairTag(STag) then Exit;
-        STag:= '></'+STag+'>';
-
-        //insert closing tag after caret
-        //then position on 2nd STag character
-        InsertText(STag);
-        CaretStrPos:= CaretStrPos-Length(STag)+1;
-        Result:= true;
-      end;
-    end;
+  begin
+    Result:= EditorAutoCloseTag(CurrentEditor, Err);
+    if not Result then
+      SetHint(Err);
+  end;
 end;
 
-function TfmMain.DoAutoCloseBracket(const ch: Widechar): boolean;
-var
-  Ed: TSyntaxMemo;
-  ch2: Widechar;
-  NStart, NLen: Integer;
+function TfmMain.DoAutoCloseBracket(ch: Widechar): boolean;
 begin
-  Result:= false;
-  Ed:= CurrentEditor;
-  if Ed.ReadOnly then Exit;
-  NStart:= Ed.CaretStrPos;
-
-  //options enabled?
-  if IsBracketChar(ch) and not opAutoCloseBrackets then Exit;
-  if IsQuoteChar(ch) and not opAutoCloseQuotes then Exit;
-
-  //bracket is escaped?
-  if opAutoCloseBracketsNoEsc then
-    if (NStart>0) and (Ed.Lines.Chars[NStart]='\') then Exit;
-
-  //closing bracket is already under caret?
-  if (Pos(ch, ')]}')>0) then
-    if Ed.Lines.Chars[NStart+1]=ch then
-    begin
-      //right 1 char
-      Ed.CaretPos:= Point(Ed.CaretPos.X+1, Ed.CaretPos.Y);
-      Result:= true;
-      Exit
-    end;
-
-  case ch of
-    '(': ch2:= ')';
-    '[': ch2:= ']';
-    '{': ch2:= '}';
-    '"',
-    '''': ch2:= ch;
-    else Exit
-  end;
-
-  if Ed.SelLength=0 then
-  //simply input start+end brackets
-  begin
-    Ed.InsertText(WideString(ch)+WideString(ch2));
-    Ed.CaretStrPos:= Ed.CaretStrPos-1;
-  end
-  else
-  //code to wrap selection with brackets
-  begin
-    Ed.BeginUpdate;
-    try
-      NStart:= Ed.SelStart;
-      NLen:= Ed.SelLength;
-      Ed.ResetSelection;
-      Ed.CaretStrPos:= NStart+NLen;
-      Ed.InsertText(ch2);
-      Ed.CaretStrPos:= NStart;
-      Ed.InsertText(ch);
-      Ed.SetSelection(NStart+1, NLen);
-    finally
-      Ed.EndUpdate;
-    end;
-  end;
-
-  Result:= true;
+  Result:= EditorAutoCloseBracket(CurrentEditor, ch,
+    opAutoCloseBrackets,
+    opAutoCloseQuotes,
+    opAutoCloseBracketsNoEsc);
 end;
 
 function TfmMain.SynImagesDll: string;
@@ -21015,7 +20705,7 @@ begin
   if not IsFileExist(fn) then
     Exit ////MsgNoFile(fn)
   else
-  if not IsFileText(fn) and not MsgConfirmBinary(fn) then
+  if not IsFileText(fn) and not MsgConfirmBinary(fn, Handle) then
     Exit
   else
     DoOpenFile(fn);
@@ -21049,7 +20739,7 @@ const
   cCnt = 10; //ask additional confirmation when many files opened
 begin
   if (Files.Count>cCnt) then
-    if not MsgConfirmManyOpen(Files.Count) then Exit;
+    if not MsgConfirmManyOpen(Files.Count, Handle) then Exit;
 
   Bads:= TTntStringList.Create;
   try
@@ -21058,7 +20748,7 @@ begin
       fn:= Files[i];
       if IsFileExist(fn) then
       begin
-        if IsFileText(fn) or MsgConfirmBinary(fn) then
+        if IsFileText(fn) or MsgConfirmBinary(fn, Handle) then
           DoOpenFile(fn);
       end
       else
@@ -21381,7 +21071,7 @@ begin
   end;
 end;
 
-function TfmMain.MsgInput(const dkmsg: string; var S: Widestring): boolean;
+function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 begin
   Result:= DoInputString(dkmsg, S);
 end;
@@ -21766,11 +21456,18 @@ begin
 end;
 
 procedure TfmMain.acColumnMarkersExecute(Sender: TObject);
+  //
+  procedure UpdEditor(Ed: TSyntaxMemo);
+  begin
+    with ATSyntMemo.TSyntaxMemo(Ed) do
+      DoUpdateMargins;
+  end;
+  //
 var
   S: Widestring;
 begin
   S:= CurrentFrame.EditorMaster.ColMarkersString;
-  
+
   with TIniFile.Create(SynIni) do
   try
     if S='' then
@@ -21784,8 +21481,8 @@ begin
 
   CurrentFrame.EditorMaster.ColMarkersString:= S;
   CurrentFrame.EditorSlave.ColMarkersString:= S;
-  CurrentFrame.EditorMaster.Invalidate;
-  CurrentFrame.EditorSlave.Invalidate;
+  UpdEditor(CurrentFrame.EditorMaster);
+  UpdEditor(CurrentFrame.EditorSlave);
 end;
 
 procedure TfmMain.ecJumpColumnMarkerLeftExecute(Sender: TObject);
@@ -22166,7 +21863,7 @@ begin
     Exit;
   end;
   if (opTextOnly<>1) and (not IsFileText(fn)) then
-    cfm:= MsgConfirmBinary(fn)
+    cfm:= MsgConfirmBinary(fn, Handle)
   else
     cfm:= true;
   if cfm then
@@ -22784,30 +22481,12 @@ end;
 }
 
 procedure TfmMain.ecPasteNoCurChangeExecute(Sender: TObject);
-var
-  NPos: TPoint;
-  NLine: Integer;
 begin
-  with CurrentEditor do
-    if not ReadOnly then
-    begin
-      NPos:= CaretPos;
-      NLine:= TopLine;
-      ExecCommand(smPaste);
-      CaretPos:= NPos;
-      TopLine:= NLine;
-    end;
+  EditorPasteNoCaretChange(CurrentEditor);
 end;
 
 procedure TfmMain.TBXItemHtmlEmmetHelpClick(Sender: TObject);
 begin
-{
-  fn:= SynDir + 'Readme\ZenCodingCheatSheet.pdf';
-  if not IsFileExist(fn) then
-    MsgNoFile(fn)
-  else
-    FExecute(fn, '', '', Handle);
-}
   FOpenURL('http://docs.emmet.io/cheat-sheet/', Handle);
 end;
 
@@ -22988,10 +22667,7 @@ end;
 
 procedure TfmMain.ecCancelSelectionExecute(Sender: TObject);
 begin
-  with CurrentEditor do
-  begin
-    ResetSelection;
-  end;
+  CurrentEditor.ResetSelection;
 end;
 
 procedure TfmMain.ecCenterLinesExecute(Sender: TObject);
@@ -24641,16 +24317,8 @@ begin
 end;
 
 procedure TfmMain.ecPasteToColumn1Execute(Sender: TObject);
-var
-  P: TPoint;
 begin
-  with CurrentEditor do
-  begin
-    P:= CaretPos;
-    CaretPos:= Point(0, P.Y);
-    PasteFromClipboard;
-    CaretPos:= Point(P.X, CaretPos.Y);
-  end;
+  EditorPasteToFirstColumn(CurrentEditor);
 end;
 
 procedure TfmMain.TBXSubmenuItemCtxMorePopup(Sender: TTBCustomItem;
@@ -24811,7 +24479,7 @@ begin
   if fn<>'' then
     if IsFileExist(fn) then
     begin
-      if IsFileText(fn) or MsgConfirmBinary(fn) then
+      if IsFileText(fn) or MsgConfirmBinary(fn, Handle) then
         DoOpenFile(fn);
     end;
 end;
@@ -25399,24 +25067,6 @@ end;
 procedure TfmMain.TBXItemEReverseClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_ReverseLines);
-end;
-
-procedure TfmMain.ecDeleteToFileBeginExecute(Sender: TObject);
-var
-  NCaret: Integer;
-begin
-  with CurrentEditor do
-  begin
-    NCaret:= CaretStrPos;
-    CaretStrPos:= 0;
-    DeleteText(NCaret);
-  end;  
-end;
-
-procedure TfmMain.ecDeleteToFileEndExecute(Sender: TObject);
-begin
-  with CurrentEditor do
-    DeleteText(TextLength);
 end;
 
 procedure TfmMain.ecShuffleLinesExecute(Sender: TObject);
@@ -26412,7 +26062,7 @@ begin
   //opColorBracket:= C[33];
   //opColorBracketBg:= C[34];
   opColorLink:= C[35];
-  opColorSplitViews:= C[36];
+  //opColorSplitViews:= C[36];
   Ed.DefaultStyles.CurrentLine.Font.Color:= C[37];
   Ed.LineStateDisplay.ModifiedColor:= C[38];
   Ed.LineStateDisplay.NewColor:= C[39];
@@ -26423,7 +26073,7 @@ begin
   opColorBkmk:= C[44];
   opColorMap:= C[45];
   Ed.DefaultStyles.CollapseMark.Font.Color:= C[46];
-  opColorSplitSlave:= C[47];
+  //opColorSplitSlave:= C[47];
   Ed.Gutter.Bands[2].Color:= C[48];
   opColorNonPrintedBG:= C[49];
   Ed.DefaultStyles.CollapseMark.BgColor:= C[50];
@@ -26472,7 +26122,7 @@ begin
   //C[33]:= opColorBracket;
   //C[34]:= opColorBracketBg;
   C[35]:= opColorLink;
-  C[36]:= opColorSplitViews;
+  //C[36]:= opColorSplitViews;
   C[37]:= TemplateEditor.DefaultStyles.CurrentLine.Font.Color;
   C[38]:= TemplateEditor.LineStateDisplay.ModifiedColor;
   C[39]:= TemplateEditor.LineStateDisplay.NewColor;
@@ -26483,7 +26133,7 @@ begin
   C[44]:= opColorBkmk;
   C[45]:= opColorMap;
   C[46]:= TemplateEditor.DefaultStyles.CollapseMark.Font.Color;
-  C[47]:= opColorSplitSlave;
+  //C[47]:= opColorSplitSlave;
   C[48]:= TemplateEditor.Gutter.Bands[2].Color;
   C[49]:= opColorNonPrintedBG;
   C[50]:= TemplateEditor.DefaultStyles.CollapseMark.BgColor;
@@ -26908,6 +26558,8 @@ begin
   if Ed=nil then Exit;
   NeedDraw:= false;
 
+  ATSyntMemo.TSyntaxMemo(Ed).DoUpdateMargins;
+
   if FBracketsHilited then
   begin
     FBracketsHilited:= false;
@@ -26915,8 +26567,12 @@ begin
     NeedDraw:= true;
   end;
 
+  //not needed now
+  {
   if opShowCurrentColumn then
     NeedDraw:= true;
+  }
+
   if NeedDraw then
     Ed.Invalidate;
 
@@ -26971,11 +26627,6 @@ end;
 procedure TfmMain.DoPasteAndSelect;
 begin
   EditorPasteAndSelect(CurrentEditor);
-end;
-
-procedure TfmMain.DoInsertBlankLineAboveBelow(ABelow: boolean);
-begin
-  EditorInsertBlankLineAboveOrBelow(CurrentEditor, ABelow);
 end;
 
 procedure TfmMain.DoCopyURL;
@@ -27571,6 +27222,12 @@ begin
   DoHandleKeysInPanels(Key, Shift);
 end;
 
+procedure TfmMain.DoZoomEditorInc(AInc: boolean);
+const
+  cInc = 10; //increase by N%
+begin
+  DoZoomEditor(CurrentEditor.Zoom + IfThen(AInc, cInc, -cInc));
+end;
 
 end.
 

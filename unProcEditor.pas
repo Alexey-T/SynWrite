@@ -10,8 +10,27 @@ uses
 
   ecSyntAnal,
   ecSyntMemo,
-  ecMemoStrings;
+  ecMemoStrings,
+  ecStrUtils;
 
+procedure EditorPasteToFirstColumn(Ed: TSyntaxMemo);
+procedure EditorPasteNoCaretChange(Ed: TSyntaxMemo);
+procedure EditorCopyAsRtf(Ed: TSyntaxMemo);
+procedure EditorCopyAsHtml(Ed: TSyntaxMemo);
+procedure EditorCopyOrCutCurrentLine(Ed: TSyntaxMemo; ACut: boolean);
+procedure EditorCopyOrCutAndAppend(Ed: TSyntaxMemo; ACut: boolean);
+
+function EditorAutoCloseBracket(Ed: TSyntaxMemo; ch: Widechar;
+  opAutoCloseBrackets, opAutoCloseQuotes, opAutoCloseBracketsNoEsc: boolean): boolean;
+procedure EditorDeleteToFileBegin(Ed: TSyntaxMemo);
+procedure EditorDeleteToFileEnd(Ed: TSyntaxMemo);
+procedure EditorJoinLines(Ed: TSyntaxMemo);
+procedure EditorMoveCaretByNChars(Ed: TSyntaxMemo; DX, DY: Integer);
+procedure EditorCommentUncommentLines(Ed: TSyntaxMemo; AComment: boolean);
+function EditorToggleSyncEditing(Ed: TSyntaxMemo): boolean;
+procedure EditorKeepCaretOnScreen(Ed: TSyntaxMemo);
+procedure EditorIndentBlock(Ed: TSyntaxMemo; shift: boolean);
+procedure EditorChangeBlockCase(Ed: TSyntaxMemo; Cmd: TChangeCase);
 procedure EditorDoHomeKey(Ed: TSyntaxMemo);
 procedure EditorInsertBlankLineAboveOrBelow(Ed: TSyntaxMemo; ABelow: boolean);
 procedure EditorPasteAndSelect(Ed: TSyntaxMemo);
@@ -118,11 +137,13 @@ uses
   Windows,
   Math,
   Clipbrd,
+  TntClipbrd,
   SysUtils,
   StrUtils,
   TntSysUtils,
-  ecStrUtils,
+  TntWideStrUtils,
   ecCmdConst,
+  ecExports,
   ATxSProc;
 
 procedure EditorSearchMarksToList(Ed: TSyntaxmemo; List: TTntStrings);
@@ -497,7 +518,6 @@ end;
 procedure EditorCenterPos(Ed: TCustomSyntaxMemo; AGotoMode: boolean; NOffsetY: Integer);
 var
   p: TPoint;
-  ext: TSize;
   w, h: integer;
   dx, dy: integer; //indents from sr result to window edge
 begin
@@ -506,9 +526,8 @@ begin
   with Ed do
   begin
     p:= CaretPos;
-    ext:= DefTextExt;
-    w:= (ClientWidth - IfThen(Gutter.Visible, Gutter.Width)) div ext.cx;
-    h:= (ClientHeight - IfThen(HorzRuler.Visible, HorzRuler.Height)) div ext.cy;
+    w:= VisibleCols;
+    h:= VisibleLines;
 
     {
     //uncollapse - buggy on big Python file folded line
@@ -1369,20 +1388,115 @@ begin
   end;
 end;
 
+
+//modified function SysUtils.WrapText from Delphi, got it somewhere
+function SWrapText(const S, SInsertBreak, SSeparators, SEol: WideString;
+  NTabSize, NMaxCol: Integer): WideString;
+var
+  NCol, NPos: Integer;
+  LinePos, LineLen: Integer;
+  BreakLen, BreakPos: Integer;
+  QuoteChar, CurChar: WideChar;
+  ExistingBreak: Boolean;
+begin
+  NCol := 1;
+  NPos := 1;
+  LinePos := 1;
+  BreakPos := 0;
+  QuoteChar := #0;
+  ExistingBreak := False;
+  LineLen := Length(S);
+  BreakLen := Length(SInsertBreak);
+  Result := '';
+  while NPos <= LineLen do
+  begin
+    CurChar := S[NPos];
+    if CurChar = #9 then
+      Inc(NCol, NTabSize - 1)
+    else  
+    begin
+    if IsQuoteChar(CurChar) then
+      if QuoteChar = #0 then
+        QuoteChar := CurChar
+      else if CurChar = QuoteChar then
+        QuoteChar := #0;
+    if QuoteChar = #0 then
+    begin
+      if CurChar = SInsertBreak[1] then
+      begin
+        ExistingBreak := WStrLComp(PWChar(SInsertBreak), PWChar(@S[NPos]), BreakLen) = 0;
+        if ExistingBreak then
+        begin
+          Inc(NPos, BreakLen-1);
+          BreakPos := NPos;
+        end;
+      end;
+
+      if not ExistingBreak then
+        if System.Pos(CurChar, SSeparators)>0 then
+          BreakPos := NPos;
+      end;
+    end;
+
+    Inc(NPos);
+    Inc(NCol);
+
+    if not (IsQuoteChar(QuoteChar)) and (ExistingBreak or
+      ((NCol > NMaxCol) and (BreakPos > LinePos))) then
+    begin
+      NCol := 1;
+      Result := Result + Copy(S, LinePos, BreakPos - LinePos + 1);
+      if not IsQuoteChar(CurChar) then
+      begin
+        while NPos <= LineLen do
+        begin
+          if System.Pos(S[NPos], SSeparators)>0 then
+          begin
+            Inc(NPos);
+            ExistingBreak := False;
+          end
+          else
+          begin
+            if WStrLComp(PWChar(@S[NPos]), PWChar(SEol), Length(SEol)) = 0 then
+            begin
+              Inc(NPos, Length(SEol));
+              ExistingBreak := True;
+            end
+            else
+              Break;
+          end;
+        end;
+      end;
+      if (NPos <= LineLen) and not ExistingBreak then
+        Result := Result + SInsertBreak;
+
+      Inc(BreakPos);
+      LinePos := BreakPos;
+      NPos := LinePos;
+      ExistingBreak := False;
+    end;
+  end;
+  Result := Result + Copy(S, LinePos, MaxInt);
+end;
+
 procedure EditorSplitLinesByPosition(Ed: TSyntaxMemo; nCol: Integer);
 var
   Ln1, Ln2, i: Integer;
   s, sCR: Widestring;
+  nTabSize: Integer;
 begin
+  if Ed.ReadOnly then Exit;
   EditorGetSelLines(Ed, Ln1, Ln2);
   sCR:= EditorEOL(Ed);
+  nTabSize:= EditorTabSize(Ed);
 
   Ed.BeginUpdate;
   try
     for i:= Ln2 downto Ln1 do
     begin
-      s:= Ed.Lines[i];
-      s:= WideWrapText(s, sCR, [' ', '-', '+', #9], nCol);
+      //WideWrapText is bad in Tnt Controls, doesn't count leading line spaces
+      s:= SWrapText(Ed.Lines[i], sCR, ' -+'#9, sCR, nTabSize, nCol);
+
       EditorReplaceLine(Ed, i, s, true{Undo});
     end;
   finally
@@ -1565,5 +1679,364 @@ begin
     Ed.CaretPos:= p;
   end;
 end;
+
+
+procedure EditorChangeBlockCase(Ed: TSyntaxMemo; Cmd: TChangeCase);
+var
+  Sel: TSynSelSave;
+  en: boolean;
+begin
+  EditorSaveSel(Ed, Sel);
+  en:= true;
+  //select current word, if no selection
+  if not Ed.HaveSelection then
+    en:= EditorSelectWord(Ed);
+  //change case
+  if en then
+  begin
+    Ed.SelChangeCase(Cmd);
+    EditorSetModified(Ed);
+  end;
+  EditorRestoreSel(Ed, Sel);
+end;
+
+procedure EditorIndentBlock(Ed: TSyntaxMemo; shift: boolean);
+var
+  p, pp: TPoint;
+  n, i, Ln1, Ln2: integer;
+  R: TRect;
+  spaces: string;
+begin
+  if not Ed.HaveSelection then Exit;
+  if Ed.SelLength>0 then
+  begin
+    if Shift then
+      n:= Ed.BlockIndent
+    else
+      n:= -Ed.BlockIndent;
+    p:= Ed.StrPosToCaretPos(Ed.SelStart);
+    Ed.ShiftSelection(n, not (soUnindentKeepAlign in Ed.Options));
+    pp:= Ed.StrPosToCaretPos(Ed.SelStart+Ed.SelLength);
+    Ed.SelStart:= Ed.CaretPosToStrPos(p);
+    Ed.SelLength:= Ed.CaretPosToStrPos(pp)-Ed.SelStart;
+  end
+  else
+  begin
+    //Selrect.Left incorrect for Tabs present at line begin.
+    //so bug like EC's
+    n:= Ed.SelRect.Left;
+    Ln1:= Ed.SelRect.Top;
+    Ln2:= Ed.SelRect.Bottom;
+    R:= Ed.SelRect;
+    p:= Ed.CaretPos;
+    spaces:= StringOfChar(' ', Ed.BlockIndent);
+
+    Ed.BeginUpdate;
+    for i:= Ln1 to Ln2 do
+    begin
+      Ed.CaretPos:= Point(n, i);
+      Ed.InsertText(spaces);
+    end;
+    Ed.EndUpdate;
+
+    Ed.CaretPos:= p;
+    Ed.SelRect:= R;
+  end;
+end;
+
+
+procedure EditorKeepCaretOnScreen(Ed: TSyntaxMemo);
+var
+  p: TPoint;
+  n: Integer;
+begin
+  with Ed do
+  begin
+    p:= CaretPos;
+    n:= TopLine + 1;
+    if p.Y < n then
+      CaretPos:= Point(p.X, n) else
+    begin
+      n:= TopLine + VisibleLines - 2;
+      if p.Y > n then
+        CaretPos:= Point(p.X, n);
+    end;
+  end;  
+end;
+
+function EditorToggleSyncEditing(Ed: TSyntaxMemo): boolean;
+begin
+  Result:= true;
+  with Ed do
+    if SyncEditing.Count>0 then
+    begin
+      SyncEditing.Clear;
+      Invalidate;
+    end
+    else
+    begin
+      if SelLength>0 then
+      begin
+        SyncEditing.Clear;
+        SyncEditing.AddCurSelection;
+        SyncEditing.Enabled:= true;
+      end
+      else
+        Result:= false;
+    end;
+end;
+
+
+//do like Delphi: move caret down after
+procedure EditorCommentUncommentLines(Ed: TSyntaxMemo; AComment: boolean);
+var
+  sel: boolean;
+begin
+  with Ed do
+  begin
+    sel:= HaveSelection;
+    LineComments(AComment);
+    if not sel then
+      ExecCommand(smDown);
+  end;
+end;
+
+procedure EditorMoveCaretByNChars(Ed: TSyntaxMemo; DX, DY: Integer);
+begin
+  with Ed do
+    if DY <> 0 then
+      CaretPos:= Point(CaretPos.X, CaretPos.Y + DY)
+    else
+      //need to goto next/prev line if at edge
+      CaretStrPos:= CaretStrPos + DX;
+end;
+
+procedure EditorCopyOrCutCurrentLine(Ed: TSyntaxMemo; ACut: boolean);
+begin
+  with Ed do
+    if CaretPos.Y < Lines.Count then
+    begin
+      TntClipboard.AsWideText:= Lines[CaretPos.Y] + sLineBreak;
+      if ACut then
+        ExecCommand(smDeleteLine);
+    end;
+end;
+
+procedure EditorCopyAsHtml(Ed: TSyntaxMemo);
+var
+  Exp: THTMLSyntExport;
+begin
+  Exp:= THTMLSyntExport.Create(nil);
+  try
+    Exp.SyntMemo:= Ed;
+    Exp.ExportType:= etSelection;
+    Exp.SaveToClipboard;
+  finally
+    FreeAndNil(Exp);
+  end;
+end;
+
+procedure EditorCopyAsRtf(Ed: TSyntaxMemo);
+var
+  Exp: TRtfSyntExport;
+begin
+  Exp:= TRtfSyntExport.Create(nil);
+  try
+    Exp.SyntMemo:= Ed;
+    Exp.ExportType:= etSelection;
+    Exp.SaveToClipboard;
+  finally
+    FreeAndNil(Exp);
+  end;
+end;
+
+procedure EditorCopyOrCutAndAppend(Ed: TSyntaxMemo; ACut: boolean);
+begin
+  with TntClipboard do
+    AsWideText:= AsWideText + Ed.SelText;
+  if ACut then
+    Ed.ClearSelection;
+end;
+
+procedure EditorJoinLines(Ed: TSyntaxMemo);
+var
+  Ln1, Ln2, i: Integer;
+  S, SEol: Widestring;
+begin
+  if Ed.ReadOnly then Exit;
+  with Ed do
+    if HaveSelection then
+    begin
+      EditorGetSelLines(Ed, Ln1, Ln2);
+      if Ln2=Ln1 then Exit;
+
+      S:= '';
+      SEol:= EditorEOL(Ed);
+      for i:= Ln1 to Ln2 do
+        S:= S + Lines[i] + IfThen(i<Ln2, ' ', SEol);
+
+      BeginUpdate;
+      try
+        SelectLines(Ln1, Ln2);
+        ClearSelection;
+        CaretStrPos:= CaretPosToStrPos(Point(0, Ln1));
+        InsertText(S);
+      finally
+        EndUpdate;
+      end;    
+    end;
+end;
+
+procedure EditorJoinLines_Old(Ed: TSyntaxMemo);
+var
+  s: Widestring;
+  nPos, nLen, i, i1: Integer;
+begin
+  with Ed do
+  if SelLength>0 then
+  begin
+    s:= SelText;
+    nLen:= Length(s);
+    nPos:= SelStart;
+
+    repeat
+      //find CR/LF
+      i1:= 0;
+      for i:= 1 to Length(s) do
+        if IsLineBreakChar(s[i]) then
+          begin i1:= i; Break end;
+      if i1=0 then Break;
+      //delete CR/LF's here
+      i:= i1;
+      while (i<=Length(s)) and IsLineBreakChar(s[i]) do
+        Delete(s, i, 1);
+      //if spaces at this pos, continue
+      if (i-1>0) and (i-1<=Length(s)) and IsSpaceChar(s[i-1]) then Continue;
+      if (i>0) and (i<=Length(s)) and IsSpaceChar(s[i]) then Continue;
+      //insert space
+      Insert(' ', s, i);
+    until false;
+    
+    CaretStrPos:= nPos;
+    DeleteText(nLen);
+    InsertText(s);
+  end;
+end;
+
+
+procedure EditorPasteNoCaretChange(Ed: TSyntaxMemo);
+var
+  NPos: TPoint;
+  NLine: Integer;
+begin
+  with Ed do
+    if not ReadOnly then
+    begin
+      NPos:= CaretPos;
+      NLine:= TopLine;
+      ExecCommand(smPaste);
+      CaretPos:= NPos;
+      TopLine:= NLine;
+    end;
+end;
+
+procedure EditorPasteToFirstColumn(Ed: TSyntaxMemo);
+var
+  P: TPoint;
+begin
+  with Ed do
+  begin
+    P:= CaretPos;
+    CaretPos:= Point(0, P.Y);
+    PasteFromClipboard;
+    CaretPos:= Point(P.X, CaretPos.Y);
+  end;
+end;
+
+procedure EditorDeleteToFileBegin(Ed: TSyntaxMemo);
+var
+  NCaret: Integer;
+begin
+  with Ed do
+    if not ReadOnly then
+    begin
+      NCaret:= CaretStrPos;
+      CaretStrPos:= 0;
+      DeleteText(NCaret);
+    end;
+end;
+
+procedure EditorDeleteToFileEnd(Ed: TSyntaxMemo);
+begin
+  with Ed do
+    if not ReadOnly then
+      DeleteText(TextLength);
+end;
+
+
+function EditorAutoCloseBracket(Ed: TSyntaxMemo; ch: Widechar;
+  opAutoCloseBrackets, opAutoCloseQuotes, opAutoCloseBracketsNoEsc: boolean): boolean;
+var
+  ch2: Widechar;
+  NStart, NLen: Integer;
+begin
+  Result:= false;
+  if Ed.ReadOnly then Exit;
+  NStart:= Ed.CaretStrPos;
+
+  //options enabled?
+  if IsBracketChar(ch) and not opAutoCloseBrackets then Exit;
+  if IsQuoteChar(ch) and not opAutoCloseQuotes then Exit;
+
+  //bracket is escaped?
+  if opAutoCloseBracketsNoEsc then
+    if (NStart>0) and (Ed.Lines.Chars[NStart]='\') then Exit;
+
+  //closing bracket is already under caret?
+  if (Pos(ch, ')]}')>0) then
+    if Ed.Lines.Chars[NStart+1]=ch then
+    begin
+      //right 1 char
+      Ed.CaretPos:= Point(Ed.CaretPos.X+1, Ed.CaretPos.Y);
+      Result:= true;
+      Exit
+    end;
+
+  case ch of
+    '(': ch2:= ')';
+    '[': ch2:= ']';
+    '{': ch2:= '}';
+    '"',
+    '''': ch2:= ch;
+    else Exit
+  end;
+
+  if Ed.SelLength=0 then
+  //simply input start+end brackets
+  begin
+    Ed.InsertText(WideString(ch)+WideString(ch2));
+    Ed.CaretStrPos:= Ed.CaretStrPos-1;
+  end
+  else
+  //code to wrap selection with brackets
+  begin
+    Ed.BeginUpdate;
+    try
+      NStart:= Ed.SelStart;
+      NLen:= Ed.SelLength;
+      Ed.ResetSelection;
+      Ed.CaretStrPos:= NStart+NLen;
+      Ed.InsertText(ch2);
+      Ed.CaretStrPos:= NStart;
+      Ed.InsertText(ch);
+      Ed.SetSelection(NStart+1, NLen);
+    finally
+      Ed.EndUpdate;
+    end;
+  end;
+
+  Result:= true;
+end;
+
 
 end.

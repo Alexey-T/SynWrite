@@ -5,6 +5,7 @@ interface
 uses
   Windows, SysUtils;
 
+function IsStringListed(const S, List: string): boolean;
 function FTempDir: string;
 
 type TSynCharArray = array[1..50] of Integer;
@@ -33,6 +34,7 @@ function SSpacesAtStart(const s: Widestring): Integer;
 procedure SReplaceSpToTabLeading(var s: Widestring; const spaces: Widestring);
 procedure SReplaceZeroesW(var S: Widestring);
 function SBegin(const s, subs: Widestring): boolean;
+function SEnd(const s, subs: Widestring): boolean;
 function SEscapeSpec(const s: Widestring): Widestring;
 function SEscapeRegex(const s: Widestring): Widestring;
 
@@ -872,9 +874,19 @@ end;
 
 function SBegin(const s, subs: Widestring): boolean;
 begin
-  Result:= (subs<>'') and
+  Result:=
+    (s<>'') and (subs<>'') and
     (Copy(s, 1, Length(subs))=subs);
 end;
+
+function SEnd(const s, subs: Widestring): boolean;
+begin
+  Result:=
+    (s<>'') and (subs<>'') and
+    (Length(subs)<=Length(s)) and
+    (Copy(s, Length(s)-Length(subs)+1, MaxInt)=subs);
+end;
+
 
 function SCollapseFN(const FN, FN_session: Widestring): Widestring;
 var
@@ -1171,5 +1183,12 @@ function FTempDir: string;
 begin
   Result:= SExpandVars('%temp%');
 end;
-  
+
+function IsStringListed(const S, List: string): boolean;
+begin
+  Result:= (S <> '') and
+    (Pos(','+S+',', ','+List+',') > 0);
+end;
+
+
 end.

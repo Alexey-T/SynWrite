@@ -10,12 +10,10 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ExtCtrls, ComCtrls, ImgList, ActiveX,
   Menus, Math,
-
   ecSyntMemo, ecSyntAnal, ecActns, ecExtHighlight, ecOleDrag, ecEmbObj, ecSpell,
-  TB2Item, SpTBXItem,
-
   ATFileNotificationSimple,
-  ATSyntMemo, SpTBXDkPanels; //this will replace TSyntaxMemo
+  ATSyntMemo, //this will replace TSyntaxMemo
+  TB2Item, SpTBXItem, SpTBXDkPanels;
 
 const
   cMaxBk = 1*1000*1000; //max bookmarks count
@@ -73,7 +71,6 @@ type
       Buton: TMouseButton; Shift: TShiftState; XY: TPoint);
     procedure EditorMasterGetTokenHint(Sender: TObject;
       TokenIndex: Integer; var HintText: String);
-    procedure SplitterEdsPaint(Sender: TObject);
     procedure EditorMasterSelectionChanged(Sender: TObject);
     procedure EditorMasterZoom(Sender: TObject);
     procedure SplitterEdsMoved(Sender: TObject);
@@ -264,44 +261,6 @@ begin
     UpdateMap(FocusedEditor)
   else
     TimerMap.Enabled:= true;
-end;
-
-procedure TEditorFrame.SplitterEdsPaint(Sender: TObject);
-{
-const
-  cc = 18; //width of drag-hint rect
-  cY1 = 1; //top of drag-hint rect
-var
-  r: TRect;
-  }
-begin
-  Color:= TfmMain(Self.Owner).opColorSplitSlave
-  (*
-  with Sender as TSplitter do
-  if IsSplitted then
-    Color:= TfmMain(Self.Owner).opColorSplitSlave
-  else
-  begin
-    if (Self.Parent is TTabSheet) and (Self.Parent as TTabSheet).TabVisible then
-      Color:= TfmMain(Self.Owner).opColorTab2
-    else
-      Color:= TfmMain(Self.Owner).opColorTab1;
-    {
-    if FSplitHorz then
-    begin
-      r:= Rect(ClientWidth - cc, cY1, ClientWidth, ClientHeight);
-      Canvas.Brush.Color:= clGray;
-      Canvas.FillRect(r);
-      InflateRect(r, -1, -1);
-      Canvas.Brush.Color:= TfmMain(Self.Owner).opColorTab2;
-      Canvas.FillRect(r);
-      Canvas.Pen.Color:= clLtGray;
-      Canvas.MoveTo(ClientWidth - cc + 1, cY1);
-      Canvas.LineTo(ClientWidth - 1, cY1);
-    end;
-    }
-  end;
-  *)
 end;
 
 // Initializing events
@@ -1327,7 +1286,7 @@ begin
   //draw current frame
   NLineTop:= Ed.TopLine;
   NLineBottom:= Ed.MouseToCaret(0, Ed.ClientHeight-1).Y+1;
-    //Ed.TopLine+ Ed.ClientHeight div Ed.DefLineHeight
+    //Ed.TopLine+ Ed.VisibleLines
 
   N1_Frame:= Int64(NCliHeight)*NLineTop div NCnt;
   N2_Frame:= Int64(NCliHeight)*NLineBottom div NCnt;
@@ -1431,7 +1390,7 @@ var
 begin
   Ed:= FocusedEditor;
   NCur:= GetMapLine(X, Y);
-  NTop:= NCur - Ed.ClientHeight div Ed.DefLineHeight div 3; //center clicked point in editor
+  NTop:= NCur - Ed.VisibleLines div 3; //center clicked point in editor
   if NTop<0 then NTop:= 0;
 
   Ed.TopLine:= NTop;

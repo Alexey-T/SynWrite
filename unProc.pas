@@ -31,6 +31,7 @@ procedure SParseString_AcpStd(
   IsBracketSep: boolean;
   var SType, SId, SPar, SHint: string);
 
+function EditorAutoCloseTag(Ed: TSyntaxMemo; var Err: string): boolean;
 function EditorStringBeforeCaret(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
 procedure EditorGetHtmlTag(Ed: TSyntaxMemo; var STag, SAttr: string);
 procedure EditorGetCssTag(Ed: TSyntaxMemo; var STag: string);
@@ -1755,6 +1756,65 @@ begin
     Result:= FGetTempFilenameIndexed(i);
     FDelete(Result);
     if not IsFileExist(Result) then Break;
+  end;
+end;
+
+
+function EditorAutoCloseTag(Ed: TSyntaxMemo; var Err: string): boolean;
+  //
+  function IsNoPairTag(const STagName: string): boolean;
+  const
+    cTagList = 'area,base,basefont,br,col,command,embed,frame,hr,img,input,keygen,link,meta,param,source,track,wbr';
+  begin
+    Result:= IsStringListed(LowerCase(STagName), cTagList);
+  end;
+  //
+  function IsTagChar(ch: Widechar): boolean;
+  begin
+    //count ":" char as part of xml tag name
+    Result:= IsWordChar(ch) or (ch=':');
+  end;
+  //
+const
+  cOpenTagRegex = '\<\w+[ \w''"=\.,;\#\-\+:/]*'; //opening tag w/o ending '>'
+var
+  S, STag: ecString;
+  nCaret, iEnd, i: integer;
+begin
+  Result:= false;
+  Err:= '';
+  with Ed do
+  begin
+    nCaret:= CaretStrPos;
+    if (nCaret >= 1) and (nCaret <= TextLength) and
+      (Lines.Chars[nCaret] <> '/') then
+    begin
+      S:= Lines[CurrentLine];
+
+      //get opening tag
+      iEnd:= StrPosToCaretPos(nCaret).X;
+      i:= iEnd;
+      while (i>0) and (S[i]<>'<') do Dec(i);
+      if i=0 then Exit;
+      STag:= Copy(S, i, iEnd-i+1);
+      if STag='' then Exit;
+
+      if not IsStringRegex(STag, cOpenTagRegex) then
+        begin Err:= 'Auto-closing failed for tag: '+STag; Exit end;
+
+      //get closing tag
+      i:= 2;
+      while (i<Length(STag)) and IsTagChar(STag[i+1]) do Inc(i);
+      STag:= Copy(STag, 2, i-1);
+      if IsNoPairTag(STag) then Exit;
+      STag:= '></'+STag+'>';
+
+      //insert closing tag after caret
+      //then position on 2nd STag character
+      InsertText(STag);
+      CaretStrPos:= CaretStrPos-Length(STag)+1;
+      Result:= true;
+    end;
   end;
 end;
 

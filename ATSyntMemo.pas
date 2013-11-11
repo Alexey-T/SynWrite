@@ -124,7 +124,6 @@ type
     procedure DoAddCaretInt(P: TPoint);
     function IsCtrlClickHandled(const P: TPoint): boolean;
     function CanSetCarets: boolean;
-    procedure DoAfterPaint;
     function GetColMarkersString: string;
     procedure SetColMarkersString(const S: string);
   protected
@@ -133,7 +132,7 @@ type
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure Paint; override;
   public
-    ColMarkers: array[0..20] of integer;
+    ColMarkers: array[0..14] of integer;
     property ColMarkersString: string read GetColMarkersString write SetColMarkersString;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -148,7 +147,7 @@ type
     property CaretsGutterColor: TColor read FCaretsGutterColor write FCaretsGutterColor;
     procedure ExecCommand(Command: integer; Data: Pointer = nil); override;
     procedure DoShowInfo;
-    procedure DoDrawColumns;
+    procedure DoUpdateMargins;
     property OnCtrlClick: TOnCtrlClick read FOnCtrlClick write FOnCtrlClick;
   end;
 
@@ -542,12 +541,12 @@ begin
       end;
     smCaretsUpPage:
       begin
-        DoCaretsExtend(true, ClientHeight div DefLineHeight);
+        DoCaretsExtend(true, VisibleLines);
         Ok:= true;
       end;
     smCaretsDownPage:
       begin
-        DoCaretsExtend(false, ClientHeight div DefLineHeight);
+        DoCaretsExtend(false, VisibleLines);
         Ok:= true;
       end;
     smCaretsUpToEnd:
@@ -862,7 +861,7 @@ begin
             end;
           end;
         end;
-
+      
       smChar:
         begin
           ch:= PWChar(Data)^;
@@ -962,7 +961,7 @@ begin
     smDown:
       begin
         //scroll 1 line down, only if needed
-        if GetCaret(CaretsCount-1).Y >= TopLine + ClientHeight div DefLineHeight - 2 then
+        if GetCaret(CaretsCount-1).Y >= TopLine + VisibleLines - 2 then
           ExecCommand(smScrollDown);
       end;
 
@@ -1323,6 +1322,7 @@ var
   R, R2, RClient: TRect;
   NSize: TSize;
 begin
+  if CaretsCount<2 then Exit;
   GetDrawCoord(NSize, RClient);
 
   for i:= 0 to CaretsCount-1 do
@@ -1360,9 +1360,6 @@ end;
 procedure TSyntaxMemo.Paint;
 begin
   inherited;
-
-  if CaretsCount<=1 then
-    DoAfterPaint;
 
   if Focused or (eoShowCaretWhenUnfocused in OptionsEx) then
     DoDrawCarets;
@@ -1596,41 +1593,33 @@ begin
   end;
 end;
 
-procedure TSyntaxMemo.DoDrawColumns;
+procedure TSyntaxMemo.DoUpdateMargins;
+const
+  cFixedMargins = 2; //one RightMargin, one caret-margin
 var
-  P: TPoint;
-  i: Integer;
+  i, NCount: Integer;
 begin
-  //draw current column line
-  if opShowCurrentColumn then
-  begin
-    Canvas.Pen.Color:= RightMarginColor;
-    Canvas.Pen.Style:= psSolid;
-    Canvas.Pen.Width:= 1;
+  NCount:= cFixedMargins + High(ColMarkers) + 1;
+  while TextMargins.Count < NCount do
+    TextMargins.Add;
 
-    P:= CaretPos;
-    P:= CaretToMouse(P.X, P.Y);
-    Canvas.MoveTo(P.X, 0);
-    Canvas.LineTo(P.X, ClientHeight);
+  //line for caret-pos
+  with TextMargins[1] do
+  begin
+    Visible:= opShowCurrentColumn;
+    if Visible then
+      Position:= LinesPosToLog(CaretPos).X;
+    Pen.Color:= RightMarginColor;
   end;
 
-  //draw "column markers" lines
+  //lines for column-markers
   for i:= Low(ColMarkers) to High(ColMarkers) do
-    if ColMarkers[i]>0 then
+    with TextMargins[i+cFixedMargins] do
     begin
-      Canvas.Pen.Color:= RightMarginColor;
-      Canvas.Pen.Style:= psSolid;
-      Canvas.Pen.Width:= 1;
-
-      P:= CaretToMouse(ColMarkers[i], 0);
-      Canvas.MoveTo(P.X, 0);
-      Canvas.LineTo(P.X, ClientHeight);
+      Visible:= ColMarkers[i]>0;
+      Position:= ColMarkers[i];
+      Pen.Color:= RightMarginColor;
     end;
-end;
-
-procedure TSyntaxMemo.DoAfterPaint;
-begin
-  DoDrawColumns;
 end;
 
 function TSyntaxMemo.GetColMarkersString: string;

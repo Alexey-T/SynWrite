@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabCarets
+    ActivePage = tabKey
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet

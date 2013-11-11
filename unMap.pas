@@ -144,7 +144,7 @@ begin
   edMap.CaretPos:= Point(0, Src.CaretPos.Y);
 
   FTopLine:= Src.TopLine;
-  FBtmLine:= FTopLine + Src.ClientHeight div Src.DefLineHeight;
+  FBtmLine:= FTopLine + Src.VisibleLines;
   if FBtmLine>= edMap.Lines.Count then
     FBtmLine:= edMap.Lines.Count-1;
 

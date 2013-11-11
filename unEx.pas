@@ -151,8 +151,7 @@ begin
   end;
 end;
 
-//create new file
-function FNew(const S: WideString): boolean;
+function IsFileCreatedOk(const S: WideString): boolean;
 var
   h: THandle;
 begin
@@ -166,7 +165,7 @@ begin
       CloseHandle(h)
     else
     begin
-      MsgError(DKLangConstW('MNCreate')+#13 + S, 0);
+      MsgCannotCreate(S, 0);
       Result:= false;
     end;
   end;
@@ -190,9 +189,9 @@ begin
 
   if (SF <> '') and (not IsFileExist(SF)) then
   begin
-    if MsgConfirmCreate(SF) then
+    if MsgConfirmCreate(SF, 0) then
     begin
-      Result:= FNew(SF);
+      Result:= IsFileCreatedOk(SF);
       if not Result then Exit;
     end
     else
@@ -202,15 +201,15 @@ begin
     end;
   end;
 
-  if (SF <> '') and FBigSized(SF) then
+  if (SF <> '') and IsFileTooBig(SF) then
   begin
-    MsgError(WideFormat(DKLangConstW('MBig'), [WideExtractFileName(SF)]), 0);
+    MsgFileTooBig(SF, 0);
     Result:= false;
     Exit
   end;
 
   if (SF <> '') and (SynTextOnly<>1) and (not IsFileText(SF)) then
-    if not MsgConfirmBinary(SF) then
+    if not MsgConfirmBinary(SF, 0) then
       Result:= false;
 end;
 

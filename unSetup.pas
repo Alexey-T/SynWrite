@@ -451,6 +451,8 @@ type
     ColorsOfTabs: array[0..Pred(cTabColors)] of TColor;
     FLangChanged: boolean;
     
+    function MsgConfirmKeyOvr(const SCategory, SName: Widestring): boolean;
+    function DoCheckKeyDups(const KeyStr: string): boolean;
     procedure UpdateKeyButtons;
     procedure ListKeys;
     procedure FixWnd;
@@ -930,54 +932,69 @@ begin
     TopRow:= TopRow+Mouse.WheelScrollLines;
 end;
 
-procedure TfmSetup.bKeySetClick(Sender: TObject);
-const
-  cCheckDupKeys = true;
+function TfmSetup.MsgConfirmKeyOvr(const SCategory, SName: Widestring): boolean;
 var
-  i, j, c, r,
-  mapindex, keyindex: integer;
-  s: string;
-  ovr_i, ovr_j: integer;
-  cfm: boolean;
+  s: Widestring;
+begin
+  s:= DKLangConstW('zKeyUsed') + #13 + SCategory + ' / ' + SName;
+  Result:= MsgConfirm(s + #13#13 + DKLangConstW('zKeyOvr'), Handle);
+end;
+
+function TfmSetup.DoCheckKeyDups(const KeyStr: string): boolean;
+var
+  mapindex, keyindex: Integer;
+  i, j: Integer;
+begin
+  Result:= true;
+  mapindex:= -1;
+  keyindex:= -1;
+
+  with KeyMapping do
+    for i:= 0 to Items.Count-1 do
+      for j:= 0 to Items[i].KeyStrokes.Count-1 do
+        if Items[i].KeyStrokes[j].AsString=KeyStr then
+        begin
+          if MsgConfirmKeyOvr(Items[i].Category, Items[i].DisplayName) then
+          begin
+            mapindex:= i;
+            keyindex:= j;
+            Break;
+          end
+          else
+          begin
+            Result:= false;
+            Exit
+          end;
+        end;
+
+  if mapindex>=0 then
+  begin
+    //clear old hotkey
+    KeyMapping.Items[mapindex].KeyStrokes.Delete(keyindex);
+    //clear KeyList cell
+    for i:= 0 to KeyList.RowCount-1 do
+      if KeymappingIndex(i)=mapindex then
+      begin
+        KeyList.Cells[keyindex+2, i]:= '';
+        if keyindex=0 then
+        begin
+          KeyList.Cells[2, i]:= KeyList.Cells[3, i];
+          KeyList.Cells[3, i]:= '';
+        end;
+      end;
+  end;
+end;
+
+procedure TfmSetup.bKeySetClick(Sender: TObject);
+var
+  c, r, mapindex, keyindex: integer;
 begin
   if ecHotKey.Text='' then Exit;
   c:= KeyList.Selection.Left;
   r:= KeyList.Selection.Top;
-  ovr_i:= -1;
-  ovr_j:= -1;
 
-  if cCheckDupKeys then
-  begin
-    //find dup keys
-    with KeyMapping do
-     for i:= 0 to Items.Count-1 do
-      for j:= 0 to Items[i].KeyStrokes.Count-1 do
-        if Items[i].KeyStrokes[j].AsString=ecHotKey.Text then
-        begin
-          s:= DKLangConstW('zKeyUsed')+#13 + Items[i].Category + ' / ' + Items[i].DisplayName;
-          cfm:= MsgConfirm(s + #13#13 + DKLangConstW('zKeyOvr'), Handle);
-          if cfm then
-            begin ovr_i:= i; ovr_j:= j; Break; end
-          else
-            Exit;
-        end;
-
-    //delete duplicate key
-    if (ovr_i>=0) and (ovr_j>=0) then
-    begin
-      KeyMapping.Items[ovr_i].KeyStrokes.Delete(ovr_j);
-      for i:= 0 to KeyList.RowCount-1 do
-        if KeymappingIndex(i)=ovr_i then
-        begin
-          KeyList.Cells[ovr_j+2, i]:= '';
-          if ovr_j=0 then
-          begin
-            KeyList.Cells[2, i]:= KeyList.Cells[3, i];
-            KeyList.Cells[3, i]:= '';
-          end;
-        end;
-    end;
-  end;
+  //find dup keys
+  if not DoCheckKeyDups(ecHotkey.Text) then Exit;
 
   //assign new hotkey
   mapindex:= KeymappingIndex(r);
@@ -989,6 +1006,7 @@ begin
     case KeyStrokes.Count of
       0: begin KeyStrokes.Add; keyindex:= 0; end;
       1: begin if keyindex>0 then begin KeyStrokes.Add; keyindex:= 1; end; end;
+      2: begin end;
       else
         raise Exception.Create(Format('Unexpected number of keystrokes, %d', [KeyStrokes.Count]));
     end;
@@ -1138,7 +1156,7 @@ end;
 
 procedure TfmSetup.bClrSRClick(Sender: TObject);
 begin
-  fmMain.DoClearHistory;
+  fmMain.DoClearSearchHistory;
   bClrSR.Enabled:= false;
 end;
 
@@ -2668,7 +2686,7 @@ end;
 procedure TfmSetup.bKeyExtendClick(Sender: TObject);
 var
   c, r, mapindex, keyindex: integer;
-  stroke: TKeyStroke;
+  stroke, strokeTest: TKeyStroke;
 begin
   if ecHotKey.Text='' then Exit;
   if ecHotKey.Hotkey=0 then
@@ -2685,7 +2703,17 @@ begin
     stroke:= KeyMapping.Items[mapindex].KeyStrokes[keyindex];
   if stroke=nil then
     begin MessageBeep(mb_iconwarning); Exit end;
-    
+
+  //check for dups
+  strokeTest:= TKeyStroke.Create(nil);
+  try
+    strokeTest.Assign(stroke);
+    strokeTest.KeyDefs.Add.ShortCut:= ecHotKey.HotKey;
+    if not DoCheckKeyDups(strokeTest.AsString) then Exit;
+  finally
+    FreeAndNil(strokeTest);
+  end;
+
   stroke.KeyDefs.Add.ShortCut:= ecHotKey.HotKey;
   KeyList.Cells[c, r]:= stroke.AsString;
 end;

@@ -228,7 +228,7 @@ begin
     an:= LV.Items.Objects[LV.ItemIndex] as TSyntAnalyzer;
     if an.CustomizeLexer then
     begin
-      LV.Items[LV.ItemIndex]:= an.LexerName;
+      LV.Items[LV.ItemIndex]:= LexerNameWithLinks(an);
       FLexLib.Modified:= True;
     end;
   end;

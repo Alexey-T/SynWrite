@@ -53,7 +53,7 @@ const
   sm_OShowTree = 715;
   sm_ZoomOut = 716;
   sm_ZoomIn = 717;
-  sm_Zoom0 = 718;
+  sm_ZoomOrig = 718;
   sm_OShowClip = 719;
 
   sm_CopyAppend = 720;
@@ -152,10 +152,10 @@ const
   sm_MenuEnc = 810;
   sm_MenuLex = 811;
   sm_MenuLE = 812;
-  sm_ClrHist = 813;
+  sm_ClearFilesHistory = 813;
   sm_QS = 814;
   sm_DateTime = 815;
-  sm_ExStr = 816;
+  sm_ExtractText = 816;
   sm_GotoNextFindResult = 817;
   sm_GotoPrevFindResult = 818;
   sm_SyncEdit = 819;
