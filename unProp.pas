@@ -39,7 +39,9 @@ type
 
 implementation
 
-uses IniFiles;
+uses
+  IniFiles,
+  unProc;
 
 {$R *.dfm}
 
@@ -47,6 +49,9 @@ procedure TfmProps.FormShow(Sender: TObject);
 begin
   with TIniFile.Create(FIniFN) do
   try
+    DoCenterForm(Handle, Self);
+    Left:= ReadInteger('Win', 'PropX', Left);
+    Top:= ReadInteger('Win', 'PropY', Top);
     Width:= ReadInteger('Win', 'PropW', Width);
     Height:= ReadInteger('Win', 'PropH', Height);
     Pages.ActivePageIndex:= ReadInteger('Win', 'PropTab', 0);
@@ -59,6 +64,8 @@ procedure TfmProps.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   with TIniFile.Create(FIniFN) do
   try
+    WriteInteger('Win', 'PropX', Left);
+    WriteInteger('Win', 'PropY', Top);
     WriteInteger('Win', 'PropW', Width);
     WriteInteger('Win', 'PropH', Height);
     WriteInteger('Win', 'PropTab', Pages.ActivePageIndex);

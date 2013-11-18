@@ -373,6 +373,7 @@ const
   sm_ScrollCurrentLineToTop = 1040;
   sm_ScrollCurrentLineToBottom = 1041;
   sm_ScrollCurrentLineToMiddle = 1042;
+  sm_SaveProject = 1043;
   //free
 
   //Tree commands

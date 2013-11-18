@@ -3,7 +3,8 @@ unit unProcHelp;
 interface
 
 function FHelpLangSuffix: string;
-function FHelpFilename(const SynDir: string): string;
+function FHelpFilename: string;
+var SynDirForHelpFiles: string;
 
 type
   TSynHelpId = (
@@ -19,7 +20,8 @@ type
     helpFindDlg,
     helpCmdListDlg,
     helpEmmet,
-    helpProjOpts
+    helpProjOpts,
+    helpKeys
   );
 const
   cSynHelpId: array[TSynHelpId] of string = (
@@ -35,10 +37,11 @@ const
     'DialogFind.html',
     'DialogCmdList.html',
     'HelperZenCoding.html',
-    'ProjMan.html#prop'
+    'ProjMan.html#prop',
+    'Keys.html'
   );
 
-procedure FHelpShow(const SynDir: string; ID: TSynHelpId; Handle: THandle);
+procedure SynHelpTopic(ID: TSynHelpId; Handle: THandle);
 
 implementation
 
@@ -66,13 +69,13 @@ begin
   end;
 end;
 
-function FHelpFilename(const SynDir: string): string;
+function FHelpFilename: string;
 var
   Suffix, HelpEn, HelpLocal: string;
 begin
   Suffix:= FHelpLangSuffix;
-  HelpEn:= SynDir + 'Readme\SynWrite.chm';
-  HelpLocal:= SynDir + 'Readme\SynWrite.' + Suffix + '.chm';
+  HelpEn:= SynDirForHelpFiles + '\SynWrite.chm';
+  HelpLocal:= SynDirForHelpFiles + '\SynWrite.' + Suffix + '.chm';
 
   if Suffix='En' then
     Result:= HelpEn
@@ -83,9 +86,9 @@ begin
       Result:= HelpEn;
 end;
 
-procedure FHelpShow(const SynDir: string; ID: TSynHelpId; Handle: THandle);
+procedure SynHelpTopic(ID: TSynHelpId; Handle: THandle);
 begin
-  FExecute('hh.exe', '"' + FHelpFilename(SynDir) + '::/' + cSynHelpId[ID] + '"', '', Handle);
+  FExecute('hh.exe', '"' + FHelpFilename + '::/' + cSynHelpId[ID] + '"', '', Handle);
 end;
 
 end.

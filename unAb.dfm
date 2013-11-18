@@ -67,9 +67,9 @@ object fmAb: TfmAb
     object LabelWn: TTntLabel
       Left = 88
       Top = 16
-      Width = 52
+      Width = 46
       Height = 13
-      Caption = 'Alexey Tor'
+      Caption = 'Alexey T.'
     end
     object Labelw2: TTntLabel
       Left = 160

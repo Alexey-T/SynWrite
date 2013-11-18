@@ -203,6 +203,7 @@ type
     function CanRename(Node: TTntTreeNode): boolean;
     procedure DoSaveProjectAs;
     procedure DoConfigProject;
+    procedure DoAddRecentItem(const fn: Widestring);
     procedure DoLoadProjectFromFile(const fn: Widestring);
     procedure DoSaveProjectToFile(const fn: string);
     procedure DoWriteNodesToList(L: TStringList; Node: TTntTreeNode; Level: integer);
@@ -218,7 +219,6 @@ type
   public
     { Public declarations }
     FOpts: TProjectOpts;
-    FSynDir: string;
     procedure DoAddFiles;
     procedure DoAddFilesDir;
     procedure DoAddVirtualDir;
@@ -342,9 +342,9 @@ procedure TfmProj.DoNewProject;
 begin
   CheckModified;
 
-  if FProjectFN<>'' then /////?? chk
-  if Assigned(FOnProjectClose) then
-    FOnProjectClose(Self);
+  if FProjectFN<>'' then
+    if Assigned(FOnProjectClose) then
+      FOnProjectClose(Self);
 
   with TreeProj do
   begin
@@ -620,6 +620,8 @@ end;
 procedure TfmProj.TreeProjDragDrop(Sender, Source: TObject; X, Y: Integer);
 var
   TargetNode, SourceNode: TTntTreeNode;
+  List: TList;
+  i: Integer;
 begin
   //drag-drop of a tab
   if (Source is TTntPageControl) then
@@ -643,22 +645,35 @@ begin
       Exit;
     end;
 
-    if IsAltPressed or not IsDir(TargetNode) then
-    begin
-      if IsRoot(TargetNode) then
-        MsgBeep
+    List:= TList.Create;
+    try
+      for i:= 0 to SelectionCount-1 do
+        List.Add(Selections[i]);
+
+      if IsAltPressed or not IsDir(TargetNode) then
+      begin
+        if IsRoot(TargetNode) then
+          MsgBeep
+        else
+        for i:= 0 to List.Count-1 do
+        begin
+          SourceNode:= List[i];
+          SourceNode.MoveTo(TargetNode, naInsert);
+        end;  
+      end
       else
-        SourceNode.MoveTo(TargetNode, naInsert);
-    end
-    else
-    begin
-      SourceNode.MoveTo(TargetNode, naAddChild);
-      {
-      //from DRKB
-      MoveNode(TargetNode, SourceNode);
-      SourceNode.Free;
-      }
+      begin
+        for i:= 0 to List.Count-1 do
+        begin
+          SourceNode:= List[i];
+          SourceNode.MoveTo(TargetNode, naAddChild);
+        end;
+      end;
+    finally
+      FreeAndNil(List);
     end;
+
+    Modify;    
   end;
 end;
 
@@ -1022,6 +1037,15 @@ begin
   DoLoadProjectFromFile(fn);
 end;
 
+procedure TfmProj.DoAddRecentItem(const fn: Widestring);
+begin
+  if fn<>'' then
+  begin
+    FMruList.AddItem(fn);
+    DoUpdateMRU;
+  end;
+end;
+
 procedure TfmProj.DoLoadProjectFromFile(const fn: Widestring);
   function FExpandFN(const fn: Widestring): Widestring;
   var
@@ -1045,13 +1069,7 @@ var
 begin
   DoNewProject;
   FProjectFN:= fn;
-
-  //add to recents
-  if fn<>'' then
-  begin
-    FMruList.AddItem(fn);
-    DoUpdateMRU;
-  end;
+  DoAddRecentItem(fn);
 
   NodeDir:= RootNode;
   LevelDir:= -1;
@@ -1151,6 +1169,9 @@ begin
     DoSaveProjectToFile(FProjectFN)
   else
     DoSaveProjectAs;
+
+  if FProjectFN<>'' then
+    DoAddRecentItem(FProjectFN);
 end;
 
 procedure TfmProj.DoSaveProjectAs;
@@ -1160,6 +1181,7 @@ begin
   if not SDProj.Execute then Exit;
   SetProjDir(ExtractFileDir(SDProj.FileName));
   DoSaveProjectToFile(SDProj.FileName);
+  DoAddRecentItem(SDProj.FileName);
 end;
 
 procedure TfmProj.DoSaveProjectToFile(const fn: string);
@@ -1217,16 +1239,14 @@ end;
 procedure TfmProj.DoWriteNodesToList(L: TStringList; Node: TTntTreeNode; Level: integer);
   function FCollapse(const fn: Widestring): Widestring;
   var
-    dir, dirVar: Widestring;
+    dir: Widestring;
   begin
     Result:= fn;
     dir:= WideExtractFilePath(FProjectFN);
-    dirVar:= cProjVar;
     if SBegin(WideLowerCase(fn), WideLowerCase(dir)) then
     begin
-      ////SReplaceW(Result, dir, dirVar+'\');
       Delete(Result, 1, Length(dir));
-      Insert(dirVar+'\', Result, 1);
+      Insert(cProjVar+'\', Result, 1);
     end;
   end;
 var
@@ -1308,7 +1328,6 @@ var
 begin
   with TfmProjProps.Create(nil) do
   try
-    FSynDir:= Self.FSynDir;
     SMsgProjDefault:= DKLangConstW('zDefault');
     cbEnc.Items.Insert(0, SMsgProjDefault);
     cbEnds.Items.Insert(0, SMsgProjDefault);

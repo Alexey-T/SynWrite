@@ -8,11 +8,32 @@ uses
   Types,
   Forms,
 
+  ATSyntMemo,
   ecSyntAnal,
   ecSyntMemo,
   ecMemoStrings,
   ecStrUtils;
 
+procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
+function EditorJumpMixedCase(Ed: TSyntaxMemo; ARight: boolean): boolean;
+procedure EditorJumpColumnMarker(Ed: TSyntaxMemo; ALeft: boolean);
+procedure EditorJumpSelEdge(Ed: TSyntaxMemo);
+function EditorJumpBlankLine(Ed: TSyntaxMemo; opSrOffsetY: Integer; ANext: boolean): boolean;
+function EditorJumpRange(Ed: TSyntaxMemo): boolean;
+function EditorJumpBracket(Ed: TSyntaxMemo): boolean;
+procedure EditorFindBrackets(Ed: TSyntaxMemo; var Pos1, Pos2: Integer);
+function EditorFindOpeningBracket(Ed: TSyntaxMemo): Integer;
+procedure EditorSelectBrackets(Ed: TSyntaxMemo; var FPrevCaretPos: Integer);
+procedure EditorSelectOrJumpToWordEnd(Ed: TSyntaxMemo; ASelect: boolean);
+procedure EditorSelectParagraph(Ed: TSyntaxMemo);
+  
+procedure EditorSetSelCoordAsString(Ed: TSyntaxMemo; const Str: string);
+function EditorGetSelCoordAsString(Ed: TSyntaxMemo): string;
+procedure EditorSetBookmarksAsString(Ed: TSyntaxMemo; const Str: string);
+function EditorGetBookmarksAsString(Ed: TSyntaxMemo): string;
+procedure EditorGetBookmarksAsSortedList(Ed: TSyntaxMemo; L: TList);
+
+function EditorPasteAsColumnBlock(Ed: TSyntaxMemo): boolean;
 procedure EditorPasteToFirstColumn(Ed: TSyntaxMemo);
 procedure EditorPasteNoCaretChange(Ed: TSyntaxMemo);
 procedure EditorCopyAsRtf(Ed: TSyntaxMemo);
@@ -20,6 +41,7 @@ procedure EditorCopyAsHtml(Ed: TSyntaxMemo);
 procedure EditorCopyOrCutCurrentLine(Ed: TSyntaxMemo; ACut: boolean);
 procedure EditorCopyOrCutAndAppend(Ed: TSyntaxMemo; ACut: boolean);
 
+procedure EditorClearMarkers(Ed: TSyntaxMemo);
 function EditorAutoCloseBracket(Ed: TSyntaxMemo; ch: Widechar;
   opAutoCloseBrackets, opAutoCloseQuotes, opAutoCloseBracketsNoEsc: boolean): boolean;
 procedure EditorDeleteToFileBegin(Ed: TSyntaxMemo);
@@ -82,7 +104,6 @@ procedure EditorDuplicateLine(Ed: TSyntaxMemo);
 procedure EditorDeleteLine(Ed: TSyntaxMemo; NLine: integer; AUndo: boolean);
 procedure EditorReplaceLine(Ed: TSyntaxMemo; NLine: integer;
   const S: WideString; AUndo: boolean);
-procedure EditorAddBookmarksToSortedList(Ed: TSyntaxMemo; L: TList);
 
 function EditorCaretAfterUnclosedQuote(Ed: TSyntaxMemo; var QuoteChar: WideChar): boolean;
 function EditorNeedsHtmlOpeningBracket(Ed: TSyntaxMemo): boolean;
@@ -808,7 +829,7 @@ begin
     Result:= Bookmarks[Integer(N1)] - Bookmarks[Integer(N2)];
 end;
 
-procedure EditorAddBookmarksToSortedList(Ed: TSyntaxMemo; L: TList);
+procedure EditorGetBookmarksAsSortedList(Ed: TSyntaxMemo; L: TList);
 var
   i: Integer;
 begin
@@ -926,9 +947,10 @@ begin
       begin
         dy:= Ed.ClientHeight;
         if Mode=cScrollToMiddle then
-          dy:= dy div 2;
+          dy:= dy div 2 + Ed.DefLineHeight;
 
         p:= Ed.CaretPos;
+        Inc(p.Y); //make next line fully visible
         Ed.TopLine:= p.Y;
         minY:= Ed.ScrollPosY - dy;
 
@@ -1222,16 +1244,22 @@ end;
 
 function EditorDeleteSelectedLines(Ed: TSyntaxMemo): Integer;
 var
-  i, Ln1, Ln2, NCol: Integer;
+  i, Ln1, Ln2, NCol, NScroll: Integer;
 begin
   Result:= 0;
   if Ed.ReadOnly then Exit;
 
   EditorGetSelLines(Ed, Ln1, Ln2);
   if Ln1=Ln2 then
-    NCol:= Ed.CaretPos.X
+  begin
+    NCol:= Ed.CaretPos.X;
+    NScroll:= Ed.ScrollPosX;
+  end
   else
+  begin
     NCol:= 0;
+    NScroll:= 0;
+  end;  
 
   Ed.BeginUpdate;
   try
@@ -1241,6 +1269,7 @@ begin
       Inc(Result);
     end;
     Ed.CaretPos:= Point(NCol, Ln1);
+    Ed.ScrollPosX:= NScroll;
   finally
     Ed.EndUpdate;
   end;
@@ -1275,6 +1304,42 @@ end;
 
 
 procedure EditorExtendSelectionByOneLine(Ed: TSyntaxMemo);
+var
+  r: TRect;
+  p: TPoint;
+  n1, n2: Integer;
+begin
+  if Ed.HaveSelection then
+  begin
+    case Ed.SelectMode of
+      msColumn:
+        begin
+          r:= Ed.SelRect;
+          Inc(r.Bottom);
+          Ed.CaretPos:= Point(r.Right, r.Bottom);
+          Ed.SelRect:= r;
+        end;
+      else
+        begin
+          n1:= Ed.SelStart;
+          n2:= Ed.SelStart+Ed.SelLength;
+          p:= Ed.StrPosToCaretPos(n2);
+          p.X:= 0;
+          Inc(p.Y);
+          n2:= Ed.CaretPosToStrPos(p);
+          Ed.SetSelection(n1, n2-n1);
+        end;
+    end;
+  end
+  else
+  begin
+    Ed.CaretPos:= Point(0, Ed.CaretPos.Y);
+    Ed.ExecCommand(smSelDown);
+  end;
+end;
+
+//this one mimics ST2 more. above one is more handy.
+procedure EditorExtendSelectionByOneLine_Prev(Ed: TSyntaxMemo);
 var
   DoNext: boolean;
   NStart, NEnd: Integer;
@@ -1637,8 +1702,13 @@ end;
 
 
 procedure EditorInsertBlankLineAboveOrBelow(Ed: TSyntaxMemo; ABelow: boolean);
+var
+  p: TPoint;
+  nX: Integer;
 begin
   if Ed.ReadOnly then Exit;
+  p:= Ed.CaretPos;
+  nX:= Ed.ScrollPosX;
   if ABelow then
   begin
     if Ed.CaretPos.Y < Ed.Lines.Count-1 then
@@ -1657,6 +1727,9 @@ begin
     Ed.CaretPos:= Point(0, Ed.CaretPos.Y);
     Ed.InsertNewLine(0, true{DoNotMoveCaret}, false);
   end;
+  //restore caret X
+  Ed.CaretPos:= Point(p.X, Ed.CaretPos.Y);
+  Ed.ScrollPosX:= nX;
 end;
 
 
@@ -1879,7 +1952,7 @@ begin
       try
         SelectLines(Ln1, Ln2);
         ClearSelection;
-        CaretStrPos:= CaretPosToStrPos(Point(0, Ln1));
+        CaretPos:= Point(0, Ln1);
         InsertText(S);
       finally
         EndUpdate;
@@ -1887,7 +1960,7 @@ begin
     end;
 end;
 
-procedure EditorJoinLines_Old(Ed: TSyntaxMemo);
+procedure EditorJoinLines_Prev(Ed: TSyntaxMemo);
 var
   s: Widestring;
   nPos, nLen, i, i1: Integer;
@@ -2038,5 +2111,451 @@ begin
   Result:= true;
 end;
 
+
+function EditorGetBookmarksAsString(Ed: TSyntaxMemo): string;
+const
+  cMaxItems = 200;
+var
+  i, NIndex: Integer;
+begin
+  Result:= '';
+  with Ed.BookmarkObj do
+    for i:= 0 to Min(Count, cMaxItems) - 1 do
+    begin
+      NIndex:= Items[i].BmIndex;
+      Result:= Result +
+        IfThen(NIndex < 10, ':'+IntToStr(NIndex)+':') +
+        IntToStr(Items[i].Position) + ',';
+    end;
+end;
+
+
+procedure EditorSetBookmarksAsString(Ed: TSyntaxMemo; const Str: string);
+var
+  S, SItem: Widestring;
+  NIndexCount, NIndexThis, NPos: Integer;
+begin
+  Ed.ClearBookmarks;
+  NIndexCount:= 10; //minimal BmIndex for unnumbered bookmarks is 10
+  S:= Str;
+
+  repeat
+    SItem:= SGetItem(S, ',');
+    if SItem='' then Break;
+
+    //'NNN' for unnumbered bkmk, or ':N:NNN' for numbered bkmk
+    if (Length(SItem)>3) and (SItem[1]=':') and (SItem[3]=':') then
+    begin
+      //numbered
+      NIndexThis:= StrToIntDef(SItem[2], 0);
+      Delete(SItem, 1, 3);
+    end
+    else
+    begin
+      //unnumbered
+      NIndexThis:= NIndexCount;
+      Inc(NIndexCount);
+    end;
+
+    NPos:= StrToIntDef(SItem, -1);
+    if NPos>=0 then
+      Ed.Bookmarks[NIndexThis]:= NPos;
+  until false;
+end;
+
+procedure EditorSetSelCoordAsString(Ed: TSyntaxMemo; const Str: string);
+var
+  S: Widestring;
+  p1, p2: TPoint;
+  n1, n2: Integer;
+begin
+  Ed.BeginUpdate;
+  try
+    Ed.ResetSelection;
+
+    S:= Str;
+    Ed.SelectMode:= TSyntSelectionMode(StrToIntDef(SGetItem(S), 0));
+    p1.X:= StrToIntDef(SGetItem(S), 0);
+    p1.Y:= StrToIntDef(SGetItem(S), 0);
+    p2.X:= StrToIntDef(SGetItem(S), 0);
+    p2.Y:= StrToIntDef(SGetItem(S), 0);
+    if (p1.X=0) and (p1.Y=0) and (p2.X=0) and (p2.Y=0) then Exit;
+
+    case Ed.SelectMode of
+      msColumn:
+        Ed.SelRect:= Rect(p1.X, p1.Y, p2.X, p2.Y);
+      msLine:
+        Ed.SelectLines(p1.Y, p2.Y-1);
+      else
+      begin
+        n1:= Ed.CaretPosToStrPos(p1);
+        n2:= Ed.CaretPosToStrPos(p2);
+        Ed.SetSelection(n1, n2-n1);
+      end;
+    end;
+  finally
+    Ed.EndUpdate;
+  end;
+end;
+
+function EditorGetSelCoordAsString(Ed: TSyntaxMemo): string;
+var
+  p1, p2: TPoint;
+  rect: TRect;
+  mode: Integer;
+begin
+  mode:= Ord(Ed.SelectMode);
+  p1:= Point(0, 0);
+  p2:= Point(0, 0);
+  if Ed.HaveSelection then
+  begin
+    if Ed.SelectMode=msColumn then
+    begin
+      rect:= Ed.SelRect;
+      p1.X:= rect.Left;
+      p1.Y:= rect.Top;
+      p2.X:= rect.Right;
+      p2.Y:= rect.Bottom;
+    end
+    else
+    begin
+      p1:= Ed.StrPosToCaretPos(Ed.SelStart);
+      p2:= Ed.StrPosToCaretPos(Ed.SelStart+Ed.SelLength);
+    end;
+  end;
+  Result:= Format('%d,%d,%d,%d,%d,', [mode, p1.X, p1.Y, p2.X, p2.Y]);
+end;
+
+procedure EditorSelectParagraph(Ed: TSyntaxMemo);
+var
+  n1, n2: Integer;
+begin
+  with Ed do
+  if Lines.Count>0 then
+  begin
+    n1:= CaretPos.Y;
+    n2:= n1;
+    if Trim(Lines[n1])='' then Exit;
+
+    //n2: last para line
+    repeat
+      Inc(n2);
+      if (n2>=Lines.Count) then Break;
+      if Trim(Lines[n2])='' then Break;
+    until false;
+    Dec(n2);
+
+    //n1: first para line
+    repeat
+      Dec(n1);
+      if (n1<0) then Break;
+      if Trim(Lines[n1])='' then Break;
+    until false;
+    Inc(n1);
+
+    n1:= CaretPosToStrPos(Point(0, n1));
+    n2:= CaretPosToStrPos(Point(Lines.LineSpace(n2), n2));
+    SetSelection(n1, n2-n1);
+  end;
+end;
+
+procedure EditorSelectOrJumpToWordEnd(Ed: TSyntaxMemo; ASelect: boolean);
+var
+  wEnd, wStart, n: Integer;
+begin
+  with Ed do
+  begin
+    WordRangeAtPos(CaretPos, wStart, wEnd);
+    if (wEnd <= wStart) or (wEnd = CaretStrPos) then
+    begin
+      if ASelect then
+        ExecCommand(smSelWordRight)
+      else
+        ExecCommand(smWordRight);
+      Exit
+    end;
+    n:= SelStart;
+    CaretStrPos:= wEnd;
+    if ASelect then
+      SetSelection(n, wEnd-n);
+  end;
+end;
+
+
+procedure EditorFindBrackets(Ed: TSyntaxMemo; var Pos1, Pos2: Integer);
+begin
+  with Ed do
+  begin
+    SFindBrackets(Lines.FText, CaretStrPos+1, Pos1, Pos2);
+    Dec(Pos1);
+    Dec(Pos2);
+  end;
+end;
+
+function EditorFindOpeningBracket(Ed: TSyntaxMemo): Integer;
+begin
+  with Ed do
+    Result:= SFindOpeningBracket(Lines.FText, CaretStrPos+1)-1;
+end;
+
+procedure EditorSelectBrackets(Ed: TSyntaxMemo; var FPrevCaretPos: Integer);
+  //-----------------
+  function DoSel: boolean;
+  var
+    n1, n2: Integer;
+    nn1, nn2: Integer;
+  begin
+    EditorFindBrackets(Ed, n1, n2);
+    Result:= n2>=0;
+    if Result then
+    begin
+      nn1:= Min(n1, n2);
+      nn2:= Max(n1, n2);
+      Ed.SetSelection(nn1, nn2-nn1+1);
+    end;
+  end;
+  //-----------------
+var
+  n1, nCaret: Integer;
+  nSelStartOld, nSelLenOld: Integer;
+  bSelChanged: boolean;
+begin
+  nCaret:= Ed.CaretStrPos;
+  n1:= nCaret;
+  if not ((n1>=0) and (n1<Ed.TextLength)) then Exit;
+  nSelStartOld:= Ed.SelStart;
+  nSelLenOld:= Ed.SelLength;
+
+  if IsBracketChar(Ed.Lines.Chars[n1+1]) then
+  begin
+    DoSel;
+  end
+  else
+  begin
+    n1:= EditorFindOpeningBracket(Ed);
+    if n1<0 then Exit;
+    Ed.CaretStrPos:= n1;
+    if not DoSel then
+      Ed.CaretStrPos:= nCaret;
+  end;
+
+  bSelChanged:= (Ed.SelLength>0) and
+    ((Ed.SelStart<>nSelStartOld) or (Ed.SelLength<>nSelLenOld));
+  if bSelChanged then
+    FPrevCaretPos:= nCaret
+  else
+  begin
+    Ed.ResetSelection;
+    Ed.CaretStrPos:= FPrevCaretPos;
+  end;
+end;
+
+
+function EditorJumpBracket(Ed: TSyntaxMemo): boolean;
+var
+  n1, n2: Integer;
+begin
+  EditorFindBrackets(Ed, n1, n2);
+  Result:= n2>=0;
+  if Result then
+    Ed.CaretStrPos:= n2;
+end;
+
+function EditorJumpRange(Ed: TSyntaxMemo): boolean;
+var
+  n: Integer;
+  BrHere, BrLefter: boolean;
+begin
+  Result:= true;
+  n:= Ed.CaretStrPos;
+  BrHere:= IsBracketChar(Ed.Lines.Chars[n+1]);
+  BrLefter:= IsBracketChar(Ed.Lines.Chars[n]);
+
+  if BrHere then
+  begin
+    if not EditorJumpBracket(Ed) then
+      Result:= false;
+  end
+  else
+  begin
+    //EC jump
+    Ed.JumpToMatchDelim;
+
+    //if bracket jump did nothing, try jump for lefter bracket
+    if (n = Ed.CaretStrPos) and BrLefter then
+    begin
+      Ed.CaretStrPos:= n-1;
+      if not EditorJumpBracket(Ed) then
+        Result:= false;
+    end;
+  end;
+end;
+
+
+function EditorJumpBlankLine(Ed: TSyntaxMemo; opSrOffsetY: Integer; ANext: boolean): boolean;
+var
+  n: Integer;
+begin
+  Result:= false;
+  with Ed do
+  begin
+    n:= CaretPos.Y;
+    repeat
+      if ANext then Inc(n) else Dec(n);
+      if (n<0) or (n>=Lines.Count) then Exit;
+      if Trim(Lines[n])='' then Break;
+    until false;
+
+    CaretPos:= Point(0, n);
+    EditorCenterPos(Ed, true, opSrOffsetY);
+    Result:= true;
+  end;
+end;
+
+procedure EditorJumpSelEdge(Ed: TSyntaxMemo);
+var
+  IsStart: boolean;
+  NStart, NLen: integer;
+begin
+  with Ed do
+    if SelLength=0 then
+      Exit
+    else
+    begin
+      NStart:= SelStart;
+      NLen:= SelLength;
+      IsStart:= CaretStrPos = NStart;
+      if not IsStart then
+        CaretStrPos:= NStart
+      else
+        CaretStrPos:= NStart + NLen;
+      SetSelection(NStart, NLen, true{DoNotMovecaret});
+    end;
+end;
+
+
+function _CompareNums(P1, P2: Pointer): Integer;
+begin
+  Result:= Integer(P1)-Integer(P2);
+end;
+
+procedure EditorJumpColumnMarker(Ed: TSyntaxMemo; ALeft: boolean);
+var
+  i, NLen, NPos: Integer;
+  L: TList;
+  Pos: TPoint;
+  Ed2: ATSyntMemo.TSyntaxMemo;
+begin
+  Ed2:= Ed as ATSyntMemo.TSyntaxMemo;
+
+  Pos:= Ed.CaretPos;
+  if Pos.Y >= Ed.Lines.Count then Exit;
+  NLen:= Length(Ed.Lines[Pos.Y]);
+
+  L:= TList.Create;
+  try
+    //allow to jump to home
+    L.Add(Pointer(0));
+
+    //allow to jump to right margin
+    if Ed.ShowRightMargin then
+      L.Add(Pointer(Ed.RightMargin));
+
+    //make sorted markers list
+    for i:= Low(Ed2.ColMarkers) to High(Ed2.Colmarkers) do
+    begin
+      NPos:= Ed2.ColMarkers[i];
+      if NPos>0 then
+        L.Add(Pointer(NPos));
+    end;
+
+    if L.Count<=1 then Exit;
+    L.Sort(_CompareNums);
+
+    //allow to jump to EOL too (if line is long)
+    if Integer(L[L.Count-1]) < NLen then
+      L.Add(Pointer(NLen));
+
+    if ALeft then
+    begin
+      for i:= L.Count-1 downto 0 do
+        if Integer(L[i])<Pos.X then
+        begin
+          Ed.CaretPos:= Point(Integer(L[i]), Pos.Y);
+          Exit
+        end;
+    end
+    else
+    begin
+      for i:= 0 to L.Count-1 do
+        if Integer(L[i])>Pos.X then
+        begin
+          Ed.CaretPos:= Point(Integer(L[i]), Pos.Y);
+          Exit
+        end;
+    end;
+  finally
+    FreeAndNil(L)
+  end;    
+end;
+
+function EditorPasteAsColumnBlock(Ed: TSyntaxMemo): boolean;
+begin
+  Result:= TntClipboard.HasFormat(CF_TEXT);
+  if Result then
+    Ed.PasteFromClipboard(true);
+end;
+
+function EditorJumpMixedCase(Ed: TSyntaxMemo; ARight: boolean): boolean;
+var
+  s: Widestring;
+  P: Integer;
+begin
+  Result:= true;
+  with Ed do
+  begin
+    s:= Lines.FText;
+    P:= CaretStrPos;
+    if s='' then Exit;
+    if ARight then
+    begin
+      if not ((P>=0) and (P<Length(s)) and IsWordChar(s[P+1])) then
+        begin Result:= false; Exit end;
+      repeat
+        if (P+1>Length(s)) or not IsWordChar(s[P+1]) then Break;
+        Inc(P);
+        if IsUpperChar(s[P+1]) then Break;
+      until false;
+    end
+    else
+    begin
+      if not ((P>0) and (P<=Length(s)) and IsWordChar(s[P])) then
+        begin Result:= false; Exit end;
+      repeat
+        if (P=0) or not IsWordChar(s[P]) then Break;
+        Dec(P);
+        if IsUpperChar(s[P+1]) then Break;
+      until false;
+    end;
+    CaretStrPos:= P;
+  end;
+end;
+
+procedure EditorClearMarkers(Ed: TSyntaxMemo);
+begin
+  with Ed do
+    if Markers.Count>0 then
+    begin
+      Markers.Clear;
+      Invalidate
+    end;
+end;
+
+procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
+begin
+  with Ed do
+    if Markers.Count>0 then
+      GotoMarker(TMarker(Markers.Last))
+end;
 
 end.

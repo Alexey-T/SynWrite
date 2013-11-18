@@ -35,6 +35,8 @@ type
     arReplaceAll,
     arReplaceAllInAll
     );
+
+type
   TSRProc = procedure(act: TSRAction) of object;
 
 function WriteFindOptions(
@@ -171,7 +173,6 @@ type
     procedure SetText2(const Value: Widestring);
   public
     { Public declarations }
-    SynDir: string;
     SRProc: TSRProc;
     SRHistTC: boolean;
     SRCount: integer;
@@ -324,7 +325,7 @@ begin
     //Read from Syn ini
     ComboLoadFromFile(ed1, SRIniS, 'SearchText');
 
-  ComboLoadFromFile(ed2, SRIni, 'RHist', false);
+  ComboLoadFromFile(ed2, SRIni, 'ReplaceHist', false);
   ed1Change(Self);
 end;
 
@@ -390,7 +391,7 @@ begin
     //Write Syn ini
     ComboSaveToFile(ed1, SRIniS, 'SearchText');
 
-  ComboSaveToFile(ed2, SRIni, 'RHist');
+  ComboSaveToFile(ed2, SRIni, 'ReplaceHist');
 end;
 
 procedure TfmSR.ed1Change(Sender: TObject);
@@ -410,7 +411,7 @@ end;
 
 procedure TfmSR.bHelpClick(Sender: TObject);
 begin
-  FHelpShow(SynDir, helpFindDlg, Handle);
+  SynHelpTopic(helpFindDlg, Handle);
 end;
 
 procedure TfmSR.cbREClick(Sender: TObject);

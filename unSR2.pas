@@ -145,7 +145,6 @@ type
     procedure FindFavs(L: TTntStringList);
   public
     { Public declarations }
-    SynDir,
     SynIniDir,
     SRCurrentDir,
     SRCurrentFile: Widestring;
@@ -294,10 +293,10 @@ begin
   end;
 
   ComboLoadFromFile(ed1, SRIniS, 'SearchText');
-  ComboLoadFromFile(ed2, SRIni, 'RHist', False);
-  ComboLoadFromFile(edFileInc, SRIni, 'IncHist');
-  ComboLoadFromFile(edFileExc, SRIni, 'ExcHist');
-  ComboLoadFromFile(edDir, SRIni, 'DirHist'{, False});
+  ComboLoadFromFile(ed2, SRIni, 'ReplaceHist', False);
+  ComboLoadFromFile(edFileInc, SRIni, 'FilesIncHist');
+  ComboLoadFromFile(edFileExc, SRIni, 'FilesExcHist');
+  ComboLoadFromFile(edDir, SRIni, 'FilesDirHist'{, False});
 
   if edFileInc.Text='' then
     edFileInc.Text:= '*.*';
@@ -405,10 +404,10 @@ begin
   ComboUpdate(edDir, SRCount);
 
   ComboSaveToFile(ed1, SRIniS, 'SearchText');
-  ComboSaveToFile(ed2, SRIni, 'RHist');
-  ComboSaveToFile(edFileInc, SRIni, 'IncHist');
-  ComboSaveToFile(edFileExc, SRIni, 'ExcHist');
-  ComboSaveToFile(edDir, SRIni, 'DirHist');
+  ComboSaveToFile(ed2, SRIni, 'ReplaceHist');
+  ComboSaveToFile(edFileInc, SRIni, 'FilesIncHist');
+  ComboSaveToFile(edFileExc, SRIni, 'FilesExcHist');
+  ComboSaveToFile(edDir, SRIni, 'FilesDirHist');
 end;
 
 procedure TfmSRFiles.edFileIncChange(Sender: TObject);

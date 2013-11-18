@@ -20,6 +20,8 @@ uses
   IniFiles,
   PngImageList;
 
+function SZenFindLeft(const s: ecString; iFrom: integer): integer;
+
 procedure SParseString_AcpHtml(
   const AcpStr, Atr: string; List: TStringList);
 procedure SParseString_AcpControlLine(
@@ -39,6 +41,7 @@ procedure EditorGetCssTag(Ed: TSyntaxMemo; var STag: string);
 function FGetTempFilenameIndexed(Index: Integer): Widestring;
 function FGetTempFilenameDeleted(NMaxCount: Integer = 20): Widestring;
 
+procedure DoCenterForm(h: THandle; fm: TCustomForm);
 function FontHeightToItemHeight(Font: TFont): Integer;
 function SDecodeUsingFileTable(const SData, fn: Widestring; ToBack: boolean): Widestring;
 function GetEditHandle(Target: TObject): THandle;
@@ -71,9 +74,6 @@ function DoInputString(const dkmsg: string; var S: Widestring;
 procedure DoDeleteComboLastWord(ed: TTntCombobox);
 procedure DoDeleteComboItem(ed: TTntCombobox);
 function ScaleFontSize(Size: Integer; Form: TForm): Integer;
-
-procedure SFindBrackets(const S: Widestring; const FromPos: Integer; var Pos1, Pos2: Integer);
-function SFindOpeningBracket(const S: Widestring; nFromPos: Integer): Integer;
 
 procedure FixDraw(Ctl: TWinControl; SizeX: boolean = true);
 procedure FixFPU;
@@ -1077,88 +1077,6 @@ begin
   end;
 end;
 
-//------------------------------
-
-function SFindOpeningBracket(const S: Widestring; nFromPos: Integer): Integer;
-var
-  n, nLockRound, nLockSquare, nLockCurly: Integer;
-begin
-  Result:= -1;
-  n:= nFromPos;
-  nLockRound:= 0;
-  nLockSquare:= 0;
-  nLockCurly:= 0;
-
-  repeat
-    Dec(n);
-    if n<1 then Break;
-
-    if S[n]=')' then begin Inc(nLockRound); Continue end;
-    if S[n]=']' then begin Inc(nLockSquare); Continue end;
-    if S[n]='}' then begin Inc(nLockCurly); Continue end;
-
-    if S[n]='(' then
-    begin
-      if nLockRound=0 then
-        begin Result:= n; Exit end
-      else
-        begin Dec(nLockRound); Continue end;
-    end;
-    if S[n]='[' then
-    begin
-      if nLockSquare=0 then
-        begin Result:= n; Exit end
-      else
-        begin Dec(nLockSquare); Continue end;
-    end;
-    if S[n]='{' then
-    begin
-      if nLockCurly=0 then
-        begin Result:= n; Exit end
-      else
-        begin Dec(nLockCurly); Continue end;
-    end;
-  until false;
-end;
-
-procedure SFindBrackets(const S: Widestring; const FromPos: Integer; var Pos1, Pos2: Integer);
-var
-  ch1, ch2: ecChar;
-  fw: Boolean;
-  n, nLock: integer;
-begin
-  Pos1:= 0;
-  Pos2:= 0;
-  if (FromPos>0) and (FromPos<=Length(S)) then
-  begin
-    ch1:= S[FromPos];
-    if ch1='[' then begin ch2:= ']'; fw:= true; end else
-    if ch1='(' then begin ch2:= ')'; fw:= true; end else
-    if ch1='{' then begin ch2:= '}'; fw:= true; end else
-    if ch1=']' then begin ch2:= '['; fw:= false; end else
-    if ch1=')' then begin ch2:= '('; fw:= false; end else
-    if ch1='}' then begin ch2:= '{'; fw:= false; end else
-      Exit;
-      
-    n:= FromPos;
-    nLock:= 0;
-
-    while (n>0) and (n<=Length(S)) do
-    begin
-      if fw then Inc(n) else Dec(n);
-      if (S[n]=ch2) and (nLock<=0) then Break;
-      if (S[n]=ch1) then Inc(nLock);
-      if (S[n]=ch2) then Dec(nLock);
-    end;
-    
-    if (n>0) and (n<=Length(S)) then
-    begin
-      Pos1:= FromPos;
-      Pos2:= n;
-    end;
-  end;
-end;
-
 procedure FixFPU;
 begin
   //to prevent EInvalidOp "Floating point error"
@@ -1817,5 +1735,64 @@ begin
     end;
   end;
 end;
+
+
+{
+<tag>
+</tag>
+<tag ... >
+<tag ... />
+<tag vv="100">
+<tag vv='100'>
+<tag vv=100>
+}
+function IsTagEnd(i: Integer; const s: Widestring): boolean;
+begin
+  Result:= false;
+  if (i<=1) or (s[i]<>'>') then Exit;
+
+  if Pos(s[i-1], ' "''/')>0 then
+    begin Result:= true; Exit end;
+
+  if IsWordChar(s[i-1]) then
+  begin
+    while (i>1) and IsWordChar(s[i-1]) do Dec(i);
+    if (i>1) and (Pos(s[i-1], '<=/')>0) then
+      Result:= true;
+  end;
+end;
+
+function SZenFindLeft(const s: ecString; iFrom: integer): integer;
+const
+  brEnd = ']}';
+  brBegin = '[{';
+var
+  i, Br: Integer;
+begin
+  i:= iFrom;
+  Br:= 0;
+  if i>1 then
+  repeat
+    Dec(i);
+    if i=1 then Break;
+    if Pos(s[i], brEnd)>0 then Inc(Br);
+    if Pos(s[i], brBegin)>0 then Dec(Br);
+    if IsSpaceChar(s[i-1]) and (Br<=0) then Break;
+    if IsTagEnd(i-1, s) then Break;
+  until false;
+  Result:= i;
+end;
+
+
+procedure DoCenterForm(h: THandle; fm: TCustomForm);
+var r: TRect;
+begin
+  GetWindowRect(h, r);
+  SetWindowPos(h, 0,
+    fm.Monitor.Left + (fm.Monitor.Width - (r.Right - r.Left)) div 2,
+    fm.Monitor.Top + (fm.Monitor.Height - (r.Bottom - r.Top)) div 2,
+    0, 0, SWP_NOSIZE);
+end;
+
 
 end.

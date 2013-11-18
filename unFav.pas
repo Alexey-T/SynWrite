@@ -59,6 +59,7 @@ implementation
 uses
   IniFiles,
   ATxSProc,
+  unProc,
   TntSysUtils;
 
 {$R *.dfm}
@@ -149,6 +150,9 @@ begin
 
   with TIniFile.Create(FOptFN) do
   try
+    DoCenterForm(Handle, Self);
+    Left:= ReadInteger('Win', 'FavX', Left);
+    Top:= ReadInteger('Win', 'FavY', Top);
     Width:= ReadInteger('Win', 'FavW', Width);
     Height:= ReadInteger('Win', 'FavH', Height);
     cbPaths.Checked:= ReadBool('Win', 'FavPath', true);
@@ -338,6 +342,8 @@ procedure TfmFav.TntFormClose(Sender: TObject; var Action: TCloseAction);
 begin
   with TIniFile.Create(FOptFN) do
   try
+    WriteInteger('Win', 'FavX', Left);
+    WriteInteger('Win', 'FavY', Top);
     WriteInteger('Win', 'FavW', Width);
     WriteInteger('Win', 'FavH', Height);
     WriteBool('Win', 'FavPath', cbPaths.Checked);

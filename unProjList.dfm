@@ -14,6 +14,7 @@ object fmProjList: TfmProjList
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  OnClose = TntFormClose
   OnCreate = TntFormCreate
   OnKeyDown = FormKeyDown
   OnResize = TntFormResize

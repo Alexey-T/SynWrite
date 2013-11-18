@@ -172,7 +172,6 @@ type
     function IsEditorPosMisspelled(APos: Integer): boolean;
     function DoSpellContinue(AFromPos: Integer): Integer;
     procedure SyncMap;
-    procedure JumpToColumnMarker(ALeft: boolean);
     property ShowMap: boolean read GetShowMap write SetShowMap;
     property MapColor: TColor read FMapColor write SetMapColor;
     property TabColor: TColor read FTabColor write FTabColor;
@@ -430,7 +429,7 @@ begin
   else
   try
     Screen.Cursor:= crHourGlass;
-    if not TfmMain(Owner).LoadState(Self, AFileName) then
+    if not TfmMain(Owner).LoadFrameState(Self, AFileName) then
       TextSource.Lines.LoadFromFile(AFileName);
   finally
     Screen.Cursor:= crDefault;
@@ -824,7 +823,7 @@ end;
 procedure TEditorFrame.DoStartNotif;
 begin
   FNotif.FileName:= FileName;
-  FNotif.Timer.Enabled:= (FileName <> '') and (TfmMain(Owner).opNotif <> cReloadNone);
+  FNotif.Timer.Enabled:= (FileName <> '') and (TfmMain(Owner).opReloadMode <> cReloadNone);
 end;
 
 procedure TEditorFrame.DoStopNotif;
@@ -878,7 +877,7 @@ begin
   //use MsgBox for plugin, MsgDlg for exe
   if not TfmMain(Owner).SynExe then
   begin
-    Cfm:= (TfmMain(Owner).opNotif = cReloadAuto) or
+    Cfm:= (TfmMain(Owner).opReloadMode = cReloadAuto) or
       MsgConfirm(WideFormat(DKLangConstW('MRel'), [WideExtractFileName(FileName)]), Handle);
   end
   else
@@ -890,7 +889,7 @@ begin
       Cfm:= false
     else
     begin
-      Cfm:= (TfmMain(Owner).opNotif = cReloadAuto);
+      Cfm:= (TfmMain(Owner).opReloadMode = cReloadAuto);
       if not Cfm then
       begin
         MsgBeep;
@@ -923,10 +922,14 @@ begin
     WasEnd:= Ed.CaretPos.Y = Ed.Lines.Count-1;
 
     //reload
-    ////was fixed: works incorrectly for opSaveState=0 and UTF8-no-bom
-    TextSource.Lines.SkipSignature:= True;
-    TextSource.Lines.LoadFromFile(FileName);
-    TextSource.Lines.SkipSignature:= False;
+    Screen.Cursor:= crHourGlass;
+    try
+      TextSource.Lines.SkipSignature:= True;
+      TextSource.Lines.LoadFromFile(FileName);
+      TextSource.Lines.SkipSignature:= False;
+    finally
+      Screen.Cursor:= crDefault;
+    end;  
 
     if TfmMain(Owner).opFollowTail and WasEnd then
     begin
@@ -1128,65 +1131,6 @@ begin
     SplitPos:= 50.0;  
 end;
 
-function _CompareNums(P1, P2: Pointer): Integer;
-begin
-  Result:= Integer(P1)-Integer(P2);
-end;
-
-procedure TEditorFrame.JumpToColumnMarker(ALeft: boolean);
-var
-  i, NLen: Integer;
-  L: TList;
-  Pos: TPoint;
-  Ed: TSyntaxMemo;
-begin
-  Ed:= FocusedEditor;
-  Pos:= Ed.CaretPos;
-  if Pos.Y >= Ed.Lines.Count then Exit;
-  NLen:= Length(Ed.Lines[Pos.Y]);
-
-  L:= TList.Create;
-  try
-    //allow to jump to home
-    L.Add(Pointer(0));
-    
-    //allow to jump to right margin
-    if Ed.ShowRightMargin then
-      L.Add(Pointer(Ed.RightMargin));
-
-    //make sorted markers list
-    for i:= Low(Ed.ColMarkers) to High(Ed.Colmarkers) do
-      if Ed.ColMarkers[i]>0 then
-        L.Add(Pointer(Ed.ColMarkers[i]));
-    if L.Count<=1 then Exit;
-    L.Sort(_CompareNums);
-
-    //allow to jump to EOL too (if line is long)
-    if Integer(L[L.Count-1]) < NLen then
-      L.Add(Pointer(NLen));
-
-    if ALeft then
-    begin
-      for i:= L.Count-1 downto 0 do
-        if Integer(L[i])<Pos.X then
-        begin
-          Ed.CaretPos:= Point(Integer(L[i]), Pos.Y);
-          Exit
-        end;
-    end
-    else
-    begin
-      for i:= 0 to L.Count-1 do
-        if Integer(L[i])>Pos.X then
-        begin
-          Ed.CaretPos:= Point(Integer(L[i]), Pos.Y);
-          Exit
-        end;
-    end;
-  finally
-    FreeAndNil(L)
-  end;    
-end;
 
 function TEditorFrame.IsFtp: boolean;
 begin
@@ -1594,9 +1538,12 @@ end;
 
 procedure TEditorFrame.EditorMasterCheckChar(Sender: TObject; C: Word;
   var IsWord: Boolean);
+var
+  ch: WideChar;
 begin
+  ch:= WideChar(C);
   if not IsWord then
-    IsWord:= Pos(WideChar(C), TfmMain(Owner).opWordChars)>0;
+    IsWord:= (ch = '$') or (Pos(ch, TfmMain(Owner).opWordChars) > 0);
 end;
 
 initialization

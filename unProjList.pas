@@ -30,12 +30,13 @@ type
     procedure TntFormCreate(Sender: TObject);
     procedure labHelpClick(Sender: TObject);
     procedure cbFuzzyClick(Sender: TObject);
+    procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
     procedure DoFilter;
   public
     { Public declarations }
-    SynDir: string;
+    FIniFN: string;
     fmProj: TfmProj;
     FColorSel: TColor;
     FColorSelBk: TColor;
@@ -48,6 +49,7 @@ uses
   TntSysUtils,
   TntWideStrings,
   Math,
+  IniFiles,
   ecUnicode,
   ecStrUtils,
   unProc,
@@ -94,6 +96,19 @@ end;
 procedure TfmProjList.FormShow(Sender: TObject);
 begin
   DoFilter;
+
+  if FIniFN<>'' then
+  with TIniFile.Create(FIniFN) do
+  try
+    DoCenterForm(Handle, Self);
+    Left:= ReadInteger('Win', 'ProjListX', Left);
+    Top:= ReadInteger('Win', 'ProjListY', Top);
+    Width:= ReadInteger('Win', 'ProjListW', Width);
+    Height:= ReadInteger('Win', 'ProjListH', Height);
+    cbFuzzy.Checked:= ReadBool('Win', 'ProjListFuzzy', false);
+  finally
+    Free
+  end;
 end;
 
 procedure TfmProjList.DoFilter;
@@ -272,12 +287,28 @@ end;
 
 procedure TfmProjList.labHelpClick(Sender: TObject);
 begin
-  FHelpShow(SynDir, helpCmdListDlg, Handle);
+  SynHelpTopic(helpCmdListDlg, Handle);
 end;
 
 procedure TfmProjList.cbFuzzyClick(Sender: TObject);
 begin
   DoFilter;
+end;
+
+procedure TfmProjList.TntFormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  if FIniFN<>'' then
+  with TIniFile.Create(FIniFN) do
+  try
+    WriteInteger('Win', 'ProjListX', Left);
+    WriteInteger('Win', 'ProjListY', Top);
+    WriteInteger('Win', 'ProjListW', Width);
+    WriteInteger('Win', 'ProjListH', Height);
+    WriteBool('Win', 'ProjListFuzzy', cbFuzzy.Checked);
+  finally
+    Free
+  end;
 end;
 
 end.

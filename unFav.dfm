@@ -1,6 +1,6 @@
 object fmFav: TfmFav
-  Left = 248
-  Top = 490
+  Left = 184
+  Top = 310
   ActiveControl = List
   AutoScroll = False
   BorderIcons = [biSystemMenu]
@@ -17,7 +17,6 @@ object fmFav: TfmFav
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
-  Position = poScreenCenter
   OnClose = TntFormClose
   OnCreate = TntFormCreate
   OnDestroy = TntFormDestroy

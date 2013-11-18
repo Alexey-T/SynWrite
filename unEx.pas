@@ -58,6 +58,7 @@ uses
 var
   SynIsPortable: boolean;
   SynIni: string;
+  SynHistoryIni: string;
   SynTextOnly: integer;
 
 function GetSynIniDir: string;
@@ -268,7 +269,7 @@ begin
   end;
 
   //next check for last MRU session
-  with TIniFile.Create(SynIni) do
+  with TIniFile.Create(SynHistoryIni) do
   try
     Result:= UTF8Decode(ReadString('MRU_Sess', '0', ''));
   finally
@@ -352,7 +353,7 @@ end;
 
 procedure TfmSynEx.LoadPos;
 begin
-  with TIniFile.Create(SynIni) do
+  with TIniFile.Create(SynHistoryIni) do
   try
     Left:= ReadInteger('Win', 'Left', 200);
     Top:= ReadInteger('Win', 'Top', 200);
@@ -382,12 +383,12 @@ end;
 procedure TfmSynEx.SavePos;
 begin
   try
-    with TIniFile.Create(SynIni) do
+    with TIniFile.Create(SynHistoryIni) do
     try
       //WriteBool('Win', 'FScr', fmMain.ShowFullScreen); //don't save full-screen
       WriteBool('Win', 'OnTop', fmMain.ShowOnTop);
       if fmMain.ShowFullScreen then Exit;
-      if not fmMain.opSavePos then Exit;
+      if not fmMain.opSaveWndPos then Exit;
       if WindowState <> wsMaximized then
       begin
         WriteInteger('Win', 'Left', Left);
@@ -544,6 +545,7 @@ end;
 initialization
   SynIsPortable:= IsFileExist(ExtractFilePath(ParamStr(0)) + 'Portable.ini');
   SynIni:= GetSynIniDir + 'Syn.ini';
+  SynHistoryIni:= ExtractFilePath(SynIni) + 'SynHistory.ini';
   _SynActionProc:= @PluginAction;
 
 end.

@@ -15,8 +15,9 @@ object fmGotoBkmk: TfmGotoBkmk
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
-  Position = poScreenCenter
+  OnClose = TntFormClose
   OnKeyDown = TntFormKeyDown
+  OnShow = TntFormShow
   DesignSize = (
     483
     305)

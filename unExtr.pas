@@ -48,8 +48,7 @@ type
     procedure SaveIni;
   public
     { Public declarations }
-    SynDir: string;
-    SynIni: string;
+    FSynIni: string;
     SRCount: Integer;
     Memo: TSyntaxMemo;
   end;
@@ -112,7 +111,7 @@ end;
 
 procedure TfmExtract.bHelpClick(Sender: TObject);
 begin
-  FHelpShow(SynDir, helpRegex, Handle);
+  SynHelpTopic(helpRegex, Handle);
 end;
 
 procedure TfmExtract.FormCreate(Sender: TObject);
@@ -123,10 +122,13 @@ end;
 
 procedure TfmExtract.ReadIni;
 begin
-  with TIniFile.Create(SynIni) do
+  with TIniFile.Create(FSynIni) do
   try
-    //Width:= ReadInteger('Extract', 'WinW', Width);
-    //Height:= ReadInteger('Extract', 'WinH', Height);
+    DoCenterForm(Handle, Self);
+    Left:= ReadInteger('Extract', 'WinX', Left);
+    Top:= ReadInteger('Extract', 'WinY', Top);
+    Width:= ReadInteger('Extract', 'WinW', Width);
+    Height:= ReadInteger('Extract', 'WinH', Height);
     bCase.Checked:= ReadBool('Extract', 'Case', false);
     bSel.Checked:= ReadBool('Extract', 'Sel', false) and Memo.HaveSelection;
     bCur.Checked:= ReadBool('Extract', 'Cur', false);
@@ -134,7 +136,7 @@ begin
     Free;
   end;
 
-  ComboLoadFromFile(ed, SynIni, 'ExHist');
+  ComboLoadFromFile(ed, FSynIni, 'ExtractHist');
 end;
 
 procedure TfmExtract.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -145,8 +147,10 @@ end;
 
 procedure TfmExtract.SaveIni;
 begin
-  with TIniFile.Create(SynIni) do
+  with TIniFile.Create(FSynIni) do
   try
+    WriteInteger('Extract', 'WinX', Left);
+    WriteInteger('Extract', 'WinY', Top);
     WriteInteger('Extract', 'WinW', Width);
     WriteInteger('Extract', 'WinH', Height);
     WriteBool('Extract', 'Case', bCase.Checked);
@@ -156,7 +160,7 @@ begin
     Free;
   end;
 
-  ComboSaveToFile(ed, SynIni, 'ExHist');
+  ComboSaveToFile(ed, FSynIni, 'ExtractHist');
 end;
 
 procedure TfmExtract.FormShow(Sender: TObject);

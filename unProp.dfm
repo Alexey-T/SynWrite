@@ -16,7 +16,6 @@ object fmProps: TfmProps
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poScreenCenter
   OnClose = FormClose
   OnShow = FormShow
   DesignSize = (

@@ -728,6 +728,21 @@ object fmSetup: TfmSetup
         Caption = 'Filter list:'
         FocusControl = edFilter
       end
+      object labHelpKeys: TTntLabel
+        Left = 8
+        Top = 356
+        Width = 13
+        Height = 13
+        Cursor = crHandPoint
+        Caption = '(?)'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlue
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+        OnClick = labHelpKeysClick
+      end
       object KeyList: TTntStringGrid
         Left = 8
         Top = 56
@@ -2954,7 +2969,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0148010000
+      0700666D5365747570010100000001000000070043617074696F6E0149010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3252,7 +3267,8 @@ object fmSetup: TfmSetup
       0000070043617074696F6E000E00636250726F6A536573734F70656E01010000
       00C6020000070043617074696F6E000F00636250726F6A436C6F736554616273
       0101000000C7020000070043617074696F6E000A00624B6579457874656E6401
-      01000000C8020000070043617074696F6E00}
+      01000000C8020000070043617074696F6E000B006C616248656C704B65797300
+      00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

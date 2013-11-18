@@ -349,6 +349,7 @@ type
     cbProjSessOpen: TTntCheckBox;
     cbProjCloseTabs: TTntCheckBox;
     bKeyExtend: TTntButton;
+    labHelpKeys: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -444,6 +445,7 @@ type
     procedure tabInsertFormatShow(Sender: TObject);
     procedure tabUndoShow(Sender: TObject);
     procedure bKeyExtendClick(Sender: TObject);
+    procedure labHelpKeysClick(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
@@ -1131,7 +1133,7 @@ end;
 
 procedure TfmSetup.FontDialogShow(Sender: TObject);
 begin
-  WndCenter(FontDialog.Handle, Self);
+  DoCenterForm(FontDialog.Handle, Self);
 end;
 
 procedure TfmSetup.tabProgSettShow(Sender: TObject);
@@ -1324,7 +1326,7 @@ end;
 
 procedure TfmSetup.labDateClick(Sender: TObject);
 begin
-  FHelpShow(fmMain.SynDir, helpDateFmt, Handle);
+  SynHelpTopic(helpDateFmt, Handle);
 end;
 
 procedure TfmSetup.tabSearchShow(Sender: TObject);
@@ -1434,17 +1436,17 @@ end;
 
 procedure TfmSetup.labSmTabHelpClick(Sender: TObject);
 begin
-  FHelpShow(fmMain.SynDir, helpSmartTabbing, Handle);
+  SynHelpTopic(helpSmartTabbing, Handle);
 end;
 
 procedure TfmSetup.labTplHelpClick(Sender: TObject);
 begin
-  FHelpShow(fmMain.SynDir, helpCodeTpl, Handle);
+  SynHelpTopic(helpCodeTpl, Handle);
 end;
 
 procedure TfmSetup.labAutoCloseHelpClick(Sender: TObject);
 begin
-  FHelpShow(fmMain.SynDir, helpAutoClose, Handle);
+  SynHelpTopic(helpAutoClose, Handle);
 end;
 
 procedure TfmSetup.cbACloseBrClick(Sender: TObject);
@@ -1681,7 +1683,7 @@ end;
 
 procedure TfmSetup.labEmmetClick(Sender: TObject);
 begin
-  FHelpShow(fmMain.SynDir, helpEmmet, Handle);
+  SynHelpTopic(helpEmmet, Handle);
 end;
 
 procedure TfmSetup.tabCaretsShow(Sender: TObject);
@@ -1693,19 +1695,19 @@ end;
 
 procedure TfmSetup.labCaretHelpClick(Sender: TObject);
 begin
-  FHelpShow(fmMain.SynDir, helpCarets, Handle);
+  SynHelpTopic(helpCarets, Handle);
 end;
 
 procedure TfmSetup.labAcpHelpClick(Sender: TObject);
 begin
-  FHelpShow(fmMain.SynDir, helpAcp, Handle);
+  SynHelpTopic(helpAcp, Handle);
 end;
 
 procedure TfmSetup.ApplyFiles;
 begin
   with fmMain do
   begin
-    opNotif:= TSynReloadMode(cbNotif.ItemIndex);
+    opReloadMode:= TSynReloadMode(cbNotif.ItemIndex);
     opAskOverwrite:= cbOverRO.Checked;
     opTextOnly:= cbText_.ItemIndex;
     opOem:= edOem.Text;
@@ -1845,8 +1847,8 @@ begin
     opMruCheck:= cbMru.Checked;
     opSaveState:= edFS.Value;
     opSaveSRHist:= edSR.Value;
-    opSaveCaret:= cbHCaret.Checked;
-    opSaveEnc:= cbHEnc.Checked;
+    opSaveEdCaret:= cbHCaret.Checked;
+    opSaveEdEnc:= cbHEnc.Checked;
     opStateForTemp:= cbHTemp.Checked;
     opLastDir:= TSynLastDirMode(cbDirLast.ItemIndex);
     opLastDirPath:= edDirLast.Text;
@@ -1894,14 +1896,14 @@ begin
     opSingleInstance:= cbInst.Checked;
     ApplyInst;
 
-    opSavePos:= cbSavePos.Checked;
+    opSaveWndPos:= cbSavePos.Checked;
     opShowRecentColors:= TSynRecentColors(cbRecColors.ItemIndex);
     opSortMode:= TSynSortMode(cbSortMode.ItemIndex);
     ApplyShowRecentColors;
-    opLexerCat:= cbGroupLexers.Checked;
-    opMenuIcon:= cbMenuIcon.Checked;
+    opLexerGroups:= cbGroupLexers.Checked;
+    opShowMenuIcons:= cbMenuIcon.Checked;
     Icons:= Icons; //update menu
-    opTitleFull:= cbFullTitle.Checked;
+    opShowTitleFull:= cbFullTitle.Checked;
     opBeep:= cbBeep.Checked;
 
     //redraw
@@ -1928,7 +1930,7 @@ begin
     opSrOnTop:= cbSrOnTop.Checked;
     opSrSuggestWord:= cbSrWord.Checked;
     opSrSuggestSel:= cbSrSel.Checked;
-    opQsCap:= cbSrQsCap.Checked;
+    opShowQsCaptions:= cbSrQsCap.Checked;
     ApplyQs;
   end;
 end;
@@ -2123,7 +2125,7 @@ procedure TfmSetup.InitFiles;
 begin
   with fmMain do
   begin
-    cbNotif.ItemIndex:= Ord(opNotif);
+    cbNotif.ItemIndex:= Ord(opReloadMode);
     cbOverRO.Checked:= opAskOverwrite;
     cbText_.ItemIndex:= opTextOnly;
     edOem.Text:= opOem;
@@ -2153,8 +2155,8 @@ begin
   begin
     edFS.Value:= opSaveState;
     edSR.Value:= opSaveSRHist;
-    cbHCaret.Checked:= opSaveCaret;
-    cbHEnc.Checked:= opSaveEnc;
+    cbHCaret.Checked:= opSaveEdCaret;
+    cbHEnc.Checked:= opSaveEdEnc;
     cbHTemp.Checked:= opStateForTemp;
     cbMru.Checked:= opMruCheck;
     cbDirLast.ItemIndex:= Ord(opLastDir);
@@ -2190,12 +2192,12 @@ begin
     cbEsc.ItemIndex:= Ord(opEsc);
     cbInst.Checked:= opSingleInstance;
 
-    cbSavePos.Checked:= opSavePos;
+    cbSavePos.Checked:= opSaveWndPos;
     cbRecColors.ItemIndex:= Ord(opShowRecentColors);
     cbSortMode.ItemIndex:= Ord(opSortMode);
-    cbGroupLexers.Checked:= opLexerCat;
-    cbFullTitle.Checked:= opTitleFull;
-    cbMenuIcon.Checked:= opMenuIcon;
+    cbGroupLexers.Checked:= opLexerGroups;
+    cbFullTitle.Checked:= opShowTitleFull;
+    cbMenuIcon.Checked:= opShowMenuIcons;
     cbBeep.Checked:= opBeep;
   end;
 end;
@@ -2236,7 +2238,7 @@ begin
     cbSrOnTop.Checked:= opSrOnTop;
     cbSrWord.Checked:= opSrSuggestWord;
     cbSrSel.Checked:= opSrSuggestSel;
-    cbSrQsCap.Checked:= opQsCap;
+    cbSrQsCap.Checked:= opShowQsCaptions;
   end;
 end;
 
@@ -2729,6 +2731,11 @@ begin
   bKeyExtend.Enabled:= IsKeySet and IsCellSet;
   bKeyClear.Enabled:= IsCellSet;
   bKeyFind.Enabled:= IsKeySet;
+end;
+
+procedure TfmSetup.labHelpKeysClick(Sender: TObject);
+begin
+  SynHelpTopic(helpKeys, Handle);
 end;
 
 end.

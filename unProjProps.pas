@@ -46,7 +46,6 @@ type
     { Private declarations }
   public
     { Public declarations }
-    FSynDir: string;
   end;
 
 implementation
@@ -94,7 +93,7 @@ end;
 
 procedure TfmProjProps.btnHelpClick(Sender: TObject);
 begin
-  FHelpShow(FSynDir, helpProjOpts, Handle);
+  SynHelpTopic(helpProjOpts, Handle);
 end;
 
 end.

@@ -111,7 +111,6 @@ type
     procedure LSwap(n, m: Integer);
   public
     { Public declarations }
-    SynDir: string;
     SCurLex: string;
     SRe,
     SReNums: string;
@@ -529,7 +528,7 @@ end;
 
 procedure TfmTools.bHelpClick(Sender: TObject);
 begin
-  FHelpShow(SynDir, helpExtTools, Handle);
+  SynHelpTopic(helpExtTools, Handle);
 end;
 
 procedure TfmTools.edOutTypeChange(Sender: TObject);
