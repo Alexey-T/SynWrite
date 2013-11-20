@@ -1224,6 +1224,7 @@ type
     TbxItemCtxTool13: TSpTBXItem;
     TBXItemProjAddAllFiles: TSpTBXItem;
     TbxItemProjSave: TSpTBXItem;
+    SpTBXSeparatorItem22: TSpTBXSeparatorItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -3011,7 +3012,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.1.145';
+  cSynVer = '6.1.155';
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -3393,6 +3394,13 @@ var
   F: TEditorFrame;
 begin
   UpdateColorHint;
+
+  if IsFileProject(AFileName) then
+  begin
+    DoOpenProject(AFileName);
+    Result:= nil;
+    Exit
+  end;
 
   if AFileName = '' then
   begin
@@ -5087,36 +5095,33 @@ begin
 end;
 
 procedure TfmMain.SynKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var
+  Ed: TSyntaxMemo;
 begin
-  if CurrentEditor = nil then Exit;
+  Ed:= CurrentEditor;
+  if Ed=nil then Exit;
 
-  {
-  if Assigned(fmSR) and fmSR.Focused then
+  if not SynExe then
+  if Ed.ReadOnly or (Shift = [ssAlt]) then
   begin
-    MsgError('1');
-    Key:= 0;
-    Exit
-  end;
-  }
-
-  if CurrentEditor.ReadOnly or (Shift = [ssAlt]) then
-  begin
+    //Lister: File -> Next (N) or Prev (P)
     if Chr(Lo(Key)) in ['N', 'P'] then
     begin
-      PostMessage(hLister, WM_KEYDOWN, Key, 0); //File -> Next (N) or Prev (P)
+      PostMessage(hLister, WM_KEYDOWN, Key, 0);
       Key:= 0;
       Exit
     end
     else
+    //Lister: Options -> 1..7
     if Chr(Lo(Key)) in ['1'..'7'] then
     begin
-      PostMessage(hLister, WM_KEYDOWN, Key, 0); //Options -> 1..7
+      PostMessage(hLister, WM_KEYDOWN, Key, 0);
       Key:= 0;
       Exit
     end;
   end;
 
-  if CurrentEditor.ReadOnly and (Key = VK_SPACE) and (Shift = []) then
+  if Ed.ReadOnly and (Key = VK_SPACE) and (Shift = []) then
   begin
     CurrentEditor.ExecCommand(smScrollPageDown);
     Key:= 0;
@@ -5124,7 +5129,7 @@ begin
   end;
 
   //handle Tab key if auto-completion popup is shown
-  if not CurrentEditor.ReadOnly and (Key = vk_tab) and (Shift = []) then
+  if not Ed.ReadOnly and (Key = vk_tab) and (Shift = []) then
     if ecACP.Visible or PluginACP.Visible then
     begin
       Key:= 0;
@@ -5208,8 +5213,11 @@ begin
           ch:= #0;
 
         //if current char is 2nd part of key-combination, don't handle it
-        if SyntKeyMapping.IsHandledCmd(Ed.KeyQueue)<>0 then
+        //(consider also ecRepeatCmd.Execute context)
+        if (SyntKeyMapping.IsHandledCmd(Ed.KeyQueue)<>0) and not FLastCmdPlaying then
+        begin
           Handled:= true
+        end
         else
         if (ch='>') then
           Handled:= DoAutoCloseTag

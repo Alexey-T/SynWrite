@@ -56,18 +56,11 @@ uses
 {$R *.dfm}
 
 var
-  SynIsPortable: boolean;
+  SynIniPath: string;
   SynIni: string;
   SynHistoryIni: string;
   SynTextOnly: integer;
 
-function GetSynIniDir: string;
-begin
-  if SynIsPortable then
-    Result:= ExtractFilePath(ParamStr(0))
-  else
-    Result:= SynAppdataDir + '\';
-end;
 
 function GetPassedLineNumber: integer;
 var
@@ -278,7 +271,7 @@ begin
 
   //use default session
   if Result='' then
-    Result:= GetSynIniDir + SynDefaultSyn;
+    Result:= SynIniPath + SynDefaultSyn;
 end;
 
 procedure TfmSynEx.FormShow(Sender: TObject);
@@ -542,10 +535,47 @@ begin
   end
 end;
 
-initialization
-  SynIsPortable:= IsFileExist(ExtractFilePath(ParamStr(0)) + 'Portable.ini');
-  SynIni:= GetSynIniDir + 'Syn.ini';
-  SynHistoryIni:= ExtractFilePath(SynIni) + 'SynHistory.ini';
+procedure InitPaths;
+var
+  SynExePath,
+  SynSampleIni,
+  SynHideIni,
+  SynHideSampleIni: string;
+begin
+  SynExePath:= ExtractFilePath(ParamStr(0));
+  if IsFileExist(SynExePath + 'Portable.ini') then
+    SynIniPath:= SynExePath
+  else
+    SynIniPath:= SynAppdataDir + '\';
+
+  SynIni:= SynIniPath + 'Syn.ini';
+  SynSampleIni:= SynExePath + 'Syn.sample.ini';
+  SynHistoryIni:= SynIniPath + 'SynHistory.ini';
+  SynHideIni:= SynExePath + 'SynHide.ini';
+  SynHideSampleIni:= SynExePath + 'SynHide.sample.ini';
+
+  if not IsFileExist(SynIni) then
+    if IsFileExist(SynSampleIni) then
+      CopyFile(PChar(SynSampleIni), PChar(SynIni), true);
+
+  if not IsFileExist(SynHideIni) then
+    if IsFileExist(SynHideSampleIni) then
+      CopyFile(PChar(SynHideSampleIni), PChar(SynHideIni), true);
+end;
+
+procedure InitApi;
+begin
   _SynActionProc:= @PluginAction;
+end;
+
+initialization
+  InitPaths;
+  InitApi;
+
+finalization
+  SynIni:= '';
+  SynHistoryIni:= '';
+  SynIniPath:= '';
 
 end.
+

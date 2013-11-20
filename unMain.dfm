@@ -805,9 +805,11 @@ object fmMain: TfmMain
       CloseButton = False
       DockMode = dmCannotFloatOrChangeDocks
       DockPos = 0
+      FullSize = True
       ProcessShortCuts = True
       ShrinkMode = tbsmWrap
       TabOrder = 0
+      UpdateActions = False
       OnShortCut = tbMenuShortCut
       Caption = 'Menu'
       Customizable = False
@@ -1744,6 +1746,8 @@ object fmMain: TfmMain
           Hint = 'Change current encoding w/o reloading the file'
           OnSelect = ButtonOnSelect
           OnPopup = TBXSubmenuEnc2Popup
+        end
+        object SpTBXSeparatorItem22: TSpTBXSeparatorItem
         end
         object TBXSubmenuLineEnds: TSpTBXSubmenuItem
           Caption = 'Change &line endings'
@@ -5472,7 +5476,13 @@ object fmMain: TfmMain
       end
       item
         Command = 630
-        KeyStrokes = <>
+        KeyStrokes = <
+          item
+            KeyDefs = <
+              item
+                ShortCut = 16464
+              end>
+          end>
         Caption = 'Print'
         Category = 'Print'
         DisplayName = 'Print'
@@ -7657,25 +7667,13 @@ object fmMain: TfmMain
       end
       item
         Command = 734
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16507
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Focusing'
         DisplayName = 'Toggle Tree focus'
       end
       item
         Command = 735
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16501
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Focusing'
         DisplayName = 'Toggle Clipboard focus'
       end
@@ -7717,13 +7715,7 @@ object fmMain: TfmMain
       end
       item
         Command = 739
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16503
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Focusing'
         DisplayName = 'Toggle Output focus'
       end
@@ -7765,13 +7757,7 @@ object fmMain: TfmMain
       end
       item
         Command = 755
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16502
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Focusing'
         DisplayName = 'Toggle Find Results focus'
       end
@@ -7945,13 +7931,7 @@ object fmMain: TfmMain
       end
       item
         Command = 756
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16506
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Focusing'
         DisplayName = 'Toggle editor view (panel) focus'
       end
@@ -7981,13 +7961,7 @@ object fmMain: TfmMain
       end
       item
         Command = 757
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16500
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Focusing'
         DisplayName = 'Toggle Validation focus'
       end
@@ -8215,13 +8189,7 @@ object fmMain: TfmMain
       end
       item
         Command = 758
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16505
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Focusing'
         DisplayName = 'Toggle Minimap focus'
       end
@@ -8593,13 +8561,7 @@ object fmMain: TfmMain
       end
       item
         Command = 759
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16504
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Focusing'
         DisplayName = 'Toggle Project focus'
       end
@@ -8849,7 +8811,7 @@ object fmMain: TfmMain
           item
             KeyDefs = <
               item
-                ShortCut = 16464
+                ShortCut = 32848
               end>
           end>
         Category = 'Search & Replace'
@@ -11980,7 +11942,7 @@ object fmMain: TfmMain
     Left = 577
     Top = 233
     LangData = {
-      0600666D4D61696E0001F30300000A00544258446F636B546F70000006007462
+      0600666D4D61696E0001F40300000A00544258446F636B546F70000006007462
       46696C650101000000B5020000070043617074696F6E000E005442584974656D
       546F6F6C4E65770102000000B6020000070043617074696F6EB7020000040048
       696E740016005442585375626D656E754974656D546F6F6C4F70656E01020000
@@ -13983,7 +13945,8 @@ object fmMain: TfmMain
       7478546F6F6C3134000010005462784974656D437478546F6F6C313300001600
       5442584974656D50726F6A416464416C6C46696C65730101000000B50A000007
       0043617074696F6E000F005462784974656D50726F6A536176650101000000BC
-      0A0000070043617074696F6E00}
+      0A0000070043617074696F6E0014005370544258536570617261746F72497465
+      6D32320000}
   end
   object TimerHint: TTimer
     Enabled = False
