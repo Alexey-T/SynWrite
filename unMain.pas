@@ -2456,12 +2456,12 @@ type
     function MsgEncReload: boolean;
     function MsgConfirmFtp: boolean;
 
+    procedure InitSynIniDir;
     function SynLexLib: string;
     function SynPluginIni(const SCaption: string): string;
     function SynIni: string;
     function SynToolbarsIni: string;
     function SynFavIni: string;
-    function SynIniDir: string;
     function SynStylesIni: string;
     function SynHistoryIni: string;
     function SynHistoryStatesIni: string;
@@ -2636,6 +2636,7 @@ type
     procedure DoZoomEditor(NZoom: Integer);
     procedure ShowDebug(const S: Widestring);
     procedure DoExtendSelection(Ed: TSyntaxMemo);
+    function MsgConfirmOpenSaveSession(AFilesCount: Integer; const AFileName: string; ASaveMode: boolean): boolean;
     //end of private
 
   protected
@@ -2645,8 +2646,8 @@ type
     //end of protected
 
   public
-    //fields
     SynDir: string;
+    SynIniDir: string;
     SynExe: boolean;
     SynIsPortable: boolean;
     SynProjectSessionFN: string;
@@ -2894,7 +2895,7 @@ type
     procedure SaveFrameState(F: TEditorFrame);
     function LoadFrameState(Frame: TEditorFrame; const fn: WideString): boolean;
 
-    procedure DoOpenSession(const fn: string; Add: boolean = False);
+    procedure DoOpenSession(const fn: string; AddMode: boolean = False);
     procedure DoCloseSession(PromptToSave: boolean);
     procedure DoSaveSession;
     procedure DoSaveSessionAs;
@@ -3012,7 +3013,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.1.155';
+  cSynVer = '6.1.164';
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -3283,6 +3284,7 @@ begin
     with fmMain do
     begin
       SynExe:= False;
+      InitSynIniDir;
 
       //synchronize our form and Lister
       //Application.Handle:= ListerWin;
@@ -4875,20 +4877,20 @@ begin
   Result:= SynIniDir + 'SynPlugin' + SCaption + '.ini';
 end;
 
-function TfmMain.SynIniDir: string;
+procedure TfmMain.InitSynIniDir;
 begin
   if SynIsPortable then
-    Result:= SynDir
+    SynIniDir:= SynDir
   else
     if SynExe then
     begin
-      Result:= SynAppdataDir;
-      if not IsDirExist(Result) then
-        CreateDir(Result);
-      Result:= Result + '\';
+      SynIniDir:= SynAppdataDir;
+      if not IsDirExist(SynIniDir) then
+        CreateDir(SynIniDir);
+      SynIniDir:= SynIniDir + '\';
     end
     else
-      Result:= ExtractFilePath(LsIni);
+      SynIniDir:= ExtractFilePath(LsIni);
 end;
 
 function TfmMain.SynIni: string;
@@ -6731,9 +6733,11 @@ var
   i: integer;
   Cur: HIcon;
 begin
+  SynExe:= true;
   SynDir:= ExtractFilePath(GetModuleName(HInstance));
   SynDirForHelpFiles:= SynDir + 'Readme';
   SynIsPortable:= IsFileExist(SynDir + 'Portable.ini');
+  InitSynIniDir;
 
   SynMruFiles:= TSynMruList.Create;
   SynMruSessions:= TSynMruList.Create;
@@ -8232,11 +8236,15 @@ begin
     if cbWords.Checked then Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
     if cbRE.Checked then Finder.Flags:= Finder.Flags + [ftRegularExpr];
     if cbSel.Checked then Finder.Flags:= Finder.Flags + [ftSelectedText];
-    if not cbFromCur.Checked then Finder.Flags:= Finder.Flags + [ftEntireScope];
     if bBack.Checked then Finder.Flags:= Finder.Flags + [ftBackward];
     if cbCfm.Checked then Finder.Flags:= Finder.Flags + [ftPromtOnReplace];
     if cbWrap.Checked then Finder.Flags:= Finder.Flags + [ftWrapSearch];
     if cbSkipCol.Checked then Finder.Flags:= Finder.Flags + [ftSkipCollapsed];
+
+    //handle "From caret" specially: ignore it for "Replace all" actions
+    if (not cbFromCur.Checked) or
+      (act in [arReplaceAll, arReplaceAllInAll]) then
+      Finder.Flags:= Finder.Flags + [ftEntireScope];
 
     Finder.Tokens:= TSearchTokens(cbTokens.ItemIndex);
     Finder.FindText:= Text1;
@@ -11016,6 +11024,9 @@ var
   F: TEditorFrame;
   dir: string;
 begin
+  //confirmation not really needed here, commented
+  //if not MsgConfirmOpenSaveSession(FrameAllCount, fn, true) then Exit;
+
   FSessionFN:= fn;
 
   //session dir may not exist, for portable install
@@ -11096,7 +11107,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoOpenSession(const fn: string; Add: boolean = False);
+procedure TfmMain.DoOpenSession(const fn: string; AddMode: boolean = False);
 var
   F: TEditorFrame;
   NFiles, NPage1, NPage2, NPageCount: integer;
@@ -11105,9 +11116,7 @@ var
   i, NTabCount1, NTabCount2, N: Integer;
   s, sdir: Widestring;
 begin
-  if not Add then
-    FSessionFN:= fn;
-  if Add then
+  if AddMode then
   begin
     NTabCount1:= PageControl1.PageCount;
     NTabCount2:= PageControl2.PageCount;
@@ -11116,7 +11125,6 @@ begin
   begin
     NTabCount1:= 0;
     NTabCount2:= 0;
-    acCloseAll.Execute;
   end;
 
   with TIniFile.Create(fn) do
@@ -11134,6 +11142,15 @@ begin
       NPageAct:= ReadBool('Ini', 'PageActive', false);
       NSplitHorz:= ReadBool('Ini', 'SplitHorz', false);
       NSplitPos:= ReadFloat('Ini', 'SplitPos', 50.0);
+
+      if not MsgConfirmOpenSaveSession(NFiles, fn, false) then
+        Exit;
+
+      if not AddMode then
+      begin
+        FSessionFN:= fn;
+        acCloseAll.Execute;
+      end;  
 
       for i:= 0 to NFiles-1 do
       begin
@@ -15575,6 +15592,7 @@ var
   NStart, NEnd: Integer;
   S, S1: string; //Addict is not Unicode aware
   AMap: boolean;
+  ASpellLiveBefore: boolean;
 begin
   {$ifdef SPELL}
   F:= CurrentFrame;
@@ -15587,12 +15605,13 @@ begin
   F.ShowMap:= false;
 
   //need to set SpellLive
-  if not F.SpellLive then
+  ASpellLiveBefore:= F.SpellLive;
+  if not ASpellLiveBefore then
   begin
     F.SpellLive:= true;
     F.ecSpellChecker.Analyze(false{Background});
   end;
-  
+
   FSpellPos:= -1;
   FSpellChecking:= true;
   UpdateBusyIco;
@@ -15609,6 +15628,7 @@ begin
         Ed.ResetSelection;
         F.ecSpellChecker.Active:= false;
         F.ecSpellChecker.Active:= true;
+        F.SpellLive:= ASpellLiveBefore;
         MsgInfo(DKLangConstW('zMSpellDone'), Handle);
         Exit
       end;
@@ -26638,6 +26658,23 @@ begin
   {$ifdef DebugAbout}
   DoTest;
   {$endif}
+end;
+
+function TfmMain.MsgConfirmOpenSaveSession(AFilesCount: Integer; const AFileName: string; ASaveMode: boolean): boolean;
+const
+  cMsg: array[boolean] of string = ('zMCfmSessionLoad', 'zMCfmSessionSave');
+var
+  NOpt: Integer;
+  SName, SMsg: Widestring;
+begin
+  NOpt:= SynHiddenOption('SessionMaxFiles', 0);
+  SName:= ChangeFileExt(ExtractFileName(AFileName), '');
+  SMsg:= WideFormat(DKLangConstW(cMsg[ASaveMode]), [SName, AFilesCount]);
+
+  if (NOpt=0) or (AFilesCount<=NOpt) then
+    Result:= true
+  else
+    Result:= MsgConfirm(SMsg, Handle);
 end;
 
 end.

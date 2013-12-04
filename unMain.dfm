@@ -805,7 +805,6 @@ object fmMain: TfmMain
       CloseButton = False
       DockMode = dmCannotFloatOrChangeDocks
       DockPos = 0
-      FullSize = True
       ProcessShortCuts = True
       ShrinkMode = tbsmWrap
       TabOrder = 0
@@ -2861,6 +2860,7 @@ object fmMain: TfmMain
       Align = alClient
       OwnerDraw = True
       TabOrder = 0
+      TabStop = False
       OnChange = PageControl1Change
       OnContextPopup = PageControl1ContextPopup
       OnDragDrop = PageControl1DragDrop
@@ -3058,6 +3058,7 @@ object fmMain: TfmMain
       Align = alRight
       OwnerDraw = True
       TabOrder = 2
+      TabStop = False
       OnChange = PageControl1Change
       OnContextPopup = PageControl1ContextPopup
       OnDragDrop = PageControl1DragDrop
@@ -10079,7 +10080,7 @@ object fmMain: TfmMain
     ItemHeight = 15
     BgColor = clWindow
     CommandID = 650
-    Width = 320
+    Width = 400
     Height = 200
     Constraints.MinWidth = 320
     ToolHint.Left = 0
@@ -15710,7 +15711,7 @@ object fmMain: TfmMain
     ItemHeight = 15
     BgColor = clWindow
     CommandID = 650
-    Width = 300
+    Width = 400
     Height = 200
     ToolHint.Left = 0
     ToolHint.Top = 0

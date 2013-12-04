@@ -316,14 +316,20 @@ begin
 end;
 
 procedure TEditorFrame.EditorMasterEnter(Sender: TObject);
+var
+  Ed: TSyntaxMemo;
 begin
-  TfmMain(Owner).CurrentEditor:= Sender as TSyntaxMemo;
+  Ed:= Sender as TSyntaxMemo;
+  TfmMain(Owner).CurrentEditor:= Ed;
 
   //Ctrl+Alt+click -- find id
   //(if no line selection is made with Ctrl+Alt+drag)
   if IsCtrlAltPressed then
-    if not (Sender as TSyntaxMemo).HaveSelection then
+    if not Ed.HaveSelection then
+    begin
+      EditorUpdateCaretPosFromMousePos(Ed);
       TfmMain(Owner).DoFindIdDelayed;
+    end;
 
   SyncMap;
 end;

@@ -14,6 +14,7 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
+procedure EditorUpdateCaretPosFromMousePos(Ed: TSyntaxMemo);
 procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
 function EditorJumpMixedCase(Ed: TSyntaxMemo; ARight: boolean): boolean;
 procedure EditorJumpColumnMarker(Ed: TSyntaxMemo; ALeft: boolean);
@@ -161,6 +162,7 @@ uses
   TntClipbrd,
   SysUtils,
   StrUtils,
+  Controls,
   TntSysUtils,
   TntWideStrUtils,
   ecCmdConst,
@@ -2557,5 +2559,15 @@ begin
     if Markers.Count>0 then
       GotoMarker(TMarker(Markers.Last))
 end;
+
+procedure EditorUpdateCaretPosFromMousePos(Ed: TSyntaxMemo);
+var
+  p: TPoint;
+begin
+  p:= Mouse.CursorPos;
+  p:= Ed.ScreenToClient(p);
+  Ed.CaretPos:= Ed.MouseToCaret(p.x, p.y);
+end;
+
 
 end.

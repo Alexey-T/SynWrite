@@ -246,7 +246,6 @@ begin
   fmMain:= TfmMain.Create(Self);
   fmMain.Parent:= Self;
   fmMain.Align:= alClient;
-  fmMain.SynExe:= True;
   //
   TVistaAltFix.Create(Self);
 end;
