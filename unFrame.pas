@@ -167,6 +167,7 @@ type
     property CaretsGutterColor: TColor read GetCaretsGutterColor write SetCaretsGutterColor;
     property CaretsIndicator: integer read GetCaretsIndicator write SetCaretsIndicator;
 
+    function CurrentLexer: string;
     property CollapsedString: Widestring read FCollapsedString write FCollapsedString;
     property CollapsedString2: Widestring read FCollapsedString2 write FCollapsedString2;
     function IsEditorPosMisspelled(APos: Integer): boolean;
@@ -328,7 +329,7 @@ begin
     if not Ed.HaveSelection then
     begin
       EditorUpdateCaretPosFromMousePos(Ed);
-      TfmMain(Owner).DoFindIdDelayed;
+      TfmMain(Owner).DoFindId;
     end;
 
   SyncMap;
@@ -1551,6 +1552,14 @@ begin
   if not IsWord then
     IsWord:= (ch = '$') or (Pos(ch, TfmMain(Owner).opWordChars) > 0);
 end;
+
+function TEditorFrame.CurrentLexer: string;
+begin
+  Result:= '';
+  if TextSource.SyntaxAnalyzer<>nil then
+    Result:= TextSource.SyntaxAnalyzer.LexerName;
+end;
+
 
 initialization
   CF_DRAGCOLOR:= RegisterClipboardFormat(CFSTR_DRAGCOLOR);

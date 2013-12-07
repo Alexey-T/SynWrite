@@ -293,7 +293,7 @@ object fmSR: TfmSR
       Top = 78
       Width = 160
       Height = 17
-      Caption = 'S&pecial chars (\n \r \t...)'
+      Caption = 'S&pecial characters'
       TabOrder = 3
       OnClick = cbSpecClick
     end

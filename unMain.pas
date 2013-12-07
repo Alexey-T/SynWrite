@@ -2615,7 +2615,6 @@ type
     procedure DoPasteAndSelect;
     procedure DoCopyURL;
     procedure DoOpenURL;
-    procedure DoFindId;
     function UpdateCurrentColorCode(var AColor: Integer): boolean;
     procedure DoAddCurrentColorCodeToRecents;
     procedure DoSaveFolding;
@@ -2935,7 +2934,7 @@ type
     procedure DoHandleQuickSearchEscape;
     function DoHandleEscapeActions: boolean;
     function IsWordChar(ch: WideChar): boolean;
-    procedure DoFindIdDelayed;
+    procedure DoFindId;
     function FrameForFilename(const fn: Widestring): TEditorFrame;
     function DoCheckCommandLineTwo: boolean;
     procedure DoClearSearchHistory;
@@ -3013,7 +3012,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.1.164';
+  cSynVer = '6.1.175';
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -25931,11 +25930,6 @@ begin
     MsgBeep;
 end;
 
-procedure TfmMain.DoFindIdDelayed;
-begin
-  DoDelayedCommand(sm_FindId);
-end;
-
 procedure TfmMain.DoSaveFolding;
 var
   Ed: TSyntaxMemo;
@@ -26463,6 +26457,8 @@ begin
   CurrentEditor.ExecCommand(sm_SaveProject);
 end;
 
+
+
 const
   cFramePropLexer    = 'lex';
   cFramePropWrap     = 'wrap';
@@ -26497,7 +26493,7 @@ begin
   begin
     Result:= Utf8Encode(F.FileName) + ';';
     Add(Result, cFramePropEnc, IntToStr(GetFrameEncoding(F)));
-    Add(Result, cFramePropLexer, EditorCurrentLexerForPos(F.EditorMaster, 0));
+    Add(Result, cFramePropLexer, F.CurrentLexer);
     Add(Result, cFramePropWrap, IntToStr(Ord(F.EditorMaster.WordWrap)));
     Add(Result, cFramePropSplit, IntToStr(Ord(F.SplitHorz)) + ',' + IntToStr(Round(F.SplitPos)));
     AddEd(Result, F.EditorMaster, '1');
