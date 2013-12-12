@@ -2986,6 +2986,7 @@ uses
   ATxFProc, ATxSProc, ATxUtilMail,
   ATxColorCodes,
   ATxLoremIpsum,
+  ATxUnpack,
 
   {$ifdef SPELL}
   ad3SpellBase,
@@ -3012,7 +3013,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.1.175';
+  cSynVer = '6.1.177';
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -22243,6 +22244,7 @@ begin
       if IsLexerListed(CurrentLexer, SLexers) then
       begin
         DoLoadPlugin_FindID(i);
+        CurrentEditor.ResetSelection; //reset selection caused by Ctrl+Alt+click
         Exit
       end;
   //no FindId plugins found
