@@ -203,8 +203,9 @@ begin
   end;
 
   if (SF <> '') and (SynTextOnly<>1) and (not IsFileText(SF)) then
-    if not MsgConfirmBinary(SF, 0) then
-      Result:= false;
+    if not IsFileArchive(SF) then
+      if not MsgConfirmBinary(SF, 0) then
+        Result:= false;
 end;
 
 function SynParamsOK: boolean;

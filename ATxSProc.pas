@@ -119,6 +119,7 @@ procedure I64LimitMax(var N: Int64; const Value: Int64);
 function SFileExtensionMatch(const FileName: WideString; const ExtList: AnsiString): Boolean;
 function IsFileProject(const fn: Widestring): boolean;
 function IsFileSession(const fn: Widestring): boolean;
+function IsFileArchive(const fn: Widestring): boolean;
 
 
 implementation
@@ -991,6 +992,10 @@ begin
   Result:= SFileExtensionMatch(fn, 'syn'); 
 end;
 
+function IsFileArchive(const fn: Widestring): boolean;
+begin
+  Result:= SFileExtensionMatch(fn, 'rar,zip');
+end;
 
 function IsUpperChar(Ch: WideChar): boolean;
 begin

@@ -2887,6 +2887,7 @@ type
     constructor CreateParented(hWindow: HWND);
     function DoOpenFile(const AFileName: WideString): TEditorFrame;
     procedure DoOpenProject(const fn: Widestring); overload;
+    procedure DoOpenArchive(const fn: Widestring);
     procedure SaveIni;
     procedure SaveSession(const fn: string);
     procedure SaveProjectSession;
@@ -3013,7 +3014,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.1.177';
+  cSynVer = '6.1.185';
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -3400,6 +3401,13 @@ begin
   if IsFileProject(AFileName) then
   begin
     DoOpenProject(AFileName);
+    Result:= nil;
+    Exit
+  end;
+
+  if IsFileArchive(AFileName) then
+  begin
+    DoOpenArchive(AFileName);
     Result:= nil;
     Exit
   end;
@@ -26673,6 +26681,142 @@ begin
     Result:= true
   else
     Result:= MsgConfirm(SMsg, Handle);
+end;
+
+procedure TfmMain.DoOpenArchive(const fn: Widestring);
+const
+  cInf = 'install.inf';
+  cPlugin = 'plugin';
+  cTemplate = 'template';
+  //
+  procedure DoHandleIni(const fn_ini, subdir, section: string);
+  var
+    s_section, s_id, s_file, s_params: string;
+  begin
+    with TIniFile.Create(fn_ini) do
+    try
+      s_section:= ReadString(section, 'section', '');
+      s_id:= ReadString(section, 'id', '');
+      s_file:= ReadString(section, 'file', '');
+      s_params:= ReadString(section, 'params', '');
+    finally
+      Free
+    end;
+
+    if (s_section='') then Exit;
+    if (s_id='') or (s_file='') then
+    begin
+      MsgError('Section in inf-file is invalid', Handle);
+      Exit
+    end;
+
+    with TIniFile.Create(SynPluginsIni) do
+    try
+      WriteString(s_section, s_id, subdir + '\' + s_file + ';' + s_params);
+    finally
+      Free
+    end;
+  end;
+  //
+type
+  TSynAddonType = (nTypeNone, nTypePlugin, nTypeTemplate);
+var
+  fn_inf, dir_to: string;
+  s_title, s_type, s_subdir: string;
+  n_type: TSynAddonType;
+begin
+  dir_to:= FTempDir;
+  fn_inf:= dir_to + '\' + cInf;
+  FDelete(fn_inf);
+
+  if not FUnpackSingle(fn, dir_to, cInf) then
+  begin
+    MsgNoFile('Unzip.exe / Unrar.exe');
+    Exit
+  end;
+
+  if not FileExists(fn_inf) then
+  begin
+    MsgError(DKLangConstW('zMInstallNoInf'), Handle);
+    Exit
+  end;
+
+  with TIniFile.Create(fn_inf) do
+  try
+    s_title:= ReadString('info', 'title', '');
+    s_type:= ReadString('info', 'type', '');
+    s_subdir:= ReadString('info', 'subdir', '');
+  finally
+    Free
+  end;
+
+  if s_type = cPlugin then n_type:= nTypePlugin else
+   if s_type = cTemplate then n_type:= nTypeTemplate else
+    n_type:= nTypeNone;
+
+  if (s_title='') then
+  begin
+    MsgError('Invalid field in inf-file: title', Handle);
+    Exit
+  end;
+  if (s_subdir='') or (Pos('\', s_subdir)>0) or (Pos('/', s_subdir)>0) then
+  begin
+    MsgError('Invalid field in inf-file: subdir', Handle);
+    Exit
+  end;
+  if (n_type=nTypeNone) then
+  begin
+    MsgError('Invalid field in inf-file: type', Handle);
+    Exit
+  end;
+
+  if not MsgConfirm(
+    Format(DKLangConstW('zMInstallCfm'), [s_type, s_title]),
+    Handle) then Exit;
+
+  case n_type of
+    nTypePlugin:
+      dir_to:= SynDir + 'Plugins\' + s_subdir;
+    nTypeTemplate:
+      dir_to:= SynDir + 'Template\' + s_subdir;
+    else
+      dir_to:= '?';  
+  end;
+
+  if not FUnpackAll(fn, dir_to) then
+  begin
+    MsgError(DKLangConstW('zMInstallCantUnpack'), Handle);
+    Exit
+  end;
+
+  FDelete(dir_to + '\' + cInf);
+  if n_type=nTypePlugin then
+  begin
+    DoHandleIni(fn_inf, s_subdir, 'ini');
+    DoHandleIni(fn_inf, s_subdir, 'ini1');
+    DoHandleIni(fn_inf, s_subdir, 'ini2');
+    DoHandleIni(fn_inf, s_subdir, 'ini3');
+    DoHandleIni(fn_inf, s_subdir, 'ini4');
+    DoHandleIni(fn_inf, s_subdir, 'ini5');
+    DoHandleIni(fn_inf, s_subdir, 'ini6');
+    DoHandleIni(fn_inf, s_subdir, 'ini7');
+    DoHandleIni(fn_inf, s_subdir, 'ini8');
+    DoHandleIni(fn_inf, s_subdir, 'ini9');
+    DoHandleIni(fn_inf, s_subdir, 'ini10');
+    DoHandleIni(fn_inf, s_subdir, 'ini11');
+    DoHandleIni(fn_inf, s_subdir, 'ini12');
+    DoHandleIni(fn_inf, s_subdir, 'ini13');
+    DoHandleIni(fn_inf, s_subdir, 'ini14');
+    DoHandleIni(fn_inf, s_subdir, 'ini15');
+    DoHandleIni(fn_inf, s_subdir, 'ini16');
+    DoHandleIni(fn_inf, s_subdir, 'ini17');
+    DoHandleIni(fn_inf, s_subdir, 'ini18');
+    DoHandleIni(fn_inf, s_subdir, 'ini19');
+    DoHandleIni(fn_inf, s_subdir, 'ini20');
+  end;
+
+  MsgInfo(Format(DKLangConstW('zMInstallOk'), [dir_to]), Handle);
+  acExit.Execute;
 end;
 
 end.
