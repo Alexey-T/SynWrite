@@ -20,6 +20,7 @@ uses
   IniFiles,
   PngImageList;
 
+procedure MemoScrollToBottom(Memo: TTntMemo);
 function SZenFindLeft(const s: ecString; iFrom: integer): integer;
 
 procedure SParseString_AcpHtml(
@@ -1792,6 +1793,12 @@ begin
     fm.Monitor.Left + (fm.Monitor.Width - (r.Right - r.Left)) div 2,
     fm.Monitor.Top + (fm.Monitor.Height - (r.Bottom - r.Top)) div 2,
     0, 0, SWP_NOSIZE);
+end;
+
+procedure MemoScrollToBottom(Memo: TTntMemo);
+begin
+  with Memo do
+    Perform(EM_LINESCROLL, 0, Lines.Count);
 end;
 
 

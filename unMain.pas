@@ -47,23 +47,25 @@ uses
   TntDialogs, TntStdCtrls, TntComCtrls,
   DKLang,
   PngImageList,
-  
+
   unProc,
   unProcHelp,
   unProcEditor,
   ATSynPlugins,
   ecMacroRec,
   ecExtHighlight,
-  ecSpell;
+  ecSpell, PythonEngine, PythonGUIInputOutput;
 
 const
-  opMruForPlugin = false; //use MRU list for Lister-plugin
-  cTabColors = 10; //number of misc tab colors (user-defined)
-  cFixedLeftTabs = 3; //number of fixed tabs on left panel (Tree; Project; Tabs)
+  opMruForPlugin = false; //use recent list for Lister-plugin
+  cTabColors = 10; //number of user-defined tab colors
+  cFixedLeftTabs = 3; //number of fixed tabs on left panel (Tree+Project+Tabs = 3)
   cMaxTreeLen = 400; //"find in files" result tree: max node length
   cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
-  cBandFolding = 3; //3rd gutter band if for folding
+  cBandFolding = 3; //index of gutter band for folding
   SynDefaultSyn = '(default).syn';
+  cConsolePrompt = '>>> ';
+  cConsoleInit = 'print("Python", sys.version)';
 
 type
   TSynEscMode = (
@@ -196,7 +198,7 @@ type
   TSynSelState = (selNone, selSmall, selStream, selColumn, selCarets);
   TSynGotoTree = (tgoNext, tgoPrev, tgoParent, tgoNextBro, tgoPrevBro);
   TSynGotoMode = (goLine, goPrevBk, goNextBk, goNumBk);
-  TSynTabOut = (tbOut, tbFind, tbVal, tbPluginsLog);
+  TSynTabOut = (tbOut, tbFind, tbVal, tbPluginsLog, tbConsole);
   TSynTabRight = (tbClip, tbMap, tbTextClips);
   TSynTabLeft = (tbTree, tbProj, tbTabs, tbPugin1, tbPugin2, tbPugin3, tbPugin4, tbPugin5);
   TSynCpOverride = (cp_sr_Def, cp_sr_OEM, cp_sr_UTF8, cp_sr_UTF16);
@@ -1225,6 +1227,14 @@ type
     TBXItemProjAddAllFiles: TSpTBXItem;
     TbxItemProjSave: TSpTBXItem;
     SpTBXSeparatorItem22: TSpTBXSeparatorItem;
+    plConsole: TPanel;
+    edConsole: TTntEdit;
+    TbxTabConsole: TSpTBXTabItem;
+    ecToggleFocusConsole: TAction;
+    TBXItemWinConsole: TSpTBXItem;
+    PythonGUIInputOutput1: TPythonGUIInputOutput;
+    PythonEngine1: TPythonEngine;
+    MemoConsole: TTntMemo;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1962,6 +1972,14 @@ type
     procedure TBXItemProjAddAllFilesClick(Sender: TObject);
     procedure TbxItemProjSaveClick(Sender: TObject);
     procedure StatusItemBusyClick(Sender: TObject);
+    procedure TbxTabConsoleClick(Sender: TObject);
+    procedure edConsoleKeyPress(Sender: TObject; var Key: Char);
+    procedure ecToggleFocusConsoleExecute(Sender: TObject);
+    procedure PythonEngine1BeforeLoad(Sender: TObject);
+    procedure edConsoleKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure MemoConsoleKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
 
   private
     cStatLine,
@@ -2636,6 +2654,7 @@ type
     procedure ShowDebug(const S: Widestring);
     procedure DoExtendSelection(Ed: TSyntaxMemo);
     function MsgConfirmOpenSaveSession(AFilesCount: Integer; const AFileName: string; ASaveMode: boolean): boolean;
+    procedure DoEnterConsoleCommand(const Str: Widestring);
     //end of private
 
   protected
@@ -3014,7 +3033,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.1.185';
+  cSynVer = '6.1.190';
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -5894,6 +5913,8 @@ begin
     sm_ToggleFocusTabs: ecToggleFocusTabs.Execute;
     sm_ToggleSlaveView: ecToggleSlave.Execute;
     sm_ToggleFocusMasterSlave: ecToggleFocusMasterSlave.Execute;
+    sm_ToggleFocusConsole: ecToggleFocusConsole.Execute;
+
     sm_SplitViewsVertHorz: ecSplitViewsVertHorz.Execute;
     sm_SplitSlaveVertHorz: ecSplitSlaveVertHorz.Execute;
 
@@ -6528,6 +6549,7 @@ begin
   ListVal.BorderStyle:= SynBorderStyle;
   ListPLog.BorderStyle:= SynBorderStyle;
   TreeFind.BorderStyle:= SynBorderStyle;
+  MemoConsole.BorderStyle:= SynBorderStyle;
 end;
 
 procedure TfmMain.FormShow(Sender: TObject);
@@ -6772,6 +6794,7 @@ begin
   Tree.Align:= alClient;
   ListPLog.Align:= alClient;
   ListTabs.Align:= alClient;
+  plConsole.Align:= alClient;
 
   //init colors
   Move(cDefColors, opTabColors, SizeOf(opTabColors));
@@ -7714,6 +7737,7 @@ begin
   ListVal.Invalidate;
   ListPLog.Invalidate;
   ListTabs.Invalidate;
+  MemoConsole.Invalidate;
 
   if Assigned(fmProj) then
     fmProj.TreeProj.Invalidate;
@@ -9272,6 +9296,7 @@ begin
   UpdKey(TbxItemWinMap, sm_ToggleFocusMap);
   UpdKey(TbxItemWinProj, sm_ToggleFocusProj);
   UpdKey(TbxItemWinTabs, sm_ToggleFocusTabs);
+  UpdKey(TbxItemWinConsole, sm_ToggleFocusConsole);
 
   //sort
   UpdKey(TBXItemEDedupAll, sm_RemoveDupsAll);
@@ -12647,6 +12672,13 @@ begin
     Key:= 0;
     Exit
   end;
+  //
+  if IsShortcutOfCmd(sh, sm_ToggleFocusConsole) then
+  begin
+    ecToggleFocusConsole.Execute;
+    Key:= 0;
+    Exit
+  end;
 
   //Tree next/prev/parent/next-brother/prev-brother
   if IsShortcutOfCmd(sh, sm_TreeNext) then
@@ -12825,6 +12857,9 @@ begin
   ListPLog.Color:= ListOut.Color;
   ListPLog.Font:= ListOut.Font;
 
+  MemoConsole.Color:= ListOut.Color;
+  edConsole.Color:= ListOut.Color;
+
   ListOut.ItemHeight:= FontHeightToItemHeight(ListOut.Font);
   ListVal.ItemHeight:= ListOut.ItemHeight;
   ListPLog.ItemHeight:= ListOut.ItemHeight;
@@ -12834,6 +12869,7 @@ begin
   TreeFind.Invalidate;
   ListPLog.Invalidate;
   ListTabs.Invalidate;
+  MemoConsole.Invalidate;
 
   if Assigned(fmProj) then
   begin
@@ -13068,6 +13104,7 @@ begin
   ListVal.Visible:= n=tbVal;
   TreeFind.Visible:= n=tbFind;
   ListPLog.Visible:= n=tbPluginsLog;
+  plConsole.Visible:= n=tbConsole;
 
   if n=tbOut then
     tbTabsOut.ActiveTabIndex:= 0
@@ -13079,7 +13116,10 @@ begin
     tbTabsOut.ActiveTabIndex:= 2
   else
   if n=tbPluginsLog then
-    tbTabsOut.ActiveTabIndex:= 3;
+    tbTabsOut.ActiveTabIndex:= 3
+  else
+  if n=tbConsole then
+    tbTabsOut.ActiveTabIndex:= 4;
 end;
 
 procedure TfmMain.UpdatePanelLeft(n: TSynTabLeft);
@@ -14032,6 +14072,7 @@ begin
   TreeFind.Invalidate;
   ListVal.Invalidate;
   ListPLog.Invalidate;
+  MemoConsole.Invalidate;
   SplitterMain.Invalidate;
 
   ApplyFrames;
@@ -18417,6 +18458,7 @@ begin
   ListOut.ShowHint:= opTipsPanels;
   ListVal.ShowHint:= opTipsPanels;
   ListPLog.ShowHint:= opTipsPanels;
+  MemoConsole.ShowHint:= opTipsPanels;
   if Assigned(fmClip) then
     fmClip.ListClip.ShowHint:= opTipsPanels;
 end;
@@ -20478,6 +20520,9 @@ begin
     TemplateEditor.Font.Name:= cc;
     TemplateEditor.LineNumbers.Font.Name:= cc;
     TemplateEditor.HorzRuler.Font.Name:= cc;
+
+    MemoConsole.Font.Name:= cc;
+    edConsole.Font.Name:= cc;
   end;
 end;
 
@@ -22423,7 +22468,7 @@ var
 begin
   with TbxSubmenuItemPlugins do
   begin
-    Visible:= true;
+    Enabled:= true;
 
     S:= SKey;
     CapMenu:= SGetItem(S, '\');
@@ -26729,7 +26774,7 @@ begin
   fn_inf:= dir_to + '\' + cInf;
   FDelete(fn_inf);
 
-  if not FUnpackSingle(fn, dir_to, cInf) then
+  if not FUnpackSingle(fn, dir_to, cInf, false{asAdmin}) then
   begin
     MsgNoFile('Unzip.exe / Unrar.exe');
     Exit
@@ -26780,16 +26825,20 @@ begin
     nTypeTemplate:
       dir_to:= SynDir + 'Template\' + s_subdir;
     else
-      dir_to:= '?';  
+      dir_to:= '?';
   end;
 
-  if not FUnpackAll(fn, dir_to) then
+  //new inf filename
+  fn_inf:= dir_to + '\' + cInf;
+
+  if not FUnpackAll(fn, dir_to, true{asAdmin}) or
+    not FileExists(fn_inf) then
   begin
     MsgError(DKLangConstW('zMInstallCantUnpack'), Handle);
     Exit
   end;
-
-  FDelete(dir_to + '\' + cInf);
+  FDelete(fn_inf);
+  
   if n_type=nTypePlugin then
   begin
     DoHandleIni(fn_inf, s_subdir, 'ini');
@@ -26817,6 +26866,87 @@ begin
 
   MsgInfo(Format(DKLangConstW('zMInstallOk'), [dir_to]), Handle);
   acExit.Execute;
+end;
+
+procedure TfmMain.TbxTabConsoleClick(Sender: TObject);
+begin
+  UpdatePanelOut(tbConsole);
+end;
+
+procedure TfmMain.DoEnterConsoleCommand(const Str: Widestring);
+begin
+  {
+  if not PythonEngine1.Initialized then
+  begin
+    PythonEngine1.Initialize();
+    PythonEngine1.ExecString(cInit);
+  end;
+  }
+
+  MemoConsole.Lines.Add(cConsolePrompt + Str);
+
+  try
+    PythonEngine1.ExecString(Str);
+  except
+    MsgBeep;
+  end;
+
+  MemoScrollToBottom(MemoConsole);
+
+  edConsole.Text:= '';
+  if edConsole.CanFocus then
+    edConsole.SetFocus;
+end;
+
+procedure TfmMain.edConsoleKeyPress(Sender: TObject; var Key: Char);
+begin
+  if (Key=#13) then
+  begin
+    DoEnterConsoleCommand(edConsole.Text);
+    Key:= #0;
+    Exit
+  end;
+end;
+
+procedure TfmMain.ecToggleFocusConsoleExecute(Sender: TObject);
+begin
+  if not plOut.Visible then
+  begin
+    ecShowOut.Execute;
+    UpdatePanelOut(tbConsole);
+    if Self.Enabled and edConsole.CanFocus then
+      edConsole.SetFocus;
+  end
+  else
+  if edConsole.Focused or MemoConsole.Focused then
+    FocusEditor
+  else
+  begin
+    UpdatePanelOut(tbConsole);
+    if Self.Enabled and edConsole.CanFocus then
+      edConsole.SetFocus;
+  end;
+end;
+
+procedure TfmMain.PythonEngine1BeforeLoad(Sender: TObject);
+begin
+  with PythonEngine1 do
+  begin
+    DllPath:= ExtractFilePath(ParamStr(0));
+    InitScript.Add(cConsoleInit);
+  end;
+end;
+
+procedure TfmMain.edConsoleKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  DoHandleKeysInPanels(Key, Shift);
+end;
+
+procedure TfmMain.MemoConsoleKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  DoHandleKeysInPanels(Key, Shift);
 end;
 
 end.

@@ -374,6 +374,7 @@ const
   sm_ScrollCurrentLineToBottom = 1041;
   sm_ScrollCurrentLineToMiddle = 1042;
   sm_SaveProject = 1043;
+  sm_ToggleFocusConsole = 1044;
   //free
 
   //Tree commands
