@@ -1228,7 +1228,7 @@ type
     TbxItemProjSave: TSpTBXItem;
     SpTBXSeparatorItem22: TSpTBXSeparatorItem;
     plConsole: TPanel;
-    edConsole: TTntEdit;
+    edConsole: TTntComboBox;
     TbxTabConsole: TSpTBXTabItem;
     ecToggleFocusConsole: TAction;
     TBXItemWinConsole: TSpTBXItem;
@@ -1980,6 +1980,7 @@ type
       Shift: TShiftState);
     procedure MemoConsoleKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure PythonEngine1AfterInit(Sender: TObject);
 
   private
     cStatLine,
@@ -2490,6 +2491,7 @@ type
     function SynPluginsIni: string;
     function SynPluginsSampleIni: string;
     function SynSkinsDir: string;
+    function SynPyDir: string;
     function SynSkinFilename(const Name: string): string;
     function SynConverterFilename(const Name: string): string;
 
@@ -2655,6 +2657,7 @@ type
     procedure DoExtendSelection(Ed: TSyntaxMemo);
     function MsgConfirmOpenSaveSession(AFilesCount: Integer; const AFileName: string; ASaveMode: boolean): boolean;
     procedure DoEnterConsoleCommand(const Str: Widestring);
+    procedure DoAddPythonPath(const Dir: string);
     //end of private
 
   protected
@@ -25291,6 +25294,12 @@ begin
   Result:= SynDir + 'template\skins';
 end;
 
+function TfmMain.SynPyDir: string;
+begin
+  //at the time of this call, SynDir not yet inited
+  Result:= ExtractFilePath(ParamStr(0)) + 'Py';
+end;
+
 function TfmMain.SynSkinFilename(const Name: string): string;
 begin
   Result:= SynSkinsDir + '\' + Copy(Name, 2, MaxInt) + '.skn';
@@ -26875,14 +26884,6 @@ end;
 
 procedure TfmMain.DoEnterConsoleCommand(const Str: Widestring);
 begin
-  {
-  if not PythonEngine1.Initialized then
-  begin
-    PythonEngine1.Initialize();
-    PythonEngine1.ExecString(cInit);
-  end;
-  }
-
   MemoConsole.Lines.Add(cConsolePrompt + Str);
 
   try
@@ -26893,6 +26894,7 @@ begin
 
   MemoScrollToBottom(MemoConsole);
 
+  ComboUpdate(edConsole, opSaveSRHist);
   edConsole.Text:= '';
   if edConsole.CanFocus then
     edConsole.SetFocus;
@@ -26947,6 +26949,18 @@ procedure TfmMain.MemoConsoleKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   DoHandleKeysInPanels(Key, Shift);
+end;
+
+procedure TfmMain.DoAddPythonPath(const Dir: string);
+const
+  cCmd = 'sys.path.append(r"%s")';
+begin
+  PythonEngine1.ExecString(Format(cCmd, [Dir]));
+end;
+
+procedure TfmMain.PythonEngine1AfterInit(Sender: TObject);
+begin
+  DoAddPythonPath(SynPyDir);
 end;
 
 end.

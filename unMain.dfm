@@ -659,7 +659,7 @@ object fmMain: TfmMain
         Align = alLeft
         BevelOuter = bvNone
         TabOrder = 6
-        object edConsole: TTntEdit
+        object edConsole: TTntComboBox
           Left = 0
           Top = 118
           Width = 209
@@ -670,6 +670,7 @@ object fmMain: TfmMain
           Font.Height = -12
           Font.Name = 'Courier New'
           Font.Style = []
+          ItemHeight = 15
           ParentFont = False
           TabOrder = 0
           OnKeyDown = edConsoleKeyDown
@@ -21006,6 +21007,7 @@ object fmMain: TfmMain
     OnBeforeLoad = PythonEngine1BeforeLoad
     IO = PythonGUIInputOutput1
     PyFlags = [pfUnicode, pfIgnoreEnvironmentFlag]
+    OnAfterInit = PythonEngine1AfterInit
     Left = 463
     Top = 200
   end
