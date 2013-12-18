@@ -1235,6 +1235,7 @@ type
     PythonGUIInputOutput1: TPythonGUIInputOutput;
     PythonEngine1: TPythonEngine;
     MemoConsole: TTntMemo;
+    PythonModule: TPythonModule;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1981,6 +1982,9 @@ type
     procedure MemoConsoleKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure PythonEngine1AfterInit(Sender: TObject);
+    procedure PythonModuleInitialization(Sender: TObject);
+    procedure PythonGUIInputOutput1SendUniData(Sender: TObject;
+      const Data: WideString);
 
   private
     cStatLine,
@@ -3030,6 +3034,7 @@ uses
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
   unCmdList, unProjList, unToolbarProp, unHideItems,
+  unProcPy,
   unLexerLib;
 
 {$R *.dfm}
@@ -4005,6 +4010,8 @@ begin
   ecMacroRecorder1.SyntMemo:= Value;
 
   FCurrentEditor:= Value;
+  PyEditor:= Value;
+
   if FCurrentEditor <> nil then
   begin
     if CurrentFrame<>nil then
@@ -26887,7 +26894,7 @@ begin
   MemoConsole.Lines.Add(cConsolePrompt + Str);
 
   try
-    PythonEngine1.ExecString(Str);
+    GetPythonEngine.ExecString(Str);
   except
     MsgBeep;
   end;
@@ -26932,7 +26939,7 @@ end;
 
 procedure TfmMain.PythonEngine1BeforeLoad(Sender: TObject);
 begin
-  with PythonEngine1 do
+  with Sender as TPythonEngine do
   begin
     DllPath:= ExtractFilePath(ParamStr(0));
     InitScript.Add(cConsoleInit);
@@ -26955,12 +26962,37 @@ procedure TfmMain.DoAddPythonPath(const Dir: string);
 const
   cCmd = 'sys.path.append(r"%s")';
 begin
-  PythonEngine1.ExecString(Format(cCmd, [Dir]));
+  GetPythonEngine.ExecString(Format(cCmd, [Dir]));
 end;
 
 procedure TfmMain.PythonEngine1AfterInit(Sender: TObject);
 begin
   DoAddPythonPath(SynPyDir);
+end;
+
+function Py_synwrite_version(Self, Args : PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyString_FromString(cSynVer);
+  end;
+end;
+
+procedure TfmMain.PythonModuleInitialization(Sender: TObject);
+begin
+  with Sender as TPythonModule do
+  begin
+    AddMethod('synwrite_version', Py_synwrite_version, '');
+    AddMethod('editor_get_text_all', Py_editor_get_text_all, '');
+    AddMethod('editor_get_text_sel', Py_editor_get_text_sel, '');
+    AddMethod('editor_get_text_line', Py_editor_get_text_line, '');
+  end;
+end;
+
+procedure TfmMain.PythonGUIInputOutput1SendUniData(Sender: TObject;
+  const Data: WideString);
+begin
+  MemoConsole.Lines.Add(Data);
 end;
 
 end.

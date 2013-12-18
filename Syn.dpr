@@ -60,7 +60,8 @@ uses
   unHideItems in 'unHideItems.pas' {fmHideItems},
   unLexerLib in 'unLexerLib.pas' {fmLexerLibrary},
   unProcEditor in 'unProcEditor.pas',
-  unRenameFN in 'unRenameFN.pas' {fmRenameFN: TTntForm};
+  unRenameFN in 'unRenameFN.pas' {fmRenameFN: TTntForm},
+  unProcPy in 'unProcPy.pas';
 
 {$R *.res}
 {$R *.dkl_const.res}
