@@ -24,74 +24,72 @@ const
   sm_CaretsExtendDownEnd     = ATSyntMemo.smCaretsDownToEnd;
 
 const
-  sm_CopyAsHTML = 309;
-  sm_CopyAsRTF = 310;
+  sm_CopyAsHtml = 309;
+  sm_CopyAsRtf = 310;
 
   sm_ReplaceInFiles = 617;
-  sm_ListerFind = 620;
-  sm_ListerFNext = 621;
-  sm_ListerFPrev = 622;
+  sm_ListerFindDialog = 620;
+  sm_ListerFindNext = 621;
+  sm_ListerFindPrev = 622;
   sm_PrinterSetup = 634;
-
   sm_AutoComplete = 670;
 
-  sm_FNew = 700;
-  sm_FOpen = 701;
-  sm_FSave = 702;
-  sm_FExpRtf = 704;
-  sm_FExpHtml = 705;
-  sm_FSaveAs = 706;
-  sm_FReopen = 707;
-  sm_FProps = 708;
+  sm_FileNew = 700;
+  sm_FileOpen = 701;
+  sm_FileSave = 702;
+  sm_FileExportRtf = 704;
+  sm_FileExportHtml = 705;
+  sm_FileSaveAs = 706;
+  sm_FileReopen = 707;
+  sm_FileProps = 708;
 
-  sm_OSetup = 709;
-  sm_OSetupLexer = 710;
-  sm_OSetupLexerLib = 711;
-  sm_OReadOnly = 712;
-  sm_OShowOut = 713;
-  //sm_OFullScr = 714; //see sm_FullScr
-  sm_OShowTree = 715;
+  sm_OptSetup = 709;
+  sm_OptSetupLexer = 710;
+  sm_OptSetupLexerLib = 711;
+  sm_OptReadOnly = 712;
+  sm_OptShowOutputPanel = 713;
+  sm_OptShowLeftPanel = 715;
   sm_ZoomOut = 716;
   sm_ZoomIn = 717;
-  sm_ZoomOrig = 718;
-  sm_OShowClip = 719;
+  sm_ZoomOriginal = 718;
+  sm_OptShowRightPanel = 719;
 
   sm_CopyAppend = 720;
   sm_CutAppend = 721;
-  sm_FSaveSessionAs = 722;
-  sm_FOpenSession = 723;
-  sm_FAddSession = 724;
+  sm_FileSaveSessionAs = 722;
+  sm_FileOpenSession = 723;
+  sm_FileAddSession = 724;
   sm_CopyLine = 725;
   sm_CutLine = 726;
-  sm_FSaveSession = 727;
-  sm_FCloseSession = 728;
+  sm_FileSaveSession = 727;
+  sm_FileCloseSession = 728;
 
-  sm_ORuler = 729;
-  sm_OWrap = 730;
-  sm_OLineNums = 731;
-  sm_OFolding = 732;
-  sm_ONonPrint = 733;
+  sm_OptRuler = 729;
+  sm_OptWrap = 730;
+  sm_OptLineNums = 731;
+  sm_OptFolding = 732;
+  sm_OptNonPrint = 733;
   sm_ToggleFocusTree = 734;
   sm_ToggleFocusClip = 735;
-  sm_ZenExpand = 736;
-  sm_ZenWrap = 737;
+  sm_Emmet_Expand = 736;
+  sm_Emmet_Wrap = 737;
   sm_ToggleLineComment = 738;
   sm_ToggleFocusOutput = 739;
 
-  sm_FNewWin = 740;
-  sm_FClose = 741;
-  sm_FCloseAll = 742;
-  sm_FCloseOth = 743;
-  sm_FSaveAll = 744;
-  sm_FExit = 745;
-  sm_FCloseDel = 746;
-  sm_FMoveTab = 747;
-  sm_FileRename = 748;
+  sm_FileNewWindow = 740;
+  sm_FileClose = 741;
+  sm_FileCloseAll = 742;
+  sm_FileCloseOthers = 743;
+  sm_FileSaveAll = 744;
+  sm_FileExit = 745;
+  sm_FileCloseAndDelete = 746;
+  sm_FileMoveToOtherView = 747;
+  sm_FileRenameDialog = 748;
   sm_ColumnMarkers = 749;
 
-  sm_MakeBak = 750;
+  sm_FileBackup = 750;
   sm_ToggleStreamComment = 751;
-  sm_CopyFN = 752;
+  sm_CopyFilename = 752;
   sm_CopyFullPath = 753;
   sm_CopyDirPath = 754;
   sm_ToggleFocusFindRes = 755;
@@ -112,10 +110,10 @@ const
   sm_ToggleFocusMasterSlave = 769;
   sm_SplitViewsVertHorz = 770;
   sm_SplitSlaveVertHorz = 771;
-  sm_GotoBookmkDialog = 772;
-  sm_FavAddFile = 773;
-  sm_FavOrganize = 774;
-  sm_FavAddProj = 775;
+  sm_GotoBookmarkDialog = 772;
+  sm_Fav_AddFile = 773;
+  sm_Fav_Organize = 774;
+  sm_Fav_AddProject = 775;
   sm_ToggleFocusClips = 776;
   sm_ToggleSmartHl = 777;
   sm_DropPortableBk = 778;
@@ -137,34 +135,35 @@ const
   sm_CommandsList = 794;
   sm_ScrollToSel = 795;
   sm_ProjectList = 796;
-  sm_AlignWithSep = 797;
+  sm_AlignWithSeparator = 797;
   sm_ToggleView2 = 798;
   sm_PasteAsColumnBlock = 799;
 
-  sm_EncAnsi = 800;
-  sm_EncOem = 801;
-  sm_EncUtf = 802;
-  sm_EncUni = 803;
-  sm_EncUniBE = 804;
-  sm_EncUtf2 = 805;
-  sm_EncKoi = 806;
-  sm_EncMac = 807;
-  sm_MenuEnc = 810;
-  sm_MenuLex = 811;
-  sm_MenuLE = 812;
+  sm_Encoding_Ansi = 800;
+  sm_Encoding_Oem = 801;
+  sm_Encoding_Utf8 = 802;
+  sm_Encoding_Unicode = 803;
+  sm_Encoding_UnicodeBE = 804;
+  sm_Encoding_Utf8NoBom = 805;
+  sm_Encoding_Koi8 = 806;
+  sm_Encoding_Mac = 807;
+  sm_Menu_Encodings = 810;
+  sm_Menu_Lexers = 811;
+  sm_Menu_LineEnds = 812;
+
   sm_ClearFilesHistory = 813;
-  sm_QS = 814;
-  sm_DateTime = 815;
-  sm_ExtractText = 816;
+  sm_QuickSearch = 814;
+  sm_InsertDateTime = 815;
+  sm_ExtractTextDialog = 816;
   sm_GotoNextFindResult = 817;
   sm_GotoPrevFindResult = 818;
-  sm_SyncEdit = 819;
-  sm_FullScr = 820;
-  sm_SyncScrollH = 821;
-  sm_SyncScrollV = 822;
-  sm_OnTop = 823;
-  sm_FillBlock = 824;
-  sm_InsText = 825;
+  sm_ToggleSyncEditing = 819;
+  sm_ShowFullScreen = 820;
+  sm_SyncScrollHorz = 821;
+  sm_SyncScrollVert = 822;
+  sm_ShowOnTop = 823;
+  sm_FillBlockDialog = 824;
+  sm_InsertTextDialog = 825;
   sm_SpellLive = 826;
   sm_SpellCheck = 827;
   sm_JoinLines = 828;
@@ -179,8 +178,8 @@ const
   sm_OpenGoogle = 836;
   sm_OpenWiki = 837;
   sm_OpenMsdn = 838;
-  sm_MacroDlg = 839;
-  sm_OpenPreview = 840;
+  sm_MacrosDialog = 839;
+  sm_OpenBrowserPreview = 840;
 
   sm_BkClear = 841;
   sm_BkToggle = 842;
@@ -189,28 +188,28 @@ const
   sm_BkCopy = 845;
   sm_BkCut = 846;
   sm_BkDelete = 847;
-  sm_BkDeleteUnmk = 848;
+  sm_BkDeleteUnmarked = 848;
   sm_BkPaste = 849;
   sm_BkInverse = 850;
 
   sm_RemoveDupsAll = 851;
-  sm_SpToTabLead = 852;
+  sm_ConvertSpacesToTabsLeading = 852;
   sm_TidyValidate = 853;
   sm_TidyConfig = 854;
   sm_RemoveDupsAdjacent = 855;
   sm_RemoveBlanks = 856;
-  sm_TrimLead = 857;
-  sm_TrimTrail = 858;
+  sm_TrimLeading = 857;
+  sm_TrimTrailing = 858;
   sm_TrimAll = 859;
-  sm_RemoveDupSp = 860;
-  sm_TabToSp = 861;
-  sm_SpToTab = 862;
-  sm_FindClipNext = 863;
-  sm_FindClipPrev = 864;
-  sm_RepeatCmd = 865;
+  sm_RemoveDupSpaces = 860;
+  sm_ConvertTabsToSpaces = 861;
+  sm_ConvertSpacesToTabsAll = 862;
+  sm_FindClipboardNext = 863;
+  sm_FindClipboardPrev = 864;
+  sm_RepeatLastCommand = 865;
   sm_MarkersClear = 866;
-  sm_TreeNext = 867;
-  sm_TreePrev = 868;
+  sm_TreeNextNode = 867;
+  sm_TreePrevNode = 868;
   sm_ReduceBlanks = 869;
   sm_GotoNextBlank = 870;
   sm_GotoPrevBlank = 871;
@@ -218,8 +217,8 @@ const
 
   sm_SelectToWordEnd = 873;
   sm_JumpToWordEnd = 874;
-  sm_FindNextExtSel = 875;
-  sm_FindPrevExtSel = 876;
+  sm_FindNextAndExtendSel = 875;
+  sm_FindPrevAndExtendSel = 876;
   sm_JumpToLastMarker = 877;
   sm_OpenCurrentFile = 878;
   sm_SelectToken = 879;
@@ -231,8 +230,8 @@ const
   sm_InsertImage = 885;
   sm_OpenHTML4Help = 886;
   sm_OpenHTML5Help = 887;
-  sm_LoremIpsum = 888;
-  sm_NumericConverter = 889;
+  sm_LoremIpsumDialog = 888;
+  sm_NumericConverterDialog = 889;
   sm_EncodeHtmlChars = 890;
   sm_SortDialog = 891;
   sm_ToggleLineCommentAlt = 892;
@@ -334,20 +333,20 @@ const
 
   sm_ExtractDupsCase = 1000;
   sm_ExtractDupsNoCase = 1001;
-  sm_ONonPrintOff = 1002;
-  sm_ONonPrintSpaces = 1003;
-  sm_ONonPrintEol = 1004;
-  sm_ONonPrintBoth = 1005;
-  sm_ONonPrintEolDetails = 1006;
+  sm_OptNonPrintOff = 1002;
+  sm_OptNonPrintSpaces = 1003;
+  sm_OptNonPrintEol = 1004;
+  sm_OptNonPrintBoth = 1005;
+  sm_OptNonPrintEolDetails = 1006;
 
-  sm_OHideMenuItems = 1007;
-  sm_ORestoreStyles = 1008;
-  sm_OExternalTools = 1009;
-  sm_OExplorerIntegration = 1010;
-  sm_OEditSynPluginsIni = 1011;
-  sm_OEditSynIni = 1012;
+  sm_HideMenuItemsDialog = 1007;
+  sm_RestoreStylesDialog = 1008;
+  sm_ExternalToolsDialog = 1009;
+  sm_ExplorerIntegrationDialog = 1010;
+  sm_EditSynPluginsIni = 1011;
+  sm_EditSynIni = 1012;
   sm_OpenBySelection = 1013;
-  sm_OCustomizeStyles = 1014;
+  sm_CustomizeStylesDialog = 1014;
   //free for options categories
 
   sm_CopySearchMarks = 1020;
@@ -380,7 +379,7 @@ const
   //Tree commands
   sm_TreeCollapseAll = 1090;
   sm_TreeExpandAll = 1091;
-  
+
   sm_TreeLevel2 = 1092;
   sm_TreeLevel3 = 1093;
   sm_TreeLevel4 = 1094;
@@ -405,29 +404,29 @@ const
   sm_TabColorCustom = 1111;
 
   //Options dialog tabs
-  sm_Options_ProgramOpt = 1115;
-  sm_Options_Colors = 1116;
-  sm_Options_Fonts = 1117;
-  sm_Options_Tabs = 1118;
-  sm_Options_EditorView = 1119;
-  sm_Options_EditorSelect = 1120;
-  sm_Options_EditorCarets = 1121;
-  sm_Options_EditorOverrides = 1122;
-  sm_Options_Keys = 1123;
-  sm_Options_FormatsReload = 1124;
-  sm_Options_Search = 1125;
-  sm_Options_TreeMap = 1126;
-  sm_Options_History = 1127;
-  sm_Options_SessionsProject = 1128;
-  sm_Options_AutoComplete = 1129;
-  sm_Options_AutoSave = 1130;
-  sm_Options_SpellChecker = 1131;
-  sm_Options_Paths = 1132;
-  //sm_Options_Misc = 1133;
-  //sm_Options_Lang = 1134;
-  sm_Options_EditorUndo = 1135;
-  sm_Options_EditorInsertFmt = 1136;
-  sm_Options_NewOpen = 1137;
+  sm_OptionsTab_ProgramOpt = 1115;
+  sm_OptionsTab_Colors = 1116;
+  sm_OptionsTab_Fonts = 1117;
+  sm_OptionsTab_Tabs = 1118;
+  sm_OptionsTab_EditorView = 1119;
+  sm_OptionsTab_EditorSelect = 1120;
+  sm_OptionsTab_EditorCarets = 1121;
+  sm_OptionsTab_EditorOverrides = 1122;
+  sm_OptionsTab_Keys = 1123;
+  sm_OptionsTab_FormatsReload = 1124;
+  sm_OptionsTab_Search = 1125;
+  sm_OptionsTab_TreeMap = 1126;
+  sm_OptionsTab_History = 1127;
+  sm_OptionsTab_SessionsProject = 1128;
+  sm_OptionsTab_AutoComplete = 1129;
+  sm_OptionsTab_AutoSave = 1130;
+  sm_OptionsTab_SpellChecker = 1131;
+  sm_OptionsTab_Paths = 1132;
+  //free 1133;
+  //free 1134;
+  sm_OptionsTab_EditorUndo = 1135;
+  sm_OptionsTab_EditorInsertFmt = 1136;
+  sm_OptionsTab_NewOpen = 1137;
 
   //end of list
 

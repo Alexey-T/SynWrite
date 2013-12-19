@@ -2570,6 +2570,8 @@ begin
 end;
 
 procedure TfmSetup.InitInsertFormat;
+var
+  fn: string;
 begin
   with fmMain do
   begin
@@ -2594,8 +2596,12 @@ begin
 
     with cbZenProfile do
     begin
-      Items.LoadFromFile(SynDir + 'Tools\emmet.txt');
-      ItemIndex:= Items.IndexOf(opZenProfile);
+      fn:= SynDir + 'Tools\emmet.txt';
+      if FileExists(fn) then
+      begin
+        Items.LoadFromFile(fn);
+        ItemIndex:= Items.IndexOf(opZenProfile);
+      end;  
     end;
   end;
 end;

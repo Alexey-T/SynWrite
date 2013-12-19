@@ -5363,7 +5363,7 @@ begin
       ecBkCut.Execute;
     sm_BkDelete:
       ecBkDelete.Execute;
-    sm_BkDeleteUnmk:
+    sm_BkDeleteUnmarked:
       ecBkDeleteUnmk.Execute;
     sm_BkPaste:
       ecBkPaste.Execute;
@@ -5567,11 +5567,11 @@ begin
     end;
 
     //Lister find
-    sm_ListerFind:
+    sm_ListerFindDialog:
       PostMessage(hLister, WM_KEYDOWN, VK_F7, 0);
-    sm_ListerFNext:
+    sm_ListerFindNext:
       PostMessage(hLister, WM_KEYDOWN, VK_F3, 0);
-    sm_ListerFPrev:
+    sm_ListerFindPrev:
     begin
       PostMessage(hLister, WM_KEYDOWN, VK_SHIFT, 0);
       PostMessage(hLister, WM_KEYDOWN, VK_F3, 0);
@@ -5623,7 +5623,7 @@ begin
     sm_OpenMSIE: RunBrowser('iexplore.exe');
     sm_OpenChrome: RunBrowser('chrome.exe');
     sm_OpenSafari: RunBrowser('safari.exe');
-    sm_OpenPreview: DoOpenBrowserPreview;
+    sm_OpenBrowserPreview: DoOpenBrowserPreview;
     sm_OpenCurrentFile: DoOpenCurrentFile;
     sm_OpenCurrentFolder: DoOpenCurrentDir;
     sm_OpenCmdPrompt: DoOpenCmdPrompt;
@@ -5637,8 +5637,8 @@ begin
     sm_TidyValidate: DoTidy('');
     sm_TidyConfig: DoOpenFile(SynTidyIni);
 
-    sm_LoremIpsum: ecLoremIpsum.Execute;
-    sm_NumericConverter: ecNumericConverter.Execute;
+    sm_LoremIpsumDialog: ecLoremIpsum.Execute;
+    sm_NumericConverterDialog: ecNumericConverter.Execute;
     sm_EncodeHtmlChars: ecEncodeHtmlChars.Execute;
     sm_EncodeHtmlChars2: ecEncodeHtmlChars2.Execute;
     sm_SortDialog: ecSortDialog.Execute;
@@ -5647,7 +5647,7 @@ begin
     sm_InsertColor: ecInsertColor.Execute;
     sm_InsertImage: ecInsertImage.Execute;
     sm_GotoSelEdge: EditorJumpSelEdge(Ed);
-    sm_GotoBookmkDialog: ecGotoBk.Execute;
+    sm_GotoBookmarkDialog: ecGotoBk.Execute;
     sm_ReplaceFromClipAll: ecReplaceSelFromClipAll.Execute;
     sm_RereadOutPanel: acRereadOut.Execute;
     sm_DropPortableBk: ecDropPortableBk.Execute;
@@ -5666,7 +5666,7 @@ begin
     sm_SelectBrackets: EditorSelectBrackets(Ed, FPrevCaretPos);
     sm_CollapseParent: ecCollapseParent.Execute;
     sm_CollapseWithNested: ecCollapseWithNested.Execute;
-    sm_AlignWithSep: ecAlignWithSep.Execute;
+    sm_AlignWithSeparator: ecAlignWithSep.Execute;
     sm_ToggleView2: ecToggleView2.Execute;
     sm_SelectionExtend: DoExtendSelection(Ed);
     //sm_SelectionShrink: ecSelShrink.Execute;
@@ -5678,13 +5678,13 @@ begin
     //blank operations
     sm_RemoveBlanks: ecRemoveBlanks.Execute;
     sm_ReduceBlanks: ecReduceBlanks.Execute;
-    sm_TrimLead: ecTrimLead.Execute;
-    sm_TrimTrail: ecTrimTrail.Execute;
+    sm_TrimLeading: ecTrimLead.Execute;
+    sm_TrimTrailing: ecTrimTrail.Execute;
     sm_TrimAll: ecTrimAll.Execute;
-    sm_RemoveDupSp: ecRemoveDupSpaces.Execute;
-    sm_TabToSp: ecTabToSp.Execute;
-    sm_SpToTab: ecSpToTab.Execute;
-    sm_SpToTabLead: ecSpToTabLeading.Execute;
+    sm_RemoveDupSpaces: ecRemoveDupSpaces.Execute;
+    sm_ConvertTabsToSpaces: ecTabToSp.Execute;
+    sm_ConvertSpacesToTabsAll: ecSpToTab.Execute;
+    sm_ConvertSpacesToTabsLeading: ecSpToTabLeading.Execute;
 
     sm_GotoNextBlank: begin if not EditorJumpBlankLine(Ed, opSrOffsetY, true) then MsgBeep; end;
     sm_GotoPrevBlank: begin if not EditorJumpBlankLine(Ed, opSrOffsetY, false) then MsgBeep; end;
@@ -5693,11 +5693,11 @@ begin
     sm_SelectTokenNoQuotes: begin if not EditorSelectToken(Ed, true) then MsgBeep; end;
     sm_SelectToWordEnd: EditorSelectOrJumpToWordEnd(Ed, true);
     sm_JumpToWordEnd: EditorSelectOrJumpToWordEnd(Ed, false);
-    sm_FindNextExtSel: ecFindNextWithExtend.Execute;
-    sm_FindPrevExtSel: ecFindPrevWithExtend.Execute;
-    sm_FindClipNext: ecFindClipNext.Execute;
-    sm_FindClipPrev: ecFindClipPrev.Execute;
-    sm_RepeatCmd: ecRepeatCmd.Execute;
+    sm_FindNextAndExtendSel: ecFindNextWithExtend.Execute;
+    sm_FindPrevAndExtendSel: ecFindPrevWithExtend.Execute;
+    sm_FindClipboardNext: ecFindClipNext.Execute;
+    sm_FindClipboardPrev: ecFindClipPrev.Execute;
+    sm_RepeatLastCommand: ecRepeatCmd.Execute;
     sm_FindCommand: DoFindCommandFromString(WideString(PWideChar(Data)));
     sm_CommandsList: ecCommandsList.Execute;
     sm_ScrollToSel: EditorScrollToSelection(Ed, opSrOffsetY);
@@ -5779,32 +5779,32 @@ begin
     sm_SplitRight: ecSplitRight.Execute;
 
     //encoding
-    sm_EncAnsi: ApplyFrameEncodingAndReload(CurrentFrame, cp_ACP);
-    sm_EncOem: ApplyFrameEncodingAndReload(CurrentFrame, cp_OEMCP);
-    sm_EncUtf: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8);
-    sm_EncUtf2: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8_noBOM);
-    sm_EncUni: ApplyFrameEncodingAndReload(CurrentFrame, cp__Unicode);
-    sm_EncUniBE: ApplyFrameEncodingAndReload(CurrentFrame, cp__UnicodeBE);
-    sm_EncKoi: ApplyFrameEncodingAndReload(CurrentFrame, 20866);
-    sm_EncMac: ApplyFrameEncodingAndReload(CurrentFrame, cp_MACCP);
+    sm_Encoding_Ansi: ApplyFrameEncodingAndReload(CurrentFrame, cp_ACP);
+    sm_Encoding_Oem: ApplyFrameEncodingAndReload(CurrentFrame, cp_OEMCP);
+    sm_Encoding_Utf8: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8);
+    sm_Encoding_Utf8NoBom: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8_noBOM);
+    sm_Encoding_Unicode: ApplyFrameEncodingAndReload(CurrentFrame, cp__Unicode);
+    sm_Encoding_UnicodeBE: ApplyFrameEncodingAndReload(CurrentFrame, cp__UnicodeBE);
+    sm_Encoding_Koi8: ApplyFrameEncodingAndReload(CurrentFrame, 20866);
+    sm_Encoding_Mac: ApplyFrameEncodingAndReload(CurrentFrame, cp_MACCP);
 
-    sm_MenuEnc:
+    sm_Menu_Encodings:
       begin
         p:= Mouse.CursorPos;
         PopupCP.Popup(p.x, p.y);
       end;
-    sm_MenuLex:
+    sm_Menu_Lexers:
       begin
         p:= Mouse.CursorPos;
         PopupLex.Popup(p.x, p.y);
       end;
-    sm_MenuLE:
+    sm_Menu_LineEnds:
       begin
         p:= Mouse.CursorPos;
         PopupLE.Popup(p.x, p.y);
       end;
 
-    sm_QS:
+    sm_QuickSearch:
       begin
         if not tbQs.Visible then
           TbxItemTQsClick(Self);
@@ -5813,9 +5813,9 @@ begin
           edQs.SetFocus;
       end;
 
-    sm_DateTime:
+    sm_InsertDateTime:
       DoDateTime;
-    sm_ExtractText:
+    sm_ExtractTextDialog:
       DoExtractText;
     sm_GotoNextFindResult:
       ecGotoNextFindResult.Execute;
@@ -5824,19 +5824,19 @@ begin
 
     sm_ClearFilesHistory:
       DoClearFilesHistory;
-    sm_SyncEdit:
+    sm_ToggleSyncEditing:
       DoToggleSyncEditing;
-    sm_FullScr:
+    sm_ShowFullScreen:
       ecFullScr.Execute;
-    sm_OnTop:
+    sm_ShowOnTop:
       ecOnTop.Execute;
-    sm_SyncScrollH:
+    sm_SyncScrollHorz:
       ecSyncScrollH.Execute;
-    sm_SyncScrollV:
+    sm_SyncScrollVert:
       ecSyncScrollV.Execute;
-    sm_FillBlock:
+    sm_FillBlockDialog:
       DoFillBlock;
-    sm_InsText:
+    sm_InsertTextDialog:
       DoInsertTextDialog;
     sm_SpellLive:
       ecSpellLive.Execute;
@@ -5865,51 +5865,51 @@ begin
       ecToggleStreamComment.Execute;
 
     //file
-    sm_FNew: acNew.Execute;
-    sm_FNewWin: acNewWin.Execute;
-    sm_FOpen: acOpen.Execute;
-    sm_FReopen: acReread.Execute;
-    sm_FSave: if acSave.Enabled then acSave.Execute;
-    sm_FSaveAs: if acSaveAs.Enabled then acSaveAs.Execute;
-    sm_FSaveAll: acSaveAll.Execute;
-    sm_FProps: acProps.Execute;
-    sm_FavAddFile: acFavAddFile.Execute;
-    sm_FavAddProj: acFavAddProj.Execute;
-    sm_FavOrganize: acFavManage.Execute;
+    sm_FileNew: acNew.Execute;
+    sm_FileNewWindow: acNewWin.Execute;
+    sm_FileOpen: acOpen.Execute;
+    sm_FileReopen: acReread.Execute;
+    sm_FileSave: if acSave.Enabled then acSave.Execute;
+    sm_FileSaveAs: if acSaveAs.Enabled then acSaveAs.Execute;
+    sm_FileSaveAll: acSaveAll.Execute;
+    sm_FileProps: acProps.Execute;
+    sm_Fav_AddFile: acFavAddFile.Execute;
+    sm_Fav_AddProject: acFavAddProj.Execute;
+    sm_Fav_Organize: acFavManage.Execute;
 
     //tab closing handling is special
-    sm_FClose,
-    sm_FCloseDel,
-    sm_FCloseAll,
-    sm_FCloseOth,
-    sm_FileRename:
+    sm_FileClose,
+    sm_FileCloseAndDelete,
+    sm_FileCloseAll,
+    sm_FileCloseOthers,
+    sm_FileRenameDialog:
       DoDelayedCommand2(Command);
 
-    sm_FMoveTab:
+    sm_FileMoveToOtherView:
       DoMoveTabToOtherView(-1);
 
-    sm_FExit: acExit.Execute;
-    sm_FSaveSession: DoSaveSession;
-    sm_FSaveSessionAs: DoSaveSessionAs;
-    sm_FOpenSession: DoSessionOpenDialog;
-    sm_FAddSession: DoSessionAddDialog;
-    sm_FCloseSession: DoCloseSession(true);
+    sm_FileExit: acExit.Execute;
+    sm_FileSaveSession: DoSaveSession;
+    sm_FileSaveSessionAs: DoSaveSessionAs;
+    sm_FileOpenSession: DoSessionOpenDialog;
+    sm_FileAddSession: DoSessionAddDialog;
+    sm_FileCloseSession: DoCloseSession(true);
 
-    sm_FExpRtf: acExportRTF.Execute;
-    sm_FExpHtml: acExportHTML.Execute;
+    sm_FileExportRtf: acExportRTF.Execute;
+    sm_FileExportHtml: acExportHTML.Execute;
 
-    sm_OSetup: acSetup.Execute;
-    sm_OSetupLexer: acSetupLexer.Execute;
-    sm_OSetupLexerLib: acSetupLexLib.Execute;
-    sm_OReadOnly: ecReadOnly.Execute;
-    sm_OShowTree: ecShowTree.Execute;
-    sm_OShowClip: ecShowClip.Execute;
-    sm_OShowOut: ecShowOut.Execute;
-    sm_OWrap: ecWrap.Execute;
-    sm_OLineNums: ecLineNums.Execute;
-    sm_OFolding: ecFolding.Execute;
-    sm_ONonPrint: ecNonPrint.Execute;
-    sm_ORuler: ecRuler.Execute;
+    sm_OptSetup: acSetup.Execute;
+    sm_OptSetupLexer: acSetupLexer.Execute;
+    sm_OptSetupLexerLib: acSetupLexLib.Execute;
+    sm_OptReadOnly: ecReadOnly.Execute;
+    sm_OptShowLeftPanel: ecShowTree.Execute;
+    sm_OptShowRightPanel: ecShowClip.Execute;
+    sm_OptShowOutputPanel: ecShowOut.Execute;
+    sm_OptWrap: ecWrap.Execute;
+    sm_OptLineNums: ecLineNums.Execute;
+    sm_OptFolding: ecFolding.Execute;
+    sm_OptNonPrint: ecNonPrint.Execute;
+    sm_OptRuler: ecRuler.Execute;
     sm_ToggleSmartHl: ecSmartHl.Execute;
 
     sm_ToggleFocusTree: ecToggleFocusTree.Execute;
@@ -5929,16 +5929,16 @@ begin
     sm_SplitViewsVertHorz: ecSplitViewsVertHorz.Execute;
     sm_SplitSlaveVertHorz: ecSplitSlaveVertHorz.Execute;
 
-    sm_ZenExpand: ecZenExpand.Execute;
-    sm_ZenWrap: ecZenWrap.Execute;
+    sm_Emmet_Expand: ecZenExpand.Execute;
+    sm_Emmet_Wrap: ecZenWrap.Execute;
 
-    sm_MakeBak:
+    sm_FileBackup:
       acBackup.Execute;
     sm_ColumnMarkers:
       acColumnMarkers.Execute;
 
     //copy path
-    sm_CopyFN:       DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFileName);
+    sm_CopyFilename: DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFileName);
     sm_CopyFullPath: DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFullName);
     sm_CopyDirPath:  DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFilePath);
 
@@ -5960,17 +5960,17 @@ begin
     smMacroRecCancel: ecMacroCancel1.Execute;
     smMacroPlay:     ecMacroPlay1.Execute;
     }
-    sm_MacroDlg:     ecMacroDlg.Execute;
+    sm_MacrosDialog: ecMacroDlg.Execute;
 
-    sm_ZoomOrig: DoZoomEditor(100);
-    sm_ZoomIn:   DoZoomEditorInc(true);
-    sm_ZoomOut:  DoZoomEditorInc(false);
+    sm_ZoomOriginal: DoZoomEditor(100);
+    sm_ZoomIn:       DoZoomEditorInc(true);
+    sm_ZoomOut:      DoZoomEditorInc(false);
 
-    sm_ONonPrintOff: ecNonPrintOff.Execute;
-    sm_ONonPrintSpaces: ecNonPrintSpaces.Execute;
-    sm_ONonPrintEol: ecNonPrintEol.Execute;
-    sm_ONonPrintBoth: ecNonPrintBoth.Execute;
-    sm_ONonPrintEolDetails: ecNonPrintEolDetails.Execute;
+    sm_OptNonPrintOff: ecNonPrintOff.Execute;
+    sm_OptNonPrintSpaces: ecNonPrintSpaces.Execute;
+    sm_OptNonPrintEol: ecNonPrintEol.Execute;
+    sm_OptNonPrintBoth: ecNonPrintBoth.Execute;
+    sm_OptNonPrintEolDetails: ecNonPrintEolDetails.Execute;
 
     sm_FoldLevel2: DoFoldLevel(2);
     sm_FoldLevel3: DoFoldLevel(3);
@@ -5994,41 +5994,41 @@ begin
     sm_TabColor9: DoSetTabColorIndex(9);
     sm_TabColor10: DoSetTabColorIndex(10);
 
-    sm_OHideMenuItems: TBXItemOHideItems.Click;
-    sm_ORestoreStyles: TBXItemORestoreStyles.Click;
-    sm_OExternalTools: TbxItemOTools.Click;
-    sm_OExplorerIntegration: TbxItemOShell.Click;
-    sm_OEditSynIni: TBXItemOEditSynIni.Click;
-    sm_OEditSynPluginsIni: TBXItemOEditSynPluginsIni.Click;
+    sm_HideMenuItemsDialog: TBXItemOHideItems.Click;
+    sm_RestoreStylesDialog: TBXItemORestoreStyles.Click;
+    sm_ExternalToolsDialog: TbxItemOTools.Click;
+    sm_ExplorerIntegrationDialog: TbxItemOShell.Click;
+    sm_EditSynIni: TBXItemOEditSynIni.Click;
+    sm_EditSynPluginsIni: TBXItemOEditSynPluginsIni.Click;
     sm_OpenBySelection: acOpenBySelection.Execute;
-    sm_OCustomizeStyles: acSetupLexHL.Execute;
+    sm_CustomizeStylesDialog: acSetupLexHL.Execute;
 
     //Options dialog tabs
-    sm_Options_ProgramOpt: DoOptionsDialog(1);
-    sm_Options_Keys: DoOptionsDialog(2);
-    sm_Options_Colors: DoOptionsDialog(3);
-    sm_Options_Fonts: DoOptionsDialog(4);
-    sm_Options_Tabs: DoOptionsDialog(5);
-    sm_Options_Search: DoOptionsDialog(6);
-    sm_Options_TreeMap: DoOptionsDialog(7);
-    sm_Options_EditorView: DoOptionsDialog(9);
-    sm_Options_EditorSelect: DoOptionsDialog(10);
-    sm_Options_EditorCarets: DoOptionsDialog(11);
-    sm_Options_EditorUndo: DoOptionsDialog(12);
-    sm_Options_EditorInsertFmt: DoOptionsDialog(13);
-    sm_Options_EditorOverrides: DoOptionsDialog(14);
-    sm_Options_AutoComplete: DoOptionsDialog(15);
-    sm_Options_SpellChecker: DoOptionsDialog(16);
-    sm_Options_NewOpen: DoOptionsDialog(18);
-    sm_Options_AutoSave: DoOptionsDialog(19);
-    sm_Options_History: DoOptionsDialog(20);
-    sm_Options_FormatsReload: DoOptionsDialog(21);
-    sm_Options_SessionsProject: DoOptionsDialog(22);
-    sm_Options_Paths: DoOptionsDialog(23);
+    sm_OptionsTab_ProgramOpt: DoOptionsDialog(1);
+    sm_OptionsTab_Keys: DoOptionsDialog(2);
+    sm_OptionsTab_Colors: DoOptionsDialog(3);
+    sm_OptionsTab_Fonts: DoOptionsDialog(4);
+    sm_OptionsTab_Tabs: DoOptionsDialog(5);
+    sm_OptionsTab_Search: DoOptionsDialog(6);
+    sm_OptionsTab_TreeMap: DoOptionsDialog(7);
+    sm_OptionsTab_EditorView: DoOptionsDialog(9);
+    sm_OptionsTab_EditorSelect: DoOptionsDialog(10);
+    sm_OptionsTab_EditorCarets: DoOptionsDialog(11);
+    sm_OptionsTab_EditorUndo: DoOptionsDialog(12);
+    sm_OptionsTab_EditorInsertFmt: DoOptionsDialog(13);
+    sm_OptionsTab_EditorOverrides: DoOptionsDialog(14);
+    sm_OptionsTab_AutoComplete: DoOptionsDialog(15);
+    sm_OptionsTab_SpellChecker: DoOptionsDialog(16);
+    sm_OptionsTab_NewOpen: DoOptionsDialog(18);
+    sm_OptionsTab_AutoSave: DoOptionsDialog(19);
+    sm_OptionsTab_History: DoOptionsDialog(20);
+    sm_OptionsTab_FormatsReload: DoOptionsDialog(21);
+    sm_OptionsTab_SessionsProject: DoOptionsDialog(22);
+    sm_OptionsTab_Paths: DoOptionsDialog(23);
 
     //tree
-    sm_TreeNext: ecTreeNext.Execute;
-    sm_TreePrev: ecTreePrev.Execute;
+    sm_TreeNextNode: ecTreeNext.Execute;
+    sm_TreePrevNode: ecTreePrev.Execute;
     sm_TreeParent: ecTreeParent.Execute;
     sm_TreeNextBrother: ecTreeNextBrother.Execute;
     sm_TreePrevBrother: ecTreePrevBrother.Execute;
@@ -9257,14 +9257,14 @@ end;
 
 procedure TfmMain.UpdateShortcuts;
 begin
-  plTree.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OShowTree);
-  plClip.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OShowClip);
-  plOut.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OShowOut);
+  plTree.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowLeftPanel);
+  plClip.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowRightPanel);
+  plOut.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowOutputPanel);
 
-  UpdKey(TBXItemONPrintSpaces, sm_ONonPrintSpaces);
-  UpdKey(TBXItemONPrintEol, sm_ONonPrintEol);
-  UpdKey(TBXItemONPrintAll, sm_ONonPrintBoth);
-  UpdKey(TBXItemONPrintEolDetails, sm_ONonPrintEolDetails);
+  UpdKey(TBXItemONPrintSpaces, sm_OptNonPrintSpaces);
+  UpdKey(TBXItemONPrintEol, sm_OptNonPrintEol);
+  UpdKey(TBXItemONPrintAll, sm_OptNonPrintBoth);
+  UpdKey(TBXItemONPrintEolDetails, sm_OptNonPrintEolDetails);
 
   UpdKey(TBXItemEExtractDupCase, sm_ExtractDupsCase);
   UpdKey(TBXItemEExtractDupNoCase, sm_ExtractDupsNoCase);
@@ -9317,15 +9317,15 @@ begin
   UpdKey(tbxItemESortDesc, smSortDescending);
 
   //blank ops
-  UpdKey(TBXItemEAlignWithSep, sm_AlignWithSep);
+  UpdKey(TBXItemEAlignWithSep, sm_AlignWithSeparator);
   UpdKey(TbxItemECenterLines, sm_CenterLines);
-  UpdKey(TbxItemETabToSp, sm_TabToSp);
-  UpdKey(TbxItemESpToTab, sm_SpToTab);
-  UpdKey(TBXItemERemDupSp, sm_RemoveDupSp);
+  UpdKey(TbxItemETabToSp, sm_ConvertTabsToSpaces);
+  UpdKey(TbxItemESpToTab, sm_ConvertSpacesToTabsAll);
+  UpdKey(TBXItemERemDupSp, sm_RemoveDupSpaces);
   UpdKey(TbxItemERemBlanks, sm_RemoveBlanks);
   UpdKey(TbxItemEReduceBlanks, sm_ReduceBlanks);
-  UpdKey(TbxItemETrimLead, sm_TrimLead);
-  UpdKey(TbxItemETrimTrail, sm_TrimTrail);
+  UpdKey(TbxItemETrimLead, sm_TrimLeading);
+  UpdKey(TbxItemETrimTrail, sm_TrimTrailing);
   UpdKey(TbxItemETrimAll, sm_TrimAll);
   UpdKey(TbxItemEIndentLike1st, sm_IndentLike1st);
 
@@ -9333,7 +9333,7 @@ begin
   UpdKey(TbxItemMarkGoLast, sm_JumpToLastMarker);
 
   UpdKey(TbxItemECommandList, sm_CommandsList);
-  UpdKey(TbxItemERepeatCmd, sm_RepeatCmd);
+  UpdKey(TbxItemERepeatCmd, sm_RepeatLastCommand);
   UpdKey(TbxItemSSelToken, sm_SelectToken);
 
   UpdKey(TbxItemTidyVal, sm_TidyValidate);
@@ -9345,7 +9345,7 @@ begin
   UpdKey(TbxItemMacroStop, smMacroRecStop);
   UpdKey(TbxItemMacroCancel, smMacroRecCancel);
   UpdKey(TbxItemMacroPlay, smMacroPlay);
-  UpdKey(TbxItemMacroDlg, sm_MacroDlg);
+  UpdKey(TbxItemMacroDlg, sm_MacrosDialog);
 
   UpdKey(TbxItemMacro1, sm_Macro1);
   UpdKey(TbxItemMacro2, sm_Macro2);
@@ -9391,15 +9391,15 @@ begin
   UpdKey(TbxItemWin9, sm_Tab9);
 
   //view
-  UpdKey(TbxItemVSyncHorz, sm_SyncScrollH);
-  UpdKey(TbxItemVSyncVert, sm_SyncScrollV);
+  UpdKey(TbxItemVSyncHorz, sm_SyncScrollHorz);
+  UpdKey(TbxItemVSyncVert, sm_SyncScrollVert);
   UpdKey(TbxItemVSpellLive, sm_SpellLive);
   UpdKey(TbxItemVSpellCheck, sm_SpellCheck);
 
   //edit
   UpdKey(TbxItemEJoin, sm_JoinLines);
   UpdKey(TbxItemESplit, sm_SplitLines);
-  UpdKey(TbxItemECpFN, sm_CopyFN);
+  UpdKey(TbxItemECpFN, sm_CopyFilename);
   UpdKey(TbxItemECpFullPath, sm_CopyFullPath);
   UpdKey(TbxItemECpDirPath, sm_CopyDirPath);
   UpdKey(TbxItemEMoveUp, smMoveLinesUp);
@@ -9408,29 +9408,29 @@ begin
   UpdKey(TbxItemEToggleLineComment, sm_ToggleLineComment);
   UpdKey(TbxItemEToggleLineCommentAlt, sm_ToggleLineCommentAlt);
 
-  UpdKey(TbxItemHtmlEmmetExpand, sm_ZenExpand);
-  UpdKey(TbxItemHtmlEmmetWrap, sm_ZenWrap);
+  UpdKey(TbxItemHtmlEmmetExpand, sm_Emmet_Expand);
+  UpdKey(TbxItemHtmlEmmetWrap, sm_Emmet_Wrap);
 
-  UpdKey(TBXItemEInsText, sm_InsText);
-  UpdKey(TBXItemEFillBlock, sm_FillBlock);
-  UpdKey(TBXItemOOnTop, sm_OnTop);
-  UpdKey(TBXItemOFullScr, sm_FullScr);
+  UpdKey(TBXItemEInsText, sm_InsertTextDialog);
+  UpdKey(TBXItemEFillBlock, sm_FillBlockDialog);
+  UpdKey(TBXItemOOnTop, sm_ShowOnTop);
+  UpdKey(TBXItemOFullScr, sm_ShowFullScreen);
   UpdKey(TBXItemViewColMarkers, sm_ColumnMarkers);
 
-  UpdKey(TBXItemESyncEd, sm_SyncEdit);
-  UpdKey(TbxItemEExtr, sm_ExtractText);
-  UpdKey(TbxItemETime, sm_DateTime);
+  UpdKey(TBXItemESyncEd, sm_ToggleSyncEditing);
+  UpdKey(TbxItemEExtr, sm_ExtractTextDialog);
+  UpdKey(TbxItemETime, sm_InsertDateTime);
   UpdKey(TbxItemHtmlInsColor, sm_InsertColor);
   UpdKey(TbxItemHtmlInsImage, sm_InsertImage);
 
-  UpdKey(TBXItemFExit, sm_FExit);
+  UpdKey(TBXItemFExit, sm_FileExit);
   UpdKey(TBXItemFClr, sm_ClearFilesHistory);
-  UpdKey(TbxItemFClose, sm_FClose);
-  UpdKey(TbxItemFCloseDel, sm_FCloseDel);
-  UpdKey(TbxItemFCloseAll, sm_FCloseAll);
-  UpdKey(TbxItemFCloseOth, sm_FCloseOth);
-  UpdKey(TbxItemFSaveAll, sm_FSaveAll);
-  UpdKey(TbxItemFRename, sm_FileRename);
+  UpdKey(TbxItemFClose, sm_FileClose);
+  UpdKey(TbxItemFCloseDel, sm_FileCloseAndDelete);
+  UpdKey(TbxItemFCloseAll, sm_FileCloseAll);
+  UpdKey(TbxItemFCloseOth, sm_FileCloseOthers);
+  UpdKey(TbxItemFSaveAll, sm_FileSaveAll);
+  UpdKey(TbxItemFRename, sm_FileRenameDialog);
   //
   UpdKey(TbxItemSResNext, sm_GotoNextFindResult);
   UpdKey(TbxItemSResPrev, sm_GotoPrevFindResult);
@@ -9440,46 +9440,46 @@ begin
   UpdKey(tbxItemSMarkPrev, smSearchMarkPrev);
   UpdKey(tbxItemSMarkClear, smSearchMarkReset);
 
-  UpdKey(TBXItemQs, sm_QS);
+  UpdKey(TBXItemQs, sm_QuickSearch);
   UpdKey(tbxItemMarkDrop, smDropMarker);
   UpdKey(tbxItemMarkColl, smCollectMarker);
   UpdKey(tbxItemMarkSwap, smSwapMarker);
   UpdKey(tbxItemZIn, sm_ZoomIn);
   UpdKey(tbxItemZOut, sm_ZoomOut);
 
-  UpdKey(TbxItemHtmlPreview, sm_OpenPreview);
-  UpdKey(TbxItemHtmlLoremIpsum, sm_LoremIpsum);
+  UpdKey(TbxItemHtmlPreview, sm_OpenBrowserPreview);
+  UpdKey(TbxItemHtmlLoremIpsum, sm_LoremIpsumDialog);
 
   UpdKey(TbxItemRunOpenFile, sm_OpenCurrentFile);
   UpdKey(TbxItemRunOpenDir, sm_OpenCurrentFolder);
   UpdKey(TbxItemRunFindPhp, sm_OpenPhp);
   UpdKey(TbxItemRunFindHtml4, sm_OpenHtml4Help);
   UpdKey(TbxItemRunFindHtml5, sm_OpenHtml5Help);
-  UpdKey(TbxItemRunNumConv, sm_NumericConverter);
+  UpdKey(TbxItemRunNumConv, sm_NumericConverterDialog);
 
   //file
   UpdKey(tbxItemFPrint, smPrint);
   UpdKey(tbxItemFPreview, smPrintPreview);
-  UpdKey(tbxItemFNew, sm_FNew);
-  UpdKey(tbxItemFNewWin, sm_FNewWin);
-  UpdKey(tbxItemFOpen, sm_FOpen);
-  UpdKey(tbxItemFReopen, sm_FReopen);
-  UpdKey(tbxItemFSave, sm_FSave);
-  UpdKey(tbxItemFSaveAs, sm_FSaveAs);
-  UpdKey(tbxItemFProps, sm_FProps);
+  UpdKey(tbxItemFNew, sm_FileNew);
+  UpdKey(tbxItemFNewWin, sm_FileNewWindow);
+  UpdKey(tbxItemFOpen, sm_FileOpen);
+  UpdKey(tbxItemFReopen, sm_FileReopen);
+  UpdKey(tbxItemFSave, sm_FileSave);
+  UpdKey(tbxItemFSaveAs, sm_FileSaveAs);
+  UpdKey(tbxItemFProps, sm_FileProps);
 
-  UpdKey(tbxItemFavAddFile, sm_FavAddFile);
-  UpdKey(tbxItemFavAddProj, sm_FavAddProj);
-  UpdKey(tbxItemFavManage, sm_FavOrganize);
+  UpdKey(tbxItemFavAddFile, sm_Fav_AddFile);
+  UpdKey(tbxItemFavAddProj, sm_Fav_AddProject);
+  UpdKey(tbxItemFavManage, sm_Fav_Organize);
 
-  UpdKey(TBXItemFSesOpen, sm_FOpenSession);
-  UpdKey(TBXItemFSesSave, sm_FSaveSession);
-  UpdKey(TBXItemFSesSaveAs, sm_FSaveSessionAs);
-  UpdKey(TBXItemFSesAdd, sm_FAddSession);
-  UpdKey(TBXItemFSesClose, sm_FCloseSession);
+  UpdKey(TBXItemFSesOpen, sm_FileOpenSession);
+  UpdKey(TBXItemFSesSave, sm_FileSaveSession);
+  UpdKey(TBXItemFSesSaveAs, sm_FileSaveSessionAs);
+  UpdKey(TBXItemFSesAdd, sm_FileAddSession);
+  UpdKey(TBXItemFSesClose, sm_FileCloseSession);
 
-  UpdKey(tbxItemFExpHtml, sm_FExpHtml);
-  UpdKey(tbxItemFExpRtf, sm_FExpRtf);
+  UpdKey(tbxItemFExpHtml, sm_FileExportHtml);
+  UpdKey(tbxItemFExpRtf, sm_FileExportRtf);
   UpdKey(tbxItemFPageSetup, smPageSetup);
   UpdKey(tbxItemFPrinterSetup, sm_PrinterSetup);
 
@@ -9535,7 +9535,7 @@ begin
 
   UpdKey(TBXItemBkGotoPortable, sm_GotoPortableBk);
   UpdKey(TBXItemBkDropPortable, sm_DropPortableBk);
-  UpdKey(TbxItemBkGoto, sm_GotoBookmkDialog);
+  UpdKey(TbxItemBkGoto, sm_GotoBookmarkDialog);
   UpdKey(tbxItemBkClear, sm_BkClear);
   UpdKey(tbxItemBkToggle, sm_BkToggle);
   UpdKey(tbxItemBkNext, sm_BkNext);
@@ -9543,14 +9543,14 @@ begin
   UpdKey(tbxItemBkCopy, sm_BkCopy);
   UpdKey(tbxItemBkCut, sm_BkCut);
   UpdKey(tbxItemBkDel, sm_BkDelete);
-  UpdKey(tbxItemBkDelUnmk, sm_BkDeleteUnmk);
+  UpdKey(tbxItemBkDelUnmk, sm_BkDeleteUnmarked);
   UpdKey(tbxItemBkPaste, sm_BkPaste);
   UpdKey(tbxItemBkInverse, sm_BkInverse);
 
   //opt
-  UpdKey(tbxItemOSetup, sm_OSetup);
-  UpdKey(tbxItemOLexer, sm_OSetupLexer);
-  UpdKey(tbxItemOLexerLib, sm_OSetupLexerLib);
+  UpdKey(tbxItemOSetup, sm_OptSetup);
+  UpdKey(tbxItemOLexer, sm_OptSetupLexer);
+  UpdKey(tbxItemOLexerLib, sm_OptSetupLexerLib);
   //search
   UpdKey(tbxItemSRep, smReplaceDialog);
   UpdKey(tbxItemSRepFiles, sm_ReplaceInFiles);
@@ -9563,15 +9563,15 @@ begin
   UpdKey(TBXItemSGoBracket, smChangeRangeSide);
   UpdKey(TbxItemSSelBrackets, sm_SelectBrackets);
   //
-  UpdKey(tbxItemORO, sm_OReadOnly);
-  UpdKey(tbxItemOTree, sm_OShowTree);
-  UpdKey(tbxItemOOut, sm_OShowOut);
-  UpdKey(tbxItemOClip, sm_OShowClip);
-  UpdKey(tbxItemOFold, sm_OFolding);
-  UpdKey(tbxItemOWrap, sm_OWrap);
-  UpdKey(tbxItemONums, sm_OLineNums);
-  UpdKey(tbxItemONPrint, sm_ONonPrint);
-  UpdKey(tbxItemORuler, sm_ORuler);
+  UpdKey(tbxItemORO, sm_OptReadOnly);
+  UpdKey(tbxItemOTree, sm_OptShowLeftPanel);
+  UpdKey(tbxItemOOut, sm_OptShowOutputPanel);
+  UpdKey(tbxItemOClip, sm_OptShowRightPanel);
+  UpdKey(tbxItemOFold, sm_OptFolding);
+  UpdKey(tbxItemOWrap, sm_OptWrap);
+  UpdKey(tbxItemONums, sm_OptLineNums);
+  UpdKey(tbxItemONPrint, sm_OptNonPrint);
+  UpdKey(tbxItemORuler, sm_OptRuler);
 
   //=========popup menus
   //main popup
@@ -9582,7 +9582,7 @@ begin
   UpdKey(TbxItemCtxPaste, smPaste);
   UpdKey(TbxItemCtxDel, smClearSelection);
   UpdKey(TbxItemCtxSelectAll, smSelectAll);
-  UpdKey(TbxItemCtxCustomize, sm_OSetup);
+  UpdKey(TbxItemCtxCustomize, sm_OptSetup);
   UpdKey(TbxItemCtxCopyAppend, sm_CopyAppend);
   UpdKey(TbxItemCtxCutAppend, sm_CutAppend);
   UpdKey(TbxItemCtxCopyHTML, sm_CopyAsHTML);
@@ -9632,11 +9632,11 @@ begin
   UpdKey(TBXItemSp80, sm_Split8020);
 
   //tab popup menu
-  UpdKey(TBXItemTabClose, sm_FClose);
-  UpdKey(TBXItemTabCloseOthers, sm_FCloseOth);
-  UpdKey(TBXItemTabNew, sm_FNew);
-  UpdKey(TBXItemTabMoveToView, sm_FMoveTab);
-  UpdKey(TBXItemTabCopyFN, sm_CopyFN);
+  UpdKey(TBXItemTabClose, sm_FileClose);
+  UpdKey(TBXItemTabCloseOthers, sm_FileCloseOthers);
+  UpdKey(TBXItemTabNew, sm_FileNew);
+  UpdKey(TBXItemTabMoveToView, sm_FileMoveToOtherView);
+  UpdKey(TBXItemTabCopyFN, sm_CopyFilename);
   UpdKey(TBXItemTabCopyFull, sm_CopyFullPath);
   UpdKey(TBXItemTabCopyDir, sm_CopyDirPath);
 end;
@@ -10323,7 +10323,7 @@ end;
 
 procedure TfmMain.TBXItemZ0Click(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_ZoomOrig);
+  CurrentEditor.ExecCommand(sm_ZoomOriginal);
 end;
 
 procedure TfmMain.TBXItemMarkDropClick(Sender: TObject);
@@ -10445,7 +10445,7 @@ end;
 
 procedure TfmMain.TBXItemQsClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_QS);
+  CurrentEditor.ExecCommand(sm_QuickSearch);
 end;
 
 procedure TfmMain.edQsKeyDown(Sender: TObject; var Key: Word;
@@ -11735,11 +11735,16 @@ end;
 procedure TfmMain.WM2(var m: TMessage);
 begin
   case m.WParam of
-    sm_FClose:   acClose.Execute;
-    sm_FCloseDel: acCloseAndDel.Execute;
-    sm_FCloseAll: acCloseAll.Execute;
-    sm_FCloseOth: acCloseOthers.Execute;
-    sm_FileRename: acRename.Execute;
+    sm_FileClose:
+      acClose.Execute;
+    sm_FileCloseAndDelete:
+      acCloseAndDel.Execute;
+    sm_FileCloseAll:
+      acCloseAll.Execute;
+    sm_FileCloseOthers:
+      acCloseOthers.Execute;
+    sm_FileRenameDialog:
+      acRename.Execute;
   end;
   m.Result:= 1;
 end;
@@ -12587,19 +12592,19 @@ begin
   if sh=0 then Exit;
 
   //Toggle panels
-  if IsShortcutOfCmd(sh, sm_OShowTree) then
+  if IsShortcutOfCmd(sh, sm_OptShowLeftPanel) then
   begin
     ecShowTree.Execute;
     Key:= 0;
     Exit
   end;
-  if IsShortcutOfCmd(sh, sm_OShowOut) then
+  if IsShortcutOfCmd(sh, sm_OptShowOutputPanel) then
   begin
     ecShowOut.Execute;
     Key:= 0;
     Exit
   end;
-  if IsShortcutOfCmd(sh, sm_OShowClip) then
+  if IsShortcutOfCmd(sh, sm_OptShowRightPanel) then
   begin
     ecShowClip.Execute;
     Key:= 0;
@@ -12692,13 +12697,13 @@ begin
   end;
 
   //Tree next/prev/parent/next-brother/prev-brother
-  if IsShortcutOfCmd(sh, sm_TreeNext) then
+  if IsShortcutOfCmd(sh, sm_TreeNextNode) then
   begin
     ecTreeNext.Execute;
     Key:= 0;
     Exit
   end;
-  if IsShortcutOfCmd(sh, sm_TreePrev) then
+  if IsShortcutOfCmd(sh, sm_TreePrevNode) then
   begin
     ecTreePrev.Execute;
     Key:= 0;
@@ -15553,7 +15558,7 @@ end;
 
 procedure TfmMain.TBXItemECpFNClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_CopyFN);
+  CurrentEditor.ExecCommand(sm_CopyFilename);
 end;
 
 procedure TfmMain.TBXItemECpFullPathClick(Sender: TObject);
@@ -19891,12 +19896,12 @@ end;
 
 procedure TfmMain.TBXItemBkGotoClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_GotoBookmkDialog);
+  CurrentEditor.ExecCommand(sm_GotoBookmarkDialog);
 end;
 
 procedure TfmMain.TBXItemHtmlLoremIpsumClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_LoremIpsum);
+  CurrentEditor.ExecCommand(sm_LoremIpsumDialog);
 end;
 
 procedure TfmMain.ecLoremIpsumExecute(Sender: TObject);
@@ -19964,12 +19969,12 @@ end;
 
 procedure TfmMain.TBXItemFavAddFileClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_FavAddFile);
+  CurrentEditor.ExecCommand(sm_Fav_AddFile);
 end;
 
 procedure TfmMain.TBXItemFavManageClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_FavOrganize);
+  CurrentEditor.ExecCommand(sm_Fav_Organize);
 end;
 
 procedure TfmMain.DoAddFav(const fn: Widestring);
@@ -20244,7 +20249,7 @@ end;
 
 procedure TfmMain.TBXItemFavAddProjClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_FavAddProj);
+  CurrentEditor.ExecCommand(sm_Fav_AddProject);
 end;
 
 procedure TfmMain.acFavAddFileExecute(Sender: TObject);
@@ -20840,7 +20845,7 @@ end;
 
 procedure TfmMain.TBXItemRunNumConvClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_NumericConverter);
+  CurrentEditor.ExecCommand(sm_NumericConverterDialog);
 end;
 
 procedure TfmMain.ecNumericConverterExecute(Sender: TObject);
@@ -24007,7 +24012,7 @@ end;
 
 procedure TfmMain.TBXItemEAlignWithSepClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_AlignWithSep);
+  CurrentEditor.ExecCommand(sm_AlignWithSeparator);
 end;
 
 procedure TfmMain.TBXItemERemBlanksClick(Sender: TObject);
@@ -24022,12 +24027,12 @@ end;
 
 procedure TfmMain.TBXItemETrimLeadClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_TrimLead);
+  CurrentEditor.ExecCommand(sm_TrimLeading);
 end;
 
 procedure TfmMain.TBXItemETrimTrailClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_TrimTrail);
+  CurrentEditor.ExecCommand(sm_TrimTrailing);
 end;
 
 procedure TfmMain.TBXItemETrimAllClick(Sender: TObject);
@@ -24037,22 +24042,22 @@ end;
 
 procedure TfmMain.TBXItemERemDupSpClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_RemoveDupSp);
+  CurrentEditor.ExecCommand(sm_RemoveDupSpaces);
 end;
 
 procedure TfmMain.TBXItemETabToSpClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_TabToSp);
+  CurrentEditor.ExecCommand(sm_ConvertTabsToSpaces);
 end;
 
 procedure TfmMain.TBXItemESpToTabClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_SpToTab);
+  CurrentEditor.ExecCommand(sm_ConvertSpacesToTabsAll);
 end;
 
 procedure TfmMain.TBXItemESpToTabLeadClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_SpToTabLead);
+  CurrentEditor.ExecCommand(sm_ConvertSpacesToTabsLeading);
 end;
 
 procedure TfmMain.TBXItemECenterLinesClick(Sender: TObject);
@@ -24117,12 +24122,12 @@ end;
 
 procedure TfmMain.TBXItemHtmlEmmetExpandClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_ZenExpand);
+  CurrentEditor.ExecCommand(sm_Emmet_Expand);
 end;
 
 procedure TfmMain.TBXItemHtmlEmmetWrapClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_ZenWrap);
+  CurrentEditor.ExecCommand(sm_Emmet_Wrap);
 end;
 
 procedure TfmMain.TBXItemMenuSplitClick(Sender: TObject);
@@ -24822,28 +24827,28 @@ begin
         S:= SCmd;
         SDeleteToW(S, ':');
         case StrToIntDef(S, 0) of
-          sm_OReadOnly:  Item.Action:= ecReadOnly;
-          sm_OWrap:      Item.Action:= ecWrap;
-          sm_OShowTree:  Item.Action:= ecShowTree;
-          sm_OShowOut:   Item.Action:= ecShowOut;
-          sm_OShowClip:  Item.Action:= ecShowClip;
-          sm_FullScr:    Item.Action:= ecFullScr;
-          sm_ORuler:     Item.Action:= ecRuler;
-          sm_OLineNums:  Item.Action:= ecLineNums;
-          sm_OFolding:   Item.Action:= ecFolding;
+          sm_OptReadOnly:        Item.Action:= ecReadOnly;
+          sm_OptWrap:            Item.Action:= ecWrap;
+          sm_OptShowLeftPanel:   Item.Action:= ecShowTree;
+          sm_OptShowOutputPanel: Item.Action:= ecShowOut;
+          sm_OptShowRightPanel:  Item.Action:= ecShowClip;
+          sm_ShowFullScreen:     Item.Action:= ecFullScr;
+          sm_OptRuler:           Item.Action:= ecRuler;
+          sm_OptLineNums:        Item.Action:= ecLineNums;
+          sm_OptFolding:         Item.Action:= ecFolding;
 
-          sm_ONonPrint:       Item.Action:= ecNonPrint;
-          sm_ONonPrintOff:    Item.Action:= ecNonPrintOff;
-          sm_ONonPrintSpaces: Item.Action:= ecNonPrintSpaces;
-          sm_ONonPrintEol:    Item.Action:= ecNonPrintEol;
-          sm_ONonPrintBoth:   Item.Action:= ecNonPrintBoth;
-          sm_ONonPrintEolDetails: Item.Action:= ecNonPrintEolDetails;
+          sm_OptNonPrint:       Item.Action:= ecNonPrint;
+          sm_OptNonPrintOff:    Item.Action:= ecNonPrintOff;
+          sm_OptNonPrintSpaces: Item.Action:= ecNonPrintSpaces;
+          sm_OptNonPrintEol:    Item.Action:= ecNonPrintEol;
+          sm_OptNonPrintBoth:   Item.Action:= ecNonPrintBoth;
+          sm_OptNonPrintEolDetails: Item.Action:= ecNonPrintEolDetails;
 
           sm_ToggleSmartHl:   Item.Action:= ecSmartHl;
-          sm_OnTop:           Item.Action:= ecOnTop;
+          sm_ShowOnTop:       Item.Action:= ecOnTop;
           sm_SpellLive:       Item.Action:= ecSpellLive;
-          sm_SyncScrollH:     Item.Action:= ecSyncScrollH;
-          sm_SyncScrollV:     Item.Action:= ecSyncScrollV;
+          sm_SyncScrollHorz:  Item.Action:= ecSyncScrollH;
+          sm_SyncScrollVert:  Item.Action:= ecSyncScrollV;
         end;
       end;
 
@@ -25719,12 +25724,12 @@ end;
 
 procedure TfmMain.TbxItemMenuXClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_FClose);
+  CurrentEditor.ExecCommand(sm_FileClose);
 end;
 
 procedure TfmMain.TbxItemMenuXXClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_FCloseAll);
+  CurrentEditor.ExecCommand(sm_FileCloseAll);
 end;
 
 function TfmMain.IsWordChar(ch: WideChar): boolean;
