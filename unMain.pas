@@ -26984,20 +26984,34 @@ begin
   with Sender as TPythonModule do
   begin
     AddMethod('app_version', Py_app_version, '');
+
     AddMethod('ed_get_text_all', Py_ed_get_text_all, '');
     AddMethod('ed_get_text_sel', Py_ed_get_text_sel, '');
     AddMethod('ed_get_text_line', Py_ed_get_text_line, '');
-    AddMethod('ed_get_caret', Py_ed_get_caret, '');
+    AddMethod('ed_get_text_len', Py_ed_get_text_len, '');
+
+    AddMethod('ed_get_caret_xy', Py_ed_get_caret_xy, '');
+    AddMethod('ed_get_caret_pos', Py_ed_get_caret_pos, '');
+    AddMethod('ed_set_caret_xy', Py_ed_set_caret_xy, '');
+    AddMethod('ed_set_caret_pos', Py_ed_set_caret_pos, '');
+    AddMethod('ed_pos_xy', Py_ed_pos_xy, '');
+    AddMethod('ed_xy_pos', Py_ed_xy_pos, '');
+
     AddMethod('ed_get_lines', Py_ed_get_lines, '');
     AddMethod('ed_get_lexer', Py_ed_get_lexer, '');
     AddMethod('ed_get_eol', Py_ed_get_eol, '');
     AddMethod('ed_get_wrap', Py_ed_get_wrap, '');
     AddMethod('ed_get_ro', Py_ed_get_ro, '');
-    AddMethod('ed_get_sel_start', Py_ed_get_sel_start, '');
-    AddMethod('ed_get_sel_len', Py_ed_get_sel_len, '');
+
     AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
+    AddMethod('ed_get_sel', Py_ed_get_sel, '');
     AddMethod('ed_get_sel_rect', Py_ed_get_sel_rect, '');
+    AddMethod('ed_set_sel', Py_ed_set_sel, '');
+    AddMethod('ed_set_sel_rect', Py_ed_set_sel_rect, '');
+
     AddMethod('ed_replace', Py_ed_replace, '');
+    AddMethod('ed_set_text_all', Py_ed_set_text_all, '');
+    AddMethod('ed_set_text_line', Py_ed_set_text_line, '');
   end;
 end;
 
