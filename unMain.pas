@@ -2990,6 +2990,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 var
+  fmMain: TfmMain = nil;
   _SynActionProc: TSynAction = nil;
 
 const
@@ -3041,7 +3042,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.1.190';
+  cSynVer = '6.1.200';
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -13927,14 +13928,15 @@ begin
   end;
 end;
 
-  procedure TfmMain.MsgBakEr(const fn: Widestring);
-  begin
-    MsgError(WideFormat(DKLangConstW('MBakEr'), [fn]), Handle);
-  end;
-  procedure TfmMain.MsgBakOk(const fn: Widestring);
-  begin
-    MsgInfo(WideFormat(DKLangConstW('MBakOk'), [fn]), Handle);
-  end;
+procedure TfmMain.MsgBakEr(const fn: Widestring);
+begin
+  MsgError(WideFormat(DKLangConstW('MBakEr'), [fn]), Handle);
+end;
+
+procedure TfmMain.MsgBakOk(const fn: Widestring);
+begin
+  MsgInfo(WideFormat(DKLangConstW('MBakOk'), [fn]), Handle);
+end;
 
 procedure TfmMain.DoBackup(const AFilename: Widestring);
 var
@@ -26894,7 +26896,7 @@ begin
   MemoConsole.Lines.Add(cConsolePrompt + Str);
 
   try
-    GetPythonEngine.ExecString(Str);
+    GetPythonEngine.ExecString(UTF8Encode(Str));
   except
     MsgBeep;
   end;
@@ -26979,10 +26981,91 @@ begin
   end;
 end;
 
+function Py_msg_status(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  P: PAnsiChar;
+  Str: Widestring;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 's:msg_status', @P) <> 0 then
+    begin
+      Str:= UTF8Decode(AnsiString(P));
+      fmMain.SetHint(Str);
+    end;
+    Result:= ReturnNone;
+  end;
+end;    
+
+function Py_msg_input(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  P1, P2: PAnsiChar;
+  Str1, Str2: Widestring;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'ss:msg_input', @P1, @P2) <> 0 then
+    begin
+      Str1:= UTF8Decode(AnsiString(P1));
+      Str2:= UTF8Decode(AnsiString(P2));
+      if WideInputQuery('SynWrite', Str1, Str2) then
+        Result:= PyUnicode_FromWideString(Str2)
+      else
+        Result:= ReturnNone;
+    end;
+  end;
+end;
+
+function Py_msg_box(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  N: Integer;
+  H: THandle;
+  P: PAnsiChar;
+  Str: Widestring;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'is:msg_box', @N, @P) <> 0 then
+    begin
+      Str:= UTF8Decode(AnsiString(P));
+      H:= Application.MainForm.Handle;
+      case N of
+        0:
+          begin
+            MsgInfo(Str, H);
+            Result:= ReturnNone;
+          end;
+        1:
+          begin
+            MsgWarn(Str, H);
+            Result:= ReturnNone;
+          end;
+        2:
+          begin
+            MsgError(Str, H);
+            Result:= ReturnNone;
+          end;
+        -1:
+          begin
+            N:= Ord(MsgConfirm(Str, H));
+            Result:= PyBool_FromLong(N);
+          end;
+        else
+          Result:= ReturnNone;
+      end;
+    end;
+  end;
+end;
+
+
+
 procedure TfmMain.PythonModuleInitialization(Sender: TObject);
 begin
   with Sender as TPythonModule do
   begin
+    AddMethod('msg_box', Py_msg_box, '');
+    AddMethod('msg_input', Py_msg_input, '');
+    AddMethod('msg_status', Py_msg_status, '');
     AddMethod('app_version', Py_app_version, '');
 
     AddMethod('ed_get_text_all', Py_ed_get_text_all, '');
@@ -26997,7 +27080,8 @@ begin
     AddMethod('ed_pos_xy', Py_ed_pos_xy, '');
     AddMethod('ed_xy_pos', Py_ed_xy_pos, '');
 
-    AddMethod('ed_get_lines', Py_ed_get_lines, '');
+    AddMethod('ed_get_line_count', Py_ed_get_line_count, '');
+    AddMethod('ed_get_line_prop', Py_ed_get_line_prop, '');
     AddMethod('ed_get_lexer', Py_ed_get_lexer, '');
     AddMethod('ed_get_eol', Py_ed_get_eol, '');
     AddMethod('ed_get_wrap', Py_ed_get_wrap, '');
@@ -27012,6 +27096,10 @@ begin
     AddMethod('ed_replace', Py_ed_replace, '');
     AddMethod('ed_set_text_all', Py_ed_set_text_all, '');
     AddMethod('ed_set_text_line', Py_ed_set_text_line, '');
+
+    AddMethod('ed_cmd', Py_ed_cmd, '');
+    AddMethod('ed_begin_update', Py_ed_begin_update, '');
+    AddMethod('ed_end_update', Py_ed_end_update, '');
   end;
 end;
 

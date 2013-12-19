@@ -9,6 +9,10 @@ uses
 var
   PyEditor: TSyntaxMemo = nil;
 
+function Py_ed_cmd(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_begin_update(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_end_update(Self, Args: PPyObject): PPyObject; cdecl;
+
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_text_sel(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_text_line(Self, Args: PPyObject): PPyObject; cdecl;
@@ -21,7 +25,8 @@ function Py_ed_set_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_pos_xy(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_xy_pos(Self, Args: PPyObject): PPyObject; cdecl;
 
-function Py_ed_get_lines(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_line_prop(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_line_count(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_lexer(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_eol(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_wrap(Self, Args: PPyObject): PPyObject; cdecl;
@@ -159,7 +164,7 @@ begin
 end;
 
 
-function Py_ed_get_lines(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_line_count(Self, Args: PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
   begin
@@ -276,7 +281,9 @@ begin
     begin
       P:= PyEditor.StrPosToCaretPos(N);
       Result:= Py_BuildValue('(ii)', P.X, P.Y);
+      Exit
     end;
+    Result:= ReturnNone;
   end;
 end;
 
@@ -290,7 +297,9 @@ begin
     begin
       N:= PyEditor.CaretPosToStrPos(Point(X, Y));
       Result:= PyInt_FromLong(N);
+      Exit
     end;
+    Result:= ReturnNone;
   end;
 end;
 
@@ -349,6 +358,60 @@ begin
       Result:= ReturnNone;
     end;
   end;
+end;
+
+function Py_ed_get_line_prop(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  N: Integer;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'i:ed_get_line_prop', @N) <> 0 then
+      if (N >= 0) and (N < PyEditor.Lines.Count) then
+      begin
+        Result:= Py_BuildValue('(ii)',
+          PyEditor.Lines.LineLength(N),
+          PyEditor.Lines.LineSpace(N));
+        Exit
+      end;
+    Result:= ReturnNone;
+  end;
+end;
+
+function Py_ed_cmd(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  N: Integer;
+  P: PAnsiChar;
+  Str: Widestring;
+  CmdPtr: Pointer;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'is:ed_cmd', @N, @P) <> 0 then
+    begin
+      Str:= UTF8Decode(AnsiString(P));
+      if Str='' then
+        CmdPtr:= nil
+      else
+        CmdPtr:= PWChar(Str);
+      PyEditor.ExecCommand(N, CmdPtr);
+    end;
+    Result:= ReturnNone;
+  end;
+end;
+
+function Py_ed_begin_update(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  PyEditor.BeginUpdate;
+  with GetPythonEngine do
+    Result:= ReturnNone;
+end;
+
+function Py_ed_end_update(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  PyEditor.EndUpdate;
+  with GetPythonEngine do
+    Result:= ReturnNone;
 end;
 
 

@@ -39,7 +39,6 @@ type
   end;
 
 var
-  fmMain: TfmMain;
   fmSynEx: TfmSynEx;
 
 function SynParamsOK: boolean;
