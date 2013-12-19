@@ -26968,9 +26968,10 @@ end;
 procedure TfmMain.PythonEngine1AfterInit(Sender: TObject);
 begin
   DoAddPythonPath(SynPyDir);
+  GetPythonEngine.ExecString('from sw import *');
 end;
 
-function Py_synwrite_version(Self, Args : PPyObject): PPyObject; cdecl;
+function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
   begin
@@ -26982,10 +26983,21 @@ procedure TfmMain.PythonModuleInitialization(Sender: TObject);
 begin
   with Sender as TPythonModule do
   begin
-    AddMethod('synwrite_version', Py_synwrite_version, '');
-    AddMethod('editor_get_text_all', Py_editor_get_text_all, '');
-    AddMethod('editor_get_text_sel', Py_editor_get_text_sel, '');
-    AddMethod('editor_get_text_line', Py_editor_get_text_line, '');
+    AddMethod('app_version', Py_app_version, '');
+    AddMethod('ed_get_text_all', Py_ed_get_text_all, '');
+    AddMethod('ed_get_text_sel', Py_ed_get_text_sel, '');
+    AddMethod('ed_get_text_line', Py_ed_get_text_line, '');
+    AddMethod('ed_get_caret', Py_ed_get_caret, '');
+    AddMethod('ed_get_lines', Py_ed_get_lines, '');
+    AddMethod('ed_get_lexer', Py_ed_get_lexer, '');
+    AddMethod('ed_get_eol', Py_ed_get_eol, '');
+    AddMethod('ed_get_wrap', Py_ed_get_wrap, '');
+    AddMethod('ed_get_ro', Py_ed_get_ro, '');
+    AddMethod('ed_get_sel_start', Py_ed_get_sel_start, '');
+    AddMethod('ed_get_sel_len', Py_ed_get_sel_len, '');
+    AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
+    AddMethod('ed_get_sel_rect', Py_ed_get_sel_rect, '');
+    AddMethod('ed_replace', Py_ed_replace, '');
   end;
 end;
 
