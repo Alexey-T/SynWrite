@@ -4011,7 +4011,7 @@ begin
   ecMacroRecorder1.SyntMemo:= Value;
 
   FCurrentEditor:= Value;
-  PyEditor:= Value;
+  PyEditor:= Value as ATSyntMemo.TSyntaxMemo;
 
   if FCurrentEditor <> nil then
   begin
@@ -6640,6 +6640,10 @@ begin
   UpdatePanelOut(FTabOut);
   UpdatePanelRight(FTabRight);
   UpdatePanelLeft(FTabLeft);
+
+  //Py fields
+  PyExeDir:= ExcludeTrailingPathDelimiter(SynDir);
+  PyIniDir:= ExcludeTrailingPathDelimiter(SynIniDir);
 end;
 
 procedure TfmMain.LoadLexLib;
@@ -26918,7 +26922,11 @@ procedure TfmMain.edConsoleKeyPress(Sender: TObject; var Key: Char);
 begin
   if (Key=#13) then
   begin
-    DoEnterConsoleCommand(edConsole.Text);
+    //empty string-> clear console
+    if edConsole.Text='' then
+      MemoConsole.Lines.Clear
+    else
+      DoEnterConsoleCommand(edConsole.Text);
     Key:= #0;
     Exit
   end;
@@ -26946,6 +26954,11 @@ end;
 
 procedure TfmMain.PythonEngine1BeforeLoad(Sender: TObject);
 begin
+  //note: for Lister plugin DllPath will be wrong, but it's ok:
+  //even with correct DllPath Python won't load in Lister plugin
+  //(cannot find MSVCRT DLLs).
+  //note: need to set FatalAbort = FatalMsgDlg = False.
+  //note: don't check SynExe here (not yet inited).
   with Sender as TPythonEngine do
   begin
     DllPath:= ExtractFilePath(ParamStr(0));
@@ -27063,7 +27076,6 @@ begin
 end;
 
 
-
 procedure TfmMain.PythonModuleInitialization(Sender: TObject);
 begin
   with Sender as TPythonModule do
@@ -27071,7 +27083,12 @@ begin
     AddMethod('msg_box', Py_msg_box, '');
     AddMethod('msg_input', Py_msg_input, '');
     AddMethod('msg_status', Py_msg_status, '');
+
     AddMethod('app_version', Py_app_version, '');
+    AddMethod('app_exe_dir', Py_app_exe_dir, '');
+    AddMethod('app_ini_dir', Py_app_ini_dir, '');
+    AddMethod('ini_read', Py_ini_read, '');
+    AddMethod('ini_write', Py_ini_write, '');
 
     AddMethod('ed_get_text_all', Py_ed_get_text_all, '');
     AddMethod('ed_get_text_sel', Py_ed_get_text_sel, '');
@@ -27087,20 +27104,32 @@ begin
 
     AddMethod('ed_get_line_count', Py_ed_get_line_count, '');
     AddMethod('ed_get_line_prop', Py_ed_get_line_prop, '');
+    AddMethod('ed_get_line_nums', Py_ed_get_line_nums, '');
     AddMethod('ed_get_lexer', Py_ed_get_lexer, '');
+    AddMethod('ed_get_lexer_def', Py_ed_get_lexer_def, '');
     AddMethod('ed_get_eol', Py_ed_get_eol, '');
     AddMethod('ed_get_wrap', Py_ed_get_wrap, '');
     AddMethod('ed_get_ro', Py_ed_get_ro, '');
+    AddMethod('ed_get_margin', Py_ed_get_margin, '');
+    AddMethod('ed_get_topline', Py_ed_get_topline, '');
+    AddMethod('ed_get_folding', Py_ed_get_folding, '');
+    AddMethod('ed_get_nonprinted', Py_ed_get_nonprinted, '');
+    AddMethod('ed_get_tab_spaces', Py_ed_get_tab_spaces, '');
+    AddMethod('ed_get_tab_size', Py_ed_get_tab_size, '');
+    AddMethod('ed_get_colmarkers', Py_ed_get_colmarkers, '');
 
     AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
+    AddMethod('ed_get_sel_lines', Py_ed_get_sel_lines, '');
     AddMethod('ed_get_sel', Py_ed_get_sel, '');
     AddMethod('ed_get_sel_rect', Py_ed_get_sel_rect, '');
     AddMethod('ed_set_sel', Py_ed_set_sel, '');
     AddMethod('ed_set_sel_rect', Py_ed_set_sel_rect, '');
 
     AddMethod('ed_replace', Py_ed_replace, '');
+    AddMethod('ed_insert', Py_ed_insert, '');
     AddMethod('ed_set_text_all', Py_ed_set_text_all, '');
     AddMethod('ed_set_text_line', Py_ed_set_text_line, '');
+    AddMethod('ed_set_topline', Py_ed_set_topline, '');
 
     AddMethod('ed_cmd', Py_ed_cmd, '');
     AddMethod('ed_begin_update', Py_ed_begin_update, '');

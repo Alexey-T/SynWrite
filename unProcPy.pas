@@ -4,14 +4,21 @@ interface
 
 uses
   PythonEngine,
-  ecSyntMemo;
+  ecSyntMemo,
+  ATSyntMemo;
 
 var
   PyEditor: TSyntaxMemo = nil;
+  PyExeDir: string;
+  PyIniDir: string;
 
 function Py_ed_cmd(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_begin_update(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_end_update(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_app_exe_dir(Self, Args : PPyObject): PPyObject; cdecl;
+function Py_app_ini_dir(Self, Args : PPyObject): PPyObject; cdecl;
+function Py_ini_read(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ini_write(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_text_sel(Self, Args: PPyObject): PPyObject; cdecl;
@@ -25,28 +32,42 @@ function Py_ed_set_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_pos_xy(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_xy_pos(Self, Args: PPyObject): PPyObject; cdecl;
 
-function Py_ed_get_line_prop(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_line_count(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_line_prop(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_line_nums(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_lexer_def(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_lexer(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_eol(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_wrap(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_ro(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_margin(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_topline(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_folding(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_nonprinted(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_tab_spaces(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_tab_size(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_colmarkers(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_sel_mode(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_sel(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_sel_rect(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_sel(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_sel_rect(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_sel_lines(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_replace(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_insert(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_text_line(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_topline(Self, Args: PPyObject): PPyObject; cdecl;
 
 implementation
 
 uses
   Windows,
+  SysUtils,
   Types,
+  IniFiles,
   ecSyntAnal,
   ecStrUtils,
   unProcEditor;
@@ -188,6 +209,62 @@ begin
   end;
 end;
 
+function Py_ed_get_folding(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyBool_FromLong(Ord(not PyEditor.DisableFolding));
+  end;
+end;
+
+function Py_ed_get_nonprinted(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyBool_FromLong(Ord(PyEditor.NonPrinted.Visible));
+  end;
+end;
+
+function Py_ed_get_line_nums(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyBool_FromLong(Ord(PyEditor.LineNumbers.Visible));
+  end;
+end;
+
+function Py_ed_get_margin(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyInt_FromLong(PyEditor.RightMargin);
+  end;
+end;
+
+function Py_ed_get_topline(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyInt_FromLong(PyEditor.TopLine);
+  end;
+end;
+
+function Py_ed_get_tab_spaces(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyBool_FromLong(Ord(PyEditor.TabMode = tmSpaces));
+  end;
+end;
+
+function Py_ed_get_tab_size(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyInt_FromLong(EditorTabSize(PyEditor));
+  end;
+end;
+
 
 function Py_ed_get_eol(Self, Args: PPyObject): PPyObject; cdecl;
 begin
@@ -197,8 +274,16 @@ begin
   end;
 end;
 
+function Py_ed_get_colmarkers(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyUnicode_FromWideString(PyEditor.ColMarkersString);
+  end;
+end;
 
-function Py_ed_get_lexer(Self, Args: PPyObject): PPyObject; cdecl;
+
+function Py_ed_get_lexer_def(Self, Args: PPyObject): PPyObject; cdecl;
 var
   An: TSyntAnalyzer;
   Str: string;
@@ -208,6 +293,18 @@ begin
     Str:= An.LexerName
   else
     Str:= '';
+
+  with GetPythonEngine do
+  begin
+    Result:= PyUnicode_FromWideString(Str);
+  end;
+end;
+
+function Py_ed_get_lexer(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  Str: string;
+begin
+  Str:= EditorCurrentLexerForPos(PyEditor, PyEditor.CaretStrPos);
 
   with GetPythonEngine do
   begin
@@ -227,12 +324,28 @@ begin
     if PyArg_ParseTuple(Args, 'iis:ed_replace', @NStart, @NLen, @P) <> 0 then
     begin
       StrW:= UTF8Decode(AnsiString(P));
-      //MessageBoxW(0, PWChar(StrW), 'Str', 0);
       PyEditor.ReplaceText(NStart, NLen, StrW);
     end;
     Result:= ReturnNone;
   end;
 end;
+
+function Py_ed_insert(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  P: PAnsiChar;
+  StrW: Widestring;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 's:ed_insert', @P) <> 0 then
+    begin
+      StrW:= UTF8Decode(AnsiString(P));
+      PyEditor.InsertText(StrW);
+    end;
+    Result:= ReturnNone;
+  end;
+end;
+
 
 function Py_ed_set_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -286,6 +399,7 @@ begin
     Result:= ReturnNone;
   end;
 end;
+
 
 function Py_ed_xy_pos(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -412,6 +526,97 @@ begin
   PyEditor.EndUpdate;
   with GetPythonEngine do
     Result:= ReturnNone;
+end;
+
+function Py_ed_get_sel_lines(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  N1, N2: Integer;
+begin
+  EditorGetSelLines(PyEditor, N1, N2);
+  with GetPythonEngine do
+  begin
+    Result:= Py_BuildValue('(ii)', N1, N2);
+  end;
+end;
+
+function Py_ed_set_topline(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  N: Integer;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'i:ed_set_topline', @N) <> 0 then
+    begin
+      PyEditor.TopLine:= N;
+    end;
+    Result:= ReturnNone;
+  end;
+end;
+
+function Py_app_exe_dir(Self, Args : PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyString_FromString(PChar(PyExeDir));
+  end;
+end;
+
+function Py_app_ini_dir(Self, Args : PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyString_FromString(PChar(PyIniDir));
+  end;
+end;
+
+function Py_ini_readwrite(Self, Args: PPyObject; AWrite: boolean): PPyObject; cdecl;
+var
+  P1, P2, P3, P4: PAnsiChar;
+  StrFN, StrSess, StrKey, StrVal: Widestring;
+  fn: string;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'ssss:ini_read', @P1, @P2, @P3, @P4) <> 0 then
+    begin
+      StrFN:= UTF8Decode(AnsiString(P1));
+      StrSess:= UTF8Decode(AnsiString(P2));
+      StrKey:= UTF8Decode(AnsiString(P3));
+      StrVal:= UTF8Decode(AnsiString(P4));
+
+      fn:= StrFN;
+      if ExtractFileDir(fn)='' then
+        fn:= PyIniDir + '\' + fn;
+
+      with TIniFile.Create(fn) do
+      try
+        if AWrite then
+        begin
+          WriteString(StrSess, StrKey, UTF8Encode(StrVal));
+          Result:= ReturnNone;
+        end
+        else
+        begin
+          StrVal:= UTF8Decode(ReadString(StrSess, StrKey, UTF8Encode(StrVal)));
+          Result:= PyUnicode_FromWideString(StrVal);
+        end;
+      finally
+        Free
+      end;
+    end
+    else
+      Result:= ReturnNone;
+  end;
+end;
+
+function Py_ini_read(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  Result:= Py_ini_readwrite(Self, Args, false);
+end;
+
+function Py_ini_write(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  Result:= Py_ini_readwrite(Self, Args, true);
 end;
 
 
