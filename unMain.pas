@@ -2669,6 +2669,7 @@ type
     procedure DoNewPythonPluginDialog;
     procedure DoRegisterPyCommandPlugin(const SId: string);
     procedure DoLoadPyPlugin(const SFilename, SCmd: string);
+    procedure DoLogPyCommand(const Str: Widestring);
     //end of private
 
   protected
@@ -26938,15 +26939,13 @@ end;
 
 procedure TfmMain.DoEnterConsoleCommand(const Str: Widestring);
 begin
-  MemoConsole.Lines.Add(cPyConsolePrompt + Str);
+  DoLogPyCommand(cPyConsolePrompt + Str);
 
   try
     GetPythonEngine.ExecString(UTF8Encode(Str));
   except
     MsgBeep(true);
   end;
-
-  MemoScrollToBottom(MemoConsole);
 
   ComboUpdate(edConsole, opSaveSRHist);
   edConsole.Text:= '';
@@ -27115,7 +27114,7 @@ end;
 procedure TfmMain.PythonGUIInputOutput1SendUniData(Sender: TObject;
   const Data: WideString);
 begin
-  MemoConsole.Lines.Add(Data);
+  DoLogPyCommand(Data);
 end;
 
 procedure TfmMain.TbxItemRunNewPluginClick(Sender: TObject);
@@ -27151,11 +27150,11 @@ begin
   end;
 
   SId:= 'my_sample';
-  if not MsgInput('zMNewPyEnter', SId) then Exit;
+  if not MsgInput('zMPyNew', SId) then Exit;
 
   if Py_BadModuleName(SId) then
   begin
-    MsgError('Incorrect module name:'#13+SId, Handle);
+    MsgError(WideFormat(DKLangConstW('zMPyBadName'), [SId]), Handle);
     Exit
   end;
 
@@ -27164,10 +27163,15 @@ begin
 
   if DirectoryExists(SDir) then
   begin
-    MsgError('Folder already exists:'#13+SDir, Handle);
+    MsgError(WideFormat(DKLangConstW('zMPyDirExists'), [SDir]), Handle);
     Exit
   end;
   CreateDir(SDir);
+  if not DirectoryExists(SDir) then
+  begin
+    MsgError(WideFormat(DKLangConstW('zMPyDirNotFound'), [SDir]), Handle);
+    Exit
+  end;
 
   List:= TStringList.Create;
   try
@@ -27202,7 +27206,7 @@ begin
       MsgError('Python engine not initialized', Handle);
       Exit
     end;
-    MemoConsole.Lines.Add('Run plugin: '+SId+'.'+SCmd);
+    DoLogPyCommand('Run plugin: '+SId+'.'+SCmd);
     try
       ExecString(Format('import %s', [SId]));
       ExecString(Format('c = %s.Command()', [SId]));
@@ -27211,8 +27215,13 @@ begin
     except
       MsgBeep(true);
     end;
-    MemoScrollToBottom(MemoConsole);
   end;
+end;
+
+procedure TfmMain.DoLogPyCommand(const Str: Widestring);
+begin
+  MemoConsole.Lines.Add(Str);
+  MemoScrollToBottom(MemoConsole);
 end;
 
 end.

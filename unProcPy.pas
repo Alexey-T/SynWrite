@@ -729,11 +729,13 @@ const
     'from sw_util import *'#13#13+
     'class Command:'#13+
     '    def run(self):'#13+
-    '        s = "Hello, World"'#13+
+    '        s = "Lines count: " + str(ed_get_line_count())'#13+
     '        msg_box(MSG_INFO, s)'#13+
     '';
 begin
-  Result:= Format(cSamplePlugin, [Py_NameToMixedCase(SId)]);
+  Result:=
+    cSamplePlugin;
+    //Format(cSamplePlugin, [Py_NameToMixedCase(SId)]);
 end;
 
 end.
