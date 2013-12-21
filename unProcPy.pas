@@ -13,8 +13,9 @@ var
   PyIniDir: string = '';
 
 function Py_SamplePluginText(const SId: string): string;
-function Py_BadModuleName(const S: string): boolean;
 function Py_NameToMixedCase(const S: string): string;
+function Py_ModuleNameIncorrect(const S: string): boolean;
+function Py_ModuleNameExists(const SId: string): boolean;
 
 function Py_ed_cmd(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_begin_update(Self, Args: PPyObject): PPyObject; cdecl;
@@ -73,6 +74,7 @@ uses
   Windows,
   SysUtils,
   Types,
+  Classes,
   IniFiles,
   Forms,
   ecSyntAnal,
@@ -694,7 +696,7 @@ begin
 end;
 
 
-function Py_BadModuleName(const S: string): boolean;
+function Py_ModuleNameIncorrect(const S: string): boolean;
 var
   i: Integer;
 begin
@@ -736,6 +738,32 @@ begin
   Result:=
     cSamplePlugin;
     //Format(cSamplePlugin, [Py_NameToMixedCase(SId)]);
+end;
+
+function Py_ModuleNameExists(const SId: string): boolean;
+var
+  L: TStringList;
+  Obj: PPyObject;
+begin
+  L:= TStringList.Create;
+  try
+    L.Add('import pkgutil');
+    L.Add('def module_exists(m):');
+    L.Add('    for module_loader, name, ispkg in pkgutil.iter_modules():');
+    L.Add('        if name == m:');
+    L.Add('            return True');
+    L.Add('    return False');
+
+    //Messagebox(0, pchar(str), '', 0);
+    with GetPythonEngine do
+    begin
+      ExecStrings(L);
+      Obj:= EvalString(Format('module_exists(r"%s")', [SId]));
+      Result:= PyObject_IsTrue(Obj) <> 0;
+    end;
+  finally
+    FreeAndNil(L);
+  end;
 end;
 
 end.

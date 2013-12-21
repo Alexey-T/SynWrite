@@ -27152,9 +27152,14 @@ begin
   SId:= 'my_sample';
   if not MsgInput('zMPyNew', SId) then Exit;
 
-  if Py_BadModuleName(SId) then
+  if Py_ModuleNameIncorrect(SId) then
   begin
     MsgError(WideFormat(DKLangConstW('zMPyBadName'), [SId]), Handle);
+    Exit
+  end;
+  if Py_ModuleNameExists(SId) then
+  begin
+    MsgError(WideFormat(DKLangConstW('zMPyDupName'), [SId]), Handle);
     Exit
   end;
 
