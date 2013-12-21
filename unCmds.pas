@@ -374,6 +374,7 @@ const
   sm_ScrollCurrentLineToMiddle = 1042;
   sm_SaveProject = 1043;
   sm_ToggleFocusConsole = 1044;
+  sm_NewPythonPluginDialog = 1045;
   //free
 
   //Tree commands

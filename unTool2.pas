@@ -170,8 +170,8 @@ var
   fn: string;
   cap, exe: Widestring;
 begin
-  if not DoInputString('zMPresetName', cap) then Exit;
-  if not DoInputString('zMPresetExe', exe) then Exit;
+  if not DoInputString(DKLangConstW('zMPresetName'), cap) then Exit;
+  if not DoInputString(DKLangConstW('zMPresetExe'), exe) then Exit;
   if cap='' then Exit;
   if exe='' then Exit;
   fn:= FDir+'\'+cap+'.'+cExt;

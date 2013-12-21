@@ -68,8 +68,12 @@ procedure SaveMruList(List: TSynMruList; Ini: TCustomIniFile; const Section: str
   
 //function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
 function LoadPngIconEx(ImageList: TPngImageList; const fn: string): boolean;
-function DoInputFilename(const dkmsg: string; var S: Widestring): boolean;
-function DoInputString(const dkmsg: string; var S: Widestring;
+function DoInputFilename(
+  const SCaption: Widestring;
+  var SValue: Widestring): boolean;
+function DoInputString(
+  const SCaption: Widestring;
+  var SValue: Widestring;
   const IniFN: string = ''; const IniSection: string = ''): boolean;
 
 procedure DoDeleteComboLastWord(ed: TTntCombobox);
@@ -1120,38 +1124,38 @@ begin
   ed.SelText:= '';
 end;
 
-function DoInputFilename(const dkmsg: string; var S: Widestring): boolean;
+function DoInputFilename(const SCaption: Widestring; var SValue: Widestring): boolean;
 begin
   with TfmRenameFN.Create(nil) do
   try
-    labRename.Caption:= DKLangConstW(dkmsg);
+    labRename.Caption:= SCaption;
 
-    edName.Text:= WideChangeFileExt(S, '');
-    edExt.Text:= Copy(WideExtractFileExt(S), 2, MaxInt);
+    edName.Text:= WideChangeFileExt(SValue, '');
+    edExt.Text:= Copy(WideExtractFileExt(SValue), 2, MaxInt);
 
     Result:= ShowModal=mrOk;
     if Result then
-      S:= GetFN;
+      SValue:= GetFN;
   finally
     Free
   end;
 end;
 
-function DoInputString(const dkmsg: string; var S: Widestring;
+function DoInputString(const SCaption: Widestring; var SValue: Widestring;
   const IniFN: string = ''; const IniSection: string = ''): boolean;
 begin
   with TfmRename.Create(nil) do
   try
-    labRename.Caption:= DKLangConstW(dkmsg);
+    labRename.Caption:= SCaption;
 
     ComboLoadFromFile(edName, IniFN, IniSection);
     FEnablePrevValue:= true;
-    edName.Text:= S;
+    edName.Text:= SValue;
 
     Result:= ShowModal=mrOk;
     if Result then
     begin
-      S:= edName.Text;
+      SValue:= edName.Text;
       ComboUpdate(edName, 10);
       ComboSaveToFile(edName, IniFN, IniSection);
     end;

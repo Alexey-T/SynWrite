@@ -11,11 +11,10 @@ uses
   TntForms, TntClasses,
   IniFiles,
   unMain, ATSynPlugins,
-  XPMan, AppEvnts;
+  AppEvnts;
 
 type
   TfmSynEx = class(TTntForm)
-    XPManifest1: TXPManifest;
     ApplicationEvents1: TApplicationEvents;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

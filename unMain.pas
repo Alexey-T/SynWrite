@@ -64,8 +64,9 @@ const
   cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
   cBandFolding = 3; //index of gutter band for folding
   SynDefaultSyn = '(default).syn';
-  cConsolePrompt = '>>> ';
-  cConsoleInit = 'print("Python", sys.version)';
+  cPyConsolePrompt = '>>> ';
+  cPyConsoleInit = 'print("Python", sys.version)';
+  cPyPluginPrefix = 'py:';
 
 type
   TSynEscMode = (
@@ -1236,6 +1237,8 @@ type
     PythonEngine1: TPythonEngine;
     MemoConsole: TTntMemo;
     PythonModule: TPythonModule;
+    SpTBXSeparatorItem25: TSpTBXSeparatorItem;
+    TbxItemRunNewPlugin: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1985,6 +1988,7 @@ type
     procedure PythonModuleInitialization(Sender: TObject);
     procedure PythonGUIInputOutput1SendUniData(Sender: TObject;
       const Data: WideString);
+    procedure TbxItemRunNewPluginClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2662,6 +2666,9 @@ type
     function MsgConfirmOpenSaveSession(AFilesCount: Integer; const AFileName: string; ASaveMode: boolean): boolean;
     procedure DoEnterConsoleCommand(const Str: Widestring);
     procedure DoAddPythonPath(const Dir: string);
+    procedure DoNewPythonPluginDialog;
+    procedure DoRegisterPyCommandPlugin(const SId: string);
+    procedure DoLoadPyPlugin(const SFilename, SCmd: string);
     //end of private
 
   protected
@@ -6076,6 +6083,8 @@ begin
     sm_ScrollCurrentLineToTop: EditorScrollCurrentLineTo(Ed, cScrollToTop);
     sm_ScrollCurrentLineToBottom: EditorScrollCurrentLineTo(Ed, cScrollToBottom);
     sm_ScrollCurrentLineToMiddle: EditorScrollCurrentLineTo(Ed, cScrollToMiddle);
+
+    sm_NewPythonPluginDialog: DoNewPythonPluginDialog;
 
     //end of commands list
     else
@@ -10118,7 +10127,7 @@ procedure TfmMain.RunTool(NTool: Integer);
 	  while Pos('{Interactive}', Result)>0 do
     begin
       fn:= '';
-      if not DoInputString('cmdInt', fn, SynHistoryIni, 'ExtToolParam') then
+      if not DoInputString(DKLangConstW('cmdInt'), fn, SynHistoryIni, 'ExtToolParam') then
         raise Exception.Create('Param input cancelled');
       SReplaceW(Result, '{Interactive}', fn);
     end;
@@ -20549,7 +20558,7 @@ end;
 
 function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 begin
-  Result:= DoInputString(dkmsg, S);
+  Result:= DoInputString(DKLangConstW(dkmsg), S);
 end;
 
 procedure TfmMain.TBXTabColorChange(Sender: TObject);
@@ -20782,7 +20791,7 @@ begin
 
   repeat
     sName:= WideExtractFileName(fn);
-    if not DoInputFilename('zMRename', sName) then Exit;
+    if not DoInputFilename(DKLangConstW('zMRename'), sName) then Exit;
 
     fn_new:= WideExtractFilePath(fn) + sName;
 
@@ -21123,7 +21132,10 @@ begin
 
       if NIndex<=High(FPluginsCommand) then
       begin
-        FPluginsCommand[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
+        if SBegin(sValue, cPyPluginPrefix) then
+          FPluginsCommand[NIndex].SFileName:= sValue
+        else
+          FPluginsCommand[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
         FPluginsCommand[NIndex].SCmd:= sValue2;
         FPluginsCommand[NIndex].SLexers:= sValue3;
         DoAddPluginMenuItem(sKey, sValue4, NIndex);
@@ -22470,13 +22482,24 @@ begin
     end;
 
     //MsgInfo(SFileName+#13+SCmd+#13);
-    DoLoadPlugin_Action(
-      SFilename,
-      cActionMenuCommand,
-      PWChar(WideString(SCmd)),
-      nil,
-      nil,
-      nil);
+    if SBegin(SFilename, cPyPluginPrefix) then
+    begin
+      //Python command plugin
+      DoLoadPyPlugin(
+        SFilename,
+        SCmd);
+    end
+    else
+    begin
+      //DLL command plugin
+      DoLoadPlugin_Action(
+        SFilename,
+        cActionMenuCommand,
+        PWChar(WideString(SCmd)),
+        nil,
+        nil,
+        nil);
+    end;    
   end;
 end;
 
@@ -22502,15 +22525,28 @@ begin
 
     if N<0 then
     begin
-      ItemSub:= TSpTbxSubmenuItem.Create(Self);
-      ItemSub.Caption:= CapMenu;
-      Add(ItemSub);
+      if CapItem='' then
+        ItemSub:= TbxSubmenuItemPlugins
+      else
+      begin
+        ItemSub:= TSpTbxSubmenuItem.Create(Self);
+        ItemSub.Caption:= CapMenu;
+        Add(ItemSub);
+      end;
     end
     else
-      ItemSub:= (Items[N] as TSpTbxSubmenuItem);
+    begin
+      if (Items[N] is TSpTbxSubmenuItem) then
+        ItemSub:= (Items[N] as TSpTbxSubmenuItem)
+      else
+        begin MsgBeep; Exit end;
+    end;
 
     Item:= TSpTbxItem.Create(Self);
-    Item.Caption:= CapItem;
+    if CapItem='' then
+      Item.Caption:= CapMenu
+    else
+      Item.Caption:= CapItem;
     Item.Tag:= NIndex;
     Item.ShortCut:= TextToShortcut(SShortcut);
     Item.OnClick:= PluginCommandItemClick;
@@ -23053,7 +23089,7 @@ begin
           with TIniFile.Create(SynIni) do
           try
             Sep:= UTF8Decode(ReadString('Win', 'AlignSep', '='));
-            ok:= DoInputString('zMEnterSep', Sep) and (Sep<>'');
+            ok:= DoInputString(DKLangConstW('zMEnterSep'), Sep) and (Sep<>'');
             if ok then
               WriteString('Win', 'AlignSep', UTF8Encode(Sep));
           finally
@@ -26902,12 +26938,12 @@ end;
 
 procedure TfmMain.DoEnterConsoleCommand(const Str: Widestring);
 begin
-  MemoConsole.Lines.Add(cConsolePrompt + Str);
+  MemoConsole.Lines.Add(cPyConsolePrompt + Str);
 
   try
     GetPythonEngine.ExecString(UTF8Encode(Str));
   except
-    MsgBeep;
+    MsgBeep(true);
   end;
 
   MemoScrollToBottom(MemoConsole);
@@ -26962,7 +26998,7 @@ begin
   with Sender as TPythonEngine do
   begin
     DllPath:= ExtractFilePath(ParamStr(0));
-    InitScript.Add(cConsoleInit);
+    InitScript.Add(cPyConsoleInit);
   end;
 end;
 
@@ -27013,76 +27049,15 @@ begin
     end;
     Result:= ReturnNone;
   end;
-end;    
-
-function Py_msg_input(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  P1, P2: PAnsiChar;
-  Str1, Str2: Widestring;
-begin
-  with GetPythonEngine do
-  begin
-    if PyArg_ParseTuple(Args, 'ss:msg_input', @P1, @P2) <> 0 then
-    begin
-      Str1:= UTF8Decode(AnsiString(P1));
-      Str2:= UTF8Decode(AnsiString(P2));
-      if WideInputQuery('SynWrite', Str1, Str2) then
-        Result:= PyUnicode_FromWideString(Str2)
-      else
-        Result:= ReturnNone;
-    end;
-  end;
 end;
-
-function Py_msg_box(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  N: Integer;
-  H: THandle;
-  P: PAnsiChar;
-  Str: Widestring;
-begin
-  with GetPythonEngine do
-  begin
-    if PyArg_ParseTuple(Args, 'is:msg_box', @N, @P) <> 0 then
-    begin
-      Str:= UTF8Decode(AnsiString(P));
-      H:= Application.MainForm.Handle;
-      case N of
-        0:
-          begin
-            MsgInfo(Str, H);
-            Result:= ReturnNone;
-          end;
-        1:
-          begin
-            MsgWarn(Str, H);
-            Result:= ReturnNone;
-          end;
-        2:
-          begin
-            MsgError(Str, H);
-            Result:= ReturnNone;
-          end;
-        -1:
-          begin
-            N:= Ord(MsgConfirm(Str, H));
-            Result:= PyBool_FromLong(N);
-          end;
-        else
-          Result:= ReturnNone;
-      end;
-    end;
-  end;
-end;
-
 
 procedure TfmMain.PythonModuleInitialization(Sender: TObject);
 begin
   with Sender as TPythonModule do
   begin
     AddMethod('msg_box', Py_msg_box, '');
-    AddMethod('msg_input', Py_msg_input, '');
     AddMethod('msg_status', Py_msg_status, '');
+    AddMethod('dlg_input', Py_dlg_input, '');
 
     AddMethod('app_version', Py_app_version, '');
     AddMethod('app_exe_dir', Py_app_exe_dir, '');
@@ -27141,6 +27116,103 @@ procedure TfmMain.PythonGUIInputOutput1SendUniData(Sender: TObject;
   const Data: WideString);
 begin
   MemoConsole.Lines.Add(Data);
+end;
+
+procedure TfmMain.TbxItemRunNewPluginClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_NewPythonPluginDialog);
+end;
+
+procedure TfmMain.DoRegisterPyCommandPlugin(const SId: string);
+var
+  SSection, SKey, SParams: string;
+begin
+  SSection:= 'Commands';
+  SKey:= Py_NameToMixedCase(SId);
+  SParams:= cPyPluginPrefix + SId + ';run;;;';
+
+  with TIniFile.Create(SynPluginsIni) do
+  try
+    WriteString(SSection, SKey, SParams);
+  finally
+    Free
+  end;
+end;
+
+procedure TfmMain.DoNewPythonPluginDialog;
+var
+  SId, SDir, SFn: Widestring;
+  List: TStringList;
+begin
+  if not GetPythonEngine.Initialized then
+  begin
+    MsgError('Python engine not initialized', Handle);
+    Exit
+  end;
+
+  SId:= 'my_sample';
+  if not MsgInput('zMNewPyEnter', SId) then Exit;
+
+  if Py_BadModuleName(SId) then
+  begin
+    MsgError('Incorrect module name:'#13+SId, Handle);
+    Exit
+  end;
+
+  SDir:= SynPyDir + '\' + SId;
+  SFn:= SDir + '\__init__.py';
+
+  if DirectoryExists(SDir) then
+  begin
+    MsgError('Folder already exists:'#13+SDir, Handle);
+    Exit
+  end;
+  CreateDir(SDir);
+
+  List:= TStringList.Create;
+  try
+    List.Text:= Py_SamplePluginText(SId);
+    List.SaveToFile(SFn);
+  finally
+    FreeAndNil(List);
+  end;
+
+  if FileExists(SFn) then
+  begin
+    DoRegisterPyCommandPlugin(SId); //write to SynPlugins.ini
+    DoLoadPluginsList; //reread SynPlugins.ini, update Plugins menu
+    DoOpenFile(SFn);
+  end
+  else
+    MsgBeep;
+end;
+
+procedure TfmMain.DoLoadPyPlugin(const SFilename, SCmd: string);
+var
+  SId: string;
+begin
+  SId:= SFilename;
+  if SBegin(SId, cPyPluginPrefix) then
+    Delete(SId, 1, Length(cPyPluginPrefix));
+
+  with GetPythonEngine do
+  begin
+    if not Initialized then
+    begin
+      MsgError('Python engine not initialized', Handle);
+      Exit
+    end;
+    MemoConsole.Lines.Add('Run plugin: '+SId+'.'+SCmd);
+    try
+      ExecString(Format('import %s', [SId]));
+      ExecString(Format('c = %s.Command()', [SId]));
+      ExecString(Format('c.%s()', [SCmd]));
+      ExecString('del c');
+    except
+      MsgBeep(true);
+    end;
+    MemoScrollToBottom(MemoConsole);
+  end;
 end;
 
 end.

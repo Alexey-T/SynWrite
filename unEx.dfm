@@ -19,10 +19,6 @@ object fmSynEx: TfmSynEx
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object XPManifest1: TXPManifest
-    Left = 208
-    Top = 60
-  end
   object ApplicationEvents1: TApplicationEvents
     OnDeactivate = ApplicationEvents1Deactivate
     OnMessage = ApplicationEvents1Message

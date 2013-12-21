@@ -9,8 +9,12 @@ uses
 
 var
   PyEditor: TSyntaxMemo = nil;
-  PyExeDir: string;
-  PyIniDir: string;
+  PyExeDir: string = '';
+  PyIniDir: string = '';
+
+function Py_SamplePluginText(const SId: string): string;
+function Py_BadModuleName(const S: string): boolean;
+function Py_NameToMixedCase(const S: string): string;
 
 function Py_ed_cmd(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_begin_update(Self, Args: PPyObject): PPyObject; cdecl;
@@ -19,6 +23,8 @@ function Py_app_exe_dir(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_app_ini_dir(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_ini_read(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ini_write(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_dlg_input(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_msg_box(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_text_sel(Self, Args: PPyObject): PPyObject; cdecl;
@@ -68,8 +74,10 @@ uses
   SysUtils,
   Types,
   IniFiles,
+  Forms,
   ecSyntAnal,
   ecStrUtils,
+  unProc,
   unProcEditor;
 
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
@@ -619,5 +627,113 @@ begin
   Result:= Py_ini_readwrite(Self, Args, true);
 end;
 
+function Py_dlg_input(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  P1, P2, P3, P4: PAnsiChar;
+  StrCaption, StrVal, StrFN, StrSection: Widestring;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'ssss:dlg_input', @P1, @P2, @P3, @P4) <> 0 then
+    begin
+      StrCaption:= UTF8Decode(AnsiString(P1));
+      StrVal:= UTF8Decode(AnsiString(P2));
+      StrFN:= UTF8Decode(AnsiString(P3));
+      StrSection:= UTF8Decode(AnsiString(P4));
+
+      if ExtractFileDir(StrFN)='' then
+        StrFN:= PyIniDir + '\' + StrFN;
+
+      if DoInputString(StrCaption, StrVal, StrFN, StrSection) then
+        Result:= PyUnicode_FromWideString(StrVal)
+      else
+        Result:= ReturnNone;
+    end;
+  end;
+end;
+
+function Py_msg_box(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  N: Integer;
+  H: THandle;
+  P: PAnsiChar;
+  Str: Widestring;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'is:msg_box', @N, @P) <> 0 then
+    begin
+      Str:= UTF8Decode(AnsiString(P));
+      H:= Application.MainForm.Handle;
+      case N of
+        0:
+          begin
+            MsgInfo(Str, H);
+            Result:= ReturnNone;
+          end;
+        1:
+          begin
+            MsgWarn(Str, H);
+            Result:= ReturnNone;
+          end;
+        2:
+          begin
+            MsgError(Str, H);
+            Result:= ReturnNone;
+          end;
+        -1:
+          begin
+            N:= Ord(MsgConfirm(Str, H));
+            Result:= PyBool_FromLong(N);
+          end;
+        else
+          Result:= ReturnNone;
+      end;
+    end;
+  end;
+end;
+
+
+function Py_BadModuleName(const S: string): boolean;
+var
+  i: Integer;
+begin
+  Result:= true;
+  if S='' then Exit;
+  if not IsAlphaChar(S[1]) then Exit;
+  for i:= 1 to Length(S) do
+    if not IsWordChar(S[i]) then Exit;
+  Result:= false;
+end;
+
+function Py_NameToMixedCase(const S: string): string;
+var
+  n: Integer;
+begin
+  Result:= S;
+  if Result='' then Exit;
+  Result[1]:= UpCase(Result[1]);
+  repeat
+    n:= Pos('_', Result);
+    if n=0 then Exit;
+    Delete(Result, n, 1);
+    if n<=Length(Result) then
+      Result[n]:= UpCase(Result[n]);
+  until false;
+end;
+
+function Py_SamplePluginText(const SId: string): string;
+const
+  cSamplePlugin =
+    'from sw import *'#13+
+    'from sw_util import *'#13#13+
+    'class Command:'#13+
+    '    def run(self):'#13+
+    '        s = "Hello, World"'#13+
+    '        msg_box(MSG_INFO, s)'#13+
+    '';
+begin
+  Result:= Format(cSamplePlugin, [Py_NameToMixedCase(SId)]);
+end;
 
 end.
