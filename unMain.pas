@@ -21468,34 +21468,6 @@ begin
   Result:= cSynOK;
 end;
 
-function Py_msg_local(Self, Args: PPyObject): PPyObject; cdecl;
-  //
-  function GetFN(const fn_py, Suffix: string): string;
-  begin
-    Result:= ExtractFilePath(fn_py) + Suffix + '.lng';
-  end;
-  //
-var
-  P1, P2: PAnsiChar;
-  fn_py, fn_lng, fn_en_lng, msg_id: string;
-  S: Widestring;
-begin
-  with GetPythonEngine do
-  begin
-    if PyArg_ParseTuple(Args, 'ss:msg_local', @P1, @P2) <> 0 then
-    begin
-      msg_id:= UTF8Decode(AnsiString(P1));
-      fn_py:= UTF8Decode(AnsiString(P2));
-
-      fn_lng:= GetFN(fn_py, FHelpLangSuffix);
-      fn_en_lng:= GetFN(fn_py, 'En');
-
-      S:= DoReadLangMsg(fn_lng, fn_en_lng, msg_id);
-      Result:= PyUnicode_FromWideString(S);
-    end;
-  end;
-end;
-
 function TfmMain.PluginAction(AHandle: Pointer; AName: PWideChar; A1, A2, A3, A4: Pointer): Integer; stdcall;
 var
   act: Widestring;

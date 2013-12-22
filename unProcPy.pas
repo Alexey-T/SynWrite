@@ -25,8 +25,10 @@ function Py_app_exe_dir(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_app_ini_dir(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_ini_read(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ini_write(Self, Args: PPyObject): PPyObject; cdecl;
+
 function Py_dlg_input(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_msg_box(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_msg_local(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_text_sel(Self, Args: PPyObject): PPyObject; cdecl;
@@ -82,6 +84,7 @@ uses
   ecStrUtils,
   ATxFProc,
   unProc,
+  unProcHelp,
   unProcEditor;
 
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
@@ -771,16 +774,17 @@ end;
 procedure Py_RunPlugin_Command(const SId, SCmd: string);
 var
   L: TStringList;
+  SObj: string;
 begin
+  //object name from module name
+  SObj:= '_syncommand_' + SId;
+
   L:= TStringList.Create;
   try
-    L.Add(Format('import %s                   ', [SId]));
-    L.Add(Format('try:                        ', ['']));
-    L.Add(Format('    if _syncommand_%s:      ', [SId]));
-    L.Add(Format('        pass                ', ['']));
-    L.Add(Format('except NameError:           ', ['']));
-    L.Add(Format('    _syncommand_%s = %s.%s()', [SId, SId, 'Command']));
-    L.Add(Format('_syncommand_%s.%s()         ', [SId, SCmd]));
+    L.Add(Format('import %s               ', [SId]));
+    L.Add(Format('if "%s" not in locals():', [SObj]));
+    L.Add(Format('    %s = %s.%s()        ', [SObj, SId, 'Command']));
+    L.Add(Format('%s.%s()                 ', [SObj, SCmd]));
     try
       GetPythonEngine.ExecStrings(L);
     except
@@ -788,6 +792,34 @@ begin
     end;
   finally
     FreeAndNil(L);
+  end;
+end;
+
+function Py_msg_local(Self, Args: PPyObject): PPyObject; cdecl;
+  //
+  function GetFN(const fn_py, Suffix: string): string;
+  begin
+    Result:= ExtractFilePath(fn_py) + Suffix + '.lng';
+  end;
+  //
+var
+  P1, P2: PAnsiChar;
+  fn_py, fn_lng, fn_en_lng, msg_id: string;
+  S: Widestring;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'ss:msg_local', @P1, @P2) <> 0 then
+    begin
+      msg_id:= UTF8Decode(AnsiString(P1));
+      fn_py:= UTF8Decode(AnsiString(P2));
+
+      fn_lng:= GetFN(fn_py, FHelpLangSuffix);
+      fn_en_lng:= GetFN(fn_py, 'En');
+
+      S:= DoReadLangMsg(fn_lng, fn_en_lng, msg_id);
+      Result:= PyUnicode_FromWideString(S);
+    end;
   end;
 end;
 
