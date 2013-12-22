@@ -12,6 +12,7 @@ var
   PyExeDir: string = '';
   PyIniDir: string = '';
 
+procedure Py_RunPlugin_Command(const SId, SCmd: string);
 function Py_SamplePluginText(const SId: string): string;
 function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
@@ -79,6 +80,7 @@ uses
   Forms,
   ecSyntAnal,
   ecStrUtils,
+  ATxFProc,
   unProc,
   unProcEditor;
 
@@ -760,6 +762,29 @@ begin
       ExecStrings(L);
       Obj:= EvalString(Format('module_exists(r"%s")', [SId]));
       Result:= PyObject_IsTrue(Obj) <> 0;
+    end;
+  finally
+    FreeAndNil(L);
+  end;
+end;
+
+procedure Py_RunPlugin_Command(const SId, SCmd: string);
+var
+  L: TStringList;
+begin
+  L:= TStringList.Create;
+  try
+    L.Add(Format('import %s                   ', [SId]));
+    L.Add(Format('try:                        ', ['']));
+    L.Add(Format('    if _syncommand_%s:      ', [SId]));
+    L.Add(Format('        pass                ', ['']));
+    L.Add(Format('except NameError:           ', ['']));
+    L.Add(Format('    _syncommand_%s = %s.%s()', [SId, SId, 'Command']));
+    L.Add(Format('_syncommand_%s.%s()         ', [SId, SCmd]));
+    try
+      GetPythonEngine.ExecStrings(L);
+    except
+      MsgBeep(true);
     end;
   finally
     FreeAndNil(L);

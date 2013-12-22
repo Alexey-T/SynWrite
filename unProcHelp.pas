@@ -60,7 +60,7 @@ begin
 	1038: Result:= 'Hu';
     1040: Result:= 'It';
     1041: Result:= 'Jp';
-	1042: Result:= 'Ko';
+	1042: Result:= 'Kr';
     1049: Result:= 'Ru';
     2052: Result:= 'Chs';
 	1028: Result:= 'Cht';

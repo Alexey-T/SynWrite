@@ -22,6 +22,7 @@ uses
 
 procedure MemoScrollToBottom(Memo: TTntMemo);
 function SZenFindLeft(const s: ecString; iFrom: integer): integer;
+function DoReadLangMsg(const fn_lng, fn_en_lng, msg_id: string): Widestring;
 
 procedure SParseString_AcpHtml(
   const AcpStr, Atr: string; List: TStringList);
@@ -1803,6 +1804,28 @@ procedure MemoScrollToBottom(Memo: TTntMemo);
 begin
   with Memo do
     Perform(EM_LINESCROLL, 0, Lines.Count);
+end;
+
+
+function DoReadLangMsg(const fn_lng, fn_en_lng, msg_id: string): Widestring;
+const
+  cSection = 'L';
+begin
+  if fn_lng<>fn_en_lng then
+    with TIniFile.Create(fn_lng) do
+    try
+      Result:= UTF8Decode(ReadString(cSection, msg_id, ''));
+    finally
+      Free
+    end;
+
+  if Result='' then
+    with TIniFile.Create(fn_en_lng) do
+    try
+      Result:= UTF8Decode(ReadString(cSection, msg_id, ''));
+    finally
+      Free
+    end;
 end;
 
 
