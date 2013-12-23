@@ -18,9 +18,10 @@ function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
 
+function Py_ed_get_smarks(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_cmd(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_begin_update(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_end_update(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_lock(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_unlock(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_app_exe_dir(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_app_ini_dir(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_ini_read(Self, Args: PPyObject): PPyObject; cdecl;
@@ -34,6 +35,7 @@ function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_text_sel(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_text_line(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_text_len(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_text_substr(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_caret_pos(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
@@ -41,6 +43,8 @@ function Py_ed_set_caret_pos(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_pos_xy(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_xy_pos(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_xy_log(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_log_xy(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_line_count(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_line_prop(Self, Args: PPyObject): PPyObject; cdecl;
@@ -62,6 +66,7 @@ function Py_ed_get_sel_mode(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_sel(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_sel_rect(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_sel(Self, Args: PPyObject): PPyObject; cdecl;
+//function Py_ed_set_sel_nomove(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_sel_rect(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_sel_lines(Self, Args: PPyObject): PPyObject; cdecl;
 
@@ -77,6 +82,7 @@ uses
   Windows,
   SysUtils,
   Types,
+  Variants,
   Classes,
   IniFiles,
   Forms,
@@ -85,7 +91,7 @@ uses
   ATxFProc,
   unProc,
   unProcHelp,
-  unProcEditor;
+  unProcEditor, ecLists;
 
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 begin
@@ -432,6 +438,41 @@ begin
   end;
 end;
 
+function Py_ed_xy_log(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  X, Y: Integer;
+  P: TPoint;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'ii:ed_xy_log', @X, @Y) <> 0 then
+    begin
+      P:= PyEditor.LinesPosToLog(Point(X, Y));
+      Result:= Py_BuildValue('(ii)', P.X, P.Y);
+      Exit
+    end;
+    Result:= ReturnNone;
+  end;
+end;
+
+function Py_ed_log_xy(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  X, Y: Integer;
+  P: TPoint;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'ii:ed_log_xy', @X, @Y) <> 0 then
+    begin
+      P:= PyEditor.LogToLinesPos(Point(X, Y));
+      Result:= Py_BuildValue('(ii)', P.X, P.Y);
+      Exit
+    end;
+    Result:= ReturnNone;
+  end;
+end;
+
+
 function Py_ed_set_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
 var
   X, Y: Integer;
@@ -463,13 +504,14 @@ end;
 
 function Py_ed_set_sel(Self, Args: PPyObject): PPyObject; cdecl;
 var
-  NStart, NLen: Integer;
+  NStart, NLen, NFlag: Integer;
 begin
   with GetPythonEngine do
   begin
-    if PyArg_ParseTuple(Args, 'ii:ed_set_sel', @NStart, @NLen) <> 0 then
+    NFlag:= 0;
+    if PyArg_ParseTuple(Args, 'ii|i:ed_set_sel', @NStart, @NLen, @NFlag) <> 0 then
     begin
-      PyEditor.SetSelection(NStart, NLen);
+      PyEditor.SetSelection(NStart, NLen, Bool(NFlag));
       Result:= ReturnNone;
     end;
   end;
@@ -529,14 +571,14 @@ begin
   end;
 end;
 
-function Py_ed_begin_update(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_lock(Self, Args: PPyObject): PPyObject; cdecl;
 begin
   PyEditor.BeginUpdate;
   with GetPythonEngine do
     Result:= ReturnNone;
 end;
 
-function Py_ed_end_update(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_unlock(Self, Args: PPyObject): PPyObject; cdecl;
 begin
   PyEditor.EndUpdate;
   with GetPythonEngine do
@@ -820,6 +862,45 @@ begin
       S:= DoReadLangMsg(fn_lng, fn_en_lng, msg_id);
       Result:= PyUnicode_FromWideString(S);
     end;
+  end;
+end;
+
+function Py_ed_get_text_substr(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  NSt, NLen: Integer;
+  Str: Widestring;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'ii:ed_get_text_substr', @NSt, @NLen) <> 0 then
+    begin
+      Str:= Copy(PyEditor.Lines.FText, NSt + 1, NLen);
+      Result:= PyUnicode_FromWideString(Str);
+    end;
+  end;
+end;
+
+
+function Py_ed_get_smarks(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  NLen, i: Integer;
+  ComArray: Variant;
+begin
+  with GetPythonEngine do
+  begin
+    NLen:= PyEditor.SearchMarks.Count;
+    if NLen>0 then
+    begin
+      ComArray:= VarArrayCreate([0, NLen-1, 0, 1], varInteger);
+      for i:= 0 to NLen-1 do
+      begin
+        ComArray[i, 0]:= PyEditor.SearchMarks[i].StartPos;
+        ComArray[i, 1]:= PyEditor.SearchMarks[i].Size;
+      end;
+      Result:= VariantAsPyObject(ComArray);
+    end
+    else
+      Result:= ReturnNone;
   end;
 end;
 

@@ -3050,7 +3050,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.1.200';
+  cSynVer = '6.2.250';
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -23108,7 +23108,9 @@ begin
   //insert string into editor
   Ed.BeginUpdate;
   try
+    Ed.CaretStrPos:= Pos1; //needed! otherwise ReplaceText will leave trailing blanks after small block.
     Ed.ReplaceText(Pos1, Pos2-Pos1, S);
+
     EditorSetModified(Ed);
 
     //restore selection Ln1...Ln2
@@ -27054,6 +27056,7 @@ begin
     AddMethod('ed_get_text_sel', Py_ed_get_text_sel, '');
     AddMethod('ed_get_text_line', Py_ed_get_text_line, '');
     AddMethod('ed_get_text_len', Py_ed_get_text_len, '');
+    AddMethod('ed_get_text_substr', Py_ed_get_text_substr, '');
 
     AddMethod('ed_get_caret_xy', Py_ed_get_caret_xy, '');
     AddMethod('ed_get_caret_pos', Py_ed_get_caret_pos, '');
@@ -27061,6 +27064,8 @@ begin
     AddMethod('ed_set_caret_pos', Py_ed_set_caret_pos, '');
     AddMethod('ed_pos_xy', Py_ed_pos_xy, '');
     AddMethod('ed_xy_pos', Py_ed_xy_pos, '');
+    AddMethod('ed_log_xy', Py_ed_log_xy, '');
+    AddMethod('ed_xy_log', Py_ed_xy_log, '');
 
     AddMethod('ed_get_line_count', Py_ed_get_line_count, '');
     AddMethod('ed_get_line_prop', Py_ed_get_line_prop, '');
@@ -27077,6 +27082,7 @@ begin
     AddMethod('ed_get_tab_spaces', Py_ed_get_tab_spaces, '');
     AddMethod('ed_get_tab_size', Py_ed_get_tab_size, '');
     AddMethod('ed_get_colmarkers', Py_ed_get_colmarkers, '');
+    AddMethod('ed_get_smarks', Py_ed_get_smarks, '');
 
     AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
     AddMethod('ed_get_sel_lines', Py_ed_get_sel_lines, '');
@@ -27092,8 +27098,8 @@ begin
     AddMethod('ed_set_topline', Py_ed_set_topline, '');
 
     AddMethod('ed_cmd', Py_ed_cmd, '');
-    AddMethod('ed_begin_update', Py_ed_begin_update, '');
-    AddMethod('ed_end_update', Py_ed_end_update, '');
+    AddMethod('ed_lock', Py_ed_lock, '');
+    AddMethod('ed_unlock', Py_ed_unlock, '');
   end;
 end;
 
