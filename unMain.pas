@@ -400,7 +400,7 @@ type
     TBXItemG8: TSpTbxItem;
     TBXItemG9: TSpTbxItem;
     TBXSubmenuItemHelp: TSpTbxSubmenuItem;
-    TBXItemHAbout: TSpTbxItem;
+    TBXItemHelpAbout: TSpTBXItem;
     TBXSubmenuItemOpt: TSpTbxSubmenuItem;
     TBXItemOSetup: TSpTbxItem;
     TBXItemOLexer: TSpTbxItem;
@@ -425,7 +425,7 @@ type
     TBXItemECaseLower: TSpTbxItem;
     TBXItemECaseTitle: TSpTbxItem;
     TBXItemECaseInvert: TSpTbxItem;
-    TBXItemHRead: TSpTbxItem;
+    TBXItemHelpReadmeDir: TSpTBXItem;
     TBXItemONPrint: TSpTbxItem;
     TBXItemONums: TSpTbxItem;
     TBXItemOTree: TSpTbxItem;
@@ -460,7 +460,7 @@ type
     TBXItemQs: TSpTbxItem;
     cbWord: TSpTbxItem;
     TBXItemSMarkAll: TSpTbxItem;
-    TBXItemHHelp: TSpTbxItem;
+    TBXItemHelpTopics: TSpTBXItem;
     TBXItemFClose: TSpTbxItem;
     acClose: TAction;
     PopupTb: TSpTbxPopupMenu;
@@ -646,7 +646,7 @@ type
     TBXSubmenuItem17: TSpTbxSubmenuItem;
     TBXItemEMoveDn: TSpTbxItem;
     TBXItemEMoveUp: TSpTbxItem;
-    TBXItemHDonate: TSpTbxItem;
+    TBXItemHelpDonate: TSpTBXItem;
     TBXItemEDelLn: TSpTbxItem;
     TBXSeparatorItem47: TSpTbxSeparatorItem;
     TBXSubmenuItem18: TSpTbxSubmenuItem;
@@ -821,7 +821,7 @@ type
     ecSplitRight: TAction;
     ecFindNextWithExtend: TAction;
     ecFindPrevWithExtend: TAction;
-    TBXItemHKeyMap: TSpTbxItem;
+    TBXItemHelpKeymap: TSpTBXItem;
     ecFindInList: TAction;
     ecFindInListNext: TAction;
     ecFindInListPrev: TAction;
@@ -1011,7 +1011,7 @@ type
     TBXItemEToggleLineCommentAlt: TSpTbxItem;
     TBXItemCtxPasteToColumn1: TSpTbxItem;
     ecCommandsList: TAction;
-    TBXItemECommandList: TSpTbxItem;
+    TBXItemHelpCommandList: TSpTBXItem;
     ecProjectList: TAction;
     TBXSeparatorItem90: TSpTbxSeparatorItem;
     TbxSubmenuCarets: TSpTbxSubmenuItem;
@@ -1239,6 +1239,7 @@ type
     PythonModule: TPythonModule;
     SpTBXSeparatorItem25: TSpTBXSeparatorItem;
     TbxItemRunNewPlugin: TSpTBXItem;
+    TbxItemHelpPyDir: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1317,7 +1318,7 @@ type
     procedure ecCharPopupShow(Sender: TObject);
     procedure ecACPShow(Sender: TObject);
     procedure acSetupLexerExecuteOK(Sender: TObject);
-    procedure TBXItemHReadClick(Sender: TObject);
+    procedure TBXItemHelpReadmeDirClick(Sender: TObject);
     procedure TBXSubmenuLineEndsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXSubmenuEncPopup(Sender: TTBCustomItem;
@@ -1358,7 +1359,7 @@ type
       Shift: TShiftState);
     procedure cbWordClick(Sender: TObject);
     procedure TBXItemSMarkAllClick(Sender: TObject);
-    procedure TBXItemHHelpClick(Sender: TObject);
+    procedure TBXItemHelpTopicsClick(Sender: TObject);
     procedure TBXItemTabCloseClick(Sender: TObject);
     procedure TBXItemTabNewClick(Sender: TObject);
     procedure DKLanguageController1LanguageChanged(Sender: TObject);
@@ -1503,7 +1504,7 @@ type
     procedure ecToggleStreamCommentExecute(Sender: TObject);
     procedure TBXItemEMoveUpClick(Sender: TObject);
     procedure TBXItemEMoveDnClick(Sender: TObject);
-    procedure TBXItemHDonateClick(Sender: TObject);
+    procedure TBXItemHelpDonateClick(Sender: TObject);
     procedure TBXItemEDelLnClick(Sender: TObject);
     procedure TBXItemECpFNClick(Sender: TObject);
     procedure TBXItemECpFullPathClick(Sender: TObject);
@@ -1605,7 +1606,7 @@ type
     procedure TreeKeyPress(Sender: TObject; var Key: Char);
     procedure ecFindNextWithExtendExecute(Sender: TObject);
     procedure ecFindPrevWithExtendExecute(Sender: TObject);
-    procedure TBXItemHKeyMapClick(Sender: TObject);
+    procedure TBXItemHelpKeymapClick(Sender: TObject);
     procedure ecFindInListExecute(Sender: TObject);
     procedure ecFindInListNextExecute(Sender: TObject);
     procedure ecFindInListPrevExecute(Sender: TObject);
@@ -1989,6 +1990,7 @@ type
     procedure PythonGUIInputOutput1SendUniData(Sender: TObject;
       const Data: WideString);
     procedure TbxItemRunNewPluginClick(Sender: TObject);
+    procedure TbxItemHelpPyDirClick(Sender: TObject);
 
   private
     cStatLine,
@@ -3051,6 +3053,7 @@ uses
 
 const
   cSynVer = '6.2.250';
+  cSynPyVer = 101;
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -9346,7 +9349,7 @@ begin
   UpdKey(TbxItemMarkClear, sm_MarkersClear);
   UpdKey(TbxItemMarkGoLast, sm_JumpToLastMarker);
 
-  UpdKey(TbxItemECommandList, sm_CommandsList);
+  UpdKey(TbxItemHelpCommandList, sm_CommandsList);
   UpdKey(TbxItemERepeatCmd, sm_RepeatLastCommand);
   UpdKey(TbxItemSSelToken, sm_SelectToken);
 
@@ -9655,12 +9658,12 @@ begin
   UpdKey(TBXItemTabCopyDir, sm_CopyDirPath);
 end;
 
-procedure TfmMain.TBXItemHReadClick(Sender: TObject);
+procedure TfmMain.TBXItemHelpReadmeDirClick(Sender: TObject);
 begin
   FOpenURL(SynDir + 'Readme', Handle);
 end;
 
-procedure TfmMain.TBXItemHHelpClick(Sender: TObject);
+procedure TfmMain.TBXItemHelpTopicsClick(Sender: TObject);
 begin
   FOpenURL(FHelpFilename, Handle);
 end;
@@ -15565,7 +15568,7 @@ begin
   CurrentEditor.ExecCommand(smDeleteLine);
 end;
 
-procedure TfmMain.TBXItemHDonateClick(Sender: TObject);
+procedure TfmMain.TBXItemHelpDonateClick(Sender: TObject);
 begin
   SynHelpTopic(helpDonate, Handle);
 end;
@@ -17483,7 +17486,7 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXItemHKeyMapClick(Sender: TObject);
+procedure TfmMain.TBXItemHelpKeymapClick(Sender: TObject);
 var
   fn: string;
 begin
@@ -27021,6 +27024,14 @@ begin
   end;
 end;
 
+function Py_app_api_version(Self, Args : PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    Result:= PyInt_FromLong(cSynPyVer);
+  end;
+end;
+
 function Py_msg_status(Self, Args: PPyObject): PPyObject; cdecl;
 var
   P: PAnsiChar;
@@ -27037,6 +27048,28 @@ begin
   end;
 end;
 
+function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  P: PAnsiChar;
+  fn: Widestring;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 's:file_open', @P) <> 0 then
+    begin
+      fn:= UTF8Decode(AnsiString(P));
+      if (fn='') or IsFileExist(fn) then
+      begin
+        fmMain.DoOpenFile(fn);
+        Result:= PyBool_FromLong(1);
+      end
+      else
+        Result:= PyBool_FromLong(0);
+    end;
+  end;
+end;
+
+
 procedure TfmMain.PythonModuleInitialization(Sender: TObject);
 begin
   with Sender as TPythonModule do
@@ -27047,10 +27080,13 @@ begin
     AddMethod('dlg_input', Py_dlg_input, '');
 
     AddMethod('app_version', Py_app_version, '');
+    AddMethod('app_api_version', Py_app_api_version, '');
     AddMethod('app_exe_dir', Py_app_exe_dir, '');
     AddMethod('app_ini_dir', Py_app_ini_dir, '');
+
     AddMethod('ini_read', Py_ini_read, '');
     AddMethod('ini_write', Py_ini_write, '');
+    AddMethod('file_open', Py_file_open, '');
 
     AddMethod('ed_get_text_all', Py_ed_get_text_all, '');
     AddMethod('ed_get_text_sel', Py_ed_get_text_sel, '');
@@ -27071,7 +27107,6 @@ begin
     AddMethod('ed_get_line_prop', Py_ed_get_line_prop, '');
     AddMethod('ed_get_line_nums', Py_ed_get_line_nums, '');
     AddMethod('ed_get_lexer', Py_ed_get_lexer, '');
-    AddMethod('ed_get_lexer_def', Py_ed_get_lexer_def, '');
     AddMethod('ed_get_eol', Py_ed_get_eol, '');
     AddMethod('ed_get_wrap', Py_ed_get_wrap, '');
     AddMethod('ed_get_ro', Py_ed_get_ro, '');
@@ -27143,6 +27178,10 @@ begin
 
   SId:= 'my_sample';
   if not MsgInput('zMPyNew', SId) then Exit;
+  
+  SId:= Trim(SId);
+  if SId='' then Exit;
+  SId:= 'syn_' + SId; //add prefix, so plugin module name won't mess with default names
 
   if Py_ModuleNameIncorrect(SId) then
   begin
@@ -27210,6 +27249,11 @@ procedure TfmMain.DoLogPyCommand(const Str: Widestring);
 begin
   MemoConsole.Lines.Add(Str);
   MemoScrollToBottom(MemoConsole);
+end;
+
+procedure TfmMain.TbxItemHelpPyDirClick(Sender: TObject);
+begin
+  FOpenURL(SynPyDir, Handle);
 end;
 
 end.

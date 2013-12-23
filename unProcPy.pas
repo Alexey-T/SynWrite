@@ -49,7 +49,6 @@ function Py_ed_log_xy(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_line_count(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_line_prop(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_line_nums(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_lexer_def(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_lexer(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_eol(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_wrap(Self, Args: PPyObject): PPyObject; cdecl;
@@ -304,32 +303,31 @@ begin
 end;
 
 
-function Py_ed_get_lexer_def(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  An: TSyntAnalyzer;
-  Str: string;
-begin
-  An:= PyEditor.TextSource.SyntaxAnalyzer;
-  if An<>nil then
-    Str:= An.LexerName
-  else
-    Str:= '';
-
-  with GetPythonEngine do
-  begin
-    Result:= PyUnicode_FromWideString(Str);
-  end;
-end;
-
 function Py_ed_get_lexer(Self, Args: PPyObject): PPyObject; cdecl;
 var
+  Pos: Integer;
   Str: string;
+  An: TSyntAnalyzer;
 begin
-  Str:= EditorCurrentLexerForPos(PyEditor, PyEditor.CaretStrPos);
-
   with GetPythonEngine do
   begin
-    Result:= PyUnicode_FromWideString(Str);
+    if PyArg_ParseTuple(Args, 'i:ed_get_lexer', @Pos) <> 0 then
+    begin
+      Str:= '';
+      case Pos of
+        -1:
+          begin
+            An:= PyEditor.TextSource.SyntaxAnalyzer;
+            if An<>nil then
+              Str:= An.LexerName;
+          end;
+        -2:
+          Str:= EditorCurrentLexerForPos(PyEditor, PyEditor.CaretStrPos);
+        else
+          Str:= EditorCurrentLexerForPos(PyEditor, Pos);
+      end;
+      Result:= PyUnicode_FromWideString(Str);
+    end;
   end;
 end;
 
