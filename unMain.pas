@@ -69,6 +69,18 @@ const
   cPyPluginPrefix = 'py:';
 
 type
+  TSynAddonType = (
+    nTypeNone,
+    nTypeBinPlugin,
+    nTypePyPlugin,
+    nTypeTemplate
+    );
+const
+  cSynAddonType: array[TSynAddonType] of string =
+    ('', 'plugin', 'py-plugin', 'template');
+  cSynMaxPluginsInInf = 120;
+
+type
   TSynEscMode = (
     cEscNothing,
     cEscCloseApp,
@@ -3053,7 +3065,7 @@ uses
 
 const
   cSynVer = '6.2.250';
-  cSynPyVer = 101;
+  cSynPyVer = '1.0.101';
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -10782,6 +10794,9 @@ var
 begin
   PageControl:= Sender as TTntPageControl;
 
+  //let's focus it, to solve clicking [X] on inactive view
+  PageControl.SetFocus;
+
   //drag start
   if opTabDragDrop and
     (Button = mbLeft) then
@@ -13524,10 +13539,10 @@ begin
     Add('-', 0);
   end;
 
-  //Read CP.cfg
+  //Read Enc.cfg
   SS:= TStringList.create;
   SK:= TStringlist.create;
-  Ini:= TMemIniFile.Create(SynDir + 'CP.cfg');
+  Ini:= TMemIniFile.Create(SynDir + 'Enc.cfg');
   try
     Ini.ReadSections(SS);
     for i:= 0 to SS.Count-1 do
@@ -26785,12 +26800,10 @@ end;
 procedure TfmMain.DoOpenArchive(const fn: Widestring);
 const
   cInf = 'install.inf';
-  cPlugin = 'plugin';
-  cTemplate = 'template';
   //
-  procedure DoHandleIni(const fn_ini, subdir, section: string);
+  function DoHandleIni(const fn_ini, subdir, section: string; typ: TSynAddonType): boolean;
   var
-    s_section, s_id, s_file, s_params: string;
+    s_section, s_id, s_file, s_params, s_value: string;
   begin
     with TIniFile.Create(fn_ini) do
     try
@@ -26802,27 +26815,40 @@ const
       Free
     end;
 
-    if (s_section='') then Exit;
-    if (s_id='') or (s_file='') then
+    Result:= s_section<>'';
+    if not Result then Exit;
+
+    if (s_id='') then
     begin
       MsgError('Section in inf-file is invalid', Handle);
       Exit
     end;
 
+    case typ of
+      nTypeBinPlugin:
+        s_value:= subdir + '\' + s_file + ';' + s_params;
+      nTypePyPlugin:
+        s_value:= 'py:' + subdir + ';' + s_params;
+      else
+        Exit;
+    end;
+
     with TIniFile.Create(SynPluginsIni) do
     try
-      WriteString(s_section, s_id, subdir + '\' + s_file + ';' + s_params);
+      WriteString(s_section, s_id, s_value);
     finally
       Free
     end;
+
+    ///debug
+    //MsgInfo(Format('Write key: [%s] %s=%s', [s_section, s_id, '.....']), Handle);
   end;
   //
-type
-  TSynAddonType = (nTypeNone, nTypePlugin, nTypeTemplate);
 var
   fn_inf, dir_to: string;
   s_title, s_type, s_subdir: string;
-  n_type: TSynAddonType;
+  n_type, i_type: TSynAddonType;
+  i: integer;
 begin
   dir_to:= FTempDir;
   fn_inf:= dir_to + '\' + cInf;
@@ -26849,9 +26875,13 @@ begin
     Free
   end;
 
-  if s_type = cPlugin then n_type:= nTypePlugin else
-   if s_type = cTemplate then n_type:= nTypeTemplate else
-    n_type:= nTypeNone;
+  n_type:= nTypeNone;
+  for i_type:= Low(TSynAddonType) to High(TSynAddonType) do
+    if s_type = cSynAddonType[i_type] then
+    begin
+      n_type:= i_type;
+      Break
+    end;
 
   if (s_title='') then
   begin
@@ -26874,8 +26904,10 @@ begin
     Handle) then Exit;
 
   case n_type of
-    nTypePlugin:
+    nTypeBinPlugin:
       dir_to:= SynDir + 'Plugins\' + s_subdir;
+    nTypePyPlugin:
+      dir_to:= SynPyDir + '\' + s_subdir;
     nTypeTemplate:
       dir_to:= SynDir + 'Template\' + s_subdir;
     else
@@ -26891,33 +26923,18 @@ begin
     MsgError(DKLangConstW('zMInstallCantUnpack'), Handle);
     Exit
   end;
-  FDelete(fn_inf);
-  
-  if n_type=nTypePlugin then
+
+  if n_type in [nTypeBinPlugin, nTypePyPlugin] then
   begin
-    DoHandleIni(fn_inf, s_subdir, 'ini');
-    DoHandleIni(fn_inf, s_subdir, 'ini1');
-    DoHandleIni(fn_inf, s_subdir, 'ini2');
-    DoHandleIni(fn_inf, s_subdir, 'ini3');
-    DoHandleIni(fn_inf, s_subdir, 'ini4');
-    DoHandleIni(fn_inf, s_subdir, 'ini5');
-    DoHandleIni(fn_inf, s_subdir, 'ini6');
-    DoHandleIni(fn_inf, s_subdir, 'ini7');
-    DoHandleIni(fn_inf, s_subdir, 'ini8');
-    DoHandleIni(fn_inf, s_subdir, 'ini9');
-    DoHandleIni(fn_inf, s_subdir, 'ini10');
-    DoHandleIni(fn_inf, s_subdir, 'ini11');
-    DoHandleIni(fn_inf, s_subdir, 'ini12');
-    DoHandleIni(fn_inf, s_subdir, 'ini13');
-    DoHandleIni(fn_inf, s_subdir, 'ini14');
-    DoHandleIni(fn_inf, s_subdir, 'ini15');
-    DoHandleIni(fn_inf, s_subdir, 'ini16');
-    DoHandleIni(fn_inf, s_subdir, 'ini17');
-    DoHandleIni(fn_inf, s_subdir, 'ini18');
-    DoHandleIni(fn_inf, s_subdir, 'ini19');
-    DoHandleIni(fn_inf, s_subdir, 'ini20');
+    DoHandleIni(fn_inf, s_subdir, 'ini', n_type);
+    for i:= 1 to cSynMaxPluginsInInf do
+    begin
+      if not DoHandleIni(fn_inf, s_subdir, 'ini'+IntToStr(i), n_type) then
+        Break
+    end;
   end;
 
+  FDelete(fn_inf);
   MsgInfo(Format(DKLangConstW('zMInstallOk'), [dir_to]), Handle);
   acExit.Execute;
 end;
@@ -27028,7 +27045,7 @@ function Py_app_api_version(Self, Args : PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
   begin
-    Result:= PyInt_FromLong(cSynPyVer);
+    Result:= PyString_FromString(cSynPyVer);
   end;
 end;
 
