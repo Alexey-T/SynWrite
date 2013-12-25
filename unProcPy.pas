@@ -18,6 +18,8 @@ function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
 
+function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
+
 function Py_ed_get_smarks(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_cmd(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_lock(Self, Args: PPyObject): PPyObject; cdecl;
@@ -899,6 +901,34 @@ begin
     end
     else
       Result:= ReturnNone;
+  end;
+end;
+
+function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  P1, P2: PAnsiChar;
+  SRegex, SData: Widestring;
+  ResL: TSynStrArray;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'ss:regex_parse', @P1, @P2) <> 0 then
+    begin
+      SRegex:= UTF8Decode(AnsiString(P1));
+      SData:= UTF8Decode(AnsiString(P2));
+
+      SParseRegexArray(SData, SRegex, ResL);
+      Result:= Py_BuildValue('(ssssssss)',
+        PChar(UTF8Encode(ResL[0])),
+        PChar(UTF8Encode(ResL[1])),
+        PChar(UTF8Encode(ResL[2])),
+        PChar(UTF8Encode(ResL[3])),
+        PChar(UTF8Encode(ResL[4])),
+        PChar(UTF8Encode(ResL[5])),
+        PChar(UTF8Encode(ResL[6])),
+        PChar(UTF8Encode(ResL[7]))
+        );
+    end;
   end;
 end;
 

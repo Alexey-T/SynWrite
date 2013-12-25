@@ -27072,6 +27072,63 @@ begin
   end;
 end;
 
+function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
+const
+  cSynPyProjectIndexBase = 10000;
+  cNone = '?';
+var
+  N, Id: Integer;
+  Str: Widestring;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'i:file_get_name', @N) <> 0 then
+    begin
+      Str:= cNone;
+
+      //get project's file name
+      if (N >= cSynPyProjectIndexBase) then
+      begin
+        id:= N - cSynPyProjectIndexBase;
+        with fmMain do
+          if Assigned(fmProj) then
+            if (id < fmProj.TreeProj.Items.Count) then
+              Str:= fmProj.GetFN(fmProj.TreeProj.Items[id]);
+      end
+      else
+      //get editor-tab filename
+      if (N >= 0) then
+      begin
+        id:= N;
+        if id < fmMain.FrameAllCount then
+          Str:= fmMain.FramesAll[id].FileName;
+      end
+      else
+      case N of
+        -1: Str:= fmMain.CurrentFrame.FileName;
+        -2: Str:= fmMain.OppositeFileName;
+        -3: Str:= fmMain.FSessionFN;
+        -10: Str:= fmMain.CurrentProjectFN;
+        -11: Str:= fmMain.CurrentProjectMainFN;
+        -12: Str:= fmMain.CurrentProjectWorkDir;
+        -13: Str:= fmMain.CurrentProjectSessionFN;
+      end;
+
+      if Str=cNone then
+        Result:= ReturnNone
+      else
+        Result:= PyUnicode_FromWideString(Str);
+    end;
+  end;
+end;
+
+function Py_file_save(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  fmMain.acSave.Execute;
+  with GetPythonEngine do
+    Result:= ReturnNone;
+end;    
+
 function Py_ed_complete(Self, Args: PPyObject): PPyObject; cdecl;
 var
   P: PAnsiChar;
@@ -27135,7 +27192,11 @@ begin
 
     AddMethod('ini_read', Py_ini_read, '');
     AddMethod('ini_write', Py_ini_write, '');
+
     AddMethod('file_open', Py_file_open, '');
+    AddMethod('file_save', Py_file_save, '');
+    AddMethod('file_get_name', Py_file_get_name, '');
+    AddMethod('regex_parse', Py_regex_parse, '');
 
     AddMethod('ed_focus', Py_ed_focus, '');
     AddMethod('ed_complete', Py_ed_complete, '');
