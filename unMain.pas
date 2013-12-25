@@ -22546,15 +22546,22 @@ begin
         begin MsgBeep; Exit end;
     end;
 
-    Item:= TSpTbxItem.Create(Self);
-    if CapItem='' then
-      Item.Caption:= CapMenu
+    if CapItem='-' then
+    begin
+      ItemSub.Add(TSpTbxSeparatorItem.Create(Self));
+    end
     else
-      Item.Caption:= CapItem;
-    Item.Tag:= NIndex;
-    Item.ShortCut:= TextToShortcut(SShortcut);
-    Item.OnClick:= PluginCommandItemClick;
-    ItemSub.Add(Item);
+    begin
+      Item:= TSpTbxItem.Create(Self);
+      if CapItem='' then
+        Item.Caption:= CapMenu
+      else
+        Item.Caption:= CapItem;
+      Item.Tag:= NIndex;
+      Item.ShortCut:= TextToShortcut(SShortcut);
+      Item.OnClick:= PluginCommandItemClick;
+      ItemSub.Add(Item);
+    end;
   end;
 end;
 
@@ -26820,7 +26827,7 @@ const
 
     if (s_id='') then
     begin
-      MsgError('Section in inf-file is invalid', Handle);
+      MsgError('Section in inf-file is incorrect', Handle);
       Exit
     end;
 
@@ -27065,6 +27072,31 @@ begin
   end;
 end;
 
+function Py_ed_complete(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  P: PAnsiChar;
+  Str: Widestring;
+  NLen, NShow, NRes: Integer;
+begin
+  with GetPythonEngine do
+  begin
+    NShow:= 1;
+    if PyArg_ParseTuple(Args, 'si|i:ed_complete', @P, @NLen, @NShow) <> 0 then
+    begin
+      Str:= UTF8Decode(AnsiString(P));
+      NRes:= fmMain.PluginAction_SuggestCompletion(PWChar(Str), NLen, Bool(NShow));
+      Result:= PyBool_FromLong(Ord(NRes = cSynOK));
+    end;
+  end;
+end;
+
+function Py_ed_focus(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  fmMain.FocusEditor;
+  with GetPythonEngine do
+    Result:= ReturnNone;
+end;    
+
 function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
 var
   P: PAnsiChar;
@@ -27104,6 +27136,9 @@ begin
     AddMethod('ini_read', Py_ini_read, '');
     AddMethod('ini_write', Py_ini_write, '');
     AddMethod('file_open', Py_file_open, '');
+
+    AddMethod('ed_focus', Py_ed_focus, '');
+    AddMethod('ed_complete', Py_ed_complete, '');
 
     AddMethod('ed_get_text_all', Py_ed_get_text_all, '');
     AddMethod('ed_get_text_sel', Py_ed_get_text_sel, '');

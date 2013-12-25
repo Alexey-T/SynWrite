@@ -792,12 +792,12 @@ var
 begin
   L:= TStringList.Create;
   try
-    L.Add('import pkgutil');
-    L.Add('def module_exists(m):');
-    L.Add('    for module_loader, name, ispkg in pkgutil.iter_modules():');
-    L.Add('        if name == m:');
-    L.Add('            return True');
-    L.Add('    return False');
+    L.Add('import pkgutil                                     ');
+    L.Add('def module_exists(m):                              ');
+    L.Add('    for ldr, name, ispkg in pkgutil.iter_modules():');
+    L.Add('        if name == m:                              ');
+    L.Add('            return True                            ');
+    L.Add('    return False                                   ');
 
     //Messagebox(0, pchar(str), '', 0);
     with GetPythonEngine do
