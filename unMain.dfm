@@ -21019,6 +21019,7 @@ object fmMain: TfmMain
   end
   object PythonGUIInputOutput1: TPythonGUIInputOutput
     OnSendUniData = PythonGUIInputOutput1SendUniData
+    OnReceiveUniData = PythonGUIInputOutput1ReceiveUniData
     UnicodeIO = True
     RawOutput = False
     Output = MemoConsole
@@ -21037,7 +21038,7 @@ object fmMain: TfmMain
     PyFlags = [pfUnicode, pfIgnoreEnvironmentFlag]
     OnAfterInit = PythonEngine1AfterInit
     Left = 463
-    Top = 200
+    Top = 196
   end
   object PythonModule: TPythonModule
     Engine = PythonEngine1

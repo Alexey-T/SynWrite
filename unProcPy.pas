@@ -18,9 +18,13 @@ function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
 
+//function Py_app_process(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 
-function Py_ed_get_smarks(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_carets(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_marks(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
+
 function Py_ed_cmd(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_lock(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_unlock(Self, Args: PPyObject): PPyObject; cdecl;
@@ -50,24 +54,17 @@ function Py_ed_log_xy(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_line_count(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_line_prop(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_line_nums(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_lexer(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_eol(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_wrap(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_ro(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_margin(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_topline(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_folding(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_nonprinted(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_tab_spaces(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_tab_size(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_colmarkers(Self, Args: PPyObject): PPyObject; cdecl;
+
+function Py_ed_get_top(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_left(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_top(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_left(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_sel_mode(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_sel(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_sel_rect(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_sel(Self, Args: PPyObject): PPyObject; cdecl;
-//function Py_ed_set_sel_nomove(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_sel_rect(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_sel_lines(Self, Args: PPyObject): PPyObject; cdecl;
 
@@ -75,7 +72,6 @@ function Py_ed_replace(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_insert(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_text_line(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_topline(Self, Args: PPyObject): PPyObject; cdecl;
 
 implementation
 
@@ -137,19 +133,6 @@ begin
     Result:= ReturnNone;
   end;
 end;
-
-{
-function Py_ed_set_ro(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  B: Boolean;
-begin
-  with GetPythonEngine do
-  begin
-    if PyArg_ParseTuple(Args, 'b:ed_set_ro', @B) <> 0 then
-      PyEditor.ReadOnly:= B;
-  end;
-end;
-}
 
 function Py_ed_get_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -215,55 +198,7 @@ begin
   end;
 end;
 
-function Py_ed_get_wrap(Self, Args: PPyObject): PPyObject; cdecl;
-begin
-  with GetPythonEngine do
-  begin
-    Result:= PyBool_FromLong(Ord(PyEditor.WordWrap));
-  end;
-end;
-
-function Py_ed_get_ro(Self, Args: PPyObject): PPyObject; cdecl;
-begin
-  with GetPythonEngine do
-  begin
-    Result:= PyBool_FromLong(Ord(PyEditor.ReadOnly));
-  end;
-end;
-
-function Py_ed_get_folding(Self, Args: PPyObject): PPyObject; cdecl;
-begin
-  with GetPythonEngine do
-  begin
-    Result:= PyBool_FromLong(Ord(not PyEditor.DisableFolding));
-  end;
-end;
-
-function Py_ed_get_nonprinted(Self, Args: PPyObject): PPyObject; cdecl;
-begin
-  with GetPythonEngine do
-  begin
-    Result:= PyBool_FromLong(Ord(PyEditor.NonPrinted.Visible));
-  end;
-end;
-
-function Py_ed_get_line_nums(Self, Args: PPyObject): PPyObject; cdecl;
-begin
-  with GetPythonEngine do
-  begin
-    Result:= PyBool_FromLong(Ord(PyEditor.LineNumbers.Visible));
-  end;
-end;
-
-function Py_ed_get_margin(Self, Args: PPyObject): PPyObject; cdecl;
-begin
-  with GetPythonEngine do
-  begin
-    Result:= PyInt_FromLong(PyEditor.RightMargin);
-  end;
-end;
-
-function Py_ed_get_topline(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_top(Self, Args: PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
   begin
@@ -271,36 +206,11 @@ begin
   end;
 end;
 
-function Py_ed_get_tab_spaces(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_left(Self, Args: PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
   begin
-    Result:= PyBool_FromLong(Ord(PyEditor.TabMode = tmSpaces));
-  end;
-end;
-
-function Py_ed_get_tab_size(Self, Args: PPyObject): PPyObject; cdecl;
-begin
-  with GetPythonEngine do
-  begin
-    Result:= PyInt_FromLong(EditorTabSize(PyEditor));
-  end;
-end;
-
-
-function Py_ed_get_eol(Self, Args: PPyObject): PPyObject; cdecl;
-begin
-  with GetPythonEngine do
-  begin
-    Result:= PyUnicode_FromWideString(EditorEOL(PyEditor));
-  end;
-end;
-
-function Py_ed_get_colmarkers(Self, Args: PPyObject): PPyObject; cdecl;
-begin
-  with GetPythonEngine do
-  begin
-    Result:= PyUnicode_FromWideString(PyEditor.ColMarkersString);
+    Result:= PyInt_FromLong(PyEditor.ScrollPosX);
   end;
 end;
 
@@ -596,19 +506,34 @@ begin
   end;
 end;
 
-function Py_ed_set_topline(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_top(Self, Args: PPyObject): PPyObject; cdecl;
 var
   N: Integer;
 begin
   with GetPythonEngine do
   begin
-    if PyArg_ParseTuple(Args, 'i:ed_set_topline', @N) <> 0 then
+    if PyArg_ParseTuple(Args, 'i:ed_set_top', @N) <> 0 then
     begin
       PyEditor.TopLine:= N;
     end;
     Result:= ReturnNone;
   end;
 end;
+
+function Py_ed_set_left(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  N: Integer;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'i:ed_set_left', @N) <> 0 then
+    begin
+      PyEditor.ScrollPosX:= N;
+    end;
+    Result:= ReturnNone;
+  end;
+end;
+
 
 function Py_app_exe_dir(Self, Args : PPyObject): PPyObject; cdecl;
 begin
@@ -881,7 +806,7 @@ begin
 end;
 
 
-function Py_ed_get_smarks(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_marks(Self, Args: PPyObject): PPyObject; cdecl;
 var
   NLen, i: Integer;
   ComArray: Variant;
@@ -903,6 +828,32 @@ begin
       Result:= ReturnNone;
   end;
 end;
+
+function Py_ed_get_carets(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  NLen, i: Integer;
+  ComArray: Variant;
+  Pnt: TPoint;
+begin
+  with GetPythonEngine do
+  begin
+    NLen:= PyEditor.CaretsCount;
+    if NLen>0 then
+    begin
+      ComArray:= VarArrayCreate([0, NLen-1, 0, 1], varInteger);
+      for i:= 0 to NLen-1 do
+      begin
+        Pnt:= PyEditor.GetCaret(i);
+        ComArray[i, 0]:= Pnt.X;
+        ComArray[i, 1]:= Pnt.Y;
+      end;
+      Result:= VariantAsPyObject(ComArray);
+    end
+    else
+      Result:= ReturnNone;
+  end;
+end;
+
 
 function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -931,5 +882,56 @@ begin
     end;
   end;
 end;
+
+function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  Id: Integer;
+  Size: TSize;
+begin
+  with GetPythonEngine do
+    if PyArg_ParseTuple(Args, 'i:ed_get_prop', @Id) <> 0 then
+      case Id of
+        1:
+          Result:= PyBool_FromLong(Ord(PyEditor.LineNumbers.Visible));
+        2:
+          Result:= PyUnicode_FromWideString(EditorEOL(PyEditor));
+        3:
+          Result:= PyBool_FromLong(Ord(PyEditor.WordWrap));
+        4:
+          Result:= PyBool_FromLong(Ord(PyEditor.ReadOnly));
+        5:
+          Result:= PyInt_FromLong(PyEditor.RightMargin);
+        6:
+          Result:= PyBool_FromLong(Ord(not PyEditor.DisableFolding));
+        7:
+          Result:= PyBool_FromLong(Ord(PyEditor.NonPrinted.Visible));
+        8:
+          Result:= PyBool_FromLong(Ord(PyEditor.TabMode = tmSpaces));
+        9:
+          Result:= PyInt_FromLong(EditorTabSize(PyEditor));
+        10:
+          Result:= PyUnicode_FromWideString(PyEditor.ColMarkersString);
+        11:
+          begin
+            Size:= PyEditor.DefTextExt;
+            Result:= Py_BuildValue('(ii)', Size.cx, Size.cy);
+          end;
+        12:
+          Result:= PyInt_FromLong(PyEditor.Zoom);
+        13:
+          Result:= PyBool_FromLong(Ord(not PyEditor.ReplaceMode));
+        else
+          Result:= ReturnNone;
+      end;
+end;
+
+{
+function Py_app_process(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  Application.ProcessMessages;
+  with GetPythonEngine do
+    Result:= ReturnNone;
+end;
+}
 
 end.

@@ -104,7 +104,6 @@ type
     procedure DoKeepCaretInText(var P: TPoint);
     procedure DoSortCarets;
     procedure DoListDupLines(L: TList);
-    function GetCaret(N: Integer): TPoint;
     procedure SetCaret(N: Integer; const P: TPoint);
     function GetCaretCoord(N: Integer): TPoint;
     procedure SetCaretCoord(N: Integer; const P: TPoint);
@@ -138,6 +137,7 @@ type
     destructor Destroy; override;
     procedure AddCaret(const P: TPoint; AddDefaultPos: boolean = true);
     procedure AddCaretsColumn(const PFrom, PTo: TPoint);
+    function GetCaret(N: Integer): TPoint;
     procedure RemoveCarets(LeaveFirst: boolean = true);
     function CaretsCount: Integer;
     procedure CaretsProps(var NTop, NBottom: integer);

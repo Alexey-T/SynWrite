@@ -70,14 +70,15 @@ const
 
 type
   TSynAddonType = (
-    nTypeNone,
-    nTypeBinPlugin,
-    nTypePyPlugin,
-    nTypeTemplate
+    cAddonTypeNone,
+    cAddonTypeBinPlugin,
+    cAddonTypePyPlugin,
+    cAddonTypeTemplate,
+    cAddonTypeRoot
     );
 const
   cSynAddonType: array[TSynAddonType] of string =
-    ('', 'plugin', 'py-plugin', 'template');
+    ('', 'plugin', 'py-plugin', 'template', 'root-addon');
   cSynMaxPluginsInInf = 120;
 
 type
@@ -2003,6 +2004,8 @@ type
       const Data: WideString);
     procedure TbxItemRunNewPluginClick(Sender: TObject);
     procedure TbxItemHelpPyDirClick(Sender: TObject);
+    procedure PythonGUIInputOutput1ReceiveUniData(Sender: TObject;
+      var Data: WideString);
 
   private
     cStatLine,
@@ -2624,6 +2627,7 @@ type
     procedure FixMenuBigImageList(Menu: TSpTbxSubmenuItem);
     procedure FixMruBigImageList(Menu: TSpTbxMruListItem);
     procedure FixSplitters;
+    procedure FocusPages(Pages: TTntPageControl);
     function SynFilesFilter: Widestring;
     procedure DoOptionsDialog(tabId: Integer);
     procedure DoTreeFocus;
@@ -3064,7 +3068,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.2.250';
+  cSynVer = '6.2.280';
   cSynPyVer = '1.0.101';
       
 const
@@ -10795,7 +10799,7 @@ begin
   PageControl:= Sender as TTntPageControl;
 
   //let's focus it, to solve clicking [X] on inactive view
-  PageControl.SetFocus;
+  FocusPages(PageControl);
 
   //drag start
   if opTabDragDrop and
@@ -26832,9 +26836,9 @@ const
     end;
 
     case typ of
-      nTypeBinPlugin:
+      cAddonTypeBinPlugin:
         s_value:= subdir + '\' + s_file + ';' + s_params;
-      nTypePyPlugin:
+      cAddonTypePyPlugin:
         s_value:= 'py:' + subdir + ';' + s_params;
       else
         Exit;
@@ -26882,7 +26886,7 @@ begin
     Free
   end;
 
-  n_type:= nTypeNone;
+  n_type:= cAddonTypeNone;
   for i_type:= Low(TSynAddonType) to High(TSynAddonType) do
     if s_type = cSynAddonType[i_type] then
     begin
@@ -26900,7 +26904,7 @@ begin
     MsgError('Invalid field in inf-file: subdir', Handle);
     Exit
   end;
-  if (n_type=nTypeNone) then
+  if (n_type = cAddonTypeNone) then
   begin
     MsgError('Invalid field in inf-file: type', Handle);
     Exit
@@ -26911,12 +26915,14 @@ begin
     Handle) then Exit;
 
   case n_type of
-    nTypeBinPlugin:
+    cAddonTypeBinPlugin:
       dir_to:= SynDir + 'Plugins\' + s_subdir;
-    nTypePyPlugin:
+    cAddonTypePyPlugin:
       dir_to:= SynPyDir + '\' + s_subdir;
-    nTypeTemplate:
+    cAddonTypeTemplate:
       dir_to:= SynDir + 'Template\' + s_subdir;
+    cAddonTypeRoot:
+      dir_to:= ExcludeTrailingPathDelimiter(SynDir)  
     else
       dir_to:= '?';
   end;
@@ -26931,7 +26937,7 @@ begin
     Exit
   end;
 
-  if n_type in [nTypeBinPlugin, nTypePyPlugin] then
+  if n_type in [cAddonTypeBinPlugin, cAddonTypePyPlugin] then
   begin
     DoHandleIni(fn_inf, s_subdir, 'ini', n_type);
     for i:= 1 to cSynMaxPluginsInInf do
@@ -27218,19 +27224,15 @@ begin
 
     AddMethod('ed_get_line_count', Py_ed_get_line_count, '');
     AddMethod('ed_get_line_prop', Py_ed_get_line_prop, '');
-    AddMethod('ed_get_line_nums', Py_ed_get_line_nums, '');
+    AddMethod('ed_get_carets', Py_ed_get_carets, '');
+    AddMethod('ed_get_marks', Py_ed_get_marks, '');
     AddMethod('ed_get_lexer', Py_ed_get_lexer, '');
-    AddMethod('ed_get_eol', Py_ed_get_eol, '');
-    AddMethod('ed_get_wrap', Py_ed_get_wrap, '');
-    AddMethod('ed_get_ro', Py_ed_get_ro, '');
-    AddMethod('ed_get_margin', Py_ed_get_margin, '');
-    AddMethod('ed_get_topline', Py_ed_get_topline, '');
-    AddMethod('ed_get_folding', Py_ed_get_folding, '');
-    AddMethod('ed_get_nonprinted', Py_ed_get_nonprinted, '');
-    AddMethod('ed_get_tab_spaces', Py_ed_get_tab_spaces, '');
-    AddMethod('ed_get_tab_size', Py_ed_get_tab_size, '');
-    AddMethod('ed_get_colmarkers', Py_ed_get_colmarkers, '');
-    AddMethod('ed_get_smarks', Py_ed_get_smarks, '');
+    AddMethod('ed_get_prop', Py_ed_get_prop, '');
+
+    AddMethod('ed_get_top', Py_ed_get_top, '');
+    AddMethod('ed_get_left', Py_ed_get_left, '');
+    AddMethod('ed_set_top', Py_ed_set_top, '');
+    AddMethod('ed_set_left', Py_ed_set_left, '');
 
     AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
     AddMethod('ed_get_sel_lines', Py_ed_get_sel_lines, '');
@@ -27243,7 +27245,6 @@ begin
     AddMethod('ed_insert', Py_ed_insert, '');
     AddMethod('ed_set_text_all', Py_ed_set_text_all, '');
     AddMethod('ed_set_text_line', Py_ed_set_text_line, '');
-    AddMethod('ed_set_topline', Py_ed_set_topline, '');
 
     AddMethod('ed_cmd', Py_ed_cmd, '');
     AddMethod('ed_lock', Py_ed_lock, '');
@@ -27367,6 +27368,26 @@ end;
 procedure TfmMain.TbxItemHelpPyDirClick(Sender: TObject);
 begin
   FOpenURL(SynPyDir, Handle);
+end;
+
+procedure TfmMain.FocusPages(Pages: TTntPageControl);
+begin
+  //first focus PageControl, then focus editor
+  if Pages.CanFocus then
+    Pages.SetFocus;
+  FocusEditor;
+  {
+  //design time:
+  PageControl1.TabStop:= false;
+  PageControl2.TabStop:= false;
+  }
+end;
+
+procedure TfmMain.PythonGUIInputOutput1ReceiveUniData(Sender: TObject;
+  var Data: WideString);
+begin
+  Data:= '';
+  if DoInputString('Python prompt:', Data) then begin end;
 end;
 
 end.
