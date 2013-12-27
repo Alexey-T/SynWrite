@@ -350,6 +350,7 @@ type
     cbProjCloseTabs: TTntCheckBox;
     bKeyExtend: TTntButton;
     labHelpKeys: TTntLabel;
+    bPy: TTntButton;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -446,6 +447,7 @@ type
     procedure tabUndoShow(Sender: TObject);
     procedure bKeyExtendClick(Sender: TObject);
     procedure labHelpKeysClick(Sender: TObject);
+    procedure bPyClick(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
@@ -1835,6 +1837,9 @@ begin
     //output panel
     ListOut.Font:= b6.Font;
     ApplyOut;
+    //console
+    opFontConsole:= bPy.Font.Name+','+IntToStr(bPy.Font.Size);
+    ApplyFontConsole;
     
     ApplyFonts;
   end;
@@ -2146,6 +2151,7 @@ begin
     b4.Font:= TemplateEditor.HorzRuler.Font;
     b5.Font:= ecACP.Font;
     b6.Font:= ListOut.Font;
+    bPy.Font:= MemoConsole.Font;
   end;
 end;
 
@@ -2742,6 +2748,13 @@ end;
 procedure TfmSetup.labHelpKeysClick(Sender: TObject);
 begin
   SynHelpTopic(helpKeys, Handle);
+end;
+
+procedure TfmSetup.bPyClick(Sender: TObject);
+begin
+  FontDialog.Font:= bPy.Font;
+  if FontDialog.Execute then
+    bPy.Font:= FontDialog.Font;
 end;
 
 end.

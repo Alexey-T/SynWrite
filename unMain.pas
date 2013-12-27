@@ -64,6 +64,8 @@ const
   cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
   cBandFolding = 3; //index of gutter band for folding
   SynDefaultSyn = '(default).syn';
+
+  cPyConsoleMaxCount = 1000;
   cPyConsolePrompt = '>>> ';
   cPyConsoleInit = 'print("Python", sys.version)';
   cPyPluginPrefix = 'py:';
@@ -2091,12 +2093,13 @@ type
     orig_Ruler: boolean;
     orig_TabRight: TSynTabRight;
     orig_TabLeft: TSynTabLeft;
+    orig_TabOut: TSynTabOut;
     orig_TabsSort: integer;
     orig_TabsWidths: string;
 
     //auto-complete lists
-    FAcpIntHtml, //Htm.acp: section [HTML]
-    FAcpIntCss, //Htm.acp: section [CSS]
+    FAcpIntHtml,
+    FAcpIntCss,
     FAcpList_Display, //ACP: display list (in form "\s1\...\s2\...")
     FAcpList_Items, //ACP: names with brackets+parameters
     FAcpList_Hints, //ACP: hints (in form "(param1; param2)")
@@ -2712,6 +2715,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     //opt
+    opFontConsole: string;
     opSyncEditIcon: boolean;
     opTabFontSize: integer;
     opWordChars: Widestring;
@@ -2900,6 +2904,7 @@ type
     property ShowFullScreen: boolean read FFullScr write SetFS;
     property ShowOnTop: boolean read FOnTop write SetOnTop;
 
+    procedure ApplyFontConsole;
     procedure ApplyTabFontSize;
     procedure ApplyTabOptions;
     procedure ApplyCarets;
@@ -4370,6 +4375,9 @@ begin
     opTabFontSize:= ReadInteger('Setup', 'TabFontSize', 0);
     ApplyTabFontSize;
 
+    opFontConsole:= ReadString('View', 'PyFont', 'Consolas,10,');
+    ApplyFontConsole;
+
     opNewEnc:= ReadInteger('Setup', 'NEnc', 0);
     opNewLineEnds:= ReadInteger('Setup', 'NLe', 0);
     opNewLex:= ReadString('Setup', 'NLex', '');
@@ -4559,8 +4567,12 @@ begin
     LoadPanelProp(plOut, Ini, 'Out');
     LoadPanelProp(plClip, Ini, 'Clip');
     FOutVisible:= plOut.Visible;
+
     FTabLeft:= TSynTabLeft(ReadInteger('plTree', 'Tab', 0));
     FTabRight:= TSynTabRight(ReadInteger('plClip', 'Tab', 0));
+    FTabOut:= TSynTabOut(ReadInteger('plOut', 'Tab', 0));
+    if FTabOut=tbPluginsLog then //don't restore last avtive Log panel
+      FTabOut:= tbOut;
 
     //opt
     ApplyDefaultFonts;
@@ -4589,6 +4601,7 @@ begin
     orig_Clip:= plClip.Visible;
     orig_TabRight:= FTabRight;
     orig_TabLeft:= FTabLeft;
+    orig_TabOut:= FTabOut;
     orig_TabsSort:= opTabsSortMode;
     orig_TabsWidths:= opTabsWidths;
   finally
@@ -4668,6 +4681,8 @@ begin
       WriteInteger('plClip', 'Tab', Ord(FTabRight));
     if FTabLeft <> orig_TabLeft then
       WriteInteger('plTree', 'Tab', Ord(FTabLeft));
+    if FTabOut <> orig_TabOut then
+      WriteInteger('plOut', 'Tab', Ord(FTabOut));
     if opTabsSortMode <> orig_TabsSort then
       WriteInteger('View', 'TabSort', opTabsSortMode);
     if opTabsWidths <> orig_TabsWidths then
@@ -4855,6 +4870,7 @@ begin
     WriteInteger('Setup', 'SortM', Ord(opSortMode));
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
 
+    WriteString('View', 'PyFont', opFontConsole);
     WriteBool('View', 'CaretsEn', opCaretsEnabled);
     WriteInteger('View', 'CaretsInd', opCaretsIndicator);
     WriteInteger('View', 'CaretsGBand', opCaretsGutterBand);
@@ -6260,10 +6276,12 @@ end;
 
 procedure TfmMain.MRU_SessClick(Sender: TObject; const S: WideString);
 begin
-  if not AskSession(true) then
-    Exit;
   if IsFileExist(S) then
-    DoOpenSession(S)
+  begin
+    if not AskSession(true) then
+      Exit;
+    DoOpenSession(S);
+  end
   else
   begin
     MsgNoFile(S);
@@ -12626,6 +12644,14 @@ var
 begin
   sh:= Shortcut(Key, Shift);
   if sh=0 then Exit;
+
+  //Cmd list
+  if IsShortcutOfCmd(sh, sm_CommandsList) then
+  begin
+    ecCommandsList.Execute;
+    Key:= 0;
+    Exit
+  end;
 
   //Toggle panels
   if IsShortcutOfCmd(sh, sm_OptShowLeftPanel) then
@@ -20574,8 +20600,8 @@ begin
     TemplateEditor.LineNumbers.Font.Name:= cc;
     TemplateEditor.HorzRuler.Font.Name:= cc;
 
-    MemoConsole.Font.Name:= cc;
-    edConsole.Font.Name:= cc;
+    //MemoConsole.Font.Name:= cc;
+    //edConsole.Font.Name:= cc;
   end;
 end;
 
@@ -27361,7 +27387,13 @@ end;
 
 procedure TfmMain.DoLogPyCommand(const Str: Widestring);
 begin
-  MemoConsole.Lines.Add(Str);
+  with MemoConsole do
+  begin
+    Lines.Add(Str);
+    while Lines.Count > cPyConsoleMaxCount do
+      Lines.Delete(0);
+  end;
+
   MemoScrollToBottom(MemoConsole);
 end;
 
@@ -27388,6 +27420,22 @@ procedure TfmMain.PythonGUIInputOutput1ReceiveUniData(Sender: TObject;
 begin
   Data:= '';
   if DoInputString('Python prompt:', Data) then begin end;
+end;
+
+procedure TfmMain.ApplyFontConsole;
+var
+  S, SName, SSize: Widestring;
+  NSize: Integer;
+begin
+  S:= opFontConsole;
+  SName:= SGetItem(S);
+  SSize:= SGetItem(S);
+  NSize:= StrToIntDef(SSize, MemoConsole.Font.Size);
+
+  MemoConsole.Font.Name:= SName;
+  MemoConsole.Font.Size:= NSize;
+  edConsole.Font.Name:= SName;
+  edConsole.Font.Size:= NSize;
 end;
 
 end.

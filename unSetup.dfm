@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabKey
+    ActivePage = tabFonts
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -353,7 +353,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = -3
         Width = 529
-        Height = 172
+        Height = 192
         Caption = 'Fonts'
         TabOrder = 0
         object b1: TTntButton
@@ -409,6 +409,15 @@ object fmSetup: TfmSetup
           Caption = 'Output panel'
           TabOrder = 5
           OnClick = b6Click
+        end
+        object bPy: TTntButton
+          Left = 10
+          Top = 160
+          Width = 242
+          Height = 23
+          Caption = 'Python console'
+          TabOrder = 6
+          OnClick = bPyClick
         end
       end
     end
@@ -2969,7 +2978,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0149010000
+      0700666D5365747570010100000001000000070043617074696F6E014A010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3268,7 +3277,7 @@ object fmSetup: TfmSetup
       00C6020000070043617074696F6E000F00636250726F6A436C6F736554616273
       0101000000C7020000070043617074696F6E000A00624B6579457874656E6401
       01000000C8020000070043617074696F6E000B006C616248656C704B65797300
-      00}
+      0003006250790101000000C9020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

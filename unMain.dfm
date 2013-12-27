@@ -625,7 +625,7 @@ object fmMain: TfmMain
         Width = 888
         Height = 21
         Align = alBottom
-        ActiveTabIndex = 4
+        ActiveTabIndex = 2
         TabPosition = ttpBottom
         HiddenItems = <>
         object TbxTabOutput: TSpTBXTabItem
@@ -638,6 +638,7 @@ object fmMain: TfmMain
         end
         object TbxTabTidy: TSpTBXTabItem
           Caption = 'Validation'
+          Checked = True
           OnClick = TBXItemOOValClick
         end
         object TbxTabPlugins: TSpTBXTabItem
@@ -647,7 +648,6 @@ object fmMain: TfmMain
         end
         object TbxTabConsole: TSpTBXTabItem
           Caption = 'Python Console'
-          Checked = True
           OnClick = TbxTabConsoleClick
         end
       end
@@ -21038,7 +21038,7 @@ object fmMain: TfmMain
     PyFlags = [pfUnicode, pfIgnoreEnvironmentFlag]
     OnAfterInit = PythonEngine1AfterInit
     Left = 463
-    Top = 196
+    Top = 200
   end
   object PythonModule: TPythonModule
     Engine = PythonEngine1
