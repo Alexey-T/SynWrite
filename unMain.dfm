@@ -691,6 +691,7 @@ object fmMain: TfmMain
           ReadOnly = True
           ScrollBars = ssBoth
           TabOrder = 1
+          OnDblClick = MemoConsoleDblClick
           OnKeyDown = MemoConsoleKeyDown
         end
       end

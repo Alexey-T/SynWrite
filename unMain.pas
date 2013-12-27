@@ -2008,6 +2008,7 @@ type
     procedure TbxItemHelpPyDirClick(Sender: TObject);
     procedure PythonGUIInputOutput1ReceiveUniData(Sender: TObject;
       var Data: WideString);
+    procedure MemoConsoleDblClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2691,6 +2692,7 @@ type
     procedure DoRegisterPyCommandPlugin(const SId: string);
     procedure DoLoadPyPlugin(const SFilename, SCmd: string);
     procedure DoLogPyCommand(const Str: Widestring);
+    procedure DoRepeatPyConsoleCommand;
     //end of private
 
   protected
@@ -27000,6 +27002,7 @@ begin
     MsgBeep(true);
   end;
 
+  edConsole.Text:= Str;
   ComboUpdate(edConsole, opSaveSRHist);
   edConsole.Text:= '';
   if edConsole.CanFocus then
@@ -27060,9 +27063,31 @@ begin
   DoHandleKeysInPanels(Key, Shift);
 end;
 
+procedure TfmMain.DoRepeatPyConsoleCommand;
+var
+  S: Widestring;
+begin
+  S:= MemoConsole.Lines[MemoConsole.CaretPos.Y];
+  if SBegin(S, cPyConsolePrompt) then
+  begin
+    Delete(S, 1, Length(cPyConsolePrompt));
+    DoEnterConsoleCommand(S);
+  end
+  else
+    MsgBeep;
+end;
+
 procedure TfmMain.MemoConsoleKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
+  //Enter key should repeat command already entered in memoConsole
+  if (Key=13) and (Shift=[]) then
+  begin
+    DoRepeatPyConsoleCommand;
+    Key:= 0;
+    Exit
+  end;
+
   DoHandleKeysInPanels(Key, Shift);
 end;
 
@@ -27443,6 +27468,11 @@ begin
   MemoConsole.Font.Size:= NSize;
   edConsole.Font.Name:= SName;
   edConsole.Font.Size:= NSize;
+end;
+
+procedure TfmMain.MemoConsoleDblClick(Sender: TObject);
+begin
+  DoRepeatPyConsoleCommand;
 end;
 
 end.
