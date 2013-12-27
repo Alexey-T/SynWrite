@@ -2191,8 +2191,8 @@ type
 
     //private methods
     procedure DoTest;
-    procedure DoDelayedCommand(Command: Integer);
-    procedure DoDelayedCommand2(Command: Integer);
+    procedure DoDelayedCommandAny(Command: Integer);
+    procedure DoDelayedCommandWithClose(Command: Integer);
     function ListTab_FrameIndex: integer;
     function GetTabsWidths: Widestring;
     procedure SetTabsWidths(const S: Widestring);
@@ -2695,8 +2695,8 @@ type
 
   protected
     procedure CreateParams(var Params: TCreateParams); override;
-    procedure WM1(var m: TMessage); message WM_USER + 1;
-    procedure WM2(var m: TMessage); message WM_USER + 2;
+    procedure WMCommandAny(var m: TMessage); message WM_USER + 1;
+    procedure WMCommandWithClose(var m: TMessage); message WM_USER + 2;
     //end of protected
 
   public
@@ -5244,12 +5244,12 @@ begin
     FLastCmdBreak:= true;
 end;
 
-procedure TfmMain.DoDelayedCommand(Command: Integer);
+procedure TfmMain.DoDelayedCommandAny(Command: Integer);
 begin
   PostMessage(Handle, WM_USER + 1, Command, 0);
 end;
 
-procedure TfmMain.DoDelayedCommand2(Command: Integer);
+procedure TfmMain.DoDelayedCommandWithClose(Command: Integer);
 begin
   PostMessage(Handle, WM_USER + 2, Command, 0);
 end;
@@ -5920,13 +5920,17 @@ begin
     sm_Fav_AddProject: acFavAddProj.Execute;
     sm_Fav_Organize: acFavManage.Execute;
 
-    //tab closing handling is special
+    //tab closing commands are special, they destroy current editor,
+    //so need to perform them not in OnExecuteCommand
     sm_FileClose,
     sm_FileCloseAndDelete,
     sm_FileCloseAll,
     sm_FileCloseOthers,
-    sm_FileRenameDialog:
-      DoDelayedCommand2(Command);
+    sm_FileRenameDialog,
+    sm_FileOpenSession,
+    sm_FileAddSession,
+    sm_FileCloseSession:
+      DoDelayedCommandWithClose(Command);
 
     sm_FileMoveToOtherView:
       DoMoveTabToOtherView(-1);
@@ -5934,9 +5938,6 @@ begin
     sm_FileExit: acExit.Execute;
     sm_FileSaveSession: DoSaveSession;
     sm_FileSaveSessionAs: DoSaveSessionAs;
-    sm_FileOpenSession: DoSessionOpenDialog;
-    sm_FileAddSession: DoSessionAddDialog;
-    sm_FileCloseSession: DoCloseSession(true);
 
     sm_FileExportRtf: acExportRTF.Execute;
     sm_FileExportHtml: acExportHTML.Execute;
@@ -8602,7 +8603,7 @@ begin
         if ((KeyStrokes.Count > 0) and (KeyStrokes[0].AsString = S)) or
           ((KeyStrokes.Count > 1) and (KeyStrokes[1].AsString = S)) then
         begin
-          DoDelayedCommand(Command);
+          DoDelayedCommandAny(Command);
           Key:= 0;
           Exit
         end;
@@ -8856,12 +8857,12 @@ end;
 
 procedure TfmMain.DoAcpPopup;
 begin
-  DoDelayedCommand(ecACP.CommandID{650});
+  DoDelayedCommandAny(ecACP.CommandID{650});
 end;
 
 procedure TfmMain.DoFuncHintPopup;
 begin
-  DoDelayedCommand(ParamCompletion.CommandID{652});
+  DoDelayedCommandAny(ParamCompletion.CommandID{652});
 end;
 
 procedure TfmMain.ecACPListClick;
@@ -9008,7 +9009,7 @@ begin
       AskSession(true, true);
 end;
 
-procedure TfmMain.WM1(var m: TMessage);
+procedure TfmMain.WMCommandAny(var m: TMessage);
 begin
   if CurrentEditor<>nil then
     CurrentEditor.ExecCommand(m.wParam);
@@ -11786,7 +11787,7 @@ begin
   end;
 end;
 
-procedure TfmMain.WM2(var m: TMessage);
+procedure TfmMain.WMCommandWithClose(var m: TMessage);
 begin
   case m.WParam of
     sm_FileClose:
@@ -11799,6 +11800,12 @@ begin
       acCloseOthers.Execute;
     sm_FileRenameDialog:
       acRename.Execute;
+    sm_FileOpenSession:
+      DoSessionOpenDialog;
+    sm_FileAddSession:
+      DoSessionAddDialog;
+    sm_FileCloseSession:
+      DoCloseSession(true);
   end;
   m.Result:= 1;
 end;
