@@ -2573,7 +2573,7 @@ type
     procedure LoadMacros;
     procedure LoadPrintOptions;
     procedure LoadHideIni;
-    procedure SaveIni2;
+    procedure SaveOptionsRecent;
     procedure SaveMacros;
     procedure SavePrintOptions;
     procedure SaveLexLib;
@@ -2686,13 +2686,15 @@ type
     procedure ShowDebug(const S: Widestring);
     procedure DoExtendSelection(Ed: TSyntaxMemo);
     function MsgConfirmOpenSaveSession(AFilesCount: Integer; const AFileName: string; ASaveMode: boolean): boolean;
-    procedure DoEnterConsoleCommand(const Str: Widestring);
+    procedure DoEnterPyConsoleCommand(const Str: Widestring);
     procedure DoAddPythonPath(const Dir: string);
     procedure DoNewPythonPluginDialog;
     procedure DoRegisterPyCommandPlugin(const SId: string);
     procedure DoLoadPyPlugin(const SFilename, SCmd: string);
     procedure DoLogPyCommand(const Str: Widestring);
     procedure DoRepeatPyConsoleCommand;
+    procedure LoadConsoleHist;
+    procedure SaveConsoleHist;
     //end of private
 
   protected
@@ -2947,7 +2949,7 @@ type
     function DoOpenFile(const AFileName: WideString): TEditorFrame;
     procedure DoOpenProject(const fn: Widestring); overload;
     procedure DoOpenArchive(const fn: Widestring);
-    procedure SaveIni;
+    procedure SaveOptionsAll;
     procedure SaveSession(const fn: string);
     procedure SaveProjectSession;
     procedure DoOpenProjectSession;
@@ -4651,8 +4653,8 @@ begin
   UpdateShortcuts;
 end;
 
-//save only visible on window
-procedure TfmMain.SaveIni2;
+//save only options visible on window
+procedure TfmMain.SaveOptionsRecent;
 const
   S: array[boolean] of string = ('False', 'True');
 var
@@ -4738,7 +4740,7 @@ begin
 end;
 
 //save all
-procedure TfmMain.SaveIni;
+procedure TfmMain.SaveOptionsAll;
 var
   f: TIniFile;
 begin
@@ -6670,6 +6672,7 @@ begin
   LoadMacros;
   LoadClip;
   LoadHideIni;
+  LoadConsoleHist;
 
   //init proj tree
   ApplyProj;
@@ -8969,7 +8972,8 @@ begin
   //save ini
   if not QuickView then
   try
-    SaveIni2;
+    SaveOptionsRecent;
+    SaveConsoleHist;
   except
     MsgError(DKLangConstW('Appn'), Handle);
   end;
@@ -26992,7 +26996,7 @@ begin
   UpdatePanelOut(tbConsole);
 end;
 
-procedure TfmMain.DoEnterConsoleCommand(const Str: Widestring);
+procedure TfmMain.DoEnterPyConsoleCommand(const Str: Widestring);
 begin
   DoLogPyCommand(cPyConsolePrompt + Str);
 
@@ -27017,7 +27021,7 @@ begin
     if edConsole.Text='' then
       MemoConsole.Lines.Clear
     else
-      DoEnterConsoleCommand(edConsole.Text);
+      DoEnterPyConsoleCommand(edConsole.Text);
     Key:= #0;
     Exit
   end;
@@ -27071,7 +27075,7 @@ begin
   if SBegin(S, cPyConsolePrompt) then
   begin
     Delete(S, 1, Length(cPyConsolePrompt));
-    DoEnterConsoleCommand(S);
+    DoEnterPyConsoleCommand(S);
   end
   else
     MsgBeep;
@@ -27080,7 +27084,7 @@ end;
 procedure TfmMain.MemoConsoleKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  //Enter key should repeat command already entered in memoConsole
+  //Enter should repeat command already entered in memoConsole
   if (Key=13) and (Shift=[]) then
   begin
     DoRepeatPyConsoleCommand;
@@ -27474,6 +27478,17 @@ procedure TfmMain.MemoConsoleDblClick(Sender: TObject);
 begin
   DoRepeatPyConsoleCommand;
 end;
+
+procedure TfmMain.LoadConsoleHist;
+begin
+  ComboLoadFromFile(edConsole, SynHistoryIni, 'Console', false);
+end;
+
+procedure TfmMain.SaveConsoleHist;
+begin
+  ComboSaveToFile(edConsole, SynHistoryIni, 'Console');
+end;
+
 
 end.
 

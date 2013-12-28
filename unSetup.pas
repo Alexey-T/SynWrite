@@ -708,7 +708,7 @@ begin
 
     //save
     opTabOptionsLast:= ListCat.ItemIndex;
-    SaveIni;
+    SaveOptionsAll;
   end;
 end;
 
