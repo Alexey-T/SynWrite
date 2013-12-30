@@ -12,7 +12,7 @@ uses
   Menus, Math,
   ecSyntMemo, ecSyntAnal, ecActns, ecExtHighlight, ecOleDrag, ecEmbObj, ecSpell,
   ATFileNotificationSimple,
-  ATSyntMemo, //this will replace TSyntaxMemo
+  ATSyntMemo, //this replaces TSyntaxMemo class
   TB2Item, SpTBXItem, SpTBXDkPanels;
 
 const
@@ -99,6 +99,8 @@ type
     procedure SplitterDblClick(Sender: TObject);
     procedure EditorMasterCheckChar(Sender: TObject; C: Word;
       var IsWord: Boolean);
+    procedure EditorMasterAfterLineDraw(Sender: TObject; Rect: TRect;
+      Line: Integer);
   private
     FNotifAllYes,
     FNotifAllNo: boolean;
@@ -214,6 +216,7 @@ implementation
 uses
   ecStrUtils, ecCmdConst, ecMemoStrings,
   Types,
+  StrUtils,
   unMain,
   unProc,
   unProcEditor,
@@ -302,7 +305,6 @@ begin
   FCollapsedString:= '';
   FCollapsedRestored:= false;
 
-  //ecSpellChecker.Dictionary:= fmMain.ecDictionary;
   TextSource.Lines.SetObjectsStore;
   EditorMaster.PopupMenu:= TfmMain(Owner).PopupEditor;
   EditorSlave.PopupMenu:= TfmMain(Owner).PopupEditor;
@@ -1560,6 +1562,50 @@ begin
     Result:= TextSource.SyntaxAnalyzer.LexerName;
 end;
 
+
+procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
+  Rect: TRect; Line: Integer);
+var
+  C: TCanvas;
+  Ed: TSyntaxMemo;
+  Str, StrItem: Widestring;
+  NUnderSize: Integer;
+  NPos, NPosStart, NCanvasLeft, NCanvasRight: Integer;
+  NColor: TColor;
+begin
+  NUnderSize:= TfmMain(Owner).opColorUnderline;
+  if NUnderSize > 0 then
+  begin
+    Ed:= Sender as TSyntaxMemo;
+    C:= Ed.Canvas;
+    Str:= TextSource.Lines[Line];
+
+    NPos:= 1;
+    repeat
+      NPos:= PosEx('#', Str, NPos);
+      if NPos=0 then Break;
+
+      Inc(NPos);
+      NPosStart:= NPos;
+      while (NPos<=Length(Str)) and IsWordChar(Str[NPos]) do Inc(NPos);
+      StrItem:= Copy(Str, NPosStart, NPos-NPosStart);
+
+      if IsHexColorString(StrItem) then
+      begin
+        NColor:= Hex2color(StrItem);
+        NCanvasLeft:= Ed.CaretToMouse(NPosStart-1-1, Line).X;
+        NCanvasRight:= Ed.CaretToMouse(NPos-1, Line).X;
+
+        C.Brush.Color:= NColor;
+        C.FillRect(Types.Rect(
+          NCanvasLeft,
+          Rect.Bottom - NUnderSize,
+          NCanvasRight,
+          Rect.Bottom));
+      end;
+    until false;
+  end;
+end;
 
 initialization
   CF_DRAGCOLOR:= RegisterClipboardFormat(CFSTR_DRAGCOLOR);

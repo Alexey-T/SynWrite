@@ -2719,6 +2719,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     //opt
+    opColorUnderline: integer;
     opFontConsole: string;
     opSyncEditIcon: boolean;
     opTabFontSize: integer;
@@ -3077,7 +3078,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.2.280';
+  cSynVer = '6.2.290';
   cSynPyVer = '1.0.101';
       
 const
@@ -4379,6 +4380,7 @@ begin
     opTabFontSize:= ReadInteger('Setup', 'TabFontSize', 0);
     ApplyTabFontSize;
 
+    opColorUnderline:= ReadInteger('Setup', 'ColorUnd', 3);
     opFontConsole:= ReadString('View', 'PyFont', 'Consolas,10,');
     ApplyFontConsole;
 
@@ -4873,6 +4875,7 @@ begin
     WriteBool('Setup', 'CopyLnNoSel', opCopyLineIfNoSel);
     WriteInteger('Setup', 'SortM', Ord(opSortMode));
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
+    WriteInteger('Setup', 'ColorUnd', opColorUnderline);
 
     WriteString('View', 'PyFont', opFontConsole);
     WriteBool('View', 'CaretsEn', opCaretsEnabled);
@@ -27440,15 +27443,14 @@ end;
 
 procedure TfmMain.FocusPages(Pages: TTntPageControl);
 begin
-  //first focus PageControl, then focus editor
-  if Pages.CanFocus then
-    Pages.SetFocus;
+  //this method needed for activating other view by clicking its tab [x] btn.
+  //first focus PageControl, then focus editor.
+
+  with Pages do
+    if (ActivePage<>nil) and (ActivePage.CanFocus) then
+      ActivePage.SetFocus;
+
   FocusEditor;
-  {
-  //design time:
-  PageControl1.TabStop:= false;
-  PageControl2.TabStop:= false;
-  }
 end;
 
 procedure TfmMain.PythonGUIInputOutput1ReceiveUniData(Sender: TObject;

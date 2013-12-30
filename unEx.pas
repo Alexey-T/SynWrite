@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Classes, Controls, Forms,
   TntForms, TntClasses,
   IniFiles,
-  unMain, ATSynPlugins,
+  unMain,
+  ATSynPlugins,
   AppEvnts;
 
 type

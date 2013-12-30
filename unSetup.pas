@@ -279,10 +279,10 @@ type
     cbCopyLineNSel: TTntCheckBox;
     cbColorOnEmpty: TTntCheckBox;
     boxView: TTntGroupBox;
-    Label15: TTntLabel;
-    Label3: TTntLabel;
-    Label14: TTntLabel;
-    TntLabel28: TTntLabel;
+    LabelSpace: TTntLabel;
+    LabelMargin: TTntLabel;
+    LabelNums: TTntLabel;
+    LabelStaple: TTntLabel;
     cbDrawLineBG: TTntCheckBox;
     cbHideCursor: TTntCheckBox;
     edLSpace: TSpinEdit;
@@ -351,6 +351,8 @@ type
     bKeyExtend: TTntButton;
     labHelpKeys: TTntLabel;
     bPy: TTntButton;
+    edColorUnder: TSpinEdit;
+    LabelUnderline: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2072,7 +2074,15 @@ begin
   with fmMain do
   begin
     cbTheme.ItemIndex:= cbTheme.Items.IndexOf(Theme);
+
+    cbIcons.Items.Clear;
+    cbIcons.Items.Add('Standard');
+    cbIcons.Items.Add('Fogue 16x16');
+    cbIcons.Items.Add('Fogue 24x24');
+    cbIcons.Items.Add('Tango 16x16');
+    cbIcons.Items.Add('Tango 22x22');
     cbIcons.ItemIndex:= Icons;
+
     InitColorsArray(Colors);
   end;
 
@@ -2563,6 +2573,8 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soVariableHorzScrollBar];
 
+    opColorUnderline:= edColorUnder.Value;
+
     opNonPrint:= cbNPrintShow.Checked;
     opNonPrintSpaces:= cbNPrintSp.Checked;
     opNonPrintEol:= cbNPrintEol.Checked;
@@ -2666,6 +2678,7 @@ begin
     edLSpace.Value:= TemplateEditor.LineSpacing;
     edLineNums.ItemIndex:= Ord(TemplateEditor.LineNumbers.NumberingStyle);
     edStapleOffset.Value:= TemplateEditor.StapleOffset;
+    edColorUnder.Value:= opColorUnderline;
     cbStaples.ItemIndex:= Ord(TemplateEditor.StaplePen.Style);
     cbDrawWrapMark.Checked:= opShowWrapMark;
     cbDrawCol.Checked:= opShowCurrentColumn;
