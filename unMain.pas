@@ -3078,7 +3078,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.2.290';
+  cSynVer = '6.2.300';
   cSynPyVer = '1.0.101';
       
 const

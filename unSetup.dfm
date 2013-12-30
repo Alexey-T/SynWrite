@@ -2403,8 +2403,8 @@ object fmSetup: TfmSetup
           Width = 41
           Height = 22
           Hint = 
-            'Height of colored line which is drawn below HTML color-tokens #r' +
-            'rggbb.'
+            'Width of colored lines which are drawn below HTML color codes li' +
+            'ke #rrggbb. 0 - disabled.'
           MaxValue = 10
           MinValue = 0
           TabOrder = 10
