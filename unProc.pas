@@ -113,8 +113,8 @@ function IsStringRegex(const S, Regex: ecString): boolean;
 function CompareListDate(List: TTntStringList; Index1, Index2: Integer): Integer;
 function CompareListDateDesc(List: TTntStringList; Index1, Index2: Integer): Integer;
 
-function Color2str(C: TColor): string;
-function Hex2color(const s: string): TColor;
+function SColorToHex(C: TColor): string;
+function SHexColorToColor(const s: string): TColor;
 function IsHexColorString(const s: Widestring): boolean;
 
 function IsCtrlPressed: boolean;
@@ -843,43 +843,46 @@ begin
 end;
 
 
-  function Hex2digit(ch: char): integer;
-  begin
-    ch:= UpCase(ch);
-    if ch>'9' then
-      Result:= Ord(ch)-Ord('A')+10
-    else
-      Result:= Ord(ch)-Ord('0');
-  end;
+function SHexCharToInt(ch: char): integer;
+begin
+  ch:= UpCase(ch);
+  if ch>'9' then
+    Result:= Ord(ch)-Ord('A')+10
+  else
+    Result:= Ord(ch)-Ord('0');
+end;
 
-  function Hex2Byte(const s: string): integer;
-  begin
-    if Length(s)<>2 then
-      raise Exception.Create('Not 2-digit hex string: '+s);
-    Result:= hex2digit(s[1])*16 + hex2digit(s[2]);
-  end;
+function SHexByteToInt(const s: string): integer;
+begin
+  if Length(s)<>2 then
+    raise Exception.Create('Not 2-digit hex string: '+s);
+  Result:=
+    SHexCharToInt(s[1])*16 +
+    SHexCharToInt(s[2]);
+end;
 
-  function Hex2color(const s: string): TColor;
-  var n1, n2, n3: integer;
+function SHexColorToColor(const s: string): TColor;
+var
+  n1, n2, n3: integer;
+begin
+  if Length(s)=6 then
   begin
-    if Length(s)=6 then
-    begin
-      n1:= hex2byte(s[1]+s[2]);
-      n2:= hex2byte(s[3]+s[4]);
-      n3:= hex2byte(s[5]+s[6]);
-      Result:= RGB(n1, n2, n3);
-    end
-    else
-    if Length(s)=3 then
-    begin
-      n1:= hex2byte(s[1]+s[1]);
-      n2:= hex2byte(s[2]+s[2]);
-      n3:= hex2byte(s[3]+s[3]);
-      Result:= RGB(n1, n2, n3);
-    end
-    else
-      raise Exception.Create('Not ok color string: '+s);
-  end;
+    n1:= SHexByteToInt(s[1]+s[2]);
+    n2:= SHexByteToInt(s[3]+s[4]);
+    n3:= SHexByteToInt(s[5]+s[6]);
+    Result:= RGB(n1, n2, n3);
+  end
+  else
+  if Length(s)=3 then
+  begin
+    n1:= SHexByteToInt(s[1]+s[1]);
+    n2:= SHexByteToInt(s[2]+s[2]);
+    n3:= SHexByteToInt(s[3]+s[3]);
+    Result:= RGB(n1, n2, n3);
+  end
+  else
+    raise Exception.Create('Not ok color string: '+s);
+end;
 
 function IsHexChar(Ch: WideChar): boolean;
 begin
@@ -887,7 +890,8 @@ begin
 end;
 
 function IsHexColorString(const s: Widestring): boolean;
-var i: integer;
+var
+  i: integer;
 begin
   Result:= false;
   if (Length(s)<>3) and (Length(s)<>6) then Exit;
@@ -897,7 +901,7 @@ begin
   Result:= true;
 end;
 
-function Color2str(C: TColor): string;
+function SColorToHex(C: TColor): string;
 begin
   Result:= '#' +
     IntToHex(GetRValue(C), 2) +

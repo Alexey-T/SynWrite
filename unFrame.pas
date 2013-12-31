@@ -1592,7 +1592,7 @@ begin
 
       if IsHexColorString(StrItem) then
       begin
-        NColor:= Hex2color(StrItem);
+        NColor:= SHexColorToColor(StrItem);
         NCanvasLeft:= Ed.CaretToMouse(NPosStart-1-1, Line).X;
         NCanvasRight:= Ed.CaretToMouse(NPos-1, Line).X;
 

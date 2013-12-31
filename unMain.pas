@@ -3078,7 +3078,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.2.300';
+  cSynVer = '6.2.305';
   cSynPyVer = '1.0.101';
       
 const
@@ -19018,7 +19018,7 @@ begin
 
     if not IsHexColorString(s) then
       begin MsgColorBad(s); Exit end;
-    NColor:= Hex2color(s);
+    NColor:= SHexColorToColor(s);
 
     MsgColorOK(s);
     Result:= true;
@@ -19033,7 +19033,7 @@ begin
 
     if not IsHexColorString(s) then
       begin MsgColorBad(s); Exit end;
-    NColor:= Hex2color(s);
+    NColor:= SHexColorToColor(s);
 
     MsgColorOK(s);
     Result:= true;
@@ -19050,8 +19050,8 @@ begin
       begin MsgColorBad(SColor); Exit end;
     if not IsHexColorString(SColorText) then
       begin MsgColorBad(SColorText); Exit end;
-    NColor:= Hex2color(SColor);
-    NColorText:= Hex2color(SColorText);
+    NColor:= SHexColorToColor(SColor);
+    NColorText:= SHexColorToColor(SColorText);
 
     MsgColorOK(SColor+ ' / #' +SColorText);
     Result:= true;
@@ -19083,7 +19083,7 @@ begin
 
   if not IsHexColorString(s) then
     begin MsgColorBad(s); Exit end;
-  NColor:= Hex2color(s);
+  NColor:= SHexColorToColor(s);
 
   MsgColorOK(s);
   Result:= true;
@@ -19137,7 +19137,7 @@ begin
         CaretStrPos:= wStart;
         DeleteText(wEnd-wStart);
       end;
-      InsertText(Color2str(Code));
+      InsertText(SColorToHex(Code));
       EndUpdate;
     end;
 end;
@@ -19183,7 +19183,7 @@ begin
 
   //add new menuitem
   Item:= TSpTbxItem.Create(Self);
-  Item.Caption:= Color2str(N);
+  Item.Caption:= SColorToHex(N);
   Item.Tag:= N;
   Item.OnClick:= RecentColorClick;
   Item.Images:= ImageListColorRecent;
@@ -19250,7 +19250,7 @@ begin
         s:= Copy(s, wStart+1, wEnd-wStart);
         if IsHexColorString(s) then
         begin
-          NColor:= Hex2color(s);
+          NColor:= SHexColorToColor(s);
           NStart:= wStart-1;
           NEnd:= wEnd;
         end;
@@ -20138,7 +20138,7 @@ begin
   Result:= '';
   with TbxSubmenuItemRecentColors do
     for i:= Count-1 downto cColorIdxMin do
-      Result:= Result+ Color2str(Items[i].Tag)+',';
+      Result:= Result+ SColorToHex(Items[i].Tag)+',';
 end;
 
 procedure TfmMain.SetRecentColors(const Str: string);
@@ -20154,7 +20154,7 @@ begin
     if SItem='' then Break;
     //Msg(SItem);
     try
-      Code:= Hex2color(SItem);
+      Code:= SHexColorToColor(SItem);
       DoAddRecentColor(Code);
     except
       Continue
@@ -20711,7 +20711,7 @@ var
 begin
   Result:= '';
   for i:= 0 to High(opTabColors) do
-    Result:= Result+ Color2Str(opTabColors[i])+',';
+    Result:= Result+ SColorToHex(opTabColors[i])+',';
 end;
 
 procedure TfmMain.SetTabColors(S: Widestring);
@@ -20725,7 +20725,7 @@ begin
     SItem:= SGetItem(S);
     Delete(SItem, 1, 1);
     if SItem='' then Break;
-    opTabColors[i]:= Hex2Color(SItem);
+    opTabColors[i]:= SHexColorToColor(SItem);
   end;
 end;
 
@@ -25355,7 +25355,7 @@ procedure TfmMain.TBXTabColorGetColor(Sender: TObject; ACol, ARow: Integer;
   var Color: TColor; var Name: WideString);
 begin
   Color:= opTabColors[ACol + ARow * 5];
-  Name:= Color2Str(Color);
+  Name:= SColorToHex(Color);
 end;
 
 procedure TfmMain.TBXTabColorCellClick(Sender: TObject; ACol,
@@ -26075,7 +26075,7 @@ begin
     Delete(s, 1, 1);
     Result:= IsHexColorString(s);
     if Result then
-      AColor:= Hex2color(s);
+      AColor:= SHexColorToColor(s);
   end
   else
   if (s<>'') and IsStringRegex(s, cRegexColorName) then
@@ -26087,7 +26087,7 @@ begin
       Delete(s, 1, 1);
       Result:= IsHexColorString(s);
       if Result then
-        AColor:= Hex2color(s);
+        AColor:= SHexColorToColor(s);
     end;
   end
   else
@@ -27183,6 +27183,7 @@ begin
         -11: Str:= fmMain.CurrentProjectMainFN;
         -12: Str:= fmMain.CurrentProjectWorkDir;
         -13: Str:= fmMain.CurrentProjectSessionFN;
+        -20: Str:= fmMain.SynLexLib;
       end;
 
       if Str=cNone then
