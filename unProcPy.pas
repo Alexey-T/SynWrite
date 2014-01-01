@@ -18,7 +18,9 @@ function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
 
-//function Py_app_process(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_add_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_del_carets(Self, Args: PPyObject): PPyObject; cdecl;
+
 function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_carets(Self, Args: PPyObject): PPyObject; cdecl;
@@ -130,6 +132,27 @@ begin
         Exit
       end;
     end;
+    Result:= ReturnNone;
+  end;
+end;
+
+function Py_ed_del_carets(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  with GetPythonEngine do
+  begin
+    PyEditor.RemoveCarets();
+    Result:= ReturnNone;
+  end;
+end;
+
+function Py_ed_add_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  X, Y: Integer;
+begin
+  with GetPythonEngine do
+  begin
+    if PyArg_ParseTuple(Args, 'ii:ed_xy_pos', @X, @Y) <> 0 then
+      PyEditor.AddCaret(Point(X, Y));
     Result:= ReturnNone;
   end;
 end;

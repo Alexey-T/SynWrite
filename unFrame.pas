@@ -1570,8 +1570,8 @@ var
   Ed: TSyntaxMemo;
   Str, StrItem: Widestring;
   NUnderSize: Integer;
-  NPos, NPosStart, NCanvasLeft, NCanvasRight: Integer;
-  NColor: TColor;
+  NPos, NPosStart, NPosBottom: Integer;
+  PosLeft, PosRight: TPoint;
 begin
   NUnderSize:= TfmMain(Owner).opColorUnderline;
   if NUnderSize > 0 then
@@ -1592,16 +1592,17 @@ begin
 
       if IsHexColorString(StrItem) then
       begin
-        NColor:= SHexColorToColor(StrItem);
-        NCanvasLeft:= Ed.CaretToMouse(NPosStart-1-1, Line).X;
-        NCanvasRight:= Ed.CaretToMouse(NPos-1, Line).X;
+        PosLeft:= Ed.CaretToMouse(NPosStart-1-1, Line);
+        PosRight:= Ed.CaretToMouse(NPos-1, Line);
+        NPosBottom:= PosLeft.Y + Ed.DefLineHeight;
 
-        C.Brush.Color:= NColor;
+        C.Brush.Color:= SHexColorToColor(StrItem);
         C.FillRect(Types.Rect(
-          NCanvasLeft,
-          Rect.Bottom - NUnderSize,
-          NCanvasRight,
-          Rect.Bottom));
+          PosLeft.X,
+          NPosBottom - NUnderSize,
+          PosRight.X,
+          NPosBottom
+          ));
       end;
     until false;
   end;

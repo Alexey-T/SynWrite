@@ -3078,8 +3078,8 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.2.305';
-  cSynPyVer = '1.0.101';
+  cSynVer = '6.2.312';
+  cSynPyVer = '1.0.102';
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -27283,6 +27283,9 @@ begin
     AddMethod('ed_get_caret_pos', Py_ed_get_caret_pos, '');
     AddMethod('ed_set_caret_xy', Py_ed_set_caret_xy, '');
     AddMethod('ed_set_caret_pos', Py_ed_set_caret_pos, '');
+    AddMethod('ed_add_caret_xy', Py_ed_add_caret_xy, '');
+    AddMethod('ed_del_carets', Py_ed_del_carets, '');
+
     AddMethod('ed_pos_xy', Py_ed_pos_xy, '');
     AddMethod('ed_xy_pos', Py_ed_xy_pos, '');
     AddMethod('ed_log_xy', Py_ed_log_xy, '');
