@@ -83,6 +83,7 @@ type
     FListUndo: TList;
     FStaticDraw: boolean;
     FOnCtrlClick: TOnCtrlClick;
+    procedure EditorZoom(Sender: TObject);
     procedure SetStaticDraw;
     procedure SetBlinkingDraw;
     procedure SetCaretsEnabled(Val: boolean);
@@ -387,10 +388,12 @@ begin
     FPrevSaved:= true;
     DoSaveBaseEditor;
   end;
-  
+
   Caret.Visible:= false;
   Options:= Options - [soDrawCurLineFocus];
   DefaultStyles.CurrentLine.Enabled:= false;
+
+  OnZoom:= EditorZoom;
 end;
 
 procedure TSyntaxMemo.DoRestoreBaseEditor;
@@ -1191,6 +1194,7 @@ end;
 procedure TSyntaxMemo.AddCaretsColumn(const PFrom, PTo: TPoint);
 var
   i, N1, N2: Integer;
+  PntOrig, PntCurr: TPoint;
 begin
   if not CanSetCarets then Exit;
   ResetSelection;
@@ -1201,8 +1205,13 @@ begin
 
   N1:= Min(PFrom.Y, PTo.Y);
   N2:= Max(PFrom.Y, PTo.Y);
+  PntOrig:= LinesPosToLog(PFrom);
+
   for i:= N1 to N2 do
-    DoAddCaretInt(Point(PFrom.X, i));
+  begin
+    PntCurr:= LogToLinesPos(Point(PntOrig.X, i));
+    DoAddCaretInt(PntCurr);
+  end;
 
   DoUpdateCarets;
   CaretPos:= PTo;
@@ -1654,5 +1663,9 @@ begin
   until false;
 end;
 
+procedure TSyntaxMemo.EditorZoom(Sender: TObject);
+begin
+  DoUpdateCarets;
+end;
 
 end.

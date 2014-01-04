@@ -27552,7 +27552,7 @@ begin
       false{EnableProcMsg});
 
     for i:= 0 to Files.Count-1 do
-      if DoReadSnippetFromFile(Files[i], InfoRec) then
+      if DoLoadSnippetFromFile(Files[i], InfoRec) then
       begin
         InfoClass:= TSynSnippetClass.Create;
         InfoClass.Info.Name:= InfoRec.Name;

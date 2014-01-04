@@ -18,7 +18,7 @@ type
   end;
 
 procedure DoClearSnippet(var AInfo: TSynSnippetInfo);
-function DoReadSnippetFromFile(const fn: string; var Info: TSynSnippetInfo): boolean;
+function DoLoadSnippetFromFile(const fn: string; var Info: TSynSnippetInfo): boolean;
 procedure DoSaveSnippetToFile(const fn: string; var Info: TSynSnippetInfo);
 
 function SStripFromTab(const S: Widestring): Widestring;
@@ -1311,7 +1311,7 @@ begin
 end;
 
 
-function DoReadSnippetFromFile(const fn: string; var Info: TSynSnippetInfo): boolean;
+function DoLoadSnippetFromFile(const fn: string; var Info: TSynSnippetInfo): boolean;
 var
   L: TStringList;
   S, SId: string;
@@ -1352,7 +1352,8 @@ begin
       begin
         //"text" field means that rest of file is snippet text
         for i:= 0 to L.Count-1 do
-          Info.Text:= Info.Text + UTF8Decode(L[i]) + #13;
+          Info.Text:= Info.Text + UTF8Decode(L[i]) +
+            IfThen(i < L.Count-1, #13); //add EOL for non-last line
         L.Clear;
       end;
     end;
