@@ -21,6 +21,7 @@ function Py_ModuleNameExists(const SId: string): boolean;
 function Py_ed_add_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_del_carets(Self, Args: PPyObject): PPyObject; cdecl;
 
+function Py_ed_get_indent(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_carets(Self, Args: PPyObject): PPyObject; cdecl;
@@ -948,13 +949,15 @@ begin
       end;
 end;
 
-{
-function Py_app_process(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_indent(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  X, Y: Integer;
 begin
-  Application.ProcessMessages;
   with GetPythonEngine do
-    Result:= ReturnNone;
+  begin
+    if PyArg_ParseTuple(Args, 'ii:ed_xy_pos', @X, @Y) <> 0 then
+      Result:= PyUnicode_FromWideString(EditorIndentStringForPos(PyEditor, Point(X, Y)));
+  end;
 end;
-}
-
+  
 end.

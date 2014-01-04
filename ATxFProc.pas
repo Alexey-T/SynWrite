@@ -31,7 +31,9 @@ procedure FFindToList(List: TTntStringList;
   ASubDir: boolean;
   ANoRO: boolean;
   ANoHidFiles: boolean;
-  ANoHidFolders: boolean);
+  ANoHidFolders: boolean;
+  AEnableProcMsg: boolean = true);
+
 function IsFilenameFixed(const fn: Widestring): Boolean;
 function IsFileExist(const FileName: WideString; var IsDir: Boolean): Boolean; overload;
 function IsFileExist(const FileName: WideString): Boolean; overload;
@@ -823,14 +825,18 @@ procedure FFindToList(List: TTntStringList;
   ASubDir: boolean;
   ANoRO: boolean;
   ANoHidFiles: boolean;
-  ANoHidFolders: boolean);
+  ANoHidFolders: boolean;
+  AEnableProcMsg: boolean = true);
 var
   f: TSearchRecW;
   s, msk: WideString;
   a: integer;
 begin
-  Application.ProcessMessages;
-  if StopFind then Exit;
+  if AEnableProcMsg then
+  begin
+    Application.ProcessMessages;
+    if StopFind then Exit;
+  end;
 
   a:= faArchive;
   if not ANoHidFiles then
@@ -870,7 +876,7 @@ begin
         begin
           //Messagebox(0, PChar(string(SDir+'\'+F.Name)), '', 0);
           FFindToList(List, ADir+'\'+F.Name, AMasksInclude, AMasksExclude, ASubDir,
-            ANoRO, ANoHidFiles, ANoHidFolders);
+            ANoRO, ANoHidFiles, ANoHidFolders, AEnableProcMsg);
         end;
     until WideFindNext(F) <> 0;
     WideFindClose(F);

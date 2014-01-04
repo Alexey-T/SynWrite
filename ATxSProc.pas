@@ -5,9 +5,27 @@ interface
 uses
   Windows, SysUtils;
 
+type
+  TSynSnippetInfo = record
+    Name,
+    Id,
+    Lexers: string;
+    Text: Widestring;
+  end;
+  TSynSnippetClass = class
+  public
+    Info: TSynSnippetInfo;
+  end;
+
+procedure DoClearSnippet(var AInfo: TSynSnippetInfo);
+function DoReadSnippetFromFile(const fn: string; var Info: TSynSnippetInfo): boolean;
+procedure DoSaveSnippetToFile(const fn: string; var Info: TSynSnippetInfo);
+
 function SStripFromTab(const S: Widestring): Widestring;
 procedure SFindBrackets(const S: Widestring; const FromPos: Integer; var Pos1, Pos2: Integer);
 function SFindOpeningBracket(const S: Widestring; nFromPos: Integer): Integer;
+
+function IsWordString(const S: Widestring): boolean;
 function IsStringListed(const S, List: string): boolean;
 function FTempDir: string;
 
@@ -120,11 +138,13 @@ function SFileExtensionMatch(const FileName: WideString; const ExtList: AnsiStri
 function IsFileProject(const fn: Widestring): boolean;
 function IsFileSession(const fn: Widestring): boolean;
 function IsFileArchive(const fn: Widestring): boolean;
+function IsFileSnippet(const fn: Widestring): boolean;
 
 
 implementation
 
 uses
+  Classes,
   StrUtils,
   ecStrUtils;
 
@@ -989,7 +1009,12 @@ end;
 
 function IsFileSession(const fn: Widestring): boolean;
 begin
-  Result:= SFileExtensionMatch(fn, 'syn'); 
+  Result:= SFileExtensionMatch(fn, 'syn');
+end;
+
+function IsFileSnippet(const fn: Widestring): boolean;
+begin
+  Result:= SFileExtensionMatch(fn, 'synw-snippet');
 end;
 
 function IsFileArchive(const fn: Widestring): boolean;
@@ -1284,5 +1309,94 @@ begin
   Result:= S;
   SDeleteFromStrW(Result, #9);
 end;
+
+
+function DoReadSnippetFromFile(const fn: string; var Info: TSynSnippetInfo): boolean;
+var
+  L: TStringList;
+  S, SId: string;
+  i: Integer;
+begin
+  Result:= false;
+  DoClearSnippet(Info);
+  if not FileExists(fn) then Exit;
+
+  L:= TStringList.Create;
+  try
+    L.LoadFromFile(fn);
+    //delete trailing empty lines
+    while (L.Count>0) and (L[L.Count-1]='') do
+      L.Delete(L.Count-1);
+
+    while L.Count>0 do
+    begin
+      S:= L[0];
+      L.Delete(0);
+
+      //not SGetItem to not use string->Widestring and speed-up
+      i:= Pos('=', S);
+      if i=0 then Continue;
+      SId:= Copy(S, 1, i-1);
+      Delete(S, 1, i);
+
+      if SId='id' then
+        Info.Id:= S
+      else
+      if SId='name' then
+        Info.Name:= S
+      else
+      if SId='lex' then
+        Info.Lexers:= S
+      else
+      if SId='text' then
+      begin
+        //"text" field means that rest of file is snippet text
+        for i:= 0 to L.Count-1 do
+          Info.Text:= Info.Text + UTF8Decode(L[i]) + #13;
+        L.Clear;
+      end;
+    end;
+  finally
+    FreeAndNil(L);
+  end;
+
+  Result:= (Info.Name<>'') and (Info.Text<>'');
+end;
+
+procedure DoSaveSnippetToFile(const fn: string; var Info: TSynSnippetInfo);
+var
+  L: TStringList;
+begin
+  L:= TStringList.Create;
+  try
+    L.Add('name='+Info.Name);
+    L.Add('id='+Info.Id);
+    L.Add('lex='+Info.Lexers);
+    L.Add('text=');
+    L.Add(UTF8Encode(Info.Text));
+    L.SaveToFile(fn);
+  finally
+    FreeAndNil(L)
+  end;
+end;
+
+procedure DoClearSnippet(var AInfo: TSynSnippetInfo);
+begin
+  AInfo.Name:= '';
+  AInfo.Id:= '';
+  AInfo.Lexers:= '';
+  AInfo.Text:= '';
+end;
+
+function IsWordString(const S: Widestring): boolean;
+var
+  i: Integer;
+begin
+  for i:= 1 to Length(S) do
+    if not IsWordChar(S[i]) then
+      begin Result:= false; Exit end;
+  Result:= true;
+end;
+
 
 end.

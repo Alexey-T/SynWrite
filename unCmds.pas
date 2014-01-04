@@ -375,6 +375,8 @@ const
   sm_SaveProject = 1043;
   sm_ToggleFocusConsole = 1044;
   sm_NewPythonPluginDialog = 1045;
+  sm_NewSnippetDialog = 1046;
+  sm_SnippetsDialog = 1047;
   //free
 
   //Tree commands

@@ -9,11 +9,14 @@ uses
   Forms,
 
   ATSyntMemo,
+  ATxSProc,
   ecSyntAnal,
   ecSyntMemo,
   ecMemoStrings,
   ecStrUtils;
 
+procedure EditorSnippetInsert(Ed: TSyntaxMemo; const AInfo: TSynSnippetInfo);
+function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
 procedure EditorUpdateCaretPosFromMousePos(Ed: TSyntaxMemo);
 procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
 function EditorJumpMixedCase(Ed: TSyntaxMemo; ARight: boolean): boolean;
@@ -166,8 +169,7 @@ uses
   TntSysUtils,
   TntWideStrUtils,
   ecCmdConst,
-  ecExports,
-  ATxSProc;
+  ecExports;
 
 procedure EditorSearchMarksToList(Ed: TSyntaxmemo; List: TTntStrings);
 var
@@ -2567,6 +2569,33 @@ begin
   p:= Mouse.CursorPos;
   p:= Ed.ScreenToClient(p);
   Ed.CaretPos:= Ed.MouseToCaret(p.x, p.y);
+end;
+
+
+function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
+var
+  NPos: Integer;
+begin
+  NPos:= Ed.LinesPosToLog(PntPos).X;
+  Result:= StringOfChar(' ', NPos);
+  if Ed.TabMode=tmTabChar then
+    SReplaceAllW(Result, EditorTabExpansion(Ed), #9);
+end;
+
+
+procedure EditorSnippetInsert(Ed: TSyntaxMemo; const AInfo: TSynSnippetInfo);
+var
+  Str, SIndent: Widestring;
+  Decode: TStringDecodeRecW;
+begin
+  SIndent:= EditorIndentStringForPos(Ed, Ed.CaretPos);
+  Decode.SFrom:= #13;
+  Decode.STo:= EditorEOL(Ed)+SIndent;
+
+  Str:= AInfo.Text;
+  Str:= SDecodeW(Str, Decode);
+
+  Ed.InsertText(Str);
 end;
 
 

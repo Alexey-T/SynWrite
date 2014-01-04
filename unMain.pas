@@ -52,6 +52,7 @@ uses
   unProcHelp,
   unProcEditor,
   ATSynPlugins,
+  ATxSProc,
   ecMacroRec,
   ecExtHighlight,
   ecSpell, PythonEngine, PythonGUIInputOutput;
@@ -1255,6 +1256,10 @@ type
     SpTBXSeparatorItem25: TSpTBXSeparatorItem;
     TbxItemRunNewPlugin: TSpTBXItem;
     TbxItemHelpPyDir: TSpTBXItem;
+    TbxItemRunSnippets: TSpTBXItem;
+    SpTBXSeparatorItem26: TSpTBXSeparatorItem;
+    TbxItemRunNewSnippet: TSpTBXItem;
+    SD_Snippets: TSaveDialog;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2009,6 +2014,8 @@ type
     procedure PythonGUIInputOutput1ReceiveUniData(Sender: TObject;
       var Data: WideString);
     procedure MemoConsoleDblClick(Sender: TObject);
+    procedure TbxItemRunSnippetsClick(Sender: TObject);
+    procedure TbxItemRunNewSnippetClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2024,6 +2031,7 @@ type
     cStatCaretsTopLn,
     cStatCaretsBotLn: Widestring;
 
+    FListSnippets: TList;
     FBracketsHilited: boolean;
     FTempFilenames: TTntStringList;
     FUserToolbarCommands: TTntStringList;
@@ -2521,6 +2529,7 @@ type
     function SynPluginsSampleIni: string;
     function SynSkinsDir: string;
     function SynPyDir: string;
+    function SynSnippetsDir: string;
     function SynSkinFilename(const Name: string): string;
     function SynConverterFilename(const Name: string): string;
 
@@ -2619,6 +2628,8 @@ type
     procedure LoadPanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile;
       const Id: string; DefFloating: boolean = false);
     procedure LoadToolbarContent(Toolbar: TObject; Id: string; AutoShow: boolean = false);
+    procedure InitSnippets;
+    procedure FreeSnippets;
     function DoShowCmdList: Integer;
     function DoShowCmdListStr: string;
     function DoShowCmdHint(Cmd: Widestring): Widestring;
@@ -2695,6 +2706,12 @@ type
     procedure DoRepeatPyConsoleCommand;
     procedure LoadConsoleHist;
     procedure SaveConsoleHist;
+
+    function DoSnippetChoice: integer;
+    function DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
+    procedure DoSnippetListDialog;
+    procedure DoSnippetNew;
+    
     //end of private
 
   protected
@@ -3047,7 +3064,8 @@ uses
   TntWideStrings,
   TntWideStrUtils,
 
-  ATxFProc, ATxSProc, ATxUtilMail,
+  ATxFProc,
+  ATxUtilMail,
   ATxColorCodes,
   ATxLoremIpsum,
   ATxUnpack,
@@ -3072,13 +3090,13 @@ uses
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
   unCmdList, unProjList, unToolbarProp, unHideItems,
   unProcPy,
-  unLexerLib;
+  unLexerLib, unSnipList, unSnipEd;
 
 {$R *.dfm}
 {$R Cur.res}
 
 const
-  cSynVer = '6.2.312';
+  cSynVer = '6.2.320';
   cSynPyVer = '1.0.102';
       
 const
@@ -3087,6 +3105,9 @@ const
 
 const
   cSynColorSwatch = 'synw-colorstring';
+  cSynSnippetExt = 'synw-snippet';
+
+const
   cRegexColorCode = '\#\w{3,6}';
   cRegexColorName = '[a-z]{3,30}';
 
@@ -6129,6 +6150,8 @@ begin
     sm_ScrollCurrentLineToMiddle: EditorScrollCurrentLineTo(Ed, cScrollToMiddle);
 
     sm_NewPythonPluginDialog: DoNewPythonPluginDialog;
+    sm_NewSnippetDialog: DoSnippetNew;
+    sm_SnippetsDialog: DoSnippetListDialog;
 
     //end of commands list
     else
@@ -6858,6 +6881,8 @@ begin
   OD_Swatch.Filter:= Format('*.%s|*.%s', [cSynColorSwatch, cSynColorSwatch]);
   SD_Swatch.DefaultExt:= cSynColorSwatch;
   SD_Swatch.Filter:= OD_Swatch.Filter;
+  SD_Snippets.DefaultExt:= cSynSnippetExt;
+  SD_Snippets.Filter:= Format('*.%s|*.%s', [cSynSnippetExt, cSynSnippetExt]);
 
   ListOut.Align:= alClient;
   ListVal.Align:= alClient;
@@ -6891,6 +6916,7 @@ begin
   FListNewDocs:= TTntStringList.Create;
   FListConv:= TTntStringList.Create;
   FListFiles:= TTntStringList.Create;
+  FListSnippets:= nil;
 
   FTabOut:= tbOut;
   FTabRight:= tbClip;
@@ -7157,6 +7183,8 @@ begin
     FreeAndNil(FListCommentStyles);
   if Assigned(FListStringStyles) then
     FreeAndNil(FListStringStyles);
+
+  FreeSnippets;
 end;
 
 function SAcpItemToId(const S: Widestring): Widestring;
@@ -15350,9 +15378,7 @@ begin
     //Msginfo('"'+s+'"'); exit;
 
     //make padding string, maybe with tabs
-    sPad:= StringOfChar(' ', LinesPosToLog(StrPosToCaretPos(iSt)).X);
-    if TabMode=tmTabChar then
-      SReplaceAll(sPad, EditorTabExpansion(CurrentEditor), #9);
+    sPad:= EditorIndentStringForPos(CurrentEditor, StrPosToCaretPos(iSt));
 
     //expand abbrev
     s:= DoZenExec(s, sPad);
@@ -18609,7 +18635,7 @@ function TfmMain.DoSmartTagTabbing: boolean;
 var
   Ed: TSyntaxMemo;
   s, sTag, sTagExp, sIndent: Widestring;
-  NTagSt, NTagLen, NTagIndent, NCaret, NPos: integer;
+  NTagSt, NTagLen, NCaret, NPos: integer;
   SelSt, SelLen: integer;
   fn: string;
   DoInitTab: boolean;
@@ -18688,16 +18714,8 @@ begin
       (Pos(' ', sTagExp) > 0);
 
     //replace '\n'
-    NTagIndent:= Ed.LinesPosToLogX(s, NTagSt);
-    sIndent:= StringOfChar(' ', NTagIndent-1);
+    sIndent:= EditorIndentStringForPos(Ed, Point(NTagSt-1, Ed.CaretPos.Y));
     SReplaceAllW(sTagExp, '\n', EditorEOL(Ed) + sIndent);
-
-    //replace spaces to tabs, if needed
-    if Ed.TabMode=tmTabChar then
-    begin
-      sIndent:= EditorTabExpansion(Ed);
-      SReplaceAllW(sTagExp, sIndent, #9);
-    end;
 
     //replace '|', save 1st '|' position
     NCaret:= Pos('|', sTagExp);
@@ -25407,6 +25425,11 @@ begin
   Result:= SynDir + 'template\skins';
 end;
 
+function TfmMain.SynSnippetsDir: string;
+begin
+  Result:= SynDir + 'template\snippets';
+end;
+
 function TfmMain.SynPyDir: string;
 begin
   //at the time of this call, SynDir not yet inited
@@ -27278,6 +27301,7 @@ begin
     AddMethod('ed_get_text_line', Py_ed_get_text_line, '');
     AddMethod('ed_get_text_len', Py_ed_get_text_len, '');
     AddMethod('ed_get_text_substr', Py_ed_get_text_substr, '');
+    AddMethod('ed_get_indent', Py_ed_get_indent, '');
 
     AddMethod('ed_get_caret_xy', Py_ed_get_caret_xy, '');
     AddMethod('ed_get_caret_pos', Py_ed_get_caret_pos, '');
@@ -27495,6 +27519,163 @@ begin
   ComboSaveToFile(edConsole, SynHistoryIni, 'Console');
 end;
 
+procedure TfmMain.InitSnippets;
+var
+  Files: TTntStringList;
+  InfoRec: TSynSnippetInfo;
+  InfoClass: TSynSnippetClass;
+  i: Integer;
+begin
+  if FListSnippets=nil then
+  begin
+    FListSnippets:= TList.Create;
+
+    {
+    //debug
+    Item:= TSynSnippetClass.Create;
+    Item.Info.Id:= 'id-one';
+    Item.Info.Name:= 'name-one';
+    Item.Info.Text:= 'test'#13'test....'#13'test..';
+    FListSnippets.Add(Item);
+
+    Item:= TSynSnippetClass.Create;
+    Item.Info.Id:= 'id-two';
+    Item.Info.Name:= 'name-two';
+    Item.Info.Text:= 'test2'#13'test2....';
+    FListSnippets.Add(Item);
+    }
+
+    Files:= TTntStringList.Create;
+    try
+      FFindToList(Files,
+        SynSnippetsDir,
+        '*.'+cSynSnippetExt, '',
+        true{SubDirs},
+        false, false, false,
+        false{EnableProcMsg});
+
+      for i:= 0 to Files.Count-1 do
+        if DoReadSnippetFromFile(Files[i], InfoRec) then
+        begin
+          InfoClass:= TSynSnippetClass.Create;
+          InfoClass.Info.Name:= InfoRec.Name;
+          InfoClass.Info.Id:= InfoRec.Id;
+          InfoClass.Info.Lexers:= InfoRec.Lexers;
+          InfoClass.Info.Text:= InfoRec.Text;
+          FListSnippets.Add(InfoClass);
+        end;
+    finally
+      FreeAndNil(Files);
+    end;
+  end;
+end;
+
+procedure TfmMain.FreeSnippets;
+var
+  i: Integer;
+begin
+  if Assigned(FListSnippets) then
+  begin
+    for i:= FListSnippets.Count-1 downto 0 do
+    begin
+      TObject(FListSnippets[i]).Free;
+      FListSnippets[i]:= nil;
+    end;
+    FreeAndNil(FListSnippets);
+  end;
+end;
+
+function TfmMain.DoSnippetChoice: integer;
+begin
+  Result:= -1;
+  InitSnippets;
+
+  with TfmSnippetList.Create(Self) do
+  try
+    Caption:= DKLangConstW('zMSnippetList');
+    cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
+
+    FInfoList:= Self.FListSnippets;
+    FCurrentLexer:= Self.CurrentLexerForFile;
+
+    FIniFN:= Self.SynHistoryIni;
+    FColorSel:= opColorOutSelText;
+    FColorSelBk:= opColorOutSelBk;
+
+    if ShowModal=mrOk then
+      if List.ItemIndex>=0 then
+        Result:= Integer(List.Items.Objects[List.ItemIndex]);
+  finally
+    Free
+  end;
+end;
+
+procedure TfmMain.DoSnippetListDialog;
+var
+  Index: Integer;
+begin
+  Index:= DoSnippetChoice;
+  if Index>=0 then
+    EditorSnippetInsert(CurrentEditor, TSynSnippetClass(FListSnippets[Index]).Info);
+end;
+
+function TfmMain.DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
+begin
+  with TfmSnippetEditor.Create(Self) do
+  try
+    edName.Text:= AInfo.Text;
+    edId.Text:= AInfo.Id;
+    edLex.Text:= AInfo.Lexers;
+    memoText.Text:= AInfo.Text;
+    memoText.Font.Assign(CurrentEditor.Font);
+
+    Result:= ShowModal=mrOk;
+    if Result then
+    begin
+      AInfo.Name:= edName.Text;
+      AInfo.Id:= edId.Text;
+      AInfo.Lexers:= edLex.Text;
+      AInfo.Text:= memoText.Text;
+    end;
+  finally
+    Free
+  end;
+end;
+
+procedure TfmMain.DoSnippetNew;
+var
+  AInfo: TSynSnippetInfo;
+  ADir: string;
+begin
+  DoClearSnippet(AInfo);
+  AInfo.Lexers:= CurrentLexerForFile;
+
+  if DoSnippetEditorDialog(AInfo) then
+  begin
+    ADir:= SynSnippetsDir;
+    CreateDir(ADir);
+    if not DirectoryExists(ADir) then
+      begin MsgNoDir(ADir); Exit end;
+
+    with SD_Snippets do
+    begin
+      InitialDir:= ADir;
+      FileName:= AInfo.Name;
+      if Execute then
+        DoSaveSnippetToFile(FileName, AInfo);
+    end;
+  end;  
+end;
+
+procedure TfmMain.TbxItemRunSnippetsClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_SnippetsDialog);
+end;
+
+procedure TfmMain.TbxItemRunNewSnippetClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_NewSnippetDialog);
+end;
 
 end.
 

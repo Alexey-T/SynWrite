@@ -61,7 +61,9 @@ uses
   unLexerLib in 'unLexerLib.pas' {fmLexerLibrary},
   unProcEditor in 'unProcEditor.pas',
   unRenameFN in 'unRenameFN.pas' {fmRenameFN: TTntForm},
-  unProcPy in 'unProcPy.pas';
+  unProcPy in 'unProcPy.pas',
+  unSnipList in 'unSnipList.pas' {fmSnippetList: TTntForm},
+  unSnipEd in 'unSnipEd.pas' {fmSnippetEditor};
 
 {$R *.res}
 {$R *.dkl_const.res}
