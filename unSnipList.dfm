@@ -21,15 +21,27 @@ object fmSnippetList: TfmSnippetList
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 16
+  object Splitter1: TSplitter
+    Left = 0
+    Top = 206
+    Width = 502
+    Height = 5
+    Cursor = crVSplit
+    Align = alBottom
+    AutoSnap = False
+    MinSize = 1
+    ResizeStyle = rsUpdate
+  end
   object List: TTntListBox
     Left = 0
     Top = 24
     Width = 502
-    Height = 248
+    Height = 182
     Style = lbOwnerDrawFixed
     Align = alClient
     ItemHeight = 16
     TabOrder = 1
+    OnClick = ListClick
     OnDblClick = ListDblClick
     OnDrawItem = ListDrawItem
   end
@@ -43,29 +55,48 @@ object fmSnippetList: TfmSnippetList
     OnChange = EditChange
     OnKeyDown = EditKeyDown
   end
-  object Panel1: TPanel
+  object PanelLow: TPanel
     Left = 0
-    Top = 272
+    Top = 211
     Width = 502
-    Height = 16
+    Height = 77
     Align = alBottom
     BevelOuter = bvNone
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
     TabOrder = 2
-    object cbFuzzy: TTntCheckBox
+    object MemoText: TTntMemo
       Left = 0
       Top = 0
-      Width = 217
-      Height = 16
-      Align = alLeft
-      Caption = 'Fuzzy search'
+      Width = 502
+      Height = 61
+      Align = alClient
+      ReadOnly = True
+      ScrollBars = ssVertical
       TabOrder = 0
-      OnClick = cbFuzzyClick
+    end
+    object Panel1: TPanel
+      Left = 0
+      Top = 61
+      Width = 502
+      Height = 16
+      Align = alBottom
+      BevelOuter = bvNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 1
+      object cbFuzzy: TTntCheckBox
+        Left = 0
+        Top = 0
+        Width = 217
+        Height = 16
+        Align = alLeft
+        Caption = 'Fuzzy search'
+        TabOrder = 0
+        OnClick = cbFuzzyClick
+      end
     end
   end
   object TimerType: TTimer

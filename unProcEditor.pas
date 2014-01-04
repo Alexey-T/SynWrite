@@ -8,14 +8,13 @@ uses
   Types,
   Forms,
 
-  ATxSProc,
   ecSyntAnal,
   ecSyntMemo,
   ATSyntMemo,
   ecMemoStrings,
   ecStrUtils;
 
-procedure EditorSnippetInsert(Ed: TSyntaxMemo; const AInfo: TSynSnippetInfo);
+procedure EditorSnippetInsert(Ed: TSyntaxMemo; const AText: Widestring);
 function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
 procedure EditorUpdateCaretPosFromMousePos(Ed: TSyntaxMemo);
 procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
@@ -168,6 +167,7 @@ uses
   Controls,
   TntSysUtils,
   TntWideStrUtils,
+  ATxSProc,
   ecCmdConst,
   ecExports;
 
@@ -2583,7 +2583,7 @@ begin
 end;
 
 
-procedure EditorSnippetInsert(Ed: TSyntaxMemo; const AInfo: TSynSnippetInfo);
+procedure EditorSnippetInsert(Ed: TSyntaxMemo; const AText: Widestring);
 var
   NInsertStart: Integer;
   NInsertPos: array[0..9] of Integer;
@@ -2611,7 +2611,7 @@ begin
   Decode.SFrom:= #13;
   Decode.STo:= EditorEOL(Ed) + EditorIndentStringForPos(Ed, Ed.CaretPos);
 
-  Str:= AInfo.Text;
+  Str:= AText;
   Str:= SDecodeW(Str, Decode);
 
   //init

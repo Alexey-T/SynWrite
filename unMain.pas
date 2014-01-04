@@ -6160,6 +6160,15 @@ begin
     sm_NewSnippetDialog: DoSnippetNew;
     sm_SnippetsDialog: DoSnippetListDialog;
 
+    smDropMarker,
+    smCollectMarker,
+    smSwapMarker:
+      begin
+        //handle to support snippets markers
+        Ed.MarkersLen.Clear;
+        Handled:= false;
+      end;
+
     //end of commands list
     else
       Handled:= false;
@@ -16544,10 +16553,13 @@ begin
     with CurrentEditor do
     begin
       BeginUpdate;
-      CaretStrPos:= 0;
-      DeleteText(TextLength);
-      InsertTextBlock(L2, Point(0, 0));
-      EndUpdate;
+      try
+        CaretStrPos:= 0;
+        DeleteText(TextLength);
+        InsertTextBlock(L2, Point(0, 0));
+      finally
+        EndUpdate;
+      end;  
     end;
     FreeAndNil(L2);
   end;
@@ -18864,28 +18876,32 @@ begin
   with ListTabs do
   begin
     Items.BeginUpdate;
-    Items.Clear;
-    for i:= 0 to FrameAllCount-1 do
-      with Items.Add do
-      begin
-        F:= FramesAll[i];
-        if F=CurrentFrame then
-          ListTabs.Selected:= Items[i];
+    try
+      Items.Clear;
+      for i:= 0 to FrameAllCount-1 do
+        with Items.Add do
+        begin
+          F:= FramesAll[i];
+          if F=CurrentFrame then
+            ListTabs.Selected:= Items[i];
 
-        if F.FileName='' then
-          Caption:= DKLangConstW('Untitled')
-        else
-          Caption:= WideExtractFileName(F.FileName);
+          if F.FileName='' then
+            Caption:= DKLangConstW('Untitled')
+          else
+            Caption:= WideExtractFileName(F.FileName);
 
-        SubItems.Add(F.FileName);
-        SubItems.Add(IntToStr(i));
+          SubItems.Add(F.FileName);
+          SubItems.Add(IntToStr(i));
 
-        if F.Modified then
-          ImageIndex:= 1
-        else
-          ImageIndex:= -1;  
-      end;
-    Items.EndUpdate;
+          if F.Modified then
+            ImageIndex:= 1
+          else
+            ImageIndex:= -1;
+        end;
+    finally
+      Items.EndUpdate;
+    end;
+
     if Selected<>nil then
       Selected.MakeVisible(false);
   end;
@@ -19174,14 +19190,17 @@ begin
     if not ReadOnly then
     begin
       BeginUpdate;
-      GetColorRange(wStart, wEnd, NColor);
-      if (wEnd>wStart) then
-      begin
-        CaretStrPos:= wStart;
-        DeleteText(wEnd-wStart);
-      end;
-      InsertText(SColorToHex(Code));
-      EndUpdate;
+      try
+        GetColorRange(wStart, wEnd, NColor);
+        if (wEnd>wStart) then
+        begin
+          CaretStrPos:= wStart;
+          DeleteText(wEnd-wStart);
+        end;
+        InsertText(SColorToHex(Code));
+      finally
+        EndUpdate;
+      end;  
     end;
 end;
 
@@ -27610,6 +27629,7 @@ begin
   try
     Caption:= DKLangConstW('zMSnippetList');
     cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
+    MemoText.Font.Assign(CurrentEditor.Font);
 
     FInfoList:= Self.FListSnippets;
     FCurrentLexer:= Self.CurrentLexerForFile;
@@ -27628,11 +27648,18 @@ end;
 
 procedure TfmMain.DoSnippetListDialog;
 var
+  Ed: TSyntaxMemo;
   Index: Integer;
 begin
-  Index:= DoSnippetChoice;
-  if Index>=0 then
-    EditorSnippetInsert(CurrentEditor, TSynSnippetClass(FListSnippets[Index]).Info);
+  Ed:= CurrentEditor;
+  if not Ed.ReadOnly then
+  begin
+    Index:= DoSnippetChoice;
+    if Index>=0 then
+      EditorSnippetInsert(Ed, TSynSnippetClass(FListSnippets[Index]).Info.Text);
+  end
+  else
+    MsgBeep;
 end;
 
 function TfmMain.DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;

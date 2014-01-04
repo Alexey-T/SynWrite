@@ -14,6 +14,9 @@ type
     List: TTntListBox;
     Edit: TTntEdit;
     TimerType: TTimer;
+    Splitter1: TSplitter;
+    PanelLow: TPanel;
+    MemoText: TTntMemo;
     Panel1: TPanel;
     cbFuzzy: TTntCheckBox;
     procedure FormKeyDown(Sender: TObject; var Key: Word;
@@ -30,6 +33,7 @@ type
     procedure TntFormCreate(Sender: TObject);
     procedure cbFuzzyClick(Sender: TObject);
     procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ListClick(Sender: TObject);
   private
     { Private declarations }
     procedure DoFilter;
@@ -99,11 +103,13 @@ begin
   with TIniFile.Create(FIniFN) do
   try
     DoCenterForm(Handle, Self);
-    Left:= ReadInteger('Win', 'CmdListX', Left);
-    Top:= ReadInteger('Win', 'CmdListY', Top);
-    Width:= ReadInteger('Win', 'CmdListW', Width);
-    Height:= ReadInteger('Win', 'CmdListH', Height);
-    cbFuzzy.Checked:= ReadBool('Win', 'CmdListFuzzy', false);
+    Left:= ReadInteger('Win', 'SnipX', Left);
+    Top:= ReadInteger('Win', 'SnipY', Top);
+    Width:= ReadInteger('Win', 'SnipW', Width);
+    Height:= ReadInteger('Win', 'SnipH', Height);
+    cbFuzzy.Checked:= ReadBool('Win', 'SnipFuzzy', false);
+    PanelLow.Height:= ReadInteger('Win', 'SnipSplit', 100);
+    Splitter1.Top:= 0;
   finally
     Free
   end;
@@ -142,6 +148,7 @@ begin
   end;
 
   List.ItemIndex:= 0;
+  ListClick(Self);
 end;
 
 procedure TfmSnippetList.ListDblClick(Sender: TObject);
@@ -243,14 +250,29 @@ begin
   if FIniFN<>'' then
   with TIniFile.Create(FIniFN) do
   try
-    WriteInteger('Win', 'CmdListX', Left);
-    WriteInteger('Win', 'CmdListY', Top);
-    WriteInteger('Win', 'CmdListW', Width);
-    WriteInteger('Win', 'CmdListH', Height);
-    WriteBool('Win', 'CmdListFuzzy', cbFuzzy.Checked);
+    WriteInteger('Win', 'SnipX', Left);
+    WriteInteger('Win', 'SnipY', Top);
+    WriteInteger('Win', 'SnipW', Width);
+    WriteInteger('Win', 'SnipH', Height);
+    WriteInteger('Win', 'SnipSplit', PanelLow.Height);
+    WriteBool('Win', 'SnipFuzzy', cbFuzzy.Checked);
   finally
     Free
   end;
+end;
+
+procedure TfmSnippetList.ListClick(Sender: TObject);
+var
+  Index: Integer;
+begin
+  Index:= List.ItemIndex;
+  if Index>=0 then
+  begin
+    Index:= Integer(List.Items.Objects[Index]);
+    MemoText.Lines.Text:= TSynSnippetClass(FInfoList[Index]).Info.Text
+  end
+  else
+    MemoText.Lines.Clear;  
 end;
 
 end.
