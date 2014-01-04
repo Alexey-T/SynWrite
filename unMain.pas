@@ -40,9 +40,9 @@ uses
   SpTBXItem, SpTbxMDIMRU, SpTBXDkPanels, SpTBXSkins,
   SpTBXControls, SpTBXTabs, SpTBXEditors, 
 
-  ATSyntMemo, //before ecSyntMemo
   ecActns, ecPrint, ecSyntMemo, ecKeyMap, ecPropManager, ecSyntAnal,
   ecSyntTree, ecStrUtils, ecPopupCtrl, ecUnicode,
+  ATSyntMemo, //after?? ecSyntMemo
 
   TntDialogs, TntStdCtrls, TntComCtrls,
   DKLang,
@@ -3097,7 +3097,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.2.320';
+  cSynVer = '6.2.330';
   cSynPyVer = '1.0.102';
       
 const
@@ -5352,6 +5352,12 @@ begin
     //indent
     smTab:
       begin
+        if (Ed.Markers.Count>0) and
+           (Ed.MarkersLen.Count>0) then
+        begin
+          Ed.DoJumpToNextInsPoint;
+        end
+        else
         if Ed.HaveSelection and EditorHasMultilineSelection(Ed) then
         begin
           Ed.ExecCommand(smBlockIndent);
@@ -9355,6 +9361,10 @@ begin
   plClip.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowRightPanel);
   plOut.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowOutputPanel);
 
+  UpdKey(TbxItemRunSnippets, sm_SnippetsDialog);
+  UpdKey(TbxItemRunNewSnippet, sm_NewSnippetDialog);
+  UpdKey(TbxItemRunNewPlugin, sm_NewPythonPluginDialog);
+
   UpdKey(TBXItemONPrintSpaces, sm_OptNonPrintSpaces);
   UpdKey(TBXItemONPrintEol, sm_OptNonPrintEol);
   UpdKey(TBXItemONPrintAll, sm_OptNonPrintBoth);
@@ -13083,16 +13093,20 @@ begin
 end;
 
 procedure TfmMain.TBXItemOutDelNonparsedClick(Sender: TObject);
-var i:Integer;
+var
+  i: Integer;
 begin
   with ListOut do
-    begin
+  begin
     Items.BeginUpdate;
-    for i:= Count-1 downto 0 do
-      if not IsNavigatableLine(Items[i]) then
-       Items.Delete(i);
-    Items.EndUpdate;
+    try
+      for i:= Count-1 downto 0 do
+        if not IsNavigatableLine(Items[i]) then
+         Items.Delete(i);
+    finally
+      Items.EndUpdate;
     end;
+  end;  
 end;
 
 procedure TfmMain.ListOutMouseDown(Sender: TObject; Button: TMouseButton;
@@ -15392,12 +15406,15 @@ begin
     SReplaceAllW(s, '|', '');
 
     BeginUpdate;
-    CaretStrPos:= iSt;
-    DeleteText(iLen);
-    InsertText(s);
-    if i>0 then
-      CaretStrPos:= iSt+i-1;
-    EndUpdate;
+    try
+      CaretStrPos:= iSt;
+      DeleteText(iLen);
+      InsertText(s);
+      if i>0 then
+        CaretStrPos:= iSt+i-1;
+    finally
+      EndUpdate;
+    end;  
   end;
 end;
 
@@ -16215,14 +16232,17 @@ begin
   begin
     EditorMaster.BeginUpdate;
     EditorSlave.BeginUpdate;
-    for i:= 0 to N-1 do
-    begin
-      DoBkToggle(EditorMaster, i);
-      if IsProgressStopped(i+1, N) then
-        Break;
-    end;
-    EditorMaster.EndUpdate;
-    EditorSlave.EndUpdate;
+    try
+      for i:= 0 to N-1 do
+      begin
+        DoBkToggle(EditorMaster, i);
+        if IsProgressStopped(i+1, N) then
+          Break;
+      end;
+    finally
+      EditorMaster.EndUpdate;
+      EditorSlave.EndUpdate;
+    end;  
   end;
 
   UpdateStatusbar;

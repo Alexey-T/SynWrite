@@ -72,6 +72,7 @@ object fmSnippetEditor: TfmSnippetEditor
       ScrollBars = ssBoth
       TabOrder = 3
       WantTabs = True
+      OnKeyDown = memoTextKeyDown
     end
     object edLex: TTntEdit
       Left = 8

@@ -132,7 +132,9 @@ type
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure Paint; override;
   public
+    MarkersLen: TList; //length of ins-points, which are marked with Markers
     ColMarkers: array[0..14] of integer;
+    procedure DoJumpToNextInsPoint;
     property ColMarkersString: string read GetColMarkersString write SetColMarkersString;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -217,7 +219,8 @@ begin
   inherited;
 
   FillChar(ColMarkers, SizeOf(ColMarkers), 0);
-
+  MarkersLen:= TList.Create;
+  
   FCarets:= TList.Create;
   FCaretsCoord:= TList.Create;
   FListDups:= TList.Create;
@@ -233,13 +236,15 @@ begin
   FCaretsGutterBand:= 0;
   FCaretsGutterColor:= clLtGray;
   FOnCtrlClick:= nil;
-  
+
   OnGetGutterBandColor:= EdGetGutterBandColor;
   OnBeforeLineDraw:= EdBeforeLineDraw;
 end;
 
 destructor TSyntaxMemo.Destroy;
 begin
+  FreeAndNil(MarkersLen);
+
   FreeAndNil(FListDups);
   DoClearCaretsUndo;
   FreeAndNil(FListUndo);
@@ -1666,6 +1671,17 @@ end;
 procedure TSyntaxMemo.EditorZoom(Sender: TObject);
 begin
   DoUpdateCarets;
+end;
+
+procedure TSyntaxMemo.DoJumpToNextInsPoint;
+begin
+  if (Markers.Count>0) and
+    (MarkersLen.Count>0) then
+  begin
+    CollectMarker;
+    SelLength:= Integer(MarkersLen.Last);
+    MarkersLen.Delete(MarkersLen.Count-1);
+  end;  
 end;
 
 end.

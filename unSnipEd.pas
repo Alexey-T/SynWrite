@@ -21,6 +21,8 @@ type
     edLex: TTntEdit;
     DKLanguageController1: TDKLanguageController;
     procedure bOkClick(Sender: TObject);
+    procedure memoTextKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -50,6 +52,17 @@ begin
     begin MessageBeep(mb_iconwarning); memoText.SetFocus; Exit end;
 
   ModalResult:= mrOk;
+end;
+
+procedure TfmSnippetEditor.memoTextKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=vk_escape) and (Shift=[]) then
+  begin
+    ModalResult:= mrCancel;
+    Key:= 0;
+    Exit
+  end;  
 end;
 
 end.

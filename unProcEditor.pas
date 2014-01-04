@@ -8,10 +8,10 @@ uses
   Types,
   Forms,
 
-  ATSyntMemo,
   ATxSProc,
   ecSyntAnal,
   ecSyntMemo,
+  ATSyntMemo,
   ecMemoStrings,
   ecStrUtils;
 
@@ -2585,17 +2585,124 @@ end;
 
 procedure EditorSnippetInsert(Ed: TSyntaxMemo; const AInfo: TSynSnippetInfo);
 var
-  Str, SIndent: Widestring;
+  NInsertStart: Integer;
+  NInsertPos: array[0..9] of Integer;
+  NInsertLen: array[0..9] of Integer;
+  //
+  procedure DoInsPnt(N: Integer);
+  var
+    NPos: Integer;
+  begin
+    if NInsertLen[N]>=0 then
+    begin
+      NPos:= NInsertStart + NInsertPos[N];
+      Ed.DropMarker(Ed.StrPosToCaretPos(NPos));
+      Ed.CaretStrPos:= NPos;
+      Ed.MarkersLen.Add(Pointer(NInsertLen[N]));
+    end;
+  end;
+  //
+var
+  Str, SId, SVal, SSelText: Widestring;
   Decode: TStringDecodeRecW;
+  NStart, NEnd, i: Integer;
+  NIdStart, NIdEnd: Integer;
 begin
-  SIndent:= EditorIndentStringForPos(Ed, Ed.CaretPos);
   Decode.SFrom:= #13;
-  Decode.STo:= EditorEOL(Ed)+SIndent;
+  Decode.STo:= EditorEOL(Ed) + EditorIndentStringForPos(Ed, Ed.CaretPos);
 
   Str:= AInfo.Text;
   Str:= SDecodeW(Str, Decode);
 
-  Ed.InsertText(Str);
+  //init
+  SSelText:= '';
+  if Pos('${sel}', Str)>0 then
+    SSelText:= Ed.SelText;
+
+  for i:= 0 to 9 do
+  begin
+    NInsertLen[i]:= -1;
+    NInsertPos[i]:= -1;
+  end;
+
+  //process macros
+  NStart:= 0;
+  repeat
+    NStart:= PosEx('${', Str, NStart+1);
+    if NStart=0 then Break;
+
+    //skip escaped "$"
+    if (NStart>1) and (Str[NStart-1]='\') then
+    begin
+      Delete(Str, NStart-1, 1);
+      Continue;
+    end;
+
+    NEnd:= PosEx('}', Str, NStart);
+    if NEnd=0 then Continue;
+
+    NIdStart:= NStart+2;
+    NIdEnd:= NIdStart;
+    while (NIdEnd<=Length(Str)) and IsWordChar(Str[NIdEnd]) do Inc(NIdEnd);
+    SVal:= Copy(Str, NIdStart, NEnd-NIdStart);
+    SId:= SGetItem(SVal, ':');
+
+    //is tab-stop found?
+    for i:= 0 to 9 do
+      if SId=IntToStr(i) then
+      begin
+        NInsertPos[i]:= NStart-1;
+        NInsertLen[i]:= Length(SVal);
+      end;
+
+    if SId='date' then
+      SVal:= FormatDateTime(SVal, Now);
+
+    if SId='sel' then
+      SVal:= SSelText;
+
+    Delete(Str, NStart, NEnd-NStart+1);
+    Insert(SVal, Str, NStart);
+
+    Inc(NStart, Length(SVal)); //skip this macro
+  until false;
+
+  //insert text
+  Ed.BeginUpdate;
+  try
+    //trick to make virtual caret pos ok
+    Ed.InsertText('x');
+    Ed.CaretStrPos:= Ed.CaretStrPos-1;
+    Ed.DeleteText(1);
+
+    //save last caret pos
+    NInsertStart:= Ed.CaretStrPos;
+    Ed.InsertText(Str);
+  finally
+    Ed.EndUpdate;
+  end;
+
+  //apply ins-points
+  Ed.Markers.Clear;
+  Ed.MarkersLen.Clear;
+  DoInsPnt(0);
+  DoInsPnt(9);
+  DoInsPnt(8);
+  DoInsPnt(7);
+  DoInsPnt(6);
+  DoInsPnt(5);
+  DoInsPnt(4);
+  DoInsPnt(3);
+  DoInsPnt(2);
+  DoInsPnt(1);
+
+  if Ed.MarkersLen.Count<2 then
+  begin
+    Ed.MarkersLen.Clear;
+    Ed.Markers.Clear;
+  end
+  else
+    Ed.DoJumpToNextInsPoint;
 end;
 
 
