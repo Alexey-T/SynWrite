@@ -2628,8 +2628,6 @@ type
     procedure LoadPanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile;
       const Id: string; DefFloating: boolean = false);
     procedure LoadToolbarContent(Toolbar: TObject; Id: string; AutoShow: boolean = false);
-    procedure InitSnippets;
-    procedure FreeSnippets;
     function DoShowCmdList: Integer;
     function DoShowCmdListStr: string;
     function DoShowCmdHint(Cmd: Widestring): Widestring;
@@ -2707,11 +2705,14 @@ type
     procedure LoadConsoleHist;
     procedure SaveConsoleHist;
 
+    procedure InitSnippets;
+    procedure LoadSnippets;
+    procedure ClearSnippets;
     function DoSnippetChoice: integer;
     function DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
     procedure DoSnippetListDialog;
     procedure DoSnippetNew;
-    
+
     //end of private
 
   protected
@@ -7184,7 +7185,11 @@ begin
   if Assigned(FListStringStyles) then
     FreeAndNil(FListStringStyles);
 
-  FreeSnippets;
+  if Assigned(FListSnippets) then
+  begin
+    ClearSnippets;
+    FreeAndNil(FListSnippets);
+  end;
 end;
 
 function SAcpItemToId(const S: Widestring): Widestring;
@@ -27520,57 +27525,48 @@ begin
 end;
 
 procedure TfmMain.InitSnippets;
+begin
+  if FListSnippets=nil then
+  begin
+    FListSnippets:= TList.Create;
+    LoadSnippets;
+  end;
+end;
+
+procedure TfmMain.LoadSnippets;
 var
   Files: TTntStringList;
   InfoRec: TSynSnippetInfo;
   InfoClass: TSynSnippetClass;
   i: Integer;
 begin
-  if FListSnippets=nil then
-  begin
-    FListSnippets:= TList.Create;
+  ClearSnippets;
 
-    {
-    //debug
-    Item:= TSynSnippetClass.Create;
-    Item.Info.Id:= 'id-one';
-    Item.Info.Name:= 'name-one';
-    Item.Info.Text:= 'test'#13'test....'#13'test..';
-    FListSnippets.Add(Item);
+  Files:= TTntStringList.Create;
+  try
+    FFindToList(Files,
+      SynSnippetsDir,
+      '*.'+cSynSnippetExt, '',
+      true{SubDirs},
+      false, false, false,
+      false{EnableProcMsg});
 
-    Item:= TSynSnippetClass.Create;
-    Item.Info.Id:= 'id-two';
-    Item.Info.Name:= 'name-two';
-    Item.Info.Text:= 'test2'#13'test2....';
-    FListSnippets.Add(Item);
-    }
-
-    Files:= TTntStringList.Create;
-    try
-      FFindToList(Files,
-        SynSnippetsDir,
-        '*.'+cSynSnippetExt, '',
-        true{SubDirs},
-        false, false, false,
-        false{EnableProcMsg});
-
-      for i:= 0 to Files.Count-1 do
-        if DoReadSnippetFromFile(Files[i], InfoRec) then
-        begin
-          InfoClass:= TSynSnippetClass.Create;
-          InfoClass.Info.Name:= InfoRec.Name;
-          InfoClass.Info.Id:= InfoRec.Id;
-          InfoClass.Info.Lexers:= InfoRec.Lexers;
-          InfoClass.Info.Text:= InfoRec.Text;
-          FListSnippets.Add(InfoClass);
-        end;
-    finally
-      FreeAndNil(Files);
-    end;
+    for i:= 0 to Files.Count-1 do
+      if DoReadSnippetFromFile(Files[i], InfoRec) then
+      begin
+        InfoClass:= TSynSnippetClass.Create;
+        InfoClass.Info.Name:= InfoRec.Name;
+        InfoClass.Info.Id:= InfoRec.Id;
+        InfoClass.Info.Lexers:= InfoRec.Lexers;
+        InfoClass.Info.Text:= InfoRec.Text;
+        FListSnippets.Add(InfoClass);
+      end;
+  finally
+    FreeAndNil(Files);
   end;
 end;
 
-procedure TfmMain.FreeSnippets;
+procedure TfmMain.ClearSnippets;
 var
   i: Integer;
 begin
@@ -27581,7 +27577,7 @@ begin
       TObject(FListSnippets[i]).Free;
       FListSnippets[i]:= nil;
     end;
-    FreeAndNil(FListSnippets);
+    FListSnippets.Clear;
   end;
 end;
 
@@ -27664,6 +27660,10 @@ begin
       if Execute then
         DoSaveSnippetToFile(FileName, AInfo);
     end;
+
+    //reload snippets to show new one
+    if FListSnippets<>nil then
+      LoadSnippets;
   end;  
 end;
 

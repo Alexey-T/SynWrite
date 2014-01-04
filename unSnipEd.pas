@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, TntForms, TntStdCtrls;
+  Dialogs, StdCtrls, TntForms, TntStdCtrls, DKLang;
 
 type
   TfmSnippetEditor = class(TTntForm)
@@ -19,6 +19,7 @@ type
     memoText: TTntMemo;
     labLex: TTntLabel;
     edLex: TTntEdit;
+    DKLanguageController1: TDKLanguageController;
     procedure bOkClick(Sender: TObject);
   private
     { Private declarations }
