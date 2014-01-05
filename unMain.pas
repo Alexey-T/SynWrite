@@ -26044,12 +26044,6 @@ begin
     NeedDraw:= true;
   end;
 
-  //not needed now
-  {
-  if opShowCurrentColumn then
-    NeedDraw:= true;
-  }
-
   if NeedDraw then
     Ed.Invalidate;
 

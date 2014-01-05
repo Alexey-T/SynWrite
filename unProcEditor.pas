@@ -2671,37 +2671,26 @@ begin
   Ed.BeginUpdate;
   try
     //trick to make virtual caret pos ok
-    Ed.InsertText('x');
+    Ed.InsertText('n');
     Ed.CaretStrPos:= Ed.CaretStrPos-1;
     Ed.DeleteText(1);
 
-    //save last caret pos
+    //remember caret pos
     NInsertStart:= Ed.CaretStrPos;
     Ed.InsertText(Str);
   finally
     Ed.EndUpdate;
   end;
 
-  //apply ins-points
+  //place markers (0 is last one, place first)
   Ed.Markers.Clear;
   Ed.MarkersLen.Clear;
-  DoInsPnt(0);
-  DoInsPnt(9);
-  DoInsPnt(8);
-  DoInsPnt(7);
-  DoInsPnt(6);
-  DoInsPnt(5);
-  DoInsPnt(4);
-  DoInsPnt(3);
-  DoInsPnt(2);
-  DoInsPnt(1);
 
-  if Ed.MarkersLen.Count<2 then
-  begin
-    Ed.MarkersLen.Clear;
-    Ed.Markers.Clear;
-  end
-  else
+  DoInsPnt(0);
+  for i:= 9 downto 1 do
+    DoInsPnt(i);
+
+  if Ed.MarkersLen.Count>0 then
     Ed.DoJumpToNextInsPoint;
 end;
 

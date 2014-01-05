@@ -1621,6 +1621,7 @@ begin
   with TextMargins[1] do
   begin
     Visible:= opShowCurrentColumn;
+    AllowDrag:= false;
     if Visible then
       Position:= LinesPosToLog(CaretPos).X;
     Pen.Color:= RightMarginColor;

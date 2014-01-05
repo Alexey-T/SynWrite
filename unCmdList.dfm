@@ -5,7 +5,7 @@ object fmCmdList: TfmCmdList
   Height = 322
   ActiveControl = Edit
   BorderIcons = [biSystemMenu, biMaximize]
-  Caption = 'Commands list'
+  Caption = 'Commands'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
