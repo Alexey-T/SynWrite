@@ -140,7 +140,7 @@ begin
           SKey:= SKey + '  [' + AInfo.Lexers + ']';
 
         if (AInfo.Lexers='') or (IsStringListed(FCurrentLexer, AInfo.Lexers)) then
-          if SFiltered(SName) then
+          if SFiltered(SName) or SFiltered(SKey) then
             List.Items.AddObject(SName + #9 + SKey, Pointer(i));
       end;
   finally

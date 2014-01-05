@@ -14,7 +14,9 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
-procedure EditorSnippetInsert(Ed: TSyntaxMemo; const AText: Widestring);
+function EditorGetWordBeforeCaret(Ed: TSyntaxMemo): Widestring;
+procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText: Widestring);
+
 function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
 procedure EditorUpdateCaretPosFromMousePos(Ed: TSyntaxMemo);
 procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
@@ -2583,7 +2585,7 @@ begin
 end;
 
 
-procedure EditorSnippetInsert(Ed: TSyntaxMemo; const AText: Widestring);
+procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText: Widestring);
 var
   NInsertStart: Integer;
   NInsertPos: array[0..9] of Integer;
@@ -2694,5 +2696,23 @@ begin
     Ed.DoJumpToNextInsPoint;
 end;
 
+
+function EditorGetWordBeforeCaret(Ed: TSyntaxMemo): Widestring;
+var
+  N: Integer;
+  ch: WideChar;
+begin
+  Result:= '';
+  N:= Ed.CaretStrPos+1;
+  if IsWordChar(Ed.Lines.Chars[N]) then Exit;
+  repeat
+    Dec(N);
+    ch:= Ed.Lines.Chars[N];
+    if IsWordChar(ch) then
+      Insert(ch, Result, 1)
+    else
+      Break;  
+  until false;
+end;
 
 end.

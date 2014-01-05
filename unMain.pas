@@ -2708,9 +2708,9 @@ type
     procedure InitSnippets;
     procedure LoadSnippets;
     procedure ClearSnippets;
-    function DoSnippetChoice: integer;
+    function DoSnippetChoice(const SText: string): integer;
+    procedure DoSnippetListDialog(const SText: string);
     function DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
-    procedure DoSnippetListDialog;
     procedure DoSnippetNew;
 
     //end of private
@@ -6158,7 +6158,7 @@ begin
 
     sm_NewPythonPluginDialog: DoNewPythonPluginDialog;
     sm_NewSnippetDialog: DoSnippetNew;
-    sm_SnippetsDialog: DoSnippetListDialog;
+    sm_SnippetsDialog: DoSnippetListDialog('');
 
     smDropMarker,
     smCollectMarker,
@@ -6166,6 +6166,16 @@ begin
       begin
         //handle to support snippets markers
         Ed.MarkersLen.Clear;
+        Handled:= false;
+      end;
+
+    smUndo:
+      begin
+        if Ed.MarkersLen.Count>0 then
+        begin
+          Ed.MarkersLen.Clear;
+          Ed.Markers.Clear;
+        end;
         Handled:= false;
       end;
 
@@ -19023,20 +19033,49 @@ end;
 function TfmMain.DoTemplateTabbing: boolean;
 var
   Ed: TSyntaxMemo;
-  ch: ecChar;
+  StrId, StrLexer: Widestring;
+  NSnipIndex, i: Integer;
 begin
-  Ed:= CurrentEditor;
   Result:= false;
+  Ed:= CurrentEditor;
   if not opTemplateTabbing then Exit;
   if SFileExtensionMatch(CurrentFrame.FileName, opTemplateTabbingExcept) then Exit;
   if Ed.ReadOnly then Exit;
-  if not CurrentLexerHasTemplates then Exit;
-  if Ed.Lines.Count=0 then Exit;
-  if Ed.CaretStrPos=0 then Exit;
-  ch:= Ed.Lines.Chars[Ed.CaretStrPos];
-  if not IsWordChar(ch) then Exit;
-  Ed.ExecCommand(TemplatePopup.CommandID); //not smCodeTemplate!
-  Result:= true;
+
+  StrLexer:= CurrentLexer;
+  StrId:= EditorGetWordBeforeCaret(Ed);
+  if StrId='' then Exit;
+
+  InitSnippets;
+  NSnipIndex:= -1;
+  for i:= 0 to FListSnippets.Count-1 do
+  begin
+    with TSynSnippetClass(FListSnippets[i]) do
+      if ((Info.Lexers = '') or IsLexerListed(StrLexer, Info.Lexers)) and
+        (StrId = Info.Id) then
+        if NSnipIndex>=0 then //id exists N times?
+        begin
+          DoSnippetListDialog(StrId);
+          Result:= true;
+          Exit
+        end
+        else
+          NSnipIndex:= i;
+  end;
+
+  //single snippet found
+  if NSnipIndex>=0 then
+  begin
+    Ed.BeginUpdate;
+    try
+      Ed.CaretStrPos:= Ed.CaretStrPos - Length(StrId);
+      Ed.DeleteText(Length(StrId));
+      EditorInsertSnippet(Ed, TSynSnippetClass(FListSnippets[NSnipIndex]).Info.Text);
+    finally
+      Ed.EndUpdate;
+    end;    
+    Result:= true;
+  end;
 end;
 
 procedure TfmMain.MsgColorBad;
@@ -27614,7 +27653,7 @@ begin
   end;
 end;
 
-function TfmMain.DoSnippetChoice: integer;
+function TfmMain.DoSnippetChoice(const SText: string): integer;
 begin
   Result:= -1;
   InitSnippets;
@@ -27623,6 +27662,8 @@ begin
   try
     Caption:= DKLangConstW('zMSnippetList');
     cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
+
+    Edit.Text:= SText;
     MemoText.Font.Assign(CurrentEditor.Font);
 
     FInfoList:= Self.FListSnippets;
@@ -27640,7 +27681,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoSnippetListDialog;
+procedure TfmMain.DoSnippetListDialog(const SText: string);
 var
   Ed: TSyntaxMemo;
   Index: Integer;
@@ -27648,9 +27689,21 @@ begin
   Ed:= CurrentEditor;
   if not Ed.ReadOnly then
   begin
-    Index:= DoSnippetChoice;
+    Index:= DoSnippetChoice(SText);
     if Index>=0 then
-      EditorSnippetInsert(Ed, TSynSnippetClass(FListSnippets[Index]).Info.Text);
+    begin
+      Ed.BeginUpdate;
+      try
+        if SText<>'' then
+        begin
+          Ed.CaretStrPos:= Ed.CaretStrPos - Length(SText);
+          Ed.DeleteText(Length(SText));
+        end;
+        EditorInsertSnippet(Ed, TSynSnippetClass(FListSnippets[Index]).Info.Text);
+      finally
+        Ed.EndUpdate;
+      end;
+    end;      
   end
   else
     MsgBeep;
