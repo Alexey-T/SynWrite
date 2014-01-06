@@ -5546,16 +5546,10 @@ object fmMain: TfmMain
       end
       item
         Command = 651
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16458
-              end>
-          end>
+        KeyStrokes = <>
         Caption = 'Template Popup'
         Category = 'Hints'
-        DisplayName = 'Code template popup'
+        DisplayName = 'Code template popup (obsolete)'
       end
       item
         Command = -1

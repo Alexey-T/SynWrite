@@ -4068,11 +4068,11 @@ begin
   ecACP.SyntMemo:= Value;
   PluginACP.SyntMemo:= Value;
   ParamCompletion.SyntMemo:= Value;
-  TemplatePopup.SyntMemo:= Value;
+  //TemplatePopup.SyntMemo:= Value; //disable code-templates, no need
   ecMacroRecorder1.SyntMemo:= Value;
 
   FCurrentEditor:= Value;
-  PyEditor:= Value as ATSyntMemo.TSyntaxMemo;
+  PyEditor:= Value;
 
   if FCurrentEditor <> nil then
   begin
@@ -4498,7 +4498,7 @@ begin
     opAcpFileSize:= ReadInteger('ACP', 'FSize', 2);
     opAcpNum:= ReadInteger('ACP', 'Num', 0);
     ecACP.ShowWhenNone:= ReadBool('ACP', 'IfNone', true);
-    opTemplateTabbing:= ReadBool('ACP', 'TplTab', true);
+    opTemplateTabbing:= true; //ReadBool('ACP', 'TplTab', true);
     opTemplateTabbingExcept:= ReadString('ACP', 'TplTabEx', 'txt,nfo,diz');
     ParamCompletion.Enabled:= ReadBool('ACP', 'ParamHints', true);
 
@@ -4916,7 +4916,7 @@ begin
     WriteBool('Tree', 'ASync', Tree.AutoSynchronize);
     WriteInteger('Tree', 'Delay', Tree.UpdateDelay);
 
-    WriteBool('ACP', 'TplTab', opTemplateTabbing);
+    //WriteBool('ACP', 'TplTab', opTemplateTabbing);
     WriteString('ACP', 'TplTabEx', opTemplateTabbingExcept);
     WriteBool('ACP', 'UseSingl', opAcpUseSingle);
     WriteBool('ACP', 'Htm', opAcpHtm);
@@ -27783,7 +27783,6 @@ procedure TfmMain.TbxItemRunNewSnippetClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_NewSnippetDialog);
 end;
-
 
 
 end.

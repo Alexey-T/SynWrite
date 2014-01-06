@@ -121,8 +121,6 @@ type
     labSmTabHelp: TTntLabel;
     cbHTemp: TTntCheckBox;
     cbAcpUseSingle: TTntCheckBox;
-    cbTplTabbing: TTntCheckBox;
-    labTplHelp: TTntLabel;
     cbACloseTags: TTntCheckBox;
     TntLabel7: TTntLabel;
     TntLabel12: TTntLabel;
@@ -207,8 +205,6 @@ type
     edSrOffsetY: TSpinEdit;
     TntLabel32: TTntLabel;
     cbTabVis: TTntComboBox;
-    edTplTabEx: TEdit;
-    TntLabel34: TTntLabel;
     TntLabel36: TTntLabel;
     cbUniNeed: TTntComboBox;
     cbTreeDelay: TSpinEdit;
@@ -338,8 +334,6 @@ type
     boxLang: TTntGroupBox;
     labLangInfo: TTntLabel;
     cbLang: TTntComboBox;
-    edWordChars: TTntEdit;
-    labWordChars: TTntLabel;
     cbTabStyle: TTntComboBox;
     cbAcpParamHints: TTntCheckBox;
     cbHiliteSmartClick: TTntCheckBox;
@@ -352,6 +346,8 @@ type
     bPy: TTntButton;
     edColorUnder: TSpinEdit;
     LabelUnderline: TTntLabel;
+    edNoSnippetsExt: TEdit;
+    TntLabel34: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -410,7 +406,6 @@ type
     procedure cbASaveUnnamedClick(Sender: TObject);
     procedure cbASaveTimerClick(Sender: TObject);
     procedure labSmTabHelpClick(Sender: TObject);
-    procedure labTplHelpClick(Sender: TObject);
     procedure labAutoCloseHelpClick(Sender: TObject);
     procedure cbACloseBrClick(Sender: TObject);
     procedure cbAcpFileClick(Sender: TObject);
@@ -1442,11 +1437,6 @@ begin
   SynHelpTopic(helpSmartTabbing, Handle);
 end;
 
-procedure TfmSetup.labTplHelpClick(Sender: TObject);
-begin
-  SynHelpTopic(helpCodeTpl, Handle);
-end;
-
 procedure TfmSetup.labAutoCloseHelpClick(Sender: TObject);
 begin
   SynHelpTopic(helpAutoClose, Handle);
@@ -1728,8 +1718,6 @@ begin
     opAcpHtm:= cbAcpHtm.Checked;
     opAcpCss:= cbAcpCss.Checked;
     opAcpTabbing:= cbAcpTabbing.Checked;
-    opTemplateTabbing:= cbTplTabbing.Checked;
-    opTemplateTabbingExcept:= edTplTabEx.Text;
     opAutoCloseTags:= cbACloseTags.Checked;
     opAutoCloseBrackets:= cbACloseBr.Checked;
     opAutoCloseBracketsNoEsc:= cbACloseBrEsc.Checked;
@@ -1745,6 +1733,8 @@ begin
     opAcpFile:= cbAcpFile.Checked;
     opAcpFileChars:= edAcpFileChars.Value;
     opAcpFileSize:= edAcpFileSize.Value;
+
+    opTemplateTabbingExcept:= edNoSnippetsExt.Text;
   end;
 end;
 
@@ -2021,8 +2011,6 @@ begin
     cbAcpHtm.Checked:= opAcpHtm;
     cbAcpCss.Checked:= opAcpCss;
     cbAcpTabbing.Checked:= opAcpTabbing;
-    cbTplTabbing.Checked:= opTemplateTabbing;
-    edTplTabEx.Text:= opTemplateTabbingExcept;
     cbACloseTags.Checked:= opAutoCloseTags;
 
     cbACloseBr.Checked:= opAutoCloseBrackets;
@@ -2040,6 +2028,8 @@ begin
     edAcpFileChars.Value:= opAcpFileChars;
     edAcpFileSize.Value:= opAcpFileSize;
     edAcpDrop.Value:= ecACP.DropDownCount;
+
+    edNoSnippetsExt.Text:= opTemplateTabbingExcept;
   end;
 end;
 
@@ -2517,7 +2507,6 @@ begin
       1: TemplateEditor.SelectModeDefault:= msColumn;
       2: TemplateEditor.SelectModeDefault:= msLine;
     end;
-    opWordChars:= edWordChars.Text;
 
     ApplyEdOptions;
     ApplyFrames;
@@ -2656,7 +2645,6 @@ begin
       msColumn: cbSelMode.ItemIndex:= 1;
       msLine: cbSelMode.ItemIndex:= 2;
     end;
-    edWordChars.Text:= opWordChars;
   end;
 end;
 
