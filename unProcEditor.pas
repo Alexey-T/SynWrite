@@ -2616,6 +2616,10 @@ begin
   Str:= AText;
   Str:= SDecodeW(Str, Decode);
 
+  //snippet may have Tabs
+  if Ed.TabMode=tmSpaces then
+    SReplaceAllW(Str, #9, EditorTabExpansion(Ed));
+
   //init
   SSelText:= '';
   if Pos('${sel}', Str)>0 then
@@ -2663,10 +2667,13 @@ begin
     if SId='sel' then
       SVal:= SSelText;
 
+    if SId='cp' then
+      SVal:= TntClipboard.AsWideText;
+
     Delete(Str, NStart, NEnd-NStart+1);
     Insert(SVal, Str, NStart);
 
-    Inc(NStart, Length(SVal)); //skip this macro
+    Inc(NStart, Length(SVal)-1); //skip this macro
   until false;
 
   //insert text
@@ -2711,7 +2718,7 @@ begin
     if IsWordChar(ch) then
       Insert(ch, Result, 1)
     else
-      Break;  
+      Break;
   until false;
 end;
 

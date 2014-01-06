@@ -86,7 +86,7 @@ object fmSnippetEditor: TfmSnippetEditor
     Left = 426
     Top = 484
     Width = 99
-    Height = 25
+    Height = 23
     Caption = 'OK'
     Default = True
     TabOrder = 1
@@ -96,7 +96,7 @@ object fmSnippetEditor: TfmSnippetEditor
     Left = 532
     Top = 484
     Width = 99
-    Height = 25
+    Height = 23
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2

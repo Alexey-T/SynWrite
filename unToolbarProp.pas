@@ -133,10 +133,10 @@ implementation
 
 uses
   Types, IniFiles,
-  TntDialogs,
   ATxSProc,
   unProc,
-  unToolbarSize, unToolbarIcon;
+  unToolbarSize,
+  unToolbarIcon;
 
 {$R *.dfm}
 
@@ -671,7 +671,7 @@ begin
     MenuId:= S;
   end;
 
-  if WideInputQuery(btnBrowseMenu.Caption, 'Menu id:', MenuId) and (MenuId<>'') then
+  if DoInputString('Menu id:', MenuId, '', '') and (MenuId<>'') then
   begin
     S:= 'm:'+MenuId;
     FToolbar[N].FCmd:= S;
