@@ -2320,6 +2320,7 @@ type
     procedure UpdateEditorNonPrinted(Ed: TSyntaxMemo);
     procedure UpdateLexList;
     procedure UpdateStatusbarLineEnds;
+    procedure UpdateStatusbarTabsize;
     procedure UpdateStatusbarEnc(F: TEditorFrame);
 
     procedure UpdateNewFrame;
@@ -4183,7 +4184,7 @@ begin
     else
       StatusItemWrap.ImageIndex:= 4;
 
-    StatusItemTabsize.Caption:= IntToStr(EditorTabSize(Ed));
+    UpdateStatusbarTabsize;
   end;
 
   UpdateStatusbarEnc(frame);
@@ -7040,13 +7041,28 @@ begin
 end;
 
 procedure TfmMain.UpdateStatusbarLineEnds;
+var
+  F: TEditorFrame;
 begin
-  case CurrentFrame.TextSource.Lines.TextFormat of
-    tfCR: StatusItemEnds.Caption:= 'Mac';
-    tfNL: StatusItemEnds.Caption:= 'Unix';
-    else StatusItemEnds.Caption:= 'Win';
-  end;
+  F:= CurrentFrame;
+  if F<>nil then
+    case F.TextSource.Lines.TextFormat of
+      tfCR: StatusItemEnds.Caption:= 'Mac';
+      tfNL: StatusItemEnds.Caption:= 'Unix';
+      else StatusItemEnds.Caption:= 'Win';
+    end;
 end;
+
+procedure TfmMain.UpdateStatusbarTabsize;
+var
+  Ed: TSyntaxMemo;
+begin
+  Ed:= CurrentEditor;
+  if Ed<>nil then
+    StatusItemTabsize.Caption:=
+      IntToStr(EditorTabSize(Ed)) +
+      IfThen(Ed.TabMode=tmSpaces, '_');
+end;  
 
 function TfmMain.GetAcpFN(const LexerName: string): string;
 begin
@@ -7836,9 +7852,8 @@ begin
       end;
     end;
 
-  //update statusbar  
-  if CurrentEditor<>nil then
-    StatusItemTabsize.Caption:= IntToStr(EditorTabSize(CurrentEditor));
+  //update statusbar
+  UpdateStatusbarTabsize;  
 end;
 
 procedure TfmMain.DoRepaintTBs;
@@ -12674,9 +12689,14 @@ end;
 procedure TfmMain.plOutVisibleChanged(Sender: TObject);
 begin
   FixSplitters;
+  
   ecShowOut.Checked:= plOut.Visible;
   if not plOut.Visible then //Apply when X icon pressed
+  begin
     FOutVisible:= false;
+    DoRepaint;
+  end;
+
   SyncMapPos;
 end;
 
@@ -19036,7 +19056,7 @@ begin
   if Ed.ReadOnly then Exit;
 
   StrLexer:= CurrentLexer;
-  StrId:= EditorGetWordBeforeCaret(Ed);
+  StrId:= EditorGetWordBeforeCaret(Ed, true);
   if StrId='' then Exit;
 
   InitSnippets;
@@ -27763,6 +27783,8 @@ procedure TfmMain.TbxItemRunNewSnippetClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_NewSnippetDialog);
 end;
+
+
 
 end.
 

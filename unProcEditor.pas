@@ -14,7 +14,7 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
-function EditorGetWordBeforeCaret(Ed: TSyntaxMemo): Widestring;
+function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
 procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText: Widestring);
 
 function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
@@ -2704,7 +2704,7 @@ begin
 end;
 
 
-function EditorGetWordBeforeCaret(Ed: TSyntaxMemo): Widestring;
+function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
 var
   N: Integer;
   ch: WideChar;
@@ -2715,7 +2715,7 @@ begin
   repeat
     Dec(N);
     ch:= Ed.Lines.Chars[N];
-    if IsWordChar(ch) then
+    if IsWordChar(ch) or (AllowDot and (ch='.')) then
       Insert(ch, Result, 1)
     else
       Break;

@@ -45,7 +45,7 @@ begin
   if (edName.Text='') then
     begin MessageBeep(mb_iconwarning); edName.SetFocus; Exit end;
 
-  if (edId.Text<>'') and not IsWordString(edId.Text) then
+  if (edId.Text<>'') and not IsWordString(edId.Text, true) then
     begin MessageBeep(mb_iconwarning); edId.SetFocus; Exit end;
 
   if (memoText.Lines.Count=0) then

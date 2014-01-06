@@ -25,7 +25,7 @@ function SStripFromTab(const S: Widestring): Widestring;
 procedure SFindBrackets(const S: Widestring; const FromPos: Integer; var Pos1, Pos2: Integer);
 function SFindOpeningBracket(const S: Widestring; nFromPos: Integer): Integer;
 
-function IsWordString(const S: Widestring): boolean;
+function IsWordString(const S: Widestring; AllowDot: boolean): boolean;
 function IsStringListed(const S, List: string): boolean;
 function FTempDir: string;
 
@@ -1389,12 +1389,12 @@ begin
   AInfo.Text:= '';
 end;
 
-function IsWordString(const S: Widestring): boolean;
+function IsWordString(const S: Widestring; AllowDot: boolean): boolean;
 var
   i: Integer;
 begin
   for i:= 1 to Length(S) do
-    if not IsWordChar(S[i]) then
+    if not (IsWordChar(S[i]) or (AllowDot and (S[i]='.'))) then
       begin Result:= false; Exit end;
   Result:= true;
 end;
