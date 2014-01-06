@@ -1260,6 +1260,8 @@ type
     SpTBXSeparatorItem26: TSpTBXSeparatorItem;
     TbxItemRunNewSnippet: TSpTBXItem;
     SD_Snippets: TSaveDialog;
+    SpTBXSeparatorItem27: TSpTBXSeparatorItem;
+    StatusItemTabsize: TSpTBXLabelItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2360,7 +2362,6 @@ type
 
     function CurrentLexer: string;
     function CurrentLexerForFile: string;
-    function CurrentLexerHasTemplates: boolean;
     function SLexerComment(const Lexer: string): string;
     function DoTemplateTabbing: boolean;
     function DoSmartTagTabbing: boolean;
@@ -4165,23 +4166,25 @@ begin
   }
 
   if Assigned(Status) then
-  if ro then
-    StatusItemRO.ImageIndex:= 0
-  else
-    StatusItemRO.ImageIndex:= 1;
+  begin
+    if ro then
+      StatusItemRO.ImageIndex:= 0
+    else
+      StatusItemRO.ImageIndex:= 1;
 
-  if Assigned(Status) then
     case ed.SelectModeDefault of
       msColumn: StatusItemSelMode.ImageIndex:= 9;
       msLine: StatusItemSelMode.ImageIndex:= 10;
       else StatusItemSelMode.ImageIndex:= 8;
     end;
 
-  if Assigned(Status) then
     if ed.WordWrap then
       StatusItemWrap.ImageIndex:= 3
     else
       StatusItemWrap.ImageIndex:= 4;
+
+    StatusItemTabsize.Caption:= IntToStr(EditorTabSize(Ed));
+  end;
 
   UpdateStatusbarEnc(frame);
   UpdateStatusbarLineEnds;
@@ -4606,11 +4609,11 @@ begin
     ApplyDefaultFonts;
     PropsManager.LoadProps(ini); //20ms
 
-    //always set KeepSelMode (override old value)
+    //force KeepSelMode and FloatMarkers
     with TemplateEditor do
     begin
-      Options:= Options+[soKeepSelMode];
-      OptionsEx:= OptionsEx+[soKeepSearchMarks];
+      Options:= Options + [soKeepSelMode, soFloatMarkers];
+      OptionsEx:= OptionsEx + [soKeepSearchMarks];
     end;
 
     ApplyACP;
@@ -7722,16 +7725,7 @@ begin
   if IsLexerHTML(Lexer) then
     ecACP.StartExpr:= '\<'
   else
-  begin
     ecACP.StartExpr:= '';
-    (*
-    if opAcpNum=0 then
-      ecACP.StartExpr:= ''
-    else
-      ecACP.StartExpr:= Format('[%s]{%d,}',
-        [EscapedAcpChars, opAcpNum]);
-    *)
-  end;
 
   //here we override editor options:
   //a) overrides for "Lexers overrides" option
@@ -7841,6 +7835,10 @@ begin
         EditorSlave.TabMode:= tmTabChar;
       end;
     end;
+
+  //update statusbar  
+  if CurrentEditor<>nil then
+    StatusItemTabsize.Caption:= IntToStr(EditorTabSize(CurrentEditor));
 end;
 
 procedure TfmMain.DoRepaintTBs;
@@ -18661,11 +18659,6 @@ begin
   Result:= '';
   if SyntaxManager.CurrentLexer<>nil then
     Result:= SyntaxManager.CurrentLexer.LexerName;
-end;
-
-function TfmMain.CurrentLexerHasTemplates: boolean;
-begin
-  Result:= EditorCurrentLexerHasTemplates(CurrentEditor);
 end;
 
 function TfmMain.SLexerComment(const Lexer: string): string;

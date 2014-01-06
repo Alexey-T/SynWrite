@@ -322,7 +322,6 @@ type
     cbVarHorzBar: TTntCheckBox;
     cbSelMode: TTntComboBox;
     TntLabel35: TTntLabel;
-    cbFloatM: TTntCheckBox;
     cbCollap: TTntCheckBox;
     cbDrag: TTntCheckBox;
     cbCopyRtf: TTntCheckBox;
@@ -2501,10 +2500,12 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soCallapseEmptyLines];
 
+    {
     if cbFloatM.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soFloatMarkers]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soFloatMarkers];
+      }
 
     if cbGrSel.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soGreedySelect]
@@ -2646,7 +2647,7 @@ begin
     cbCopyRtf.Checked:= soCopyAsRTF in TemplateEditor.Options;
     cbDrag.Checked:= soDragText in TemplateEditor.Options;
     cbCollap.Checked:= soCallapseEmptyLines in TemplateEditor.Options;
-    cbFloatM.Checked:= soFloatMarkers in TemplateEditor.Options;
+    //cbFloatM.Checked:= soFloatMarkers in TemplateEditor.Options;
     cbGrSel.Checked:= soGreedySelect in TemplateEditor.Options;
 
     case TemplateEditor.SelectModeDefault of
