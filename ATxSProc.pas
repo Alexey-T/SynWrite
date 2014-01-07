@@ -7,8 +7,8 @@ uses
 
 type
   TSynSnippetInfo = record
-    Name,
-    Id,
+    Name: Widestring;
+    Id: string;
     Lexers: string;
     Text: Widestring;
   end;
@@ -1339,11 +1339,11 @@ begin
       SId:= Copy(S, 1, i-1);
       Delete(S, 1, i);
 
+      if SId='name' then
+        Info.Name:= UTF8Decode(S)
+      else
       if SId='id' then
         Info.Id:= S
-      else
-      if SId='name' then
-        Info.Name:= S
       else
       if SId='lex' then
         Info.Lexers:= S
@@ -1370,9 +1370,9 @@ var
 begin
   L:= TStringList.Create;
   try
-    L.Add('name='+Info.Name);
-    L.Add('id='+Info.Id);
-    L.Add('lex='+Info.Lexers);
+    L.Add('name=' + UTF8Encode(Info.Name));
+    L.Add('id=' + Info.Id);
+    L.Add('lex=' + Info.Lexers);
     L.Add('text=');
     L.Add(UTF8Encode(Info.Text));
     L.SaveToFile(fn);
