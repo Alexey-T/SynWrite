@@ -397,9 +397,7 @@ begin
   SMsgProjFolderName:= DKLangConstW('zNewFolderName');
 
   S:= SMsgProjNewFolder;
-  {$ifndef DD}
-  if not WideInputQuery(SMsgProjCaption, SMsgProjFolderName, S) then Exit;
-  {$endif}
+  if not DoInputString(SMsgProjFolderName, S) then Exit;
 
   with TreeProj do
   begin

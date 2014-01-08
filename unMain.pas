@@ -2714,6 +2714,7 @@ type
     procedure DoSnippetListDialog(const SText: string);
     function DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
     procedure DoSnippetNew;
+    procedure DoSnippetsReload;
 
     //end of private
 
@@ -5330,9 +5331,11 @@ begin
 
         //if current char is 2nd part of key-combination, don't handle it
         //(consider also ecRepeatCmd.Execute context)
-        if (SyntKeyMapping.IsHandledCmd(Ed.KeyQueue)<>0) and not FLastCmdPlaying then
+        if (SyntKeyMapping.IsHandledCmd(Ed.KeyQueue)<>0) and
+          not FLastCmdPlaying and
+          not ecMacroRecorder1.Plying then
         begin
-          Handled:= true
+          Handled:= true;
         end
         else
         if (ch='>') then
@@ -6191,7 +6194,9 @@ begin
   //workaround for non-recorded commands
   //(EC issue)
   if Handled or IsCommandAllowedInMacro(Command) then
+  begin
     DoRecordToMacro(Command, nil);
+  end;
 end;
 
 function TfmMain.IsCommandAllowedInMacro(Cmd: Integer): boolean;
@@ -27680,7 +27685,7 @@ begin
     MemoText.Font.Assign(CurrentEditor.Font);
 
     FInfoList:= Self.FListSnippets;
-    FCurrentLexer:= Self.CurrentLexerForFile;
+    FCurrentLexer:= Self.CurrentLexer;
 
     FIniFN:= Self.SynHistoryIni;
     FColorSel:= opColorOutSelText;
@@ -27751,11 +27756,11 @@ var
   ADir: string;
 begin
   DoClearSnippet(AInfo);
-  AInfo.Lexers:= CurrentLexerForFile;
+  AInfo.Lexers:= CurrentLexer;
+  ADir:= SynSnippetsDir;
 
   if DoSnippetEditorDialog(AInfo) then
   begin
-    ADir:= SynSnippetsDir;
     CreateDir(ADir);
     if not DirectoryExists(ADir) then
       begin MsgNoDir(ADir); Exit end;
@@ -27765,13 +27770,18 @@ begin
       InitialDir:= ADir;
       FileName:= AInfo.Name;
       if Execute then
+      begin
         DoSaveSnippetToFile(FileName, AInfo);
+        DoSnippetsReload;
+      end;
     end;
+  end;
+end;
 
-    //reload snippets to show new one
-    if FListSnippets<>nil then
-      LoadSnippets;
-  end;  
+procedure TfmMain.DoSnippetsReload;
+begin
+  if FListSnippets<>nil then
+    LoadSnippets;
 end;
 
 procedure TfmMain.TbxItemRunSnippetsClick(Sender: TObject);

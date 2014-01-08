@@ -97,8 +97,11 @@ function EditMacro(AMacros: TecMacroRecorder;
 
 implementation
 
-uses {$IFDEF EC_DOTNET}Types,{$ENDIF}
-  ecKeyMap, ecMacroCmdEditDlg, ecStrUtils,
+uses
+  ecKeyMap,
+  ecMacroCmdEditDlg,
+  ecStrUtils,
+  unProc,
   Menus,
   TntDialogs;
 
@@ -264,14 +267,15 @@ begin
 end;
 
 procedure TfmMacroEdit.MacrosRenameExecute(Sender: TObject);
-var S: Widestring;
+var
+  S: Widestring;
 begin
   S:= Recorder[MacrosList.ItemIndex].Name;
-  if WideInputQuery(DKLangConstW('macName'), DKLangConstW('macName2'), S) then//AT
-    begin
-      Recorder[MacrosList.ItemIndex].Name:= S;
-      MacrosList.Items[MacrosList.ItemIndex]:= NameN(MacrosList.ItemIndex);
-    end;
+  if DoInputString(DKLangConstW('zMMacroName'), S) then
+  begin
+    Recorder[MacrosList.ItemIndex].Name:= S;
+    MacrosList.Items[MacrosList.ItemIndex]:= NameN(MacrosList.ItemIndex);
+  end;
 end;
 
 procedure TfmMacroEdit.MacrosDeleteExecute(Sender: TObject);
