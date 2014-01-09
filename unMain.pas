@@ -4919,6 +4919,7 @@ begin
     WriteInteger('Setup', 'SortM', Ord(opSortMode));
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
     WriteInteger('Setup', 'ColorUnd', opColorUnderline);
+    WriteString('Setup', 'TreeSorted', opTreeSorted);
 
     WriteString('View', 'PyFont', opFontConsole);
     WriteBool('View', 'CaretsEn', opCaretsEnabled);

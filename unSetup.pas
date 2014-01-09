@@ -348,6 +348,8 @@ type
     LabelUnderline: TTntLabel;
     edNoSnippetsExt: TEdit;
     TntLabel34: TTntLabel;
+    edTreeSorted: TTntEdit;
+    TntLabel28: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1995,6 +1997,7 @@ begin
   begin
     Tree.AutoSynchronize:= cbTreeSync.Checked;
     Tree.UpdateDelay:= cbTreeDelay.Value;
+    opTreeSorted:= edTreeSorted.Text;
 
     opMapZoom:= edMapZoom.Value;
     ApplyMap;
@@ -2309,6 +2312,8 @@ begin
   begin
     cbTreeSync.Checked:= Tree.AutoSynchronize;
     cbTreeDelay.Value:= Tree.UpdateDelay;
+    edTreeSorted.Text:= opTreeSorted;
+
     edMapZoom.Value:= opMapZoom;
     cbMicroMap.Checked:= opMicroMap;
   end;

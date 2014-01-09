@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabACP
+    ActivePage = tabTree
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -1130,6 +1130,13 @@ object fmSetup: TfmSetup
           Height = 13
           Caption = 'Update delay, ms'
         end
+        object TntLabel28: TTntLabel
+          Left = 280
+          Top = 16
+          Width = 139
+          Height = 13
+          Caption = 'Sort for these file extensions'
+        end
         object cbTreeSync: TTntCheckBox
           Left = 8
           Top = 16
@@ -1149,6 +1156,13 @@ object fmSetup: TfmSetup
           TabOrder = 1
           Value = 500
           OnKeyDown = edIndentKeyDown
+        end
+        object edTreeSorted: TTntEdit
+          Left = 280
+          Top = 32
+          Width = 241
+          Height = 21
+          TabOrder = 2
         end
       end
       object boxMinimap: TTntGroupBox
@@ -2943,7 +2957,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0147010000
+      0700666D5365747570010100000001000000070043617074696F6E0149010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3240,7 +3254,8 @@ object fmSetup: TfmSetup
       01000000CA020000040048696E74000E004C6162656C556E6465726C696E6501
       01000000CB020000070043617074696F6E000F0065644E6F536E697070657473
       45787400000A00546E744C6162656C33340101000000CC020000070043617074
-      696F6E00}
+      696F6E000C00656454726565536F7274656400000A00546E744C6162656C3238
+      0101000000CD020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
