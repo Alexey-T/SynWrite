@@ -3100,7 +3100,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.2.330';
+  cSynVer = '6.3.370';
   cSynPyVer = '1.0.102';
       
 const
@@ -5359,10 +5359,9 @@ begin
     //indent
     smTab:
       begin
-        if (Ed.Markers.Count>0) and
-           (Ed.MarkersLen.Count>0) then
+        if Ed.IsTabstopMode then
         begin
-          Ed.DoJumpToNextInsPoint;
+          Ed.DoJumpToNextTabstop;
         end
         else
         if Ed.HaveSelection and EditorHasMultilineSelection(Ed) then
@@ -6178,7 +6177,7 @@ begin
 
     smUndo:
       begin
-        if Ed.MarkersLen.Count>0 then
+        if Ed.IsTabstopMode then
         begin
           Ed.MarkersLen.Clear;
           Ed.Markers.Clear;
@@ -7065,8 +7064,7 @@ begin
   Ed:= CurrentEditor;
   if Ed<>nil then
   begin
-    if (Ed.Markers.Count>0) and
-      (Ed.MarkersLen.Count>0) then
+    if Ed.IsTabstopMode then
     begin
       StatusItemTabsize.ImageIndex:= 12;
       StatusItemTabsize.Caption:= '';

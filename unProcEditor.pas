@@ -2588,19 +2588,20 @@ end;
 procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText: Widestring);
 var
   NInsertStart: Integer;
-  NInsertPos: array[0..9] of Integer;
-  NInsertLen: array[0..9] of Integer;
+  NInsertPos: array[0..100] of Integer;
+  NInsertLen: array[0..100] of Integer;
   //
   procedure DoInsPnt(N: Integer);
   var
-    NPos: Integer;
+    NPos, NLen: Integer;
   begin
-    if NInsertLen[N]>=0 then
+    if NInsertPos[N]>=0 then
     begin
       NPos:= NInsertStart + NInsertPos[N];
+      NLen:= NInsertLen[N];
       Ed.DropMarker(Ed.StrPosToCaretPos(NPos));
       Ed.CaretStrPos:= NPos;
-      Ed.MarkersLen.Add(Pointer(NInsertLen[N]));
+      Ed.MarkersLen.Add(Pointer(NLen));
     end;
   end;
   //
@@ -2609,6 +2610,7 @@ var
   Decode: TStringDecodeRecW;
   NStart, NEnd, i: Integer;
   NIdStart, NIdEnd: Integer;
+  NCountMirrors: Integer;
 begin
   Decode.SFrom:= #13;
   Decode.STo:= EditorEOL(Ed) + EditorIndentStringForPos(Ed, Ed.CaretPos);
@@ -2625,13 +2627,14 @@ begin
   if Pos('${sel}', Str)>0 then
     SSelText:= Ed.SelText;
 
-  for i:= 0 to 9 do
+  for i:= Low(NInsertLen) to High(NInsertLen) do
   begin
     NInsertLen[i]:= -1;
     NInsertPos[i]:= -1;
   end;
 
   //process macros
+  NCountMirrors:= 0;
   NStart:= 0;
   repeat
     NStart:= PosEx('${', Str, NStart+1);
@@ -2653,12 +2656,23 @@ begin
     SVal:= Copy(Str, NIdStart, NEnd-NIdStart);
     SId:= SGetItem(SVal, ':');
 
-    //is tab-stop found?
+    //is tabstop found?
     for i:= 0 to 9 do
       if SId=IntToStr(i) then
       begin
-        NInsertPos[i]:= NStart-1;
-        NInsertLen[i]:= Length(SVal);
+        if NInsertPos[i]>=0 then
+        begin
+          //mirror tabstop
+          Inc(NCountMirrors);
+          NInsertPos[9 + NCountMirrors]:= NStart-1;
+          NInsertLen[9 + NCountMirrors]:= i shl 16;
+        end
+        else
+        begin
+          //original tabstop
+          NInsertPos[i]:= NStart-1;
+          NInsertLen[i]:= i shl 16 + Length(SVal);
+        end;
       end;
 
     if SId='date' then
@@ -2695,12 +2709,15 @@ begin
   Ed.Markers.Clear;
   Ed.MarkersLen.Clear;
 
+  for i:= High(NInsertLen) downto 10 do
+    DoInsPnt(i);
+
   DoInsPnt(0);
   for i:= 9 downto 1 do
     DoInsPnt(i);
 
-  if Ed.MarkersLen.Count>0 then
-    Ed.DoJumpToNextInsPoint;
+  if Ed.IsTabstopMode then
+    Ed.DoJumpToNextTabstop;
 end;
 
 

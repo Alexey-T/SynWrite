@@ -134,7 +134,8 @@ type
   public
     MarkersLen: TList; //length of ins-points, which are marked with Markers
     ColMarkers: array[0..14] of integer;
-    procedure DoJumpToNextInsPoint;
+    function IsTabstopMode: boolean;
+    procedure DoJumpToNextTabstop;
     property ColMarkersString: string read GetColMarkersString write SetColMarkersString;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -590,6 +591,9 @@ begin
   if CaretsCount=0 then
     inherited
   else  
+  if IsTabstopMode and (Command=smTab) then
+    inherited
+  else
     case Command of
       smLeft,
       smRight,
@@ -836,7 +840,7 @@ begin
           begin
             NShiftY:= 1;
             NShiftX:= cShiftToHome;
-          end;  
+          end;
         end;
 
       smDeleteChar:
@@ -846,7 +850,7 @@ begin
           else
             b:= ReplaceText(CaretPosToStrPos(P), {Lines.LineSpace(P.Y)-Lines.LineLength(P.Y)}Length(Lines.LineEndStr(P.Y)), '');
           if b then
-            NShiftX:= -1;  
+            NShiftX:= -1;
         end;
 
       smDeleteLastChar:
@@ -869,7 +873,7 @@ begin
             end;
           end;
         end;
-      
+
       smChar:
         begin
           ch:= PWChar(Data)^;
@@ -1674,15 +1678,57 @@ begin
   DoUpdateCarets;
 end;
 
-procedure TSyntaxMemo.DoJumpToNextInsPoint;
+procedure TSyntaxMemo.DoJumpToNextTabstop;
+var
+  NPos, NLength, NTabstopIndex: Integer;
+  bMirrorFound: boolean;
+  i: Integer;
 begin
-  if (Markers.Count>0) and
-    (MarkersLen.Count>0) then
+  if IsTabstopMode then
   begin
+    //MarkersLen[i] has 2 values: (Length + TabstopIndex shl 16)
+    i:= Integer(MarkersLen.Last);
+    NTabstopIndex:= i shr 16;
+    NLength:= i and $FFFF;
+    NPos:= TMarker(Markers.Last).Position; //don't use TMarker.CaretPos (incorrect)
+
+    //process base tabstop
     CollectMarker;
-    SelLength:= Integer(MarkersLen.Last);
     MarkersLen.Delete(MarkersLen.Count-1);
-  end;  
+
+    RemoveCarets();
+    CaretStrPos:= NPos;
+    SetSelection(NPos, NLength, true);
+
+    //process mirror tabstops
+    repeat
+      bMirrorFound:= false;
+      for i:= MarkersLen.Count-1 downto 0 do
+        if (Integer(MarkersLen[i]) shr 16) = NTabstopIndex then
+        begin
+          if CaretsCount=0 then
+          begin
+            AddCaret(StrPosToCaretPos(NPos), false);
+            SetSelection(NPos, NLength, true);
+          end;
+          AddCaret(TMarker(Markers[i]).CaretPos, false);
+
+          Markers.Delete(i);
+          MarkersLen.Delete(i);
+
+          bMirrorFound:= true;
+          Break;
+        end;
+      if not bMirrorFound then Break;
+    until false;
+  end;
+end;
+
+function TSyntaxMemo.IsTabstopMode: boolean;
+begin
+  Result:=
+    (Markers.Count>0) and
+    (MarkersLen.Count>0);
 end;
 
 end.
