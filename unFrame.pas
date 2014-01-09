@@ -1347,7 +1347,7 @@ begin
   if NTop<0 then NTop:= 0;
 
   Ed.TopLine:= NTop;
-  Ed.CaretPos:= Point(0, NCur);
+  //Ed.CaretPos:= Point(0, NCur); //don't move caret, like Sublime
   UpdateMap(Ed);
 end;
 
@@ -1580,10 +1580,13 @@ begin
     C:= Ed.Canvas;
     Str:= TextSource.Lines[Line];
 
-    NPos:= 1;
+    NPos:= 0;
     repeat
-      NPos:= PosEx('#', Str, NPos);
+      NPos:= PosEx('#', Str, NPos+1);
       if NPos=0 then Break;
+
+      //char "&" before "#" - skip
+      if (NPos>1) and (Str[NPos-1]='&') then Continue;
 
       Inc(NPos);
       NPosStart:= NPos;

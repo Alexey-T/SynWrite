@@ -25,16 +25,16 @@ object fmSnippetEditor: TfmSnippetEditor
     object labName: TTntLabel
       Left = 8
       Top = 12
-      Width = 71
+      Width = 41
       Height = 13
-      Caption = 'Caption string:'
+      Caption = 'Caption:'
     end
     object labId: TTntLabel
       Left = 8
       Top = 52
-      Width = 235
+      Width = 188
       Height = 13
-      Caption = 'Keyword for Tab key (optional word, no spaces):'
+      Caption = 'Alias for Tab key (optional, no spaces):'
     end
     object labText: TTntLabel
       Left = 8
@@ -46,9 +46,9 @@ object fmSnippetEditor: TfmSnippetEditor
     object labLex: TTntLabel
       Left = 8
       Top = 92
-      Width = 194
+      Width = 178
       Height = 13
-      Caption = 'Lexers list (optional, comma-separated):'
+      Caption = 'Lexers (optional, comma-separated):'
     end
     object edName: TTntEdit
       Left = 8

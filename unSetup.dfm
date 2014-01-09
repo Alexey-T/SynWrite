@@ -1485,7 +1485,7 @@ object fmSetup: TfmSetup
           Width = 217
           Height = 29
           AutoSize = False
-          Caption = 'Disable Tab for snippets for these file file-extensions'
+          Caption = 'Disable Tab for snippets for these file extensions:'
           WordWrap = True
         end
         object cbAcpFilter: TTntComboBox

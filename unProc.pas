@@ -865,7 +865,8 @@ function SHexColorToColor(const s: string): TColor;
 var
   n1, n2, n3: integer;
 begin
-  if Length(s)=6 then
+  //"rrggbb" is the same as "rrggbbaa"
+  if (Length(s)=6) or (Length(s)=8) then
   begin
     n1:= SHexByteToInt(s[1]+s[2]);
     n2:= SHexByteToInt(s[3]+s[4]);
@@ -881,7 +882,7 @@ begin
     Result:= RGB(n1, n2, n3);
   end
   else
-    raise Exception.Create('Not ok color string: '+s);
+    raise Exception.Create('Incorrect color string: '+s);
 end;
 
 function IsHexChar(Ch: WideChar): boolean;
@@ -891,11 +892,12 @@ end;
 
 function IsHexColorString(const s: Widestring): boolean;
 var
-  i: integer;
+  i, Len: integer;
 begin
   Result:= false;
-  if (Length(s)<>3) and (Length(s)<>6) then Exit;
-  for i:= 1 to Length(s) do
+  Len:= Length(s);
+  if (Len<>3) and (Len<>6) and (Len<>8) then Exit;
+  for i:= 1 to Len do
     if not IsHexChar(s[i]) then
       Exit;
   Result:= true;

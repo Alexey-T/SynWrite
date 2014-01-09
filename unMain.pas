@@ -5371,10 +5371,10 @@ begin
           Exit; //don't record Tab cmd
         end
         else
-        if DoSmartTagTabbing then
+        if DoTemplateTabbing then //snippets - before SmartTagTabbing
           begin end
         else
-        if DoTemplateTabbing then
+        if DoSmartTagTabbing then
           begin end
         else
           Handled:= false;
@@ -7064,9 +7064,21 @@ var
 begin
   Ed:= CurrentEditor;
   if Ed<>nil then
-    StatusItemTabsize.Caption:=
-      IntToStr(EditorTabSize(Ed)) +
-      IfThen(Ed.TabMode=tmSpaces, '_');
+  begin
+    if (Ed.Markers.Count>0) and
+      (Ed.MarkersLen.Count>0) then
+    begin
+      StatusItemTabsize.ImageIndex:= 12;
+      StatusItemTabsize.Caption:= '';
+    end
+    else
+    begin
+      StatusItemTabsize.ImageIndex:= -1;
+      StatusItemTabsize.Caption:=
+        IntToStr(EditorTabSize(Ed)) +
+        IfThen(Ed.TabMode=tmSpaces, '_');
+    end;
+  end;
 end;  
 
 function TfmMain.GetAcpFN(const LexerName: string): string;
