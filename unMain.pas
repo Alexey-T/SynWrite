@@ -2301,7 +2301,7 @@ type
     procedure DoSaveStringToIni(const fn: string; const Str: string);
 
     //private UpdateNNN
-    procedure UpdateTreeImages;
+    procedure UpdateTreeProps;
     procedure UpdateTitle(Sender: TFrame);
     procedure UpdateAcp(const Lexer: string);
     procedure UpdateTools;
@@ -2740,6 +2740,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     //opt
+    opTreeSorted: string;
     opColorUnderline: integer;
     opFontConsole: string;
     opSyncEditIcon: boolean;
@@ -3971,20 +3972,33 @@ begin
   UpdateTabList(PageControl.ActivePageIndex, -1, n);
 end;
 
-procedure TfmMain.UpdateTreeImages;
+procedure TfmMain.UpdateTreeProps;
 var
+  bSorted, bIcons: boolean;
   i: integer;
 begin
+  //sort tree?
+  bSorted:= SFileExtensionMatch(CurrentFrame.FileName, opTreeSorted);
+  if bSorted then
+    Tree.SortType:= stText
+  else
+    Tree.SortType:= stNone;
+
+  //show icons in tree?
+  bIcons:= false;
   if (ImgListTree.Count > 0) and (CurrentFrame.TextSource.SyntaxAnalyzer <> nil) then
     with CurrentFrame.TextSource.SyntaxAnalyzer do
-      for i:= 0 to BlockRules.Count - 1 do
+      for i:= 0 to BlockRules.Count-1 do
         if (BlockRules[i].TreeItemImage <> -1) or
            (BlockRules[i].TreeGroupImage <> -1) then
         begin
-          Tree.Images:= ImgListTree;
-          Exit;
+          bIcons:= true;
+          Break;
         end;
-  Tree.Images:= nil;
+  if bIcons then
+    Tree.Images:= ImgListTree
+  else
+    Tree.Images:= nil;
 end;
 
 procedure TfmMain.FrameChanged;
@@ -4000,7 +4014,7 @@ begin
        UpdateStatusbar;
        SynScroll(CurrentEditor);
        UpdateTabList(-1, -1, -1);
-       UpdateTreeImages;
+       UpdateTreeProps;
     end
   else
     CurrentEditor:= nil;
@@ -4403,11 +4417,13 @@ begin
     opSaveWndPos:= ReadBool('Hist', 'SavePos', true);
 
     //setup
+    opTreeSorted:= ReadString('Setup', 'TreeSorted', '');
+    opColorUnderline:= ReadInteger('Setup', 'ColorUnd', 3);
     opSyncEditIcon:= ReadBool('Setup', 'SyncEditIcon', true);
+
     opTabFontSize:= ReadInteger('Setup', 'TabFontSize', 0);
     ApplyTabFontSize;
 
-    opColorUnderline:= ReadInteger('Setup', 'ColorUnd', 3);
     opFontConsole:= ReadString('View', 'PyFont', 'Consolas,10,');
     ApplyFontConsole;
 
