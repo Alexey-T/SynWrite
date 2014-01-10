@@ -1316,6 +1316,7 @@ var
   L: TStringList;
   S, SId: string;
   i: Integer;
+  TrailEol: boolean;
 begin
   Result:= false;
   DoClearSnippet(Info);
@@ -1324,7 +1325,9 @@ begin
   L:= TStringList.Create;
   try
     L.LoadFromFile(fn);
+
     //delete trailing empty lines
+    TrailEol:= (L.Count>0) and (L[L.Count-1]='');
     while (L.Count>0) and (L[L.Count-1]='') do
       L.Delete(L.Count-1);
 
@@ -1350,10 +1353,11 @@ begin
       else
       if SId='text' then
       begin
-        //"text" field means that rest of file is snippet text
+        //"text" field means rest of file is snippet text
         for i:= 0 to L.Count-1 do
-          Info.Text:= Info.Text + UTF8Decode(L[i]) +
-            IfThen(i < L.Count-1, #13); //add EOL for non-last line
+          Info.Text:= Info.Text +
+            UTF8Decode(L[i]) +
+            IfThen((i < L.Count-1) or TrailEol, #13); //add EOL for non-last line
         L.Clear;
       end;
     end;
