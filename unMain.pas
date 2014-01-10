@@ -1262,6 +1262,7 @@ type
     SD_Snippets: TSaveDialog;
     SpTBXSeparatorItem27: TSpTBXSeparatorItem;
     StatusItemTabsize: TSpTBXLabelItem;
+    TbxItemTreeSorted: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2018,6 +2019,7 @@ type
     procedure MemoConsoleDblClick(Sender: TObject);
     procedure TbxItemRunSnippetsClick(Sender: TObject);
     procedure TbxItemRunNewSnippetClick(Sender: TObject);
+    procedure TbxItemTreeSortedClick(Sender: TObject);
 
   private
     cStatLine,
@@ -3101,7 +3103,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.370';
+  cSynVer = '6.3.380';
   cSynPyVer = '1.0.102';
       
 const
@@ -17828,7 +17830,8 @@ begin
     TbxItemTreeExpandAll.Enabled:= en;
     TBXSubmenuTreeLevel.Enabled:= en;
     TbxItemTreeFind.Enabled:= en;
-    end;
+    TbxItemTreeSorted.Checked:= SortType <> stNone;
+  end;
 end;
 
 procedure TfmMain.TBXItemTreeCollapseClick(Sender: TObject);
@@ -27821,6 +27824,16 @@ begin
   CurrentEditor.ExecCommand(sm_NewSnippetDialog);
 end;
 
+
+procedure TfmMain.TbxItemTreeSortedClick(Sender: TObject);
+begin
+  if Tree.SortType = stNone then
+    Tree.SortType:= stText
+  else
+    Tree.SortType:= stNone;
+
+  Tree.UpdateTree;
+end;
 
 end.
 
