@@ -3103,7 +3103,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.380';
+  cSynVer = '6.3.390';
   cSynPyVer = '1.0.102';
       
 const
@@ -6511,6 +6511,9 @@ begin
   //update icons  
   UpdateSaveIco;
   UpdateBusyIco;
+
+  if StatusItemTabsize.ImageIndex>=0 then
+    UpdateStatusbarTabsize;
 
   if FUpdatePluginsLang then
   begin
@@ -15240,7 +15243,7 @@ end;
 procedure TfmMain.TBXItemORestoreStylesClick(Sender: TObject);
   //------
   function FindAn(const S: string): TSyntAnalyzer;
-  var i:Integer;
+  var i: Integer;
   begin
     Result:= nil;
     with SyntaxManager do
@@ -15249,7 +15252,7 @@ procedure TfmMain.TBXItemORestoreStylesClick(Sender: TObject);
           begin Result:= Analyzers[i]; Exit end;
   end;
 var
-  i:Integer;
+  i: Integer;
   An: TSyntAnalyzer;
   S: string;
 begin
@@ -19081,7 +19084,7 @@ end;
 function TfmMain.DoTemplateTabbing: boolean;
 var
   Ed: TSyntaxMemo;
-  StrId, StrLexer: Widestring;
+  StrId, StrLexer, StrSelText: Widestring;
   NSnipIndex, i: Integer;
 begin
   Result:= false;
@@ -19116,12 +19119,14 @@ begin
   begin
     Ed.BeginUpdate;
     try
+      StrSelText:= Ed.SelText;
+      Ed.ClearSelection;
       Ed.CaretStrPos:= Ed.CaretStrPos - Length(StrId);
       Ed.DeleteText(Length(StrId));
-      EditorInsertSnippet(Ed, TSynSnippetClass(FListSnippets[NSnipIndex]).Info.Text);
+      EditorInsertSnippet(Ed, TSynSnippetClass(FListSnippets[NSnipIndex]).Info.Text, StrSelText);
     finally
       Ed.EndUpdate;
-    end;    
+    end;
     Result:= true;
   end;
 end;
@@ -27733,6 +27738,7 @@ procedure TfmMain.DoSnippetListDialog(const SText: string);
 var
   Ed: TSyntaxMemo;
   Index: Integer;
+  StrSelText: Widestring;
 begin
   Ed:= CurrentEditor;
   if not Ed.ReadOnly then
@@ -27742,16 +27748,18 @@ begin
     begin
       Ed.BeginUpdate;
       try
+        StrSelText:= Ed.SelText;
+        Ed.ClearSelection;
         if SText<>'' then
         begin
           Ed.CaretStrPos:= Ed.CaretStrPos - Length(SText);
           Ed.DeleteText(Length(SText));
         end;
-        EditorInsertSnippet(Ed, TSynSnippetClass(FListSnippets[Index]).Info.Text);
+        EditorInsertSnippet(Ed, TSynSnippetClass(FListSnippets[Index]).Info.Text, StrSelText);
       finally
         Ed.EndUpdate;
       end;
-    end;      
+    end;
   end
   else
     MsgBeep;

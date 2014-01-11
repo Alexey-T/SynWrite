@@ -1698,7 +1698,8 @@ begin
 
     RemoveCarets();
     CaretStrPos:= NPos;
-    SetSelection(NPos, NLength, true);
+    //select from caret to the left, don't move caret
+    SetSelection(NPos-NLength, NLength, true);
 
     //process mirror tabstops
     repeat
@@ -1711,7 +1712,7 @@ begin
             AddCaret(StrPosToCaretPos(NPos), false);
             SetSelection(NPos, NLength, true);
           end;
-          AddCaret(TMarker(Markers[i]).CaretPos, false);
+          AddCaret(StrPosToCaretPos(TMarker(Markers[i]).Position), false);
 
           Markers.Delete(i);
           MarkersLen.Delete(i);

@@ -72,7 +72,7 @@ end;
 procedure SaveLexerStylesToFile(f: TSyntAnalyzer; const fn: string);
 var
   i: Integer;
-  s, si, sd: string;
+  s, si{, sd}: string;
 begin
   s:= f.LexerName;
   with TIniFile.Create(fn) do
@@ -110,6 +110,7 @@ begin
       WriteInteger(s, si+'_VertAlignment', Integer(VertAlignment));
     end;
 
+    (*
     WriteInteger(s, 'TpNum', f.CodeTemplates.Count);
     for i:= 0 to f.CodeTemplates.Count-1 do
       with f.CodeTemplates[i] do
@@ -122,18 +123,19 @@ begin
         SReplaceAll(sd, sLineBreak, '<SW_EOL>');
         WriteString(s, si+'_Code', '"'+sd+'"');
       end;
+    *)  
   finally
     Free
-  end;    
+  end;
 end;
 
 
 procedure LoadLexerStylesFromFile(f: TSyntAnalyzer; const fn: string);
 var
-  i, j, n:Integer;
-  s, si, sd: string;
+  i, j{, n}:Integer;
+  s, si{, sd}: string;
   fm: TSyntaxFormat;
-  tp: TCodeTemplate;
+  //tp: TCodeTemplate;
 begin
   if f=nil then Exit;
   s:= f.LexerName;
@@ -178,6 +180,8 @@ begin
         end;
     end;
 
+    (*
+    //code-templates
     n:= ReadInteger(s, 'TpNum', 0);
     if n>0 then
     begin
@@ -194,6 +198,7 @@ begin
         tp.Code.SetText(PWideChar(WideString(sd)));
       end;
     end;
+    *)
   finally
     Free;
     fm.Free;

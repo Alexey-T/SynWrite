@@ -1398,7 +1398,7 @@ var
   i: Integer;
 begin
   for i:= 1 to Length(S) do
-    if not (IsWordChar(S[i]) or (AllowDot and (S[i]='.'))) then
+    if not (IsWordChar(S[i]) or (S[i]='$') or (AllowDot and (S[i]='.'))) then
       begin Result:= false; Exit end;
   Result:= true;
 end;

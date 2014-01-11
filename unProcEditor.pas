@@ -15,7 +15,7 @@ uses
   ecStrUtils;
 
 function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
-procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText: Widestring);
+procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText: Widestring);
 
 function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
 procedure EditorUpdateCaretPosFromMousePos(Ed: TSyntaxMemo);
@@ -2585,7 +2585,7 @@ begin
 end;
 
 
-procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText: Widestring);
+procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText: Widestring);
 var
   NInsertStart: Integer;
   NInsertPos: array[0..100] of Integer;
@@ -2593,12 +2593,13 @@ var
   //
   procedure DoInsPnt(N: Integer);
   var
-    NPos, NLen: Integer;
+    NPos, NLen, NLenReal: Integer;
   begin
     if NInsertPos[N]>=0 then
     begin
-      NPos:= NInsertStart + NInsertPos[N];
       NLen:= NInsertLen[N];
+      NLenReal:= NLen and $FFFF; //low-word is length
+      NPos:= NInsertStart + NInsertPos[N] + NLenReal;
       Ed.DropMarker(Ed.StrPosToCaretPos(NPos));
       Ed.CaretStrPos:= NPos;
       Ed.MarkersLen.Add(Pointer(NLen));
@@ -2606,7 +2607,7 @@ var
   end;
   //
 var
-  Str, SId, SVal, SSelText: Widestring;
+  Str, SId, SVal: Widestring;
   Decode: TStringDecodeRecW;
   NStart, NEnd, i: Integer;
   NIdStart, NIdEnd: Integer;
@@ -2621,11 +2622,6 @@ begin
   //snippet may have Tabs
   if Ed.TabMode=tmSpaces then
     SReplaceAllW(Str, #9, EditorTabExpansion(Ed));
-
-  //init
-  SSelText:= '';
-  if Pos('${sel}', Str)>0 then
-    SSelText:= Ed.SelText;
 
   for i:= Low(NInsertLen) to High(NInsertLen) do
   begin
@@ -2679,7 +2675,7 @@ begin
       SVal:= FormatDateTime(SVal, Now);
 
     if SId='sel' then
-      SVal:= SSelText;
+      SVal:= ASelText;
 
     if SId='cp' then
       SVal:= TntClipboard.AsWideText;
@@ -2732,7 +2728,7 @@ begin
   repeat
     Dec(N);
     ch:= Ed.Lines.Chars[N];
-    if IsWordChar(ch) or (AllowDot and (ch='.')) then
+    if IsWordChar(ch) or (ch='$') or (AllowDot and (ch='.')) then
       Insert(ch, Result, 1)
     else
       Break;
