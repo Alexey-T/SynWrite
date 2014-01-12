@@ -944,6 +944,8 @@ begin
           Result:= PyInt_FromLong(PyEditor.Zoom);
         13:
           Result:= PyBool_FromLong(Ord(not PyEditor.ReplaceMode));
+        14:
+          Result:= PyBool_FromLong(Ord(PyEditor.SyncEditing.Count>0));  
         else
           Result:= ReturnNone;
       end;

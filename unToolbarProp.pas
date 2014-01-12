@@ -12,12 +12,14 @@ type
   TShowCmdListProc = function: string of object;
   TShowCmdHintProc = function(Cmd: Widestring): Widestring of object;
   TGetExtToolsProc = procedure(List: TTntStringList) of object;
+  TGetPyToolsProc = procedure(List: TTntStringList) of object;
 
 function DoShowToolbarProp(
   const AIni, AId: string;
   AShowCmdList: TShowCmdListProc;
   AShowCmdHint: TShowCmdHintProc;
   AGetExtTools: TGetExtToolsProc;
+  AGetPyTools: TGetPyToolsProc;
   AForceSizeX,
   AForceSizeY: Integer;
   var AImageDir: string): boolean;
@@ -74,6 +76,7 @@ type
     labInfo: TTntLabel;
     mnuConv: TTntMenuItem;
     mnuRecProjects: TTntMenuItem;
+    btnBrowsePy: TTntButton;
     procedure FormShow(Sender: TObject);
     procedure btnIconSizeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -106,10 +109,12 @@ type
     procedure mnuNonPrintClick(Sender: TObject);
     procedure mnuConvClick(Sender: TObject);
     procedure mnuRecProjectsClick(Sender: TObject);
+    procedure btnBrowsePyClick(Sender: TObject);
   private
     { Private declarations }
     procedure DoMenuSys(const Cmd, Hint: Widestring);
     procedure MenuToolClick(Sender: TObject);
+    procedure MenuPyClick(Sender: TObject);
     procedure SwapBtn(var BFrom, BTo: TToolbarProp);
     procedure ClearBtn(var Btn: TToolbarProp);
     function CanAddBtn: boolean;
@@ -127,6 +132,7 @@ type
     FShowCmdList: TShowCmdListProc;
     FShowCmdHint: TShowCmdHintProc;
     FGetExtTools: TGetExtToolsProc;
+    FGetPyTools: TGetPyToolsProc;
   end;
 
 implementation
@@ -601,7 +607,7 @@ begin
   if MenuTool.Items.Count>0 then
     MenuTool.Popup(p.x, p.y)
   else
-    MessageBeep(mb_iconwarning);  
+    MessageBeep(mb_iconwarning);
 end;
 
 procedure TfmToolbarProp.MenuToolClick(Sender: TObject);
@@ -617,12 +623,26 @@ begin
   edHint.Text:= FToolbar[n].FHint;
 end;
 
+procedure TfmToolbarProp.MenuPyClick(Sender: TObject);
+var
+  S: Widestring;
+  n: Integer;
+begin
+  S:= (Sender as TTntMenuItem).Caption;
+  n:= Listbox1.ItemIndex;
+  FToolbar[n].FCmd:= 'py:'+S;
+  FToolbar[n].FHint:= 'Plugin: '+S;
+  edCmd.Text:= FToolbar[n].FCmd;
+  edHint.Text:= FToolbar[n].FHint;
+end;
+
 
 function DoShowToolbarProp(
   const AIni, AId: string;
   AShowCmdList: TShowCmdListProc;
   AShowCmdHint: TShowCmdHintProc;
   AGetExtTools: TGetExtToolsProc;
+  AGetPyTools: TGetPyToolsProc;
   AForceSizeX,
   AForceSizeY: Integer;
   var AImageDir: string): boolean;
@@ -645,6 +665,7 @@ begin
     FShowCmdList:= AShowCmdList;
     FShowCmdHint:= AShowCmdHint;
     FGetExtTools:= AGetExtTools;
+    FGetPyTools:= AGetPyTools;
     FImagesDir:= AImageDir;
 
     Result:= ShowModal=mrOk;
@@ -682,6 +703,7 @@ begin
       FShowCmdList,
       FShowCmdHint,
       FGetExtTools,
+      FGetPyTools,
       FSizeX,
       FSizeY,
       FImagesDir);
@@ -766,6 +788,36 @@ end;
 procedure TfmToolbarProp.mnuRecProjectsClick(Sender: TObject);
 begin
   DoMenuSys('m:{projects}', mnuRecProjects.Caption);
+end;
+
+procedure TfmToolbarProp.btnBrowsePyClick(Sender: TObject);
+var
+  L: TTntStringList;
+  i: Integer;
+  Item: TTntMenuItem;
+  p: TPoint;
+begin
+  if not Assigned(FGetPyTools) then Exit;
+  L:= TTntStringList.Create;
+  try
+    FGetPyTools(L);
+    MenuTool.Items.Clear;
+    for i:= 0 to L.Count-1 do
+    begin
+      Item:= TTntMenuItem.Create(Self);
+      Item.Caption:= L[i];
+      Item.OnClick:= MenuPyClick;
+      MenuTool.Items.Add(Item);
+    end;
+  finally
+    FreeAndNil(L)
+  end;
+
+  p:= btnBrowsePy.ClientToScreen(point(0, 0));
+  if MenuTool.Items.Count>0 then
+    MenuTool.Popup(p.x, p.y)
+  else
+    MessageBeep(mb_iconwarning);
 end;
 
 end.

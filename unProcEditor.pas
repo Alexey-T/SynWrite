@@ -2585,6 +2585,29 @@ begin
 end;
 
 
+function SIndentedSnippetString(const StrText, StrSnippet, StrTextEol, StrSnippetEol: Widestring; NStart: Integer): Widestring;
+var
+  StrIndent: Widestring;
+  Decode: TStringDecodeRecW;
+  i: Integer;
+begin
+  StrIndent:= '';
+  i:= NStart;
+  while (i>1) and not IsLineBreakChar(StrText[i-1]) do
+  begin
+    Dec(i);
+    if StrText[i]=#9 then
+      StrIndent:= StrText[i] + StrIndent
+    else
+      StrIndent:= ' ' + StrIndent;
+  end;
+
+  Decode.SFrom:= StrSnippetEol;
+  Decode.STo:= StrTextEol + StrIndent;
+
+  Result:= SDecodeW(StrSnippet, Decode);
+end;
+
 procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText: Widestring);
 var
   NInsertStart: Integer;
@@ -2593,16 +2616,16 @@ var
   //
   procedure DoInsPnt(N: Integer);
   var
-    NPos, NLen, NLenReal: Integer;
+    NPos, NLenFull, NLenReal: Integer;
   begin
     if NInsertPos[N]>=0 then
     begin
-      NLen:= NInsertLen[N];
-      NLenReal:= NLen and $FFFF; //low-word is length
+      NLenFull:= NInsertLen[N];
+      NLenReal:= LoWord(NLenFull);
       NPos:= NInsertStart + NInsertPos[N] + NLenReal;
       Ed.DropMarker(Ed.StrPosToCaretPos(NPos));
       Ed.CaretStrPos:= NPos;
-      Ed.MarkersLen.Add(Pointer(NLen));
+      Ed.MarkersLen.Add(Pointer(NLenFull));
     end;
   end;
   //
@@ -2611,17 +2634,17 @@ var
   Decode: TStringDecodeRecW;
   NStart, NEnd, i: Integer;
   NIdStart, NIdEnd: Integer;
-  NCountMirrors: Integer;
+  NMirrorCnt: Integer;
 begin
   Decode.SFrom:= #13;
   Decode.STo:= EditorEOL(Ed) + EditorIndentStringForPos(Ed, Ed.CaretPos);
-
-  Str:= AText;
-  Str:= SDecodeW(Str, Decode);
+  Str:= SDecodeW(AText, Decode);
 
   //snippet may have Tabs
   if Ed.TabMode=tmSpaces then
+  begin
     SReplaceAllW(Str, #9, EditorTabExpansion(Ed));
+  end;  
 
   for i:= Low(NInsertLen) to High(NInsertLen) do
   begin
@@ -2630,7 +2653,7 @@ begin
   end;
 
   //process macros
-  NCountMirrors:= 0;
+  NMirrorCnt:= 9; //first mirrors index is 10
   NStart:= 0;
   repeat
     NStart:= PosEx('${', Str, NStart+1);
@@ -2659,26 +2682,35 @@ begin
         if NInsertPos[i]>=0 then
         begin
           //mirror tabstop
-          Inc(NCountMirrors);
-          NInsertPos[9 + NCountMirrors]:= NStart-1;
-          NInsertLen[9 + NCountMirrors]:= i shl 16;
+          Inc(NMirrorCnt);
+          if NMirrorCnt<=High(NInsertPos) then
+          begin
+            NInsertPos[NMirrorCnt]:= NStart-1;
+            NInsertLen[NMirrorCnt]:= MakeLong(0, i);
+          end;
         end
         else
         begin
           //original tabstop
           NInsertPos[i]:= NStart-1;
-          NInsertLen[i]:= i shl 16 + Length(SVal);
+          NInsertLen[i]:= MakeLong(Length(SVal), i);
         end;
       end;
 
     if SId='date' then
+    begin
       SVal:= FormatDateTime(SVal, Now);
+    end;  
 
     if SId='sel' then
-      SVal:= ASelText;
+    begin
+      SVal:= SIndentedSnippetString(Str, ASelText, EditorEOL(Ed), EditorEOL(Ed), NStart);
+    end;
 
     if SId='cp' then
-      SVal:= TntClipboard.AsWideText;
+    begin
+      SVal:= SIndentedSnippetString(Str, TntClipboard.AsWideText, EditorEOL(Ed), #13#10, NStart);
+    end;
 
     Delete(Str, NStart, NEnd-NStart+1);
     Insert(SVal, Str, NStart);

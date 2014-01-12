@@ -151,7 +151,7 @@ type
     scmdCopyFilePath
     );
 
-  TPluginList_Command = array[0..19] of record
+  TPluginList_Command = array[0..50] of record
     SFilename: string;
     SLexers: string;
     SCmd: string;
@@ -2638,7 +2638,8 @@ type
     function DoCustomizeToolbar(const Id: string): boolean;
     procedure DoCustomizeAndReloadToolbar(Id: TSynUserToolbarId);
     procedure ToolbarUserClick(Sender: TObject);
-    procedure DoExtToolsList(L: TTntStringList);
+    procedure DoEnumExtTools(L: TTntStringList);
+    procedure DoEnumPyTools(L: TTntStringList);
     procedure InitMenuItemsList;
     procedure DoOpenBySelection;
     procedure FixMenuBigImageList(Menu: TSpTbxSubmenuItem);
@@ -24908,7 +24909,8 @@ begin
       Id,
       DoShowCmdListStr,
       DoShowCmdHint,
-      DoExtToolsList,
+      DoEnumExtTools,
+      DoEnumPyTools,
       0, 0,
       Dir);
     WriteString('Win', 'ImagesDir', Dir);
@@ -25163,12 +25165,13 @@ end;
 procedure TfmMain.ToolbarUserClick(Sender: TObject);
 var
   Cmd: Widestring;
+  PyFile, PyCmd: Widestring;
   NCmd, i: Integer;
 begin
   NCmd:= (Sender as TSpTbxItem).Tag;
   if not ((NCmd>=0) and (NCmd<FUserToolbarCommands.Count)) then
     begin MsgBeep; Exit end;
-  Cmd:= FUserToolbarCommands[NCmd];  
+  Cmd:= FUserToolbarCommands[NCmd];
 
   //run internal command
   if SBegin(Cmd, 'cm:') then
@@ -25190,10 +25193,20 @@ begin
         Exit
       end;
     MsgError(WideFormat(DKLangConstW('MRun'), [Cmd]), Handle);
+  end
+  else
+  //run py-plugin
+  if SBegin(Cmd, 'py:') then
+  begin
+    PyCmd:= Cmd;
+    PyFile:= SGetItem(PyCmd, '/');
+    DoLoadPyPlugin(
+      PyFile,
+      PyCmd);
   end;
 end;
 
-procedure TfmMain.DoExtToolsList(L: TTntStringList);
+procedure TfmMain.DoEnumExtTools(L: TTntStringList);
 var
   i: Integer;
 begin
@@ -25201,6 +25214,16 @@ begin
     with opTools[i] do
       if ToolCaption<>'' then
         L.Add(ToolCaption);
+end;
+
+procedure TfmMain.DoEnumPyTools(L: TTntStringList);
+var
+  i: Integer;
+begin
+  for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
+    with FPluginsCommand[i] do
+      if SFileName<>'' then
+        L.Add(Copy(SFileName, Length(cPyPluginPrefix)+1, MaxInt) + '/' + SCmd);
 end;
 
 procedure TfmMain.ecExtractDupsCaseExecute(Sender: TObject);

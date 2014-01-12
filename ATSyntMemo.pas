@@ -1688,8 +1688,8 @@ begin
   begin
     //MarkersLen[i] has 2 values: (Length + TabstopIndex shl 16)
     i:= Integer(MarkersLen.Last);
-    NTabstopIndex:= i shr 16;
-    NLength:= i and $FFFF;
+    NTabstopIndex:= HiWord(i);
+    NLength:= LoWord(i); 
     NPos:= TMarker(Markers.Last).Position; //don't use TMarker.CaretPos (incorrect)
 
     //process base tabstop
@@ -1697,9 +1697,14 @@ begin
     MarkersLen.Delete(MarkersLen.Count-1);
 
     RemoveCarets();
-    CaretStrPos:= NPos;
-    //select from caret to the left, don't move caret
-    SetSelection(NPos-NLength, NLength, true);
+
+    //select from caret to the left side, don't move caret
+    //this isn't ok:
+    //  SetSelection(NPos-NLength, NLength, true);
+    CaretStrPos:= NPos-NLength;
+    SetSelection(CaretStrPos, 0);
+    for i:= 1 to NLength do
+      ExecCommand(smSelRight);
 
     //process mirror tabstops
     repeat
