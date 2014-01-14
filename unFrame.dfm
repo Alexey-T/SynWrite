@@ -112,6 +112,7 @@ object EditorFrame: TEditorFrame
       HintProps.Font.Style = []
       HintProps.Color = clCream
       HintProps.ShowHints = [shCollapsed, shGutter, shTokens]
+      HintProps.DelayBefore = 1500
       HintProps.TimeCollapsed = 100000
       HintProps.TimeTokens = 100000
       HintProps.CollapsedLines = 10
@@ -313,6 +314,7 @@ object EditorFrame: TEditorFrame
       HintProps.Font.Style = []
       HintProps.Color = clCream
       HintProps.ShowHints = [shCollapsed, shGutter, shTokens]
+      HintProps.DelayBefore = 1500
       HintProps.TimeCollapsed = 100000
       HintProps.TimeTokens = 100000
       HintProps.CollapsedLines = 10

@@ -334,6 +334,8 @@ begin
       TfmMain(Owner).DoFindId;
     end;
 
+  //EditorMasterCaretPosChanged(Sender);
+
   SyncMap;
 end;
 

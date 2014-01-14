@@ -1263,6 +1263,7 @@ type
     SpTBXSeparatorItem27: TSpTBXSeparatorItem;
     StatusItemTabsize: TSpTBXLabelItem;
     TbxItemTreeSorted: TSpTBXItem;
+    ColorDialogTabs: TColorDialog;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2036,7 +2037,6 @@ type
     cStatCaretsBotLn: Widestring;
 
     FListSnippets: TList;
-    FBracketsHilited: boolean;
     FTempFilenames: TTntStringList;
     FUserToolbarCommands: TTntStringList;
     FInitialDir: Widestring;
@@ -2256,6 +2256,7 @@ type
     procedure DoSetFrameTabColor(F: TEditorFrame; NColor: Longint);
     procedure DoSetTabColorValue(NColor: Longint);
     procedure DoSetTabColorIndex(NIndex: Integer);
+    procedure DoSetTabColorIndex_Current(NIndex: Integer);
     procedure ClipsClick(Sender: TObject; const S: Widestring);
     procedure ClipsInsPress(Sender: TObject);
     function IsProgressNeeded(Ed: TSyntaxMemo): boolean;
@@ -3104,7 +3105,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.390';
+  cSynVer = '6.3.410';
   cSynPyVer = '1.0.102';
       
 const
@@ -4460,7 +4461,7 @@ begin
     ApplyQs;
     opHiliteUrls:= ReadBool('Setup', 'Link', true);
     opColorLink:= ReadInteger('Setup', 'LinkCl', clBlue);
-    opKeepCaretOnScreen:= ReadBool('Setup', 'KeepScr', true);
+    opKeepCaretOnScreen:= false;
     ApplyEdOptions;
 
     opShowWrapMark:= ReadBool('Setup', 'WrapMk', true);
@@ -4884,7 +4885,6 @@ begin
     WriteBool('Setup', 'LexCat', opLexerGroups);
     WriteBool('Setup', 'Link', opHiliteUrls);
     WriteInteger('Setup', 'LinkCl', opColorLink);
-    WriteBool('Setup', 'KeepScr', opKeepCaretOnScreen);
     WriteBool('Setup', 'WrapMk', opShowWrapMark);
     WriteInteger('Setup', 'TxOnly', opTextOnly);
 
@@ -6086,18 +6086,18 @@ begin
     sm_FoldLevel8: DoFoldLevel(8);
     sm_FoldLevel9: DoFoldLevel(9);
 
-    sm_TabColorDefault: DoSetTabColorIndex(0);
-    sm_TabColorCustom: DoSetTabColorIndex(-1);
-    sm_TabColor1: DoSetTabColorIndex(1);
-    sm_TabColor2: DoSetTabColorIndex(2);
-    sm_TabColor3: DoSetTabColorIndex(3);
-    sm_TabColor4: DoSetTabColorIndex(4);
-    sm_TabColor5: DoSetTabColorIndex(5);
-    sm_TabColor6: DoSetTabColorIndex(6);
-    sm_TabColor7: DoSetTabColorIndex(7);
-    sm_TabColor8: DoSetTabColorIndex(8);
-    sm_TabColor9: DoSetTabColorIndex(9);
-    sm_TabColor10: DoSetTabColorIndex(10);
+    sm_TabColorDefault: DoSetTabColorIndex_Current(0);
+    sm_TabColorCustom: DoSetTabColorIndex_Current(-1);
+    sm_TabColor1: DoSetTabColorIndex_Current(1);
+    sm_TabColor2: DoSetTabColorIndex_Current(2);
+    sm_TabColor3: DoSetTabColorIndex_Current(3);
+    sm_TabColor4: DoSetTabColorIndex_Current(4);
+    sm_TabColor5: DoSetTabColorIndex_Current(5);
+    sm_TabColor6: DoSetTabColorIndex_Current(6);
+    sm_TabColor7: DoSetTabColorIndex_Current(7);
+    sm_TabColor8: DoSetTabColorIndex_Current(8);
+    sm_TabColor9: DoSetTabColorIndex_Current(9);
+    sm_TabColor10: DoSetTabColorIndex_Current(10);
 
     sm_HideMenuItemsDialog: TBXItemOHideItems.Click;
     sm_RestoreStylesDialog: TBXItemORestoreStyles.Click;
@@ -13336,6 +13336,8 @@ begin
   else
   if n=tbConsole then
     tbTabsOut.ActiveTabIndex:= 4;
+
+  plOut.Caption:= tbTabsOut.ActiveTab.Caption;  
 end;
 
 procedure TfmMain.UpdatePanelLeft(n: TSynTabLeft);
@@ -14103,7 +14105,7 @@ begin
       EditorFindBrackets(Ed, n1, n2);
       if n2<0 then Exit;
 
-      FBracketsHilited:= true;
+      Ed.BracketsHilited:= true;
       SearchMarks.Clear;
       SearchMarks.Add(ecLists.TRange.Create(n1, n1+1));
       SearchMarks.Add(ecLists.TRange.Create(n2, n2+1));
@@ -20801,6 +20803,12 @@ begin
   DoSetFrameTabColor(FClickedFrame, NColor);
 end;
 
+procedure TfmMain.DoSetTabColorIndex_Current(NIndex: Integer);
+begin
+  FClickedFrame:= CurrentFrame;
+  DoSetTabColorIndex(NIndex);
+end;
+  
 procedure TfmMain.DoSetTabColorIndex(NIndex: Integer);
 var
   NColor: TColor;
@@ -20810,15 +20818,12 @@ begin
       NColor:= clNone;
     -1:
       begin
-        with TColorDialog.Create(nil) do
-        try
-          Options:= Options+[cdFullOpen];
+        with ColorDialogTabs do
+        begin
           if Execute then
             NColor:= Color
           else
             Exit;
-        finally
-          Free
         end;
       end;
     1..10:
@@ -20845,14 +20850,9 @@ end;
 
 procedure TfmMain.TBXItemTabColorMiscClick(Sender: TObject);
 begin
-  with TColorDialog.Create(nil) do
-  try
-    Options:= Options+[cdFullOpen];
+  with ColorDialogTabs do
     if Execute then
       DoSetTabColorValue(Color);
-  finally
-    Free
-  end;
 end;
 
 procedure TfmMain.TBXItemTabColorDefClick(Sender: TObject);
@@ -26152,9 +26152,9 @@ begin
 
   ATSyntMemo.TSyntaxMemo(Ed).DoUpdateMargins;
 
-  if FBracketsHilited then
+  if Ed.BracketsHilited then
   begin
-    FBracketsHilited:= false;
+    Ed.BracketsHilited:= false;
     Ed.SearchMarks.Clear;
     NeedDraw:= true;
   end;

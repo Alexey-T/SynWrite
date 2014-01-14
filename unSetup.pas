@@ -312,7 +312,6 @@ type
     cbWrap: TTntCheckBox;
     cbFold: TTntCheckBox;
     cbFixLineSize: TTntCheckBox;
-    cbScrollLast: TTntCheckBox;
     cbWrapMargin: TTntCheckBox;
     cbFixColMove: TTntCheckBox;
     cbVarHorzBar: TTntCheckBox;
@@ -350,6 +349,7 @@ type
     TntLabel34: TTntLabel;
     edTreeSorted: TTntEdit;
     TntLabel28: TTntLabel;
+    cbScrollLast: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
