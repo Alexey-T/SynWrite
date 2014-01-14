@@ -4,7 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ecSyntMemo, ecSyntAnal, Menus;
+  Dialogs, Menus,
+  ecSyntMemo, ecSyntAnal,
+  ATSyntMemo;
 
 type
   TfmMap = class(TForm)
@@ -41,7 +43,8 @@ type
 
 implementation
 
-uses ecLists,
+uses
+  ecLists,
   StdCtrls;
 
 {$R *.dfm}
