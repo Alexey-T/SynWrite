@@ -3105,7 +3105,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.410';
+  cSynVer = '6.3.415';
   cSynPyVer = '1.0.102';
       
 const
@@ -10240,11 +10240,11 @@ end;
 procedure TfmMain.RunTool(NTool: Integer);
   function HandleParams(const s, dir: WideString): WideString;
   var
-    fn, SVarValue: Widestring;
-	p: TPoint;
+    fn, SValue: Widestring;
+	  p: TPoint;
   begin
     Result:= S;
-	p:= CurrentEditor.CaretPos;
+    p:= CurrentEditor.CaretPos;
     //
     SReplaceW(Result, '{FileName}', CurrentFrame.FileName);
     SReplaceW(Result, '{FileNameOnly}', WideExtractFileName(CurrentFrame.FileName));
@@ -10255,14 +10255,16 @@ procedure TfmMain.RunTool(NTool: Integer);
     SReplaceW(Result, '{ProjectWorkDir}', CurrentProjectWorkDir);
     SReplaceW(Result, '{ProjectMainFileName}', CurrentProjectMainFN);
     SReplaceW(Result, '{ProjectMainFileDir}', WideExtractFileDir(CurrentProjectMainFN));
-    //                                                                
+    //
     SReplaceW(Result, '{CurrentWord}', CurrentEditor.WordAtPos(p));
     SReplaceW(Result, '{CurrentLineNum}', IntToStr(p.Y+1));
     SReplaceW(Result, '{CurrentColumnNum}', IntToStr(p.X+1));
     if (p.Y >= 0) and (p.Y < CurrentEditor.Lines.Count) then
       SReplaceW(Result, '{CurrentLine}', CurrentEditor.Lines[p.Y]);
     //
-    SReplaceW(Result, '{SelectedText}', CurrentEditor.SelText);
+    SValue:= SReplaceAllEols(CurrentEditor.SelText, ' ');
+    SReplaceW(Result, '{SelectedText}', SValue);
+
     if Pos('{SelectionFileName}', Result)>0 then
       SReplaceW(Result, '{SelectionFileName}', CurrentSelectionFN(true));
     if Pos('{SelectionFileNameAnsi}', Result)>0 then
@@ -10313,7 +10315,7 @@ procedure TfmMain.RunTool(NTool: Integer);
     //
     //user variables (from project)
     if Assigned(fmProj) then
-      fmProj.ReplaceUserVars(Result, '', SVarValue);
+      fmProj.ReplaceUserVars(Result, '', SValue);
   end;
 var
   ft, fcmd, fpar, frun, fexe, fdir,
@@ -20616,10 +20618,7 @@ var
   L: TTntStringList;
   S: Widestring;
 begin
-  S:= CurrentEditor.SelText;
-  SReplaceAllW(S, #13#10, '\n');
-  SReplaceAllW(S, #13, '\n');
-  SReplaceAllW(S, #10, '\n');
+  S:= SReplaceAllEols(CurrentEditor.SelText, '\n');
 
   if Pos('=', S)>0 then
     Insert(cName+'=', S, 1);
@@ -23325,7 +23324,6 @@ begin
 
     //get resulting string
     S:= L.Text;
-    //correct EOLs
     FixLineEnds(S, Ed.Lines.TextFormat);
   finally
     FreeAndNil(L);
@@ -25219,11 +25217,17 @@ end;
 procedure TfmMain.DoEnumPyTools(L: TTntStringList);
 var
   i: Integer;
+  S: Widestring;
 begin
   for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
     with FPluginsCommand[i] do
       if SFileName<>'' then
-        L.Add(Copy(SFileName, Length(cPyPluginPrefix)+1, MaxInt) + '/' + SCmd);
+      begin
+        S:= SFileName + '/' + SCmd;
+        if SBegin(S, cPyPluginPrefix) then
+          Delete(S, 1, Length(cPyPluginPrefix));
+        L.Add(S);
+      end;
 end;
 
 procedure TfmMain.ecExtractDupsCaseExecute(Sender: TObject);

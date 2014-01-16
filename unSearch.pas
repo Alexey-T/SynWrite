@@ -713,16 +713,8 @@ begin
   Result:= S;
   if (Pos(#13, S)=0) and (Pos(#10, S)=0) then Exit;
 
-  SReplaceAllW(Result, #13#10, cc);
-  SReplaceAllW(Result, #13, cc);
-  SReplaceAllW(Result, #10, cc);
-
-  case Ed.Lines.TextFormat of
-    tfCR: SEnd:= #13;
-    tfNL: SEnd:= #10;
-    else SEnd:= #13#10;
-  end;
-  SReplaceAllW(Result, cc, SEnd);
+  SReplaceAllEols(Result, cc);
+  SReplaceAllW(Result, cc, EditorEol(Ed));
 end;
 
 procedure TSynFinderReplacer.FixTextEOL;

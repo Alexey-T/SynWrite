@@ -21,6 +21,7 @@ procedure DoClearSnippet(var AInfo: TSynSnippetInfo);
 function DoLoadSnippetFromFile(const fn: string; var Info: TSynSnippetInfo): boolean;
 procedure DoSaveSnippetToFile(const fn: string; var Info: TSynSnippetInfo);
 
+function SReplaceAllEols(const S, SReplace: Widestring): Widestring;
 function SStripFromTab(const S: Widestring): Widestring;
 procedure SFindBrackets(const S: Widestring; const FromPos: Integer; var Pos1, Pos2: Integer);
 function SFindOpeningBracket(const S: Widestring; nFromPos: Integer): Integer;
@@ -182,6 +183,7 @@ procedure SReplaceAll(var S: string; const SFrom, STo: string);
 var
   i: Integer;
 begin
+  if SFrom <> STo then
   repeat
     i := Pos(SFrom, S);
     if i = 0 then Break;
@@ -194,6 +196,7 @@ procedure SReplaceAllW(var S: WideString; const SFrom, STo: WideString);
 var
   i: Integer;
 begin
+  if SFrom <> STo then
   repeat
     i := Pos(SFrom, S);
     if i = 0 then Break;
@@ -890,10 +893,8 @@ end;
 
 function SEscapeRegex(const s: Widestring): Widestring;
 begin
-  Result:= SEscapeStr(s, cRecodeRegex);
-  SReplaceAllW(Result, #13#10, '\z');
-  SReplaceAllW(Result, #13, '\z');
-  SReplaceAllW(Result, #10, '\z');
+  Result:= SEscapeStr(s, cRecodeRegex); 
+  Result:= SReplaceAllEols(Result, '\z'); 
 end;
 
 function SBegin(const s, subs: Widestring): boolean;
@@ -1403,5 +1404,12 @@ begin
   Result:= true;
 end;
 
+function SReplaceAllEols(const S, SReplace: Widestring): Widestring;
+begin
+  Result:= S;
+  SReplaceAllW(Result, #13#10, SReplace);
+  SReplaceAllW(Result, #10, SReplace);
+  SReplaceAllW(Result, #13, SReplace);
+end;
 
 end.

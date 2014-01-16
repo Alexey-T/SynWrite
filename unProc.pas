@@ -83,7 +83,6 @@ function ScaleFontSize(Size: Integer; Form: TForm): Integer;
 
 procedure FixDraw(Ctl: TWinControl; SizeX: boolean = true);
 procedure FixFPU;
-procedure FixLineEnds(var S: Widestring; const ATextFormat: TTextFormat);
 procedure FixFilenamePath(var S: Widestring);
 function IsDirOkForSaving(const S: Widestring): boolean;
 
@@ -1081,14 +1080,6 @@ begin
     S:= WideExcludeTrailingBackslash(WideGetCurrentDir)+'\'+S;
 end;
 
-procedure FixLineEnds(var S: Widestring; const ATextFormat: TTextFormat);
-begin
-  case ATextFormat of
-    tfCR: ReplaceStr(S, #13#10, #13);
-    tfNL: ReplaceStr(S, #13#10, #10);
-  end;
-end;
-
 procedure FixFPU;
 begin
   //to prevent EInvalidOp "Floating point error"
@@ -1833,6 +1824,5 @@ begin
       Free
     end;
 end;
-
 
 end.

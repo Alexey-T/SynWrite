@@ -14,6 +14,7 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
+procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
 function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
 procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText: Widestring);
 
@@ -72,7 +73,7 @@ procedure EditorSplitLinesByPosition(Ed: TSyntaxMemo; nCol: Integer);
 procedure EditorScrollToSelection(Ed: TSyntaxMemo; NSearchOffsetY: Integer);
 procedure EditorCenterSelectedLines(Ed: TSyntaxMemo);
 function EditorDeleteSelectedLines(Ed: TSyntaxMemo): Integer;
-function EditorEOL(Ed: TSyntaxMemo): Widestring;
+function EditorEOL(Ed: TCustomSyntaxMemo): Widestring;
 procedure EditorToggleStreamComment(Ed: TSyntaxMemo; s1, s2: string; CmtMLine: boolean);
 procedure EditorFillBlockRect(Ed: TSyntaxMemo; SData: Widestring; bKeep: boolean);
 function EditorCurrentLexerForPos(Ed: TSyntaxMemo; NPos: integer): string;
@@ -1175,7 +1176,7 @@ begin
   end;
 end;
 
-function EditorEOL(Ed: TSyntaxMemo): Widestring;
+function EditorEOL(Ed: TCustomSyntaxMemo): Widestring;
 begin
   case Ed.Lines.TextFormat of
     tfCR: Result:= #13;
@@ -1672,6 +1673,15 @@ begin
 end;
 
 
+procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
+begin
+  case ATextFormat of
+    tfCR: ReplaceStr(S, #13#10, #13);
+    tfNL: ReplaceStr(S, #13#10, #10);
+  end;
+end;
+
+
 procedure EditorPasteAndSelect(Ed: TSyntaxMemo);
 var
   ins_text: Widestring;
@@ -1689,11 +1699,8 @@ begin
       ins_text:= GetClipboardTextEx(Ed.Charset)
     else
       ins_text:= GetClipboardText(Ed.Charset);
-
-    case Ed.Lines.TextFormat of
-      tfCR: ReplaceStr(ins_text, #13#10, #13);
-      tfNL: ReplaceStr(ins_text, #13#10, #10);
-    end;
+      
+    FixLineEnds(ins_text, Ed.Lines.TextFormat);
 
     Ed.InsertText(''); //fix CaretStrPos when caret is after EOL
     NStart:= Ed.CaretStrPos;
@@ -2289,13 +2296,15 @@ end;
 
 
 procedure EditorFindBrackets(Ed: TSyntaxMemo; var Pos1, Pos2: Integer);
+var
+  NStart: Integer;
 begin
-  with Ed do
-  begin
-    SFindBrackets(Lines.FText, CaretStrPos+1, Pos1, Pos2);
-    Dec(Pos1);
-    Dec(Pos2);
-  end;
+  NStart:= Ed.CaretStrPos;
+  SFindBrackets(Ed.Lines.FText, NStart+1, Pos1, Pos2);
+  if Pos2=0 then
+    SFindBrackets(Ed.Lines.FText, NStart, Pos1, Pos2);
+  Dec(Pos1);
+  Dec(Pos2);
 end;
 
 function EditorFindOpeningBracket(Ed: TSyntaxMemo): Integer;
@@ -2721,11 +2730,8 @@ begin
   //insert text
   Ed.BeginUpdate;
   try
-    //trick to make virtual caret pos ok
-    Ed.InsertText('n');
-    Ed.CaretStrPos:= Ed.CaretStrPos-1;
-    Ed.DeleteText(1);
-
+    //fix CaretStrPos, for virtual caret pos
+    Ed.InsertText('');
     //remember caret pos
     NInsertStart:= Ed.CaretStrPos;
     Ed.InsertText(Str);
