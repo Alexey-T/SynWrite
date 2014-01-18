@@ -498,6 +498,7 @@ object fmMain: TfmMain
         Width = 246
         Height = 21
         Align = alBottom
+        PopupMenu = PopupPanelTitle
         ActiveTabIndex = 0
         TabPosition = ttpBottom
         HiddenItems = <>
@@ -625,7 +626,8 @@ object fmMain: TfmMain
         Width = 888
         Height = 21
         Align = alBottom
-        ActiveTabIndex = 2
+        PopupMenu = PopupPanelTitle
+        ActiveTabIndex = 4
         TabPosition = ttpBottom
         HiddenItems = <>
         object TbxTabOutput: TSpTBXTabItem
@@ -638,7 +640,6 @@ object fmMain: TfmMain
         end
         object TbxTabTidy: TSpTBXTabItem
           Caption = 'Validation'
-          Checked = True
           OnClick = TBXItemOOValClick
         end
         object TbxTabPlugins: TSpTBXTabItem
@@ -648,6 +649,7 @@ object fmMain: TfmMain
         end
         object TbxTabConsole: TSpTBXTabItem
           Caption = 'Python Console'
+          Checked = True
           OnClick = TbxTabConsoleClick
         end
       end
@@ -726,6 +728,7 @@ object fmMain: TfmMain
         Width = 175
         Height = 21
         Align = alBottom
+        PopupMenu = PopupPanelTitle
         ActiveTabIndex = 0
         TabPosition = ttpBottom
         HiddenItems = <>
@@ -10191,6 +10194,7 @@ object fmMain: TfmMain
     DropDownCount = 10
     IntegralHeight = True
     ItemHeight = 15
+    AutoSelect = False
     BgColor = clWindow
     CommandID = 650
     Width = 400
@@ -10251,6 +10255,7 @@ object fmMain: TfmMain
     Font.Height = -12
     Font.Name = 'Tahoma'
     Font.Style = []
+    AutoSelect = False
     BgColor = clWindow
     CommandID = 651
     Constraints.MinWidth = 220
@@ -12057,7 +12062,7 @@ object fmMain: TfmMain
     Left = 577
     Top = 233
     LangData = {
-      0600666D4D61696E0001080400000A00544258446F636B546F70000006007462
+      0600666D4D61696E00010E0400000A00544258446F636B546F70000006007462
       46696C650101000000B5020000070043617074696F6E000E005442584974656D
       546F6F6C4E65770102000000B6020000070043617074696F6EB7020000040048
       696E740016005442585375626D656E754974656D546F6F6C4F70656E01020000
@@ -14086,7 +14091,14 @@ object fmMain: TfmMain
       536570617261746F724974656D3237000011005374617475734974656D546162
       73697A650101000000D10A0000040048696E740011005462784974656D547265
       65536F727465640101000000D20A0000070043617074696F6E000F00436F6C6F
-      724469616C6F67546162730000}
+      724469616C6F675461627300000F00506F70757050616E656C5469746C650000
+      14005462784974656D50616E656C5469746C654261720101000000D30A000007
+      0043617074696F6E001A005462784974656D50616E656C5469746C6553686F77
+      52696768740101000000D40A0000070043617074696F6E001800546278497465
+      6D50616E656C5469746C6553686F774F75740101000000D50A00000700436170
+      74696F6E0019005462784974656D50616E656C5469746C6553686F774C656674
+      0101000000D60A0000070043617074696F6E0014005370544258536570617261
+      746F724974656D32380000}
   end
   object TimerHint: TTimer
     Enabled = False
@@ -15852,6 +15864,7 @@ object fmMain: TfmMain
     DropDownCount = 10
     IntegralHeight = True
     ItemHeight = 15
+    AutoSelect = False
     BgColor = clWindow
     CommandID = 650
     Width = 400
@@ -21098,5 +21111,28 @@ object fmMain: TfmMain
     Options = [cdFullOpen]
     Left = 639
     Top = 308
+  end
+  object PopupPanelTitle: TSpTBXPopupMenu
+    OnPopup = PopupPanelTitlePopup
+    Left = 465
+    Top = 386
+    object TbxItemPanelTitleBar: TSpTBXItem
+      Caption = 'Show title bar (docked)'
+      OnClick = TbxItemPanelTitleBarClick
+    end
+    object SpTBXSeparatorItem28: TSpTBXSeparatorItem
+    end
+    object TbxItemPanelTitleShowLeft: TSpTBXItem
+      Caption = 'Show structure/project panel'
+      Action = ecShowTree
+    end
+    object TbxItemPanelTitleShowOut: TSpTBXItem
+      Caption = 'Show output panel'
+      Action = ecShowOut
+    end
+    object TbxItemPanelTitleShowRight: TSpTBXItem
+      Caption = 'Show clipboard/minimap panel'
+      Action = ecShowClip
+    end
   end
 end

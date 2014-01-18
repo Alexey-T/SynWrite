@@ -42,7 +42,7 @@ uses
 
   ecActns, ecPrint, ecSyntMemo, ecKeyMap, ecPropManager, ecSyntAnal,
   ecSyntTree, ecStrUtils, ecPopupCtrl, ecUnicode,
-  ATSyntMemo, //after?? ecSyntMemo
+  ATSyntMemo, //after ecSyntMemo
 
   TntDialogs, TntStdCtrls, TntComCtrls,
   DKLang,
@@ -1264,6 +1264,12 @@ type
     StatusItemTabsize: TSpTBXLabelItem;
     TbxItemTreeSorted: TSpTBXItem;
     ColorDialogTabs: TColorDialog;
+    PopupPanelTitle: TSpTBXPopupMenu;
+    TbxItemPanelTitleBar: TSpTBXItem;
+    TbxItemPanelTitleShowRight: TSpTBXItem;
+    TbxItemPanelTitleShowOut: TSpTBXItem;
+    TbxItemPanelTitleShowLeft: TSpTBXItem;
+    SpTBXSeparatorItem28: TSpTBXSeparatorItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2021,6 +2027,8 @@ type
     procedure TbxItemRunSnippetsClick(Sender: TObject);
     procedure TbxItemRunNewSnippetClick(Sender: TObject);
     procedure TbxItemTreeSortedClick(Sender: TObject);
+    procedure TbxItemPanelTitleBarClick(Sender: TObject);
+    procedure PopupPanelTitlePopup(Sender: TObject);
 
   private
     cStatLine,
@@ -2719,6 +2727,7 @@ type
     function DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
     procedure DoSnippetNew;
     procedure DoSnippetsReload;
+    procedure ApplyPanelTitles;
 
     //end of private
 
@@ -2744,6 +2753,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     //opt
+    opShowPanelTitles: boolean;
     opTreeSorted: string;
     opColorUnderline: integer;
     opFontConsole: string;
@@ -3982,7 +3992,7 @@ var
   i: integer;
 begin
   //sort tree?
-  bSorted:= SFileExtensionMatch(CurrentFrame.FileName, opTreeSorted);
+  bSorted:= CurrentFrame.IsTreeSorted;
   if bSorted then
     Tree.SortType:= stText
   else
@@ -4421,6 +4431,9 @@ begin
     opSaveWndPos:= ReadBool('Hist', 'SavePos', true);
 
     //setup
+    opShowPanelTitles:= ReadBool('View', 'PaneTitle', true); 
+    ApplyPanelTitles;
+
     opTreeSorted:= ReadString('Setup', 'TreeSorted', '');
     opColorUnderline:= ReadInteger('Setup', 'ColorUnd', 3);
     opSyncEditIcon:= ReadBool('Setup', 'SyncEditIcon', true);
@@ -27862,12 +27875,47 @@ end;
 
 procedure TfmMain.TbxItemTreeSortedClick(Sender: TObject);
 begin
-  if Tree.SortType = stNone then
-    Tree.SortType:= stText
-  else
-    Tree.SortType:= stNone;
+  with CurrentFrame do
+  begin
+    IsTreeSorted:= not IsTreeSorted;
+    if IsTreeSorted then
+      Tree.SortType:= stText
+    else
+      Tree.SortType:= stNone;
+  end;
 
   Tree.UpdateTree;
+end;
+
+procedure TfmMain.ApplyPanelTitles;
+var
+  en: boolean;
+begin
+  en:= opShowPanelTitles;
+  //plTree.ShowCaption:= en;
+  plTree.ShowCaptionWhenDocked:= en;
+  //plOut.ShowCaption:= en;
+  plOut.ShowCaptionWhenDocked:= en;
+  //plClip.ShowCaption:= en;
+  plClip.ShowCaptionWhenDocked:= en;
+end;
+
+procedure TfmMain.TbxItemPanelTitleBarClick(Sender: TObject);
+begin
+  opShowPanelTitles:= not opShowPanelTitles;
+  ApplyPanelTitles;
+
+  with TIniFile.Create(SynIni) do
+  try
+    WriteBool('View', 'PaneTitle', opShowPanelTitles);
+  finally
+    Free
+  end;    
+end;
+
+procedure TfmMain.PopupPanelTitlePopup(Sender: TObject);
+begin
+  TbxItemPanelTitleBar.Checked:= opShowPanelTitles;
 end;
 
 end.

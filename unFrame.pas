@@ -102,6 +102,7 @@ type
     procedure EditorMasterAfterLineDraw(Sender: TObject; Rect: TRect;
       Line: Integer);
   private
+    FTreeSorted: boolean;
     FNotifAllYes,
     FNotifAllNo: boolean;
     FNotif: TATFileNotificationSimple;
@@ -169,6 +170,7 @@ type
     property CaretsGutterColor: TColor read GetCaretsGutterColor write SetCaretsGutterColor;
     property CaretsIndicator: integer read GetCaretsIndicator write SetCaretsIndicator;
 
+    property IsTreeSorted: boolean read FTreeSorted write FTreeSorted;
     function CurrentLexer: string;
     property CollapsedString: Widestring read FCollapsedString write FCollapsedString;
     property CollapsedString2: Widestring read FCollapsedString2 write FCollapsedString2;
@@ -505,6 +507,8 @@ procedure TEditorFrame.DoTitleChanged;
 var
   FTab: TTntTabSheet;
 begin
+  FTreeSorted:= SFileExtensionMatch(FFileName, TfmMain(Owner).opTreeSorted);
+
   if Parent<>nil then
     if Parent is TTntTabSheet then
     begin

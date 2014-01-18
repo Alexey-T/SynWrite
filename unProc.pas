@@ -1658,6 +1658,10 @@ begin
   SPar:= Copy(s, b, c-b);
   SHint:= Copy(s, c+1, cMaxHintLen);
 
+  //spaces are allowed in id as "%20"
+  for a:= $20 to $2F do
+    SReplaceAll(SId, '%'+IntToHex(a, 2), Chr(a));
+
   SReplaceAll(SPar, ';', ','); //Pascal lexer has ";" param separator
   SReplaceAll(SPar, '[,', ',['); //for optional params
 end;
