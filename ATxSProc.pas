@@ -21,6 +21,7 @@ procedure DoClearSnippet(var AInfo: TSynSnippetInfo);
 function DoLoadSnippetFromFile(const fn: string; var Info: TSynSnippetInfo): boolean;
 procedure DoSaveSnippetToFile(const fn: string; var Info: TSynSnippetInfo);
 
+procedure SReplaceAllPercentChars(var S: string);
 function SReplaceAllEols(const S, SReplace: Widestring): Widestring;
 function SStripFromTab(const S: Widestring): Widestring;
 procedure SFindBrackets(const S: Widestring; const FromPos: Integer; var Pos1, Pos2: Integer);
@@ -1411,5 +1412,17 @@ begin
   SReplaceAllW(Result, #10, SReplace);
   SReplaceAllW(Result, #13, SReplace);
 end;
+
+procedure SReplaceAllPercentChars(var S: string);
+var
+  i: Integer;
+begin
+  for i:= $20 to $2F do
+    SReplaceAll(S, '%'+IntToHex(i, 2), Chr(i));
+
+  i:= $7C;
+  SReplaceAll(S, '%'+IntToHex(i, 2), Chr(i));
+end;
+
 
 end.

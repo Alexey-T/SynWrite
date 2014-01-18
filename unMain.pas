@@ -4101,7 +4101,6 @@ begin
   ecMacroRecorder1.SyntMemo:= Value;
 
   FCurrentEditor:= Value;
-  PyEditor:= Value;
 
   if FCurrentEditor <> nil then
   begin
@@ -7232,7 +7231,7 @@ begin
       SParseString_AcpStd(s, IsBracketSep, SType, SId, SPar, SHint);
       if SId<>'' then
       begin
-        FAcpList_Items.Add(SId + IfThen(Pos('(', SPar)>0, '('));
+        FAcpList_Items.Add(SId + IfThen(Pos('(', SPar)=1, '('));
         FAcpList_Display.Add(AcpItem(SType, SId, SPar, ''{SHint}));
         FAcpList_Desc.Add(SHint);
 
@@ -27917,6 +27916,24 @@ procedure TfmMain.PopupPanelTitlePopup(Sender: TObject);
 begin
   TbxItemPanelTitleBar.Checked:= opShowPanelTitles;
 end;
+
+function MainPyEditor(H: Integer): TSyntaxMemo;
+begin
+  Result:= nil;
+  if Assigned(fmMain) then
+  begin
+    case H of
+      0: Result:= fmMain.CurrentEditor;
+      -1: Result:= fmMain.BrotherEditor(fmMain.CurrentEditor);
+      -2: Result:= fmMain.OppositeFrame.EditorMaster;
+      -3: Result:= fmMain.OppositeFrame.EditorSlave;
+      else Result:= fmMain.CurrentEditor; //don't return nil
+    end;
+  end;  
+end;
+
+initialization
+  PyEditor:= MainPyEditor;
 
 end.
 

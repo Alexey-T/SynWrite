@@ -1621,6 +1621,7 @@ begin
   end;
 end;
 
+
 //parse string from usual .ACP file
 procedure SParseString_AcpStd(
   const S: string;
@@ -1658,9 +1659,8 @@ begin
   SPar:= Copy(s, b, c-b);
   SHint:= Copy(s, c+1, cMaxHintLen);
 
-  //spaces are allowed in id as "%20"
-  for a:= $20 to $2F do
-    SReplaceAll(SId, '%'+IntToHex(a, 2), Chr(a));
+  SReplaceAllPercentChars(SId);
+  SReplaceAllPercentChars(SPar);
 
   SReplaceAll(SPar, ';', ','); //Pascal lexer has ";" param separator
   SReplaceAll(SPar, '[,', ',['); //for optional params
