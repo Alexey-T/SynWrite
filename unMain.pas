@@ -2735,7 +2735,9 @@ type
     procedure DoSnippetsReload;
     procedure ApplyPanelTitles;
     procedure DoQuickSearch(AMode: TSynQuickSearchType);
-
+    procedure DoWorkaround_BeforeFindNext(Ed: TSyntaxMemo);
+    procedure DoWorkaround_QViewHorzScroll;
+    procedure DoWorkaround_FindNext1;
     //end of private
 
   protected
@@ -3422,15 +3424,9 @@ begin
       UpdateRO;
       Result:= Handle;
 
-      //workaround for QView horz scroll
-      if not SynExe then//QuickView then
+      if not SynExe then
       begin
-        if CurrentFrame<>nil then
-          with CurrentFrame do
-          begin
-            EditorMaster.ScrollPosX:= 0;
-            EditorSlave.ScrollPosX:= 0;
-          end;
+        DoWorkaround_QViewHorzScroll;
         if QuickView then
           UpdateQVTree(FileToLoad);
       end;
@@ -5591,6 +5587,8 @@ begin
 
     smFindNext:
     begin
+      DoWorkaround_BeforeFindNext(Ed);
+
       if IsTreeviewFocused then
         ecFindInTreeNext.Execute
       else
@@ -5612,6 +5610,8 @@ begin
 
     smFindPrev:
     begin
+      DoWorkaround_BeforeFindNext(Ed);
+
       if IsTreeviewFocused then
         ecFindInTreePrev.Execute
       else
@@ -6233,9 +6233,7 @@ begin
   //workaround for non-recorded commands
   //(EC issue)
   if Handled or IsCommandAllowedInMacro(Command) then
-  begin
     DoRecordToMacro(Command, nil);
-  end;
 end;
 
 function TfmMain.IsCommandAllowedInMacro(Cmd: Integer): boolean;
@@ -8523,10 +8521,7 @@ begin
         //sel next match
         Finder.FindAgain;
         //workaround for Bug1
-        if (Finder.Matches>0) and (Finder.MatchLen=0) and (not Finder.IsSpecialCase1) then
-          with CurrentEditor do
-            if CaretStrPos>0 then
-              CaretStrPos:= CaretStrPos-1;
+        DoWorkaround_FindNext1;
 
         //show msg
         Ok:= Finder.Matches>0;
@@ -17374,12 +17369,16 @@ begin
 end;
 
 procedure TfmMain.MapClick(Sender: TObject);
+var
+  Ed: TSyntaxMemo;
+  P: TPoint;
 begin
-  if CurrentEditor<>nil then
-  with CurrentEditor do
+  Ed:= CurrentEditor;
+  if Ed<>nil then
   begin
-    CaretPos:= (Sender as TSyntaxMemo).CaretPos;
-    TopLine:= CaretPos.Y - VisibleLines div 2;
+    P:= (Sender as TSyntaxMemo).CaretPos;
+    //Ed.CaretPos:= P; //don't move caret
+    Ed.TopLine:= P.Y - Ed.VisibleLines div 2;
   end;
 end;
 
@@ -21330,7 +21329,10 @@ begin
 
       if NIndex<=High(FPluginsFindid) then
       begin
-        FPluginsFindid[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
+        if SBegin(sValue, cPyPluginPrefix) then
+          FPluginsFindid[NIndex].SFileName:= sValue
+        else  
+          FPluginsFindid[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
         FPluginsFindid[NIndex].SLexers:= sValue2;
         Inc(NIndex);
       end;
@@ -22568,7 +22570,10 @@ begin
     with FPluginsFindid[i] do
       if IsLexerListed(CurrentLexer, SLexers) then
       begin
-        DoLoadPlugin_FindID(i);
+        if SBegin(SFileName, cPyPluginPrefix) then
+          DoLoadPyPlugin(SFileName, 'findid')
+        else
+          DoLoadPlugin_FindID(i);
         CurrentEditor.ResetSelection; //reset selection caused by Ctrl+Alt+click
         Exit
       end;
@@ -27351,18 +27356,24 @@ end;
 
 function Py_ed_get_split(Self, Args: PPyObject): PPyObject; cdecl;
 var
-  H, NHorz, NValue: Integer;
+  H, NValue: Integer;
   Ed: TSyntaxMemo;
   F: TEditorFrame;
+  Obj: PPyIntObject;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'i', @H)) then
     begin
       Ed:= PyEditor(H);
       F:= fmMain.FrameOfEditor(Ed);
-      NHorz:= Ord(F.SplitHorz);
+
       NValue:= Trunc(F.SplitPos);
-      Result:= Py_BuildValue('(ii)', NHorz, NValue);
+      if F.SplitHorz then
+        Obj:= Py_True
+      else
+        Obj:= Py_False;
+
+      Result:= Py_BuildValue('(Oi)', Obj, NValue);
     end;
 end;
 
@@ -27982,8 +27993,34 @@ begin
       -3: Result:= fmMain.OppositeFrame.EditorSlave;
       else Result:= fmMain.CurrentEditor; //don't return nil
     end;
-  end;  
+  end;
 end;
+
+procedure TfmMain.DoWorkaround_BeforeFindNext(Ed: TSyntaxMemo);
+begin
+  //horz scrollbar can be disabled even if we have ScrollPosX>0 after FindNext
+  //(Memo.AdjustScrollBars not called)
+  Ed.ScrollPosX:= 0;
+end;
+
+procedure TfmMain.DoWorkaround_QViewHorzScroll;
+begin
+  //fix incorrect ScrollPosX>0
+  if CurrentFrame<>nil then
+    with CurrentFrame do
+    begin
+      EditorMaster.ScrollPosX:= 0;
+      EditorSlave.ScrollPosX:= 0;
+    end;
+end;
+
+procedure TfmMain.DoWorkaround_FindNext1;
+begin
+  if (Finder.Matches>0) and (Finder.MatchLen=0) and (not Finder.IsSpecialCase1) then
+    with CurrentEditor do
+      if CaretStrPos>0 then
+        CaretStrPos:= CaretStrPos-1;
+end;        
 
 initialization
   PyEditor:= MainPyEditor;
