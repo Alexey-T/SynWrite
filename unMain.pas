@@ -3122,7 +3122,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.430';
+  cSynVer = '6.3.460';
   cSynPyVer = '1.0.110';
 
 const
@@ -27332,6 +27332,41 @@ begin
     Result:= PyString_FromString(cSynPyVer);
 end;
 
+function Py_ed_set_split(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, NHorz, NValue: Integer;
+  Ed: TSyntaxMemo;
+  F: TEditorFrame;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iii', @H, @NHorz, @NValue)) then
+    begin
+      Ed:= PyEditor(H);
+      F:= fmMain.FrameOfEditor(Ed);
+      F.SplitHorz:= Bool(NHorz);
+      F.SplitPos:= NValue;
+      Result:= ReturnNone;
+    end;
+end;
+
+function Py_ed_get_split(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, NHorz, NValue: Integer;
+  Ed: TSyntaxMemo;
+  F: TEditorFrame;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'i', @H)) then
+    begin
+      Ed:= PyEditor(H);
+      F:= fmMain.FrameOfEditor(Ed);
+      NHorz:= Ord(F.SplitHorz);
+      NValue:= Trunc(F.SplitPos);
+      Result:= Py_BuildValue('(ii)', NHorz, NValue);
+    end;
+end;
+
+
 function Py_msg_status(Self, Args: PPyObject): PPyObject; cdecl;
 var
   P: PAnsiChar;
@@ -27339,7 +27374,7 @@ var
 begin
   with GetPythonEngine do
   begin
-    if PyArg_ParseTuple(Args, 's:msg_status', @P) <> 0 then
+    if Bool(PyArg_ParseTuple(Args, 's:msg_status', @P)) then
     begin
       Str:= UTF8Decode(AnsiString(P));
       fmMain.SetHint(Str);
@@ -27358,7 +27393,7 @@ var
 begin
   with GetPythonEngine do
   begin
-    if PyArg_ParseTuple(Args, 'i:file_get_name', @N) <> 0 then
+    if Bool(PyArg_ParseTuple(Args, 'i:file_get_name', @N)) then
     begin
       Str:= cNone;
 
@@ -27417,7 +27452,7 @@ begin
   with GetPythonEngine do
   begin
     NShow:= 1;
-    if PyArg_ParseTuple(Args, 'isi|i:ed_complete', @H, @P, @NLen, @NShow) <> 0 then
+    if Bool(PyArg_ParseTuple(Args, 'isi|i:ed_complete', @H, @P, @NLen, @NShow)) then
     begin
       //Ed:= PyEditor(H); //not used here
       Str:= UTF8Decode(AnsiString(P));
@@ -27441,7 +27476,7 @@ var
 begin
   with GetPythonEngine do
   begin
-    if PyArg_ParseTuple(Args, 's:file_open', @P) <> 0 then
+    if Bool(PyArg_ParseTuple(Args, 's:file_open', @P)) then
     begin
       fn:= UTF8Decode(AnsiString(P));
       if (fn='') or IsFileExist(fn) then
@@ -27480,6 +27515,8 @@ begin
 
     AddMethod('ed_focus', Py_ed_focus, '');
     AddMethod('ed_complete', Py_ed_complete, '');
+    AddMethod('ed_get_split', Py_ed_get_split, '');
+    AddMethod('ed_set_split', Py_ed_set_split, '');
 
     AddMethod('ed_get_text_all', Py_ed_get_text_all, '');
     AddMethod('ed_get_text_sel', Py_ed_get_text_sel, '');
