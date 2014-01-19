@@ -12,6 +12,7 @@ var
   PyExeDir: string = '';
   PyIniDir: string = '';
 
+procedure Py_AddSysPath(const Dir: string);
 procedure Py_RunPlugin_Command(const SId, SCmd: string);
 function Py_SamplePluginText(const SId: string): string;
 function Py_NameToMixedCase(const S: string): string;
@@ -978,5 +979,14 @@ begin
       Result:= PyUnicode_FromWideString(Str);
     end;
 end;
+
+procedure Py_AddSysPath(const Dir: string);
+const
+  cCmd = 'sys.path.append(r"%s")';
+begin
+  with GetPythonEngine do
+    ExecString(Format(cCmd, [Dir]));
+end;
+
 
 end.

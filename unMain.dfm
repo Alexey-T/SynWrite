@@ -21097,7 +21097,7 @@ object fmMain: TfmMain
   object PythonModule: TPythonModule
     Engine = PythonEngine1
     OnInitialization = PythonModuleInitialization
-    ModuleName = 'sw'
+    ModuleName = 'sw_api'
     Errors = <>
     Left = 511
     Top = 200

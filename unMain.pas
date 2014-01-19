@@ -2710,7 +2710,6 @@ type
     procedure DoExtendSelection(Ed: TSyntaxMemo);
     function MsgConfirmOpenSaveSession(AFilesCount: Integer; const AFileName: string; ASaveMode: boolean): boolean;
     procedure DoEnterPyConsoleCommand(const Str: Widestring);
-    procedure DoAddPythonPath(const Dir: string);
     procedure DoNewPythonPluginDialog;
     procedure DoRegisterPyCommandPlugin(const SId: string);
     procedure DoLoadPyPlugin(const SFilename, SCmd: string);
@@ -3115,8 +3114,8 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.415';
-  cSynPyVer = '1.0.102';
+  cSynVer = '6.3.430';
+  cSynPyVer = '1.0.110';
       
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -27290,33 +27289,23 @@ begin
   DoHandleKeysInPanels(Key, Shift);
 end;
 
-procedure TfmMain.DoAddPythonPath(const Dir: string);
-const
-  cCmd = 'sys.path.append(r"%s")';
-begin
-  GetPythonEngine.ExecString(Format(cCmd, [Dir]));
-end;
-
 procedure TfmMain.PythonEngine1AfterInit(Sender: TObject);
 begin
-  DoAddPythonPath(SynPyDir);
-  GetPythonEngine.ExecString('from sw import *');
+  Py_AddSysPath(SynPyDir);
+  with GetPythonEngine do
+    ExecString('from sw_api import *');
 end;
 
 function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
-  begin
     Result:= PyString_FromString(cSynVer);
-  end;
 end;
 
 function Py_app_api_version(Self, Args : PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
-  begin
     Result:= PyString_FromString(cSynPyVer);
-  end;
 end;
 
 function Py_msg_status(Self, Args: PPyObject): PPyObject; cdecl;
@@ -27395,15 +27384,18 @@ end;
 
 function Py_ed_complete(Self, Args: PPyObject): PPyObject; cdecl;
 var
+  H: Integer;
   P: PAnsiChar;
   Str: Widestring;
   NLen, NShow, NRes: Integer;
+  //Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
   begin
     NShow:= 1;
-    if PyArg_ParseTuple(Args, 'si|i:ed_complete', @P, @NLen, @NShow) <> 0 then
+    if PyArg_ParseTuple(Args, 'isi|i:ed_complete', @H, @P, @NLen, @NShow) <> 0 then
     begin
+      //Ed:= PyEditor(H); //not used here
       Str:= UTF8Decode(AnsiString(P));
       NRes:= fmMain.PluginAction_SuggestCompletion(PWChar(Str), NLen, Bool(NShow));
       Result:= PyBool_FromLong(Ord(NRes = cSynOK));
