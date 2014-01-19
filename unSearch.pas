@@ -99,6 +99,7 @@ type
     procedure CenterPos;
   public
     constructor Create(AOwner: TComponent); override;
+    function FindFirst: Boolean;
     function FindAgain: Boolean;
     function FindNext: Boolean;
     function FindPrev: Boolean;
@@ -597,7 +598,8 @@ begin
 end;
 
 function TSynFinderReplacer.FindAgain: Boolean;
-var st, len: integer;
+var
+  st, len: integer;
 begin
   DoBeforeExec;
   Assert(Assigned(FControl));
@@ -609,7 +611,8 @@ begin
 end;
 
 function TSynFinderReplacer.FindNext: Boolean;
-var st, len: integer;
+var
+  st, len: integer;
 begin
   DoBeforeExec;
   Assert(Assigned(FControl));
@@ -621,7 +624,8 @@ begin
 end;
 
 function TSynFinderReplacer.FindPrev: Boolean;
-var st, len: integer;
+var
+  st, len: integer;
 begin
   DoBeforeExec;
   Assert(Assigned(FControl));
@@ -631,6 +635,14 @@ begin
   if Result and (len>0) and (FControl.SelStart=st) and (FControl.SelLength=len) then
     Result:= DoSearch(False, True, True);
 end;
+
+function TSynFinderReplacer.FindFirst: Boolean;
+begin
+  DoBeforeExec;
+  Assert(Assigned(FControl));
+  Result:= DoSearch(False, False, False);
+end;
+
 
 function TSynFinderReplacer.FindAll_(Cnt: boolean): Boolean;
 begin
@@ -707,8 +719,6 @@ end;
 function SFixEOL(const S: Widestring; Ed: TCustomSyntaxMemo): Widestring;
 const
   cc: Widestring = #1;
-var
-  SEnd: Widestring;
 begin
   Result:= S;
   if (Pos(#13, S)=0) and (Pos(#10, S)=0) then Exit;

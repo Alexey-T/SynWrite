@@ -72,6 +72,13 @@ const
   cPyPluginPrefix = 'py:';
 
 type
+  TSynQuickSearchType = (
+    cQsNext,
+    cQsPrev,
+    cQsAgain
+    );
+
+type
   TSynAddonType = (
     cAddonTypeNone,
     cAddonTypeBinPlugin,
@@ -2727,6 +2734,7 @@ type
     procedure DoSnippetNew;
     procedure DoSnippetsReload;
     procedure ApplyPanelTitles;
+    procedure DoQuickSearch(AMode: TSynQuickSearchType);
 
     //end of private
 
@@ -3116,7 +3124,7 @@ uses
 const
   cSynVer = '6.3.430';
   cSynPyVer = '1.0.110';
-      
+
 const
   cConverterHtml1 = 'HTML - all entities';
   cConverterHtml2 = 'HTML - entities except brackets';
@@ -3128,6 +3136,7 @@ const
 const
   cRegexColorCode = '\#\w{3,6}';
   cRegexColorName = '[a-z]{3,30}';
+  cColorNotFound = $AAAAFF;
 
 const
   cThemeWindows = 'Windows';
@@ -10587,28 +10596,49 @@ begin
   SaveToolbarsProps;
 end;
 
-procedure TfmMain.TBXItemFFPrevClick(Sender: TObject);
+procedure TfmMain.DoQuickSearch(AMode: TSynQuickSearchType);
+var
+  bBeep, bFound: boolean;
 begin
-  if Finder.FindText <> '' then
+  if edQs.Text<>'' then
   begin
     Finder.FindText:= edQs.Text;
     Finder.Flags:= [ftWrapSearch];
-    if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSensitive];
-    if cbWord.Checked then Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
-    Finder.FindPrev;
-  end;
+    if cbCase.Checked then
+      Finder.Flags:= Finder.Flags + [ftCaseSensitive];
+    if cbWord.Checked then
+      Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
+
+    bBeep:= opBeep;
+    opBeep:= false;
+    try
+      case AMode of
+        cQsNext: bFound:= Finder.FindNext;
+        cQsPrev: bFound:= Finder.FindPrev;
+        cQsAgain: bFound:= Finder.FindFirst;
+        else bFound:= false;
+      end;
+    finally
+      opBeep:= bBeep;
+    end;  
+
+    if not bFound then
+      edQs.Color:= cColorNotFound
+    else
+      edQs.Color:= clWindow;
+  end
+  else
+    edQs.Color:= clWindow;
+end;
+
+procedure TfmMain.TBXItemFFPrevClick(Sender: TObject);
+begin
+  DoQuickSearch(cQsPrev);
 end;
 
 procedure TfmMain.TBXItemFFNextClick(Sender: TObject);
 begin
-  if Finder.FindText <> '' then
-  begin
-    Finder.FindText:= edQs.Text;
-    Finder.Flags:= [ftWrapSearch];
-    if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSensitive];
-    if cbWord.Checked then Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
-    Finder.FindNext;
-  end;
+  DoQuickSearch(cQsNext);
 end;
 
 procedure TfmMain.cbCaseClick(Sender: TObject);
@@ -10621,13 +10651,7 @@ procedure TfmMain.edQsChange(Sender: TObject);
 begin
   TBXItemFFNext.Enabled:= edQs.Text <> '';
   TBXItemFFPrev.Enabled:= TBXItemFFNext.Enabled;
-  if edQs.Text = '' then Exit;
-
-  Finder.FindText:= edQs.Text;
-  Finder.Flags:= [ftEntireScope, ftWrapSearch];
-  if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSensitive];
-  if cbWord.Checked then Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
-  Finder.FindAgain;
+  DoQuickSearch(cQsAgain);
 end;
 
 procedure TfmMain.TBXItemQsClick(Sender: TObject);
