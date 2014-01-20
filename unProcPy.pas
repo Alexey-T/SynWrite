@@ -20,7 +20,7 @@ function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
 
 function Py_ed_add_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_del_carets(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_add_mark(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_indent(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
@@ -139,29 +139,43 @@ begin
     end;
 end;
 
-function Py_ed_del_carets(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H: Integer;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_del_carets', @H)) then
-    begin
-      PyEditor(H).RemoveCarets();
-      Result:= ReturnNone;
-    end;
-end;
-
 function Py_ed_add_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H, X, Y: Integer;
+  Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'iii:ed_add_caret_xy', @H, @X, @Y)) then
     begin
-      PyEditor(H).AddCaret(Point(X, Y));
+      Ed:= PyEditor(H);
+      if (X=-1) then
+        Ed.RemoveCarets()
+      else
+        Ed.AddCaret(Point(X, Y));
       Result:= ReturnNone;
     end;
 end;
+
+function Py_ed_add_mark(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, NStart, NLen: Integer;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iii:ed_add_mark', @H, @NStart, @NLen)) then
+    begin
+      Ed:= PyEditor(H);
+      if (NStart=-1) then
+        Ed.ResetSearchMarks
+      else
+      begin
+        Ed.SearchMarks.Add(TRange.Create(NStart, NStart + NLen));
+        Ed.Invalidate;
+      end;
+      Result:= ReturnNone;
+    end;
+end;
+
 
 function Py_ed_get_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
 var

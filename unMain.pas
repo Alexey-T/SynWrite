@@ -3124,7 +3124,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.460';
+  cSynVer = '6.3.470';
   cSynPyVer = '1.0.110';
 
 const
@@ -11044,23 +11044,6 @@ end;
 
 procedure TfmMain.PageControl1MouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
-  //show filename in statusbar, truncated if needed
-  procedure ShowFN(const fn: Widestring);
-  var
-    bmp: TBitmap;
-    size: integer;
-  begin
-    //width of last panel
-    size:= Status.ClientWidth - 8 - Status.View.Find(StatusItemHint).BoundsRect.Left;
-     
-    bmp:= TBitmap.Create;
-    try
-      bmp.Canvas.Font.Assign(Status.Font);
-      SetHint(WideMinimizeName(fn, bmp.Canvas, size));
-    finally
-      FreeAndNil(bmp);
-    end;
-  end;
 var
   i,n: Integer;
   r: TRect;
@@ -11074,7 +11057,7 @@ begin
     //draw tab hint
     TabCtrl_GetItemRect(PageControl.Handle, i, R);
     if PtInRect(R, Point(x, y)) then
-      ShowFN(PagesToFrame(PageControl, i).FileName);
+      SetHint(PagesToFrame(PageControl, i).FileName);
 
     //handle X btn mouse-over
     TabCtrl_GetXRect(PageControl.Handle, i, R);
@@ -27541,7 +27524,7 @@ begin
     AddMethod('ed_set_caret_xy', Py_ed_set_caret_xy, '');
     AddMethod('ed_set_caret_pos', Py_ed_set_caret_pos, '');
     AddMethod('ed_add_caret_xy', Py_ed_add_caret_xy, '');
-    AddMethod('ed_del_carets', Py_ed_del_carets, '');
+    AddMethod('ed_add_mark', Py_ed_add_mark, '');
 
     AddMethod('ed_pos_xy', Py_ed_pos_xy, '');
     AddMethod('ed_xy_pos', Py_ed_xy_pos, '');

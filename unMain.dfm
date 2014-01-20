@@ -756,6 +756,7 @@ object fmMain: TfmMain
     OnResize = StatusResize
     Images = ImageListStatus
     object StatusItemCaret: TSpTBXLabelItem
+      Wrapping = twNone
       OnClick = StatusItemCaretClick
       Alignment = taCenter
       MinWidth = 155
@@ -765,6 +766,7 @@ object fmMain: TfmMain
     end
     object StatusItemEnc: TSpTBXLabelItem
       Hint = 'Encoding (click to change)'
+      Wrapping = twNone
       OnClick = StatusItemEncClick
       Alignment = taCenter
       MinWidth = 85
@@ -773,6 +775,7 @@ object fmMain: TfmMain
     end
     object StatusItemEnds: TSpTBXLabelItem
       Hint = 'Line endings (click to change)'
+      Wrapping = twNone
       OnClick = StatusItemEndsClick
       Alignment = taCenter
       MinWidth = 30
@@ -781,6 +784,7 @@ object fmMain: TfmMain
     end
     object StatusItemLexer: TSpTBXLabelItem
       Hint = 'Lexer (click to change)'
+      Wrapping = twNone
       OnClick = StatusItemLexerClick
       Alignment = taCenter
       MinWidth = 130
@@ -789,6 +793,7 @@ object fmMain: TfmMain
     end
     object StatusItemChar: TSpTBXLabelItem
       Hint = 'Char at caret position (click to call Char Table)'
+      Wrapping = twNone
       ImageIndex = 2
       OnClick = StatusItemCharClick
       Alignment = taCenter
@@ -797,6 +802,7 @@ object fmMain: TfmMain
     end
     object StatusItemRO: TSpTBXLabelItem
       Hint = 'Read-only (click to change)'
+      Wrapping = twNone
       ImageIndex = 1
       OnClick = StatusItemROClick
       Alignment = taCenter
@@ -805,6 +811,7 @@ object fmMain: TfmMain
     end
     object StatusItemWrap: TSpTBXLabelItem
       Hint = 'Word wrap (click to change)'
+      Wrapping = twNone
       ImageIndex = 3
       OnClick = StatusItemWrapClick
       Alignment = taCenter
@@ -813,6 +820,7 @@ object fmMain: TfmMain
     end
     object StatusItemSelMode: TSpTBXLabelItem
       Hint = 'Mouse selection mode (click to change)'
+      Wrapping = twNone
       ImageIndex = 8
       OnClick = StatusItemSelModeClick
       Alignment = taCenter
@@ -822,6 +830,7 @@ object fmMain: TfmMain
     object StatusItemInsMode: TSpTBXLabelItem
       Caption = 'Ins'
       Hint = 'Insert/overwrite mode (click to change)'
+      Wrapping = twNone
       OnClick = StatusItemInsModeClick
       Alignment = taCenter
     end
@@ -830,6 +839,7 @@ object fmMain: TfmMain
     object StatusItemZoom: TSpTBXLabelItem
       Caption = '100%'
       Hint = 'Zoom value (click to change)'
+      Wrapping = twNone
       OnClick = StatusItemZoomClick
       Alignment = taCenter
     end
@@ -837,10 +847,12 @@ object fmMain: TfmMain
     end
     object StatusItemTabsize: TSpTBXLabelItem
       Hint = 'Tabulation size'
+      Wrapping = twNone
     end
     object SpTBXSeparatorItem11: TSpTBXSeparatorItem
     end
     object StatusItemBusy: TSpTBXLabelItem
+      Wrapping = twNone
       ImageIndex = 6
       OnClick = StatusItemBusyClick
       Alignment = taCenter
@@ -848,6 +860,7 @@ object fmMain: TfmMain
     object SpTBXSeparatorItem27: TSpTBXSeparatorItem
     end
     object StatusItemHint: TSpTBXLabelItem
+      Wrapping = twNone
     end
   end
   object Menu: TSpTBXDock
