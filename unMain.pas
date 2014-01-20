@@ -2738,6 +2738,7 @@ type
     procedure DoWorkaround_BeforeFindNext(Ed: TSyntaxMemo);
     procedure DoWorkaround_QViewHorzScroll;
     procedure DoWorkaround_FindNext1;
+    procedure DoShowHintFilename(const fn: Widestring);
     //end of private
 
   protected
@@ -3124,8 +3125,8 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.470';
-  cSynPyVer = '1.0.110';
+  cSynVer = '6.3.472';
+  cSynPyVer = '1.0.111';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -11042,26 +11043,45 @@ begin
   UpdatePages;
 end;
 
+//show filename in statusbar, truncated if needed
+procedure TfmMain.DoShowHintFilename(const fn: Widestring);
+var
+  bmp: TBitmap;
+  size: integer;
+begin
+  //width of last panel
+  size:= Status.ClientWidth - 8 - Status.View.Find(StatusItemHint).BoundsRect.Left;
+
+  bmp:= TBitmap.Create;
+  try
+    bmp.Canvas.Font.Assign(Status.Font);
+    SetHint(WideMinimizeName(fn, bmp.Canvas, size));
+  finally
+    FreeAndNil(bmp);
+  end;
+end;
+
 procedure TfmMain.PageControl1MouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 var
-  i,n: Integer;
-  r: TRect;
   PageControl: TTntPageControl;
+  R: TRect;
+  i, NPrevIndex: Integer;
 begin
   PageControl:= Sender as TTntPageControl;
-  n:= FPagesNTab;
+  NPrevIndex:= FPagesNTab;
   FPagesNTab:= -1;
+
   for i:= 0 to PageControl.PageCount-1 do
   begin
     //draw tab hint
     TabCtrl_GetItemRect(PageControl.Handle, i, R);
-    if PtInRect(R, Point(x, y)) then
-      SetHint(PagesToFrame(PageControl, i).FileName);
+    if PtInRect(R, Point(X, Y)) then
+      DoShowHintFilename(PagesToFrame(PageControl, i).FileName);
 
     //handle X btn mouse-over
     TabCtrl_GetXRect(PageControl.Handle, i, R);
-    if PtInRect(R, Point(x, y)) then
+    if PtInRect(R, Point(X, Y)) then
     begin
       FPagesNTab:= i;
       Break
@@ -11069,8 +11089,7 @@ begin
   end;
 
   //redraw X btn
-  if (n<>FPagesNTab) then
-    //PageControl.Invalidate;
+  if NPrevIndex<>FPagesNTab then
     DoRepaintTabCaptions(PageControl);
 end;
 
