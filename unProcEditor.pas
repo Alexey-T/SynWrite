@@ -493,7 +493,9 @@ begin
            Upd:= true;
          end;
       if Upd then
-        Invalidate;
+      begin
+        CollapsedChanged; //need to be in public (ecSyntMemo.pas)
+      end;
     end;
   end;
 end;
