@@ -2739,6 +2739,7 @@ type
     procedure DoWorkaround_QViewHorzScroll;
     procedure DoWorkaround_FindNext1;
     procedure DoShowHintFilename(const fn: Widestring);
+    function DoCheckAutoCorrectCase(Ed: TSyntaxMemo; Ch: Widechar): boolean;
     //end of private
 
   protected
@@ -2763,6 +2764,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     //opt
+    opCorrectCaseLexers: string;
     opShowPanelTitles: boolean;
     opTreeSorted: string;
     opColorUnderline: integer;
@@ -2996,6 +2998,7 @@ type
     function DoOpenFile(const AFileName: WideString): TEditorFrame;
     procedure DoOpenProject(const fn: Widestring); overload;
     procedure DoOpenArchive(const fn: Widestring);
+    procedure DoOpenFolder(const dir: Widestring);
     procedure SaveOptionsAll;
     procedure SaveSession(const fn: string);
     procedure SaveProjectSession;
@@ -3125,7 +3128,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.474';
+  cSynVer = '6.3.500';
   cSynPyVer = '1.0.111';
 
 const
@@ -4438,6 +4441,7 @@ begin
     opShowPanelTitles:= ReadBool('View', 'PaneTitle', true); 
     ApplyPanelTitles;
 
+    opCorrectCaseLexers:= ReadString('Setup', 'FixCase', '');
     opTreeSorted:= ReadString('Setup', 'TreeSorted', '');
     opColorUnderline:= ReadInteger('Setup', 'ColorUnd', 3);
     opSyncEditIcon:= ReadBool('Setup', 'SyncEditIcon', true);
@@ -4940,6 +4944,7 @@ begin
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
     WriteInteger('Setup', 'ColorUnd', opColorUnderline);
     WriteString('Setup', 'TreeSorted', opTreeSorted);
+    WriteString('Setup', 'FixCase', opCorrectCaseLexers);
 
     WriteString('View', 'PyFont', opFontConsole);
     WriteBool('View', 'CaretsEn', opCaretsEnabled);
@@ -5382,7 +5387,11 @@ begin
           Handled:= DoAutoCloseBracket(ch)
         else
         if IsWordChar(ch) then
+        begin
+          if DoCheckAutoCorrectCase(Ed, ch) then
+            Handled:= true;
           DoCheckAutoShowACP(Ed);
+        end;
       end;
 
     //case changing
@@ -6225,6 +6234,9 @@ begin
         end;
         Handled:= false;
       end;
+
+    sm_HelpFileContents:
+      FOpenURL(FHelpFilename, Handle);
 
     //end of commands list
     else
@@ -9447,6 +9459,7 @@ begin
   plClip.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowRightPanel);
   plOut.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowOutputPanel);
 
+  UpdKey(TBXItemHelpTopics, sm_HelpFileContents);
   UpdKey(TbxItemRunSnippets, sm_SnippetsDialog);
   UpdKey(TbxItemRunNewSnippet, sm_NewSnippetDialog);
   UpdKey(TbxItemRunNewPlugin, sm_NewPythonPluginDialog);
@@ -20441,8 +20454,14 @@ begin
     DoInsertImageTag(fn)
   else
   //open file in editor
+  if IsDirExist(fn) then
+    DoOpenFolder(fn)
+  else  
   if not IsFileExist(fn) then
-    Exit ////MsgNoFile(fn)
+  begin
+    MsgBeep;
+    Exit
+  end
   else
   if not IsFileText(fn) and not MsgConfirmBinary(fn, Handle) then
     Exit
@@ -28022,7 +28041,69 @@ begin
     with CurrentEditor do
       if CaretStrPos>0 then
         CaretStrPos:= CaretStrPos-1;
-end;        
+end;
+
+function TfmMain.DoCheckAutoCorrectCase(Ed: TSyntaxMemo; Ch: Widechar): boolean;
+var
+  NCaret, NLen, i: Integer;
+  SId, SAcpId: string;
+begin
+  Result:= false;
+  if opCorrectCaseLexers='' then Exit;
+  if not IsLexerListed(CurrentLexerForFile, opCorrectCaseLexers) then Exit;
+
+  NCaret:= Ed.CaretStrPos;
+  if NCaret>Length(Ed.Lines.FText) then Exit;
+  //don't do if next char is wordchar
+  if IsWordChar(Ed.Lines.Chars[NCaret+1]) then Exit;
+
+  SId:= EditorGetWordBeforeCaret(Ed, false) + Ch;
+  NLen:= Length(SId);
+
+  for i:= 0 to FAcpList_Items.Count-1 do
+  begin
+    SAcpId:= FAcpList_Items[i];
+    
+    if not IsWordChar(WideChar(SAcpId[Length(SAcpId)])) then
+      SetLength(SAcpId, Length(SAcpId)-1);
+
+    if StrIComp(PChar(SAcpId), PChar(SId))=0 then
+    begin
+      if (SAcpId<>SId) and
+        IsPositionMatchesTokens(Ed, NCaret-1, NCaret, tokensExceptCmtStr) then
+      begin
+        Dec(NLen);
+        Ed.ReplaceText(NCaret-NLen, NLen, SAcpId);
+        Ed.CaretStrPos:= NCaret+1;
+        SetHint('Id: ' + SAcpId);
+        Result:= true;
+      end;
+      Break;
+    end;
+  end;
+end;
+
+procedure TfmMain.DoOpenFolder(const dir: Widestring);
+var
+  L: TTntStringList;
+  i: Integer;
+  fn: Widestring;
+begin
+  L:= TTntStringList.Create;
+  try
+    FFindToList(L, dir, '*', '',
+      true{SubDir},
+      false{NoRO}, false{NoHidFiles}, true{NoHidFolders});
+    for i:= 0 to L.Count-1 do
+    begin
+      fn:= L[i];
+      if IsFileText(fn) and not IsFileTooBig(fn) then
+        DoOpenFile(fn);
+    end;
+  finally
+    FreeAndNil(L);
+  end;
+end;
 
 initialization
   PyEditor:= MainPyEditor;

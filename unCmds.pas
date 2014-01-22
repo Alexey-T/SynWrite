@@ -377,6 +377,7 @@ const
   sm_NewPythonPluginDialog = 1045;
   sm_NewSnippetDialog = 1046;
   sm_SnippetsDialog = 1047;
+  sm_HelpFileContents = 1048;
   //free
 
   //Tree commands

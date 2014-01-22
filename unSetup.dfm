@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabView
+    ActivePage = tabInsertFormat
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -1591,10 +1591,17 @@ object fmSetup: TfmSetup
           Height = 13
           Caption = 'Search for words only in first ... Mb of file'
         end
+        object TntLabel29: TTntLabel
+          Left = 304
+          Top = 44
+          Width = 180
+          Height = 13
+          Caption = 'Auto-correct id case for these lexers:'
+        end
         object cbAcpFile: TTntCheckBox
           Left = 8
           Top = 16
-          Width = 457
+          Width = 505
           Height = 17
           Caption = 'Also show words from current file'
           TabOrder = 0
@@ -1621,6 +1628,13 @@ object fmSetup: TfmSetup
           TabOrder = 2
           Value = 1
           OnKeyDown = edIndentKeyDown
+        end
+        object edAcpFixCase: TEdit
+          Left = 304
+          Top = 60
+          Width = 217
+          Height = 21
+          TabOrder = 3
         end
       end
       object gAcpSp: TTntGroupBox
@@ -2955,7 +2969,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0149010000
+      0700666D5365747570010100000001000000070043617074696F6E014B010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3253,7 +3267,9 @@ object fmSetup: TfmSetup
       6162656C33340101000000CC020000070043617074696F6E000C006564547265
       65536F7274656400000A00546E744C6162656C32380101000000CD0200000700
       43617074696F6E000C0063625363726F6C6C4C6173740102000000CF02000007
-      0043617074696F6ECE020000040048696E7400}
+      0043617074696F6ECE020000040048696E74000A00546E744C6162656C323901
+      01000000D0020000070043617074696F6E000C00656441637046697843617365
+      0000}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

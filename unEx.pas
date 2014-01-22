@@ -233,6 +233,11 @@ begin
       Exit;
     end;    
 
+    if IsDirExist(S) then
+    begin
+      Exit
+    end;  
+
     if not CheckFile(S) then
     begin
       Result:= False;
@@ -321,8 +326,11 @@ begin
       S:= WideParamStr(i);
       if IsUnneededParam(S) then Continue;
 
-      //open cmd-line filename
-      fmMain.DoOpenFile(S);
+      //open cmd-line parameter
+      if IsDirExist(S) then
+        fmMain.DoOpenFolder(S)
+      else
+        fmMain.DoOpenFile(S);
       fmMain.UpdateRO;
 
       //if file empty (new), uncheck R/O

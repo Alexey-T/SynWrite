@@ -1,7 +1,7 @@
 object fmLexerLibrary: TfmLexerLibrary
   Left = 421
   Top = 335
-  Width = 372
+  Width = 447
   Height = 433
   BorderIcons = [biSystemMenu]
   Color = clBtnFace
@@ -20,7 +20,7 @@ object fmLexerLibrary: TfmLexerLibrary
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
-    Width = 364
+    Width = 439
     Height = 29
     Caption = 'ToolBar1'
     Images = ImageList1
@@ -129,7 +129,7 @@ object fmLexerLibrary: TfmLexerLibrary
   object LV: TTntCheckListBox
     Left = 0
     Top = 29
-    Width = 364
+    Width = 439
     Height = 370
     OnClickCheck = LVClickCheck
     Align = alClient

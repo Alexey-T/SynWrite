@@ -350,6 +350,8 @@ type
     edTreeSorted: TTntEdit;
     TntLabel28: TTntLabel;
     cbScrollLast: TTntCheckBox;
+    TntLabel29: TTntLabel;
+    edAcpFixCase: TEdit;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1735,6 +1737,7 @@ begin
     opAcpFile:= cbAcpFile.Checked;
     opAcpFileChars:= edAcpFileChars.Value;
     opAcpFileSize:= edAcpFileSize.Value;
+    opCorrectCaseLexers:= edAcpFixCase.Text;
 
     opTemplateTabbingExcept:= edNoSnippetsExt.Text;
   end;
@@ -2032,6 +2035,7 @@ begin
     edAcpFileSize.Value:= opAcpFileSize;
     edAcpDrop.Value:= ecACP.DropDownCount;
 
+    edAcpFixCase.Text:= opCorrectCaseLexers;
     edNoSnippetsExt.Text:= opTemplateTabbingExcept;
   end;
 end;
