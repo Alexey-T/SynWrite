@@ -58,6 +58,7 @@ uses
   ecSpell, PythonEngine, PythonGUIInputOutput;
 
 const
+  cMaxFilesInFolder = 50;
   opMruForPlugin = false; //use recent list for Lister-plugin
   cTabColors = 10; //number of user-defined tab colors
   cFixedLeftTabs = 3; //number of fixed tabs on left panel (Tree+Project+Tabs = 3)
@@ -28094,11 +28095,33 @@ begin
     FFindToList(L, dir, '*', '',
       true{SubDir},
       false{NoRO}, false{NoHidFiles}, true{NoHidFolders});
+
+    if L.Count > cMaxFilesInFolder then
+      if not MsgConfirm(
+        WideFormat(DKLangConstW('zMCfmOpenFolder'), [dir, L.Count]),
+        Handle) then Exit;
+
+    //exclude binary files
+    for i:= L.Count-1 downto 0 do
+    begin
+      Application.Title:= Format('filter %d / %d', [L.Count-i, L.Count]);
+      Application.ProcessMessages;
+      if Application.Terminated then Exit;
+
+      fn:= L[i];
+      if not IsFileText(fn) or IsFileTooBig(fn) then
+        L.Delete(i);
+    end;
+
+    //open left files
     for i:= 0 to L.Count-1 do
     begin
+      Application.Title:= Format('... %d / %d', [i+1, L.Count]);
+      Application.ProcessMessages;
+      if Application.Terminated then Exit;
+
       fn:= L[i];
-      if IsFileText(fn) and not IsFileTooBig(fn) then
-        DoOpenFile(fn);
+      DoOpenFile(fn);
     end;
   finally
     FreeAndNil(L);
