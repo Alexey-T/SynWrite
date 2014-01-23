@@ -10034,42 +10034,41 @@ begin
 end;
 
 procedure TfmMain.TBXItemOToolsClick(Sender: TObject);
-var i: Integer;
+var
+  i: Integer;
   s: Widestring;
-  L: TStringList;
+  L: TTntStringList;
 begin
-  L:= TStringList.Create;
+  L:= TTntStringList.Create;
   L.Sorted:= true;
   L.Duplicates:= dupIgnore;
-  for i:= 0 to SyntaxManager.AnalyzerCount-1 do
-    if not SyntaxManager.Analyzers[i].Internal then
-      L.Add(SyntaxManager.Analyzers[i].LexerName);
+  DoEnumLexers(L);
 
   with TfmTools.Create(Self) do
   try
     List.Items.Clear;
     for i:= Low(opTools) to High(opTools) do
       with List.Items.Add do
-       with opTools[i] do
-      begin
-        Caption:= ToolCaption;
-        SubItems.Add(ToolCommand);
-        SubItems.Add(ToolParams);
-        SubItems.Add(ToolDir);
-        SubItems.Add(Inttostr(Ord(ToolOutCapture)));
-        SubItems.Add(ToolOutRegex);
-        SubItems.Add(Format('%d,%d,%d', [ToolOutNum_fn, ToolOutNum_line, ToolOutNum_col]));
-        SubItems.Add(ToolLexer);
-        SubItems.Add(ToolKeys);
-        SubItems.Add(Inttostr(Ord(ToolSaveMode)));
-        SubItems.Add(Inttostr(Ord(ToolNoTags)));
-        SubItems.Add(Inttostr(Ord(ToolContextItem)));
-        SubItems.Add(ToolOutType);
-        SubItems.Add(Inttostr(Ord(ToolOutEncoding)));
-        {
-        Note: when adding SubItems, correct const cc in unTool.pas
-        }
-      end;
+        with opTools[i] do
+        begin
+          Caption:= ToolCaption;
+          SubItems.Add(ToolCommand);
+          SubItems.Add(ToolParams);
+          SubItems.Add(ToolDir);
+          SubItems.Add(Inttostr(Ord(ToolOutCapture)));
+          SubItems.Add(ToolOutRegex);
+          SubItems.Add(Format('%d,%d,%d', [ToolOutNum_fn, ToolOutNum_line, ToolOutNum_col]));
+          SubItems.Add(ToolLexer);
+          SubItems.Add(ToolKeys);
+          SubItems.Add(Inttostr(Ord(ToolSaveMode)));
+          SubItems.Add(Inttostr(Ord(ToolNoTags)));
+          SubItems.Add(Inttostr(Ord(ToolContextItem)));
+          SubItems.Add(ToolOutType);
+          SubItems.Add(Inttostr(Ord(ToolOutEncoding)));
+          {
+          Note: when adding SubItems, correct const cc in unTool.pas
+          }
+        end;
 
     edLexer.Items.Add(DKLangConstW('AllL'));
     edLexer.Items.AddStrings(L);
@@ -20531,14 +20530,9 @@ begin
 end;
 
 procedure TfmMain.ProjGetLexers(Sender: TObject; Files: TTntStrings);
-var
-  i: Integer;
 begin
   Files.Add(' '+DKLangConstW('None')); //needed for proj too
-  with SyntaxManager do
-    for i:= 0 to AnalyzerCount-1 do
-      if not Analyzers[i].Internal then
-        Files.Add(Analyzers[i].LexerName);
+  DoEnumLexers(Files);
 end;
 
 procedure TfmMain.TBXItemFavAddProjClick(Sender: TObject);
@@ -28133,7 +28127,7 @@ procedure TfmMain.DoEnumLexers(L: TTntStrings);
 var
   i: Integer;
 begin
-  with fmMain.SyntaxManager do
+  with SyntaxManager do
     for i:= 0 to AnalyzerCount-1 do
       if not Analyzers[i].Internal then
         L.Add(Analyzers[i].LexerName);
