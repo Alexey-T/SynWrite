@@ -2741,6 +2741,13 @@ type
     procedure DoWorkaround_FindNext1;
     procedure DoShowHintFilename(const fn: Widestring);
     function DoCheckAutoCorrectCase(Ed: TSyntaxMemo; Ch: Widechar): boolean;
+    function DoFindCommand(
+      Ed: TSyntaxMemo;
+      Act: TSRAction;
+      const SText1, SText2: Widestring;
+      const Opt: TSearchOptions;
+      const Tok: TSearchTokens;
+      OptBkmk, OptExtSel: boolean): Integer;
     //end of private
 
   protected
@@ -9460,6 +9467,19 @@ begin
   plTree.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowLeftPanel);
   plClip.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowRightPanel);
   plOut.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowOutputPanel);
+
+  TbxTabTree.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusTree);
+  TbxTabProject.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusProj);
+  TbxTabTabs.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusTabs);
+  //
+  TbxTabClipboard.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusClip);
+  TbxTabClips.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusClips);
+  TbxTabMinimap.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusMap);
+  //
+  TbxTabOutput.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusOutput);
+  TbxTabResults.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusFindRes);
+  TbxTabTidy.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusValidate);
+  TbxTabConsole.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusConsole);
 
   UpdKey(TBXItemHelpTopics, sm_HelpFileContents);
   UpdKey(TbxItemRunSnippets, sm_SnippetsDialog);
@@ -23880,30 +23900,48 @@ end;
 procedure TfmMain.DoFindCommandFromString(const S: Widestring);
 var
   Act: TSRAction;
-  Opt, OptPrev: TSearchOptions;
-  Tok, TokPrev: TSearchTokens;
-  OptBkmk, OptExtSel, Ok: boolean;
   SText1, SText2: Widestring;
-  oldSelStart, oldSelLength: Integer;
+  Opt: TSearchOptions;
+  Tok: TSearchTokens;
+  OptBkmk, OptExtSel: boolean;
 begin
   ReadFindOptions(S, Act, SText1, SText2, Opt, Tok, OptBkmk, OptExtSel);
+  DoFindCommand(CurrentEditor, Act, SText1, SText2, Opt, Tok, OptBkmk, OptExtSel);
+end;
 
-  OptPrev:= Finder.Flags;
-  TokPrev:= Finder.Tokens;
+function TfmMain.DoFindCommand(
+  Ed: TSyntaxMemo;
+  Act: TSRAction;
+  const SText1, SText2: Widestring;
+  const Opt: TSearchOptions;
+  const Tok: TSearchTokens;
+  OptBkmk, OptExtSel: boolean): Integer;
+var
+  _OptPrev: TSearchOptions;
+  _TokPrev: TSearchTokens;
+  _PrevSelStart, _PrevSelLength: Integer;
+  _BeforePrev: TNotifyEvent;
+  Ok: boolean;
+begin
+  _OptPrev:= Finder.Flags;
+  _TokPrev:= Finder.Tokens;
+  _BeforePrev:= Finder.OnBeforeExecute;
+
   Finder.FindText:= SText1;
   Finder.ReplaceText:= SText2;
   Finder.Flags:= Opt;
   Finder.Tokens:= Tok;
-
-  Finder.Control:= CurrentEditor;
+  Finder.OnBeforeExecute:= nil;
   Finder.OnCanAccept:= FinderCanAccept;
+  Finder.Control:= Ed;
+  
   if OptBkmk then
     Finder.OnFind:= FinderFindBk
   else
     Finder.OnFind:= nil;
 
-  oldSelStart:= Finder.Control.SelStart;
-  oldSelLength:= Finder.Control.SelLength;
+  _PrevSelStart:= Finder.Control.SelStart;
+  _PrevSelLength:= Finder.Control.SelLength;
 
   case Act of
     arFindNext: Finder.FindNext;
@@ -23915,12 +23953,14 @@ begin
     arReplaceAll: Finder.ReplaceAll;
     arReplaceAllInAll: MsgError('Command "Replace in all tabs" not supported in macros yet', Handle);
   end;
+  Result:= Finder.Matches;
 
   //restote Finder
+  Finder.OnBeforeExecute:= _BeforePrev;
   Finder.OnCanAccept:= nil;
   Finder.OnFind:= nil;
-  Finder.Flags:= OptPrev;
-  Finder.Tokens:= TokPrev;
+  Finder.Flags:= _OptPrev;
+  Finder.Tokens:= _TokPrev;
 
   //post-find actions
   Ok:= Finder.Matches>0;
@@ -23928,7 +23968,7 @@ begin
   begin
     if OptExtSel and (Act in [arFindNext]) then
       EditorExtendSelectionByPosition(CurrentEditor,
-        oldSelStart, oldSelLength,
+        _PrevSelStart, _PrevSelLength,
         CurrentEditor.CaretStrPos, 0);
 
     if Assigned(fmSR) then
@@ -27518,6 +27558,67 @@ begin
   end;
 end;
 
+function Py_ed_find(Self, Args: PPyObject): PPyObject; cdecl;
+const
+  cFlag_Case     = 1;
+  cFlag_Words    = 1 shl 1;
+  cFlag_Back     = 1 shl 2;
+  cFlag_Sel      = 1 shl 3;
+  cFlag_Entire   = 1 shl 4;
+  cFlag_Regexp   = 1 shl 5;
+  cFlag_Prompt   = 1 shl 6;
+  cFlag_Wrap     = 1 shl 7;
+  cFlag_SkipCol  = 1 shl 8;
+  cFlag_Bkmk     = 1 shl 14;
+  cFlag_ExtSel   = 1 shl 15;
+var
+  H: Integer;
+  Ed: TSyntaxMemo;
+  PText1, PText2: PAnsiChar;
+  AText1, AText2: Widestring;
+  AAction: TSRAction;
+  AOptions: TSearchOptions;
+  ATokens: TSearchTokens;
+  AOptBkmk, AOptExtSel: boolean;
+  EdPrev: TCustomSyntaxMemo;
+  NAction, NOptions, NTokens, NFindRes: Integer;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iiiiss:ed_find',
+      @H, @NAction, @NOptions, @NTokens,
+      @PText1, @PText2)) then
+    begin
+      Ed:= PyEditor(H);
+      EdPrev:= fmMain.Finder.Control;
+
+      AText1:= UTF8Decode(AnsiString(PText1));
+      AText2:= UTF8Decode(AnsiString(PText2));
+      AAction:= TSRAction(NAction);
+      ATokens:= TSearchTokens(NTokens);
+
+      AOptions:= [];
+      if (NOptions and cFlag_Case)<>0 then Include(AOptions, ftCaseSensitive);
+      if (NOptions and cFlag_Words)<>0 then Include(AOptions, ftWholeWordOnly);
+      if (NOptions and cFlag_Back)<>0 then Include(AOptions, ftBackward);
+      if (NOptions and cFlag_Sel)<>0 then Include(AOptions, ftSelectedText);
+      if (NOptions and cFlag_Entire)<>0 then Include(AOptions, ftEntireScope);
+      if (NOptions and cFlag_Regexp)<>0 then Include(AOptions, ftRegularExpr);
+      if (NOptions and cFlag_Prompt)<>0 then Include(AOptions, ftPromtOnReplace);
+      if (NOptions and cFlag_Wrap)<>0 then Include(AOptions, ftWrapSearch);
+      if (NOptions and cFlag_SkipCol)<>0 then Include(AOptions, ftSkipCollapsed);
+      AOptBkmk:= (NOptions and cFlag_Bkmk)<>0;
+      AOptExtSel:= (NOptions and cFlag_ExtSel)<>0;
+
+      try
+        NFindRes:= fmMain.DoFindCommand(Ed, AAction, AText1, AText2, AOptions, ATokens, AOptBkmk, AOptExtSel);
+      except
+        NFindRes:= -1;
+      end;
+
+      fmMain.Finder.Control:= EdPrev;
+      Result:= PyInt_FromLong(NFindRes);
+    end;
+end;
 
 procedure TfmMain.PythonModuleInitialization(Sender: TObject);
 begin
@@ -27592,6 +27693,7 @@ begin
     AddMethod('ed_cmd', Py_ed_cmd, '');
     AddMethod('ed_lock', Py_ed_lock, '');
     AddMethod('ed_unlock', Py_ed_unlock, '');
+    AddMethod('ed_find', Py_ed_find, '');
   end;
 end;
 
@@ -28132,6 +28234,7 @@ begin
       if not Analyzers[i].Internal then
         L.Add(Analyzers[i].LexerName);
 end;
+
 
 initialization
   PyEditor:= MainPyEditor;
