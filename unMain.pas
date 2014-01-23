@@ -2714,7 +2714,6 @@ type
     procedure DoToggleSyncEditing;
     procedure DoZoomEditorInc(AInc: boolean);
     procedure DoZoomEditor(NZoom: Integer);
-    procedure ShowDebug(const S: Widestring);
     procedure DoExtendSelection(Ed: TSyntaxMemo);
     function MsgConfirmOpenSaveSession(AFilesCount: Integer; const AFileName: string; ASaveMode: boolean): boolean;
     procedure DoEnterPyConsoleCommand(const Str: Widestring);
@@ -23944,11 +23943,11 @@ begin
   _PrevSelLength:= Finder.Control.SelLength;
 
   case Act of
-    arFindNext: Finder.FindNext;
+    arFindNext: Finder.FindAgain;
     arFindAll: Finder.FindAll;
     arFindInTabs: MsgError('Command "Find in all tabs" not supported in macros yet', Handle);
     arCount: Finder.CountAll;
-    arSkip: Finder.FindNext;
+    arSkip: Finder.FindAgain;
     arReplaceNext: Finder.ReplaceAgain;
     arReplaceAll: Finder.ReplaceAll;
     arReplaceAllInAll: MsgError('Command "Replace in all tabs" not supported in macros yet', Handle);
@@ -24603,7 +24602,11 @@ var
   Lex, Err: string;
 begin
   if Ed.SyntObj=nil then
-    begin SetHint('Extend selection: no lexer active'); MsgBeep; Exit end;
+  begin
+    SetHint('Extend selection: no lexer active');
+    MsgBeep;
+    Exit
+  end;
 
   //we have two variants of code: for usual code (Pascal/C/PHP/etc) and for HTML/XML.
   //HTML/XML case is special, need precise jumps considering "<" and ">".
@@ -26956,12 +26959,6 @@ begin
   end;  
 end;
 
-procedure TfmMain.ShowDebug(const S: Widestring);
-begin
-  SetHint(S);
-  Sleep(500);
-end;
-
 function TfmMain.IsFramePropertiesStringForFilename(const fn: Widestring; const Str: string): boolean;
 var
   N: Integer;
@@ -27073,6 +27070,9 @@ begin
 end;
 
 procedure TfmMain.DoTest;
+begin
+end;
+(*
 var
   S, S2: string;
   F: TEditorFrame;
@@ -27101,7 +27101,7 @@ begin
   else
     MsgInfo('test ok'#13#13{+S}, Handle);
 end;
-
+*)
 
 procedure TfmMain.StatusItemBusyClick(Sender: TObject);
 begin
@@ -27378,8 +27378,10 @@ end;
 procedure TfmMain.PythonEngine1AfterInit(Sender: TObject);
 begin
   Py_AddSysPath(SynPyDir);
-  with GetPythonEngine do
-    ExecString('from sw_api import *');
+
+  //no need now:
+  //with GetPythonEngine do
+  //  ExecString('from sw_api import *');
 end;
 
 function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
