@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabInsertFormat
+    ActivePage = tabACP
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -1465,7 +1465,7 @@ object fmSetup: TfmSetup
       OnShow = tabACPShow
       object gAcpAll: TTntGroupBox
         Left = 8
-        Top = 112
+        Top = 140
         Width = 529
         Height = 121
         Caption = 'Common auto-completion options'
@@ -1572,7 +1572,7 @@ object fmSetup: TfmSetup
       end
       object gAcp2: TTntGroupBox
         Left = 8
-        Top = 236
+        Top = 264
         Width = 529
         Height = 89
         Caption = 'Auto-completion from current file'
@@ -1590,13 +1590,6 @@ object fmSetup: TfmSetup
           Width = 200
           Height = 13
           Caption = 'Search for words only in first ... Mb of file'
-        end
-        object TntLabel29: TTntLabel
-          Left = 304
-          Top = 44
-          Width = 180
-          Height = 13
-          Caption = 'Auto-correct id case for these lexers:'
         end
         object cbAcpFile: TTntCheckBox
           Left = 8
@@ -1629,19 +1622,12 @@ object fmSetup: TfmSetup
           Value = 1
           OnKeyDown = edIndentKeyDown
         end
-        object edAcpFixCase: TEdit
-          Left = 304
-          Top = 60
-          Width = 217
-          Height = 21
-          TabOrder = 3
-        end
       end
       object gAcpSp: TTntGroupBox
         Left = 8
         Top = 4
         Width = 529
-        Height = 105
+        Height = 133
         Caption = 'Special auto-completion features'
         TabOrder = 0
         object labSmTabHelp: TTntLabel
@@ -1689,6 +1675,13 @@ object fmSetup: TfmSetup
           ParentFont = False
           OnClick = labAcpHelpClick
         end
+        object TntLabel29: TTntLabel
+          Left = 304
+          Top = 88
+          Width = 180
+          Height = 13
+          Caption = 'Auto-correct id case for these lexers:'
+        end
         object cbAcpHtm: TTntCheckBox
           Left = 8
           Top = 16
@@ -1731,21 +1724,37 @@ object fmSetup: TfmSetup
           OnClick = cbACloseBrClick
         end
         object cbACloseBrEsc: TTntCheckBox
-          Left = 336
-          Top = 80
+          Left = 24
+          Top = 112
           Width = 185
           Height = 17
           Caption = 'Skip escaped: \{'
           TabOrder = 6
         end
         object cbACloseQ: TTntCheckBox
-          Left = 216
-          Top = 80
+          Left = 24
+          Top = 96
           Width = 120
           Height = 17
           Caption = 'And quotes: " '#39
           TabOrder = 5
           OnClick = cbACloseBrClick
+        end
+        object edAcpFixCase: TEdit
+          Left = 304
+          Top = 104
+          Width = 185
+          Height = 21
+          TabOrder = 7
+        end
+        object bAcpFixCase: TTntButton
+          Left = 488
+          Top = 104
+          Width = 35
+          Height = 21
+          Caption = '...'
+          TabOrder = 8
+          OnClick = bAcpFixCaseClick
         end
       end
     end
@@ -2969,7 +2978,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E014B010000
+      0700666D5365747570010100000001000000070043617074696F6E014D010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3269,7 +3278,7 @@ object fmSetup: TfmSetup
       43617074696F6E000C0063625363726F6C6C4C6173740102000000CF02000007
       0043617074696F6ECE020000040048696E74000A00546E744C6162656C323901
       01000000D0020000070043617074696F6E000C00656441637046697843617365
-      0000}
+      00000B00624163704669784361736500000B00506F7075704C65786572730000}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
@@ -3288,5 +3297,9 @@ object fmSetup: TfmSetup
     OnTimer = TimerFiltTimer
     Left = 300
     Top = 402
+  end
+  object PopupLexers: TTntPopupMenu
+    Left = 328
+    Top = 400
   end
 end

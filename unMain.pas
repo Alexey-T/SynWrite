@@ -3051,6 +3051,7 @@ type
     function FrameForFilename(const fn: Widestring): TEditorFrame;
     function DoCheckCommandLineTwo: boolean;
     procedure DoClearSearchHistory;
+    procedure DoEnumLexers(L: TTntStrings);
     //end of public
   end;
 
@@ -28126,6 +28127,16 @@ begin
   finally
     FreeAndNil(L);
   end;
+end;
+
+procedure TfmMain.DoEnumLexers(L: TTntStrings);
+var
+  i: Integer;
+begin
+  with fmMain.SyntaxManager do
+    for i:= 0 to AnalyzerCount-1 do
+      if not Analyzers[i].Internal then
+        L.Add(Analyzers[i].LexerName);
 end;
 
 initialization

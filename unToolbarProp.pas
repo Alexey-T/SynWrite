@@ -11,15 +11,15 @@ uses
 type
   TShowCmdListProc = function: string of object;
   TShowCmdHintProc = function(Cmd: Widestring): Widestring of object;
-  TGetExtToolsProc = procedure(List: TTntStringList) of object;
-  TGetPyToolsProc = procedure(List: TTntStringList) of object;
+  TEnumExtProc = procedure(List: TTntStringList) of object;
+  TEnumPyProc = procedure(List: TTntStringList) of object;
 
 function DoShowToolbarProp(
   const AIni, AId: string;
   AShowCmdList: TShowCmdListProc;
   AShowCmdHint: TShowCmdHintProc;
-  AGetExtTools: TGetExtToolsProc;
-  AGetPyTools: TGetPyToolsProc;
+  AEnumExt: TEnumExtProc;
+  AEnumPy: TEnumPyProc;
   AForceSizeX,
   AForceSizeY: Integer;
   var AImageDir: string): boolean;
@@ -131,8 +131,8 @@ type
     FToolbarId: string;
     FShowCmdList: TShowCmdListProc;
     FShowCmdHint: TShowCmdHintProc;
-    FGetExtTools: TGetExtToolsProc;
-    FGetPyTools: TGetPyToolsProc;
+    FEnumExt: TEnumExtProc;
+    FGetPyTools: TEnumPyProc;
   end;
 
 implementation
@@ -587,10 +587,10 @@ var
   Item: TTntMenuItem;
   p: TPoint;
 begin
-  if not Assigned(FGetExtTools) then Exit;
+  if not Assigned(FEnumExt) then Exit;
   L:= TTntStringList.Create;
   try
-    FGetExtTools(L);
+    FEnumExt(L);
     MenuTool.Items.Clear;
     for i:= 0 to L.Count-1 do
     begin
@@ -641,8 +641,8 @@ function DoShowToolbarProp(
   const AIni, AId: string;
   AShowCmdList: TShowCmdListProc;
   AShowCmdHint: TShowCmdHintProc;
-  AGetExtTools: TGetExtToolsProc;
-  AGetPyTools: TGetPyToolsProc;
+  AEnumExt: TEnumExtProc;
+  AEnumPy: TEnumPyProc;
   AForceSizeX,
   AForceSizeY: Integer;
   var AImageDir: string): boolean;
@@ -664,8 +664,8 @@ begin
 
     FShowCmdList:= AShowCmdList;
     FShowCmdHint:= AShowCmdHint;
-    FGetExtTools:= AGetExtTools;
-    FGetPyTools:= AGetPyTools;
+    FEnumExt:= AEnumExt;
+    FGetPyTools:= AEnumPy;
     FImagesDir:= AImageDir;
 
     Result:= ShowModal=mrOk;
@@ -702,7 +702,7 @@ begin
       S,
       FShowCmdList,
       FShowCmdHint,
-      FGetExtTools,
+      FEnumExt,
       FGetPyTools,
       FSizeX,
       FSizeY,

@@ -16,7 +16,7 @@ uses
   DKLang,
 
   unMain,
-  unSetupOvr;
+  unSetupOvr, Menus, TntMenus;
 
 type
   TfmSetup = class(TTntForm)
@@ -352,6 +352,8 @@ type
     cbScrollLast: TTntCheckBox;
     TntLabel29: TTntLabel;
     edAcpFixCase: TEdit;
+    bAcpFixCase: TTntButton;
+    PopupLexers: TTntPopupMenu;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -448,13 +450,15 @@ type
     procedure bKeyExtendClick(Sender: TObject);
     procedure labHelpKeysClick(Sender: TObject);
     procedure bPyClick(Sender: TObject);
+    procedure bAcpFixCaseClick(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
     Colors: TSynColors;
     ColorsOfTabs: array[0..Pred(cTabColors)] of TColor;
     FLangChanged: boolean;
-    
+
+    procedure MenuLexersClick(Sender: TObject);
     function MsgConfirmKeyOvr(const SCategory, SName: Widestring): boolean;
     function DoCheckKeyDups(const KeyStr: string): boolean;
     procedure UpdateKeyButtons;
@@ -636,13 +640,11 @@ implementation
 
 uses
   IniFiles, Types,
+  StrUtils,
   ecSyntTree, ecSyntAnal, ecStrUtils,
   ATSyntMemo,
   ATxShell, ATxFProc, ATxSProc,
 
-  //unHints, //seems no effect for SpTbx hints, for editor hints. 
-             //only effect for project tree (hints loose shadow). poor.
-  
   unProc,
   unProcHelp,
   unProj,
@@ -2104,8 +2106,6 @@ begin
 end;
 
 procedure TfmSetup.InitEditorOverrides;
-var
-  i: Integer;
 begin
   fmOvr:= TfmSetupOvr.Create(Self);
   fmOvr.Parent:= tabOvr;
@@ -2124,10 +2124,8 @@ begin
     FDefMargin:= fmMain.TemplateEditor.RightMargin;
     FDefSpacing:= fmMain.TemplateEditor.LineSpacing;
 
-    with fmMain.SyntaxManager do
-      for i:= 0 to AnalyzerCount-1 do
-        if not Analyzers[i].Internal then
-          ListLex.Items.Add(Analyzers[i].LexerName);
+    ListLex.Items.Clear;
+    fmMain.DoEnumLexers(ListLex.Items);
   end;
   fmOvr.Show;
 end;
@@ -2362,16 +2360,13 @@ begin
 end;
 
 procedure TfmSetup.InitNewOpen;
-var
-  i: Integer;
 begin
   with fmMain do
   begin
+    edLex.Items.Clear;
     edLex.Items.Add(' '+DKLangConstW('None'));
-    with SyntaxManager do
-      for i:= 0 to AnalyzerCount-1 do
-        if not Analyzers[i].Internal then
-          edLex.Items.Add(Analyzers[i].LexerName);
+    DoEnumLexers(edLex.Items);
+
     with edLex do
       if opNewLex='' then
         ItemIndex:= 0
@@ -2766,6 +2761,52 @@ begin
   FontDialog.Font:= bPy.Font;
   if FontDialog.Execute then
     bPy.Font:= FontDialog.Font;
+end;
+
+procedure TfmSetup.MenuLexersClick(Sender: TObject);
+var
+  S: string;
+begin
+  S:= (Sender as TTntMenuItem).Caption;
+  with edAcpFixCase do
+    Text:= Text + IfThen(Text<>'', ',') + S;
+end;
+
+procedure TfmSetup.bAcpFixCaseClick(Sender: TObject);
+var
+  L: TTntStringList;
+  i: Integer;
+  MI: TTntMenuItem;
+  P: TPoint;
+begin
+  PopupLexers.Items.Clear;
+
+  L:= TTntStringList.Create;
+  try
+    fmMain.DoEnumLexers(L);
+    L.Sort;
+
+    for i:= 0 to L.Count-1 do
+    begin
+      MI:= TTntMenuItem.Create(Self);
+      MI.Caption:= L[i];
+      MI.OnClick:= MenuLexersClick;
+      PopupLexers.Items.Add(MI);
+
+      if (i>0) and (i mod 30 = 0) then
+      begin
+        MI:= TTntMenuItem.Create(Self);
+        MI.Caption:= '-';
+        MI.Break:= mbBarBreak;
+        PopupLexers.Items.Add(MI);
+      end;
+    end;
+  finally
+    FreeAndNil(L);
+  end;
+
+  P:= bAcpFixCase.ClientToScreen(Point(0, 0));
+  PopupLexers.Popup(P.X, P.Y);
 end;
 
 end.

@@ -9,7 +9,7 @@ uses
 
 type
   TfmSetupOvr = class(TTntForm)
-    ListLex: TListBox;
+    ListLex: TTntListBox;
     Label1: TTntLabel;
     edTab: TTntEdit;
     LabelTabStop: TTntLabel;

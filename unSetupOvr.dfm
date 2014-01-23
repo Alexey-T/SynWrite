@@ -91,7 +91,7 @@ object fmSetupOvr: TfmSetupOvr
     Caption = '+'
     OnClick = LabelTextShowClick
   end
-  object ListLex: TListBox
+  object ListLex: TTntListBox
     Left = 8
     Top = 20
     Width = 161
