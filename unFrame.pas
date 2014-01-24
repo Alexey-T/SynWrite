@@ -1244,7 +1244,7 @@ begin
 
   //draw current frame
   NLineTop:= Ed.TopLine;
-  NLineBottom:= Ed.MouseToCaret(0, Ed.ClientHeight-1).Y+1;
+  NLineBottom:= EditorGetBottomLineIndex(Ed)+1;
     //Ed.TopLine+ Ed.VisibleLines
 
   N1_Frame:= Int64(NCliHeight)*NLineTop div NCnt;

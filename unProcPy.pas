@@ -14,6 +14,7 @@ var
 
 function Py_get_clip(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_set_clip(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 
 procedure Py_AddSysPath(const Dir: string);
 procedure Py_RunPlugin_Command(const SId, SCmd: string);
@@ -22,16 +23,18 @@ function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
 
-function Py_ed_get_word(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_sync_ranges(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_add_sync_range(Self, Args: PPyObject): PPyObject; cdecl;
+
+function Py_ed_get_carets(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_add_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
+
+function Py_ed_get_marks(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_add_mark(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_indent(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_get_carets(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_marks(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_word(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_cmd(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_lock(Self, Args: PPyObject): PPyObject; cdecl;
@@ -178,6 +181,24 @@ begin
         Ed.SearchMarks.Add(TRange.Create(NStart, NStart + NLen));
         Ed.Invalidate;
       end;
+      Result:= ReturnNone;
+    end;
+end;
+
+function Py_ed_add_sync_range(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, NStart, NLen: Integer;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iii:ed_add_sync_range', @H, @NStart, @NLen)) then
+    begin
+      Ed:= PyEditor(H);
+      if (NStart=-1) then
+        Ed.SyncEditing.Clear
+      else
+        Ed.SyncEditing.AddRange(NStart, NStart + NLen);
+      Ed.Invalidate;
       Result:= ReturnNone;
     end;
 end;
@@ -883,6 +904,33 @@ begin
     end;  
 end;
 
+function Py_ed_get_sync_ranges(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, NLen, i: Integer;
+  ComArray: Variant;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_sync_ranges', @H)) then
+    begin
+      Ed:= PyEditor(H);
+      NLen:= Ed.SyncEditing.Count;
+      if NLen>0 then
+      begin
+        ComArray:= VarArrayCreate([0, NLen-1, 0, 1], varInteger);
+        for i:= 0 to NLen-1 do
+        begin
+          ComArray[i, 0]:= Ed.SyncEditing[i].StartPos;
+          ComArray[i, 1]:= Ed.SyncEditing[i].Size;
+        end;
+        Result:= VariantAsPyObject(ComArray);
+      end
+      else
+        Result:= ReturnNone;
+    end;
+end;
+
+
 function Py_ed_get_carets(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H: Integer;
@@ -977,7 +1025,7 @@ begin
           end;
         12:
           Result:= PyInt_FromLong(Ed.Zoom);
-        13: //insert mode
+        13:
           Result:= PyBool_FromLong(Ord(not Ed.ReplaceMode));
         14:
           Result:= PyInt_FromLong(Ed.SyncEditing.Count);
@@ -987,8 +1035,8 @@ begin
           Result:= PyInt_FromLong(Ed.VisibleLines);
         17:
           Result:= PyInt_FromLong(Ed.VisibleCols);
-        18: //bottom line
-          Result:= PyInt_FromLong(Ed.MouseToCaret(0, Ed.ClientHeight).Y);
+        18:
+          Result:= PyInt_FromLong(EditorGetBottomLineIndex(Ed));
         else
           Result:= ReturnNone;
       end;

@@ -15,6 +15,7 @@ uses
   ecStrUtils;
 
 procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
+function EditorGetBottomLineIndex(Ed: TSyntaxMemo): Integer;
 function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
 procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText: Widestring);
 
@@ -2775,4 +2776,9 @@ begin
   until false;
 end;
 
+function EditorGetBottomLineIndex(Ed: TSyntaxMemo): Integer;
+begin
+  Result:= Ed.MouseToCaret(0, Ed.ClientHeight-1).Y;
+end;
+  
 end.

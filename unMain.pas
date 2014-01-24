@@ -27647,6 +27647,8 @@ begin
     AddMethod('get_clip', Py_get_clip, '');
     AddMethod('set_clip', Py_set_clip, '');
 
+    AddMethod('ed_get_sync_ranges', Py_ed_get_sync_ranges, '');
+    AddMethod('ed_add_sync_range', Py_ed_add_sync_range, '');
     AddMethod('ed_focus', Py_ed_focus, '');
     AddMethod('ed_complete', Py_ed_complete, '');
     AddMethod('ed_get_split', Py_ed_get_split, '');
@@ -28199,11 +28201,6 @@ begin
       true{SubDir},
       false{NoRO}, false{NoHidFiles}, true{NoHidFolders});
 
-    if L.Count > cMaxFilesInFolder then
-      if not MsgConfirm(
-        WideFormat(DKLangConstW('zMCfmOpenFolder'), [dir, L.Count]),
-        Handle) then Exit;
-
     //exclude binary files
     for i:= L.Count-1 downto 0 do
     begin
@@ -28215,6 +28212,12 @@ begin
       if not IsFileText(fn) or IsFileTooBig(fn) then
         L.Delete(i);
     end;
+
+    //confirm
+    if L.Count > cMaxFilesInFolder then
+      if not MsgConfirm(
+        WideFormat(DKLangConstW('zMCfmOpenFolder'), [dir, L.Count]),
+        Handle) then Exit;
 
     //open left files
     for i:= 0 to L.Count-1 do

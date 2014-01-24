@@ -44,8 +44,9 @@ type
 implementation
 
 uses
+  StdCtrls,
   ecLists,
-  StdCtrls;
+  unProcEditor;
 
 {$R *.dfm}
 
@@ -80,7 +81,7 @@ begin
     BeginUpdate;
     //
     //fix TopLine
-    nBottomLine:= edMap.MouseToCaret(0, ClientHeight).Y;
+    nBottomLine:= EditorGetBottomLineIndex(edMap);
     if FTopLine<TopLine then
       TopLine:= FTopLine
     else
