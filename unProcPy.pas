@@ -18,7 +18,6 @@ function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 
 procedure Py_AddSysPath(const Dir: string);
 procedure Py_RunPlugin_Command(const SId, SCmd: string);
-function Py_SamplePluginText(const SId: string): string;
 function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
@@ -766,22 +765,6 @@ begin
     if n<=Length(Result) then
       Result[n]:= UpCase(Result[n]);
   until false;
-end;
-
-function Py_SamplePluginText(const SId: string): string;
-const
-  cSamplePlugin =
-    'from sw import *'#13+
-    'from sw_util import *'#13#13+
-    'class Command:'#13+
-    '    def run(self):'#13+
-    '        s = "Lines count: " + str(ed_get_line_count())'#13+
-    '        msg_box(MSG_INFO, s)'#13+
-    '';
-begin
-  Result:=
-    cSamplePlugin;
-    //Format(cSamplePlugin, [Py_NameToMixedCase(SId)]);
 end;
 
 function Py_ModuleNameExists(const SId: string): boolean;

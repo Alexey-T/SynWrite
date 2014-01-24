@@ -27734,8 +27734,9 @@ end;
 
 procedure TfmMain.DoNewPythonPluginDialog;
 var
-  SId, SDir, SFn: Widestring;
+  SId, SDir: Widestring;
   List: TStringList;
+  fn_plugin, fn_sample: string;
 begin
   if not GetPythonEngine.Initialized then
   begin
@@ -27762,7 +27763,7 @@ begin
   end;
 
   SDir:= SynPyDir + '\' + SId;
-  SFn:= SDir + '\__init__.py';
+  fn_plugin:= SDir + '\__init__.py';
 
   if DirectoryExists(SDir) then
   begin
@@ -27778,17 +27779,19 @@ begin
 
   List:= TStringList.Create;
   try
-    List.Text:= Py_SamplePluginText(SId);
-    List.SaveToFile(SFn);
+    fn_sample:= SynPyDir + '\sw_sample_plugin.py';
+    if FileExists(fn_sample) then
+      List.LoadFromFile(fn_sample);
+    List.SaveToFile(fn_plugin);
   finally
     FreeAndNil(List);
   end;
 
-  if FileExists(SFn) then
+  if FileExists(fn_plugin) then
   begin
     DoRegisterPyCommandPlugin(SId); //write to SynPlugins.ini
     DoLoadPluginsList; //reread SynPlugins.ini, update Plugins menu
-    DoOpenFile(SFn);
+    DoOpenFile(fn_plugin);
   end
   else
     MsgBeep;

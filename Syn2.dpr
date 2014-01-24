@@ -130,23 +130,24 @@ var
 begin
   Result:= LISTPLUGIN_OK;
   f:= TfmMain(FindControl(ListWin));
-  if f <> nil then
-  with f do begin
-    SetHint('');
-    Finder.Flags:= [];
-    if (SearchParameter and lcs_backwards) <> 0 then
-      Finder.Flags:= Finder.Flags + [ftBackward];
-    if (SearchParameter and lcs_matchcase) <> 0 then
-      Finder.Flags:= Finder.Flags + [ftCaseSensitive];
-    if (SearchParameter and lcs_findfirst) <> 0 then
-      Finder.Flags:= Finder.Flags + [ftEntireScope];
-    if (SearchParameter and lcs_wholewords) <> 0 then
-      Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
+  if f<>nil then
+    with f do
+    begin
+      DoHint('');
+      Finder.Flags:= [];
+      if (SearchParameter and lcs_backwards) <> 0 then
+        Finder.Flags:= Finder.Flags + [ftBackward];
+      if (SearchParameter and lcs_matchcase) <> 0 then
+        Finder.Flags:= Finder.Flags + [ftCaseSensitive];
+      if (SearchParameter and lcs_findfirst) <> 0 then
+        Finder.Flags:= Finder.Flags + [ftEntireScope];
+      if (SearchParameter and lcs_wholewords) <> 0 then
+        Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
 
-    Finder.SkipInit:= True;
-    Finder.FindText:= SearchString;
-    Finder.FindAgain;
-  end;
+      Finder.SkipInit:= True;
+      Finder.FindText:= SearchString;
+      Finder.FindAgain;
+    end;
 end;
 
 function ListSearchText(ListWin: HWND;
