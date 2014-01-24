@@ -302,7 +302,7 @@ begin
           fmMain.DoOpenSession(S)
         else
         begin
-          fmMain.SetHint(DKLangConstW('MNFound')+' '+S);
+          fmMain.DoHint(DKLangConstW('MNFound')+' '+S);
           MsgBeep;
         end;
     end;

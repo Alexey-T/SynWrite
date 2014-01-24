@@ -1195,7 +1195,7 @@ var
   N: Integer;
 begin
   N:= GetMapLine(X, Y);
-  TfmMain(Owner).SetHint(WideFormat(DKLangConstW('zMLine'), [N+1]));
+  TfmMain(Owner).DoHint(WideFormat(DKLangConstW('zMLine'), [N+1]));
   if ssLeft in Shift then
     PanelMapMouseDown(Self, mbLeft, Shift, X, Y);
 end;

@@ -3049,7 +3049,7 @@ type
     //procedure TestApi;
     function IsPluginWindowActive(var HWnd: THandle): boolean;
     function opMarkDeletedAsModified: boolean;
-    procedure SetHint(S: WideString);
+    procedure DoHint(S: WideString);
     procedure DoHandleQuickSearchEscape;
     function DoHandleEscapeActions: boolean;
     function IsWordChar(ch: WideChar): boolean;
@@ -6650,7 +6650,7 @@ end;
 
 procedure TfmMain.ButtonOnSelect(Sender: TTBCustomItem; Viewer: TTBItemViewer; Selecting: Boolean);
 begin
-  SetHint(Sender.Hint);
+  DoHint(Sender.Hint);
 end;
 
 procedure TfmMain.SynScroll(Sender: TObject);
@@ -6700,13 +6700,13 @@ end;
 procedure TfmMain.FinderInit(Sender: TObject);
 begin
   Finder.Control:= CurrentEditor;
-  SetHint('');
+  DoHint('');
 end;
 
 procedure TfmMain.FinderFail(Sender: TObject);
 begin
   HideProgress;
-  SetHint(WideFormat(DKLangConstW('MNFound2'), [Finder.FindText]));
+  DoHint(WideFormat(DKLangConstW('MNFound2'), [Finder.FindText]));
   MsgBeep;
 end;
 
@@ -7372,7 +7372,7 @@ begin
   if IsImageHint(s, sFileName, sResult) then
   begin
     HintText:= sResult;
-    SetHint(sResult);
+    DoHint(sResult);
     Exit
   end;
 
@@ -7410,7 +7410,7 @@ begin
     on E: Exception do
     begin
       HintText:= '';
-      SetHint('Exception on reading hint: '+E.Message);
+      DoHint('Exception on reading hint: '+E.Message);
     end;
   end;
 end;
@@ -8619,7 +8619,7 @@ begin
   if Finder.Matches > 0 then
   begin
     S:= WideFormat(DKLangConstW('Found'), [Finder.Matches]) + ' ' + Sfiles;
-    SetHint(S);
+    DoHint(S);
     if act in [arCount, arFindAll, arReplaceAll, arReplaceAllInAll] then
       fmSR.ShowStatus(S);
   end;
@@ -9076,7 +9076,7 @@ begin
   UpdateColorHint;
 end;
 
-procedure TfmMain.SetHint(S: WideString);
+procedure TfmMain.DoHint(S: WideString);
 begin
   SDeleteFromW(S, #10);
   SDeleteFromW(S, #13);
@@ -11088,7 +11088,7 @@ begin
   bmp:= TBitmap.Create;
   try
     bmp.Canvas.Font.Assign(Status.Font);
-    SetHint(WideMinimizeName(fn, bmp.Canvas, size));
+    DoHint(WideMinimizeName(fn, bmp.Canvas, size));
   finally
     FreeAndNil(bmp);
   end;
@@ -14257,7 +14257,7 @@ begin
 
   if (Result<>'') and not IsDirExist(Result) then
   begin
-    SetHint(DKLangConstW('MNFoundFold')+': '+Result);
+    DoHint(DKLangConstW('MNFoundFold')+': '+Result);
     MsgBeep;
     Result:= 'C:\';
   end;
@@ -14276,7 +14276,7 @@ begin
     Result:= opLastDirPath;
   if (Result<>'') and not IsDirExist(Result) then
   begin
-    SetHint(DKLangConstW('MNFoundFold')+': '+Result);
+    DoHint(DKLangConstW('MNFoundFold')+': '+Result);
     MsgBeep;
     Result:= 'C:\';
   end;
@@ -15301,7 +15301,7 @@ begin
     end;
   finally
     FreeAndNil(LL);
-    SetHint('');
+    DoHint('');
   end;
 end;
 
@@ -17140,7 +17140,7 @@ begin
   SDeleteFromW(s, #13);
   SDeleteFromW(s, #10);
 
-  SetHint('');
+  DoHint('');
   Finder.FindText:= s;
   Finder.Flags:= Finder.Flags-[ftRegularExpr];
   if Next then
@@ -17485,7 +17485,7 @@ begin
   else
     s:= '';
   s:= WideFormat(DKLangConstW('MNFound2'), [s]);
-  SetHint(s);
+  DoHint(s);
   MsgBeep;
 end;
 
@@ -18710,17 +18710,17 @@ end;
 
 procedure TfmMain.MsgDelLines(N: integer);
 begin
-  SetHint(WideFormat(DKLangConstW('zDelLn'), [N]));
+  DoHint(WideFormat(DKLangConstW('zDelLn'), [N]));
 end;
 
 procedure TfmMain.MsgDoneLines(N: integer);
 begin
-  SetHint(WideFormat(DKLangConstW('zDoneLn'), [N]));
+  DoHint(WideFormat(DKLangConstW('zDoneLn'), [N]));
 end;
 
 procedure TfmMain.MsgTabbing(const s: Widestring);
 begin
-  SetHint('[SmartTagTabbing] ' + s);
+  DoHint('[SmartTagTabbing] ' + s);
 end;
 
 procedure TfmMain.MsgRenameError(const fn, fn_new: Widestring);
@@ -19207,12 +19207,12 @@ end;
 
 procedure TfmMain.MsgColorBad;
 begin
-  SetHint(DKLangConstW('MColorBad')+' "'+s+'"');
+  DoHint(DKLangConstW('MColorBad')+' "'+s+'"');
 end;
 
 procedure TfmMain.MsgColorOK;
 begin
-  SetHint(WideFormat(DKLangConstW('MColorOk'), ['#'+s]));
+  DoHint(WideFormat(DKLangConstW('MColorOk'), ['#'+s]));
 end;
 
 
@@ -19318,7 +19318,7 @@ end;
 procedure TfmMain.UpdateColorHint(AClearHint: boolean = true);
 begin
   if AClearHint then
-    SetHint('');
+    DoHint('');
 end;
 
 procedure TfmMain.ecInsertColorExecute(Sender: TObject);
@@ -19496,7 +19496,7 @@ begin
   ListOut.Items.Clear;
   if not (IsFileExist(ft) and (FGetFileSize(ft)>0)) then
   begin
-    SetHint(WideFormat(DKLangConstW('MRun0'), [opTools[NTool].ToolCaption]));
+    DoHint(WideFormat(DKLangConstW('MRun0'), [opTools[NTool].ToolCaption]));
     MsgBeep;
     Exit
   end;
@@ -19789,7 +19789,7 @@ begin
   n:= Finder.Matches;
   if n>0 then
     //if (n>1) or AllowOne then
-      SetHint(WideFormat(DKLangConstW('Found'), [n]));
+      DoHint(WideFormat(DKLangConstW('Found'), [n]));
 end;
 
 procedure TfmMain.UpdateOutFromList(List: TWideStringList);
@@ -19876,7 +19876,7 @@ begin
   begin
     Result:= EditorAutoCloseTag(CurrentEditor, Err);
     if not Result then
-      SetHint(Err);
+      DoHint(Err);
   end;
 end;
 
@@ -19927,7 +19927,7 @@ begin
   dir:= ExtractFileDir(Frame.FileName);
   s:= SGetImageTag(fn, fn_wdx, dir, IsCss, EditorEOL(Ed));
   if s='' then
-    begin SetHint('Cannot insert tag: '+fn); MsgBeep; Exit end;
+    begin DoHint('Cannot insert tag: '+fn); MsgBeep; Exit end;
 
   with Ed do
   begin
@@ -20157,7 +20157,7 @@ begin
     end;
 
     if L.Count=0 then
-      begin SetHint(DKlangConstW('zMNoBookmk')); MsgBeep; Exit end;
+      begin DoHint(DKlangConstW('zMNoBookmk')); MsgBeep; Exit end;
 
     with TfmGotoBkmk.Create(nil) do
     try
@@ -21970,7 +21970,7 @@ end;
 
 function TfmMain.PluginAction_ShowHint(const AMsg: Widestring): Integer;
 begin
-  SetHint(AMsg);
+  DoHint(AMsg);
   Result:= cSynOK;
 end;
 
@@ -22614,7 +22614,7 @@ begin
         Exit
       end;
   //no FindId plugins found
-  SetHint(DKLangConstW('zMFindIdNone'));
+  DoHint(DKLangConstW('zMFindIdNone'));
 end;
 
 function TfmMain.DoAcpFromPlugins(const AAction: PWideChar): Widestring;
@@ -22626,11 +22626,11 @@ begin
     with FPluginsAcp[i] do
       if IsLexerListed(CurrentLexer, SLexers) then
       begin
-        SetHint(DKLangConstW('zMTryAcp')+' '+ExtractFileName(SFileName));
+        DoHint(DKLangConstW('zMTryAcp')+' '+ExtractFileName(SFileName));
         Result:= DoLoadPlugin_GetString(
           SFilename,
           AAction);
-        SetHint('');
+        DoHint('');
         if Result<>'' then Exit;
       end;
 end;
@@ -22756,7 +22756,7 @@ begin
 
     if (SLexers<>'') and not IsLexerListed(CurrentLexer, SLexers) then
     begin
-      SetHint(WideFormat(DKLangConstW('zMNoneLexer'), [SLexers]));
+      DoHint(WideFormat(DKLangConstW('zMNoneLexer'), [SLexers]));
       MsgBeep;
       Exit;
     end;
@@ -24603,7 +24603,7 @@ var
 begin
   if Ed.SyntObj=nil then
   begin
-    SetHint('Extend selection: no lexer active');
+    DoHint('Extend selection: no lexer active');
     MsgBeep;
     Exit
   end;
@@ -24619,7 +24619,7 @@ begin
   begin
     EditorExtendSelectionByLexer_All(Ed, Err);
     if Err<>'' then
-      begin SetHint(Err); MsgBeep; end;
+      begin DoHint(Err); MsgBeep; end;
   end
 end;
 
@@ -24735,7 +24735,7 @@ var
 begin
   Ed:= CurrentEditor;
   if Ed.SyntObj=nil then
-    begin SetHint('Fold level: no lexer active'); MsgBeep; Exit end;
+    begin DoHint('Fold level: no lexer active'); MsgBeep; Exit end;
   EditorFoldLevel(Ed, NLevel);
 end;
 
@@ -26398,14 +26398,14 @@ begin
 
   if F.FileName='' then
   begin
-    SetHint('Cannot save folding for unnamed tab');
+    DoHint('Cannot save folding for unnamed tab');
     MsgBeep;
     Exit
   end;
 
   if Ed.DisableFolding then
   begin
-    SetHint('Cannot save folding when it''s disabled');
+    DoHint('Cannot save folding when it''s disabled');
     MsgBeep;
     Exit
   end;
@@ -26413,7 +26413,7 @@ begin
   SFold:= EditorGetCollapsedRanges(Ed);
   if SFold='' then
   begin
-    SetHint('Cannot save empty folding state');
+    DoHint('Cannot save empty folding state');
     MsgBeep;
     Exit
   end;
@@ -26425,7 +26425,7 @@ begin
     Free
   end;
 
-  SetHint('Folding saved to file');
+  DoHint('Folding saved to file');
 end;
 
 procedure TfmMain.DoLoadFolding;
@@ -26439,7 +26439,7 @@ begin
 
   if F.FileName='' then
   begin
-    SetHint('Cannot load folding for unnamed tab');
+    DoHint('Cannot load folding for unnamed tab');
     MsgBeep;
     Exit
   end;
@@ -26456,13 +26456,13 @@ begin
 
   if SFold='' then
   begin
-    SetHint('Cannot load empty folding state');
+    DoHint('Cannot load empty folding state');
     MsgBeep;
     Exit
   end;
 
   EditorSetCollapsedRanges(Ed, SFold);
-  SetHint('Folding loaded from file');
+  DoHint('Folding loaded from file');
 end;
 
 procedure TfmMain.PluginACPShow(Sender: TObject);
@@ -27447,7 +27447,7 @@ begin
     if Bool(PyArg_ParseTuple(Args, 's:msg_status', @P)) then
     begin
       Str:= UTF8Decode(AnsiString(P));
-      fmMain.SetHint(Str);
+      fmMain.DoHint(Str);
     end;
     Result:= ReturnNone;
   end;
@@ -28181,7 +28181,7 @@ begin
         Dec(NLen);
         Ed.ReplaceText(NCaret-NLen, NLen, SAcpId);
         Ed.CaretStrPos:= NCaret+1;
-        SetHint('Id: ' + SAcpId);
+        DoHint('Id: ' + SAcpId);
         Result:= true;
       end;
       Break;
