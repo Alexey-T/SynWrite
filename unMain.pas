@@ -3136,8 +3136,8 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.500';
-  cSynPyVer = '1.0.111';
+  cSynVer = '6.3.510';
+  cSynPyVer = '1.0.112';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -27644,6 +27644,9 @@ begin
     AddMethod('file_get_name', Py_file_get_name, '');
     AddMethod('regex_parse', Py_regex_parse, '');
 
+    AddMethod('get_clip', Py_get_clip, '');
+    AddMethod('set_clip', Py_set_clip, '');
+
     AddMethod('ed_focus', Py_ed_focus, '');
     AddMethod('ed_complete', Py_ed_complete, '');
     AddMethod('ed_get_split', Py_ed_get_split, '');
@@ -27691,6 +27694,7 @@ begin
     AddMethod('ed_insert', Py_ed_insert, '');
     AddMethod('ed_set_text_all', Py_ed_set_text_all, '');
     AddMethod('ed_set_text_line', Py_ed_set_text_line, '');
+    AddMethod('ed_get_word', Py_ed_get_word, '');
 
     AddMethod('ed_cmd', Py_ed_cmd, '');
     AddMethod('ed_lock', Py_ed_lock, '');

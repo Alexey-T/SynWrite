@@ -12,6 +12,9 @@ var
   PyExeDir: string = '';
   PyIniDir: string = '';
 
+function Py_get_clip(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_set_clip(Self, Args: PPyObject): PPyObject; cdecl;
+
 procedure Py_AddSysPath(const Dir: string);
 procedure Py_RunPlugin_Command(const SId, SCmd: string);
 function Py_SamplePluginText(const SId: string): string;
@@ -19,6 +22,7 @@ function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
 
+function Py_ed_get_word(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_add_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_add_mark(Self, Args: PPyObject): PPyObject; cdecl;
 
@@ -87,12 +91,14 @@ uses
   Classes,
   IniFiles,
   Forms,
+  TntClipbrd,
   ecSyntAnal,
   ecStrUtils,
   ATxFProc,
   unProc,
   unProcHelp,
-  unProcEditor, ecLists;
+  unProcEditor,
+  ecLists;
 
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -971,10 +977,18 @@ begin
           end;
         12:
           Result:= PyInt_FromLong(Ed.Zoom);
-        13:
+        13: //insert mode
           Result:= PyBool_FromLong(Ord(not Ed.ReplaceMode));
         14:
           Result:= PyInt_FromLong(Ed.SyncEditing.Count);
+        15:
+          Result:= PyBool_FromLong(Ord(Ed.Modified));
+        16:
+          Result:= PyInt_FromLong(Ed.VisibleLines);
+        17:
+          Result:= PyInt_FromLong(Ed.VisibleCols);
+        18: //bottom line
+          Result:= PyInt_FromLong(Ed.MouseToCaret(0, Ed.ClientHeight).Y);
         else
           Result:= ReturnNone;
       end;
@@ -1000,6 +1014,52 @@ const
 begin
   with GetPythonEngine do
     ExecString(Format(cCmd, [Dir]));
+end;
+
+function Py_set_clip(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  P: PAnsiChar;
+  Str: Widestring;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 's:set_clip', @P)) then
+    begin
+      Str:= UTF8Decode(AnsiString(P));
+      TntClipboard.AsWideText:= Str;
+      Result:= ReturnNone;
+    end;
+end;
+
+function Py_get_clip(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  Str: Widestring;
+  NLimit: Integer;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'i:get_clip', @NLimit)) then
+    begin
+      Str:= TntClipboard.AsWideText;
+      if Length(Str)>NLimit then
+        SetLength(Str, NLimit);
+      Result:= PyUnicode_FromWideString(Str);
+    end;
+end;
+
+function Py_ed_get_word(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, X, Y: Integer;
+  Ed: TSyntaxMemo;
+  NStart, NEnd: Integer;
+  Str: Widestring;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iii:ed_get_word', @H, @X, @Y)) then
+    begin
+      Ed:= PyEditor(H);
+      Ed.WordRangeAtPos(Point(X, Y), NStart, NEnd);
+      Str:= Copy(Ed.Lines.Text, NStart+1, NEnd-NStart);
+      Result:= Py_BuildValue('(iis)', NStart, NEnd-NStart, PChar(UTF8Encode(Str)));
+    end;
 end;
 
 
