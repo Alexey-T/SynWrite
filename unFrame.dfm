@@ -537,8 +537,14 @@ object EditorFrame: TEditorFrame
     object TBXSeparatorItem1: TSpTBXSeparatorItem
     end
     object TBXItemSplitHorz: TSpTBXItem
-      Caption = 'Split horozintally'
+      Caption = 'Horizontal split'
+      RadioItem = True
       OnClick = TBXItemSplitHorzClick
+    end
+    object TBXItemSplitVert: TSpTBXItem
+      Caption = 'Vertical split'
+      RadioItem = True
+      OnClick = TBXItemSplitVertClick
     end
     object TBXSeparatorItem2: TSpTBXSeparatorItem
     end

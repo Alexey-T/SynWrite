@@ -2562,11 +2562,11 @@ end;
 procedure EditorClearMarkers(Ed: TSyntaxMemo);
 begin
   with Ed do
-    if Markers.Count>0 then
-    begin
-      Markers.Clear;
-      Invalidate
-    end;
+  begin
+    Markers.Clear;
+    MarkersLen.Clear;
+    Invalidate;
+  end;
 end;
 
 procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);

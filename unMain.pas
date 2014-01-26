@@ -830,7 +830,6 @@ type
     TBXItemWinTree: TSpTbxItem;
     TBXItemWinVal: TSpTbxItem;
     TBXSubWin: TSpTbxSubmenuItem;
-    ecMarkersClear: TAction;
     TBXItemMarkClear: TSpTbxItem;
     ecToggleFocusMap: TAction;
     TBXItemWinMap: TSpTbxItem;
@@ -1278,6 +1277,7 @@ type
     TbxItemPanelTitleShowOut: TSpTBXItem;
     TbxItemPanelTitleShowLeft: TSpTBXItem;
     SpTBXSeparatorItem28: TSpTBXSeparatorItem;
+    TBXItemSpVert: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1629,7 +1629,6 @@ type
     procedure ecMacroPlay1BeforeExecute(Sender: TObject);
     procedure ecMacroRepeatExecute(Sender: TObject);
     procedure ecRepeatCmdExecute(Sender: TObject);
-    procedure ecMarkersClearExecute(Sender: TObject);
     procedure TBXItemRightClipClick(Sender: TObject);
     procedure TBXItemRightMapClick(Sender: TObject);
     procedure ecToggleFocusMapExecute(Sender: TObject);
@@ -2037,6 +2036,9 @@ type
     procedure TbxItemTreeSortedClick(Sender: TObject);
     procedure TbxItemPanelTitleBarClick(Sender: TObject);
     procedure PopupPanelTitlePopup(Sender: TObject);
+    procedure TBXItemMarkGoLastClick(Sender: TObject);
+    procedure TBXItemSpVertClick(Sender: TObject);
+    procedure TBXItemMarkClearClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2553,6 +2555,8 @@ type
     function SynSnippetsDir: string;
     function SynSkinFilename(const Name: string): string;
     function SynConverterFilename(const Name: string): string;
+    function SynLexersCfg: string;
+    function SynLexersExCfg: string;
 
     procedure LexListClick(Sender: TObject);
     procedure FinderInit(Sender: TObject);
@@ -2739,7 +2743,7 @@ type
     procedure DoWorkaround_QViewHorzScroll;
     procedure DoWorkaround_FindNext1;
     procedure DoShowHintFilename(const fn: Widestring);
-    function DoCheckAutoCorrectCase(Ed: TSyntaxMemo; Ch: Widechar): boolean;
+    function DoCheckAutoCorrectCase(Ed: TSyntaxMemo): boolean;
     function DoFindCommand(
       Ed: TSyntaxMemo;
       Act: TSRAction;
@@ -2747,6 +2751,7 @@ type
       const Opt: TSearchOptions;
       const Tok: TSearchTokens;
       OptBkmk, OptExtSel: boolean): Integer;
+    function DoReadLexersCfg(const ASection, AId: string): string;
     //end of private
 
   protected
@@ -4038,7 +4043,12 @@ begin
     begin
        SyntaxManager.CurrentLexer:= TextSource.SyntaxAnalyzer;
        SyntaxManagerChange(Self);
-       CurrentEditor:= EditorMaster;
+
+       if IsMasterFocused or not IsSplitted then
+         CurrentEditor:= EditorMaster
+       else
+         CurrentEditor:= EditorSlave;
+
        ecSyntPrinter.Title:= WideExtractFileName(CurrentFrame.FileName);
        UpdateTitle(CurrentFrame);
        UpdateStatusbar;
@@ -4113,7 +4123,6 @@ begin
   ecACP.SyntMemo:= Value;
   PluginACP.SyntMemo:= Value;
   ParamCompletion.SyntMemo:= Value;
-  //TemplatePopup.SyntMemo:= Value; //disable code-templates, no need
   ecMacroRecorder1.SyntMemo:= Value;
 
   FCurrentEditor:= Value;
@@ -5123,6 +5132,16 @@ begin
   Result:= SynDir + 'Template\conv\' + Name + '.txt';
 end;
 
+function TfmMain.SynLexersCfg: string;
+begin
+  Result:= SynDir + 'Lexers.cfg';
+end;
+
+function TfmMain.SynLexersExCfg: string;
+begin
+  Result:= SynDir + 'LexersEx.cfg';
+end;
+
 function TfmMain.LoadFrameState(Frame: TEditorFrame; const fn: WideString): boolean;
 var
   fnIni: string;
@@ -5386,8 +5405,12 @@ begin
           not ecMacroRecorder1.Plying then
         begin
           Handled:= true;
-        end
-        else
+          Exit
+        end;
+
+        if not IsWordChar(ch) then
+          DoCheckAutoCorrectCase(Ed);
+
         if (ch='>') then
           Handled:= DoAutoCloseTag
         else
@@ -5396,10 +5419,14 @@ begin
         else
         if IsWordChar(ch) then
         begin
-          if DoCheckAutoCorrectCase(Ed, ch) then
-            Handled:= true;
           DoCheckAutoShowACP(Ed);
         end;
+      end;
+
+    smLineBreak:
+      begin
+        DoCheckAutoCorrectCase(Ed);
+        Handled:= false;
       end;
 
     //case changing
@@ -5470,18 +5497,6 @@ begin
 
     smGotoLine:
       ecGoto.Execute;
-
-    (*//doesnt work in RO, marks 1..7
-    smGotoBookmark0 .. smGotoBookmark9:
-    begin
-      Ed.CaretStrPos:= Ed.Bookmarks[Command - smGotoBookmark0];
-      Handled:= False;
-    end;*)
-    smSetBookmark0 .. smSetBookmark9:
-      begin
-        BrotherEditor(Ed).Bookmarks[Command - smSetBookmark0]:= Ed.CaretStrPos;
-        Handled:= false;
-      end;
 
     sm_AutoComplete:
       DoAcpCommand;
@@ -5844,9 +5859,6 @@ begin
     sm_CommandsList: ecCommandsList.Execute;
     sm_ScrollToSel: EditorScrollToSelection(Ed, opSrOffsetY);
     sm_ProjectList: ecProjectList.Execute;
-
-    sm_MarkersClear: ecMarkersClear.Execute;
-    sm_JumpToLastMarker: EditorJumpToLastMarker(Ed);
 
     sm_RemoveDupsAll: ecDedupAll.Execute;
     sm_RemoveDupsAdjacent: ecDedupAdjacent.Execute;
@@ -6224,11 +6236,43 @@ begin
     sm_NewSnippetDialog: DoSnippetNew;
     sm_SnippetsDialog: DoSnippetListDialog('');
 
-    smDropMarker,
-    smCollectMarker,
+    //sync bookmarks of master/slave editors
+    smSetBookmark0 .. smSetBookmark9:
+      begin
+        BrotherEditor(Ed).Bookmarks[Command - smSetBookmark0]:= Ed.CaretStrPos;
+        Handled:= false;
+      end;
+
+    //sync markers of master/slave editors
+    smDropMarker:
+      begin
+        BrotherEditor(Ed).DropMarker(Ed.CaretPos);
+        //consider snippets
+        Ed.MarkersLen.Clear;
+        Handled:= false;
+      end;
+    smCollectMarker:
+      begin
+        with BrotherEditor(Ed) do
+        begin
+          if Markers.Count>0 then
+            Markers.Delete(Markers.Count-1);
+          Invalidate;
+        end;
+        //consider snippets
+        Ed.MarkersLen.Clear;
+        Handled:= false;
+      end;
     smSwapMarker:
       begin
-        //handle to support snippets markers
+        with BrotherEditor(Ed) do
+        begin
+          DropMarker(Ed.CaretPos);
+          if Markers.Count>=2 then
+            Markers.Delete(Markers.Count-2);
+          Invalidate;  
+        end;
+        //consider snippets
         Ed.MarkersLen.Clear;
         Handled:= false;
       end;
@@ -6242,6 +6286,14 @@ begin
         end;
         Handled:= false;
       end;
+
+    sm_MarkersClear:
+      begin
+        EditorClearMarkers(Ed);
+        EditorClearMarkers(BrotherEditor(Ed));
+      end;
+    sm_JumpToLastMarker:
+      EditorJumpToLastMarker(Ed);
 
     sm_HelpFileContents:
       FOpenURL(FHelpFilename, Handle);
@@ -14711,7 +14763,14 @@ end;
 
 procedure TfmMain.TBXItemSpHorzClick(Sender: TObject);
 begin
-  ecSplitViewsVertHorz.Execute;
+  if not FSplitHorz then
+    ecSplitViewsVertHorz.Execute;
+end;
+
+procedure TfmMain.TBXItemSpVertClick(Sender: TObject);
+begin
+  if FSplitHorz then
+    ecSplitViewsVertHorz.Execute;
 end;
 
 procedure TfmMain.ecSplitViewsVertHorzExecute(Sender: TObject);
@@ -14736,6 +14795,7 @@ end;
 procedure TfmMain.PopupSplitterPopup(Sender: TObject);
 begin
   TBXItemSpHorz.Checked:= FSplitHorz;
+  TBXItemSpVert.Checked:= not FSplitHorz;
 end;
 
 procedure TfmMain.ecSyncScrollHExecute(Sender: TObject);
@@ -15760,19 +15820,14 @@ begin
     if sStart<>'' then Exit;
   end;
 
-  with TIniFile.Create(SynDir + 'Lexers.cfg') do
-  try
-    s:= ReadString('Comments', Lexer, '');
-    if s='' then
-    begin
-      IsMultiLine:= true;
-      s:= ReadString('CommentsForLines', Lexer, '');
-    end;
-    n:= Pos(',', s);
-  finally
-    Free
+  s:= DoReadLexersCfg('Comments', Lexer);
+  if s='' then
+  begin
+    IsMultiLine:= true;
+    s:= DoReadLexersCfg('CommentsForLines', Lexer);
   end;
 
+  n:= Pos(',', s);
   if (s='') or (n=0) then
   begin
     if UseDefault then
@@ -17381,15 +17436,6 @@ begin
     else
       CaretStrPos:= n;
     SetSelection(n, nf, true);
-  end;
-end;
-
-procedure TfmMain.ecMarkersClearExecute(Sender: TObject);
-begin
-  with CurrentFrame do
-  begin
-    EditorClearMarkers(EditorMaster);
-    EditorClearMarkers(EditorSlave);
   end;
 end;
 
@@ -23518,17 +23564,37 @@ begin
 end;
 
 procedure TfmMain.InitStyleLists;
+var
+  AListCmt, AListStr: TStringList;
 begin
   if FListCommentStyles=nil then
   begin
     FListCommentStyles:= TStringList.Create;
     FListStringStyles:= TStringList.Create;
-    with TIniFile.Create(SynDir + 'Lexers.cfg') do
+
+    with TIniFile.Create(SynLexersCfg) do
     try
       ReadSectionValues('CommentStyles', FListCommentStyles);
       ReadSectionValues('StringStyles', FListStringStyles);
     finally
       Free
+    end;
+
+    AListCmt:= TStringList.Create;
+    AListStr:= TStringList.Create;
+    try
+      with TIniFile.Create(SynLexersExCfg) do
+      try
+        ReadSectionValues('CommentStyles', AListCmt);
+        ReadSectionValues('StringStyles', AListStr);
+        FListCommentStyles.AddStrings(AListCmt);
+        FListStringStyles.AddStrings(AListStr);
+      finally
+        Free
+      end;
+    finally
+      FreeAndNil(AListStr);
+      FreeAndNil(AListCmt);
     end;
   end;
 end;
@@ -27764,6 +27830,7 @@ begin
 
   SDir:= SynPyDir + '\' + SId;
   fn_plugin:= SDir + '\__init__.py';
+  fn_sample:= SynPyDir + '\sw_sample_plugin.py';
 
   if DirectoryExists(SDir) then
   begin
@@ -27779,7 +27846,6 @@ begin
 
   List:= TStringList.Create;
   try
-    fn_sample:= SynPyDir + '\sw_sample_plugin.py';
     if FileExists(fn_sample) then
       List.LoadFromFile(fn_sample);
     List.SaveToFile(fn_plugin);
@@ -28152,7 +28218,7 @@ begin
         CaretStrPos:= CaretStrPos-1;
 end;
 
-function TfmMain.DoCheckAutoCorrectCase(Ed: TSyntaxMemo; Ch: Widechar): boolean;
+function TfmMain.DoCheckAutoCorrectCase(Ed: TSyntaxMemo): boolean;
 var
   NCaret, NLen, i: Integer;
   SId, SAcpId: string;
@@ -28162,17 +28228,15 @@ begin
   if not IsLexerListed(CurrentLexerForFile, opCorrectCaseLexers) then Exit;
 
   NCaret:= Ed.CaretStrPos;
-  if NCaret>Length(Ed.Lines.FText) then Exit;
-  //don't do if next char is wordchar
-  if IsWordChar(Ed.Lines.Chars[NCaret+1]) then Exit;
+  if not IsWordChar(Ed.Lines.Chars[NCaret]) then Exit;
 
-  SId:= EditorGetWordBeforeCaret(Ed, false) + Ch;
+  SId:= EditorGetWordBeforeCaret(Ed, false);
   NLen:= Length(SId);
 
   for i:= 0 to FAcpList_Items.Count-1 do
   begin
     SAcpId:= FAcpList_Items[i];
-    
+
     if not IsWordChar(WideChar(SAcpId[Length(SAcpId)])) then
       SetLength(SAcpId, Length(SAcpId)-1);
 
@@ -28181,9 +28245,7 @@ begin
       if (SAcpId<>SId) and
         IsPositionMatchesTokens(Ed, NCaret-1, NCaret, tokensExceptCmtStr) then
       begin
-        Dec(NLen);
         Ed.ReplaceText(NCaret-NLen, NLen, SAcpId);
-        Ed.CaretStrPos:= NCaret+1;
         DoHint('Id: ' + SAcpId);
         Result:= true;
       end;
@@ -28195,7 +28257,7 @@ end;
 procedure TfmMain.DoOpenFolder(const dir: Widestring);
 var
   L: TTntStringList;
-  i: Integer;
+  i, NCount: Integer;
   fn: Widestring;
 begin
   L:= TTntStringList.Create;
@@ -28205,9 +28267,10 @@ begin
       false{NoRO}, false{NoHidFiles}, true{NoHidFolders});
 
     //exclude binary files
+    NCount:= L.Count;
     for i:= L.Count-1 downto 0 do
     begin
-      Application.Title:= Format('filter %d / %d', [L.Count-i, L.Count]);
+      Application.Title:= Format('filter %d / %d', [NCount-i, NCount]);
       Application.ProcessMessages;
       if Application.Terminated then Exit;
 
@@ -28247,6 +28310,33 @@ begin
         L.Add(Analyzers[i].LexerName);
 end;
 
+function TfmMain.DoReadLexersCfg(const ASection, AId: string): string;
+begin
+  with TIniFile.Create(SynLexersCfg) do
+  try
+    Result:= ReadString(ASection, AId, '');
+  finally
+    Free
+  end;
+
+  if Result='' then
+    with TIniFile.Create(SynLexersExCfg) do
+    try
+      Result:= ReadString(ASection, AId, '');
+    finally
+      Free
+    end;
+end;
+
+procedure TfmMain.TBXItemMarkGoLastClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_JumpToLastMarker);
+end;
+
+procedure TfmMain.TBXItemMarkClearClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_MarkersClear);
+end;
 
 initialization
   PyEditor:= MainPyEditor;

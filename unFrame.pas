@@ -45,6 +45,7 @@ type
     TimerMap: TTimer;
     TBXSeparatorItem2: TSpTbxSeparatorItem;
     TBXItemSplitCancel: TSpTbxItem;
+    TBXItemSplitVert: TSpTBXItem;
     procedure EditorMasterEnter(Sender: TObject);
     procedure EditorMasterSetBookmark(Snder: TObject; Bookmark: TBookmark;
       var Accept: Boolean);
@@ -101,7 +102,9 @@ type
       var IsWord: Boolean);
     procedure EditorMasterAfterLineDraw(Sender: TObject; Rect: TRect;
       Line: Integer);
+    procedure TBXItemSplitVertClick(Sender: TObject);
   private
+    FIsMasterFocused: boolean;
     FTreeSorted: boolean;
     FNotifAllYes,
     FNotifAllNo: boolean;
@@ -170,6 +173,7 @@ type
     property CaretsGutterColor: TColor read GetCaretsGutterColor write SetCaretsGutterColor;
     property CaretsIndicator: integer read GetCaretsIndicator write SetCaretsIndicator;
 
+    property IsMasterFocused: boolean read FIsMasterFocused;
     property IsTreeSorted: boolean read FTreeSorted write FTreeSorted;
     function CurrentLexer: string;
     property CollapsedString: Widestring read FCollapsedString write FCollapsedString;
@@ -303,6 +307,7 @@ begin
   FNotInRecents:= false;
   FLockMapUpdate:= false;
   FSavingBusy:= false;
+  FIsMasterFocused:= true;
 
   FCollapsedString:= '';
   FCollapsedRestored:= false;
@@ -336,8 +341,7 @@ begin
       TfmMain(Owner).DoFindId;
     end;
 
-  //EditorMasterCaretPosChanged(Sender);
-
+  FIsMasterFocused:= Ed=EditorMaster;
   SyncMap;
 end;
 
@@ -1092,13 +1096,22 @@ end;
 
 procedure TEditorFrame.TBXItemSplitHorzClick(Sender: TObject);
 begin
-  SplitHorz:= not SplitHorz;
+  SplitHorz:= true;
+end;
+
+procedure TEditorFrame.TBXItemSplitVertClick(Sender: TObject);
+begin
+  SplitHorz:= false;
 end;
 
 procedure TEditorFrame.PopupSplitEditorsPopup(Sender: TObject);
 begin
   TbxItemSplitHorz.Checked:= SplitHorz;
+  TbxItemSplitVert.Checked:= not SplitHorz;
+
   TbxItemSplitHorz.Caption:= TfmMain(Owner).TBXItemSpHorz.Caption;
+  TbxItemSplitVert.Caption:= TfmMain(Owner).TBXItemSpVert.Caption;
+
   TbxItemSplitCaption.Caption:= DKLangConstW('Split_Ed');
   TbxItemSplitCancel.Caption:= DKLangConstW('Split_Cancel');
 end;
