@@ -590,7 +590,11 @@ begin
         if (StrPosToCaretPos(SelStart).X <= ScrollPosX + dx) or
           (StrPosToCaretPos(SelStart+SelLength).X >= ScrollPosX + w - dx) then
         ScrollPosX:= StrPosToCaretPos(SelStart + SelLength div 2).X - w div 2 + 1;
-      end
+      end;
+
+      //this UpdateEditor call doesn't help: still bug:
+      //http://synwrite.sourceforge.net/forums/viewtopic.php?p=5225#p5225
+      UpdateEditor;
     end;
   end;
 end;

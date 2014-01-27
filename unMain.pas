@@ -2739,7 +2739,6 @@ type
     procedure DoSnippetsReload;
     procedure ApplyPanelTitles;
     procedure DoQuickSearch(AMode: TSynQuickSearchType);
-    procedure DoWorkaround_BeforeFindNext(Ed: TSyntaxMemo);
     procedure DoWorkaround_QViewHorzScroll;
     procedure DoWorkaround_FindNext1;
     procedure DoShowHintFilename(const fn: Widestring);
@@ -5620,8 +5619,6 @@ begin
 
     smFindNext:
     begin
-      DoWorkaround_BeforeFindNext(Ed);
-
       if IsTreeviewFocused then
         ecFindInTreeNext.Execute
       else
@@ -5643,8 +5640,6 @@ begin
 
     smFindPrev:
     begin
-      DoWorkaround_BeforeFindNext(Ed);
-
       if IsTreeviewFocused then
         ecFindInTreePrev.Execute
       else
@@ -6953,8 +6948,10 @@ begin
         Exit;
     end;
 
-    //clear RegEx
+    //set needed flags
     Finder.Flags:= Finder.Flags-[ftRegularExpr];
+    Finder.Flags:= Finder.Flags+[ftWrapSearch];
+
     //search
     if Next then
     begin
@@ -8235,10 +8232,10 @@ begin
     IsSkipCol:= fmSR.cbSkipCol.Checked;
   end
   else
-  with TIniFile.Create(SynIni) do
+  with TIniFile.Create(SynHistoryIni) do
   try
     SText:= DoReadTotalHistory;
-    IsSel:= false; //ReadBool('Search', 'SelOnly', false); //not saved
+    IsSel:= false; //not saved
     IsForw:= ReadBool('Search', 'Forw', true);
     IsRE:= ReadBool('Search', 'RegExp', false);
     if AKeepFlags then
@@ -17198,6 +17195,8 @@ begin
   DoHint('');
   Finder.FindText:= s;
   Finder.Flags:= Finder.Flags-[ftRegularExpr];
+  Finder.Flags:= Finder.Flags+[ftWrapSearch];
+
   if Next then
     Finder.FindNext
   else
@@ -23763,6 +23762,7 @@ var
   Ed: TSyntaxMemo;
   En: boolean;
 begin
+  {$ifdef SPELL}
   F:= Sender as TEditorFrame;
   Ed:= F.EditorMaster;
   En:= F.SpellLive;
@@ -23772,6 +23772,9 @@ begin
     Valid:= FSpell.CheckWord(AWord) or IsUrlAt(F, APos)
   else
     Valid:= true;
+  {$else}
+  Valid:= true;
+  {$endif}  
 end;
 
 procedure TfmMain.SynContextGutterPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
@@ -23812,6 +23815,7 @@ begin
   if not F.IsEditorPosMisspelled(Ed.CaretStrPos) then Exit;
   Handled:= true;
 
+  {$ifdef SPELL}
   AWord:= Ed.WordAtPos(Ed.CaretPos);
   MousePos:= Ed.ClientToScreen(MousePos);
   S:= AWord;
@@ -23821,6 +23825,7 @@ begin
     Ed.WordRangeAtPos(Ed.CaretPos, NStart, NEnd);
     Ed.ReplaceText(NStart, NEnd-NStart, S);
   end;
+  {$endif}
 end;
 
 procedure TfmMain.DoCheckAutoShowACP(Ed: TSyntaxMemo);
@@ -23880,9 +23885,11 @@ begin
   if ecMacroRecorder1.Recording then
     StatusItemBusy.ImageIndex:= 7
   else
+  {$ifdef SPELL}
   if FSpellChecking then
     StatusItemBusy.ImageIndex:= 11
   else
+  {$endif}
     StatusItemBusy.ImageIndex:= 6;
 end;
 
@@ -28190,13 +28197,6 @@ begin
       else Result:= fmMain.CurrentEditor; //don't return nil
     end;
   end;
-end;
-
-procedure TfmMain.DoWorkaround_BeforeFindNext(Ed: TSyntaxMemo);
-begin
-  //horz scrollbar can be disabled even if we have ScrollPosX>0 after FindNext
-  //(Memo.AdjustScrollBars not called)
-  Ed.ScrollPosX:= 0;
 end;
 
 procedure TfmMain.DoWorkaround_QViewHorzScroll;
