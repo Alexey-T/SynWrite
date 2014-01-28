@@ -120,7 +120,7 @@ object fmMain: TfmMain
           OnSelect = ButtonOnSelect
         end
         object TBXItemRFiles: TSpTBXItem
-          Caption = 'Find/replace in files...'
+          Caption = 'Find/Replace in files...'
           Hint = 'Dialog "Find/replace in files"'
           Action = ecReplaceInFiles
           OnSelect = ButtonOnSelect
@@ -2803,6 +2803,18 @@ object fmMain: TfmMain
       object tbxWin: TSpTBXSubmenuItem
         Caption = '&Window'
         OnPopup = tbxWinPopup
+        object SpTBXSeparatorItem29: TSpTBXSeparatorItem
+        end
+        object TbxItemWinSplitH: TSpTBXItem
+          Caption = 'Horizontal split'
+          RadioItem = True
+          OnClick = TbxItemWinSplitHClick
+        end
+        object TbxItemWinSplitV: TSpTBXItem
+          Caption = 'Vertical split'
+          RadioItem = True
+          OnClick = TbxItemWinSplitVClick
+        end
         object TBXSepWin: TSpTBXSeparatorItem
         end
         object TBXSubWin: TSpTBXSubmenuItem
@@ -12079,7 +12091,7 @@ object fmMain: TfmMain
     Left = 577
     Top = 233
     LangData = {
-      0600666D4D61696E00010E0400000A00544258446F636B546F70000006007462
+      0600666D4D61696E0001110400000A00544258446F636B546F70000006007462
       46696C650101000000B5020000070043617074696F6E000E005442584974656D
       546F6F6C4E65770102000000B6020000070043617074696F6EB7020000040048
       696E740016005442585375626D656E754974656D546F6F6C4F70656E01020000
@@ -14117,7 +14129,10 @@ object fmMain: TfmMain
       43617074696F6E0019005462784974656D50616E656C5469746C6553686F774C
       6566740101000000D60A0000070043617074696F6E0014005370544258536570
       617261746F724974656D323800000D005442584974656D537056657274010100
-      0000D90A0000070043617074696F6E00}
+      0000D90A0000070043617074696F6E0014005370544258536570617261746F72
+      4974656D3239000010005462784974656D57696E53706C6974560101000000DA
+      0A0000070043617074696F6E0010005462784974656D57696E53706C69744801
+      01000000DB0A0000070043617074696F6E00}
   end
   object TimerHint: TTimer
     Enabled = False

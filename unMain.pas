@@ -62,6 +62,7 @@ const
   opMruForPlugin = false; //use recent list for Lister-plugin
   cTabColors = 10; //number of user-defined tab colors
   cFixedLeftTabs = 3; //number of fixed tabs on left panel (Tree+Project+Tabs = 3)
+  cFixedWindowItems = 5; //number of fixed items in Window menu
   cMaxTreeLen = 400; //"find in files" result tree: max node length
   cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
   cBandFolding = 3; //index of gutter band for folding
@@ -1278,6 +1279,9 @@ type
     TbxItemPanelTitleShowLeft: TSpTBXItem;
     SpTBXSeparatorItem28: TSpTBXSeparatorItem;
     TBXItemSpVert: TSpTBXItem;
+    SpTBXSeparatorItem29: TSpTBXSeparatorItem;
+    TbxItemWinSplitV: TSpTBXItem;
+    TbxItemWinSplitH: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2039,6 +2043,8 @@ type
     procedure TBXItemMarkGoLastClick(Sender: TObject);
     procedure TBXItemSpVertClick(Sender: TObject);
     procedure TBXItemMarkClearClick(Sender: TObject);
+    procedure TbxItemWinSplitHClick(Sender: TObject);
+    procedure TbxItemWinSplitVClick(Sender: TObject);
 
   private
     cStatLine,
@@ -3140,7 +3146,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.510';
+  cSynVer = '6.3.512';
   cSynPyVer = '1.0.112';
 
 const
@@ -11596,11 +11602,18 @@ var
   b: TSpTbxItem;
   bSep: TSpTbxSeparatorItem;
 begin
+  with CurrentFrame do
+  begin
+    TbxItemWinSplitH.Checked:= IsSplitted and SplitHorz;
+    TbxItemWinSplitV.Checked:= IsSplitted and not SplitHorz;
+  end;
+
   //clear
   with tbxWin do
     for i:= Count-1 downto 0 do
       if Items[i].Tag>0 then
         Items[i].Free;
+
   //add tabs
   for i:= 0 to FrameAllCount-1 do
   begin
@@ -11628,12 +11641,11 @@ begin
       b.Checked:= i-PageControl1.PageCount = PageControl2.ActivePageIndex;
     tbxWin.Add(b);
   end;
-  //move Cmds to end
-  with TbxWin do
-  begin
-    Move(0, Count-1);
-    Move(0, Count-1);
-  end;
+
+  //move lower Window items to end
+  for i:= 1 to cFixedWindowItems do
+    with TbxWin do
+      Move(0, Count-1);
 end;
 
 procedure TfmMain.TabClick(Sender: TObject);
@@ -28336,6 +28348,40 @@ end;
 procedure TfmMain.TBXItemMarkClearClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_MarkersClear);
+end;
+
+procedure TfmMain.TbxItemWinSplitHClick(Sender: TObject);
+begin
+  with CurrentFrame do
+  begin
+    if not IsSplitted then
+    begin
+      SplitHorz:= true;
+      SplitPos:= 50;
+    end
+    else
+    if not SplitHorz then
+      SplitHorz:= true
+    else
+      SplitPos:= 0;
+  end;
+end;
+
+procedure TfmMain.TbxItemWinSplitVClick(Sender: TObject);
+begin
+  with CurrentFrame do
+  begin
+    if not IsSplitted then
+    begin
+      SplitHorz:= false;
+      SplitPos:= 50;
+    end
+    else
+    if SplitHorz then
+      SplitHorz:= false
+    else
+      SplitPos:= 0;
+  end;
 end;
 
 initialization
