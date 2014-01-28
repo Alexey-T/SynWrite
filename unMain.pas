@@ -71,6 +71,7 @@ const
   cPyConsoleMaxCount = 1000;
   cPyConsolePrompt = '>>> ';
   cPyConsoleInit = 'print("Python", sys.version)';
+  cPyConsoleClear = '-';
   cPyPluginPrefix = 'py:';
 
 type
@@ -27366,7 +27367,10 @@ begin
   DoLogPyCommand(cPyConsolePrompt + Str);
 
   try
-    GetPythonEngine.ExecString(UTF8Encode(Str));
+    if IsWordString(Str, true) then
+      GetPythonEngine.ExecString('print('+UTF8Encode(Str)+')')
+    else
+      GetPythonEngine.ExecString(UTF8Encode(Str));
   except
     MsgBeep(true);
   end;
@@ -27382,9 +27386,11 @@ procedure TfmMain.edConsoleKeyPress(Sender: TObject; var Key: Char);
 begin
   if (Key=#13) then
   begin
-    //empty string-> clear console
-    if edConsole.Text='' then
-      MemoConsole.Lines.Clear
+    if edConsole.Text=cPyConsoleClear then
+    begin
+      MemoConsole.Lines.Clear;
+      edConsole.Text:= '';
+    end
     else
       DoEnterPyConsoleCommand(edConsole.Text);
     Key:= #0;
