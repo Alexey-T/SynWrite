@@ -2264,7 +2264,8 @@ type
     function SGetFrameIndexFromPrefixedStr(const InfoFN: Widestring): Integer;
     function SGetTabPrefix: Widestring;
     procedure DoFindCommandFromString(const S: Widestring);
-    procedure DoFindInTabs;
+    procedure DoFindAllInTabs;
+    procedure DoFindAllInCurrentTab(AWithBkmk: boolean);
     procedure DoFindInClipPanel;
     procedure DoFindInFindResults;
     procedure DoFindInOutPanel;
@@ -2521,12 +2522,14 @@ type
     procedure DoListCopy(Sender: TTntListbox);
     procedure DoListCopyAll(Sender: TTntListbox);
     procedure FinderContinue(Sender: TObject; var ACanContinue: boolean);
-    procedure FinderFind(Sender: TObject;
+    procedure FinderFind_WithResultPane(Sender: TObject;
       StartPos, EndPos: integer;
       var Accept: Boolean);
-    procedure FinderFindBk(Sender: TObject;
+    procedure FinderFind_WithBkmk(Sender: TObject;
       StartPos, EndPos: integer;
       var Accept: Boolean);
+    procedure FinderFind_WithResultPaneAndBkmk(Sender: TObject;
+      StartPos, EndPos: integer; var Accept: Boolean);
     procedure FinderCanAccept(Sender: TObject;
       StartPos, EndPos: integer;
       var Accept: Boolean);
@@ -2587,7 +2590,9 @@ type
     procedure FindFocusEditor(Sender: TObject);
     procedure FindDialog(AReplaceMode: boolean);
     procedure FindInFile(const fn: Widestring; InCodepage: TSynCpOverride = cp_sr_Def);
-    procedure FindInFrame(F: TEditorFrame);
+    procedure FindInFrame(F: TEditorFrame;
+      AMarkAll: boolean = false;
+      AWithBkmk: boolean = false);
     procedure ReplaceInFile(const fn: Widestring);
     procedure ReplaceInAllTabs(var nRep, nFiles: integer);
     procedure DoMarkAll(const Str: Widestring);
@@ -3049,6 +3054,7 @@ type
     property FrameAllCount: integer read GetFrameAllCount;
     property Frames[Index: integer]: TEditorFrame read GetFrames;
     property FramesAll[Index: integer]: TEditorFrame read GetFramesAll;
+    function FrameIndex(F: TEditorFrame): Integer;
     property CurrentFrame: TEditorFrame read GetCurrentFrame write SetCurrentFrame;
     function CreateFrame: TEditorFrame;
     procedure CloseFrame(Frame: TEditorFrame);
@@ -3147,7 +3153,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.512';
+  cSynVer = '6.3.520';
   cSynPyVer = '1.0.112';
 
 const
@@ -8611,16 +8617,7 @@ begin
     //
     arFindAll:
       begin
-        CurrentEditor.ResetSearchMarks;
-        if fmSR.cbBk.Checked then
-          Finder.OnFind:= FinderFindBk
-        else
-          Finder.OnFind:= nil;
-        Finder.FindAll;
-        Finder.OnFind:= nil;
-        fmSR.ShowError(Finder.Matches=0);
-        UpdateStatusbar; //needed as Bkmk appear
-        UpdateFrameMicroMap(CurrentFrame);
+        DoFindAllInCurrentTab(fmSR.cbBk.Checked);
       end;
     //
     arCount:
@@ -8631,7 +8628,7 @@ begin
     //
     arFindInTabs:
       begin
-        DoFindInTabs;
+        DoFindAllInTabs;
       end;
     //
     arReplaceAll:
@@ -12166,7 +12163,7 @@ begin
     end;
   end;
 
-  Finder.OnFind:= FinderFind;
+  Finder.OnFind:= FinderFind_WithResultPane;
   Finder.OnCanAccept:= nil;
   Finder.OnContinue:= FinderContinue;
   FLastOnContinueCheck:= 0;
@@ -12611,7 +12608,7 @@ begin
 
             TreeFind.Selected:= TreeFind.Items.AddChild(FTreeRoot,
               FListFiles[i] + Format(' (%d)', [Finder.Matches]));
-              //todo: make adding with prefix+str, using FinderFind
+              //todo: make adding with prefix+str, using FinderFindWithResPane
           end;
         except
           on E: Exception do
@@ -13366,7 +13363,14 @@ begin
   ACanContinue:= not StopFind;
 end;
 
-procedure TfmMain.FinderFind(Sender: TObject;
+procedure TfmMain.FinderFind_WithResultPaneAndBkmk(Sender: TObject;
+      StartPos, EndPos: integer; var Accept: Boolean);
+begin
+  FinderFind_WithResultPane(Sender, StartPos, EndPos, Accept);
+  FinderFind_WithBkmk(Sender, StartPos, EndPos, Accept);
+end;
+
+procedure TfmMain.FinderFind_WithResultPane(Sender: TObject;
       StartPos, EndPos: integer; var Accept: Boolean);
 var
   Ed: TCustomSyntaxMemo;
@@ -13429,7 +13433,7 @@ begin
   //Sleep(250); //debug
 end;
 
-procedure TfmMain.FinderFindBk(Sender: TObject;
+procedure TfmMain.FinderFind_WithBkmk(Sender: TObject;
   StartPos, EndPos: integer; var Accept: Boolean);
 var
   Ed: TCustomSyntaxMemo;
@@ -22164,31 +22168,23 @@ begin
   Result:= DKLangConstW('Tab') + ':';
 end;
 
-procedure TfmMain.DoFindInTabs;
+procedure TfmMain.DoFindAllInTabs;
 var
   NTotalSize, NDoneSize: Int64;
-  i: Integer;
   ADir: Widestring;
   F: TEditorFrame;
+  i: Integer;
 begin
   FListFiles.Clear;
   for i:= 0 to FrameAllCount-1 do
     FListFiles.AddObject('',
       Pointer(FramesAll[i].EditorMaster.TextLength));
 
-  {
-  if FListFiles.Count=0 then
-  begin
-    MsgWarn(DKLangConstW('fnMul'));
-    Exit
-  end;
-  }
-
   FListResFN:= '';
   FListResFN_Prev:= '';
   ADir:= '';
 
-  //Init TreeRoot, show pane
+  //init TreeRoot, show pane
   UpdateTreeInit(Finder.FindText, ADir, true);
   UpdatePanelOut(tbFind);
   plOut.Show;
@@ -22213,7 +22209,7 @@ begin
         FListResFN:= FListResFN + '[' + WideExtractFileName(F.FileName) + ']';
 
       FindInFrame(F);
-        
+
       Inc(NDoneSize, DWORD(FListFiles.Objects[i]));
       FFinderDoneSize:= NDoneSize;
       if IsProgressStopped(NDoneSize, NTotalSize) then
@@ -22252,17 +22248,26 @@ begin
   end;
 end;
 
-procedure TfmMain.FindInFrame(F: TEditorFrame);
+procedure TfmMain.FindInFrame(F: TEditorFrame;
+  AMarkAll: boolean = false;
+  AWithBkmk: boolean = false);
 begin
+  FLastOnContinueCheck:= 0;
   Finder.OnBeforeExecute:= nil;
   Finder.OnNotFound:= nil;
-  Finder.OnFind:= FinderFind;
   Finder.OnCanAccept:= FinderCanAccept;
   Finder.OnContinue:= FinderContinue;
-  FLastOnContinueCheck:= 0;
+  if AWithBkmk then
+    Finder.OnFind:= FinderFind_WithResultPaneAndBkmk
+  else
+    Finder.OnFind:= FinderFind_WithResultPane;
+
   try
     Finder.Control:= F.EditorMaster;
-    Finder.CountAll;
+    if AMarkAll then
+      Finder.FindAll
+    else
+      Finder.CountAll;
   finally
     Finder.OnBeforeExecute:= FinderInit;
     Finder.OnNotFound:= FinderFail;
@@ -24021,7 +24026,7 @@ begin
   Finder.Control:= Ed;
   
   if OptBkmk then
-    Finder.OnFind:= FinderFindBk
+    Finder.OnFind:= FinderFind_WithBkmk
   else
     Finder.OnFind:= nil;
 
@@ -28400,6 +28405,66 @@ begin
       SplitPos:= 0;
   end;
 end;
+
+function TfmMain.FrameIndex(F: TEditorFrame): Integer;
+var
+  i: Integer;
+begin
+  Result:= -1;
+  for i:= 0 to FrameAllCount-1 do
+    if F=FramesAll[i] then
+    begin
+      Result:= i;
+      Break
+    end;
+end;
+
+procedure TfmMain.DoFindAllInCurrentTab(AWithBkmk: boolean);
+var
+  ADir: Widestring;
+  AFrame: TEditorFrame;
+  AFrameIndex: Integer;
+begin
+  ADir:= '';
+  AFrame:= CurrentFrame;
+  AFrameIndex:= FrameIndex(AFrame);
+
+  //init TreeRoot, show pane
+  UpdateTreeInit(Finder.FindText, ADir, true);
+  UpdatePanelOut(tbFind);
+  plOut.Show;
+
+  FListFiles.Clear;
+  FListResFN_Prev:= '';
+  FListResFN:= SGetTabPrefix + IntToStr(AFrameIndex+1);
+  if AFrame.FileName<>'' then
+    FListResFN:= FListResFN + '[' + WideExtractFileName(AFrame.FileName) + ']';
+
+  try
+    FindInFrame(AFrame, true, AWithBkmk);
+  except
+    on E: Exception do
+    begin
+      MsgExcept('Error on searching in tab', E, Handle);
+      HideProgress;
+      Exit;
+    end;
+  end;
+
+  //update states
+  if Assigned(fmSR) then
+    fmSR.ShowError(Finder.Matches=0);
+  UpdateStatusbar; //needed as bookmarks appear
+  UpdateFrameMicroMap(AFrame);
+
+  //update "Search Results" pane
+  if FTreeRoot=nil then
+    raise Exception.Create('TreeRoot nil');
+  UpdateTreeFind(Finder.FindText, ADir, false, true);
+  UpdatePanelOut(tbFind);
+  plOut.Show;
+end;
+
 
 initialization
   PyEditor:= MainPyEditor;
