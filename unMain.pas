@@ -27363,14 +27363,25 @@ begin
 end;
 
 procedure TfmMain.DoEnterPyConsoleCommand(const Str: Widestring);
+//var Obj: PPyObject;
 begin
   DoLogPyCommand(cPyConsolePrompt + Str);
 
   try
-    if IsWordString(Str, true) then
-      GetPythonEngine.ExecString('print('+UTF8Encode(Str)+')')
-    else
-      GetPythonEngine.ExecString(UTF8Encode(Str));
+    with GetPythonEngine do
+    begin
+      if IsWordString(Str, true) then
+        ExecString('print('+UTF8Encode(Str)+')')
+      else
+        ExecString(UTF8Encode(Str));
+
+      //code fails on entering "import sys"
+      {
+      Obj:= EvalString(UTF8Encode(Str));
+      if Obj<>Py_None then
+        DoLogPyCommand(PyObjectAsString(Obj));
+      }
+    end;
   except
     MsgBeep(true);
   end;

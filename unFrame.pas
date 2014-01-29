@@ -1626,6 +1626,8 @@ begin
           NPosBottom
           ));
       end;
+
+      Dec(NPos);
     until false;
   end;
 end;
