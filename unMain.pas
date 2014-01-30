@@ -2393,7 +2393,7 @@ type
     function CurrentLexer: string;
     function CurrentLexerForFile: string;
     function SLexerComment(const Lexer: string): string;
-    function DoTemplateTabbing: boolean;
+    function DoSnippetTabbing: boolean;
     function DoSmartTagTabbing: boolean;
     procedure DoSmartHilite;
     procedure DoSmartHiliteOnClick;
@@ -2479,7 +2479,6 @@ type
 
     procedure DoBkDelete(Ed: TSyntaxMemo; DelUnmarked: boolean);
     procedure DoBkNext(Ed: TSyntaxMemo; Next: boolean);
-    procedure DoBkClear(Ed: TSyntaxMemo);
     procedure DoDeleteLine(Ed: TSyntaxMemo; NLine: integer; ForceUndo: boolean = false);
     procedure DoReplaceLine(Ed: TSyntaxMemo; NLine: integer; const S: Widestring; ForceUndo: boolean = false);
     
@@ -3153,8 +3152,8 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.520';
-  cSynPyVer = '1.0.112';
+  cSynVer = '6.3.530';
+  cSynPyVer = '1.0.114';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -5463,7 +5462,7 @@ begin
           Exit; //don't record Tab cmd
         end
         else
-        if DoTemplateTabbing then //snippets - before SmartTagTabbing
+        if DoSnippetTabbing then //snippets - before SmartTagTabbing
           begin end
         else
         if DoSmartTagTabbing then
@@ -8556,7 +8555,7 @@ begin
 
     //handle "From caret" specially: ignore it for "Replace all" actions
     if (not cbFromCur.Checked) or
-      (act in [arReplaceAll, arReplaceAllInAll]) then
+      (act in cSearchIngoreFromCaret) then
       Finder.Flags:= Finder.Flags + [ftEntireScope];
 
     Finder.Tokens:= TSearchTokens(cbTokens.ItemIndex);
@@ -16343,21 +16342,13 @@ begin
   TbxItemMacro30.Caption:= MacroCmdName(29);
 end;
 
-procedure TfmMain.DoBkClear(Ed: TSyntaxMemo);
-begin
-  with Ed do
-  begin
-    BookmarkObj.Clear;
-    Invalidate;
-  end;
-end;
 
 procedure TfmMain.ecBkClearAllExecute(Sender: TObject);
 begin
   if MsgConfirm(DKLangConstW('MBk'), Handle) then
   begin
-    DoBkClear(CurrentFrame.EditorMaster);
-    DoBkClear(CurrentFrame.EditorSlave);
+    EditorClearBookmarks(CurrentFrame.EditorMaster);
+    EditorClearBookmarks(CurrentFrame.EditorSlave);
     UpdateStatusbar;
   end;
 end;
@@ -18512,7 +18503,8 @@ end;
 
 function TfmMain.SFindResPrefix(const FN: Widestring; LineNum: integer): Widestring;
 begin
-  Result:= WideExtractFileName(FN)+
+  Result:=
+    //WideExtractFileName(FN)+ //no need to show filename
     WideFormat('(%d): ', [LineNum+1]);
 end;
 
@@ -19217,7 +19209,7 @@ begin
       TemplatePopup.CloseUp(true);
 end;
 
-function TfmMain.DoTemplateTabbing: boolean;
+function TfmMain.DoSnippetTabbing: boolean;
 var
   Ed: TSyntaxMemo;
   StrId, StrLexer, StrSelText: Widestring;
@@ -27754,6 +27746,8 @@ begin
     AddMethod('get_clip', Py_get_clip, '');
     AddMethod('set_clip', Py_set_clip, '');
 
+    AddMethod('ed_get_bk', Py_ed_get_bk, '');
+    AddMethod('ed_set_bk', Py_ed_set_bk, '');
     AddMethod('ed_get_sync_ranges', Py_ed_get_sync_ranges, '');
     AddMethod('ed_add_sync_range', Py_ed_add_sync_range, '');
     AddMethod('ed_focus', Py_ed_focus, '');

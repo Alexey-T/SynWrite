@@ -22,6 +22,9 @@ function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
 
+function Py_ed_get_bk(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
+
 function Py_ed_get_sync_ranges(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_add_sync_range(Self, Args: PPyObject): PPyObject; cdecl;
 
@@ -102,6 +105,9 @@ uses
   unProcEditor,
   ecLists;
 
+const
+  cMaxBookmarks = 10000;
+    
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H: Integer;
@@ -485,12 +491,15 @@ end;
 function Py_ed_set_sel(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H, NStart, NLen, NFlag: Integer;
+  Ed: TSyntaxMemo;
 begin
   NFlag:= 0;
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'iii|i:ed_set_sel', @H, @NStart, @NLen, @NFlag)) then
     begin
-      PyEditor(H).SetSelection(NStart, NLen, Bool(NFlag));
+      Ed:= PyEditor(H);
+      Ed.SetSelection(NStart, NLen, Bool(NFlag));
+      Ed.DragPos:= NStart;
       Result:= ReturnNone;
     end;
 end;
@@ -1093,5 +1102,77 @@ begin
     end;
 end;
 
+
+function Py_ed_get_bk(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, NId, NIndex, NPos, NLen: Integer;
+  Ed: TSyntaxMemo;
+  Allow: boolean;
+  ComArray: Variant;
+  List: TList;
+  i: Integer;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'ii:ed_get_bk', @H, @NId)) then
+    begin
+      Ed:= PyEditor(H);
+
+      List:= TList.Create;
+      try
+        for i:= 0 to Ed.BookmarkObj.Count-1 do
+        begin
+          NIndex:= Ed.BookmarkObj.Items[i].BmIndex;
+          NPos:= Ed.BookmarkObj.Items[i].Position;
+          case NId of
+            0..9: Allow:= NIndex = NId;
+            -1: Allow:= NIndex>=10;
+            -2: Allow:= NIndex<10;
+            -3: Allow:= true;
+            else Allow:= false;
+          end;
+          if Allow then
+            List.Add(Pointer(NPos));
+        end;
+
+        NLen:= List.Count;
+        if NLen>0 then
+        begin
+          ComArray:= VarArrayCreate([0, NLen-1], varInteger);
+          for i:= 0 to NLen-1 do
+          begin
+            ComArray[i]:= Integer(List[i]);
+          end;
+          Result:= VariantAsPyObject(ComArray);
+        end
+        else
+          Result:= ReturnNone;
+      finally
+        FreeAndNil(List);
+      end;
+    end;
+end;
+
+
+function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, NId, NPos: Integer;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iii:ed_set_bk', @H, @NId, @NPos)) then
+    begin
+      Ed:= PyEditor(H);
+      case NId of
+        0..9:
+          begin
+            Ed.Bookmarks[NId]:= NPos;
+            Ed.Invalidate;
+          end;
+        -1: EditorSetBookmarkUnnumbered(Ed, NPos);
+        -2: EditorClearBookmarks(Ed);
+      end;
+      Result:= ReturnNone;
+    end;
+end;
 
 end.

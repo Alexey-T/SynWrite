@@ -14,6 +14,8 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
+procedure EditorClearBookmarks(Ed: TSyntaxMemo);
+procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos: Integer);
 procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
 function EditorGetBottomLineIndex(Ed: TSyntaxMemo): Integer;
 function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
@@ -2769,7 +2771,7 @@ var
 begin
   Result:= '';
   N:= Ed.CaretStrPos+1;
-  if IsWordChar(Ed.Lines.Chars[N]) then Exit;
+  //if IsWordChar(Ed.Lines.Chars[N]) then Exit; //don't allow letter after caret
   repeat
     Dec(N);
     ch:= Ed.Lines.Chars[N];
@@ -2784,5 +2786,29 @@ function EditorGetBottomLineIndex(Ed: TSyntaxMemo): Integer;
 begin
   Result:= Ed.MouseToCaret(0, Ed.ClientHeight-1).Y;
 end;
-  
+
+procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos: Integer);
+const
+  cMaxBk = 1*1000*1000;
+var
+  nIndex, i: Integer;
+begin
+  nIndex:= -1;
+  for i:= 10 to cMaxBk do
+    if Ed.Bookmarks[i]<0 then
+    begin
+      nIndex:= i;
+      Break;
+    end;
+
+  if nIndex>=0 then
+    Ed.Bookmarks[nIndex]:= NPos;
+end;  
+
+procedure EditorClearBookmarks(Ed: TSyntaxMemo);
+begin
+  Ed.BookmarkObj.Clear;
+  Ed.Invalidate;
+end;
+
 end.

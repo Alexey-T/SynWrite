@@ -36,6 +36,11 @@ type
     arReplaceAllInAll
     );
 
+const
+  cSearchIngoreFromCaret: set of TSRAction =
+    [arFindAll, arFindInTabs, arCount, arReplaceAll, arReplaceAllInAll];
+
+
 type
   TSRProc = procedure(act: TSRAction) of object;
 
