@@ -72,7 +72,8 @@ const
   cPyConsolePrompt = '>>> ';
   cPyConsoleInit = 'print("Python", sys.version)';
   cPyConsoleClear = '-';
-  cPyPluginPrefix = 'py:';
+  cPyPrefix = 'py:';
+  cPyAcpString = '?';
 
 type
   TSynQuickSearchType = (
@@ -21419,7 +21420,7 @@ begin
 
       if NIndex<=High(FPluginsFindid) then
       begin
-        if SBegin(sValue, cPyPluginPrefix) then
+        if SBegin(sValue, cPyPrefix) then
           FPluginsFindid[NIndex].SFileName:= sValue
         else  
           FPluginsFindid[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
@@ -21450,7 +21451,10 @@ begin
 
       if NIndex<=High(FPluginsAcp) then
       begin
-        FPluginsAcp[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
+        if SBegin(sValue, cPyPrefix) then
+          FPluginsAcp[NIndex].SFileName:= sValue
+        else
+          FPluginsAcp[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
         FPluginsAcp[NIndex].SLexers:= sValue2;
         Inc(NIndex);
       end;
@@ -21478,7 +21482,7 @@ begin
 
       if NIndex<=High(FPluginsCommand) then
       begin
-        if SBegin(sValue, cPyPluginPrefix) then
+        if SBegin(sValue, cPyPrefix) then
           FPluginsCommand[NIndex].SFileName:= sValue
         else
           FPluginsCommand[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
@@ -22661,7 +22665,7 @@ begin
     with FPluginsFindid[i] do
       if IsLexerListed(CurrentLexer, SLexers) then
       begin
-        if SBegin(SFileName, cPyPluginPrefix) then
+        if SBegin(SFileName, cPyPrefix) then
           DoLoadPyPlugin(SFileName, 'findid')
         else
           DoLoadPlugin_FindID(i);
@@ -22682,6 +22686,16 @@ begin
       if IsLexerListed(CurrentLexer, SLexers) then
       begin
         DoHint(DKLangConstW('zMTryAcp')+' '+ExtractFileName(SFileName));
+
+        //auto-completion Py plugin?
+        if SBegin(SFileName, cPyPrefix) then
+        begin
+          DoLoadPyPlugin(SFileName, 'complete');
+          Result:= cPyAcpString;
+          Exit
+        end;
+
+        //auto-completion dll plugin?
         Result:= DoLoadPlugin_GetString(
           SFilename,
           AAction);
@@ -22817,7 +22831,7 @@ begin
     end;
 
     //MsgInfo(SFileName+#13+SCmd+#13);
-    if SBegin(SFilename, cPyPluginPrefix) then
+    if SBegin(SFilename, cPyPrefix) then
     begin
       //Python command plugin
       DoLoadPyPlugin(
@@ -24662,14 +24676,21 @@ begin
     SText:= DoAcpFromPlugins(cActionGetAutoComplete)
   else
     SText:= '';
-      
-  if SText<>'' then
+
+  //auto-completion from Py plugin?
+  if (SText=cPyAcpString) then
+    Exit;
+
+  //auto-completion from dll plugin?
+  if (SText<>'') then
   begin
     Ed:= CurrentEditor;
     PluginAction_SuggestCompletion(PWChar(SText), EditorWordLength(Ed), true);
-  end
-  else
-    DoAcpPopup;
+    Exit
+  end;
+
+  //usual auto-completion
+  DoAcpPopup;
 end;
 
 procedure TfmMain.PluginACPAfterComplete(Sender: TObject;
@@ -25407,8 +25428,8 @@ begin
       if SFileName<>'' then
       begin
         S:= SFileName + '/' + SCmd;
-        if SBegin(S, cPyPluginPrefix) then
-          Delete(S, 1, Length(cPyPluginPrefix));
+        if SBegin(S, cPyPrefix) then
+          Delete(S, 1, Length(cPyPrefix));
         L.Add(S);
       end;
 end;
@@ -27823,7 +27844,7 @@ var
 begin
   SSection:= 'Commands';
   SKey:= Py_NameToMixedCase(SId);
-  SParams:= cPyPluginPrefix + SId + ';run;;;';
+  SParams:= cPyPrefix + SId + ';run;;;';
 
   with TIniFile.Create(SynPluginsIni) do
   try
@@ -27903,8 +27924,8 @@ var
   SId: string;
 begin
   SId:= SFilename;
-  if SBegin(SId, cPyPluginPrefix) then
-    Delete(SId, 1, Length(cPyPluginPrefix));
+  if SBegin(SId, cPyPrefix) then
+    Delete(SId, 1, Length(cPyPrefix));
 
   if not GetPythonEngine.Initialized then
   begin
