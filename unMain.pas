@@ -2683,6 +2683,7 @@ type
     procedure DoOptionsDialog(tabId: Integer);
     procedure DoTreeFocus;
     function DoGetFavList: Widestring;
+    function DoGetSearchPaths: Widestring;
     procedure DoGetOppositeEditor(
       EdSrc: TSyntaxMemo;
       var EdOther: TSyntaxMemo;
@@ -22961,9 +22962,7 @@ begin
       end;
     cSynIdSearchPaths:
       begin
-        s:= opProjPaths;
-        if Assigned(fmProj) then
-          s:= s + fmProj.FOpts.SearchDirs;
+        s:= DoGetSearchPaths;
       end;
     cSynIdFavoritesText:
       begin
@@ -22990,6 +22989,13 @@ begin
   lstrcpynW(BufferPtr, PWChar(s), NeededSize);
   BufferSize:= Length(s);
   Result:= cSynOK;
+end;
+
+function TfmMain.DoGetSearchPaths: Widestring;
+begin
+  Result:= opProjPaths;
+  if Assigned(fmProj) then
+    Result:= Result + fmProj.FOpts.SearchDirs;
 end;
 
 function TfmMain.PluginAction_SetText(const id: Integer;
@@ -27614,6 +27620,8 @@ begin
         -12: Str:= fmMain.CurrentProjectWorkDir;
         -13: Str:= fmMain.CurrentProjectSessionFN;
         -20: Str:= fmMain.SynLexLib;
+        -21: Str:= fmMain.DoGetSearchPaths;
+        -22: Str:= fmMain.DoGetFavList;
       end;
 
       if Str=cNone then
