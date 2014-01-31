@@ -4606,6 +4606,7 @@ object fmMain: TfmMain
     end
   end
   object ImgListGutter: TTBImageList
+    AllocBy = 30
     Left = 288
     Top = 192
     Bitmap = {

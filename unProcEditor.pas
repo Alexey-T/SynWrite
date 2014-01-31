@@ -15,7 +15,7 @@ uses
   ecStrUtils;
 
 procedure EditorClearBookmarks(Ed: TSyntaxMemo);
-procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos: Integer);
+procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos, NIcon, NColor: Integer);
 procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
 function EditorGetBottomLineIndex(Ed: TSyntaxMemo): Integer;
 function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
@@ -2787,12 +2787,13 @@ begin
   Result:= Ed.MouseToCaret(0, Ed.ClientHeight-1).Y;
 end;
 
-procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos: Integer);
+procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos, NIcon, NColor: Integer);
 const
   cMaxBk = 1*1000*1000;
 var
   nIndex, i: Integer;
 begin
+  //find free bookmark-index
   nIndex:= -1;
   for i:= 10 to cMaxBk do
     if Ed.Bookmarks[i]<0 then
@@ -2801,9 +2802,22 @@ begin
       Break;
     end;
 
-  if nIndex>=0 then
-    Ed.Bookmarks[nIndex]:= NPos;
-end;  
+  if nIndex<0 then Exit;
+  Ed.Bookmarks[nIndex]:= NPos;
+
+  //correct bookmark color and icon
+  if (NIcon<0) and (NColor<0) then Exit;
+  
+  for i:= 0 to Ed.BookmarkObj.Count-1 do
+    if Ed.BookmarkObj.Items[i].BmIndex= nIndex then
+    begin
+      if NIcon>=0 then
+        Ed.BookmarkObj.Items[i].ImageIndex:= NIcon;
+      if NColor>=0 then
+        Ed.BookmarkObj.Items[i].BgColor:= NColor;
+      Break
+    end;
+end;
 
 procedure EditorClearBookmarks(Ed: TSyntaxMemo);
 begin

@@ -2413,13 +2413,14 @@ type
     procedure MsgDoneLines(N: integer);
     procedure MsgTabbing(const s: Widestring);
     procedure MsgRenameError(const fn, fn_new: Widestring);
-    
-    procedure ClearTreeFind;
-    procedure CopyFindResultToTab(ALastSearch, AFilesOnly: boolean;
+
+    procedure DoClearTreeFind;
+    procedure DoCopyFindResultToTab(ALastSearch, AFilesOnly: boolean;
       AToClip: boolean = false);
-    procedure CopyFindResultToList(ARootNode: TTntTreeNode;
+    procedure DoCopyFindResultToList(ARootNode: TTntTreeNode;
       L: TWideStringList; AFilesOnly: boolean);
-    procedure CopyFindResultNode;
+    procedure DoCopyFindResultNode;
+
     function SFindResPrefix(const FN: Widestring; LineNum: integer): Widestring;
     function MacroName(n: integer): Widestring;
     function MacroCmdName(n: integer): Widestring;
@@ -9190,7 +9191,7 @@ begin
   if Assigned(fmClip) then
     fmClip.Close;
   //clear find results
-  ClearTreeFind;
+  DoClearTreeFind;
   //close plugins
   DoClosePlugins;
 
@@ -12466,7 +12467,7 @@ begin
 
     //init TreeRoot, show Output pane
     if not AOutAppend then
-      ClearTreeFind;
+      DoClearTreeFind;
     UpdateTreeInit(Finder.FindText, ADir);
     UpdatePanelOut(tbFind);
     plOut.Show;
@@ -12555,7 +12556,7 @@ begin
       UpdateTreeFind(Finder.FindText, ADir, false);
       if AToTab then
       begin
-        CopyFindResultToTab(true, AFnOnly);
+        DoCopyFindResultToTab(true, AFnOnly);
       end
       else
       begin
@@ -12575,7 +12576,7 @@ begin
   begin
     //init FTreeRoot, show Output pane
     if not AOutAppend then
-      ClearTreeFind;
+      DoClearTreeFind;
     ANodeText:= WideFormat(DKLangConstW('O_fnode_r'),
         [Finder.FindText, Finder.ReplaceText, ADir]);
     FTreeRoot:= TreeFind.Items.Add(nil, ANodeText);
@@ -12642,7 +12643,7 @@ begin
       TreeFind.Selected:= FTreeRoot;
       if AToTab then
       begin
-        CopyFindResultToTab(true, true{AFnOnly=true for replace});
+        DoCopyFindResultToTab(true, true{AFnOnly=true for replace});
       end
       else
       begin
@@ -18576,10 +18577,10 @@ end;
 
 procedure TfmMain.TBXItemTreeFindCopyToTabClick(Sender: TObject);
 begin
-  CopyFindResultToTab(false, false);
+  DoCopyFindResultToTab(false, false);
 end;
 
-procedure TfmMain.CopyFindResultToTab(ALastSearch, AFilesOnly: boolean;
+procedure TfmMain.DoCopyFindResultToTab(ALastSearch, AFilesOnly: boolean;
   AToClip: boolean = false);
 var
   Node: TTntTreeNode;
@@ -18604,7 +18605,7 @@ begin
 
   L:= TWideStringList.Create;
   try
-    CopyFindResultToList(Node, L, AFilesOnly);
+    DoCopyFindResultToList(Node, L, AFilesOnly);
     if AToClip then
     begin
       S:= L.Text;
@@ -18623,7 +18624,7 @@ begin
 end;
 
 //copy tree from selected node
-procedure TfmMain.CopyFindResultNode;
+procedure TfmMain.DoCopyFindResultNode;
 var
   Node: TTntTreeNode;
   L: TWideStringList;
@@ -18634,7 +18635,7 @@ begin
 
   L:= TWideStringList.Create;
   try
-    CopyFindResultToList(Node, L, true);
+    DoCopyFindResultToList(Node, L, true);
     S:= L.Text;
   finally
     FreeAndNil(L);
@@ -18644,7 +18645,7 @@ begin
   TntClipboard.AsWideText:= S;
 end;
 
-procedure TfmMain.CopyFindResultToList(ARootNode: TTntTreeNode;
+procedure TfmMain.DoCopyFindResultToList(ARootNode: TTntTreeNode;
   L: TWideStringList; AFilesOnly: boolean);
 var
   Node, Node2: TTntTreeNode;
@@ -18686,10 +18687,10 @@ end;
 
 procedure TfmMain.TBXItemTreeFindClearClick(Sender: TObject);
 begin
-  ClearTreeFind;
+  DoClearTreeFind;
 end;
 
-procedure TfmMain.ClearTreeFind;
+procedure TfmMain.DoClearTreeFind;
 var
   i: integer;
   Node: TTntTreeNode;
@@ -18708,7 +18709,7 @@ end;
 
 procedure TfmMain.TBXItemTreeFindCopyToClipClick(Sender: TObject);
 begin
-  CopyFindResultToTab(false, false, true{AToClip});
+  DoCopyFindResultToTab(false, false, true{AToClip});
 end;
 
 procedure TfmMain.TBXItemTreeFindExpandClick(Sender: TObject);
@@ -19008,7 +19009,7 @@ begin
   if (TreeFind.Selected<>nil) and (TreeFind.Selected.Parent=nil) then
     TBXItemTreeFindCopyToClipClick(Self)
   else
-    CopyFindResultNode;
+    DoCopyFindResultNode;
 end;
 
 procedure TfmMain.DoTabSwitch(ANext: boolean);

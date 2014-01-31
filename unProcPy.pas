@@ -1155,11 +1155,11 @@ end;
 
 function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
 var
-  H, NId, NPos: Integer;
+  H, NId, NPos, NIcon, NColor: Integer;
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:ed_set_bk', @H, @NId, @NPos)) then
+    if Bool(PyArg_ParseTuple(Args, 'iiiii:ed_set_bk', @H, @NId, @NPos, @NIcon, @NColor)) then
     begin
       Ed:= PyEditor(H);
       case NId of
@@ -1168,7 +1168,7 @@ begin
             Ed.Bookmarks[NId]:= NPos;
             Ed.Invalidate;
           end;
-        -1: EditorSetBookmarkUnnumbered(Ed, NPos);
+        -1: EditorSetBookmarkUnnumbered(Ed, NPos, NIcon, NColor);
         -2: EditorClearBookmarks(Ed);
       end;
       Result:= ReturnNone;
