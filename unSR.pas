@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, TntStdCtrls, TntClasses, TntForms, DKLang,
   ComCtrls, Menus, TntMenus, Buttons,
-  unSearch;
+  unSearch, TntComCtrls;
 
 type
   TTrackBar = class(ComCtrls.TTrackBar)
@@ -81,16 +81,12 @@ type
     cbCfm: TTntCheckBox;
     bCount: TTntButton;
     bRepInTabs: TTntButton;
-    labRes: TTntLabel;
-    Timer1: TTimer;
     bSkip: TTntButton;
     PanelTr: TPanel;
     labTr: TTntLabel;
     TrackBar1: TTrackBar;
     cbLoose: TTntCheckBox;
     labStyle: TTntLabel;
-    labCnt: TTntLabel;
-    TimerCnt: TTimer;
     mnuRe: TTntPopupMenu;
     labRe: TTntLabel;
     cbBk: TTntCheckBox;
@@ -107,12 +103,12 @@ type
     bCombo1: TSpeedButton;
     bCombo2: TSpeedButton;
     mnuCombo: TTntPopupMenu;
+    StatusFind: TTntStatusBar;
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
     procedure cbREClick(Sender: TObject);
     procedure cbSpecClick(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
     procedure TntFormDestroy(Sender: TObject);
     procedure bCancelClick(Sender: TObject);
@@ -128,7 +124,6 @@ type
     procedure cbLooseClick(Sender: TObject);
     procedure labStyleClick(Sender: TObject);
     procedure bGlobClick(Sender: TObject);
-    procedure TimerCntTimer(Sender: TObject);
     procedure TntFormShortCut(var Msg: TWMKey; var Handled: Boolean);
     procedure mnuRePopup(Sender: TObject);
     procedure labReClick(Sender: TObject);
@@ -445,25 +440,17 @@ begin
     cbRe.Checked:= false;
 end;
 
-procedure TfmSR.Timer1Timer(Sender: TObject);
-begin
-  ShowError(false);
-end;
-
 procedure TfmSR.ShowError(b: boolean);
 begin
-  labCnt.Hide;
-  labRes.Visible:= b;
-  Timer1.Enabled:= false;
-  Timer1.Enabled:= b;
+  if b then
+    StatusFind.SimpleText:= WideFormat(DKLangConstW('MNFound2'), [Text1])
+  else
+    StatusFind.SimpleText:= '';
 end;
 
 procedure TfmSR.ShowStatus(const s: Widestring);
 begin
-  labCnt.Caption:= S;
-  labCnt.Show;
-  TimerCnt.Enabled:= false;
-  TimerCnt.Enabled:= true;
+  StatusFind.SimpleText:= S;
 end;
 
 procedure TfmSR.TrackBar1Change(Sender: TObject);
@@ -601,12 +588,6 @@ begin
   en:= not cbSel.Checked;
   cbFromCur.Enabled:= en;
   cbFromCurClick(Self);
-end;
-
-procedure TfmSR.TimerCntTimer(Sender: TObject);
-begin
-  TimerCnt.Enabled:= false;
-  labCnt.Hide;
 end;
 
 function Sh_of(const s: string): char;
@@ -1112,11 +1093,6 @@ end;
 procedure TfmSR.UpdMemoHeight;
 begin
   ed1Memo.Height:= Trunc(ed2Memo.Height*IfThen(IsReplace, 1, 1.5));
-  if IsMultiline then
-    labRes.Top:= ed1Memo.Top+ ed1Memo.Height+ 4
-  else
-    labRes.Top:= FTopLab2;
-  labCnt.Top:= labRes.Top;
 
   bCombo1.SetBounds(ed1Memo.Left+ed1Memo.Width, ed1Memo.Top, 16, ed1Memo.Height);
   bCombo2.SetBounds(ed2Memo.Left+ed2Memo.Width, ed2Memo.Top, 16, ed2Memo.Height);
@@ -1149,8 +1125,6 @@ begin
     ed2Memo.Top:= FTopEd2+IfThen(Value, dy);
 
     labEd2.Top:= FTopLab2+IfThen(Value, dy);
-    labRes.Top:= labEd2.Top;
-    labCnt.Top:= labEd2.Top;
     gOp.Top:= FTopGOpt+IfThen(Value, dy*2);
     gDir.Top:= gOp.Top;
     gScop.Top:= FTopGScope+IfThen(Value, dy*2);

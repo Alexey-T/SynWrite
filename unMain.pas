@@ -3155,7 +3155,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.530';
+  cSynVer = '6.3.540';
   cSynPyVer = '1.0.114';
 
 const
@@ -8390,7 +8390,7 @@ begin
         SR_SuggestedSel:= Ed.WordAtPos(Ed.CaretPos);
     end;
 
-    cbSel.Enabled:= SR_SuggestedSelEn;
+    cbSel.Enabled:= true; //SR_SuggestedSelEn;
     cbSel.Checked:= SR_SuggestedSelScope;
 
     if SR_SuggestedSel<>'' then
@@ -27942,7 +27942,7 @@ begin
     Exit
   end;
 
-  DoLogPyCommand('Run plugin: ' + SId + '/' + SCmd);
+  //DoLogPyCommand('Run plugin: ' + SId + '/' + SCmd);
   Py_RunPlugin_Command(SId, SCmd);
 end;
 
