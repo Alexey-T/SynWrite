@@ -31,6 +31,7 @@ type
     LabelBlanks: TTntLabel;
     edKeepBlanks: TTntComboBox;
     LabelTextShow: TLabel;
+    cbAutoCase: TTntCheckBox;
     procedure cbOvrClick(Sender: TObject);
     procedure ListLexClick(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
@@ -69,6 +70,7 @@ begin
   edOptFill.Enabled:= en;
   edWordChars.Enabled:= en;
   edKeepBlanks.Enabled:= en;
+  cbAutoCase.Enabled:= en;
   LabelTabStop.Enabled:= en;
   LabelTabMode.Enabled:= en;
   LabelWrap.Enabled:= en;
@@ -81,7 +83,7 @@ begin
   if not en then
   begin
     if ListLex.ItemIndex>=0 then
-      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '', '');
+      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '', '', '');
     edTab.Text:= FDefTabStop;
     edTabMode.ItemIndex:= FDefTabMode;
     edWrap.ItemIndex:= 0;
@@ -97,13 +99,13 @@ procedure TfmSetupOvr.ListLexClick(Sender: TObject);
 var
   Ovr: boolean;
   ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-  AOptWordChars, AKeepBlanks: string;
+  AOptWordChars, AKeepBlanks, ACaseCorrect: string;
 begin
   if ListLex.ItemIndex>=0 then
   begin
     Ovr:= SGetLexerOverride(FString, ListLex.Items[ListLex.ItemIndex],
       ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-      AOptWordChars, AKeepBlanks);
+      AOptWordChars, AKeepBlanks, ACaseCorrect);
     cbOvr.Enabled:= true;
   end
   else
@@ -124,6 +126,7 @@ begin
     edOptFill.ItemIndex:= StrToIntDef(AOptFill, 0);
     edKeepBlanks.ItemIndex:= StrToIntDef(AKeepBlanks, 0);
     edWordChars.Text:= AOptWordChars;
+    cbAutoCase.Checked:= Bool(StrToIntDef(ACaseCorrect, 0));
   end
   else
   begin
@@ -135,6 +138,7 @@ begin
     edOptFill.ItemIndex:= 0;
     edKeepBlanks.ItemIndex:= 0;
     edWordChars.Text:= '';
+    cbAutoCase.Checked:= false;
   end;
 
   FUpdLock:= false;
@@ -188,7 +192,8 @@ begin
         {Op5}IntToStr(edSpacing.Value),
         {Op6}IntToStr(edOptFill.ItemIndex),
         {Op7}edWordChars.Text,
-        {Op8}IntToStr(edKeepBlanks.ItemIndex)
+        {Op8}IntToStr(edKeepBlanks.ItemIndex),
+        {Op9}IntToStr(Ord(cbAutoCase.Checked))
         );
       edText.Text:= FString;
     end;

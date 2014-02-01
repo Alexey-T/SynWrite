@@ -2789,7 +2789,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     //opt
-    opCorrectCaseLexers: string;
+    opAutoCase: boolean;
     opShowPanelTitles: boolean;
     opTreeSorted: string;
     opColorUnderline: integer;
@@ -3155,7 +3155,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.540';
+  cSynVer = '6.3.542';
   cSynPyVer = '1.0.114';
 
 const
@@ -4472,7 +4472,6 @@ begin
     opShowPanelTitles:= ReadBool('View', 'PaneTitle', true); 
     ApplyPanelTitles;
 
-    opCorrectCaseLexers:= ReadString('Setup', 'FixCase', '');
     opTreeSorted:= ReadString('Setup', 'TreeSorted', '');
     opColorUnderline:= ReadInteger('Setup', 'ColorUnd', 3);
     opSyncEditIcon:= ReadBool('Setup', 'SyncEditIcon', true);
@@ -4975,7 +4974,6 @@ begin
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
     WriteInteger('Setup', 'ColorUnd', opColorUnderline);
     WriteString('Setup', 'TreeSorted', opTreeSorted);
-    WriteString('Setup', 'FixCase', opCorrectCaseLexers);
 
     WriteString('View', 'PyFont', opFontConsole);
     WriteBool('View', 'CaretsEn', opCaretsEnabled);
@@ -7821,7 +7819,7 @@ var
   en: boolean;
   Lexer: string;
   ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-  AOptWordChars, AKeepBlanks: string;
+  AOptWordChars, AKeepBlanks, AAutoCase: string;
 begin
   UpdateTools;
   acSetupLexHL.Enabled:= SyntaxManager.CurrentLexer<>nil;
@@ -7904,7 +7902,7 @@ begin
       //optional overrides
       if SGetLexerOverride(opLexersOverride, Lexer,
         ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-        AOptWordChars, AKeepBlanks) then
+        AOptWordChars, AKeepBlanks, AAutoCase) then
       begin
         //1) override TabStops
         EditorMaster.TabList.AsString:= ATabStop;
@@ -7976,6 +7974,9 @@ begin
             EditorSlave.Options:= EditorSlave.Options + [soKeepTrailingBlanks];
           end
         end;
+
+        //9) override "Auto-correct case"
+        opAutoCase:= AAutoCase='1';
       end;
 
       //overrides for "NFO files"
@@ -28282,8 +28283,7 @@ var
   SId, SAcpId: string;
 begin
   Result:= false;
-  if opCorrectCaseLexers='' then Exit;
-  if not IsLexerListed(CurrentLexerForFile, opCorrectCaseLexers) then Exit;
+  if not opAutoCase then Exit;
 
   NCaret:= Ed.CaretStrPos;
   if not IsWordChar(Ed.Lines.Chars[NCaret]) then Exit;

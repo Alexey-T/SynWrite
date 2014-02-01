@@ -350,9 +350,6 @@ type
     edTreeSorted: TTntEdit;
     TntLabel28: TTntLabel;
     cbScrollLast: TTntCheckBox;
-    TntLabel29: TTntLabel;
-    edAcpFixCase: TEdit;
-    bAcpFixCase: TTntButton;
     PopupLexers: TTntPopupMenu;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
@@ -450,7 +447,6 @@ type
     procedure bKeyExtendClick(Sender: TObject);
     procedure labHelpKeysClick(Sender: TObject);
     procedure bPyClick(Sender: TObject);
-    procedure bAcpFixCaseClick(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
@@ -1739,7 +1735,6 @@ begin
     opAcpFile:= cbAcpFile.Checked;
     opAcpFileChars:= edAcpFileChars.Value;
     opAcpFileSize:= edAcpFileSize.Value;
-    opCorrectCaseLexers:= edAcpFixCase.Text;
 
     opTemplateTabbingExcept:= edNoSnippetsExt.Text;
   end;
@@ -2037,7 +2032,6 @@ begin
     edAcpFileSize.Value:= opAcpFileSize;
     edAcpDrop.Value:= ecACP.DropDownCount;
 
-    edAcpFixCase.Text:= opCorrectCaseLexers;
     edNoSnippetsExt.Text:= opTemplateTabbingExcept;
   end;
 end;
@@ -2764,14 +2758,16 @@ begin
 end;
 
 procedure TfmSetup.MenuLexersClick(Sender: TObject);
-var
-  S: string;
+//var S: string;
 begin
+  {
   S:= (Sender as TTntMenuItem).Caption;
   with edAcpFixCase do
     Text:= Text + IfThen(Text<>'', ',') + S;
+    }
 end;
 
+{
 procedure TfmSetup.bAcpFixCaseClick(Sender: TObject);
 var
   L: TTntStringList;
@@ -2808,6 +2804,7 @@ begin
   P:= bAcpFixCase.ClientToScreen(Point(0, 0));
   PopupLexers.Popup(P.X, P.Y);
 end;
+}
 
 end.
 

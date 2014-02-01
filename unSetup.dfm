@@ -1675,13 +1675,6 @@ object fmSetup: TfmSetup
           ParentFont = False
           OnClick = labAcpHelpClick
         end
-        object TntLabel29: TTntLabel
-          Left = 304
-          Top = 88
-          Width = 180
-          Height = 13
-          Caption = 'Auto-correct id case for these lexers:'
-        end
         object cbAcpHtm: TTntCheckBox
           Left = 8
           Top = 16
@@ -1739,22 +1732,6 @@ object fmSetup: TfmSetup
           Caption = 'And quotes: " '#39
           TabOrder = 5
           OnClick = cbACloseBrClick
-        end
-        object edAcpFixCase: TEdit
-          Left = 304
-          Top = 104
-          Width = 185
-          Height = 21
-          TabOrder = 7
-        end
-        object bAcpFixCase: TTntButton
-          Left = 488
-          Top = 104
-          Width = 35
-          Height = 21
-          Caption = '...'
-          TabOrder = 8
-          OnClick = bAcpFixCaseClick
         end
       end
     end
@@ -2978,7 +2955,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E014D010000
+      0700666D5365747570010100000001000000070043617074696F6E014A010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3276,9 +3253,8 @@ object fmSetup: TfmSetup
       6162656C33340101000000CC020000070043617074696F6E000C006564547265
       65536F7274656400000A00546E744C6162656C32380101000000CD0200000700
       43617074696F6E000C0063625363726F6C6C4C6173740102000000CF02000007
-      0043617074696F6ECE020000040048696E74000A00546E744C6162656C323901
-      01000000D0020000070043617074696F6E000C00656441637046697843617365
-      00000B00624163704669784361736500000B00506F7075704C65786572730000}
+      0043617074696F6ECE020000040048696E74000B00506F7075704C6578657273
+      0000}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
