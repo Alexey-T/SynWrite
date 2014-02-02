@@ -25,7 +25,7 @@ type
   TEditorFrame = class(TFrame)
     ecSpellChecker: TecSpellChecker;
     HyperlinkHighlighter: THyperlinkHighlighter;
-    TextSource: TecEmbeddedObjects;
+    TextSourceObj: TecEmbeddedObjects;
     PopupSplitEditors: TSpTBXPopupMenu;
     TBXItemSplitHorz: TSpTbxItem;
     TBXItemSplit70_30: TSpTbxItem;
@@ -184,7 +184,7 @@ type
     property ShowMap: boolean read GetShowMap write SetShowMap;
     property MapColor: TColor read FMapColor write SetMapColor;
     property TabColor: TColor read FTabColor write FTabColor;
-    procedure DoBkToggle(e: TCustomSyntaxMemo; line: integer);
+    procedure DoBkToggle(Ed: TCustomSyntaxMemo; LineNum: integer);
     procedure DoTitleChanged;
     procedure DoStartNotif;
     procedure DoStopNotif;
@@ -266,7 +266,7 @@ begin
   if FLockMapUpdate then
     Exit;
 
-  if TextSource.Lines.Count<=cManyLines then
+  if EditorMaster.TextSource.Lines.Count<=cManyLines then
     UpdateMap(FocusedEditor)
   else
     TimerMap.Enabled:= true;
@@ -312,7 +312,7 @@ begin
   FCollapsedString:= '';
   FCollapsedRestored:= false;
 
-  TextSource.Lines.SetObjectsStore;
+  EditorMaster.TextSource.Lines.SetObjectsStore;
   EditorMaster.PopupMenu:= TfmMain(Owner).PopupEditor;
   EditorSlave.PopupMenu:= TfmMain(Owner).PopupEditor;
   EditorMaster.Gutter.Images:= TfmMain(Owner).ImgListGutter;
@@ -410,7 +410,7 @@ begin
     begin ErrorWritable; Exit end;
 
   FSavingBusy:= true;
-  TextSource.Lines.SkipSignature:= SkipSign;
+  EditorMaster.TextSource.Lines.SkipSignature:= SkipSign;
   ext:= Copy(WideExtractFileExt(AFileName), 2, MaxInt);
 
   repeat
@@ -425,7 +425,7 @@ begin
   until false;
 
   FSavingBusy:= false;
-  TextSource.Lines.SkipSignature:= False;
+  EditorMaster.TextSource.Lines.SkipSignature:= False;
 
   FFileName:= AFileName;
   DoTitleChanged;
@@ -439,15 +439,15 @@ end;
 procedure TEditorFrame.LoadFile(const AFileName: Widestring);
 begin
   SkipSign:= False;
-  TextSource.Lines.SkipSignature:= False;
+  EditorMaster.TextSource.Lines.SkipSignature:= False;
 
   if (AFileName = '') then
-    TextSource.Lines.Clear
+    EditorMaster.TextSource.Lines.Clear
   else
   try
     Screen.Cursor:= crHourGlass;
     if not TfmMain(Owner).LoadFrameState(Self, AFileName) then
-      TextSource.Lines.LoadFromFile(AFileName);
+      EditorMaster.TextSource.Lines.LoadFromFile(AFileName);
   finally
     Screen.Cursor:= crDefault;
   end;
@@ -795,42 +795,50 @@ begin
   end;
 end;
 
-procedure TEditorFrame.DoBkToggle(e: TCustomSyntaxMemo; line: integer);
+procedure TEditorFrame.DoBkToggle(Ed: TCustomSyntaxMemo; LineNum: integer);
 var
   i, j, nBk: integer;
 begin
-    //delete?
-    j:= e.BookmarkForLine(line);
-    if j<>-1 then
-    begin
-      for i:=0 to e.BookmarkObj.Count-1 do
-        if Assigned(e.BookmarkObj[i]) and (e.BookmarkObj[i].BmIndex=j) then
+  //bookmark exists at this line? then delete
+  j:= Ed.BookmarkForLine(LineNum);
+  if j>=0 then
+  begin
+    for i:= 0 to Ed.BookmarkObj.Count-1 do
+      if Assigned(Ed.BookmarkObj[i]) and (Ed.BookmarkObj[i].BmIndex=j) then
+      begin
+        if i<EditorSlave.BookmarkObj.Count then
         begin
           EditorSlave.BookmarkObj.Delete(i);
-          EditorMaster.BookmarkObj.Delete(i);
           EditorSlave.Invalidate;
-          EditorMaster.Invalidate;
-          Break;
         end;
-      Exit;
-    end;
+        if i<EditorMaster.BookmarkObj.Count then
+        begin
+          EditorMaster.BookmarkObj.Delete(i);
+          EditorMaster.Invalidate;
+        end;
+        Break;
+      end;
+    Exit;
+  end;
 
-    //find first non-busy bookmark
-    nBk:= -1;
-    for i:= Max2(e.BookmarkObj.Count, 10) to cMaxBk do
-      if e.Bookmarks[i]<0 then
-        begin nBk:= i; Break; end;
+  //find first non-busy bookmark
+  nBk:= -1;
+  for i:= 10 to cMaxBk do
+    if Ed.Bookmarks[i]<0 then
+      begin nBk:= i; Break; end;
 
-    if nBk<0 then
-      begin MsgBeep; Exit; end;
+  if nBk<0 then
+    begin MsgBeep; Exit; end;
 
-    //remember col num?
-    if line=e.CaretPos.Y then
-      i:= e.CaretPos.X else i:= 0;
+  //remember col num?
+  if LineNum = Ed.CaretPos.Y then
+    i:= Ed.CaretPos.X
+  else
+    i:= 0;
 
-    j:= e.CaretPosToStrPos(Point(i, line));
-    EditorSlave.Bookmarks[nBk]:= j;
-    EditorMaster.Bookmarks[nBk]:= j;
+  j:= Ed.CaretPosToStrPos(Point(i, LineNum));
+  EditorSlave.Bookmarks[nBk]:= j;
+  EditorMaster.Bookmarks[nBk]:= j;
 end;
 
 procedure TEditorFrame.EditorMasterGetTokenHint(Sender: TObject;
@@ -943,9 +951,9 @@ begin
     //reload
     Screen.Cursor:= crHourGlass;
     try
-      TextSource.Lines.SkipSignature:= True;
-      TextSource.Lines.LoadFromFile(FileName);
-      TextSource.Lines.SkipSignature:= False;
+      EditorMaster.TextSource.Lines.SkipSignature:= True;
+      EditorMaster.TextSource.Lines.LoadFromFile(FileName);
+      EditorMaster.TextSource.Lines.SkipSignature:= False;
     finally
       Screen.Cursor:= crDefault;
     end;  
@@ -1199,7 +1207,7 @@ end;
 
 function TEditorFrame.GetMapLine(X, Y: Integer): Integer;
 begin
-  Result:= Int64(TextSource.Lines.Count) * Y div PanelMap.Height;
+  Result:= Int64(EditorMaster.TextSource.Lines.Count) * Y div PanelMap.Height;
 end;
 
 procedure TEditorFrame.PanelMapMouseMove(Sender: TObject;
@@ -1252,7 +1260,7 @@ begin
   C.Brush.Color:= clBtnFace;
   C.FillRect(Rect(0, 0, NCliWidth, NCliHeight));
 
-  NCnt:= TextSource.Lines.Count;
+  NCnt:= EditorMaster.TextSource.Lines.Count;
   if NCnt=0 then Exit;
 
   //draw current frame
@@ -1291,7 +1299,7 @@ begin
     //draw line states
     for i:= 0 to NCnt-1 do
     begin
-      case TextSource.Lines.LineState[i] of
+      case EditorMaster.TextSource.Lines.LineState[i] of
         lsModified: AColor:= Ed.LineStateDisplay.ModifiedColor;
         lsNew:      AColor:= Ed.LineStateDisplay.NewColor;
         lsSaved:    AColor:= Ed.LineStateDisplay.SavedColor;
@@ -1345,7 +1353,7 @@ end;
 
 procedure TEditorFrame.PanelMapPaint(Sender: TObject);
 begin
-  if TextSource.Lines.Count>cManyLines then
+  if EditorMaster.TextSource.Lines.Count>cManyLines then
     with PanelMap do
     begin
       Canvas.Brush.Color:= clBtnFace;
@@ -1577,8 +1585,8 @@ end;
 function TEditorFrame.CurrentLexer: string;
 begin
   Result:= '';
-  if TextSource.SyntaxAnalyzer<>nil then
-    Result:= TextSource.SyntaxAnalyzer.LexerName;
+  if EditorMaster.TextSource.SyntaxAnalyzer<>nil then
+    Result:= EditorMaster.TextSource.SyntaxAnalyzer.LexerName;
 end;
 
 
@@ -1597,7 +1605,7 @@ begin
   begin
     Ed:= Sender as TSyntaxMemo;
     C:= Ed.Canvas;
-    Str:= TextSource.Lines[Line];
+    Str:= EditorMaster.TextSource.Lines[Line];
 
     NPos:= 0;
     repeat

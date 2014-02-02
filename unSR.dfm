@@ -3,7 +3,7 @@ object fmSR: TfmSR
   Top = 193
   ActiveControl = ed1
   BorderStyle = bsDialog
-  ClientHeight = 302
+  ClientHeight = 304
   ClientWidth = 482
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -261,7 +261,7 @@ object fmSR: TfmSR
       Top = 78
       Width = 160
       Height = 17
-      Caption = 'S&pecial characters'
+      Caption = 'Special chars (\n \r \t...)'
       TabOrder = 3
       OnClick = cbSpecClick
     end
@@ -426,7 +426,7 @@ object fmSR: TfmSR
     TabOrder = 7
     OnClick = bSkipClick
   end
-  object PanelTr: TPanel
+  object PanelTr: TTntPanel
     Left = 360
     Top = 208
     Width = 121
@@ -510,13 +510,23 @@ object fmSR: TfmSR
   end
   object StatusFind: TTntStatusBar
     Left = 0
-    Top = 283
+    Top = 285
     Width = 482
     Height = 19
     Panels = <>
     ParentFont = True
     SimplePanel = True
     UseSystemFont = False
+  end
+  object PanelBusy: TTntPanel
+    Left = 288
+    Top = 276
+    Width = 185
+    Height = 25
+    BevelOuter = bvNone
+    Caption = 'Search in progres...'
+    TabOrder = 19
+    Visible = False
   end
   object DKLanguageController1: TDKLanguageController
     IgnoreList.Strings = (
@@ -526,7 +536,7 @@ object fmSR: TfmSR
     Left = 104
     Top = 4
     LangData = {
-      0400666D535200012D00000006006C6162456431010100000002000000070043
+      0400666D535200012E00000006006C6162456431010100000002000000070043
       617074696F6E0006006C6162456432010100000003000000070043617074696F
       6E0009006246696E644E657874010100000005000000070043617074696F6E00
       0800625265704E657874010100000006000000070043617074696F6E00070062
@@ -558,7 +568,8 @@ object fmSR: TfmSR
       006C61624D756C74696C696E65010100000028000000070043617074696F6E00
       07006564314D656D6F000007006564324D656D6F0000070062436F6D626F3100
       00070062436F6D626F32000008006D6E75436F6D626F00000A00537461747573
-      46696E640000}
+      46696E640000090050616E656C42757379010100000029000000070043617074
+      696F6E00}
   end
   object mnuRe: TTntPopupMenu
     AutoHotkeys = maManual

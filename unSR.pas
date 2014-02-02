@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, TntStdCtrls, TntClasses, TntForms, DKLang,
   ComCtrls, Menus, TntMenus, Buttons,
-  unSearch, TntComCtrls;
+  unSearch, TntComCtrls, TntExtCtrls;
 
 type
   TTrackBar = class(ComCtrls.TTrackBar)
@@ -82,7 +82,7 @@ type
     bCount: TTntButton;
     bRepInTabs: TTntButton;
     bSkip: TTntButton;
-    PanelTr: TPanel;
+    PanelTr: TTntPanel;
     labTr: TTntLabel;
     TrackBar1: TTrackBar;
     cbLoose: TTntCheckBox;
@@ -104,6 +104,7 @@ type
     bCombo2: TSpeedButton;
     mnuCombo: TTntPopupMenu;
     StatusFind: TTntStatusBar;
+    PanelBusy: TTntPanel;
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure bHelpClick(Sender: TObject);

@@ -48,7 +48,7 @@ object EditorFrame: TEditorFrame
       Top = 0
       Width = 433
       Height = 208
-      TextSource = TextSource
+      TextSource = TextSourceObj
       TabList.AsString = '4'
       NonPrinted.Font.Charset = DEFAULT_CHARSET
       NonPrinted.Font.Color = clSilver
@@ -249,7 +249,7 @@ object EditorFrame: TEditorFrame
       Top = 213
       Width = 433
       Height = 57
-      TextSource = TextSource
+      TextSource = TextSourceObj
       TabList.AsString = '4'
       NonPrinted.Font.Charset = DEFAULT_CHARSET
       NonPrinted.Font.Color = clSilver
@@ -494,7 +494,7 @@ object EditorFrame: TEditorFrame
     Left = 140
     Top = 32
   end
-  object TextSource: TecEmbeddedObjects
+  object TextSourceObj: TecEmbeddedObjects
     Left = 204
     Top = 32
   end

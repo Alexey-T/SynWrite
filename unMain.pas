@@ -2288,8 +2288,8 @@ type
     procedure ClipsInsPress(Sender: TObject);
     function IsProgressNeeded(Ed: TSyntaxMemo): boolean;
     function IsProgressStopped(const NDoneSize, NTotalSize: Int64): boolean;
-    procedure ShowProgress(AMode: TProgressType = proFindText);
-    procedure HideProgress;
+    procedure DoProgressShow(AMode: TProgressType = proFindText);
+    procedure DoProgressHide;
     function CurrentContentFN(Unicode: boolean): Widestring;
     function CurrentSelectionFN(Unicode: boolean): Widestring;
     function CurrentProjectFN: Widestring;
@@ -2421,7 +2421,7 @@ type
       L: TWideStringList; AFilesOnly: boolean);
     procedure DoCopyFindResultNode;
 
-    function SFindResPrefix(const FN: Widestring; LineNum: integer): Widestring;
+    function SFindResPrefix(LineNum: integer): Widestring;
     function MacroName(n: integer): Widestring;
     function MacroCmdName(n: integer): Widestring;
     procedure SetLineEnds(Sender: TObject; AManual: boolean);
@@ -3155,7 +3155,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.542';
+  cSynVer = '6.3.550';
   cSynPyVer = '1.0.114';
 
 const
@@ -3578,10 +3578,10 @@ begin
   ApplyFrameEncoding(Result, 0);
 
   if FCanUseLexer(AFileName) then
-    Result.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(AFileName)
+    Result.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(AFileName)
   else
-    Result.TextSource.SyntaxAnalyzer:= nil;
-  SyntaxManager.CurrentLexer:= Result.TextSource.SyntaxAnalyzer;
+    Result.EditorMaster.TextSource.SyntaxAnalyzer:= nil;
+  SyntaxManager.CurrentLexer:= Result.EditorMaster.TextSource.SyntaxAnalyzer;
   SyntaxManagerChange(Self);
 
   Result.DoStopNotif;
@@ -3636,6 +3636,7 @@ end;
 function TfmMain.SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
 var
   AUntitled: boolean;
+  ALexerName: string;
 begin
   Result:= true;
   if Frame=nil then Exit;
@@ -3654,9 +3655,10 @@ begin
     else
       SD.InitialDir:= LastDir;
     SD.Filter:= SynFilesFilter;
-
-    if Frame.TextSource.SyntaxAnalyzer<>nil then
-      SD.FilterIndex:= SFilterNameToIdx(SD.Filter, Frame.TextSource.SyntaxAnalyzer.LexerName)
+                     
+    ALexerName:= Frame.CurrentLexer;
+    if ALexerName<>'' then
+      SD.FilterIndex:= SFilterNameToIdx(SD.Filter, ALexerName)
     else
       SD.FilterIndex:= SFilterNum(SD.Filter);
 
@@ -3680,10 +3682,10 @@ begin
 
       //update lexer
       if FCanUseLexer(SD.FileName) then
-        Frame.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(SD.FileName)
+        Frame.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(SD.FileName)
       else
-        Frame.TextSource.SyntaxAnalyzer:= nil;
-      SyntaxManager.CurrentLexer:= Frame.TextSource.SyntaxAnalyzer;
+        Frame.EditorMaster.TextSource.SyntaxAnalyzer:= nil;
+      SyntaxManager.CurrentLexer:= Frame.EditorMaster.TextSource.SyntaxAnalyzer;
       SyntaxManagerChange(Self);
 
       //save last dir
@@ -3917,10 +3919,10 @@ begin
     Str:= opNewLex;
 
   if Str='' then
-    F.TextSource.SyntaxAnalyzer:= nil
+    F.EditorMaster.TextSource.SyntaxAnalyzer:= nil
   else
-    F.TextSource.SyntaxAnalyzer:= SyntaxManager.FindAnalyzer(Str);
-  SyntaxManager.CurrentLexer:= F.TextSource.SyntaxAnalyzer;
+    F.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.FindAnalyzer(Str);
+  SyntaxManager.CurrentLexer:= F.EditorMaster.TextSource.SyntaxAnalyzer;
   SyntaxManagerChange(Self);
 
   //other
@@ -4035,8 +4037,8 @@ begin
 
   //show icons in tree?
   bIcons:= false;
-  if (ImgListTree.Count > 0) and (CurrentFrame.TextSource.SyntaxAnalyzer <> nil) then
-    with CurrentFrame.TextSource.SyntaxAnalyzer do
+  if (ImgListTree.Count > 0) and (CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer <> nil) then
+    with CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer do
       for i:= 0 to BlockRules.Count-1 do
         if (BlockRules[i].TreeItemImage <> -1) or
            (BlockRules[i].TreeGroupImage <> -1) then
@@ -4055,7 +4057,7 @@ begin
   if CurrentFrame<>nil then
     with CurrentFrame do
     begin
-       SyntaxManager.CurrentLexer:= TextSource.SyntaxAnalyzer;
+       SyntaxManager.CurrentLexer:= EditorMaster.TextSource.SyntaxAnalyzer;
        SyntaxManagerChange(Self);
 
        if IsMasterFocused or not IsSplitted then
@@ -5177,11 +5179,11 @@ begin
         Frame.FileName:= fn;
         Screen.Cursor:= crHourGlass;
         try
-          Frame.TextSource.Lines.Clear;
-          Frame.TextSource.Lines.SkipSignature:= true;
+          Frame.EditorMaster.TextSource.Lines.Clear;
+          Frame.EditorMaster.TextSource.Lines.SkipSignature:= true;
           FrameSetPropertiesString(Frame, L[i], true); //EncodingOnly=true
-          Frame.TextSource.Lines.LoadFromFile(fn); //uses set encoding
-          Frame.TextSource.Lines.SkipSignature:= false;
+          Frame.EditorMaster.TextSource.Lines.LoadFromFile(fn); //uses set encoding
+          Frame.EditorMaster.TextSource.Lines.SkipSignature:= false;
           FrameSetPropertiesString(Frame, L[i], false); //EncodingOnly=false
         finally
           Screen.Cursor:= crDefault;
@@ -6345,7 +6347,7 @@ begin
    but.Tag:= -1;
    but.OnClick:= LexListClick;
    but.RadioItem:= true;
-   but.Checked:= (CurrentFrame<>nil) and (CurrentFrame.TextSource.SyntaxAnalyzer=nil);
+   but.Checked:= (CurrentFrame<>nil) and (CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer=nil);
    PopupLex.Items.Add(but);
 
    s:=TStringList.Create;
@@ -6369,9 +6371,7 @@ begin
          but.Tag:=integer(s.Objects[i]);
          but.OnClick:=LexListClick;
          but.RadioItem:=true;
-         but.Checked:=(CurrentFrame<>nil)
-            and (CurrentFrame.TextSource.SyntaxAnalyzer<>nil)
-            and (s[i] = CurrentFrame.TextSource.SyntaxAnalyzer.LexerName);
+         but.Checked:=(CurrentFrame<>nil) and (s[i] = CurrentFrame.CurrentLexer);
          menu.Add(but);
        end;
      if menu.Count = 0 then
@@ -6386,9 +6386,7 @@ begin
        but.Tag:=integer(s.Objects[i]);
        but.OnClick:=LexListClick;
        but.RadioItem:=true;
-       but.Checked:=(CurrentFrame<>nil)
-          and (CurrentFrame.TextSource.SyntaxAnalyzer<>nil)
-          and (s[i] = CurrentFrame.TextSource.SyntaxAnalyzer.LexerName);
+       but.Checked:=(CurrentFrame<>nil) and (s[i] = CurrentFrame.CurrentLexer);
        PopupLex.Items.Add(but);
      end;
    FreeAndNil(s);
@@ -6402,7 +6400,7 @@ begin
   n:= (Sender as TComponent).Tag;
   if n = -1 then
   begin
-    CurrentFrame.TextSource.SyntaxAnalyzer:= nil;
+    CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= nil;
     SyntaxManager.CurrentLexer:= nil;
     SyntaxManagerChange(Self);
   end
@@ -6411,8 +6409,8 @@ begin
     i:= CurrentFrame.EditorMaster.TopLine;
     j:= CurrentFrame.EditorSlave.TopLine;
 
-    CurrentFrame.TextSource.SyntaxAnalyzer:= SyntaxManager.Analyzers[n];
-    SyntaxManager.CurrentLexer:= CurrentFrame.TextSource.SyntaxAnalyzer;
+    CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.Analyzers[n];
+    SyntaxManager.CurrentLexer:= CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer;
     SyntaxManagerChange(Self);
 
     CurrentFrame.EditorMaster.TopLine:= i;
@@ -6765,7 +6763,7 @@ end;
 
 procedure TfmMain.FinderFail(Sender: TObject);
 begin
-  HideProgress;
+  DoProgressHide;
   DoHint(WideFormat(DKLangConstW('MNFound2'), [Finder.FindText]));
   MsgBeep;
 end;
@@ -7156,9 +7154,9 @@ begin
   tf:= TTextFormat((Sender as TComponent).Tag);
   if CurrentFrame <> nil then
     with CurrentFrame do
-      if tf <> TextSource.Lines.TextFormat then
+      if tf <> EditorMaster.TextSource.Lines.TextFormat then
       begin
-        TextSource.Lines.TextFormat:= tf;
+        EditorMaster.TextSource.Lines.TextFormat:= tf;
         if AManual then
         begin
           Modified:= true;
@@ -7174,7 +7172,7 @@ var
 begin
   F:= CurrentFrame;
   if F<>nil then
-    case F.TextSource.Lines.TextFormat of
+    case F.EditorMaster.TextSource.Lines.TextFormat of
       tfCR: StatusItemEnds.Caption:= 'Mac';
       tfNL: StatusItemEnds.Caption:= 'Unix';
       else StatusItemEnds.Caption:= 'Win';
@@ -7869,9 +7867,9 @@ begin
   end
   else
   begin
-    if (CurrentFrame<>nil) and (CurrentFrame.TextSource.SyntaxAnalyzer<>nil) then
-      StatusItemLexer.Caption:= CurrentFrame.TextSource.SyntaxAnalyzer.LexerName
-    else
+    if CurrentFrame<>nil then
+      StatusItemLexer.Caption:= CurrentFrame.CurrentLexer;
+    if StatusItemLexer.Caption='' then   
       StatusItemLexer.Caption:= DKLangConstW('None');
   end;
 
@@ -8116,29 +8114,29 @@ begin
     case AEnc of
     cp__UTF8:
       begin
-        TextSource.Lines.CodePage:= 0;
-        TextSource.Lines.TextCoding:= tcUTF8;
+        EditorMaster.TextSource.Lines.CodePage:= 0;
+        EditorMaster.TextSource.Lines.TextCoding:= tcUTF8;
       end;
     cp__UTF8_noBOM:
       begin
         SkipSign:= True;
-        TextSource.Lines.CodePage:= 0;
-        TextSource.Lines.TextCoding:= tcUTF8;
+        EditorMaster.TextSource.Lines.CodePage:= 0;
+        EditorMaster.TextSource.Lines.TextCoding:= tcUTF8;
       end;
     cp__Unicode:
       begin
-        TextSource.Lines.CodePage:= 0;
-        TextSource.Lines.TextCoding:= tcUnicode;
+        EditorMaster.TextSource.Lines.CodePage:= 0;
+        EditorMaster.TextSource.Lines.TextCoding:= tcUnicode;
       end;
     cp__UnicodeBE:
       begin
-        TextSource.Lines.CodePage:= 0;
-        TextSource.Lines.TextCoding:= tcSwapUnicode;
+        EditorMaster.TextSource.Lines.CodePage:= 0;
+        EditorMaster.TextSource.Lines.TextCoding:= tcSwapUnicode;
       end;
     else
       begin
-        TextSource.Lines.TextCoding:= tcANSI;
-        TextSource.Lines.CodePage:= AEnc;
+        EditorMaster.TextSource.Lines.TextCoding:= tcANSI;
+        EditorMaster.TextSource.Lines.CodePage:= AEnc;
       end;
     end;
   end;
@@ -8159,9 +8157,9 @@ begin
           if IsFileWithBOM(FileName) then
             MsgWarn(WideFormat(DKLangConstW('cpBOM'), [WideExtractFileName(FileName)]), Handle);
           Modified:= False;
-          TextSource.Lines.SkipSignature:= True;
+          EditorMaster.TextSource.Lines.SkipSignature:= True;
           DoFrameReloadInt(Frame);
-          TextSource.Lines.SkipSignature:= False;
+          EditorMaster.TextSource.Lines.SkipSignature:= False;
          end;
 
       if not ACanReload then
@@ -8192,10 +8190,10 @@ procedure TfmMain.UpdateStatusbarEnc(F: TEditorFrame);
 begin
   if F<>nil then
   with F do
-  case TextSource.Lines.TextCoding of
+  case EditorMaster.TextSource.Lines.TextCoding of
     tcAnsi:
     begin
-      case Textsource.Lines.Codepage of
+      case EditorMaster.TextSource.Lines.Codepage of
       CP_ACP:
         StatusItemEnc.Caption:= 'ANSI';
       CP_OEMCP:
@@ -8203,7 +8201,7 @@ begin
       CP_MACCP:
         StatusItemEnc.Caption:= 'Mac';
       else
-        StatusItemEnc.Caption:= IntToStr(Textsource.Lines.Codepage);
+        StatusItemEnc.Caption:= IntToStr(EditorMaster.TextSource.Lines.Codepage);
       end;
     end;
     tcUnicode:
@@ -8449,7 +8447,15 @@ end;
     //Status.Enabled:= En;
 
     if Assigned(fmSR) then
-      fmSR.Enabled:= En;
+    begin
+      fmSR.PanelBusy.Align:= alClient;
+      fmSR.PanelBusy.Visible:= not En;
+      fmSR.StatusFind.Visible:= En;
+      fmSR.labMultiline.Visible:= En;
+      fmSR.labStyle.Visible:= En;
+      fmSR.labRe.Visible:= En;
+    end;
+
     if Assigned(fmNumConv) then
       fmNumConv.Enabled:= En;
 
@@ -8459,7 +8465,7 @@ end;
       Screen.Cursor:= crHourGlass;
   end;
 
-  procedure TfmMain.ShowProgress(AMode: TProgressType);
+  procedure TfmMain.DoProgressShow(AMode: TProgressType);
   begin
     UpdateFormEnabled(false);
 
@@ -8482,7 +8488,7 @@ end;
     Application.ProcessMessages;
   end;
 
-  procedure TfmMain.HideProgress;
+  procedure TfmMain.DoProgressHide;
   begin
     UpdateFormEnabled(true);
 
@@ -8510,14 +8516,14 @@ begin
   oldLength:= Ed.SelLength;
 
   if IsProgressNeeded(Ed) then
-    ShowProgress;
+    DoProgressShow;
 
   try
     FindAction(act);
   finally
     FinderPro:= nil;
     FinderProNum:= 0;
-    HideProgress;
+    DoProgressHide;
   end;
 
   //record find action in macro
@@ -8820,10 +8826,8 @@ begin
   //Handle tools
   for i:= Low(opTools) to High(opTools) do
    with opTools[i] do
-    with CurrentFrame.TextSource do
      if (ToolCaption<>'') and (ToolCommand<>'') and (S=ToolKeys) and
-      ((ToolLexer='') or
-       ((SyntaxAnalyzer<>nil) and (ToolLexer=SyntaxAnalyzer.LexerName))) then
+       ((ToolLexer='') or (CurrentFrame.CurrentLexer=ToolLexer)) then
     begin
       RunTool(i);
       Key:= 0;
@@ -8939,7 +8943,7 @@ begin
 
     p1:= F.EditorMaster.TopLine;
     p2:= F.EditorSlave.TopLine;
-    F.TextSource.Lines.LoadFromFile(F.FileName);
+    F.EditorMaster.TextSource.Lines.LoadFromFile(F.FileName);
     F.EditorMaster.TopLine:= p1;
     F.EditorSlave.TopLine:= p2;
 
@@ -9359,7 +9363,7 @@ begin
       if Ed.Lines.TextCoding=tcAnsi then
       begin
         ch:= Ed.Lines.Chars[Ed.CaretStrPos+1];
-        s:= UnicodeToAnsiCP(ch, CurrentFrame.TextSource.Lines.Codepage);
+        s:= UnicodeToAnsiCP(ch, CurrentFrame.EditorMaster.TextSource.Lines.Codepage);
         if s<>'' then SelChar:= s[1];
       end
       else
@@ -10023,7 +10027,7 @@ end;
 procedure TfmMain.DoEnableTool(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
 begin
   if CurrentFrame <> nil then
-  with CurrentFrame.TextSource do
+  with CurrentFrame.EditorMaster.TextSource do
   with opTools[n] do
    if not ForCtx or ToolContextItem then
    begin
@@ -10148,8 +10152,7 @@ begin
     edLexer.Items.Add(DKLangConstW('AllL'));
     edLexer.Items.AddStrings(L);
 
-    if CurrentFrame.TextSource.SyntaxAnalyzer<>nil then
-      SCurLex:= CurrentFrame.TextSource.SyntaxAnalyzer.LexerName;
+    SCurLex:= CurrentFrame.CurrentLexer;
 
     Left:= Self.Monitor.Left + (Self.Monitor.Width - Width) div 2;
     Top:= Self.Monitor.Top + (Self.Monitor.Height - Height) div 2;
@@ -10916,8 +10919,8 @@ begin
     acNew.Execute;
   CurrentEditor.LoadFromFile(fn);
 
-  CurrentFrame.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(fn);
-  SyntaxManager.CurrentLexer:= CurrentFrame.TextSource.SyntaxAnalyzer;
+  CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(fn);
+  SyntaxManager.CurrentLexer:= CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer;
   SyntaxManagerChange(Self);
 
   ApplyFrameEncodingAndReload(CurrentFrame, Enc);
@@ -11396,7 +11399,7 @@ begin
         WriteInteger('Top2', IntToStr(i), F.EditorSlave.TopLine);
         WriteInteger('Cur', IntToStr(i), F.EditorMaster.CaretStrPos);
         WriteInteger('Cur2', IntToStr(i), F.EditorSlave.CaretStrPos);
-        WriteBool('RO', IntToStr(i), F.TextSource.ReadOnly);
+        WriteBool('RO', IntToStr(i), F.EditorMaster.TextSource.ReadOnly);
         WriteBool('Wrap', IntToStr(i), F.EditorMaster.WordWrap);
         WriteBool('Wrap2', IntToStr(i), F.EditorSlave.WordWrap);
         WriteBool('Line', IntToStr(i), F.EditorMaster.LineNumbers.Visible);
@@ -11531,7 +11534,7 @@ begin
           F.EditorMaster.CaretStrPos:= ReadInteger('Cur', IntToStr(i), 0);
           F.EditorSlave.CaretStrPos:= ReadInteger('Cur2', IntToStr(i), 0);
         end;
-        F.TextSource.ReadOnly:= ReadBool('RO', IntToStr(i), false);
+        F.EditorMaster.TextSource.ReadOnly:= ReadBool('RO', IntToStr(i), false);
         F.EditorMaster.WordWrap:= ReadBool('Wrap', IntToStr(i), false);
         F.EditorSlave.WordWrap:= ReadBool('Wrap2', IntToStr(i), false);
         F.EditorMaster.LineNumbers.Visible:= ReadBool('Line', IntToStr(i), false);
@@ -12376,13 +12379,13 @@ begin
     ACloseAfter:= cbCloseAfter.Checked;
     ASortMode:= TSynFileSort(edSort.ItemIndex);
 
-    ShowProgress(proFindFiles);
+    DoProgressShow(proFindFiles);
     try
       FFindToList(FListFiles, edDir.Text, edFileInc.Text, edFileExc.Text,
         cbSubDir.Checked, cbNoRO.Checked, cbNoHid.Checked, cbNoHid2.Checked);
       if StopFind then
       begin
-        HideProgress;
+        DoProgressHide;
         RestoreFinder;
         Exit
       end;
@@ -12390,7 +12393,7 @@ begin
       on E: Exception do
       begin
         MsgExcept('Error on searching for files', E, Handle);
-        HideProgress;
+        DoProgressHide;
         Exit;
       end;
     end;
@@ -12406,7 +12409,7 @@ begin
           FListFiles.Delete(i);
         if IsProgressStopped(N-i, N) then
         begin
-          HideProgress;
+          DoProgressHide;
           RestoreFinder;
           Exit
         end;
@@ -12415,7 +12418,7 @@ begin
       on E: Exception do
       begin
         MsgExcept('Error on excluding binary files', E, Handle);
-        HideProgress;
+        DoProgressHide;
         Exit;
       end;
     end;
@@ -12531,7 +12534,7 @@ begin
     except
       on E: Exception do
       begin
-        HideProgress;
+        DoProgressHide;
         MsgExcept('Error on finding in files', E, Handle);
         Exit
       end;
@@ -12621,7 +12624,7 @@ begin
         //if "Replace in files" stopped
         if IsProgressStopped(i+1, FListFiles.Count) then
         begin
-          HideProgress;
+          DoProgressHide;
           UpdateTreeReplace(ANodeText, ACountFiles, ACountMatches, true);
           Break;
         end;
@@ -12629,7 +12632,7 @@ begin
     except
       on E: Exception do
       begin
-        HideProgress;
+        DoProgressHide;
         MsgExcept('Error on replacing in files', E, Handle);
         Exit;
       end;
@@ -12660,13 +12663,13 @@ begin
 
   if (AErrorMode>0) or (not ACloseAfter) then
   begin
-    HideProgress;
+    DoProgressHide;
     goto _Show;
   end;
 
   //restore finder
   _Exit:
-  HideProgress;
+  DoProgressHide;
   StopFind:= false;
   RestoreFinder;
 
@@ -13424,7 +13427,7 @@ begin
     TreeFind.Items.AddChildObject(NodeFile, '...', Info)
   else
     TreeFind.Items.AddChildObject(NodeFile,
-      SFindResPrefix(FListResFN, LineNum)+S, Info);
+      SFindResPrefix({FListResFN,} LineNum)+S, Info);
 
   //scroll to last file, update
   FTreeRoot.Expand(false);
@@ -13878,7 +13881,7 @@ end;
 
 function TfmMain.GetFrameEncoding(F: TEditorFrame): integer;
 begin
-  case F.TextSource.Lines.TextCoding of
+  case F.EditorMaster.TextSource.Lines.TextCoding of
     tcUTF8:
     begin
       if F.SkipSign then
@@ -13891,7 +13894,7 @@ begin
     tcSwapUnicode:
       Result:= cp__UnicodeBE;
     tcAnsi:
-      Result:= F.TextSource.Lines.Codepage;
+      Result:= F.EditorMaster.TextSource.Lines.Codepage;
     else
       Result:= cp_ACP;
   end;
@@ -15135,8 +15138,8 @@ begin
   end;
 
   //ext - 1st extension of lexer
-  if CurrentFrame.TextSource.SyntaxAnalyzer<>nil then
-    ext:= CurrentFrame.TextSource.SyntaxAnalyzer.Extentions
+  if CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer<>nil then
+    ext:= CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer.Extentions
   else
     ext:= '';
   SDeleteFromW(ext, ' ');
@@ -15747,8 +15750,8 @@ begin
   Ed:= CurrentEditor;
 
   //get comment chars
-  if CurrentFrame.TextSource.SyntaxAnalyzer<>nil then
-    sCom:= CurrentFrame.TextSource.SyntaxAnalyzer.LineComment
+  if CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer<>nil then
+    sCom:= CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer.LineComment
   else
     sCom:= '';
   if sCom='' then
@@ -16434,7 +16437,7 @@ begin
   N:= CurrentEditor.Lines.Count;
   if N=0 then Exit;
 
-  ShowProgress(proBookmarks);
+  DoProgressShow(proBookmarks);
 
   with CurrentFrame do
   begin
@@ -16454,7 +16457,7 @@ begin
   end;
 
   UpdateStatusbar;
-  HideProgress;
+  DoProgressHide;
 end;
 
 procedure TfmMain.ecBkCopyExecute(Sender: TObject);
@@ -16498,7 +16501,7 @@ begin
   N:= ed.Lines.Count;
   if N=0 then Exit;
 
-  ShowProgress(proBookmarks);
+  DoProgressShow(proBookmarks);
   NDel:= 0;
 
   with ed do
@@ -16522,7 +16525,7 @@ begin
   end;
 
   MsgDelLines(NDel);
-  HideProgress;
+  DoProgressHide;
   UpdateStatusbar;
 end;
 
@@ -16550,7 +16553,7 @@ begin
   N:= CurrentEditor.Lines.Count;
   if N=0 then Exit;
 
-  ShowProgress(proBookmarks);
+  DoProgressShow(proBookmarks);
 
   with CurrentEditor do
   begin
@@ -16570,7 +16573,7 @@ begin
     EndUpdate;
   end;
 
-  HideProgress;
+  DoProgressHide;
   UpdateStatusbar;
 end;
 
@@ -18005,7 +18008,7 @@ procedure TfmMain.DoAutoSave;
   begin
     Result:=
       (opASaveMaxSizeKb = 0) or
-      (F.TextSource.Lines.TextLength <= opASaveMaxSizeKb * 1024);
+      (F.EditorMaster.TextSource.Lines.TextLength <= opASaveMaxSizeKb * 1024);
   end;
   //
   function FrameOk(F: TEditorFrame): boolean;
@@ -18038,8 +18041,8 @@ procedure TfmMain.DoAutoSave;
         ForceDirectories(dir);
 
       //get save extention
-      if F.TextSource.SyntaxAnalyzer<>nil then
-        ext:= F.TextSource.SyntaxAnalyzer.Extentions
+      if F.EditorMaster.TextSource.SyntaxAnalyzer<>nil then
+        ext:= F.EditorMaster.TextSource.SyntaxAnalyzer.Extentions
       else
         ext:= 'txt';
       SDeleteFromW(ext, ' ');
@@ -18498,18 +18501,16 @@ begin
   Sender.Canvas.Font.Color:= opColorOutRedText;
   Sender.Canvas.Brush.Color:= opColorOutHi;
 
-  sInf:= SFindResPrefix(Info.FN, Info.LineNum);
+  sInf:= SFindResPrefix({Info.FN,} Info.LineNum);
   s:= Copy(TTntTreeNode(Node).Text, 1, Length(sInf)+Info.ColNum);
   n:= ecTextExtent(Sender.Canvas, s).cx;
   s:= Copy(TTntTreeNode(Node).Text, Length(sInf)+Info.ColNum+1, Info.Len);
   ecTextOut(Sender.Canvas, R.Left+n, R.Top, s);
 end;
 
-function TfmMain.SFindResPrefix(const FN: Widestring; LineNum: integer): Widestring;
+function TfmMain.SFindResPrefix(LineNum: integer): Widestring;
 begin
-  Result:=
-    //WideExtractFileName(FN)+ //no need to show filename
-    WideFormat('(%d): ', [LineNum+1]);
+  Result:= WideFormat('(%d): ', [LineNum+1]);
 end;
 
 procedure TfmMain.TreeFindKeyDown(Sender: TObject; var Key: Word;
@@ -19144,9 +19145,7 @@ begin
     AFN:= F.FileName;
     if AFN='' then
       AFN:= DKLangConstW('Untitled');
-    ALex:= '';
-    if F.TextSource.SyntaxAnalyzer<>nil then
-      ALex:= F.TextSource.SyntaxAnalyzer.LexerName;
+    ALex:= F.CurrentLexer;
   end
   else
   begin
@@ -19176,11 +19175,11 @@ begin
   NWords:= 0;
   NChars:= 0;
   NLines:= 0;
-  if (CurrentFrame<>nil) and (CurrentFrame.TextSource<>nil) then
+  if (CurrentFrame<>nil) and (CurrentFrame.EditorMaster.TextSource<>nil) then
   try
     Screen.Cursor:= crHourGlass;
-    EditorCountWords(CurrentFrame.TextSource.Lines, NWords, NChars);
-    NLines:= CurrentFrame.TextSource.Lines.Count;
+    EditorCountWords(CurrentFrame.EditorMaster.TextSource.Lines, NWords, NChars);
+    NLines:= CurrentFrame.EditorMaster.TextSource.Lines.Count;
   finally
     Screen.Cursor:= crDefault;
   end;
@@ -21263,7 +21262,7 @@ begin
     Ind_Old:= SIndentOf(Lines[Ln1]);
       
     BeginUpdate;
-    ShowProgress;
+    DoProgressShow;
 
     try
       for i:= Ln1+1 to Ln2 do
@@ -21280,7 +21279,7 @@ begin
         end;  
       end;
     finally
-      HideProgress;
+      DoProgressHide;
       EndUpdate;
     end;
   end;
@@ -22188,7 +22187,7 @@ begin
   UpdatePanelOut(tbFind);
   plOut.Show;
 
-  ShowProgress(proFindText);
+  DoProgressShow(proFindText);
   try
     NTotalSize:= 0;
     NDoneSize:= 0;
@@ -22221,7 +22220,7 @@ begin
     on E: Exception do
     begin
       MsgExcept('Error on searching in tabs', E, Handle);
-      HideProgress;
+      DoProgressHide;
       Exit;
     end;
   end;
@@ -23723,8 +23722,8 @@ procedure TfmMain.DoCheckUnicodeNeeded(Frame: TEditorFrame);
   //
 begin
   if opUnicodeNeeded=0 then Exit;
-  if Frame.TextSource.Lines.TextCoding<>tcAnsi then Exit;
-  if not Frame.TextSource.Lines.ContainUnicode then Exit;
+  if Frame.EditorMaster.TextSource.Lines.TextCoding<>tcAnsi then Exit;
+  if not Frame.EditorMaster.TextSource.Lines.ContainUnicode then Exit;
 
   case opUnicodeNeeded of
     1:
@@ -23761,7 +23760,7 @@ end;
 
 procedure TfmMain.PopupLEPopup(Sender: TObject);
 begin
-  case CurrentFrame.TextSource.Lines.TextFormat of
+  case CurrentFrame.EditorMaster.TextSource.Lines.TextFormat of
     tfCR: TbxItemEndMac.Checked:= true;
     tfNL: TbxItemEndUn.Checked:= true;
     else TbxItemEndWin.Checked:= true;
@@ -23771,7 +23770,7 @@ end;
 procedure TfmMain.TBXSubmenuLineEndsPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
-  case CurrentFrame.TextSource.Lines.TextFormat of
+  case CurrentFrame.EditorMaster.TextSource.Lines.TextFormat of
     tfCR: TbxItemEndMMac.Checked:= true;
     tfNL: TbxItemEndMUn.Checked:= true;
     else TbxItemEndMWin.Checked:= true;
@@ -27130,7 +27129,7 @@ begin
       if SId=cFramePropLexer then
         begin
           if FCanUseLexer(F.FileName) then
-            F.TextSource.SyntaxAnalyzer:= SyntaxManager.FindAnalyzer(SVal);
+            F.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.FindAnalyzer(SVal);
         end
       else
       if SId=cFramePropWrap then
@@ -28470,7 +28469,7 @@ begin
     on E: Exception do
     begin
       MsgExcept('Error on searching in tab', E, Handle);
-      HideProgress;
+      DoProgressHide;
       Exit;
     end;
   end;
