@@ -687,7 +687,7 @@ begin
   old:='';
 
   try
-    for i:=0 to SyntKeyMapping.Items.Count-1 do
+    for i:= 0 to SyntKeyMapping.Items.Count-1 do
       if SyntKeyMapping.Items[i].Customizable then
         if LCat.IndexOf(SyntKeyMapping.Items[i].Category)<0 then
           LCat.Add(SyntKeyMapping.Items[i].Category);
@@ -709,8 +709,8 @@ begin
 
     //list keys
     Writeln(f, '<p><table class="sample">');
-    for k:=0 to LCat.Count-1 do //categories
-     for i:=0 to SyntKeyMapping.Items.Count-1 do //items
+    for k:= 0 to LCat.Count-1 do //categories
+     for i:= 0 to SyntKeyMapping.Items.Count-1 do //items
       if SyntKeyMapping.Items[i].Category = LCat[k] then
       begin
         if not SyntKeyMapping.Items[i].Customizable then Continue;

@@ -1137,7 +1137,7 @@ type
     ImageListUser1: TPngImageList;
     ImageListUser2: TPngImageList;
     ImageListUser3: TPngImageList;
-    TBXDockLeft1: TSpTbxDock;
+    TBXDockLeft1: TSpTBXDock;
     TBXDockRight1: TSpTbxDock;
     TBXDockBottom1: TSpTbxDock;
     SplitterLeft: TSpTBXSplitter;
@@ -6333,64 +6333,70 @@ end;
 
 procedure TfmMain.UpdateLexList;
 var
-  i: integer;
-  but: TSpTbxItem;
+  ACurLexer: string;
+  //
+  function DoMakeItem(const SName: string; NTag: Integer): TSpTbxItem;
+  begin
+    Result:= TSpTbxItem.Create(Self);
+    if SName<>'' then
+      Result.Caption:= SName
+    else
+      Result.Caption:= DKLangConstW('None');
+    Result.Tag:= NTag;
+    Result.OnClick:= LexListClick;
+    Result.RadioItem:= true;
+    Result.Checked:= SName = ACurLexer;
+  end;
+  //
+var
   menu: TSpTbxSubmenuItem;
   s: TStringList;
+  i, nTag: integer;
   ch: char;
 begin
- PopupLex.Items.Clear;
- if (SyntaxManager.AnalyzerCount>0) then
- begin
-   but:= TSpTbxItem.Create(Self);
-   but.Caption:= DKLangConstW('None');
-   but.Tag:= -1;
-   but.OnClick:= LexListClick;
-   but.RadioItem:= true;
-   but.Checked:= (CurrentFrame<>nil) and (CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer=nil);
-   PopupLex.Items.Add(but);
+  PopupLex.Items.Clear;
+  if SyntaxManager.AnalyzerCount=0 then Exit;
 
-   s:=TStringList.Create;
-   s.Sorted:=true;
-   s.Duplicates:=dupIgnore;
-   for i:=0 to SyntaxManager.AnalyzerCount-1 do
-     if not SyntaxManager.Analyzers[i].Internal then
-       s.AddObject(SyntaxManager.Analyzers[i].LexerName, TObject(i));
+  ACurLexer:= CurrentLexerForFile;
+  PopupLex.Items.Add(DoMakeItem('', -1));
 
-  if opLexerGroups then
-   for ch:='A' to 'Z' do begin
-     menu:=TSpTbxSubmenuItem.Create(Self);
-     menu.Caption:=ch;
-     PopupLex.Items.Add(menu);
+  s:= TStringList.Create;
+  try
+    s.Sorted:= true;
+    s.Duplicates:= dupIgnore;
+    for i:= 0 to SyntaxManager.AnalyzerCount-1 do
+      if not SyntaxManager.Analyzers[i].Internal then
+        s.AddObject(SyntaxManager.Analyzers[i].LexerName, TObject(i));
 
-     for i:=0 to s.Count-1 do
-       if (UpCase(s[i][1]) = UpCase(ch)) then begin
-         if SyntaxManager.Analyzers[integer(s.Objects[i])].Internal then Continue;
-         but:=TSpTbxItem.Create(Self);
-         but.Caption:=s[i];
-         but.Tag:=integer(s.Objects[i]);
-         but.OnClick:=LexListClick;
-         but.RadioItem:=true;
-         but.Checked:=(CurrentFrame<>nil) and (s[i] = CurrentFrame.CurrentLexer);
-         menu.Add(but);
-       end;
-     if menu.Count = 0 then
-       FreeAndNil(menu);
-   end
-   else //not opLexerGroups
-     for i:=0 to s.Count-1 do
-     begin
-       if SyntaxManager.Analyzers[integer(s.Objects[i])].Internal then Continue;
-       but:=TSpTbxItem.Create(Self);
-       but.Caption:=s[i];
-       but.Tag:=integer(s.Objects[i]);
-       but.OnClick:=LexListClick;
-       but.RadioItem:=true;
-       but.Checked:=(CurrentFrame<>nil) and (s[i] = CurrentFrame.CurrentLexer);
-       PopupLex.Items.Add(but);
-     end;
-   FreeAndNil(s);
- end;
+    if opLexerGroups then
+    begin
+      for ch:= 'A' to 'Z' do
+      begin
+        menu:= TSpTbxSubmenuItem.Create(Self);
+        menu.Caption:= ch;
+        PopupLex.Items.Add(menu);
+
+        for i:= 0 to s.Count-1 do
+          if (UpCase(s[i][1]) = UpCase(ch)) then
+          begin
+            nTag:= integer(s.Objects[i]);
+            if SyntaxManager.Analyzers[nTag].Internal then Continue;
+            menu.Add(DoMakeItem(s[i], nTag));
+          end;
+        if menu.Count=0 then
+          FreeAndNil(menu);
+      end;
+    end  
+    else //not opLexerGroups
+      for i:= 0 to s.Count-1 do
+      begin
+        nTag:= integer(s.Objects[i]);
+        if SyntaxManager.Analyzers[nTag].Internal then Continue;
+        PopupLex.Items.Add(DoMakeItem(s[i], nTag));
+      end;
+  finally
+    FreeAndNil(s);
+  end;
 end;
 
 procedure TfmMain.LexListClick(Sender: TObject);
@@ -7305,7 +7311,7 @@ begin
   List:= TStringList.Create;
   try
     List.LoadFromFile(fn);
-    for i:=0 to List.Count-1 do
+    for i:= 0 to List.Count-1 do
     begin
       s:= List[i];
       if s='' then
@@ -8441,8 +8447,11 @@ end;
 
     TbxDockTop.Enabled:= En;
     TbxDockLeft.Enabled:= En;
+    TbxDockLeft1.Enabled:= En;
     TbxDockRight.Enabled:= En;
+    TbxDockRight1.Enabled:= En;
     TbxDockBottom.Enabled:= En;
+    TbxDockBottom1.Enabled:= En;
     Menu.Enabled:= En;
     //Status.Enabled:= En;
 

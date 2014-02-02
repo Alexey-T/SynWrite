@@ -32,12 +32,14 @@ type
     edKeepBlanks: TTntComboBox;
     LabelTextShow: TLabel;
     cbAutoCase: TTntCheckBox;
+    labAutoCloseHelp: TTntLabel;
     procedure cbOvrClick(Sender: TObject);
     procedure ListLexClick(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
     procedure edTabChange(Sender: TObject);
     procedure LabelTextShowClick(Sender: TObject);
+    procedure labAutoCloseHelpClick(Sender: TObject);
   private
     { Private declarations }
     FUpdLock: boolean;
@@ -53,7 +55,10 @@ type
 
 implementation
 
-uses ATxSProc, StrUtils;
+uses
+  StrUtils,
+  ATxSProc,
+  unProcHelp;
 
 {$R *.dfm}
 
@@ -203,6 +208,11 @@ procedure TfmSetupOvr.LabelTextShowClick(Sender: TObject);
 begin
   with edText do
     Visible:= not Visible; 
+end;
+
+procedure TfmSetupOvr.labAutoCloseHelpClick(Sender: TObject);
+begin
+  SynHelpTopic(helpAutoCase, Handle);
 end;
 
 end.
