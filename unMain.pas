@@ -21610,11 +21610,12 @@ begin
   end;
 
   {
-  //test
+  //test output
   sValue:= '';
   for i:= 0 to 5 do
     with FPluginsEvent[i] do
-      sValue:= sValue+sFilename+#13+sLexers+#13+IfThen(cSynEventOnSave in Events, 'on-save');
+      if SFilename<>'' then
+        sValue:= sValue+SFilename+#13+SLexers+#13+IfThen(cSynEventOnSave in Events, 'on_save');
   MsgInfo(sValue, Handle);
   }
 end;
@@ -28608,12 +28609,21 @@ end;
 
 function TfmMain.StringToPyEvents(const Str: string): TSynPyEvents;
 var
+  SText, SItem: Widestring;
   ev: TSynPyEvent;
 begin
   Result:= [];
-  for ev:= Low(TSynPyEvent) to High(TSynPyEvent) do
-    if IsStringListed(cSynPyEvent[ev], Str) then
-      Include(Result, ev);
+  SText:= Str;
+  repeat
+    SItem:= SGetItem(SText);
+    if SItem='' then Break;
+    for ev:= Low(TSynPyEvent) to High(TSynPyEvent) do
+      if SItem=cSynPyEvent[ev] then
+      begin
+        Include(Result, ev);
+        Break
+      end;
+  until false;      
 end;
 
 function TfmMain.DoCheckPyEvent(AFrame: TEditorFrame; AEvent: TSynPyEvent): boolean;

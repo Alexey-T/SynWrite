@@ -92,7 +92,7 @@ object fmSetupOvr: TfmSetupOvr
     OnClick = LabelTextShowClick
   end
   object labAutoCloseHelp: TTntLabel
-    Left = 408
+    Left = 400
     Top = 218
     Width = 13
     Height = 13
@@ -241,7 +241,7 @@ object fmSetupOvr: TfmSetupOvr
   object cbAutoCase: TTntCheckBox
     Left = 184
     Top = 216
-    Width = 217
+    Width = 205
     Height = 17
     Alignment = taLeftJustify
     Caption = 'Auto-correct identifier case'
