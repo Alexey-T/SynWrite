@@ -55,7 +55,9 @@ uses
   ATxSProc,
   ecMacroRec,
   ecExtHighlight,
-  ecSpell, PythonEngine, PythonGUIInputOutput;
+  ecSpell,
+  PythonEngine,
+  PythonGUIInputOutput;
 
 const
   cMaxFilesInFolder = 50;
@@ -2758,16 +2760,20 @@ type
     procedure DoZoomEditor(NZoom: Integer);
     procedure DoExtendSelection(Ed: TSyntaxMemo);
     function MsgConfirmOpenSaveSession(AFilesCount: Integer; const AFileName: string; ASaveMode: boolean): boolean;
-    procedure DoEnterPyConsoleCommand(const Str: Widestring);
-    procedure DoNewPythonPluginDialog;
-    procedure DoRegisterPyCommandPlugin(const SId: string);
-    function DoLoadPyPlugin(const SFilename, SCmd: string): string;
-    function DoLoadPyEventPlugin(const SFilename: string; AEvent: TSynPyEvent): string;
-    procedure DoLogPyCommand(const Str: Widestring);
-    procedure DoRepeatPyConsoleCommand;
+
+    //python group
+    procedure DoPyConsole_EnterCommand(const Str: Widestring);
+    procedure DoPyConsole_LogString(const Str: Widestring);
+    procedure DoPyConsole_RepeatCommand;
+    procedure DoPyNewPluginDialog;
+    procedure DoPyRegisterCommandPlugin(const SId: string);
+    function DoPyLoadPlugin(const SFilename, SCmd: string): string;
+    function DoPyEventPlugin(const SFilename: string; AEvent: TSynPyEvent): string;
+    function DoPyEventCheck(AFrame: TEditorFrame; AEvent: TSynPyEvent): boolean;
+    function DoPyStringToEvents(const Str: string): TSynPyEvents;
+
     procedure LoadConsoleHist;
     procedure SaveConsoleHist;
-
     procedure InitSnippets;
     procedure LoadSnippets;
     procedure ClearSnippets;
@@ -2790,8 +2796,6 @@ type
       const Tok: TSearchTokens;
       OptBkmk, OptExtSel: boolean): Integer;
     function DoReadLexersCfg(const ASection, AId: string): string;
-    function StringToPyEvents(const Str: string): TSynPyEvents;
-    function DoCheckPyEvent(AFrame: TEditorFrame; AEvent: TSynPyEvent): boolean;
     //end of private
 
   protected
@@ -3670,7 +3674,7 @@ begin
   Frame.DoStopNotif;
 
   DoCheckUnicodeNeeded(Frame);
-  if not DoCheckPyEvent(Frame, cSynEventOnSave) then Exit;
+  if not DoPyEventCheck(Frame, cSynEventOnSave) then Exit;
 
   AUntitled:= Frame.IsNewFile;
   if not PromtDialog then
@@ -6270,7 +6274,7 @@ begin
     sm_ScrollCurrentLineToBottom: EditorScrollCurrentLineTo(Ed, cScrollToBottom);
     sm_ScrollCurrentLineToMiddle: EditorScrollCurrentLineTo(Ed, cScrollToMiddle);
 
-    sm_NewPythonPluginDialog: DoNewPythonPluginDialog;
+    sm_NewPythonPluginDialog: DoPyNewPluginDialog;
     sm_NewSnippetDialog: DoSnippetNew;
     sm_SnippetsDialog: DoSnippetListDialog('');
 
@@ -21600,7 +21604,7 @@ begin
       if NIndex<=High(FPluginsEvent) then
       begin
         FPluginsEvent[NIndex].SFileName:= sValue;
-        FPluginsEvent[NIndex].Events:= StringToPyEvents(sValue2);
+        FPluginsEvent[NIndex].Events:= DoPyStringToEvents(sValue2);
         FPluginsEvent[NIndex].SLexers:= sValue3;
         Inc(NIndex);
       end;
@@ -22779,7 +22783,7 @@ begin
       if IsLexerListed(CurrentLexer, SLexers) then
       begin
         if SBegin(SFileName, cPyPrefix) then
-          DoLoadPyPlugin(SFileName, 'findid')
+          DoPyLoadPlugin(SFileName, 'findid')
         else
           DoLoadPlugin_FindID(i);
         CurrentEditor.ResetSelection; //reset selection caused by Ctrl+Alt+click
@@ -22803,7 +22807,7 @@ begin
         //auto-completion Py plugin?
         if SBegin(SFileName, cPyPrefix) then
         begin
-          DoLoadPyPlugin(SFileName, 'complete');
+          DoPyLoadPlugin(SFileName, 'complete');
           Result:= cPyAcpString;
           Exit
         end;
@@ -22947,7 +22951,7 @@ begin
     if SBegin(SFilename, cPyPrefix) then
     begin
       //Python command plugin
-      DoLoadPyPlugin(
+      DoPyLoadPlugin(
         SFilename,
         SCmd);
     end
@@ -25520,7 +25524,7 @@ begin
   begin
     PyCmd:= Cmd;
     PyFile:= SGetItem(PyCmd, '/');
-    DoLoadPyPlugin(
+    DoPyLoadPlugin(
       PyFile,
       PyCmd);
   end;
@@ -27498,10 +27502,10 @@ begin
   UpdatePanelOut(tbConsole);
 end;
 
-procedure TfmMain.DoEnterPyConsoleCommand(const Str: Widestring);
+procedure TfmMain.DoPyConsole_EnterCommand(const Str: Widestring);
 //var Obj: PPyObject;
 begin
-  DoLogPyCommand(cPyConsolePrompt + Str);
+  DoPyConsole_LogString(cPyConsolePrompt + Str);
 
   try
     with GetPythonEngine do
@@ -27515,7 +27519,7 @@ begin
       {
       Obj:= EvalString(UTF8Encode(Str));
       if Obj<>Py_None then
-        DoLogPyCommand(PyObjectAsString(Obj));
+        DoPyConsole_LogString(PyObjectAsString(Obj));
       }
     end;
   except
@@ -27539,7 +27543,7 @@ begin
       edConsole.Text:= '';
     end
     else
-      DoEnterPyConsoleCommand(edConsole.Text);
+      DoPyConsole_EnterCommand(edConsole.Text);
     Key:= #0;
     Exit
   end;
@@ -27585,7 +27589,7 @@ begin
   DoHandleKeysInPanels(Key, Shift);
 end;
 
-procedure TfmMain.DoRepeatPyConsoleCommand;
+procedure TfmMain.DoPyConsole_RepeatCommand;
 var
   S: Widestring;
 begin
@@ -27593,7 +27597,7 @@ begin
   if SBegin(S, cPyConsolePrompt) then
   begin
     Delete(S, 1, Length(cPyConsolePrompt));
-    DoEnterPyConsoleCommand(S);
+    DoPyConsole_EnterCommand(S);
   end
   else
     MsgBeep;
@@ -27605,7 +27609,7 @@ begin
   //Enter should repeat command already entered in memoConsole
   if (Key=13) and (Shift=[]) then
   begin
-    DoRepeatPyConsoleCommand;
+    DoPyConsole_RepeatCommand;
     Key:= 0;
     Exit
   end;
@@ -27954,7 +27958,7 @@ end;
 procedure TfmMain.PythonGUIInputOutput1SendUniData(Sender: TObject;
   const Data: WideString);
 begin
-  DoLogPyCommand(Data);
+  DoPyConsole_LogString(Data);
 end;
 
 procedure TfmMain.TbxItemRunNewPluginClick(Sender: TObject);
@@ -27962,7 +27966,7 @@ begin
   CurrentEditor.ExecCommand(sm_NewPythonPluginDialog);
 end;
 
-procedure TfmMain.DoRegisterPyCommandPlugin(const SId: string);
+procedure TfmMain.DoPyRegisterCommandPlugin(const SId: string);
 var
   SSection, SKey, SParams: string;
 begin
@@ -27978,7 +27982,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoNewPythonPluginDialog;
+procedure TfmMain.DoPyNewPluginDialog;
 var
   SId, SDir: Widestring;
   List: TStringList;
@@ -28035,7 +28039,7 @@ begin
 
   if FileExists(fn_plugin) then
   begin
-    DoRegisterPyCommandPlugin(SId); //write to SynPlugins.ini
+    DoPyRegisterCommandPlugin(SId); //write to SynPlugins.ini
     DoLoadPluginsList; //reread SynPlugins.ini, update Plugins menu
     DoOpenFile(fn_plugin);
   end
@@ -28043,7 +28047,7 @@ begin
     MsgBeep;
 end;
 
-function TfmMain.DoLoadPyPlugin(const SFilename, SCmd: string): string;
+function TfmMain.DoPyLoadPlugin(const SFilename, SCmd: string): string;
 var
   SId: string;
 begin
@@ -28053,19 +28057,19 @@ begin
 
   if not GetPythonEngine.Initialized then
   begin
-    DoLogPyCommand(cPyNotInited);
+    DoPyConsole_LogString(cPyNotInited);
     Exit
   end;
 
   Result:= Py_RunPlugin_Command(SId, SCmd);
 end;
 
-function TfmMain.DoLoadPyEventPlugin(const SFilename: string; AEvent: TSynPyEvent): string;
+function TfmMain.DoPyEventPlugin(const SFilename: string; AEvent: TSynPyEvent): string;
 begin
-  Result:= DoLoadPyPlugin(SFilename, cSynPyEvent[AEvent]);
+  Result:= DoPyLoadPlugin(SFilename, cSynPyEvent[AEvent]);
 end;
 
-procedure TfmMain.DoLogPyCommand(const Str: Widestring);
+procedure TfmMain.DoPyConsole_LogString(const Str: Widestring);
 begin
   with MemoConsole do
   begin
@@ -28119,7 +28123,7 @@ end;
 
 procedure TfmMain.MemoConsoleDblClick(Sender: TObject);
 begin
-  DoRepeatPyConsoleCommand;
+  DoPyConsole_RepeatCommand;
 end;
 
 procedure TfmMain.LoadConsoleHist;
@@ -28607,7 +28611,7 @@ begin
   plOut.Show;
 end;
 
-function TfmMain.StringToPyEvents(const Str: string): TSynPyEvents;
+function TfmMain.DoPyStringToEvents(const Str: string): TSynPyEvents;
 var
   SText, SItem: Widestring;
   ev: TSynPyEvent;
@@ -28626,7 +28630,7 @@ begin
   until false;      
 end;
 
-function TfmMain.DoCheckPyEvent(AFrame: TEditorFrame; AEvent: TSynPyEvent): boolean;
+function TfmMain.DoPyEventCheck(AFrame: TEditorFrame; AEvent: TSynPyEvent): boolean;
 var
   i: Integer;
   SCurLexer, SRes: string;
@@ -28640,7 +28644,7 @@ begin
       if (AEvent in Events) then
         if IsLexerListed(SCurLexer, SLexers) then
         begin
-          SRes:= DoLoadPyEventPlugin(SFilename, AEvent);
+          SRes:= DoPyEventPlugin(SFilename, AEvent);
           if SRes=cPyFalse then
           begin
             Result:= false;
