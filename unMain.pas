@@ -69,12 +69,27 @@ const
   cDefaultCursor: array[boolean] of TCursor = (crHourGlass, crDefault);
   SynDefaultSyn = '(default).syn';
 
+const  
   cPyConsoleMaxCount = 1000;
   cPyConsolePrompt = '>>> ';
   cPyConsoleInit = 'print("Python", sys.version)';
   cPyConsoleClear = '-';
   cPyPrefix = 'py:';
   cPyAcpString = '?';
+  cPyNotInited = 'Python engine not inited';
+  cPyTrue = 'True';
+  cPyFalse = 'False';
+
+type
+  TSynPyEvent = (
+    cSynEventOnSave
+    );
+  TSynPyEvents = set of TSynPyEvent;
+    
+const
+  cSynPyEvent: array[TSynPyEvent] of string = (
+    'on_save'
+    );
 
 type
   TSynQuickSearchType = (
@@ -169,14 +184,20 @@ type
     SCmd: string;
   end;
 
-  TPluginList_Findid = array[0..7] of record
+  TPluginList_Event = array[0..50] of record
+    SFilename: string;
+    SLexers: string;
+    Events: TSynPyEvents;
+  end;
+
+  TPluginList_Findid = array[0..20] of record
     SFilename: string;
     SLexers: string;
   end;
 
   TPluginList_Acp = TPluginList_FindId;
 
-  TPluginList_Panel = array[0..7] of record
+  TPluginList_Panel = array[0..10] of record
     SCaption: string;
     SFileName: string;
     FToolButton: TSpTbxTabItem;
@@ -2086,10 +2107,12 @@ type
     FSpellChecking: boolean;
     {$endif}
 
-    FPlugins: TPluginList_Panel;
+    FPluginsPanel: TPluginList_Panel;
     FPluginsFindid: TPluginList_Findid;
     FPluginsCommand: TPluginList_Command;
+    FPluginsEvent: TPluginList_Event;
     FPluginsAcp: TPluginList_Acp;
+    
     FPanelDrawBusy: boolean;
     FSyncBusy: boolean;
     FSplitHorz: boolean; //views splitter is horizontal
@@ -2739,6 +2762,7 @@ type
     procedure DoNewPythonPluginDialog;
     procedure DoRegisterPyCommandPlugin(const SId: string);
     function DoLoadPyPlugin(const SFilename, SCmd: string): string;
+    function DoLoadPyEventPlugin(const SFilename: string; AEvent: TSynPyEvent): string;
     procedure DoLogPyCommand(const Str: Widestring);
     procedure DoRepeatPyConsoleCommand;
     procedure LoadConsoleHist;
@@ -2766,6 +2790,8 @@ type
       const Tok: TSearchTokens;
       OptBkmk, OptExtSel: boolean): Integer;
     function DoReadLexersCfg(const ASection, AId: string): string;
+    function StringToPyEvents(const Str: string): TSynPyEvents;
+    function DoCheckPyEvent(AFrame: TEditorFrame; AEvent: TSynPyEvent): boolean;
     //end of private
 
   protected
@@ -3644,6 +3670,7 @@ begin
   Frame.DoStopNotif;
 
   DoCheckUnicodeNeeded(Frame);
+  if not DoCheckPyEvent(Frame, cSynEventOnSave) then Exit;
 
   AUntitled:= Frame.IsNewFile;
   if not PromtDialog then
@@ -7059,7 +7086,7 @@ begin
   Move(cDefColors, opTabColors, SizeOf(opTabColors));
 
   //init plugins
-  FillChar(FPlugins, Sizeof(FPlugins), 0);
+  FillChar(FPluginsPanel, Sizeof(FPluginsPanel), 0);
   FillChar(FPluginsFindid, Sizeof(FPluginsFindid), 0);
   FillChar(FPluginsCommand, Sizeof(FPluginsCommand), 0);
   FillChar(FPluginsAcp, Sizeof(FPluginsAcp), 0);
@@ -13500,10 +13527,10 @@ begin
   if n>tbProj then
   begin
     i:= Ord(n)-cFixedLeftTabs;
-    if (i>=Low(FPlugins)) and (i<=High(FPlugins)) then
-      if FPlugins[i].FToolButton<>nil then
+    if (i>=Low(FPluginsPanel)) and (i<=High(FPluginsPanel)) then
+      if FPluginsPanel[i].FToolButton<>nil then
       begin
-        PluginPanelItemClick(FPlugins[i].FToolButton);
+        PluginPanelItemClick(FPluginsPanel[i].FToolButton);
         Exit
       end
       else
@@ -13539,8 +13566,8 @@ begin
     plTree.Caption:= '?';
 
   //plugins
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if FToolButton<>nil then
         FToolButton.Checked:= false;
   DoShowPlugin(-1);
@@ -21348,8 +21375,8 @@ var
   ListSec: TStringList;
 begin
   //clear Panels list
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
     begin
       SCaption:= '';
       SFileName:= '';
@@ -21380,6 +21407,15 @@ begin
       SCmd:= '';
     end;
 
+  //clear Event list
+  for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
+    with FPluginsEvent[i] do
+    begin
+      SFileName:= '';
+      SLexers:= '';
+      Events:= [];
+    end;
+
   fn_plug_ini:= SynPluginsIni;
   fn_plug_def_ini:= SynPluginsSampleIni;
   if not IsFileExist(fn_plug_ini) then
@@ -21398,16 +21434,16 @@ begin
 
   //parse section "Panels"
   try
-    NIndex:= Low(FPlugins);
+    NIndex:= Low(FPluginsPanel);
     for i:= 0 to ListSec.Count-1 do
     begin
       SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
       if (sKey='') or (sValue='') then Continue;
 
-      if NIndex<=High(FPlugins) then
+      if NIndex<=High(FPluginsPanel) then
       begin
-        FPlugins[NIndex].SCaption:= sKey;
-        FPlugins[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
+        FPluginsPanel[NIndex].SCaption:= sKey;
+        FPluginsPanel[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
         Inc(NIndex);
       end;
     end;
@@ -21511,13 +21547,42 @@ begin
   end;
 
 
-  //test
+  //load section "Events"
+  ListSec:= TStringList.Create;
+  with TIniFile.Create(fn_plug_ini) do
+  try
+    ReadSectionValues('Events', ListSec);
+  finally
+    Free
+  end;
+
+  //parse section "Events"
+  try
+    NIndex:= Low(FPluginsEvent);
+    for i:= 0 to ListSec.Count-1 do
+    begin
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      if (sKey='') or (sValue='') then Continue;
+
+      if NIndex<=High(FPluginsEvent) then
+      begin
+        FPluginsEvent[NIndex].SFileName:= sValue;
+        FPluginsEvent[NIndex].Events:= StringToPyEvents(sValue2);
+        FPluginsEvent[NIndex].SLexers:= sValue3;
+        Inc(NIndex);
+      end;
+    end;
+  finally
+    FreeAndNil(ListSec);
+  end;
+
   {
+  //test
   sValue:= '';
-  for i:= 0 to 7 do
-    with FPluginsCommand[i] do
-      sValue:= sValue+sFilename+#13+sLexers+#13+SCmd+#13#13;
-  MsgError(sValue);
+  for i:= 0 to 5 do
+    with FPluginsEvent[i] do
+      sValue:= sValue+sFilename+#13+sLexers+#13+IfThen(cSynEventOnSave in Events, 'on-save');
+  MsgInfo(sValue, Handle);
   }
 end;
 
@@ -21530,8 +21595,8 @@ begin
   if not SynExe then Exit;
 
   DoLoadPluginsList;
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if SCaption<>'' then
       begin
         Item:= TSpTbxTabItem.Create(Self);
@@ -21549,9 +21614,9 @@ var
 begin
   if (Sender=nil) then Exit;
   N:= (Sender as TComponent).Tag;
-  if FPlugins[N].SCaption='' then Exit;
+  if FPluginsPanel[N].SCaption='' then Exit;
 
-  plTree.Caption:= FPlugins[N].SCaption;
+  plTree.Caption:= FPluginsPanel[N].SCaption;
   FTabLeft:= TSynTabLeft(N+cFixedLeftTabs);
 
   Tree.Visible:= false;
@@ -21561,8 +21626,8 @@ begin
 
   //check buttons
   UpdateCheckLeftTabs(false, false, false);
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if FToolButton<>nil then
         FToolButton.Checked:= i=N;
 
@@ -21575,7 +21640,7 @@ var
   AParent: THandle;
   AIni: Widestring;
 begin
-  with FPlugins[Index] do
+  with FPluginsPanel[Index] do
   begin
     //already loaded?
     if FWindow<>0 then Exit;
@@ -21643,8 +21708,8 @@ begin
   XSize:= plTree.ClientWidth;
   YSize:= plTree.ClientHeight - Y - tbTabsLeft.Height;
 
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if FWindow<>0 then
         SetWindowPos(FWindow, 0, X, Y, XSize, YSize, 0);
 end;
@@ -21653,8 +21718,8 @@ procedure TfmMain.DoClosePlugins;
 var
   i: Integer;
 begin
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if (FForm<>nil) and Assigned(FSynCloseForm) then
         FSynCloseForm(FForm);
 end;
@@ -21663,8 +21728,8 @@ procedure TfmMain.DoShowPlugin(N: Integer);
 var
   i: Integer;
 begin
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if FWindow<>0 then
         ShowWindow(FWindow, IfThen(i=N, sw_show, sw_hide));
 end;
@@ -21682,14 +21747,14 @@ begin
   AName:= Copy(AFileName, 1, N-1);
   ADir:= Copy(AFileName, N+2, MaxInt);
 
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if SCaption=AName then
       begin
         if not plTree.Visible then
           ecShowTree.Execute;
         PluginPanelItemClick(FToolButton);
-        with FPlugins[i] do
+        with FPluginsPanel[i] do
           if (FForm<>nil) and Assigned(FSynAction) then
             FSynAction(FForm, cActionNavigateToFile, PWChar(ADir), nil, nil, nil);
         Break
@@ -21801,8 +21866,8 @@ var
   i: Integer;
 begin
   Result:= '';
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
     begin
       if FForm=nil then Break;
       if FForm=AHandle then
@@ -21996,8 +22061,8 @@ procedure TfmMain.DoRefreshPluginsFiles(const fn: Widestring);
 var
   i: Integer;
 begin
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if (FForm<>nil) and Assigned(FSynAction) then
         FSynAction(FForm, cActionRefreshFileList, PWChar(fn), nil, nil, nil);
 end;
@@ -22006,8 +22071,8 @@ procedure TfmMain.DoRefreshPluginsLang;
 var
   i: Integer;
 begin
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if (FForm<>nil) and Assigned(FSynAction) then
         FSynAction(FForm, cActionUpdateLang, nil, nil, nil, nil);
 end;
@@ -22016,8 +22081,8 @@ procedure TfmMain.DoPluginsRepaint;
 var
   i: Integer;
 begin
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if (FForm<>nil) and Assigned(FSynAction) then
         FSynAction(FForm, cActionRepaint, nil, nil, nil, nil);
 end;
@@ -22026,8 +22091,8 @@ procedure TfmMain.DoPluginSaveFtpFile(F: TEditorFrame);
 var
   i: Integer;
 begin
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if (FForm<>nil) and Assigned(FSynAction) then
         FSynAction(FForm, cActionSaveFtpFile,
           PWideChar(Widestring(F.FileName)),
@@ -23970,8 +24035,8 @@ var
 begin
   Result:= false;
   HWnd:= 0;
-  for i:= Low(FPlugins) to High(FPlugins) do
-    with FPlugins[i] do
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
       if (FDll<>0) and (FWindow<>0) and IsChild(FWindow, Windows.GetFocus) then
       begin
         HWnd:= FWindow;
@@ -27883,7 +27948,7 @@ var
 begin
   if not GetPythonEngine.Initialized then
   begin
-    MsgError('Python engine not initialized', Handle);
+    MsgError(cPyNotInited, Handle);
     Exit
   end;
 
@@ -27950,12 +28015,16 @@ begin
 
   if not GetPythonEngine.Initialized then
   begin
-    DoLogPyCommand('Python engine not initialized');
+    DoLogPyCommand(cPyNotInited);
     Exit
   end;
 
-  //DoLogPyCommand('Run plugin: ' + SId + '/' + SCmd);
   Result:= Py_RunPlugin_Command(SId, SCmd);
+end;
+
+function TfmMain.DoLoadPyEventPlugin(const SFilename: string; AEvent: TSynPyEvent): string;
+begin
+  Result:= DoLoadPyPlugin(SFilename, cSynPyEvent[AEvent]);
 end;
 
 procedure TfmMain.DoLogPyCommand(const Str: Widestring);
@@ -28498,6 +28567,37 @@ begin
   UpdateTreeFind(Finder.FindText, ADir, false, true);
   UpdatePanelOut(tbFind);
   plOut.Show;
+end;
+
+function TfmMain.StringToPyEvents(const Str: string): TSynPyEvents;
+var
+  ev: TSynPyEvent;
+begin
+  Result:= [];
+  for ev:= Low(TSynPyEvent) to High(TSynPyEvent) do
+    if IsStringListed(cSynPyEvent[ev], Str) then
+      Include(Result, ev);
+end;
+
+function TfmMain.DoCheckPyEvent(AFrame: TEditorFrame; AEvent: TSynPyEvent): boolean;
+var
+  i: Integer;
+  SCurLexer, SRes: string;
+begin
+  Result:= true;
+  SCurLexer:= CurrentLexerForFile;
+  for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
+    with FPluginsEvent[i] do
+      if (SFilename<>'') and (AEvent in Events) then
+        if IsLexerListed(SCurLexer, SLexers) then
+        begin
+          SRes:= DoLoadPyEventPlugin(SFilename, AEvent);
+          if SRes=cPyFalse then
+          begin
+            Result:= false;
+            Exit
+          end;
+        end;
 end;
 
 

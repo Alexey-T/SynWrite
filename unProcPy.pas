@@ -778,27 +778,22 @@ end;
 
 function Py_ModuleNameExists(const SId: string): boolean;
 var
-  L: TStringList;
+  SCmd: string;
   Obj: PPyObject;
 begin
-  L:= TStringList.Create;
-  try
-    L.Add('import pkgutil                                     ');
-    L.Add('def module_exists(m):                              ');
-    L.Add('    for ldr, name, ispkg in pkgutil.iter_modules():');
-    L.Add('        if name == m:                              ');
-    L.Add('            return True                            ');
-    L.Add('    return False                                   ');
+  SCmd:=
+    'import pkgutil                                     ' + SLineBreak +
+    'def module_exists(m):                              ' + SLineBreak +
+    '    for ldr, name, ispkg in pkgutil.iter_modules():' + SLineBreak +
+    '        if name == m:                              ' + SLineBreak +
+    '            return True                            ' + SLineBreak +
+    '    return False                                   ';
 
-    //Messagebox(0, pchar(str), '', 0);
-    with GetPythonEngine do
-    begin
-      ExecStrings(L);
-      Obj:= EvalString(Format('module_exists(r"%s")', [SId]));
-      Result:= PyObject_IsTrue(Obj) <> 0;
-    end;
-  finally
-    FreeAndNil(L);
+  with GetPythonEngine do
+  begin
+    ExecString(SCmd);
+    Obj:= EvalString(Format('module_exists(r"%s")', [SId]));
+    Result:= Bool(PyObject_IsTrue(Obj));
   end;
 end;
 

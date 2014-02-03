@@ -454,7 +454,7 @@ type
     ColorsOfTabs: array[0..Pred(cTabColors)] of TColor;
     FLangChanged: boolean;
 
-    procedure MenuLexersClick(Sender: TObject);
+    //procedure MenuLexersClick(Sender: TObject);
     function MsgConfirmKeyOvr(const SCategory, SName: Widestring): boolean;
     function DoCheckKeyDups(const KeyStr: string): boolean;
     procedure UpdateKeyButtons;
@@ -2757,15 +2757,15 @@ begin
     bPy.Font:= FontDialog.Font;
 end;
 
+{
 procedure TfmSetup.MenuLexersClick(Sender: TObject);
-//var S: string;
+var S: string;
 begin
-  {
   S:= (Sender as TTntMenuItem).Caption;
   with edAcpFixCase do
     Text:= Text + IfThen(Text<>'', ',') + S;
-    }
 end;
+}
 
 {
 procedure TfmSetup.bAcpFixCaseClick(Sender: TObject);
