@@ -83,7 +83,6 @@ type
     bRepInTabs: TTntButton;
     bSkip: TTntButton;
     PanelTr: TTntPanel;
-    labTr: TTntLabel;
     TrackBar1: TTrackBar;
     cbLoose: TTntCheckBox;
     labStyle: TTntLabel;
@@ -107,6 +106,7 @@ type
     PanelBusy: TTntPanel;
     cbReDot: TTntCheckBox;
     cbReMulti: TTntCheckBox;
+    labTransp: TTntLabel;
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
@@ -148,6 +148,7 @@ type
     procedure ed2KeyPress(Sender: TObject; var Key: Char);
     procedure TntFormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure labTranspClick(Sender: TObject);
   private
     { Private declarations }
     CurChecked: boolean;
@@ -891,7 +892,7 @@ begin
 
   if H(labEd1, ch1, ch2) then begin Handled:= true; Exit end;
   if H(labEd2, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(labTr, ch1, ch2) then begin Handled:= true; Exit end;
+  //if H(labTr, ch1, ch2) then begin Handled:= true; Exit end;
 
   if not FIsReplace then
   begin
@@ -1475,6 +1476,12 @@ begin
     Key:= 0;
     Exit;
   end;
+end;
+
+procedure TfmSR.labTranspClick(Sender: TObject);
+begin
+  with PanelTr do
+    Visible:= not Visible;
 end;
 
 end.

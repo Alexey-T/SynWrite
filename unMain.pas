@@ -8503,6 +8503,7 @@ end;
       fmSR.labRe.Visible:= En;
       fmSR.labEd1.Visible:= En;
       fmSR.labEd2.Visible:= En;
+      fmSR.labTransp.Visible:= En;
       if En then
         fmSR.IsReplace:= fmSR.IsReplace;
       fmSR.Cursor:= cDefaultCursor[En];
