@@ -14,12 +14,14 @@ uses
 
 type
   TSearchOption = (
-    ftCaseSensitive,
-    ftWholeWordOnly,
+    ftCaseSens,
+    ftWholeWords,
     ftBackward,       //else Forward
     ftSelectedText,   //else All file
-    ftEntireScope,    //else From cursor
-    ftRegularExpr,    //use regular expressions
+    ftEntireScope,    //else From caret
+    ftRegex,          //use regular expressions
+    ftRegex_s,        //regex: dot matches newline
+    ftRegex_m,        //regex: ^ and $ matches lines
     ftPromtOnReplace,
     ftWrapSearch,
     ftSkipCollapsed
@@ -137,13 +139,14 @@ uses
 { TSynFinder }
 
 function TSynFinder.MatchAtPos(const Text: WideString; StrtPos: integer; var mLen: integer): Boolean;
-var cmp_fl, L2: integer;
+var
+  nFlags, nLen: integer;
 begin
   if Assigned(FOnProgress) then
     FOnProgress(StrtPos, Length(Text));
 
-  L2:= Length(FFindText);
-  if ftRegularExpr in Flags then
+  nLen:= Length(FFindText);
+  if ftRegex in Flags then
   begin
     mLen:= StrtPos;
     Result:= FRegExpr.Match(Text, mLen);
@@ -152,23 +155,25 @@ begin
   end
   else
   begin
-    if ftCaseSensitive in Flags then cmp_fl:= 0
-                                else cmp_fl:= NORM_IGNORECASE;
+    if ftCaseSens in Flags then
+      nFlags:= 0
+    else
+      nFlags:= NORM_IGNORECASE;
     if StrtPos > Length(Text) then
     begin
       Result:= False;
       Exit;
     end;
 
-    Result:= CompareStringW(LOCALE_SYSTEM_DEFAULT, cmp_fl,
-              @Text[StrtPos], L2,
-              PWideChar(FFindText), L2) = 2;
-    if Result then mLen:= L2;
+    Result:= CompareStringW(LOCALE_SYSTEM_DEFAULT, nFlags,
+              @Text[StrtPos], nLen,
+              PWideChar(FFindText), nLen) = 2;
+    if Result then mLen:= nLen;
 
     //check "Whole words" only for non-regex search
-    if Result and (ftWholeWordOnly in Flags) then
+    if Result and (ftWholeWords in Flags) then
       Result:= ((StrtPos <= 1) or not IsWordChar(Text[StrtPos - 1]) or not IsWordChar(Text[StrtPos])) and
-                ((StrtPos + L2 > Length(Text)) or not IsWordChar(Text[StrtPos + L2]) or not IsWordChar(Text[StrtPos + L2-1]));
+                ((StrtPos + nLen > Length(Text)) or not IsWordChar(Text[StrtPos + nLen]) or not IsWordChar(Text[StrtPos + nLen-1]));
   end;
 end;
 
@@ -192,10 +197,12 @@ begin
      if StrtPos > L then StrtPos:= L;
   end;
 
-  if ftRegularExpr in Flags then
+  if ftRegex in Flags then
    begin
      FRegExpr.Expression:= FFindText;
-     FRegExpr.ModifierI:= not (ftCaseSensitive in Flags);
+     FRegExpr.ModifierI:= not (ftCaseSens in Flags);
+     //FRegExpr.ModifierM:= ftRegex_m in Flags; //not visible option in dialog
+     FRegExpr.ModifierS:= ftRegex_s in Flags;
    end
    else
    begin
@@ -363,7 +370,7 @@ begin
                ShowRes(st - 1, RepLen, ToBack);
 
              //workaround for replacing regex ".*?" with some string
-             if (not ToBack) and (ftRegularExpr in FFlags) then
+             if (not ToBack) and (ftRegex in FFlags) then
                if (FMatchLen=0) then
                  Inc(RepLen);
            end;
@@ -391,8 +398,8 @@ begin
          case FControl.Lines.TextFormat of
            tfCR_NL: Inc(StrtPos, 2);
            else Inc(StrtPos);
-         end;
-
+         end
+       else
        //workaround for replacing regex "^www" with empty sting:
        if IsSpecialCase2 then
          Inc(StrtPos);
@@ -439,7 +446,7 @@ begin
     not CntOnly and
     not ToBack and
     not IsSel and
-    not (ftRegularExpr in Flags) and
+    not (ftRegex in Flags) and
     not (ftPromtOnReplace in Flags) and
     not IsWrap;
 
@@ -479,8 +486,8 @@ begin
   begin
     cStrings.FundFinder:= Self; //set Fundamentals callback
     S:= cStrings.StrReplaceW(FFindText, FReplaceText, FControl.Text,
-      ftCaseSensitive in Flags,
-      ftWholeWordOnly in Flags,
+      ftCaseSens in Flags,
+      ftWholeWords in Flags,
       StrtPos,
       FMatches);
     Result:= FMatches > 0;
@@ -671,7 +678,7 @@ end;
 
 function TSynFinderReplacer.StrReplaceWith: WideString;
 begin
-  if (ftRegularExpr in FFlags) then
+  if (ftRegex in FFlags) then
     Result:= FRegExpr.Substitute(FControl.Lines.FText, FReplaceText)
   else
     Result:= FReplaceText;
@@ -741,7 +748,7 @@ end;
 function TSynFinderReplacer.IsSpecialCase1: boolean;
 begin
   Result:=
-    (ftRegularExpr in FFlags) and
+    (ftRegex in FFlags) and
     (FFindText<>'') and
     (FFindText[Length(FFindText)] = '$');
 end;
@@ -749,7 +756,7 @@ end;
 function TSynFinderReplacer.IsSpecialCase2: boolean;
 begin
   Result:=
-    (ftRegularExpr in FFlags) and
+    (ftRegex in FFlags) and
     (FFindText<>'') and
     (FFindText[1] = '^') and
     (FReplaceText = '');

@@ -9,7 +9,7 @@ uses
   ecSyntMemo,
   ATSyntMemo,
   unSearch,
-  DKLang;
+  DKLang, ComCtrls, TntComCtrls;
 
 type
   TfmExtract = class(TTntForm)
@@ -23,7 +23,6 @@ type
     PanelMid: TPanel;
     b1: TTntGroupBox;
     TntLabel1: TTntLabel;
-    labNot: TTntLabel;
     ed: TTntComboBox;
     bCase: TTntCheckBox;
     bSel: TTntCheckBox;
@@ -31,6 +30,7 @@ type
     b2: TTntGroupBox;
     List: TTntListBox;
     PanelLeft: TPanel;
+    Status: TTntStatusBar;
     procedure bCopyClick(Sender: TObject);
     procedure bFindClick(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
@@ -93,15 +93,15 @@ begin
   begin
     Control:= Self.Memo;
     FindText:= ed.Text;
-    Flags:= [ftRegularExpr];
-    if bCase.Checked then
-      Flags:= Flags + [ftCaseSensitive];
-    if bSel.Checked then
-      Flags:= Flags + [ftSelectedText];
-    if not bCur.Checked then
-      Flags:= Flags + [ftEntireScope];
+    Flags:= [ftRegex, ftRegex_m];
+    if bCase.Checked then Flags:= Flags + [ftCaseSens];
+    if bSel.Checked then Flags:= Flags + [ftSelectedText];
+    if not bCur.Checked then Flags:= Flags + [ftEntireScope];
     FindAll;
-    labNot.Visible:= Matches=0;
+    if Matches=0 then
+      Status.SimpleText:= WideFormat(DKLangConstW('MNFound2'), [FindText])
+    else
+      Status.SimpleText:= WideFormat(DKLangConstW('Found'), [Matches]);
   end;
 
   bCopy.Enabled:= false;

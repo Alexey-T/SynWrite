@@ -244,7 +244,7 @@ object fmSetupOvr: TfmSetupOvr
     Width = 217
     Height = 17
     Alignment = taLeftJustify
-    Caption = 'Auto-correct id case'
+    Caption = 'Auto-correct identifier case'
     TabOrder = 10
     OnClick = edTabChange
   end

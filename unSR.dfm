@@ -1,6 +1,6 @@
 object fmSR: TfmSR
-  Left = 235
-  Top = 193
+  Left = 184
+  Top = 306
   ActiveControl = ed1
   BorderStyle = bsDialog
   ClientHeight = 304
@@ -231,18 +231,18 @@ object fmSR: TfmSR
     Height = 181
     Caption = 'Options'
     TabOrder = 2
-    object cbRE: TTntCheckBox
+    object cbRe: TTntCheckBox
       Left = 8
-      Top = 60
+      Top = 86
       Width = 160
       Height = 17
       Caption = 'Regular e&xpressions'
-      TabOrder = 2
-      OnClick = cbREClick
+      TabOrder = 3
+      OnClick = cbReClick
     end
     object cbCase: TTntCheckBox
       Left = 8
-      Top = 24
+      Top = 20
       Width = 160
       Height = 17
       Caption = '&Case sensitive'
@@ -250,7 +250,7 @@ object fmSR: TfmSR
     end
     object cbWords: TTntCheckBox
       Left = 8
-      Top = 42
+      Top = 38
       Width = 160
       Height = 17
       Caption = '&Whole words'
@@ -258,20 +258,20 @@ object fmSR: TfmSR
     end
     object cbSpec: TTntCheckBox
       Left = 8
-      Top = 78
+      Top = 68
       Width = 160
       Height = 17
       Caption = 'Special chars (\n \r \t...)'
-      TabOrder = 3
+      TabOrder = 2
       OnClick = cbSpecClick
     end
     object cbCfm: TTntCheckBox
       Left = 8
-      Top = 116
+      Top = 138
       Width = 160
       Height = 17
       Caption = 'Pro&mpt on replace'
-      TabOrder = 4
+      TabOrder = 6
     end
     object cbBk: TTntCheckBox
       Left = 8
@@ -279,7 +279,7 @@ object fmSR: TfmSR
       Width = 160
       Height = 17
       Caption = 'Boo&kmark results'
-      TabOrder = 5
+      TabOrder = 7
     end
     object cbExtSel: TTntCheckBox
       Left = 8
@@ -287,7 +287,24 @@ object fmSR: TfmSR
       Width = 160
       Height = 17
       Caption = 'Extend selecti&on'
-      TabOrder = 6
+      TabOrder = 8
+    end
+    object cbReDot: TTntCheckBox
+      Left = 24
+      Top = 104
+      Width = 142
+      Height = 17
+      Caption = 'Dot matches newlines'
+      TabOrder = 4
+    end
+    object cbReMulti: TTntCheckBox
+      Left = 112
+      Top = 106
+      Width = 142
+      Height = 17
+      Caption = 'Multiline regex'
+      TabOrder = 5
+      Visible = False
     end
   end
   object bFindAll: TTntButton
@@ -325,9 +342,9 @@ object fmSR: TfmSR
       OnClick = cbFromCurClick
     end
     object cbWrap: TTntCheckBox
-      Left = 8
+      Left = 24
       Top = 52
-      Width = 160
+      Width = 142
       Height = 17
       Caption = 'Wrap searc&h'
       TabOrder = 2
@@ -536,14 +553,14 @@ object fmSR: TfmSR
     Left = 104
     Top = 4
     LangData = {
-      0400666D535200012E00000006006C6162456431010100000002000000070043
+      0400666D535200013000000006006C6162456431010100000002000000070043
       617074696F6E0006006C6162456432010100000003000000070043617074696F
       6E0009006246696E644E657874010100000005000000070043617074696F6E00
       0800625265704E657874010100000006000000070043617074696F6E00070062
       526570416C6C010100000007000000070043617074696F6E0007006243616E63
       656C010100000008000000070043617074696F6E000300656431000003006564
       3200000300674F70010100000009000000070043617074696F6E000400636252
-      4501010000000A000000070043617074696F6E00060063624361736501010000
+      6501010000000A000000070043617074696F6E00060063624361736501010000
       000B000000070043617074696F6E0007006362576F72647301010000000C0000
       00070043617074696F6E00060063625370656301010000000D00000007004361
       7074696F6E0008006246696E64416C6C01010000000E00000007004361707469
@@ -569,7 +586,8 @@ object fmSR: TfmSR
       07006564314D656D6F000007006564324D656D6F0000070062436F6D626F3100
       00070062436F6D626F32000008006D6E75436F6D626F00000A00537461747573
       46696E640000090050616E656C42757379010100000029000000070043617074
-      696F6E00}
+      696F6E00070063625265446F7401010000002A000000070043617074696F6E00
+      0900636252654D756C746901010000002B000000070043617074696F6E00}
   end
   object mnuRe: TTntPopupMenu
     AutoHotkeys = maManual

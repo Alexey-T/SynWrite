@@ -138,11 +138,11 @@ begin
       if (SearchParameter and lcs_backwards) <> 0 then
         Finder.Flags:= Finder.Flags + [ftBackward];
       if (SearchParameter and lcs_matchcase) <> 0 then
-        Finder.Flags:= Finder.Flags + [ftCaseSensitive];
+        Finder.Flags:= Finder.Flags + [ftCaseSens];
       if (SearchParameter and lcs_findfirst) <> 0 then
         Finder.Flags:= Finder.Flags + [ftEntireScope];
       if (SearchParameter and lcs_wholewords) <> 0 then
-        Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
+        Finder.Flags:= Finder.Flags + [ftWholeWords];
 
       Finder.SkipInit:= True;
       Finder.FindText:= SearchString;

@@ -178,7 +178,7 @@ type
     scmdCopyFilePath
     );
 
-  TPluginList_Command = array[0..50] of record
+  TPluginList_Command = array[0..100] of record
     SFilename: string;
     SLexers: string;
     SCmd: string;
@@ -190,7 +190,7 @@ type
     Events: TSynPyEvents;
   end;
 
-  TPluginList_Findid = array[0..20] of record
+  TPluginList_Findid = array[0..30] of record
     SFilename: string;
     SLexers: string;
   end;
@@ -3182,7 +3182,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.550';
+  cSynVer = '6.3.560';
   cSynPyVer = '1.0.114';
 
 const
@@ -6994,7 +6994,7 @@ begin
     end;
 
     //set needed flags
-    Finder.Flags:= Finder.Flags-[ftRegularExpr];
+    Finder.Flags:= Finder.Flags-[ftRegex];
     Finder.Flags:= Finder.Flags+[ftWrapSearch];
 
     //search
@@ -8257,8 +8257,8 @@ procedure TfmMain.FindInit(AKeepFlags: boolean = false);
 var
   IsSpec, IsSel,
   IsCase, IsWords,
-  IsForw, IsRE, IsWrap,
-  IsSkipCol: boolean;
+  IsRe, IsRe_s, IsRe_m,
+  IsForw, IsWrap, IsSkipCol: boolean;
   SText: Widestring;
 begin
   IsCase:= false;
@@ -8269,7 +8269,9 @@ begin
     SText:= '';
     IsSel:= fmSR.cbSel.Checked;
     IsForw:= fmSR.bFor.Checked;
-    IsRE:= fmSR.cbRE.Checked;
+    IsRe:= fmSR.cbRe.Checked;
+    IsRe_s:= fmSR.cbReDot.Checked;
+    IsRe_m:= fmSR.cbReMulti.Checked;
     if AKeepFlags then
     begin
       IsCase:= fmSR.cbCase.Checked;
@@ -8285,7 +8287,9 @@ begin
     SText:= DoReadTotalHistory;
     IsSel:= false; //not saved
     IsForw:= ReadBool('Search', 'Forw', true);
-    IsRE:= ReadBool('Search', 'RegExp', false);
+    IsRe:= ReadBool('Search', 'RegExp', false);
+    IsRe_s:= ReadBool('Search', 'RegExpS', false);
+    IsRe_m:= ReadBool('Search', 'RegExpM', true);
     if AKeepFlags then
     begin
       IsCase:= ReadBool('Search', 'Case', false);
@@ -8308,11 +8312,13 @@ begin
   Finder.Flags:= [];
   if IsSel then Finder.Flags:= Finder.Flags + [ftSelectedText];
   if not IsForw then Finder.Flags:= Finder.Flags + [ftBackward];
-  if IsRE then Finder.Flags:= Finder.Flags + [ftRegularExpr];
+  if IsRe then Finder.Flags:= Finder.Flags + [ftRegex];
+  if IsRe_s then Finder.Flags:= Finder.Flags + [ftRegex_s];
+  if IsRe_m then Finder.Flags:= Finder.Flags + [ftRegex_m];
   if AKeepFlags then
   begin
-    if IsCase then Finder.Flags:= Finder.Flags + [ftCaseSensitive];
-    if IsWords then Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
+    if IsCase then Finder.Flags:= Finder.Flags + [ftCaseSens];
+    if IsWords then Finder.Flags:= Finder.Flags + [ftWholeWords];
   end;
   if IsWrap then Finder.Flags:= Finder.Flags + [ftWrapSearch];
   if IsSkipCol then Finder.Flags:= Finder.Flags + [ftSkipCollapsed];
@@ -8583,7 +8589,7 @@ procedure TfmMain.FindAction(act: TSRAction);
 var
   S, Sfiles: Widestring;
   n, nf: Integer;
-  Ok, OkSel: boolean;
+  Ok, OkSel, OkReplaced: boolean;
   Sel: TSynSelSave;
   OldScrollPosY: integer;
 begin
@@ -8593,9 +8599,11 @@ begin
       begin MsgBeep(true); Exit end;
 
     Finder.Flags:= [];
-    if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSensitive];
-    if cbWords.Checked then Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
-    if cbRE.Checked then Finder.Flags:= Finder.Flags + [ftRegularExpr];
+    if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSens];
+    if cbWords.Checked then Finder.Flags:= Finder.Flags + [ftWholeWords];
+    if cbRe.Checked then Finder.Flags:= Finder.Flags + [ftRegex];
+    if cbReDot.Checked then Finder.Flags:= Finder.Flags + [ftRegex_s];
+    if cbReMulti.Checked then Finder.Flags:= Finder.Flags + [ftRegex_m];
     if cbSel.Checked then Finder.Flags:= Finder.Flags + [ftSelectedText];
     if bBack.Checked then Finder.Flags:= Finder.Flags + [ftBackward];
     if cbCfm.Checked then Finder.Flags:= Finder.Flags + [ftPromtOnReplace];
@@ -8624,9 +8632,12 @@ begin
       begin
         Finder.FindAgain;
         Ok:= Finder.Matches>0;
-        fmSR.ShowError(not Ok);
         if Ok then
           EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
+        if Ok then
+          fmSR.ShowStatus(DKLangConstW('zMResFound'))
+        else
+          fmSR.ShowStatus(DKLangConstW('zMResFoundNo'));
       end;
     //
     arReplaceNext,
@@ -8639,6 +8650,7 @@ begin
           DoFixReplaceCaret(CurrentEditor);
 
         //replace only when sel present
+        OkReplaced:= false;
         Ok:= (CurrentEditor.SelLength>0) or (Finder.Matches>0);
         if Ok then
           if (act<>arSkip) then
@@ -8646,6 +8658,7 @@ begin
             //Bug1: RepAgain doesn't replace 1st match if caret
             //already at match and match_len =0 (search for '^')
             Finder.ReplaceAgain;
+            OkReplaced:= Finder.Matches>0;
             CurrentFrame.DoTitleChanged;
           end;
 
@@ -8656,15 +8669,30 @@ begin
 
         //show msg
         Ok:= Finder.Matches>0;
-        fmSR.ShowError(not Ok);
         if Ok and (CurrentEditor.SelLength>0) then
           DoFixReplaceCaret(CurrentEditor);
         if Ok then
           EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
+
+        if not OkReplaced then
+        begin
+          if Ok then
+            fmSR.ShowStatus(DKLangConstW('zMResRepNoFoundYes'))
+          else
+            fmSR.ShowStatus(DKLangConstW('zMResRepNoFoundNo'));
+        end
+        else
+        begin
+          if Ok then
+            fmSR.ShowStatus(DKLangConstW('zMResRepYesFoundYes'))
+          else
+            fmSR.ShowStatus(DKLangConstW('zMResRepYesFoundNo'));
+        end;
       end;
     //
     arFindAll:
       begin
+        CurrentEditor.ResetSearchMarks;
         DoFindAllInCurrentTab(fmSR.cbBk.Checked);
       end;
     //
@@ -10732,9 +10760,9 @@ begin
     Finder.FindText:= edQs.Text;
     Finder.Flags:= [ftWrapSearch];
     if cbCase.Checked then
-      Finder.Flags:= Finder.Flags + [ftCaseSensitive];
+      Finder.Flags:= Finder.Flags + [ftCaseSens];
     if cbWord.Checked then
-      Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
+      Finder.Flags:= Finder.Flags + [ftWholeWords];
 
     bBeep:= opBeep;
     opBeep:= false;
@@ -12476,9 +12504,14 @@ begin
     Finder.ReplaceText:= ed2.Text;
     Finder.Tokens:= tokensAll;
     Finder.Flags:= [ftEntireScope];
-    if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSensitive];
-    if cbWords.Checked then Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
-    if cbRE.Checked then Finder.Flags:= Finder.Flags + [ftRegularExpr];
+    if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSens];
+    if cbWords.Checked then Finder.Flags:= Finder.Flags + [ftWholeWords];
+
+    if cbRe.Checked then Finder.Flags:= Finder.Flags + [ftRegex];
+    //if cbReDot.Checked then Finder.Flags:= Finder.Flags + [ftRegexDot];
+    //if cbReMLine.Checked then
+      Finder.Flags:= Finder.Flags + [ftRegex_m];
+
     if cbSpec.Checked then
     begin
       Finder.FindText:= SDecodeSpecChars(Finder.FindText);
@@ -12741,9 +12774,9 @@ begin
   Finder.ReplaceText:= '';
   Finder.Flags:= [ftEntireScope];
   if opHiliteSmartWords then
-    Finder.Flags:= Finder.Flags + [ftWholeWordOnly];
+    Finder.Flags:= Finder.Flags + [ftWholeWords];
   if opHiliteSmartCase then
-    Finder.Flags:= Finder.Flags + [ftCaseSensitive];
+    Finder.Flags:= Finder.Flags + [ftCaseSens];
 
   Finder.OnAfterExecute:= nil;
   Finder.OnBeforeExecute:= nil;
@@ -17248,7 +17281,7 @@ begin
 
   DoHint('');
   Finder.FindText:= s;
-  Finder.Flags:= Finder.Flags-[ftRegularExpr];
+  Finder.Flags:= Finder.Flags-[ftRegex];
   Finder.Flags:= Finder.Flags+[ftWrapSearch];
 
   if Next then
@@ -19865,7 +19898,7 @@ begin
   Finder.FindText:= Ed.SelText;
   Finder.ReplaceText:= S;
   Finder.Flags:= Finder.Flags
-    - [ftBackward, ftSelectedText, ftRegularExpr, ftPromtOnReplace]
+    - [ftBackward, ftSelectedText, ftRegex, ftPromtOnReplace]
     + [ftEntireScope];
 
   //replace
@@ -27773,10 +27806,12 @@ const
   cFlag_Back     = 1 shl 2;
   cFlag_Sel      = 1 shl 3;
   cFlag_Entire   = 1 shl 4;
-  cFlag_Regexp   = 1 shl 5;
-  cFlag_Prompt   = 1 shl 6;
-  cFlag_Wrap     = 1 shl 7;
-  cFlag_SkipCol  = 1 shl 8;
+  cFlag_Regex    = 1 shl 5;
+  cFlag_Regex_S  = 1 shl 6;
+  cFlag_Regex_M  = 1 shl 7;
+  cFlag_Prompt   = 1 shl 8;
+  cFlag_Wrap     = 1 shl 9;
+  cFlag_SkipCol  = 1 shl 10;
   cFlag_Bkmk     = 1 shl 14;
   cFlag_ExtSel   = 1 shl 15;
 var
@@ -27805,12 +27840,14 @@ begin
       ATokens:= TSearchTokens(NTokens);
 
       AOptions:= [];
-      if (NOptions and cFlag_Case)<>0 then Include(AOptions, ftCaseSensitive);
-      if (NOptions and cFlag_Words)<>0 then Include(AOptions, ftWholeWordOnly);
+      if (NOptions and cFlag_Case)<>0 then Include(AOptions, ftCaseSens);
+      if (NOptions and cFlag_Words)<>0 then Include(AOptions, ftWholeWords);
       if (NOptions and cFlag_Back)<>0 then Include(AOptions, ftBackward);
       if (NOptions and cFlag_Sel)<>0 then Include(AOptions, ftSelectedText);
       if (NOptions and cFlag_Entire)<>0 then Include(AOptions, ftEntireScope);
-      if (NOptions and cFlag_Regexp)<>0 then Include(AOptions, ftRegularExpr);
+      if (NOptions and cFlag_Regex)<>0 then Include(AOptions, ftRegex);
+      if (NOptions and cFlag_Regex_S)<>0 then Include(AOptions, ftRegex_s);
+      if (NOptions and cFlag_Regex_M)<>0 then Include(AOptions, ftRegex_m);
       if (NOptions and cFlag_Prompt)<>0 then Include(AOptions, ftPromtOnReplace);
       if (NOptions and cFlag_Wrap)<>0 then Include(AOptions, ftWrapSearch);
       if (NOptions and cFlag_SkipCol)<>0 then Include(AOptions, ftSkipCollapsed);
@@ -28588,7 +28625,9 @@ begin
   SCurLexer:= CurrentLexerForFile;
   for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
     with FPluginsEvent[i] do
-      if (SFilename<>'') and (AEvent in Events) then
+    begin
+      if (SFilename='') then Break;
+      if (AEvent in Events) then
         if IsLexerListed(SCurLexer, SLexers) then
         begin
           SRes:= DoLoadPyEventPlugin(SFilename, AEvent);
@@ -28598,6 +28637,7 @@ begin
             Exit
           end;
         end;
+    end;
 end;
 
 

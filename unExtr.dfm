@@ -2,7 +2,7 @@ object fmExtract: TfmExtract
   Left = 305
   Top = 426
   Width = 453
-  Height = 313
+  Height = 349
   ActiveControl = ed
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Extract strings'
@@ -24,7 +24,7 @@ object fmExtract: TfmExtract
     Left = 321
     Top = 0
     Width = 124
-    Height = 279
+    Height = 296
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 2
@@ -83,7 +83,7 @@ object fmExtract: TfmExtract
     Left = 9
     Top = 0
     Width = 312
-    Height = 279
+    Height = 296
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
@@ -104,21 +104,6 @@ object fmExtract: TfmExtract
         Width = 96
         Height = 13
         Caption = 'Regular expression:'
-      end
-      object labNot: TTntLabel
-        Left = 240
-        Top = 16
-        Width = 63
-        Height = 13
-        Alignment = taRightJustify
-        Caption = 'Not found...'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clRed
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = [fsBold]
-        ParentFont = False
-        Visible = False
       end
       object ed: TTntComboBox
         Left = 8
@@ -163,7 +148,7 @@ object fmExtract: TfmExtract
       Left = 0
       Top = 113
       Width = 312
-      Height = 166
+      Height = 183
       Align = alClient
       Caption = 'Found strings'
       TabOrder = 1
@@ -171,7 +156,7 @@ object fmExtract: TfmExtract
         Left = 2
         Top = 15
         Width = 308
-        Height = 149
+        Height = 166
         Style = lbOwnerDrawFixed
         Align = alClient
         ItemHeight = 13
@@ -184,10 +169,18 @@ object fmExtract: TfmExtract
     Left = 0
     Top = 0
     Width = 9
-    Height = 279
+    Height = 296
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 0
+  end
+  object Status: TTntStatusBar
+    Left = 0
+    Top = 296
+    Width = 445
+    Height = 19
+    Panels = <>
+    SimplePanel = True
   end
   object DKLanguageController1: TDKLanguageController
     Left = 296
@@ -200,11 +193,10 @@ object fmExtract: TfmExtract
       70010100000005000000070043617074696F6E0004006243616E010100000006
       000000070043617074696F6E00080050616E656C4D6964000002006231010100
       000007000000070043617074696F6E000900546E744C6162656C310101000000
-      08000000070043617074696F6E0006006C61624E6F7401010000000900000007
-      0043617074696F6E000200656400000500624361736501010000000A00000007
-      0043617074696F6E0004006253656C01010000000B000000070043617074696F
-      6E0004006243757201010000000C000000070043617074696F6E000200623201
-      010000000D000000070043617074696F6E0004004C6973740000090050616E65
-      6C4C6566740000}
+      08000000070043617074696F6E00020065640000050062436173650101000000
+      0A000000070043617074696F6E0004006253656C01010000000B000000070043
+      617074696F6E0004006243757201010000000C000000070043617074696F6E00
+      0200623201010000000D000000070043617074696F6E0004004C697374000009
+      0050616E656C4C656674000006005374617475730000}
   end
 end

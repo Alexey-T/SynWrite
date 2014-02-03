@@ -68,7 +68,7 @@ type
     ed2: TTntComboBox;
     labEd2: TTntLabel;
     gOp: TTntGroupBox;
-    cbRE: TTntCheckBox;
+    cbRe: TTntCheckBox;
     cbCase: TTntCheckBox;
     cbWords: TTntCheckBox;
     gScop: TTntGroupBox;
@@ -105,10 +105,12 @@ type
     mnuCombo: TTntPopupMenu;
     StatusFind: TTntStatusBar;
     PanelBusy: TTntPanel;
+    cbReDot: TTntCheckBox;
+    cbReMulti: TTntCheckBox;
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
-    procedure cbREClick(Sender: TObject);
+    procedure cbReClick(Sender: TObject);
     procedure cbSpecClick(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
     procedure TntFormDestroy(Sender: TObject);
@@ -248,9 +250,12 @@ begin
   ed2Memo.Visible:= Value and IsMultiline;
   bCombo2.Visible:= ed2Memo.Visible;
   labEd2.Visible:= Value;
-  cbCfm.Enabled:= Value;
-  cbBk.Enabled:= not Value;
-  cbExtSel.Enabled:= not Value;
+  //cbCfm.Enabled:= Value;
+  cbCfm.Visible:= Value;
+  //cbBk.Enabled:= not Value;
+  cbBk.Visible:= not Value;
+  //cbExtSel.Enabled:= not Value;
+  cbExtSel.Visible:= not Value;
   bCount.Visible:= not Value;
   bFindInTabs.Visible:= not Value;
   bRepInTabs.Visible:= Value;
@@ -278,7 +283,9 @@ begin
     cbWrap.Checked:= ReadBool('Search', 'Wrap', false);
     bFor.Checked:= ReadBool('Search', 'Forw', true);
     bBack.Checked:= not bFor.Checked;
-    cbRE.Checked:= ReadBool('Search', 'RegExp', false);
+    cbRe.Checked:= ReadBool('Search', 'RegExp', false);
+    cbReDot.Checked:= ReadBool('Search', 'RegExpS', false);
+    cbReMulti.Checked:= ReadBool('Search', 'RegExpM', true);
     cbCase.Checked:= ReadBool('Search', 'Case', false);
     cbWords.Checked:= ReadBool('Search', 'Words', false);
     cbSpec.Checked:= ReadBool('Search', 'Spec', false);
@@ -347,7 +354,9 @@ begin
     WriteBool('Search', 'Wrap', cbWrap.Checked);
     //WriteBool('Search', 'SelOnly', bSel.Checked); //no need
     WriteBool('Search', 'Forw', bFor.Checked);
-    WriteBool('Search', 'RegExp', cbRE.Checked);
+    WriteBool('Search', 'RegExp', cbRe.Checked);
+    WriteBool('Search', 'RegExpS', cbReDot.Checked);
+    WriteBool('Search', 'RegExpM', cbReMulti.Checked);
     WriteBool('Search', 'Case', cbCase.Checked);
     WriteBool('Search', 'Words', cbWords.Checked);
     WriteBool('Search', 'Spec', cbSpec.Checked);
@@ -415,7 +424,7 @@ begin
   SynHelpTopic(helpFindDlg, Handle);
 end;
 
-procedure TfmSR.cbREClick(Sender: TObject);
+procedure TfmSR.cbReClick(Sender: TObject);
 var
   re: boolean;
   C: TColor;
@@ -427,6 +436,8 @@ begin
     cbWords.Checked:= false;
   end;
   cbWords.Enabled:= not re;
+  cbReDot.Enabled:= re;
+  cbReMulti.Enabled:= re;
 
   C:= IfThen(re, $B0FFFF, clWindow);
   ed1.Color:= C;
@@ -899,7 +910,11 @@ begin
 end;
 
 const
+  {$ifdef PERLRE}
+  cRe: array[0..36] of record
+  {$else}
   cRe: array[0..37] of record
+  {$endif}
     id, s, re: string;
   end = (
    (id: 're_s_mod'; s: SMod; re: SMod),
@@ -931,10 +946,12 @@ const
    (id: ''; s: ''; re: ''),
    (id: 're_slash'; s: '\\'; re: '\\'),
    (id: 're_hex'; s: '\xC0'; re: '\x'),
-   (id: 're_n'; s: '\n'; re: '\n'),
-   (id: 're_r'; s: '\r'; re: '\r'),
-   (id: 're_z'; s: '\z'; re: '\z'),
    (id: 're_t'; s: '\t'; re: '\t'),
+   (id: 're_r'; s: '\r'; re: '\r'),
+   (id: 're_n'; s: '\n'; re: '\n'),
+  {$ifndef PERLRE}
+   (id: 're_z'; s: '\z'; re: '\z'),
+  {$endif}
    (id: ''; s: ''; re: ''),
    (id: 're_as_pos_a'; s: '(?=...)'; re: '(?=...)'),
    (id: 're_as_neg_a'; s: '(?!...)'; re: '(?!...)'),
@@ -1259,6 +1276,8 @@ const
   cFindOptCase = 'c';
   cFindOptWords = 'w';
   cFindOptRegex = 're';
+  cFindOptRegex_s = 're_s';
+  cFindOptRegex_m = 're_m';
   cFindOptSpec = 'spec';
   cFindOptConfirm = 'cfm';
   cFindOptBookmk = 'bk';
@@ -1275,7 +1294,9 @@ begin
   Result:=
     IfThen(cbCase.Checked, cFindOptCase+',')+
     IfThen(cbWords.Checked, cFindOptWords+',')+
-    IfThen(cbRE.Checked, cFindOptRegex+',')+
+    IfThen(cbRe.Checked, cFindOptRegex+',')+
+    IfThen(cbReDot.Checked, cFindOptRegex_s+',')+
+    IfThen(cbReMulti.Checked, cFindOptRegex_m+',')+
     IfThen(cbSpec.Checked, cFindOptSpec+',')+
     IfThen(cbCfm.Checked, cFindOptConfirm+',')+
     IfThen(cbBk.Checked, cFindOptBookmk+',')+
@@ -1335,9 +1356,11 @@ begin
   repeat
     S:= SGetItem(SOpt, ',');
     if S='' then Break;
-    if S=cFindOptCase then Include(Opt, ftCaseSensitive);
-    if S=cFindOptWords then Include(Opt, ftWholeWordOnly);
-    if S=cFindOptRegex then Include(Opt, ftRegularExpr);
+    if S=cFindOptCase then Include(Opt, ftCaseSens);
+    if S=cFindOptWords then Include(Opt, ftWholeWords);
+    if S=cFindOptRegex then Include(Opt, ftRegex);
+    if S=cFindOptRegex_s then Include(Opt, ftRegex_s);
+    if S=cFindOptRegex_m then Include(Opt, ftRegex_m);
     if S=cFindOptSpec then OptSpec:= true;
     if S=cFindOptConfirm then Include(Opt, ftPromtOnReplace);
     if S=cFindOptBookmk then OptBkmk:= true;
