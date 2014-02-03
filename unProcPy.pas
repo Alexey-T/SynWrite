@@ -17,7 +17,7 @@ function Py_set_clip(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 
 procedure Py_AddSysPath(const Dir: string);
-procedure Py_RunPlugin_Command(const SId, SCmd: string);
+function Py_RunPlugin_Command(const SId, SCmd: string): string;
 function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
@@ -802,27 +802,24 @@ begin
   end;
 end;
 
-procedure Py_RunPlugin_Command(const SId, SCmd: string);
+function Py_RunPlugin_Command(const SId, SCmd: string): string;
 var
-  L: TStringList;
   SObj: string;
+  SCmd1, SCmd2: string;
 begin
   //object name from module name
   SObj:= '_syncommand_' + SId;
 
-  L:= TStringList.Create;
+  SCmd1:= Format('import %s               ', [SId]) + SLineBreak +
+          Format('if "%s" not in locals():', [SObj]) + SLineBreak +
+          Format('    %s = %s.%s()        ', [SObj, SId, 'Command']);
+  SCmd2:= Format('%s.%s()                 ', [SObj, SCmd]);
+
   try
-    L.Add(Format('import %s               ', [SId]));
-    L.Add(Format('if "%s" not in locals():', [SObj]));
-    L.Add(Format('    %s = %s.%s()        ', [SObj, SId, 'Command']));
-    L.Add(Format('%s.%s()                 ', [SObj, SCmd]));
-    try
-      GetPythonEngine.ExecStrings(L);
-    except
-      MsgBeep(true);
-    end;
-  finally
-    FreeAndNil(L);
+    GetPythonEngine.ExecString(SCmd1);
+    Result:= GetPythonEngine.EvalStringAsStr(SCmd2);
+  except
+    MsgBeep(true);
   end;
 end;
 

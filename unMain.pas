@@ -66,6 +66,7 @@ const
   cMaxTreeLen = 400; //"find in files" result tree: max node length
   cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
   cBandFolding = 3; //index of gutter band for folding
+  cDefaultCursor: array[boolean] of TCursor = (crHourGlass, crDefault);
   SynDefaultSyn = '(default).syn';
 
   cPyConsoleMaxCount = 1000;
@@ -2737,7 +2738,7 @@ type
     procedure DoEnterPyConsoleCommand(const Str: Widestring);
     procedure DoNewPythonPluginDialog;
     procedure DoRegisterPyCommandPlugin(const SId: string);
-    procedure DoLoadPyPlugin(const SFilename, SCmd: string);
+    function DoLoadPyPlugin(const SFilename, SCmd: string): string;
     procedure DoLogPyCommand(const Str: Widestring);
     procedure DoRepeatPyConsoleCommand;
     procedure LoadConsoleHist;
@@ -8463,15 +8464,17 @@ end;
       fmSR.labMultiline.Visible:= En;
       fmSR.labStyle.Visible:= En;
       fmSR.labRe.Visible:= En;
+      fmSR.labEd1.Visible:= En;
+      fmSR.labEd2.Visible:= En;
+      if En then
+        fmSR.IsReplace:= fmSR.IsReplace;
+      fmSR.Cursor:= cDefaultCursor[En];
     end;
 
     if Assigned(fmNumConv) then
       fmNumConv.Enabled:= En;
 
-    if En then
-      Screen.Cursor:= crDefault
-    else
-      Screen.Cursor:= crHourGlass;
+    Screen.Cursor:= cDefaultCursor[En];
   end;
 
   procedure TfmMain.DoProgressShow(AMode: TProgressType);
@@ -27937,7 +27940,7 @@ begin
     MsgBeep;
 end;
 
-procedure TfmMain.DoLoadPyPlugin(const SFilename, SCmd: string);
+function TfmMain.DoLoadPyPlugin(const SFilename, SCmd: string): string;
 var
   SId: string;
 begin
@@ -27947,12 +27950,12 @@ begin
 
   if not GetPythonEngine.Initialized then
   begin
-    MsgError('Python engine not initialized', Handle);
+    DoLogPyCommand('Python engine not initialized');
     Exit
   end;
 
   //DoLogPyCommand('Run plugin: ' + SId + '/' + SCmd);
-  Py_RunPlugin_Command(SId, SCmd);
+  Result:= Py_RunPlugin_Command(SId, SCmd);
 end;
 
 procedure TfmMain.DoLogPyCommand(const Str: Widestring);
