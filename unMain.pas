@@ -65,7 +65,7 @@ const
   cTabColors = 10; //number of user-defined tab colors
   cFixedLeftTabs = 3; //number of fixed tabs on left panel (Tree+Project+Tabs = 3)
   cFixedWindowItems = 5; //number of fixed items in Window menu
-  cMaxTreeLen = 400; //"find in files" result tree: max node length
+  cMaxTreeLen = 250; //"find in files" result tree: max node length
   cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
   cBandFolding = 3; //index of gutter band for folding
   cDefaultCursor: array[boolean] of TCursor = (crHourGlass, crDefault);
@@ -84,13 +84,15 @@ const
 
 type
   TSynPyEvent = (
-    cSynEventOnSave
+    cSynEventOnSave,
+    cSynEventOnChangeSlow
     );
   TSynPyEvents = set of TSynPyEvent;
-    
+
 const
   cSynPyEvent: array[TSynPyEvent] of string = (
-    'on_save'
+    'on_save',
+    'on_change_slow'
     );
 
 type
@@ -233,7 +235,7 @@ type
   end;
 
   TSynFindInfo = class
-    FN: Widestring;
+    FN, Str: Widestring;
     LineNum, ColNum, Len: integer;
     constructor Create;
   end;
@@ -2086,6 +2088,7 @@ type
     cStatCaretsTopLn,
     cStatCaretsBotLn: Widestring;
 
+    FPyChangeTick: DWORD;
     FListSnippets: TList;
     FTempFilenames: TTntStringList;
     FUserToolbarCommands: TTntStringList;
@@ -2769,7 +2772,7 @@ type
     procedure DoPyRegisterCommandPlugin(const SId: string);
     function DoPyLoadPlugin(const SFilename, SCmd: string): string;
     function DoPyEventPlugin(const SFilename: string; AEvent: TSynPyEvent): string;
-    function DoPyEventCheck(AFrame: TEditorFrame; AEvent: TSynPyEvent): boolean;
+    function DoPyEvent(AEvent: TSynPyEvent): boolean;
     function DoPyStringToEvents(const Str: string): TSynPyEvents;
 
     procedure LoadConsoleHist;
@@ -2820,6 +2823,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     //opt
+    opPyChangeDelay: DWORD;
     opAutoCase: boolean;
     opShowPanelTitles: boolean;
     opTreeSorted: string;
@@ -3187,7 +3191,7 @@ uses
 
 const
   cSynVer = '6.3.560';
-  cSynPyVer = '1.0.114';
+  cSynPyVer = '1.0.115';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -3674,7 +3678,7 @@ begin
   Frame.DoStopNotif;
 
   DoCheckUnicodeNeeded(Frame);
-  if not DoPyEventCheck(Frame, cSynEventOnSave) then Exit;
+  if not DoPyEvent(cSynEventOnSave) then Exit;
 
   AUntitled:= Frame.IsNewFile;
   if not PromtDialog then
@@ -4503,7 +4507,9 @@ begin
     opSaveWndPos:= ReadBool('Hist', 'SavePos', true);
 
     //setup
-    opShowPanelTitles:= ReadBool('View', 'PaneTitle', true); 
+    opPyChangeDelay:= 2000;
+
+    opShowPanelTitles:= ReadBool('View', 'PaneTitle', true);
     ApplyPanelTitles;
 
     opTreeSorted:= ReadString('Setup', 'TreeSorted', '');
@@ -6676,6 +6682,12 @@ begin
     //Repaint editor
     if CurrentEditor<>nil then
       FixDraw(CurrentEditor, true);
+  end;
+
+  if (FPyChangeTick>0) and (GetTickCount-FPyChangeTick>opPyChangeDelay) then
+  begin
+    FPyChangeTick:= 0;
+    DoPyEvent(cSynEventOnChangeSlow);
   end;
 end;
 
@@ -13489,11 +13501,12 @@ begin
   ColNum:= p.X;
   LineNum:= p.Y;
 
-  S:= Copy(Ed.Lines[LineNum], 1, cMaxTreeLen); //cut so Treeview doesn't crash
+  S:= Ed.Lines[LineNum];
   SReplaceAllW(S, #9, ' '); //replace tabs with 1 space (to not break BG hiliting) in Treeview
 
   Info:= TSynFindInfo.Create;
   Info.FN:= FListResFN;
+  Info.Str:= S;
   Info.LineNum:= LineNum; //LineNum - 0-based
   Info.ColNum:= ColNum-1; //ColNum - 1-based
   Info.Len:= EndPos-StartPos;
@@ -13504,7 +13517,7 @@ begin
     TreeFind.Items.AddChildObject(NodeFile, '...', Info)
   else
     TreeFind.Items.AddChildObject(NodeFile,
-      SFindResPrefix({FListResFN,} LineNum)+S, Info);
+      SFindResPrefix(LineNum) + Copy(S, 1, cMaxTreeLen), Info);
 
   //scroll to last file, update
   FTreeRoot.Expand(false);
@@ -17579,6 +17592,7 @@ end;
 
 procedure TfmMain.SynChange(Sender: TObject);
 begin
+  FPyChangeTick:= GetTickCount;
   SyncMapPos;
 end;
 
@@ -18412,6 +18426,7 @@ end;
 constructor TSynFindInfo.Create;
 begin
   FN:= '';
+  Str:= '';
   LineNum:= 0;
   ColNum:= 0;
   Len:= 0;
@@ -18734,8 +18749,9 @@ begin
   L.Clear;
   L.Add(ARootNode.Text);
   L.Add('');
-  Node:= ARootNode.getFirstChild;
+  Node:= ARootNode.GetFirstChild;
   if Node=nil then Exit;
+
   repeat
     if AFilesOnly then
       L.Add(Node.Text)
@@ -18755,7 +18771,7 @@ begin
             if n>0 then
               L.Add(
                 Info.FN + '(' + IntToStr(Info.LineNum+1) + '): ' +
-                Copy(Node2.Text, n+3, MaxInt));
+                Info.Str);
           end;
           Node2:= Node.GetNextChild(Node2);
         until Node2=nil;
@@ -28631,7 +28647,7 @@ begin
   until false;      
 end;
 
-function TfmMain.DoPyEventCheck(AFrame: TEditorFrame; AEvent: TSynPyEvent): boolean;
+function TfmMain.DoPyEvent(AEvent: TSynPyEvent): boolean;
 var
   i: Integer;
   SCurLexer, SRes: string;
@@ -28643,7 +28659,7 @@ begin
     begin
       if (SFilename='') then Break;
       if (AEvent in Events) then
-        if IsLexerListed(SCurLexer, SLexers) then
+        if (SLexers='') or IsLexerListed(SCurLexer, SLexers) then
         begin
           SRes:= DoPyEventPlugin(SFilename, AEvent);
           if SRes=cPyFalse then

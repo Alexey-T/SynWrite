@@ -735,6 +735,21 @@ begin
             MsgError(Str, H);
             Result:= ReturnNone;
           end;
+        3:
+          begin
+            MessageBeep(mb_iconinformation);
+            Result:= ReturnNone;
+          end;
+        4:
+          begin
+            MessageBeep(mb_iconwarning);
+            Result:= ReturnNone;
+          end;
+        5:
+          begin
+            MessageBeep(mb_iconerror);
+            Result:= ReturnNone;
+          end;
         -1:
           begin
             N:= Ord(MsgConfirm(Str, H));

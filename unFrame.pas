@@ -584,9 +584,6 @@ begin
   TfmMain(Owner).UpdateStatusBar;
   TfmMain(Owner).SynChange(Sender);
   SyncMap;
-
-  //not good, may be slow
-  //FixEditorCollapsed(Sender as TSyntaxMemo);
 end;
 
 procedure TEditorFrame.EditorMasterCaretPosChanged(Sender: TObject);
