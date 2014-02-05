@@ -2823,6 +2823,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     //opt
+    opHintScroll: boolean;
     opPyChangeDelay: DWORD;
     opAutoCase: boolean;
     opShowPanelTitles: boolean;
@@ -3884,6 +3885,14 @@ begin
   Result.HyperlinkHighlighter.Style.Font.Color:= opColorLink;
   Result.HyperlinkHighlighter.SingleClick:= opSingleClickURL;
 
+  if opHintScroll then
+  begin
+    with Result.EditorMaster.HintProps do
+      ShowHints:= ShowHints+[shScroll];
+    with Result.EditorSlave.HintProps do
+      ShowHints:= ShowHints+[shScroll];
+  end;
+
   UpdateEditorNonPrinted(Result.EditorMaster);
   UpdateEditorNonPrinted(Result.EditorSlave);
 
@@ -4507,7 +4516,8 @@ begin
     opSaveWndPos:= ReadBool('Hist', 'SavePos', true);
 
     //setup
-    opPyChangeDelay:= 2000;
+    opHintScroll:= ReadBool('Setup', 'HintScroll', false);
+    opPyChangeDelay:= 2000; //ReadInteger('Setup', 'PyChangeTime', 5000);
 
     opShowPanelTitles:= ReadBool('View', 'PaneTitle', true);
     ApplyPanelTitles;
