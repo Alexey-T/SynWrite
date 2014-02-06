@@ -2140,7 +2140,6 @@ type
     FListNewDocs: TTntStringList; //filenames list of templates (template\newdoc)
     FListConv: TTntStringList; //filenames of text converters (template\conv)
     FListFiles: TTntStringList; //filenames list of mass search/replace operation
-    FListValFN: Widestring; //filename for which HTML Tidy is called
     FSelBlank: boolean; //selection is blank (for Smart Hilite)
     FFullScr: boolean; //full-screen
     FOnTop: boolean; //always-on-top
@@ -2576,8 +2575,8 @@ type
       StartPos, EndPos: integer;
       var Accept: Boolean);
     procedure DoHandleKeysInPanels(var Key: Word; Shift: TShiftState);
-    procedure ListOutNav(const s: Widestring);
-    procedure ListValNav(const s: Widestring);
+    procedure ListOutNav(const Str: Widestring);
+    procedure ListValNav(const Str: Widestring);
     function IsNavigatableLine(const s: Widestring): boolean;
     procedure DoNewDoc(const fn: Widestring);
     procedure RunBrowser(const fn: Widestring);
@@ -12992,24 +12991,24 @@ begin
      ListOutNav(Items[ItemIndex]);
 end;
 
-procedure TfmMain.ListOutNav(const s: Widestring);
+procedure TfmMain.ListOutNav(const Str: Widestring);
 var
   fn: Widestring;
-  n_line, n_col: Integer;
+  nLine, nCol: Integer;
 begin
-  if s='' then Exit;
+  if Str='' then Exit;
 
   fn:= SynPanelPropsOut.DefFilename;
-  SParseOut(s,
+  SParseOut(Str,
     SynPanelPropsOut.RegexStr,
     SynPanelPropsOut.RegexIdName,
     SynPanelPropsOut.RegexIdLine,
     SynPanelPropsOut.RegexIdCol,
-    fn, n_line, n_col);
+    fn, nLine, nCol);
 
   if fn='' then Exit;
-  if n_line<=0 then Exit;
-  if n_col<=0 then n_col:= 1;
+  if nLine<1 then Exit;
+  if nCol<1 then nCol:= 1;
 
   //correct fn
   if (SExtractFilePath(fn)='') and (CurrentFrame.FileName<>'') then
@@ -13019,7 +13018,7 @@ begin
 
   DoOpenFile(fn); //must activate tab too
   FocusEditor;
-  CurrentEditor.CaretPos:= Point(n_col-1, n_line-1);
+  CurrentEditor.CaretPos:= Point(nCol-1, nLine-1);
 end;
 
 procedure TfmMain.DoHandleKeysInPanels(var Key: Word; Shift: TShiftState);
@@ -13362,25 +13361,26 @@ begin
   end;
 end;
 
-function TfmMain.IsNavigatableLine(const s: Widestring): boolean;
+function TfmMain.IsNavigatableLine(const S: Widestring): boolean;
 var
   fn: Widestring;
-  n_line, n_col: Integer;
+  nLine, nCol: Integer;
+  LogProps: ^TSynLogPanelProps;
 begin
-  //ListVal
-  if (ListVal.Visible) then
-    begin Result:= True; Exit end;
+  if ListVal.Visible then
+    LogProps:= @SynPanelPropsVal
+  else
+    LogProps:= @SynPanelPropsOut;
 
-  //ListOut
-  fn:= SynPanelPropsOut.DefFilename;
-  SParseOut(s,
-    SynPanelPropsOut.RegexStr,
-    SynPanelPropsOut.RegexIdName,
-    SynPanelPropsOut.RegexIdLine,
-    SynPanelPropsOut.RegexIdCol,
-    fn, n_line, n_col);
+  fn:= LogProps.DefFilename;
+  SParseOut(S,
+    LogProps.RegexStr,
+    LogProps.RegexIdName,
+    LogProps.RegexIdLine,
+    LogProps.RegexIdCol,
+    fn, nLine, nCol);
 
-  Result:= (fn<>'') and (n_line>0);
+  Result:= (fn<>'') and (nLine>0);
 end;
 
 procedure TfmMain.ListOutDrawItem(Control: TWinControl; Index: Integer;
@@ -16810,14 +16810,14 @@ procedure TfmMain.DoTidy(const Cfg: string);
 var
   L: TStringList;
   L2: TWideStringList;
-  fn_cfg, fn_out, fn_err,
+  fn_cfg, fn_out, fn_err, fn_current,
   fcmd, fdir: string;
 begin
   if CurrentFrame.FileName='' then Exit;
   if CurrentFrame.Modified then
     acSave.Execute;
-  FListValFN:= CurrentFrame.FileName;
 
+  fn_current:= CurrentFrame.FileName;
   fn_cfg:= FTempDir + '\SynwTidyCfg.txt';
   fn_out:= FTempDir + '\SynwTidyOut.txt';
   fn_err:= FTempDir + '\SynwTidyErr.txt';
@@ -16841,14 +16841,14 @@ begin
        fn_out,
        fn_cfg,
        fn_err,
-       FListValFN]);
+       fn_current]);
   end
   else
   begin
     fcmd:= WideFormat('"%s" -file "%s" -errors -quiet "%s"',
       [SynDir + 'Tools\tidy.exe',
        fn_err,
-       FListValFN]);
+       fn_current]);
   end;
 
   //exec
@@ -16859,6 +16859,12 @@ begin
   //show errors
   if IsFileExist(fn_err) and (FGetFileSize(fn_err)>0) then
   begin
+    SynPanelPropsVal.DefFilename:= fn_current;
+    SynPanelPropsVal.RegexStr:= 'line (\d+) column (\d+) .*';
+    SynPanelPropsVal.RegexIdLine:= 1;
+    SynPanelPropsVal.RegexIdCol:= 2;
+    SynPanelPropsVal.RegexIdName:= 0;
+
     ListVal.Items.LoadFromFile(fn_err);
     UpdatePanelOut(tbVal);
     plOut.Show;
@@ -16910,21 +16916,27 @@ begin
      ListValNav(Items[ItemIndex]);
 end;
 
-procedure TfmMain.ListValNav(const s: Widestring);
+procedure TfmMain.ListValNav(const Str: Widestring);
 var
-  Ln, Col: Integer;
-  ss, sLn, sCol: Widestring;
+  fn: Widestring;
+  nLine, nCol: Integer;
 begin
-  if s='' then Exit;
-  ss:= s;
-  sLn:= SGetItem(ss, ' ');
-  sLn:= SGetItem(ss, ' ');
-  sCol:= SGetItem(ss, ' ');
-  sCol:= SGetItem(ss, ' ');
-  Ln:= StrToIntDef(sLn, 1)-1;
-  Col:= StrToIntDef(sCol, 1)-1;
-  DoOpenFile(FListValFN);
-  CurrentEditor.CaretPos:= Point(Col, Ln);
+  if Str='' then Exit;
+
+  fn:= SynPanelPropsVal.DefFilename;
+  SParseOut(Str,
+    SynPanelPropsVal.RegexStr,
+    SynPanelPropsVal.RegexIdName,
+    SynPanelPropsVal.RegexIdLine,
+    SynPanelPropsVal.RegexIdCol,
+    fn, nLine, nCol);
+
+  if fn='' then Exit;
+  if nLine<1 then Exit;
+  if nCol<1 then nCol:= 1;
+
+  DoOpenFile(fn);                    
+  CurrentEditor.CaretPos:= Point(nCol-1, nLine-1);
   FocusEditor;
 end;
 
