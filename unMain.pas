@@ -2793,8 +2793,8 @@ type
     procedure InitSnippets;
     procedure LoadSnippets;
     procedure ClearSnippets;
-    function DoSnippetChoice(const SText: string): integer;
-    procedure DoSnippetListDialog(const SText: string);
+    function DoSnippetChoice(const SInitialText: string): integer;
+    procedure DoSnippetListDialog(const SInitialText: string);
     function DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
     procedure DoSnippetNew;
     procedure DoSnippetsReload;
@@ -3208,7 +3208,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.3.560';
+  cSynVer = '6.4.580';
   cSynPyVer = '1.0.115';
 
 const
@@ -28060,6 +28060,7 @@ begin
 
     AddMethod('ed_replace', Py_ed_replace, '');
     AddMethod('ed_insert', Py_ed_insert, '');
+    AddMethod('ed_insert_snippet', Py_ed_insert_snippet, '');
     AddMethod('ed_set_text_all', Py_ed_set_text_all, '');
     AddMethod('ed_set_text_line', Py_ed_set_text_line, '');
     AddMethod('ed_get_word', Py_ed_get_word, '');
@@ -28309,7 +28310,7 @@ begin
   end;
 end;
 
-function TfmMain.DoSnippetChoice(const SText: string): integer;
+function TfmMain.DoSnippetChoice(const SInitialText: string): integer;
 begin
   Result:= -1;
   InitSnippets;
@@ -28319,7 +28320,7 @@ begin
     Caption:= DKLangConstW('zMSnippetList');
     cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
 
-    Edit.Text:= SText;
+    Edit.Text:= SInitialText;
     MemoText.Font.Assign(CurrentEditor.Font);
 
     FInfoList:= Self.FListSnippets;
@@ -28337,35 +28338,34 @@ begin
   end;
 end;
 
-procedure TfmMain.DoSnippetListDialog(const SText: string);
+procedure TfmMain.DoSnippetListDialog(const SInitialText: string);
 var
   Ed: TSyntaxMemo;
   Index: Integer;
-  StrSelText: Widestring;
+  SSelText, SSnippetText: Widestring;
 begin
   Ed:= CurrentEditor;
-  if not Ed.ReadOnly then
+  if Ed.ReadOnly then Exit;
+
+  Index:= DoSnippetChoice(SInitialText);
+  if Index>=0 then
   begin
-    Index:= DoSnippetChoice(SText);
-    if Index>=0 then
-    begin
-      Ed.BeginUpdate;
-      try
-        StrSelText:= Ed.SelText;
-        Ed.ClearSelection;
-        if SText<>'' then
-        begin
-          Ed.CaretStrPos:= Ed.CaretStrPos - Length(SText);
-          Ed.DeleteText(Length(SText));
-        end;
-        EditorInsertSnippet(Ed, TSynSnippetClass(FListSnippets[Index]).Info.Text, StrSelText);
-      finally
-        Ed.EndUpdate;
+    SSelText:= Ed.SelText;
+    SSnippetText:= TSynSnippetClass(FListSnippets[Index]).Info.Text;
+
+    Ed.BeginUpdate;
+    try
+      Ed.ClearSelection;
+      if SInitialText<>'' then
+      begin
+        Ed.CaretStrPos:= Ed.CaretStrPos - Length(SInitialText);
+        Ed.DeleteText(Length(SInitialText));
       end;
+      EditorInsertSnippet(Ed, SSnippetText, SSelText);
+    finally
+      Ed.EndUpdate;
     end;
-  end
-  else
-    MsgBeep;
+  end;
 end;
 
 function TfmMain.DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;

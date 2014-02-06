@@ -83,6 +83,7 @@ function Py_ed_get_sel_lines(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_replace(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_insert(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_insert_snippet(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_text_line(Self, Args: PPyObject): PPyObject; cdecl;
 
@@ -372,6 +373,23 @@ begin
     end;
 end;
 
+function Py_ed_insert_snippet(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H: Integer;
+  P1, P2: PAnsiChar;
+  Str1, Str2: Widestring;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iss:ed_insert_snippet', @H, @P1, @P2)) then
+    begin
+      Str1:= UTF8Decode(AnsiString(P1));
+      Str2:= UTF8Decode(AnsiString(P2));
+      Ed:= PyEditor(H);
+      EditorInsertSnippet(Ed, Str1, Str2);
+      Result:= ReturnNone;
+    end;
+end;
 
 function Py_ed_set_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 var
