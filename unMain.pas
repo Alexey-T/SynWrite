@@ -84,7 +84,8 @@ const
 
 type
   TSynPyEvent = (
-    cSynEventOnSave,
+    cSynEventOnSaveAfter,
+    cSynEventOnSaveBefore,
     cSynEventOnChangeSlow
     );
   TSynPyEvents = set of TSynPyEvent;
@@ -92,6 +93,7 @@ type
 const
   cSynPyEvent: array[TSynPyEvent] of string = (
     'on_save',
+    'on_save_pre',
     'on_change_slow'
     );
 
@@ -2577,7 +2579,7 @@ type
     procedure DoHandleKeysInPanels(var Key: Word; Shift: TShiftState);
     procedure ListOutNav(const Str: Widestring);
     procedure ListValNav(const Str: Widestring);
-    function IsNavigatableLine(const s: Widestring): boolean;
+    function IsNavigatableLine(const Str: Widestring): boolean;
     procedure DoNewDoc(const fn: Widestring);
     procedure RunBrowser(const fn: Widestring);
     procedure RunTool(NTool: Integer);
@@ -3694,7 +3696,7 @@ begin
   Frame.DoStopNotif;
 
   DoCheckUnicodeNeeded(Frame);
-  if not DoPyEvent(cSynEventOnSave) then Exit;
+  if not DoPyEvent(cSynEventOnSaveBefore) then Exit;
 
   AUntitled:= Frame.IsNewFile;
   if not PromtDialog then
@@ -3731,6 +3733,7 @@ begin
 
       Frame.SaveFile(SD.FileName);
       SynMruFiles.AddItem(SD.FileName);
+      DoPyEvent(cSynEventOnSaveAfter);
 
       //update lexer
       if FCanUseLexer(SD.FileName) then
@@ -3762,6 +3765,7 @@ begin
     end;
 
     Frame.SaveFile(Frame.FileName);
+    DoPyEvent(cSynEventOnSaveAfter);
 
     //save on ftp
     if Frame.IsFtp then
@@ -13037,6 +13041,14 @@ begin
     Exit
   end;
 
+  //Find-in-files
+  if IsShortcutOfCmd(sh, sm_ReplaceInFiles) then
+  begin
+    ecReplaceInFiles.Execute;
+    Key:= 0;
+    Exit
+  end;
+
   //Toggle panels
   if IsShortcutOfCmd(sh, sm_OptShowLeftPanel) then
   begin
@@ -13361,7 +13373,7 @@ begin
   end;
 end;
 
-function TfmMain.IsNavigatableLine(const S: Widestring): boolean;
+function TfmMain.IsNavigatableLine(const Str: Widestring): boolean;
 var
   fn: Widestring;
   nLine, nCol: Integer;
@@ -13373,7 +13385,7 @@ begin
     LogProps:= @SynPanelPropsOut;
 
   fn:= LogProps.DefFilename;
-  SParseOut(S,
+  SParseOut(Str,
     LogProps.RegexStr,
     LogProps.RegexIdName,
     LogProps.RegexIdLine,
@@ -27951,16 +27963,11 @@ begin
             LogListbox:= fmMain.ListOut;
             LogProps:= @fmMain.SynPanelPropsOut;
           end;
-        cSynLogValidate:
+        else
           begin
             LogListbox:= fmMain.ListVal;
             LogProps:= @fmMain.SynPanelPropsVal;
           end;
-        else
-        begin
-          LogListbox:= nil;
-          LogProps:= nil;
-        end;
       end;
 
       case Id of
