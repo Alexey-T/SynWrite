@@ -234,6 +234,20 @@ type
     ToolContextItem: boolean;
   end;
 
+  TSynLogPanelProps = record
+    RegexStr: string;
+    RegexIdLine,
+    RegexIdCol,
+    RegexIdName: Integer;
+    DefFilename: Widestring;
+    Encoding: TOutputEnc;
+  end;  
+
+  TSynLogPanelKind = (
+    cSynLogOutput,
+    cSynLogValidate
+    );
+
   TSynFindInfo = class
     FN, Str: Widestring;
     LineNum, ColNum, Len: integer;
@@ -2206,8 +2220,6 @@ type
     FToolbarMoved: boolean;  //set when toolbars are moved
     FPopupUrl: string;       //current URL for editor popup menu
     FPopupColor: integer;    //current color-id-in-text for editor popup menu
-    FCurrTool: integer;      //number of last called ext-tool
-    FCurrToolFN: Widestring; //filename for last called ext-tool
     FCurrPluginAcpStartPos: TPoint; //auto-complete popup position, for cActionSuggestCompletion
     FCurrSelState: TSynSelState; //current selection state (stream, column, carets etc)
     FCurrTheme: string;      //current SpTBX theme
@@ -2813,6 +2825,10 @@ type
     SynExe: boolean;
     SynIsPortable: boolean;
     SynProjectSessionFN: string;
+
+    SynPyLog: TSynLogPanelKind;
+    SynPanelPropsOut,
+    SynPanelPropsVal: TSynLogPanelProps;
 
     hLister: HWND;
     fmProgress: TfmProgress;
@@ -12983,9 +12999,13 @@ var
 begin
   if s='' then Exit;
 
-  fn:= FCurrToolFN;
-  with opTools[FCurrTool] do
-    SParseOut(s, ToolOutRegex, ToolOutNum_fn, ToolOutNum_line, ToolOutNum_col, fn, n_line, n_col);
+  fn:= SynPanelPropsOut.DefFilename;
+  SParseOut(s,
+    SynPanelPropsOut.RegexStr,
+    SynPanelPropsOut.RegexIdName,
+    SynPanelPropsOut.RegexIdLine,
+    SynPanelPropsOut.RegexIdCol,
+    fn, n_line, n_col);
 
   if fn='' then Exit;
   if n_line<=0 then Exit;
@@ -13350,13 +13370,15 @@ begin
   //ListVal
   if (ListVal.Visible) then
     begin Result:= True; Exit end;
-  //ListOut
-  if (s='') or (FCurrTool<=0) then
-    begin Result:= False; Exit end;
 
-  fn:= FCurrToolFN;
-  with opTools[FCurrTool] do
-    SParseOut(s, ToolOutRegex, ToolOutNum_fn, ToolOutNum_line, ToolOutNum_col, fn, n_line, n_col);
+  //ListOut
+  fn:= SynPanelPropsOut.DefFilename;
+  SParseOut(s,
+    SynPanelPropsOut.RegexStr,
+    SynPanelPropsOut.RegexIdName,
+    SynPanelPropsOut.RegexIdLine,
+    SynPanelPropsOut.RegexIdCol,
+    fn, n_line, n_col);
 
   Result:= (fn<>'') and (n_line>0);
 end;
@@ -19683,8 +19705,14 @@ begin
       outToPanel:
         begin
           UpdateOutFromList(List);
-          FCurrTool:= NTool;
-          FCurrToolFN:= CurrentFrame.FileName;
+
+          SynPanelPropsOut.DefFilename:= CurrentFrame.FileName;
+          SynPanelPropsOut.RegexStr:= opTools[NTool].ToolOutRegex;
+          SynPanelPropsOut.RegexIdName:= opTools[NTool].ToolOutNum_fn;
+          SynPanelPropsOut.RegexIdLine:= opTools[NTool].ToolOutNum_line;
+          SynPanelPropsOut.RegexIdCol:= opTools[NTool].ToolOutNum_col;
+          SynPanelPropsOut.Encoding:= opTools[NTool].ToolOutEncoding;
+
           UpdatePanelOut(tbOut);
           plOut.Show;
         end;
@@ -19971,21 +19999,16 @@ procedure TfmMain.acRereadOutExecute(Sender: TObject);
 var
   ft: Widestring;
   List: TWideStringList;
-  Enc: TOutputEnc;
 begin
   ft:= FGetTempFilenameIndexed(0);
   if not (IsFileExist(ft) and (FGetFileSize(ft)>0)) then
     begin MsgNoFile(ft); Exit end;
 
-  if FCurrTool>0 then
-    Enc:= opTools[FCurrTool].ToolOutEncoding
-  else
-    Enc:= encOem;
-
   List:= TWideStringList.Create;
   try
     List.LoadFromFile(ft);
-    FixListOutput(List, false{NoTags}, false{NoDups}, Enc,
+    FixListOutput(List, false{NoTags}, false{NoDups},
+      SynPanelPropsOut.Encoding,
       EditorTabExpansion(CurrentEditor));
     UpdateOutFromList(List);
     UpdatePanelOut(tbOut);
@@ -27897,6 +27920,52 @@ begin
     end;
 end;
 
+function Py_app_log(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  P: PAnsiChar;
+  Str: Widestring;
+  Id: Integer;
+  LogListbox: TTntListbox;
+  LogProps: ^TSynLogPanelProps;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'is:app_log', @Id, @P)) then
+    begin
+      Str:= UTF8Decode(AnsiString(P));
+
+      case fmMain.SynPyLog of
+        cSynLogOutput:
+          begin
+            LogListbox:= fmMain.ListOut;
+            LogProps:= @fmMain.SynPanelPropsOut;
+          end;
+        cSynLogValidate:
+          begin
+            LogListbox:= fmMain.ListVal;
+            LogProps:= @fmMain.SynPanelPropsVal;
+          end;
+        else
+        begin
+          LogListbox:= nil;
+          LogProps:= nil;
+        end;
+      end;
+
+      case Id of
+        0: LogListbox.Items.Clear;
+        1: LogListbox.Items.Add(Str);
+        2: fmMain.SynPyLog:= TSynLogPanelKind(StrToIntDef(Str, 0));
+        3: LogProps.RegexStr:= Str;
+        4: LogProps.RegexIdLine:= StrToIntDef(Str, 0);
+        5: LogProps.RegexIdCol:= StrToIntDef(Str, 0);
+        6: LogProps.RegexIdName:= StrToIntDef(Str, 0);
+        7: LogProps.DefFilename:= Str;
+      end;
+
+      Result:= ReturnNone;
+    end;
+end;
+
 procedure TfmMain.PythonModuleInitialization(Sender: TObject);
 begin
   with Sender as TPythonModule do
@@ -27910,6 +27979,7 @@ begin
     AddMethod('app_api_version', Py_app_api_version, '');
     AddMethod('app_exe_dir', Py_app_exe_dir, '');
     AddMethod('app_ini_dir', Py_app_ini_dir, '');
+    AddMethod('app_log', Py_app_log, '');
 
     AddMethod('ini_read', Py_ini_read, '');
     AddMethod('ini_write', Py_ini_write, '');
