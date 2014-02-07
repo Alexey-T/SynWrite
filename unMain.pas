@@ -2783,9 +2783,16 @@ type
     procedure DoPyConsole_RepeatCommand;
     procedure DoPyNewPluginDialog;
     procedure DoPyRegisterCommandPlugin(const SId: string);
-    function DoPyLoadPlugin(const SFilename, SCmd: string): string;
-    function DoPyEventPlugin(const SFilename: string; AEvent: TSynPyEvent): string;
-    function DoPyEvent(AEvent: TSynPyEvent): boolean;
+    function DoPyLoadPlugin(
+      const SFilename, SCmd: string): string;
+    function DoPyLoadPluginWithParams(
+      const SFilename, SCmd: string;
+      AEd: TSyntaxMemo;
+      const AParams: array of string): string;
+    function DoPyEvent(
+      AEd: TSyntaxMemo;
+      AEvent: TSynPyEvent;
+      const AParams: array of string): boolean;
     function DoPyStringToEvents(const Str: string): TSynPyEvents;
 
     procedure LoadConsoleHist;
@@ -3696,7 +3703,7 @@ begin
   Frame.DoStopNotif;
 
   DoCheckUnicodeNeeded(Frame);
-  if not DoPyEvent(cSynEventOnSaveBefore) then Exit;
+  if not DoPyEvent(Frame.EditorMaster, cSynEventOnSaveBefore, []) then Exit;
 
   AUntitled:= Frame.IsNewFile;
   if not PromtDialog then
@@ -3733,7 +3740,7 @@ begin
 
       Frame.SaveFile(SD.FileName);
       SynMruFiles.AddItem(SD.FileName);
-      DoPyEvent(cSynEventOnSaveAfter);
+      DoPyEvent(Frame.EditorMaster, cSynEventOnSaveAfter, []);
 
       //update lexer
       if FCanUseLexer(SD.FileName) then
@@ -3765,7 +3772,7 @@ begin
     end;
 
     Frame.SaveFile(Frame.FileName);
-    DoPyEvent(cSynEventOnSaveAfter);
+    DoPyEvent(Frame.EditorMaster, cSynEventOnSaveAfter, []);
 
     //save on ftp
     if Frame.IsFtp then
@@ -6716,7 +6723,7 @@ begin
   if (FPyChangeTick>0) and (GetTickCount-FPyChangeTick>opPyChangeDelay) then
   begin
     FPyChangeTick:= 0;
-    DoPyEvent(cSynEventOnChangeSlow);
+    DoPyEvent(CurrentEditor, cSynEventOnChangeSlow, []);
   end;
 end;
 
@@ -28181,10 +28188,26 @@ begin
   Result:= Py_RunPlugin_Command(SId, SCmd);
 end;
 
-function TfmMain.DoPyEventPlugin(const SFilename: string; AEvent: TSynPyEvent): string;
+function TfmMain.DoPyLoadPluginWithParams(
+  const SFilename, SCmd: string;
+  AEd: TSyntaxMemo;
+  const AParams: array of string): string;
+var
+  SId: string;
 begin
-  Result:= DoPyLoadPlugin(SFilename, cSynPyEvent[AEvent]);
+  SId:= SFilename;
+  if SBegin(SId, cPyPrefix) then
+    Delete(SId, 1, Length(cPyPrefix));
+
+  if not GetPythonEngine.Initialized then
+  begin
+    DoPyConsole_LogString(cPyNotInited);
+    Exit
+  end;
+
+  Result:= Py_RunPlugin_Event(SId, SCmd, AEd, AParams);
 end;
+
 
 procedure TfmMain.DoPyConsole_LogString(const Str: Widestring);
 begin
@@ -28488,10 +28511,10 @@ begin
   begin
     case H of
       0: Result:= fmMain.CurrentEditor;
-      -1: Result:= fmMain.BrotherEditor(fmMain.CurrentEditor);
-      -2: Result:= fmMain.OppositeFrame.EditorMaster;
-      -3: Result:= fmMain.OppositeFrame.EditorSlave;
-      else Result:= fmMain.CurrentEditor; //don't return nil
+      1: Result:= fmMain.BrotherEditor(fmMain.CurrentEditor);
+      2: Result:= fmMain.OppositeFrame.EditorMaster;
+      3: Result:= fmMain.OppositeFrame.EditorSlave;
+      else Result:= TSyntaxMemo(Pointer(H));
     end;
   end;
 end;
@@ -28746,13 +28769,15 @@ begin
   until false;      
 end;
 
-function TfmMain.DoPyEvent(AEvent: TSynPyEvent): boolean;
+function TfmMain.DoPyEvent(AEd: TSyntaxMemo; AEvent: TSynPyEvent;
+  const AParams: array of string): boolean;
 var
   i: Integer;
   SCurLexer, SRes: string;
 begin
   Result:= true;
   SCurLexer:= CurrentLexerForFile;
+
   for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
     with FPluginsEvent[i] do
     begin
@@ -28760,7 +28785,7 @@ begin
       if (AEvent in Events) then
         if (SLexers='') or IsLexerListed(SCurLexer, SLexers) then
         begin
-          SRes:= DoPyEventPlugin(SFilename, AEvent);
+          SRes:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, AParams);
           if SRes=cPyFalse then
           begin
             Result:= false;

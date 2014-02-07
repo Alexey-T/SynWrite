@@ -18,6 +18,7 @@ function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 
 procedure Py_AddSysPath(const Dir: string);
 function Py_RunPlugin_Command(const SId, SCmd: string): string;
+function Py_RunPlugin_Event(const SId, SCmd: string; AEd: TSyntaxMemo; const AParams: array of string): string;
 function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
@@ -92,6 +93,7 @@ implementation
 uses
   Windows,
   SysUtils,
+  StrUtils,
   Types,
   Variants,
   Classes,
@@ -835,13 +837,13 @@ var
   SObj: string;
   SCmd1, SCmd2: string;
 begin
-  //object name from module name
   SObj:= '_syncommand_' + SId;
-
-  SCmd1:= Format('import %s               ', [SId]) + SLineBreak +
-          Format('if "%s" not in locals():', [SObj]) + SLineBreak +
-          Format('    %s = %s.%s()        ', [SObj, SId, 'Command']);
-  SCmd2:= Format('%s.%s()                 ', [SObj, SCmd]);
+  SCmd1:=
+    Format('import %s               ', [SId]) + SLineBreak +
+    Format('if "%s" not in locals():', [SObj]) + SLineBreak +
+    Format('    %s = %s.%s()        ', [SObj, SId, 'Command']);
+  SCmd2:=
+    Format('%s.%s()', [SObj, SCmd]);
 
   try
     GetPythonEngine.ExecString(SCmd1);
@@ -850,6 +852,37 @@ begin
     MsgBeep(true);
   end;
 end;
+
+function Py_RunPlugin_Event(const SId, SCmd: string;
+  AEd: TSyntaxMemo; const AParams: array of string): string;
+var
+  SObj: string;
+  SCmd1, SCmd2: string;
+  SParams: string;
+  i: Integer;
+  H: Integer;
+begin
+  H:= Integer(Pointer(AEd));
+  SParams:= Format('sw.Editor(%d)', [H]);
+  for i:= 0 to Length(AParams)-1 do
+    SParams:= SParams + ', ' + AParams[i];
+
+  SObj:= '_syncommand_' + SId;
+  SCmd1:= 'import sw' + SLineBreak +
+    Format('import %s               ', [SId]) + SLineBreak +
+    Format('if "%s" not in locals():', [SObj]) + SLineBreak +
+    Format('    %s = %s.%s()        ', [SObj, SId, 'Command']);
+  SCmd2:=
+    Format('%s.%s(%s)', [SObj, SCmd, SParams]);
+
+  try
+    GetPythonEngine.ExecString(SCmd1);
+    Result:= GetPythonEngine.EvalStringAsStr(SCmd2);
+  except
+    MsgBeep(true);
+  end;
+end;
+
 
 function Py_msg_local(Self, Args: PPyObject): PPyObject; cdecl;
   //
