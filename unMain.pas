@@ -2104,7 +2104,6 @@ type
     cStatCaretsTopLn,
     cStatCaretsBotLn: Widestring;
 
-    FPyChangeTick: DWORD;
     FListSnippets: TList;
     FTempFilenames: TTntStringList;
     FUserToolbarCommands: TTntStringList;
@@ -2789,10 +2788,6 @@ type
       const SFilename, SCmd: string;
       AEd: TSyntaxMemo;
       const AParams: array of string): string;
-    function DoPyEvent(
-      AEd: TSyntaxMemo;
-      AEvent: TSynPyEvent;
-      const AParams: array of string): boolean;
     function DoPyStringToEvents(const Str: string): TSynPyEvents;
 
     procedure LoadConsoleHist;
@@ -3137,6 +3132,10 @@ type
     function DoCheckCommandLineTwo: boolean;
     procedure DoClearSearchHistory;
     procedure DoEnumLexers(L: TTntStrings);
+    function DoPyEvent(
+      AEd: TSyntaxMemo;
+      AEvent: TSynPyEvent;
+      const AParams: array of string): boolean;
     //end of public
   end;
 
@@ -3216,7 +3215,7 @@ uses
 
 const
   cSynVer = '6.4.580';
-  cSynPyVer = '1.0.115';
+  cSynPyVer = '1.0.116';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -4543,7 +4542,7 @@ begin
 
     //setup
     opHintScroll:= ReadBool('Setup', 'HintScroll', false);
-    opPyChangeDelay:= 2000; //ReadInteger('Setup', 'PyChangeTime', 5000);
+    opPyChangeDelay:= ReadInteger('Setup', 'PyChangeDelay', 3000);
 
     opShowPanelTitles:= ReadBool('View', 'PaneTitle', true);
     ApplyPanelTitles;
@@ -6720,11 +6719,7 @@ begin
       FixDraw(CurrentEditor, true);
   end;
 
-  if (FPyChangeTick>0) and (GetTickCount-FPyChangeTick>opPyChangeDelay) then
-  begin
-    FPyChangeTick:= 0;
-    DoPyEvent(CurrentEditor, cSynEventOnChangeSlow, []);
-  end;
+  CurrentFrame.DoChangeTick;
 end;
 
 procedure TfmMain.acExportRTFBeforeExecute(Sender: TObject);
@@ -17655,7 +17650,6 @@ end;
 
 procedure TfmMain.SynChange(Sender: TObject);
 begin
-  FPyChangeTick:= GetTickCount;
   SyncMapPos;
 end;
 
@@ -27992,6 +27986,22 @@ begin
     end;
 end;
 
+function Py_ed_get_filename(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H: Integer;
+  Ed: TSyntaxMemo;
+  Str: Widestring;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_filename', @H)) then
+    begin
+      Ed:= PyEditor(H);
+      Str:= fmMain.FrameOfEditor(Ed).FileName;
+      Result:= PyUnicode_FromWideString(Str);
+    end;
+end;    
+
+
 procedure TfmMain.PythonModuleInitialization(Sender: TObject);
 begin
   with Sender as TPythonModule do
@@ -28052,6 +28062,7 @@ begin
     AddMethod('ed_get_marks', Py_ed_get_marks, '');
     AddMethod('ed_get_lexer', Py_ed_get_lexer, '');
     AddMethod('ed_get_prop', Py_ed_get_prop, '');
+    AddMethod('ed_get_filename', Py_ed_get_filename, '');
 
     AddMethod('ed_get_top', Py_ed_get_top, '');
     AddMethod('ed_get_left', Py_ed_get_left, '');

@@ -104,6 +104,7 @@ type
       Line: Integer);
     procedure TBXItemSplitVertClick(Sender: TObject);
   private
+    FPyChangeTick: DWORD;
     FIsMasterFocused: boolean;
     FTreeSorted: boolean;
     FNotifAllYes,
@@ -165,6 +166,7 @@ type
     function IsFtp: boolean;
     //---------------------
 
+    procedure DoChangeTick;
     function CaretsCount: integer;
     procedure CaretsProps(var NTop, NBottom: integer);
     function SUrlAt(const Pnt: TPoint): Widestring;
@@ -295,6 +297,7 @@ begin
   FNotif.Timer.Interval:= 1000;
   FNotif.OnChanged:= FileReload;
 
+  FPyChangeTick:= 0;  
   FFtpInfoPtr:= nil;
   FFtpInfoSize:= 0;
   FMapColor:= clLtGray;
@@ -584,6 +587,8 @@ begin
   TfmMain(Owner).UpdateStatusBar;
   TfmMain(Owner).SynChange(Sender);
   SyncMap;
+
+  FPyChangeTick:= GetTickCount;
 end;
 
 procedure TEditorFrame.EditorMasterCaretPosChanged(Sender: TObject);
@@ -1635,6 +1640,16 @@ begin
       Dec(NPos);
     until false;
   end;
+end;
+
+procedure TEditorFrame.DoChangeTick;
+begin
+  if (FPyChangeTick>0) then
+    if (GetTickCount-FPyChangeTick > TfmMain(Owner).opPyChangeDelay) then
+    begin
+      FPyChangeTick:= 0;
+      TfmMain(Owner).DoPyEvent(EditorMaster, cSynEventOnChangeSlow, []);
+    end;
 end;
 
 initialization
