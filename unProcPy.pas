@@ -14,6 +14,8 @@ var
 
 function Py_get_clip(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_set_clip(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_text_local(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_text_convert(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 
 procedure Py_AddSysPath(const Dir: string);
@@ -49,7 +51,6 @@ function Py_ini_write(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_dlg_input(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_msg_box(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_msg_local(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_text_sel(Self, Args: PPyObject): PPyObject; cdecl;
@@ -884,7 +885,7 @@ begin
 end;
 
 
-function Py_msg_local(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_text_local(Self, Args: PPyObject): PPyObject; cdecl;
   //
   function GetFN(const fn_py, Suffix: string): string;
   begin
@@ -1230,6 +1231,28 @@ begin
         -2: EditorClearBookmarks(Ed);
       end;
       Result:= ReturnNone;
+    end;
+end;
+
+
+function Py_text_convert(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  PData, PFName: PAnsiChar;
+  StrData, StrFName, StrResult: Widestring;
+  NBack: Integer;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'ssi:text_convert', @PData, @PFName, @NBack)) then
+    begin
+      StrData:= UTF8Decode(AnsiString(PData));
+      StrFName:= UTF8Decode(AnsiString(PFName));
+      if IsFileExist(StrFName) then
+      begin
+        StrResult:= SDecodeUsingFileTable(StrData, StrFName, Bool(NBack));
+        Result:= PyUnicode_FromWideString(StrResult);
+      end
+      else
+        Result:= ReturnNone;
     end;
 end;
 

@@ -2,7 +2,11 @@
 SynWrite text finder/replacer class
 Original code was by: EControl Ltd.
 Modifications by: Alexey (SynWrite)
+
+2014-02-02 Modified by Zvezdan Dimitrijevic to allow use of TPerlRegEx instead of TecRegExpr
 }
+{$define PERLRE}
+
 unit unSearch;
 
 interface
@@ -10,7 +14,17 @@ interface
 uses
   Classes, Types,
   Controls, Forms, StdCtrls,
-  ecZRegExpr, ecSyntMemo, ecStrUtils;
+//ZD start
+  //{$UnDef PERLRE}
+  // Define FWDMATCH for forward searches with single Match, it is faster but cannot be canceled until it finishes
+  //{$define FWDMATCH}
+  {$ifdef PERLRE}
+  PerlRegEx,
+  {$else}
+  ecZRegExpr,
+  {$endif}
+  ecSyntMemo, ecStrUtils;
+//ZD end
 
 type
   TSearchOption = (
@@ -48,7 +62,11 @@ type
     FTokens: TSearchTokens;
     FFindText: WideString;
     FControl: TCustomSyntaxMemo;
+    {$ifdef PERLRE} //ZD
+    FRegExpr: TPerlRegEx; //ZD
+    {$else} //ZD
     FRegExpr: TecRegExpr;
+    {$endif} //ZD
     FOnFind: TOnFindEvent;
     FOnCanAccept: TOnFindEvent;
     FOnProgress: TOnFindProgress;
@@ -58,7 +76,7 @@ type
     function CanAccept(StrtPos, EndPos: integer): Boolean;
     function CanContinue: boolean;
   protected
-    function MatchAtPos(const Text: WideString; StrtPos: integer; var mLen: integer): Boolean;
+    function MatchAtPos(const Text: WideString; var StrtPos, mLen: integer): Boolean; //ZD
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -138,23 +156,34 @@ uses
 
 { TSynFinder }
 
-function TSynFinder.MatchAtPos(const Text: WideString; StrtPos: integer; var mLen: integer): Boolean;
+//ZD start
+function TSynFinder.MatchAtPos(const Text: WideString; var StrtPos, mLen: integer): Boolean;
 var
   nFlags, nLen: integer;
 begin
   if Assigned(FOnProgress) then
     FOnProgress(StrtPos, Length(Text));
 
-  nLen:= Length(FFindText);
   if ftRegex in Flags then
   begin
+    {$ifdef PERLRE}
+    FRegExpr.Start := StrtPos;
+    Result := FRegExpr.MatchAgain;
+    if Result then begin
+      StrtPos := FRegExpr.MatchedOffset;
+      mLen:= FRegExpr.MatchedLength;
+    end;
+    {$else}
     mLen:= StrtPos;
     Result:= FRegExpr.Match(Text, mLen);
     if Result then
       mLen:= mLen - StrtPos;
+    {$endif}
   end
   else
   begin
+    nLen:= Length(FFindText);
+//ZD end
     if ftCaseSens in Flags then
       nFlags:= 0
     else
@@ -180,11 +209,11 @@ end;
 
 function TSynFinder.Find(const Text: WideString; var StrtPos, EndPos: integer; ToBack: Boolean): Boolean;
 var
-  i, L: integer;
+  i, S, L: integer; //ZD
 begin
   Result:= false;
   L:= Length(Text);
-  
+
   if L = 0 then
   begin
     StrtPos:= 1;
@@ -198,11 +227,36 @@ begin
   end;
 
   if ftRegex in Flags then
-   begin
-     FRegExpr.Expression:= FFindText;
-     FRegExpr.ModifierI:= not (ftCaseSens in Flags);
+    begin
+//ZD start
+      {$ifdef PERLRE}
+      if (ftCaseSens in Flags) then
+        FRegExpr.Options := FRegExpr.Options - [preCaseLess]
+      else
+        FRegExpr.Options := FRegExpr.Options + [preCaseLess];
+      if (ftRegex_s in Flags) then
+        FRegExpr.Options := FRegExpr.Options + [preSingleLine]
+      else
+        FRegExpr.Options := FRegExpr.Options - [preSingleLine];
+      {if (ftRegex_m in Flags) then
+        FRegExpr.Options := FRegExpr.Options + [preMultiLine]
+      else
+        FRegExpr.Options := FRegExpr.Options - [preMultiLine];}
+      {$ifdef FWDMATCH}
+      if not ToBack then
+        FRegExpr.Options := FRegExpr.Options - [preAnchored]
+      else
+      {$endif FWDMATCH}
+        FRegExpr.Options := FRegExpr.Options + [preAnchored];
+      FRegExpr.RegEx := FFindText;
+      FRegExpr.Subject := Text;
+      {$else PERLRE}
+      FRegExpr.Expression:= FFindText;
+      FRegExpr.ModifierI:= not (ftCaseSens in Flags);
      //FRegExpr.ModifierM:= ftRegex_m in Flags; //not visible option in dialog
      FRegExpr.ModifierS:= ftRegex_s in Flags;
+      {$endif PERLRE}
+//ZD end
    end
    else
    begin
@@ -220,30 +274,53 @@ begin
         Exit;
       if StopFind then
         Exit;
-      if MatchAtPos(Text, i, L) and
+      S := i; //ZD
+      if MatchAtPos(Text, S, L) and //ZD
          ((L > 0) or (i < EndPos) or (FLastSearchPos <> EndPos)) then
       begin
         Result:= true;
-        StrtPos:= i;
-        EndPos:= i + L;
+        StrtPos:= S; //ZD
+        EndPos:= S + L; //ZD
         FLastSearchPos:= EndPos;
         Exit;
       end;
     end
   end
   else
+//ZD start
+  {$ifdef PERLRE}
+  {$ifdef FWDMATCH}
+  if ftRegularExpr in Flags then begin
+    FRegExpr.Stop := EndPos;
+    if StrtPos = 1 then
+      Result := FRegExpr.Match
+    else begin
+      FRegExpr.Start := StrtPos;
+      Result := FRegExpr.MatchAgain;
+    end;
+    if Result then begin
+      StrtPos := FRegExpr.MatchedOffset;
+      EndPos:= StrtPos + FRegExpr.MatchedLength;
+      FLastSearchPos:= StrtPos;
+    end;
+  end
+  else
+  {$endif FWDMATCH}
+  {$endif PERLRE}
+//ZD end
     for i:= StrtPos to EndPos do
     begin
       if not CanContinue then
         Exit;
       if StopFind then
         Exit;
-      if MatchAtPos(Text, i, L) and
+      S := i; //ZD
+      if MatchAtPos(Text, S, L) and //ZD
          ((L > 0) or (i > StrtPos) or (StrtPos <> FLastSearchPos)) then
       begin
         Result:= true;
-        StrtPos:= i;
-        EndPos:= i + L;
+        StrtPos:= S; //ZD
+        EndPos:= S + L; //ZD
         FLastSearchPos:= StrtPos;
         Exit;
       end;
@@ -265,8 +342,18 @@ end;
 constructor TSynFinder.Create(AOwner: TComponent);
 begin
   inherited;
+//ZD start
+  {$ifdef PERLRE}
+  FRegExpr := TPerlRegEx.Create;
+  FRegExpr.Options := [preMultiLine];
+  //FRegExpr.Options := FRegExpr.Options + [preExtended]; //to handle spaces in regex
+  // I don't think this is a good idea to filter out spaces in regex by default.
+  // If someone realy want to write comments inside of regex, one could add (?x) on its begin
+  {$else}
   FRegExpr:= TecRegExpr.Create;
   FRegExpr.ModifierX:= False; //to handle spaces in regex
+  {$endif}
+//ZD end
   FLastSearchPos:= -1;
   FTokens:= tokensAll;
 end;
@@ -679,7 +766,16 @@ end;
 function TSynFinderReplacer.StrReplaceWith: WideString;
 begin
   if (ftRegex in FFlags) then
+//ZD start
+    {$ifdef PERLRE}
+    begin
+      FRegExpr.Replacement := FReplaceText;
+      Result := FRegExpr.ComputeReplacement;
+    end
+    {$else}
     Result:= FRegExpr.Substitute(FControl.Lines.FText, FReplaceText)
+    {$endIf}
+//ZD end
   else
     Result:= FReplaceText;
 end;

@@ -86,7 +86,8 @@ type
   TSynPyEvent = (
     cSynEventOnSaveAfter,
     cSynEventOnSaveBefore,
-    cSynEventOnChangeSlow
+    cSynEventOnChangeSlow,
+    cSynEventOnKey
     );
   TSynPyEvents = set of TSynPyEvent;
 
@@ -94,7 +95,8 @@ const
   cSynPyEvent: array[TSynPyEvent] of string = (
     'on_save',
     'on_save_pre',
-    'on_change_slow'
+    'on_change_slow',
+    'on_key'
     );
 
 type
@@ -193,6 +195,7 @@ type
   TPluginList_Event = array[0..50] of record
     SFilename: string;
     SLexers: string;
+    SKeycodes: string;
     Events: TSynPyEvents;
   end;
 
@@ -2296,6 +2299,12 @@ type
       const AFileName: string;
       const AActionName: Widestring): Widestring;
     procedure DoLoadPluginsList;
+    procedure DoLoadPlugins_Panels(const fn_plug_ini: string);
+    procedure DoLoadPlugins_FindId(const fn_plug_ini: string);
+    procedure DoLoadPlugins_Complete(const fn_plug_ini: string);
+    procedure DoLoadPlugins_Commands(const fn_plug_ini: string);
+    procedure DoLoadPlugins_Events(const fn_plug_ini: string);
+    procedure DoTestPlugins;
     procedure LoadPluginsInfo;
     procedure PluginPanelItemClick(Sender: TObject);
     procedure PluginCommandItemClick(Sender: TObject);
@@ -2740,9 +2749,8 @@ type
     procedure DoRememberTempFile(const fn: Widestring);
     procedure DoDeleteTempFiles;
     procedure DoCopySearchMarks(Ed: TSyntaxMemo);
-    function SEncodeHtmlChars(const SData, fn: WideString; ToBack: boolean): WideString;
     procedure ConvClick(Sender: TObject);
-    procedure DoTextConverter(const fn: Widestring; ToBack: boolean);
+    procedure DoTextConverter(Ed: TSyntaxMemo; const fn: Widestring; ToBack: boolean);
 
     procedure ShowProj;
     procedure DoOpenProject; overload;
@@ -2788,7 +2796,9 @@ type
       const SFilename, SCmd: string;
       AEd: TSyntaxMemo;
       const AParams: array of string): string;
-    function DoPyStringToEvents(const Str: string): TSynPyEvents;
+    procedure DoPyStringToEvents(const Str: string;
+      var AEvents: TSynPyEvents;
+      var AKeycodes: string);
 
     procedure LoadConsoleHist;
     procedure SaveConsoleHist;
@@ -3214,8 +3224,8 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.4.580';
-  cSynPyVer = '1.0.116';
+  cSynVer = '6.4.590';
+  cSynPyVer = '1.0.117';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -5367,12 +5377,24 @@ begin
   end;
 end;
 
+function SShiftToString(const Shift: TShiftState): string;
+begin
+  Result:=
+    IfThen(ssShift in Shift, 's')+
+    IfThen(ssCtrl in Shift, 'c')+
+    IfThen(ssAlt in Shift, 'a');
+end;
+
 procedure TfmMain.SynKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
   Ed: TSyntaxMemo;
 begin
   Ed:= CurrentEditor;
   if Ed=nil then Exit;
+
+  if not DoPyEvent(Ed, cSynEventOnKey, [
+    IntToStr(Key),
+    '"'+SShiftToString(Shift)+'"']) then Exit;
 
   if not SynExe then
   if Ed.ReadOnly or (Shift = [ssAlt]) then
@@ -6719,7 +6741,8 @@ begin
       FixDraw(CurrentEditor, true);
   end;
 
-  CurrentFrame.DoChangeTick;
+  if CurrentFrame<>nil then
+    CurrentFrame.DoChangeTick;
 end;
 
 procedure TfmMain.acExportRTFBeforeExecute(Sender: TObject);
@@ -21480,54 +21503,9 @@ end;
 
 procedure TfmMain.DoLoadPluginsList;
 var
-  i, NIndex: Integer;
   fn_plug_ini,
   fn_plug_def_ini: string;
-  sKey, sValue, sValue2, sValue3, sValue4: Widestring;
-  ListSec: TStringList;
 begin
-  //clear Panels list
-  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
-    with FPluginsPanel[i] do
-    begin
-      SCaption:= '';
-      SFileName:= '';
-    end;
-
-  //clear FindID list
-  for i:= Low(FPluginsFindid) to High(FPluginsFindid) do
-    with FPluginsFindid[i] do
-    begin
-      SLexers:= '';
-      SFileName:= '';
-    end;
-
-  //clear ACP list
-  for i:= Low(FPluginsAcp) to High(FPluginsAcp) do
-    with FPluginsAcp[i] do
-    begin
-      SLexers:= '';
-      SFileName:= '';
-    end;
-
-  //clear Command list
-  for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
-    with FPluginsCommand[i] do
-    begin
-      SFileName:= '';
-      SLexers:= '';
-      SCmd:= '';
-    end;
-
-  //clear Event list
-  for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
-    with FPluginsEvent[i] do
-    begin
-      SFileName:= '';
-      SLexers:= '';
-      Events:= [];
-    end;
-
   fn_plug_ini:= SynPluginsIni;
   fn_plug_def_ini:= SynPluginsSampleIni;
   if not IsFileExist(fn_plug_ini) then
@@ -21535,168 +21513,14 @@ begin
   if not IsFileExist(fn_plug_ini) then
     Exit;
 
-  //load section "Panels"
-  ListSec:= TStringList.Create;
-  with TIniFile.Create(fn_plug_ini) do
-  try
-    ReadSectionValues('Panels', ListSec);
-  finally
-    Free
-  end;
+  DoLoadPlugins_Panels(fn_plug_ini);
+  DoLoadPlugins_Findid(fn_plug_ini);
+  DoLoadPlugins_Complete(fn_plug_ini);
+  DoLoadPlugins_Commands(fn_plug_ini);
+  DoLoadPlugins_Events(fn_plug_ini);
 
-  //parse section "Panels"
-  try
-    NIndex:= Low(FPluginsPanel);
-    for i:= 0 to ListSec.Count-1 do
-    begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
-      if (sKey='') or (sValue='') then Continue;
-
-      if NIndex<=High(FPluginsPanel) then
-      begin
-        FPluginsPanel[NIndex].SCaption:= sKey;
-        FPluginsPanel[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
-        Inc(NIndex);
-      end;
-    end;
-  finally
-    FreeAndNil(ListSec);
-  end;
-
-  //load section "FindID"
-  ListSec:= TStringList.Create;
-  with TIniFile.Create(fn_plug_ini) do
-  try
-    ReadSectionValues('FindID', ListSec);
-  finally
-    Free
-  end;
-
-  //parse section "FindID"
-  try
-    NIndex:= Low(FPluginsFindid);
-    for i:= 0 to ListSec.Count-1 do
-    begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
-      if (sKey='') or (sValue='') then Continue;
-
-      if NIndex<=High(FPluginsFindid) then
-      begin
-        if SBegin(sValue, cPyPrefix) then
-          FPluginsFindid[NIndex].SFileName:= sValue
-        else  
-          FPluginsFindid[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
-        FPluginsFindid[NIndex].SLexers:= sValue2;
-        Inc(NIndex);
-      end;
-    end;
-  finally
-    FreeAndNil(ListSec);
-  end;
-
-  //load section "Complete"
-  ListSec:= TStringList.Create;
-  with TIniFile.Create(fn_plug_ini) do
-  try
-    ReadSectionValues('Complete', ListSec);
-  finally
-    Free
-  end;
-
-  //parse section "Complete"
-  try
-    NIndex:= Low(FPluginsAcp);
-    for i:= 0 to ListSec.Count-1 do
-    begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
-      if (sKey='') or (sValue='') then Continue;
-
-      if NIndex<=High(FPluginsAcp) then
-      begin
-        if SBegin(sValue, cPyPrefix) then
-          FPluginsAcp[NIndex].SFileName:= sValue
-        else
-          FPluginsAcp[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
-        FPluginsAcp[NIndex].SLexers:= sValue2;
-        Inc(NIndex);
-      end;
-    end;
-  finally
-    FreeAndNil(ListSec);
-  end;
-
-  //load section "Commands"
-  ListSec:= TStringList.Create;
-  with TIniFile.Create(fn_plug_ini) do
-  try
-    ReadSectionValues('Commands', ListSec);
-  finally
-    Free
-  end;
-
-  //parse section "Commands"
-  try
-    NIndex:= Low(FPluginsCommand);
-    for i:= 0 to ListSec.Count-1 do
-    begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
-      if (sKey='') or (sValue='') then Continue;
-
-      if NIndex<=High(FPluginsCommand) then
-      begin
-        if SBegin(sValue, cPyPrefix) then
-          FPluginsCommand[NIndex].SFileName:= sValue
-        else
-          FPluginsCommand[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
-        FPluginsCommand[NIndex].SCmd:= sValue2;
-        FPluginsCommand[NIndex].SLexers:= sValue3;
-        DoAddPluginMenuItem(sKey, sValue4, NIndex);
-        Inc(NIndex);
-      end;
-    end;
-  finally
-    FreeAndNil(ListSec);
-  end;
-
-
-  //load section "Events"
-  ListSec:= TStringList.Create;
-  with TIniFile.Create(fn_plug_ini) do
-  try
-    ReadSectionValues('Events', ListSec);
-  finally
-    Free
-  end;
-
-  //parse section "Events"
-  try
-    NIndex:= Low(FPluginsEvent);
-    for i:= 0 to ListSec.Count-1 do
-    begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
-      if (sKey='') or (sValue='') then Continue;
-
-      if NIndex<=High(FPluginsEvent) then
-      begin
-        FPluginsEvent[NIndex].SFileName:= sValue;
-        FPluginsEvent[NIndex].Events:= DoPyStringToEvents(sValue2);
-        FPluginsEvent[NIndex].SLexers:= sValue3;
-        Inc(NIndex);
-      end;
-    end;
-  finally
-    FreeAndNil(ListSec);
-  end;
-
-  {
-  //test output
-  sValue:= '';
-  for i:= 0 to 5 do
-    with FPluginsEvent[i] do
-      if SFilename<>'' then
-        sValue:= sValue+SFilename+#13+SLexers+#13+IfThen(cSynEventOnSave in Events, 'on_save');
-  MsgInfo(sValue, Handle);
-  }
+  //debug
+  //DoTestPlugins;
 end;
 
 procedure TfmMain.LoadPluginsInfo;
@@ -26267,17 +26091,6 @@ begin
   SyncMapPos;
 end;
 
-function TfmMain.SEncodeHtmlChars(const SData, fn: WideString; ToBack: boolean): WideString;
-begin
-  if not IsFileExist(fn) then
-  begin
-    MsgNoFile(fn);
-    Result:= SData;
-  end
-  else
-    Result:= SDecodeUsingFileTable(SData, fn, ToBack);
-end;
-
 
 procedure TfmMain.TBXSubmenuItemConvPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
@@ -26343,22 +26156,22 @@ begin
 
   if (N>=0) and (N<FListConv.Count) then
   begin
-    DoTextConverter(FListConv[N], ToBack);
+    DoTextConverter(CurrentEditor, FListConv[N], ToBack);
     //MsgInfo(FListConv[N]+#13+IntToStr(Ord(ToBack)), Handle);
   end
   else
     MsgError(WideFormat('Invalid text converter index: %d', [N]), Handle);
 end;
 
-procedure TfmMain.DoTextConverter(const fn: Widestring; ToBack: boolean);
+procedure TfmMain.DoTextConverter(Ed: TSyntaxMemo; const fn: Widestring; ToBack: boolean);
 var
-  Ed: TSyntaxMemo;
   SFrom, STo: Widestring;
   NStart, NLen: Integer;
   ToAll: boolean;
 begin
-  Ed:= CurrentEditor;
   if Ed.ReadOnly then Exit;
+  if not IsFileExist(fn) then
+    begin MsgNoFile(fn); Exit end;
 
   ToAll:= Ed.SelLength=0;
   if ToAll then
@@ -26374,7 +26187,7 @@ begin
     NLen:= Ed.SelLength;
   end;
 
-  STo:= SEncodeHtmlChars(SFrom, fn, ToBack);
+  STo:= SDecodeUsingFileTable(SFrom, fn, ToBack);
   if STo=SFrom then
     begin MsgDoneLines(0); MsgBeep; Exit end;
 
@@ -26395,12 +26208,12 @@ end;
 
 procedure TfmMain.ecEncodeHtmlCharsExecute(Sender: TObject);
 begin
-  DoTextConverter(SynConverterFilename(cConverterHtml1), false);
+  DoTextConverter(CurrentEditor, SynConverterFilename(cConverterHtml1), false);
 end;
 
 procedure TfmMain.ecEncodeHtmlChars2Execute(Sender: TObject);
 begin
-  DoTextConverter(SynConverterFilename(cConverterHtml2), false);
+  DoTextConverter(CurrentEditor, SynConverterFilename(cConverterHtml2), false);
 end;
 
 procedure TfmMain.ProjGotoFile(Sender: TObject);
@@ -28008,7 +27821,6 @@ begin
   begin
     AddMethod('msg_box', Py_msg_box, '');
     AddMethod('msg_status', Py_msg_status, '');
-    AddMethod('msg_local', Py_msg_local, '');
     AddMethod('dlg_input', Py_dlg_input, '');
 
     AddMethod('app_version', Py_app_version, '');
@@ -28023,6 +27835,8 @@ begin
     AddMethod('file_open', Py_file_open, '');
     AddMethod('file_save', Py_file_save, '');
     AddMethod('file_get_name', Py_file_get_name, '');
+    AddMethod('text_local', Py_text_local, '');
+    AddMethod('text_convert', Py_text_convert, '');
     AddMethod('regex_parse', Py_regex_parse, '');
 
     AddMethod('get_clip', Py_get_clip, '');
@@ -28761,20 +28575,32 @@ begin
   plOut.Show;
 end;
 
-function TfmMain.DoPyStringToEvents(const Str: string): TSynPyEvents;
+procedure TfmMain.DoPyStringToEvents(const Str: string;
+  var AEvents: TSynPyEvents;
+  var AKeycodes: string);
 var
   SText, SItem: Widestring;
   ev: TSynPyEvent;
 begin
-  Result:= [];
+  AEvents:= [];
+  AKeycodes:= '';
   SText:= Str;
+
   repeat
     SItem:= SGetItem(SText);
     if SItem='' then Break;
+
+    if SItem[1]='k' then
+    begin
+      Delete(SItem, 1, 1);
+      AKeyCodes:= AKeyCodes+SItem+',';
+      Continue;
+    end;
+
     for ev:= Low(TSynPyEvent) to High(TSynPyEvent) do
       if SItem=cSynPyEvent[ev] then
       begin
-        Include(Result, ev);
+        Include(AEvents, ev);
         Break
       end;
   until false;      
@@ -28796,6 +28622,12 @@ begin
       if (AEvent in Events) then
         if (SLexers='') or IsLexerListed(SCurLexer, SLexers) then
         begin
+          //check that OnKey event is called for supported keys 
+          if (AEvent=cSynEventOnKey) then
+            if Length(AParams)>=1 then
+              if not IsStringListed(AParams[0], SKeycodes) then Continue;
+
+          //call Python    
           SRes:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, AParams);
           if SRes=cPyFalse then
           begin
@@ -28806,6 +28638,252 @@ begin
     end;
 end;
 
+
+procedure TfmMain.DoLoadPlugins_Events(const fn_plug_ini: string);
+var
+  ListSec: TStringList;
+  NIndex, i: Integer;
+  sKey, sValue, sValue2, sValue3, sValue4: Widestring;
+begin
+  //clear Event list
+  for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
+    with FPluginsEvent[i] do
+    begin
+      SFileName:= '';
+      SLexers:= '';
+      Events:= [];
+    end;
+
+  //load section "Events"
+  ListSec:= TStringList.Create;
+  with TIniFile.Create(fn_plug_ini) do
+  try
+    ReadSectionValues('Events', ListSec);
+  finally
+    Free
+  end;
+
+  //parse section "Events"
+  try
+    NIndex:= Low(FPluginsEvent);
+    for i:= 0 to ListSec.Count-1 do
+    begin
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      if (sKey='') or (sValue='') then Continue;
+
+      if NIndex<=High(FPluginsEvent) then
+      begin
+        FPluginsEvent[NIndex].SFileName:= sValue;
+        DoPyStringToEvents(sValue2,
+          FPluginsEvent[NIndex].Events,
+          FPluginsEvent[NIndex].SKeycodes);
+        FPluginsEvent[NIndex].SLexers:= sValue3;
+        Inc(NIndex);
+      end;
+    end;
+  finally
+    FreeAndNil(ListSec);
+  end;
+end;
+
+
+procedure TfmMain.DoLoadPlugins_Commands(const fn_plug_ini: string);
+var
+  ListSec: TStringList;
+  NIndex, i: Integer;
+  sKey, sValue, sValue2, sValue3, sValue4: Widestring;
+begin
+  //clear Command list
+  for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
+    with FPluginsCommand[i] do
+    begin
+      SFileName:= '';
+      SLexers:= '';
+      SCmd:= '';
+    end;
+
+  //load section "Commands"
+  ListSec:= TStringList.Create;
+  with TIniFile.Create(fn_plug_ini) do
+  try
+    ReadSectionValues('Commands', ListSec);
+  finally
+    Free
+  end;
+
+  //parse section "Commands"
+  try
+    NIndex:= Low(FPluginsCommand);
+    for i:= 0 to ListSec.Count-1 do
+    begin
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      if (sKey='') or (sValue='') then Continue;
+
+      if NIndex<=High(FPluginsCommand) then
+      begin
+        if SBegin(sValue, cPyPrefix) then
+          FPluginsCommand[NIndex].SFileName:= sValue
+        else
+          FPluginsCommand[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
+        FPluginsCommand[NIndex].SCmd:= sValue2;
+        FPluginsCommand[NIndex].SLexers:= sValue3;
+        DoAddPluginMenuItem(sKey, sValue4, NIndex);
+        Inc(NIndex);
+      end;
+    end;
+  finally
+    FreeAndNil(ListSec);
+  end;
+end;
+
+procedure TfmMain.DoLoadPlugins_Complete(const fn_plug_ini: string);
+var
+  ListSec: TStringList;
+  NIndex, i: Integer;
+  sKey, sValue, sValue2, sValue3, sValue4: Widestring;
+begin
+  //clear ACP list
+  for i:= Low(FPluginsAcp) to High(FPluginsAcp) do
+    with FPluginsAcp[i] do
+    begin
+      SLexers:= '';
+      SFileName:= '';
+    end;
+
+  //load section "Complete"
+  ListSec:= TStringList.Create;
+  with TIniFile.Create(fn_plug_ini) do
+  try
+    ReadSectionValues('Complete', ListSec);
+  finally
+    Free
+  end;
+
+  //parse section "Complete"
+  try
+    NIndex:= Low(FPluginsAcp);
+    for i:= 0 to ListSec.Count-1 do
+    begin
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      if (sKey='') or (sValue='') then Continue;
+
+      if NIndex<=High(FPluginsAcp) then
+      begin
+        if SBegin(sValue, cPyPrefix) then
+          FPluginsAcp[NIndex].SFileName:= sValue
+        else
+          FPluginsAcp[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
+        FPluginsAcp[NIndex].SLexers:= sValue2;
+        Inc(NIndex);
+      end;
+    end;
+  finally
+    FreeAndNil(ListSec);
+  end;
+end;
+
+procedure TfmMain.DoLoadPlugins_FindId(const fn_plug_ini: string);
+var
+  ListSec: TStringList;
+  NIndex, i: Integer;
+  sKey, sValue, sValue2, sValue3, sValue4: Widestring;
+begin
+  //clear FindID list
+  for i:= Low(FPluginsFindid) to High(FPluginsFindid) do
+    with FPluginsFindid[i] do
+    begin
+      SLexers:= '';
+      SFileName:= '';
+    end;
+
+  //load section "FindID"
+  ListSec:= TStringList.Create;
+  with TIniFile.Create(fn_plug_ini) do
+  try
+    ReadSectionValues('FindID', ListSec);
+  finally
+    Free
+  end;
+
+  //parse section "FindID"
+  try
+    NIndex:= Low(FPluginsFindid);
+    for i:= 0 to ListSec.Count-1 do
+    begin
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      if (sKey='') or (sValue='') then Continue;
+
+      if NIndex<=High(FPluginsFindid) then
+      begin
+        if SBegin(sValue, cPyPrefix) then
+          FPluginsFindid[NIndex].SFileName:= sValue
+        else
+          FPluginsFindid[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
+        FPluginsFindid[NIndex].SLexers:= sValue2;
+        Inc(NIndex);
+      end;
+    end;
+  finally
+    FreeAndNil(ListSec);
+  end;
+end;
+
+procedure TfmMain.DoLoadPlugins_Panels(const fn_plug_ini: string);
+var
+  ListSec: TStringList;
+  NIndex, i: Integer;
+  sKey, sValue, sValue2, sValue3, sValue4: Widestring;
+begin
+  //clear Panels list
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
+    begin
+      SCaption:= '';
+      SFileName:= '';
+    end;
+
+  //load section "Panels"
+  ListSec:= TStringList.Create;
+  with TIniFile.Create(fn_plug_ini) do
+  try
+    ReadSectionValues('Panels', ListSec);
+  finally
+    Free
+  end;
+
+  //parse section "Panels"
+  try
+    NIndex:= Low(FPluginsPanel);
+    for i:= 0 to ListSec.Count-1 do
+    begin
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      if (sKey='') or (sValue='') then Continue;
+
+      if NIndex<=High(FPluginsPanel) then
+      begin
+        FPluginsPanel[NIndex].SCaption:= sKey;
+        FPluginsPanel[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
+        Inc(NIndex);
+      end;
+    end;
+  finally
+    FreeAndNil(ListSec);
+  end;
+end;
+
+procedure TfmMain.DoTestPlugins;
+var
+  i: Integer;
+  sValue: string;
+begin
+  //test output
+  sValue:= '';
+  for i:= 0 to 5 do
+    with FPluginsEvent[i] do
+      if SFilename<>'' then
+        sValue:= sValue+SFilename+#13+SLexers+#13+SKeycodes+#13{+IfThen(cSynEventOnSave in Events, 'on_save')};
+  MsgInfo(sValue, Handle);
+end;
 
 initialization
   PyEditor:= MainPyEditor;
