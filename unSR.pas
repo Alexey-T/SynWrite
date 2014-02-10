@@ -160,7 +160,6 @@ type
     FTopGOpt,
     FTopGScope,
     FHeight0: Integer;
-    procedure SModClick(const SMod: Widestring);
     procedure mnuComboClick(Sender: TObject);
     procedure DoCombo(ed: TTntCombobox; edMemo: TTntMemo; edNum: integer);
     procedure ReClick(Sender: TObject);
@@ -216,7 +215,6 @@ uses
 
 const
   cc = 50; //Max items in history
-  SMod = '(?s)'; //Dot modifier for regex
 
 procedure TfmSR.FormShow(Sender: TObject);
 begin
@@ -911,15 +909,9 @@ begin
 end;
 
 const
-  {$ifdef PERLRE}
-  cRe: array[0..36] of record
-  {$else}
-  cRe: array[0..37] of record
-  {$endif}
+  cRe: array[0..34] of record
     id, s, re: string;
   end = (
-   (id: 're_s_mod'; s: SMod; re: SMod),
-   (id: ''; s: ''; re: ''),
    (id: 're_dot'; s: '.'; re: '.'),
    (id: 're_st'; s: '^'; re: '^'),
    (id: 're_end'; s: '$'; re: '$'),
@@ -950,9 +942,7 @@ const
    (id: 're_t'; s: '\t'; re: '\t'),
    (id: 're_r'; s: '\r'; re: '\r'),
    (id: 're_n'; s: '\n'; re: '\n'),
-  {$ifndef PERLRE}
-   (id: 're_z'; s: '\z'; re: '\z'),
-  {$endif}
+   //(id: 're_z'; s: '\z'; re: '\z'),
    (id: ''; s: ''; re: ''),
    (id: 're_as_pos_a'; s: '(?=...)'; re: '(?=...)'),
    (id: 're_as_neg_a'; s: '(?!...)'; re: '(?!...)'),
@@ -992,11 +982,13 @@ begin
   cbRe.Checked:= true;
   S:= cRe[(Sender as TComponent).Tag].re;
 
+  {
   if S=SMod then
   begin
     SModClick(SMod);
     Exit
   end;
+  }
 
   if not IsMultiline then
   begin
@@ -1430,6 +1422,7 @@ begin
   end;
 end;
 
+{
 procedure TfmSR.SModClick(const SMod: Widestring);
 var
   S: Widestring;
@@ -1443,6 +1436,7 @@ begin
 
   SetText1(S);
 end;
+}
 
 procedure TfmSR.ed1KeyPress(Sender: TObject; var Key: Char);
 begin

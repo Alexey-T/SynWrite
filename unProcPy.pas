@@ -259,18 +259,32 @@ begin
     end;
 end;
 
+const
+  SEL_NORMAL = 0;
+  SEL_COLUMN = 1;
+  SEL_LINES  = 2;
 
 function Py_ed_get_sel_mode(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H, N: Integer;
+  Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'i:ed_get_sel_mode', @H)) then
     begin
-      case PyEditor(H).SelectMode of
-        msColumn: N:= 1;
-        msLine: N:= 2;
-        else N:= 0;
+      Ed:= PyEditor(H);
+      case Ed.SelectMode of
+        msColumn:
+          begin
+            if IsRectEmpty(Ed.SelRect) then
+              N:= SEL_NORMAL
+            else
+              N:= SEL_COLUMN;
+          end;
+        msLine:
+          N:= SEL_LINES;
+        else
+          N:= SEL_NORMAL;
       end;
       Result:= PyInt_FromLong(N);
     end;

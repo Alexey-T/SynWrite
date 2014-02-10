@@ -2825,6 +2825,7 @@ type
       const Tok: TSearchTokens;
       OptBkmk, OptExtSel: boolean): Integer;
     function DoReadLexersCfg(const ASection, AId: string): string;
+    procedure DoClearFindDialogStatus;
     //end of private
 
   protected
@@ -3225,7 +3226,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.4.600';
+  cSynVer = '6.4.610';
   cSynPyVer = '1.0.118';
 
 const
@@ -5738,6 +5739,7 @@ begin
       else
       begin
         FindInit(true{KeepFlags});
+
         if Finder.FindText<>'' then
         begin
           Finder.FindNext;
@@ -5746,6 +5748,8 @@ begin
         end
         else
           ecFind.Execute;
+
+        DoClearFindDialogStatus;
       end;
     end;
 
@@ -5759,6 +5763,7 @@ begin
       else
       begin
         FindInit(true{KeepFlags});
+
         if Finder.FindText<>'' then
         begin
           Finder.FindPrev;
@@ -5767,6 +5772,8 @@ begin
         end
         else
           ecFind.Execute;
+
+        DoClearFindDialogStatus;
       end;
     end;
 
@@ -5787,6 +5794,7 @@ begin
         MsgFound;
         UpdateFrameMicroMap(CurrentFrame);
       end;
+      DoClearFindDialogStatus;
     end;
 
     smReplaceAll:
@@ -5800,6 +5808,7 @@ begin
         Finder.ReplaceAll;
         MsgFound;
       end;
+      DoClearFindDialogStatus;
     end;
 
     smReplaceNext:
@@ -5815,6 +5824,7 @@ begin
           Finder.ReplaceAgain;
         Finder.FindAgain;
       end;
+      DoClearFindDialogStatus;
     end;
 
     //find curr word
@@ -28898,6 +28908,12 @@ begin
       if SFilename<>'' then
         sValue:= sValue+SFilename+#13+SLexers+#13+SKeycodes+#13{+IfThen(cSynEventOnSave in Events, 'on_save')};
   MsgInfo(sValue, Handle);
+end;
+
+procedure TfmMain.DoClearFindDialogStatus;
+begin
+  if Assigned(fmSR) then
+    fmSR.ShowStatus('');
 end;
 
 initialization
