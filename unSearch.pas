@@ -5,8 +5,6 @@ Modifications by: Alexey (SynWrite)
 
 2014-02-02 Modified by Zvezdan Dimitrijevic to allow use of TPerlRegEx instead of TecRegExpr
 }
-{$define PERLRE}
-
 unit unSearch;
 
 interface
@@ -18,11 +16,11 @@ uses
   //{$UnDef PERLRE}
   // Define FWDMATCH for forward searches with single Match, it is faster but cannot be canceled until it finishes
   //{$define FWDMATCH}
-  {$ifdef PERLRE}
+{$ifdef PERLRE}
   PerlRegEx,
-  {$else}
+{$else}
   ecZRegExpr,
-  {$endif}
+{$endif}
   ecSyntMemo, ecStrUtils;
 //ZD end
 
@@ -62,11 +60,11 @@ type
     FTokens: TSearchTokens;
     FFindText: WideString;
     FControl: TCustomSyntaxMemo;
-    {$ifdef PERLRE} //ZD
+  {$ifdef PERLRE} //ZD
     FRegExpr: TPerlRegEx; //ZD
-    {$else} //ZD
+  {$else} //ZD
     FRegExpr: TecRegExpr;
-    {$endif} //ZD
+  {$endif} //ZD
     FOnFind: TOnFindEvent;
     FOnCanAccept: TOnFindEvent;
     FOnProgress: TOnFindProgress;
@@ -166,19 +164,19 @@ begin
 
   if ftRegex in Flags then
   begin
-    {$ifdef PERLRE}
+  {$ifdef PERLRE}
     FRegExpr.Start := StrtPos;
     Result := FRegExpr.MatchAgain;
     if Result then begin
       StrtPos := FRegExpr.MatchedOffset;
       mLen:= FRegExpr.MatchedLength;
     end;
-    {$else}
+  {$else}
     mLen:= StrtPos;
     Result:= FRegExpr.Match(Text, mLen);
     if Result then
       mLen:= mLen - StrtPos;
-    {$endif}
+  {$endif}
   end
   else
   begin
@@ -229,7 +227,17 @@ begin
   if ftRegex in Flags then
     begin
 //ZD start
-      {$ifdef PERLRE}
+    {$ifdef PERLRE}
+      case FControl.Lines.TextFormat of
+      tfCR:
+        FRegExpr.State := [preNewlineCR];
+      tfNL:
+        FRegExpr.State := [preNewlineLF];
+      else
+        FRegExpr.State := [preNewlineCRLF];
+      end;
+      FRegExpr.State := FRegExpr.State - [preNotEmpty];
+
       if (ftCaseSens in Flags) then
         FRegExpr.Options := FRegExpr.Options - [preCaseLess]
       else
@@ -242,20 +250,20 @@ begin
         FRegExpr.Options := FRegExpr.Options + [preMultiLine]
       else
         FRegExpr.Options := FRegExpr.Options - [preMultiLine];}
-      {$ifdef FWDMATCH}
+    {$ifdef FWDMATCH}
       if not ToBack then
         FRegExpr.Options := FRegExpr.Options - [preAnchored]
       else
-      {$endif FWDMATCH}
+    {$endif FWDMATCH}
         FRegExpr.Options := FRegExpr.Options + [preAnchored];
       FRegExpr.RegEx := FFindText;
       FRegExpr.Subject := Text;
-      {$else PERLRE}
+    {$else PERLRE}
       FRegExpr.Expression:= FFindText;
       FRegExpr.ModifierI:= not (ftCaseSens in Flags);
-     //FRegExpr.ModifierM:= ftRegex_m in Flags; //not visible option in dialog
-     FRegExpr.ModifierS:= ftRegex_s in Flags;
-      {$endif PERLRE}
+      //FRegExpr.ModifierM:= ftRegex_m in Flags; //not visible option in dialog
+      FRegExpr.ModifierS:= ftRegex_s in Flags;
+    {$endif PERLRE}
 //ZD end
    end
    else
@@ -288,9 +296,9 @@ begin
   end
   else
 //ZD start
-  {$ifdef PERLRE}
-  {$ifdef FWDMATCH}
-  if ftRegularExpr in Flags then begin
+{$ifdef PERLRE}
+{$ifdef FWDMATCH}
+  if ftRegex in Flags then begin
     FRegExpr.Stop := EndPos;
     if StrtPos = 1 then
       Result := FRegExpr.Match
@@ -305,24 +313,48 @@ begin
     end;
   end
   else
-  {$endif FWDMATCH}
-  {$endif PERLRE}
-//ZD end
+{$endif FWDMATCH}
+{$endif PERLRE}
     for i:= StrtPos to EndPos do
     begin
       if not CanContinue then
         Exit;
       if StopFind then
         Exit;
-      S := i; //ZD
-      if MatchAtPos(Text, S, L) and //ZD
-         ((L > 0) or (i > StrtPos) or (StrtPos <> FLastSearchPos)) then
+    // Next PERLRE lines allow $ to match at the end of string.
+    {$ifdef PERLRE}
+    {$ifndef FWDMATCH}
+      if (ftRegex in Flags) and (i = EndPos) then begin
+        FRegExpr.Options := FRegExpr.Options - [preAnchored];
+        FRegExpr.Stop := EndPos;
+        if StrtPos = 1 then
+          Result := FRegExpr.Match
+        else begin
+          FRegExpr.Start := EndPos;
+          Result := FRegExpr.MatchAgain;
+        end;
+        if Result then begin
+          StrtPos := FRegExpr.MatchedOffset;
+          EndPos:= StrtPos + FRegExpr.MatchedLength;
+          FLastSearchPos:= StrtPos;
+        end;
+      end else
+    {$endif FWDMATCH}
+    {$endif PERLRE}
+    // End of PERLRE lines that allow $ to match at the end of string.
+    // You could remove this block if you don't want such behavior.
       begin
-        Result:= true;
-        StrtPos:= S; //ZD
-        EndPos:= S + L; //ZD
-        FLastSearchPos:= StrtPos;
-        Exit;
+        S := i;
+        if MatchAtPos(Text, S, L) and
+           ((L > 0) or (i > StrtPos) or (StrtPos <> FLastSearchPos)) then
+        begin
+          Result:= true;
+          StrtPos:= S;
+          EndPos:= S + L;
+          FLastSearchPos:= StrtPos;
+          Exit;
+        end;
+//ZD end
       end;
     end;
 end;
@@ -343,8 +375,9 @@ constructor TSynFinder.Create(AOwner: TComponent);
 begin
   inherited;
 //ZD start
-  {$ifdef PERLRE}
+{$ifdef PERLRE}
   FRegExpr := TPerlRegEx.Create;
+  FRegExpr.State := [preNewlineCRLF];
   FRegExpr.Options := [preMultiLine];
   //FRegExpr.Options := FRegExpr.Options + [preExtended]; //to handle spaces in regex
   // I don't think this is a good idea to filter out spaces in regex by default.
@@ -352,7 +385,7 @@ begin
   {$else}
   FRegExpr:= TecRegExpr.Create;
   FRegExpr.ModifierX:= False; //to handle spaces in regex
-  {$endif}
+{$endif}
 //ZD end
   FLastSearchPos:= -1;
   FTokens:= tokensAll;
@@ -480,6 +513,7 @@ begin
      begin
        StrtPos:= st + RepLen;
 
+     {$ifndef PERLRE} //ZD
        //workaround for inf-looping on replacing regex '$':
        if IsSpecialCase1 then
          case FControl.Lines.TextFormat of
@@ -490,6 +524,7 @@ begin
        //workaround for replacing regex "^www" with empty sting:
        if IsSpecialCase2 then
          Inc(StrtPos);
+     {$endif} //ZD
      end;
   until False;
 
@@ -767,14 +802,14 @@ function TSynFinderReplacer.StrReplaceWith: WideString;
 begin
   if (ftRegex in FFlags) then
 //ZD start
-    {$ifdef PERLRE}
+  {$ifdef PERLRE}
     begin
       FRegExpr.Replacement := FReplaceText;
       Result := FRegExpr.ComputeReplacement;
     end
-    {$else}
+  {$else}
     Result:= FRegExpr.Substitute(FControl.Lines.FText, FReplaceText)
-    {$endIf}
+  {$endIf}
 //ZD end
   else
     Result:= FReplaceText;
@@ -838,7 +873,7 @@ begin
       FFindText:= SFixEOL(FFindText, FControl);
     if FReplaceText<>'' then
       FReplaceText:= SFixEOL(FReplaceText, FControl);
-  end;  
+  end;
 end;
 
 function TSynFinderReplacer.IsSpecialCase1: boolean;

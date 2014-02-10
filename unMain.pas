@@ -76,6 +76,7 @@ const
   cPyConsolePrompt = '>>> ';
   cPyConsoleInit = 'print("Python", sys.version)';
   cPyConsoleClear = '-';
+  cPyConsolePrint = '=';
   cPyPrefix = 'py:';
   cPyAcpString = '?';
   cPyNotInited = 'Python engine not inited';
@@ -3224,8 +3225,8 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.4.590';
-  cSynPyVer = '1.0.117';
+  cSynVer = '6.4.600';
+  cSynPyVer = '1.0.118';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -11633,9 +11634,9 @@ begin
 
       if not AddMode then
       begin
+        if not DoCloseAllTabs(True, True) then Exit;
         FSessionFN:= fn;
-        acCloseAll.Execute;
-      end;  
+      end;
 
       for i:= 0 to NFiles-1 do
       begin
@@ -27391,17 +27392,25 @@ begin
 end;
 
 procedure TfmMain.DoPyConsole_EnterCommand(const Str: Widestring);
-//var Obj: PPyObject;
+var
+  SNew: Widestring;
 begin
   DoPyConsole_LogString(cPyConsolePrompt + Str);
 
   try
     with GetPythonEngine do
     begin
-      if IsWordString(Str, true) then
-        ExecString('print('+UTF8Encode(Str)+')')
+      SNew:= Str;
+      if SBegin(SNew, cPyConsolePrint) then
+      begin
+        Delete(SNew, 1, Length(cPyConsolePrint));
+        SNew:= 'print('+SNew+')'
+      end
       else
-        ExecString(UTF8Encode(Str));
+      if IsWordString(SNew, true) then
+        SNew:= 'print('+SNew+')';
+
+      ExecString(UTF8Encode(SNew));
 
       //code fails on entering "import sys"
       {
@@ -27422,16 +27431,19 @@ begin
 end;
 
 procedure TfmMain.edConsoleKeyPress(Sender: TObject; var Key: Char);
+var
+  Str: Widestring;
 begin
+  Str:= edConsole.Text;
   if (Key=#13) then
   begin
-    if edConsole.Text=cPyConsoleClear then
+    if Str=cPyConsoleClear then
     begin
       MemoConsole.Lines.Clear;
       edConsole.Text:= '';
     end
     else
-      DoPyConsole_EnterCommand(edConsole.Text);
+      DoPyConsole_EnterCommand(Str);
     Key:= #0;
     Exit
   end;
@@ -27812,7 +27824,14 @@ begin
       Str:= fmMain.FrameOfEditor(Ed).FileName;
       Result:= PyUnicode_FromWideString(Str);
     end;
-end;    
+end;
+
+function Py_ed_set_prop_wrapper(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  Result:= Py_ed_set_prop(Self, Args);
+  fmMain.CurrentEditor.Invalidate;
+  fmMain.UpdateStatusBar;
+end;
 
 
 procedure TfmMain.PythonModuleInitialization(Sender: TObject);
@@ -27876,12 +27895,8 @@ begin
     AddMethod('ed_get_marks', Py_ed_get_marks, '');
     AddMethod('ed_get_lexer', Py_ed_get_lexer, '');
     AddMethod('ed_get_prop', Py_ed_get_prop, '');
+    AddMethod('ed_set_prop', Py_ed_set_prop_wrapper, '');
     AddMethod('ed_get_filename', Py_ed_get_filename, '');
-
-    AddMethod('ed_get_top', Py_ed_get_top, '');
-    AddMethod('ed_get_left', Py_ed_get_left, '');
-    AddMethod('ed_set_top', Py_ed_set_top, '');
-    AddMethod('ed_set_left', Py_ed_set_left, '');
 
     AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
     AddMethod('ed_get_sel_lines', Py_ed_get_sel_lines, '');

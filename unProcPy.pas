@@ -39,6 +39,7 @@ function Py_ed_add_mark(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_indent(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_prop(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_word(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_cmd(Self, Args: PPyObject): PPyObject; cdecl;
@@ -70,11 +71,6 @@ function Py_ed_log_xy(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_line_count(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_line_prop(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_lexer(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_get_top(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_left(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_top(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_left(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_sel_mode(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_sel(Self, Args: PPyObject): PPyObject; cdecl;
@@ -289,28 +285,6 @@ begin
     if Bool(PyArg_ParseTuple(Args, 'i:ed_get_line_count', @H)) then
     begin
       Result:= PyInt_FromLong(PyEditor(H).Lines.Count);
-    end;
-end;
-
-function Py_ed_get_top(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H: Integer;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_top', @H)) then
-    begin
-      Result:= PyInt_FromLong(PyEditor(H).TopLine);
-    end;
-end;
-
-function Py_ed_get_left(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H: Integer;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_left', @H)) then
-    begin
-      Result:= PyInt_FromLong(PyEditor(H).ScrollPosX);
     end;
 end;
 
@@ -608,30 +582,6 @@ begin
     begin
       EditorGetSelLines(PyEditor(H), N1, N2);
       Result:= Py_BuildValue('(ii)', N1, N2);
-    end;
-end;
-
-function Py_ed_set_top(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H, N: Integer;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:ed_set_top', @H, @N)) then
-    begin
-      PyEditor(H).TopLine:= N;
-      Result:= ReturnNone;
-    end;
-end;
-
-function Py_ed_set_left(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H, N: Integer;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:ed_set_left', @H, @N)) then
-    begin
-      PyEditor(H).ScrollPosX:= N;
-      Result:= ReturnNone;
     end;
 end;
 
@@ -1038,6 +988,27 @@ begin
     end;
 end;
 
+const
+  PROP_NUMS        = 1;
+  PROP_EOL         = 2;
+  PROP_WRAP        = 3;
+  PROP_RO          = 4;
+  PROP_MARGIN      = 5;
+  PROP_FOLDING     = 6;
+  PROP_NON_PRINTED = 7;
+  PROP_TAB_SPACES  = 8;
+  PROP_TAB_SIZE    = 9;
+  PROP_COL_MARKERS = 10;
+  PROP_TEXT_EXTENT = 11;
+  PROP_ZOOM        = 12;
+  PROP_INSERT      = 13;
+  PROP_MODIFIED    = 14;
+  PROP_VIS_LINES   = 15;
+  PROP_VIS_COLS    = 16;
+  PROP_LEFT        = 17;
+  PROP_TOP         = 18;
+  PROP_BOTTOM      = 19;
+
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H, Id: Integer;
@@ -1049,48 +1020,106 @@ begin
     begin
       Ed:= PyEditor(H);
       case Id of
-        1:
+        PROP_NUMS:
           Result:= PyBool_FromLong(Ord(Ed.LineNumbers.Visible));
-        2:
+        PROP_EOL:
           Result:= PyUnicode_FromWideString(EditorEOL(Ed));
-        3:
+        PROP_WRAP:
           Result:= PyBool_FromLong(Ord(Ed.WordWrap));
-        4:
+        PROP_RO:
           Result:= PyBool_FromLong(Ord(Ed.ReadOnly));
-        5:
+        PROP_MARGIN:
           Result:= PyInt_FromLong(Ed.RightMargin);
-        6:
+        PROP_FOLDING:
           Result:= PyBool_FromLong(Ord(not Ed.DisableFolding));
-        7:
+        PROP_NON_PRINTED:
           Result:= PyBool_FromLong(Ord(Ed.NonPrinted.Visible));
-        8:
+        PROP_TAB_SPACES:
           Result:= PyBool_FromLong(Ord(Ed.TabMode = tmSpaces));
-        9:
+        PROP_TAB_SIZE:
           Result:= PyInt_FromLong(EditorTabSize(Ed));
-        10:
+        PROP_COL_MARKERS:
           Result:= PyUnicode_FromWideString(Ed.ColMarkersString);
-        11:
+        PROP_TEXT_EXTENT:
           begin
             Size:= Ed.DefTextExt;
             Result:= Py_BuildValue('(ii)', Size.cx, Size.cy);
           end;
-        12:
+        PROP_ZOOM:
           Result:= PyInt_FromLong(Ed.Zoom);
-        13:
+        PROP_INSERT:
           Result:= PyBool_FromLong(Ord(not Ed.ReplaceMode));
-        14:
-          Result:= PyInt_FromLong(Ed.SyncEditing.Count);
-        15:
+        PROP_MODIFIED:
           Result:= PyBool_FromLong(Ord(Ed.Modified));
-        16:
+        PROP_VIS_LINES:
           Result:= PyInt_FromLong(Ed.VisibleLines);
-        17:
+        PROP_VIS_COLS:
           Result:= PyInt_FromLong(Ed.VisibleCols);
-        18:
+        PROP_LEFT:
+          Result:= PyInt_FromLong(Ed.ScrollPosX);
+        PROP_TOP:
+          Result:= PyInt_FromLong(Ed.TopLine);
+        PROP_BOTTOM:
           Result:= PyInt_FromLong(EditorGetBottomLineIndex(Ed));
         else
           Result:= ReturnNone;
       end;
+    end;
+end;
+
+function Py_ed_set_prop(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, Id: Integer;
+  Ed: TSyntaxMemo;
+  P: PAnsiChar;
+  StrVal: Widestring;
+  NumVal: Integer;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iis:ed_set_prop', @H, @Id, @P)) then
+    begin
+      Ed:= PyEditor(H);
+      StrVal:= UTF8Decode(AnsiString(P));
+      NumVal:= StrToIntDef(StrVal, 0);
+
+      case Id of
+        PROP_NUMS:
+          Ed.LineNumbers.Visible:= Bool(NumVal);
+        PROP_WRAP:
+          Ed.WordWrap:= Bool(NumVal);
+        PROP_RO:
+          Ed.ReadOnly:= Bool(NumVal);
+        PROP_MARGIN:
+          Ed.RightMargin:= NumVal;
+        PROP_FOLDING:
+          Ed.DisableFolding:= not Bool(NumVal);
+        PROP_NON_PRINTED:
+          Ed.NonPrinted.Visible:= Bool(NumVal);
+        PROP_TAB_SPACES:
+          begin
+            if Bool(NumVal) then
+              Ed.TabMode:= tmSpaces
+            else
+              Ed.TabMode:= tmTabChar;
+          end;      
+        PROP_TAB_SIZE:
+          begin
+            Ed.TabList.Clear;
+            Ed.TabList.Add(NumVal);
+          end;
+        PROP_COL_MARKERS:
+          Ed.ColMarkersString:= StrVal;
+        PROP_ZOOM:
+          Ed.Zoom:= NumVal;
+        PROP_INSERT:
+          Ed.ReplaceMode:= not Bool(NumVal);
+        PROP_LEFT:
+          Ed.ScrollPosX:= NumVal;
+        PROP_TOP:
+          Ed.TopLine:= NumVal;
+      end;
+
+      Result:= ReturnNone;
     end;
 end;
 
