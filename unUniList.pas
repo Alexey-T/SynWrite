@@ -107,49 +107,22 @@ end;
 
 procedure TfmUniList.DoFilter;
   //----------------
-  function SFiltered(const fn: Widestring): boolean;
+  function SFiltered(const Str: Widestring): boolean;
   var
-    SFilter, SContent,
-    SItem, SItemName, SItemDesc,
-    SFilterName, SFilterDesc: Widestring;
-    N: Integer;
-    IsCaseIgnore, IsFuzzy: boolean;
+    SFilter,
+    SItem, SItemName: Widestring;
+    IsFuzzy: boolean;
   begin
     SFilter:= Edit.Text;
-    SContent:= '';
-    IsCaseIgnore:= false;
     IsFuzzy:= cbFuzzy.Checked;
 
-    // "@Word" starts case-sensitive content search,
-    // "@@Word" starts case-insensitive
-    N:= Pos('@', SFilter);
-    if N>0 then
-    begin
-      SContent:= Copy(SFilter, N+1, MaxInt);
-      IsCaseIgnore:= (SContent<>'') and (SContent[1]='@');
-      if IsCaseIgnore then
-        Delete(SContent, 1, 1);
-
-      Delete(SFilter, N, MaxInt);
-      SFilter:= WideTrim(SFilter);
-    end;
-
-    SItem:= fn;
+    SItem:= Str;
     SItemName:= SGetItem(SItem, #9);
-    SItemDesc:= SGetItem(SItem, #9);
-
-    SItem:= SFilter;
-    SFilterName:= SGetItem(SItem, #9);
-    SFilterDesc:= SGetItem(SItem, #9);
 
     if IsFuzzy then
-      Result:= SFuzzyMatch(SItemName, SFilterName) and SFuzzyMatch(SItemDesc, SFilterDesc)
+      Result:= SFuzzyMatch(SItemName, SFilter)
     else
-      Result:= SSubstringMatch(SItemName, SFilterName) and SSubstringMatch(SItemDesc, SFilterDesc);
-
-    if Result then
-      if SContent<>'' then
-        Result:= FFindStringInFile(fn, SContent, IsCaseIgnore);
+      Result:= SSubstringMatch(SItemName, SFilter);
   end;
   //----------------
 var
