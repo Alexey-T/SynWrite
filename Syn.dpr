@@ -63,7 +63,8 @@ uses
   unRenameFN in 'unRenameFN.pas' {fmRenameFN: TTntForm},
   unProcPy in 'unProcPy.pas',
   unSnipList in 'unSnipList.pas' {fmSnippetList: TTntForm},
-  unSnipEd in 'unSnipEd.pas' {fmSnippetEditor};
+  unSnipEd in 'unSnipEd.pas' {fmSnippetEditor},
+  unUniList in 'unUniList.pas' {fmUniList: TTntForm};
 
 {$R *.res}
 {$R *.dkl_const.res}

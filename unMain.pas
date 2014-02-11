@@ -3188,6 +3188,7 @@ implementation
 uses
   Clipbrd, Registry, CommCtrl,
   StrUtils, Types, Math, ShellApi,
+  Variants,
 
   TntSystem, TntSysUtils,
   TntClipbrd, TntFileCtrl,
@@ -3220,13 +3221,13 @@ uses
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
   unCmdList, unProjList, unToolbarProp, unHideItems,
   unProcPy,
-  unLexerLib, unSnipList, unSnipEd;
+  unLexerLib, unSnipList, unSnipEd, unUniList;
 
 {$R *.dfm}
 {$R Cur.res}
 
 const
-  cSynVer = '6.4.610';
+  cSynVer = '6.4.625';
   cSynPyVer = '1.0.118';
 
 const
@@ -27844,6 +27845,107 @@ begin
 end;
 
 
+function Py_get_console(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  NLen, i: Integer;
+  ComArray: Variant;
+begin
+  with GetPythonEngine do
+  begin
+    NLen:= fmMain.edConsole.Items.Count;
+    if NLen>0 then
+    begin
+      ComArray:= VarArrayCreate([0, NLen-1], varOleStr);
+      for i:= 0 to NLen-1 do
+      begin
+        ComArray[i]:= fmMain.edConsole.Items[i];
+      end;
+      Result:= VariantAsPyObject(ComArray);
+    end
+    else
+      Result:= ReturnNone;
+  end;
+end;
+
+
+function Py_set_console(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  Id: Integer;
+  P: PAnsiChar;
+  Str: Widestring;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'is:set_console', @Id, @P)) then
+    begin
+      Str:= UTF8Decode(AnsiString(P));
+      case Id of
+        0:
+          with fmMain do
+          begin
+            DoPyConsole_LogString(cPyConsolePrompt + Str);
+            edConsole.Text:= Str;
+            ComboUpdate(edConsole, opSaveSRHist);
+            edConsole.Text:= '';
+          end;
+        1:
+          with fmMain do
+          begin
+            MemoConsole.Lines.Clear;
+            edConsole.Text:= '';
+          end;
+      end;
+      Result:= ReturnNone;
+    end;
+end;
+
+
+function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  Id: Integer;
+  PCaption, PText: PAnsiChar;
+  StrCaption, StrText: Widestring;
+  MenuItems: TTntStringList;
+  NResult, i: Integer;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iss:dlg_menu', @Id, @PCaption, @PText)) then
+    begin
+      StrCaption:= UTF8Decode(AnsiString(PCaption));
+      StrText:= UTF8Decode(AnsiString(PText));
+      MenuItems:= TTntStringList.Create;
+      try
+        MenuItems.Text:= StrText;
+        for i:= 0 to MenuItems.Count-1 do
+          MenuItems.Objects[i]:= Pointer(i);
+
+        with TfmUniList.Create(nil) do
+        try
+          Caption:= StrCaption;
+          cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
+          FListItems:= MenuItems;
+          FListStyle:= Id;
+          FIniFN:= fmMain.SynHistoryIni;
+          FColorSel:= fmMain.opColorOutSelText;
+          FColorSelBk:= fmMain.opColorOutSelBk;
+
+          NResult:= -1;
+          if ShowModal=mrOk then
+            if List.ItemIndex>=0 then
+              NResult:= Integer(List.Items.Objects[List.ItemIndex]);
+
+          if NResult>=0 then
+            Result:= PyInt_FromLong(NResult)
+          else
+            Result:= ReturnNone;
+        finally
+          Free
+        end;
+      finally
+        FreeAndNil(MenuItems);
+      end;
+    end;
+end;
+
 procedure TfmMain.PythonModuleInitialization(Sender: TObject);
 begin
   with Sender as TPythonModule do
@@ -27851,6 +27953,7 @@ begin
     AddMethod('msg_box', Py_msg_box, '');
     AddMethod('msg_status', Py_msg_status, '');
     AddMethod('dlg_input', Py_dlg_input, '');
+    AddMethod('dlg_menu', Py_dlg_menu, '');
 
     AddMethod('app_version', Py_app_version, '');
     AddMethod('app_api_version', Py_app_api_version, '');
@@ -27870,6 +27973,8 @@ begin
 
     AddMethod('get_clip', Py_get_clip, '');
     AddMethod('set_clip', Py_set_clip, '');
+    AddMethod('get_console', Py_get_console, '');
+    AddMethod('set_console', Py_set_console, '');
 
     AddMethod('ed_get_bk', Py_ed_get_bk, '');
     AddMethod('ed_set_bk', Py_ed_set_bk, '');

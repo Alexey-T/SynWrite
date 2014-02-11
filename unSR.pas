@@ -1,3 +1,4 @@
+//{$define PS} //escape regex chars on pasting into edit field
 unit unSR;
 
 interface
@@ -14,6 +15,7 @@ type
     procedure CreateParams(var Params: TCreateParams); override;
   end;
 
+{$ifdef PS}
 type
    TTntCombobox = class(TntStdCtrls.TTntComboBox)
    public
@@ -23,6 +25,7 @@ type
      procedure ComboWndProc(var Message: TMessage; ComboWnd: HWnd;
        ComboProc: Pointer); override;
    end;
+{$endif}
 
 type
   TSRAction = (
@@ -1031,11 +1034,13 @@ end;
 
 procedure TfmSR.TntFormCreate(Sender: TObject);
 begin
+  {$ifdef PS}
   //make ed1/ed2 Paste interceptable
   ed1.refSpec:= cbSpec;
   ed1.refRE:= cbRE;
   ed2.refSpec:= cbSpec;
   ed2.refRE:= cbRE;
+  {$endif}
 
   //other
   FIsReplace:= false;
@@ -1060,6 +1065,7 @@ begin
   cbWrap.Enabled:= cbFromCur.Enabled and cbFromCur.Checked;
 end;
 
+{$ifdef PS}
 procedure TTntCombobox.ComboWndProc(var Message: TMessage;
   ComboWnd: HWnd; ComboProc: Pointer);
 begin
@@ -1072,6 +1078,7 @@ begin
   else
     inherited;
 end;
+{$endif}
 
 procedure TfmSR.bFindInTabsClick(Sender: TObject);
 begin
