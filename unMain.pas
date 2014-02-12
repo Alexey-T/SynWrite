@@ -2192,7 +2192,6 @@ type
     FAcpList_Desc: //ACP: descriptions (text after "|")
       TStringList;
 
-    FLockUpdate: boolean;
     FTabOut: TSynTabOut;
     FTabRight: TSynTabRight;
     FTabLeft: TSynTabLeft;
@@ -3004,6 +3003,7 @@ type
     opOem,
     opUTF8: string;
 
+    FLockUpdate: boolean;
     FFinderTotalSize: Int64;
     FFinderDoneSize: Int64;
 
@@ -3227,8 +3227,8 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.4.625';
-  cSynPyVer = '1.0.118';
+  cSynVer = '6.4.626';
+  cSynPyVer = '1.0.119';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -4685,6 +4685,8 @@ begin
     Tree.Font.Size:= ReadInteger('Tree', 'FontSize', Tree.Font.Size);
     Tree.Font.Color:= ReadInteger('Tree', 'FontColor', Tree.Font.Color);
     Tree.AutoSynchronize:= ReadBool('Tree', 'ASync', true);
+    Tree.AutoCollapse:= ReadBool('Tree', 'ACollapse', false);
+    Tree.AutoExpand:= ReadBool('Tree', 'AExpand', false);
     Tree.UpdateDelay:= ReadInteger('Tree', 'Delay', 1000);
 
     opSrOffsetY:= ReadInteger('SR', 'OffY', 6);
@@ -27905,7 +27907,7 @@ var
   PCaption, PText: PAnsiChar;
   StrCaption, StrText: Widestring;
   MenuItems: TTntStringList;
-  NResult, i: Integer;
+  NResult: Integer;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'iss:dlg_menu', @Id, @PCaption, @PText)) then
@@ -27915,35 +27917,64 @@ begin
       MenuItems:= TTntStringList.Create;
       try
         MenuItems.Text:= StrText;
-        for i:= 0 to MenuItems.Count-1 do
-          MenuItems.Objects[i]:= Pointer(i);
+        case Id of
+          0, 1:
+          begin
+            with TfmUniList.Create(nil) do
+            try
+              Caption:= StrCaption;
+              cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
+              FListItems:= MenuItems;
+              FListStyle:= Id;
+              FIniFN:= fmMain.SynHistoryIni;
+              FColorSel:= fmMain.opColorOutSelText;
+              FColorSelBk:= fmMain.opColorOutSelBk;
 
-        with TfmUniList.Create(nil) do
-        try
-          Caption:= StrCaption;
-          cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
-          FListItems:= MenuItems;
-          FListStyle:= Id;
-          FIniFN:= fmMain.SynHistoryIni;
-          FColorSel:= fmMain.opColorOutSelText;
-          FColorSelBk:= fmMain.opColorOutSelBk;
+              NResult:= -1;
+              if ShowModal=mrOk then
+                if List.ItemIndex>=0 then
+                  NResult:= Integer(List.Items.Objects[List.ItemIndex]);
 
-          NResult:= -1;
-          if ShowModal=mrOk then
-            if List.ItemIndex>=0 then
-              NResult:= Integer(List.Items.Objects[List.ItemIndex]);
-
-          if NResult>=0 then
-            Result:= PyInt_FromLong(NResult)
+              if NResult>=0 then
+                Result:= PyInt_FromLong(NResult)
+              else
+                Result:= ReturnNone;
+            finally
+              Free
+            end;
+          end;
+          2:
+          begin
+            NResult:= DoShowPopupMenu(MenuItems, CenterPoint(Screen.DesktopRect), fmMain.Handle);
+            if NResult>=0 then
+              Result:= PyInt_FromLong(NResult)
+            else
+              Result:= ReturnNone;
+          end;
           else
             Result:= ReturnNone;
-        finally
-          Free
         end;
       finally
         FreeAndNil(MenuItems);
       end;
     end;
+end;
+
+function Py_app_lock(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  Id: Integer;
+begin
+  with GetPythonEngine do
+  begin
+    if Bool(PyArg_ParseTuple(Args, 'i:app_lock', @Id)) then
+    begin
+      case Id of
+        0: fmMain.FLockUpdate:= true;
+        1: fmMain.FLockUpdate:= false;
+      end;
+      Result:= ReturnNone;
+    end;
+  end;
 end;
 
 procedure TfmMain.PythonModuleInitialization(Sender: TObject);
@@ -27960,6 +27991,7 @@ begin
     AddMethod('app_exe_dir', Py_app_exe_dir, '');
     AddMethod('app_ini_dir', Py_app_ini_dir, '');
     AddMethod('app_log', Py_app_log, '');
+    AddMethod('app_lock', Py_app_lock, '');
 
     AddMethod('ini_read', Py_ini_read, '');
     AddMethod('ini_write', Py_ini_write, '');

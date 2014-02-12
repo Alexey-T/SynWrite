@@ -20,6 +20,7 @@ uses
   IniFiles,
   PngImageList;
 
+function DoShowPopupMenu(List: TTntStringList; Pnt: TPoint; hWnd: THandle): Integer;
 procedure MemoScrollToBottom(Memo: TTntMemo);
 function SZenFindLeft(const s: ecString; iFrom: integer): integer;
 function DoReadLangMsg(const fn_lng, fn_en_lng, msg_id: string): Widestring;
@@ -1827,6 +1828,30 @@ begin
     finally
       Free
     end;
+end;
+
+
+function DoShowPopupMenu(List: TTntStringList; Pnt: TPoint; hWnd: THandle): Integer;
+var
+  hMenu: THandle;
+  n: integer;
+begin
+  hMenu:= CreatePopupMenu;
+  for n:= 0 to List.Count-1 do
+    AppendMenuW(hMenu, MF_ENABLED or MF_STRING or MF_UNCHECKED, 100+n, PWChar(List[n]));
+
+  n:= Integer(TrackPopupMenu(hMenu, TPM_LEFTALIGN or TPM_LEFTBUTTON or TPM_RETURNCMD,
+    Pnt.X, Pnt.Y, 0, hWnd, nil));
+  SendMessage(hWnd, WM_NULL, 0, 0);
+
+  if n>0 then
+    Result:= n-100
+  else
+    Result:= -1;
+
+  for n:= List.Count-1 downto 0 do
+    DeleteMenu(hMenu, n, MF_BYCOMMAND);
+  DestroyMenu(hMenu);
 end;
 
 end.
