@@ -1092,7 +1092,7 @@ begin
   TreeProj.Items.BeginUpdate;
   L:= TStringList.Create;
   try
-    FReadSection(fn, 'Nodes', L);
+    FReadIniSection(fn, 'Nodes', L);
     for i:= 0 to L.Count-1 do
     begin
       S:= L[i];

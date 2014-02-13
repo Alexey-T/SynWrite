@@ -189,6 +189,7 @@ type
 
   TPluginList_Command = array[0..100] of record
     SCaption: Widestring;
+    SHotkey: string;
     SFilename: string;
     SLexers: string;
     SCmd: string;
@@ -16860,8 +16861,6 @@ end;
 
 procedure TfmMain.DoTidy(const Cfg: string);
 var
-  L: TStringList;
-  L2: TWideStringList;
   fn_cfg, fn_out, fn_err, fn_current,
   fcmd, fdir: string;
 begin
@@ -16879,13 +16878,12 @@ begin
 
   if Cfg<>'' then
   begin
-    L:= TStringList.Create;
-    FReadSection(SynTidyIni, Cfg, L);
-    L.SaveToFile(fn_cfg);
-    FreeAndNil(L);
-
+    FWriteIniSectionToFile(SynTidyIni, Cfg, fn_cfg);
     if (not IsFileExist(fn_cfg)) or (FGetFileSize(fn_cfg)=0) then
-      begin MsgError('Tidy configuration empty:'#13+Cfg, Handle); Exit end;
+    begin
+      MsgError('Tidy configuration empty:'#13+Cfg, Handle);
+      Exit
+    end;
     //DoOpenFile(fn_cfg); exit;
 
     fcmd:= WideFormat('"%s" -output "%s" -config "%s" -file "%s" -quiet "%s"',
@@ -16930,20 +16928,7 @@ begin
   //show output
   if IsFileExist(fn_out) and (FGetFileSize(fn_out)>0) then
   begin
-    L2:= TWideStringList.Create;
-    L2.LoadFromFile(fn_out);
-    with CurrentEditor do
-    begin
-      BeginUpdate;
-      try
-        CaretStrPos:= 0;
-        DeleteText(TextLength);
-        InsertTextBlock(L2, Point(0, 0));
-      finally
-        EndUpdate;
-      end;  
-    end;
-    FreeAndNil(L2);
+    CurrentEditor.Lines.LoadFromFile(fn_out);
   end;
 
   FDelete(fn_cfg);
@@ -24204,7 +24189,7 @@ begin
     for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
       with FPluginsCommand[i] do
         if SCaption<>'' then
-          PyList.Add('Plugin: '+SCaption);
+          PyList.Add('Plugin: ' + SCaption + #9 + SHotkey);
 
     FIniFN:= Self.SynHistoryIni;
     FColorSel:= opColorOutSelText;
@@ -28874,6 +28859,8 @@ begin
   for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
     with FPluginsCommand[i] do
     begin
+      SCaption:= '';
+      SHotkey:= '';
       SFileName:= '';
       SLexers:= '';
       SCmd:= '';
@@ -28905,6 +28892,7 @@ begin
         FPluginsCommand[NIndex].SCmd:= sValue2;
         FPluginsCommand[NIndex].SLexers:= sValue3;
         FPluginsCommand[NIndex].SCaption:= sKey;
+        FPluginsCommand[NIndex].SHotkey:= sValue4;
         DoAddPluginMenuItem(sKey, sValue4, NIndex);
         Inc(NIndex);
       end;

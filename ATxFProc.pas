@@ -25,7 +25,8 @@ function FReadString(const fn: string): string;
 function FFindInSubdirs(const sname, sdir: Widestring; var fn: Widestring): boolean;
 function FAppDataPath: string;
 function FExecProcess(const CmdLine, CurrentDir: Widestring; ShowCmd: integer; DoWait: boolean): TExecCode;
-procedure FReadSection(const fn, sec: string; L: TStringList);
+procedure FReadIniSection(const fn, sec: string; L: TStringList);
+procedure FWriteIniSectionToFile(const fn, sec, fn_out: string);
 procedure FFindToList(List: TTntStringList;
   const ADir, AMasksInclude, AMasksExclude: Widestring;
   ASubDir: boolean;
@@ -1021,8 +1022,9 @@ begin
     end;
 end;
 
-procedure FReadSection(const fn, sec: string; L: TStringList);
-var f: TextFile;
+procedure FReadIniSection(const fn, sec: string; L: TStringList);
+var
+  f: TextFile;
   s: string;
   d: boolean;
 begin
@@ -1040,6 +1042,19 @@ begin
     if d then L.Add(s);
   end;
   CloseFile(f);
+end;
+
+procedure FWriteIniSectionToFile(const fn, sec, fn_out: string);
+var
+  L: TStringList;
+begin
+  L:= TStringList.Create;
+  try
+    FReadIniSection(fn, sec, L);
+    L.SaveToFile(fn_out);
+  finally
+    FreeAndNil(L);
+  end;
 end;
 
 //http://www.delphi.int.ru/articles/41/
