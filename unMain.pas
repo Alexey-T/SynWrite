@@ -16861,14 +16861,15 @@ end;
 
 procedure TfmMain.DoTidy(const Cfg: string);
 var
+  Frame: TEditorFrame;
   fn_cfg, fn_out, fn_err, fn_current,
   fcmd, fdir: string;
 begin
-  if CurrentFrame.FileName='' then Exit;
-  if CurrentFrame.Modified then
-    acSave.Execute;
+  Frame:= CurrentFrame;
+  if Frame.FileName='' then Exit;
+  if Frame.Modified then acSave.Execute;
 
-  fn_current:= CurrentFrame.FileName;
+  fn_current:= Frame.FileName;
   fn_cfg:= FTempDir + '\SynwTidyCfg.txt';
   fn_out:= FTempDir + '\SynwTidyOut.txt';
   fn_err:= FTempDir + '\SynwTidyErr.txt';
@@ -16928,7 +16929,8 @@ begin
   //show output
   if IsFileExist(fn_out) and (FGetFileSize(fn_out)>0) then
   begin
-    CurrentEditor.Lines.LoadFromFile(fn_out);
+    Frame.EditorMaster.Lines.LoadFromFile(fn_out);
+    EditorSetModified(Frame.EditorMaster);
   end;
 
   FDelete(fn_cfg);
