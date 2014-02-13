@@ -16,6 +16,7 @@ object fmCmdList: TfmCmdList
   OldCreateOrder = False
   OnClose = TntFormClose
   OnCreate = TntFormCreate
+  OnDestroy = TntFormDestroy
   OnKeyDown = FormKeyDown
   OnResize = TntFormResize
   OnShow = FormShow
@@ -84,7 +85,7 @@ object fmCmdList: TfmCmdList
       OnClick = cbFuzzyClick
     end
   end
-  object Keys: TSyntKeyMapping
+  object KeysList: TSyntKeyMapping
     Items = <>
     Left = 360
     Top = 4

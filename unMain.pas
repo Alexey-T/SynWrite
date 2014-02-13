@@ -188,6 +188,7 @@ type
     );
 
   TPluginList_Command = array[0..100] of record
+    SCaption: Widestring;
     SFilename: string;
     SLexers: string;
     SCmd: string;
@@ -3227,7 +3228,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.4.626';
+  cSynVer = '6.4.635';
   cSynPyVer = '1.0.119';
 
 const
@@ -24164,7 +24165,13 @@ var
 begin
   Cmd:= DoShowCmdList;
   if Cmd>0 then
-    CurrentEditor.ExecCommand(Cmd);
+    if Cmd>=cPyListBase then
+    begin
+      Dec(Cmd, cPyListBase);
+      DoPyLoadPlugin(FPluginsCommand[Cmd].SFilename, FPluginsCommand[Cmd].SCmd);
+    end
+    else
+      CurrentEditor.ExecCommand(Cmd);
 end;
 
 
@@ -24179,6 +24186,8 @@ begin
 end;
 
 function TfmMain.DoShowCmdList: Integer;
+var
+  i: Integer;
 begin
   Result:= 0;
 
@@ -24189,7 +24198,13 @@ begin
     labHelp.Caption:= DKLangConstW('zMHelp');
 
     UpdateMacroKeynames;
-    Keys.Assign(SyntKeyMapping);
+    //1) add commands
+    KeysList.Assign(SyntKeyMapping);
+    //2) add command-plugins
+    for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
+      with FPluginsCommand[i] do
+        if SCaption<>'' then
+          PyList.Add('Plugin: '+SCaption);
 
     FIniFN:= Self.SynHistoryIni;
     FColorSel:= opColorOutSelText;
@@ -28889,6 +28904,7 @@ begin
           FPluginsCommand[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
         FPluginsCommand[NIndex].SCmd:= sValue2;
         FPluginsCommand[NIndex].SLexers:= sValue3;
+        FPluginsCommand[NIndex].SCaption:= sKey;
         DoAddPluginMenuItem(sKey, sValue4, NIndex);
         Inc(NIndex);
       end;

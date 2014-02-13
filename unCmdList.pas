@@ -5,13 +5,13 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls,
-  TntStdCtrls, TntForms,
+  TntStdCtrls, TntForms, TntClasses,
   ecKeyMap, ExtCtrls;
 
 type
   TfmCmdList = class(TTntForm)
     List: TTntListBox;
-    Keys: TSyntKeyMapping;
+    KeysList: TSyntKeyMapping;
     Edit: TTntEdit;
     TimerType: TTimer;
     Panel1: TPanel;
@@ -32,20 +32,25 @@ type
     procedure labHelpClick(Sender: TObject);
     procedure cbFuzzyClick(Sender: TObject);
     procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
+    procedure TntFormDestroy(Sender: TObject);
   private
     { Private declarations }
     procedure DoFilter;
   public
     { Public declarations }
+    PyList: TTntStringList;
     FIniFN: string;
     FColorSel: TColor;
     FColorSelBk: TColor;
   end;
 
+const
+  cPyListBase = 5000;  
+
 implementation
 
 uses
-  TntClasses, TntWideStrings,
+  TntWideStrings,
   Math,
   IniFiles,
   ecStrUtils,
@@ -115,39 +120,49 @@ procedure TfmCmdList.DoFilter;
       Result:= SFuzzyMatch(S, Edit.Text)
     else
       Result:= SSubstringMatch(S, Edit.Text);
-  end;      
+  end;
 var
   i, j: Integer;
   ListCat: TTntStringList;
   S, SKey: Widestring;
 begin
   ListCat:= TTntStringList.Create;
-  for i:= 0 to Keys.Items.Count-1 do
-    if ListCat.IndexOf(Keys.Items[i].Category)<0 then
-      ListCat.Add(Keys.Items[i].Category);
-
-  List.Items.BeginUpdate;
   try
-    List.Items.Clear;
-    for j:= 0 to ListCat.Count-1 do
-      for i:= 0 to Keys.Items.Count-1 do
-        if ListCat[j]=Keys.Items[i].Category then
-          if Keys.Items[i].Command>0 then
-          begin
-            S:= Keys.Items[i].Category + ': ' + Keys.Items[i].DisplayName;
-            if Keys.Items[i].KeyStrokes.Count>0 then
+    for i:= 0 to KeysList.Items.Count-1 do
+      if ListCat.IndexOf(KeysList.Items[i].Category)<0 then
+        ListCat.Add(KeysList.Items[i].Category);
+
+    List.Items.BeginUpdate;
+    try
+      List.Items.Clear;
+      for j:= 0 to ListCat.Count-1 do
+        for i:= 0 to KeysList.Items.Count-1 do
+          if ListCat[j]=KeysList.Items[i].Category then
+            if KeysList.Items[i].Command>0 then
             begin
-              SKey:= Keys.Items[i].KeyStrokes[0].AsString;
-              if Keys.Items[i].KeyStrokes.Count>1 then
-                SKey:= SKey+' / '+Keys.Items[i].KeyStrokes[1].AsString;
-            end
-            else
-              SKey:= '';
-            if SFiltered(S) then
-              List.Items.AddObject(S + #9 + SKey, Pointer(Keys.Items[i].Command));
-          end;
+              S:= KeysList.Items[i].Category + ': ' + KeysList.Items[i].DisplayName;
+              if KeysList.Items[i].KeyStrokes.Count>0 then
+              begin
+                SKey:= KeysList.Items[i].KeyStrokes[0].AsString;
+                if KeysList.Items[i].KeyStrokes.Count>1 then
+                  SKey:= SKey+' / '+KeysList.Items[i].KeyStrokes[1].AsString;
+              end
+              else
+                SKey:= '';
+              if SFiltered(S) then
+                List.Items.AddObject(S + #9 + SKey, Pointer(KeysList.Items[i].Command));
+            end;
+
+      for i:= 0 to PyList.Count-1 do
+      begin
+        S:= PyList[i];
+        if SFiltered(S) then
+          List.Items.AddObject(S, Pointer(cPyListBase+i));
+      end;
+    finally
+      List.Items.EndUpdate;
+    end;
   finally
-    List.Items.EndUpdate;
     FreeAndNil(ListCat);
   end;
 
@@ -240,6 +255,7 @@ end;
 procedure TfmCmdList.TntFormCreate(Sender: TObject);
 begin
   List.ItemHeight:= ScaleFontSize(List.ItemHeight, Self);
+  PyList:= TTntStringList.Create;
 end;
 
 procedure TfmCmdList.labHelpClick(Sender: TObject);
@@ -266,6 +282,11 @@ begin
   finally
     Free
   end;
+end;
+
+procedure TfmCmdList.TntFormDestroy(Sender: TObject);
+begin
+  FreeAndNil(PyList);
 end;
 
 end.
