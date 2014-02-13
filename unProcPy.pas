@@ -1022,6 +1022,7 @@ const
   PROP_LEFT        = 17;
   PROP_TOP         = 18;
   PROP_BOTTOM      = 19;
+  PROP_RULER       = 20;
 
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1075,6 +1076,8 @@ begin
           Result:= PyInt_FromLong(Ed.TopLine);
         PROP_BOTTOM:
           Result:= PyInt_FromLong(EditorGetBottomLineIndex(Ed));
+        PROP_RULER:
+          Result:= PyBool_FromLong(Ord(Ed.HorzRuler.Visible));  
         else
           Result:= ReturnNone;
       end;
@@ -1131,6 +1134,8 @@ begin
           Ed.ScrollPosX:= NumVal;
         PROP_TOP:
           Ed.TopLine:= NumVal;
+        PROP_RULER:
+          Ed.HorzRuler.Visible:= Bool(NumVal);
       end;
 
       Result:= ReturnNone;

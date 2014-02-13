@@ -88,7 +88,8 @@ type
     cSynEventOnSaveAfter,
     cSynEventOnSaveBefore,
     cSynEventOnChangeSlow,
-    cSynEventOnKey
+    cSynEventOnKey,
+    cSynEventOnState
     );
   TSynPyEvents = set of TSynPyEvent;
 
@@ -97,7 +98,8 @@ const
     'on_save',
     'on_save_pre',
     'on_change_slow',
-    'on_key'
+    'on_key',
+    'on_state'
     );
 
 type
@@ -6770,10 +6772,15 @@ begin
 end;
 
 procedure TfmMain.ecReadOnlyExecute(Sender: TObject);
+var
+  Ed: TSyntaxMemo;
 begin
-  CurrentEditor.ReadOnly:= not CurrentEditor.ReadOnly;
+  Ed:= CurrentEditor;
+  if not DoPyEvent(Ed, cSynEventOnState, ['sw.PROP_RO']) then Exit;
+  Ed.ReadOnly:= not Ed.ReadOnly;
+  
   UpdateStatusbar;
-  UpdateEditorCaret(CurrentEditor);
+  UpdateEditorCaret(Ed);
   UpdateTitle(CurrentFrame);
 end;
 
@@ -9003,23 +9010,31 @@ begin
 end;
 
 procedure TfmMain.ecWrapExecute(Sender: TObject);
-var p: integer;
+var
+  Ed: TSyntaxMemo;
+  NPos: Integer;
 begin
-  with CurrentEditor do begin
-    p:= TopLine;
+  Ed:= CurrentEditor;
+  if not DoPyEvent(Ed, cSynEventOnState, ['sw.PROP_WRAP']) then Exit;
+
+  with Ed do
+  begin
+    NPos:= TopLine;
     WordWrap:= not WordWrap;
-    TopLine:= p;
+    TopLine:= NPos;
     if not WordWrap then
       ExecCommand(smScrollAbsLeft);
   end;
 
-  TemplateEditor.WordWrap:= CurrentEditor.WordWrap;
-  PostMessage(hLister, WM_COMMAND, MAKELONG(Ord(CurrentEditor.WordWrap), itm_wrap), Handle);
+  TemplateEditor.WordWrap:= Ed.WordWrap;
+  PostMessage(hLister, WM_COMMAND, MAKELONG(Ord(Ed.WordWrap), itm_wrap), Handle);
   UpdateStatusbar;
 end;
 
 procedure TfmMain.ecLineNumsExecute(Sender: TObject);
 begin
+  if not DoPyEvent(CurrentEditor, cSynEventOnState, ['sw.PROP_NUMS']) then Exit;
+
   with CurrentFrame do
   begin
      EditorMaster.LineNumbers.Visible:= not EditorMaster.LineNumbers.Visible;
@@ -9034,7 +9049,10 @@ end;
 
 procedure TfmMain.ecFoldingExecute(Sender: TObject);
 begin
-  with CurrentFrame do begin
+  if not DoPyEvent(CurrentEditor, cSynEventOnState, ['sw.PROP_FOLDING']) then Exit;
+
+  with CurrentFrame do
+  begin
     EditorMaster.DisableFolding:= not EditorMaster.DisableFolding;
     EditorSlave.DisableFolding:= EditorMaster.DisableFolding;
     TemplateEditor.DisableFolding:= EditorMaster.DisableFolding;
@@ -20212,6 +20230,8 @@ end;
 
 procedure TfmMain.ecRulerExecute(Sender: TObject);
 begin
+  if not DoPyEvent(CurrentEditor, cSynEventOnState, ['sw.PROP_RULER']) then Exit;
+
   with CurrentEditor do
   begin
     HorzRuler.Visible:= not HorzRuler.Visible;
