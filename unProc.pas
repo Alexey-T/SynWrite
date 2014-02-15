@@ -166,7 +166,7 @@ function SFilterNameToIdx(const AFilter, ALexerName: string): integer;
 procedure MsgInfo(const S: WideString; H: THandle);
 procedure MsgWarn(const S: WideString; H: THandle);
 procedure MsgError(const S: WideString; H: THandle);
-function MsgConfirm(const S: Widestring; H: THandle): boolean;
+function MsgConfirm(const S: Widestring; H: THandle; IsQuestion: boolean = false): boolean;
 procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);
 
 procedure SetFormStyle(Form: TForm; Value: Boolean);
@@ -239,10 +239,16 @@ begin
     mb_ok or mb_iconerror or mb_taskmodal);
 end;
 
-function MsgConfirm(const S: Widestring; H: THandle): boolean;
+function MsgConfirm(const S: Widestring; H: THandle; IsQuestion: boolean = false): boolean;
+var
+  nIcon: Integer;
 begin
+  if IsQuestion then
+    nIcon:= mb_iconquestion
+  else
+    nIcon:= mb_iconwarning;
   Result:= MessageBoxW(H, PWChar(S), 'SynWrite',
-    MB_okcancel or MB_iconwarning or mb_taskmodal) = id_ok;
+    MB_okcancel or nIcon or mb_taskmodal) = id_ok;
 end;
 
 procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);

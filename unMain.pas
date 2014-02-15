@@ -27331,7 +27331,7 @@ const
   //
 var
   fn_inf, dir_to: string;
-  s_title, s_type, s_subdir: string;
+  s_title, s_type, s_desc, s_ver, s_subdir, s_msg: string;
   n_type, i_type: TSynAddonType;
   i: integer;
 begin
@@ -27355,6 +27355,8 @@ begin
   try
     s_title:= ReadString('info', 'title', '');
     s_type:= ReadString('info', 'type', '');
+    s_desc:= ReadString('info', 'desc', '');
+    s_ver:= ReadString('info', 'ver', '');
     s_subdir:= ReadString('info', 'subdir', '');
   finally
     Free
@@ -27384,9 +27386,17 @@ begin
     Exit
   end;
 
-  if not MsgConfirm(
-    Format(DKLangConstW('zMInstallCfm'), [s_type, s_title]),
-    Handle) then Exit;
+  //confirm installation
+  s_msg:= DKLangConstW('zMInstallThis') + #13#13 +
+          DKLangConstW('zMInstallName') + ': ' + s_title + #13 +
+          DKLangConstW('zMInstallType') + ': ' + s_type + #13;
+  if s_desc<>'' then
+    s_msg:= s_msg + DKLangConstW('zMInstallDesc') + ': ' + s_desc + #13;
+  if s_ver<>'' then
+    s_msg:= s_msg + DKLangConstW('zMInstallVer') + ': ' + s_ver + #13;
+  s_msg:= s_msg + #13 + DKLangConstW('zMInstallYesNo');
+
+  if not MsgConfirm(s_msg, Handle, true) then Exit;
 
   case n_type of
     cAddonTypeBinPlugin:
