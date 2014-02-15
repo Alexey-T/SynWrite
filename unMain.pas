@@ -6776,7 +6776,7 @@ var
   Ed: TSyntaxMemo;
 begin
   Ed:= CurrentEditor;
-  if not DoPyEvent(Ed, cSynEventOnState, ['sw.PROP_RO']) then Exit;
+  if not DoPyEvent(Ed, cSynEventOnState, [cSynPropRO]) then Exit;
   Ed.ReadOnly:= not Ed.ReadOnly;
   
   UpdateStatusbar;
@@ -9015,7 +9015,7 @@ var
   NPos: Integer;
 begin
   Ed:= CurrentEditor;
-  if not DoPyEvent(Ed, cSynEventOnState, ['sw.PROP_WRAP']) then Exit;
+  if not DoPyEvent(Ed, cSynEventOnState, [cSynPropWrap]) then Exit;
 
   with Ed do
   begin
@@ -9033,7 +9033,7 @@ end;
 
 procedure TfmMain.ecLineNumsExecute(Sender: TObject);
 begin
-  if not DoPyEvent(CurrentEditor, cSynEventOnState, ['sw.PROP_NUMS']) then Exit;
+  if not DoPyEvent(CurrentEditor, cSynEventOnState, [cSynPropNums]) then Exit;
 
   with CurrentFrame do
   begin
@@ -9049,7 +9049,7 @@ end;
 
 procedure TfmMain.ecFoldingExecute(Sender: TObject);
 begin
-  if not DoPyEvent(CurrentEditor, cSynEventOnState, ['sw.PROP_FOLDING']) then Exit;
+  if not DoPyEvent(CurrentEditor, cSynEventOnState, [cSynPropFolding]) then Exit;
 
   with CurrentFrame do
   begin
@@ -20230,7 +20230,7 @@ end;
 
 procedure TfmMain.ecRulerExecute(Sender: TObject);
 begin
-  if not DoPyEvent(CurrentEditor, cSynEventOnState, ['sw.PROP_RULER']) then Exit;
+  if not DoPyEvent(CurrentEditor, cSynEventOnState, [cSynPropRuler]) then Exit;
 
   with CurrentEditor do
   begin

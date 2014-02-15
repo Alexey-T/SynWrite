@@ -12,6 +12,13 @@ var
   PyExeDir: string = '';
   PyIniDir: string = '';
 
+const
+  cSynPropRO = 'sw.PROP_RO';
+  cSynPropWrap = 'sw.PROP_WRAP';
+  cSynPropFolding = 'sw.PROP_FOLDING';
+  cSynPropNums = 'sw.PROP_NUMS';
+  cSynPropRuler = 'sw.PROP_RULER';
+
 function Py_get_clip(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_set_clip(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_text_local(Self, Args: PPyObject): PPyObject; cdecl;
