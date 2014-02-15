@@ -747,6 +747,11 @@ begin
             N:= Ord(MsgConfirm(Str, H));
             Result:= PyBool_FromLong(N);
           end;
+        -2:
+          begin
+            N:= Ord(MsgConfirm(Str, H, true));
+            Result:= PyBool_FromLong(N);
+          end;
         else
           Result:= ReturnNone;
       end;

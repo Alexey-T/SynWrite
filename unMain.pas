@@ -2803,6 +2803,7 @@ type
     procedure DoPyStringToEvents(const Str: string;
       var AEvents: TSynPyEvents;
       var AKeycodes: string);
+    procedure DoPyResetPlugins;
 
     procedure LoadConsoleHist;
     procedure SaveConsoleHist;
@@ -3231,7 +3232,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.4.635';
+  cSynVer = '6.4.660';
   cSynPyVer = '1.0.119';
 
 const
@@ -6420,6 +6421,8 @@ begin
 
     sm_HelpFileContents:
       FOpenURL(FHelpFilename, Handle);
+    sm_ResetPythonPlugins:
+      DoPyResetPlugins;
 
     //end of commands list
     else
@@ -29093,6 +29096,27 @@ begin
   if Assigned(fmSR) then
     fmSR.ShowStatus('');
 end;
+
+procedure TfmMain.DoPyResetPlugins;
+var
+  fn, Cmd: string;
+  L: TStringList;
+begin
+  fn:= SynPyDir + '\sw_reset_plugins.py';
+  if not FileExists(fn) then
+    begin MsgNoFile(fn); Exit end;
+
+  L:= TStringList.Create;
+  try
+    L.LoadFromFile(fn);
+    GetPythonEngine.ExecStrings(L);
+    Cmd:= Format('_reset_plugins(r"%s")', [SynPyDir]);
+    GetPythonEngine.ExecString(Cmd);
+  finally
+    FreeAndNil(L)
+  end;
+end;
+
 
 initialization
   PyEditor:= MainPyEditor;
