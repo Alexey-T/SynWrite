@@ -77,6 +77,8 @@ type
     mnuConv: TTntMenuItem;
     mnuRecProjects: TTntMenuItem;
     btnBrowsePy: TTntButton;
+    btnRemoveIcon: TTntButton;
+    mnuPlugins: TTntMenuItem;
     procedure FormShow(Sender: TObject);
     procedure btnIconSizeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -110,6 +112,8 @@ type
     procedure mnuConvClick(Sender: TObject);
     procedure mnuRecProjectsClick(Sender: TObject);
     procedure btnBrowsePyClick(Sender: TObject);
+    procedure btnRemoveIconClick(Sender: TObject);
+    procedure mnuPluginsClick(Sender: TObject);
   private
     { Private declarations }
     procedure DoMenuSys(const Cmd, Hint: Widestring);
@@ -818,6 +822,26 @@ begin
     MenuTool.Popup(p.x, p.y)
   else
     MessageBeep(mb_iconwarning);
+end;
+
+procedure TfmToolbarProp.btnRemoveIconClick(Sender: TObject);
+var
+  AIndex: Integer;
+begin
+  AIndex:= ListBox1.ItemIndex;
+  if not ((AIndex>=Low(FToolbar)) and (AIndex<=High(FToolbar))) then Exit;
+
+  if Assigned(FToolbar[AIndex].FImage) then
+    FreeAndNil(FToolbar[AIndex].FImage);
+  FToolbar[AIndex].FImage:= nil;
+  FToolbar[AIndex].FImageFN:= '';
+
+  Self.Listbox1.Invalidate;
+end;
+
+procedure TfmToolbarProp.mnuPluginsClick(Sender: TObject);
+begin
+  DoMenuSys('m:{plugins}', mnuPlugins.Caption);
 end;
 
 end.

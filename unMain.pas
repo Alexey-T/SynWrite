@@ -25317,6 +25317,11 @@ begin
           Item.LinkSubitems:= TBXSubmenuItemProjRecents;
         end
         else
+        if SCmd='m:{plugins}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuItemPlugins;
+        end
+        else
         begin
           FUserToolbarCommands.Add(SCmd);
           Item.Tag:= FUserToolbarCommands.Count-1;
