@@ -378,6 +378,7 @@ const
   sm_NewSnippetDialog = 1046;
   sm_SnippetsDialog = 1047;
   sm_HelpFileContents = 1048;
+  sm_ResetPythonPlugins = 1049;
   //free
 
   //Tree commands
