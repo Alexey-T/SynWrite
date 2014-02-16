@@ -3232,7 +3232,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.4.660';
+  cSynVer = '6.4.662';
   cSynPyVer = '1.0.119';
 
 const

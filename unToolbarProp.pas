@@ -77,8 +77,8 @@ type
     mnuConv: TTntMenuItem;
     mnuRecProjects: TTntMenuItem;
     btnBrowsePy: TTntButton;
-    btnRemoveIcon: TTntButton;
     mnuPlugins: TTntMenuItem;
+    btnRemoveIcon: TTntButton;
     procedure FormShow(Sender: TObject);
     procedure btnIconSizeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);

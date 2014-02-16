@@ -4496,8 +4496,8 @@ object fmMain: TfmMain
       OnSelect = ButtonOnSelect
     end
     object TBXItemCtxFindID: TSpTBXItem
-      Caption = 'Find ID'
-      Hint = 'Find current ID declaration (only for few lexers)'
+      Caption = 'Go to definition'
+      Hint = 'Go to definition of identifier (only with plugin installed)'
       Enabled = False
       OnClick = TBXItemCtxFindIDClick
       OnSelect = ButtonOnSelect
@@ -9706,7 +9706,7 @@ object fmMain: TfmMain
         Command = 1031
         KeyStrokes = <>
         Category = 'Miscellaneous'
-        DisplayName = 'Find current id declaration'
+        DisplayName = 'Go to definition'
       end
       item
         Command = 1032
