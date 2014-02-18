@@ -1840,13 +1840,27 @@ end;
 function DoShowPopupMenu(List: TTntStringList; Pnt: TPoint; hWnd: THandle): Integer;
 var
   hMenu: THandle;
-  n: integer;
+  n, nFlag: integer;
+  Str: Widestring;
 begin
   hMenu:= CreatePopupMenu;
   for n:= 0 to List.Count-1 do
-    AppendMenuW(hMenu, MF_ENABLED or MF_STRING or MF_UNCHECKED, 100+n, PWChar(List[n]));
+  begin
+    Str:= List[n];
+    if Str='-' then
+      nFlag:= MF_SEPARATOR
+    else
+    if SBegin(Str, '!') then
+      begin nFlag:= MF_CHECKED; Delete(Str, 1, 1); end
+    else
+    if SBegin(Str, '?') then
+      begin nFlag:= MF_CHECKED or MFT_RADIOCHECK; Delete(Str, 1, 1); end
+    else
+      nFlag:= 0;
+    AppendMenuW(hMenu, MF_ENABLED or MF_STRING or nFlag, 100+n, PWChar(Str));
+  end;
 
-  n:= Integer(TrackPopupMenu(hMenu, TPM_LEFTALIGN or TPM_LEFTBUTTON or TPM_RETURNCMD,
+  n:= Integer(TrackPopupMenu(hMenu, {TPM_LEFTALIGN}TPM_CENTERALIGN or TPM_VCENTERALIGN or TPM_LEFTBUTTON or TPM_RETURNCMD,
     Pnt.X, Pnt.Y, 0, hWnd, nil));
   SendMessage(hWnd, WM_NULL, 0, 0);
 
