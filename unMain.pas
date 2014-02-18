@@ -3232,7 +3232,7 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.4.662';
+  cSynVer = '6.4.670';
   cSynPyVer = '1.0.119';
 
 const
@@ -8128,7 +8128,8 @@ end;
 
 procedure TfmMain.DoRepaintTBs;
 begin
-  tbMenu.Invalidate;
+  //ZD start
+  {tbMenu.Invalidate;
   tbFile.Invalidate;
   tbEdit.Invalidate;
   tbView.Invalidate;
@@ -8161,12 +8162,14 @@ begin
 
   tbTabsLeft.Invalidate;
   tbTabsOut.Invalidate;
-  tbTabsRight.Invalidate;
+  tbTabsRight.Invalidate;}
+  //ZD end
 end;
 
 procedure TfmMain.DoRepaintTBs2;
 begin
-  if Assigned(fmClip) then
+  //ZD start
+  {if Assigned(fmClip) then
     FixDraw(fmClip.ListClip, true);
 
   if Assigned(fmMap) then
@@ -8175,12 +8178,13 @@ begin
   FixDraw(Tree);
 
   if CurrentEditor<>nil then
-    FixDraw(CurrentEditor, true);
+    FixDraw(CurrentEditor, true);}
+  //ZD end
 end;
 
 procedure TfmMain.FormResize(Sender: TObject);
 begin
-  DoRepaintTBs;
+  //DoRepaintTBs; //ZD
   SyncMapPos;
 end;
 
@@ -13019,8 +13023,8 @@ end;
 
 procedure TfmMain.plOutResize(Sender: TObject);
 begin
-  plOut.Invalidate;
-  tbViewMove(Self);
+  //plOut.Invalidate; //ZD
+  //tbViewMove(Self); //ZD
 end;
 
 procedure TfmMain.ecShowOutExecute(Sender: TObject);
@@ -14336,10 +14340,12 @@ end;
 
 procedure TfmMain.plClipResize(Sender: TObject);
 begin
-  plClip.Invalidate;
-  if Assigned(fmClip) then
-    fmClip.ListClip.Invalidate;
-  tbViewMove(Self);
+  //ZD start
+  //plClip.Invalidate;
+  //if Assigned(fmClip) then
+  //  fmClip.ListClip.Invalidate;
+  //tbViewMove(Self);
+  //ZD end
 end;
 
 procedure TfmMain.plClipVisibleChanged(Sender: TObject);
