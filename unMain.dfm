@@ -2827,6 +2827,10 @@ object fmMain: TfmMain
             Caption = 'Project pane'
             Action = ecToggleFocusProject
           end
+          object TbxItemWinProjPre: TSpTBXItem
+            Caption = 'Preview pane'
+            Action = ecToggleProjPreview
+          end
           object TbxItemWinTabs: TSpTBXItem
             Caption = 'Tabs pane'
             Action = ecToggleFocusTabs
@@ -3295,6 +3299,7 @@ object fmMain: TfmMain
     Height = 356
     Cursor = crSizeWE
     MinSize = 50
+    ResizeStyle = rsPattern
   end
   object SplitterRight: TSpTBXSplitter
     Left = 708
@@ -3303,6 +3308,7 @@ object fmMain: TfmMain
     Cursor = crSizeWE
     Align = alRight
     MinSize = 50
+    ResizeStyle = rsPattern
   end
   object SplitterBottom: TSpTBXSplitter
     Left = 0
@@ -3312,6 +3318,7 @@ object fmMain: TfmMain
     Cursor = crSizeNS
     Align = alBottom
     MinSize = 70
+    ResizeStyle = rsPattern
   end
   object ActionList: TActionList
     Images = ImageListIconsStd
@@ -4286,6 +4293,10 @@ object fmMain: TfmMain
     object ecToggleFocusConsole: TAction
       Category = 'Focus'
       OnExecute = ecToggleFocusConsoleExecute
+    end
+    object ecToggleProjPreview: TAction
+      Category = 'View'
+      OnExecute = ecToggleProjPreviewExecute
     end
   end
   object SD: TTntSaveDialog
@@ -12230,7 +12241,7 @@ object fmMain: TfmMain
     Left = 577
     Top = 233
     LangData = {
-      0600666D4D61696E0001110400000A00544258446F636B546F70000006007462
+      0600666D4D61696E0001130400000A00544258446F636B546F70000006007462
       46696C650101000000B5020000070043617074696F6E000E005442584974656D
       546F6F6C4E65770102000000B6020000070043617074696F6EB7020000040048
       696E740016005442585375626D656E754974656D546F6F6C4F70656E01020000
@@ -14273,7 +14284,9 @@ object fmMain: TfmMain
       74696F6E0014005370544258536570617261746F724974656D32390000100054
       62784974656D57696E53706C6974560101000000DA0A0000070043617074696F
       6E0010005462784974656D57696E53706C6974480101000000DB0A0000070043
-      617074696F6E00}
+      617074696F6E0011005462784974656D57696E50726F6A5072650101000000DE
+      0A0000070043617074696F6E0013006563546F67676C6550726F6A5072657669
+      65770000}
   end
   object TimerHint: TTimer
     Enabled = False

@@ -1334,6 +1334,8 @@ type
     SpTBXSeparatorItem29: TSpTBXSeparatorItem;
     TbxItemWinSplitV: TSpTBXItem;
     TbxItemWinSplitH: TSpTBXItem;
+    TbxItemWinProjPre: TSpTBXItem;
+    ecToggleProjPreview: TAction;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2097,6 +2099,7 @@ type
     procedure TBXItemMarkClearClick(Sender: TObject);
     procedure TbxItemWinSplitHClick(Sender: TObject);
     procedure TbxItemWinSplitVClick(Sender: TObject);
+    procedure ecToggleProjPreviewExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -2830,6 +2833,7 @@ type
       OptBkmk, OptExtSel: boolean): Integer;
     function DoReadLexersCfg(const ASection, AId: string): string;
     procedure DoClearFindDialogStatus;
+    procedure ProjPreviewVisibleChanged(Sender: TObject);
     //end of private
 
   protected
@@ -6880,9 +6884,10 @@ end;
 
 procedure TfmMain.plTreeResize(Sender: TObject);
 begin
-  plTree.Invalidate;
-  tbTabsLeft.Invalidate;
+  //plTree.Invalidate;
+  //tbTabsLeft.Invalidate;
   DoResizePlugins;
+  tbViewMove(Self);
 end;
 
 procedure TfmMain.FinderInit(Sender: TObject);
@@ -6983,6 +6988,7 @@ begin
   LoadClip;
   LoadHideIni;
   LoadConsoleHist;
+  LoadProjPreview;
 
   //init proj tree
   ApplyProj;
@@ -7121,6 +7127,10 @@ procedure TfmMain.plTreeVisibleChanged(Sender: TObject);
 begin
   FixSplitters;
   ecShowTree.Checked:= plTree.Visible;
+
+  if plTree.Visible then //ZD
+    RedrawWindow(plTree.Handle, nil, 0,
+      RDW_ERASE or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_FRAME); //ZD
 end;
 
 procedure TfmMain.ecShowTreeExecute(Sender: TObject);
@@ -13024,7 +13034,7 @@ end;
 procedure TfmMain.plOutResize(Sender: TObject);
 begin
   //plOut.Invalidate; //ZD
-  //tbViewMove(Self); //ZD
+  tbViewMove(Self);
 end;
 
 procedure TfmMain.ecShowOutExecute(Sender: TObject);
@@ -14264,8 +14274,6 @@ begin
       Show;
     end;
   end;
-
-  LoadProjPreview;
 end;
 
 procedure TfmMain.LoadProjPreview;
@@ -14277,11 +14285,14 @@ begin
     FProjPreview:= TSpTbxDockablePanel.Create(Self);
     with FProjPreview do
     begin
-      Parent:= TBXDockRight;
+      Parent:= plTree; //TBXDockRight;
       Options.RightAlignSpacer.FontSettings.Style:= []; //make font non-bold
+      ShowCaptionWhenDocked:= opShowPanelTitles;
       DockMode:= dmCanFloat;
       HideWhenInactive:= false;
+
       OnClose:= ProjPreviewClose;
+      OnVisibleChanged:= ProjPreviewVisibleChanged;
 
       ClientWidth:= 400;
       ClientHeight:= 300;
@@ -14295,6 +14306,7 @@ begin
       begin
         Parent:= FProjPreview;
         Align:= alClient;
+        BorderStyle:= bsNone;
         ReadOnly:= true;
         Gutter.Visible:= false;
         Options:= Options + [soAlwaysShowCaret];
@@ -14340,12 +14352,10 @@ end;
 
 procedure TfmMain.plClipResize(Sender: TObject);
 begin
-  //ZD start
-  //plClip.Invalidate;
-  //if Assigned(fmClip) then
+  //plClip.Invalidate; //ZD
+  //if Assigned(fmClip) then //ZD
   //  fmClip.ListClip.Invalidate;
-  //tbViewMove(Self);
-  //ZD end
+  tbViewMove(Self);
 end;
 
 procedure TfmMain.plClipVisibleChanged(Sender: TObject);
@@ -26683,20 +26693,18 @@ begin
 end;
 
 procedure TfmMain.ProjPreview(Sender: TObject; const AFilename: Widestring; AToggle: boolean);
-const
-  cBtnIndent = '          ';
 var
   Ed: TSyntaxMemo;
 begin
   if Assigned(FProjPreview) then
     with FProjPreview do
     begin
-      Caption:= DKLangConstW('MPre')+': '+WideExtractFilename(AFilename);
-      if Assigned(FProjPreviewButton) then
-        FProjPreviewButton.Caption:= cBtnIndent + DKLangConstW('MPreButton') + cBtnIndent;
-
       if AToggle then
         Visible:= not Visible;
+
+      FProjPreview.Caption:= DKLangConstW('MPre')+': '+WideExtractFilename(AFilename);
+      if Assigned(FProjPreviewButton) then
+        FProjPreviewButton.Caption:= '[ ' + DKLangConstW('MPreButton') + ' ]';
 
       Ed:= FProjPreviewEditor;
       Ed.Lines.Clear;
@@ -29123,6 +29131,22 @@ begin
   end;
 end;
 
+
+procedure TfmMain.ecToggleProjPreviewExecute(Sender: TObject);
+begin
+  if Assigned(FProjPreview) then
+  begin
+    if Assigned(fmProj) then
+      fmProj.DoPreview(true{Toggle})
+    else
+      ProjPreview(Sender, '', true{Toggle});
+  end;
+end;
+
+procedure TfmMain.ProjPreviewVisibleChanged(Sender: TObject);
+begin
+//
+end;
 
 initialization
   PyEditor:= MainPyEditor;
