@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabACP
+    ActivePage = tabColors
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -245,7 +245,7 @@ object fmSetup: TfmSetup
         object cbTheme: TTntComboBox
           Left = 8
           Top = 32
-          Width = 249
+          Width = 273
           Height = 21
           Style = csDropDownList
           DropDownCount = 40
@@ -255,7 +255,7 @@ object fmSetup: TfmSetup
         object cbIcons: TTntComboBox
           Left = 8
           Top = 72
-          Width = 249
+          Width = 273
           Height = 21
           Style = csDropDownList
           DropDownCount = 20
@@ -288,7 +288,7 @@ object fmSetup: TfmSetup
           Left = 8
           Top = 32
           Width = 273
-          Height = 157
+          Height = 205
           Style = lbOwnerDrawFixed
           AutoComplete = False
           ExtendedSelect = False
@@ -311,7 +311,7 @@ object fmSetup: TfmSetup
         object ColorBox1: TColorBox
           Left = 286
           Top = 32
-          Width = 177
+          Width = 227
           Height = 22
           Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames]
           DropDownCount = 20
@@ -320,18 +320,18 @@ object fmSetup: TfmSetup
           OnSelect = ColorBox1Select
         end
         object bColorLoad: TTntButton
-          Left = 8
-          Top = 196
-          Width = 249
+          Left = 288
+          Top = 192
+          Width = 230
           Height = 21
           Caption = 'Load color preset...'
           TabOrder = 3
           OnClick = bColorLoadClick
         end
         object bColorSave: TTntButton
-          Left = 8
-          Top = 220
-          Width = 249
+          Left = 288
+          Top = 216
+          Width = 230
           Height = 21
           Caption = 'Save color preset...'
           TabOrder = 4

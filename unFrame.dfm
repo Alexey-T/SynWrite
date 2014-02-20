@@ -41,6 +41,7 @@ object EditorFrame: TEditorFrame
       PopupMenu = PopupSplitEditors
       OnDblClick = SplitterDblClick
       MinSize = 70
+      ResizeStyle = rsPattern
       OnMoved = SplitterEdsMoved
     end
     object EditorMaster: TSyntaxMemo

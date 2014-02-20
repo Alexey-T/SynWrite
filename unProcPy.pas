@@ -346,12 +346,15 @@ var
   NStart, NLen: Integer;
   P: PAnsiChar;
   StrW: Widestring;
+  Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'iiis:ed_replace', @H, @NStart, @NLen, @P)) then
     begin
+      Ed:= PyEditor(H);
       StrW:= UTF8Decode(AnsiString(P));
-      PyEditor(H).ReplaceText(NStart, NLen, StrW);
+      Ed.ReplaceText(NStart, NLen, StrW);
+      EditorSetModified(Ed);
       Result:= ReturnNone;
     end;
 end;
@@ -402,6 +405,7 @@ begin
       Ed:= PyEditor(H);
       StrW:= UTF8Decode(AnsiString(P));
       Ed.ReplaceText(0, Ed.TextLength, StrW);
+      EditorSetModified(Ed);
       Result:= ReturnNone;
     end;
 end;

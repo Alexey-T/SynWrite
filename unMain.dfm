@@ -2969,6 +2969,7 @@ object fmMain: TfmMain
       Align = alRight
       PopupMenu = PopupSplitter
       MinSize = 50
+      ResizeStyle = rsPattern
       OnMoved = SplitterMainMoved
     end
     object PageControl1: TTntPageControl

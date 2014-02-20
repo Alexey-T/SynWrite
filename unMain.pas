@@ -1,10 +1,12 @@
 {
 SynWrite main UI form.
 }
-//{$define TabOrder} //Debug: show tabs switch-order in form caption
-//SPELL word must be defined in project options (if spell lib available)
+//SPELL word must be defined in project options (if Addict lib available)
+//PERLRE word must be defined in project options
 {$Q-} //Disable int-checks to avoid integer exception in TabCtrl_GetXRect
+//{$define TabOrder} //Debug: show tabs switch-order in form caption
 //{$define DebugAbout} //Debug: show debug info by click on "busy signal" status field
+{$define FixRepaint} //Fix repaint problem when resizing SpTBX panels and moving toolbars
 
 unit unMain;
 
@@ -6750,9 +6752,11 @@ begin
   begin
     FNeedRepaint:= false;
 
+    {$ifndef FixRepaint}
     FixDraw(plOut, true);
     FixDraw(plTree, false);
     FixDraw(plClip, false);
+    {$endif}
 
     //Repaint TBs
     tbMenu.Invalidate;
@@ -6884,8 +6888,10 @@ end;
 
 procedure TfmMain.plTreeResize(Sender: TObject);
 begin
-  //plTree.Invalidate;
-  //tbTabsLeft.Invalidate;
+  {$ifndef FixRepaint}
+  plTree.Invalidate;
+  tbTabsLeft.Invalidate;
+  {$endif}
   DoResizePlugins;
   tbViewMove(Self);
 end;
@@ -7140,7 +7146,9 @@ begin
   if not plTree.Visible then
     FocusEditor;
 
+  {$ifndef FixRepaint}
   DoRepaintTBs;
+  {$endif}
 end;
 
 const
@@ -8138,8 +8146,8 @@ end;
 
 procedure TfmMain.DoRepaintTBs;
 begin
-  //ZD start
-  {tbMenu.Invalidate;
+  {$ifndef FixRepaint}
+  tbMenu.Invalidate;
   tbFile.Invalidate;
   tbEdit.Invalidate;
   tbView.Invalidate;
@@ -8172,14 +8180,14 @@ begin
 
   tbTabsLeft.Invalidate;
   tbTabsOut.Invalidate;
-  tbTabsRight.Invalidate;}
-  //ZD end
+  tbTabsRight.Invalidate;
+  {$endif}
 end;
 
 procedure TfmMain.DoRepaintTBs2;
 begin
-  //ZD start
-  {if Assigned(fmClip) then
+  {$ifndef FixRepaint}
+  if Assigned(fmClip) then
     FixDraw(fmClip.ListClip, true);
 
   if Assigned(fmMap) then
@@ -8188,13 +8196,15 @@ begin
   FixDraw(Tree);
 
   if CurrentEditor<>nil then
-    FixDraw(CurrentEditor, true);}
-  //ZD end
+    FixDraw(CurrentEditor, true);
+  {$endif}
 end;
 
 procedure TfmMain.FormResize(Sender: TObject);
 begin
-  //DoRepaintTBs; //ZD
+  {$ifndef FixRepaint}
+  DoRepaintTBs;
+  {$endif}
   SyncMapPos;
 end;
 
@@ -13033,7 +13043,9 @@ end;
 
 procedure TfmMain.plOutResize(Sender: TObject);
 begin
-  //plOut.Invalidate; //ZD
+  {$ifndef FixRepaint}
+  plOut.Invalidate;
+  {$endif}
   tbViewMove(Self);
 end;
 
@@ -13046,8 +13058,11 @@ begin
     if not Visible then
       FocusEditor;
   end;
+
+  {$ifndef FixRepaint}
   DoRepaintTBs;
   DoRepaintTBs2;
+  {$endif}
 end;
 
 procedure TfmMain.plOutVisibleChanged(Sender: TObject);
@@ -14352,9 +14367,11 @@ end;
 
 procedure TfmMain.plClipResize(Sender: TObject);
 begin
-  //plClip.Invalidate; //ZD
-  //if Assigned(fmClip) then //ZD
-  //  fmClip.ListClip.Invalidate;
+  {$ifndef FixRepaint}
+  plClip.Invalidate;
+  if Assigned(fmClip) then
+    fmClip.ListClip.Invalidate;
+  {$endif}
   tbViewMove(Self);
 end;
 
@@ -14370,8 +14387,11 @@ begin
     Visible:= not Visible;
   if not plClip.Visible then
     FocusEditor;
+
+  {$ifndef FixRepaint}
   DoRepaintTBs;
   DoRepaintTBs2;
+  {$endif}
 end;
 
 procedure TfmMain.TBXItemClipClrClick(Sender: TObject);
@@ -19613,7 +19633,9 @@ begin
     begin
       DoInsertColorCode(code);
       DoAddRecentColor(code);
+      {$ifndef FixRepaint}
       DoRepaintTBs;
+      {$endif}
     end;
 end;
 

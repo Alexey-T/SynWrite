@@ -1217,8 +1217,8 @@ end;
 
 procedure TfmSetup.bColorSaveClick(Sender: TObject);
 var
-  i:Integer;
-  ok:Boolean;
+  ok: Boolean;
+  i: Integer;
 begin
   with SaveDialogPre do
   begin
@@ -1227,8 +1227,10 @@ begin
     ok:= Execute;
     FixWnd;
     if not ok then Exit;
+
     if ExtractFileExt(FileName) <> '.'+cColorExt then
       FileName:= FileName+'.'+cColorExt;
+
     with TIniFile.Create(FileName) do
     try
       EraseSection('Colors');
