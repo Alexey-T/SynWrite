@@ -112,14 +112,22 @@ procedure TfmMap.edMapMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   if Button=mbLeft then
+  begin
     FMouseDown:= true;
+    edMap.Cursor:= crSizeNS;
+    SetCursor(Screen.Cursors[edMap.Cursor]);
+  end;
 end;
 
 procedure TfmMap.edMapMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   if Button=mbLeft then
+  begin
     FMouseDown:= false;
+    edMap.Cursor:= crDefault;
+    SetCursor(Screen.Cursors[edMap.Cursor]);
+  end;
 end;
 
 procedure TfmMap.SyncMapData(Src: TSyntaxMemo);

@@ -122,6 +122,7 @@ object fmMap: TfmMap
     SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
     SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
     SyncEditing.InactiveWordsStyle.BorderColorBottom = clBtnFace
+    DisableFolding = True
     Options = [soOverwriteBlocks, soEnableBlockSel, soHideSelection, soHideDynamic, soAutoIndentMode, soBackUnindent, soGroupUndo, soDragText, soVariableHorzScrollBar]
     HorzRuler.Font.Charset = DEFAULT_CHARSET
     HorzRuler.Font.Color = clWindowText

@@ -97,8 +97,9 @@ procedure SParseRegexArray(const SStr, SRegex: Widestring;
 //parse tool output string.
 //res_fn: filename, res_line/res_col: line/column number.
 procedure SParseOut(const SStr, SRegex: Widestring;
-  num_fn, num_line, num_col: integer; //1-based
-  var res_fn: Widestring; var res_line, res_col: integer);
+  IndexFN, IndexLine, IndexCol: integer; ZeroBase: boolean;
+  var ResultFN: Widestring;
+  var ResultLine, ResultCol: integer);
 
 procedure FWriteStringToFile(const fn: string; const S: WideString; UseUTF8: boolean);
 function FFindStringInFile(const fn: Widestring;
@@ -305,57 +306,33 @@ end;
 
 
 procedure SParseOut(const SStr, SRegex: Widestring;
-  num_fn, num_line, num_col: integer;
-  var res_fn: Widestring; var res_line, res_col: integer);
+  IndexFN, IndexLine, IndexCol: integer; ZeroBase: boolean;
+  var ResultFN: Widestring;
+  var ResultLine, ResultCol: integer);
 var
-  Res: TSynStrArray;
+  StrArray: TSynStrArray;
 begin
-  res_line:= 0;
-  res_col:= 0;
-  SParseRegexArray(SStr, SRegex, Res);
-  if num_fn>0 then
-  begin
-    res_fn:= Res[Pred(num_fn)];
-    SReplaceAllW(res_fn, '/', '\'); //needed for TypeScript compiler 0.8
-  end;
-  if num_line>0 then
-    res_line:= StrToIntDef(Res[Pred(num_line)], -1);
-  if num_col>0 then
-    res_col:= StrToIntDef(Res[Pred(num_col)], -1);
-end;
+  ResultLine:= 0;
+  ResultCol:= 0;
+  SParseRegexArray(SStr, SRegex, StrArray);
 
-{
-procedure SParseOut(const s, re: Widestring;
-  num_fn, num_line, num_col: integer;
-  var res_fn: Widestring; var res_line, res_col: integer);
-var
-  r: TecRegExpr;
-  n: Integer;
-begin
-  res_line:= 0;
-  res_col:= 0;
-  R:= TecRegExpr.Create;
-  try
-    R.Expression:= re;
-    R.ModifierX:= false; //to handle ' ' in RE
-    n:= 1;
-    if R.Match(s, n) then
-    begin
-      if num_fn>0 then
-      begin
-        res_fn:= R.GetMatch(s, num_fn);
-        SReplaceAllW(res_fn, '/', '\'); //needed for TypeScript compiler 0.8
-      end;
-      if num_line>0 then
-        res_line:= StrToIntDef(R.GetMatch(s, num_line), -1);
-      if num_col>0 then
-        res_col:= StrToIntDef(R.GetMatch(s, num_col), -1);
-    end;
-  finally
-    FreeAndNil(R);
+  if IndexFN>0 then
+  begin
+    ResultFN:= StrArray[Pred(IndexFN)];
+    SReplaceAllW(ResultFN, '/', '\'); //needed for TypeScript compiler
+  end;
+  if IndexLine>0 then
+    ResultLine:= StrToIntDef(StrArray[Pred(IndexLine)], -1);
+  if IndexCol>0 then
+    ResultCol:= StrToIntDef(StrArray[Pred(IndexCol)], -1);
+
+  if ZeroBase then
+  begin
+    //results must be 1-based
+    if ResultLine>=0 then Inc(ResultLine);
+    if ResultCol>=0 then Inc(ResultCol);
   end;
 end;
-}
 
 procedure SParseRegexArray(const SStr, SRegex: Widestring;
   var Res: TSynStrArray);
@@ -1856,8 +1833,11 @@ begin
     if SBegin(Str, '?') then
       begin nFlag:= MF_CHECKED or MFT_RADIOCHECK; Delete(Str, 1, 1); end
     else
+    if SBegin(Str, '*') then
+      begin nFlag:= MF_DISABLED or MF_GRAYED; Delete(Str, 1, 1); end
+    else
       nFlag:= 0;
-    AppendMenuW(hMenu, MF_ENABLED or MF_STRING or nFlag, 100+n, PWChar(Str));
+    AppendMenuW(hMenu, MF_STRING or nFlag, 100+n, PWChar(Str));
   end;
 
   n:= Integer(TrackPopupMenu(hMenu, {TPM_LEFTALIGN}TPM_CENTERALIGN or TPM_VCENTERALIGN or TPM_LEFTBUTTON or TPM_RETURNCMD,

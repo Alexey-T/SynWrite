@@ -82,7 +82,7 @@ var
 begin
   fn:= '';
   SParseOut(edTest.Text, edRE.Text,
-    edFN.ItemIndex, edLn.ItemIndex, edCol.ItemIndex, fn, n_line, n_col);
+    edFN.ItemIndex, edLn.ItemIndex, edCol.ItemIndex, false, fn, n_line, n_col);
 
   if fn='' then
     MsgError(DKLangConstW('O_fn'), Handle)

@@ -252,6 +252,7 @@ type
     RegexIdCol,
     RegexIdName: Integer;
     DefFilename: Widestring;
+    ZeroBase: boolean;
     Encoding: TOutputEnc;
   end;  
 
@@ -13099,6 +13100,7 @@ begin
     SynPanelPropsOut.RegexIdName,
     SynPanelPropsOut.RegexIdLine,
     SynPanelPropsOut.RegexIdCol,
+    SynPanelPropsOut.ZeroBase,
     fn, nLine, nCol);
 
   if fn='' then Exit;
@@ -13481,6 +13483,7 @@ begin
     LogProps.RegexIdName,
     LogProps.RegexIdLine,
     LogProps.RegexIdCol,
+    LogProps.ZeroBase,
     fn, nLine, nCol);
 
   Result:= (fn<>'') and (nLine>0);
@@ -16972,6 +16975,7 @@ begin
     SynPanelPropsVal.RegexIdLine:= 1;
     SynPanelPropsVal.RegexIdCol:= 2;
     SynPanelPropsVal.RegexIdName:= 0;
+    SynPanelPropsVal.ZeroBase:= false;
 
     ListVal.Items.LoadFromFile(fn_err);
     UpdatePanelOut(tbVal);
@@ -17025,6 +17029,7 @@ begin
     SynPanelPropsVal.RegexIdName,
     SynPanelPropsVal.RegexIdLine,
     SynPanelPropsVal.RegexIdCol,
+    SynPanelPropsVal.ZeroBase,
     fn, nLine, nCol);
 
   if fn='' then Exit;
@@ -19821,6 +19826,7 @@ begin
           SynPanelPropsOut.RegexIdLine:= opTools[NTool].ToolOutNum_line;
           SynPanelPropsOut.RegexIdCol:= opTools[NTool].ToolOutNum_col;
           SynPanelPropsOut.Encoding:= opTools[NTool].ToolOutEncoding;
+          SynPanelPropsOut.ZeroBase:= false;
 
           UpdatePanelOut(tbOut);
           plOut.Show;
@@ -27894,6 +27900,7 @@ begin
         5: LogProps.RegexIdCol:= StrToIntDef(Str, 0);
         6: LogProps.RegexIdName:= StrToIntDef(Str, 0);
         7: LogProps.DefFilename:= Str;
+        8: LogProps.ZeroBase:= Bool(StrToIntDef(Str, 0));
       end;
 
       Result:= ReturnNone;
