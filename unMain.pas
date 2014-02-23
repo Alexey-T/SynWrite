@@ -3239,8 +3239,8 @@ uses
 {$R Cur.res}
 
 const
-  cSynVer = '6.4.670';
-  cSynPyVer = '1.0.119';
+  cSynVer = '6.4.700';
+  cSynPyVer = '1.0.120';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -14327,7 +14327,7 @@ begin
         BorderStyle:= bsNone;
         ReadOnly:= true;
         Gutter.Visible:= false;
-        Options:= Options + [soAlwaysShowCaret];
+        Options:= Options + [soAlwaysShowCaret] - [soScrollLastLine];
         Lines.Clear;
         OnKeyDown:= ProjPreviewKeyDown;
       end;
@@ -21706,11 +21706,10 @@ end;
 
 procedure TfmMain.DoResizePlugins;
 var
-  i: Integer;
-  X, Y, XSize, YSize: Integer;
+  X, Y, XSize, YSize, i: Integer;
 begin
   X:= 0;
-  Y:= plTree.CaptionPanelSize.Y;
+  Y:= IfThen(opShowPanelTitles, plTree.CaptionPanelSize.Y, 0);
   XSize:= plTree.ClientWidth;
   YSize:= plTree.ClientHeight - Y - tbTabsLeft.Height;
 
@@ -28548,12 +28547,12 @@ var
   en: boolean;
 begin
   en:= opShowPanelTitles;
-  //plTree.ShowCaption:= en;
   plTree.ShowCaptionWhenDocked:= en;
-  //plOut.ShowCaption:= en;
   plOut.ShowCaptionWhenDocked:= en;
-  //plClip.ShowCaption:= en;
   plClip.ShowCaptionWhenDocked:= en;
+  if Assigned(FProjPreview) then
+    FProjPreview.ShowCaptionWhenDocked:= en;
+  DoResizePlugins;  
 end;
 
 procedure TfmMain.TbxItemPanelTitleBarClick(Sender: TObject);
