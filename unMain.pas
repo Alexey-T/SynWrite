@@ -5155,6 +5155,31 @@ begin
 end;
 *)
 
+(*
+//http://www.delphi.int.ru/articles/41/
+function GetSpecialFolderPath(folder : integer) : string;
+const
+  SHGFP_TYPE_CURRENT = 0;
+var
+  path: array[0..MAX_PATH] of char;
+begin
+  if SUCCEEDED(SHGetFolderPath(0, folder, 0, SHGFP_TYPE_CURRENT, @path[0])) then
+    Result := path
+  else
+    Result := '';
+end;
+
+function FAppDataPath: string;
+begin
+  Result:= GetSpecialFolderPath(CSIDL_APPDATA) + '\';
+end;
+*)
+
+function FAppDataPath: string;
+begin
+  Result:= SExpandVars('%AppData%\');
+end;
+
 function SynAppdataDir: string;
 begin
   Result:= FAppDataPath + 'SynWrite';
@@ -11005,7 +11030,7 @@ begin
   if (FrameCount = 1) and (F.FileName = '') and not F.Modified then
     Exit;
 
-  if F.Modified then
+  if F.Modified and F.IsAlertEnabled then
     case FrameAskToSave(F, False, True) of
       mrYes:
       begin
@@ -26739,10 +26764,15 @@ begin
       if CurrentEditor=nil then Exit;
       if not IsFileExist(AFilename) then Exit;
 
+      //sync preview-editor options
       //don't use Ed.Assign(CurrentEditor), it gives error on exit
       Ed.Font.Assign(CurrentEditor.Font);
       Ed.Color:= CurrentEditor.Color;
       Ed.RightMargin:= CurrentEditor.RightMargin;
+      Ed.Options:= CurrentEditor.Options;
+      Ed.OptionsEx:= CurrentEditor.OptionsEx;
+      Ed.StapleOffset:= CurrentEditor.StapleOffset;
+      Ed.StaplePen.Assign(CurrentEditor.StaplePen);
 
       //detect UTF8-no-bom
       if IsFileUTF8NoBOM(AFilename) then
@@ -27921,6 +27951,36 @@ begin
     end;
 end;
 
+function Py_ed_get_alerts(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H: Integer;
+  Flag: boolean;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_alerts', @H)) then
+    begin
+      Ed:= PyEditor(H);
+      Flag:= fmMain.FrameOfEditor(Ed).IsAlertEnabled;
+      Result:= PyBool_FromLong(Ord(Flag));
+    end;
+end;
+
+function Py_ed_set_alerts(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, Flag: Integer;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'ii:ed_set_alerts', @H, @Flag)) then
+    begin
+      Ed:= PyEditor(H);
+      fmMain.FrameOfEditor(Ed).IsAlertEnabled:= Bool(Flag);
+      Result:= ReturnNone;
+    end;
+end;
+
+
 function Py_ed_set_prop_wrapper(Self, Args: PPyObject): PPyObject; cdecl;
 begin
   Result:= Py_ed_set_prop(Self, Args);
@@ -28126,6 +28186,8 @@ begin
     AddMethod('ed_get_prop', Py_ed_get_prop, '');
     AddMethod('ed_set_prop', Py_ed_set_prop_wrapper, '');
     AddMethod('ed_get_filename', Py_ed_get_filename, '');
+    AddMethod('ed_get_alerts', Py_ed_get_alerts, '');
+    AddMethod('ed_set_alerts', Py_ed_set_alerts, '');
 
     AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
     AddMethod('ed_get_sel_lines', Py_ed_get_sel_lines, '');

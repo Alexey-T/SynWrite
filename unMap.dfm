@@ -57,6 +57,7 @@ object fmMap: TfmMap
     HintProps.Color = 13041663
     HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
     UserRanges = <>
+    ScrollBars = ssNone
     StaplePen.Color = clGray
     DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
     DefaultStyles.SelectioMark.Font.Color = clHighlightText

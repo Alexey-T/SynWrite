@@ -23,7 +23,6 @@ procedure MsgBeep(Err: boolean = false);
 function FFilenameMatchesMaskList(fn, masks: Widestring; folders: boolean): boolean;
 function FReadString(const fn: string): string;
 function FFindInSubdirs(const sname, sdir: Widestring; var fn: Widestring): boolean;
-function FAppDataPath: string;
 function FExecProcess(const CmdLine, CurrentDir: Widestring; ShowCmd: integer; DoWait: boolean): TExecCode;
 procedure FReadIniSection(const fn, sec: string; L: TStringList);
 procedure FWriteIniSectionToFile(const fn, sec, fn_out: string);
@@ -93,8 +92,8 @@ implementation
 uses
   SysUtils, StrUtils,
   ShellAPI,
-  SHFolder,
-  TntSysUtils, Forms,
+  Forms,
+  TntSysUtils,
   ATxUTF8Detect;
 
 function IsFilenameFixed(const fn: Widestring): Boolean;
@@ -1055,24 +1054,6 @@ begin
   finally
     FreeAndNil(L);
   end;
-end;
-
-//http://www.delphi.int.ru/articles/41/
-function GetSpecialFolderPath(folder : integer) : string;
-const
-  SHGFP_TYPE_CURRENT = 0;
-var
-  path: array[0..MAX_PATH] of char;
-begin
-  if SUCCEEDED(SHGetFolderPath(0, folder, 0, SHGFP_TYPE_CURRENT, @path[0])) then
-    Result := path
-  else
-    Result := '';
-end;
-
-function FAppDataPath: string;
-begin
-  Result:= GetSpecialFolderPath(CSIDL_APPDATA) + '\';
 end;
 
 procedure MsgBeep(Err: boolean = false);

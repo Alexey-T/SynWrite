@@ -104,6 +104,7 @@ type
       Line: Integer);
     procedure TBXItemSplitVertClick(Sender: TObject);
   private
+    FAlertEnabled: boolean;
     FPyChangeTick: DWORD;
     FIsMasterFocused: boolean;
     FTreeSorted: boolean;
@@ -175,6 +176,7 @@ type
     property CaretsGutterColor: TColor read GetCaretsGutterColor write SetCaretsGutterColor;
     property CaretsIndicator: integer read GetCaretsIndicator write SetCaretsIndicator;
 
+    property IsAlertEnabled: boolean read FAlertEnabled write FAlertEnabled;
     property IsMasterFocused: boolean read FIsMasterFocused;
     property IsTreeSorted: boolean read FTreeSorted write FTreeSorted;
     function CurrentLexer: string;
@@ -297,6 +299,7 @@ begin
   FNotif.Timer.Interval:= 1000;
   FNotif.OnChanged:= FileReload;
 
+  FAlertEnabled:= true;
   FPyChangeTick:= 0;  
   FFtpInfoPtr:= nil;
   FFtpInfoSize:= 0;
@@ -372,6 +375,7 @@ end;
 
 {$warnings off}
 procedure TEditorFrame.SaveFile(AFileName: Widestring);
+  //
   procedure ErrorWritable;
   begin
     MsgError(WideFormat(DKLangConstW('MAtt'), [AFileName]), Handle);
@@ -384,6 +388,7 @@ procedure TEditorFrame.SaveFile(AFileName: Widestring);
   begin
     Result:= MsgConfirm(WideFormat(DKLangConstW('MOver'), [WideExtractFileName(AFileName)]), Handle);
   end;
+  //
 var
   attr: integer;
   ext: string;
