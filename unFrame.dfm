@@ -240,6 +240,7 @@ object EditorFrame: TEditorFrame
       OnOleDrop = EditorMasterOleDrop
       OnCheckChar = EditorMasterCheckChar
       OnZoom = EditorMasterZoom
+      OnModifiedChanged = EditorMasterModifiedChanged
       OnClick = EditorMasterEnter
       OnContextPopup = EditorMasterContextPopup
       OnEnter = EditorMasterEnter
@@ -439,6 +440,7 @@ object EditorFrame: TEditorFrame
       OnOleDrop = EditorMasterOleDrop
       OnCheckChar = EditorMasterCheckChar
       OnZoom = EditorMasterZoom
+      OnModifiedChanged = EditorMasterModifiedChanged
       OnClick = EditorMasterEnter
       OnContextPopup = EditorMasterContextPopup
       OnEnter = EditorMasterEnter

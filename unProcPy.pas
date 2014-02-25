@@ -354,7 +354,6 @@ begin
       Ed:= PyEditor(H);
       StrW:= UTF8Decode(AnsiString(P));
       Ed.ReplaceText(NStart, NLen, StrW);
-      EditorSetModified(Ed);
       Result:= ReturnNone;
     end;
 end;
@@ -405,7 +404,6 @@ begin
       Ed:= PyEditor(H);
       StrW:= UTF8Decode(AnsiString(P));
       Ed.ReplaceText(0, Ed.TextLength, StrW);
-      EditorSetModified(Ed);
       Result:= ReturnNone;
     end;
 end;

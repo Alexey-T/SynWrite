@@ -325,6 +325,10 @@ begin
 end;
 
 procedure EditorSetModified(Ed: TSyntaxMemo);
+begin
+end;
+(*
+//this nasty code was needed to avoid missing "*" on tab. fixed: used OnModifiedChanged.
 const
   S: Widestring = ' ';
 var
@@ -345,6 +349,7 @@ begin
     end;
   end;
 end;
+*)
 
 function EditorShortSelText(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
 begin
@@ -579,23 +584,46 @@ begin
     else
     //center X
     begin
+      //ZD start
+      if VisibleLinesWidth <= ClientWidth then
+        ScrollPosX := 0
+      else
+      //ZD end
       if AGotoMode or (SelLength=0) then
       begin
-        //center caret
+        {//center caret
         if (p.X <= ScrollPosX + dx) or
           (p.X >= ScrollPosX + w - dx) then
-        ScrollPosX:= p.X - w div 2;
+        ScrollPosX:= p.X - w div 2;}
+
+        //ZD start
+        if (p.X <= ScrollPosX + dx) then
+          ScrollPosX := p.X - dx
+        else if (p.X >= ScrollPosX + w - dx) then
+          ScrollPosX := p.X - w + dx;
+        //ZD end
       end
       else
       begin
-        //center seltext
+        {//center seltext
         if (StrPosToCaretPos(SelStart).X <= ScrollPosX + dx) or
-          (StrPosToCaretPos(SelStart+SelLength).X >= ScrollPosX + w - dx) then
-        ScrollPosX:= StrPosToCaretPos(SelStart + SelLength div 2).X - w div 2 + 1;
+        (StrPosToCaretPos(SelStart+SelLength).X >= ScrollPosX + w - dx) then
+          ScrollPosX:= StrPosToCaretPos(SelStart + SelLength div 2).X - w div 2 + 1;}
+
+        //ZD start
+        // Centered selected text doesn't have too much sense when it is
+        // on the end of line and none editor has such behavior, they instead
+        // try to bring it into the view to the nearest side of editor.
+        if (StrPosToCaretPos(SelStart).X <= ScrollPosX + dx) then
+          ScrollPosX := StrPosToCaretPos(SelStart).X - dx
+        else if (StrPosToCaretPos(SelStart + SelLength).X >= ScrollPosX + w - dx) then
+          ScrollPosX := StrPosToCaretPos(SelStart + SelLength).X - w + dx;
+        //ZD end
       end;
 
       //this UpdateEditor call doesn't help: still bug:
       //http://synwrite.sourceforge.net/forums/viewtopic.php?p=5225#p5225
+      //ZD - this bug doesn't exist anymore
       UpdateEditor;
     end;
   end;

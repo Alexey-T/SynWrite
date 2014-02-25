@@ -91,7 +91,8 @@ type
     cSynEventOnSaveBefore,
     cSynEventOnChangeSlow,
     cSynEventOnKey,
-    cSynEventOnState
+    cSynEventOnState,
+    cSynEventOnGetNum
     );
   TSynPyEvents = set of TSynPyEvent;
 
@@ -101,7 +102,8 @@ const
     'on_save_pre',
     'on_change_slow',
     'on_key',
-    'on_state'
+    'on_state',
+    'on_get_num'
     );
 
 type
@@ -3092,7 +3094,7 @@ type
     procedure DoBackup(const AFilename: Widestring);
     procedure DoRepaint;
     procedure DoDropFile(const fn: Widestring; IntoProj: boolean = false);
-    procedure DoTabSwitch(ANext: boolean);
+    procedure DoTabSwitch(ANext: boolean; AAllowModernSwitch: boolean = true);
     procedure FocusEditor;
     procedure FocusProj;
     procedure FindInit(AKeepFlags: boolean = false);
@@ -3160,6 +3162,10 @@ type
       AEd: TSyntaxMemo;
       AEvent: TSynPyEvent;
       const AParams: array of string): boolean;
+    procedure DoPyEvent_GetLineNumber(
+      AEd: TSyntaxMemo;
+      const ALineNum: Integer;
+      var AResult: string);
     //end of public
   end;
 
@@ -6455,6 +6461,11 @@ begin
       FOpenURL(FHelpFilename, Handle);
     sm_ResetPythonPlugins:
       DoPyResetPlugins;
+
+    sm_GotoNextTab:
+      DoTabSwitch(true, false);
+    sm_GotoPrevTab:
+      DoTabSwitch(false, false);
 
     //end of commands list
     else
@@ -19276,14 +19287,14 @@ begin
     DoCopyFindResultNode;
 end;
 
-procedure TfmMain.DoTabSwitch(ANext: boolean);
+procedure TfmMain.DoTabSwitch(ANext: boolean; AAllowModernSwitch: boolean = true);
 var
   nTabs: integer;
 begin
   nTabs:= PageControl.PageCount;
   if nTabs<=1 then Exit;
 
-  if opTabSwitcher and (nTabs>2) then
+  if opTabSwitcher and (nTabs>2) and AAllowModernSwitch then
   begin
     if PageControl=PageControl1 then
       PageControl.ActivePageIndex:= TabSwitcher.TabSwitch(ANext, Application.MainForm)
@@ -27209,8 +27220,12 @@ var
   S, SItem, SId, SVal: Widestring;
   Ed: TSyntaxMemo;
   pnt: TPoint;
-  EdIndex, NVal: Integer;
+  EdIndex, NVal, NVal2: Integer;
+  Analyzer: TSyntAnalyzer;
 begin
+  Analyzer:= SyntaxManager.AnalyzerForFile(F.FileName);
+  F.EditorMaster.TextSource.SyntaxAnalyzer:= nil;
+
   F.EditorMaster.BeginUpdate;
   F.EditorSlave.BeginUpdate;
   try
@@ -27246,8 +27261,7 @@ begin
 
       if SId=cFramePropLexer then
         begin
-          if FCanUseLexer(F.FileName) then
-            F.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.FindAnalyzer(SVal);
+          Analyzer:= SyntaxManager.FindAnalyzer(SVal);
         end
       else
       if SId=cFramePropWrap then
@@ -27296,6 +27310,15 @@ begin
     F.EditorMaster.EndUpdate;
     F.EditorSlave.EndUpdate;
   end;
+
+  //now repaint and set lexer - this is long operation (5s on unMain.pas, if caret at end)
+  Application.ProcessMessages;
+  NVal:= F.EditorMaster.TopLine;
+  NVal2:= F.EditorSlave.TopLine;
+  if FCanUseLexer(F.FileName) then
+    F.EditorMaster.TextSource.SyntaxAnalyzer:= Analyzer;
+  F.EditorMaster.TopLine:= NVal;
+  F.EditorSlave.TopLine:= NVal2;
 end;
 
 procedure TfmMain.DoTest;
@@ -28928,12 +28951,12 @@ begin
       if (AEvent in Events) then
         if (SLexers='') or IsLexerListed(SCurLexer, SLexers) then
         begin
-          //check that OnKey event is called for supported keys 
+          //check that OnKey event is called for supported keys
           if (AEvent=cSynEventOnKey) then
             if Length(AParams)>=1 then
               if not IsStringListed(AParams[0], SKeycodes) then Continue;
 
-          //call Python    
+          //call Python
           SRes:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, AParams);
           if SRes=cPyFalse then
           begin
@@ -28941,6 +28964,29 @@ begin
             Exit
           end;
         end;
+    end;
+end;
+
+procedure TfmMain.DoPyEvent_GetLineNumber(
+  AEd: TSyntaxMemo;
+  const ALineNum: Integer;
+  var AResult: string);
+var
+  AEvent: TSynPyEvent;
+  i: Integer;
+begin
+  AEvent:= cSynEventOnGetNum;
+
+  for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
+    with FPluginsEvent[i] do
+    begin
+      if (SFilename='') then Break;
+      if (AEvent in Events) then
+      //no check for lexer name, to speed-up
+      begin
+        AResult:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, [IntToStr(ALineNum)]);
+        Exit;
+      end;
     end;
 end;
 

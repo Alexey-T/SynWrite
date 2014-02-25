@@ -379,6 +379,8 @@ const
   sm_SnippetsDialog = 1047;
   sm_HelpFileContents = 1048;
   sm_ResetPythonPlugins = 1049;
+  sm_GotoNextTab = 1050;
+  sm_GotoPrevTab = 1051;
   //free
 
   //Tree commands

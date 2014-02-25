@@ -103,6 +103,7 @@ type
     procedure EditorMasterAfterLineDraw(Sender: TObject; Rect: TRect;
       Line: Integer);
     procedure TBXItemSplitVertClick(Sender: TObject);
+    procedure EditorMasterModifiedChanged(Sender: TObject);
   private
     FAlertEnabled: boolean;
     FPyChangeTick: DWORD;
@@ -479,8 +480,7 @@ procedure TEditorFrame.SetModified(Value: boolean);
 begin
   EditorMaster.Modified:= Value;
   EditorSlave.Modified:= Value;
-  if not Value then
-    FModifiedPrev:= Value;
+  FModifiedPrev:= Value;
 end;
 
 function TEditorFrame.GetTitle: Widestring;
@@ -526,14 +526,6 @@ begin
     begin
       FTab:= (Parent as TTntTabSheet);
       FTab.Caption:= Title;
-      {
-      //trying to fix issue with tab header overlapped by [<] and [>] buttons
-      //(single line PageControl), but it's not nice code
-      if FTab.PageIndex = FTab.PageControl.ActivePageIndex then
-      begin
-        FTab.PageControl.ScrollTabs(FTab.PageControl.PageCount);
-      end;
-      }
     end;
 
   if Assigned(FOnTitleChanged) then
@@ -582,12 +574,6 @@ end;
 
 procedure TEditorFrame.EditorMasterChange(Sender: TObject);
 begin
-  if FModifiedPrev <> Modified then
-  begin
-    DoTitleChanged;
-    FModifiedPrev:= Modified;
-  end;
-
   UpdateGutterWidth(Sender);
   TfmMain(Owner).UpdateStatusBar;
   TfmMain(Owner).SynChange(Sender);
@@ -1655,6 +1641,15 @@ begin
       FPyChangeTick:= 0;
       TfmMain(Owner).DoPyEvent(EditorMaster, cSynEventOnChangeSlow, []);
     end;
+end;
+
+procedure TEditorFrame.EditorMasterModifiedChanged(Sender: TObject);
+begin
+  if FModifiedPrev <> Modified then
+  begin
+    DoTitleChanged;
+    FModifiedPrev:= Modified;
+  end;
 end;
 
 initialization
