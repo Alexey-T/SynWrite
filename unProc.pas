@@ -602,6 +602,7 @@ var
   S: Widestring;
 begin
   S:= TntClipboard.AsWideText;
+  {
   if IsSpec then
     ed.SelText:= SEscapeSpec(S)
   else
@@ -609,16 +610,26 @@ begin
     ed.SelText:= SEscapeRegex(S)
   else
     ed.SelText:= S;
+    }
+  if IsRegex or IsSpec then
+    ed.SelText:= SEscapeEols(S)
+  else
+    ed.SelText:= S;
 end;
 
 procedure DoCopyToEdit(ed: TTntCombobox;
   IsSpec, IsRegex: boolean; const Str: Widestring);
 begin
+  {
   if IsSpec then
     ed.Text:= SEscapeSpec(Str)
   else
   if IsRegex then
     ed.Text:= SEscapeRegex(Str)
+  else
+    }
+  if IsRegex or IsSpec then
+    ed.Text:= SEscapeEols(Str)
   else
     ed.Text:= Str;
 end;

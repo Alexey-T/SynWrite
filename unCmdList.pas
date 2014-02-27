@@ -33,6 +33,8 @@ type
     procedure cbFuzzyClick(Sender: TObject);
     procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
     procedure TntFormDestroy(Sender: TObject);
+    procedure ListKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
     procedure DoFilter;
@@ -287,6 +289,23 @@ end;
 procedure TfmCmdList.TntFormDestroy(Sender: TObject);
 begin
   FreeAndNil(PyList);
+end;
+
+procedure TfmCmdList.ListKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=vk_up) and (List.ItemIndex=0) then
+  begin
+    List.ItemIndex:= List.Items.Count-1;
+    Key:= 0;
+    Exit
+  end;
+  if (Key=vk_down) and (List.ItemIndex=List.Items.Count-1) then
+  begin
+    List.ItemIndex:= 0;
+    Key:= 0;
+    Exit
+  end;
 end;
 
 end.

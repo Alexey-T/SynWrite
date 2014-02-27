@@ -1,4 +1,4 @@
-//{$define PS} //escape regex chars on pasting into edit field
+{$define PS} //escape regex chars on pasting into edit field
 unit unSR;
 
 interface

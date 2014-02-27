@@ -31,6 +31,8 @@ type
     procedure labHelpClick(Sender: TObject);
     procedure cbFuzzyClick(Sender: TObject);
     procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ListKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
     procedure DoFilter;
@@ -308,6 +310,23 @@ begin
     WriteBool('Win', 'ProjListFuzzy', cbFuzzy.Checked);
   finally
     Free
+  end;
+end;
+
+procedure TfmProjList.ListKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=vk_up) and (List.ItemIndex=0) then
+  begin
+    List.ItemIndex:= List.Items.Count-1;
+    Key:= 0;
+    Exit
+  end;
+  if (Key=vk_down) and (List.ItemIndex=List.Items.Count-1) then
+  begin
+    List.ItemIndex:= 0;
+    Key:= 0;
+    Exit
   end;
 end;
 

@@ -31,6 +31,7 @@ object fmUniList: TfmUniList
     TabOrder = 1
     OnDblClick = ListDblClick
     OnDrawItem = ListDrawItem
+    OnKeyDown = ListKeyDown
   end
   object Edit: TTntEdit
     Left = 0

@@ -58,8 +58,10 @@ procedure SReplaceSpToTabLeading(var s: Widestring; const spaces: Widestring);
 procedure SReplaceZeroesW(var S: Widestring);
 function SBegin(const s, subs: Widestring): boolean;
 function SEnd(const s, subs: Widestring): boolean;
-function SEscapeSpec(const s: Widestring): Widestring;
-function SEscapeRegex(const s: Widestring): Widestring;
+
+function SEscapeEols(const s: Widestring): Widestring;
+//function SEscapeSpec(const s: Widestring): Widestring;
+//function SEscapeRegex(const s: Widestring): Widestring;
 
 function SCollapseFN(const FN, FN_session: Widestring): Widestring;
 function SGetKeyValue(const s: string; var sKey, sVal: string): boolean;
@@ -838,20 +840,24 @@ end;
 type
   TEscapeRec = record
     sFrom: Widechar;
-    sTo: string;
+    sTo: Widestring;
   end;
 
 const
-  cRecodeSpec: array[0..3] of TEscapeRec =
-    ((sFrom: #13; sTo: '\r'),
+  cRecodeEols: array[0..1] of TEscapeRec = (
+     (sFrom: #13; sTo: '\r'),
+     (sFrom: #10; sTo: '\n')
+     );
+
+  (*
+  cRecodeSpec: array[0..3] of TEscapeRec = (
+     (sFrom: #13; sTo: '\r'),
      (sFrom: #10; sTo: '\n'),
      (sFrom: #9; sTo: '\t'),
      (sFrom: '\'; sTo: '\\')
      );
 
-  cRecodeRegex: array[0..13] of TEscapeRec =
-    (//(sFrom: #13; sTo: '\z'),
-     //(sFrom: #10; sTo: '\z'),
+  cRecodeRegex: array[0..13] of TEscapeRec = (
      (sFrom: #9; sTo: '\t'),
      (sFrom: '\'; sTo: '\\'),
      (sFrom: '|'; sTo: '\|'),
@@ -867,6 +873,7 @@ const
      (sFrom: '*'; sTo: '\*'),
      (sFrom: '?'; sTo: '\?')
      );
+   *)  
 
 function SEscapeStr(const s: Widestring;
   const Rec: array of TEscapeRec): Widestring;
@@ -887,6 +894,12 @@ begin
   end;
 end;
 
+function SEscapeEols(const s: Widestring): Widestring;
+begin
+  Result:= SEscapeStr(s, cRecodeEols);
+end;
+
+(*
 function SEscapeSpec(const s: Widestring): Widestring;
 begin
   Result:= SEscapeStr(s, cRecodeSpec);
@@ -894,9 +907,9 @@ end;
 
 function SEscapeRegex(const s: Widestring): Widestring;
 begin
-  Result:= SEscapeStr(s, cRecodeRegex); 
-  Result:= SReplaceAllEols(Result, '\z'); 
+  Result:= SEscapeStr(s, cRecodeRegex);
 end;
+*)
 
 function SBegin(const s, subs: Widestring): boolean;
 begin
@@ -1068,7 +1081,7 @@ end;
 
 function SDecodeSpecChars(const s: WideString): WideString;
 const
-  DecodeRec: array[1..5] of TStringDecodeRecW =
+  DecodeRec: array[0..4] of TStringDecodeRecW =
     ((SFrom: '\n'; STo: #10),
      (SFrom: '\r'; STo: #13),
      (SFrom: '\t'; STo: #9),

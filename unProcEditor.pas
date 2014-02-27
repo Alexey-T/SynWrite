@@ -146,8 +146,7 @@ procedure EditorCheckCaretOverlappedByForm(Ed: TCustomSyntaxMemo; Form: TForm);
 function SyntaxManagerFilesFilter(M: TSyntaxManager; const SAllText: Widestring): Widestring;
 
 function EditorWordLength(Ed: TSyntaxMemo): Integer;
-procedure EditorSetModified(Ed: TSyntaxMemo);
-function EditorShortSelText(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
+function EditorGetSelTextLimited(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
 function EditorGetCollapsedRanges(Ed: TSyntaxMemo): string;
 procedure EditorSetCollapsedRanges(Ed: TSyntaxMemo; S: Widestring);
 function EditorTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
@@ -324,38 +323,9 @@ begin
   until false;
 end;
 
-procedure EditorSetModified(Ed: TSyntaxMemo);
-begin
-end;
-(*
-//this nasty code was needed to avoid missing "*" on tab. fixed: used OnModifiedChanged.
-const
-  S: Widestring = ' ';
-var
-  p: TPoint;
-begin
-  with Ed do
-  begin
-    BeginUpdate;
-    try
-      p:= CaretPos;
-      if HaveSelection then
-        ResetSelection;
-      InsertText(S);
-      CaretPos:= p;
-      DeleteText(Length(S));
-    finally
-      EndUpdate;
-    end;
-  end;
-end;
-*)
-
-function EditorShortSelText(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
+function EditorGetSelTextLimited(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
 begin
   Result:= Ed.SelText;
-  SDeleteFromW(Result, #13);
-  SDeleteFromW(Result, #10);
   if Length(Result)>MaxLen then
     SetLength(Result, MaxLen);
 end;
@@ -807,7 +777,7 @@ begin
     EditorAddLineToEnd(Ed);
     Ed.DuplicateLine(Ed.CaretPos.Y);
     Ed.ExecCommand(smDown);
-    EditorSetModified(Ed);
+    //EditorSetModified(Ed);
   finally
     Ed.EndUpdate;
   end;
@@ -1818,7 +1788,7 @@ begin
   if en then
   begin
     Ed.SelChangeCase(Cmd);
-    EditorSetModified(Ed);
+    //EditorSetModified(Ed);
   end;
   EditorRestoreSel(Ed, Sel);
 end;

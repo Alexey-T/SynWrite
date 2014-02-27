@@ -227,12 +227,17 @@ end;
 procedure TfmSRFiles.DoCopyToEdit(ed: TTntCombobox;
   IsSpec, IsRegex: boolean; const Str: Widestring);
 begin
+  {
   if IsSpec then
     ed.Text:= SEscapeSpec(Str)
   else
   if IsRegex then
     ed.Text:= SEscapeRegex(Str)
   else
+  }
+  if IsRegex or IsSpec then
+    ed.Text:= SEscapeEols(Str)
+  else  
     ed.Text:= Str;
 end;
 

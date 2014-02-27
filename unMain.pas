@@ -1359,7 +1359,6 @@ type
       Selecting: Boolean);
     procedure plTreeResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure IncSearchChange(Sender: TObject; State: TIncSearchState);
     procedure plTreeVisibleChanged(Sender: TObject);
     procedure ecShowTreeExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -2635,7 +2634,7 @@ type
     procedure FinderInit(Sender: TObject);
     procedure FinderFail(Sender: TObject);
     procedure FinderProgress(CurPos, MaxPos: integer);
-    procedure FindCurrentWord(Next: boolean);
+    procedure FindCurrentWord(ANext: boolean);
     function LocalizedEncodingName(const s: Widestring): Widestring;
 
     function IsShortcutOfCmd(sh: TShortcut; cmd: integer): boolean;
@@ -2705,7 +2704,7 @@ type
     procedure DoAcpPopup;
     procedure DoFuncHintPopup;
     procedure DoInsertImageTag(const fn: string);
-    procedure DoCheckUnicodeNeeded(Frame: TEditorFrame);
+    function DoCheckUnicodeNeeded(Frame: TEditorFrame): boolean;
 
     function GetFrameEncoding(F: TEditorFrame): integer;
     procedure ApplyFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
@@ -3732,7 +3731,7 @@ begin
   if Frame=nil then Exit;
   Frame.DoStopNotif;
 
-  DoCheckUnicodeNeeded(Frame);
+  if not DoCheckUnicodeNeeded(Frame) then Exit;
   if not DoPyEvent(Frame.EditorMaster, cSynEventOnSaveBefore, []) then Exit;
 
   AUntitled:= Frame.IsNewFile;
@@ -3964,8 +3963,8 @@ begin
 
   PropsManager.Add(Result.EditorMaster);
   PropsManager.Add(Result.EditorSlave);
-  Result.EditorMaster.OnIncSearchChange:= IncSearchChange;
-  Result.EditorSlave.OnIncSearchChange:= IncSearchChange;
+  //Result.EditorMaster.OnIncSearchChange:= IncSearchChange; //inc-search not used yet
+  //Result.EditorSlave.OnIncSearchChange:= IncSearchChange;
 
   Result.EditorMaster.Gutter.LineBreakObj:= IfThen(opShowWrapMark, 0, -1);
   Result.EditorSlave.Gutter.LineBreakObj:= Result.EditorMaster.Gutter.LineBreakObj;
@@ -7095,36 +7094,20 @@ begin
     SyntaxManager.LoadFromFile(fn);
 end;
 
-procedure TfmMain.IncSearchChange(Sender: TObject;
-  State: TIncSearchState);
-begin
-  {
-  if State = isStart then
-   with Sender as TSyntaxMemo do
-     begin
-      IncSearchBack:= ftBackward in Finder.Flags;
-      IncSearchIgnoreCase:= not (ftCaseSensitive in Finder.Flags);
-     end;
-  if State <> isStop then
-   SB.SimpleText:= 'Search for: ' + (Sender as TSyntaxMemo).IncSearchStr
-  else
-   SB.SimpleText:= '';
-  SB.SimplePanel:= State <> isStop;
-  }
-end;
-
-procedure TfmMain.FindCurrentWord(Next: boolean);
+procedure TfmMain.FindCurrentWord(ANext: boolean);
 var
   NStart, NEnd, NMaxLen: integer;
+  Ed: TSyntaxMemo;
 begin
-  if CurrentEditor=nil then Exit;
-  with CurrentEditor do
+  Ed:= CurrentEditor;
+  if Ed=nil then Exit;
+  with Ed do
   begin
     if SelLength>0 then
     begin
       //search for selection
       NMaxLen:= SynHiddenOption('MaxWordLen', 100);
-      Finder.FindText:= EditorShortSelText(CurrentEditor, NMaxLen);
+      Finder.FindText:= EditorGetSelTextLimited(Ed, NMaxLen);
       NStart:= SelStart;
       NEnd:= NStart+SelLength;
     end
@@ -7143,13 +7126,13 @@ begin
     Finder.Flags:= Finder.Flags+[ftWrapSearch];
 
     //search
-    if Next then
+    if ANext then
     begin
       CaretStrPos:= NEnd;
-      
-        //repeat selection as caret moving may clear it
-        SelStart:= NStart;
-        SelLength:= NEnd-NStart;
+
+      //repeat selection as caret moving may clear it
+      SelStart:= NStart;
+      SelLength:= NEnd-NStart;
 
       Finder.FindNext;
     end
@@ -7157,9 +7140,9 @@ begin
     begin
       CaretStrPos:= NStart;
 
-        //repeat selection
-        SelStart:= NStart;
-        SelLength:= NEnd-NStart;
+      //repeat selection
+      SelStart:= NStart;
+      SelLength:= NEnd-NStart;
 
       Finder.FindPrev;
     end;
@@ -8353,8 +8336,8 @@ begin
           EditorMaster.TextSource.Lines.SkipSignature:= False;
          end;
 
-      if not ACanReload then
-        EditorSetModified(Frame.EditorMaster);
+      //if not ACanReload then
+      //  EditorSetModified(Frame.EditorMaster);
     end;
 
   UpdateStatusBar;
@@ -11160,7 +11143,7 @@ begin
   SyntaxManagerChange(Self);
 
   ApplyFrameEncodingAndReload(CurrentFrame, Enc);
-  EditorSetModified(CurrentFrame.EditorMaster);
+  //EditorSetModified(CurrentFrame.EditorMaster);
 end;
 
 //tab X button rect
@@ -12686,6 +12669,7 @@ begin
       Finder.FindText:= SDecodeSpecChars(Finder.FindText);
       Finder.ReplaceText:= SDecodeSpecChars(Finder.ReplaceText);
     end;
+
     Finder.OnAfterExecute:= nil;
     Finder.OnBeforeExecute:= nil;
     Finder.OnNotFound:= nil;
@@ -15785,7 +15769,7 @@ begin
     with CurrentEditor do
     begin
       //Need separate action in Undo list (after typing text)
-      EditorSetModified(CurrentEditor);
+      //EditorSetModified(CurrentEditor);
       InsertText(s);
     end;
 end;
@@ -17023,11 +17007,17 @@ begin
     if Cfg='' then Exit;
   end;
 
-  //show output
+  //show output in editor
   if IsFileExist(fn_out) and (FGetFileSize(fn_out)>0) then
   begin
-    Frame.EditorMaster.Lines.LoadFromFile(fn_out);
-    EditorSetModified(Frame.EditorMaster);
+    with TStringList.Create do
+    try
+      LoadFromFile(fn_out);
+      Frame.EditorMaster.CaretStrPos:= 0;
+      Frame.EditorMaster.ReplaceText(0, Length(Frame.EditorMaster.Text), Text);
+    finally
+      Free
+    end;
   end;
 
   FDelete(fn_cfg);
@@ -18890,7 +18880,7 @@ begin
     begin
       acNew.Execute;
       CurrentEditor.Lines.AddStrings(L);
-      EditorSetModified(CurrentEditor);
+      //EditorSetModified(CurrentEditor);
     end;
   finally
     FreeAndNil(L);
@@ -19872,7 +19862,7 @@ begin
         begin
           acNew.Execute;
           CurrentEditor.Lines.AddStrings(List);
-          EditorSetModified(CurrentEditor);
+          //EditorSetModified(CurrentEditor);
         end;
 
       outReplaceSel:
@@ -20114,8 +20104,8 @@ begin
   //replace
   NLine:= Ed.TopLine;
   Finder.ReplaceAll;
-  if Finder.Matches>0 then
-    EditorSetModified(Ed);
+  //if Finder.Matches>0 then
+  //  EditorSetModified(Ed);
   Ed.TopLine:= NLine;
 
   MsgFound;
@@ -23604,8 +23594,7 @@ begin
   try
     Ed.CaretStrPos:= Pos1; //needed! otherwise ReplaceText will leave trailing blanks after small block.
     Ed.ReplaceText(Pos1, Pos2-Pos1, S);
-
-    EditorSetModified(Ed);
+    //EditorSetModified(Ed);
 
     //restore selection Ln1...Ln2
     Ed.SetSelection(Pos1, Length(S));
@@ -23831,39 +23820,43 @@ begin
     Tree.SyntaxMemo:= nil;
 end;
 
-procedure TfmMain.DoCheckUnicodeNeeded(Frame: TEditorFrame);
+function TfmMain.DoCheckUnicodeNeeded(Frame: TEditorFrame): boolean;
   //
-  function Cfm(const SEnc: Widestring): boolean;
+  function Cfm(const SEnc: Widestring): integer;
+  var
+    S: Widestring;
   begin
-    Result:= MsgConfirm(WideFormat(DKLangConstW('zMUniNeed'), [SEnc]), Handle);
+    S:= WideFormat(DKLangConstW('zMUniNeed'), [SEnc]);
+    Result:= MessageBoxW(Handle, PWChar(S), 'SynWrite', mb_yesnocancel or mb_iconquestion);
   end;
   //
 begin
+  Result:= true;
   if opUnicodeNeeded=0 then Exit;
   if Frame.EditorMaster.TextSource.Lines.TextCoding<>tcAnsi then Exit;
   if not Frame.EditorMaster.TextSource.Lines.ContainUnicode then Exit;
 
   case opUnicodeNeeded of
     1:
-      begin
-        if Cfm('UTF-8') then
-          ApplyFrameEncodingAndReload(Frame, cp__UTF8, False{ACanReload});
-      end;
+        case Cfm('UTF-8') of
+          id_yes: ApplyFrameEncodingAndReload(Frame, cp__UTF8, False{ACanReload});
+          id_cancel: Result:= false;
+        end;
     2:
-      begin
-        if Cfm(DKLangConstW('cpUTF8no')) then
-          ApplyFrameEncodingAndReload(Frame, cp__UTF8_noBOM, False{ACanReload});
-      end;
+        case Cfm(DKLangConstW('cpUTF8no')) of
+          id_yes: ApplyFrameEncodingAndReload(Frame, cp__UTF8_noBOM, False{ACanReload});
+          id_cancel: Result:= false;
+        end;
     3:
-      begin
-        if Cfm('UTF-16') then
-          ApplyFrameEncodingAndReload(Frame, cp__Unicode, False{ACanReload});
-      end;
+        case Cfm('UTF-16') of
+          id_yes: ApplyFrameEncodingAndReload(Frame, cp__Unicode, False{ACanReload});
+          id_cancel: Result:= false;
+        end;
     4:
-      begin
-        if Cfm('UTF-16 BE') then
-          ApplyFrameEncodingAndReload(Frame, cp__UnicodeBE, False{ACanReload});
-      end;
+        case Cfm('UTF-16 BE') of
+          id_yes: ApplyFrameEncodingAndReload(Frame, cp__UnicodeBE, False{ACanReload});
+          id_cancel: Result:= false;
+        end;
     5:
       ApplyFrameEncodingAndReload(Frame, cp__UTF8, False{ACanReload});
     6:
@@ -26927,7 +26920,7 @@ begin
         acNew.Execute;
         F:= CurrentFrame;
         F.EditorMaster.Lines.Text:= DKLangConstW('MNFound')+' '+SName2;
-        EditorSetModified(F.EditorMaster);
+        F.Modified:= true;
       end;
 
       //update state
