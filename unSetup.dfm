@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabColors
+    ActivePage = tabCarets
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -672,8 +672,8 @@ object fmSetup: TfmSetup
           Top = 44
           Width = 249
           Height = 17
-          Hint = 'Acts on the caret movement (up, down, line start, line end).'
-          Caption = 'Smart caret behaviour'
+          Hint = 'Changes caret up/down/home/end behaviour inside wrapped lines.'
+          Caption = 'Allow caret navigation in wrapped lines'
           TabOrder = 1
         end
         object cbCaretInText: TTntCheckBox
@@ -2323,7 +2323,7 @@ object fmSetup: TfmSetup
           Top = 12
           Width = 256
           Height = 17
-          Hint = 'Wraps text at edge of memo.'
+          Hint = 'Wraps text at edge of editor.'
           Caption = 'Word wrap'
           TabOrder = 0
         end
@@ -2332,7 +2332,7 @@ object fmSetup: TfmSetup
           Top = 44
           Width = 256
           Height = 17
-          Hint = 'Shows codefolding bar on gutter.'
+          Hint = 'Shows code-folding bar on gutter.'
           Caption = 'Code folding'
           TabOrder = 2
         end
@@ -2352,7 +2352,7 @@ object fmSetup: TfmSetup
           Top = 28
           Width = 257
           Height = 17
-          Hint = 'Word wrap works on right margin, not edge of memo.'
+          Hint = 'Word wrap works on right margin, not edge of editor.'
           Caption = 'Word wrap on right margin'
           TabOrder = 1
         end

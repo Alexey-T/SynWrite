@@ -9073,7 +9073,6 @@ begin
       ExecCommand(smScrollAbsLeft);
   end;
 
-  TemplateEditor.WordWrap:= Ed.WordWrap;
   PostMessage(hLister, WM_COMMAND, MAKELONG(Ord(Ed.WordWrap), itm_wrap), Handle);
   UpdateStatusbar;
 end;
@@ -9084,12 +9083,12 @@ begin
 
   with CurrentFrame do
   begin
-     EditorMaster.LineNumbers.Visible:= not EditorMaster.LineNumbers.Visible;
-     EditorSlave.LineNumbers.Visible:= EditorMaster.LineNumbers.Visible;
-     TemplateEditor.LineNumbers.Visible:= EditorMaster.LineNumbers.Visible;
-     UpdateGutterWidth(EditorMaster);
-     UpdateGutterWidth(EditorSlave);
-   end;
+    EditorMaster.LineNumbers.Visible:= not EditorMaster.LineNumbers.Visible;
+    EditorSlave.LineNumbers.Visible:= EditorMaster.LineNumbers.Visible;
+    UpdateGutterWidth(EditorMaster);
+    UpdateGutterWidth(EditorSlave);
+  end;
+
   UpdateGutter(CurrentFrame);
   UpdateStatusbar;
 end;
@@ -9102,8 +9101,8 @@ begin
   begin
     EditorMaster.DisableFolding:= not EditorMaster.DisableFolding;
     EditorSlave.DisableFolding:= EditorMaster.DisableFolding;
-    TemplateEditor.DisableFolding:= EditorMaster.DisableFolding;
   end;
+  
   UpdateGutter(CurrentFrame);
   UpdateStatusbar;
 end;
@@ -9112,7 +9111,6 @@ procedure TfmMain.ecNonPrintExecute(Sender: TObject);
 begin
   with CurrentEditor do
     NonPrinted.Visible:= not NonPrinted.Visible;
-  //TemplateEditor.NonPrinted.Visible:= CurrentEditor.NonPrinted.Visible;
   UpdateStatusbar;
 end;
 
@@ -20308,7 +20306,6 @@ begin
   with CurrentEditor do
   begin
     HorzRuler.Visible:= not HorzRuler.Visible;
-    TemplateEditor.HorzRuler.Visible:= HorzRuler.Visible;
   end;
   UpdateStatusbar;
 end;
@@ -21167,9 +21164,6 @@ begin
     TemplateEditor.Font.Name:= cc;
     TemplateEditor.LineNumbers.Font.Name:= cc;
     TemplateEditor.HorzRuler.Font.Name:= cc;
-
-    //MemoConsole.Font.Name:= cc;
-    //edConsole.Font.Name:= cc;
   end;
 end;
 
@@ -26561,6 +26555,8 @@ begin
 end;
 
 procedure TfmMain.DoOpenURL;
+const
+  cMaxLen = 1000;
 var
   S: Widestring;
 begin
@@ -26568,7 +26564,14 @@ begin
   if S<>'' then
     FOpenURL(S, Handle)
   else
-    MsgBeep;
+  begin
+    S:= Trim(EditorGetSelTextLimited(CurrentEditor, cMaxLen));
+    if S='' then
+      begin MsgBeep; Exit end;
+    if Pos('://', S)=0 then
+      S:= 'http://' + S;
+    FOpenURL(S, Handle);
+  end;
 end;
 
 //updates TbxItemCtxAddColor.Enabled

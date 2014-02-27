@@ -770,14 +770,13 @@ end;
 procedure TfmSetup.ListKeys;
 var
   i, j, k: integer;
-  //info: TScrollInfo;
   old: string;
   g: TGridRect;
 begin
   with KeyList do
   begin
     ColWidths[0]:= 0;
-    ColWidths[1]:= Width - 2*DefaultColWidth - 32;
+    ColWidths[1]:= Width - 2 * DefaultColWidth - 32;
     Cells[1,0]:= DKLangConstW('zKeyCmd');
     Cells[2,0]:= DKLangConstW('zKey1');
     Cells[3,0]:= DKLangConstW('zKey2');
@@ -786,39 +785,46 @@ begin
     old:= '';
 
     for k:= 0 to cbKeyCat.Items.Count-1 do //categories
-    for i:= 0 to KeyMapping.Items.Count-1 do //items
-    //item filtered?
-    if SSubstringMatch(KeyMapping.Items[i].DisplayName, edFilter.Text) or
-      SSubstringMatch(SKeysOf(KeyMapping.Items[i]), edFilter.Text) then
-    if KeyMapping.Items[i].Category = cbKeyCat.Items[k] then
-    begin
-      if not KeyMapping.Items[i].Customizable then Continue;
-      if KeyMapping.Items[i].Command = -1 then //unused items
-        begin KeyMapping.Items[i].KeyStrokes.Clear; Continue; end;
+      for i:= 0 to KeyMapping.Items.Count-1 do //items
+        //item filtered?
+        if SSubstringMatch(KeyMapping.Items[i].DisplayName, edFilter.Text) or
+          SSubstringMatch(SKeysOf(KeyMapping.Items[i]), edFilter.Text) then
+        if KeyMapping.Items[i].Category = cbKeyCat.Items[k] then
+        begin
+          if not KeyMapping.Items[i].Customizable then
+            Continue;
+          if KeyMapping.Items[i].Command <= 0 then //unused items
+          begin
+            KeyMapping.Items[i].KeyStrokes.Clear;
+            Continue;
+          end;
 
-      RowCount:= j+1;
-      KeyList.RowHeights[KeyList.RowCount-1]:= KeyList.RowHeights[0];
+          RowCount:= j+1;
+          KeyList.RowHeights[KeyList.RowCount-1]:= KeyList.RowHeights[0];
 
-      //add category
-      if old<>KeyMapping.Items[i].Category then
-      begin
-        Cells[0,j]:= '-';
-        Cells[1,j]:= KeyMapping.Items[i].Category;
-        Cells[2,j]:= '';
-        Cells[3,j]:= '';
-        old:= Cells[1,j];
-        inc(j);
-        RowCount:= j+1;
-      end;
-      //add item
-      Cells[0,j]:= IntToStr(i);
-      Cells[1,j]:= KeyMapping.Items[i].DisplayName;
-      Cells[2,j]:= '';
-      Cells[3,j]:= '';
-      if KeyMapping.Items[i].KeyStrokes.Count>0 then Cells[2,j]:= KeyMapping.Items[i].KeyStrokes.Items[0].AsString;
-      if KeyMapping.Items[i].KeyStrokes.Count>1 then Cells[3,j]:= KeyMapping.Items[i].KeyStrokes.Items[1].AsString;
-      inc(j);
-    end;
+          //add category
+          if old<>KeyMapping.Items[i].Category then
+          begin
+            Cells[0,j]:= '-';
+            Cells[1,j]:= KeyMapping.Items[i].Category;
+            Cells[2,j]:= '';
+            Cells[3,j]:= '';
+            old:= Cells[1,j];
+            Inc(j);
+            RowCount:= j+1;
+          end;
+          
+          //add item
+          Cells[0,j]:= IntToStr(i);
+          Cells[1,j]:= KeyMapping.Items[i].DisplayName;
+          Cells[2,j]:= '';
+          Cells[3,j]:= '';
+          if KeyMapping.Items[i].KeyStrokes.Count>0 then
+            Cells[2,j]:= KeyMapping.Items[i].KeyStrokes.Items[0].AsString;
+          if KeyMapping.Items[i].KeyStrokes.Count>1 then
+            Cells[3,j]:= KeyMapping.Items[i].KeyStrokes.Items[1].AsString;
+          Inc(j);
+        end;
   end;
 
   if edFilter.Text='' then

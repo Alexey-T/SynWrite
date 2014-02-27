@@ -709,7 +709,7 @@ begin
       if SyntKeyMapping.Items[i].Category = LCat[k] then
       begin
         if not SyntKeyMapping.Items[i].Customizable then Continue;
-        if SyntKeyMapping.Items[i].Command = -1 then Continue;
+        if SyntKeyMapping.Items[i].Command <= 0 then Continue;
 
         if old<>SyntKeyMapping.Items[i].Category then
         begin
