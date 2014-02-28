@@ -2237,7 +2237,7 @@ object fmSetup: TfmSetup
         end
         object cbMargin: TTntCheckBox
           Left = 8
-          Top = 76
+          Top = 72
           Width = 256
           Height = 17
           Hint = 'Shows vertical line after specified column.'
@@ -2270,7 +2270,7 @@ object fmSetup: TfmSetup
         end
         object cbRuler: TTntCheckBox
           Left = 8
-          Top = 60
+          Top = 56
           Width = 256
           Height = 17
           Hint = 'Shows ruler above editor area.'
@@ -2320,7 +2320,7 @@ object fmSetup: TfmSetup
         end
         object cbFold: TTntCheckBox
           Left = 8
-          Top = 44
+          Top = 40
           Width = 256
           Height = 17
           Hint = 'Shows code-folding bar on gutter.'
@@ -2386,7 +2386,7 @@ object fmSetup: TfmSetup
         object edWrap: TTntComboBox
           Left = 8
           Top = 16
-          Width = 217
+          Width = 209
           Height = 21
           Style = csDropDownList
           ItemHeight = 13

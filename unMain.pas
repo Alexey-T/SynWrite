@@ -3249,7 +3249,7 @@ uses
 {$R Text.res}
 
 const
-  cSynVer = '6.4.700';
+  cSynVer = '6.4.720';
   cSynPyVer = '1.0.120';
 
 const

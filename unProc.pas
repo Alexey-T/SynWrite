@@ -108,8 +108,16 @@ function FFindStringInFile(const fn: Widestring;
   
 procedure FixTcIni(var fnTC: string; const section: string);
 
-function SFindRegex(const S, Regex: ecString): ecString;
-function IsStringRegex(const S, Regex: ecString): boolean;
+function SFindRegex(const S, Regex: Widestring): Widestring;
+function SFindRegexEx(
+  const Str, StrRegex: Widestring;
+  const PosFrom: Integer;
+  var ResStart, ResLen: Integer;
+  var ResStart1, ResLen1: Integer;
+  var ResStart2, ResLen2: Integer;
+  var ResStart3, ResLen3: Integer
+  ): boolean;
+function IsStringRegex(const S, Regex: Widestring): boolean;
 
 function CompareListDate(List: TTntStringList; Index1, Index2: Integer): Integer;
 function CompareListDateDesc(List: TTntStringList; Index1, Index2: Integer): Integer;
@@ -263,7 +271,7 @@ begin
   Rect:= Types.Rect(Rect.Left-4, Rect.Top-4, Rect.Right+4, Rect.Bottom+4);
 end;
 
-function IsStringRegex(const S, Regex: ecString): boolean;
+function IsStringRegex(const S, Regex: Widestring): boolean;
 var
   R: TecRegExpr;
   n: integer;
@@ -280,7 +288,7 @@ begin
   end;
 end;
 
-function SFindRegex(const S, Regex: ecString): ecString;
+function SFindRegex(const S, Regex: Widestring): Widestring;
 var
   R: TecRegExpr;
   n, nRes: integer;
@@ -296,6 +304,48 @@ begin
       if R.Match(S, nRes) then
       begin
         Result:= Copy(S, n, R.MatchLen[0]);
+        Exit
+      end;
+    end;
+  finally
+    R.Free;
+  end;
+end;
+
+function SFindRegexEx(
+  const Str, StrRegex: Widestring;
+  const PosFrom: Integer;
+  var ResStart, ResLen: Integer;
+  var ResStart1, ResLen1: Integer;
+  var ResStart2, ResLen2: Integer;
+  var ResStart3, ResLen3: Integer
+  ): boolean;
+var
+  R: TecRegExpr;
+  n, nRes: integer;
+begin
+  Result:= false;
+  ResStart:= 0;
+  ResLen:= 0;
+
+  R:= TecRegExpr.Create;
+  try
+    R.Expression:= StrRegex;
+    R.ModifierX:= false; //to handle ' ' in RE
+    for n:= PosFrom to Length(Str) do
+    begin
+      nRes:= n;
+      if R.Match(Str, nRes) then
+      begin
+        Result:= true;
+        ResStart:= n;
+        ResLen:= R.MatchLen[0];
+        ResStart1:= R.MatchPos[1];
+        ResLen1:= R.MatchLen[1];
+        ResStart2:= R.MatchPos[2];
+        ResLen2:= R.MatchLen[2];
+        ResStart3:= R.MatchPos[3];
+        ResLen3:= R.MatchLen[3];
         Exit
       end;
     end;

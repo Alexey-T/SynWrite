@@ -1583,54 +1583,103 @@ begin
 end;
 
 
+const
+  cRegexColorRgb = '\bRGB\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)';
+
 procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
   Rect: TRect; Line: Integer);
+  //
+  procedure DoColorize(Ed: TSyntaxMemo;
+    C: TCanvas;
+    const StrItem: Widestring;
+    NPosStart, NPosEnd, NUnderSize: Integer);
+  var
+    PosLeft, PosRight: TPoint;
+    NPosBottom, NColor: Integer;
+    ResStart, ResLen,
+    ResStart1, ResLen1,
+    ResStart2, ResLen2,
+    ResStart3, ResLen3: Integer;
+  begin
+    //#rrggbb
+    if IsHexColorString(StrItem) then
+      NColor:= SHexColorToColor(StrItem)
+    else
+    //rgb(...)
+    if SFindRegexEx(StrItem, cRegexColorRgb, 1,
+        ResStart, ResLen,
+        ResStart1, ResLen1,
+        ResStart2, ResLen2,
+        ResStart3, ResLen3) then
+      NColor:= RGB(
+        StrToIntDef(Copy(StrItem, ResStart1, ResLen1), 0),
+        StrToIntDef(Copy(StrItem, ResStart2, ResLen2), 0),
+        StrToIntDef(Copy(StrItem, ResStart3, ResLen3), 0))
+    else
+      Exit;
+
+    PosLeft:= Ed.CaretToMouse(NPosStart-1, Line);
+    PosRight:= Ed.CaretToMouse(NPosEnd-1, Line);
+    NPosBottom:= PosLeft.Y + Ed.DefLineHeight;
+
+    C.Brush.Color:= NColor;
+    C.FillRect(Types.Rect(
+      PosLeft.X,
+      NPosBottom - NUnderSize,
+      PosRight.X,
+      NPosBottom
+      ));
+  end;
+  //
 var
   C: TCanvas;
   Ed: TSyntaxMemo;
   Str, StrItem: Widestring;
+  NPos, NPosStart: Integer;
   NUnderSize: Integer;
-  NPos, NPosStart, NPosBottom: Integer;
-  PosLeft, PosRight: TPoint;
+  ResStart, ResLen,
+  ResStart1, ResLen1,
+  ResStart2, ResLen2,
+  ResStart3, ResLen3: Integer;
 begin
   NUnderSize:= TfmMain(Owner).opColorUnderline;
-  if NUnderSize > 0 then
-  begin
-    Ed:= Sender as TSyntaxMemo;
-    C:= Ed.Canvas;
-    Str:= EditorMaster.TextSource.Lines[Line];
+  if NUnderSize<=0 then Exit;
 
-    NPos:= 0;
-    repeat
-      NPos:= PosEx('#', Str, NPos+1);
-      if NPos=0 then Break;
+  Ed:= Sender as TSyntaxMemo;
+  C:= Ed.Canvas;
+  Str:= EditorMaster.TextSource.Lines[Line];
 
-      //char "&" before "#" - skip
-      if (NPos>1) and (Str[NPos-1]='&') then Continue;
+  //#rrggbb
+  NPos:= 0;
+  repeat
+    NPos:= PosEx('#', Str, NPos+1);
+    if NPos=0 then Break;
 
-      Inc(NPos);
-      NPosStart:= NPos;
-      while (NPos<=Length(Str)) and IsWordChar(Str[NPos]) do Inc(NPos);
-      StrItem:= Copy(Str, NPosStart, NPos-NPosStart);
+    //char "&" before "#" - skip
+    if (NPos>1) and (Str[NPos-1]='&') then Continue;
 
-      if IsHexColorString(StrItem) then
-      begin
-        PosLeft:= Ed.CaretToMouse(NPosStart-1-1, Line);
-        PosRight:= Ed.CaretToMouse(NPos-1, Line);
-        NPosBottom:= PosLeft.Y + Ed.DefLineHeight;
+    Inc(NPos);
+    NPosStart:= NPos;
+    while (NPos<=Length(Str)) and IsWordChar(Str[NPos]) do Inc(NPos);
+    StrItem:= Copy(Str, NPosStart, NPos-NPosStart);
 
-        C.Brush.Color:= SHexColorToColor(StrItem);
-        C.FillRect(Types.Rect(
-          PosLeft.X,
-          NPosBottom - NUnderSize,
-          PosRight.X,
-          NPosBottom
-          ));
-      end;
+    DoColorize(Ed, C, StrItem, NPosStart, NPos, NUnderSize);
+    Dec(NPos);
+  until false;
 
-      Dec(NPos);
-    until false;
-  end;
+  //RGB(nn,nn,nn)
+  NPos:= 1;
+  repeat
+    if not SFindRegexEx(
+      Str, cRegexColorRgb, NPos,
+      ResStart, ResLen,
+      ResStart1, ResLen1,
+      ResStart2, ResLen2,
+      ResStart3, ResLen3) then Break;
+    StrItem:= Copy(Str, ResStart, ResLen);
+    DoColorize(Ed, C, StrItem, ResStart, ResStart+ResLen, NUnderSize);
+    NPos:= ResStart+ResLen;
+  until false;
 end;
 
 procedure TEditorFrame.DoChangeTick;
