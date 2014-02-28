@@ -2425,6 +2425,7 @@ type
     procedure UpdateClickedFrame;
 
     procedure UpdateLexer;
+    procedure UpdateLexerTo(An: TSyntAnalyzer);
     procedure UpdateFormEnabled(En: boolean);
     procedure UpdateOutFromList(List: TWideStringList);
     procedure UpdateRecentsOnClose;
@@ -3674,8 +3675,7 @@ begin
     Result.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(AFileName)
   else
     Result.EditorMaster.TextSource.SyntaxAnalyzer:= nil;
-  SyntaxManager.CurrentLexer:= Result.EditorMaster.TextSource.SyntaxAnalyzer;
-  SyntaxManagerChange(Self);
+  UpdateLexerTo(Result.EditorMaster.TextSource.SyntaxAnalyzer);
 
   Result.DoStopNotif;
   Result.LoadFile(AFileName);
@@ -3783,8 +3783,7 @@ begin
         Frame.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(SD.FileName)
       else
         Frame.EditorMaster.TextSource.SyntaxAnalyzer:= nil;
-      SyntaxManager.CurrentLexer:= Frame.EditorMaster.TextSource.SyntaxAnalyzer;
-      SyntaxManagerChange(Self);
+      UpdateLexerTo(Frame.EditorMaster.TextSource.SyntaxAnalyzer);
 
       //save last dir
       if AUntitled then
@@ -4029,8 +4028,7 @@ begin
     F.EditorMaster.TextSource.SyntaxAnalyzer:= nil
   else
     F.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.FindAnalyzer(Str);
-  SyntaxManager.CurrentLexer:= F.EditorMaster.TextSource.SyntaxAnalyzer;
-  SyntaxManagerChange(Self);
+  UpdateLexerTo(F.EditorMaster.TextSource.SyntaxAnalyzer);
 
   //other
   F.Modified:= false;
@@ -4164,20 +4162,18 @@ begin
   if CurrentFrame<>nil then
     with CurrentFrame do
     begin
-       SyntaxManager.CurrentLexer:= EditorMaster.TextSource.SyntaxAnalyzer;
-       SyntaxManagerChange(Self);
+      if IsMasterFocused or not IsSplitted then
+        CurrentEditor:= EditorMaster
+      else
+        CurrentEditor:= EditorSlave;
 
-       if IsMasterFocused or not IsSplitted then
-         CurrentEditor:= EditorMaster
-       else
-         CurrentEditor:= EditorSlave;
-
-       ecSyntPrinter.Title:= WideExtractFileName(CurrentFrame.FileName);
-       UpdateTitle(CurrentFrame);
-       UpdateStatusbar;
-       SynScroll(CurrentEditor);
-       UpdateTabList(-1, -1, -1);
-       UpdateTreeProps;
+      UpdateLexerTo(EditorMaster.TextSource.SyntaxAnalyzer);
+      UpdateTitle(CurrentFrame);
+      UpdateStatusbar;
+      SynScroll(CurrentEditor);
+      UpdateTabList(-1, -1, -1);
+      UpdateTreeProps;
+      ecSyntPrinter.Title:= WideExtractFileName(CurrentFrame.FileName);
     end
   else
     CurrentEditor:= nil;
@@ -4233,6 +4229,7 @@ end;
 procedure TfmMain.SetCurrentEditor(Value: TSyntaxMemo);
 var
   i: integer;
+  An: TSyntAnalyzer;
 begin
   if FCurrentEditor = Value then Exit;
   ecSyntPrinter.SyntMemo:= Value;
@@ -4255,11 +4252,11 @@ begin
     if CurrentFrame<>nil then
       CurrentFrame.HyperlinkHighlighter.Editor:= FCurrentEditor;
 
-    if FCurrentEditor.SyntObj <> nil then
-      SyntaxManager.CurrentLexer:= FCurrentEditor.SyntObj.Owner
+    if FCurrentEditor.SyntObj<>nil then
+      An:= FCurrentEditor.SyntObj.Owner
     else
-      SyntaxManager.CurrentLexer:= nil;
-    SyntaxManagerChange(Self);
+      An:= nil;
+    UpdateLexerTo(An);
 
     UpdateStatusBar;
     if not QuickView then
@@ -6566,26 +6563,24 @@ end;
 
 procedure TfmMain.LexListClick(Sender: TObject);
 var
-  i, j, n: integer;
+  n, n1, n2: integer;
 begin
   n:= (Sender as TComponent).Tag;
   if n = -1 then
   begin
     CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= nil;
-    SyntaxManager.CurrentLexer:= nil;
-    SyntaxManagerChange(Self);
+    UpdateLexerTo(nil);
   end
   else
   begin
-    i:= CurrentFrame.EditorMaster.TopLine;
-    j:= CurrentFrame.EditorSlave.TopLine;
+    n1:= CurrentFrame.EditorMaster.TopLine;
+    n2:= CurrentFrame.EditorSlave.TopLine;
 
     CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.Analyzers[n];
-    SyntaxManager.CurrentLexer:= CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer;
-    SyntaxManagerChange(Self);
+    UpdateLexerTo(CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer);
 
-    CurrentFrame.EditorMaster.TopLine:= i;
-    CurrentFrame.EditorSlave.TopLine:= j;
+    CurrentFrame.EditorMaster.TopLine:= n1;
+    CurrentFrame.EditorSlave.TopLine:= n2;
   end;
 end;
 
@@ -11146,8 +11141,7 @@ begin
   CurrentEditor.LoadFromFile(fn);
 
   CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(fn);
-  SyntaxManager.CurrentLexer:= CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer;
-  SyntaxManagerChange(Self);
+  UpdateLexerTo(CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer);
 
   ApplyFrameEncodingAndReload(CurrentFrame, Enc);
   //EditorSetModified(CurrentFrame.EditorMaster);
@@ -24268,7 +24262,7 @@ begin
     if (Cmd>=0) and (Cmd<SyntaxManager.AnalyzerCount) then
     begin
       CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.Analyzers[Cmd];
-      SyntaxManagerChange(Self);
+      UpdateLexerTo(CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer);
     end;
   end
   else
@@ -29318,7 +29312,12 @@ end;
 
 procedure TfmMain.ProjPreviewVisibleChanged(Sender: TObject);
 begin
-//
+end;
+
+procedure TfmMain.UpdateLexerTo(An: TSyntAnalyzer);
+begin
+  SyntaxManager.CurrentLexer:= An;
+  SyntaxManagerChange(Self);
 end;
 
 initialization

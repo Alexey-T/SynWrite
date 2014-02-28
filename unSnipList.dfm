@@ -44,6 +44,7 @@ object fmSnippetList: TfmSnippetList
     OnClick = ListClick
     OnDblClick = ListDblClick
     OnDrawItem = ListDrawItem
+    OnKeyDown = ListKeyDown
   end
   object Edit: TTntEdit
     Left = 0

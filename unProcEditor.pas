@@ -2668,9 +2668,11 @@ begin
     NInsertPos[i]:= -1;
   end;
 
-  //process macros
+  SReplaceAllW(Str, '\\', #1); //replace double-slashes (so only single slashes remain)
   NMirrorCnt:= 9; //first mirrors index is 10
   NStart:= 0;
+
+  //process macros
   repeat
     NStart:= PosEx('${', Str, NStart+1);
     if NStart=0 then Break;
@@ -2733,6 +2735,8 @@ begin
 
     Inc(NStart, Length(SVal)-1); //skip this macro
   until false;
+
+  SReplaceAllW(Str, #1, '\'); //replace #1 to slash
 
   //insert text
   Ed.BeginUpdate;

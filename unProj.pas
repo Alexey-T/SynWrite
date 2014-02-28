@@ -99,6 +99,7 @@ type
     TBXItemMnuProjGoto: TSpTBXItem;
     TBXItemMnuTogglePaths: TSpTBXItem;
     TBXItemMnuSortByPath: TSpTBXItem;
+    TbxItemMnuTogglePreview: TSpTBXItem;
     procedure TBXItemProjAddVirtDirClick(Sender: TObject);
     procedure TBXItemProjDelFilesClick(Sender: TObject);
     procedure TBXItemProjAddFilesClick(Sender: TObject);
@@ -158,6 +159,7 @@ type
     procedure TreeProjChange(Sender: TObject; Node: TTreeNode);
     procedure TBXItemMnuTogglePathsClick(Sender: TObject);
     procedure TBXItemMnuSortByPathClick(Sender: TObject);
+    procedure TbxItemMnuTogglePreviewClick(Sender: TObject);
   private
     { Private declarations }
     FProjectFN: Widestring;
@@ -1991,5 +1993,10 @@ begin
   Result:= IsDir(TreeProj.Selected);
 end;  
 
+
+procedure TfmProj.TbxItemMnuTogglePreviewClick(Sender: TObject);
+begin
+  DoPreview(true);
+end;
 
 end.

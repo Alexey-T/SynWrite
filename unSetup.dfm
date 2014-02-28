@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabCarets
+    ActivePage = tabView
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -2198,7 +2198,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Draws custom background for the current line.'
           Caption = 'Draw current line background'
-          TabOrder = 13
+          TabOrder = 12
         end
         object cbHideCursor: TTntCheckBox
           Left = 272
@@ -2209,7 +2209,7 @@ object fmSetup: TfmSetup
             'Hides mouse cursor when you type text and mouse cursor is within' +
             ' client area.'
           Caption = 'Hide cursor on typing'
-          TabOrder = 11
+          TabOrder = 10
         end
         object edLSpace: TSpinEdit
           Left = 8
@@ -2219,7 +2219,7 @@ object fmSetup: TfmSetup
           Hint = 'Vertical spacing between lines.'
           MaxValue = 10
           MinValue = 0
-          TabOrder = 6
+          TabOrder = 5
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
@@ -2231,7 +2231,7 @@ object fmSetup: TfmSetup
           Hint = 'Right margin column position.'
           MaxValue = 300
           MinValue = 1
-          TabOrder = 5
+          TabOrder = 4
           Value = 1
           OnKeyDown = edIndentKeyDown
         end
@@ -2242,7 +2242,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Shows vertical line after specified column.'
           Caption = 'Show right margin'
-          TabOrder = 4
+          TabOrder = 3
         end
         object edLineNums: TTntComboBox
           Left = 8
@@ -2252,7 +2252,7 @@ object fmSetup: TfmSetup
           Hint = 'Style of line numbering.'
           Style = csDropDownList
           ItemHeight = 13
-          TabOrder = 7
+          TabOrder = 6
           Items.Strings = (
             'Default'
             'Delphi style'
@@ -2266,7 +2266,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Draws focus rectangle around current line when editor has focus.'
           Caption = 'Draw current line focus'
-          TabOrder = 12
+          TabOrder = 11
         end
         object cbRuler: TTntCheckBox
           Left = 8
@@ -2275,7 +2275,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Shows ruler above editor area.'
           Caption = 'Show horizontal ruler'
-          TabOrder = 3
+          TabOrder = 2
         end
         object cbStaples: TComboBox
           Left = 48
@@ -2285,7 +2285,7 @@ object fmSetup: TfmSetup
           Hint = 'Line style of block staples.'
           Style = csOwnerDrawFixed
           ItemHeight = 16
-          TabOrder = 9
+          TabOrder = 8
           OnDrawItem = cbStaplesDrawItem
         end
         object edStapleOffset: TSpinEdit
@@ -2296,7 +2296,7 @@ object fmSetup: TfmSetup
           Hint = 'Horizontal offset of block staples (in pixels).'
           MaxValue = 5
           MinValue = -5
-          TabOrder = 8
+          TabOrder = 7
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
@@ -2307,7 +2307,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Draw "line is wrapped" icons on gutter.'
           Caption = 'Draw gutter "line wrapped" mark'
-          TabOrder = 15
+          TabOrder = 14
         end
         object cbDrawCol: TTntCheckBox
           Left = 272
@@ -2316,16 +2316,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Draw vertical line at caret'#39's column position.'
           Caption = 'Draw current column margin'
-          TabOrder = 14
-        end
-        object cbWrap: TTntCheckBox
-          Left = 8
-          Top = 12
-          Width = 256
-          Height = 17
-          Hint = 'Wraps text at edge of editor.'
-          Caption = 'Word wrap'
-          TabOrder = 0
+          TabOrder = 13
         end
         object cbFold: TTntCheckBox
           Left = 8
@@ -2334,7 +2325,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Shows code-folding bar on gutter.'
           Caption = 'Code folding'
-          TabOrder = 2
+          TabOrder = 1
         end
         object cbFixLineSize: TTntCheckBox
           Left = 272
@@ -2345,16 +2336,7 @@ object fmSetup: TfmSetup
             'Prevents the line height calculation. Line height will be calcul' +
             'ated by means of Default Style.'
           Caption = 'Fixed line height'
-          TabOrder = 16
-        end
-        object cbWrapMargin: TTntCheckBox
-          Left = 8
-          Top = 28
-          Width = 257
-          Height = 17
-          Hint = 'Word wrap works on right margin, not edge of editor.'
-          Caption = 'Word wrap on right margin'
-          TabOrder = 1
+          TabOrder = 15
         end
         object cbFixColMove: TTntCheckBox
           Left = 272
@@ -2365,7 +2347,7 @@ object fmSetup: TfmSetup
             'Keeps X position of caret before editing text, this position is ' +
             'used when moving up/down caret.'
           Caption = 'Fixed column move'
-          TabOrder = 17
+          TabOrder = 16
         end
         object cbVarHorzBar: TTntCheckBox
           Left = 272
@@ -2376,7 +2358,7 @@ object fmSetup: TfmSetup
             'Recalculates horizontal scrollbar for currently displayed text o' +
             'nly.'
           Caption = 'Variable horizontal scrollbar'
-          TabOrder = 18
+          TabOrder = 17
         end
         object edColorUnder: TSpinEdit
           Left = 8
@@ -2388,7 +2370,7 @@ object fmSetup: TfmSetup
             'ke #rrggbb. 0 - disabled.'
           MaxValue = 10
           MinValue = 0
-          TabOrder = 10
+          TabOrder = 9
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
@@ -2399,7 +2381,20 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'After scroll to EOF, last line appears on top instead of bottom.'
           Caption = 'Last line shows on top'
-          TabOrder = 19
+          TabOrder = 18
+        end
+        object edWrap: TTntComboBox
+          Left = 8
+          Top = 16
+          Width = 217
+          Height = 21
+          Style = csDropDownList
+          ItemHeight = 13
+          TabOrder = 0
+          Items.Strings = (
+            'Wrap text at editor edge'
+            'Wrap text at right margin'
+            'Don'#39't wrap text')
         end
       end
     end
@@ -2955,7 +2950,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E014A010000
+      0700666D5365747570010100000001000000070043617074696F6E0149010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3211,50 +3206,48 @@ object fmSetup: TfmSetup
       00070043617074696F6E8A020000040048696E7400090063624F707446696C6C
       01020000008D020000070043617074696F6E8C020000040048696E74000B0063
       624B656570426C616E6B01020000008F020000070043617074696F6E8E020000
-      040048696E74000600636257726170010200000091020000070043617074696F
-      6E90020000040048696E740006006362466F6C64010200000093020000070043
-      617074696F6E92020000040048696E74000D0063624669784C696E6553697A65
-      010200000095020000070043617074696F6E94020000040048696E74000C0063
-      62577261704D617267696E010200000099020000070043617074696F6E980200
-      00040048696E74000C006362466978436F6C4D6F766501020000009B02000007
-      0043617074696F6E9A020000040048696E74000C006362566172486F727A4261
-      7201020000009D020000070043617074696F6E9C020000040048696E74000900
-      636253656C4D6F646501010000009E02000005004974656D73000A00546E744C
-      6162656C333501010000009F020000070043617074696F6E0008006362436F6C
-      6C61700102000000A3020000070043617074696F6EA2020000040048696E7400
-      06006362447261670102000000A5020000070043617074696F6EA40200000400
-      48696E740009006362436F70795274660102000000A702000007004361707469
-      6F6EA6020000040048696E740007006362477253656C0102000000A902000007
-      0043617074696F6EA8020000040048696E74000800636244436C69636B010200
-      0000AB020000070043617074696F6EAA020000040048696E7400070063624250
-      6572730102000000AD020000070043617074696F6EAC020000040048696E7400
-      07006362424F7665720102000000AF020000070043617074696F6EAE02000004
-      0048696E74000800626F7854616273320101000000B102000007004361707469
-      6F6E000A00656454616253746F70730101000000B2020000040048696E740007
-      004C6162656C31360101000000B3020000070043617074696F6E000900656454
-      61624D6F64650102000000B4020000040048696E74B502000005004974656D73
-      0006004C6162656C360101000000B6020000070043617074696F6E000D006362
-      5265706C616365546162730102000000B8020000070043617074696F6EB70200
-      00040048696E74000700626F784C616E670101000000BB020000070043617074
-      696F6E000B006C61624C616E67496E666F0000060063624C616E6700000A0063
-      625461625374796C650101000000BD02000005004974656D73000F0063624163
-      70506172616D48696E74730101000000BF020000070043617074696F6E001200
-      636248696C697465536D617274436C69636B0101000000C10200000700436170
-      74696F6E001200636248696C697465536D617274576F7264730102000000C302
-      0000070043617074696F6EC2020000040048696E74000E00636250726F6A5365
-      7373536176650101000000C4020000070043617074696F6E000E00636250726F
-      6A536573734F70656E0101000000C6020000070043617074696F6E000F006362
-      50726F6A436C6F7365546162730101000000C7020000070043617074696F6E00
-      0A00624B6579457874656E640101000000C8020000070043617074696F6E000B
-      006C616248656C704B657973000003006250790101000000C902000007004361
-      7074696F6E000C006564436F6C6F72556E6465720101000000CA020000040048
-      696E74000E004C6162656C556E6465726C696E650101000000CB020000070043
-      617074696F6E000F0065644E6F536E69707065747345787400000A00546E744C
-      6162656C33340101000000CC020000070043617074696F6E000C006564547265
-      65536F7274656400000A00546E744C6162656C32380101000000CD0200000700
-      43617074696F6E000C0063625363726F6C6C4C6173740102000000CF02000007
-      0043617074696F6ECE020000040048696E74000B00506F7075704C6578657273
-      0000}
+      040048696E740006006362466F6C64010200000093020000070043617074696F
+      6E92020000040048696E74000D0063624669784C696E6553697A650102000000
+      95020000070043617074696F6E94020000040048696E74000C00636246697843
+      6F6C4D6F766501020000009B020000070043617074696F6E9A02000004004869
+      6E74000C006362566172486F727A42617201020000009D020000070043617074
+      696F6E9C020000040048696E74000900636253656C4D6F646501010000009E02
+      000005004974656D73000A00546E744C6162656C333501010000009F02000007
+      0043617074696F6E0008006362436F6C6C61700102000000A302000007004361
+      7074696F6EA2020000040048696E740006006362447261670102000000A50200
+      00070043617074696F6EA4020000040048696E740009006362436F7079527466
+      0102000000A7020000070043617074696F6EA6020000040048696E7400070063
+      62477253656C0102000000A9020000070043617074696F6EA802000004004869
+      6E74000800636244436C69636B0102000000AB020000070043617074696F6EAA
+      020000040048696E74000700636242506572730102000000AD02000007004361
+      7074696F6EAC020000040048696E740007006362424F7665720102000000AF02
+      0000070043617074696F6EAE020000040048696E74000800626F785461627332
+      0101000000B1020000070043617074696F6E000A00656454616253746F707301
+      01000000B2020000040048696E740007004C6162656C31360101000000B30200
+      00070043617074696F6E00090065645461624D6F64650102000000B402000004
+      0048696E74B502000005004974656D730006004C6162656C360101000000B602
+      0000070043617074696F6E000D0063625265706C616365546162730102000000
+      B8020000070043617074696F6EB7020000040048696E74000700626F784C616E
+      670101000000BB020000070043617074696F6E000B006C61624C616E67496E66
+      6F0000060063624C616E6700000A0063625461625374796C650101000000BD02
+      000005004974656D73000F006362416370506172616D48696E74730101000000
+      BF020000070043617074696F6E001200636248696C697465536D617274436C69
+      636B0101000000C1020000070043617074696F6E001200636248696C69746553
+      6D617274576F7264730102000000C3020000070043617074696F6EC202000004
+      0048696E74000E00636250726F6A53657373536176650101000000C402000007
+      0043617074696F6E000E00636250726F6A536573734F70656E0101000000C602
+      0000070043617074696F6E000F00636250726F6A436C6F736554616273010100
+      0000C7020000070043617074696F6E000A00624B6579457874656E6401010000
+      00C8020000070043617074696F6E000B006C616248656C704B65797300000300
+      6250790101000000C9020000070043617074696F6E000C006564436F6C6F7255
+      6E6465720101000000CA020000040048696E74000E004C6162656C556E646572
+      6C696E650101000000CB020000070043617074696F6E000F0065644E6F536E69
+      707065747345787400000A00546E744C6162656C33340101000000CC02000007
+      0043617074696F6E000C00656454726565536F7274656400000A00546E744C61
+      62656C32380101000000CD020000070043617074696F6E000C0063625363726F
+      6C6C4C6173740102000000CF020000070043617074696F6ECE02000004004869
+      6E74000B00506F7075704C6578657273000006006564577261700101000000D1
+      02000005004974656D7300}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

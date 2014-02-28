@@ -34,6 +34,8 @@ type
     procedure cbFuzzyClick(Sender: TObject);
     procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
     procedure ListClick(Sender: TObject);
+    procedure ListKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
     procedure DoFilter;
@@ -273,6 +275,23 @@ begin
   end
   else
     MemoText.Lines.Clear;  
+end;
+
+procedure TfmSnippetList.ListKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=vk_up) and (List.ItemIndex=0) then
+  begin
+    List.ItemIndex:= List.Items.Count-1;
+    Key:= 0;
+    Exit
+  end;
+  if (Key=vk_down) and (List.ItemIndex=List.Items.Count-1) then
+  begin
+    List.ItemIndex:= 0;
+    Key:= 0;
+    Exit
+  end;
 end;
 
 end.

@@ -309,10 +309,8 @@ type
     cbUnindentAlign: TTntCheckBox;
     cbOptFill: TTntCheckBox;
     cbKeepBlank: TTntCheckBox;
-    cbWrap: TTntCheckBox;
     cbFold: TTntCheckBox;
     cbFixLineSize: TTntCheckBox;
-    cbWrapMargin: TTntCheckBox;
     cbFixColMove: TTntCheckBox;
     cbVarHorzBar: TTntCheckBox;
     cbSelMode: TTntComboBox;
@@ -351,6 +349,7 @@ type
     TntLabel28: TTntLabel;
     cbScrollLast: TTntCheckBox;
     PopupLexers: TTntPopupMenu;
+    edWrap: TTntComboBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2523,7 +2522,7 @@ procedure TfmSetup.ApplyView;
 begin
   with fmMain do
   begin
-    TemplateEditor.WordWrap:= cbWrap.Checked;
+    TemplateEditor.WordWrap:= edWrap.ItemIndex < 2;
     TemplateEditor.DisableFolding:= not cbFold.Checked;
     TemplateEditor.HorzRuler.Visible:= cbRuler.Checked;
     TemplateEditor.DefaultStyles.CurrentLine.Enabled:= cbDrawLineBG.Checked;
@@ -2554,7 +2553,7 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soScrollLastLine];
 
-    if cbWrapMargin.Checked then
+    if edWrap.ItemIndex=1 then
       TemplateEditor.Options:= TemplateEditor.Options + [soBreakOnRightMargin]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soBreakOnRightMargin];
@@ -2678,8 +2677,14 @@ begin
     cbDrawWrapMark.Checked:= opShowWrapMark;
     cbDrawCol.Checked:= opShowCurrentColumn;
 
-    cbWrap.Checked:= TemplateEditor.WordWrap;
-    cbWrapMargin.Checked:= soBreakOnRightMargin in TemplateEditor.Options;
+    if not TemplateEditor.WordWrap then
+      edWrap.ItemIndex:= 2
+    else
+    if soBreakOnRightMargin in TemplateEditor.Options then
+      edWrap.ItemIndex:= 1
+    else
+      edWrap.ItemIndex:= 0;  
+
     cbFold.Checked:= not TemplateEditor.DisableFolding;
     cbFixLineSize.Checked:= soFixedLineHeight in TemplateEditor.Options;
     cbFixColMove.Checked:= soFixedColumnMove in TemplateEditor.Options;
