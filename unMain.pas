@@ -2120,6 +2120,7 @@ type
     cStatCaretsBotLn: Widestring;
 
     FListSnippets: TList;
+    FListLexersSorted: TTntStringList;
     FTempFilenames: TTntStringList;
     FUserToolbarCommands: TTntStringList;
     FInitialDir: Widestring;
@@ -3242,6 +3243,7 @@ uses
 
 {$R *.dfm}
 {$R Cur.res}
+{$R Text.res}
 
 const
   cSynVer = '6.4.700';
@@ -7240,6 +7242,7 @@ begin
   FListNewDocs:= TTntStringList.Create;
   FListConv:= TTntStringList.Create;
   FListFiles:= TTntStringList.Create;
+  FListLexersSorted:= TTntStringList.Create;
   FListSnippets:= nil;
 
   FTabOut:= tbOut;
@@ -7528,6 +7531,7 @@ begin
   FreeAndNil(FListFiles);
   FreeAndNil(FListNewDocs);
   FreeAndNil(FListConv);
+  FreeAndNil(FListLexersSorted);
 
   if Assigned(FListCommentStyles) then
     FreeAndNil(FListCommentStyles);
@@ -24240,14 +24244,31 @@ var
   Cmd: Integer;
 begin
   Cmd:= DoShowCmdList;
-  if Cmd>0 then
-    if Cmd>=cPyListBase then
+  if Cmd<=0 then Exit;
+
+  //command plugin selected?
+  if Cmd>=cPyListBase then
+  begin
+    Dec(Cmd, cPyListBase);
+    DoPyLoadPlugin(
+      FPluginsCommand[Cmd].SFilename,
+      FPluginsCommand[Cmd].SCmd);
+  end
+  else
+  //lexer selected?
+  if Cmd>=cLexListBase then
+  begin
+    Dec(Cmd, cLexListBase);
+    Cmd:= Integer(FListLexersSorted.Objects[Cmd]);
+    if (Cmd>=0) and (Cmd<SyntaxManager.AnalyzerCount) then
     begin
-      Dec(Cmd, cPyListBase);
-      DoPyLoadPlugin(FPluginsCommand[Cmd].SFilename, FPluginsCommand[Cmd].SCmd);
-    end
-    else
-      CurrentEditor.ExecCommand(Cmd);
+      CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.Analyzers[Cmd];
+      SyntaxManagerChange(Self);
+    end;
+  end
+  else
+  //usual command selected
+    CurrentEditor.ExecCommand(Cmd);
 end;
 
 
@@ -24276,11 +24297,20 @@ begin
     UpdateMacroKeynames;
     //1) add commands
     KeysList.Assign(SyntKeyMapping);
+
     //2) add command-plugins
     for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
       with FPluginsCommand[i] do
         if SCaption<>'' then
           PyList.Add('Plugin: ' + SCaption + #9 + SHotkey);
+
+    //3) add lexers
+    FListLexersSorted.Clear;
+    FListLexersSorted.Sorted:= true;
+    for i:= 0 to SyntaxManager.AnalyzerCount-1 do
+      FListLexersSorted.AddObject(SyntaxManager.Analyzers[i].LexerName, Pointer(i));
+    for i:= 0 to FListLexersSorted.Count-1 do
+      LexList.Add('Lexer: ' + FListLexersSorted[i]);
 
     FIniFN:= Self.SynHistoryIni;
     FColorSel:= opColorOutSelText;
@@ -27216,11 +27246,13 @@ var
   S, SItem, SId, SVal: Widestring;
   Ed: TSyntaxMemo;
   pnt: TPoint;
-  EdIndex, NVal, NVal2: Integer;
-  Analyzer: TSyntAnalyzer;
+  EdIndex, NVal{, NVal2}: Integer;
+  //Analyzer: TSyntAnalyzer;
 begin
+  (*
   Analyzer:= SyntaxManager.AnalyzerForFile(F.FileName);
   F.EditorMaster.TextSource.SyntaxAnalyzer:= nil;
+  *)
 
   F.EditorMaster.BeginUpdate;
   F.EditorSlave.BeginUpdate;
@@ -27257,7 +27289,8 @@ begin
 
       if SId=cFramePropLexer then
         begin
-          Analyzer:= SyntaxManager.FindAnalyzer(SVal);
+          //Analyzer:= SyntaxManager.FindAnalyzer(SVal);
+          F.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.FindAnalyzer(SVal);
         end
       else
       if SId=cFramePropWrap then
@@ -27307,6 +27340,7 @@ begin
     F.EditorSlave.EndUpdate;
   end;
 
+  (*
   //now repaint and set lexer - this is long operation (5s on unMain.pas, if caret at end)
   Application.ProcessMessages;
   NVal:= F.EditorMaster.TopLine;
@@ -27315,6 +27349,7 @@ begin
     F.EditorMaster.TextSource.SyntaxAnalyzer:= Analyzer;
   F.EditorMaster.TopLine:= NVal;
   F.EditorSlave.TopLine:= NVal2;
+  *)
 end;
 
 procedure TfmMain.DoTest;

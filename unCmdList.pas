@@ -41,13 +41,15 @@ type
   public
     { Public declarations }
     PyList: TTntStringList;
+    LexList: TTntStringList;
     FIniFN: string;
     FColorSel: TColor;
     FColorSelBk: TColor;
   end;
 
 const
-  cPyListBase = 5000;  
+  cPyListBase = 5000;
+  cLexListBase = 4000;
 
 implementation
 
@@ -155,6 +157,13 @@ begin
                 List.Items.AddObject(S + #9 + SKey, Pointer(KeysList.Items[i].Command));
             end;
 
+      for i:= 0 to LexList.Count-1 do
+      begin
+        S:= LexList[i];
+        if SFiltered(S) then
+          List.Items.AddObject(S, Pointer(cLexListBase+i));
+      end;
+
       for i:= 0 to PyList.Count-1 do
       begin
         S:= PyList[i];
@@ -258,6 +267,7 @@ procedure TfmCmdList.TntFormCreate(Sender: TObject);
 begin
   List.ItemHeight:= ScaleFontSize(List.ItemHeight, Self);
   PyList:= TTntStringList.Create;
+  LexList:= TTntStringList.Create;
 end;
 
 procedure TfmCmdList.labHelpClick(Sender: TObject);
@@ -289,6 +299,7 @@ end;
 procedure TfmCmdList.TntFormDestroy(Sender: TObject);
 begin
   FreeAndNil(PyList);
+  FreeAndNil(LexList);
 end;
 
 procedure TfmCmdList.ListKeyDown(Sender: TObject; var Key: Word;

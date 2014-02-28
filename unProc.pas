@@ -634,31 +634,21 @@ begin
     ed.Text:= Str;
 end;
 
-//===================================
-const
-  _CssDoc =
-  '<style type="text/css">                             '#13+
-  'td, body {                                          '#13+
-  'color:#000;                                         '#13+
-  //'line-height: 1.5;                                   '#13+
-  'font-family: Verdana, Arial, Helvetica, sans-serif; '#13+
-  'font-size: 13px;                                    '#13+
-  '}                                                   '#13+
-  'table.sample {                                      '#13+
-  '	border-width: 1px;                                 '#13+
-  '	border-spacing: 2px;                               '#13+
-  '	border-style: none;                                '#13+
-  '	border-color: gray;                                '#13+
-  '	border-collapse: collapse;                         '#13+
-  '}                                                   '#13+
-  'table.sample td{                                    '#13+
-  '	border-width: 1px;                                 '#13+
-  '	padding: 1px;                                      '#13+
-  '	border-style: solid;                               '#13+
-  '	border-color: gray;                                '#13+
-  '}                                                   '#13+
-  '</style>                                            '#13+
-  '';
+function _KeymapStyle: string;
+var
+  Res: TResourceStream;
+  List: TStringList;
+begin
+  Res:= TResourceStream.Create(hInstance, 'KeymapHtml', RT_RCDATA);
+  List:= TStringList.Create;
+  try
+    List.LoadFromStream(Res);
+    Result:= List.Text;
+  finally
+    FreeAndNil(List);
+    FreeAndNil(Res);
+  end;
+end;
 
 procedure DoListKeys(SyntKeymapping: TSyntKeyMapping;
   const fn: string);
@@ -672,9 +662,8 @@ var
 begin
   AssignFile(f, fn);
   Rewrite(f);
-  Writeln(f, '<html><head><title>SynWrite keyboard mapping</title><head>'+
-    '<body>');
-  Writeln(f, _CssDoc);
+  Writeln(f, '<html><head><title>SynWrite keyboard mapping</title><head><body>');
+  Writeln(f, _KeymapStyle);
 
   LCat:= TStringList.Create;
   LKeys:= TStringList.Create;
@@ -1864,5 +1853,6 @@ begin
     DeleteMenu(hMenu, n, MF_BYCOMMAND);
   DestroyMenu(hMenu);
 end;
+
 
 end.
