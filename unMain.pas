@@ -87,6 +87,7 @@ const
 
 type
   TSynPyEvent = (
+    cSynEventOnOpen,
     cSynEventOnSaveAfter,
     cSynEventOnSaveBefore,
     cSynEventOnChangeSlow,
@@ -98,6 +99,7 @@ type
 
 const
   cSynPyEvent: array[TSynPyEvent] of string = (
+    'on_open',
     'on_save',
     'on_save_pre',
     'on_change_slow',
@@ -3690,9 +3692,12 @@ begin
 
   if not SynExe then
     BringWindowToTop(hLister);
+
   UpdateGutter(Result);
   if opTabsReplace and (TemplateEditor.TabMode=tmSpaces) then
     DoReplaceTabsToSpaces(Result);
+
+  DoPyEvent(Result.EditorMaster, cSynEventOnOpen, []);
 end;
 
 procedure TfmMain.UpdateFrameEnc(Frame: TEditorFrame);
@@ -24308,7 +24313,8 @@ begin
     FListLexersSorted.Clear;
     FListLexersSorted.Sorted:= true;
     for i:= 0 to SyntaxManager.AnalyzerCount-1 do
-      FListLexersSorted.AddObject(SyntaxManager.Analyzers[i].LexerName, Pointer(i));
+      if not SyntaxManager.Analyzers[i].Internal then
+        FListLexersSorted.AddObject(SyntaxManager.Analyzers[i].LexerName, Pointer(i));
     for i:= 0 to FListLexersSorted.Count-1 do
       LexList.Add('Lexer: ' + FListLexersSorted[i]);
 
