@@ -1584,7 +1584,7 @@ end;
 
 
 const
-  cRegexColorRgb = '\bRGB\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)';
+  cRegexColorRgb = '\bRGBA?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\,?\s*(\d*\.?\d+)?\s*\)';
 
 procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
   Rect: TRect; Line: Integer);
@@ -1596,25 +1596,18 @@ procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
   var
     PosLeft, PosRight: TPoint;
     NPosBottom, NColor: Integer;
-    ResStart, ResLen,
-    ResStart1, ResLen1,
-    ResStart2, ResLen2,
-    ResStart3, ResLen3: Integer;
+    ResStart, ResLen: TSynIntArray4;
   begin
     //#rrggbb
     if IsHexColorString(StrItem) then
       NColor:= SHexColorToColor(StrItem)
     else
     //rgb(...)
-    if SFindRegexEx(StrItem, cRegexColorRgb, 1,
-        ResStart, ResLen,
-        ResStart1, ResLen1,
-        ResStart2, ResLen2,
-        ResStart3, ResLen3) then
+    if SFindRegexEx(StrItem, cRegexColorRgb, 1, ResStart, ResLen) then
       NColor:= RGB(
-        StrToIntDef(Copy(StrItem, ResStart1, ResLen1), 0),
-        StrToIntDef(Copy(StrItem, ResStart2, ResLen2), 0),
-        StrToIntDef(Copy(StrItem, ResStart3, ResLen3), 0))
+        StrToIntDef(Copy(StrItem, ResStart[1], ResLen[1]), 0),
+        StrToIntDef(Copy(StrItem, ResStart[2], ResLen[2]), 0),
+        StrToIntDef(Copy(StrItem, ResStart[3], ResLen[3]), 0))
     else
       Exit;
 
@@ -1637,10 +1630,7 @@ var
   Str, StrItem: Widestring;
   NPos, NPosStart: Integer;
   NUnderSize: Integer;
-  ResStart, ResLen,
-  ResStart1, ResLen1,
-  ResStart2, ResLen2,
-  ResStart3, ResLen3: Integer;
+  ResStart, ResLen: TSynIntArray4;
 begin
   NUnderSize:= TfmMain(Owner).opColorUnderline;
   if NUnderSize<=0 then Exit;
@@ -1663,22 +1653,17 @@ begin
     while (NPos<=Length(Str)) and IsWordChar(Str[NPos]) do Inc(NPos);
     StrItem:= Copy(Str, NPosStart, NPos-NPosStart);
 
-    DoColorize(Ed, C, StrItem, NPosStart, NPos, NUnderSize);
+    DoColorize(Ed, C, StrItem, NPosStart-1 {-1 for "#" char}, NPos, NUnderSize);
     Dec(NPos);
   until false;
 
-  //RGB(nn,nn,nn)
+  //rgb(nnn,nnn,nnn)
   NPos:= 1;
   repeat
-    if not SFindRegexEx(
-      Str, cRegexColorRgb, NPos,
-      ResStart, ResLen,
-      ResStart1, ResLen1,
-      ResStart2, ResLen2,
-      ResStart3, ResLen3) then Break;
-    StrItem:= Copy(Str, ResStart, ResLen);
-    DoColorize(Ed, C, StrItem, ResStart, ResStart+ResLen, NUnderSize);
-    NPos:= ResStart+ResLen;
+    if not SFindRegexEx(Str, cRegexColorRgb, NPos, ResStart, ResLen) then Break;
+    StrItem:= Copy(Str, ResStart[0], ResLen[0]);
+    DoColorize(Ed, C, StrItem, ResStart[0], ResStart[0]+ResLen[0], NUnderSize);
+    NPos:= ResStart[0]+ResLen[0];
   until false;
 end;
 

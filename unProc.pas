@@ -105,17 +105,18 @@ procedure FWriteStringToFile(const fn: string; const S: WideString; UseUTF8: boo
 function FFindStringInFile(const fn: Widestring;
   const Str: Widestring;
   IgnoreCase: boolean): boolean;
-  
+
 procedure FixTcIni(var fnTC: string; const section: string);
 
-function SFindRegex(const S, Regex: Widestring): Widestring;
+type
+  TSynIntArray4 = array[0..4] of Integer;
+  
+function SFindRegex(
+  const Str, StrRegex: Widestring): Widestring;
 function SFindRegexEx(
   const Str, StrRegex: Widestring;
   const PosFrom: Integer;
-  var ResStart, ResLen: Integer;
-  var ResStart1, ResLen1: Integer;
-  var ResStart2, ResLen2: Integer;
-  var ResStart3, ResLen3: Integer
+  var ResStart, ResLen: TSynIntArray4
   ): boolean;
 function IsStringRegex(const S, Regex: Widestring): boolean;
 
@@ -288,7 +289,7 @@ begin
   end;
 end;
 
-function SFindRegex(const S, Regex: Widestring): Widestring;
+function SFindRegex(const Str, StrRegex: Widestring): Widestring;
 var
   R: TecRegExpr;
   n, nRes: integer;
@@ -296,14 +297,14 @@ begin
   Result:= '';
   R:= TecRegExpr.Create;
   try
-    R.Expression:= Regex;
+    R.Expression:= StrRegex;
     R.ModifierX:= false; //to handle ' ' in RE
-    for n:= 1 to Length(S) do
+    for n:= 1 to Length(Str) do
     begin
       nRes:= n;
-      if R.Match(S, nRes) then
+      if R.Match(Str, nRes) then
       begin
-        Result:= Copy(S, n, R.MatchLen[0]);
+        Result:= Copy(Str, n, R.MatchLen[0]);
         Exit
       end;
     end;
@@ -315,18 +316,15 @@ end;
 function SFindRegexEx(
   const Str, StrRegex: Widestring;
   const PosFrom: Integer;
-  var ResStart, ResLen: Integer;
-  var ResStart1, ResLen1: Integer;
-  var ResStart2, ResLen2: Integer;
-  var ResStart3, ResLen3: Integer
+  var ResStart, ResLen: TSynIntArray4
   ): boolean;
 var
   R: TecRegExpr;
-  n, nRes: integer;
+  n, nRes, i: integer;
 begin
   Result:= false;
-  ResStart:= 0;
-  ResLen:= 0;
+  FillChar(ResStart, SizeOf(ResStart), 0);
+  FillChar(ResLen, SizeOf(ResLen), 0);
 
   R:= TecRegExpr.Create;
   try
@@ -338,14 +336,11 @@ begin
       if R.Match(Str, nRes) then
       begin
         Result:= true;
-        ResStart:= n;
-        ResLen:= R.MatchLen[0];
-        ResStart1:= R.MatchPos[1];
-        ResLen1:= R.MatchLen[1];
-        ResStart2:= R.MatchPos[2];
-        ResLen2:= R.MatchLen[2];
-        ResStart3:= R.MatchPos[3];
-        ResLen3:= R.MatchLen[3];
+        for i:= 0 to High(ResLen) do
+        begin
+          ResStart[i]:= R.MatchPos[i];
+          ResLen[i]:= R.MatchLen[i];
+        end;
         Exit
       end;
     end;
