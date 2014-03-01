@@ -7,7 +7,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, TntStdCtrls, TntClasses, TntForms, DKLang,
   ComCtrls, Menus, TntMenus, Buttons,
-  unSearch, TntComCtrls, TntExtCtrls;
+  unSearch, TntComCtrls, TntExtCtrls, TntClipbrd;
 
 type
   TTrackBar = class(ComCtrls.TTrackBar)
@@ -1457,6 +1457,8 @@ end;
 
 procedure TfmSR.TntFormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
+var
+  Str: Widestring;
 begin
   if Shortcut(Key, Shift) = Sh_FindNext then
   begin
@@ -1476,6 +1478,17 @@ begin
     IsReplace:= true;
     Key:= 0;
     Exit;
+  end;
+  //Ctrl+E - paste escaped string
+  if (Key=Ord('E')) and (Shift=[ssCtrl]) then
+  begin
+    Str:= SEscapeRegex(TntClipboard.AsWideText);
+    if ed1.Focused then ed1.SelText:= Str else
+     if ed1Memo.Focused then ed1Memo.SelText:= Str else
+      if ed2.Focused then ed2.SelText:= Str else
+       if ed2Memo.Focused then ed2Memo.SelText:= Str;
+    Key:= 0;
+    Exit
   end;
 end;
 

@@ -3237,7 +3237,7 @@ uses
 
   unSaveLex,
   unProcImg,
-  unSetup, unAb, unEnc, unTool, unSR2, unExtr, unShell, unInsTxt,
+  unSetup, unAb, unEnc, unTool, unSRFiles, unExtr, unShell, unInsTxt,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
   unCmdList, unProjList, unToolbarProp, unHideItems,

@@ -1624,12 +1624,13 @@ procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
       ));
   end;
   //
+const
+  cMaxCount = 10;  
 var
   C: TCanvas;
   Ed: TSyntaxMemo;
   Str, StrItem: Widestring;
-  NPos, NPosStart: Integer;
-  NUnderSize: Integer;
+  NPos, NPosStart, NCount, NUnderSize: Integer;
   ResStart, ResLen: TSynIntArray4;
 begin
   NUnderSize:= TfmMain(Owner).opColorUnderline;
@@ -1640,6 +1641,7 @@ begin
   Str:= EditorMaster.TextSource.Lines[Line];
 
   //#rrggbb
+  NCount:= 0;
   NPos:= 0;
   repeat
     NPos:= PosEx('#', Str, NPos+1);
@@ -1655,15 +1657,22 @@ begin
 
     DoColorize(Ed, C, StrItem, NPosStart-1 {-1 for "#" char}, NPos, NUnderSize);
     Dec(NPos);
+
+    Inc(NCount);
+    if NCount>cMaxCount then Break;
   until false;
 
   //rgb(nnn,nnn,nnn)
+  NCount:= 0;
   NPos:= 1;
   repeat
     if not SFindRegexEx(Str, cRegexColorRgb, NPos, ResStart, ResLen) then Break;
     StrItem:= Copy(Str, ResStart[0], ResLen[0]);
     DoColorize(Ed, C, StrItem, ResStart[0], ResStart[0]+ResLen[0], NUnderSize);
     NPos:= ResStart[0]+ResLen[0];
+
+    Inc(NCount);
+    if NCount>cMaxCount then Break;
   until false;
 end;
 

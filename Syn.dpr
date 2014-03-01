@@ -18,7 +18,6 @@ uses
   unEnc in 'unEnc.pas' {fmEnc},
   unTool in 'unTool.pas' {fmTools},
   VCLFixes,
-  unSR2 in 'unSR2.pas' {fmSRFiles},
   unTool2 in 'unTool2.pas' {fmToolOutput},
   unProgress in 'unProgress.pas' {fmProgress},
   unExtr in 'unExtr.pas' {fmExtract},
@@ -64,7 +63,8 @@ uses
   unProcPy in 'unProcPy.pas',
   unSnipList in 'unSnipList.pas' {fmSnippetList: TTntForm},
   unSnipEd in 'unSnipEd.pas' {fmSnippetEditor},
-  unUniList in 'unUniList.pas' {fmUniList: TTntForm};
+  unUniList in 'unUniList.pas' {fmUniList: TTntForm},
+  unSRFiles in 'unSRFiles.pas' {fmSRFiles: TTntForm};
 
 {$R *.res}
 {$R *.dkl_const.res}
@@ -76,5 +76,6 @@ begin
   Application.Title := 'SynWrite';
   Application.HintHidePause := 5000;
   Application.CreateForm(TfmSynEx, fmSynEx);
+  Application.CreateForm(TfmSRFiles, fmSRFiles);
   Application.Run;
 end.

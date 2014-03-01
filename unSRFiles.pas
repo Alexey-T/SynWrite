@@ -1,15 +1,16 @@
-unit unSR2;
+unit unSRFiles;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls,
+  Dialogs, ExtCtrls, StdCtrls, DKLang, Menus,
   TntStdCtrls,
   TntClasses,
   TntDialogs,
   TntForms,
-  DKLang, Menus, TntMenus;
+  TntClipbrd,
+  TntMenus;
 
 type
    TTntCombobox = class(TntStdCtrls.TTntComboBox)
@@ -349,18 +350,11 @@ end;
 
 procedure TfmSRFiles.FormDestroy(Sender: TObject);
 begin
+  if SRIni<>'' then
   with TIniFile.Create(SRIni) do
   try
     WriteInteger(cSecSR, 'WLeftFiles', Left);
     WriteInteger(cSecSR, 'WTopFiles', Top);
-  finally
-    Free
-  end;    
-
-  //if ModalResult = mrCancel then Exit;
-
-  with TIniFile.Create(SRIni) do
-  try
     WriteInteger(cSecSR, 'Sort', edSort.ItemIndex);
     WriteBool(cSecSR, 'CloseAfter', cbCloseAfter.Checked);
     WriteBool(cSecSR, 'OutAdd', cbOutAppend.Checked);
@@ -538,6 +532,8 @@ end;
 
 procedure TfmSRFiles.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
+var
+  Str: Widestring;
 begin
   //Alt+1..Alt+9
   if ((Key>=Ord('1')) and (Key<=Ord('9'))) and (Shift=[ssAlt]) then
@@ -582,6 +578,15 @@ begin
     labFindRepClick(Self);
     key:= 0;
     Exit;
+  end;
+  //Ctrl+E - paste escaped string
+  if (Key=Ord('E')) and (Shift=[ssCtrl]) then
+  begin
+    Str:= SEscapeRegex(TntClipboard.AsWideText);
+    if ed1.Focused then ed1.SelText:= Str else
+     if ed2.Focused then ed2.SelText:= Str;
+    Key:= 0;
+    Exit
   end;
 end;
 

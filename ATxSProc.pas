@@ -60,8 +60,8 @@ function SBegin(const s, subs: Widestring): boolean;
 function SEnd(const s, subs: Widestring): boolean;
 
 function SEscapeEols(const s: Widestring): Widestring;
+function SEscapeRegex(const s: Widestring): Widestring;
 //function SEscapeSpec(const s: Widestring): Widestring;
-//function SEscapeRegex(const s: Widestring): Widestring;
 
 function SCollapseFN(const FN, FN_session: Widestring): Widestring;
 function SGetKeyValue(const s: string; var sKey, sVal: string): boolean;
@@ -856,8 +856,11 @@ const
      (sFrom: #9; sTo: '\t'),
      (sFrom: '\'; sTo: '\\')
      );
+   *)  
 
-  cRecodeRegex: array[0..13] of TEscapeRec = (
+  cRecodeRegex: array[0..15] of TEscapeRec = (
+     (sFrom: #13; sTo: '\r'),
+     (sFrom: #10; sTo: '\n'),
      (sFrom: #9; sTo: '\t'),
      (sFrom: '\'; sTo: '\\'),
      (sFrom: '|'; sTo: '\|'),
@@ -873,7 +876,6 @@ const
      (sFrom: '*'; sTo: '\*'),
      (sFrom: '?'; sTo: '\?')
      );
-   *)  
 
 function SEscapeStr(const s: Widestring;
   const Rec: array of TEscapeRec): Widestring;
@@ -904,12 +906,12 @@ function SEscapeSpec(const s: Widestring): Widestring;
 begin
   Result:= SEscapeStr(s, cRecodeSpec);
 end;
+*)
 
 function SEscapeRegex(const s: Widestring): Widestring;
 begin
   Result:= SEscapeStr(s, cRecodeRegex);
 end;
-*)
 
 function SBegin(const s, subs: Widestring): boolean;
 begin
