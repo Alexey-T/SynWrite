@@ -109,6 +109,14 @@ const
     );
 
 type
+  TSynViewId = (
+    cSynViewActive,
+    cSynViewOpposite,
+    cSynViewLeft,
+    cSynViewRight
+    );
+
+type
   TSynQuickSearchType = (
     cQsNext,
     cQsPrev,
@@ -2280,7 +2288,9 @@ type
     function SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
     function FramesModifiedCount(FExcept: TEditorFrame = nil): integer;
     function OppositeFrame: TEditorFrame;
-    function OppositeFileName: Widestring;
+    function LeftFrame: TEditorFrame;
+    function RightFrame: TEditorFrame;
+    function CurrentFileName(Id: TSynViewId): Widestring;
     function IsFramePropertiesStringForFilename(const fn: Widestring; const Str: string): boolean;
     function FrameGetPropertiesString(F: TEditorFrame): string;
     procedure FrameSetPropertiesString(F: TEditorFrame; const Str: string; EncodingOnly: boolean);
@@ -3249,7 +3259,7 @@ uses
 {$R Text.res}
 
 const
-  cSynVer = '6.4.722';
+  cSynVer = '6.4.730';
   cSynPyVer = '1.0.120';
 
 const
@@ -7127,6 +7137,10 @@ begin
     Finder.Flags:= Finder.Flags-[ftRegex];
     Finder.Flags:= Finder.Flags+[ftWrapSearch];
 
+    //make sure FindNext won't try to find regex
+    if Assigned(fmSR) then
+      fmSR.cbRe.Checked:= false;
+
     //search
     if ANext then
     begin
@@ -10607,11 +10621,25 @@ procedure TfmMain.RunTool(NTool: Integer);
       SReplaceW(Result, '{ContentFileNameAnsi}', CurrentContentFN(false));
     //
     if Pos('{FileName2}', Result)>0 then
-      SReplaceW(Result, '{FileName2}', OppositeFileName);
+      SReplaceW(Result, '{FileName2}', CurrentFileName(cSynViewOpposite));
     if Pos('{FileDir2}', Result)>0 then
-      SReplaceW(Result, '{FileDir2}', WideExtractFileDir(OppositeFileName));
+      SReplaceW(Result, '{FileDir2}', WideExtractFileDir(CurrentFileName(cSynViewOpposite)));
     if Pos('{FileExt2}', Result)>0 then
-      SReplaceW(Result, '{FileExt2}', WideExtractFileExt(OppositeFileName));
+      SReplaceW(Result, '{FileExt2}', WideExtractFileExt(CurrentFileName(cSynViewOpposite)));
+    //
+    if Pos('{FileNameL}', Result)>0 then
+      SReplaceW(Result, '{FileNameL}', CurrentFileName(cSynViewLeft));
+    if Pos('{FileDirL}', Result)>0 then
+      SReplaceW(Result, '{FileDirL}', WideExtractFileDir(CurrentFileName(cSynViewLeft)));
+    if Pos('{FileExtL}', Result)>0 then
+      SReplaceW(Result, '{FileExtL}', WideExtractFileExt(CurrentFileName(cSynViewLeft)));
+    //
+    if Pos('{FileNameR}', Result)>0 then
+      SReplaceW(Result, '{FileNameR}', CurrentFileName(cSynViewRight));
+    if Pos('{FileDirR}', Result)>0 then
+      SReplaceW(Result, '{FileDirR}', WideExtractFileDir(CurrentFileName(cSynViewRight)));
+    if Pos('{FileExtR}', Result)>0 then
+      SReplaceW(Result, '{FileExtR}', WideExtractFileExt(CurrentFileName(cSynViewRight)));
     //
     SReplaceW(Result, '{SynDir}', ExtractFileDir(SynDir));
     SReplaceW(Result, '{SynIniDir}', ExtractFileDir(SynIni));
@@ -21458,12 +21486,34 @@ begin
   Result:= PagesToFrame(P, P.ActivePageIndex);
 end;
 
-function TfmMain.OppositeFileName: Widestring;
+function TfmMain.LeftFrame: TEditorFrame;
+var
+  P: TTntPageControl;
+begin
+  P:= PageControl1;
+  Result:= PagesToFrame(P, P.ActivePageIndex);
+end;
+
+function TfmMain.RightFrame: TEditorFrame;
+var
+  P: TTntPageControl;
+begin
+  P:= PageControl2;
+  Result:= PagesToFrame(P, P.ActivePageIndex);
+end;
+
+function TfmMain.CurrentFileName(Id: TSynViewId): Widestring;
 var
   F: TEditorFrame;
 begin
   Result:= '';
-  F:= OppositeFrame;
+  case Id of
+    cSynViewActive:   F:= CurrentFrame;
+    cSynViewOpposite: F:= OppositeFrame;
+    cSynViewLeft:     F:= LeftFrame;
+    cSynViewRight:    F:= RightFrame;
+    else F:= nil;
+  end;
   if F<>nil then
     Result:= F.FileName;
 end;
@@ -27461,6 +27511,7 @@ var
   fn_inf, dir_to: string;
   s_title, s_type, s_desc, s_ver, s_subdir, s_msg: string;
   n_type, i_type: TSynAddonType;
+  AsAdmin: boolean;
   i: integer;
 begin
   dir_to:= FTempDir;
@@ -27542,7 +27593,11 @@ begin
   //new inf filename
   fn_inf:= dir_to + '\' + cInf;
 
-  if not FUnpackAll(fn, dir_to, true{asAdmin}) or
+  AsAdmin:= Win32PlatformIsVista and (
+    SBegin(dir_to, SExpandVars('%ProgramFiles%')) or
+    SBegin(dir_to, SExpandVars('%ProgramFiles(x86)%')) );
+
+  if not FUnpackAll(fn, dir_to, AsAdmin) or
     not FileExists(fn_inf) then
   begin
     MsgError(DKLangConstW('zMInstallCantUnpack'), Handle);
@@ -27807,7 +27862,7 @@ begin
       else
       case N of
         -1: Str:= fmMain.CurrentFrame.FileName;
-        -2: Str:= fmMain.OppositeFileName;
+        -2: Str:= fmMain.CurrentFileName(cSynViewOpposite);
         -3: Str:= fmMain.FSessionFN;
         -10: Str:= fmMain.CurrentProjectFN;
         -11: Str:= fmMain.CurrentProjectMainFN;
