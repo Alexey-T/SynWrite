@@ -33,7 +33,6 @@ function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
 
 function Py_ed_get_bk(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_sync_ranges(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_add_sync_range(Self, Args: PPyObject): PPyObject; cdecl;
@@ -1272,30 +1271,6 @@ begin
       end;
     end;
 end;
-
-
-function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H, NId, NPos, NIcon, NColor: Integer;
-  Ed: TSyntaxMemo;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iiiii:ed_set_bk', @H, @NId, @NPos, @NIcon, @NColor)) then
-    begin
-      Ed:= PyEditor(H);
-      case NId of
-        0..9:
-          begin
-            Ed.Bookmarks[NId]:= NPos;
-            Ed.Invalidate;
-          end;
-        -1: EditorSetBookmarkUnnumbered(Ed, NPos, NIcon, NColor);
-        -2: EditorClearBookmarks(Ed);
-      end;
-      Result:= ReturnNone;
-    end;
-end;
-
 
 function Py_text_convert(Self, Args: PPyObject): PPyObject; cdecl;
 var

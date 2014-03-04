@@ -14,6 +14,7 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
+procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer);
 procedure EditorClearBookmarks(Ed: TSyntaxMemo);
 procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos, NIcon, NColor: Integer);
 procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
@@ -2826,5 +2827,19 @@ begin
   Ed.BookmarkObj.Clear;
   Ed.Invalidate;
 end;
+
+procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer);
+begin
+  case NCmd of
+    0..9:
+      begin
+        Ed.Bookmarks[NCmd]:= NPos;
+        Ed.Invalidate;
+      end;
+    -1: EditorSetBookmarkUnnumbered(Ed, NPos, NIcon, NColor);
+    -2: EditorClearBookmarks(Ed);
+  end;
+end;
+
 
 end.
