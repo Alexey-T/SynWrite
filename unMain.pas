@@ -27507,7 +27507,6 @@ var
   fn_inf, dir_to: string;
   s_title, s_type, s_desc, s_ver, s_subdir, s_msg: string;
   n_type, i_type: TSynAddonType;
-  AsAdmin: boolean;
   i: integer;
 begin
   dir_to:= FTempDir;
@@ -27589,11 +27588,7 @@ begin
   //new inf filename
   fn_inf:= dir_to + '\' + cInf;
 
-  AsAdmin:= Win32PlatformIsVista and (
-    SBegin(dir_to, SExpandVars('%ProgramFiles%')) or
-    SBegin(dir_to, SExpandVars('%ProgramFiles(x86)%')) );
-
-  if not FUnpackAll(fn, dir_to, AsAdmin) or
+  if not FUnpackAll(fn, dir_to, IsElevationNeededForFolder(dir_to)) or
     not FileExists(fn_inf) then
   begin
     MsgError(DKLangConstW('zMInstallCantUnpack'), Handle);

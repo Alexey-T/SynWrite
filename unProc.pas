@@ -20,6 +20,7 @@ uses
   IniFiles,
   PngImageList;
 
+function IsElevationNeededForFolder(const Dir: Widestring): boolean;
 function DoShowPopupMenu(List: TTntStringList; Pnt: TPoint; hWnd: THandle): Integer;
 procedure MemoScrollToBottom(Memo: TTntMemo);
 function SZenFindLeft(const s: ecString; iFrom: integer): integer;
@@ -1899,5 +1900,12 @@ begin
   DestroyMenu(hMenu);
 end;
 
+function IsElevationNeededForFolder(const Dir: Widestring): boolean;
+begin
+  Result:= (Win32MajorVersion >= 6) and (
+    SBegin(Dir, SExpandVars('%ProgramFiles%')) or
+    SBegin(Dir, SExpandVars('%ProgramFiles(x86)%'))
+    );
+end;
 
 end.
