@@ -2852,6 +2852,7 @@ type
     function DoReadLexersCfg(const ASection, AId: string): string;
     procedure DoClearFindDialogStatus;
     procedure ProjPreviewVisibleChanged(Sender: TObject);
+    procedure DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynViewId);
     //end of private
 
   protected
@@ -10580,6 +10581,23 @@ begin
   end;
 end;
 
+procedure TfmMain.DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynViewId);
+  //
+  function SMacro(const MacroName: string): string;
+  begin
+    Result:= '{'+MacroName+StrId+'}';
+  end;
+var
+  fn: Widestring;
+begin
+  fn:= CurrentFileName(ViewId);
+  SReplaceW(Str, SMacro('FileName'), fn);
+  SReplaceW(Str, SMacro('FileNameOnly'), WideExtractFileName(fn));
+  SReplaceW(Str, SMacro('FileNameNoExt'), WideChangeFileExt(WideExtractFileName(fn), ''));
+  SReplaceW(Str, SMacro('FileDir'), WideExtractFileDir(fn));
+  SReplaceW(Str, SMacro('FileExt'), Copy(WideExtractFileExt(fn), 2, MaxInt));
+end;
+  
 procedure TfmMain.RunTool(NTool: Integer);
   function HandleParams(const s, dir: WideString): WideString;
   var
@@ -10589,11 +10607,10 @@ procedure TfmMain.RunTool(NTool: Integer);
     Result:= S;
     p:= CurrentEditor.CaretPos;
     //
-    SReplaceW(Result, '{FileName}', CurrentFrame.FileName);
-    SReplaceW(Result, '{FileNameOnly}', WideExtractFileName(CurrentFrame.FileName));
-    SReplaceW(Result, '{FileNameNoExt}', WideChangeFileExt(WideExtractFileName(CurrentFrame.FileName), ''));
-    SReplaceW(Result, '{FileDir}', WideExtractFileDir(CurrentFrame.FileName));
-    SReplaceW(Result, '{FileExt}', Copy(WideExtractFileExt(CurrentFrame.FileName), 2, MaxInt));
+    DoReplaceFileNameMacro(Result, '', cSynViewActive);
+    DoReplaceFileNameMacro(Result, '2', cSynViewOpposite);
+    DoReplaceFileNameMacro(Result, 'L', cSynViewLeft);
+    DoReplaceFileNameMacro(Result, 'R', cSynViewRight);
     //
     SReplaceW(Result, '{ProjectWorkDir}', CurrentProjectWorkDir);
     SReplaceW(Result, '{ProjectMainFileName}', CurrentProjectMainFN);
@@ -10619,27 +10636,6 @@ procedure TfmMain.RunTool(NTool: Integer);
       SReplaceW(Result, '{ContentFileName}', CurrentContentFN(true));
     if Pos('{ContentFileNameAnsi}', Result)>0 then
       SReplaceW(Result, '{ContentFileNameAnsi}', CurrentContentFN(false));
-    //
-    if Pos('{FileName2}', Result)>0 then
-      SReplaceW(Result, '{FileName2}', CurrentFileName(cSynViewOpposite));
-    if Pos('{FileDir2}', Result)>0 then
-      SReplaceW(Result, '{FileDir2}', WideExtractFileDir(CurrentFileName(cSynViewOpposite)));
-    if Pos('{FileExt2}', Result)>0 then
-      SReplaceW(Result, '{FileExt2}', WideExtractFileExt(CurrentFileName(cSynViewOpposite)));
-    //
-    if Pos('{FileNameL}', Result)>0 then
-      SReplaceW(Result, '{FileNameL}', CurrentFileName(cSynViewLeft));
-    if Pos('{FileDirL}', Result)>0 then
-      SReplaceW(Result, '{FileDirL}', WideExtractFileDir(CurrentFileName(cSynViewLeft)));
-    if Pos('{FileExtL}', Result)>0 then
-      SReplaceW(Result, '{FileExtL}', WideExtractFileExt(CurrentFileName(cSynViewLeft)));
-    //
-    if Pos('{FileNameR}', Result)>0 then
-      SReplaceW(Result, '{FileNameR}', CurrentFileName(cSynViewRight));
-    if Pos('{FileDirR}', Result)>0 then
-      SReplaceW(Result, '{FileDirR}', WideExtractFileDir(CurrentFileName(cSynViewRight)));
-    if Pos('{FileExtR}', Result)>0 then
-      SReplaceW(Result, '{FileExtR}', WideExtractFileExt(CurrentFileName(cSynViewRight)));
     //
     SReplaceW(Result, '{SynDir}', ExtractFileDir(SynDir));
     SReplaceW(Result, '{SynIniDir}', ExtractFileDir(SynIni));
