@@ -2548,7 +2548,6 @@ type
     function SNewDocName(const fn: Widestring): string;
     procedure NewDocClick(Sender: TObject);
     procedure NewDocFolderClick(Sender: TObject);
-    function AskSession(CanCancel: boolean; ExitCmd: boolean = false): boolean;
     procedure TabClickN(n: integer);
     procedure TabRightClickN(n: integer);
     procedure DoTidy(const Cfg: string);
@@ -2682,8 +2681,9 @@ type
     procedure DoEnableTool(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
     procedure LoadHtmlAndCssLists;
 
-    function AskClose(CanCancel: boolean= false): boolean;
-    function AskLexer(CanCancel: boolean= false): boolean;
+    function DoConfirmClose(CanCancel: boolean= false): boolean;
+    function DoConfirmSaveLexLib: boolean;
+    function DoConfirmSaveSession(CanCancel: boolean; ExitCmd: boolean = false): boolean;
 
     procedure LoadClip;
     procedure LoadProj;
@@ -3484,7 +3484,7 @@ begin
         Result:= 0;
         Exit;
   end;
-  if (Msg = WM_CLOSE) and (not p^.PlugForm.AskClose(True)) then begin
+  if (Msg = WM_CLOSE) and (not p^.PlugForm.DoConfirmClose(True)) then begin
     Result:= 0;
     Exit;
   end;
@@ -3670,6 +3670,7 @@ begin
   begin
     Result:= F;
     CurrentFrame:= F;
+    UpdateTabList(PageControl.ActivePageIndex, -1, -1);
     Exit;
   end;
 
@@ -5382,7 +5383,7 @@ begin
       if FramesAll[i].Modified then Inc(Result);
 end;
 
-function TfmMain.AskClose(CanCancel: boolean = false): boolean;
+function TfmMain.DoConfirmClose(CanCancel: boolean = false): boolean;
 var
   i: integer;
 begin
@@ -5414,28 +5415,19 @@ begin
   SyntaxManager.SaveToFile(SyntaxManager.FileName);
 end;
 
-function TfmMain.AskLexer(CanCancel: boolean = false): boolean;
+function TfmMain.DoConfirmSaveLexLib: boolean;
 var
   buttons: TMsgDlgButtons;
 begin
-  Result:= True;
+  Result:= true;
   if SyntaxManager.Modified then
   begin
     buttons:= [mbYes, mbNo];
-    if CanCancel then
-      Include(buttons, mbCancel);
-      
-    case WideMessageDlg(DKLangConstW('MSavLex'), mtConfirmation, buttons, 0) of
-      mrYes:
-        begin
-          SaveLexLib;
-          SyntaxManager.Modified:= False;
-        end;
-      mrNo:
-        SyntaxManager.Modified:= False;
-      mrCancel:
-        Result:= False;
-    end;
+    //if CanCancel then
+    //  Include(buttons, mbCancel);
+    if WideMessageDlg(DKLangConstW('MSavLex'), mtConfirmation, buttons, 0) = mrYes then
+      SaveLexLib;
+    SyntaxManager.Modified:= false;
   end;
 end;
 
@@ -6637,7 +6629,7 @@ procedure TfmMain.MRU_SessClick(Sender: TObject; const S: WideString);
 begin
   if IsFileExist(S) then
   begin
-    if not AskSession(true) then
+    if not DoConfirmSaveSession(true) then
       Exit;
     DoOpenSession(S);
   end
@@ -9410,7 +9402,7 @@ end;
 procedure TfmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action:= caFree;
-  AskClose;
+  DoConfirmClose;
   UpdateRecentsOnClose;
 
   //save ini
@@ -9455,8 +9447,8 @@ begin
   end
   else
     CanClose:=
-      AskClose(not QuickView) and
-      AskSession(true, true);
+      DoConfirmClose(not QuickView) and
+      DoConfirmSaveSession(true, true);
 end;
 
 procedure TfmMain.WMCommandAny(var m: TMessage);
@@ -9652,7 +9644,7 @@ end;
 procedure TfmMain.acSetupLexerExecuteOK(Sender: TObject);
 begin
   SyntaxManager.Modified:= True;
-  AskLexer(True);
+  DoConfirmSaveLexLib;
 end;
 
 procedure TfmMain.SaveLexLibFilename;
@@ -11671,7 +11663,7 @@ end;
 
 procedure TfmMain.DoSessionOpenDialog;
 begin
-  if not AskSession(true) then
+  if not DoConfirmSaveSession(true) then
     Exit;
   with OD_Session do
   begin
@@ -14540,7 +14532,7 @@ end;
 procedure TfmMain.DoSessionAddDialog;
 begin
   {//No need for "Add session":
-  if not AskSession(true) then
+  if not DoConfirmSaveSession(true) then
     Exit;}
   with OD_Session do
   begin
@@ -17214,13 +17206,13 @@ end;
 procedure TfmMain.DoCloseSession(PromptToSave: boolean);
 begin
   if PromptToSave then
-    if not AskSession(true) then
+    if not DoConfirmSaveSession(true) then
       Exit;
   FSessionFN:= '';
   UpdateTitle(CurrentFrame);
 end;
 
-function TfmMain.AskSession(CanCancel: boolean; ExitCmd: boolean = false): boolean;
+function TfmMain.DoConfirmSaveSession(CanCancel: boolean; ExitCmd: boolean = false): boolean;
 var
   Buttons: TMsgDlgButtons;
   sName, fn: WideString;
@@ -26198,8 +26190,8 @@ end;
 procedure TfmMain.acSetupLexLibExecute(Sender: TObject);
 begin
   DoCustomizeLexerLibrary(SyntaxManager);
-  SaveLexLibFilename; //always save lexer filename
-  AskLexer(True); //save lexer file, if modified
+  SaveLexLibFilename;
+  DoConfirmSaveLexLib;
 end;
 
 procedure TfmMain.TbxItemTabReloadClick(Sender: TObject);
