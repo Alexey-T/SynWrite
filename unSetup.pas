@@ -350,6 +350,8 @@ type
     cbScrollLast: TTntCheckBox;
     PopupLexers: TTntPopupMenu;
     edWrap: TTntComboBox;
+    cbTreeExpand: TTntCheckBox;
+    cbTreeCollapse: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2003,6 +2005,8 @@ begin
   with fmMain do
   begin
     Tree.AutoSynchronize:= cbTreeSync.Checked;
+    Tree.AutoCollapse:= cbTreeCollapse.Checked;
+    Tree.AutoExpand:= cbTreeExpand.Checked;
     Tree.UpdateDelay:= cbTreeDelay.Value;
     opTreeSorted:= edTreeSorted.Text;
 
@@ -2314,6 +2318,8 @@ begin
   with fmMain do
   begin
     cbTreeSync.Checked:= Tree.AutoSynchronize;
+    cbTreeCollapse.Checked:= Tree.AutoCollapse;
+    cbTreeExpand.Checked:= Tree.AutoExpand;
     cbTreeDelay.Value:= Tree.UpdateDelay;
     edTreeSorted.Text:= opTreeSorted;
 

@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabView
+    ActivePage = tabTree
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -1120,12 +1120,12 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 65
+        Height = 101
         Caption = 'Syntax tree'
         TabOrder = 0
         object TntLabel39: TTntLabel
           Left = 72
-          Top = 40
+          Top = 72
           Width = 84
           Height = 13
           Caption = 'Update delay, ms'
@@ -1147,13 +1147,13 @@ object fmSetup: TfmSetup
         end
         object cbTreeDelay: TSpinEdit
           Left = 8
-          Top = 36
+          Top = 68
           Width = 57
           Height = 22
           Increment = 500
           MaxValue = 10000
           MinValue = 500
-          TabOrder = 1
+          TabOrder = 3
           Value = 500
           OnKeyDown = edIndentKeyDown
         end
@@ -1162,12 +1162,28 @@ object fmSetup: TfmSetup
           Top = 32
           Width = 241
           Height = 21
+          TabOrder = 4
+        end
+        object cbTreeExpand: TTntCheckBox
+          Left = 8
+          Top = 48
+          Width = 260
+          Height = 17
+          Caption = 'Auto expand'
           TabOrder = 2
+        end
+        object cbTreeCollapse: TTntCheckBox
+          Left = 8
+          Top = 32
+          Width = 260
+          Height = 17
+          Caption = 'Auto collapse'
+          TabOrder = 1
         end
       end
       object boxMinimap: TTntGroupBox
         Left = 8
-        Top = 68
+        Top = 104
         Width = 529
         Height = 53
         Caption = 'Mini-map'
@@ -1194,7 +1210,7 @@ object fmSetup: TfmSetup
       end
       object boxMicromap: TTntGroupBox
         Left = 8
-        Top = 124
+        Top = 160
         Width = 529
         Height = 45
         Caption = 'Micro-map'
@@ -2950,7 +2966,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0149010000
+      0700666D5365747570010100000001000000070043617074696F6E014B010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3247,7 +3263,9 @@ object fmSetup: TfmSetup
       62656C32380101000000CD020000070043617074696F6E000C0063625363726F
       6C6C4C6173740102000000CF020000070043617074696F6ECE02000004004869
       6E74000B00506F7075704C6578657273000006006564577261700101000000D1
-      02000005004974656D7300}
+      02000005004974656D73000C00636254726565457870616E640101000000D202
+      0000070043617074696F6E000E00636254726565436F6C6C6170736501010000
+      00D3020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

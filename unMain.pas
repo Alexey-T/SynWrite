@@ -5109,6 +5109,8 @@ begin
     WriteInteger('Tree', 'FontSize', Tree.Font.Size);
     WriteInteger('Tree', 'FontColor', Tree.Font.Color);
     WriteBool('Tree', 'ASync', Tree.AutoSynchronize);
+    WriteBool('Tree', 'ACollapse', Tree.AutoCollapse);
+    WriteBool('Tree', 'AExpand', Tree.AutoExpand);
     WriteInteger('Tree', 'Delay', Tree.UpdateDelay);
 
     //WriteBool('ACP', 'TplTab', opTemplateTabbing);
