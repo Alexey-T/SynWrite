@@ -3260,8 +3260,8 @@ uses
 {$R Text.res}
 
 const
-  cSynVer = '6.4.730';
-  cSynPyVer = '1.0.120';
+  cSynVer = '6.4.740';
+  cSynPyVer = '1.0.121';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -28219,14 +28219,17 @@ function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H, NId, NPos, NIcon, NColor: Integer;
   Ed, Ed2: TSyntaxMemo;
+  PHint: PAnsiChar;
+  SHint: Widestring;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iiiii:ed_set_bk', @H, @NId, @NPos, @NIcon, @NColor)) then
+    if Bool(PyArg_ParseTuple(Args, 'iiiiis:ed_set_bk', @H, @NId, @NPos, @NIcon, @NColor, @PHint)) then
     begin
       Ed:= PyEditor(H);
       Ed2:= fmMain.BrotherEditor(Ed);
-      EditorBookmarkCommand(Ed, NId, NPos, NIcon, NColor);
-      EditorBookmarkCommand(Ed2, NId, NPos, NIcon, NColor);
+      SHint:= UTF8Decode(AnsiString(PHint));
+      EditorBookmarkCommand(Ed, NId, NPos, NIcon, NColor, SHint);
+      EditorBookmarkCommand(Ed2, NId, NPos, NIcon, NColor, SHint);
       Result:= ReturnNone;
     end;
 end;

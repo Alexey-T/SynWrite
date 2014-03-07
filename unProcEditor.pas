@@ -14,9 +14,9 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
-procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer);
+procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer; const SHint: string);
 procedure EditorClearBookmarks(Ed: TSyntaxMemo);
-procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos, NIcon, NColor: Integer);
+procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos, NIcon, NColor: Integer; const SHint: string);
 procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
 function EditorGetBottomLineIndex(Ed: TSyntaxMemo): Integer;
 function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
@@ -2143,6 +2143,9 @@ begin
   with Ed.BookmarkObj do
     for i:= 0 to Min(Count, cMaxItems) - 1 do
     begin
+      //don't read bookmarks from SynLint (hint begins with "!")
+      if SBegin(Items[i].Hint, '!') then Continue;
+
       NIndex:= Items[i].BmIndex;
       Result:= Result +
         IfThen(NIndex < 10, ':'+IntToStr(NIndex)+':') +
@@ -2790,7 +2793,9 @@ begin
   Result:= Ed.MouseToCaret(0, Ed.ClientHeight-1).Y;
 end;
 
-procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos, NIcon, NColor: Integer);
+procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo;
+  NPos, NIcon, NColor: Integer;
+  const SHint: string);
 const
   cMaxBk = 1*1000*1000;
 var
@@ -2818,6 +2823,8 @@ begin
         Ed.BookmarkObj.Items[i].ImageIndex:= NIcon;
       if NColor>=0 then
         Ed.BookmarkObj.Items[i].BgColor:= NColor;
+      if SHint<>'' then
+        Ed.BookmarkObj.Items[i].Hint:= SHint;
       Break
     end;
 end;
@@ -2828,7 +2835,7 @@ begin
   Ed.Invalidate;
 end;
 
-procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer);
+procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer; const SHint: string);
 begin
   case NCmd of
     0..9:
@@ -2836,7 +2843,7 @@ begin
         Ed.Bookmarks[NCmd]:= NPos;
         Ed.Invalidate;
       end;
-    -1: EditorSetBookmarkUnnumbered(Ed, NPos, NIcon, NColor);
+    -1: EditorSetBookmarkUnnumbered(Ed, NPos, NIcon, NColor, SHint);
     -2: EditorClearBookmarks(Ed);
   end;
 end;
