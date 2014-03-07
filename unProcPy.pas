@@ -25,7 +25,7 @@ function Py_text_local(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_text_convert(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 
-procedure Py_AddSysPath(const Dir: Widestring);
+procedure Py_SetSysPath(const Dirs: array of string);
 function Py_RunPlugin_Command(const SId, SCmd: string): string;
 function Py_RunPlugin_Event(const SId, SCmd: string; AEd: TSyntaxMemo; const AParams: array of string): string;
 function Py_NameToMixedCase(const S: string): string;
@@ -1168,12 +1168,16 @@ begin
     end;
 end;
 
-procedure Py_AddSysPath(const Dir: Widestring);
-const
-  cCmd = 'sys.path.append(r"%s")';
+procedure Py_SetSysPath(const Dirs: array of string);
+var
+  Str: AnsiString;
+  i: Integer;
 begin
-  with GetPythonEngine do
-    ExecString(Format(cCmd, [UTF8Encode(Dir)]));
+  Str:= '';
+  for i:= 0 to Length(Dirs)-1 do
+    Str:= Str + Format('r"%s", ', [UTF8Encode(Dirs[i])]);
+  Str:= Format('sys.path = [%s]', [Str]);
+  GetPythonEngine.ExecString(Str);
 end;
 
 function Py_set_clip(Self, Args: PPyObject): PPyObject; cdecl;

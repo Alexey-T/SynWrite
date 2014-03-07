@@ -27736,12 +27736,14 @@ begin
 end;
 
 procedure TfmMain.PythonEngine1AfterInit(Sender: TObject);
+var
+  SDir, S1, S2, S3: string;
 begin
-  Py_AddSysPath(SynPyDir);
-
-  //no need now:
-  //with GetPythonEngine do
-  //  ExecString('from sw_api import *');
+  SDir:= ExtractFilePath(ParamStr(0));
+  S1:= SDir + 'DLLs';
+  S2:= SDir + 'python32.zip';
+  S3:= SDir + 'Py';
+  Py_SetSysPath([S1, S2, S3]);
 end;
 
 function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
