@@ -245,6 +245,7 @@ object EditorFrame: TEditorFrame
       OnContextPopup = EditorMasterContextPopup
       OnEnter = EditorMasterEnter
       OnKeyDown = EditorMasterKeyDown
+      OnMouseUp = EditorMasterMouseUp
     end
     object EditorSlave: TSyntaxMemo
       Left = 0
@@ -445,6 +446,7 @@ object EditorFrame: TEditorFrame
       OnContextPopup = EditorMasterContextPopup
       OnEnter = EditorMasterEnter
       OnKeyDown = EditorMasterKeyDown
+      OnMouseUp = EditorMasterMouseUp
     end
   end
   object ecSpellChecker: TecSpellChecker

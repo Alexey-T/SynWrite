@@ -104,7 +104,10 @@ type
       Line: Integer);
     procedure TBXItemSplitVertClick(Sender: TObject);
     procedure EditorMasterModifiedChanged(Sender: TObject);
+    procedure EditorMasterMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
+    FMouseClickOnNumbers: boolean;
     FAlertEnabled: boolean;
     FPyChangeTick: DWORD;
     FIsMasterFocused: boolean;
@@ -348,6 +351,7 @@ begin
       TfmMain(Owner).DoFindId;
     end;
 
+  FMouseClickOnNumbers:= EditorMouseCursorOnNumbers(Ed);
   FIsMasterFocused:= Ed=EditorMaster;
   SyncMap;
 end;
@@ -759,26 +763,30 @@ procedure TEditorFrame.EditorMasterGutterClick(Sender: TObject;
   Line: Integer; Buton: TMouseButton; Shift: TShiftState; XY: TPoint);
 var
   Ed: TSyntaxMemo;
-  ColX1, ColX2: Integer;
+  nColX1, nColX2: Integer;
   //IsNums,
   IsBkmk: boolean;
 begin
   Ed:= Sender as TSyntaxMemo;
-  ColX1:= Ed.Gutter.Bands[0].Width;
-  ColX2:= ColX1+Ed.Gutter.Bands[1].Width;
-  //IsNums:= (XY.X<ColX1);
-  IsBkmk:= (XY.X>=ColX1) and (XY.X<ColX2);
 
-  {
+  nColX1:= Ed.Gutter.Bands[0].Width;
+  nColX2:= nColX1 + Ed.Gutter.Bands[1].Width;
+  //IsNums:= (XY.X < nColX1);
+  IsBkmk:= (XY.X >= nColX1) and (XY.X < nColX2);
+
   //doesnt work
+  {
   if IsNums and (Buton=mbLeft) then
+  begin
+    MsgBeep;
     if (Line>=0) and (Line<Ed.Lines.Count) then
     begin
       Ed.SetSelection(Ed.CaretPosToStrPos(Point(0, Line)), Ed.Lines.LineSpace(Line));
       //TfmMain(Owner).UpdateStatusBar;
       Exit
     end;
-    }
+  end;
+  }
 
   if IsBkmk and (Buton=mbLeft) and (Shift=[ssLeft]) then
   begin
@@ -1693,6 +1701,22 @@ begin
     DoTitleChanged;
     FModifiedPrev:= Modified;
   end;
+end;
+
+procedure TEditorFrame.EditorMasterMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  Ed: TSyntaxMemo;
+  Line: Integer;
+begin
+  Ed:= Sender as TSyntaxMemo;
+  if EditorMouseCursorOnNumbers(Ed) and FMouseClickOnNumbers then
+    if not Ed.HaveSelection then
+    begin
+      Line:= Ed.MouseToCaret(X, Y).Y;
+      if (Line>=0) and (Line<Ed.Lines.Count) then
+        Ed.SetSelection(Ed.CaretPosToStrPos(Point(0, Line)), Ed.Lines.LineSpace(Line));
+    end;    
 end;
 
 initialization

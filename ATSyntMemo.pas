@@ -955,7 +955,14 @@ begin
       smLineEnd,
       smLastLetter:
         begin
-          P.X:= Lines.LineLength(P.Y);
+          //End key should toggle position: line end <--> last non-space char
+          if P.X = Lines.LineLength(P.Y) then
+          begin
+            while (P.X>0) and (Lines[P.Y][P.X]=' ') do
+              Dec(P.X);
+          end
+          else
+            P.X:= Lines.LineLength(P.Y);
         end;
     end;
 

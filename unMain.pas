@@ -3260,7 +3260,7 @@ uses
 {$R Text.res}
 
 const
-  cSynVer = '6.4.740';
+  cSynVer = '6.4.750';
   cSynPyVer = '1.0.121';
 
 const
@@ -9098,6 +9098,7 @@ begin
   begin
     EditorMaster.LineNumbers.Visible:= not EditorMaster.LineNumbers.Visible;
     EditorSlave.LineNumbers.Visible:= EditorMaster.LineNumbers.Visible;
+    TemplateEditor.LineNumbers.Visible:= EditorMaster.LineNumbers.Visible;
     UpdateGutterWidth(EditorMaster);
     UpdateGutterWidth(EditorSlave);
   end;

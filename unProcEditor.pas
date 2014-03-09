@@ -14,6 +14,7 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
+function EditorMouseCursorOnNumbers(Ed: TSyntaxMemo): boolean;
 procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer; const SHint: string);
 procedure EditorClearBookmarks(Ed: TSyntaxMemo);
 procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos, NIcon, NColor: Integer; const SHint: string);
@@ -2847,6 +2848,17 @@ begin
     -2: EditorClearBookmarks(Ed);
   end;
 end;
+
+function EditorMouseCursorOnNumbers(Ed: TSyntaxMemo): boolean;
+var
+  P: TPoint;
+begin
+  P:= Mouse.CursorPos;
+  P:= Ed.ScreenToClient(P);
+  Result:= Ed.LineNumbers.Visible and
+    (P.X <= Ed.Gutter.Bands[0].Width);
+end;
+
 
 
 end.
