@@ -3171,7 +3171,7 @@ type
     function FrameForFilename(const fn: Widestring): TEditorFrame;
     function DoCheckCommandLineTwo: boolean;
     procedure DoClearSearchHistory;
-    procedure DoEnumLexers(L: TTntStrings);
+    procedure DoEnumLexers(L: TTntStrings; AlsoDisabled: boolean = false);
     function DoPyEvent(
       AEd: TSyntaxMemo;
       AEvent: TSynPyEvent;
@@ -27758,6 +27758,147 @@ begin
     Result:= PyString_FromString(cSynPyVer);
 end;
 
+function Py_lexer_proc(Self, Args : PPyObject): PPyObject; cdecl;
+const
+  LEXER_GET_LIST    = 0;
+  LEXER_GET_ENABLED = 1;
+  LEXER_GET_EXT     = 2;
+  LEXER_GET_MOD     = 3;
+  LEXER_SET_NAME    = 10;
+  LEXER_SET_ENABLED = 11;
+  LEXER_SET_EXT     = 12;
+  LEXER_SAVE_LIB    = 20;
+  LEXER_DELETE      = 21;
+  LEXER_IMPORT      = 22;
+  LEXER_EXPORT      = 23;
+  LEXER_CONFIG      = 24;
+  LEXER_CONFIG_ALT  = 25;
+var
+  Id: Integer;
+  Ptr: PAnsiChar;
+  Str, Str1, Str2: Widestring;
+  List: TTntStringList;
+  An: TSyntAnalyzer;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'is', @Id, @Ptr)) then
+    begin
+      Str:= UTF8Decode(AnsiString(Ptr));
+      Str1:= SGetItem(Str, ';');
+      Str2:= SGetItem(Str, ';');
+
+      case Id of
+        LEXER_GET_LIST:
+          begin
+            List:= TTntStringList.Create;
+            try
+              fmMain.DoEnumLexers(List, true);
+              List.Sort;
+              Result:= PyUnicode_FromWideString(List.Text);
+            finally
+              FreeAndNil(List);
+            end;
+          end;
+        LEXER_GET_ENABLED:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+              Result:= PyBool_FromLong(Ord(not An.Internal))
+            else
+              Result:= ReturnNone;
+          end;
+        LEXER_GET_EXT:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+              Result:= PyUnicode_FromWideString(An.Extentions)
+            else
+              Result:= ReturnNone;
+          end;
+        LEXER_GET_MOD:
+          begin
+            Result:= PyBool_FromLong(Ord(fmMain.SyntaxManager.Modified));
+          end;  
+
+        LEXER_SET_ENABLED:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+              An.Internal:= Str2='0';
+            Result:= ReturnNone;
+          end;
+        LEXER_SET_NAME:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+              An.LexerName:= Str2;
+            Result:= ReturnNone;
+          end;
+        LEXER_SET_EXT:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+              An.Extentions:= Str2;
+            Result:= ReturnNone;
+          end;
+
+        LEXER_IMPORT:
+          begin
+            if FileExists(Str1) then
+            begin
+              An:= fmMain.SyntaxManager.AddAnalyzer;
+              An.LoadFromFile(Str1);
+              Result:= PyUnicode_FromWideString(An.LexerName);
+            end
+            else
+              Result:= ReturnNone;
+          end;
+        LEXER_EXPORT:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+            begin
+              An.SaveToFile(Str2);
+              Result:= PyBool_FromLong(1);
+            end
+            else
+              Result:= PyBool_FromLong(0);
+          end;
+        LEXER_DELETE:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+              An.Free;
+            Result:= ReturnNone;
+          end;
+        LEXER_CONFIG:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+              Result:= PyBool_FromLong(Ord(An.CustomizeLexer))
+            else
+              Result:= ReturnNone;
+          end;
+        LEXER_CONFIG_ALT:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+              Result:= PyBool_FromLong(Ord(An.Customize))
+            else
+              Result:= ReturnNone;
+          end;
+        LEXER_SAVE_LIB:
+          begin
+            with fmMain.SyntaxManager do
+              SaveToFile(FileName);
+            Result:= ReturnNone;
+          end;
+        else
+          Result:= ReturnNone;
+      end;
+    end;
+end;
+
 function Py_ed_set_split(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H, NHorz, NValue: Integer;
@@ -28249,6 +28390,7 @@ begin
     AddMethod('app_ini_dir', Py_app_ini_dir, '');
     AddMethod('app_log', Py_app_log, '');
     AddMethod('app_lock', Py_app_lock, '');
+    AddMethod('lexer_proc', Py_lexer_proc, '');
 
     AddMethod('ini_read', Py_ini_read, '');
     AddMethod('ini_write', Py_ini_write, '');
@@ -28865,13 +29007,13 @@ begin
   end;
 end;
 
-procedure TfmMain.DoEnumLexers(L: TTntStrings);
+procedure TfmMain.DoEnumLexers(L: TTntStrings; AlsoDisabled: boolean = false);
 var
   i: Integer;
 begin
   with SyntaxManager do
     for i:= 0 to AnalyzerCount-1 do
-      if not Analyzers[i].Internal then
+      if AlsoDisabled or not Analyzers[i].Internal then
         L.Add(Analyzers[i].LexerName);
 end;
 
