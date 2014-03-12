@@ -14,6 +14,9 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
+function EditorTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
+procedure EditorTokenType(Ed: TSyntaxMemo; StartPos, EndPos: Integer; var IsCmt, IsStr: boolean);
+
 function EditorMouseCursorOnNumbers(Ed: TSyntaxMemo): boolean;
 procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer; const SHint: string);
 procedure EditorClearBookmarks(Ed: TSyntaxMemo);
@@ -151,7 +154,6 @@ function EditorWordLength(Ed: TSyntaxMemo): Integer;
 function EditorGetSelTextLimited(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
 function EditorGetCollapsedRanges(Ed: TSyntaxMemo): string;
 procedure EditorSetCollapsedRanges(Ed: TSyntaxMemo; S: Widestring);
-function EditorTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
 procedure EditorCommentLinesAlt(Ed: TSyntaxMemo; const sComment: Widestring);
 
 procedure EditorCollapseWithNested(Ed: TSyntaxMemo; Line: Integer);
@@ -161,6 +163,10 @@ function IsEditorLineCollapsed(Ed: TCustomSyntaxMemo; Line: Integer): boolean;
 
 procedure EditorCountWords(L: TSyntMemoStrings; var NWords, NChars: Int64);
 procedure EditorCenterPos(Ed: TCustomSyntaxMemo; AGotoMode: boolean; NOffsetY: Integer);
+
+var
+  EditorSynLexersCfg: string = '';
+  EditorSynLexersExCfg: string = '';
 
 implementation
 
@@ -175,8 +181,13 @@ uses
   TntSysUtils,
   TntWideStrUtils,
   ATxSProc,
+  IniFiles,
   ecCmdConst,
   ecExports;
+
+var
+  FListCommentStyles: TStringList = nil; //holds "Comments" style list
+  FListStringStyles: TStringList = nil; //holds "Strings" style list
 
 procedure EditorSearchMarksToList(Ed: TSyntaxmemo; List: TTntStrings);
 var
@@ -2856,9 +2867,93 @@ begin
   P:= Mouse.CursorPos;
   P:= Ed.ScreenToClient(P);
   Result:= Ed.LineNumbers.Visible and
-    (P.X <= Ed.Gutter.Bands[0].Width);
+    //assume that line-numbers column is 0
+    (P.X >= 0) and (P.X < Ed.Gutter.Bands[0].Width);
+end;
+
+procedure InitStyleLists;
+var
+  AListCmt, AListStr: TStringList;
+begin
+  if FListCommentStyles=nil then
+  begin
+    FListCommentStyles:= TStringList.Create;
+    FListStringStyles:= TStringList.Create;
+
+    with TIniFile.Create(EditorSynLexersCfg) do
+    try
+      ReadSectionValues('CommentStyles', FListCommentStyles);
+      ReadSectionValues('StringStyles', FListStringStyles);
+    finally
+      Free
+    end;
+
+    AListCmt:= TStringList.Create;
+    AListStr:= TStringList.Create;
+    try
+      with TIniFile.Create(EditorSynLexersExCfg) do
+      try
+        ReadSectionValues('CommentStyles', AListCmt);
+        ReadSectionValues('StringStyles', AListStr);
+        FListCommentStyles.AddStrings(AListCmt);
+        FListStringStyles.AddStrings(AListStr);
+      finally
+        Free
+      end;
+    finally
+      FreeAndNil(AListStr);
+      FreeAndNil(AListCmt);
+    end;
+  end;
 end;
 
 
+function IsStyleListed(const Style, Lexer: string; List: TStringList): boolean;
+var
+  Val: string;
+begin
+  Result:= false;
+  if (Style='') or (Lexer='') then Exit;
+  Val:= List.Values[Lexer];
+  if Val<>'' then
+    Result:= IsStringListed(Style, Val);
+end;
+
+procedure EditorTokenType(Ed: TSyntaxMemo;
+  StartPos, EndPos: Integer;
+  var IsCmt, IsStr: boolean);
+var
+  Lexer, Style: string;
+begin
+  Lexer:= EditorCurrentLexerForPos(Ed, StartPos);
+  if Lexer='' then Exit;
+  Style:= EditorTokenName(Ed, StartPos, EndPos);
+
+  InitStyleLists;
+
+  //we treat empty Style as string, but only for those lexers, which aren't
+  //listed in [CommentStyles], [StringStyles]
+  if (Style='') and
+    (FListCommentStyles.IndexOfName(Lexer)<0) and
+    (FListStringStyles.IndexOfName(Lexer)<0) then
+  begin
+    IsCmt:= false;
+    IsStr:= true;
+  end
+  else
+  begin
+    IsCmt:= IsStyleListed(Style, Lexer, FListCommentStyles);
+    IsStr:= IsStyleListed(Style, Lexer, FListStringStyles);
+  end;
+end;
+
+
+initialization
+
+finalization
+  if Assigned(FListCommentStyles) then
+    FreeAndNil(FListCommentStyles);
+  if Assigned(FListStringStyles) then
+    FreeAndNil(FListStringStyles);
 
 end.

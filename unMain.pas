@@ -2171,8 +2171,6 @@ type
     FFullScr: boolean; //full-screen
     FOnTop: boolean; //always-on-top
     FBoundsRectOld: TRect;
-    FListCommentStyles: TStringList; //holds "Comments" style list
-    FListStringStyles: TStringList; //holds "Strings" style list
 
     //forms
     fmNumConv: TfmNumConv;
@@ -2703,7 +2701,6 @@ type
     procedure SaveToolbarsProps;
     function DoReadTotalHistory: Widestring;
 
-    procedure InitStyleLists;
     function IsPositionMatchesTokens(Ed: TSyntaxMemo; StartPos, EndPos: Integer;
       OptTokens: TSearchTokens): boolean;
 
@@ -3260,7 +3257,7 @@ uses
 {$R Text.res}
 
 const
-  cSynVer = '6.4.750';
+  cSynVer = '6.4.752';
   cSynPyVer = '1.0.121';
 
 const
@@ -7198,6 +7195,9 @@ begin
   SynIsPortable:= IsFileExist(SynDir + 'Portable.ini');
   InitSynIniDir;
 
+  EditorSynLexersCfg:= SynLexersCfg;
+  EditorSynLexersExCfg:= SynLexersExCfg;
+
   SynMruFiles:= TSynMruList.Create;
   SynMruSessions:= TSynMruList.Create;
   SynMruProjects:= TSynMruList.Create;
@@ -7541,11 +7541,6 @@ begin
   FreeAndNil(FListNewDocs);
   FreeAndNil(FListConv);
   FreeAndNil(FListLexersSorted);
-
-  if Assigned(FListCommentStyles) then
-    FreeAndNil(FListCommentStyles);
-  if Assigned(FListStringStyles) then
-    FreeAndNil(FListStringStyles);
 
   if Assigned(FListSnippets) then
   begin
@@ -23738,83 +23733,15 @@ begin
   end;
 end;
 
-procedure TfmMain.InitStyleLists;
-var
-  AListCmt, AListStr: TStringList;
-begin
-  if FListCommentStyles=nil then
-  begin
-    FListCommentStyles:= TStringList.Create;
-    FListStringStyles:= TStringList.Create;
-
-    with TIniFile.Create(SynLexersCfg) do
-    try
-      ReadSectionValues('CommentStyles', FListCommentStyles);
-      ReadSectionValues('StringStyles', FListStringStyles);
-    finally
-      Free
-    end;
-
-    AListCmt:= TStringList.Create;
-    AListStr:= TStringList.Create;
-    try
-      with TIniFile.Create(SynLexersExCfg) do
-      try
-        ReadSectionValues('CommentStyles', AListCmt);
-        ReadSectionValues('StringStyles', AListStr);
-        FListCommentStyles.AddStrings(AListCmt);
-        FListStringStyles.AddStrings(AListStr);
-      finally
-        Free
-      end;
-    finally
-      FreeAndNil(AListStr);
-      FreeAndNil(AListCmt);
-    end;
-  end;
-end;
-
-function IsStyleListed(const Style, Lexer: string; List: TStringList): boolean;
-var
-  Val: string;
-begin
-  Result:= false;
-  if (Style='') or (Lexer='') then Exit;
-  Val:= List.Values[Lexer];
-  if Val<>'' then
-    Result:= IsStringListed(Style, Val);
-end;
-
 function TfmMain.IsPositionMatchesTokens(Ed: TSyntaxMemo;
   StartPos, EndPos: Integer; OptTokens: TSearchTokens): boolean;
 var
   IsCmt, IsStr: boolean;
-  Lexer, Style: string;
 begin
   Result:= true;
   if OptTokens=tokensAll then Exit;
 
-  Lexer:= EditorCurrentLexerForPos(Ed, StartPos);
-  if Lexer='' then Exit;
-  Style:= EditorTokenName(Ed, StartPos, EndPos);
-
-  InitStyleLists;
-  
-  //we treat empty Style as string, but only for those lexers, which aren't
-  //listed in [CommentStyles], [StringStyles]
-  if (Style='') and
-    (FListCommentStyles.IndexOfName(Lexer)<0) and
-    (FListStringStyles.IndexOfName(Lexer)<0) then
-  begin
-    IsCmt:= false;
-    IsStr:= true;
-  end
-  else
-  begin
-    IsCmt:= IsStyleListed(Style, Lexer, FListCommentStyles);
-    IsStr:= IsStyleListed(Style, Lexer, FListStringStyles);
-  end;
-
+  EditorTokenType(Ed, StartPos, EndPos, IsCmt, IsStr);
   case OptTokens of
     tokensCmt:
       Result:= IsCmt;
@@ -27774,6 +27701,7 @@ const
   LEXER_EXPORT      = 23;
   LEXER_CONFIG      = 24;
   LEXER_CONFIG_ALT  = 25;
+  LEXER_ACTIVATE    = 26;
 var
   Id: Integer;
   Ptr: PAnsiChar;
@@ -27892,6 +27820,13 @@ begin
           begin
             with fmMain.SyntaxManager do
               SaveToFile(FileName);
+            Result:= ReturnNone;
+          end;
+        LEXER_ACTIVATE:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            fmMain.CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= An;
+            fmMain.UpdateLexerTo(An);
             Result:= ReturnNone;
           end;
         else

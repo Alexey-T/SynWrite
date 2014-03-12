@@ -310,6 +310,9 @@ end;
 
 
 function Py_ed_get_lexer(Self, Args: PPyObject): PPyObject; cdecl;
+const
+  LEXER_FOR_FILE  = -1;
+  LEXER_FOR_CARET = -2;
 var
   H: Integer;
   Pos: Integer;
@@ -323,13 +326,13 @@ begin
       Ed:= PyEditor(H);
       Str:= '';
       case Pos of
-        -1:
+        LEXER_FOR_FILE:
           begin
             An:= Ed.TextSource.SyntaxAnalyzer;
             if An<>nil then
               Str:= An.LexerName;
           end;
-        -2:
+        LEXER_FOR_CARET:
           Str:= EditorCurrentLexerForPos(Ed, Ed.CaretStrPos);
         else
           Str:= EditorCurrentLexerForPos(Ed, Pos);

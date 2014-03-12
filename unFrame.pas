@@ -764,35 +764,19 @@ procedure TEditorFrame.EditorMasterGutterClick(Sender: TObject;
 var
   Ed: TSyntaxMemo;
   nColX1, nColX2: Integer;
-  //IsNums,
   IsBkmk: boolean;
 begin
   Ed:= Sender as TSyntaxMemo;
 
   nColX1:= Ed.Gutter.Bands[0].Width;
   nColX2:= nColX1 + Ed.Gutter.Bands[1].Width;
-  //IsNums:= (XY.X < nColX1);
   IsBkmk:= (XY.X >= nColX1) and (XY.X < nColX2);
 
-  //doesnt work
-  {
-  if IsNums and (Buton=mbLeft) then
-  begin
-    MsgBeep;
-    if (Line>=0) and (Line<Ed.Lines.Count) then
-    begin
-      Ed.SetSelection(Ed.CaretPosToStrPos(Point(0, Line)), Ed.Lines.LineSpace(Line));
-      //TfmMain(Owner).UpdateStatusBar;
-      Exit
-    end;
-  end;
-  }
-
+  //toggle unnumbered bookmark when clicked on its gutter column
   if IsBkmk and (Buton=mbLeft) and (Shift=[ssLeft]) then
   begin
     DoBkToggle(Ed, Line);
     TfmMain(Owner).UpdateStatusBar;
-    Exit
   end;
 end;
 
@@ -831,7 +815,7 @@ begin
   if nBk<0 then
     begin MsgBeep; Exit; end;
 
-  //remember col num?
+  //remember column
   if LineNum = Ed.CaretPos.Y then
     i:= Ed.CaretPos.X
   else
