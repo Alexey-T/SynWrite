@@ -1039,17 +1039,23 @@ const
   PROP_TOP         = 18;
   PROP_BOTTOM      = 19;
   PROP_RULER       = 20;
+  PROP_TOKEN_TYPE  = 21;
 
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
-  H, Id: Integer;
+  H, Id, NValue: Integer;
   Size: TSize;
   Ed: TSyntaxMemo;
+  Ptr: PAnsiChar;
+  Str: Widestring;
+  IsCmt, IsStr: boolean;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:ed_get_prop', @H, @Id)) then
+    if Bool(PyArg_ParseTuple(Args, 'iis:ed_get_prop', @H, @Id, @Ptr)) then
     begin
       Ed:= PyEditor(H);
+      Str:= UTF8Decode(AnsiString(Ptr));
+      NValue:= StrToIntDef(Str, 0);
       case Id of
         PROP_NUMS:
           Result:= PyBool_FromLong(Ord(Ed.LineNumbers.Visible));
@@ -1093,7 +1099,16 @@ begin
         PROP_BOTTOM:
           Result:= PyInt_FromLong(EditorGetBottomLineIndex(Ed));
         PROP_RULER:
-          Result:= PyBool_FromLong(Ord(Ed.HorzRuler.Visible));  
+          Result:= PyBool_FromLong(Ord(Ed.HorzRuler.Visible));
+        PROP_TOKEN_TYPE:
+          begin
+            //some issue?: needed position incremented
+            EditorGetTokenType(Ed, NValue+1, NValue+1, IsCmt, IsStr);
+            if IsCmt then Str:= 'c' else
+             if IsStr then Str:= 's' else
+              Str:= '';
+            Result:= PyUnicode_FromWideString(Str);
+          end;
         else
           Result:= ReturnNone;
       end;

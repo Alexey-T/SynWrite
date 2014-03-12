@@ -14,8 +14,8 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
-function EditorTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
-procedure EditorTokenType(Ed: TSyntaxMemo; StartPos, EndPos: Integer; var IsCmt, IsStr: boolean);
+function EditorGetTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
+procedure EditorGetTokenType(Ed: TSyntaxMemo; StartPos, EndPos: Integer; var IsCmt, IsStr: boolean);
 
 function EditorMouseCursorOnNumbers(Ed: TSyntaxMemo): boolean;
 procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer; const SHint: string);
@@ -368,7 +368,7 @@ begin
   Ed.Invalidate;
 end;
 
-function EditorTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
+function EditorGetTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
 var
   n: integer;
   t: TSyntToken;
@@ -2919,7 +2919,7 @@ begin
     Result:= IsStringListed(Style, Val);
 end;
 
-procedure EditorTokenType(Ed: TSyntaxMemo;
+procedure EditorGetTokenType(Ed: TSyntaxMemo;
   StartPos, EndPos: Integer;
   var IsCmt, IsStr: boolean);
 var
@@ -2927,7 +2927,7 @@ var
 begin
   Lexer:= EditorCurrentLexerForPos(Ed, StartPos);
   if Lexer='' then Exit;
-  Style:= EditorTokenName(Ed, StartPos, EndPos);
+  Style:= EditorGetTokenName(Ed, StartPos, EndPos);
 
   InitStyleLists;
 

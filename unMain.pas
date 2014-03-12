@@ -3257,8 +3257,8 @@ uses
 {$R Text.res}
 
 const
-  cSynVer = '6.4.752';
-  cSynPyVer = '1.0.121';
+  cSynVer = '6.4.755';
+  cSynPyVer = '1.0.122';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -23741,7 +23741,7 @@ begin
   Result:= true;
   if OptTokens=tokensAll then Exit;
 
-  EditorTokenType(Ed, StartPos, EndPos, IsCmt, IsStr);
+  EditorGetTokenType(Ed, StartPos, EndPos, IsCmt, IsStr);
   case OptTokens of
     tokensCmt:
       Result:= IsCmt;
