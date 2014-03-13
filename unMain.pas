@@ -2114,6 +2114,7 @@ type
     procedure TbxItemWinSplitHClick(Sender: TObject);
     procedure TbxItemWinSplitVClick(Sender: TObject);
     procedure ecToggleProjPreviewExecute(Sender: TObject);
+    procedure acExportHTMLBeforeExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -2850,6 +2851,7 @@ type
     procedure DoClearFindDialogStatus;
     procedure ProjPreviewVisibleChanged(Sender: TObject);
     procedure DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynViewId);
+    procedure UpadateFilenameForExport;
     //end of private
 
   protected
@@ -3257,7 +3259,7 @@ uses
 {$R Text.res}
 
 const
-  cSynVer = '6.4.755';
+  cSynVer = '6.4.756';
   cSynPyVer = '1.0.122';
 
 const
@@ -6820,6 +6822,8 @@ begin
     acExportRTF.ExportType:= etSelection
   else
     acExportRTF.ExportType:= etAllText;
+
+  UpadateFilenameForExport;
 end;
 
 procedure TfmMain.ecReadOnlyExecute(Sender: TObject);
@@ -29483,6 +29487,17 @@ procedure TfmMain.UpdateLexerTo(An: TSyntAnalyzer);
 begin
   SyntaxManager.CurrentLexer:= An;
   SyntaxManagerChange(Self);
+end;
+
+procedure TfmMain.acExportHTMLBeforeExecute(Sender: TObject);
+begin
+  UpadateFilenameForExport;
+end;
+
+procedure TfmMain.UpadateFilenameForExport;
+begin
+  //variable in ecActns.pas
+  ecActns.ecExportsBaseFilename:= ChangeFileExt(ExtractFileName(CurrentFrame.FileName), '');
 end;
 
 initialization
