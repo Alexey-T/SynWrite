@@ -28067,18 +28067,54 @@ begin
     end;
 end;
 
-function Py_app_log(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_get_console_list: PPyObject; cdecl;
 var
-  P: PAnsiChar;
+  NLen, i: Integer;
+  ComArray: Variant;
+begin
+  with GetPythonEngine do
+  begin
+    NLen:= fmMain.edConsole.Items.Count;
+    if NLen>0 then
+    begin
+      ComArray:= VarArrayCreate([0, NLen-1], varOleStr);
+      for i:= 0 to NLen-1 do
+      begin
+        ComArray[i]:= fmMain.edConsole.Items[i];
+      end;
+      Result:= VariantAsPyObject(ComArray);
+    end
+    else
+      Result:= ReturnNone;
+  end;
+end;
+
+
+function Py_app_log(Self, Args: PPyObject): PPyObject; cdecl;
+const
+  LOG_CLEAR         = 0;
+  LOG_ADD           = 1;
+  LOG_SET_PANEL     = 2;
+  LOG_SET_REGEX     = 3;
+  LOG_SET_LINE_ID   = 4;
+  LOG_SET_COL_ID    = 5;
+  LOG_SET_NAME_ID   = 6;
+  LOG_SET_FILENAME  = 7;
+  LOG_SET_ZEROBASE  = 8;
+  LOG_CONSOLE_CLEAR = 20;
+  LOG_CONSOLE_ADD   = 21;
+  LOG_CONSOLE_GET   = 22;
+var
+  Ptr: PAnsiChar;
   Str: Widestring;
   Id: Integer;
   LogListbox: TTntListbox;
   LogProps: ^TSynLogPanelProps;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'is:app_log', @Id, @P)) then
+    if Bool(PyArg_ParseTuple(Args, 'is:app_log', @Id, @Ptr)) then
     begin
-      Str:= UTF8Decode(AnsiString(P));
+      Str:= UTF8Decode(AnsiString(Ptr));
 
       case fmMain.SynPyLog of
         cSynLogOutput:
@@ -28094,15 +28130,44 @@ begin
       end;
 
       case Id of
-        0: LogListbox.Items.Clear;
-        1: LogListbox.Items.Add(Str);
-        2: fmMain.SynPyLog:= TSynLogPanelKind(StrToIntDef(Str, 0));
-        3: LogProps.RegexStr:= Str;
-        4: LogProps.RegexIdLine:= StrToIntDef(Str, 0);
-        5: LogProps.RegexIdCol:= StrToIntDef(Str, 0);
-        6: LogProps.RegexIdName:= StrToIntDef(Str, 0);
-        7: LogProps.DefFilename:= Str;
-        8: LogProps.ZeroBase:= Bool(StrToIntDef(Str, 0));
+        LOG_CLEAR:
+          LogListbox.Items.Clear;
+        LOG_ADD:
+          LogListbox.Items.Add(Str);
+        LOG_SET_PANEL:
+          fmMain.SynPyLog:= TSynLogPanelKind(StrToIntDef(Str, 0));
+        LOG_SET_REGEX:
+          LogProps.RegexStr:= Str;
+        LOG_SET_LINE_ID:
+          LogProps.RegexIdLine:= StrToIntDef(Str, 0);
+        LOG_SET_COL_ID:
+          LogProps.RegexIdCol:= StrToIntDef(Str, 0);
+        LOG_SET_NAME_ID:
+          LogProps.RegexIdName:= StrToIntDef(Str, 0);
+        LOG_SET_FILENAME:
+          LogProps.DefFilename:= Str;
+        LOG_SET_ZEROBASE:
+          LogProps.ZeroBase:= Bool(StrToIntDef(Str, 0));
+
+        LOG_CONSOLE_CLEAR:
+          with fmMain do
+          begin
+            MemoConsole.Lines.Clear;
+            edConsole.Text:= '';
+          end;
+        LOG_CONSOLE_ADD:
+          with fmMain do
+          begin
+            DoPyConsole_LogString(cPyConsolePrompt + Str);
+            edConsole.Text:= Str;
+            ComboUpdate(edConsole, opSaveSRHist);
+            edConsole.Text:= '';
+          end;
+        LOG_CONSOLE_GET:
+          begin
+            Result:= Py_get_console_list;
+            Exit; //skip ReturnNone
+          end;
       end;
 
       Result:= ReturnNone;
@@ -28162,55 +28227,16 @@ begin
 end;
 
 
-function Py_get_console(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  NLen, i: Integer;
-  ComArray: Variant;
-begin
-  with GetPythonEngine do
-  begin
-    NLen:= fmMain.edConsole.Items.Count;
-    if NLen>0 then
-    begin
-      ComArray:= VarArrayCreate([0, NLen-1], varOleStr);
-      for i:= 0 to NLen-1 do
-      begin
-        ComArray[i]:= fmMain.edConsole.Items[i];
-      end;
-      Result:= VariantAsPyObject(ComArray);
-    end
-    else
-      Result:= ReturnNone;
-  end;
-end;
-
-
-function Py_set_console(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_set_app_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
   Id: Integer;
-  P: PAnsiChar;
+  Ptr: PAnsiChar;
   Str: Widestring;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'is:set_console', @Id, @P)) then
+    if Bool(PyArg_ParseTuple(Args, 'is:set_app_prop', @Id, @Ptr)) then
     begin
-      Str:= UTF8Decode(AnsiString(P));
-      case Id of
-        0:
-          with fmMain do
-          begin
-            DoPyConsole_LogString(cPyConsolePrompt + Str);
-            edConsole.Text:= Str;
-            ComboUpdate(edConsole, opSaveSRHist);
-            edConsole.Text:= '';
-          end;
-        1:
-          with fmMain do
-          begin
-            MemoConsole.Lines.Clear;
-            edConsole.Text:= '';
-          end;
-      end;
+      Str:= UTF8Decode(AnsiString(Ptr));
       Result:= ReturnNone;
     end;
 end;
@@ -28340,8 +28366,8 @@ begin
 
     AddMethod('get_clip', Py_get_clip, '');
     AddMethod('set_clip', Py_set_clip, '');
-    AddMethod('get_console', Py_get_console, '');
-    AddMethod('set_console', Py_set_console, '');
+    //AddMethod('get_app_prop', Py_get_app_prop, '');
+    //AddMethod('set_app_prop', Py_set_app_prop, '');
 
     AddMethod('ed_get_bk', Py_ed_get_bk, '');
     AddMethod('ed_set_bk', Py_ed_set_bk, '');
