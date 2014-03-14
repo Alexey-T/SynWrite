@@ -1351,6 +1351,7 @@ type
     TbxItemWinSplitH: TSpTBXItem;
     TbxItemWinProjPre: TSpTBXItem;
     ecToggleProjPreview: TAction;
+    TbxItemCtxPlugins: TSpTBXSubmenuItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -23009,6 +23010,7 @@ begin
   with TbxSubmenuItemPlugins do
   begin
     Enabled:= true;
+    TbxItemCtxPlugins.Visible:= true;
 
     S:= SKey;
     CapMenu:= SGetItem(S, '\');
@@ -29195,7 +29197,7 @@ procedure TfmMain.DoLoadPlugins_Events(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
-  sKey, sValue, sValue2, sValue3, sValue4: Widestring;
+  sKey, sValue, sValue2, sValue3, sValue4, sValue5: Widestring;
 begin
   //clear Event list
   for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
@@ -29220,7 +29222,7 @@ begin
     NIndex:= Low(FPluginsEvent);
     for i:= 0 to ListSec.Count-1 do
     begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4, sValue5);
       if (sKey='') or (sValue='') then Continue;
 
       if NIndex<=High(FPluginsEvent) then
@@ -29243,7 +29245,7 @@ procedure TfmMain.DoLoadPlugins_Commands(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
-  sKey, sValue, sValue2, sValue3, sValue4: Widestring;
+  sKey, sValue, sValue2, sValueLexers, sValueHotkey, sValueFlags: Widestring;
 begin
   //clear Command list
   for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
@@ -29270,8 +29272,9 @@ begin
     NIndex:= Low(FPluginsCommand);
     for i:= 0 to ListSec.Count-1 do
     begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValueLexers, sValueHotkey, sValueFlags);
       if (sKey='') or (sValue='') then Continue;
+      //field sValueFlags is for future
 
       if NIndex<=High(FPluginsCommand) then
       begin
@@ -29280,10 +29283,11 @@ begin
         else
           FPluginsCommand[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
         FPluginsCommand[NIndex].SCmd:= sValue2;
-        FPluginsCommand[NIndex].SLexers:= sValue3;
+        FPluginsCommand[NIndex].SLexers:= sValueLexers;
         FPluginsCommand[NIndex].SCaption:= sKey;
-        FPluginsCommand[NIndex].SHotkey:= sValue4;
-        DoAddPluginMenuItem(sKey, sValue4, NIndex);
+        FPluginsCommand[NIndex].SHotkey:= sValueHotkey;
+
+        DoAddPluginMenuItem(sKey, sValueHotkey, NIndex);
         Inc(NIndex);
       end;
     end;
@@ -29296,7 +29300,7 @@ procedure TfmMain.DoLoadPlugins_Complete(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
-  sKey, sValue, sValue2, sValue3, sValue4: Widestring;
+  sKey, sValue, sValue2, sValue3, sValue4, sValue5: Widestring;
 begin
   //clear ACP list
   for i:= Low(FPluginsAcp) to High(FPluginsAcp) do
@@ -29320,7 +29324,7 @@ begin
     NIndex:= Low(FPluginsAcp);
     for i:= 0 to ListSec.Count-1 do
     begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4, sValue5);
       if (sKey='') or (sValue='') then Continue;
 
       if NIndex<=High(FPluginsAcp) then
@@ -29342,7 +29346,7 @@ procedure TfmMain.DoLoadPlugins_FindId(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
-  sKey, sValue, sValue2, sValue3, sValue4: Widestring;
+  sKey, sValue, sValue2, sValue3, sValue4, sValue5: Widestring;
 begin
   //clear FindID list
   for i:= Low(FPluginsFindid) to High(FPluginsFindid) do
@@ -29366,7 +29370,7 @@ begin
     NIndex:= Low(FPluginsFindid);
     for i:= 0 to ListSec.Count-1 do
     begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4, sValue5);
       if (sKey='') or (sValue='') then Continue;
 
       if NIndex<=High(FPluginsFindid) then
@@ -29388,7 +29392,7 @@ procedure TfmMain.DoLoadPlugins_Panels(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
-  sKey, sValue, sValue2, sValue3, sValue4: Widestring;
+  sKey, sValue, sValue2, sValue3, sValue4, sValue5: Widestring;
 begin
   //clear Panels list
   for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
@@ -29412,7 +29416,7 @@ begin
     NIndex:= Low(FPluginsPanel);
     for i:= 0 to ListSec.Count-1 do
     begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4);
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4, sValue5);
       if (sKey='') or (sValue='') then Continue;
 
       if NIndex<=High(FPluginsPanel) then

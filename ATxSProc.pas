@@ -44,7 +44,7 @@ function IsUpperChar(Ch: WideChar): boolean;
 function IsQuoteChar(ch: WideChar): boolean;
 function IsBracketChar(ch: WideChar): boolean;
 
-procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3, Val4: Widestring);
+procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3, Val4, Val5: Widestring);
 function SBufferToString(BufPtr: Pointer; BufSize: Integer): Widestring;
 
 function SGetLexerOverride(const AOption, ALexer: string;
@@ -1048,7 +1048,7 @@ begin
 end;
 
 
-procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3, Val4: Widestring);
+procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3, Val4, Val5: Widestring);
 var
   n: Integer;
   Val: Widestring;
@@ -1058,6 +1058,7 @@ begin
   Val2:= '';
   Val3:= '';
   Val4:= '';
+  Val5:= '';
 
   n:= Pos('=', Str);
   if n=0 then Exit;
@@ -1068,6 +1069,7 @@ begin
   Val2:= SGetItem(Val, ';');
   Val3:= SGetItem(Val, ';');
   Val4:= SGetItem(Val, ';');
+  Val5:= SGetItem(Val, ';');
 end;
 
 function SBufferToString(BufPtr: Pointer; BufSize: Integer): Widestring;
