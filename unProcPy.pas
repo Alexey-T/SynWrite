@@ -13,11 +13,11 @@ var
   PyIniDir: string = '';
 
 const
-  cSynPropRO = 'sw.PROP_RO';
-  cSynPropWrap = 'sw.PROP_WRAP';
+  cSynPropRO      = 'sw.PROP_RO';
+  cSynPropWrap    = 'sw.PROP_WRAP';
   cSynPropFolding = 'sw.PROP_FOLDING';
-  cSynPropNums = 'sw.PROP_NUMS';
-  cSynPropRuler = 'sw.PROP_RULER';
+  cSynPropNums    = 'sw.PROP_NUMS';
+  cSynPropRuler   = 'sw.PROP_RULER';
 
 function Py_get_clip(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_set_clip(Self, Args: PPyObject): PPyObject; cdecl;
@@ -57,6 +57,7 @@ function Py_ini_read(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ini_write(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_dlg_input(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_dlg_inputs(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_msg_box(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
@@ -102,6 +103,7 @@ uses
   Classes,
   IniFiles,
   Forms,
+  Controls,
   TntClipbrd,
   ecSyntAnal,
   ecStrUtils,
@@ -109,7 +111,7 @@ uses
   unProc,
   unProcHelp,
   unProcEditor,
-  ecLists;
+  ecLists, unInputEx;
 
 const
   cMaxBookmarks = 10000;
@@ -677,6 +679,73 @@ begin
   Result:= Py_ini_readwrite(Self, Args, true);
 end;
 
+
+function Py_dlg_inputs(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  Num: Integer;
+  PCaption,
+  PLab1, PLab2, PLab3, PLab4, PLab5, PLab6, PLab7, PLab8, PLab9, PLab10,
+  PText1, PText2, PText3, PText4, PText5, PText6, PText7, PText8, PText9, PText10: PAnsiChar;
+  Form: TfmInputEx;
+begin
+  with GetPythonEngine do
+  begin
+    if Bool(PyArg_ParseTuple(Args, 'isssssssssssssssssssss:dlg_inputs',
+      @Num, @PCaption,
+      @PLab1, @PText1,
+      @PLab2, @PText2,
+      @PLab3, @PText3,
+      @PLab4, @PText4,
+      @PLab5, @PText5,
+      @PLab6, @PText6,
+      @PLab7, @PText7,
+      @PLab8, @PText8,
+      @PLab9, @PText9,
+      @PLab10, @PText10)) then
+      begin
+        Form:= TfmInputEx.Create(nil);
+        Form.SetSize(Num);
+        Form.Caption:= UTF8Decode(AnsiString(PCaption));
+        Form.lab1.Caption:= UTF8Decode(AnsiString(PLab1));
+        Form.lab2.Caption:= UTF8Decode(AnsiString(PLab2));
+        Form.lab3.Caption:= UTF8Decode(AnsiString(PLab3));
+        Form.lab4.Caption:= UTF8Decode(AnsiString(PLab4));
+        Form.lab5.Caption:= UTF8Decode(AnsiString(PLab5));
+        Form.lab6.Caption:= UTF8Decode(AnsiString(PLab6));
+        Form.lab7.Caption:= UTF8Decode(AnsiString(PLab7));
+        Form.lab8.Caption:= UTF8Decode(AnsiString(PLab8));
+        Form.lab9.Caption:= UTF8Decode(AnsiString(PLab9));
+        Form.lab10.Caption:= UTF8Decode(AnsiString(PLab10));
+        Form.ed1.Text:= UTF8Decode(AnsiString(PText1));
+        Form.ed2.Text:= UTF8Decode(AnsiString(PText2));
+        Form.ed3.Text:= UTF8Decode(AnsiString(PText3));
+        Form.ed4.Text:= UTF8Decode(AnsiString(PText4));
+        Form.ed5.Text:= UTF8Decode(AnsiString(PText5));
+        Form.ed6.Text:= UTF8Decode(AnsiString(PText6));
+        Form.ed7.Text:= UTF8Decode(AnsiString(PText7));
+        Form.ed8.Text:= UTF8Decode(AnsiString(PText8));
+        Form.ed9.Text:= UTF8Decode(AnsiString(PText9));
+        Form.ed10.Text:= UTF8Decode(AnsiString(PText10));
+
+        if Form.ShowModal=mrOk then
+          Result:= PyUnicode_FromWideString(
+          Form.ed1.Text+#13+
+          Form.ed2.Text+#13+
+          Form.ed3.Text+#13+
+          Form.ed4.Text+#13+
+          Form.ed5.Text+#13+
+          Form.ed6.Text+#13+
+          Form.ed7.Text+#13+
+          Form.ed8.Text+#13+
+          Form.ed9.Text+#13+
+          Form.ed10.Text+#13
+          )
+        else
+          Result:= ReturnNone;  
+      end;
+  end;
+end;
+  
 function Py_dlg_input(Self, Args: PPyObject): PPyObject; cdecl;
 var
   P1, P2, P3, P4: PAnsiChar;

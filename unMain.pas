@@ -3260,7 +3260,7 @@ uses
 {$R Text.res}
 
 const
-  cSynVer = '6.4.756';
+  cSynVer = '6.4.760';
   cSynPyVer = '1.0.122';
 
 const
@@ -16019,7 +16019,7 @@ procedure TfmMain.DoToggleLineComment(Alt: boolean);
 var
   Ed: TSyntaxMemo;
   sCom: Widestring;
-  n: Integer;
+  nLine1, nLine2, n: Integer;
   NeedUncomm: boolean;
 begin
   Ed:= CurrentEditor;
@@ -16045,6 +16045,18 @@ begin
     else
       begin MsgBeep; Exit; end;
   end;
+
+  //work for: selection is small, 1-line, so better to unselect
+  //(to move caret down after toggling comment)
+  if Ed.SelLength>0 then
+  begin
+    Ed.GetSelectedLines(nLine1, nLine2);
+    if nLine1=nLine2 then
+    begin
+      Ed.CaretStrPos:= Ed.SelStart;
+      Ed.ResetSelection;
+    end;
+  end;    
 
   //toggle comment
   if NeedUncomm then
@@ -28350,6 +28362,7 @@ begin
     AddMethod('msg_box', Py_msg_box, '');
     AddMethod('msg_status', Py_msg_status, '');
     AddMethod('dlg_input', Py_dlg_input, '');
+    AddMethod('dlg_inputs', Py_dlg_inputs, '');
     AddMethod('dlg_menu', Py_dlg_menu, '');
 
     AddMethod('app_version', Py_app_version, '');

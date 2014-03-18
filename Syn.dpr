@@ -64,7 +64,8 @@ uses
   unSnipList in 'unSnipList.pas' {fmSnippetList: TTntForm},
   unSnipEd in 'unSnipEd.pas' {fmSnippetEditor},
   unUniList in 'unUniList.pas' {fmUniList: TTntForm},
-  unSRFiles in 'unSRFiles.pas' {fmSRFiles: TTntForm};
+  unSRFiles in 'unSRFiles.pas' {fmSRFiles: TTntForm},
+  unInputEx in 'unInputEx.pas' {fmInputEx};
 
 {$R *.res}
 {$R *.dkl_const.res}
@@ -76,6 +77,5 @@ begin
   Application.Title := 'SynWrite';
   Application.HintHidePause := 5000;
   Application.CreateForm(TfmSynEx, fmSynEx);
-  Application.CreateForm(TfmSRFiles, fmSRFiles);
   Application.Run;
 end.

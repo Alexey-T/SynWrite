@@ -5,7 +5,7 @@ object fmRename: TfmRename
   BorderStyle = bsDialog
   Caption = 'SynWrite'
   ClientHeight = 87
-  ClientWidth = 371
+  ClientWidth = 372
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
