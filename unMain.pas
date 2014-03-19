@@ -3260,8 +3260,8 @@ uses
 {$R Text.res}
 
 const
-  cSynVer = '6.4.760';
-  cSynPyVer = '1.0.122';
+  cSynVer = '6.4.765';
+  cSynPyVer = '1.0.123';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -28362,7 +28362,8 @@ begin
     AddMethod('msg_box', Py_msg_box, '');
     AddMethod('msg_status', Py_msg_status, '');
     AddMethod('dlg_input', Py_dlg_input, '');
-    AddMethod('dlg_inputs', Py_dlg_inputs, '');
+    AddMethod('dlg_input_ex', Py_dlg_input_ex, '');
+    AddMethod('dlg_input_memo', Py_dlg_input_memo, '');
     AddMethod('dlg_menu', Py_dlg_menu, '');
 
     AddMethod('app_version', Py_app_version, '');
@@ -28420,7 +28421,6 @@ begin
     AddMethod('ed_get_line_prop', Py_ed_get_line_prop, '');
     AddMethod('ed_get_carets', Py_ed_get_carets, '');
     AddMethod('ed_get_marks', Py_ed_get_marks, '');
-    AddMethod('ed_get_lexer', Py_ed_get_lexer, '');
     AddMethod('ed_get_prop', Py_ed_get_prop, '');
     AddMethod('ed_set_prop', Py_ed_set_prop_wrapper, '');
     AddMethod('ed_get_filename', Py_ed_get_filename, '');

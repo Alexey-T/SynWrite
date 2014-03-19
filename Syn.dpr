@@ -65,7 +65,8 @@ uses
   unSnipEd in 'unSnipEd.pas' {fmSnippetEditor},
   unUniList in 'unUniList.pas' {fmUniList: TTntForm},
   unSRFiles in 'unSRFiles.pas' {fmSRFiles: TTntForm},
-  unInputEx in 'unInputEx.pas' {fmInputEx};
+  unInputEx in 'unInputEx.pas' {fmInputEx},
+  unInputMemo in 'unInputMemo.pas' {fmInputMemo};
 
 {$R *.res}
 {$R *.dkl_const.res}

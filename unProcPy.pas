@@ -57,7 +57,8 @@ function Py_ini_read(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ini_write(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_dlg_input(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_dlg_inputs(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_dlg_input_ex(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_dlg_input_memo(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_msg_box(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
@@ -77,7 +78,6 @@ function Py_ed_log_xy(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_line_count(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_line_prop(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_lexer(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_sel_mode(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_sel(Self, Args: PPyObject): PPyObject; cdecl;
@@ -111,7 +111,7 @@ uses
   unProc,
   unProcHelp,
   unProcEditor,
-  ecLists, unInputEx;
+  ecLists, unInputEx, unInputMemo;
 
 const
   cMaxBookmarks = 10000;
@@ -310,38 +310,6 @@ begin
     end;
 end;
 
-
-function Py_ed_get_lexer(Self, Args: PPyObject): PPyObject; cdecl;
-const
-  LEXER_FOR_FILE  = -1;
-  LEXER_FOR_CARET = -2;
-var
-  H: Integer;
-  Pos: Integer;
-  Str: string;
-  Ed: TSyntaxMemo;
-  An: TSyntAnalyzer;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:ed_get_lexer', @H, @Pos)) then
-    begin
-      Ed:= PyEditor(H);
-      Str:= '';
-      case Pos of
-        LEXER_FOR_FILE:
-          begin
-            An:= Ed.TextSource.SyntaxAnalyzer;
-            if An<>nil then
-              Str:= An.LexerName;
-          end;
-        LEXER_FOR_CARET:
-          Str:= EditorCurrentLexerForPos(Ed, Ed.CaretStrPos);
-        else
-          Str:= EditorCurrentLexerForPos(Ed, Pos);
-      end;
-      Result:= PyUnicode_FromWideString(Str);
-    end;
-end;
 
 
 function Py_ed_replace(Self, Args: PPyObject): PPyObject; cdecl;
@@ -680,7 +648,7 @@ begin
 end;
 
 
-function Py_dlg_inputs(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_dlg_input_ex(Self, Args: PPyObject): PPyObject; cdecl;
 var
   Num: Integer;
   PCaption,
@@ -690,7 +658,7 @@ var
 begin
   with GetPythonEngine do
   begin
-    if Bool(PyArg_ParseTuple(Args, 'isssssssssssssssssssss:dlg_inputs',
+    if Bool(PyArg_ParseTuple(Args, 'isssssssssssssssssssss:dlg_input_ex',
       @Num, @PCaption,
       @PLab1, @PText1,
       @PLab2, @PText2,
@@ -704,48 +672,80 @@ begin
       @PLab10, @PText10)) then
       begin
         Form:= TfmInputEx.Create(nil);
-        Form.SetSize(Num);
-        Form.Caption:= UTF8Decode(AnsiString(PCaption));
-        Form.lab1.Caption:= UTF8Decode(AnsiString(PLab1));
-        Form.lab2.Caption:= UTF8Decode(AnsiString(PLab2));
-        Form.lab3.Caption:= UTF8Decode(AnsiString(PLab3));
-        Form.lab4.Caption:= UTF8Decode(AnsiString(PLab4));
-        Form.lab5.Caption:= UTF8Decode(AnsiString(PLab5));
-        Form.lab6.Caption:= UTF8Decode(AnsiString(PLab6));
-        Form.lab7.Caption:= UTF8Decode(AnsiString(PLab7));
-        Form.lab8.Caption:= UTF8Decode(AnsiString(PLab8));
-        Form.lab9.Caption:= UTF8Decode(AnsiString(PLab9));
-        Form.lab10.Caption:= UTF8Decode(AnsiString(PLab10));
-        Form.ed1.Text:= UTF8Decode(AnsiString(PText1));
-        Form.ed2.Text:= UTF8Decode(AnsiString(PText2));
-        Form.ed3.Text:= UTF8Decode(AnsiString(PText3));
-        Form.ed4.Text:= UTF8Decode(AnsiString(PText4));
-        Form.ed5.Text:= UTF8Decode(AnsiString(PText5));
-        Form.ed6.Text:= UTF8Decode(AnsiString(PText6));
-        Form.ed7.Text:= UTF8Decode(AnsiString(PText7));
-        Form.ed8.Text:= UTF8Decode(AnsiString(PText8));
-        Form.ed9.Text:= UTF8Decode(AnsiString(PText9));
-        Form.ed10.Text:= UTF8Decode(AnsiString(PText10));
+        try
+          Form.SetSize(Num);
+          Form.Caption:= UTF8Decode(AnsiString(PCaption));
+          Form.lab1.Caption:= UTF8Decode(AnsiString(PLab1));
+          Form.lab2.Caption:= UTF8Decode(AnsiString(PLab2));
+          Form.lab3.Caption:= UTF8Decode(AnsiString(PLab3));
+          Form.lab4.Caption:= UTF8Decode(AnsiString(PLab4));
+          Form.lab5.Caption:= UTF8Decode(AnsiString(PLab5));
+          Form.lab6.Caption:= UTF8Decode(AnsiString(PLab6));
+          Form.lab7.Caption:= UTF8Decode(AnsiString(PLab7));
+          Form.lab8.Caption:= UTF8Decode(AnsiString(PLab8));
+          Form.lab9.Caption:= UTF8Decode(AnsiString(PLab9));
+          Form.lab10.Caption:= UTF8Decode(AnsiString(PLab10));
+          Form.ed1.Text:= UTF8Decode(AnsiString(PText1));
+          Form.ed2.Text:= UTF8Decode(AnsiString(PText2));
+          Form.ed3.Text:= UTF8Decode(AnsiString(PText3));
+          Form.ed4.Text:= UTF8Decode(AnsiString(PText4));
+          Form.ed5.Text:= UTF8Decode(AnsiString(PText5));
+          Form.ed6.Text:= UTF8Decode(AnsiString(PText6));
+          Form.ed7.Text:= UTF8Decode(AnsiString(PText7));
+          Form.ed8.Text:= UTF8Decode(AnsiString(PText8));
+          Form.ed9.Text:= UTF8Decode(AnsiString(PText9));
+          Form.ed10.Text:= UTF8Decode(AnsiString(PText10));
 
-        if Form.ShowModal=mrOk then
-          Result:= PyUnicode_FromWideString(
-          Form.ed1.Text+#13+
-          Form.ed2.Text+#13+
-          Form.ed3.Text+#13+
-          Form.ed4.Text+#13+
-          Form.ed5.Text+#13+
-          Form.ed6.Text+#13+
-          Form.ed7.Text+#13+
-          Form.ed8.Text+#13+
-          Form.ed9.Text+#13+
-          Form.ed10.Text+#13
-          )
-        else
-          Result:= ReturnNone;  
+          if Form.ShowModal=mrOk then
+            Result:= PyUnicode_FromWideString(
+            Form.ed1.Text+#13+
+            Form.ed2.Text+#13+
+            Form.ed3.Text+#13+
+            Form.ed4.Text+#13+
+            Form.ed5.Text+#13+
+            Form.ed6.Text+#13+
+            Form.ed7.Text+#13+
+            Form.ed8.Text+#13+
+            Form.ed9.Text+#13+
+            Form.ed10.Text+#13
+            )
+          else
+            Result:= ReturnNone;
+        finally
+          FreeAndNil(Form);
+        end;
       end;
   end;
 end;
-  
+
+function Py_dlg_input_memo(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  PCaption, PLab, PText: PAnsiChar;
+  Form: TfmInputMemo;
+begin
+  with GetPythonEngine do
+  begin
+    if Bool(PyArg_ParseTuple(Args, 'sss:dlg_input_memo',
+      @PCaption, @PLab, @PText)) then
+      begin
+        Form:= TfmInputMemo.Create(nil);
+        try
+          Form.Caption:= UTF8Decode(AnsiString(PCaption));
+          Form.lab1.Caption:= UTF8Decode(AnsiString(PLab));
+          Form.Ed.Lines.Text:= UTF8Decode(AnsiString(PText));
+          Form.Ed.Font.Assign(PyEditor(0).Font); //font from active editor
+
+          if Form.ShowModal=mrOk then
+            Result:= PyUnicode_FromWideString(Form.Ed.Lines.Text)
+          else
+            Result:= ReturnNone;
+        finally
+          FreeAndNil(Form);
+        end;
+      end;
+  end;
+end;
+
 function Py_dlg_input(Self, Args: PPyObject): PPyObject; cdecl;
 var
   P1, P2, P3, P4: PAnsiChar;
@@ -1109,6 +1109,9 @@ const
   PROP_BOTTOM      = 19;
   PROP_RULER       = 20;
   PROP_TOKEN_TYPE  = 21;
+  PROP_LEXER_FILE  = 22;
+  PROP_LEXER_CARET = 23;
+  PROP_LEXER_POS   = 24;
 
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1118,6 +1121,7 @@ var
   Ptr: PAnsiChar;
   Str: Widestring;
   IsCmt, IsStr: boolean;
+  An: TSyntAnalyzer;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'iis:ed_get_prop', @H, @Id, @Ptr)) then
@@ -1169,6 +1173,7 @@ begin
           Result:= PyInt_FromLong(EditorGetBottomLineIndex(Ed));
         PROP_RULER:
           Result:= PyBool_FromLong(Ord(Ed.HorzRuler.Visible));
+
         PROP_TOKEN_TYPE:
           begin
             //some issue?: needed position incremented
@@ -1178,6 +1183,27 @@ begin
               Str:= '';
             Result:= PyUnicode_FromWideString(Str);
           end;
+
+        PROP_LEXER_FILE:
+          begin
+            An:= Ed.TextSource.SyntaxAnalyzer;
+            if An<>nil then
+              Str:= An.LexerName
+            else
+              Str:= '';
+            Result:= PyUnicode_FromWideString(Str);
+          end;
+        PROP_LEXER_CARET:
+          begin
+            Str:= EditorCurrentLexerForPos(Ed, Ed.CaretStrPos);
+            Result:= PyUnicode_FromWideString(Str);
+          end;
+        PROP_LEXER_POS:
+          begin
+            Str:= EditorCurrentLexerForPos(Ed, NValue);
+            Result:= PyUnicode_FromWideString(Str);
+          end;
+
         else
           Result:= ReturnNone;
       end;

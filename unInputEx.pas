@@ -38,9 +38,6 @@ type
     procedure SetSize(N: Integer);
   end;
 
-var
-  fmInputEx: TfmInputEx;
-
 implementation
 
 {$R *.dfm}
