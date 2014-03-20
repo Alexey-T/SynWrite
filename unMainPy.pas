@@ -678,6 +678,19 @@ begin
 end;
 
 
+procedure _SetPanelDock(Panel: TSpTBXDockablePanel; const DockId: string);
+begin
+  if DockId='' then Panel.Floating:= true else
+   if DockId='l' then Panel.CurrentDock:= fmMain.TbxDockLeft else
+    if DockId='r' then Panel.CurrentDock:= fmMain.TbxDockRight else
+     if DockId='b' then Panel.CurrentDock:= fmMain.TbxDockBottom else
+      //if DockId='L' then Panel.CurrentDock:= fmMain.TbxDockLeft1 else
+       //if DockId='R' then Panel.CurrentDock:= fmMain.TbxDockRight1 else
+        //if DockId='B' then Panel.CurrentDock:= fmMain.TbxDockBottom1 else
+         //if DockId='t' then Panel.CurrentDock:= fmMain.TbxDockTop else
+          begin end;
+end;
+
 function Py_dock_str(Panel: TSpTBXDockablePanel): PPyObject; cdecl;
 var
   Dock: TTBDock;
@@ -792,6 +805,7 @@ begin
       case Id of
         PROP_COORD_WINDOW:
           Application.MainForm.BoundsRect:= R;
+
         PROP_COORD_TREE:
           _SetPanelRect(fmMain.plTree, R);
         PROP_COORD_CLIP:
@@ -800,6 +814,15 @@ begin
           _SetPanelRect(fmMain.plOut, R);
         PROP_COORD_PRE:
           _SetPanelRect(fmMain.FProjPreview, R);
+
+        PROP_DOCK_TREE:
+          _SetPanelDock(fmMain.plTree, Str);
+        PROP_DOCK_CLIP:
+          _SetPanelDock(fmMain.plClip, Str);
+        PROP_DOCK_OUT:
+          _SetPanelDock(fmMain.plOut, Str);
+        PROP_DOCK_PRE:
+          _SetPanelDock(fmMain.FProjPreview, Str);
       end;
       Result:= ReturnNone;
     end;
