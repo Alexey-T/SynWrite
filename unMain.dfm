@@ -415,6 +415,8 @@ object fmMain: TfmMain
         Width = 121
         Height = 21
         Hint = 'Quick search'
+        ParentShowHint = False
+        ShowHint = False
         TabOrder = 0
         OnChange = edQsChange
         OnExit = edQsExit
