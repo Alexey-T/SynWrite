@@ -552,21 +552,6 @@ begin
 end;
 
 
-function Py_set_app_prop(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  Id: Integer;
-  Ptr: PAnsiChar;
-  Str: Widestring;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'is:set_app_prop', @Id, @Ptr)) then
-    begin
-      Str:= UTF8Decode(AnsiString(Ptr));
-      Result:= ReturnNone;
-    end;
-end;
-
-
 function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
 var
   Id: Integer;
@@ -669,7 +654,7 @@ begin
     Result:= Py_BuildValue('(iiii)', R.Left, R.Top, R.Right, R.Bottom);
 end;
 
-function _PanelRect(Panel: TSpTBXDockablePanel): TRect;
+function _GetPanelRect(Panel: TSpTBXDockablePanel): TRect;
 var
   P: TPoint;
 begin
@@ -679,6 +664,19 @@ begin
   else
     Result:= Panel.BoundsRect;
 end;
+
+procedure _SetPanelRect(Panel: TSpTBXDockablePanel; const R: TRect);
+begin
+  if Panel.Floating then
+  begin
+    Panel.FloatingPosition:= Point(R.Left, R.Top);
+    Panel.FloatingClientWidth:= R.Right-R.Left;
+    Panel.FloatingClientHeight:= R.Bottom-R.Top;
+  end
+  else
+    Panel.BoundsRect:= R;
+end;
+
 
 function Py_dock_str(Panel: TSpTBXDockablePanel): PPyObject; cdecl;
 var
@@ -741,13 +739,13 @@ begin
           Result:= Py_rect(Application.MainForm.BoundsRect);
 
         PROP_COORD_TREE:
-          Result:= Py_rect(_PanelRect(fmMain.plTree));
+          Result:= Py_rect(_GetPanelRect(fmMain.plTree));
         PROP_COORD_CLIP:
-          Result:= Py_rect(_PanelRect(fmMain.plClip));
+          Result:= Py_rect(_GetPanelRect(fmMain.plClip));
         PROP_COORD_OUT:
-          Result:= Py_rect(_PanelRect(fmMain.plOut));
+          Result:= Py_rect(_GetPanelRect(fmMain.plOut));
         PROP_COORD_PRE:
-          Result:= Py_rect(_PanelRect(fmMain.FProjPreview));
+          Result:= Py_rect(_GetPanelRect(fmMain.FProjPreview));
 
         PROP_DOCK_TREE:
           Result:= Py_dock_str(fmMain.plTree);
@@ -769,6 +767,41 @@ begin
         PROP_COORD_MONITOR3:
           Result:= Py_rect_monitor(3);
       end;
+    end;
+end;
+
+
+function Py_set_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
+var
+  Id: Integer;
+  Ptr: PAnsiChar;
+  Str, SRect: Widestring;
+  R: TRect;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'is:set_app_prop', @Id, @Ptr)) then
+    begin
+      Str:= UTF8Decode(AnsiString(Ptr));
+
+      SRect:= Str;
+      R.Left:= StrToIntDef(SGetItem(SRect), 0);
+      R.Top:= StrToIntDef(SGetItem(SRect), 0);
+      R.Right:= StrToIntDef(SGetItem(SRect), 0);
+      R.Bottom:= StrToIntDef(SGetItem(SRect), 0);
+
+      case Id of
+        PROP_COORD_WINDOW:
+          Application.MainForm.BoundsRect:= R;
+        PROP_COORD_TREE:
+          _SetPanelRect(fmMain.plTree, R);
+        PROP_COORD_CLIP:
+          _SetPanelRect(fmMain.plClip, R);
+        PROP_COORD_OUT:
+          _SetPanelRect(fmMain.plOut, R);
+        PROP_COORD_PRE:
+          _SetPanelRect(fmMain.FProjPreview, R);
+      end;
+      Result:= ReturnNone;
     end;
 end;
 

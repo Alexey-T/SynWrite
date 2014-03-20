@@ -27727,7 +27727,7 @@ begin
     AddMethod('get_clip', Py_get_clip, '');
     AddMethod('set_clip', Py_set_clip, '');
     AddMethod('get_app_prop', Py_get_app_prop, '');
-    //AddMethod('set_app_prop', Py_set_app_prop, '');
+    AddMethod('set_app_prop', Py_set_app_prop, '');
 
     AddMethod('ed_get_bk', Py_ed_get_bk, '');
     AddMethod('ed_set_bk', Py_ed_set_bk, '');
