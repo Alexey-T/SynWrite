@@ -734,18 +734,23 @@ begin
     Panel.BoundsRect:= R;
 end;
 
+const
+  DOCK_NONE = '';
+  DOCK_LEFT = 'l';
+  DOCK_LEFT1 = 'L';
+  DOCK_RIGHT = 'r';
+  DOCK_RIGHT1 = 'R';
+  DOCK_BOTTOM = 'b';
+  DOCK_BOTTOM1 = 'B';
+  DOCK_TOP = 't';
 
 procedure _SetPanelDock(Panel: TSpTBXDockablePanel; const DockId: string);
 begin
-  if DockId='' then Panel.Floating:= true else
-   if DockId='l' then Panel.CurrentDock:= fmMain.TbxDockLeft else
-    if DockId='r' then Panel.CurrentDock:= fmMain.TbxDockRight else
-     if DockId='b' then Panel.CurrentDock:= fmMain.TbxDockBottom else
-      //if DockId='L' then Panel.CurrentDock:= fmMain.TbxDockLeft1 else
-       //if DockId='R' then Panel.CurrentDock:= fmMain.TbxDockRight1 else
-        //if DockId='B' then Panel.CurrentDock:= fmMain.TbxDockBottom1 else
-         //if DockId='t' then Panel.CurrentDock:= fmMain.TbxDockTop else
-          begin end;
+  if DockId=DOCK_NONE then Panel.Floating:= true else
+   if DockId=DOCK_LEFT then Panel.CurrentDock:= fmMain.TbxDockLeft else
+    if DockId=DOCK_RIGHT then Panel.CurrentDock:= fmMain.TbxDockRight else
+     if DockId=DOCK_BOTTOM then Panel.CurrentDock:= fmMain.TbxDockBottom;
+  //other docks aren't valid for panels
 end;
 
 function Py_dock_str(Panel: TSpTBXDockablePanel): PPyObject; cdecl;
@@ -754,15 +759,15 @@ var
   Str: Widestring;
 begin
   Dock:= Panel.CurrentDock;
-  if Dock=nil then Str:= '' else
-   if Dock=fmMain.TbxDockLeft then Str:= 'l' else
-    if Dock=fmMain.TbxDockLeft1 then Str:= 'L' else
-     if Dock=fmMain.TbxDockRight then Str:= 'r' else
-      if Dock=fmMain.TbxDockRight1 then Str:= 'R' else
-       if Dock=fmMain.TbxDockBottom then Str:= 'b' else
-        if Dock=fmMain.TbxDockBottom1 then Str:= 'B' else
-         if Dock=fmMain.TbxDockTop then Str:= 't' else
-          Str:= '?';
+  if Dock=nil then Str:= DOCK_NONE else
+   if Dock=fmMain.TbxDockLeft then Str:= DOCK_LEFT else
+    if Dock=fmMain.TbxDockLeft1 then Str:= DOCK_LEFT1 else
+     if Dock=fmMain.TbxDockRight then Str:= DOCK_RIGHT else
+      if Dock=fmMain.TbxDockRight1 then Str:= DOCK_RIGHT1 else
+       if Dock=fmMain.TbxDockBottom then Str:= DOCK_BOTTOM else
+        if Dock=fmMain.TbxDockBottom1 then Str:= DOCK_BOTTOM1 else
+         if Dock=fmMain.TbxDockTop then Str:= DOCK_TOP else
+          Str:= DOCK_NONE;
 
   with GetPythonEngine do
     Result:= PyUnicode_FromWideString(Str);
@@ -788,11 +793,12 @@ const
   PROP_DOCK_OUT      = 107;
   PROP_DOCK_PRE      = 108;
 
-  PROP_COORD_MONITOR  = 120;
-  PROP_COORD_MONITOR0 = 121;
-  PROP_COORD_MONITOR1 = 122;
-  PROP_COORD_MONITOR2 = 123;
-  PROP_COORD_MONITOR3 = 124;
+  PROP_COORD_DESKTOP  = 120;
+  PROP_COORD_MONITOR  = 121;
+  PROP_COORD_MONITOR0 = 122;
+  PROP_COORD_MONITOR1 = 123;
+  PROP_COORD_MONITOR2 = 124;
+  PROP_COORD_MONITOR3 = 125;
 
 function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 var
@@ -826,6 +832,8 @@ begin
         PROP_DOCK_PRE:
           Result:= Py_dock_str(fmMain.FProjPreview);
 
+        PROP_COORD_DESKTOP:
+          Result:= Py_rect(Screen.DesktopRect);  
         PROP_COORD_MONITOR:
           Result:= Py_rect(fmMain.Monitor.BoundsRect);
         PROP_COORD_MONITOR0:
