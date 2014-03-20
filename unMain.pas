@@ -2182,10 +2182,6 @@ type
     fmProj: TfmProj;
     fmSR: TfmSR;
 
-    FProjPreview: TSpTBXDockablePanel;
-    FProjPreviewEditor: TSyntaxMemo;
-    FProjPreviewButton: TSpTbxItem;
-
     TabSwitcher,
     TabSwitcher2: TTabSwitcher;
 
@@ -2271,8 +2267,6 @@ type
     //frame related-----------------------------------------
     FCurrentEditor: TSyntaxMemo;
     FClickedFrame: TEditorFrame;
-    function FrameOfEditor(Ed: TSyntaxMemo): TEditorFrame;
-    function BrotherEditor(Ed: TSyntaxMemo): TSyntaxMemo;
     procedure SetCurrentEditor(Value: TSyntaxMemo);
     function GetFrameCount: integer;
     function GetFrameAllCount: integer;
@@ -2290,7 +2284,6 @@ type
     function OppositeFrame: TEditorFrame;
     function LeftFrame: TEditorFrame;
     function RightFrame: TEditorFrame;
-    function CurrentFileName(Id: TSynViewId): Widestring;
     function IsFramePropertiesStringForFilename(const fn: Widestring; const Str: string): boolean;
     function FrameGetPropertiesString(F: TEditorFrame): string;
     procedure FrameSetPropertiesString(F: TEditorFrame; const Str: string; EncodingOnly: boolean);
@@ -2364,12 +2357,6 @@ type
     function IsProgressStopped(const NDoneSize, NTotalSize: Int64): boolean;
     procedure DoProgressShow(AMode: TProgressType = proFindText);
     procedure DoProgressHide;
-    function CurrentContentFN(Unicode: boolean): Widestring;
-    function CurrentSelectionFN(Unicode: boolean): Widestring;
-    function CurrentProjectFN: Widestring;
-    function CurrentProjectSessionFN: string;
-    function CurrentProjectMainFN: Widestring;
-    function CurrentProjectWorkDir: Widestring;
 
     procedure ProjKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ProjOpen(Sender: TObject);
@@ -2435,7 +2422,6 @@ type
     procedure UpdateClickedFrame;
 
     procedure UpdateLexer;
-    procedure UpdateLexerTo(An: TSyntAnalyzer);
     procedure UpdateFormEnabled(En: boolean);
     procedure UpdateOutFromList(List: TWideStringList);
     procedure UpdateRecentsOnClose;
@@ -2621,28 +2607,6 @@ type
     function MsgConfirmFtp: boolean;
 
     procedure InitSynIniDir;
-    function SynLexLib: string;
-    function SynPluginIni(const SCaption: string): string;
-    function SynIni: string;
-    function SynToolbarsIni: string;
-    function SynFavIni: string;
-    function SynStylesIni: string;
-    function SynHistoryIni: string;
-    function SynHistoryStatesIni: string;
-    function SynFoldStatesIni: string;
-    function SynMacrosIni: string;
-    function SynHideIni: string;
-    function SynTidyIni: string;
-    function SynPluginsIni: string;
-    function SynPluginsSampleIni: string;
-    function SynSkinsDir: string;
-    function SynPyDir: string;
-    function SynSnippetsDir: string;
-    function SynSkinFilename(const Name: string): string;
-    function SynConverterFilename(const Name: string): string;
-    function SynLexersCfg: string;
-    function SynLexersExCfg: string;
-
     procedure LexListClick(Sender: TObject);
     procedure FinderInit(Sender: TObject);
     procedure FinderFail(Sender: TObject);
@@ -2757,8 +2721,6 @@ type
     function SynFilesFilter: Widestring;
     procedure DoOptionsDialog(tabId: Integer);
     procedure DoTreeFocus;
-    function DoGetFavList: Widestring;
-    function DoGetSearchPaths: Widestring;
     procedure DoGetOppositeEditor(
       EdSrc: TSyntaxMemo;
       var EdOther: TSyntaxMemo;
@@ -2810,7 +2772,6 @@ type
 
     //python group
     procedure DoPyConsole_EnterCommand(const Str: Widestring);
-    procedure DoPyConsole_LogString(const Str: Widestring);
     procedure DoPyConsole_RepeatCommand;
     procedure DoPyNewPluginDialog;
     procedure DoPyRegisterCommandPlugin(const SId: string);
@@ -2841,13 +2802,6 @@ type
     procedure DoWorkaround_FindNext1;
     procedure DoShowHintFilename(const fn: Widestring);
     function DoCheckAutoCorrectCase(Ed: TSyntaxMemo): boolean;
-    function DoFindCommand(
-      Ed: TSyntaxMemo;
-      Act: TSRAction;
-      const SText1, SText2: Widestring;
-      const Opt: TSearchOptions;
-      const Tok: TSearchTokens;
-      OptBkmk, OptExtSel: boolean): Integer;
     function DoReadLexersCfg(const ASection, AId: string): string;
     procedure DoClearFindDialogStatus;
     procedure ProjPreviewVisibleChanged(Sender: TObject);
@@ -2879,6 +2833,10 @@ type
     SynMruSessions: TSynMruList;
     SynMruProjects: TSynMruList;
     SynMruNewdoc: TSynMruList;
+
+    FProjPreview: TSpTBXDockablePanel;
+    FProjPreviewEditor: TSyntaxMemo;
+    FProjPreviewButton: TSpTbxItem;
 
     //opt
     opHintScroll: boolean;
@@ -3071,6 +3029,7 @@ type
     procedure UpdateGutter(F: TEditorFrame; AUpdateCur: boolean = true);
     procedure UpdateQVTree(const fn: Widestring);
     procedure UpdateStatusBar;
+    procedure UpdateLexerTo(An: TSyntAnalyzer);
 
     property opTabsWidths: Widestring read GetTabsWidths write SetTabsWidths;
     property PageControl: TTntPageControl read GetPageControl write FPageControl;
@@ -3180,11 +3139,56 @@ type
       AEd: TSyntaxMemo;
       const ALineNum: Integer;
       var AResult: string);
+
+    function FrameOfEditor(Ed: TSyntaxMemo): TEditorFrame;
+    function BrotherEditor(Ed: TSyntaxMemo): TSyntaxMemo;
+    function DoGetProjectFilename(id: Integer): Widestring;
+    function CurrentFileName(Id: TSynViewId): Widestring;
+    function CurrentSessionFN: string;
+    function CurrentContentFN(Unicode: boolean): Widestring;
+    function CurrentSelectionFN(Unicode: boolean): Widestring;
+    function CurrentProjectFN: Widestring;
+    function CurrentProjectSessionFN: string;
+    function CurrentProjectMainFN: Widestring;
+    function CurrentProjectWorkDir: Widestring;
+
+    function SynIni: string;
+    function SynToolbarsIni: string;
+    function SynFavIni: string;
+    function SynStylesIni: string;
+    function SynHistoryStatesIni: string;
+    function SynFoldStatesIni: string;
+    function SynMacrosIni: string;
+    function SynHideIni: string;
+    function SynHistoryIni: string;
+    function SynTidyIni: string;
+    function SynPluginsIni: string;
+    function SynPluginsSampleIni: string;
+    function SynPluginIni(const SCaption: string): string;
+    function SynSkinsDir: string;
+    function SynPyDir: string;
+    function SynSnippetsDir: string;
+    function SynSkinFilename(const Name: string): string;
+    function SynConverterFilename(const Name: string): string;
+    function SynLexersCfg: string;
+    function SynLexersExCfg: string;
+    function SynLexLib: string;
+
+    function DoGetFavList: Widestring;
+    function DoGetSearchPaths: Widestring;
+    function DoFindCommand(
+      Ed: TSyntaxMemo;
+      Act: TSRAction;
+      const SText1, SText2: Widestring;
+      const Opt: TSearchOptions;
+      const Tok: TSearchTokens;
+      OptBkmk, OptExtSel: boolean): Integer;
+    procedure DoPyConsole_LogString(const Str: Widestring);
     //end of public
   end;
 
 var
-  LsIni: string = '';
+  SynListerIni: string = ''; //passed from Totalcmd API
   opListerSynDialog: boolean;
   opListerTcHistory: boolean;
   opListerQVReadOnly: boolean;
@@ -3204,9 +3208,9 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
-var
-  fmMain: TfmMain = nil;
-  _SynActionProc: TSynAction = nil;
+const
+  cSynVer = '6.4.770';
+  cSynPyVer = '1.0.123';
 
 const
   cSynParamRO = '/ro';
@@ -3214,6 +3218,10 @@ const
   cSynParamLineNum = '/n=';
   cSynParamReg = '/reg';
   cSynParamTwo = '/two=';
+
+var
+  fmMain: TfmMain = nil;
+  _SynActionProc: TSynAction = nil;
 
 implementation
 
@@ -3253,15 +3261,12 @@ uses
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
   unCmdList, unProjList, unToolbarProp, unHideItems,
   unProcPy,
+  unMainPy,
   unLexerLib, unSnipList, unSnipEd, unUniList;
 
 {$R *.dfm}
 {$R Cur.res}
 {$R Text.res}
-
-const
-  cSynVer = '6.4.765';
-  cSynPyVer = '1.0.123';
 
 const
   cConverterHtml1 = 'HTML - all entities';
@@ -4968,7 +4973,7 @@ var
   f: TIniFile;
 begin
   if not SynExe then
-    with TIniFile.Create(LsIni) do
+    with TIniFile.Create(SynListerIni) do
     try
       WriteInteger('Syn2', 'TxOnly', opTextOnly);
     finally
@@ -5226,7 +5231,7 @@ begin
       SynIniDir:= SynIniDir + '\';
     end
     else
-      SynIniDir:= ExtractFilePath(LsIni);
+      SynIniDir:= ExtractFilePath(SynListerIni);
 end;
 
 function TfmMain.SynIni: string;
@@ -21318,6 +21323,12 @@ begin
     fmClips.DoDeleteClip;
 end;
 
+
+function TfmMain.CurrentSessionFN: string;
+begin
+  Result:= FSessionFN;
+end;  
+
 function TfmMain.CurrentContentFN(Unicode: boolean): Widestring;
 var
   S, Ext: Widestring;
@@ -27693,7 +27704,7 @@ begin
 end;
 
 
-{$I unMainPy.pas}
+//{$I unMainPy.pas}
 
 procedure TfmMain.PythonModuleInitialization(Sender: TObject);
 begin
@@ -28857,8 +28868,16 @@ begin
   ecActns.ecExportsBaseFilename:= ChangeFileExt(ExtractFileName(CurrentFrame.FileName), '');
 end;
 
+function TfmMain.DoGetProjectFilename(id: Integer): Widestring;
+begin
+  Result:= '';
+  if Assigned(fmProj) then
+    if (id>=0) and (id<fmProj.TreeProj.Items.Count) then
+      Result:= fmProj.GetFN(fmProj.TreeProj.Items[id]);
+end;
+
 initialization
-  PyEditor:= MainPyEditor;
+  unProcPy.PyEditor:= MainPyEditor;
 
 end.
 

@@ -1,3 +1,63 @@
+unit unMainPy;
+
+interface
+
+uses
+  PythonEngine;
+
+function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
+function Py_app_api_version(Self, Args : PPyObject): PPyObject; cdecl;
+function Py_app_log(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_app_lock(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_split(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_split(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_filename(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_alerts(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_alerts(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_prop_wrapper(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_complete(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_focus(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_find(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_msg_status(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_file_save(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_lexer_proc(Self, Args : PPyObject): PPyObject; cdecl;
+function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
+function Py_set_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
+
+implementation
+
+uses
+  SysUtils,
+  Windows,
+  Classes,
+  Types,
+  Controls,
+  Forms,
+  TntClasses,
+  TntStdCtrls,
+  unMain,
+  unFrame,
+  unSR,
+  unSearch,
+  unProc,
+  unProcPy,
+  unProcEditor,
+  unUniList,
+  ecSyntAnal,
+  ecSyntMemo,
+  ATSyntMemo,
+  ATxFProc,
+  ATxSProc,
+  ATSynPlugins,
+  Variants,
+  DKLang,
+  SpTbxDkPanels,
+  TB2Dock;
+
 function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
@@ -235,10 +295,7 @@ begin
       if (N >= cSynPyProjectIndexBase) then
       begin
         id:= N - cSynPyProjectIndexBase;
-        with fmMain do
-          if Assigned(fmProj) then
-            if (id < fmProj.TreeProj.Items.Count) then
-              Str:= fmProj.GetFN(fmProj.TreeProj.Items[id]);
+        Str:= fmMain.DoGetProjectFilename(id);
       end
       else
       //get editor-tab filename
@@ -252,7 +309,7 @@ begin
       case N of
         -1: Str:= fmMain.CurrentFrame.FileName;
         -2: Str:= fmMain.CurrentFileName(cSynViewOpposite);
-        -3: Str:= fmMain.FSessionFN;
+        -3: Str:= fmMain.CurrentSessionFN;
         -10: Str:= fmMain.CurrentProjectFN;
         -11: Str:= fmMain.CurrentProjectMainFN;
         -12: Str:= fmMain.CurrentProjectWorkDir;
@@ -827,4 +884,6 @@ begin
       Result:= ReturnNone;
     end;
 end;
+
+end.
 

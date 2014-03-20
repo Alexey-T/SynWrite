@@ -66,7 +66,8 @@ uses
   unUniList in 'unUniList.pas' {fmUniList: TTntForm},
   unSRFiles in 'unSRFiles.pas' {fmSRFiles: TTntForm},
   unInputEx in 'unInputEx.pas' {fmInputEx},
-  unInputMemo in 'unInputMemo.pas' {fmInputMemo};
+  unInputMemo in 'unInputMemo.pas' {fmInputMemo},
+  unMainPy in 'unMainPy.pas';
 
 {$R *.res}
 {$R *.dkl_const.res}

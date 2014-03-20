@@ -293,8 +293,8 @@ type
 
 procedure ListSetDefaultParams(dps: pListDefaultParamStruct); stdcall;
 begin
-  LsIni:= AnsiString(dps.DefaultIniName);
-  with TIniFile.Create(LsIni) do
+  SynListerIni:= AnsiString(dps.DefaultIniName);
+  with TIniFile.Create(SynListerIni) do
   try
     opListerSynDialog:= ReadBool('Syn2', 'SynDialog', true);
     opListerTcHistory:= ReadBool('Syn2', 'TcHistory', false);
