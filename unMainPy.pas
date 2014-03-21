@@ -27,6 +27,7 @@ function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_lexer_proc(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_set_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
+function Py_sound_proc(Self, Args: PPyObject): PPyObject; cdecl;
 
 implementation
 
@@ -892,6 +893,62 @@ begin
       Result:= ReturnNone;
     end;
 end;
+
+type
+  TPlaySoundFunc = function(Name: PAnsiChar; Flags: UINT): BOOL; stdcall;
+
+var
+  _DllMedia: THandle = 0;
+  _FuncPlay: TPlaySoundFunc = nil;
+
+const
+  SND_SYNC            = $0000;  { play synchronously (default) }
+  SND_ASYNC           = $0001;  { play asynchronously }
+  SND_NODEFAULT       = $0002;  { don't use default sound }
+  SND_MEMORY          = $0004;  { lpszSoundName points to a memory file }
+  SND_LOOP            = $0008;  { loop the sound until next sndPlaySound }
+  SND_NOSTOP          = $0010;  { don't stop any currently playing sound }
+
+function DoPlaySound(const fn: string): boolean;
+begin
+  Result:= false;
+  if _DllMedia=0 then
+  begin
+    _DllMedia:= LoadLibrary('winmm.dll');
+    if _DllMedia<>0 then
+      @_FuncPlay:= GetProcAddress(_DllMedia, 'sndPlaySoundA');
+  end;
+
+  if @_FuncPlay<>nil then
+  begin
+    if fn='' then
+      Result:= _FuncPlay(nil, 0)
+    else
+      Result:= _FuncPlay(PChar(fn), SND_ASYNC);
+  end;
+end;
+
+function Py_sound_proc(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  Ptr: PAnsiChar;
+  fn: Widestring;
+begin
+  with GetPythonEngine do
+  begin
+    if Bool(PyArg_ParseTuple(Args, 's:sound_proc', @Ptr)) then
+    begin
+      fn:= UTF8Decode(AnsiString(Ptr));
+      if (fn='') or IsFileExist(fn) then
+        Result:= PyBool_FromLong(Ord(DoPlaySound(fn)))
+      else
+        Result:= PyBool_FromLong(0);
+    end;
+  end;
+end;
+
+initialization
+  //debug
+  //DoPlaySound('c:\WIN_NEW\Media\ringin.wav');
 
 end.
 

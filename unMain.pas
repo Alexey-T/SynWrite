@@ -20920,7 +20920,11 @@ begin
     Exit
   else
   begin
-    PageControl:= DoGetPagesUnderCursor;
+    if IsMouseOverControl(PageControl1) then
+      PageControl:= PageControl1
+    else
+    if IsMouseOverControl(PageControl2) then
+      PageControl:= PageControl2;
     DoOpenFile(fn);
   end;
 end;
@@ -27798,6 +27802,7 @@ begin
     AddMethod('app_log', Py_app_log, '');
     AddMethod('app_lock', Py_app_lock, '');
     AddMethod('lexer_proc', Py_lexer_proc, '');
+    AddMethod('sound_proc', Py_sound_proc, '');
 
     AddMethod('ini_read', Py_ini_read, '');
     AddMethod('ini_write', Py_ini_write, '');
