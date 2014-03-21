@@ -2808,6 +2808,7 @@ type
     procedure ProjPreviewVisibleChanged(Sender: TObject);
     procedure DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynViewId);
     procedure UpadateFilenameForExport;
+    function DoGetPagesUnderCursor: TTntPageControl;
     //end of private
 
   protected
@@ -3072,7 +3073,7 @@ type
     procedure FocusEditor;
     procedure FocusProj;
     procedure FindInit(AKeepFlags: boolean = false);
-    function IsMouseInProj: boolean;
+    function IsMouseOverProject: boolean;
 
     constructor CreateParented(hWindow: HWND);
     function DoOpenFile(const AFileName: WideString): TEditorFrame;
@@ -20876,16 +20877,25 @@ begin
     end;
 end;
 
-function TfmMain.IsMouseInProj: boolean;
+function TfmMain.IsMouseOverProject: boolean;
 begin
   if Assigned(fmProj) and fmProj.Visible and plTree.Visible then
-    Result:= PtInRect(
-      Rect(0, 0, fmProj.Width, fmProj.Height),
-      fmProj.ScreenToClient(Mouse.CursorPos))
+    Result:= IsMouseOverControl(fmProj)
   else
     Result:= false;
 end;
-        
+
+function TfmMain.DoGetPagesUnderCursor: TTntPageControl;
+begin
+  if IsMouseOverControl(PageControl1) then
+    Result:= PageControl1
+  else
+  if IsMouseOverControl(PageControl2) then
+    Result:= PageControl2
+  else
+    Result:= PageControl;
+end;
+
 procedure TfmMain.DoDropFile(const fn: Widestring; IntoProj: boolean = false);
 begin
   //drop item to Project tree
@@ -20899,7 +20909,7 @@ begin
   //open file in editor
   if IsDirExist(fn) then
     DoOpenFolder(fn)
-  else  
+  else
   if not IsFileExist(fn) then
   begin
     MsgBeep;
@@ -20909,7 +20919,10 @@ begin
   if not IsFileText(fn) and not MsgConfirmBinary(fn, Handle) then
     Exit
   else
+  begin
+    PageControl:= DoGetPagesUnderCursor;
     DoOpenFile(fn);
+  end;
 end;
 
 procedure TfmMain.ProjAddEditorFile(Sender: TObject;

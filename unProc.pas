@@ -20,6 +20,7 @@ uses
   IniFiles,
   PngImageList;
 
+function IsMouseOverControl(Control: TControl): boolean;
 function IsElevationNeededForFolder(const Dir: Widestring): boolean;
 function DoShowPopupMenu(List: TTntStringList; Pnt: TPoint; hWnd: THandle): Integer;
 procedure MemoScrollToBottom(Memo: TTntMemo);
@@ -1907,5 +1908,14 @@ begin
     SBegin(Dir, SExpandVars('%ProgramFiles(x86)%'))
     );
 end;
+
+function IsMouseOverControl(Control: TControl): boolean;
+var
+  P: TPoint;
+begin
+  P:= Control.ScreenToClient(Mouse.CursorPos);
+  Result:= PtInRect(Control.ClientRect, P);
+end;
+
 
 end.

@@ -407,13 +407,13 @@ end;
 procedure TfmSynEx.WMDropFiles(var m: TMessage);
 var
   fn: array[0..MAX_PATH-1] of WideChar;
-  n, i: Integer;
+  nCount, i: Integer;
   InProj: boolean;
 begin
-  InProj:= fmMain.IsMouseInProj;
+  InProj:= fmMain.IsMouseOverProject;
   FillChar(fn, Sizeof(fn), 0);
-  n:= DragQueryFileW(THandle(M.WParam), $FFFFFFFF, fn, MAX_PATH);
-  for i:= 0 to n-1 do
+  nCount:= DragQueryFileW(THandle(M.WParam), $FFFFFFFF, fn, MAX_PATH);
+  for i:= 0 to nCount-1 do
   begin
     FillChar(fn, Sizeof(fn), 0);
     DragQueryFileW(THandle(M.WParam), i, fn, MAX_PATH);
