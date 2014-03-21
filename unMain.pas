@@ -2595,8 +2595,8 @@ type
       StartPos, EndPos: integer;
       var Accept: Boolean);
     procedure DoHandleKeysInPanels(var Key: Word; Shift: TShiftState);
-    procedure ListOutNav(const Str: Widestring);
-    procedure ListValNav(const Str: Widestring);
+    function DoNavigate_ListOut(const Str: Widestring): boolean;
+    function DoNavigate_ListVal(const Str: Widestring): boolean;
     function IsNavigatableLine(const Str: Widestring): boolean;
     procedure DoNewDoc(const fn: Widestring);
     procedure RunBrowser(const fn: Widestring);
@@ -2671,6 +2671,7 @@ type
       OptTokens: TSearchTokens): boolean;
 
     procedure DoJumpToNextSearchResult(ANext: boolean);
+    procedure DoJumpToNextOutputResult(AOutputPanel: boolean; ANext: boolean);
     procedure DoHideMenuItem(const Str: string);
     function IsLexerFindID(const Lex: string): boolean;
 
@@ -6479,6 +6480,26 @@ begin
       DoTabSwitch(true, false);
     sm_GotoPrevTab:
       DoTabSwitch(false, false);
+
+    sm_GotoNextOutputResult:
+      DoJumpToNextOutputResult(not ListVal.Visible, true);
+    sm_GotoPrevOutputResult:
+      DoJumpToNextOutputResult(not ListVal.Visible, false);
+
+    sm_GotoNextSearchOrOutputResult:
+      begin
+        if TreeFind.Visible then
+          DoJumpToNextSearchResult(true)
+        else
+          DoJumpToNextOutputResult(not ListVal.Visible, true);
+      end;
+    sm_GotoPrevSearchOrOutputResult:
+      begin
+        if TreeFind.Visible then
+          DoJumpToNextSearchResult(false)
+        else
+          DoJumpToNextOutputResult(not ListVal.Visible, false);
+      end;
 
     //end of commands list
     else
@@ -13129,14 +13150,15 @@ procedure TfmMain.ListOutDblClick(Sender: TObject);
 begin
   with ListOut do
    if (ItemIndex>=0) and (ItemIndex<Items.Count) then
-     ListOutNav(Items[ItemIndex]);
+     DoNavigate_ListOut(Items[ItemIndex]);
 end;
 
-procedure TfmMain.ListOutNav(const Str: Widestring);
+function TfmMain.DoNavigate_ListOut(const Str: Widestring): boolean;
 var
   fn: Widestring;
   nLine, nCol: Integer;
 begin
+  Result:= false;
   if Str='' then Exit;
 
   fn:= SynPanelPropsOut.DefFilename;
@@ -13151,6 +13173,7 @@ begin
   if fn='' then Exit;
   if nLine<1 then Exit;
   if nCol<1 then nCol:= 1;
+  Result:= true;
 
   //correct fn
   if (SExtractFilePath(fn)='') and (CurrentFrame.FileName<>'') then
@@ -13405,7 +13428,7 @@ procedure TfmMain.TBXItemOutNavClick(Sender: TObject);
 begin
   with ListOut do
    if FOutItem>=0 then
-    ListOutNav(Items[FOutItem]);
+    DoNavigate_ListOut(Items[FOutItem]);
 end;
 
 procedure TfmMain.PopupOutPopup(Sender: TObject);
@@ -14491,6 +14514,40 @@ begin
 
     TreeFindDblClick(Self);
   end;
+end;
+
+procedure TfmMain.DoJumpToNextOutputResult(AOutputPanel: boolean; ANext: boolean);
+var
+  List: TTntListbox;
+  N, i: Integer;
+  ok: boolean;
+begin
+  if AOutputPanel then
+    List:= ListOut
+  else
+    List:= ListVal;
+
+  N:= List.ItemIndex;
+  if (N<0) and (not ANext) then
+    N:= List.Items.Count;
+
+  repeat
+    if ANext then Inc(N) else Dec(N);
+    if not ((N>=0) and (N<List.Items.Count)) then
+      begin MsgBeep; Exit end;
+
+    List.ItemIndex:= N;
+    for i:= 0 to List.Items.Count-1 do
+      List.Selected[i]:= i=N;
+
+    if AOutputPanel then
+      ok:= DoNavigate_ListOut(List.Items[N])
+    else
+      ok:= DoNavigate_ListVal(List.Items[N]);
+    if ok then Exit;
+  until false;
+
+  MsgBeep;
 end;
 
 procedure TfmMain.TBXItemESyncEdClick(Sender: TObject);
@@ -17076,14 +17133,15 @@ procedure TfmMain.ListValDblClick(Sender: TObject);
 begin
   with ListVal do
    if (ItemIndex>=0) and (ItemIndex<Items.Count) then
-     ListValNav(Items[ItemIndex]);
+     DoNavigate_ListVal(Items[ItemIndex]);
 end;
 
-procedure TfmMain.ListValNav(const Str: Widestring);
+function TfmMain.DoNavigate_ListVal(const Str: Widestring): boolean;
 var
   fn: Widestring;
   nLine, nCol: Integer;
 begin
+  Result:= false;
   if Str='' then Exit;
 
   fn:= SynPanelPropsVal.DefFilename;
@@ -17098,8 +17156,10 @@ begin
   if fn='' then Exit;
   if nLine<1 then Exit;
   if nCol<1 then nCol:= 1;
+  Result:= true;
 
-  DoOpenFile(fn);                    
+  if not IsFileExist(fn) then Exit;
+  DoOpenFile(fn);
   CurrentEditor.CaretPos:= Point(nCol-1, nLine-1);
   FocusEditor;
 end;
@@ -28518,9 +28578,11 @@ begin
         if (SLexers='') or IsLexerListed(SCurLexer, SLexers) then
         begin
           //check that OnKey event is called for supported keys
+          //(if code "0" listed, call event for any key)
           if (AEvent=cSynEventOnKey) then
             if Length(AParams)>=1 then
-              if not IsStringListed(AParams[0], SKeycodes) then Continue;
+              if not IsStringListed('0', SKeycodes) and
+                not IsStringListed(AParams[0], SKeycodes) then Continue;
 
           //call Python
           SRes:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, AParams);

@@ -381,6 +381,10 @@ const
   sm_ResetPythonPlugins = 1049;
   sm_GotoNextTab = 1050;
   sm_GotoPrevTab = 1051;
+  sm_GotoNextOutputResult = 1052;
+  sm_GotoPrevOutputResult = 1053;
+  sm_GotoNextSearchOrOutputResult = 1054;
+  sm_GotoPrevSearchOrOutputResult = 1055;
   //free
 
   //Tree commands
