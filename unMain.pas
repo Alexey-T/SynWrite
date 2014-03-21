@@ -3210,7 +3210,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.4.770';
+  cSynVer = '6.4.780';
   cSynPyVer = '1.0.123';
 
 const
@@ -13173,6 +13173,7 @@ begin
   if fn='' then Exit;
   if nLine<1 then Exit;
   if nCol<1 then nCol:= 1;
+
   Result:= true;
 
   //correct fn
@@ -13181,7 +13182,7 @@ begin
   if not IsFileExist(fn) then
     begin MsgError(WideFormat(DKLangConstW('O_fne'), [fn]), Handle); Exit end;
 
-  DoOpenFile(fn); //must activate tab too
+  DoOpenFile(fn);
   FocusEditor;
   CurrentEditor.CaretPos:= Point(nCol-1, nLine-1);
 end;
@@ -17156,8 +17157,8 @@ begin
   if fn='' then Exit;
   if nLine<1 then Exit;
   if nCol<1 then nCol:= 1;
-  Result:= true;
 
+  Result:= true;
   if not IsFileExist(fn) then Exit;
   DoOpenFile(fn);
   CurrentEditor.CaretPos:= Point(nCol-1, nLine-1);
