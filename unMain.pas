@@ -28583,11 +28583,10 @@ begin
         if (SLexers='') or IsLexerListed(SCurLexer, SLexers) then
         begin
           //check that OnKey event is called for supported keys
-          //(if code "0" listed, call event for any key)
           if (AEvent=cSynEventOnKey) then
             if Length(AParams)>=1 then
-              if not IsStringListed('0', SKeycodes) and
-                not IsStringListed(AParams[0], SKeycodes) then Continue;
+              if (SKeycodes<>'') and not IsStringListed(AParams[0], SKeycodes) then
+                Continue;
 
           //call Python
           SRes:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, AParams);
