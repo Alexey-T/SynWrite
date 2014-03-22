@@ -27,7 +27,7 @@ function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_lexer_proc(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_set_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
-function Py_sound_proc(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_app_proc(Self, Args: PPyObject): PPyObject; cdecl;
 
 implementation
 
@@ -40,6 +40,7 @@ uses
   Forms,
   TntClasses,
   TntStdCtrls,
+  TntClipbrd,
   unMain,
   unFrame,
   unSR,
@@ -894,61 +895,65 @@ begin
     end;
 end;
 
-type
-  TPlaySoundFunc = function(Name: PAnsiChar; Flags: UINT): BOOL; stdcall;
-
-var
-  _DllMedia: THandle = 0;
-  _FuncPlay: TPlaySoundFunc = nil;
-
 const
-  SND_SYNC            = $0000;  { play synchronously (default) }
-  SND_ASYNC           = $0001;  { play asynchronously }
-  SND_NODEFAULT       = $0002;  { don't use default sound }
-  SND_MEMORY          = $0004;  { lpszSoundName points to a memory file }
-  SND_LOOP            = $0008;  { loop the sound until next sndPlaySound }
-  SND_NOSTOP          = $0010;  { don't stop any currently playing sound }
+  PROC_GET_CLIP      = 1;
+  PROC_SET_CLIP      = 2;
+  PROC_LOCK_STATUS   = 3;
+  PROC_UNLOCK_STATUS = 4;
+  PROC_SOUND         = 5;
 
-function DoPlaySound(const fn: string): boolean;
-begin
-  Result:= false;
-  if _DllMedia=0 then
-  begin
-    _DllMedia:= LoadLibrary('winmm.dll');
-    if _DllMedia<>0 then
-      @_FuncPlay:= GetProcAddress(_DllMedia, 'sndPlaySoundA');
-  end;
-
-  if @_FuncPlay<>nil then
-  begin
-    if fn='' then
-      Result:= _FuncPlay(nil, 0)
-    else
-      Result:= _FuncPlay(PChar(fn), SND_ASYNC);
-  end;
-end;
-
-function Py_sound_proc(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_app_proc(Self, Args: PPyObject): PPyObject; cdecl;
 var
+  Id: Integer;
   Ptr: PAnsiChar;
-  fn: Widestring;
+  Str: Widestring;
+  NValue: Integer;
 begin
   with GetPythonEngine do
   begin
-    if Bool(PyArg_ParseTuple(Args, 's:sound_proc', @Ptr)) then
+    if Bool(PyArg_ParseTuple(Args, 'is:app_proc', @Id, @Ptr)) then
     begin
-      fn:= UTF8Decode(AnsiString(Ptr));
-      if (fn='') or IsFileExist(fn) then
-        Result:= PyBool_FromLong(Ord(DoPlaySound(fn)))
-      else
-        Result:= PyBool_FromLong(0);
+      Str:= UTF8Decode(AnsiString(Ptr));
+      case Id of
+        PROC_LOCK_STATUS:
+          begin
+            fmMain.FLockUpdate:= true;
+            Result:= ReturnNone;
+          end;
+        PROC_UNLOCK_STATUS:
+          begin
+            fmMain.FLockUpdate:= false;
+            Result:= ReturnNone;
+          end;
+        PROC_SOUND:
+          begin
+            if (Str='') or IsFileExist(Str) then
+              Result:= PyBool_FromLong(Ord(DoPlayWaveSound(Str)))
+            else
+              Result:= PyBool_FromLong(0);
+          end;
+
+        PROC_GET_CLIP:
+          begin
+            NValue:= StrToIntDef(Str, 0);
+            Str:= TntClipboard.AsWideText;
+            if (NValue>0) and (Length(Str)>NValue) then
+              SetLength(Str, NValue);
+            Result:= PyUnicode_FromWideString(Str);
+          end;
+        PROC_SET_CLIP:
+          begin
+            TntClipboard.AsWideText:= Str;
+            Result:= ReturnNone;
+          end;
+
+        else
+          Result:= ReturnNone;
+      end;
     end;
   end;
 end;
 
-initialization
-  //debug
-  //DoPlaySound('c:\WIN_NEW\Media\ringin.wav');
 
 end.
 

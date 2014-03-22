@@ -26,6 +26,7 @@ function DoShowPopupMenu(List: TTntStringList; Pnt: TPoint; hWnd: THandle): Inte
 procedure MemoScrollToBottom(Memo: TTntMemo);
 function SZenFindLeft(const s: ecString; iFrom: integer): integer;
 function DoReadLangMsg(const fn_lng, fn_en_lng, msg_id: string): Widestring;
+function DoPlayWaveSound(const fn: string): boolean;
 
 procedure SParseString_AcpHtml(
   const AcpStr, Atr: string; List: TStringList);
@@ -1916,6 +1917,40 @@ begin
   P:= Control.ScreenToClient(Mouse.CursorPos);
   Result:= PtInRect(Control.ClientRect, P);
 end;
+
+type
+  TPlaySoundFunc = function(Name: PAnsiChar; Flags: UINT): BOOL; stdcall;
+
+var
+  _DllMedia: THandle = 0;
+  _FuncPlay: TPlaySoundFunc = nil;
+
+function DoPlayWaveSound(const fn: string): boolean;
+const
+  SND_SYNC            = $0000;  { play synchronously (default) }
+  SND_ASYNC           = $0001;  { play asynchronously }
+  SND_NODEFAULT       = $0002;  { don't use default sound }
+  SND_MEMORY          = $0004;  { lpszSoundName points to a memory file }
+  SND_LOOP            = $0008;  { loop the sound until next sndPlaySound }
+  SND_NOSTOP          = $0010;  { don't stop any currently playing sound }
+begin
+  Result:= false;
+  if _DllMedia=0 then
+  begin
+    _DllMedia:= LoadLibrary('winmm.dll');
+    if _DllMedia<>0 then
+      @_FuncPlay:= GetProcAddress(_DllMedia, 'sndPlaySoundA');
+  end;
+
+  if @_FuncPlay<>nil then
+  begin
+    if fn='' then
+      Result:= _FuncPlay(nil, 0)
+    else
+      Result:= _FuncPlay(PChar(fn), SND_ASYNC);
+  end;
+end;
+
 
 
 end.

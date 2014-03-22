@@ -19,8 +19,6 @@ const
   cSynPropNums    = 'sw.PROP_NUMS';
   cSynPropRuler   = 'sw.PROP_RULER';
 
-function Py_get_clip(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_set_clip(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_text_local(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_text_convert(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
@@ -99,19 +97,20 @@ uses
   SysUtils,
   StrUtils,
   Types,
-  Variants,
   Classes,
   IniFiles,
   Forms,
   Controls,
-  TntClipbrd,
+  Variants,
   ecSyntAnal,
   ecStrUtils,
+  ecLists,
   ATxFProc,
   unProc,
   unProcHelp,
   unProcEditor,
-  ecLists, unInputEx, unInputMemo;
+  unInputEx,
+  unInputMemo;
 
 const
   cMaxBookmarks = 10000;
@@ -1291,35 +1290,6 @@ begin
     Str:= Str + Format('r"%s", ', [UTF8Encode(Dirs[i])]);
   Str:= Format('sys.path = [%s]', [Str]);
   GetPythonEngine.ExecString(Str);
-end;
-
-function Py_set_clip(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  P: PAnsiChar;
-  Str: Widestring;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 's:set_clip', @P)) then
-    begin
-      Str:= UTF8Decode(AnsiString(P));
-      TntClipboard.AsWideText:= Str;
-      Result:= ReturnNone;
-    end;
-end;
-
-function Py_get_clip(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  Str: Widestring;
-  NLimit: Integer;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:get_clip', @NLimit)) then
-    begin
-      Str:= TntClipboard.AsWideText;
-      if Length(Str)>NLimit then
-        SetLength(Str, NLimit);
-      Result:= PyUnicode_FromWideString(Str);
-    end;
 end;
 
 function Py_ed_get_word(Self, Args: PPyObject): PPyObject; cdecl;

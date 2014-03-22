@@ -2808,7 +2808,6 @@ type
     procedure ProjPreviewVisibleChanged(Sender: TObject);
     procedure DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynViewId);
     procedure UpadateFilenameForExport;
-    function DoGetPagesUnderCursor: TTntPageControl;
     //end of private
 
   protected
@@ -20885,17 +20884,6 @@ begin
     Result:= false;
 end;
 
-function TfmMain.DoGetPagesUnderCursor: TTntPageControl;
-begin
-  if IsMouseOverControl(PageControl1) then
-    Result:= PageControl1
-  else
-  if IsMouseOverControl(PageControl2) then
-    Result:= PageControl2
-  else
-    Result:= PageControl;
-end;
-
 procedure TfmMain.DoDropFile(const fn: Widestring; IntoProj: boolean = false);
 begin
   //drop item to Project tree
@@ -27800,9 +27788,9 @@ begin
     AddMethod('app_exe_dir', Py_app_exe_dir, '');
     AddMethod('app_ini_dir', Py_app_ini_dir, '');
     AddMethod('app_log', Py_app_log, '');
-    AddMethod('app_lock', Py_app_lock, '');
+    AddMethod('app_lock', Py_app_lock, ''); //deprecated, remove later
+    AddMethod('app_proc', Py_app_proc, '');
     AddMethod('lexer_proc', Py_lexer_proc, '');
-    AddMethod('sound_proc', Py_sound_proc, '');
 
     AddMethod('ini_read', Py_ini_read, '');
     AddMethod('ini_write', Py_ini_write, '');
@@ -27814,8 +27802,6 @@ begin
     AddMethod('text_convert', Py_text_convert, '');
     AddMethod('regex_parse', Py_regex_parse, '');
 
-    AddMethod('get_clip', Py_get_clip, '');
-    AddMethod('set_clip', Py_set_clip, '');
     AddMethod('get_app_prop', Py_get_app_prop, '');
     AddMethod('set_app_prop', Py_set_app_prop, '');
 
