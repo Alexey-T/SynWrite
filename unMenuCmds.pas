@@ -1,4 +1,4 @@
-unit unCmdList;
+unit unMenuCmds;
 
 interface
 
@@ -9,7 +9,7 @@ uses
   ecKeyMap, ExtCtrls;
 
 type
-  TfmCmdList = class(TTntForm)
+  TfmMenuCmds = class(TTntForm)
     List: TTntListBox;
     KeysList: TSyntKeyMapping;
     Edit: TTntEdit;
@@ -64,7 +64,7 @@ uses
 
 {$R *.dfm}
 
-procedure TfmCmdList.FormKeyDown(Sender: TObject; var Key: Word;
+procedure TfmMenuCmds.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   //Esc
@@ -99,7 +99,7 @@ begin
   end;
 end;
 
-procedure TfmCmdList.FormShow(Sender: TObject);
+procedure TfmMenuCmds.FormShow(Sender: TObject);
 begin
   DoFilter;
 
@@ -117,7 +117,7 @@ begin
   end;
 end;
 
-procedure TfmCmdList.DoFilter;
+procedure TfmMenuCmds.DoFilter;
   function SFiltered(const S: Widestring): boolean;
   begin
     if cbFuzzy.Checked then
@@ -180,13 +180,13 @@ begin
   List.ItemIndex:= 0;
 end;
 
-procedure TfmCmdList.ListDblClick(Sender: TObject);
+procedure TfmMenuCmds.ListDblClick(Sender: TObject);
 begin
   if List.ItemIndex>=0 then
     ModalResult:= mrOk;
 end;
 
-procedure TfmCmdList.EditKeyDown(Sender: TObject; var Key: Word;
+procedure TfmMenuCmds.EditKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (((Key=vk_prior) or (Key=vk_next) or (key=vk_up) or (key=vk_down)) and (Shift=[])) or
@@ -198,19 +198,19 @@ begin
     end;
 end;
 
-procedure TfmCmdList.EditChange(Sender: TObject);
+procedure TfmMenuCmds.EditChange(Sender: TObject);
 begin
   TimerType.Enabled:= false;
   TimerType.Enabled:= true;
 end;
 
-procedure TfmCmdList.TimerTypeTimer(Sender: TObject);
+procedure TfmMenuCmds.TimerTypeTimer(Sender: TObject);
 begin
   TimerType.Enabled:= false;
   DoFilter;
 end;
 
-procedure TfmCmdList.ListDrawItem(Control: TWinControl; Index: Integer;
+procedure TfmMenuCmds.ListDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 var
   S, S1, S2: Widestring;
@@ -258,29 +258,29 @@ begin
   end;
 end;
 
-procedure TfmCmdList.TntFormResize(Sender: TObject);
+procedure TfmMenuCmds.TntFormResize(Sender: TObject);
 begin
   List.Invalidate;
 end;
 
-procedure TfmCmdList.TntFormCreate(Sender: TObject);
+procedure TfmMenuCmds.TntFormCreate(Sender: TObject);
 begin
   List.ItemHeight:= ScaleFontSize(List.ItemHeight, Self);
   PyList:= TTntStringList.Create;
   LexList:= TTntStringList.Create;
 end;
 
-procedure TfmCmdList.labHelpClick(Sender: TObject);
+procedure TfmMenuCmds.labHelpClick(Sender: TObject);
 begin
   SynHelpTopic(helpCmdListDlg, Handle);
 end;
 
-procedure TfmCmdList.cbFuzzyClick(Sender: TObject);
+procedure TfmMenuCmds.cbFuzzyClick(Sender: TObject);
 begin
   DoFilter;
 end;
 
-procedure TfmCmdList.TntFormClose(Sender: TObject;
+procedure TfmMenuCmds.TntFormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
   if FIniFN<>'' then
@@ -296,13 +296,13 @@ begin
   end;
 end;
 
-procedure TfmCmdList.TntFormDestroy(Sender: TObject);
+procedure TfmMenuCmds.TntFormDestroy(Sender: TObject);
 begin
   FreeAndNil(PyList);
   FreeAndNil(LexList);
 end;
 
-procedure TfmCmdList.ListKeyDown(Sender: TObject; var Key: Word;
+procedure TfmMenuCmds.ListKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key=vk_up) and (List.ItemIndex=0) then

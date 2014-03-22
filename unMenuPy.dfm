@@ -1,11 +1,10 @@
-object fmProjList: TfmProjList
+object fmMenuPy: TfmMenuPy
   Left = 247
   Top = 474
   Width = 510
   Height = 322
   ActiveControl = Edit
   BorderIcons = [biSystemMenu, biMaximize]
-  Caption = 'Project list'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -58,22 +57,6 @@ object fmProjList: TfmProjList
     Font.Style = []
     ParentFont = False
     TabOrder = 2
-    object labHelp: TLabel
-      Left = 488
-      Top = 0
-      Width = 14
-      Height = 16
-      Cursor = crHandPoint
-      Align = alRight
-      Caption = #187'? '
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlue
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsUnderline]
-      ParentFont = False
-      OnClick = labHelpClick
-    end
     object cbFuzzy: TTntCheckBox
       Left = 0
       Top = 0

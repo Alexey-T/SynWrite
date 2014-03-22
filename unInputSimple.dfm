@@ -1,11 +1,11 @@
-object fmRenameFN: TfmRenameFN
+object fmInputSimple: TfmInputSimple
   Left = 313
   Top = 545
   ActiveControl = edName
   BorderStyle = bsDialog
   Caption = 'SynWrite'
   ClientHeight = 87
-  ClientWidth = 371
+  ClientWidth = 372
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,20 +26,6 @@ object fmRenameFN: TfmRenameFN
     Caption = 'Rename to:'
     FocusControl = edName
   end
-  object Label1: TTntLabel
-    Left = 282
-    Top = 24
-    Width = 4
-    Height = 16
-    Caption = '.'
-    FocusControl = edName
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -13
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
   object btnOK: TTntButton
     Left = 101
     Top = 56
@@ -48,7 +34,7 @@ object fmRenameFN: TfmRenameFN
     Caption = 'OK'
     Default = True
     ModalResult = 1
-    TabOrder = 2
+    TabOrder = 1
   end
   object btnCancel: TTntButton
     Left = 189
@@ -58,22 +44,16 @@ object fmRenameFN: TfmRenameFN
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
-    TabOrder = 3
+    TabOrder = 2
   end
-  object edName: TTntEdit
+  object edName: TTntComboBox
     Left = 8
     Top = 24
-    Width = 273
+    Width = 353
     Height = 21
+    DropDownCount = 20
+    ItemHeight = 13
     TabOrder = 0
-    OnChange = edNameChange
-  end
-  object edExt: TTntEdit
-    Left = 288
-    Top = 24
-    Width = 73
-    Height = 21
-    TabOrder = 1
     OnChange = edNameChange
   end
 end

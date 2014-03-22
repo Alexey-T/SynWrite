@@ -1,17 +1,22 @@
-unit unUniList;
+unit unMenuSnippets;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls,
-  TntStdCtrls, TntForms, TntClasses;
+  Dialogs, StdCtrls,
+  TntStdCtrls, TntForms,
+  ExtCtrls,
+  ATxSProc;
 
 type
-  TfmUniList = class(TTntForm)
+  TfmMenuSnippets = class(TTntForm)
     List: TTntListBox;
     Edit: TTntEdit;
     TimerType: TTimer;
+    Splitter1: TSplitter;
+    PanelLow: TPanel;
+    MemoText: TTntMemo;
     Panel1: TPanel;
     cbFuzzy: TTntCheckBox;
     procedure FormKeyDown(Sender: TObject; var Key: Word;
@@ -28,6 +33,7 @@ type
     procedure TntFormCreate(Sender: TObject);
     procedure cbFuzzyClick(Sender: TObject);
     procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ListClick(Sender: TObject);
     procedure ListKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
   private
@@ -35,28 +41,26 @@ type
     procedure DoFilter;
   public
     { Public declarations }
+    FInfoList: TList;
+    FCurrentLexer: string;
     FIniFN: string;
     FColorSel: TColor;
     FColorSelBk: TColor;
-    FListItems: TTntStringList;
-    FListStyle: Integer;
   end;
 
 implementation
 
 uses
-  TntSysUtils,
-  TntWideStrings,
+  TntClasses, TntWideStrings,
   Math,
   IniFiles,
-  ecUnicode,
   ecStrUtils,
   unProc,
-  ATxSProc;
+  unProcHelp;
 
 {$R *.dfm}
 
-procedure TfmUniList.FormKeyDown(Sender: TObject; var Key: Word;
+procedure TfmMenuSnippets.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   //Esc
@@ -82,83 +86,80 @@ begin
     Key:= 0;
     Exit
   end;
+  //F1
+  {
+  if (Key=vk_f1) and (Shift=[]) then
+  begin
+    labHelpClick(Self);
+    Key:= 0;
+    Exit
+  end;
+  }
 end;
 
-procedure TfmUniList.FormShow(Sender: TObject);
+procedure TfmMenuSnippets.FormShow(Sender: TObject);
 begin
-  case FListStyle of
-    0: List.ItemHeight:= 20;
-    1: List.ItemHeight:= 33;
-  end;  
-
   DoFilter;
 
   if FIniFN<>'' then
   with TIniFile.Create(FIniFN) do
   try
     DoCenterForm(Handle, Self);
-    Left:= ReadInteger('Win', 'PyListX', Left);
-    Top:= ReadInteger('Win', 'PyListY', Top);
-    Width:= ReadInteger('Win', 'PyListW', Width);
-    Height:= ReadInteger('Win', 'PyListH', Height);
-    cbFuzzy.Checked:= ReadBool('Win', 'PyListFuzzy', false);
+    Left:= ReadInteger('Win', 'SnipX', Left);
+    Top:= ReadInteger('Win', 'SnipY', Top);
+    Width:= ReadInteger('Win', 'SnipW', Width);
+    Height:= ReadInteger('Win', 'SnipH', Height);
+    cbFuzzy.Checked:= ReadBool('Win', 'SnipFuzzy', false);
+    PanelLow.Height:= ReadInteger('Win', 'SnipSplit', 100);
+    Splitter1.Top:= 0;
   finally
     Free
   end;
 end;
 
-procedure TfmUniList.DoFilter;
-  //----------------
-  function SFiltered(const Str: Widestring): boolean;
-  var
-    SFilter,
-    SItem, SItemName: Widestring;
-    IsFuzzy: boolean;
+procedure TfmMenuSnippets.DoFilter;
+  function SFiltered(const S: Widestring): boolean;
   begin
-    SFilter:= Edit.Text;
-    IsFuzzy:= cbFuzzy.Checked;
-
-    SItem:= Str;
-    SItemName:= SGetItem(SItem, #9);
-
-    if IsFuzzy then
-      Result:= SFuzzyMatch(SItemName, SFilter)
+    if cbFuzzy.Checked then
+      Result:= SFuzzyMatch(S, Edit.Text)
     else
-      Result:= SSubstringMatch(SItemName, SFilter);
+      Result:= SSubstringMatch(S, Edit.Text);
   end;
-  //----------------
 var
   i: Integer;
-  S: Widestring;
+  SName, SKey: Widestring;
+  AInfo: TSynSnippetInfo;
 begin
-  if not Assigned(FListItems) then
-    raise Exception.Create('File list not passed to form');
-
   List.Items.BeginUpdate;
-  Screen.Cursor:= crHourGlass;
   try
     List.Items.Clear;
-    for i:= 0 to FListItems.Count-1 do
-    begin
-      S:= FListItems[i];
-      if SFiltered(S) then
-        List.Items.AddObject(S, Pointer(i));
-    end;
+    for i:= 0 to FInfoList.Count-1 do
+      begin
+        AInfo:= TSynSnippetClass(FInfoList[i]).Info;
+        SName:= AInfo.Name;
+        SKey:= AInfo.Id;
+        if AInfo.Lexers<>'' then
+          SKey:= SKey + '  [' + AInfo.Lexers + ']';
+
+        if (AInfo.Lexers='') or (IsStringListed(FCurrentLexer, AInfo.Lexers)) then
+          if SFiltered(SName) or SFiltered(SKey) then
+            List.Items.AddObject(SName + #9 + SKey, Pointer(i));
+      end;
   finally
-    Screen.Cursor:= crDefault;
     List.Items.EndUpdate;
   end;
 
   List.ItemIndex:= 0;
+  ListClick(Self);
 end;
 
-procedure TfmUniList.ListDblClick(Sender: TObject);
+procedure TfmMenuSnippets.ListDblClick(Sender: TObject);
 begin
   if List.ItemIndex>=0 then
     ModalResult:= mrOk;
 end;
 
-procedure TfmUniList.EditKeyDown(Sender: TObject; var Key: Word;
+procedure TfmMenuSnippets.EditKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (((Key=vk_prior) or (Key=vk_next) or (key=vk_up) or (key=vk_down)) and (Shift=[])) or
@@ -170,22 +171,22 @@ begin
     end;
 end;
 
-procedure TfmUniList.EditChange(Sender: TObject);
+procedure TfmMenuSnippets.EditChange(Sender: TObject);
 begin
   TimerType.Enabled:= false;
   TimerType.Enabled:= true;
 end;
 
-procedure TfmUniList.TimerTypeTimer(Sender: TObject);
+procedure TfmMenuSnippets.TimerTypeTimer(Sender: TObject);
 begin
   TimerType.Enabled:= false;
   DoFilter;
 end;
 
-procedure TfmUniList.ListDrawItem(Control: TWinControl; Index: Integer;
+procedure TfmMenuSnippets.ListDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 var
-  S, SName, SDesc: Widestring;
+  S, S1, S2: Widestring;
   i, n: Integer;
   Arr: TSynCharArray;
 begin
@@ -199,78 +200,84 @@ begin
     Inc(Rect.Left, 2);
 
     S:= Items[Index];
-    SName:= SGetItem(S, #9);
-    SDesc:= SGetItem(S, #9);
+    n:= Pos(#9, S);
+    if n=0 then n:= 600;
+    S1:= Copy(S, 1, n-1);
+    S2:= Copy(S, n+1, MaxInt);
+    n:= ecTextExtent(Canvas, S2).cx+4;
 
-    //name
-    Canvas.Font.Size:= Self.Font.Size;
+    //shortcut
+    Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clNavy);
+    ecTextOut(Canvas, rect.right-n, rect.top, S2);
+
+    //caption
     Canvas.Font.Color:= IfThen(odSelected in State, FColorSel, Font.Color);
-    ecTextOut(Canvas, rect.left, rect.top, SName);
-
-    if FListStyle=1 then
-    begin
-      //desc
-      Canvas.Font.Size:= Self.Font.Size-2;
-      Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clNavy);
-      ecTextOut(Canvas, rect.left, rect.top + List.ItemHeight div 2, SDesc);
-
-      //separator
-      Canvas.Pen.Color:= clLtGray;
-      n:= rect.top+ List.ItemHeight-1;
-      Canvas.MoveTo(2, n);
-      Canvas.LineTo(ClientWidth-2, n);
-    end;
+    ecTextOut(Canvas, rect.left, rect.top, S1);
 
     //filter chars
     if cbFuzzy.Checked then
     begin
-      Canvas.Font.Size:= Self.Font.Size;
       Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clBlue);
-      SGetCharArray(SName, Edit.Text, Arr);
+      SGetCharArray(S1, Edit.Text, Arr);
       for i:= Low(Arr) to High(Arr) do
         if Arr[i]>0 then
         begin
-          n:= ecTextExtent(Canvas, Copy(SName, 1, Arr[i]-1)).cx;
-          ecTextOut(Canvas, rect.left+n, rect.top, Copy(SName, Arr[i], 1));
+          n:= ecTextExtent(Canvas, Copy(S1, 1, Arr[i]-1)).cx;
+          ecTextOut(Canvas, rect.left+n, rect.top, Copy(S1, Arr[i], 1));
         end
         else
           Break;
-    end;
+    end;      
   end;
 end;
 
-procedure TfmUniList.TntFormResize(Sender: TObject);
+procedure TfmMenuSnippets.TntFormResize(Sender: TObject);
 begin
   List.Invalidate;
 end;
 
-procedure TfmUniList.TntFormCreate(Sender: TObject);
+procedure TfmMenuSnippets.TntFormCreate(Sender: TObject);
 begin
   List.ItemHeight:= ScaleFontSize(List.ItemHeight, Self);
 end;
 
-procedure TfmUniList.cbFuzzyClick(Sender: TObject);
+procedure TfmMenuSnippets.cbFuzzyClick(Sender: TObject);
 begin
   DoFilter;
 end;
 
-procedure TfmUniList.TntFormClose(Sender: TObject;
+procedure TfmMenuSnippets.TntFormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
   if FIniFN<>'' then
   with TIniFile.Create(FIniFN) do
   try
-    WriteInteger('Win', 'PyListX', Left);
-    WriteInteger('Win', 'PyListY', Top);
-    WriteInteger('Win', 'PyListW', Width);
-    WriteInteger('Win', 'PyListH', Height);
-    WriteBool('Win', 'PyListFuzzy', cbFuzzy.Checked);
+    WriteInteger('Win', 'SnipX', Left);
+    WriteInteger('Win', 'SnipY', Top);
+    WriteInteger('Win', 'SnipW', Width);
+    WriteInteger('Win', 'SnipH', Height);
+    WriteInteger('Win', 'SnipSplit', PanelLow.Height);
+    WriteBool('Win', 'SnipFuzzy', cbFuzzy.Checked);
   finally
     Free
   end;
 end;
 
-procedure TfmUniList.ListKeyDown(Sender: TObject; var Key: Word;
+procedure TfmMenuSnippets.ListClick(Sender: TObject);
+var
+  Index: Integer;
+begin
+  Index:= List.ItemIndex;
+  if Index>=0 then
+  begin
+    Index:= Integer(List.Items.Objects[Index]);
+    MemoText.Lines.Text:= TSynSnippetClass(FInfoList[Index]).Info.Text
+  end
+  else
+    MemoText.Lines.Clear;  
+end;
+
+procedure TfmMenuSnippets.ListKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key=vk_up) and (List.ItemIndex=0) then

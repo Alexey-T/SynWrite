@@ -1,4 +1,4 @@
-unit unProjList;
+unit unMenuProj;
 
 interface
 
@@ -9,7 +9,7 @@ uses
   ecKeyMap, ExtCtrls, unProj;
 
 type
-  TfmProjList = class(TTntForm)
+  TfmMenuProj = class(TTntForm)
     List: TTntListBox;
     Edit: TTntEdit;
     TimerType: TTimer;
@@ -60,7 +60,7 @@ uses
 
 {$R *.dfm}
 
-procedure TfmProjList.FormKeyDown(Sender: TObject; var Key: Word;
+procedure TfmMenuProj.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   //Esc
@@ -95,7 +95,7 @@ begin
   end;
 end;
 
-procedure TfmProjList.FormShow(Sender: TObject);
+procedure TfmMenuProj.FormShow(Sender: TObject);
 begin
   DoFilter;
 
@@ -113,7 +113,7 @@ begin
   end;
 end;
 
-procedure TfmProjList.DoFilter;
+procedure TfmMenuProj.DoFilter;
   //----------------
   function SFiltered(const fn: Widestring): boolean;
   var
@@ -183,13 +183,13 @@ begin
   List.ItemIndex:= 0;
 end;
 
-procedure TfmProjList.ListDblClick(Sender: TObject);
+procedure TfmMenuProj.ListDblClick(Sender: TObject);
 begin
   if List.ItemIndex>=0 then
     ModalResult:= mrOk;
 end;
 
-procedure TfmProjList.EditKeyDown(Sender: TObject; var Key: Word;
+procedure TfmMenuProj.EditKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (((Key=vk_prior) or (Key=vk_next) or (key=vk_up) or (key=vk_down)) and (Shift=[])) or
@@ -201,19 +201,19 @@ begin
     end;
 end;
 
-procedure TfmProjList.EditChange(Sender: TObject);
+procedure TfmMenuProj.EditChange(Sender: TObject);
 begin
   TimerType.Enabled:= false;
   TimerType.Enabled:= true;
 end;
 
-procedure TfmProjList.TimerTypeTimer(Sender: TObject);
+procedure TfmMenuProj.TimerTypeTimer(Sender: TObject);
 begin
   TimerType.Enabled:= false;
   DoFilter;
 end;
 
-procedure TfmProjList.ListDrawItem(Control: TWinControl; Index: Integer;
+procedure TfmMenuProj.ListDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 const
   dx = 20; //offset of text from left edge (for icon)
@@ -277,27 +277,27 @@ begin
   end;
 end;
 
-procedure TfmProjList.TntFormResize(Sender: TObject);
+procedure TfmMenuProj.TntFormResize(Sender: TObject);
 begin
   List.Invalidate;
 end;
 
-procedure TfmProjList.TntFormCreate(Sender: TObject);
+procedure TfmMenuProj.TntFormCreate(Sender: TObject);
 begin
   List.ItemHeight:= ScaleFontSize(List.ItemHeight, Self);
 end;
 
-procedure TfmProjList.labHelpClick(Sender: TObject);
+procedure TfmMenuProj.labHelpClick(Sender: TObject);
 begin
   SynHelpTopic(helpCmdListDlg, Handle);
 end;
 
-procedure TfmProjList.cbFuzzyClick(Sender: TObject);
+procedure TfmMenuProj.cbFuzzyClick(Sender: TObject);
 begin
   DoFilter;
 end;
 
-procedure TfmProjList.TntFormClose(Sender: TObject;
+procedure TfmMenuProj.TntFormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
   if FIniFN<>'' then
@@ -313,7 +313,7 @@ begin
   end;
 end;
 
-procedure TfmProjList.ListKeyDown(Sender: TObject; var Key: Word;
+procedure TfmMenuProj.ListKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key=vk_up) and (List.ItemIndex=0) then

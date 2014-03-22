@@ -48,7 +48,7 @@ uses
   unProc,
   unProcPy,
   unProcEditor,
-  unUniList,
+  unMenuPy,
   ecSyntAnal,
   ecSyntMemo,
   ATSyntMemo,
@@ -630,7 +630,7 @@ begin
         case Id of
           0, 1:
           begin
-            with TfmUniList.Create(nil) do
+            with TfmMenuPy.Create(nil) do
             try
               Caption:= StrCaption;
               cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');

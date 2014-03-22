@@ -1,4 +1,4 @@
-unit unRename;
+unit unInputSimple;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   StdCtrls, TntStdCtrls, TntForms;
 
 type
-  TfmRename = class(TTntForm)
+  TfmInputSimple = class(TTntForm)
     btnOK: TTntButton;
     btnCancel: TTntButton;
     edName: TTntComboBox;
@@ -31,18 +31,18 @@ uses
 
 {$R *.dfm}
 
-procedure TfmRename.edNameChange(Sender: TObject);
+procedure TfmInputSimple.edNameChange(Sender: TObject);
 begin
   btnOK.Enabled:= FEnablePrevValue or ((edName.Text<>'') and (edName.Text<>FOldName));
 end;
 
-procedure TfmRename.FormShow(Sender: TObject);
+procedure TfmInputSimple.FormShow(Sender: TObject);
 begin
   FOldName:= edName.Text;
   edNameChange(Self);
 end;
 
-procedure TfmRename.TntFormCreate(Sender: TObject);
+procedure TfmInputSimple.TntFormCreate(Sender: TObject);
 begin
   FEnablePrevValue:= false;
 

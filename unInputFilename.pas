@@ -1,4 +1,4 @@
-unit unRenameFN;
+unit unInputFilename;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   StdCtrls, TntStdCtrls, TntForms;
 
 type
-  TfmRenameFN = class(TTntForm)
+  TfmInputFilename = class(TTntForm)
     btnOK: TTntButton;
     btnCancel: TTntButton;
     edName: TTntEdit;
@@ -33,25 +33,25 @@ uses
 
 {$R *.dfm}
 
-procedure TfmRenameFN.edNameChange(Sender: TObject);
+procedure TfmInputFilename.edNameChange(Sender: TObject);
 begin
   btnOK.Enabled:= (edName.Text<>'') and (GetFN<>FOldName);
 end;
 
-procedure TfmRenameFN.FormShow(Sender: TObject);
+procedure TfmInputFilename.FormShow(Sender: TObject);
 begin
   FOldName:= GetFN;
   edNameChange(Self);
 end;
 
-function TfmRenameFN.GetFN: Widestring;
+function TfmInputFilename.GetFN: Widestring;
 begin
   Result:= edName.Text;
   if edExt.Text<>'' then
     Result:= Result+'.'+edExt.Text;
 end;
 
-procedure TfmRenameFN.TntFormCreate(Sender: TObject);
+procedure TfmInputFilename.TntFormCreate(Sender: TObject);
 begin
   btnOK.Caption:= DKLangConstW('sOk');
   btnCancel.Caption:= DKLangConstW('sCan');

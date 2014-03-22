@@ -232,7 +232,9 @@ uses
   TntClipbrd, TntSysUtils,
   DKLang,
   PngImage,
-  unSRTree, unRename, unRenameFN;
+  unSRTree,
+  unInputSimple,
+  unInputFilename;
 
 procedure MsgInfo(const S: WideString; H: THandle);
 begin
@@ -1156,7 +1158,7 @@ end;
 
 function DoInputFilename(const SCaption: Widestring; var SValue: Widestring): boolean;
 begin
-  with TfmRenameFN.Create(nil) do
+  with TfmInputFilename.Create(nil) do
   try
     labRename.Caption:= SCaption;
 
@@ -1174,7 +1176,7 @@ end;
 function DoInputString(const SCaption: Widestring; var SValue: Widestring;
   const IniFN: string = ''; const IniSection: string = ''): boolean;
 begin
-  with TfmRename.Create(nil) do
+  with TfmInputSimple.Create(nil) do
   try
     labRename.Caption:= SCaption;
 

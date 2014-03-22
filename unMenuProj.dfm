@@ -1,11 +1,11 @@
-object fmSnippetList: TfmSnippetList
+object fmMenuProj: TfmMenuProj
   Left = 247
   Top = 474
   Width = 510
   Height = 322
   ActiveControl = Edit
   BorderIcons = [biSystemMenu, biMaximize]
-  Caption = 'Snippets'
+  Caption = 'Project list'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,27 +21,15 @@ object fmSnippetList: TfmSnippetList
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 16
-  object Splitter1: TSplitter
-    Left = 0
-    Top = 206
-    Width = 502
-    Height = 5
-    Cursor = crVSplit
-    Align = alBottom
-    AutoSnap = False
-    MinSize = 1
-    ResizeStyle = rsUpdate
-  end
   object List: TTntListBox
     Left = 0
     Top = 24
     Width = 502
-    Height = 182
+    Height = 248
     Style = lbOwnerDrawFixed
     Align = alClient
-    ItemHeight = 16
+    ItemHeight = 33
     TabOrder = 1
-    OnClick = ListClick
     OnDblClick = ListDblClick
     OnDrawItem = ListDrawItem
     OnKeyDown = ListKeyDown
@@ -56,48 +44,45 @@ object fmSnippetList: TfmSnippetList
     OnChange = EditChange
     OnKeyDown = EditKeyDown
   end
-  object PanelLow: TPanel
+  object Panel1: TPanel
     Left = 0
-    Top = 211
+    Top = 272
     Width = 502
-    Height = 77
+    Height = 16
     Align = alBottom
     BevelOuter = bvNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 2
-    object MemoText: TTntMemo
-      Left = 0
+    object labHelp: TLabel
+      Left = 488
       Top = 0
-      Width = 502
-      Height = 61
-      Align = alClient
-      ReadOnly = True
-      ScrollBars = ssVertical
-      TabOrder = 0
-    end
-    object Panel1: TPanel
-      Left = 0
-      Top = 61
-      Width = 502
+      Width = 14
       Height = 16
-      Align = alBottom
-      BevelOuter = bvNone
+      Cursor = crHandPoint
+      Align = alRight
+      Caption = #187'? '
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
+      Font.Color = clBlue
       Font.Height = -11
       Font.Name = 'Tahoma'
-      Font.Style = []
+      Font.Style = [fsUnderline]
       ParentFont = False
-      TabOrder = 1
-      object cbFuzzy: TTntCheckBox
-        Left = 0
-        Top = 0
-        Width = 217
-        Height = 16
-        Align = alLeft
-        Caption = 'Fuzzy search'
-        TabOrder = 0
-        OnClick = cbFuzzyClick
-      end
+      OnClick = labHelpClick
+    end
+    object cbFuzzy: TTntCheckBox
+      Left = 0
+      Top = 0
+      Width = 217
+      Height = 16
+      Align = alLeft
+      Caption = 'Fuzzy search'
+      TabOrder = 0
+      OnClick = cbFuzzyClick
     end
   end
   object TimerType: TTimer

@@ -1,4 +1,4 @@
-object fmCmdList: TfmCmdList
+object fmMenuCmds: TfmMenuCmds
   Left = 247
   Top = 474
   Width = 510

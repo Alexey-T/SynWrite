@@ -3260,10 +3260,11 @@ uses
   unSetup, unAb, unEnc, unTool, unSRFiles, unExtr, unShell, unInsTxt,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
-  unCmdList, unProjList, unToolbarProp, unHideItems,
+  unMenuCmds, unMenuProj, unMenuSnippets, 
+  unToolbarProp, unHideItems,
   unProcPy,
   unMainPy,
-  unLexerLib, unSnipList, unSnipEd, unUniList;
+  unLexerLib, unSnipEd;
 
 {$R *.dfm}
 {$R Cur.res}
@@ -24350,7 +24351,7 @@ var
 begin
   Result:= 0;
 
-  with TfmCmdList.Create(Self) do
+  with TfmMenuCmds.Create(Self) do
   try
     Caption:= DKLangConstW('zMCmdList');
     cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
@@ -24417,7 +24418,7 @@ begin
     end;
 
     fn:= '';
-    with TfmProjList.Create(Self) do
+    with TfmMenuProj.Create(Self) do
     try
       Caption:= DKLangConstW('zMProjList');
       cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
@@ -28123,7 +28124,7 @@ begin
   Result:= -1;
   InitSnippets;
 
-  with TfmSnippetList.Create(Self) do
+  with TfmMenuSnippets.Create(Self) do
   try
     Caption:= DKLangConstW('zMSnippetList');
     cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
