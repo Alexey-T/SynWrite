@@ -14,6 +14,7 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
+function DoReadLexersCfg(const ASection, AId: string): string;
 procedure EditorInsertColorCode(Ed: TSyntaxMemo; Code: Integer);
 procedure EditorGetColorCodeRange(Ed: TSyntaxMemo; var NStart, NEnd: integer; var NColor: integer);
 function EditorGetTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
@@ -2987,10 +2988,47 @@ begin
 end;
 
 
+function DoReadLexersCfg(const ASection, AId: string): string;
+begin
+  with TIniFile.Create(EditorSynLexersCfg) do
+  try
+    Result:= ReadString(ASection, AId, '');
+  finally
+    Free
+  end;
+
+  if Result='' then
+    with TIniFile.Create(EditorSynLexersExCfg) do
+    try
+      Result:= ReadString(ASection, AId, '');
+    finally
+      Free
+    end;
+end;
+
+
 procedure EditorInsertColorCode(Ed: TSyntaxMemo; Code: Integer);
 var
   wStart, wEnd, NColor: Integer;
+  SLexer, SCode, SFormat: string;
 begin
+  //get color for HTML
+  SCode:= SColorToHex(Code);
+
+  //get color formatted for current lexer
+  SLexer:= EditorCurrentLexerForPos(Ed, Ed.CaretStrPos);
+  if SLexer<>'' then
+    SFormat:= DoReadLexersCfg('ColorValues', SLexer)
+  else
+    SFormat:= '';
+  if SFormat<>'' then
+  begin
+    SReplace(SFormat, 'rr', IntToHex(GetRValue(Code), 2));
+    SReplace(SFormat, 'gg', IntToHex(GetGValue(Code), 2));
+    SReplace(SFormat, 'bb', IntToHex(GetBValue(Code), 2));
+    SCode:= SFormat;
+  end;
+
   with Ed do
     if not ReadOnly then
     begin
@@ -3002,10 +3040,10 @@ begin
           CaretStrPos:= wStart;
           DeleteText(wEnd-wStart);
         end;
-        InsertText(SColorToHex(Code));
+        InsertText(SCode);
       finally
         EndUpdate;
-      end;  
+      end;
     end;
 end;
 

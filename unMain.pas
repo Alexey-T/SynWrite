@@ -2801,7 +2801,6 @@ type
     procedure DoWorkaround_FindNext1;
     procedure DoShowHintFilename(const fn: Widestring);
     function DoCheckAutoCorrectCase(Ed: TSyntaxMemo): boolean;
-    function DoReadLexersCfg(const ASection, AId: string): string;
     procedure DoClearFindDialogStatus;
     procedure ProjPreviewVisibleChanged(Sender: TObject);
     procedure DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynViewId);
@@ -3208,7 +3207,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.4.780';
+  cSynVer = '6.4.785';
   cSynPyVer = '1.0.123';
 
 const
@@ -28352,24 +28351,6 @@ begin
     for i:= 0 to AnalyzerCount-1 do
       if AlsoDisabled or not Analyzers[i].Internal then
         L.Add(Analyzers[i].LexerName);
-end;
-
-function TfmMain.DoReadLexersCfg(const ASection, AId: string): string;
-begin
-  with TIniFile.Create(SynLexersCfg) do
-  try
-    Result:= ReadString(ASection, AId, '');
-  finally
-    Free
-  end;
-
-  if Result='' then
-    with TIniFile.Create(SynLexersExCfg) do
-    try
-      Result:= ReadString(ASection, AId, '');
-    finally
-      Free
-    end;
 end;
 
 procedure TfmMain.TBXItemMarkGoLastClick(Sender: TObject);
