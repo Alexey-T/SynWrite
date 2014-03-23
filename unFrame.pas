@@ -106,6 +106,7 @@ type
     procedure EditorMasterModifiedChanged(Sender: TObject);
     procedure EditorMasterMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure EditorMasterResize(Sender: TObject);
   private
     FMouseClickOnNumbers: boolean;
     FAlertEnabled: boolean;
@@ -1700,7 +1701,12 @@ begin
       Line:= Ed.MouseToCaret(X, Y).Y;
       if (Line>=0) and (Line<Ed.Lines.Count) then
         Ed.SetSelection(Ed.CaretPosToStrPos(Point(0, Line)), Ed.Lines.LineSpace(Line));
-    end;    
+    end;
+end;
+
+procedure TEditorFrame.EditorMasterResize(Sender: TObject);
+begin
+  TfmMain(Owner).OnResize(Self);
 end;
 
 initialization

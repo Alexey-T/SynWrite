@@ -246,6 +246,7 @@ object EditorFrame: TEditorFrame
       OnEnter = EditorMasterEnter
       OnKeyDown = EditorMasterKeyDown
       OnMouseUp = EditorMasterMouseUp
+      OnResize = EditorMasterResize
     end
     object EditorSlave: TSyntaxMemo
       Left = 0
@@ -447,6 +448,7 @@ object EditorFrame: TEditorFrame
       OnEnter = EditorMasterEnter
       OnKeyDown = EditorMasterKeyDown
       OnMouseUp = EditorMasterMouseUp
+      OnResize = EditorMasterResize
     end
   end
   object ecSpellChecker: TecSpellChecker
