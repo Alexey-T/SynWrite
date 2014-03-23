@@ -1592,7 +1592,7 @@ procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
   begin
     //#rrggbb
     if IsHexColorString(StrItem) then
-      NColor:= SHexColorToColor(StrItem)
+      NColor:= SHtmlCodeToColor(StrItem)
     else
     //rgb(...)
     if SFindRegexEx(StrItem, cRegexColorRgb, 1, ResStart, ResLen) then

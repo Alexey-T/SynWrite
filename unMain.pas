@@ -19659,7 +19659,7 @@ begin
 
     if not IsHexColorString(s) then
       begin MsgColorBad(s); Exit end;
-    NColor:= SHexColorToColor(s);
+    NColor:= SHtmlCodeToColor(s);
 
     MsgColorOK(s);
     Result:= true;
@@ -19674,7 +19674,7 @@ begin
 
     if not IsHexColorString(s) then
       begin MsgColorBad(s); Exit end;
-    NColor:= SHexColorToColor(s);
+    NColor:= SHtmlCodeToColor(s);
 
     MsgColorOK(s);
     Result:= true;
@@ -19691,8 +19691,8 @@ begin
       begin MsgColorBad(SColor); Exit end;
     if not IsHexColorString(SColorText) then
       begin MsgColorBad(SColorText); Exit end;
-    NColor:= SHexColorToColor(SColor);
-    NColorText:= SHexColorToColor(SColorText);
+    NColor:= SHtmlCodeToColor(SColor);
+    NColorText:= SHtmlCodeToColor(SColorText);
 
     MsgColorOK(SColor+ ' / #' +SColorText);
     Result:= true;
@@ -19724,7 +19724,7 @@ begin
 
   if not IsHexColorString(s) then
     begin MsgColorBad(s); Exit end;
-  NColor:= SHexColorToColor(s);
+  NColor:= SHtmlCodeToColor(s);
 
   MsgColorOK(s);
   Result:= true;
@@ -19807,7 +19807,7 @@ begin
 
   //add new menuitem
   Item:= TSpTbxItem.Create(Self);
-  Item.Caption:= SColorToHex(N);
+  Item.Caption:= SColorToHtmlCode(N);
   Item.Tag:= N;
   Item.OnClick:= RecentColorClick;
   Item.Images:= ImageListColorRecent;
@@ -20728,7 +20728,7 @@ begin
   Result:= '';
   with TbxSubmenuItemRecentColors do
     for i:= Count-1 downto cColorIdxMin do
-      Result:= Result+ SColorToHex(Items[i].Tag)+',';
+      Result:= Result+ SColorToHtmlCode(Items[i].Tag)+',';
 end;
 
 procedure TfmMain.SetRecentColors(const Str: string);
@@ -20744,7 +20744,7 @@ begin
     if SItem='' then Break;
     //Msg(SItem);
     try
-      Code:= SHexColorToColor(SItem);
+      Code:= SHtmlCodeToColor(SItem);
       DoAddRecentColor(Code);
     except
       Continue
@@ -21299,7 +21299,7 @@ var
 begin
   Result:= '';
   for i:= 0 to High(opTabColors) do
-    Result:= Result+ SColorToHex(opTabColors[i])+',';
+    Result:= Result+ SColorToHtmlCode(opTabColors[i])+',';
 end;
 
 procedure TfmMain.SetTabColors(S: Widestring);
@@ -21313,7 +21313,7 @@ begin
     SItem:= SGetItem(S);
     Delete(SItem, 1, 1);
     if SItem='' then Break;
-    opTabColors[i]:= SHexColorToColor(SItem);
+    opTabColors[i]:= SHtmlCodeToColor(SItem);
   end;
 end;
 
@@ -23833,7 +23833,7 @@ begin
   Result:= true;
   if opUnicodeNeeded=0 then Exit;
   if Frame.EditorMaster.TextSource.Lines.TextCoding<>tcAnsi then Exit;
-  if not Frame.EditorMaster.TextSource.Lines.ContainUnicode then Exit;
+  if not IsTextUnicode(Frame.EditorMaster.Lines.FText) then Exit;
 
   case opUnicodeNeeded of
     1:
@@ -25903,7 +25903,7 @@ procedure TfmMain.TBXTabColorGetColor(Sender: TObject; ACol, ARow: Integer;
   var Color: TColor; var Name: WideString);
 begin
   Color:= opTabColors[ACol + ARow * 5];
-  Name:= SColorToHex(Color);
+  Name:= SColorToHtmlCode(Color);
 end;
 
 procedure TfmMain.TBXTabColorCellClick(Sender: TObject; ACol,
@@ -26620,7 +26620,7 @@ begin
     Delete(s, 1, 1);
     Result:= IsHexColorString(s);
     if Result then
-      AColor:= SHexColorToColor(s);
+      AColor:= SHtmlCodeToColor(s);
   end
   else
   if (s<>'') and IsStringRegex(s, cRegexColorName) then
@@ -26632,7 +26632,7 @@ begin
       Delete(s, 1, 1);
       Result:= IsHexColorString(s);
       if Result then
-        AColor:= SHexColorToColor(s);
+        AColor:= SHtmlCodeToColor(s);
     end;
   end
   else

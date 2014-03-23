@@ -277,7 +277,7 @@ procedure TColorHintWindow.Paint;
     S: string;
     i: Integer;
   begin
-    S:= SColorToHex(NColor);
+    S:= SColorToHtmlCode(NColor);
     for i:= Low(cColorCodes) to High(cColorCodes) do
       if cColorCodes[i].sVal=S then
       begin

@@ -27,9 +27,11 @@ function SStripFromTab(const S: Widestring): Widestring;
 procedure SFindBrackets(const S: Widestring; const FromPos: Integer; var Pos1, Pos2: Integer);
 function SFindOpeningBracket(const S: Widestring; nFromPos: Integer): Integer;
 
-function SColorToHex(C: Integer): string;
-function SHexColorToColor(const s: string): Integer;
+function SColorToHtmlCode(C: Integer): string;
+function SHtmlCodeToColor(const s: string): Integer;
 function IsHexColorString(const s: Widestring): boolean;
+
+function IsTextUnicode(const S: Widestring): boolean;
 function IsWordString(const S: Widestring; AllowDot: boolean): boolean;
 function IsStringListed(const S, List: string): boolean;
 function FTempDir: string;
@@ -1447,8 +1449,6 @@ begin
   SReplaceAll(S, '%'+IntToHex(i, 2), Chr(i));
 end;
 
-
-
 function IsHexChar(Ch: WideChar): boolean;
 begin
   Result:= Pos(Ch, '1234567890abcdefABCDEF') > 0;
@@ -1486,7 +1486,7 @@ begin
     SHexCharToInt(s[2]);
 end;
 
-function SHexColorToColor(const s: string): Integer;
+function SHtmlCodeToColor(const s: string): Integer;
 var
   n1, n2, n3: integer;
 begin
@@ -1510,12 +1510,25 @@ begin
     raise Exception.Create('Incorrect color string: '+s);
 end;
 
-function SColorToHex(C: Integer): string;
+function SColorToHtmlCode(C: Integer): string;
 begin
   Result:= '#' +
     IntToHex(GetRValue(C), 2) +
     IntToHex(GetGValue(C), 2) +
     IntToHex(GetBValue(C), 2)
+end;
+
+function IsTextUnicode(const S: Widestring): boolean;
+var
+  i: integer;
+begin
+  for i:= 1 to Length(S) do
+    if Ord(S[i]) > $FF then
+    begin
+      Result:= true;
+      Exit;
+    end;
+  Result:= false;
 end;
 
 

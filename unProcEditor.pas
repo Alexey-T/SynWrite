@@ -2979,7 +2979,7 @@ begin
         s:= Copy(s, wStart+1, wEnd-wStart);
         if IsHexColorString(s) then
         begin
-          NColor:= SHexColorToColor(s);
+          NColor:= SHtmlCodeToColor(s);
           NStart:= wStart-1;
           NEnd:= wEnd;
         end;
@@ -3013,7 +3013,7 @@ var
   SLexer, SCode, SFormat: string;
 begin
   //get color for HTML
-  SCode:= SColorToHex(Code);
+  SCode:= SColorToHtmlCode(Code);
 
   //get color formatted for current lexer
   SLexer:= EditorCurrentLexerForPos(Ed, Ed.CaretStrPos);
