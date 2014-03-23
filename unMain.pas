@@ -2375,7 +2375,6 @@ type
     function GetRecentColors: string;
     procedure SetRecentColors(const Str: string);
     property RecentColorsStr: string read GetRecentColors write SetRecentColors;
-    procedure DoInsertColorCode(Code: Integer);
     procedure DoClearRecentColors;
     procedure RecentColorClick(Sender: TObject);
     procedure RecentColorOpen(Sender: TObject);
@@ -2440,7 +2439,6 @@ type
     function SStatusHint(state: TSynSelState): Widestring;
 
     procedure DoHandleToolOutput(const ft: Widestring; NTool: integer);
-    procedure GetColorRange(var NStart, NEnd: integer; var NColor: integer);
     function IsShowColor(s: string; var NColor, NColorText: TColor): boolean;
     procedure GetTabName(APagesNumber, ATabIndex: Integer; var AName, AFN, ALex: Widestring);
     procedure ClearTabList;
@@ -19757,37 +19755,15 @@ begin
   if not IsFileExist(fn) then
     begin MsgNoFile(fn); Exit end;
 
-  GetColorRange(wStart, wEnd, NColor);
+  EditorGetColorCodeRange(CurrentEditor, wStart, wEnd, NColor);
   if FExecuteGetCode(fn, IntToStr(NColor), sw_show, true, code) then
     if code<>Cardinal(-1) then
     begin
-      DoInsertColorCode(code);
+      EditorInsertColorCode(CurrentEditor, code);
       DoAddRecentColor(code);
       {$ifndef FixRepaint}
       DoRepaintTBs;
       {$endif}
-    end;
-end;
-
-procedure TfmMain.DoInsertColorCode(Code: Longint);
-var
-  wStart, wEnd, NColor: Integer;
-begin
-  with CurrentEditor do
-    if not ReadOnly then
-    begin
-      BeginUpdate;
-      try
-        GetColorRange(wStart, wEnd, NColor);
-        if (wEnd>wStart) then
-        begin
-          CaretStrPos:= wStart;
-          DeleteText(wEnd-wStart);
-        end;
-        InsertText(SColorToHex(Code));
-      finally
-        EndUpdate;
-      end;  
     end;
 end;
 
@@ -19866,47 +19842,10 @@ begin
     DoDeleteRecentColor(Code)
   else
   begin
-    DoInsertColorCode(Code);
+    EditorInsertColorCode(CurrentEditor, Code);
     DoAddRecentColor(Code);
   end;
 end;
-
-procedure TfmMain.GetColorRange(var NStart, NEnd: integer; var NColor: integer);
-var
-  p: TPoint;
-  s: ecString;
-  wStart, wEnd: integer;
-begin
-  NColor:= clWhite;
-  NStart:= 0;
-  NEnd:= 0;
-  with CurrentEditor do
-    if (Lines.Count>0) then
-    begin
-      s:= Lines.FText;
-      p:= CaretPos;
-      if (CaretStrPos<Length(s)) and
-        (s[CaretStrPos+1]='#') then Inc(p.X);
-      WordRangeAtPos(p, wStart, wEnd);
-
-      //needed for fixed ecSyntMemo's WordRangeAtPos
-      if (wStart+1<=Length(s)) and (s[wStart+1]='#') then
-        Inc(wStart);
-
-      if (wStart>0) and (wStart<=Length(s)) and (s[wStart]='#') and
-        (wEnd>wStart) then
-      begin
-        s:= Copy(s, wStart+1, wEnd-wStart);
-        if IsHexColorString(s) then
-        begin
-          NColor:= SHexColorToColor(s);
-          NStart:= wStart-1;
-          NEnd:= wEnd;
-        end;
-      end;
-    end;
-end;
-
 
 procedure TfmMain.DoHandleToolOutput(const ft: Widestring; NTool: integer);
 var
@@ -26699,7 +26638,7 @@ begin
   end
   else
   begin
-    GetColorRange(nStart, nEnd, AColor);
+    EditorGetColorCodeRange(Ed, nStart, nEnd, AColor);
     Result:= nEnd>nStart;
   end;
 end;

@@ -14,6 +14,8 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
+procedure EditorInsertColorCode(Ed: TSyntaxMemo; Code: Integer);
+procedure EditorGetColorCodeRange(Ed: TSyntaxMemo; var NStart, NEnd: integer; var NColor: integer);
 function EditorGetTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
 procedure EditorGetTokenType(Ed: TSyntaxMemo; StartPos, EndPos: Integer; var IsCmt, IsStr: boolean);
 
@@ -2945,6 +2947,66 @@ begin
     IsCmt:= IsStyleListed(Style, Lexer, FListCommentStyles);
     IsStr:= IsStyleListed(Style, Lexer, FListStringStyles);
   end;
+end;
+
+
+procedure EditorGetColorCodeRange(Ed: TSyntaxMemo; var NStart, NEnd: integer; var NColor: integer);
+var
+  p: TPoint;
+  s: ecString;
+  wStart, wEnd: integer;
+begin
+  NColor:= $FFFFFF;
+  NStart:= 0;
+  NEnd:= 0;
+  with Ed do
+    if (Lines.Count>0) then
+    begin
+      s:= Lines.FText;
+      p:= CaretPos;
+      if (CaretStrPos<Length(s)) and
+        (s[CaretStrPos+1]='#') then Inc(p.X);
+      WordRangeAtPos(p, wStart, wEnd);
+
+      //needed for fixed ecSyntMemo's WordRangeAtPos
+      if (wStart+1<=Length(s)) and (s[wStart+1]='#') then
+        Inc(wStart);
+
+      if (wStart>0) and (wStart<=Length(s)) and (s[wStart]='#') and
+        (wEnd>wStart) then
+      begin
+        s:= Copy(s, wStart+1, wEnd-wStart);
+        if IsHexColorString(s) then
+        begin
+          NColor:= SHexColorToColor(s);
+          NStart:= wStart-1;
+          NEnd:= wEnd;
+        end;
+      end;
+    end;
+end;
+
+
+procedure EditorInsertColorCode(Ed: TSyntaxMemo; Code: Integer);
+var
+  wStart, wEnd, NColor: Integer;
+begin
+  with Ed do
+    if not ReadOnly then
+    begin
+      BeginUpdate;
+      try
+        EditorGetColorCodeRange(Ed, wStart, wEnd, NColor);
+        if (wEnd>wStart) then
+        begin
+          CaretStrPos:= wStart;
+          DeleteText(wEnd-wStart);
+        end;
+        InsertText(SColorToHex(Code));
+      finally
+        EndUpdate;
+      end;  
+    end;
 end;
 
 

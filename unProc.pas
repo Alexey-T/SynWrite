@@ -126,10 +126,6 @@ function IsStringRegex(const S, Regex: Widestring): boolean;
 function CompareListDate(List: TTntStringList; Index1, Index2: Integer): Integer;
 function CompareListDateDesc(List: TTntStringList; Index1, Index2: Integer): Integer;
 
-function SColorToHex(C: TColor): string;
-function SHexColorToColor(const s: string): TColor;
-function IsHexColorString(const s: Widestring): boolean;
-
 function IsCtrlPressed: boolean;
 function IsCtrlAltPressed: boolean;
 
@@ -875,74 +871,6 @@ begin
   end;
 end;
 
-
-function SHexCharToInt(ch: char): integer;
-begin
-  ch:= UpCase(ch);
-  if ch>'9' then
-    Result:= Ord(ch)-Ord('A')+10
-  else
-    Result:= Ord(ch)-Ord('0');
-end;
-
-function SHexByteToInt(const s: string): integer;
-begin
-  if Length(s)<>2 then
-    raise Exception.Create('Not 2-digit hex string: '+s);
-  Result:=
-    SHexCharToInt(s[1])*16 +
-    SHexCharToInt(s[2]);
-end;
-
-function SHexColorToColor(const s: string): TColor;
-var
-  n1, n2, n3: integer;
-begin
-  //"rrggbb" is the same as "rrggbbaa"
-  if (Length(s)=6) or (Length(s)=8) then
-  begin
-    n1:= SHexByteToInt(s[1]+s[2]);
-    n2:= SHexByteToInt(s[3]+s[4]);
-    n3:= SHexByteToInt(s[5]+s[6]);
-    Result:= RGB(n1, n2, n3);
-  end
-  else
-  if Length(s)=3 then
-  begin
-    n1:= SHexByteToInt(s[1]+s[1]);
-    n2:= SHexByteToInt(s[2]+s[2]);
-    n3:= SHexByteToInt(s[3]+s[3]);
-    Result:= RGB(n1, n2, n3);
-  end
-  else
-    raise Exception.Create('Incorrect color string: '+s);
-end;
-
-function IsHexChar(Ch: WideChar): boolean;
-begin
-  Result:= Pos(Ch, '1234567890abcdefABCDEF') > 0;
-end;
-
-function IsHexColorString(const s: Widestring): boolean;
-var
-  i, Len: integer;
-begin
-  Result:= false;
-  Len:= Length(s);
-  if (Len<>3) and (Len<>6) and (Len<>8) then Exit;
-  for i:= 1 to Len do
-    if not IsHexChar(s[i]) then
-      Exit;
-  Result:= true;
-end;
-
-function SColorToHex(C: TColor): string;
-begin
-  Result:= '#' +
-    IntToHex(GetRValue(C), 2) +
-    IntToHex(GetGValue(C), 2) +
-    IntToHex(GetBValue(C), 2)
-end;
 
 //-----------------------
 function OutputTypeLangID(n: TSynOutputType): Widestring;
