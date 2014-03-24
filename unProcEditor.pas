@@ -14,9 +14,11 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
-function DoReadLexersCfg(const ASection, AId: string): string;
+function EditorFormatHexCode(Ed: TSyntaxMemo; const SHexCode: string): string;
 procedure EditorInsertColorCode(Ed: TSyntaxMemo; Code: Integer);
 procedure EditorGetColorCodeRange(Ed: TSyntaxMemo; var NStart, NEnd: integer; var NColor: integer);
+function DoReadLexersCfg(const ASection, AId: string): string;
+
 function EditorGetTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
 procedure EditorGetTokenType(Ed: TSyntaxMemo; StartPos, EndPos: Integer; var IsCmt, IsStr: boolean);
 
@@ -3045,6 +3047,26 @@ begin
         EndUpdate;
       end;
     end;
+end;
+
+
+function EditorFormatHexCode(Ed: TSyntaxMemo; const SHexCode: string): string;
+var
+  SLexer, SFormat: string;
+begin
+  Result:= SHexCode;
+  SLexer:= EditorCurrentLexerForPos(Ed, Ed.CaretStrPos);
+  if SLexer<>'' then
+    SFormat:= DoReadLexersCfg('HexValues', SLexer)
+  else
+    SFormat:= '';
+  if SFormat<>'' then
+  begin
+    SReplace(SFormat, '{v}', SHexCode);
+    if (SFormat<>'') and (SFormat[1] in ['a'..'f', 'A'..'F']) then
+      SFormat:= '0'+SFormat;
+    Result:= SFormat;
+  end
 end;
 
 

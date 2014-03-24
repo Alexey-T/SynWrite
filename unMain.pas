@@ -2340,7 +2340,7 @@ type
     procedure DoFindInValidatePanel;
     procedure DoFindInPluginsLog;
     procedure DoAddFav(const fn: Widestring);
-    procedure NumConvInsert(Sender: TObject; const S: string);
+    procedure NumConvInsert(Sender: TObject; const S: string; Typ: TSynNumType);
     procedure DoGetCommentProps(const Lexer: string;
       UseDefault: boolean;
       var sStart, sEnd: string; var IsMultiLine: boolean);
@@ -3207,7 +3207,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.4.785';
+  cSynVer = '6.4.790';
   cSynPyVer = '1.0.123';
 
 const
@@ -21561,9 +21561,14 @@ begin
   fmNumConv.Show;
 end;
 
-procedure TfmMain.NumConvInsert(Sender: TObject; const S: string);
+procedure TfmMain.NumConvInsert(Sender: TObject; const S: string; Typ: TSynNumType);
+var
+  SCode: string;
 begin
-  CurrentEditor.InsertText(S);
+  SCode:= S;
+  if Typ=numHex then
+    SCode:= EditorFormatHexCode(CurrentEditor, S);
+  CurrentEditor.InsertText(SCode);
 end;
 
 procedure TfmMain.TBXItemEUnindentClick(Sender: TObject);

@@ -8,8 +8,8 @@ uses
   TntForms, TntStdCtrls, DKLang;
 
 type
-  TNumType = (numChar, numDec, numHex, numBin, numOct);
-  TNumConvEvent = procedure(Sender: TObject; const S: string) of object;
+  TSynNumType = (numChar, numDec, numHex, numBin, numOct);
+  TSynNumConvEvent = procedure(Sender: TObject; const AStr: string; AMode: TSynNumType) of object;
 
 type
   TfmNumConv = class(TTntForm)
@@ -57,12 +57,12 @@ type
   private
     { Private declarations }
     FLock: boolean;
-    FOnInsert: TNumConvEvent;
-    procedure ShowRes(const S: string; Typ: TNumType);
-    procedure DoInsert(const S: string);
+    FOnInsert: TSynNumConvEvent;
+    procedure ShowRes(const S: string; Typ: TSynNumType);
+    procedure DoInsert(const S: string; Typ: TSynNumType);
   public
     { Public declarations }
-    property OnInsert: TNumConvEvent read FOnInsert write FOnInsert;
+    property OnInsert: TSynNumConvEvent read FOnInsert write FOnInsert;
     procedure SelNext;
   end;
 
@@ -99,7 +99,7 @@ begin
     ShowRes(edOct.Text, numOct);
 end;
 
-procedure TfmNumConv.ShowRes(const S: string; Typ: TNumType);
+procedure TfmNumConv.ShowRes(const S: string; Typ: TSynNumType);
 var
   N: LongWord;
   V: boolean;
@@ -180,35 +180,35 @@ begin
   Clipboard.AsText:= edOct.Text;
 end;
 
-procedure TfmNumConv.DoInsert(const S: string);
+procedure TfmNumConv.DoInsert(const S: string; Typ: TSynNumType);
 begin
   if Assigned(FOnInsert) then
-    FOnInsert(Self, S);
+    FOnInsert(Self, S, Typ);
 end;
 
 procedure TfmNumConv.bInsCharClick(Sender: TObject);
 begin
-  DoInsert(edChar.Text);
+  DoInsert(edChar.Text, numChar);
 end;
 
 procedure TfmNumConv.bInsDecClick(Sender: TObject);
 begin
-  DoInsert(edDec.Text);
+  DoInsert(edDec.Text, numDec);
 end;
 
 procedure TfmNumConv.bInsHexClick(Sender: TObject);
 begin
-  DoInsert(edHex.Text);
+  DoInsert(edHex.Text, numHex);
 end;
 
 procedure TfmNumConv.bInsBinClick(Sender: TObject);
 begin
-  DoInsert(edBin.Text);
+  DoInsert(edBin.Text, numBin);
 end;
 
 procedure TfmNumConv.bInsOctClick(Sender: TObject);
 begin
-  DoInsert(edOct.Text);
+  DoInsert(edOct.Text, numOct);
 end;
 
 procedure TfmNumConv.bCloseClick(Sender: TObject);
