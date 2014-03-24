@@ -213,7 +213,31 @@ function OutputTypeStrToOrder(const s: string): integer;
 
 type
   TOutputEnc = (encAnsi, encOem, encUtf8{, encUni, encUniBE});
+type
+  TSynTool = record
+    ToolCaption,
+    ToolCommand,
+    ToolDir,
+    ToolParams,
+    ToolLexer,
+    ToolKeys: WideString;
+    ToolOutCapture: boolean;
+    ToolOutType: string;
+    ToolOutEncoding: TOutputEnc;
+    ToolOutRegex: string;
+    ToolOutNum_fn,
+    ToolOutNum_line,
+    ToolOutNum_col: integer;
+    ToolSaveMode: TSynToolSave;
+    ToolNoTags: boolean;
+    ToolContextItem: boolean;
+  end;
+type
+  TSynToolList = array[1..16] of TSynTool;
 
+procedure DoLoadToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
+procedure DoSaveToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
+  
 var
   opSrOffsetY: integer = 6;
 
@@ -1882,5 +1906,72 @@ begin
 end;
 
 
+procedure DoLoadToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
+var
+  i: integer;
+  s: Widestring;
+begin
+  with TIniFile.Create(AIniFN) do
+  try
+    for i:= Low(AToolList) to High(AToolList) do
+    with AToolList[i] do
+    begin
+      ToolCaption:= UTF8Decode(ReadString(ASection, 'C'+IntToStr(i), ''));
+      ToolCommand:= UTF8Decode(ReadString(ASection, 'Ex'+IntToStr(i), ''));
+      ToolDir:= UTF8Decode(ReadString(ASection, 'Dir'+IntToStr(i), ''));
+      ToolParams:= UTF8Decode(ReadString(ASection, 'Par'+IntToStr(i), ''));
+      ToolLexer:= ReadString(ASection, 'Lex'+IntToStr(i), '');
+      ToolKeys:= ReadString(ASection, 'Key'+IntToStr(i), '');
+      ToolOutRegex:= ReadString(ASection, 'Re'+IntToStr(i), '');
+
+      S:= ReadString(ASection, 'S'+IntToStr(i), '');
+      ToolOutCapture:= Boolean(StrToIntDef(SGetItem(S), 0));
+      ToolOutNum_fn:= StrToIntDef(SGetItem(S), 0);
+      ToolOutNum_line:= StrToIntDef(SGetItem(S), 0);
+      ToolOutNum_col:= StrToIntDef(SGetItem(S), 0);
+      ToolSaveMode:= TSynToolSave(StrToIntDef(SGetItem(S), 0));
+      ToolNoTags:= Boolean(StrToIntDef(SGetItem(S), 0));
+      ToolContextItem:= Boolean(StrToIntDef(SGetItem(S), 0));
+      ToolOutType:= SGetItem(S);
+      if ToolOutType='' then
+        ToolOutType:= cOutputTypeString[outToPanel];
+      ToolOutEncoding:= TOutputEnc(StrToIntDef(SGetItem(S), Ord(encOem)));
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure DoSaveToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
+var
+  i: Integer;
+begin
+  with TIniFile.Create(AIniFN) do
+  try
+    for i:= Low(AToolList) to High(AToolList) do
+    with AToolList[i] do
+    begin
+      WriteString(ASection, 'C'+IntToStr(i), '"'+UTF8Encode(ToolCaption)+'"');
+      WriteString(ASection, 'Ex'+IntToStr(i), '"'+UTF8Encode(ToolCommand)+'"');
+      WriteString(ASection, 'Dir'+IntToStr(i), '"'+UTF8Encode(ToolDir)+'"');
+      WriteString(ASection, 'Par'+IntToStr(i), '"'+UTF8Encode(ToolParams)+'"');
+      WriteString(ASection, 'Lex'+IntToStr(i), ToolLexer);
+      WriteString(ASection, 'Key'+IntToStr(i), ToolKeys);
+      WriteString(ASection, 'Re'+IntToStr(i), '"'+ToolOutRegex+'"');
+      WriteString(ASection, 'S'+IntToStr(i), Format('%d,%d,%d,%d,%d,%d,%d,%s,%d',
+        [Ord(ToolOutCapture),
+        ToolOutNum_fn,
+        ToolOutNum_line,
+        ToolOutNum_col,
+        Ord(ToolSaveMode),
+        Ord(ToolNoTags),
+        Ord(ToolContextItem),
+        ToolOutType,
+        Ord(ToolOutEncoding)]));
+    end;
+  finally
+    Free;
+  end;
+end;
 
 end.

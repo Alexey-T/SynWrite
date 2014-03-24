@@ -239,25 +239,6 @@ type
   end;
 
 type
-  TSynTool = record
-    ToolCaption,
-    ToolCommand,
-    ToolDir,
-    ToolParams,
-    ToolLexer,
-    ToolKeys: WideString;
-    ToolOutCapture: boolean;
-    ToolOutType: string;
-    ToolOutEncoding: TOutputEnc;
-    ToolOutRegex: string;
-    ToolOutNum_fn,
-    ToolOutNum_line,
-    ToolOutNum_col: integer;
-    ToolSaveMode: TSynToolSave;
-    ToolNoTags: boolean;
-    ToolContextItem: boolean;
-  end;
-
   TSynLogPanelProps = record
     RegexStr: string;
     RegexIdLine,
@@ -2422,7 +2403,7 @@ type
 
     procedure UpdateLexer;
     procedure UpdateFormEnabled(En: boolean);
-    procedure UpdateOutFromList(List: TWideStringList);
+    procedure UpdatePanelOutFromList(List: TWideStringList);
     procedure UpdateRecentsOnClose;
     procedure UpdateColorHint(AClearHint: boolean = true);
     procedure UpdateListTabs;
@@ -2914,7 +2895,7 @@ type
     opColorOutRedText,
     opColorOutRedSelText,
     opColorOutHi: integer;
-    opTools: array[1..16] of TSynTool;
+    opTools: TSynToolList;
       //Note: if need to change max count of tools, also change these places:
       //- in design time create more items in "Run" menu (at top)
       //- in design time create more items in PopupEditor menu (at bottom)
@@ -10247,35 +10228,8 @@ begin
 end;
 
 procedure TfmMain.LoadTools;
-var i: integer;
-  s: Widestring;
 begin
-  with TIniFile.Create(SynIni) do
-  try
-    for i:= Low(opTools) to High(opTools) do
-    with opTools[i] do begin
-      ToolCaption:= UTF8Decode(ReadString('Tool', 'C'+IntToStr(i), ''));
-      ToolCommand:= UTF8Decode(ReadString('Tool', 'Ex'+IntToStr(i), ''));
-      ToolDir:= UTF8Decode(ReadString('Tool', 'Dir'+IntToStr(i), ''));
-      ToolParams:= UTF8Decode(ReadString('Tool', 'Par'+IntToStr(i), ''));
-      ToolLexer:= ReadString('Tool', 'Lex'+IntToStr(i), '');
-      ToolKeys:= ReadString('Tool', 'Key'+IntToStr(i), '');
-      ToolOutRegex:= ReadString('Tool', 'Re'+IntToStr(i), '');
-      S:= ReadString('Tool', 'S'+IntToStr(i), '');
-      ToolOutCapture:= Boolean(StrToIntDef(SGetItem(S), 0));
-      ToolOutNum_fn:= StrToIntDef(SGetItem(S), 0);
-      ToolOutNum_line:= StrToIntDef(SGetItem(S), 0);
-      ToolOutNum_col:= StrToIntDef(SGetItem(S), 0);
-      ToolSaveMode:= TSynToolSave(StrToIntDef(SGetItem(S), 0));
-      ToolNoTags:= Boolean(StrToIntDef(SGetItem(S), 0));
-      ToolContextItem:= Boolean(StrToIntDef(SGetItem(S), 0));
-      ToolOutType:= SGetItem(S);
-      if ToolOutType='' then ToolOutType:= cOutputTypeString[outToPanel];
-      ToolOutEncoding:= TOutputEnc(StrToIntDef(SGetItem(S), Ord(encOem)));
-    end;
-  finally
-    Free;
-  end;
+  DoLoadToolList(opTools, SynIni, 'Tool');
   UpdateTools;
 end;
 
@@ -10342,28 +10296,8 @@ begin
 end;
 
 procedure TfmMain.SaveTools;
-var
-  i: Integer;
 begin
-  with TIniFile.Create(SynIni) do
-  try
-    for i:= Low(opTools) to High(opTools) do
-    with opTools[i] do
-    begin
-      WriteString('Tool', 'C'+IntToStr(i), '"'+UTF8Encode(ToolCaption)+'"');
-      WriteString('Tool', 'Ex'+IntToStr(i), '"'+UTF8Encode(ToolCommand)+'"');
-      WriteString('Tool', 'Dir'+IntToStr(i), '"'+UTF8Encode(ToolDir)+'"');
-      WriteString('Tool', 'Par'+IntToStr(i), '"'+UTF8Encode(ToolParams)+'"');
-      WriteString('Tool', 'Lex'+IntToStr(i), ToolLexer);
-      WriteString('Tool', 'Key'+IntToStr(i), ToolKeys);
-      WriteString('Tool', 'Re'+IntToStr(i), '"'+ToolOutRegex+'"');
-      WriteString('Tool', 'S'+IntToStr(i), Format('%d,%d,%d,%d,%d,%d,%d,%s,%d',
-        [Ord(ToolOutCapture), ToolOutNum_fn, ToolOutNum_line, ToolOutNum_col, Ord(ToolSaveMode), Ord(ToolNoTags), Ord(ToolContextItem), ToolOutType, Ord(ToolOutEncoding)]));
-    end;
-  finally
-    Free;
-  end;
-
+  DoSaveToolList(opTools, SynIni, 'Tool');
   UpdateTools;
 end;
 
@@ -19926,7 +19860,7 @@ begin
           SynPanelPropsOut.Encoding:= opTools[NTool].ToolOutEncoding;
           SynPanelPropsOut.ZeroBase:= false;
 
-          UpdateOutFromList(List);
+          UpdatePanelOutFromList(List);
           UpdatePanelOut(tbOut);
           plOut.Show;
         end;
@@ -20162,10 +20096,12 @@ begin
   Ed:= CurrentEditor;
   if Ed=nil then Exit;
   if Ed.ReadOnly then Exit;
-  if Ed.SelLength=0 then begin MsgBeep; Exit end;
+  if Ed.SelLength=0 then
+    begin MsgBeep; Exit end;
 
   S:= TntClipboard.AsWideText;
-  if S='' then begin MsgBeep; Exit end;
+  if S='' then
+    begin MsgBeep; Exit end;
 
   //set finder
   Finder.FindText:= Ed.SelText;
@@ -20177,24 +20113,21 @@ begin
   //replace
   NLine:= Ed.TopLine;
   Finder.ReplaceAll;
-  //if Finder.Matches>0 then
-  //  EditorSetModified(Ed);
   Ed.TopLine:= NLine;
 
   MsgFound;
 end;
 
-procedure TfmMain.MsgFound;//(AllowOne: boolean = true);
+procedure TfmMain.MsgFound;
 var
   n: Integer;
 begin
   n:= Finder.Matches;
   if n>0 then
-    //if (n>1) or AllowOne then
-      DoHint(WideFormat(DKLangConstW('Found'), [n]));
+    DoHint(WideFormat(DKLangConstW('Found'), [n]));
 end;
 
-procedure TfmMain.UpdateOutFromList(List: TWideStringList);
+procedure TfmMain.UpdatePanelOutFromList(List: TWideStringList);
 var
   i: integer;
 begin
@@ -20224,7 +20157,7 @@ begin
     FixListOutput(List, false{NoTags}, false{NoDups},
       SynPanelPropsOut.Encoding,
       EditorTabExpansion(CurrentEditor));
-    UpdateOutFromList(List);
+    UpdatePanelOutFromList(List);
     UpdatePanelOut(tbOut);
     plOut.Show;
   finally
