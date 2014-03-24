@@ -152,7 +152,7 @@ procedure TfmMap.SyncMapPos(Src: TSyntaxMemo);
 begin
   if Src=nil then Exit;
 
-  //have col#0 in map visible
+  //make map column 0 visible
   edMap.CaretPos:= Point(0, Src.CaretPos.Y);
 
   FTopLine:= Src.TopLine;

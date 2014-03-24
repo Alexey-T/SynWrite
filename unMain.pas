@@ -14449,6 +14449,9 @@ procedure TfmMain.plClipVisibleChanged(Sender: TObject);
 begin
   FixSplitters;
   ecShowClip.Checked:= plClip.Visible;
+
+  SyncMapData;
+  SyncMapPos;
 end;
 
 procedure TfmMain.ecShowClipExecute(Sender: TObject);
@@ -17854,14 +17857,16 @@ end;
 
 procedure TfmMain.SyncMapData;
 begin
-  if Assigned(fmMap) and fmMap.Visible then
-    fmMap.SyncMapData(CurrentEditor);
+  if plClip.Visible then
+    if Assigned(fmMap) and fmMap.Visible then
+      fmMap.SyncMapData(CurrentEditor);
 end;
 
 procedure TfmMain.SyncMapPos;
 begin
-  if Assigned(fmMap) and fmMap.Visible then
-    fmMap.SyncMapPos(CurrentEditor);
+  if plClip.Visible then
+    if Assigned(fmMap) and fmMap.Visible then
+      fmMap.SyncMapPos(CurrentEditor);
 end;
 
 procedure TfmMain.SynChange(Sender: TObject);
