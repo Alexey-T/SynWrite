@@ -14526,9 +14526,16 @@ begin
   else
     List:= ListVal;
 
-  N:= List.ItemIndex;
-  if (N<0) and (not ANext) then
+  //previous index (will be increased or decreased)  
+  if ANext then
+    N:= -1
+  else
     N:= List.Items.Count;
+
+  //consider listbox selection
+  for i:= 0 to List.Items.Count-1 do
+    if List.Selected[i] then
+      begin N:= i; Break end;
 
   repeat
     if ANext then Inc(N) else Dec(N);
