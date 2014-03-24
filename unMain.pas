@@ -13229,7 +13229,7 @@ begin
     Exit
   end;
 
-  //Next/prev mass search result
+  //Next/prev search/output result - 6 commands
   if IsShortcutOfCmd(sh, sm_GotoNextFindResult) then
   begin
     ecGotoNextFindResult.Execute;
@@ -13239,6 +13239,31 @@ begin
   if IsShortcutOfCmd(sh, sm_GotoPrevFindResult) then
   begin
     ecGotoPrevFindResult.Execute;
+    Key:= 0;
+    Exit
+  end;
+
+  if IsShortcutOfCmd(sh, sm_GotoNextOutputResult) then
+  begin
+    CurrentEditor.ExecCommand(sm_GotoNextOutputResult);
+    Key:= 0;
+    Exit
+  end;
+  if IsShortcutOfCmd(sh, sm_GotoPrevOutputResult) then
+  begin
+    CurrentEditor.ExecCommand(sm_GotoPrevOutputResult);
+    Key:= 0;
+    Exit
+  end;
+  if IsShortcutOfCmd(sh, sm_GotoNextSearchOrOutputResult) then
+  begin
+    CurrentEditor.ExecCommand(sm_GotoNextSearchOrOutputResult);
+    Key:= 0;
+    Exit
+  end;
+  if IsShortcutOfCmd(sh, sm_GotoPrevSearchOrOutputResult) then
+  begin
+    CurrentEditor.ExecCommand(sm_GotoPrevSearchOrOutputResult);
     Key:= 0;
     Exit
   end;
@@ -19893,8 +19918,6 @@ begin
 
       outToPanel:
         begin
-          UpdateOutFromList(List);
-
           SynPanelPropsOut.DefFilename:= CurrentFrame.FileName;
           SynPanelPropsOut.RegexStr:= opTools[NTool].ToolOutRegex;
           SynPanelPropsOut.RegexIdName:= opTools[NTool].ToolOutNum_fn;
@@ -19903,6 +19926,7 @@ begin
           SynPanelPropsOut.Encoding:= opTools[NTool].ToolOutEncoding;
           SynPanelPropsOut.ZeroBase:= false;
 
+          UpdateOutFromList(List);
           UpdatePanelOut(tbOut);
           plOut.Show;
         end;
