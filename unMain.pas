@@ -10671,10 +10671,16 @@ begin
     if not ToolOutCapture then
     //don't handle output
     begin
-      frun:= SExpandVars(fexe);
       fdir:= SExpandVars(fdir);
       if fdir='' then
         fdir:= SExtractFileDir(CurrentFrame.FileName);
+
+      try
+        frun:= SExpandVars(fexe);
+        frun:= HandleParams(frun, fdir);
+      except
+        Exit
+      end;
 
       try
         fpar:= SExpandVars(ToolParams);
@@ -10693,18 +10699,26 @@ begin
       if IsFileExist(ft) then
         begin MsgError('Cannot delete temp file: '#13+ft, Handle); Exit end;
 
-      frun:= SExpandVars(fexe);
       fdir:= SExpandVars(fdir);
       if fdir='' then
         fdir:= SExtractFileDir(CurrentFrame.FileName);
       if fdir='' then
         fdir:= FTempDir;
+
+      try
+        frun:= SExpandVars(fexe);
+        frun:= HandleParams(frun, fdir);
+      except
+        Exit
+      end;
+
       try
         fpar:= SExpandVars(ToolParams);
         fpar:= HandleParams(fpar, fdir);
       except
         Exit
       end;
+
       fcmd:= WideFormat('cmd.exe /c""%s" %s >"%s" 2>&1"', [frun, fpar, ft]);
 
       Screen.Cursor:= crHourGlass;
