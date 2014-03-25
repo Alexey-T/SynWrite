@@ -2786,6 +2786,10 @@ type
     procedure ProjPreviewVisibleChanged(Sender: TObject);
     procedure DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynViewId);
     procedure UpadateFilenameForExport;
+    procedure DoConfigTools;
+    procedure DoConfigShellOptions;
+    procedure DoConfigHideItems;
+    procedure DoConfigRestoreStyles;
     //end of private
 
   protected
@@ -6304,14 +6308,15 @@ begin
     sm_TabColor9: DoSetTabColorIndex_Current(9);
     sm_TabColor10: DoSetTabColorIndex_Current(10);
 
-    sm_HideMenuItemsDialog: TBXItemOHideItems.Click;
-    sm_RestoreStylesDialog: TBXItemORestoreStyles.Click;
-    sm_ExternalToolsDialog: TbxItemOTools.Click;
-    sm_ExplorerIntegrationDialog: TbxItemOShell.Click;
-    sm_EditSynIni: TBXItemOEditSynIni.Click;
-    sm_EditSynPluginsIni: TBXItemOEditSynPluginsIni.Click;
-    sm_OpenBySelection: acOpenBySelection.Execute;
-    sm_CustomizeStylesDialog: acSetupLexHL.Execute;
+    sm_HideMenuItemsDialog:       DoConfigHideItems;
+    sm_RestoreStylesDialog:       DoConfigRestoreStyles;
+    sm_ExternalToolsDialog:       DoConfigTools;
+    sm_ExplorerIntegrationDialog: DoConfigShellOptions;
+
+    sm_EditSynIni:                DoOpenFile(SynIni);
+    sm_EditSynPluginsIni:         DoOpenFile(SynPluginsIni);
+    sm_OpenBySelection:           acOpenBySelection.Execute;
+    sm_CustomizeStylesDialog:     acSetupLexHL.Execute;
 
     //Options dialog tabs
     sm_OptionsTab_ProgramOpt: DoOptionsDialog(1);
@@ -10302,81 +10307,29 @@ begin
 end;
 
 procedure TfmMain.TBXItemOToolsClick(Sender: TObject);
+begin
+  DoConfigTools;
+end;
+
+procedure TfmMain.DoConfigTools;
 var
-  i: Integer;
-  s: Widestring;
   L: TTntStringList;
 begin
   L:= TTntStringList.Create;
-  L.Sorted:= true;
-  L.Duplicates:= dupIgnore;
-  DoEnumLexers(L);
-
-  with TfmTools.Create(Self) do
   try
-    List.Items.Clear;
-    for i:= Low(opTools) to High(opTools) do
-      with List.Items.Add do
-        with opTools[i] do
-        begin
-          Caption:= ToolCaption;
-          SubItems.Add(ToolCommand);
-          SubItems.Add(ToolParams);
-          SubItems.Add(ToolDir);
-          SubItems.Add(Inttostr(Ord(ToolOutCapture)));
-          SubItems.Add(ToolOutRegex);
-          SubItems.Add(Format('%d,%d,%d', [ToolOutNum_fn, ToolOutNum_line, ToolOutNum_col]));
-          SubItems.Add(ToolLexer);
-          SubItems.Add(ToolKeys);
-          SubItems.Add(Inttostr(Ord(ToolSaveMode)));
-          SubItems.Add(Inttostr(Ord(ToolNoTags)));
-          SubItems.Add(Inttostr(Ord(ToolContextItem)));
-          SubItems.Add(ToolOutType);
-          SubItems.Add(Inttostr(Ord(ToolOutEncoding)));
-          {
-          Note: when adding SubItems, correct const cc in unTool.pas
-          }
-        end;
+    L.Sorted:= true;
+    L.Duplicates:= dupIgnore;
+    DoEnumLexers(L);
 
-    edLexer.Items.Add(DKLangConstW('AllL'));
-    edLexer.Items.AddStrings(L);
-
-    SCurLex:= CurrentFrame.CurrentLexer;
-
-    Left:= Self.Monitor.Left + (Self.Monitor.Width - Width) div 2;
-    Top:= Self.Monitor.Top + (Self.Monitor.Height - Height) div 2;
-    if ShowModal = mrOk then
+    if DoCustomizeToolList(opTools, Self, L, CurrentFrame.CurrentLexer) then
     begin
-      for i:= Low(opTools) to High(opTools) do
-       with opTools[i] do
-        with List.Items[i-1] do
-        begin
-          ToolCaption:= Caption;
-          ToolCommand:= SubItems[0];
-          ToolParams:= SubItems[1];
-          ToolDir:= SubItems[2];
-          ToolOutCapture:= Bool(StrToIntDef(SubItems[3], 0));
-          ToolOutRegex:= SubItems[4];
-          S:= SubItems[5];
-          ToolOutNum_fn:= StrToIntDef(SGetItem(S), 0);
-          ToolOutNum_line:= StrToIntDef(SGetItem(S), 0);
-          ToolOutNum_col:= StrToIntDef(SGetItem(S), 0);
-          ToolLexer:= SubItems[6];
-          ToolKeys:= SubItems[7];
-          ToolSaveMode:= TSynToolSave(StrToIntDef(SubItems[8], 0));
-          ToolNoTags:= Boolean(StrToIntDef(SubItems[9], 0));
-          ToolContextItem:= Boolean(StrToIntDef(SubItems[10], 0));
-          ToolOutType:= SubItems[11];
-          ToolOutEncoding:= TOutputEnc(StrToIntDef(SubItems[12], 0));
-        end;
       Application.ProcessMessages;
       SaveTools;
       ListOut.Invalidate;
     end;
   finally
-    Release;
+    FreeAndNil(L);
   end;
-  L.Free;
 end;
 
 procedure TfmMain.TimerHintTimer(Sender: TObject);
@@ -15202,7 +15155,13 @@ begin
 end;
 
 procedure TfmMain.TBXItemOShellClick(Sender: TObject);
-var i: Integer;
+begin
+  DoConfigShellOptions;
+end;  
+
+procedure TfmMain.DoConfigShellOptions;
+var
+  i: Integer;
 begin
   with TfmShell.Create(nil) do
   try
@@ -15211,7 +15170,6 @@ begin
       with SyntaxManager.Analyzers[i] do
         if (not Internal) and (Extentions <> '') then
           FLex.Add(LexerName + '=' + Extentions);
-
     ShowModal;
   finally
     Release
@@ -15696,6 +15654,12 @@ begin
 end;
 
 procedure TfmMain.TBXItemORestoreStylesClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_RestoreStylesDialog);
+end;
+
+
+procedure TfmMain.DoConfigRestoreStyles;
   //------
   function FindAn(const S: string): TSyntAnalyzer;
   var i: Integer;
@@ -23068,7 +23032,7 @@ end;
 
 procedure TfmMain.TBXItemOEditSynPluginsIniClick(Sender: TObject);
 begin
-  DoOpenFile(SynPluginsIni);
+  CurrentEditor.ExecCommand(sm_EditSynPluginsIni);
 end;
 
 function TfmMain.PluginAction_GetText(const id: Integer; BufferPtr: Pointer; var BufferSize: Integer): Integer;
@@ -25675,6 +25639,11 @@ begin
 end;
 
 procedure TfmMain.TBXItemOHideItemsClick(Sender: TObject);
+begin
+  DoConfigHideItems;
+end;
+
+procedure TfmMain.DoConfigHideItems;
 const
   cSep: Widestring = '———';
   cSub: Widestring = '  >>';
@@ -25764,7 +25733,7 @@ end;
 
 procedure TfmMain.TBXItemOEditSynIniClick(Sender: TObject);
 begin
-  DoOpenFile(SynIni);
+  CurrentEditor.ExecCommand(sm_EditSynIni);
 end;
 
 procedure TfmMain.acOpenBySelectionExecute(Sender: TObject);

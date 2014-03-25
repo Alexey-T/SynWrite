@@ -237,6 +237,10 @@ type
 
 procedure DoLoadToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
 procedure DoSaveToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
+function DoCustomizeToolList(var AToolList: TSynToolList;
+  AParentForm: TForm;
+  ALexersList: TTntStringList;
+  const ACurrentLexer: string): boolean;
   
 var
   opSrOffsetY: integer = 6;
@@ -254,7 +258,7 @@ uses
   PngImage,
   unSRTree,
   unInputSimple,
-  unInputFilename;
+  unInputFilename, unTool;
 
 procedure MsgInfo(const S: WideString; H: THandle);
 begin
@@ -1971,6 +1975,80 @@ begin
     end;
   finally
     Free;
+  end;
+end;
+
+
+function DoCustomizeToolList(
+  var AToolList: TSynToolList;
+  AParentForm: TForm;
+  ALexersList: TTntStringList;
+  const ACurrentLexer: string): boolean;
+var
+  i: Integer;
+  s: Widestring;
+begin
+  with TfmTools.Create(AParentForm) do
+  try
+    List.Items.Clear;
+    for i:= Low(AToolList) to High(AToolList) do
+      with List.Items.Add do
+        with AToolList[i] do
+        begin
+          Caption:= ToolCaption;
+          SubItems.Add(ToolCommand);
+          SubItems.Add(ToolParams);
+          SubItems.Add(ToolDir);
+          SubItems.Add(Inttostr(Ord(ToolOutCapture)));
+          SubItems.Add(ToolOutRegex);
+          SubItems.Add(Format('%d,%d,%d', [ToolOutNum_fn, ToolOutNum_line, ToolOutNum_col]));
+          SubItems.Add(ToolLexer);
+          SubItems.Add(ToolKeys);
+          SubItems.Add(Inttostr(Ord(ToolSaveMode)));
+          SubItems.Add(Inttostr(Ord(ToolNoTags)));
+          SubItems.Add(Inttostr(Ord(ToolContextItem)));
+          SubItems.Add(ToolOutType);
+          SubItems.Add(Inttostr(Ord(ToolOutEncoding)));
+          {
+          Note: when adding SubItems, correct const cc in unTool.pas
+          }
+        end;
+
+    edLexer.Items.Add(DKLangConstW('AllL'));
+    edLexer.Items.AddStrings(ALexersList);
+    SCurLex:= ACurrentLexer;
+
+    Left:= AParentForm.Monitor.Left + (AParentForm.Monitor.Width - Width) div 2;
+    Top:= AParentForm.Monitor.Top + (AParentForm.Monitor.Height - Height) div 2;
+    
+    Result:= ShowModal = mrOk;
+    if Result then
+    begin
+      for i:= Low(AToolList) to High(AToolList) do
+       with AToolList[i] do
+        with List.Items[i-1] do
+        begin
+          ToolCaption:= Caption;
+          ToolCommand:= SubItems[0];
+          ToolParams:= SubItems[1];
+          ToolDir:= SubItems[2];
+          ToolOutCapture:= Bool(StrToIntDef(SubItems[3], 0));
+          ToolOutRegex:= SubItems[4];
+          S:= SubItems[5];
+          ToolOutNum_fn:= StrToIntDef(SGetItem(S), 0);
+          ToolOutNum_line:= StrToIntDef(SGetItem(S), 0);
+          ToolOutNum_col:= StrToIntDef(SGetItem(S), 0);
+          ToolLexer:= SubItems[6];
+          ToolKeys:= SubItems[7];
+          ToolSaveMode:= TSynToolSave(StrToIntDef(SubItems[8], 0));
+          ToolNoTags:= Boolean(StrToIntDef(SubItems[9], 0));
+          ToolContextItem:= Boolean(StrToIntDef(SubItems[10], 0));
+          ToolOutType:= SubItems[11];
+          ToolOutEncoding:= TOutputEnc(StrToIntDef(SubItems[12], 0));
+        end;
+    end;
+  finally
+    Release;
   end;
 end;
 
