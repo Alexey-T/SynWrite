@@ -28,6 +28,7 @@ type
   TListProc = procedure(Sender: TObject; Files: TTntStrings) of object;
   TMruListProc = procedure(MruList: TSynMruList) of object;
   TProjPreviewProc = procedure(Sender: TObject; const fn: Widestring; Toggle: boolean) of object;
+  TProjToolProc = procedure(const ATool: TSynTool) of object;
   TProjSort = (srNone, srName, srExt, srDate, srSize, srDateDesc, srSizeDesc, srFullPath);
 
 type
@@ -57,7 +58,7 @@ type
     TimerHint: TTimer;
     TBXItemProjOpenFiles: TSpTbxItem;
     ImageListTool: TImageList;
-    TBXItemProjProp: TSpTbxItem;
+    TBXItemProjProp: TSpTBXSubmenuItem;
     PopupProj: TSpTbxPopupMenu;
     TbxItemMnuAdd: TSpTbxSubmenuItem;
     TbxItemMnuAddFiles: TSpTbxItem;
@@ -100,6 +101,9 @@ type
     TBXItemMnuTogglePaths: TSpTBXItem;
     TBXItemMnuSortByPath: TSpTBXItem;
     TbxItemMnuTogglePreview: TSpTBXItem;
+    TbxItemProjOptions: TSpTBXItem;
+    TbxItemProjTools: TSpTBXItem;
+    SpTBXSeparatorItem1: TSpTBXSeparatorItem;
     procedure TBXItemProjAddVirtDirClick(Sender: TObject);
     procedure TBXItemProjDelFilesClick(Sender: TObject);
     procedure TBXItemProjAddFilesClick(Sender: TObject);
@@ -160,16 +164,20 @@ type
     procedure TBXItemMnuTogglePathsClick(Sender: TObject);
     procedure TBXItemMnuSortByPathClick(Sender: TObject);
     procedure TbxItemMnuTogglePreviewClick(Sender: TObject);
+    procedure TbxItemProjOptionsClick(Sender: TObject);
+    procedure TbxItemProjToolsClick(Sender: TObject);
   private
     { Private declarations }
     FProjectFN: Widestring;
     FModified: boolean;
+    FProjectTools: TSynToolList;
     FShowPaths: boolean;
     FMruList: TSynMruList;
     FIcoList: TStringList;
     FPathList: TTntStringList;
     FOldItemsCount: integer;
     FOnPreview: TProjPreviewProc;
+    FOnRunTool: TProjToolProc;
     FOnGotoProj: TNotifyEvent;
     FOnProjectOpen: TNotifyEvent;
     FOnProjectClose: TNotifyEvent;
@@ -205,6 +213,7 @@ type
     function CanRename(Node: TTntTreeNode): boolean;
     procedure DoSaveProjectAs;
     procedure DoConfigProject;
+    procedure DoConfigProjectTools;
     procedure DoAddRecentItem(const fn: Widestring);
     procedure DoLoadProjectFromFile(const fn: Widestring);
     procedure DoSaveProjectToFile(const fn: string);
@@ -218,6 +227,8 @@ type
     function DoAddFile(Sel: TTntTreeNode; const fn: Widestring): TTntTreeNode;
     function DoAddDir(Sel: TTntTreeNode; S: Widestring;
       DoExpand: boolean = true): TTntTreeNode;
+    procedure UpdateProjectToolsMenu;
+    procedure DoRunProjectTool(Sender: TObject);
   public
     { Public declarations }
     FOpts: TProjectOpts;
@@ -243,6 +254,7 @@ type
     property ProjectFN: Widestring read FProjectFN write DoLoadProjectFromFile;
     property Modified: boolean read FModified;
     property OnPreview: TProjPreviewProc read FOnPreview write FOnPreview;
+    property OnRunTool: TProjToolProc read FOnRunTool write FOnRunTool;
     property OnFileOpen: TListProc read FOnFileOpen write FOnFileOpen;
     property OnProjectOpen: TNotifyEvent read FOnProjectOpen write FOnProjectOpen;
     property OnProjectClose: TNotifyEvent read FOnProjectClose write FOnProjectClose;
@@ -1997,6 +2009,67 @@ end;
 procedure TfmProj.TbxItemMnuTogglePreviewClick(Sender: TObject);
 begin
   DoPreview(true);
+end;
+
+procedure TfmProj.TbxItemProjOptionsClick(Sender: TObject);
+begin
+  DoConfigProject;
+end;
+
+procedure TfmProj.TbxItemProjToolsClick(Sender: TObject);
+begin
+  DoConfigProjectTools;
+end;
+
+procedure TfmProj.DoConfigProjectTools;
+var
+  L: TTntStringList;
+begin
+  L:= TTntStringList.Create;
+  try
+    if Assigned(FOnGetLexers) then
+      FOnGetLexers(Self, L);
+    if DoCustomizeToolList(FProjectTools, Self, L, '') then
+      UpdateProjectToolsMenu;
+  finally
+    FreeAndNil(L);
+  end;
+end;
+
+procedure TfmProj.UpdateProjectToolsMenu;
+var
+  i: Integer;
+  Item: TSpTbxItem;
+begin
+  with TbxItemProjProp do
+    for i:= Count-1 downto 0 do
+      if Items[i].Tag>0 then
+        Items[i].Free;
+
+  for i:= Low(TSynToolList) to High(TSynToolList) do
+    with FProjectTools[i] do
+      if ToolCaption<>'' then
+      begin
+        Item:= TSpTbxItem.Create(Self);
+        Item.Caption:= ToolCaption;
+        Item.Tag:= i;
+        Item.OnClick:= DoRunProjectTool;
+        TbxItemProjProp.Add(Item);
+      end;
+end;
+
+procedure TfmProj.DoRunProjectTool(Sender: TObject);
+var
+  N: Integer;
+begin
+  N:= (Sender as TComponent).Tag;
+  if (N>=Low(TSynToolList)) and (N<=High(TSynToolList)) then
+  begin
+    if Assigned(FOnRunTool) then
+      FOnRunTool(FProjectTools[N]);
+  end
+  else
+    MsgError('Incorrect tool index: '+IntToStr(N), Handle);    
 end;
 
 end.

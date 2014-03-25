@@ -2419,7 +2419,7 @@ type
     function SStatusCharInfo(Ed: TSyntaxMemo): Widestring;
     function SStatusHint(state: TSynSelState): Widestring;
 
-    procedure DoHandleToolOutput(const ft: Widestring; NTool: integer);
+    procedure DoHandleToolOutput(const ft: Widestring; const ATool: TSynTool);
     function IsShowColor(s: string; var NColor, NColorText: TColor): boolean;
     procedure GetTabName(APagesNumber, ATabIndex: Integer; var AName, AFN, ALex: Widestring);
     procedure ClearTabList;
@@ -2579,7 +2579,7 @@ type
     function IsNavigatableLine(const Str: Widestring): boolean;
     procedure DoNewDoc(const fn: Widestring);
     procedure RunBrowser(const fn: Widestring);
-    procedure RunTool(NTool: Integer);
+    procedure RunTool(const ATool: TSynTool);
     procedure RunMacro(n: Integer);
     procedure AppException(Sender: TObject; E: Exception);
     function MsgEncReload: boolean;
@@ -2735,6 +2735,7 @@ type
     procedure DoLoadFolding;
     procedure DoOpenLastClosedFile;
     procedure ProjPreview(Sender: TObject; const AFilename: Widestring; AToggle: boolean);
+    procedure ProjRunTool(const ATool: TSynTool);
     procedure ProjPreviewClose(Sender: TObject);
     procedure ProjPreviewKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -9060,7 +9061,7 @@ begin
      if (ToolCaption<>'') and (ToolCommand<>'') and (S=ToolKeys) and
        ((ToolLexer='') or (CurrentFrame.CurrentLexer=ToolLexer)) then
     begin
-      RunTool(i);
+      RunTool(opTools[i]);
       Key:= 0;
       Exit
     end;
@@ -10503,8 +10504,9 @@ begin
   SReplaceW(Str, SMacro('FileDir'), WideExtractFileDir(fn));
   SReplaceW(Str, SMacro('FileExt'), Copy(WideExtractFileExt(fn), 2, MaxInt));
 end;
-  
-procedure TfmMain.RunTool(NTool: Integer);
+
+procedure TfmMain.RunTool(const ATool: TSynTool);
+  //
   function HandleParams(const s, dir: WideString): WideString;
   var
     fn, SValue: Widestring;
@@ -10580,8 +10582,8 @@ var
   ft, fcmd, fpar, frun, fexe, fdir,
   SCurWord: Widestring;
 begin
-  if CurrentFrame = nil then Exit;
-  with opTools[NTool] do
+  if CurrentFrame=nil then Exit;
+  with ATool do
   begin
     //check correctness of tool params
     if (Pos('{File', ToolParams)>0) and (CurrentFrame.FileName='') then
@@ -10714,29 +10716,89 @@ begin
         Screen.Cursor:= crDefault;
       end;
 
-      DoHandleToolOutput(ft, NTool);
+      DoHandleToolOutput(ft, ATool);
     end;
   end;
 end;
 
 procedure TfmMain.TbxItemTool1Click(Sender: TObject);
 begin
-  RunTool(1);
+  RunTool(opTools[1]);
 end;
 
 procedure TfmMain.TbxItemTool2Click(Sender: TObject);
 begin
-  RunTool(2);
+  RunTool(opTools[2]);
 end;
 
 procedure TfmMain.TbxItemTool3Click(Sender: TObject);
 begin
-  RunTool(3);
+  RunTool(opTools[3]);
 end;
 
 procedure TfmMain.TbxItemTool4Click(Sender: TObject);
 begin
-  RunTool(4);
+  RunTool(opTools[4]);
+end;
+
+procedure TfmMain.TBXItemTool5Click(Sender: TObject);
+begin
+  RunTool(opTools[5]);
+end;
+
+procedure TfmMain.TBXItemTool6Click(Sender: TObject);
+begin
+  RunTool(opTools[6]);
+end;
+
+procedure TfmMain.TBXItemTool7Click(Sender: TObject);
+begin
+  RunTool(opTools[7]);
+end;
+
+procedure TfmMain.TBXItemTool8Click(Sender: TObject);
+begin
+  RunTool(opTools[8]);
+end;
+
+procedure TfmMain.TBXItemTool9Click(Sender: TObject);
+begin
+  RunTool(opTools[9]);
+end;
+
+procedure TfmMain.TBXItemTool10Click(Sender: TObject);
+begin
+  RunTool(opTools[10]);
+end;
+
+procedure TfmMain.TBXItemTool11Click(Sender: TObject);
+begin
+  RunTool(opTools[11]);
+end;
+
+procedure TfmMain.TBXItemTool12Click(Sender: TObject);
+begin
+  RunTool(opTools[12]);
+end;
+
+procedure TfmMain.TBXItemTool13Click(Sender: TObject);
+begin
+  RunTool(opTools[13]);
+end;
+
+procedure TfmMain.TBXItemTool14Click(Sender: TObject);
+begin
+  RunTool(opTools[14]);
+end;
+
+procedure TfmMain.TBXItemTool15Click(Sender: TObject);
+begin
+  RunTool(opTools[15]);
+end;
+
+procedure TfmMain.TBXItemTool16Click(Sender: TObject);
+begin
+  RunTool(opTools[16]);
 end;
 
 procedure TfmMain.TBXSubmenuItemRunPopup(Sender: TTBCustomItem; FromLink: Boolean);
@@ -12108,26 +12170,6 @@ begin
   FExecute('cmd.exe', '', SDir, Handle);  
 end;
 
-procedure TfmMain.TBXItemTool5Click(Sender: TObject);
-begin
-  RunTool(5);
-end;
-
-procedure TfmMain.TBXItemTool6Click(Sender: TObject);
-begin
-  RunTool(6);
-end;
-
-procedure TfmMain.TBXItemTool7Click(Sender: TObject);
-begin
-  RunTool(7);
-end;
-
-procedure TfmMain.TBXItemTool8Click(Sender: TObject);
-begin
-  RunTool(8);
-end;
-
 procedure TfmMain.TimerLoadTimer(Sender: TObject);
 begin
   TimerLoad.Enabled:= false;
@@ -12966,26 +13008,6 @@ begin
   TbxItemHtmlEmmetWrap.Enabled:= not ro;
   TbxItemEToggleLineComment.Enabled:= not ro;
   TbxItemEToggleStreamComment.Enabled:= not ro;
-end;
-
-procedure TfmMain.TBXItemTool9Click(Sender: TObject);
-begin
-  RunTool(9);
-end;
-
-procedure TfmMain.TBXItemTool10Click(Sender: TObject);
-begin
-  RunTool(10);
-end;
-
-procedure TfmMain.TBXItemTool11Click(Sender: TObject);
-begin
-  RunTool(11);
-end;
-
-procedure TfmMain.TBXItemTool12Click(Sender: TObject);
-begin
-  RunTool(12);
 end;
 
 procedure TfmMain.TBXItemSGoBracketClick(Sender: TObject);
@@ -14255,6 +14277,7 @@ begin
       //
       OnPreview:= ProjPreview;
       OnFileOpen:= ProjFileOpen;
+      OnRunTool:= ProjRunTool;
       OnAddEditorFile:= ProjAddEditorFile;
       OnAddEditorFilesAll:= ProjAddEditorFiles;
       OnGetLexers:= ProjGetLexers;
@@ -15490,62 +15513,82 @@ end;
 
 procedure TfmMain.TBXItemCtxTool1Click(Sender: TObject);
 begin
-  RunTool(1);
+  RunTool(opTools[1]);
 end;
 
 procedure TfmMain.TBXItemCtxTool2Click(Sender: TObject);
 begin
-  RunTool(2);
+  RunTool(opTools[2]);
 end;
 
 procedure TfmMain.TBXItemCtxTool3Click(Sender: TObject);
 begin
-  RunTool(3);
+  RunTool(opTools[3]);
 end;
 
 procedure TfmMain.TBXItemCtxTool4Click(Sender: TObject);
 begin
-  RunTool(4);
+  RunTool(opTools[4]);
 end;
 
 procedure TfmMain.TBXItemCtxTool5Click(Sender: TObject);
 begin
-  RunTool(5);
+  RunTool(opTools[5]);
 end;
 
 procedure TfmMain.TBXItemCtxTool6Click(Sender: TObject);
 begin
-  RunTool(6);
+  RunTool(opTools[6]);
 end;
 
 procedure TfmMain.TBXItemCtxTool7Click(Sender: TObject);
 begin
-  RunTool(7);
+  RunTool(opTools[7]);
 end;
 
 procedure TfmMain.TBXItemCtxTool8Click(Sender: TObject);
 begin
-  RunTool(8);
+  RunTool(opTools[8]);
 end;
 
 procedure TfmMain.TBXItemCtxTool9Click(Sender: TObject);
 begin
-  RunTool(9);
+  RunTool(opTools[9]);
 end;
 
 procedure TfmMain.TBXItemCtxTool10Click(Sender: TObject);
 begin
-  RunTool(10);
+  RunTool(opTools[10]);
 end;
 
 procedure TfmMain.TBXItemCtxTool11Click(Sender: TObject);
 begin
-  RunTool(11);
+  RunTool(opTools[11]);
 end;
 
 procedure TfmMain.TBXItemCtxTool12Click(Sender: TObject);
 begin
-  RunTool(12);
+  RunTool(opTools[12]);
+end;
+
+procedure TfmMain.TbxItemCtxTool13Click(Sender: TObject);
+begin
+  RunTool(opTools[13]);
+end;
+
+procedure TfmMain.TbxItemCtxTool14Click(Sender: TObject);
+begin
+  RunTool(opTools[14]);
+end;
+
+procedure TfmMain.TbxItemCtxTool15Click(Sender: TObject);
+begin
+  RunTool(opTools[15]);
+end;
+
+procedure TfmMain.TbxItemCtxTool16Click(Sender: TObject);
+begin
+  RunTool(opTools[16]);
 end;
 
 procedure TfmMain.FinderProgress(CurPos, MaxPos: integer);
@@ -19781,7 +19824,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoHandleToolOutput(const ft: Widestring; NTool: integer);
+procedure TfmMain.DoHandleToolOutput(const ft: Widestring; const ATool: TSynTool);
 var
   List: TWideStringList;
   AType: TSynOutputType;
@@ -19790,13 +19833,13 @@ begin
   ListOut.Items.Clear;
   if not (IsFileExist(ft) and (FGetFileSize(ft)>0)) then
   begin
-    DoHint(WideFormat(DKLangConstW('MRun0'), [opTools[NTool].ToolCaption]));
+    DoHint(WideFormat(DKLangConstW('MRun0'), [ATool.ToolCaption]));
     MsgBeep;
     Exit
   end;
 
   List:= TWideStringList.Create;
-  with opTools[NTool] do
+  with ATool do
   try
     List.LoadFromFile(ft);
     FDelete(ft);
@@ -19817,11 +19860,11 @@ begin
       outToPanel:
         begin
           SynPanelPropsOut.DefFilename:= CurrentFrame.FileName;
-          SynPanelPropsOut.RegexStr:= opTools[NTool].ToolOutRegex;
-          SynPanelPropsOut.RegexIdName:= opTools[NTool].ToolOutNum_fn;
-          SynPanelPropsOut.RegexIdLine:= opTools[NTool].ToolOutNum_line;
-          SynPanelPropsOut.RegexIdCol:= opTools[NTool].ToolOutNum_col;
-          SynPanelPropsOut.Encoding:= opTools[NTool].ToolOutEncoding;
+          SynPanelPropsOut.RegexStr:= ATool.ToolOutRegex;
+          SynPanelPropsOut.RegexIdName:= ATool.ToolOutNum_fn;
+          SynPanelPropsOut.RegexIdLine:= ATool.ToolOutNum_line;
+          SynPanelPropsOut.RegexIdCol:= ATool.ToolOutNum_col;
+          SynPanelPropsOut.Encoding:= ATool.ToolOutEncoding;
           SynPanelPropsOut.ZeroBase:= false;
 
           UpdatePanelOutFromList(List);
@@ -25492,7 +25535,7 @@ begin
     for i:= Low(opTools) to High(opTools) do
       if opTools[i].ToolCaption=Cmd then
       begin
-        RunTool(i);
+        RunTool(opTools[i]);
         Exit
       end;
     MsgError(WideFormat(DKLangConstW('MRun'), [Cmd]), Handle);
@@ -26908,45 +26951,6 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXItemTool13Click(Sender: TObject);
-begin
-  RunTool(13);
-end;
-
-procedure TfmMain.TBXItemTool14Click(Sender: TObject);
-begin
-  RunTool(14);
-end;
-
-procedure TfmMain.TBXItemTool15Click(Sender: TObject);
-begin
-  RunTool(15);
-end;
-
-procedure TfmMain.TBXItemTool16Click(Sender: TObject);
-begin
-  RunTool(16);
-end;
-
-procedure TfmMain.TbxItemCtxTool13Click(Sender: TObject);
-begin
-  RunTool(13);
-end;
-
-procedure TfmMain.TbxItemCtxTool14Click(Sender: TObject);
-begin
-  RunTool(14);
-end;
-
-procedure TfmMain.TbxItemCtxTool15Click(Sender: TObject);
-begin
-  RunTool(15);
-end;
-
-procedure TfmMain.TbxItemCtxTool16Click(Sender: TObject);
-begin
-  RunTool(16);
-end;
 
 procedure TfmMain.plTreeDockChanged(Sender: TObject);
 begin
@@ -28804,6 +28808,11 @@ begin
   if Assigned(fmProj) then
     if (id>=0) and (id<fmProj.TreeProj.Items.Count) then
       Result:= fmProj.GetFN(fmProj.TreeProj.Items[id]);
+end;
+
+procedure TfmMain.ProjRunTool(const ATool: TSynTool);
+begin
+  RunTool(ATool);
 end;
 
 initialization
