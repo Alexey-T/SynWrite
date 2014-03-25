@@ -240,6 +240,7 @@ procedure DoSaveToolList(var AToolList: TSynToolList; const AIniFN, ASection: st
 function DoCustomizeToolList(var AToolList: TSynToolList;
   AParentForm: TForm;
   ALexersList: TTntStringList;
+  AKeyEnabled: boolean;
   const ACurrentLexer: string): boolean;
   
 var
@@ -1983,6 +1984,7 @@ function DoCustomizeToolList(
   var AToolList: TSynToolList;
   AParentForm: TForm;
   ALexersList: TTntStringList;
+  AKeyEnabled: boolean;
   const ACurrentLexer: string): boolean;
 var
   i: Integer;
@@ -1990,6 +1992,11 @@ var
 begin
   with TfmTools.Create(AParentForm) do
   try
+    labKey.Enabled:= AKeyEnabled;
+    edKey.Enabled:= AKeyEnabled;
+    bKey.Enabled:= AKeyEnabled;
+    cbCtx.Enabled:= AKeyEnabled;
+
     List.Items.Clear;
     for i:= Low(AToolList) to High(AToolList) do
       with List.Items.Add do

@@ -199,7 +199,7 @@ type
     procedure ShowProgress(M: TProgressType);
     procedure HideProgress;
     function IsProgressStopped(Cnt, CntAll: integer): boolean;
-    procedure Modify;
+    procedure SetModified;
     function RootNode: TTntTreeNode;
     function GetWorkDir: Widestring;
     function GetProjDir: Widestring;
@@ -385,6 +385,10 @@ begin
   FPathList.Clear;
   UpdateTitle;
 
+  //clear tools
+  DoLoadToolList(FProjectTools, '??', '');
+  UpdateProjectToolsMenu;
+
   {$ifdef DD}
   {
   DoAddDir(RootNode, 'Test');
@@ -419,7 +423,7 @@ begin
     DoUpdateSort(Selected);
   end;
 
-  Modify;
+  SetModified;
 end;
 
 function TfmProj.DoAddDir(Sel: TTntTreeNode; S: Widestring; DoExpand: boolean = true): TTntTreeNode;
@@ -440,7 +444,7 @@ begin
 
   if DoExpand then
     sel.Expand(false);
-  Modify;
+  SetModified;
 end;
 
 procedure TfmProj.TBXItemProjDelFilesClick(Sender: TObject);
@@ -465,7 +469,7 @@ begin
       if not MsgCfm(WideFormat(DKLangConstW('zMDelMany'), [SelectionCount]), Self.Handle) then Exit;
       for i:= SelectionCount-1 downto 0 do
         Items.Delete(Selections[i]);
-      Modify;
+      SetModified;
     end;  
 end;
 
@@ -535,7 +539,7 @@ begin
         Data:= Pointer(FPathList.Add(fn));
       end;
     end;
-  Modify;
+  SetModified;
 end;
 
 
@@ -685,7 +689,7 @@ begin
       FreeAndNil(List);
     end;
 
-    Modify;    
+    SetModified;    
   end;
 end;
 
@@ -1086,6 +1090,7 @@ begin
   NodeDir:= RootNode;
   LevelDir:= -1;
 
+  //1) load project options
   with TIniFile.Create(fn) do
   try
     FOpts.WorkDir:= UTF8Decode(ReadString('Ini', 'WorkDir', ''));
@@ -1102,6 +1107,7 @@ begin
     Free
   end;
 
+  //2) load project tree
   Screen.Cursor:= crHourGlass;
   TreeProj.Items.BeginUpdate;
   L:= TStringList.Create;
@@ -1152,6 +1158,7 @@ begin
     TreeProj.Items.EndUpdate;
   end;
 
+  //2b) expand needed tree nodes
   RootNode.Expand(false);
   SetCollapsedList(SFolded);
 
@@ -1161,6 +1168,11 @@ begin
     TreeProj.Selected:= RootNode;
   TreeProj.Selected.MakeVisible;
 
+  //3) load project tools
+  DoLoadToolList(FProjectTools, fn, 'Tools');
+  UpdateProjectToolsMenu;
+
+  //finalize
   FModified:= false;
   UpdateTitle;
 
@@ -1246,6 +1258,8 @@ begin
     FreeAndNil(ListNodes);
     FreeAndNil(List);
   end;
+
+  DoSaveToolList(FProjectTools, fn, 'Tools');
 end;
 
 procedure TfmProj.DoWriteNodesToList(L: TStringList; Node: TTntTreeNode; Level: integer);
@@ -1369,7 +1383,7 @@ begin
 
     if ShowModal=mrOk then
     begin
-      Modify;
+      SetModified;
       if cbLexer.ItemIndex>0 then
         FOpts.DefLexer:= cbLexer.Text
       else
@@ -1487,7 +1501,7 @@ begin
       if not IsDir(Selected) then
       begin
         FOpts.MainFN:= GetFN(Selected);
-        Modify;
+        SetModified;
       end;
 end;
 
@@ -1619,7 +1633,7 @@ begin
     FreeAndNil(L);
   end;
   
-  Modify;
+  SetModified;
 end;
 
 procedure TfmProj.DoSortBy(Mode: TProjSort);
@@ -1687,10 +1701,10 @@ end;
 procedure TfmProj.TreeProjEdited(Sender: TObject; Node: TTntTreeNode;
   var S: WideString);
 begin
-  Modify;
+  SetModified;
 end;
 
-procedure TfmProj.Modify;
+procedure TfmProj.SetModified;
 begin
   FModified:= true;
   UpdateTitle;
@@ -1994,9 +2008,7 @@ begin
       begin
         FPathList[Integer(Items[i].Data)]:= fn_new;
         Items[i].Text:= GetFileNodeCaption(fn_new);
-        
-        FModified:= true;
-        UpdateTitle;
+        SetModified;
       end;
 end;
 
@@ -2029,8 +2041,11 @@ begin
   try
     if Assigned(FOnGetLexers) then
       FOnGetLexers(Self, L);
-    if DoCustomizeToolList(FProjectTools, Self, L, '') then
+    if DoCustomizeToolList(FProjectTools, Self, L, false, '') then
+    begin
       UpdateProjectToolsMenu;
+      SetModified;
+    end;
   finally
     FreeAndNil(L);
   end;
@@ -2069,7 +2084,7 @@ begin
       FOnRunTool(FProjectTools[N]);
   end
   else
-    MsgError('Incorrect tool index: '+IntToStr(N), Handle);    
+    MsgError('Incorrect tool index: '+IntToStr(N), Handle);
 end;
 
 end.

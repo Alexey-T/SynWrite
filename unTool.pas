@@ -37,7 +37,7 @@ type
     TntLabel4: TTntLabel;
     edCap: TTntEdit;
     bClr: TTntButton;
-    TntLabel5: TTntLabel;
+    labKey: TTntLabel;
     edKey: TecHotKey;
     TntLabel6: TTntLabel;
     edLexer: TTntComboBox;

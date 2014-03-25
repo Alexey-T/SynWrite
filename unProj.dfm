@@ -114,11 +114,11 @@ object fmProj: TfmProj
         ImageIndex = 7
         Options = [tboDropdownArrow]
         object TbxItemProjOptions: TSpTBXItem
-          Caption = 'Customize project options...'
+          Caption = 'Project properties...'
           OnClick = TbxItemProjOptionsClick
         end
         object TbxItemProjTools: TSpTBXItem
-          Caption = 'Customize project tools...'
+          Caption = 'Project tools...'
           OnClick = TbxItemProjToolsClick
         end
         object SpTBXSeparatorItem1: TSpTBXSeparatorItem

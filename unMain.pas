@@ -3193,7 +3193,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.4.790';
+  cSynVer = '6.4.800';
   cSynPyVer = '1.0.123';
 
 const
@@ -10322,7 +10322,7 @@ begin
     L.Duplicates:= dupIgnore;
     DoEnumLexers(L);
 
-    if DoCustomizeToolList(opTools, Self, L, CurrentFrame.CurrentLexer) then
+    if DoCustomizeToolList(opTools, Self, L, true, CurrentFrame.CurrentLexer) then
     begin
       Application.ProcessMessages;
       SaveTools;
