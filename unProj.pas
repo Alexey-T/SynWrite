@@ -166,6 +166,8 @@ type
     procedure TbxItemMnuTogglePreviewClick(Sender: TObject);
     procedure TbxItemProjOptionsClick(Sender: TObject);
     procedure TbxItemProjToolsClick(Sender: TObject);
+    procedure TBXItemProjPropPopup(Sender: TTBCustomItem;
+      FromLink: Boolean);
   private
     { Private declarations }
     FProjectFN: Widestring;
@@ -186,12 +188,14 @@ type
     FOnLoadMRU: TMruListProc;
     FOnAddEditorFile: TListProc;
     FOnAddEditorFilesAll: TListProc;
+    FOnGetLexer: TListProc;
     FOnGetLexers: TListProc;
     FOnGetWorkDir: TListProc;
     FOnGetProjDir: TListProc;
     FOnSetProjDir: TListProc;
     FShellIcons: boolean;
     fmProgress: TfmProgress;
+    function GetCurrentLexer: string;
     function GetFileNodeCaption(const fn: Widestring): Widestring;
     function GetCollapsedList: string;
     procedure SetCollapsedList(S: Widestring);
@@ -262,6 +266,7 @@ type
     property OnLoadMRU: TMruListProc read FOnLoadMRU write FOnLoadMRU;
     property OnAddEditorFile: TListProc read FOnAddEditorFile write FOnAddEditorFile;
     property OnAddEditorFilesAll: TListProc read FOnAddEditorFilesAll write FOnAddEditorFilesAll;
+    property OnGetLexer: TListProc read FOnGetLexer write FOnGetLexer;
     property OnGetLexers: TListProc read FOnGetLexers write FOnGetLexers;
     property OnGetWorkDir: TListProc read FOnGetWorkDir write FOnGetWorkDir;
     property OnGetProjDir: TListProc read FOnGetProjDir write FOnGetProjDir;
@@ -387,7 +392,6 @@ begin
 
   //clear tools
   DoLoadToolList(FProjectTools, '??', '');
-  UpdateProjectToolsMenu;
 
   {$ifdef DD}
   {
@@ -1170,7 +1174,6 @@ begin
 
   //3) load project tools
   DoLoadToolList(FProjectTools, fn, 'Tools');
-  UpdateProjectToolsMenu;
 
   //finalize
   FModified:= false;
@@ -2041,9 +2044,8 @@ begin
   try
     if Assigned(FOnGetLexers) then
       FOnGetLexers(Self, L);
-    if DoCustomizeToolList(FProjectTools, Self, L, false, '') then
+    if DoCustomizeToolList(FProjectTools, Self, L, false, GetCurrentLexer) then
     begin
-      UpdateProjectToolsMenu;
       SetModified;
     end;
   finally
@@ -2055,7 +2057,10 @@ procedure TfmProj.UpdateProjectToolsMenu;
 var
   i: Integer;
   Item: TSpTbxItem;
+  SLexer: string;
 begin
+  SLexer:= GetCurrentLexer;
+
   with TbxItemProjProp do
     for i:= Count-1 downto 0 do
       if Items[i].Tag>0 then
@@ -2069,6 +2074,7 @@ begin
         Item.Caption:= ToolCaption;
         Item.Tag:= i;
         Item.OnClick:= DoRunProjectTool;
+        Item.Enabled:= (ToolLexer='') or (SLexer=ToolLexer);
         TbxItemProjProp.Add(Item);
       end;
 end;
@@ -2085,6 +2091,29 @@ begin
   end
   else
     MsgError('Incorrect tool index: '+IntToStr(N), Handle);
+end;
+
+function TfmProj.GetCurrentLexer: string;
+var
+  L: TTntStringList;
+begin
+  L:= TTntStringList.Create;
+  try
+    if Assigned(FOnGetLexer) then
+      FOnGetLexer(Self, L);
+    if L.Count>0 then
+      Result:= L[0]
+    else
+      Result:= '';
+  finally
+    FreeAndNil(L);
+  end;
+end;
+
+procedure TfmProj.TBXItemProjPropPopup(Sender: TTBCustomItem;
+  FromLink: Boolean);
+begin
+  UpdateProjectToolsMenu;
 end;
 
 end.

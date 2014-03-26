@@ -1333,6 +1333,7 @@ type
     TbxItemWinProjPre: TSpTBXItem;
     ecToggleProjPreview: TAction;
     TbxItemCtxPlugins: TSpTBXSubmenuItem;
+    TbxSubmenuItemProjTools: TSpTBXSubmenuItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2348,6 +2349,7 @@ type
     procedure ProjFileOpen(Sender: TObject; Files: TTntStrings);
     procedure ProjAddEditorFile(Sender: TObject; Files: TTntStrings);
     procedure ProjAddEditorFiles(Sender: TObject; Files: TTntStrings);
+    procedure ProjGetLexer(Sender: TObject; Files: TTntStrings);
     procedure ProjGetLexers(Sender: TObject; Files: TTntStrings);
     procedure ProjGetWorkDir(Sender: TObject; Files: TTntStrings);
     procedure ProjGetProjDir(Sender: TObject; Files: TTntStrings);
@@ -3135,6 +3137,7 @@ type
     function CurrentProjectSessionFN: string;
     function CurrentProjectMainFN: Widestring;
     function CurrentProjectWorkDir: Widestring;
+    function CurrentProjectDir: Widestring;
 
     function SynIni: string;
     function SynToolbarsIni: string;
@@ -10520,6 +10523,7 @@ procedure TfmMain.RunTool(const ATool: TSynTool);
     DoReplaceFileNameMacro(Result, 'L', cSynViewLeft);
     DoReplaceFileNameMacro(Result, 'R', cSynViewRight);
     //
+    SReplaceW(Result, '{ProjectDir}', CurrentProjectDir);
     SReplaceW(Result, '{ProjectWorkDir}', CurrentProjectWorkDir);
     SReplaceW(Result, '{ProjectMainFileName}', CurrentProjectMainFN);
     SReplaceW(Result, '{ProjectMainFileDir}', WideExtractFileDir(CurrentProjectMainFN));
@@ -14294,6 +14298,7 @@ begin
       OnRunTool:= ProjRunTool;
       OnAddEditorFile:= ProjAddEditorFile;
       OnAddEditorFilesAll:= ProjAddEditorFiles;
+      OnGetLexer:= ProjGetLexer;
       OnGetLexers:= ProjGetLexers;
       OnGetWorkDir:= ProjGetWorkDir;
       OnGetProjDir:= ProjGetProjDir;
@@ -14306,6 +14311,8 @@ begin
       TreeProj.OnKeyDown:= ProjKeyDown;
       //
       Show;
+      //
+      Self.TbxSubmenuItemProjTools.LinkSubitems:= TBXItemProjProp;
     end;
   end;
 end;
@@ -20911,6 +20918,11 @@ begin
   DoEnumLexers(Files);
 end;
 
+procedure TfmMain.ProjGetLexer(Sender: TObject; Files: TTntStrings);
+begin
+  Files.Add(CurrentLexerForFile);
+end;  
+
 procedure TfmMain.TBXItemFavAddProjClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_Fav_AddProject);
@@ -20971,6 +20983,13 @@ begin
   Result:= '';
   if Assigned(fmProj) then
     Result:= fmProj.FOpts.MainFN;
+end;
+
+function TfmMain.CurrentProjectDir: Widestring;
+begin
+  Result:= '';
+  if Assigned(fmProj) then
+    Result:= WideExtractFileDir(fmProj.ProjectFN);
 end;
 
 function TfmMain.CurrentProjectWorkDir: Widestring;
@@ -25416,6 +25435,11 @@ begin
         if SCmd='m:{plugins}' then
         begin
           Item.LinkSubitems:= TBXSubmenuItemPlugins;
+        end
+        else
+        if SCmd='m:{projtools}' then
+        begin
+          Item.LinkSubitems:= TbxSubmenuItemProjTools;
         end
         else
         begin

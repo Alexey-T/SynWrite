@@ -79,6 +79,7 @@ type
     btnBrowsePy: TTntButton;
     mnuPlugins: TTntMenuItem;
     btnRemoveIcon: TTntButton;
+    mnuProjectTools: TTntMenuItem;
     procedure FormShow(Sender: TObject);
     procedure btnIconSizeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -114,6 +115,7 @@ type
     procedure btnBrowsePyClick(Sender: TObject);
     procedure btnRemoveIconClick(Sender: TObject);
     procedure mnuPluginsClick(Sender: TObject);
+    procedure mnuProjectToolsClick(Sender: TObject);
   private
     { Private declarations }
     procedure DoMenuSys(const Cmd, Hint: Widestring);
@@ -842,6 +844,11 @@ end;
 procedure TfmToolbarProp.mnuPluginsClick(Sender: TObject);
 begin
   DoMenuSys('m:{plugins}', mnuPlugins.Caption);
+end;
+
+procedure TfmToolbarProp.mnuProjectToolsClick(Sender: TObject);
+begin
+  DoMenuSys('m:{projtools}', mnuProjectTools.Caption);
 end;
 
 end.

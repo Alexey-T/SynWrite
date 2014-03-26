@@ -71,13 +71,14 @@ type
     pSelFNAnsi: TMenuItem;
     N5: TMenuItem;
     pFileName2: TMenuItem;
-    pFileDir2: TMenuItem;
-    pFileExt2: TMenuItem;
+    pFileNameL: TMenuItem;
+    pFileNameR: TMenuItem;
     N6: TMenuItem;
     pSynDir: TMenuItem;
     pSynIniDir: TMenuItem;
     pContFN: TMenuItem;
     pContFNAnsi: TMenuItem;
+    pProj4: TMenuItem;
     procedure bBrClick(Sender: TObject);
     procedure bBr2Click(Sender: TObject);
     procedure ListClick(Sender: TObject);
@@ -133,7 +134,7 @@ uses
 {$R *.dfm}
 
 const
-  ccStr: array[0..24] of string = (
+  ccStr: array[0..25] of string = (
     '"{FileName}"',
     '"{FileDir}"',
     '"{FileNameOnly}"',
@@ -141,9 +142,10 @@ const
     '"{FileExt}"',
     //
     '"{FileName2}"',
-    '"{FileDir2}"',
-    '"{FileExt2}"',
+    '"{FileNameL}"',
+    '"{FileNameR}"',
     //
+    '"{ProjectDir}"',
     '"{ProjectWorkDir}"',
     '"{ProjectMainFileName}"',
     '"{ProjectMainFileDir}"',
@@ -352,30 +354,31 @@ begin
   s(pFileExt, 4);
   //
   s(pFileName2, 5);
-  s(pFileDir2, 6);
-  s(pFileExt2, 7);
+  s(pFileNameL, 6);
+  s(pFileNameR, 7);
   //
   s(pProj1, 8);
   s(pProj2, 9);
   s(pProj3, 10);
+  s(pProj4, 11);
   //
-  s(pCurWord, 11);
-  s(pCurLineNum, 12);
-  s(pCurColNum, 13);
-  s(pCurLine, 14);
+  s(pCurWord, 12);
+  s(pCurLineNum, 13);
+  s(pCurColNum, 14);
+  s(pCurLine, 15);
   //
-  s(pSelText, 15);
-  s(pSelFN, 16);
-  s(pSelFNAnsi, 17);
-  s(pContFN, 18);
-  s(pContFNAnsi, 19);
+  s(pSelText, 16);
+  s(pSelFN, 17);
+  s(pSelFNAnsi, 18);
+  s(pContFN, 19);
+  s(pContFNAnsi, 20);
   //
-  s(pInter, 20);
-  s(pInterFile, 21);
-  s(pInterDir, 22);
+  s(pInter, 21);
+  s(pInterFile, 22);
+  s(pInterDir, 23);
   //
-  s(pSynDir, 23);
-  s(pSynIniDir, 24);
+  s(pSynDir, 24);
+  s(pSynIniDir, 25);
 
   with TntOpenDialog1 do
     Filter:= WideFormat(

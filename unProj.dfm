@@ -113,6 +113,7 @@ object fmProj: TfmProj
         Hint = 'Change project properties'
         ImageIndex = 7
         Options = [tboDropdownArrow]
+        OnPopup = TBXItemProjPropPopup
         object TbxItemProjOptions: TSpTBXItem
           Caption = 'Project properties...'
           OnClick = TbxItemProjOptionsClick
