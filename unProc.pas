@@ -27,6 +27,7 @@ procedure MemoScrollToBottom(Memo: TTntMemo);
 function SZenFindLeft(const s: ecString; iFrom: integer): integer;
 function DoReadLangMsg(const fn_lng, fn_en_lng, msg_id: string): Widestring;
 function DoPlayWaveSound(const fn: string): boolean;
+function ShiftStateToString(const Shift: TShiftState): string;
 
 procedure SParseString_AcpHtml(
   const AcpStr, Atr: string; List: TStringList);
@@ -2058,5 +2059,14 @@ begin
     Release;
   end;
 end;
+
+function ShiftStateToString(const Shift: TShiftState): string;
+begin
+  Result:=
+    IfThen(ssShift in Shift, 's')+
+    IfThen(ssCtrl in Shift, 'c')+
+    IfThen(ssAlt in Shift, 'a');
+end;
+
 
 end.

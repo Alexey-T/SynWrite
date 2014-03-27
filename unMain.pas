@@ -5426,14 +5426,6 @@ begin
   end;
 end;
 
-function SShiftToString(const Shift: TShiftState): string;
-begin
-  Result:=
-    IfThen(ssShift in Shift, 's')+
-    IfThen(ssCtrl in Shift, 'c')+
-    IfThen(ssAlt in Shift, 'a');
-end;
-
 procedure TfmMain.SynKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
   Ed: TSyntaxMemo;
@@ -5441,9 +5433,9 @@ begin
   Ed:= CurrentEditor;
   if Ed=nil then Exit;
 
-  if not DoPyEvent(Ed, cSynEventOnKey, [
-    IntToStr(Key),
-    '"'+SShiftToString(Shift)+'"']) then Exit;
+  if not DoPyEvent(Ed, cSynEventOnKey,
+    [IntToStr(Key), '"'+ShiftStateToString(Shift)+'"']) then
+    begin Key:= 0; Exit end;
 
   if not SynExe then
   if Ed.ReadOnly or (Shift = [ssAlt]) then
@@ -11027,7 +11019,7 @@ end;
 procedure TfmMain.CloseFrameWithCfm(F: TEditorFrame);
 var
   n: integer;
-  acNew: TEditorFrame;
+  AFrameNew: TEditorFrame;
 begin
   UpdateColorHint;
   if QuickView then Exit;
@@ -11065,26 +11057,26 @@ begin
     if n >= 0 then
     begin
       ActivePageIndex:= n;
-      acNew:= Frames[ActivePageIndex];
+      AFrameNew:= Frames[ActivePageIndex];
     end
     else
-      acNew:= nil;
+      AFrameNew:= nil;
   end
   else
-    acNew:= CurrentFrame;
+    AFrameNew:= CurrentFrame;
 
   //If it is last tab
   if FrameCount = 1 then
   begin
     CreateFrame;
-    acNew:= CurrentFrame;
+    AFrameNew:= CurrentFrame;
   end;
 
   CloseFrame(F);
   FPagesNTab:= -1;
-  if Assigned(acNew) then
+  if Assigned(AFrameNew) then
   begin
-    CurrentFrame:= acNew;
+    CurrentFrame:= AFrameNew;
     FocusEditor;
   end;
   //If all closed
