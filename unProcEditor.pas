@@ -837,11 +837,16 @@ begin
   if AUndo then
     with Ed do
     begin
-      p:= CaretPos;
-      CaretPos:= Point(0, NLine);
-      DeleteText(Lines.LineLength(NLine));
-      InsertText(S);
-      CaretPos:= p;
+      BeginUpdate;
+      try
+        p:= CaretPos;
+        CaretPos:= Point(0, NLine);
+        DeleteText(Lines.LineLength(NLine));
+        InsertText(S);
+        CaretPos:= p;
+      finally
+        EndUpdate;
+      end;    
     end
   else
   begin

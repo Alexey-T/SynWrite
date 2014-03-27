@@ -382,19 +382,19 @@ end;
 function Py_ed_set_text_line(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H, N: Integer;
-  P: PAnsiChar;
-  StrW: Widestring;
+  Ptr: PAnsiChar;
+  Str: Widestring;
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iis:ed_set_text_line', @H, @N, @P)) then
+    if Bool(PyArg_ParseTuple(Args, 'iis:ed_set_text_line', @H, @N, @Ptr)) then
     begin
       Ed:= PyEditor(H);
-      StrW:= UTF8Decode(AnsiString(P));
+      Str:= UTF8Decode(AnsiString(Ptr));
       if (N = -1) then
         N:= Ed.CurrentLine;
       if (N >= 0) and (N < Ed.Lines.Count) then
-        Ed.Lines[N]:= StrW;
+        EditorReplaceLine(Ed, N, Str, true);
       Result:= ReturnNone;
     end;
 end;
