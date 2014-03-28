@@ -345,6 +345,7 @@ object fmToolbarProp: TfmToolbarProp
     object mnuProjectTools: TTntMenuItem
       Caption = 'Project tools'
       Enabled = False
+      Visible = False
       OnClick = mnuProjectToolsClick
     end
   end

@@ -2509,7 +2509,6 @@ type
     procedure SpellDialogShow(Sender: TObject);
     procedure SpellPositionDialog(Sender: TObject);
 
-    procedure DoSplitterPos(const Pos: Double);
     procedure DoRecordToMacro(Cmd: integer; Data: PWChar);
     procedure DoFindClip(Next: boolean);
     function SNewDocName(const fn: Widestring): string;
@@ -2549,7 +2548,10 @@ type
     function GetPageControl: TTntPageControl;
     function DoCloseAllTabs(CanCancel, CanClose: Boolean; FExcept: TEditorFrame = nil): boolean;
     procedure DoCloseOtherTabs(F: TEditorFrame);
-    procedure SetSplitter(const F: Double);
+    function GetSplitterPos: Double;
+    procedure SetSplitter_(const F: Double);
+    procedure SetSplitterPos(const Pos: Double);
+    procedure SetSplitterHorz(Val: boolean);
     function PagesEmpty(P: TTntPageControl): boolean;
     procedure DoMoveTabToOtherView(NTab: integer);
     procedure DoMoveTabToWindow(NTab: integer; AndClose: boolean);
@@ -3171,6 +3173,8 @@ type
       const Tok: TSearchTokens;
       OptBkmk, OptExtSel: boolean): Integer;
     procedure DoPyConsole_LogString(const Str: Widestring);
+    property MainSplitterPos: Double read GetSplitterPos write SetSplitterPos;
+    property MainSplitterHorz: boolean read FSplitHorz write SetSplitterHorz;
     //end of public
   end;
 
@@ -3196,8 +3200,8 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.4.800';
-  cSynPyVer = '1.0.123';
+  cSynVer = '6.4.810';
+  cSynPyVer = '1.0.124';
 
 const
   cSynParamRO = '/ro';
@@ -8249,7 +8253,7 @@ end;
 
 procedure TfmMain.Panel1Resize(Sender: TObject);
 begin
-  SetSplitter(FSplitter);
+  SetSplitter_(FSplitter);
 end;
 
 procedure TfmMain.ecACPChange(Sender: TObject);
@@ -11611,8 +11615,8 @@ begin
       WriteInteger('Ini', 'Page2', PageControl2.ActivePageIndex);
       WriteInteger('Ini', 'PageCount', PageControl1.PageCount);
       WriteBool('Ini', 'PageActive', PageControl=PageControl2);
-      WriteBool('Ini', 'SplitHorz', FSplitHorz);
-      WriteFloat('Ini', 'SplitPos', Trunc(FSplitter * 100)/100);
+      WriteBool('Ini', 'SplitHorz', MainSplitterHorz);
+      WriteFloat('Ini', 'SplitPos', MainSplitterPos);
       for i:= 0 to FrameAllCount-1 do
       begin
         F:= FramesAll[i];
@@ -11793,10 +11797,8 @@ begin
         CurrentFrame:= Frames[N];
 
       FSplitter:= NSplitPos;
-      SetSplitter(FSplitter);
-
-      if FSplitHorz<>NSplitHorz then
-        ecSplitViewsVertHorz.Execute;
+      SetSplitter_(FSplitter);
+      SetSplitterHorz(NSplitHorz);
     finally
       Free;
     end;
@@ -15040,7 +15042,7 @@ begin
     FSplitter:= PageControl2.Width * 100 / (Panel1.Width - SplitterMain.Width);
 end;
 
-procedure TfmMain.SetSplitter(const F: Double);
+procedure TfmMain.SetSplitter_(const F: Double);
 begin
   if FSplitHorz then
     PageControl2.Height:= Trunc((Panel1.Height - SplitterMain.Height) * F / 100.0)
@@ -15048,15 +15050,26 @@ begin
     PageControl2.Width:= Trunc((Panel1.Width - SplitterMain.Width) * F / 100.0);
 end;
 
-procedure TfmMain.DoSplitterPos(const Pos: Double);
+procedure TfmMain.SetSplitterPos(const Pos: Double);
 begin
   if SplitterMain.Visible then
   begin
     FSplitter:= Pos;
-    SetSplitter(FSplitter);
+    SetSplitter_(FSplitter);
   end;
 end;
 
+function TfmMain.GetSplitterPos: Double;
+begin
+  //leave only 2 digits after decimal dot
+  Result:= Trunc(FSplitter * 100)/100;
+end;
+
+procedure TfmMain.SetSplitterHorz(Val: boolean);
+begin
+  if FSplitHorz<>Val then
+    ecSplitViewsVertHorz.Execute;
+end;
 
 procedure TfmMain.TBXItemSp50Click(Sender: TObject);
 begin
@@ -15077,14 +15090,12 @@ end;
 
 procedure TfmMain.TBXItemSpHorzClick(Sender: TObject);
 begin
-  if not FSplitHorz then
-    ecSplitViewsVertHorz.Execute;
+  SetSplitterHorz(true);
 end;
 
 procedure TfmMain.TBXItemSpVertClick(Sender: TObject);
 begin
-  if FSplitHorz then
-    ecSplitViewsVertHorz.Execute;
+  SetSplitterHorz(false);
 end;
 
 procedure TfmMain.ecSplitViewsVertHorzExecute(Sender: TObject);
@@ -15103,7 +15114,7 @@ begin
     SplitterMain.Align:= alRight;
     SplitterMain.Left:= 5;
   end;
-  SetSplitter(FSplitter);
+  SetSplitter_(FSplitter);
 end;
 
 procedure TfmMain.PopupSplitterPopup(Sender: TObject);
@@ -17605,37 +17616,37 @@ end;
 
 procedure TfmMain.ecSplit50_50Execute(Sender: TObject);
 begin
-  DoSplitterPos(50.0);
+  SetSplitterPos(50.0);
 end;
 
 procedure TfmMain.ecSplit40_60Execute(Sender: TObject);
 begin
-  DoSplitterPos(60.0);
+  SetSplitterPos(60.0);
 end;
 
 procedure TfmMain.ecSplit60_40Execute(Sender: TObject);
 begin
-  DoSplitterPos(40.0);
+  SetSplitterPos(40.0);
 end;
 
 procedure TfmMain.ecSplit30_70Execute(Sender: TObject);
 begin
-  DoSplitterPos(70.0);
+  SetSplitterPos(70.0);
 end;
 
 procedure TfmMain.ecSplit70_30Execute(Sender: TObject);
 begin
-  DoSplitterPos(30.0);
+  SetSplitterPos(30.0);
 end;
 
 procedure TfmMain.ecSplit20_80Execute(Sender: TObject);
 begin
-  DoSplitterPos(80.0);
+  SetSplitterPos(80.0);
 end;
 
 procedure TfmMain.ecSplit80_20Execute(Sender: TObject);
 begin
-  DoSplitterPos(20.0);
+  SetSplitterPos(20.0);
 end;
 
 {
@@ -18014,7 +18025,7 @@ begin
       FSplitter:= Round(FSplitter) + cMinSplitter
     else
       FSplitter:= 100.0-cMinSplitter;
-    SetSplitter(FSplitter);
+    SetSplitter_(FSplitter);
   end;
 end;
 
@@ -18027,7 +18038,7 @@ begin
       FSplitter:= Round(FSplitter) - cMinSplitter
     else
       FSplitter:= cMinSplitter;
-    SetSplitter(FSplitter);
+    SetSplitter_(FSplitter);
   end;
 end;
 

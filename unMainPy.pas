@@ -802,6 +802,9 @@ const
   PROP_COORD_MONITOR2 = 124;
   PROP_COORD_MONITOR3 = 125;
 
+  PROP_SPLIT_MAIN_POS  = 130;
+  PROP_SPLIT_MAIN_HORZ = 131;
+
 function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 var
   Id: Integer;
@@ -846,6 +849,11 @@ begin
           Result:= Py_rect_monitor(2);
         PROP_COORD_MONITOR3:
           Result:= Py_rect_monitor(3);
+
+        PROP_SPLIT_MAIN_POS:
+          Result:= PyFloat_FromDouble(fmMain.MainSplitterPos);
+        PROP_SPLIT_MAIN_HORZ:
+          Result:= PyBool_FromLong(Ord(fmMain.MainSplitterHorz));
       end;
     end;
 end;
@@ -890,6 +898,12 @@ begin
           _SetPanelDock(fmMain.plOut, Str);
         PROP_DOCK_PRE:
           _SetPanelDock(fmMain.FProjPreview, Str);
+
+        PROP_SPLIT_MAIN_POS:
+          fmMain.MainSplitterPos:= StrToFloatDef(Str, 50.0);
+        PROP_SPLIT_MAIN_HORZ:
+          fmMain.MainSplitterHorz:= Bool(StrToIntDef(Str, 0));
+
       end;
       Result:= ReturnNone;
     end;
