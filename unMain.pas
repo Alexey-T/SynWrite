@@ -4112,7 +4112,7 @@ end;
 procedure TfmMain.CloseFrame(Frame: TEditorFrame);
 var
   ts: TTntTabSheet;
-  n: integer;
+  nTab: integer;
 begin
   if opSaveState>0 then
     SaveFrameState(Frame);
@@ -4122,7 +4122,12 @@ begin
 
   CurrentEditor:= nil;
   ts:= Frame.Parent as TTntTabSheet;
-  n:= ts.TabIndex;
+  nTab:= ts.TabIndex;
+
+  //work-around for flickering of 1st tab, when last tab is freed
+  if (nTab>0) and (nTab=ts.PageControl.PageCount-1) then
+    ts.PageIndex:= nTab-1;
+
   Frame.Free;
   ts.Free;
   FrameChanged;
@@ -4134,7 +4139,7 @@ begin
   UpdateTabs(PageControl);
   if PageControl.PageCount=1 then
     PageControl.ActivePageIndex:= 0;
-  UpdateTabList(PageControl.ActivePageIndex, -1, n);
+  UpdateTabList(PageControl.ActivePageIndex, -1, nTab);
 end;
 
 procedure TfmMain.UpdateTreeProps;
@@ -5962,10 +5967,10 @@ begin
 
     sm_InsertColor: ecInsertColor.Execute;
     sm_InsertImage: ecInsertImage.Execute;
-    sm_GotoSelEdge: EditorJumpSelEdge(Ed);
+    sm_GotoSelectionStartEnd: EditorJumpSelectionStartEnd(Ed);
     sm_GotoBookmarkDialog: ecGotoBk.Execute;
     sm_ReplaceFromClipAll: ecReplaceSelFromClipAll.Execute;
-    sm_RereadOutPanel: acRereadOut.Execute;
+    sm_RereadOutputPanel: acRereadOut.Execute;
     sm_DropPortableBk: ecDropPortableBk.Execute;
     sm_GotoPortableBk: ecGotoPortableBk.Execute;
     sm_IndentLike1st: ecIndentLike1st.Execute;
@@ -17351,27 +17356,35 @@ procedure TfmMain.PageControl1DragDrop(Sender, Source: TObject; X,
 const
   TCM_GETITEMRECT = $130A;
 var
+  APages: TTntPageControl;
   ARect: TRect;
-  j: Integer;
+  nIndex, i: Integer;
 begin
-  //Dont allow to drag between views
-  if Sender <> Source then
+  //dont allow to drag between views
+  if Sender<>Source then
     begin MsgBeep(true); Exit end;
 
-  with (Sender as TTntPageControl) do
-    for j:= 0 to PageCount - 1 do
+  APages:= Sender as TTntPageControl;
+  nIndex:= -1;
+  for i:= 0 to APages.PageCount-1 do
+  begin
+    APages.Perform(TCM_GETITEMRECT, i, Integer(@ARect));
+    if PtInRect(ARect, Point(X, Y)) then
     begin
-      Perform(TCM_GETITEMRECT, j, Integer(@ARect));
-      if PtInRect(ARect, Point(X, Y)) then
-      begin
-        if ActivePage.PageIndex <> j then
-        begin
-          MoveTabInList(PageControl.ActivePage.PageIndex, j);
-          ActivePage.PageIndex:= j;
-        end;
-        Exit;
-      end;
+      nIndex:= i;
+      Break
     end;
+  end;
+
+  if nIndex<0 then
+    nIndex:= APages.PageCount-1;
+  if nIndex<0 then Exit;  
+
+  if APages.ActivePage.PageIndex<>nIndex then
+  begin
+    MoveTabInList(APages.ActivePage.PageIndex, nIndex);
+    APages.ActivePage.PageIndex:= nIndex;
+  end;
 end;
 
 procedure TfmMain.PageControl1DragOver(Sender, Source: TObject; X,

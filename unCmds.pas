@@ -223,10 +223,10 @@ const
   sm_OpenCurrentFile = 878;
   sm_SelectToken = 879;
   sm_InsertColor = 880;
-  sm_GotoSelEdge = 881;
+  sm_GotoSelectionStartEnd = 881;
   sm_ReplaceFromClip = 882; //not used
   sm_ReplaceFromClipAll = 883;
-  sm_RereadOutPanel = 884;
+  sm_RereadOutputPanel = 884;
   sm_InsertImage = 885;
   sm_OpenHTML4Help = 886;
   sm_OpenHTML5Help = 887;

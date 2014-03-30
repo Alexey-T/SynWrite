@@ -452,6 +452,7 @@ begin
     FControl.BeginUpdate;
   StopFind:= false;
 
+ try
   repeat
      st:= StrtPos;
      en:= EndPos;
@@ -529,8 +530,10 @@ begin
   until False;
 
   Result:= FMatches > 0;
+ finally
   if Replace then FControl.EndUpdate;
   if Result then FControl.Invalidate;
+ end; 
 end;
 
 function TSynFinderReplacer.DoSearch(

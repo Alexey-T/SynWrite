@@ -36,7 +36,7 @@ procedure EditorUpdateCaretPosFromMousePos(Ed: TSyntaxMemo);
 procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
 function EditorJumpMixedCase(Ed: TSyntaxMemo; ARight: boolean): boolean;
 procedure EditorJumpColumnMarker(Ed: TSyntaxMemo; ALeft: boolean);
-procedure EditorJumpSelEdge(Ed: TSyntaxMemo);
+procedure EditorJumpSelectionStartEnd(Ed: TSyntaxMemo);
 function EditorJumpBlankLine(Ed: TSyntaxMemo; opSrOffsetY: Integer; ANext: boolean): boolean;
 function EditorJumpRange(Ed: TSyntaxMemo): boolean;
 function EditorJumpBracket(Ed: TSyntaxMemo): boolean;
@@ -2460,7 +2460,7 @@ begin
   end;
 end;
 
-procedure EditorJumpSelEdge(Ed: TSyntaxMemo);
+procedure EditorJumpSelectionStartEnd(Ed: TSyntaxMemo);
 var
   IsStart: boolean;
   NStart, NLen: integer;
