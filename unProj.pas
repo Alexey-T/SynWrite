@@ -990,7 +990,9 @@ begin
   begin
     TreeProj.Selected:= Node;
     TreeProj.Selected.MakeVisible;
-  end;
+  end
+  else
+    MsgWarn(DKLangConstW('zMProjNotAdded'), Handle);
 end;
 
 
@@ -1740,6 +1742,7 @@ var
   L: TTntStringList;
 begin
   Result:= FOpts.WorkDir;
+  
   if Result='' then
     if Assigned(FOnGetWorkDir) then
     begin
@@ -1752,6 +1755,9 @@ begin
         FreeAndNil(L);
       end;
     end;
+
+  if Result='' then
+    Result:= GetProjDir;  
 end;
 
 function TfmProj.GetProjDir: Widestring;
