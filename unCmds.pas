@@ -508,12 +508,13 @@ begin
     smCopyPasteAbove,
     smCopyPasteBelow,
 
+    sm_ToggleLineCommentAlt,
     sm_GotoNextBlank,
     sm_GotoPrevBlank,
     sm_SelectParagraph,
     sm_SelectToWordEnd,
     sm_JumpToWordEnd
-    
+
       : Result:= true;
     else
       Result:= false;

@@ -1,8 +1,8 @@
 object EditorFrame: TEditorFrame
   Left = 0
   Top = 0
-  Width = 443
-  Height = 270
+  Width = 435
+  Height = 266
   Align = alClient
   AutoScroll = False
   Color = clWindow
@@ -10,10 +10,10 @@ object EditorFrame: TEditorFrame
   TabOrder = 0
   OnResize = FrameResize
   object PanelMap: TPaintBox
-    Left = 433
+    Left = 425
     Top = 0
     Width = 10
-    Height = 270
+    Height = 266
     Align = alRight
     ParentShowHint = False
     ShowHint = True
@@ -24,15 +24,15 @@ object EditorFrame: TEditorFrame
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 433
-    Height = 270
+    Width = 425
+    Height = 266
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
     object SplitterEds: TSpTBXSplitter
       Left = 0
-      Top = 208
-      Width = 433
+      Top = 204
+      Width = 425
       Height = 5
       Cursor = crSizeNS
       Align = alBottom
@@ -47,8 +47,8 @@ object EditorFrame: TEditorFrame
     object EditorMaster: TSyntaxMemo
       Left = 0
       Top = 0
-      Width = 433
-      Height = 208
+      Width = 425
+      Height = 204
       TextSource = TextSourceObj
       TabList.AsString = '4'
       NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -250,8 +250,8 @@ object EditorFrame: TEditorFrame
     end
     object EditorSlave: TSyntaxMemo
       Left = 0
-      Top = 213
-      Width = 433
+      Top = 209
+      Width = 425
       Height = 57
       TextSource = TextSourceObj
       TabList.AsString = '4'
@@ -472,8 +472,8 @@ object EditorFrame: TEditorFrame
         DisplayName = 'http & ftp'
         Expression = 
           '(https?|ftp):// (\w+\:\w+@)? [\w\d\-]+(\.[\w\d\-]+)+(:\d\d?\d?\d' +
-          '?\d?)? (((/~?[%+\w\d\-\\\.,=]*)+)*) (\?[^\s="'#39']+=[^\s=&"'#39']* (&[^' +
-          '\s=&"'#39']+ =?([^\s=&"'#39']*)? )*)?((\#|=)[\w\d\-=,%+]+)?'
+          '?\d?)? (((/~?[%+\w\d\-\\\.,=]*)+)*) (\?[^\s="'#39']+=?[^\s=&"'#39']* (&[' +
+          '^\s=&"'#39']+ =?([^\s=&"'#39']*)? )*)?((\#|=)[\w\d\-=,%+]+)?'
         ShellCommand = '\0'
       end
       item
