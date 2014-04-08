@@ -2726,8 +2726,6 @@ type
     procedure DoOpenProject; overload;
     procedure DoAddFileToProject;
     procedure DoAddFilesToProject;
-    procedure DoNewProject;
-    procedure DoSaveProject;
     procedure DoFavoriteProjects;
     procedure DoFavoritesDialog(ATab: Integer = -1);
     procedure DoPasteAndSelect;
@@ -3066,6 +3064,8 @@ type
     procedure DoOpenProject(const fn: Widestring); overload;
     procedure DoOpenArchive(const fn: Widestring);
     procedure DoOpenFolder(const dir: Widestring);
+    procedure DoNewProject;
+    procedure DoSaveProject;
     procedure SaveOptionsAll;
     procedure SaveSession(const fn: string);
     procedure SaveProjectSession;
@@ -16355,9 +16355,8 @@ var
   Ed: TSyntaxMemo;
   NStart, NEnd: Integer;
   S, S1: string; //Addict is not Unicode aware
-  ch: Widechar;
-  AMap: boolean;
-  ASpellLiveBefore: boolean;
+  AMap, ASpellLiveBefore: boolean;
+  //ch: Widechar;
 begin
   {$ifdef SPELL}
   F:= CurrentFrame;

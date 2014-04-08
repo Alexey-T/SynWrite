@@ -802,7 +802,8 @@ const
 
   PROP_SPLIT_MAIN_POS  = 130;
   PROP_SPLIT_MAIN_HORZ = 131;
-  PROP_SESSION         = 132;
+  PROP_FILENAME_SESSION = 132;
+  PROP_FILENAME_PROJECT = 133;
 
   PROP_RECENT_FILES    = 135;
   PROP_RECENT_SESSIONS = 136;
@@ -876,8 +877,10 @@ begin
             Result:= Py_StringList(fmMain.SynMruNewdoc.Items);
           end;
 
-        PROP_SESSION:
+        PROP_FILENAME_SESSION:
           Result:= PyUnicode_FromWideString(fmMain.CurrentSessionFN);
+        PROP_FILENAME_PROJECT:
+          Result:= PyUnicode_FromWideString(fmMain.CurrentProjectFN);
       end;
     end;
 end;
@@ -928,8 +931,20 @@ begin
         PROP_SPLIT_MAIN_HORZ:
           fmMain.MainSplitterHorz:= Bool(StrToIntDef(Str, 0));
 
-        PROP_SESSION:
-          fmMain.DoOpenSession(Str);
+        PROP_FILENAME_SESSION:
+          begin
+            if Str<>'' then
+              fmMain.DoOpenSession(Str)
+            else
+              fmMain.DoCloseSession(false);
+          end;
+        PROP_FILENAME_PROJECT:
+          begin
+            if Str<>'' then
+              fmMain.DoOpenProject(Str)
+            else
+              fmMain.DoNewProject;
+          end;    
       end;
       Result:= ReturnNone;
     end;
