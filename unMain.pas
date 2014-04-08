@@ -3200,8 +3200,8 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.4.810';
-  cSynPyVer = '1.0.124';
+  cSynVer = '6.4.815';
+  cSynPyVer = '1.0.125';
 
 const
   cSynParamRO = '/ro';
@@ -16355,6 +16355,7 @@ var
   Ed: TSyntaxMemo;
   NStart, NEnd: Integer;
   S, S1: string; //Addict is not Unicode aware
+  ch: Widechar;
   AMap: boolean;
   ASpellLiveBefore: boolean;
 begin
@@ -16398,6 +16399,20 @@ begin
       end;
 
       Ed.WordRangeAtPos(Ed.StrPosToCaretPos(FSpellPos), NStart, NEnd);
+      (*
+      //WordRangeAtPos works not ok for "we'll", "you've" words
+      //work for this:
+
+      NStart:= FSpellPos;
+      NEnd:= NStart;
+      while (NEnd<Ed.Lines.TextLength-1) do
+      begin
+        ch:= Ed.Lines.Chars[NEnd+1];
+        if not (IsWordChar(ch) or (ch='''')) then Break;
+        Inc(NEnd);
+      end;
+      *)
+
       if NEnd<=NStart then
         begin MsgBeep; Continue end;
       S:= Copy(Ed.Lines.FText, NStart+1, NEnd-NStart);

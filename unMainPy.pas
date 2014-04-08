@@ -451,21 +451,19 @@ begin
     end;
 end;
 
-function Py_get_console_list: PPyObject; cdecl;
+function Py_StringList(List: TTntStrings): PPyObject; cdecl;
 var
   NLen, i: Integer;
   ComArray: Variant;
 begin
   with GetPythonEngine do
   begin
-    NLen:= fmMain.edConsole.Items.Count;
+    NLen:= List.Count;
     if NLen>0 then
     begin
       ComArray:= VarArrayCreate([0, NLen-1], varOleStr);
       for i:= 0 to NLen-1 do
-      begin
-        ComArray[i]:= fmMain.edConsole.Items[i];
-      end;
+        ComArray[i]:= List[i];
       Result:= VariantAsPyObject(ComArray);
     end
     else
@@ -549,7 +547,7 @@ begin
           end;
         LOG_CONSOLE_GET:
           begin
-            Result:= Py_get_console_list;
+            Result:= Py_StringList(fmMain.edConsole.Items);
             Exit; //skip ReturnNone
           end;
       end;
@@ -804,7 +802,15 @@ const
 
   PROP_SPLIT_MAIN_POS  = 130;
   PROP_SPLIT_MAIN_HORZ = 131;
+  PROP_SESSION         = 132;
 
+  PROP_RECENT_FILES    = 135;
+  PROP_RECENT_SESSIONS = 136;
+  PROP_RECENT_PROJECTS = 137;
+  PROP_RECENT_NEWDOC   = 138;
+  PROP_RECENT_COLORS   = 139;
+
+  
 function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 var
   Id: Integer;
@@ -854,6 +860,24 @@ begin
           Result:= PyFloat_FromDouble(fmMain.MainSplitterPos);
         PROP_SPLIT_MAIN_HORZ:
           Result:= PyBool_FromLong(Ord(fmMain.MainSplitterHorz));
+
+        PROP_RECENT_FILES:
+          Result:= Py_StringList(fmMain.SynMruFiles.Items);  
+        PROP_RECENT_SESSIONS:
+          Result:= Py_StringList(fmMain.SynMruSessions.Items);
+        PROP_RECENT_PROJECTS:
+          begin
+            fmMain.TBXSubmenuItemProjRecentsPopup(nil, false); //update SynMruProjects
+            Result:= Py_StringList(fmMain.SynMruProjects.Items);
+          end;
+        PROP_RECENT_NEWDOC:
+          begin
+            fmMain.TBXSubmenuItemFNewPopup(nil, false); //update SynMruNewdoc
+            Result:= Py_StringList(fmMain.SynMruNewdoc.Items);
+          end;
+
+        PROP_SESSION:
+          Result:= PyUnicode_FromWideString(fmMain.CurrentSessionFN);
       end;
     end;
 end;
@@ -904,6 +928,8 @@ begin
         PROP_SPLIT_MAIN_HORZ:
           fmMain.MainSplitterHorz:= Bool(StrToIntDef(Str, 0));
 
+        PROP_SESSION:
+          fmMain.DoOpenSession(Str);
       end;
       Result:= ReturnNone;
     end;
