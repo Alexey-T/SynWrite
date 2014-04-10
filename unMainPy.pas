@@ -72,6 +72,26 @@ begin
     Result:= PyString_FromString(cSynPyVer);
 end;
 
+function Py_StringList(List: TTntStrings): PPyObject; cdecl;
+var
+  NLen, i: Integer;
+  ComArray: Variant;
+begin
+  with GetPythonEngine do
+  begin
+    NLen:= List.Count;
+    if NLen>0 then
+    begin
+      ComArray:= VarArrayCreate([0, NLen-1], varOleStr);
+      for i:= 0 to NLen-1 do
+        ComArray[i]:= List[i];
+      Result:= VariantAsPyObject(ComArray);
+    end
+    else
+      Result:= ReturnNone;
+  end;
+end;
+
 
 function Py_lexer_proc(Self, Args : PPyObject): PPyObject; cdecl;
 const
@@ -107,10 +127,12 @@ begin
         LEXER_GET_LIST:
           begin
             List:= TTntStringList.Create;
+            List.Sorted:= true;
             try
               fmMain.DoEnumLexers(List, true);
-              List.Sort;
-              Result:= PyUnicode_FromWideString(List.Text);
+              Result:=
+                Py_StringList(List);
+                //PyUnicode_FromWideString(List.Text);
             finally
               FreeAndNil(List);
             end;
@@ -450,27 +472,6 @@ begin
       Result:= PyInt_FromLong(NFindRes);
     end;
 end;
-
-function Py_StringList(List: TTntStrings): PPyObject; cdecl;
-var
-  NLen, i: Integer;
-  ComArray: Variant;
-begin
-  with GetPythonEngine do
-  begin
-    NLen:= List.Count;
-    if NLen>0 then
-    begin
-      ComArray:= VarArrayCreate([0, NLen-1], varOleStr);
-      for i:= 0 to NLen-1 do
-        ComArray[i]:= List[i];
-      Result:= VariantAsPyObject(ComArray);
-    end
-    else
-      Result:= ReturnNone;
-  end;
-end;
-
 
 function Py_app_log(Self, Args: PPyObject): PPyObject; cdecl;
 const
