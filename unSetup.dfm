@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabTree
+    ActivePage = tabTabs
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -423,12 +423,12 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 229
+        Height = 249
         Caption = 'Tabs'
         TabOrder = 0
         object TntLabel3: TTntLabel
           Left = 56
-          Top = 168
+          Top = 192
           Width = 109
           Height = 13
           Caption = 'Maximal caption length'
@@ -475,38 +475,38 @@ object fmSetup: TfmSetup
         end
         object cbTabSw: TTntCheckBox
           Left = 8
-          Top = 200
+          Top = 224
           Width = 433
           Height = 17
           Caption = 'Use modern tab switcher (Ctrl+Tab)'
-          TabOrder = 9
+          TabOrder = 10
         end
         object cbTabDnD: TTntCheckBox
           Left = 8
-          Top = 144
+          Top = 160
           Width = 380
           Height = 17
           Caption = 'Allow drag&&drop'
-          TabOrder = 7
+          TabOrder = 8
         end
         object edTabMaxLen: TSpinEdit
           Left = 8
-          Top = 164
+          Top = 188
           Width = 43
           Height = 22
           MaxValue = 200
           MinValue = 0
-          TabOrder = 8
+          TabOrder = 9
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
         object cbTabDbl: TTntCheckBox
           Left = 8
-          Top = 128
+          Top = 144
           Width = 380
           Height = 17
           Caption = 'Allow closing by double-click'
-          TabOrder = 6
+          TabOrder = 7
         end
         object ListTabColors: TTntListBox
           Left = 448
@@ -515,7 +515,7 @@ object fmSetup: TfmSetup
           Height = 181
           Style = lbOwnerDrawFixed
           ItemHeight = 16
-          TabOrder = 10
+          TabOrder = 11
           OnDblClick = ListTabColorsDblClick
           OnDrawItem = ListTabColorsDrawItem
           OnKeyDown = ListTabColorsKeyDown
@@ -545,6 +545,14 @@ object fmSetup: TfmSetup
             'Tabs style'
             'Buttons style'
             'Flat buttons style')
+        end
+        object cbTabDirs: TTntCheckBox
+          Left = 8
+          Top = 128
+          Width = 380
+          Height = 17
+          Caption = 'Show file+folder names on tab captions'
+          TabOrder = 6
         end
       end
     end
@@ -2966,7 +2974,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E014B010000
+      0700666D5365747570010100000001000000070043617074696F6E014C010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3265,7 +3273,8 @@ object fmSetup: TfmSetup
       6E74000B00506F7075704C6578657273000006006564577261700101000000D1
       02000005004974656D73000C00636254726565457870616E640101000000D202
       0000070043617074696F6E000E00636254726565436F6C6C6170736501010000
-      00D3020000070043617074696F6E00}
+      00D3020000070043617074696F6E0009006362546162446972730101000000D4
+      020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

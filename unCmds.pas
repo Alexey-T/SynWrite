@@ -385,6 +385,7 @@ const
   sm_GotoPrevOutputResult = 1053;
   sm_GotoNextSearchOrOutputResult = 1054;
   sm_GotoPrevSearchOrOutputResult = 1055;
+  sm_ToggleShowFoldersOnTabs = 1056;
   //free
 
   //Tree commands

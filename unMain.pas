@@ -2271,6 +2271,7 @@ type
     function IsFramePropertiesStringForFilename(const fn: Widestring; const Str: string): boolean;
     function FrameGetPropertiesString(F: TEditorFrame): string;
     procedure FrameSetPropertiesString(F: TEditorFrame; const Str: string; EncodingOnly: boolean);
+    procedure FrameGetTabCaption(Sender: TFrame; var Str: Widestring);
     //frame related------------------------------
 
     //private methods
@@ -2795,6 +2796,7 @@ type
     procedure DoConfigShellOptions;
     procedure DoConfigHideItems;
     procedure DoConfigRestoreStyles;
+    procedure DoToggleTabDirs;
     //end of private
 
   protected
@@ -2867,6 +2869,7 @@ type
     opTabVisible: integer;
     opTabMultiLine: boolean;
     opTabAtBottom: boolean;
+    opTabDirs: boolean; //show folder names before file names on tabs
     opTabNums: boolean; //show numbers on tabs
     opTabBtn: boolean; //show [x] button on tabs
     opTabOptionsIndex: integer; //id of active tab in Options dialog
@@ -3202,7 +3205,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.4.815';
+  cSynVer = '6.4.820';
   cSynPyVer = '1.0.125';
 
 const
@@ -3948,6 +3951,7 @@ begin
   Result.Name:= '';
   Result.OnTitleChanged:= UpdateTitle;
   Result.OnSaveState:= FrameSaveState;
+  Result.OnGetTabCaption:= FrameGetTabCaption;
 
   Result.EditorMaster.BorderStyle:= SynBorderStyleEditor;
   Result.EditorSlave.BorderStyle:= SynBorderStyleEditor;
@@ -4613,6 +4617,7 @@ begin
     opTabDblClick:= ReadBool('Setup', 'TabDbl', true);
     opTabDragDrop:= ReadBool('Setup', 'TabDnD', true);
     opTabSwitcher:= ReadBool('Setup', 'TabSw', true);
+    opTabDirs:= ReadBool('View', 'TabDirs', false);
     opTabNums:= ReadBool('View', 'TabNum', false);
     opTabBtn:= ReadBool('View', 'TabBtn', true);
     opTabMultiLine:= ReadBool('View', 'TabMul', false);
@@ -5126,6 +5131,7 @@ begin
     WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
 
     WriteInteger('View', 'TabLast', opTabOptionsLast);
+    WriteBool('View', 'TabDirs', opTabDirs);
     WriteBool('View', 'TabNum', opTabNums);
     WriteBool('View', 'TabBtn', opTabBtn);
     WriteBool('View', 'TabMul', opTabMultiLine);
@@ -6479,6 +6485,9 @@ begin
         else
           DoJumpToNextOutputResult(not ListVal.Visible, false);
       end;
+
+    sm_ToggleShowFoldersOnTabs:
+      DoToggleTabDirs;  
 
     //end of commands list
     else
@@ -11188,6 +11197,7 @@ begin
 
   //get title string
   SCaption:= (PageControl.Pages[TabIndex] as TTntTabSheet).Caption;
+
   if opTabNums then
   begin
     //Title has 3 lead spaces, replace em:
@@ -25850,6 +25860,7 @@ end;
 procedure TfmMain.ApplyTabOptions;
 var
   Pos: TTabPosition;
+  i: Integer;
 begin
   //apply visible-mode
   UpdateTabs(PageControl1);
@@ -25864,6 +25875,9 @@ begin
   if opTabAtBottom then Pos:= tpBottom else Pos:= tpTop;
   PageControl1.TabPosition:= Pos;
   PageControl2.TabPosition:= Pos;
+
+  for i:= 0 to FrameAllCount-1 do
+    FramesAll[i].DoTitleChanged;
 end;
 
 procedure TfmMain.FixSplitters;
@@ -28890,6 +28904,51 @@ begin
   TBXItemBkDelUnmk.Enabled:= not ro;
   TBXItemBkPaste.Enabled:= bk and not ro;
   TBXItemBkGoto.Enabled:= bk;
+end;
+
+
+
+procedure TfmMain.FrameGetTabCaption(Sender: TFrame; var Str: Widestring);
+  //-----
+  function SCutLong(const Str: Widestring): Widestring;
+  const
+    cDash: Widestring = #$2026;
+  var
+    nMax, n: Integer;
+  begin
+    Result:= Str;
+    nMax:= opTabMaxLen;
+    if (nMax>0) and (Length(Str)>nMax) then
+    begin
+      //a)cut the end of string
+      ////Result:= Copy(Str, 1, nMax) + cDash;
+      //b)cut the middle of string
+      n:= nMax div 2;
+      Result:= Copy(Str, 1, n) + cDash + Copy(Str, Length(Str)-(nMax-n)+1, MaxInt);
+    end;
+  end;
+  //-----
+var
+  Frame: TEditorFrame;
+begin
+  Frame:= Sender as TEditorFrame;
+  if Frame.FileName='' then
+    Str:= DKLangConstW('Untitled')
+  else
+  begin
+    Str:= WideExtractFileName(Frame.FileName);
+    if not opTabDirs then
+      Str:= SCutLong(Str)
+    else
+      Str:= SCutLong(WideExtractFileName(WideExtractFileDir(Frame.FileName))) +
+        '\' + SCutLong(Str);
+  end;
+end;
+
+procedure TfmMain.DoToggleTabDirs;
+begin
+  opTabDirs:= not opTabDirs;
+  ApplyTabOptions;
 end;
 
 initialization

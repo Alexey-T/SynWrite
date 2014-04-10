@@ -21,6 +21,8 @@ const
 
 type
   TEditorEvent = procedure(Sender: TFrame) of object;
+  TGetTabCaptionEvent = procedure(Sender: TFrame; var Str: Widestring) of object;
+
 type
   TEditorFrame = class(TFrame)
     ecSpellChecker: TecSpellChecker;
@@ -131,6 +133,7 @@ type
     FFileName: WideString;
     FOnTitleChanged: TEditorEvent;
     FOnSaveState: TNotifyEvent;
+    FOnGetTabCaption: TGetTabCaptionEvent;
     FModifiedPrev: Boolean;
     FModifiedClr: Boolean;
     FSplitHorz: boolean;
@@ -221,6 +224,7 @@ type
     property Title: Widestring read GetTitle;
     property OnTitleChanged: TEditorEvent read FOnTitleChanged write FOnTitleChanged;
     property OnSaveState: TNotifyEvent read FOnSaveState write FOnSaveState;
+    property OnGetTabCaption: TGetTabCaptionEvent read FOnGetTabCaption write FOnGetTabCaption;
   end;
 
 const
@@ -489,20 +493,10 @@ begin
 end;
 
 function TEditorFrame.GetTitle: Widestring;
-var
-  MaxLen, n: integer;
 begin
-  if FFileName='' then
-    Result:= DKLangConstW('Untitled')
-  else
-    Result:= WideExtractFileName(FFileName);
-
-  MaxLen:= TfmMain(Owner).opTabMaxLen;
-  if (MaxLen>0) and (Length(Result)>MaxLen) then
-  begin
-    n:= MaxLen div 2;
-    Result:= Copy(Result, 1, n) + #$2026 + Copy(Result, Length(Result)-(MaxLen-n)+1, MaxInt);
-  end;
+  Result:= '??';
+  if Assigned(FOnGetTabCaption) then
+    FOnGetTabCaption(Self, Result);
 
   if Modified then
     Result:= Result + '*';
@@ -515,7 +509,7 @@ begin
   //more spaces for tab numbers
   if TfmMain(Owner).opTabNums then
     Result:= StringOfChar(' ', cTabNumPrefix) + Result;
-  //more spaces for X button  
+  //more spaces for X button
   if TfmMain(Owner).opTabBtn then
     Result:= Result + '   ';
 end;

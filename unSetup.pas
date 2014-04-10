@@ -352,6 +352,7 @@ type
     edWrap: TTntComboBox;
     cbTreeExpand: TTntCheckBox;
     cbTreeCollapse: TTntCheckBox;
+    cbTabDirs: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1991,6 +1992,7 @@ begin
     opTabMaxLen:= edTabMaxLen.Value;
     opTabMultiLine:= cbTabMul.Checked;
     opTabAtBottom:= cbTabDown.Checked;
+    opTabDirs:= cbTabDirs.Checked;
 
     for i:= 0 to High(ColorsOfTabs) do
       opTabColors[i]:= ColorsOfTabs[i];
@@ -2302,6 +2304,7 @@ begin
     cbTabSw.Checked:= opTabSwitcher;
     cbTabDnD.Checked:= opTabDragDrop;
     cbTabDbl.Checked:= opTabDblClick;
+    cbTabDirs.Checked:= opTabDirs;
     edTabMaxLen.Value:= opTabMaxLen;
 
     ListTabColors.Items.Clear;
