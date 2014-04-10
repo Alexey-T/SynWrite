@@ -2098,6 +2098,8 @@ type
     procedure TbxItemWinSplitVClick(Sender: TObject);
     procedure ecToggleProjPreviewExecute(Sender: TObject);
     procedure acExportHTMLBeforeExecute(Sender: TObject);
+    procedure TBXSubmenuItemBkPopup(Sender: TTBCustomItem;
+      FromLink: Boolean);
 
   private
     cStatLine,
@@ -4303,7 +4305,7 @@ end;
 
 procedure TfmMain.UpdateStatusBar;
 var
-  bk, ro, {sel,} sel2, en_lex: boolean;
+  ro, sel2, en_lex: boolean;
   ed: TSyntaxMemo;
   frame: TEditorFrame;
 begin
@@ -4314,9 +4316,7 @@ begin
   if ed=nil then Exit;
   if frame=nil then Exit;
 
-  bk:= ed.BookmarkObj.Count>0;
   ro:= ed.ReadOnly;
-  //sel:= ed.SelLength>0;
   sel2:= ed.HaveSelection;
   en_lex:= SyntaxManager.CurrentLexer<>nil;
 
@@ -4425,16 +4425,6 @@ begin
   ecPreviewAction.Update;
   ecPageSetupAction.Update;
   ecPrinterSetup.Update;
-
-  ecBkClearAll.Enabled:= bk;
-  ecBkNext.Enabled:= bk;
-  ecBkPrev.Enabled:= bk;
-  ecBkCopy.Enabled:= bk;
-  ecBkCut.Enabled:= bk and not ro;
-  ecBkDelete.Enabled:= bk and not ro;
-  ecBkDeleteUnmk.Enabled:= not ro;
-  ecBkPaste.Enabled:= bk and not ro;
-  TBXItemBkGoto.Enabled:= bk;
 
   begin
     StatusItemCaret.Caption:= SStatusText(Ed);
@@ -28881,6 +28871,25 @@ end;
 procedure TfmMain.ProjRunTool(const ATool: TSynTool);
 begin
   RunTool(ATool);
+end;
+
+procedure TfmMain.TBXSubmenuItemBkPopup(Sender: TTBCustomItem;
+  FromLink: Boolean);
+var
+  bk, ro: boolean;  
+begin
+  ro:= CurrentEditor.ReadOnly;
+  bk:= CurrentEditor.BookmarkObj.Count>0;
+
+  TBXItemBkClear.Enabled:= bk;
+  TBXItemBkNext.Enabled:= bk;
+  TBXItemBkPrev.Enabled:= bk;
+  TBXItemBkCopy.Enabled:= bk;
+  TBXItemBkCut.Enabled:= bk and not ro;
+  TBXItemBkDel.Enabled:= bk and not ro;
+  TBXItemBkDelUnmk.Enabled:= not ro;
+  TBXItemBkPaste.Enabled:= bk and not ro;
+  TBXItemBkGoto.Enabled:= bk;
 end;
 
 initialization

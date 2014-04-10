@@ -26,7 +26,7 @@ object fmMain: TfmMain
   TextHeight = 13
   object TBXDockTop: TSpTBXDock
     Left = 0
-    Top = 24
+    Top = 25
     Width = 892
     Height = 52
     object tbFile: TSpTBXToolbar
@@ -426,14 +426,14 @@ object fmMain: TfmMain
   end
   object TBXDockLeft: TSpTBXMultiDock
     Left = 0
-    Top = 76
+    Top = 77
     Width = 250
-    Height = 356
+    Height = 355
     object plTree: TSpTBXDockablePanel
       Left = 0
       Top = 0
       Width = 250
-      Height = 356
+      Height = 355
       ActivateParent = False
       DockableTo = [dpLeft, dpRight]
       DockPos = 4
@@ -497,7 +497,7 @@ object fmMain: TfmMain
       end
       object tbTabsLeft: TSpTBXTabSet
         Left = 0
-        Top = 331
+        Top = 330
         Width = 246
         Height = 21
         Align = alBottom
@@ -704,15 +704,15 @@ object fmMain: TfmMain
   end
   object TBXDockRight: TSpTBXMultiDock
     Left = 713
-    Top = 76
+    Top = 77
     Width = 179
-    Height = 356
+    Height = 355
     Position = dpxRight
     object plClip: TSpTBXDockablePanel
       Left = 0
       Top = 0
       Width = 179
-      Height = 356
+      Height = 355
       DockPos = 0
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -727,7 +727,7 @@ object fmMain: TfmMain
       OnVisibleChanged = plClipVisibleChanged
       object tbTabsRight: TSpTBXTabSet
         Left = 0
-        Top = 331
+        Top = 330
         Width = 175
         Height = 21
         Align = alBottom
@@ -870,7 +870,7 @@ object fmMain: TfmMain
     Left = 0
     Top = 0
     Width = 892
-    Height = 24
+    Height = 25
     object tbMenu: TSpTBXToolbar
       Left = 0
       Top = 0
@@ -1850,6 +1850,7 @@ object fmMain: TfmMain
       end
       object TBXSubmenuItemBk: TSpTBXSubmenuItem
         Caption = '&Bookmarks'
+        OnPopup = TBXSubmenuItemBkPopup
         object TBXSubmenuItemBkSet: TSpTBXSubmenuItem
           Caption = '&Set numbered bookmark'
           Hint = 'Set numbered (0-9) bookmark for current line'
@@ -2959,9 +2960,9 @@ object fmMain: TfmMain
   end
   object Panel1: TPanel
     Left = 295
-    Top = 76
+    Top = 77
     Width = 404
-    Height = 356
+    Height = 355
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 6
@@ -2969,7 +2970,7 @@ object fmMain: TfmMain
     object SplitterMain: TSpTBXSplitter
       Left = 284
       Top = 0
-      Height = 356
+      Height = 355
       Cursor = crSizeWE
       Align = alRight
       PopupMenu = PopupSplitter
@@ -2981,7 +2982,7 @@ object fmMain: TfmMain
       Left = 0
       Top = 0
       Width = 284
-      Height = 356
+      Height = 355
       Align = alClient
       OwnerDraw = True
       TabOrder = 0
@@ -3179,7 +3180,7 @@ object fmMain: TfmMain
       Left = 289
       Top = 0
       Width = 115
-      Height = 356
+      Height = 355
       Align = alRight
       OwnerDraw = True
       TabOrder = 2
@@ -3196,9 +3197,9 @@ object fmMain: TfmMain
   end
   object TBXDockLeft1: TSpTBXDock
     Left = 255
-    Top = 76
+    Top = 77
     Width = 40
-    Height = 356
+    Height = 355
     Position = dpLeft
     object tbView: TSpTBXToolbar
       Left = 0
@@ -3287,9 +3288,9 @@ object fmMain: TfmMain
   end
   object TBXDockRight1: TSpTBXDock
     Left = 699
-    Top = 76
+    Top = 77
     Width = 9
-    Height = 356
+    Height = 355
     Position = dpRight
   end
   object TBXDockBottom1: TSpTBXDock
@@ -3301,16 +3302,16 @@ object fmMain: TfmMain
   end
   object SplitterLeft: TSpTBXSplitter
     Left = 250
-    Top = 76
-    Height = 356
+    Top = 77
+    Height = 355
     Cursor = crSizeWE
     MinSize = 50
     ResizeStyle = rsPattern
   end
   object SplitterRight: TSpTBXSplitter
     Left = 708
-    Top = 76
-    Height = 356
+    Top = 77
+    Height = 355
     Cursor = crSizeWE
     Align = alRight
     MinSize = 50

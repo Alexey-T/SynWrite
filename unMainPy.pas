@@ -858,7 +858,7 @@ begin
           Result:= Py_rect_monitor(3);
 
         PROP_SPLIT_MAIN_POS:
-          Result:= PyFloat_FromDouble(fmMain.MainSplitterPos);
+          Result:= PyInt_FromLong(Trunc(fmMain.MainSplitterPos));
         PROP_SPLIT_MAIN_HORZ:
           Result:= PyBool_FromLong(Ord(fmMain.MainSplitterHorz));
 
@@ -927,7 +927,7 @@ begin
           _SetPanelDock(fmMain.FProjPreview, Str);
 
         PROP_SPLIT_MAIN_POS:
-          fmMain.MainSplitterPos:= StrToFloatDef(Str, 50.0);
+          fmMain.MainSplitterPos:= StrToIntDef(Str, 50);
         PROP_SPLIT_MAIN_HORZ:
           fmMain.MainSplitterHorz:= Bool(StrToIntDef(Str, 0));
 
