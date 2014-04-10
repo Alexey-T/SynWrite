@@ -147,7 +147,7 @@ type
     procedure SetSplitHorz(Value: boolean);
     function GetModified: boolean;
     procedure SetModified(Value: boolean);
-    function GetTitle: WideString;
+    function GetTabCaption: WideString;
     procedure FileReload(Sender: TObject);
     function GetShowMap: boolean;
     procedure SetShowMap(V: boolean);
@@ -221,7 +221,7 @@ type
     property ModifiedClr: boolean read FModifiedClr write FModifiedClr;
     //property Closing: boolean read FClosing write FClosing;
     property LockMapUpdate: boolean read FLockMapUpdate write FLockMapUpdate;
-    property Title: Widestring read GetTitle;
+    property TabCaption: Widestring read GetTabCaption;
     property OnTitleChanged: TEditorEvent read FOnTitleChanged write FOnTitleChanged;
     property OnSaveState: TNotifyEvent read FOnSaveState write FOnSaveState;
     property OnGetTabCaption: TGetTabCaptionEvent read FOnGetTabCaption write FOnGetTabCaption;
@@ -492,26 +492,11 @@ begin
   FModifiedPrev:= Value;
 end;
 
-function TEditorFrame.GetTitle: Widestring;
+function TEditorFrame.GetTabCaption: Widestring;
 begin
   Result:= '??';
   if Assigned(FOnGetTabCaption) then
     FOnGetTabCaption(Self, Result);
-
-  if Modified then
-    Result:= Result + '*';
-  //spaces for look
-  Result:= ' ' + Result + '   ';
-  //ftp: more spaces for icon
-  if IsFtp then
-    Result:= Result + '  ';
-
-  //more spaces for tab numbers
-  if TfmMain(Owner).opTabNums then
-    Result:= StringOfChar(' ', cTabNumPrefix) + Result;
-  //more spaces for X button
-  if TfmMain(Owner).opTabBtn then
-    Result:= Result + '   ';
 end;
 
 procedure TEditorFrame.DoTitleChanged;
@@ -524,7 +509,7 @@ begin
     if Parent is TTntTabSheet then
     begin
       FTab:= (Parent as TTntTabSheet);
-      FTab.Caption:= Title;
+      FTab.Caption:= TabCaption;
     end;
 
   if Assigned(FOnTitleChanged) then

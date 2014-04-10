@@ -429,7 +429,7 @@ type
     TBXItemFNewWin: TSpTbxItem;
     TBXItemFNew: TSpTbxItem;
     TBXSeparatorItem15: TSpTbxSeparatorItem;
-    TBXSubmenuItemFNew: TSpTbxSubmenuItem;
+    TBXSubmenuItemFNew: TSpTBXSubmenuItem;
     TBXItemFPreview: TSpTbxItem;
     TBXItemFPrint: TSpTbxItem;
     TBXItemFPageSetup: TSpTbxItem;
@@ -4109,7 +4109,7 @@ var
 begin
   tab:= TTntTabSheet.Create(Self);
   tab.PageControl:= PageControl;
-  tab.Caption:= Frame.Title;
+  tab.Caption:= Frame.TabCaption;
   Frame.Parent:= tab;
   UpdateTabs(PageControl);
   UpdateFrameSpell(Frame);
@@ -11857,7 +11857,7 @@ begin
       tbxWin.Add(bSep);
     end;
     b:= TSpTbxItem.Create(Self);
-    b.Caption:= FramesAll[i].Title + Sh(i);
+    b.Caption:= FramesAll[i].TabCaption + Sh(i);
     if i < 9 then
       b.Caption:= WideFormat('&%d   ', [i+1]) + b.Caption
     else
@@ -15013,7 +15013,7 @@ begin
   //create Dest tab
   tab:= TTntTabSheet.Create(Self);
   tab.PageControl:= Page_D;
-  tab.Caption:= Frame.Title;
+  tab.Caption:= Frame.TabCaption;
   Frame.Parent:= tab;
 
   Page_S.Pages[NTab].Free;
@@ -19529,7 +19529,7 @@ begin
   if (ATabIndex>=0) and (ATabIndex<NFrames) then
   begin
     F:= PagesToFrame(P, ATabIndex);
-    AName:= WideFormat('[%d] ', [ATabIndex+1]) + F.Title;
+    AName:= WideFormat('[%d] ', [ATabIndex+1]) + F.TabCaption;
     AFN:= F.FileName;
     if AFN='' then
       AFN:= DKLangConstW('Untitled');
@@ -28932,6 +28932,8 @@ var
   Frame: TEditorFrame;
 begin
   Frame:= Sender as TEditorFrame;
+
+  //caption text
   if Frame.FileName='' then
     Str:= DKLangConstW('Untitled')
   else
@@ -28943,6 +28945,21 @@ begin
       Str:= SCutLong(WideExtractFileName(WideExtractFileDir(Frame.FileName))) +
         '\' + SCutLong(Str);
   end;
+
+  if Frame.Modified then
+    Str:= Str + '*';
+  //spaces for look
+  Str:= ' ' + Str + '   ';
+  //ftp: more spaces for icon
+  if Frame.IsFtp then
+    Str:= Str + '  ';
+
+  //more spaces for tab numbers
+  if opTabNums then
+    Str:= StringOfChar(' ', cTabNumPrefix) + Str;
+  //more spaces for X button
+  if opTabBtn then
+    Str:= Str + '   ';
 end;
 
 procedure TfmMain.DoToggleTabDirs;
