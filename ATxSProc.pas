@@ -21,6 +21,7 @@ procedure DoClearSnippet(var AInfo: TSynSnippetInfo);
 function DoLoadSnippetFromFile(const fn: string; var Info: TSynSnippetInfo): boolean;
 procedure DoSaveSnippetToFile(const fn: string; var Info: TSynSnippetInfo);
 
+function STruncateLong(const Str: Widestring; MaxLen: Integer; CutMiddle: boolean): Widestring;
 procedure SReplaceAllPercentChars(var S: string);
 function SReplaceAllEols(const S, SReplace: Widestring): Widestring;
 function SStripFromTab(const S: Widestring): Widestring;
@@ -1531,5 +1532,21 @@ begin
   Result:= false;
 end;
 
+
+function STruncateLong(const Str: Widestring; MaxLen: Integer; CutMiddle: boolean): Widestring;
+const
+  cDots: Widestring = #$2026;
+begin
+  Result:= Str;
+  if (MaxLen>0) and (Length(Str)>MaxLen) then
+  begin
+    if CutMiddle then
+      Result:=
+        Copy(Str, 1, MaxLen div 2) + cDots +
+        Copy(Str, Length(Str)-(MaxLen - MaxLen div 2)+1, MaxInt)
+    else
+      Result:= Copy(Str, 1, MaxLen) + cDots;
+  end;
+end;
 
 end.

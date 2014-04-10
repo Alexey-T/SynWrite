@@ -551,7 +551,7 @@ object fmSetup: TfmSetup
           Top = 128
           Width = 380
           Height = 17
-          Caption = 'Show file+folder names on tab captions'
+          Caption = 'Show file+folder names on tabs'
           TabOrder = 6
         end
       end

@@ -28910,40 +28910,26 @@ end;
 
 procedure TfmMain.FrameGetTabCaption(Sender: TFrame; var Str: Widestring);
   //-----
-  function SCutLong(const Str: Widestring): Widestring;
-  const
-    cDash: Widestring = #$2026;
-  var
-    nMax, n: Integer;
+  function SCut(const S: Widestring): Widestring;
   begin
-    Result:= Str;
-    nMax:= opTabMaxLen;
-    if (nMax>0) and (Length(Str)>nMax) then
-    begin
-      //a)cut the end of string
-      ////Result:= Copy(Str, 1, nMax) + cDash;
-      //b)cut the middle of string
-      n:= nMax div 2;
-      Result:= Copy(Str, 1, n) + cDash + Copy(Str, Length(Str)-(nMax-n)+1, MaxInt);
-    end;
+    Result:= STruncateLong(S, opTabMaxLen, true);
   end;
-  //-----
 var
   Frame: TEditorFrame;
 begin
   Frame:= Sender as TEditorFrame;
 
-  //caption text
+  //main text
   if Frame.FileName='' then
     Str:= DKLangConstW('Untitled')
   else
   begin
     Str:= WideExtractFileName(Frame.FileName);
     if not opTabDirs then
-      Str:= SCutLong(Str)
+      Str:= SCut(Str)
     else
-      Str:= SCutLong(WideExtractFileName(WideExtractFileDir(Frame.FileName))) +
-        '\' + SCutLong(Str);
+      Str:= SCut(WideExtractFileName(WideExtractFileDir(Frame.FileName))) +
+        '\' + SCut(Str);
   end;
 
   if Frame.Modified then
