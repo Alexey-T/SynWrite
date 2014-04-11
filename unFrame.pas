@@ -563,6 +563,7 @@ begin
   UpdateGutterWidth(Sender);
   TfmMain(Owner).UpdateStatusBar;
   TfmMain(Owner).SynChange(Sender);
+  TfmMain(Owner).DoPyEvent(Sender as TSyntaxMemo, cSynEventOnChange, []);
   SyncMap;
 
   FPyChangeTick:= GetTickCount;
@@ -571,6 +572,7 @@ end;
 procedure TEditorFrame.EditorMasterCaretPosChanged(Sender: TObject);
 begin
   TfmMain(Owner).SynCaretPosChanged(Self);
+  TfmMain(Owner).DoPyEvent(Sender as TSyntaxMemo, cSynEventOnCaretMove, []);
 end;
 
 procedure TEditorFrame.EditorMasterGetGutterImage(Sender: TObject;
@@ -974,7 +976,9 @@ begin
       Ed.ResetSearchMarks;
       UpdateMap(Ed);
     end;
-  end;    
+  end;
+
+  TfmMain(Owner).DoPyEvent(Sender as TSyntaxMemo, cSynEventOnSelect, []);
 end;
 
 procedure TEditorFrame.EditorMasterZoom(Sender: TObject);

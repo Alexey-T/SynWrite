@@ -90,8 +90,11 @@ type
     cSynEventOnOpen,
     cSynEventOnSaveAfter,
     cSynEventOnSaveBefore,
-    cSynEventOnChangeSlow,
     cSynEventOnKey,
+    cSynEventOnChange,
+    cSynEventOnChangeSlow,
+    cSynEventOnSelect,
+    cSynEventOnCaretMove,
     cSynEventOnNumber,
     cSynEventOnState,
     cSynEventOnCompare
@@ -103,8 +106,11 @@ const
     'on_open',
     'on_save',
     'on_save_pre',
-    'on_change_slow',
     'on_key',
+    'on_change',
+    'on_change_slow',
+    'on_select',
+    'on_caret_move',
     'on_num',
     'on_state',
     'on_compare'
@@ -3207,7 +3213,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.4.820';
+  cSynVer = '6.4.825';
   cSynPyVer = '1.0.125';
 
 const
