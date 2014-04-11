@@ -93,6 +93,7 @@ type
     cSynEventOnChangeSlow,
     cSynEventOnKey,
     cSynEventOnState,
+    cSynEventOnCompare,
     cSynEventOnGetNum
     );
   TSynPyEvents = set of TSynPyEvent;
@@ -105,6 +106,7 @@ const
     'on_change_slow',
     'on_key',
     'on_state',
+    'on_compare',
     'on_get_num'
     );
 
@@ -3214,6 +3216,7 @@ const
   cSynParamLineNum = '/n=';
   cSynParamReg = '/reg';
   cSynParamTwo = '/two=';
+  cSynParamCmp = '/cmp=';
 
 var
   fmMain: TfmMain = nil;
@@ -26962,15 +26965,18 @@ var
   SLine1, SLine2, SCol1, SCol2, SDelta: Widestring;
   NLine1, NLine2, NCol1, NCol2, NDelta: Integer;
   F: TEditorFrame;
+  IsParamTwo, IsParamCmp: boolean;
 begin
   Result:= false;
   for i:= 1 to WideParamCount do
   begin
     S:= WideParamStr(i);
-    if SBegin(S, cSynParamTwo) then
+    IsParamTwo:= SBegin(S, cSynParamTwo);
+    IsParamCmp:= SBegin(S, cSynParamCmp);
+    if IsParamTwo or IsParamCmp then
     begin
       Result:= true;
-      Delete(S, 1, Length(cSynParamTwo));
+      SDeleteToW(S, '='); //must work with both /two and /cmp
 
       SName1:= SGetItem(S, '|');
       SName2:= SGetItem(S, '|');
@@ -27020,6 +27026,9 @@ begin
       ecToggleView2.Execute; //move tab to 2nd view
       CurrentFrame:= FramesAll[0]; //activate 1st view
     end;
+
+    if IsParamCmp then
+      DoPyEvent(CurrentEditor, cSynEventOnCompare, []);
   end;
 end;
 
