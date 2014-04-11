@@ -92,9 +92,9 @@ type
     cSynEventOnSaveBefore,
     cSynEventOnChangeSlow,
     cSynEventOnKey,
+    cSynEventOnNumber,
     cSynEventOnState,
-    cSynEventOnCompare,
-    cSynEventOnGetNum
+    cSynEventOnCompare
     );
   TSynPyEvents = set of TSynPyEvent;
 
@@ -105,9 +105,9 @@ const
     'on_save_pre',
     'on_change_slow',
     'on_key',
+    'on_num',
     'on_state',
-    'on_compare',
-    'on_get_num'
+    'on_compare'
     );
 
 type
@@ -26964,8 +26964,8 @@ var
   S, SName1, SName2,
   SLine1, SLine2, SCol1, SCol2, SDelta: Widestring;
   NLine1, NLine2, NCol1, NCol2, NDelta: Integer;
-  F: TEditorFrame;
   IsParamTwo, IsParamCmp: boolean;
+  F: TEditorFrame;
 begin
   Result:= false;
   for i:= 1 to WideParamCount do
@@ -26973,10 +26973,11 @@ begin
     S:= WideParamStr(i);
     IsParamTwo:= SBegin(S, cSynParamTwo);
     IsParamCmp:= SBegin(S, cSynParamCmp);
-    if IsParamTwo or IsParamCmp then
+
+    if IsParamTwo then
     begin
       Result:= true;
-      SDeleteToW(S, '='); //must work with both /two and /cmp
+      SDeleteToW(S, '=');
 
       SName1:= SGetItem(S, '|');
       SName2:= SGetItem(S, '|');
@@ -27028,7 +27029,25 @@ begin
     end;
 
     if IsParamCmp then
-      DoPyEvent(CurrentEditor, cSynEventOnCompare, []);
+    begin
+      Result:= true;
+      SDeleteToW(S, '=');
+
+      SName1:= SGetItem(S, '|');
+      SName2:= SGetItem(S, '|');
+
+      if not IsFileExist(SName1) then
+        begin MsgNoFile(SName1); Exit end;
+      if not IsFileExist(SName2) then
+        begin MsgNoFile(SName2); Exit end;
+
+      //close all tabs
+      acCloseAll.Execute;
+
+      DoPyEvent(CurrentEditor, cSynEventOnCompare,
+        ['r"'+SName1+'"',
+         'r"'+SName2+'"']);
+    end;  
   end;
 end;
 
@@ -28556,7 +28575,7 @@ var
   AEvent: TSynPyEvent;
   i: Integer;
 begin
-  AEvent:= cSynEventOnGetNum;
+  AEvent:= cSynEventOnNumber;
 
   for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
     with FPluginsEvent[i] do

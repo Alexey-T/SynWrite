@@ -109,6 +109,8 @@ type
     procedure EditorMasterMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure EditorMasterResize(Sender: TObject);
+    procedure EditorMasterGetLineNumberStr(Sender: TObject; Line: Integer;
+      var NumberStr: String);
   private
     FMouseClickOnNumbers: boolean;
     FAlertEnabled: boolean;
@@ -1686,6 +1688,12 @@ end;
 procedure TEditorFrame.EditorMasterResize(Sender: TObject);
 begin
   TfmMain(Owner).OnResize(Self);
+end;
+
+procedure TEditorFrame.EditorMasterGetLineNumberStr(Sender: TObject;
+  Line: Integer; var NumberStr: String);
+begin
+  TfmMain(Owner).DoPyEvent_GetLineNumber((Sender as TSyntaxMemo), Line, NumberStr);
 end;
 
 initialization

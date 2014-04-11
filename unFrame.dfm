@@ -229,6 +229,7 @@ object EditorFrame: TEditorFrame
       OnGutterClick = EditorMasterGutterClick
       OnGetTokenHint = EditorMasterGetTokenHint
       OnChange = EditorMasterChange
+      OnGetLineNumberStr = EditorMasterGetLineNumberStr
       OnAfterLineDraw = EditorMasterAfterLineDraw
       OnSetBookmark = EditorMasterSetBookmark
       OnFinishAnalysis = EditorMasterFinishAnalysis
@@ -431,6 +432,7 @@ object EditorFrame: TEditorFrame
       OnGutterClick = EditorMasterGutterClick
       OnGetTokenHint = EditorMasterGetTokenHint
       OnChange = EditorMasterChange
+      OnGetLineNumberStr = EditorMasterGetLineNumberStr
       OnAfterLineDraw = EditorMasterAfterLineDraw
       OnSetBookmark = EditorMasterSetBookmark
       OnFinishAnalysis = EditorSlaveFinishAnalysis
