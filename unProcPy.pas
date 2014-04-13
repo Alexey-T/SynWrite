@@ -25,7 +25,8 @@ function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 
 procedure Py_SetSysPath(const Dirs: array of string);
 function Py_RunPlugin_Command(const SId, SCmd: string): string;
-function Py_RunPlugin_Event(const SId, SCmd: string; AEd: TSyntaxMemo; const AParams: array of string): string;
+function Py_RunPlugin_Event(const SId, SCmd: string;
+  AEd: TSyntaxMemo; const AParams: array of string): Widestring;
 function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
@@ -902,8 +903,39 @@ begin
   end;
 end;
 
+//No such method on PythonEngine code
+function Py_EvalStringAsWideString(const command: string): Widestring;
+var
+  obj : PPyObject;
+  s : PPyObject;
+begin
+  Result := '';
+  with GetPythonEngine do
+  begin
+    obj := Run_CommandAsObject( command, eval_input );
+    try
+      if PyUnicode_Check(obj) then
+      begin
+        Result := PyUnicode_AsWideString(obj);
+        Exit;
+      end;
+
+      s := PyObject_Str( obj );
+      try
+        if Assigned(s) and PyString_Check(s) then
+          Result := PyString_AsWideString(s);
+      finally
+        Py_XDECREF(s);
+      end;
+    finally
+      Py_XDECREF(obj);
+    end;
+  end;  
+end;
+
+
 function Py_RunPlugin_Event(const SId, SCmd: string;
-  AEd: TSyntaxMemo; const AParams: array of string): string;
+  AEd: TSyntaxMemo; const AParams: array of string): Widestring;
 var
   SObj: string;
   SCmd1, SCmd2: string;
@@ -926,7 +958,8 @@ begin
 
   try
     GetPythonEngine.ExecString(SCmd1);
-    Result:= GetPythonEngine.EvalStringAsStr(SCmd2);
+    //Result:= GetPythonEngine.EvalStringAsStr(SCmd2);
+    Result:= Py_EvalStringAsWideString(SCmd2);
   except
     MsgBeep(true);
   end;

@@ -2778,7 +2778,7 @@ type
     function DoPyLoadPluginWithParams(
       const SFilename, SCmd: string;
       AEd: TSyntaxMemo;
-      const AParams: array of string): string;
+      const AParams: array of string): Widestring;
     procedure DoPyStringToEvents(const Str: string;
       var AEvents: TSynPyEvents;
       var AKeycodes: string);
@@ -3136,13 +3136,10 @@ type
     function DoCheckCommandLineTwo: boolean;
     procedure DoClearSearchHistory;
     procedure DoEnumLexers(L: TTntStrings; AlsoDisabled: boolean = false);
-    function DoPyEvent_String(
-      AEd: TSyntaxMemo; AEvent: TSynPyEvent;
-      const AParams: array of string): string;
     function DoPyEvent(
       AEd: TSyntaxMemo;
       AEvent: TSynPyEvent;
-      const AParams: array of string): boolean;
+      const AParams: array of string): Widestring;
     procedure DoPyEvent_GetLineNumber(
       AEd: TSyntaxMemo;
       const ALineNum: Integer;
@@ -3769,7 +3766,7 @@ begin
   Frame.DoStopNotif;
 
   if not DoCheckUnicodeNeeded(Frame) then Exit;
-  if not DoPyEvent(Frame.EditorMaster, cSynEventOnSaveBefore, []) then Exit;
+  if DoPyEvent(Frame.EditorMaster, cSynEventOnSaveBefore, [])=cPyFalse then Exit;
 
   AUntitled:= Frame.IsNewFile;
   if not PromtDialog then
@@ -5454,8 +5451,8 @@ begin
   Ed:= CurrentEditor;
   if Ed=nil then Exit;
 
-  if not DoPyEvent(Ed, cSynEventOnKey,
-    [IntToStr(Key), '"'+ShiftStateToString(Shift)+'"']) then
+  if DoPyEvent(Ed, cSynEventOnKey,
+    [IntToStr(Key), '"'+ShiftStateToString(Shift)+'"']) = cPyFalse then
     begin Key:= 0; Exit end;
 
   if not SynExe then
@@ -6862,7 +6859,7 @@ var
   Ed: TSyntaxMemo;
 begin
   Ed:= CurrentEditor;
-  if not DoPyEvent(Ed, cSynEventOnState, [cSynPropRO]) then Exit;
+  if DoPyEvent(Ed, cSynEventOnState, [cSynPropRO]) = cPyFalse then Exit;
   Ed.ReadOnly:= not Ed.ReadOnly;
   
   UpdateStatusbar;
@@ -9105,7 +9102,7 @@ var
   NPos: Integer;
 begin
   Ed:= CurrentEditor;
-  if not DoPyEvent(Ed, cSynEventOnState, [cSynPropWrap]) then Exit;
+  if DoPyEvent(Ed, cSynEventOnState, [cSynPropWrap]) = cPyFalse then Exit;
 
   with Ed do
   begin
@@ -9122,7 +9119,7 @@ end;
 
 procedure TfmMain.ecLineNumsExecute(Sender: TObject);
 begin
-  if not DoPyEvent(CurrentEditor, cSynEventOnState, [cSynPropNums]) then Exit;
+  if DoPyEvent(CurrentEditor, cSynEventOnState, [cSynPropNums]) = cPyFalse then Exit;
 
   with CurrentFrame do
   begin
@@ -9139,7 +9136,7 @@ end;
 
 procedure TfmMain.ecFoldingExecute(Sender: TObject);
 begin
-  if not DoPyEvent(CurrentEditor, cSynEventOnState, [cSynPropFolding]) then Exit;
+  if DoPyEvent(CurrentEditor, cSynEventOnState, [cSynPropFolding]) = cPyFalse then Exit;
 
   with CurrentFrame do
   begin
@@ -20383,7 +20380,7 @@ end;
 
 procedure TfmMain.ecRulerExecute(Sender: TObject);
 begin
-  if not DoPyEvent(CurrentEditor, cSynEventOnState, [cSynPropRuler]) then Exit;
+  if DoPyEvent(CurrentEditor, cSynEventOnState, [cSynPropRuler]) = cPyFalse then Exit;
 
   with CurrentEditor do
   begin
@@ -22918,14 +22915,18 @@ var
 begin
   if AAction=cActionGetAutoComplete then
   begin
-    Result:= DoPyEvent_String(CurrentEditor, cSynEventOnComplete, []);
+    Result:= DoPyEvent(CurrentEditor, cSynEventOnComplete, []);
     if Result<>'' then Exit;
   end;
 
   if AAction=cActionGetFunctionHint then
   begin
-    Result:= DoPyEvent_String(CurrentEditor, cSynEventOnFuncHint, []);
-    if Result<>'' then Exit;
+    Result:= DoPyEvent(CurrentEditor, cSynEventOnFuncHint, []);
+    if Result<>'' then
+    begin
+      //debug
+      Exit;
+    end;
   end;
 
   Result:= '';
@@ -27979,7 +27980,7 @@ end;
 function TfmMain.DoPyLoadPluginWithParams(
   const SFilename, SCmd: string;
   AEd: TSyntaxMemo;
-  const AParams: array of string): string;
+  const AParams: array of string): Widestring;
 var
   SId: string;
 begin
@@ -28548,40 +28549,17 @@ begin
         Include(AEvents, ev);
         Break
       end;
-  until false;      
-end;
-
-function TfmMain.DoPyEvent_String(AEd: TSyntaxMemo; AEvent: TSynPyEvent;
-  const AParams: array of string): string;
-var
-  SCurLexer, SRes: string;
-  i: Integer;
-begin
-  Result:= '';
-  SCurLexer:= CurrentLexerForFile;
-
-  for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
-    with FPluginsEvent[i] do
-    begin
-      if (SFilename='') then Break;
-      if (AEvent in Events) then
-        if (SLexers='') or IsLexerListed(SCurLexer, SLexers) then
-        begin
-          //call Python
-          SRes:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, AParams);
-          if SRes<>'' then
-            begin Result:= SRes; Exit end;
-        end;
-    end;
+  until false;
 end;
 
 function TfmMain.DoPyEvent(AEd: TSyntaxMemo; AEvent: TSynPyEvent;
-  const AParams: array of string): boolean;
+  const AParams: array of string): Widestring;
 var
-  SCurLexer, SRes: string;
+  SCurLexer: string;
   i: Integer;
 begin
-  Result:= true;
+  //empty string result means "no handlers for event"
+  Result:= '';
   SCurLexer:= CurrentLexerForFile;
 
   for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
@@ -28598,12 +28576,9 @@ begin
                 Continue;
 
           //call Python
-          SRes:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, AParams);
-          if SRes=cPyFalse then
-          begin
-            Result:= false;
-            Exit
-          end;
+          Result:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, AParams);
+          //False result means "stop", others ignored
+          if Result=cPyFalse then Exit;
         end;
     end;
 end;
