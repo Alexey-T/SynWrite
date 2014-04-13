@@ -99,6 +99,7 @@ type
     cSynEventOnState,
     cSynEventOnComplete,
     cSynEventOnFuncHint,
+    cSynEventOnGotoDef,
     cSynEventOnCompare
     );
   TSynPyEvents = set of TSynPyEvent;
@@ -117,6 +118,7 @@ const
     'on_state',
     'on_complete',
     'on_func_hint',
+    'on_goto_def',
     'on_compare'
     );
 
@@ -22894,18 +22896,22 @@ procedure TfmMain.DoFindId;
 var
   i: Integer;
 begin
+  if DoPyEvent(CurrentEditor, cSynEventOnGotoDef, []) = cPyTrue then
+  begin
+    CurrentEditor.ResetSelection; //reset selection caused by Ctrl+Alt+click
+    Exit;
+  end;  
+
   for i:= Low(FPluginsFindid) to High(FPluginsFindid) do
     with FPluginsFindid[i] do
       if IsLexerListed(CurrentLexer, SLexers) then
       begin
-        if SBegin(SFileName, cPyPrefix) then
-          DoPyLoadPlugin(SFileName, 'findid')
-        else
-          DoLoadPlugin_FindID(i);
+        DoLoadPlugin_FindID(i);
         CurrentEditor.ResetSelection; //reset selection caused by Ctrl+Alt+click
         Exit
       end;
-  //no FindId plugins found
+
+  //no find-id plugins found
   DoHint(DKLangConstW('zMFindIdNone'));
 end;
 
@@ -22916,7 +22922,7 @@ begin
   if AAction=cActionGetAutoComplete then
   begin
     Result:= DoPyEvent(CurrentEditor, cSynEventOnComplete, []);
-    if Result<>'' then Exit;
+    if Result=cPyTrue then Exit;
   end;
 
   if AAction=cActionGetFunctionHint then
@@ -24900,7 +24906,9 @@ begin
 
   //Python plugin?
   //it must show popup by itself.
-  if (SText=cPyNone) then
+  if (SText=cPyNone) then //plugin didn't handle
+    SText:= '';
+  if (SText=cPyTrue) then //plugin did handle
     Exit;
 
   //binary plugin?
