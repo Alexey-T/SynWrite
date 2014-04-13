@@ -80,10 +80,10 @@ const
   cPyConsoleClear = '-';
   cPyConsolePrint = '=';
   cPyPrefix = 'py:';
-  cPyAcpString = '?';
   cPyNotInited = 'Python engine not inited';
   cPyTrue = 'True';
   cPyFalse = 'False';
+  cPyNone = 'None';
 
 type
   TSynPyEvent = (
@@ -97,6 +97,8 @@ type
     cSynEventOnCaretMove,
     cSynEventOnNumber,
     cSynEventOnState,
+    cSynEventOnComplete,
+    cSynEventOnFuncHint,
     cSynEventOnCompare
     );
   TSynPyEvents = set of TSynPyEvent;
@@ -113,6 +115,8 @@ const
     'on_caret_move',
     'on_num',
     'on_state',
+    'on_complete',
+    'on_func_hint',
     'on_compare'
     );
 
@@ -3132,6 +3136,9 @@ type
     function DoCheckCommandLineTwo: boolean;
     procedure DoClearSearchHistory;
     procedure DoEnumLexers(L: TTntStrings; AlsoDisabled: boolean = false);
+    function DoPyEvent_String(
+      AEd: TSyntaxMemo; AEvent: TSynPyEvent;
+      const AParams: array of string): string;
     function DoPyEvent(
       AEd: TSyntaxMemo;
       AEvent: TSynPyEvent;
@@ -3213,8 +3220,8 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.4.825';
-  cSynPyVer = '1.0.125';
+  cSynVer = '6.4.830';
+  cSynPyVer = '1.0.126';
 
 const
   cSynParamRO = '/ro';
@@ -22909,6 +22916,18 @@ function TfmMain.DoAcpFromPlugins(const AAction: PWideChar): Widestring;
 var
   i: Integer;
 begin
+  if AAction=cActionGetAutoComplete then
+  begin
+    Result:= DoPyEvent_String(CurrentEditor, cSynEventOnComplete, []);
+    if Result<>'' then Exit;
+  end;
+
+  if AAction=cActionGetFunctionHint then
+  begin
+    Result:= DoPyEvent_String(CurrentEditor, cSynEventOnFuncHint, []);
+    if Result<>'' then Exit;
+  end;
+
   Result:= '';
   for i:= Low(FPluginsAcp) to High(FPluginsAcp) do
     with FPluginsAcp[i] do
@@ -22916,18 +22935,8 @@ begin
       begin
         DoHint(DKLangConstW('zMTryAcp')+' '+ExtractFileName(SFileName));
 
-        //auto-completion Py plugin?
-        if SBegin(SFileName, cPyPrefix) then
-        begin
-          DoPyLoadPlugin(SFileName, 'complete');
-          Result:= cPyAcpString;
-          Exit
-        end;
-
         //auto-completion dll plugin?
-        Result:= DoLoadPlugin_GetString(
-          SFilename,
-          AAction);
+        Result:= DoLoadPlugin_GetString(SFilename, AAction);
         DoHint('');
         if Result<>'' then Exit;
       end;
@@ -24888,11 +24897,13 @@ begin
   else
     SText:= '';
 
-  //auto-completion from Py plugin?
-  if (SText=cPyAcpString) then
+  //Python plugin?
+  //it must show popup by itself.
+  if (SText=cPyNone) then
     Exit;
 
-  //auto-completion from dll plugin?
+  //binary plugin?
+  //it must return completions here.
   if (SText<>'') then
   begin
     Ed:= CurrentEditor;
@@ -24900,7 +24911,7 @@ begin
     Exit
   end;
 
-  //usual auto-completion
+  //usual completion from name.acp file
   DoAcpPopup;
 end;
 
@@ -28540,11 +28551,35 @@ begin
   until false;      
 end;
 
+function TfmMain.DoPyEvent_String(AEd: TSyntaxMemo; AEvent: TSynPyEvent;
+  const AParams: array of string): string;
+var
+  SCurLexer, SRes: string;
+  i: Integer;
+begin
+  Result:= '';
+  SCurLexer:= CurrentLexerForFile;
+
+  for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
+    with FPluginsEvent[i] do
+    begin
+      if (SFilename='') then Break;
+      if (AEvent in Events) then
+        if (SLexers='') or IsLexerListed(SCurLexer, SLexers) then
+        begin
+          //call Python
+          SRes:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, AParams);
+          if SRes<>'' then
+            begin Result:= SRes; Exit end;
+        end;
+    end;
+end;
+
 function TfmMain.DoPyEvent(AEd: TSyntaxMemo; AEvent: TSynPyEvent;
   const AParams: array of string): boolean;
 var
-  i: Integer;
   SCurLexer, SRes: string;
+  i: Integer;
 begin
   Result:= true;
   SCurLexer:= CurrentLexerForFile;
