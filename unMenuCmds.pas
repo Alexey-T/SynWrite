@@ -227,14 +227,12 @@ begin
     Inc(Rect.Left, 2);
 
     S:= Items[Index];
-    n:= Pos(#9, S);
-    if n=0 then n:= 600;
-    S1:= Copy(S, 1, n-1);
-    S2:= Copy(S, n+1, MaxInt);
-    n:= ecTextExtent(Canvas, S2).cx+4;
+    S1:= SGetItem(S, #9);
+    S2:= SGetItem(S, #9);
 
     //shortcut
     Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clNavy);
+    n:= ecTextExtent(Canvas, S2).cx+4;
     ecTextOut(Canvas, rect.right-n, rect.top, S2);
 
     //caption

@@ -202,8 +202,14 @@ begin
     SName:= SGetItem(S, #9);
     SDesc:= SGetItem(S, #9);
 
-    //name
     Canvas.Font.Size:= Self.Font.Size;
+
+    //desc
+    Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clNavy);
+    n:= ecTextExtent(Canvas, SDesc).cx+4;
+    ecTextOut(Canvas, rect.right-n, rect.top, SDesc);
+
+    //name
     Canvas.Font.Color:= IfThen(odSelected in State, FColorSel, Font.Color);
     ecTextOut(Canvas, rect.left, rect.top, SName);
 

@@ -25,8 +25,8 @@ object fmMenuCmds: TfmMenuCmds
   object List: TTntListBox
     Left = 0
     Top = 24
-    Width = 502
-    Height = 248
+    Width = 494
+    Height = 244
     Style = lbOwnerDrawFixed
     Align = alClient
     ItemHeight = 16
@@ -38,7 +38,7 @@ object fmMenuCmds: TfmMenuCmds
   object Edit: TTntEdit
     Left = 0
     Top = 0
-    Width = 502
+    Width = 494
     Height = 24
     Align = alTop
     TabOrder = 0
@@ -47,8 +47,8 @@ object fmMenuCmds: TfmMenuCmds
   end
   object Panel1: TPanel
     Left = 0
-    Top = 272
-    Width = 502
+    Top = 268
+    Width = 494
     Height = 16
     Align = alBottom
     BevelOuter = bvNone
@@ -60,7 +60,7 @@ object fmMenuCmds: TfmMenuCmds
     ParentFont = False
     TabOrder = 2
     object labHelp: TLabel
-      Left = 488
+      Left = 480
       Top = 0
       Width = 14
       Height = 16
