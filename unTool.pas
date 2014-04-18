@@ -79,6 +79,7 @@ type
     pContFN: TMenuItem;
     pContFNAnsi: TMenuItem;
     pProj4: TMenuItem;
+    pSynDrive: TMenuItem;
     procedure bBrClick(Sender: TObject);
     procedure bBr2Click(Sender: TObject);
     procedure ListClick(Sender: TObject);
@@ -134,7 +135,7 @@ uses
 {$R *.dfm}
 
 const
-  ccStr: array[0..25] of string = (
+  ccStr: array[0..26] of string = (
     '"{FileName}"',
     '"{FileDir}"',
     '"{FileNameOnly}"',
@@ -166,7 +167,8 @@ const
     '"{InteractiveDir}"',
     //
     '"{SynDir}"',
-    '"{SynIniDir}"'
+    '"{SynIniDir}"',
+    '{SynDrive}'
     );
 
 procedure TfmTools.bBrClick(Sender: TObject);
@@ -379,6 +381,7 @@ begin
   //
   s(pSynDir, 24);
   s(pSynIniDir, 25);
+  s(pSynDrive, 26);
 
   with TntOpenDialog1 do
     Filter:= WideFormat(

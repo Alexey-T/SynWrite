@@ -3219,7 +3219,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.4.830';
+  cSynVer = '6.4.835';
   cSynPyVer = '1.0.126';
 
 const
@@ -10566,6 +10566,7 @@ procedure TfmMain.RunTool(const ATool: TSynTool);
     //
     SReplaceW(Result, '{SynDir}', ExtractFileDir(SynDir));
     SReplaceW(Result, '{SynIniDir}', ExtractFileDir(SynIni));
+    SReplaceW(Result, '{SynDrive}', ExtractFileDrive(SynDir));
     //
 	  while Pos('{Interactive}', Result)>0 do
     begin
