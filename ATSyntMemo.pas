@@ -1,6 +1,6 @@
-{$define GotoWork}
+{$define GotoWork} //work-around for Goto command
 {
-Multi-carets memo add-on for EControl Syntax Editor SDK
+Multi-carets and multi-selections for EControl Syntax Editor SDK
 (c) A. Torgashin, www.uvviewsoft.com
 
 How to use unit:
@@ -138,6 +138,9 @@ type
     function CanSetCarets: boolean;
     function GetColMarkersString: string;
     procedure SetColMarkersString(const S: string);
+    procedure DoCalculateOffsets;
+    procedure DoCalculateSelections;
+    procedure DoResetSelections;
   protected
     procedure DoScroll; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -787,16 +790,11 @@ begin
   DoSortCarets;
   DoListDupLines(FListDups);
 
-  //calculate origin offsets for carets,
-  //needed for calculation of sel-length after Shift+arrows commands
-  FListOffsets.Clear;
+  //calculate origin offsets for Shift+arrows
   if IsCommandSelection(Cmd) then
-    for i:= 0 to CaretsCount-1 do
-    begin
-      P:= GetCaret(i);
-      N:= CaretPosToStrPos(P) + GetCaretSel(i);
-      FListOffsets.Add(Pointer(N));
-    end;
+    DoCalculateOffsets
+  else
+    DoResetSelections;  
 
   {
   s:= '';
@@ -1121,19 +1119,50 @@ begin
     end;
   end;
 
-  //calculate selections for Shift+arrows here
+  //calculate selections for Shift+arrows
   if IsCommandSelection(Cmd) then
-    for i:= 0 to CaretsCount-1 do
-    begin
-      P:= GetCaret(i);
-      N:= Integer(FListOffsets[i]);
-      N2:= CaretPosToStrPos(P);
-      SetCaretSel(i, N-N2);
-    end;
+    DoCalculateSelections;
 
   DoUpdateCarets;
   SetBlinkingDraw;
   Change;
+end;
+
+
+procedure TSyntaxMemo.DoResetSelections;
+var
+  i: Integer;
+begin
+  for i:= 0 to FCaretsSel.Count-1 do
+    FCaretsSel[i]:= nil;
+end;
+
+procedure TSyntaxMemo.DoCalculateOffsets;
+var
+  i, N: Integer;
+  P: TPoint;
+begin
+  FListOffsets.Clear;
+  for i:= 0 to CaretsCount-1 do
+  begin
+    P:= GetCaret(i);
+    N:= CaretPosToStrPos(P) + GetCaretSel(i);
+    FListOffsets.Add(Pointer(N));
+  end;
+end;
+
+procedure TSyntaxMemo.DoCalculateSelections;
+var
+  i, NOffset, NOffsetNew: Integer;
+  P: TPoint;
+begin
+  for i:= 0 to CaretsCount-1 do
+  begin
+    P:= GetCaret(i);
+    NOffset:= Integer(FListOffsets[i]);
+    NOffsetNew:= CaretPosToStrPos(P);
+    SetCaretSel(i, NOffset-NOffsetNew);
+  end;
 end;
 
 procedure TSyntaxMemo.DoRemoveDupCarets;
