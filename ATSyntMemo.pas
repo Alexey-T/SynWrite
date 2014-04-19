@@ -71,6 +71,7 @@ type
     FCaretsTimer: TTimer;
     FCarets: TList;
     FCaretsCoord: TList;
+    FCaretsSel: TList;
     FCaretsGutterBand: Integer;
     FCaretsGutterColor: TColor;
     FTextExt: TSize;
@@ -92,6 +93,7 @@ type
     procedure DoUpdateLastCaret;
     procedure CaretTimerTimer(Sender: TObject);
     procedure DoUpdateCarets;
+    procedure DoUpdateCaretsSelections;
     procedure EdGetGutterBandColor(Sender: TObject; NBand: Integer; NLine: Integer; var NColor: TColor);
     function IsCaretOnLine(NLine: Integer): boolean;
     function IsCaretAt(const P: TPoint): boolean;
@@ -109,6 +111,7 @@ type
     procedure SetCaret(N: Integer; const P: TPoint);
     function GetCaretCoord(N: Integer): TPoint;
     procedure SetCaretCoord(N: Integer; const P: TPoint);
+    procedure SetCaretSel(N, Value: Integer);
     procedure GetDrawCoord(var NSize: TSize; var RClient: TRect);
     procedure DoDrawCarets;
     procedure DoSaveBaseEditor;
@@ -122,7 +125,7 @@ type
     procedure DoCaretsFromSel(ALeft, AClearSel: boolean);
     procedure DoCaretsFromMarks(ALeft, AClear: boolean);
     procedure DoCaretsExtend(ToUp: boolean; NLines: Integer);
-    procedure DoAddCaretInt(P: TPoint);
+    procedure DoAddCaretInt(P: TPoint; NSelCount: Integer = 0);
     function IsCtrlClickHandled(const P: TPoint): boolean;
     function CanSetCarets: boolean;
     function GetColMarkersString: string;
@@ -141,9 +144,10 @@ type
     property ColMarkersString: string read GetColMarkersString write SetColMarkersString;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure AddCaret(const P: TPoint; AddDefaultPos: boolean = true);
+    procedure AddCaret(const P: TPoint; ASelCount: Integer = 0; AddDefaultPos: boolean = true);
     procedure AddCaretsColumn(const PFrom, PTo: TPoint);
     function GetCaret(N: Integer): TPoint;
+    function GetCaretSel(N: Integer): Integer;
     procedure RemoveCarets(LeaveFirst: boolean = true);
     function CaretsCount: Integer;
     procedure CaretsProps(var NTop, NBottom: integer);
@@ -183,6 +187,7 @@ uses
   Forms, Dialogs,
   Math,
   TntClipbrd,
+  ecEmbObj,
   ecStrUtils,
   ecCmdConst;
 
@@ -226,6 +231,7 @@ begin
   
   FCarets:= TList.Create;
   FCaretsCoord:= TList.Create;
+  FCaretsSel:= TList.Create;
   FListDups:= TList.Create;
   FListUndo:= TList.Create;
 
@@ -255,6 +261,7 @@ begin
   FreeAndNil(FCaretsTimer);
   FreeAndNil(FCarets);
   FreeAndNil(FCaretsCoord);
+  FreeAndNil(FCaretsSel);
   inherited;
 end;
 
@@ -317,12 +324,47 @@ begin
   if CaretsCount>0 then
   begin
     FTextExt:= DefTextExt;
+
     for i:= 0 to CaretsCount-1 do
       DoUpdateCaretPos(i);
 
     DoRemoveDupCarets;
+    DoUpdateCaretsSelections;
+
     //DoShowInfo; //debug
-  end;  
+  end;
+end;
+
+procedure TSyntaxMemo.DoUpdateCaretsSelections;
+var
+  i, NSel, NPos: Integer;
+  Pos: TPoint;
+begin
+  //Exit;//debug
+
+  TecEmbeddedObjects(TextSource).ClearFormatting;
+
+  if CaretsCount>0 then
+  begin
+    for i:= 0 to CaretsCount-1 do
+    begin
+      Pos:= GetCaret(i);
+      NSel:= GetCaretSel(i);
+      if NSel<>0 then
+      begin
+        NPos:= CaretPosToStrPos(Pos);
+
+        if NSel>0 then
+          SetSelection(NPos, NSel)
+        else
+          SetSelection(NPos+NSel, -NSel);
+
+        SelAttributes.BgColor:= DefaultStyles.SelectioMark.BgColor;
+        SelAttributes.Color:= DefaultStyles.SelectioMark.Font.Color;
+      end;
+    end;
+    ResetSelection;
+  end;
 end;
 
 procedure TSyntaxMemo.DoUpdateLastCaret;
@@ -348,7 +390,7 @@ begin
   DoDrawCarets;
 end;
 
-procedure TSyntaxMemo.DoAddCaretInt(P: TPoint);
+procedure TSyntaxMemo.DoAddCaretInt(P: TPoint; NSelCount: Integer);
 begin
   DoKeepCaretInText(P);
 
@@ -356,6 +398,7 @@ begin
   FCarets.Add(Pointer(P.Y));
   FCaretsCoord.Add(nil);
   FCaretsCoord.Add(nil);
+  FCaretsSel.Add(Pointer(NSelCount));
 end;
 
 function TSyntaxMemo.CanSetCarets: boolean;
@@ -363,7 +406,11 @@ begin
   Result:= (TextLength>0) and FCaretsEnabled and not ReadOnly;
 end;
 
-procedure TSyntaxMemo.AddCaret(const P: TPoint; AddDefaultPos: boolean = true);
+procedure TSyntaxMemo.AddCaret(const P: TPoint;
+  ASelCount: Integer = 0;
+  AddDefaultPos: boolean = true);
+var
+  NSelCount: Integer;
 begin
   if not CanSetCarets then Exit;
   DoInitBaseEditor;
@@ -371,12 +418,23 @@ begin
 
   if (CaretsCount=0) and AddDefaultPos then
   begin
-    DoAddCaretInt(FDefaultCaret);
+    //calculate SelCount for first caret
+    NSelCount:= 0;
+    if SelLength>0 then
+    begin
+      if SelStart<CaretStrPos then
+        NSelCount:= -SelLength
+      else
+        NSelCount:= SelLength;
+    end;
+
+    DoAddCaretInt(FDefaultCaret, NSelCount);
     DoUpdateLastCaret;
   end;
 
-  DoAddCaretInt(P);
+  DoAddCaretInt(P, ASelCount);
   DoUpdateLastCaret;
+  DoUpdateCaretsSelections;
 
   InvalidateGutter;
   SetBlinkingDraw;
@@ -436,8 +494,11 @@ begin
 
     FCarets.Clear;
     FCaretsCoord.Clear;
+    FCaretsSel.Clear;
 
+    DoUpdateCaretsSelections;
     DoRestoreBaseEditor;
+
     Invalidate;
     Change;
   end;
@@ -1046,6 +1107,14 @@ begin
     Integer(FCarets[N*2+1]));
 end;
 
+function TSyntaxMemo.GetCaretSel(N: Integer): Integer;
+begin
+  if (N>=0) and (N<FCaretsSel.Count) then
+    Result:= Integer(FCaretsSel[N])
+  else
+    Result:= 0;  
+end;
+
 procedure TSyntaxMemo.SetCaret(N: Integer; const P: TPoint);
 begin
   FCarets[N*2]:= Pointer(P.X);
@@ -1063,6 +1132,12 @@ procedure TSyntaxMemo.SetCaretCoord(N: Integer; const P: TPoint);
 begin
   FCaretsCoord[N*2]:= Pointer(P.X);
   FCaretsCoord[N*2+1]:= Pointer(P.Y);
+end;
+
+procedure TSyntaxMemo.SetCaretSel(N, Value: Integer);
+begin
+  if (N>=0) and (N<FCaretsSel.Count) then
+    FCaretsSel[N]:= Pointer(Value);
 end;
 
 
@@ -1248,34 +1323,42 @@ end;
 
 procedure TSyntaxMemo.DoSortCarets;
 var
-  LS: TStringList;
-  LNew: TList;
-  i, N: Integer;
+  ListStr: TStringList;
+  ListPos: TList;
+  ListSel: TList;
+  i, N, NSel: Integer;
   P: TPoint;
 begin
-  LS:= TStringList.Create;
-  LNew:= TList.Create;
+  ListStr:= TStringList.Create;
+  ListPos:= TList.Create;
+  ListSel:= TList.Create;
+
   try
     for i:= 0 to CaretsCount-1 do
     begin
       P:= GetCaret(i);
-      LS.AddObject(Format('%10.10d %10.10d', [P.Y, P.X]), Pointer(i));
+      ListStr.AddObject(Format('%10.10d %10.10d', [P.Y, P.X]), Pointer(i));
     end;
-    LS.Sort;
+    ListStr.Sort;
 
-    LNew.Clear;
-    for i:= 0 to LS.Count-1 do
+    ListPos.Clear;
+    ListSel.Clear;
+    for i:= 0 to ListStr.Count-1 do
     begin
-      N:= Integer(LS.Objects[i]);
+      N:= Integer(ListStr.Objects[i]);
       P:= GetCaret(N);
-      LNew.Add(Pointer(P.X));
-      LNew.Add(Pointer(P.Y));
+      NSel:= GetCaretSel(N);
+      ListPos.Add(Pointer(P.X));
+      ListPos.Add(Pointer(P.Y));
+      ListSel.Add(Pointer(NSel));
     end;
 
-    FCarets.Assign(LNew);
+    FCarets.Assign(ListPos);
+    FCaretsSel.Assign(ListSel);
   finally
-    FreeAndNil(LNew);
-    FreeAndNil(LS);
+    FreeAndNil(ListSel);
+    FreeAndNil(ListPos);
+    FreeAndNil(ListStr);
   end;
 end;
 
@@ -1528,7 +1611,7 @@ begin
 
   //handle no carets case
   if CaretsCount=0 then
-    AddCaret(CaretPos, false);
+    AddCaret(CaretPos, 0, false);
   NCount:= Lines.Count;
 
   for i:= 0 to CaretsCount-1 do
@@ -1723,10 +1806,10 @@ begin
         begin
           if CaretsCount=0 then
           begin
-            AddCaret(StrPosToCaretPos(NPos), false);
+            AddCaret(StrPosToCaretPos(NPos), 0, false);
             SetSelection(NPos, NLength, true);
           end;
-          AddCaret(StrPosToCaretPos(TMarker(Markers[i]).Position), false);
+          AddCaret(StrPosToCaretPos(TMarker(Markers[i]).Position), 0, false);
 
           Markers.Delete(i);
           MarkersLen.Delete(i);
