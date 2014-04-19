@@ -84,6 +84,7 @@ type
     FListUndo: TList;
     FStaticDraw: boolean;
     FOnCtrlClick: TOnCtrlClick;
+    FMouseDownPoint: TPoint;
 
     procedure EditorZoom(Sender: TObject);
     procedure SetStaticDraw;
@@ -1146,6 +1147,8 @@ procedure TSyntaxMemo.MouseDown(Button: TMouseButton; Shift: TShiftState;
 var
   PTo: TPoint;
 begin
+  FMouseDownPoint:= Point(-1, -1);
+
   if CanSetCarets then
   begin
     FDefaultCaret:= CaretPos;
@@ -1163,6 +1166,7 @@ begin
       else
       if not DoRemoveCaret(PTo) then
       begin
+        FMouseDownPoint:= PTo;
         AddCaret(PTo);
         CaretPos:= PTo;
       end;
@@ -1276,8 +1280,26 @@ end;
 
 
 procedure TSyntaxMemo.MouseMove(Shift: TShiftState; X, Y: Integer);
+var
+  P: TPoint;
+  NCount, NSel: Integer;
 begin
   inherited;
+
+  //if we drag mouse, then update position and selection for last caret
+  if (ssLeft in Shift) then
+    if FMouseDownPoint.X>=0 then
+    begin
+      P:= MouseToCaret(X, Y);
+      NSel:= CaretPosToStrPos(P) - CaretPosToStrPos(FMouseDownPoint);
+      NCount:= CaretsCount;
+      if NCount>0 then
+      begin
+        SetCaret(NCount-1, P);
+        SetCaretSel(NCount-1, -NSel);
+        DoUpdateCarets;
+      end;
+    end;
 
   //remove carets as Ctrl+Alt+drag can be used to select lines
   if HaveSelection then
@@ -1383,6 +1405,7 @@ begin
   FCarets.Delete(N*2);
   FCaretsCoord.Delete(N*2+1);
   FCaretsCoord.Delete(N*2);
+  FCaretsSel.Delete(N);
 end;
 
 function TSyntaxMemo.DoRemoveCaret(const P: TPoint): boolean;
@@ -1397,7 +1420,10 @@ begin
       if CaretsCount=0 then
         RemoveCarets
       else
+      begin
+        DoUpdateCaretsSelections;
         Invalidate;
+      end;
       Result:= true;
       Change;
       Break;
