@@ -87,6 +87,7 @@ type
     FPrevSaved: boolean;
     FListDups: TList;
     FListUndo: TList;
+    FListOffsets: TList;
     FStaticDraw: boolean;
     FOnCtrlClick: TOnCtrlClick;
     FMouseDownPoint: TPoint;
@@ -199,6 +200,11 @@ uses
   ecStrUtils,
   ecCmdConst;
 
+function IsCommandSelection(N: Integer): boolean;
+begin
+  Result:= (N>smSelection) and (N<smSelection+100);
+end;  
+
 function SGetItem(var S: string; const sep: Char = ','): string;
 var
   i: integer;
@@ -210,7 +216,8 @@ begin
 end;
 
 function SLineWidth(const S: Widestring): Integer;
-var n: Integer;
+var
+  n: Integer;
 begin
   n:= Pos(#13, S);
   if n=0 then
@@ -220,7 +227,8 @@ begin
 end;
 
 function SLineHeight(const S: Widestring): Integer;
-var i: Integer;
+var
+  i: Integer;
 begin
   Result:= 1;
   for i:= 1 to Length(S) do
@@ -242,6 +250,7 @@ begin
   FCaretsSel:= TList.Create;
   FListDups:= TList.Create;
   FListUndo:= TList.Create;
+  FListOffsets:= TList.Create;
 
   FCaretsTimer:= TTimer.Create(Self);
   FCaretsTimer.Enabled:= false;
@@ -266,6 +275,7 @@ begin
   FreeAndNil(FListDups);
   DoClearCaretsUndo;
   FreeAndNil(FListUndo);
+  FreeAndNil(FListOffsets);
 
   FreeAndNil(FCaretsTimer);
   FreeAndNil(FCarets);
@@ -701,7 +711,10 @@ begin
       smUndo:
         DoCaretsCommand(Command, Data);
 
-      100..300, //Shift+arrows /Alt+arrows
+      smSelection+1..smSelection+100: //Shift+arrows
+        DoCaretsCommand(Command, Data);
+
+      smColSelection+1..smColSelection+100, //Shift+Alt+arrows
       smSelectAll:
         begin
           RemoveCarets;
@@ -773,6 +786,17 @@ begin
 
   DoSortCarets;
   DoListDupLines(FListDups);
+
+  //calculate origin offsets for carets,
+  //needed for calculation of sel-length after Shift+arrows commands
+  FListOffsets.Clear;
+  if IsCommandSelection(Cmd) then
+    for i:= 0 to CaretsCount-1 do
+    begin
+      P:= GetCaret(i);
+      N:= CaretPosToStrPos(P) + GetCaretSel(i);
+      FListOffsets.Add(Pointer(N));
+    end;
 
   {
   s:= '';
@@ -980,7 +1004,8 @@ begin
       smTabChar:
         DoInputText(#9, P);
 
-      smLeft:
+      smLeft,
+      smSelLeft:
         begin
           if {not (soKeepCaretInText in Options) or} (P.X > 0) then
             P:= SkipHidden(P.X - 1, P.Y, False)
@@ -989,7 +1014,8 @@ begin
             P:= SkipHidden(Lines.LineLength(P.Y - 1), P.Y - 1, False);
         end;
 
-      smRight:
+      smRight,
+      smSelRight:
         begin
           if not (soKeepCaretInText in Options) or (P.X < Lines.LineLength(P.Y)) then
             P:= SkipHidden(P.X + 1, P.Y, True)
@@ -998,14 +1024,16 @@ begin
             P:= SkipHidden(0, P.Y + 1, True);
         end;
 
-      smUp:
+      smUp,
+      smSelUp:
         begin
-          if P.Y>0 then 
+          if P.Y>0 then
             Dec(P.Y);
           DoKeepCaretInText(P);
         end;
 
-      smDown:
+      smDown,
+      smSelDown:
         begin
           if P.Y<Lines.Count-1 then
             Inc(P.Y);
@@ -1013,19 +1041,26 @@ begin
         end;
 
       smWordLeft,
-      smWordRight:
+      smWordRight,
+      smSelWordLeft,
+      smSelWordRight:
         begin
-          P:= StrPosToCaretPos(DoWordJumpPos(CaretPosToStrPos(P), Cmd=smWordRight));
+          P:= StrPosToCaretPos(DoWordJumpPos(CaretPosToStrPos(P),
+            Cmd in [smWordRight, smSelWordRight]));
         end;
 
       smLineStart,
-      smFirstLetter:
+      smFirstLetter,
+      smSelLineStart,
+      smSelFirstLetter:
         begin
           P.X:= 0;
         end;
 
       smLineEnd,
-      smLastLetter:
+      smLastLetter,
+      smSelLineEnd,
+      smSelLastLetter:
         begin
           //End key should toggle position: line end <--> last non-space char
           if P.X = Lines.LineLength(P.Y) then
@@ -1043,15 +1078,18 @@ begin
   end;
   EndUpdate;
 
+
   //scroll editor if carets moved up/down
   case Cmd of
-    smUp:
+    smUp,
+    smSelUp:
       begin
         //scroll 1 line up, and only if needed
         if GetCaret(0).Y <= TopLine then
           ExecCommand(smScrollUp);
       end;
-    smDown:
+    smDown,
+    smSelDown:
       begin
         //scroll 1 line down, only if needed
         if GetCaret(CaretsCount-1).Y >= TopLine + VisibleLines - 2 then
@@ -1082,6 +1120,16 @@ begin
       DoCaretsUndo;
     end;
   end;
+
+  //calculate selections for Shift+arrows here
+  if IsCommandSelection(Cmd) then
+    for i:= 0 to CaretsCount-1 do
+    begin
+      P:= GetCaret(i);
+      N:= Integer(FListOffsets[i]);
+      N2:= CaretPosToStrPos(P);
+      SetCaretSel(i, N-N2);
+    end;
 
   DoUpdateCarets;
   SetBlinkingDraw;
