@@ -90,6 +90,7 @@ type
     FStaticDraw: boolean;
     FOnCtrlClick: TOnCtrlClick;
     FMouseDownPoint: TPoint;
+    FMouseDownCaret: Integer;
 
     procedure EditorZoom(Sender: TObject);
     procedure SetStaticDraw;
@@ -248,7 +249,7 @@ begin
   FCaretsTimer.OnTimer:= CaretTimerTimer;
 
   FCaretsEnabled:= true;
-  FCaretsSelEnabled:= false; ///////TODO
+  FCaretsSelEnabled:= true; ///////TODO
   FCaretsColorIndicator:= cciGutterBg;
   FCaretsGutterBand:= 0;
   FCaretsGutterColor:= clLtGray;
@@ -360,7 +361,9 @@ begin
       if NSel<>0 then
       begin
         NPos:= CaretPosToStrPos(Pos);
+
         IntSetSelection(Min(NPos, NPos+NSel), Abs(NSel), false{redraw});
+        //SetSelection(Min(NPos, NPos+NSel), Abs(NSel));
 
         //add SelAttributes
         SelAttributes.BgColor:= DefaultStyles.SelectioMark.BgColor;
@@ -1095,6 +1098,10 @@ begin
       for j:= i-1 downto 0 do
         if PointsEqual(GetCaret(i), GetCaret(j)) then
         begin
+          //correct index of mouse-down caret here
+          if FMouseDownCaret=i then
+            FMouseDownCaret:= j;
+            
           DoRemoveCaretIndex(i);
           Break;
         end;
@@ -1156,6 +1163,7 @@ var
   PTo: TPoint;
 begin
   FMouseDownPoint:= Point(-1, -1);
+  FMouseDownCaret:= -1;
 
   if CanSetCarets then
   begin
@@ -1174,9 +1182,10 @@ begin
       else
       if not DoRemoveCaret(PTo) then
       begin
-        FMouseDownPoint:= PTo;
         AddCaret(PTo);
         CaretPos:= PTo;
+        FMouseDownPoint:= PTo;
+        FMouseDownCaret:= CaretsCount-1;
       end;
     end
     else
@@ -1289,28 +1298,32 @@ end;
 
 procedure TSyntaxMemo.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
-  P: TPoint;
+  Pnt: TPoint;
   NSel: Integer;
 begin
   inherited;
 
   //if we drag mouse, then update position and selection for last caret
   if (ssLeft in Shift) then
-    if FMouseDownPoint.X>=0 then
+    if FMouseDownCaret>=0 then
     begin
-      P:= MouseToCaret(X, Y);
-      NSel:= CaretPosToStrPos(P) - CaretPosToStrPos(FMouseDownPoint);
+      Pnt:= MouseToCaret(X, Y);
+      NSel:= CaretPosToStrPos(Pnt) - CaretPosToStrPos(FMouseDownPoint);
 
       if CaretsCount>0 then
       begin
-        SetCaret(CaretsCount-1, P);
-        SetCaretSel(CaretsCount-1, -NSel);
+        if FMouseDownCaret<CaretsCount then
+        begin
+          SetCaret(FMouseDownCaret, Pnt);
+          SetCaretSel(FMouseDownCaret, -NSel);
+        end
+        else
+          MessageBeep(mb_iconerror);  
 
         //do careful redraw and remove dup carets
         SetStaticDraw;
         try
-          DoRemoveDupCarets;
-          DoUpdateCarets;
+          DoUpdateCarets; //includes DoRemoveDupCarets
           Change; //maybe dup removed, update statusbar
         finally
           SetBlinkingDraw;
