@@ -1290,7 +1290,7 @@ end;
 procedure TSyntaxMemo.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
   P: TPoint;
-  NCount, NSel: Integer;
+  NSel: Integer;
 begin
   inherited;
 
@@ -1300,16 +1300,18 @@ begin
     begin
       P:= MouseToCaret(X, Y);
       NSel:= CaretPosToStrPos(P) - CaretPosToStrPos(FMouseDownPoint);
-      NCount:= CaretsCount;
-      if NCount>0 then
-      begin
-        SetCaret(NCount-1, P);
-        SetCaretSel(NCount-1, -NSel);
 
-        //do careful redraw
+      if CaretsCount>0 then
+      begin
+        SetCaret(CaretsCount-1, P);
+        SetCaretSel(CaretsCount-1, -NSel);
+
+        //do careful redraw and remove dup carets
         SetStaticDraw;
         try
+          DoRemoveDupCarets;
           DoUpdateCarets;
+          Change; //maybe dup removed, update statusbar
         finally
           SetBlinkingDraw;
         end;  
