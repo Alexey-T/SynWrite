@@ -21,6 +21,10 @@ Additional properties:
 - CaretsColorIndicator
 Additional methods:
 - AddCaret
+- GetCaret
+- GetCaretSel
+- SetCaret
+- SetCaretSel
 - RemoveCarets
 Additional ExecCommand commands:
   smCaretsRemoveLeaveFirst    
@@ -67,6 +71,7 @@ type
   TSyntaxMemo = class(ecSyntMemo.TSyntaxMemo)
   private
     FCaretsEnabled: boolean;
+    FCaretsSelEnabled: boolean;
     FCaretsColorIndicator: TCaretsColorIndicator;
     FCaretsTimer: TTimer;
     FCarets: TList;
@@ -153,6 +158,7 @@ type
     function CaretsCount: Integer;
     procedure CaretsProps(var NTop, NBottom: integer);
     property CaretsEnabled: boolean read FCaretsEnabled write SetCaretsEnabled;
+    property CaretsSelEnabled: boolean read FCaretsSelEnabled write FCaretsSelEnabled;
     property CaretsColorIndicator: TCaretsColorIndicator read FCaretsColorIndicator write FCaretsColorIndicator;
     property CaretsGutterBand: Integer read FCaretsGutterBand write FCaretsGutterBand;
     property CaretsGutterColor: TColor read FCaretsGutterColor write FCaretsGutterColor;
@@ -242,6 +248,7 @@ begin
   FCaretsTimer.OnTimer:= CaretTimerTimer;
 
   FCaretsEnabled:= true;
+  FCaretsSelEnabled:= false; ///////TODO
   FCaretsColorIndicator:= cciGutterBg;
   FCaretsGutterBand:= 0;
   FCaretsGutterColor:= clLtGray;
@@ -341,8 +348,7 @@ var
   i, NSel, NPos: Integer;
   Pos: TPoint;
 begin
-  //Exit;//debug
-
+  //clear SelAttributes
   TecEmbeddedObjects(TextSource).ClearFormatting;
 
   if CaretsCount>0 then
@@ -354,12 +360,9 @@ begin
       if NSel<>0 then
       begin
         NPos:= CaretPosToStrPos(Pos);
+        IntSetSelection(Min(NPos, NPos+NSel), Abs(NSel), false{redraw});
 
-        if NSel>0 then
-          SetSelection(NPos, NSel)
-        else
-          SetSelection(NPos+NSel, -NSel);
-
+        //add SelAttributes
         SelAttributes.BgColor:= DefaultStyles.SelectioMark.BgColor;
         SelAttributes.Color:= DefaultStyles.SelectioMark.Font.Color;
       end;
@@ -399,12 +402,16 @@ begin
   FCarets.Add(Pointer(P.Y));
   FCaretsCoord.Add(nil);
   FCaretsCoord.Add(nil);
-  FCaretsSel.Add(Pointer(NSelCount));
+
+  if FCaretsSelEnabled then
+    FCaretsSel.Add(Pointer(NSelCount))
+  else
+    FCaretsSel.Add(nil);
 end;
 
 function TSyntaxMemo.CanSetCarets: boolean;
 begin
-  Result:= (TextLength>0) and FCaretsEnabled and not ReadOnly;
+  Result:= FCaretsEnabled and (TextLength>0) and not ReadOnly;
 end;
 
 procedure TSyntaxMemo.AddCaret(const P: TPoint;
@@ -1137,8 +1144,9 @@ end;
 
 procedure TSyntaxMemo.SetCaretSel(N, Value: Integer);
 begin
-  if (N>=0) and (N<FCaretsSel.Count) then
-    FCaretsSel[N]:= Pointer(Value);
+  if FCaretsSelEnabled then
+    if (N>=0) and (N<FCaretsSel.Count) then
+      FCaretsSel[N]:= Pointer(Value);
 end;
 
 
@@ -1297,7 +1305,14 @@ begin
       begin
         SetCaret(NCount-1, P);
         SetCaretSel(NCount-1, -NSel);
-        DoUpdateCarets;
+
+        //do careful redraw
+        SetStaticDraw;
+        try
+          DoUpdateCarets;
+        finally
+          SetBlinkingDraw;
+        end;  
       end;
     end;
 
