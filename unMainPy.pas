@@ -369,7 +369,7 @@ begin
   with GetPythonEngine do
   begin
     NShow:= 1;
-    if Bool(PyArg_ParseTuple(Args, 'isi|i:ed_complete', @H, @P, @NLen, @NShow)) then
+    if Bool(PyArg_ParseTuple(Args, 'isi|i:complete', @H, @P, @NLen, @NShow)) then
     begin
       //Ed:= PyEditor(H); //not used here
       Str:= UTF8Decode(AnsiString(P));
@@ -435,7 +435,7 @@ var
   NAction, NOptions, NTokens, NFindRes: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iiiiss:ed_find',
+    if Bool(PyArg_ParseTuple(Args, 'iiiiss:find',
       @H, @NAction, @NOptions, @NTokens,
       @PText1, @PText2)) then
     begin
@@ -564,7 +564,7 @@ var
   Str: Widestring;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_filename', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_filename', @H)) then
     begin
       Ed:= PyEditor(H);
       Str:= fmMain.FrameOfEditor(Ed).FileName;
@@ -579,7 +579,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_alerts', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_alerts', @H)) then
     begin
       Ed:= PyEditor(H);
       Flag:= fmMain.FrameOfEditor(Ed).IsAlertEnabled;
@@ -593,7 +593,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:ed_set_alerts', @H, @Flag)) then
+    if Bool(PyArg_ParseTuple(Args, 'ii:set_alerts', @H, @Flag)) then
     begin
       Ed:= PyEditor(H);
       fmMain.FrameOfEditor(Ed).IsAlertEnabled:= Bool(Flag);
@@ -694,7 +694,7 @@ var
   SHint: Widestring;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iiiiis:ed_set_bk', @H, @NId, @NPos, @NIcon, @NColor, @PHint)) then
+    if Bool(PyArg_ParseTuple(Args, 'iiiiis:set_bk', @H, @NId, @NPos, @NIcon, @NColor, @PHint)) then
     begin
       Ed:= PyEditor(H);
       Ed2:= fmMain.BrotherEditor(Ed);

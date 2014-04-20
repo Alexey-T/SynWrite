@@ -121,7 +121,7 @@ var
   H: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_text_all', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_text_all', @H)) then
       Result:= PyUnicode_FromWideString(PyEditor(H).Lines.FText);
 end;
 
@@ -130,7 +130,7 @@ var
   H: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_text_len', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_text_len', @H)) then
       Result:= PyInt_FromLong(PyEditor(H).TextLength);
 end;
 
@@ -139,7 +139,7 @@ var
   H: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_text_sel', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_text_sel', @H)) then
       Result:= PyUnicode_FromWideString(PyEditor(H).SelText);
 end;
 
@@ -149,7 +149,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:ed_get_text_line', @H, @N)) then
+    if Bool(PyArg_ParseTuple(Args, 'ii:get_text_line', @H, @N)) then
     begin
       Ed:= PyEditor(H);
       if N = -1 then
@@ -163,17 +163,17 @@ end;
 
 function Py_ed_add_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
 var
-  H, X, Y: Integer;
+  H, X, Y, NSel: Integer;
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:ed_add_caret_xy', @H, @X, @Y)) then
+    if Bool(PyArg_ParseTuple(Args, 'iiii:add_caret_xy', @H, @X, @Y, @NSel)) then
     begin
       Ed:= PyEditor(H);
       if (X=-1) then
         Ed.RemoveCarets()
       else
-        Ed.AddCaret(Point(X, Y));
+        Ed.AddCaret(Point(X, Y), NSel);
       Result:= ReturnNone;
     end;
 end;
@@ -184,7 +184,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:ed_add_mark', @H, @NStart, @NLen)) then
+    if Bool(PyArg_ParseTuple(Args, 'iii:add_mark', @H, @NStart, @NLen)) then
     begin
       Ed:= PyEditor(H);
       if (NStart=-1) then
@@ -204,7 +204,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:ed_add_sync_range', @H, @NStart, @NLen)) then
+    if Bool(PyArg_ParseTuple(Args, 'iii:add_sync_range', @H, @NStart, @NLen)) then
     begin
       Ed:= PyEditor(H);
       if (NStart=-1) then
@@ -223,7 +223,7 @@ var
   P: TPoint;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_caret_xy', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_caret_xy', @H)) then
     begin
       P:= PyEditor(H).CaretPos;
       Result:= Py_BuildValue('(ii)', P.X, P.Y);
@@ -235,7 +235,7 @@ var
   H: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_caret_pos', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_caret_pos', @H)) then
     begin
       Result:= PyInt_FromLong(PyEditor(H).CaretStrPos);
     end;
@@ -247,7 +247,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_sel', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_sel', @H)) then
     begin
       Ed:= PyEditor(H);
       Result:= Py_BuildValue('(ii)', Ed.SelStart, Ed.SelLength);
@@ -260,7 +260,7 @@ var
   R: TRect;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_sel_rect', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_sel_rect', @H)) then
     begin
       R:= PyEditor(H).SelRect;
       Result:= Py_BuildValue('(iiii)', R.Left, R.Top, R.Right, R.Bottom);
@@ -278,7 +278,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_sel_mode', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_sel_mode', @H)) then
     begin
       Ed:= PyEditor(H);
       case Ed.SelectMode of
@@ -304,7 +304,7 @@ var
   H: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_line_count', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_line_count', @H)) then
     begin
       Result:= PyInt_FromLong(PyEditor(H).Lines.Count);
     end;
@@ -321,7 +321,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iiis:ed_replace', @H, @NStart, @NLen, @P)) then
+    if Bool(PyArg_ParseTuple(Args, 'iiis:replace', @H, @NStart, @NLen, @P)) then
     begin
       Ed:= PyEditor(H);
       StrW:= UTF8Decode(AnsiString(P));
@@ -337,7 +337,7 @@ var
   StrW: Widestring;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'is:ed_insert', @H, @P)) then
+    if Bool(PyArg_ParseTuple(Args, 'is:insert', @H, @P)) then
     begin
       StrW:= UTF8Decode(AnsiString(P));
       PyEditor(H).InsertText(StrW);
@@ -353,7 +353,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iss:ed_insert_snippet', @H, @P1, @P2)) then
+    if Bool(PyArg_ParseTuple(Args, 'iss:insert_snippet', @H, @P1, @P2)) then
     begin
       Str1:= UTF8Decode(AnsiString(P1));
       Str2:= UTF8Decode(AnsiString(P2));
@@ -371,7 +371,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'is:ed_set_text_all', @H, @P)) then
+    if Bool(PyArg_ParseTuple(Args, 'is:set_text_all', @H, @P)) then
     begin
       Ed:= PyEditor(H);
       StrW:= UTF8Decode(AnsiString(P));
@@ -388,7 +388,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iis:ed_set_text_line', @H, @N, @Ptr)) then
+    if Bool(PyArg_ParseTuple(Args, 'iis:set_text_line', @H, @N, @Ptr)) then
     begin
       Ed:= PyEditor(H);
       Str:= UTF8Decode(AnsiString(Ptr));
@@ -406,7 +406,7 @@ var
   H, N: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:ed_pos_xy', @H, @N)) then
+    if Bool(PyArg_ParseTuple(Args, 'ii:pos_xy', @H, @N)) then
     begin
       P:= PyEditor(H).StrPosToCaretPos(N);
       Result:= Py_BuildValue('(ii)', P.X, P.Y);
@@ -419,7 +419,7 @@ var
   H, X, Y, N: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:ed_xy_pos', @H, @X, @Y)) then
+    if Bool(PyArg_ParseTuple(Args, 'iii:xy_pos', @H, @X, @Y)) then
     begin
       N:= PyEditor(H).CaretPosToStrPos(Point(X, Y));
       Result:= PyInt_FromLong(N);
@@ -432,7 +432,7 @@ var
   P: TPoint;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:ed_xy_log', @H, @X, @Y)) then
+    if Bool(PyArg_ParseTuple(Args, 'iii:xy_log', @H, @X, @Y)) then
     begin
       P:= PyEditor(H).LinesPosToLog(Point(X, Y));
       Result:= Py_BuildValue('(ii)', P.X, P.Y);
@@ -445,7 +445,7 @@ var
   P: TPoint;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:ed_log_xy', @H, @X, @Y)) then
+    if Bool(PyArg_ParseTuple(Args, 'iii:log_xy', @H, @X, @Y)) then
     begin
       P:= PyEditor(H).LogToLinesPos(Point(X, Y));
       Result:= Py_BuildValue('(ii)', P.X, P.Y);
@@ -458,7 +458,7 @@ var
   H, X, Y: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:ed_set_caret_xy', @H, @X, @Y)) then
+    if Bool(PyArg_ParseTuple(Args, 'iii:set_caret_xy', @H, @X, @Y)) then
     begin
       PyEditor(H).CaretPos:= Point(X, Y);
       Result:= ReturnNone;
@@ -470,7 +470,7 @@ var
   H, N: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:ed_set_caret_pos', @H, @N)) then
+    if Bool(PyArg_ParseTuple(Args, 'ii:set_caret_pos', @H, @N)) then
     begin
       PyEditor(H).CaretStrPos:= N;
       Result:= ReturnNone;
@@ -485,7 +485,7 @@ var
 begin
   NFlag:= 0;
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii|i:ed_set_sel', @H, @NStart, @NLen, @NFlag)) then
+    if Bool(PyArg_ParseTuple(Args, 'iii|i:set_sel', @H, @NStart, @NLen, @NFlag)) then
     begin
       Ed:= PyEditor(H);
       Ed.SetSelection(NStart, NLen, Bool(NFlag));
@@ -499,7 +499,7 @@ var
   H, X1, Y1, X2, Y2: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iiiii:ed_set_sel_rect', @H, @X1, @Y1, @X2, @Y2)) then
+    if Bool(PyArg_ParseTuple(Args, 'iiiii:set_sel_rect', @H, @X1, @Y1, @X2, @Y2)) then
     begin
       PyEditor(H).SelRect:= Rect(X1, Y1, X2, Y2);
       Result:= ReturnNone;
@@ -512,7 +512,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:ed_get_line_prop', @H, @N)) then
+    if Bool(PyArg_ParseTuple(Args, 'ii:get_line_prop', @H, @N)) then
     begin
       Ed:= PyEditor(H);
       if (N >= 0) and (N < Ed.Lines.Count) then
@@ -532,7 +532,7 @@ var
   CmdPtr: Pointer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iis:ed_cmd', @H, @N, @P)) then
+    if Bool(PyArg_ParseTuple(Args, 'iis:cmd', @H, @N, @P)) then
     begin
       Str:= UTF8Decode(AnsiString(P));
       if Str='' then
@@ -549,7 +549,7 @@ var
   H: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_lock', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:lock', @H)) then
     begin
       PyEditor(H).BeginUpdate;
       Result:= ReturnNone;
@@ -561,7 +561,7 @@ var
   H: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_unlock', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:unlock', @H)) then
     begin
       PyEditor(H).EndUpdate;
       Result:= ReturnNone;
@@ -573,7 +573,7 @@ var
   H, N1, N2: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_sel_lines', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_sel_lines', @H)) then
     begin
       EditorGetSelLines(PyEditor(H), N1, N2);
       Result:= Py_BuildValue('(ii)', N1, N2);
@@ -1001,7 +1001,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:ed_get_text_substr', @H, @NSt, @NLen)) then
+    if Bool(PyArg_ParseTuple(Args, 'iii:get_text_substr', @H, @NSt, @NLen)) then
     begin
       Ed:= PyEditor(H);
       Str:= Copy(Ed.Lines.FText, NSt + 1, NLen);
@@ -1017,7 +1017,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_marks', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_marks', @H)) then
     begin
       Ed:= PyEditor(H);
       NLen:= Ed.SearchMarks.Count;
@@ -1043,7 +1043,7 @@ var
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_sync_ranges', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_sync_ranges', @H)) then
     begin
       Ed:= PyEditor(H);
       NLen:= Ed.SyncEditing.Count;
@@ -1066,24 +1066,26 @@ end;
 function Py_ed_get_carets(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H: Integer;
-  NLen, i: Integer;
+  NLen, NSel, i: Integer;
   ComArray: Variant;
   Pnt: TPoint;
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:ed_get_carets', @H)) then
+    if Bool(PyArg_ParseTuple(Args, 'i:get_carets', @H)) then
     begin
       Ed:= PyEditor(H);
       NLen:= Ed.CaretsCount;
       if NLen>0 then
       begin
-        ComArray:= VarArrayCreate([0, NLen-1, 0, 1], varInteger);
+        ComArray:= VarArrayCreate([0, NLen-1, 0, 2], varInteger);
         for i:= 0 to NLen-1 do
         begin
           Pnt:= Ed.GetCaret(i);
+          NSel:= Ed.GetCaretSel(i);
           ComArray[i, 0]:= Pnt.X;
           ComArray[i, 1]:= Pnt.Y;
+          ComArray[i, 2]:= NSel;
         end;
         Result:= VariantAsPyObject(ComArray);
       end
@@ -1156,7 +1158,7 @@ var
   An: TSyntAnalyzer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iis:ed_get_prop', @H, @Id, @Ptr)) then
+    if Bool(PyArg_ParseTuple(Args, 'iis:get_prop', @H, @Id, @Ptr)) then
     begin
       Ed:= PyEditor(H);
       Str:= UTF8Decode(AnsiString(Ptr));
@@ -1251,7 +1253,7 @@ var
   NumVal: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iis:ed_set_prop', @H, @Id, @P)) then
+    if Bool(PyArg_ParseTuple(Args, 'iis:set_prop', @H, @Id, @P)) then
     begin
       Ed:= PyEditor(H);
       StrVal:= UTF8Decode(AnsiString(P));
@@ -1306,7 +1308,7 @@ var
   Str: Widestring;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:ed_xy_pos', @H, @X, @Y)) then
+    if Bool(PyArg_ParseTuple(Args, 'iii:xy_pos', @H, @X, @Y)) then
     begin
       Str:= EditorIndentStringForPos(PyEditor(H), Point(X, Y));
       Result:= PyUnicode_FromWideString(Str);
@@ -1333,7 +1335,7 @@ var
   Str: Widestring;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:ed_get_word', @H, @X, @Y)) then
+    if Bool(PyArg_ParseTuple(Args, 'iii:get_word', @H, @X, @Y)) then
     begin
       Ed:= PyEditor(H);
       Ed.WordRangeAtPos(Point(X, Y), NStart, NEnd);
@@ -1353,7 +1355,7 @@ var
   i: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:ed_get_bk', @H, @NId)) then
+    if Bool(PyArg_ParseTuple(Args, 'ii:get_bk', @H, @NId)) then
     begin
       Ed:= PyEditor(H);
 
