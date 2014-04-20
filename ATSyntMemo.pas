@@ -54,6 +54,7 @@ interface
 uses
   Classes, Types, Graphics,
   Controls, ExtCtrls,
+  TntClasses,
   ecSyntMemo;
 
 //global options for all editors  
@@ -88,6 +89,7 @@ type
     FListDups: TList;
     FListUndo: TList;
     FListOffsets: TList;
+    FListClip: TTntStringList;
     FStaticDraw: boolean;
     FOnCtrlClick: TOnCtrlClick;
     FMouseDownPoint: TPoint;
@@ -213,17 +215,20 @@ end;
 
 function IsCommandHandleSelections(N: Integer): boolean;
 begin
-  Result:= (N=smCopy) or (N=smCut) or (N=smPaste) or (N=smDeleteChar);
+  Result:= (N=smCopy) or (N=smCut) or (N=smPaste) or (N=smDeleteChar) or
+    (N=smChar) or (N=smString);
 end;
 
-function SGetItem(var S: string; const sep: Char = ','): string;
+//SGetItem is also present in ATxSProc, but it's nice not to use ATxSProc,
+//to distribute unit
+function SGetItem(var S: string; const Sep: Char = ','): string;
 var
   i: integer;
 begin
-  i:= Pos(sep, s);
+  i:= Pos(Sep, S);
   if i = 0 then i:= MaxInt;
-  Result:= Copy(s, 1, i-1);
-  Delete(s, 1, i);
+  Result:= Copy(S, 1, i-1);
+  Delete(S, 1, i);
 end;
 
 function SLineWidth(const S: Widestring): Integer;
@@ -262,6 +267,7 @@ begin
   FListDups:= TList.Create;
   FListUndo:= TList.Create;
   FListOffsets:= TList.Create;
+  FListClip:= TTntStringList.Create;
 
   FCaretsTimer:= TTimer.Create(Self);
   FCaretsTimer.Enabled:= false;
@@ -287,6 +293,7 @@ begin
   DoClearCaretsUndo;
   FreeAndNil(FListUndo);
   FreeAndNil(FListOffsets);
+  FreeAndNil(FListClip);
 
   FreeAndNil(FCaretsTimer);
   FreeAndNil(FCarets);
@@ -759,16 +766,16 @@ procedure TSyntaxMemo.DoCaretsCommand(Cmd: Integer; Data: Pointer);
 var
   NShiftX,
   NShiftY: Integer;
-
+  //-----------------------------
   procedure DoDelLine(const P: TPoint);
   var
-    N: Integer;
+    NPos: Integer;
   begin
-    N:= CaretPosToStrPos(Point(0, P.Y));
-    if ReplaceText(N, Lines.LineSpace(P.Y), '') then
+    NPos:= CaretPosToStrPos(Point(0, P.Y));
+    if ReplaceText(NPos, Lines.LineSpace(P.Y), '') then
       NShiftY:= -1;
   end;
-
+  //-----------------------------
   procedure DoInputText(const S: Widestring; var P: TPoint);
   var
     Len, RepLen: Integer;
@@ -782,11 +789,12 @@ var
     begin
       Len:= SLineWidth(S);
       Inc(P.X, Len);
-      NShiftX:= IfThen(ReplaceMode, 0, Len);
-      NShiftY:= SLineHeight(S)-1;
+
+      NShiftX:= NShiftX + IfThen(ReplaceMode, 0, Len);
+      NShiftY:= NShiftY + SLineHeight(S)-1;
     end;
   end;
-
+  //-----------------------------
   procedure DoClearSelectionText(var Pnt: TPoint; NCaret: Integer);
   var
     NOffset, NSel: Integer;
@@ -803,18 +811,17 @@ var
       Pnt:= StrPosToCaretPos(NOffset);
       SetCaretSel(NCaret, 0);
 
-      NShiftX:= -SLineWidth(Str);
-      NShiftY:= -SLineHeight(Str)+1;
-      //todo
+      NShiftX:= NShiftX - SLineWidth(Str);
+      NShiftY:= NShiftY - SLineHeight(Str)+1;
     end;
   end;
-
+  //-----------------------------
 var
   PCur, PFrom: TPoint;
   i, N, N2: Integer;
   ch: WideChar;
   S: Widestring;
-  b, bHasSelection: boolean;
+  bFlag, bHasSelection, bListClipMatch: boolean;
 begin
   SetStaticDraw;
 
@@ -860,11 +867,24 @@ begin
       DoAddCaretsUndo;
   end;
 
-  //need to clear Clipboard?
+  FListClip.Clear;
+  bListClipMatch:= false;
+
   case Cmd of
     smCopy,
     smCut:
-      TntClipboard.Clear;
+      begin
+        //need to clear clipboard
+        TntClipboard.Clear;
+      end;  
+    smPaste:
+      begin
+        //save clipboard text as stringlist for pasting
+        FListClip.Text:= TntClipboard.AsWideText;
+        bListClipMatch:= FListClip.Count = CaretsCount;
+        if not bListClipMatch then
+          FListClip.Clear;
+      end;
   end;
 
   BeginUpdate;
@@ -913,7 +933,15 @@ begin
 
           smPaste:
             try
-              S:= TntClipboard.AsWideText;
+              if not bListClipMatch then
+                S:= TntClipboard.AsWideText
+              else
+              begin
+                if (i>=0) and (i<FListClip.Count) then
+                  S:= FListClip[i]
+                else
+                  S:= '??';  
+              end;
               DoInputText(S, PCur);
             except
             end;
@@ -1001,10 +1029,10 @@ begin
               if not bHasSelection then
               begin
                 if PCur.X<Lines.LineLength(PCur.Y) then
-                  b:= ReplaceText(CaretPosToStrPos(PCur), 1, '')
+                  bFlag:= ReplaceText(CaretPosToStrPos(PCur), 1, '')
                 else
-                  b:= ReplaceText(CaretPosToStrPos(PCur), {Lines.LineSpace(PCur.Y)-Lines.LineLength(PCur.Y)}Length(Lines.LineEndStr(PCur.Y)), '');
-                if b then
+                  bFlag:= ReplaceText(CaretPosToStrPos(PCur), Length(Lines.LineEndStr(PCur.Y)), '');
+                if bFlag then
                   NShiftX:= -1;
               end
               else
@@ -1036,12 +1064,15 @@ begin
 
           smChar:
             begin
+              DoClearSelectionText(PCur, i);
               ch:= PWChar(Data)^;
               if ch>=' ' then
                 DoInputText(ch, PCur);
             end;
+            
           smString:
             begin
+              DoClearSelectionText(PCur, i);
               S:= PWChar(Data);
               DoInputText(S, PCur);
             end;
@@ -1189,6 +1220,8 @@ begin
   //calculate selections for Shift+arrows
   if IsCommandMoveSelections(Cmd) then
     DoCalculateSelections;
+
+  FListClip.Clear;
 
   DoUpdateCarets;
   SetBlinkingDraw;
