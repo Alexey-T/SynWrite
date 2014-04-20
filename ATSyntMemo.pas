@@ -103,6 +103,7 @@ type
     procedure DoUpdateCarets;
     procedure DoUpdateCaretsSelections;
     procedure EdGetGutterBandColor(Sender: TObject; NBand: Integer; NLine: Integer; var NColor: TColor);
+    function IsDuplicateCaret(Cmd, NCaret: Integer): boolean;
     function IsCaretOnLine(NLine: Integer): boolean;
     function IsCaretAt(const P: TPoint): boolean;
     procedure DoCaretsCommand(Cmd: Integer; Data: Pointer);
@@ -115,7 +116,7 @@ type
     procedure DoShiftCarets(const PFrom: TPoint; NShiftX, NShiftY: Integer);
     procedure DoKeepCaretInText(var P: TPoint);
     procedure DoSortCarets;
-    procedure DoListDupLines(L: TList);
+    procedure DoCalculateDupCarets(L: TList);
     procedure SetCaret(N: Integer; const P: TPoint);
     function GetCaretCoord(N: Integer): TPoint;
     procedure SetCaretCoord(N: Integer; const P: TPoint);
@@ -140,7 +141,9 @@ type
     procedure SetColMarkersString(const S: string);
     procedure DoCalculateOffsets;
     procedure DoCalculateSelections;
+    function DoCalculateSelectionText(i: Integer): Widestring;
     procedure DoResetSelections;
+    function IsSelectionExist: boolean;
   protected
     procedure DoScroll; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -203,10 +206,15 @@ uses
   ecStrUtils,
   ecCmdConst;
 
-function IsCommandSelection(N: Integer): boolean;
+function IsCommandMoveSelections(N: Integer): boolean;
 begin
   Result:= (N>smSelection) and (N<smSelection+100);
-end;  
+end;
+
+function IsCommandHandleSelections(N: Integer): boolean;
+begin
+  Result:= (N=smCopy) or (N=smCut) or (N=smPaste) or (N=smDeleteChar);
+end;
 
 function SGetItem(var S: string; const sep: Char = ','): string;
 var
@@ -261,7 +269,7 @@ begin
   FCaretsTimer.OnTimer:= CaretTimerTimer;
 
   FCaretsEnabled:= true;
-  FCaretsSelEnabled:= true; ///////TODO
+  FCaretsSelEnabled:= true;
   FCaretsColorIndicator:= cciGutterBg;
   FCaretsGutterBand:= 0;
   FCaretsGutterColor:= clLtGray;
@@ -729,6 +737,21 @@ begin
     end;
 end;
 
+function TSyntaxMemo.IsDuplicateCaret(Cmd, NCaret: Integer): boolean;
+begin
+  case Cmd of
+    smDeleteLine,
+    smCopy,
+    smCut,
+    smBlockIndent,
+    smBlockUnindent:
+      Result:= FListDups.IndexOf(Pointer(NCaret))>=0;
+    else
+      Result:= false;
+  end;
+end;
+
+
 const
   cShiftToHome = -(MaxInt div 2);
 
@@ -764,37 +787,46 @@ var
     end;
   end;
 
-  function NeedToSkip(NCaret: Integer): boolean;
+  procedure DoClearSelectionText(var Pnt: TPoint; NCaret: Integer);
+  var
+    NOffset, NSel: Integer;
+    Str: Widestring;
   begin
-    case Cmd of
-      smDeleteLine,
-      smCopy,
-      smCut,
-      smBlockIndent,
-      smBlockUnindent:
-        Result:= FListDups.IndexOf(Pointer(NCaret))>=0;
-      else
-        Result:= false;
+    NSel:= GetCaretSel(NCaret);
+    if NSel<>0 then
+    begin
+      NOffset:= CaretPosToStrPos(Pnt);
+      NOffset:= Min(NOffset, NOffset+NSel);
+      Str:= Lines.SubString(NOffset+1, Abs(NSel));
+      ReplaceText(NOffset, Abs(NSel), '');
+
+      Pnt:= StrPosToCaretPos(NOffset);
+      SetCaretSel(NCaret, 0);
+
+      NShiftX:= -SLineWidth(Str);
+      NShiftY:= -SLineHeight(Str)+1;
+      //todo
     end;
   end;
 
 var
-  P, PFrom: TPoint;
+  PCur, PFrom: TPoint;
   i, N, N2: Integer;
   ch: WideChar;
   S: Widestring;
-  b: boolean;
+  b, bHasSelection: boolean;
 begin
   SetStaticDraw;
 
   DoSortCarets;
-  DoListDupLines(FListDups);
+  DoCalculateDupCarets(FListDups);
 
   //calculate origin offsets for Shift+arrows
-  if IsCommandSelection(Cmd) then
+  if IsCommandMoveSelections(Cmd) then
     DoCalculateOffsets
   else
-    DoResetSelections;  
+  if not IsCommandHandleSelections(Cmd) then
+    DoResetSelections;
 
   {
   s:= '';
@@ -836,245 +868,279 @@ begin
   end;
 
   BeginUpdate;
-  for i:= CaretsCount-1 downto 0 do
-  if not NeedToSkip(i) then
-  begin
-    P:= GetCaret(i);
-    PFrom:= P;
-    NShiftX:= 0;
-    NShiftY:= 0;
+  try
+    bHasSelection:= IsSelectionExist;
+    for i:= CaretsCount-1 downto 0 do
+      //discard "duplicate carets" (N carets on same line), for clipboard commands
+      if bHasSelection or not IsDuplicateCaret(Cmd, i) then
+      begin
+        PCur:= GetCaret(i);
+        PFrom:= PCur;
+        NShiftX:= 0;
+        NShiftY:= 0;
 
-    case Cmd of
-      smCopy,
-      smCut:
-        try
-          TntClipboard.AsWideText:=
-            Lines[P.Y] + sLineBreak +
-            IfThen(opSeparateCopiedLines, sLineBreak) +
-            TntClipboard.AsWideText;
-          if Cmd=smCut then
-            DoDelLine(P);
-        except
-        end;
-
-      smPaste:
-        try
-          S:= TntClipboard.AsWideText;
-          DoInputText(S, P);
-        except
-        end;
-
-      smBlockIndent,
-      smBlockUnindent:
-        begin
-          if not ReadOnly then
-          begin
-            N:= IfThen(Cmd=smBlockIndent, BlockIndent, -BlockIndent);
-            IndentLines(P.Y, P.Y, N, 0, true);
-            Inc(P.X, N);
-            if P.X<0 then P.X:= 0;
-            NShiftX:= N;
-          end;
-        end;
-
-      smDeleteLine:
-        DoDelLine(P);
-
-      smDeleteWord:
-        begin
-          N:= CaretPosToStrPos(P);
-          N2:= DoWordJumpPos(N, true);
-          if ReplaceText(N, N2-N, '') then
-            NShiftX:= -(N2-N);
-        end;
-
-      smDeleteLastWord:
-        begin
-          N:= CaretPosToStrPos(P);
-          N2:= DoWordJumpPos(N, false);
-          if ReplaceText(N2, N-N2, '') then
-          begin
-            NShiftX:= -(N-N2);
-            P:= StrPosToCaretPos(N2);
-          end;
-        end;
-
-      smDeleteBOL:
-        begin
-          N2:= CaretPosToStrPos(Point(0, P.Y));
-          if ReplaceText(N2, Min(Lines.LineLength(P.Y), P.X), '') then
-            P:= StrPosToCaretPos(N2);
-        end;
-      smDeleteEOL:
-        begin
-          N:= CaretPosToStrPos(P);
-          if P.X < Lines.LineLength(P.Y) then
-            ReplaceText(N, Lines.LineLength(P.Y) - P.X, '');
-        end;
-
-      smLineBreakSoft,
-      smLineBreak:
-        begin
-          N:= IfThen(soAutoIndentMode in Options,
-            GetIndent(P.Y, LinesPosToLog(P).X + 1), 0);
-          S:= GetIndentString(N, false);
-          N:= Length(S); //indent size
-          S:= SEol(Cmd=smLineBreakSoft) + S; //CR + indent
-          if ReplaceText(CaretPosToStrPos(P), 0, S) then
-          begin
-            Inc(P.Y);
-            P.X:= N; //indent size
-            NShiftY:= 1;
-            NShiftX:= cShiftToHome - N;
-          end;
-        end;
-
-      smInsertLine:
-        begin
-          S:= SEol(false);
-          if ReplaceText(CaretPosToStrPos(P), 0, S) then
-          begin
-            NShiftY:= 1;
-            NShiftX:= cShiftToHome;
-          end;
-        end;
-
-      smDeleteChar:
-        begin
-          if P.X<Lines.LineLength(P.Y) then
-            b:= ReplaceText(CaretPosToStrPos(P), 1, '')
-          else
-            b:= ReplaceText(CaretPosToStrPos(P), {Lines.LineSpace(P.Y)-Lines.LineLength(P.Y)}Length(Lines.LineEndStr(P.Y)), '');
-          if b then
-            NShiftX:= -1;
-        end;
-
-      smDeleteLastChar:
-        begin
-          if P.X>0 then
-          begin
-            Dec(P.X);
-            if ReplaceText(CaretPosToStrPos(P), 1, '') then
-              NShiftX:= -1;
-          end
-          else
-          if P.Y>0 then
-          begin
-            Dec(P.Y);
-            P.X:= Lines.LineLength(P.Y);
-            if ReplaceText(CaretPosToStrPos(P), {Lines.LineSpace(P.Y)-Lines.LineLength(P.Y)}Length(Lines.LineEndStr(P.Y)), '') then
-            begin
-              NShiftX:= 1;
-              NShiftY:= -1;
+        case Cmd of
+          smCopy,
+          smCut:
+            try
+              //copy/cut work differently for two cases:
+              //a) if selections exist: copy/cut only selections
+              //   (skipping empty carets)
+              //b) if no selections exist: copy/cut entire lines with carets
+              //   (once per each line: this's handled above by "IsDuplicateCaret")
+              if not bHasSelection then
+              begin
+                TntClipboard.AsWideText:=
+                  Lines[PCur.Y] + sLineBreak +
+                  IfThen(opSeparateCopiedLines, sLineBreak) +
+                  TntClipboard.AsWideText;
+                if Cmd=smCut then
+                  DoDelLine(PCur);
+              end
+              else
+              begin
+                S:= DoCalculateSelectionText(i);
+                if S<>'' then
+                begin
+                  TntClipboard.AsWideText:=
+                    S + sLineBreak + TntClipboard.AsWideText;
+                  if Cmd=smCut then
+                    DoClearSelectionText(PCur, i);
+                end;    
+              end;
+            except
             end;
-          end;
+
+          smPaste:
+            try
+              S:= TntClipboard.AsWideText;
+              DoInputText(S, PCur);
+            except
+            end;
+
+          smBlockIndent,
+          smBlockUnindent:
+            begin
+              if not ReadOnly then
+              begin
+                N:= IfThen(Cmd=smBlockIndent, BlockIndent, -BlockIndent);
+                IndentLines(PCur.Y, PCur.Y, N, 0, true);
+                Inc(PCur.X, N);
+                if PCur.X<0 then PCur.X:= 0;
+                NShiftX:= N;
+              end;
+            end;
+
+          smDeleteLine:
+            DoDelLine(PCur);
+
+          smDeleteWord:
+            begin
+              N:= CaretPosToStrPos(PCur);
+              N2:= DoWordJumpPos(N, true);
+              if ReplaceText(N, N2-N, '') then
+                NShiftX:= -(N2-N);
+            end;
+
+          smDeleteLastWord:
+            begin
+              N:= CaretPosToStrPos(PCur);
+              N2:= DoWordJumpPos(N, false);
+              if ReplaceText(N2, N-N2, '') then
+              begin
+                NShiftX:= -(N-N2);
+                PCur:= StrPosToCaretPos(N2);
+              end;
+            end;
+
+          smDeleteBOL:
+            begin
+              N2:= CaretPosToStrPos(Point(0, PCur.Y));
+              if ReplaceText(N2, Min(Lines.LineLength(PCur.Y), PCur.X), '') then
+                PCur:= StrPosToCaretPos(N2);
+            end;
+          smDeleteEOL:
+            begin
+              N:= CaretPosToStrPos(PCur);
+              if PCur.X < Lines.LineLength(PCur.Y) then
+                ReplaceText(N, Lines.LineLength(PCur.Y) - PCur.X, '');
+            end;
+
+          smLineBreakSoft,
+          smLineBreak:
+            begin
+              N:= IfThen(soAutoIndentMode in Options,
+                GetIndent(PCur.Y, LinesPosToLog(PCur).X + 1), 0);
+              S:= GetIndentString(N, false);
+              N:= Length(S); //indent size
+              S:= SEol(Cmd=smLineBreakSoft) + S; //CR + indent
+              if ReplaceText(CaretPosToStrPos(PCur), 0, S) then
+              begin
+                Inc(PCur.Y);
+                PCur.X:= N; //indent size
+                NShiftY:= 1;
+                NShiftX:= cShiftToHome - N;
+              end;
+            end;
+
+          smInsertLine:
+            begin
+              S:= SEol(false);
+              if ReplaceText(CaretPosToStrPos(PCur), 0, S) then
+              begin
+                NShiftY:= 1;
+                NShiftX:= cShiftToHome;
+              end;
+            end;
+
+          smDeleteChar:
+            begin
+              //"delete" works differently for two cases:
+              //a) if selections exist: clears all selections,
+              //b) if no selections exist: deletes 1 char at each caret
+              if not bHasSelection then
+              begin
+                if PCur.X<Lines.LineLength(PCur.Y) then
+                  b:= ReplaceText(CaretPosToStrPos(PCur), 1, '')
+                else
+                  b:= ReplaceText(CaretPosToStrPos(PCur), {Lines.LineSpace(PCur.Y)-Lines.LineLength(PCur.Y)}Length(Lines.LineEndStr(PCur.Y)), '');
+                if b then
+                  NShiftX:= -1;
+              end
+              else
+              begin
+                DoClearSelectionText(PCur, i);
+              end;
+            end;
+
+          smDeleteLastChar:
+            begin
+              if PCur.X>0 then
+              begin
+                Dec(PCur.X);
+                if ReplaceText(CaretPosToStrPos(PCur), 1, '') then
+                  NShiftX:= -1;
+              end
+              else
+              if PCur.Y>0 then
+              begin
+                Dec(PCur.Y);
+                PCur.X:= Lines.LineLength(PCur.Y);
+                if ReplaceText(CaretPosToStrPos(PCur), {Lines.LineSpace(PCur.Y)-Lines.LineLength(PCur.Y)}Length(Lines.LineEndStr(PCur.Y)), '') then
+                begin
+                  NShiftX:= 1;
+                  NShiftY:= -1;
+                end;
+              end;
+            end;
+
+          smChar:
+            begin
+              ch:= PWChar(Data)^;
+              if ch>=' ' then
+                DoInputText(ch, PCur);
+            end;
+          smString:
+            begin
+              S:= PWChar(Data);
+              DoInputText(S, PCur);
+            end;
+
+          smTab:
+            begin
+              case TabMode of
+                tmSpaces,
+                tmSmartTab:
+                 begin
+                   N:= LinesPosToLog(PCur).X;
+                   if TabMode = tmSpaces then
+                     N2:= TabList.NextTab(N, False)
+                   else
+                     N2:= GetSmartPos(N, PCur.Y);
+                   DoInputText(StringOfChar(' ', N2-N), PCur)
+                 end;
+                tmTabChar:
+                  DoInputText(#9, PCur);
+              end;
+            end;
+          smTabChar:
+            DoInputText(#9, PCur);
+
+          smLeft,
+          smSelLeft:
+            begin
+              if {not (soKeepCaretInText in Options) or} (PCur.X > 0) then
+                PCur:= SkipHidden(PCur.X - 1, PCur.Y, False)
+              else
+              if PCur.Y > 0 then
+                PCur:= SkipHidden(Lines.LineLength(PCur.Y - 1), PCur.Y - 1, False);
+            end;
+
+          smRight,
+          smSelRight:
+            begin
+              if not (soKeepCaretInText in Options) or (PCur.X < Lines.LineLength(PCur.Y)) then
+                PCur:= SkipHidden(PCur.X + 1, PCur.Y, True)
+              else
+              if PCur.Y < Lines.Count - 1 then
+                PCur:= SkipHidden(0, PCur.Y + 1, True);
+            end;
+
+          smUp,
+          smSelUp:
+            begin
+              if PCur.Y>0 then
+                Dec(PCur.Y);
+              DoKeepCaretInText(PCur);
+            end;
+
+          smDown,
+          smSelDown:
+            begin
+              if PCur.Y<Lines.Count-1 then
+                Inc(PCur.Y);
+              DoKeepCaretInText(PCur);
+            end;
+
+          smWordLeft,
+          smWordRight,
+          smSelWordLeft,
+          smSelWordRight:
+            begin
+              PCur:= StrPosToCaretPos(DoWordJumpPos(CaretPosToStrPos(PCur),
+                Cmd in [smWordRight, smSelWordRight]));
+            end;
+
+          smLineStart,
+          smFirstLetter,
+          smSelLineStart,
+          smSelFirstLetter:
+            begin
+              PCur.X:= 0;
+            end;
+
+          smLineEnd,
+          smLastLetter,
+          smSelLineEnd,
+          smSelLastLetter:
+            begin
+              //End key should toggle position: line end <--> last non-space char
+              if PCur.X = Lines.LineLength(PCur.Y) then
+              begin
+                while (PCur.X>0) and (Lines[PCur.Y][PCur.X]=' ') do
+                  Dec(PCur.X);
+              end
+              else
+                PCur.X:= Lines.LineLength(PCur.Y);
+            end;
         end;
 
-      smChar:
-        begin
-          ch:= PWChar(Data)^;
-          if ch>=' ' then
-            DoInputText(ch, P);
-        end;
-      smString:
-        begin
-          S:= PWChar(Data);
-          DoInputText(S, P);
-        end;
-
-      smTab:
-        begin
-          case TabMode of
-            tmSpaces,
-            tmSmartTab:
-             begin
-               N:= LinesPosToLog(P).X;
-               if TabMode = tmSpaces then
-                 N2:= TabList.NextTab(N, False)
-               else
-                 N2:= GetSmartPos(N, P.Y);
-               DoInputText(StringOfChar(' ', N2-N), P)
-             end;
-            tmTabChar:
-              DoInputText(#9, P);
-          end;
-        end;
-      smTabChar:
-        DoInputText(#9, P);
-
-      smLeft,
-      smSelLeft:
-        begin
-          if {not (soKeepCaretInText in Options) or} (P.X > 0) then
-            P:= SkipHidden(P.X - 1, P.Y, False)
-          else
-          if P.Y > 0 then
-            P:= SkipHidden(Lines.LineLength(P.Y - 1), P.Y - 1, False);
-        end;
-
-      smRight,
-      smSelRight:
-        begin
-          if not (soKeepCaretInText in Options) or (P.X < Lines.LineLength(P.Y)) then
-            P:= SkipHidden(P.X + 1, P.Y, True)
-          else
-          if P.Y < Lines.Count - 1 then
-            P:= SkipHidden(0, P.Y + 1, True);
-        end;
-
-      smUp,
-      smSelUp:
-        begin
-          if P.Y>0 then
-            Dec(P.Y);
-          DoKeepCaretInText(P);
-        end;
-
-      smDown,
-      smSelDown:
-        begin
-          if P.Y<Lines.Count-1 then
-            Inc(P.Y);
-          DoKeepCaretInText(P);
-        end;
-
-      smWordLeft,
-      smWordRight,
-      smSelWordLeft,
-      smSelWordRight:
-        begin
-          P:= StrPosToCaretPos(DoWordJumpPos(CaretPosToStrPos(P),
-            Cmd in [smWordRight, smSelWordRight]));
-        end;
-
-      smLineStart,
-      smFirstLetter,
-      smSelLineStart,
-      smSelFirstLetter:
-        begin
-          P.X:= 0;
-        end;
-
-      smLineEnd,
-      smLastLetter,
-      smSelLineEnd,
-      smSelLastLetter:
-        begin
-          //End key should toggle position: line end <--> last non-space char
-          if P.X = Lines.LineLength(P.Y) then
-          begin
-            while (P.X>0) and (Lines[P.Y][P.X]=' ') do
-              Dec(P.X);
-          end
-          else
-            P.X:= Lines.LineLength(P.Y);
-        end;
-    end;
-
-    DoShiftCarets(PFrom, NShiftX, NShiftY);
-    SetCaret(i, P);
+        DoShiftCarets(PFrom, NShiftX, NShiftY);
+        SetCaret(i, PCur);
+      end;
+  finally
+    EndUpdate;
   end;
-  EndUpdate;
 
 
   //scroll editor if carets moved up/down
@@ -1086,6 +1152,7 @@ begin
         if GetCaret(0).Y <= TopLine then
           ExecCommand(smScrollUp);
       end;
+
     smDown,
     smSelDown:
       begin
@@ -1120,7 +1187,7 @@ begin
   end;
 
   //calculate selections for Shift+arrows
-  if IsCommandSelection(Cmd) then
+  if IsCommandMoveSelections(Cmd) then
     DoCalculateSelections;
 
   DoUpdateCarets;
@@ -1137,30 +1204,59 @@ begin
     FCaretsSel[i]:= nil;
 end;
 
+function TSyntaxMemo.IsSelectionExist: boolean;
+var
+  i: Integer;
+begin
+  Result:= false;
+  for i:= 0 to FCaretsSel.Count-1 do
+    if FCaretsSel[i]<>nil then
+    begin
+      Result:= true;
+      Exit
+    end;  
+end;
+
+function TSyntaxMemo.DoCalculateSelectionText(i: Integer): Widestring;
+var
+  NOffset, NSel: Integer;
+  Pnt: TPoint;
+begin
+  Result:= '';
+  Pnt:= GetCaret(i);
+  NSel:= GetCaretSel(i);
+  if NSel<>0 then
+  begin
+    NOffset:= CaretPosToStrPos(Pnt);
+    NOffset:= Min(NOffset, NOffset+NSel);
+    Result:= Lines.SubString(NOffset+1, Abs(NSel));
+  end;
+end;
+
 procedure TSyntaxMemo.DoCalculateOffsets;
 var
-  i, N: Integer;
-  P: TPoint;
+  i, NOffset: Integer;
+  Pnt: TPoint;
 begin
   FListOffsets.Clear;
   for i:= 0 to CaretsCount-1 do
   begin
-    P:= GetCaret(i);
-    N:= CaretPosToStrPos(P) + GetCaretSel(i);
-    FListOffsets.Add(Pointer(N));
+    Pnt:= GetCaret(i);
+    NOffset:= CaretPosToStrPos(Pnt) + GetCaretSel(i);
+    FListOffsets.Add(Pointer(NOffset));
   end;
 end;
 
 procedure TSyntaxMemo.DoCalculateSelections;
 var
   i, NOffset, NOffsetNew: Integer;
-  P: TPoint;
+  Pnt: TPoint;
 begin
   for i:= 0 to CaretsCount-1 do
   begin
-    P:= GetCaret(i);
+    Pnt:= GetCaret(i);
     NOffset:= Integer(FListOffsets[i]);
-    NOffsetNew:= CaretPosToStrPos(P);
+    NOffsetNew:= CaretPosToStrPos(Pnt);
     SetCaretSel(i, NOffset-NOffsetNew);
   end;
 end;
@@ -1491,17 +1587,18 @@ begin
   end;
 end;
 
-procedure TSyntaxMemo.DoListDupLines(L: TList);
+procedure TSyntaxMemo.DoCalculateDupCarets(L: TList);
 var
   i, Y1, Y2: Integer;
 begin
-  Assert(Assigned(L));
+  if not Assigned(L) then
+    raise Exception.Create('List nil');
   L.Clear;
   for i:= 0 to Pred(CaretsCount-1) do
   begin
     Y1:= GetCaret(i).Y;
     Y2:= GetCaret(i+1).Y;
-    if (Y1=Y2) and (L.IndexOf(Pointer(Y1))<0) then
+    if (Y1=Y2) and (L.IndexOf(Pointer(i+1))<0) then
       L.Add(Pointer(i+1));
   end;
 end;
