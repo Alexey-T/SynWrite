@@ -161,7 +161,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure AddCaret(const P: TPoint; ASelCount: Integer = 0; AddDefaultPos: boolean = true);
-    procedure AddCaretsColumn(const PFrom, PTo: TPoint);
+    procedure AddCaretsColumn(const PntFrom, PntTo: TPoint; ALeftSide: boolean);
     function GetCaret(N: Integer): TPoint;
     function GetCaretSel(N: Integer): Integer;
     procedure RemoveCarets(LeaveFirst: boolean = true);
@@ -1381,7 +1381,7 @@ begin
     begin
       if (ssShift in Shift) then
       begin
-        AddCaretsColumn(FDefaultCaret, PTo);
+        AddCaretsColumn(FDefaultCaret, PTo, FDefaultCaret.X<=PTo.X);
       end
       else
       if IsCtrlClickHandled(PTo) then
@@ -1543,10 +1543,10 @@ begin
     RemoveCarets;
 end;
 
-procedure TSyntaxMemo.AddCaretsColumn(const PFrom, PTo: TPoint);
+procedure TSyntaxMemo.AddCaretsColumn(const PntFrom, PntTo: TPoint; ALeftSide: boolean);
 var
-  i, N1, N2: Integer;
-  PntOrig, PntCurr: TPoint;
+  i, NLine1, NLine2, NCol1, NCol2, NCol, NSelCount: Integer;
+  PntCurr: TPoint;
 begin
   if not CanSetCarets then Exit;
   ResetSelection;
@@ -1555,18 +1555,22 @@ begin
   DoInitBaseEditor;
   SetStaticDraw;
 
-  N1:= Min(PFrom.Y, PTo.Y);
-  N2:= Max(PFrom.Y, PTo.Y);
-  PntOrig:= LinesPosToLog(PFrom);
+  NLine1:= Min(PntFrom.Y, PntTo.Y);
+  NLine2:= Max(PntFrom.Y, PntTo.Y);
 
-  for i:= N1 to N2 do
+  NCol1:= LinesPosToLog(PntFrom).X;
+  NCol2:= LinesPosToLog(PntTo).X;
+  NCol:= IfThen(ALeftSide, NCol1, NCol2);
+  NSelCount:= (NCol2-NCol1) * IfThen(ALeftSide, 1, -1);
+
+  for i:= NLine1 to NLine2 do
   begin
-    PntCurr:= LogToLinesPos(Point(PntOrig.X, i));
-    DoAddCaretInt(PntCurr);
+    PntCurr:= LogToLinesPos(Point(NCol, i));
+    DoAddCaretInt(PntCurr, NSelCount);
   end;
 
   DoUpdateCarets;
-  CaretPos:= PTo;
+  CaretPos:= PntTo;
 
   InvalidateGutter;
   SetBlinkingDraw;
@@ -1811,21 +1815,26 @@ end;
 
 procedure TSyntaxMemo.DoCaretsFromSel(ALeft, AClearSel: boolean);
 var
-  NCol, NTop, NBottom, i: Integer;
+  NCol, NColLeft, NColRight,
+  NTop, NBottom, i: Integer;
 begin
   if not CanSetCarets then Exit;
   if HaveSelection then
     if (SelectMode=msColumn) then
     begin
-      NCol:= IfThen(ALeft, SelRect.Left, SelRect.Right); //logical X
-      NCol:= LogToLinesPos(Point(NCol, SelRect.Top)).X; //consider Tabs
+      NColLeft:= LogToLinesPos(Point(SelRect.Left, SelRect.Top)).X; //consider Tabs
+      NColRight:= LogToLinesPos(Point(SelRect.Right, SelRect.Top)).X; //consider Tabs
+
       NTop:= SelRect.Top;
       NBottom:= SelRect.Bottom;
 
       if AClearSel then
         ClearSelection;
 
-      AddCaretsColumn(Point(NCol, NTop), Point(NCol, NBottom));
+      AddCaretsColumn(
+        Point(NColLeft, NTop),
+        Point(IfThen(AClearSel, NColLeft, NColRight), NBottom),
+        ALeft);
     end
     else
     begin
@@ -1861,7 +1870,7 @@ begin
           EndUpdate;
         end;
 
-        AddCaretsColumn(Point(NCol, NTop), Point(NCol, NBottom));
+        AddCaretsColumn(Point(NCol, NTop), Point(NCol, NBottom), ALeft);
       end;
     end;
 end;
@@ -1915,27 +1924,33 @@ begin
   SetStaticDraw;
 
   BeginUpdate;
-  NCaret:= SearchMarks[0].StartPos;
-  for i:= SearchMarks.Count-1 downto 0 do
-    with SearchMarks[i] do
-    begin
-      NStart:= StartPos;
-      NEnd:= EndPos;
-      NSize:= Size;
+  try
+    NCaret:= SearchMarks[0].StartPos;
+    for i:= SearchMarks.Count-1 downto 0 do
+      with SearchMarks[i] do
+      begin
+        NStart:= StartPos;
+        NEnd:= EndPos;
+        NSize:= Size;
 
-      if AClear then
-        ReplaceText(NStart, NSize, '');
+        if AClear then
+        begin
+          ReplaceText(NStart, NSize, '');
+          DoAddCaretInt(StrPosToCaretPos(NStart));
+        end
+        else
+        if ALeft then
+          DoAddCaretInt(StrPosToCaretPos(NStart), NSize)
+        else
+          DoAddCaretInt(StrPosToCaretPos(NEnd), -NSize);
 
-      if ALeft then
-        DoAddCaretInt(StrPosToCaretPos(NStart))
-      else
-        DoAddCaretInt(StrPosToCaretPos(NEnd));
-
-      if AClear then
-        DoShiftCarets(StrPosToCaretPos(NStart), -NSize, 0);
-    end;
-  CaretStrPos:= NCaret;
-  EndUpdate;
+        if AClear then
+          DoShiftCarets(StrPosToCaretPos(NStart), -NSize, 0);
+      end;
+    CaretStrPos:= NCaret;
+  finally
+    EndUpdate;
+  end;  
 
   DoUpdateCarets;
 
