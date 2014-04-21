@@ -773,7 +773,7 @@ var
   begin
     NPos:= CaretPosToStrPos(Point(0, P.Y));
     if ReplaceText(NPos, Lines.LineSpace(P.Y), '') then
-      NShiftY:= -1;
+      NShiftY:= NShiftY-1;
   end;
   //-----------------------------
   procedure DoInputText(const S: Widestring; var P: TPoint);
@@ -926,13 +926,14 @@ begin
                     S + sLineBreak + TntClipboard.AsWideText;
                   if Cmd=smCut then
                     DoClearSelectionText(PCur, i);
-                end;    
+                end;
               end;
             except
             end;
 
           smPaste:
             try
+              DoClearSelectionText(PCur, i);
               if not bListClipMatch then
                 S:= TntClipboard.AsWideText
               else

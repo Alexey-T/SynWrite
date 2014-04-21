@@ -3219,7 +3219,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.4.850';
+  cSynVer = '6.5.850';
   cSynPyVer = '1.0.128';
 
 const
@@ -5382,7 +5382,12 @@ begin
 
     while L.Count>opSaveState do
       L.Delete(L.Count-1);
-    L.SaveToFile(fnIni);
+
+    try
+      //file may be R/O
+      L.SaveToFile(fnIni);
+    except
+    end;
   finally
     FreeAndNil(L);
   end;
@@ -11662,7 +11667,8 @@ begin
       Free;
     end;
   except
-    MsgError(WideFormat(DKLangConstW('AppNSes'), [fn]), Handle);
+    //better not show this msg, for R/O ini folder
+    //MsgError(WideFormat(DKLangConstW('AppNSes'), [fn]), Handle);
   end;
 end;
 
@@ -25207,22 +25213,25 @@ procedure TfmMain.SavePanelProp(
   Ini: TCustomIniFile;
   const Id: string);
 begin
-  with Panel do
-  begin
-    Ini.WriteBool('pl'+Id, 'Vis', Visible);
-    if CurrentDock<>nil then
-      Ini.WriteString('pl'+Id, 'Dock', CurrentDock.Name);
+  try
+    with Panel do
+    begin
+      Ini.WriteBool('pl'+Id, 'Vis', Visible);
+      if CurrentDock<>nil then
+        Ini.WriteString('pl'+Id, 'Dock', CurrentDock.Name);
 
-    Ini.WriteInteger('pl'+Id, 'DW', Width);
-    Ini.WriteInteger('pl'+Id, 'DH', Height);
-    Ini.WriteInteger('pl'+Id, 'DPos', DockPos);
-    Ini.WriteInteger('pl'+Id, 'DRow', DockRow);
-    Ini.WriteBool('pl'+Id, 'Fl', Floating);
-    Ini.WriteInteger('pl'+Id, 'FlW', FloatingClientWidth);
-    Ini.WriteInteger('pl'+Id, 'FlH', FloatingClientHeight);
-    Ini.WriteInteger('pl'+Id, 'FlX', FloatingPosition.X);
-    Ini.WriteInteger('pl'+Id, 'FlY', FloatingPosition.Y);
-  end;
+      Ini.WriteInteger('pl'+Id, 'DW', Width);
+      Ini.WriteInteger('pl'+Id, 'DH', Height);
+      Ini.WriteInteger('pl'+Id, 'DPos', DockPos);
+      Ini.WriteInteger('pl'+Id, 'DRow', DockRow);
+      Ini.WriteBool('pl'+Id, 'Fl', Floating);
+      Ini.WriteInteger('pl'+Id, 'FlW', FloatingClientWidth);
+      Ini.WriteInteger('pl'+Id, 'FlH', FloatingClientHeight);
+      Ini.WriteInteger('pl'+Id, 'FlX', FloatingPosition.X);
+      Ini.WriteInteger('pl'+Id, 'FlY', FloatingPosition.Y);
+    end;
+  except
+  end;  
 end;
 
 procedure TfmMain.LoadPanelProp(
