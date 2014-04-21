@@ -3219,7 +3219,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.850';
+  cSynVer = '6.5.880';
   cSynPyVer = '1.0.128';
 
 const
@@ -15315,15 +15315,22 @@ begin
 end;
 
 procedure TfmMain.DoFillBlock;
+begin
+end;
+
+//this function deprecated.
+(*
+procedure TfmMain.DoFillBlock;
 var
   Ed: TSyntaxMemo;
   sData: Widestring;
   bKeep: boolean;
 begin
+
   Ed:= CurrentEditor;
   if Ed.ReadOnly then Exit;
   if not Ed.HaveSelection then Exit;
-  
+
   if Ed.SelectMode <> msColumn then
   begin
     MsgWarn(DKLangConstW('vert'), Handle);
@@ -15341,6 +15348,7 @@ begin
 
   EditorFillBlockRect(Ed, sData, bKeep);
 end;
+*)
 
 procedure TfmMain.TBXItemEInsTextClick(Sender: TObject);
 begin
@@ -24576,7 +24584,7 @@ begin
       if SelectMode <> msColumn then
         MsgWarn(DKLangConstW('vert'), Handle)
       else
-        ExecCommand(sm_CaretsFromSelClear);
+        ExecCommand(sm_CaretsFromSelLeft);
 end;
 
 procedure TfmMain.ecDedupAllExecute(Sender: TObject);

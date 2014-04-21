@@ -1657,6 +1657,7 @@ object fmMain: TfmMain
         object TBXItemEFillBlock: TSpTBXItem
           Caption = 'Fill block...'
           Hint = 'Fill column block lines with custom string'
+          Visible = False
           OnClick = TBXItemEFillBlockClick
           OnSelect = ButtonOnSelect
         end
