@@ -94,6 +94,7 @@ type
     FOnCtrlClick: TOnCtrlClick;
     FMouseDownPoint: TPoint;
     FMouseDownCaret: Integer;
+    FMouseDownTick: DWORD;
 
     procedure EditorZoom(Sender: TObject);
     procedure SetStaticDraw;
@@ -280,6 +281,10 @@ begin
   FCaretsGutterBand:= 0;
   FCaretsGutterColor:= clLtGray;
   FOnCtrlClick:= nil;
+
+  FMouseDownPoint:= Point(-1, -1);
+  FMouseDownCaret:= -1;
+  FMouseDownTick:= 0;
 
   OnGetGutterBandColor:= EdGetGutterBandColor;
   OnBeforeLineDraw:= EdBeforeLineDraw;
@@ -1367,10 +1372,15 @@ end;
 procedure TSyntaxMemo.MouseDown(Button: TMouseButton; Shift: TShiftState;
   X, Y: Integer);
 var
-  PTo: TPoint;
+  PTo, PEnd: TPoint;
+  bDoubleClick: boolean;
+  nStart, nEnd: Integer;
 begin
   FMouseDownPoint:= Point(-1, -1);
   FMouseDownCaret:= -1;
+
+  bDoubleClick:= (GetTickCount-FMouseDownTick) <= GetDoubleClickTime;
+  FMouseDownTick:= GetTickCount;
 
   if CanSetCarets then
   begin
@@ -1379,14 +1389,32 @@ begin
 
     if (ssCtrl in Shift) and not (ssAlt in Shift) then
     begin
+      //Ctrl+Shift+click - make carets column
       if (ssShift in Shift) then
       begin
         AddCaretsColumn(FDefaultCaret, PTo, FDefaultCaret.X<=PTo.X);
       end
       else
+      //main form handled Ctrl+click (e.g. URL)
       if IsCtrlClickHandled(PTo) then
         inherited
       else
+      //Ctrl+doubleclick - make word selection
+      if bDoubleClick then
+      begin
+        WordRangeAtPos(PTo, nStart, nEnd);
+        if nEnd-nStart>0 then
+        begin
+          PEnd:= StrPosToCaretPos(nEnd);
+          AddCaret(PEnd, nStart-nEnd);
+          CaretPos:= PEnd;
+          FMouseDownPoint:= PEnd;
+          FMouseDownCaret:= CaretsCount-1;
+          DoRemoveCaret(PTo);
+        end;
+      end
+      else
+      //Ctrl+click - add or remove caret
       if not DoRemoveCaret(PTo) then
       begin
         AddCaret(PTo);
