@@ -1380,7 +1380,10 @@ begin
   FMouseDownCaret:= -1;
 
   bDoubleClick:= (GetTickCount-FMouseDownTick) <= GetDoubleClickTime;
-  FMouseDownTick:= GetTickCount;
+  if bDoubleClick then
+    FMouseDownTick:= 0
+  else
+    FMouseDownTick:= GetTickCount;
 
   if CanSetCarets then
   begin
