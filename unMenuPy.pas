@@ -202,30 +202,35 @@ begin
     SName:= SGetItem(S, #9);
     SDesc:= SGetItem(S, #9);
 
-    Canvas.Font.Size:= Self.Font.Size;
 
     //desc
-    Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clNavy);
-    n:= ecTextExtent(Canvas, SDesc).cx+4;
-    ecTextOut(Canvas, rect.right-n, rect.top, SDesc);
+    case FListStyle of
+      0:
+        begin
+          Canvas.Font.Size:= Self.Font.Size;
+          Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clNavy);
+          n:= ecTextExtent(Canvas, SDesc).cx+4;
+          ecTextOut(Canvas, rect.right-n, rect.top, SDesc);
+        end;
+      1:
+        begin
+          //desc
+          Canvas.Font.Size:= Self.Font.Size-2;
+          Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clNavy);
+          ecTextOut(Canvas, rect.left, rect.top + List.ItemHeight div 2, SDesc);
+
+          //separator
+          Canvas.Pen.Color:= clLtGray;
+          n:= rect.top+ List.ItemHeight-1;
+          Canvas.MoveTo(2, n);
+          Canvas.LineTo(ClientWidth-2, n);
+        end;
+    end;
 
     //name
+    Canvas.Font.Size:= Self.Font.Size;
     Canvas.Font.Color:= IfThen(odSelected in State, FColorSel, Font.Color);
     ecTextOut(Canvas, rect.left, rect.top, SName);
-
-    if FListStyle=1 then
-    begin
-      //desc
-      Canvas.Font.Size:= Self.Font.Size-2;
-      Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clNavy);
-      ecTextOut(Canvas, rect.left, rect.top + List.ItemHeight div 2, SDesc);
-
-      //separator
-      Canvas.Pen.Color:= clLtGray;
-      n:= rect.top+ List.ItemHeight-1;
-      Canvas.MoveTo(2, n);
-      Canvas.LineTo(ClientWidth-2, n);
-    end;
 
     //filter chars
     if cbFuzzy.Checked then

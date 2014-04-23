@@ -2091,7 +2091,7 @@ begin
     //MarkersLen[i] has 2 values: (Length + TabstopIndex shl 16)
     i:= Integer(MarkersLen.Last);
     NTabstopIndex:= HiWord(i);
-    NLength:= LoWord(i); 
+    NLength:= LoWord(i);
     NPos:= TMarker(Markers.Last).Position; //don't use TMarker.CaretPos (incorrect)
 
     //process base tabstop
@@ -2116,10 +2116,17 @@ begin
         begin
           if CaretsCount=0 then
           begin
-            AddCaret(StrPosToCaretPos(NPos), 0, false);
-            SetSelection(NPos, NLength, true);
+            //add first caret for this tabstop
+            AddCaret(
+              StrPosToCaretPos(NPos),
+              -NLength,
+              false);
           end;
-          AddCaret(StrPosToCaretPos(TMarker(Markers[i]).Position), 0, false);
+          //add carets for mirrors
+          AddCaret(
+            StrPosToCaretPos(TMarker(Markers[i]).Position),
+            -LoWord(Integer(MarkersLen[i])),
+            false);
 
           Markers.Delete(i);
           MarkersLen.Delete(i);
@@ -2129,6 +2136,9 @@ begin
         end;
       if not bMirrorFound then Break;
     until false;
+
+    //update statusbar
+    SelectionChanged;
   end;
 end;
 

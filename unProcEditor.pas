@@ -2730,7 +2730,7 @@ begin
           if NMirrorCnt<=High(NInsertPos) then
           begin
             NInsertPos[NMirrorCnt]:= NStart-1;
-            NInsertLen[NMirrorCnt]:= MakeLong(0, i);
+            NInsertLen[NMirrorCnt]:= MakeLong(Length(SVal), i);
           end;
         end
         else
@@ -2789,6 +2789,10 @@ begin
 
   if Ed.IsTabstopMode then
     Ed.DoJumpToNextTabstop;
+
+  //update statusbar  
+  if Assigned(Ed.OnSelectionChanged) then
+    Ed.OnSelectionChanged(Ed);
 end;
 
 
