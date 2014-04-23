@@ -2088,7 +2088,9 @@ var
 begin
   if IsTabstopMode then
   begin
-    //MarkersLen[i] has 2 values: (Length + TabstopIndex shl 16)
+    //MarkersLen[i] contain two values: (Length + TabstopIndex shl 16)
+    //so LoWord(Integer(MarkersLen[i])) is length,
+    //   HiWord(Integer(MarkersLen[i])) is tabstop index
     i:= Integer(MarkersLen.Last);
     NTabstopIndex:= HiWord(i);
     NLength:= LoWord(i);
@@ -2112,7 +2114,7 @@ begin
     repeat
       bMirrorFound:= false;
       for i:= MarkersLen.Count-1 downto 0 do
-        if (Integer(MarkersLen[i]) shr 16) = NTabstopIndex then
+        if HiWord(Integer(MarkersLen[i])) = NTabstopIndex then
         begin
           if CaretsCount=0 then
           begin
