@@ -150,6 +150,7 @@ type
     function IsSelectionExist: boolean;
     function IsSelectionOverlap(Index1, Index2: Integer; var MergedRange: TIntRec2): boolean;
     function GetCaretSelRange(Index: Integer): TIntRec2;
+    function GetSelCountForUsualCaret: Integer;
   protected
     procedure DoScroll; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -462,11 +463,29 @@ begin
   Result:= FCaretsEnabled and (TextLength>0) and not ReadOnly;
 end;
 
+function TSyntaxMemo.GetSelCountForUsualCaret: Integer;
+var
+  NCaretPos: Integer;
+begin
+  Result:= 0;
+  if SelLength>0 then
+  begin
+    NCaretPos:= CaretStrPos;
+    //check that single selection is "near" usual caret
+    //(may be not so for "Preserve selection" opt)
+    if (NCaretPos=SelStart) or (NCaretPos=SelStart+SelLength) then
+    begin
+      if SelStart<NCaretPos then
+        Result:= -SelLength
+      else
+        Result:= SelLength;
+    end;
+  end;  
+end;
+
 procedure TSyntaxMemo.AddCaret(const P: TPoint;
   ASelCount: Integer = 0;
   AddDefaultPos: boolean = true);
-var
-  NSelCount, NCaretPos: Integer;
 begin
   if not CanSetCarets then Exit;
   DoInitBaseEditor;
@@ -474,22 +493,7 @@ begin
 
   if (CaretsCount=0) and AddDefaultPos then
   begin
-    //calculate SelCount for usual caret
-    NSelCount:= 0;
-    if SelLength>0 then
-    begin
-      NCaretPos:= CaretStrPos;
-      //check that single selection is "near" usual caret
-      if (NCaretPos=SelStart) or (NCaretPos=SelStart+SelLength) then
-      begin
-        if SelStart<NCaretPos then
-          NSelCount:= -SelLength
-        else
-          NSelCount:= SelLength;
-      end;
-    end;
-
-    DoAddCaretInt(FDefaultCaret, NSelCount);
+    DoAddCaretInt(FDefaultCaret, GetSelCountForUsualCaret);
     DoUpdateLastCaret;
   end;
 
