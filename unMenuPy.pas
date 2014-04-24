@@ -8,6 +8,9 @@ uses
   TntStdCtrls, TntForms, TntClasses;
 
 type
+  TSynPyMenuStyle = (cSynPyMenuSingle, cSynPyMenuDouble);
+
+type
   TfmMenuPy = class(TTntForm)
     List: TTntListBox;
     Edit: TTntEdit;
@@ -39,7 +42,7 @@ type
     FColorSel: TColor;
     FColorSelBk: TColor;
     FListItems: TTntStringList;
-    FListStyle: Integer;
+    FListStyle: TSynPyMenuStyle;
   end;
 
 implementation
@@ -87,8 +90,8 @@ end;
 procedure TfmMenuPy.FormShow(Sender: TObject);
 begin
   case FListStyle of
-    0: List.ItemHeight:= 20;
-    1: List.ItemHeight:= 33;
+    cSynPyMenuSingle: List.ItemHeight:= 20;
+    cSynPyMenuDouble: List.ItemHeight:= 33;
   end;  
 
   DoFilter;
@@ -205,14 +208,14 @@ begin
 
     //desc
     case FListStyle of
-      0:
+      cSynPyMenuSingle:
         begin
           Canvas.Font.Size:= Self.Font.Size;
           Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clNavy);
           n:= ecTextExtent(Canvas, SDesc).cx+4;
           ecTextOut(Canvas, rect.right-n, rect.top, SDesc);
         end;
-      1:
+      cSynPyMenuDouble:
         begin
           //desc
           Canvas.Font.Size:= Self.Font.Size-2;

@@ -634,7 +634,13 @@ begin
               Caption:= StrCaption;
               cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
               FListItems:= MenuItems;
-              FListStyle:= Id;
+              case Id of
+                0: FListStyle:= cSynPyMenuSingle;
+                1: FListStyle:= cSynPyMenuDouble;
+                else
+                  raise Exception.Create('Unknown menu style: '+IntToStr(Id))
+              end;
+
               FIniFN:= fmMain.SynHistoryIni;
               FColorSel:= fmMain.opColorOutSelText;
               FColorSelBk:= fmMain.opColorOutSelBk;
