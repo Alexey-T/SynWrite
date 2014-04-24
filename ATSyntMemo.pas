@@ -28,7 +28,7 @@ Additional methods:
 - RemoveCarets
 Additional ExecCommand commands:
   smCaretsRemoveLeaveFirst    
-  smCaretsRemoveLeaveLast     
+  smCaretsRemoveLeaveLast
   smCaretsFromSelLeft
   smCaretsFromSelRight
   smCaretsFromSelClear
@@ -57,13 +57,14 @@ uses
   TntClasses,
   ecSyntMemo;
 
-//global options for all editors  
+//global options for all editors
 var
   opSeparateCopiedLines: boolean = false;
   opShowCurrentColumn: boolean = false;
 
 type
   TCaretsColorIndicator = (cciNone, cciLineBg, cciGutterBg);
+  TIntRec2 = record N1, N2: Integer end;
 
 type
   TOnCtrlClick = procedure(Sender: TObject; const Pnt: TPoint; var Handled: boolean) of object;
@@ -143,10 +144,12 @@ type
     function GetColMarkersString: string;
     procedure SetColMarkersString(const S: string);
     procedure DoCalculateOffsets;
-    procedure DoCalculateSelections;
+    procedure DoCalculateSelections(AMoveDown: boolean);
     function DoCalculateSelectionText(i: Integer): Widestring;
     procedure DoResetSelections;
     function IsSelectionExist: boolean;
+    function IsSelectionOverlap(Index1, Index2: Integer; var MergedRange: TIntRec2): boolean;
+    function GetCaretSelRange(Index: Integer): TIntRec2;
   protected
     procedure DoScroll; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -214,9 +217,18 @@ begin
   Result:= (N>smSelection) and (N<smSelection+100);
 end;
 
+function IsCommandMoveSelectionsDown(N: Integer): boolean;
+begin
+  Result:=
+    (N=smSelRight) or (N=smSelDown) or (N=smSelWordRight) or
+    (N=smSelLineEnd) or (N=smSelPageDown) or (N=smSelPageRight) or
+    (N=smSelPageBottom) or (N=smSelEditorBottom) or (N=smSelLastLetter);
+end;
+
 function IsCommandHandleSelections(N: Integer): boolean;
 begin
-  Result:= (N=smCopy) or (N=smCut) or (N=smPaste) or (N=smDeleteChar) or
+  Result:=
+    (N=smCopy) or (N=smCut) or (N=smPaste) or (N=smDeleteChar) or
     (N=smChar) or (N=smString);
 end;
 
@@ -1225,7 +1237,7 @@ begin
 
   //calculate selections for Shift+arrows
   if IsCommandMoveSelections(Cmd) then
-    DoCalculateSelections;
+    DoCalculateSelections(IsCommandMoveSelectionsDown(Cmd));
 
   FListClip.Clear;
 
@@ -1286,10 +1298,42 @@ begin
   end;
 end;
 
-procedure TSyntaxMemo.DoCalculateSelections;
+function TSyntaxMemo.GetCaretSelRange(Index: Integer): TIntRec2;
 var
-  i, NOffset, NOffsetNew: Integer;
+  Pos, Sel: Integer;
+begin
+  Pos:= CaretPosToStrPos(GetCaret(Index));
+  Sel:= GetCaretSel(Index);
+  Result.N1:= Min(Pos, Pos+Sel);
+  Result.N2:= Max(Pos, Pos+Sel);
+end;
+
+function TSyntaxMemo.IsSelectionOverlap(
+  Index1, Index2: Integer; var MergedRange: TIntRec2): boolean;
+var
+  Range1, Range2: TIntRec2;
+begin
+  Range1:= GetCaretSelRange(Index1);
+  Range2:= GetCaretSelRange(Index2);
+  Result:= not ((Range1.N1>Range2.N2) or (Range2.N1>Range1.N2));
+  if Result then
+  begin
+    MergedRange.N1:= Min(Range1.N1, Range2.N1);
+    MergedRange.N2:= Max(Range1.N2, Range2.N2);
+  end
+  else
+  begin
+    MergedRange.N1:= 0;
+    MergedRange.N2:= 0;
+  end;  
+end;
+
+procedure TSyntaxMemo.DoCalculateSelections(AMoveDown: boolean);
+var
+  NOffset, NOffsetNew: Integer;
+  i, j, MergedStart, MergedSel: Integer;
   Pnt: TPoint;
+  Range: TIntRec2;
 begin
   for i:= 0 to CaretsCount-1 do
   begin
@@ -1298,6 +1342,32 @@ begin
     NOffsetNew:= CaretPosToStrPos(Pnt);
     SetCaretSel(i, NOffset-NOffsetNew);
   end;
+
+  //check overlaps of selections, merge them if so
+  for i:= CaretsCount-1 downto 1 do
+    for j:= i-1 downto 0 do
+      if IsSelectionOverlap(i, j, Range) then
+      begin
+        //calc merged range
+        if AMoveDown then
+        begin
+          MergedStart:= Range.N2;
+          MergedSel:= Range.N1-Range.N2;
+        end
+        else
+        begin
+          MergedStart:= Range.N1;
+          MergedSel:= Range.N2-Range.N1;
+        end;
+
+        //update coords of j-th caret
+        SetCaret(j, StrPosToCaretPos(MergedStart));
+        SetCaretSel(j, MergedSel);
+
+        //remove merged i-th caret
+        DoRemoveCaretIndex(i);
+        Break
+      end;
 end;
 
 procedure TSyntaxMemo.DoRemoveDupCarets;
@@ -2116,14 +2186,13 @@ begin
       for i:= MarkersLen.Count-1 downto 0 do
         if HiWord(Integer(MarkersLen[i])) = NTabstopIndex then
         begin
+          //add first caret for this tabstop
           if CaretsCount=0 then
-          begin
-            //add first caret for this tabstop
             AddCaret(
               StrPosToCaretPos(NPos),
               -NLength,
               false);
-          end;
+
           //add carets for mirrors
           AddCaret(
             StrPosToCaretPos(TMarker(Markers[i]).Position),

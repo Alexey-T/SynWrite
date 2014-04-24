@@ -180,8 +180,6 @@ type
     cbNotif: TTntComboBox;
     cbTail: TTntCheckBox;
     cbOverRO: TTntCheckBox;
-    edBigSize: TSpinEdit;
-    TntLabel23: TTntLabel;
     ListTabColors: TTntListBox;
     TntLabel13: TTntLabel;
     tabFolders: TTntTabSheet;
@@ -353,6 +351,9 @@ type
     cbTreeExpand: TTntCheckBox;
     cbTreeCollapse: TTntCheckBox;
     cbTabDirs: TTntCheckBox;
+    boxOpen: TTntGroupBox;
+    edBigSize: TSpinEdit;
+    TntLabel23: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1717,7 +1718,6 @@ begin
     opTextOnly:= cbText_.ItemIndex;
     opOem:= edOem.Text;
     opUTF8:= edUTF8.Text;
-    opBigSize:= edBigSize.Value;
     opFollowTail:= cbTail.Checked;
     opUnicodeNeeded:= cbUniNeed.ItemIndex;
   end;
@@ -2146,7 +2146,6 @@ begin
     cbText_.ItemIndex:= opTextOnly;
     edOem.Text:= opOem;
     edUTF8.Text:= opUTF8;
-    edBigSize.Value:= opBigSize;
     cbTail.Checked:= opFollowTail;
     cbUniNeed.ItemIndex:= opUnicodeNeeded;
   end;
@@ -2366,6 +2365,7 @@ begin
       opNewLex:= ''
     else
       opNewLex:= edLex.Text;
+    opBigSize:= edBigSize.Value;
   end;
 end;
 
@@ -2384,6 +2384,8 @@ begin
         ItemIndex:= Items.IndexOf(opNewLex);
     edEnc.ItemIndex:= opNewEnc;
     edLE.ItemIndex:= opNewLineEnds;
+
+    edBigSize.Value:= opBigSize;
   end;
 end;
 
