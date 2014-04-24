@@ -466,7 +466,7 @@ procedure TSyntaxMemo.AddCaret(const P: TPoint;
   ASelCount: Integer = 0;
   AddDefaultPos: boolean = true);
 var
-  NSelCount: Integer;
+  NSelCount, NCaretPos: Integer;
 begin
   if not CanSetCarets then Exit;
   DoInitBaseEditor;
@@ -474,14 +474,19 @@ begin
 
   if (CaretsCount=0) and AddDefaultPos then
   begin
-    //calculate SelCount for first caret
+    //calculate SelCount for usual caret
     NSelCount:= 0;
     if SelLength>0 then
     begin
-      if SelStart<CaretStrPos then
-        NSelCount:= -SelLength
-      else
-        NSelCount:= SelLength;
+      NCaretPos:= CaretStrPos;
+      //check that single selection is "near" usual caret
+      if (NCaretPos=SelStart) or (NCaretPos=SelStart+SelLength) then
+      begin
+        if SelStart<NCaretPos then
+          NSelCount:= -SelLength
+        else
+          NSelCount:= SelLength;
+      end;
     end;
 
     DoAddCaretInt(FDefaultCaret, NSelCount);
@@ -1368,6 +1373,9 @@ begin
         DoRemoveCaretIndex(i);
         Break
       end;
+
+  if CaretsCount<=1 then
+    RemoveCarets;    
 end;
 
 procedure TSyntaxMemo.DoRemoveDupCarets;
