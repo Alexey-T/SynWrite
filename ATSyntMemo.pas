@@ -212,7 +212,7 @@ uses
   TntClipbrd,
   ecEmbObj,
   ecStrUtils,
-  ecCmdConst;
+  ecCmdConst, ecLists;
 
 function IsCommandMoveSelections(N: Integer): boolean;
 begin
@@ -2039,10 +2039,37 @@ procedure TSyntaxMemo.DoCaretsFromMarks(ALeft, AClear: boolean);
 var
   i, NStart, NEnd, NCaret, NSize: Integer;
 begin
-  if not CanSetCarets then Exit;
-  ResetSelection;
   if SearchMarks.Count=0 then Exit;
+
+  //single search mark
+  if SearchMarks.Count=1 then
+  begin
+    NStart:= SearchMarks[0].StartPos;
+    NSize:= SearchMarks[0].Size;
+
+    ResetSelection;
+    RemoveCarets;
+
+    if AClear then
+    begin
+      CaretStrPos:= NStart;
+      ReplaceText(NStart, NSize, '');
+    end
+    else
+    if ALeft then
+    begin
+      CaretStrPos:= NStart;
+      SetSelection(NStart, NSize, true);
+    end
+    else
+      SetSelection(NStart, NSize);
+    Exit
+  end;
+
+  //multi search marks
+  ResetSelection;
   RemoveCarets;
+  if not CanSetCarets then Exit;
 
   DoInitBaseEditor;
   SetStaticDraw;
