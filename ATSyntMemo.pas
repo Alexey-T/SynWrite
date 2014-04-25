@@ -95,7 +95,8 @@ type
     FOnCtrlClick: TOnCtrlClick;
     FMouseDownPoint: TPoint;
     FMouseDownCaret: Integer;
-    FMouseDownTick: DWORD;
+    FMouseDblTick: DWORD;
+    FMouseDblPoint: TPoint;
 
     procedure EditorZoom(Sender: TObject);
     procedure SetStaticDraw;
@@ -297,7 +298,8 @@ begin
 
   FMouseDownPoint:= Point(-1, -1);
   FMouseDownCaret:= -1;
-  FMouseDownTick:= 0;
+  FMouseDblTick:= 0;
+  FMouseDblPoint:= Point(-1, -1);
 
   OnGetGutterBandColor:= EdGetGutterBandColor;
   OnBeforeLineDraw:= EdBeforeLineDraw;
@@ -1461,16 +1463,25 @@ begin
   FMouseDownPoint:= Point(-1, -1);
   FMouseDownCaret:= -1;
 
-  bDoubleClick:= (GetTickCount-FMouseDownTick) <= GetDoubleClickTime;
-  if bDoubleClick then
-    FMouseDownTick:= 0
-  else
-    FMouseDownTick:= GetTickCount;
-
   if CanSetCarets then
   begin
     FDefaultCaret:= CaretPos;
     PTo:= MouseToCaret(X, Y);
+
+    //detect double-click
+    bDoubleClick:=
+      ((GetTickCount-FMouseDblTick) <= GetDoubleClickTime) and
+      PointsEqual(PTo, FMouseDblPoint);
+    if bDoubleClick then
+    begin
+      FMouseDblTick:= 0;
+      FMouseDblPoint:= Point(-1, -1);
+    end
+    else
+    begin
+      FMouseDblTick:= GetTickCount;
+      FMouseDblPoint:= PTo;
+    end;
 
     if (ssCtrl in Shift) and not (ssAlt in Shift) then
     begin
