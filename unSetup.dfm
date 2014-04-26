@@ -2114,7 +2114,7 @@ object fmSetup: TfmSetup
       end
       object boxOpen: TTntGroupBox
         Left = 8
-        Top = 152
+        Top = 148
         Width = 529
         Height = 57
         Caption = 'Open document'

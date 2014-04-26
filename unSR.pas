@@ -91,7 +91,7 @@ type
     labStyle: TTntLabel;
     mnuRe: TTntPopupMenu;
     labRe: TTntLabel;
-    cbBk: TTntCheckBox;
+    cbBkmkAll: TTntCheckBox;
     cbSel: TTntCheckBox;
     cbFromCur: TTntCheckBox;
     cbWrap: TTntCheckBox;
@@ -108,8 +108,8 @@ type
     StatusFind: TTntStatusBar;
     PanelBusy: TTntPanel;
     cbReDot: TTntCheckBox;
-    cbReMulti: TTntCheckBox;
     labTransp: TTntLabel;
+    cbSelectAll: TTntCheckBox;
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
@@ -152,6 +152,8 @@ type
     procedure TntFormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure labTranspClick(Sender: TObject);
+    procedure cbBkmkAllClick(Sender: TObject);
+    procedure cbSelectAllClick(Sender: TObject);
   private
     { Private declarations }
     CurChecked: boolean;
@@ -255,7 +257,8 @@ begin
   //cbCfm.Enabled:= Value;
   cbCfm.Visible:= Value;
   //cbBk.Enabled:= not Value;
-  cbBk.Visible:= not Value;
+  cbBkmkAll.Visible:= not Value;
+  cbSelectAll.Visible:= not Value;
   //cbExtSel.Enabled:= not Value;
   cbExtSel.Visible:= not Value;
   bCount.Visible:= not Value;
@@ -287,12 +290,12 @@ begin
     bBack.Checked:= not bFor.Checked;
     cbRe.Checked:= ReadBool('Search', 'RegExp', false);
     cbReDot.Checked:= ReadBool('Search', 'RegExpS', false);
-    cbReMulti.Checked:= ReadBool('Search', 'RegExpM', true);
     cbCase.Checked:= ReadBool('Search', 'Case', false);
     cbWords.Checked:= ReadBool('Search', 'Words', false);
     cbSpec.Checked:= ReadBool('Search', 'Spec', false);
     cbCfm.Checked:= ReadBool('Search', 'Cfm', false);
-    cbBk.Checked:= ReadBool('Search', 'Bk', false);
+    cbBkmkAll.Checked:= ReadBool('Search', 'Bk', false);
+    cbSelectAll.Checked:= ReadBool('Search', 'SelAll', false);
     cbExtSel.Checked:= ReadBool('Search', 'ExtSel', false);
     cbTokens.ItemIndex:= 0;
     IsMultiline:= ReadBool('Search', 'Multiline', false);
@@ -358,12 +361,12 @@ begin
     WriteBool('Search', 'Forw', bFor.Checked);
     WriteBool('Search', 'RegExp', cbRe.Checked);
     WriteBool('Search', 'RegExpS', cbReDot.Checked);
-    WriteBool('Search', 'RegExpM', cbReMulti.Checked);
     WriteBool('Search', 'Case', cbCase.Checked);
     WriteBool('Search', 'Words', cbWords.Checked);
     WriteBool('Search', 'Spec', cbSpec.Checked);
     WriteBool('Search', 'Cfm', cbCfm.Checked);
-    WriteBool('Search', 'Bk', cbBk.Checked);
+    WriteBool('Search', 'Bk', cbBkmkAll.Checked);
+    WriteBool('Search', 'SelAll', cbSelectAll.Checked);
     WriteBool('Search', 'ExtSel', cbExtSel.Checked);
     WriteInteger('Search', 'Tr', Trackbar1.Position);
     WriteBool('Search', 'TrLoose', cbLoose.Checked);
@@ -439,7 +442,6 @@ begin
   end;
   cbWords.Enabled:= not re;
   cbReDot.Enabled:= re;
-  cbReMulti.Enabled:= re;
 
   C:= IfThen(re, $B0FFFF, clWindow);
   ed1.Color:= C;
@@ -882,7 +884,7 @@ begin
   if H(cbSpec, ch1, ch2) then begin Handled:= true; Exit end;
   if FIsReplace then
     if H(cbCfm, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbBk, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbBkmkAll, ch1, ch2) then begin Handled:= true; Exit end;
   if H(cbExtSel, ch1, ch2) then begin Handled:= true; Exit end;
   if H(cbLoose, ch1, ch2) then begin Handled:= true; Exit end;
 
@@ -1281,6 +1283,7 @@ const
   cFindOptSpec = 'spec';
   cFindOptConfirm = 'cfm';
   cFindOptBookmk = 'bk';
+  cFindOptSelAll = 'selall';
   cFindOptExtSel = 'ext';
   cFindOptBack = 'back';
   cFindOptSel = 'sel';
@@ -1296,10 +1299,10 @@ begin
     IfThen(cbWords.Checked, cFindOptWords+',')+
     IfThen(cbRe.Checked, cFindOptRegex+',')+
     IfThen(cbReDot.Checked, cFindOptRegex_s+',')+
-    IfThen(cbReMulti.Checked, cFindOptRegex_m+',')+
     IfThen(cbSpec.Checked, cFindOptSpec+',')+
     IfThen(cbCfm.Checked, cFindOptConfirm+',')+
-    IfThen(cbBk.Checked, cFindOptBookmk+',')+
+    IfThen(cbBkmkAll.Checked, cFindOptBookmk+',')+
+    IfThen(cbSelectAll.Checked, cFindOptSelAll+',')+
     IfThen(cbExtSel.Checked, cFindOptExtSel+',')+
     IfThen(bBack.Checked, cFindOptBack+',')+
     IfThen(cbSel.Checked, cFindOptSel+',')+
@@ -1496,6 +1499,18 @@ procedure TfmSR.labTranspClick(Sender: TObject);
 begin
   with PanelTr do
     Visible:= not Visible;
+end;
+
+procedure TfmSR.cbBkmkAllClick(Sender: TObject);
+begin
+  if cbBkmkAll.Checked then
+    cbSelectAll.Checked:= false;
+end;
+
+procedure TfmSR.cbSelectAllClick(Sender: TObject);
+begin
+  if cbSelectAll.Checked then
+    cbBkmkAll.Checked:= false;
 end;
 
 end.

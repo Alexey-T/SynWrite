@@ -2331,6 +2331,10 @@ type
     function SGetFrameIndexFromPrefixedStr(const InfoFN: Widestring): Integer;
     function SGetTabPrefix: Widestring;
     procedure DoFindCommandFromString(const S: Widestring);
+    procedure DoReplaceOrSkipMatch(ADoReplace: boolean);
+    procedure DoReplaceAllMatches;
+    procedure DoReplaceAllMatchesInTabs(var AFilesReport: Widestring);
+    procedure DoFindNextMatch;
     procedure DoFindAllInTabs;
     procedure DoFindAllInCurrentTab(AWithBkmk: boolean);
     procedure DoFindInClipPanel;
@@ -3219,7 +3223,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.910';
+  cSynVer = '6.5.930';
   cSynPyVer = '1.0.128';
 
 const
@@ -8444,7 +8448,7 @@ procedure TfmMain.FindInit(AKeepFlags: boolean = false);
 var
   IsSpec, IsSel,
   IsCase, IsWords,
-  IsRe, IsRe_s, IsRe_m,
+  IsRe, IsRe_s, //IsRe_m,
   IsForw, IsWrap, IsSkipCol: boolean;
   SText: Widestring;
 begin
@@ -8458,7 +8462,7 @@ begin
     IsForw:= fmSR.bFor.Checked;
     IsRe:= fmSR.cbRe.Checked;
     IsRe_s:= fmSR.cbReDot.Checked;
-    IsRe_m:= fmSR.cbReMulti.Checked;
+    //IsRe_m:= fmSR.cbReMulti.Checked;
     if AKeepFlags then
     begin
       IsCase:= fmSR.cbCase.Checked;
@@ -8476,7 +8480,7 @@ begin
     IsForw:= ReadBool('Search', 'Forw', true);
     IsRe:= ReadBool('Search', 'RegExp', false);
     IsRe_s:= ReadBool('Search', 'RegExpS', false);
-    IsRe_m:= ReadBool('Search', 'RegExpM', true);
+    //IsRe_m:= ReadBool('Search', 'RegExpM', true);
     if AKeepFlags then
     begin
       IsCase:= ReadBool('Search', 'Case', false);
@@ -8501,7 +8505,7 @@ begin
   if not IsForw then Finder.Flags:= Finder.Flags + [ftBackward];
   if IsRe then Finder.Flags:= Finder.Flags + [ftRegex];
   if IsRe_s then Finder.Flags:= Finder.Flags + [ftRegex_s];
-  if IsRe_m then Finder.Flags:= Finder.Flags + [ftRegex_m];
+  //if IsRe_m then Finder.Flags:= Finder.Flags + [ftRegex_m];
   if AKeepFlags then
   begin
     if IsCase then Finder.Flags:= Finder.Flags + [ftCaseSens];
@@ -8773,14 +8777,128 @@ begin
       Ed.SelStart, Ed.SelLength);
 end;
 
-procedure TfmMain.FindAction(act: TSRAction);
+
+procedure TfmMain.DoReplaceOrSkipMatch(ADoReplace: boolean);
 var
-  S, Sfiles: Widestring;
-  n, nf: Integer;
-  Ok, OkSel, OkReplaced: boolean;
+  Ok, OkReplaced: boolean;
+begin
+  Finder.Flags:= Finder.Flags-[ftPromtOnReplace];
+
+  //move to sel start
+  if (CurrentEditor.SelLength>0) then
+    DoFixReplaceCaret(CurrentEditor);
+
+  //replace only when sel present
+  OkReplaced:= false;
+  Ok:= (CurrentEditor.SelLength>0) or (Finder.Matches>0);
+  if Ok then
+    if ADoReplace then
+    begin
+      //Bug1: RepAgain doesn't replace 1st match if caret
+      //already at match and match_len =0 (search for '^')
+      Finder.ReplaceAgain;
+      OkReplaced:= Finder.Matches>0;
+      CurrentFrame.DoTitleChanged;
+    end;
+
+  //sel next match
+  Finder.FindAgain;
+  //workaround for Bug1
+  DoWorkaround_FindNext1;
+
+  //final actions
+  Ok:= Finder.Matches>0;
+  if Ok and (CurrentEditor.SelLength>0) then
+    DoFixReplaceCaret(CurrentEditor);
+  if Ok then
+    EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
+
+  //show message in Find dialog status
+  if not OkReplaced then
+  begin
+    if Ok then
+      fmSR.ShowStatus(DKLangConstW('zMResRepNoFoundYes'))
+    else
+      fmSR.ShowStatus(DKLangConstW('zMResRepNoFoundNo'));
+  end
+  else
+  begin
+    if Ok then
+      fmSR.ShowStatus(DKLangConstW('zMResRepYesFoundYes'))
+    else
+      fmSR.ShowStatus(DKLangConstW('zMResRepYesFoundNo'));
+  end;
+end;
+
+procedure TfmMain.DoFindNextMatch;
+var
+  Ok: boolean;
+begin
+  Finder.FindAgain;
+  Ok:= Finder.Matches>0;
+  if Ok then
+    EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
+  if Ok then
+    fmSR.ShowStatus(DKLangConstW('zMResFound'))
+  else
+    fmSR.ShowStatus(DKLangConstW('zMResFoundNo'));
+end;
+
+procedure TfmMain.DoReplaceAllMatches;
+var
+  Ok, OkSel: boolean;
+  SText: Widestring;
   Sel: TSynSelSave;
   OldScrollPosY: integer;
 begin
+  Ok:= ftPromtOnReplace in Finder.Flags;
+  OkSel:= ftSelectedText in Finder.Flags;
+  if Ok then
+  begin
+    fmSR.Hide;
+    SText:= fmSR.Text1;
+  end;
+  if OkSel then
+    EditorSaveSel(CurrentEditor, Sel);
+  OldScrollPosY:= CurrentEditor.ScrollPosY;
+  //
+  Finder.ReplaceAll;
+  if Finder.Matches>0 then
+    CurrentFrame.DoTitleChanged;
+  //
+  CurrentEditor.ScrollPosY:= OldScrollPosY;
+  if OkSel then
+    EditorRestoreSel(CurrentEditor, Sel);
+  fmSR.ShowError(Finder.Matches=0);
+  if Ok then
+  begin
+    fmSR.Show;
+    fmSR.Text1:= SText;
+  end;
+end;
+
+procedure TfmMain.DoReplaceAllMatchesInTabs(var AFilesReport: Widestring);
+var
+  nMatches, nFiles: Integer;
+begin
+  if FrameAllCount<2 then
+    MsgWarn(DKLangConstW('fnMul'), Handle)
+  else
+  begin
+    ReplaceInAllTabs(nMatches, nFiles);
+    Finder.Matches:= nMatches;
+    fmSR.ShowError(Finder.Matches=0);
+    AFilesReport:= WideFormat(DKLangConstW('fn_f'), [nFiles]);
+  end;
+end;
+
+procedure TfmMain.FindAction(act: TSRAction);
+var
+  SMsg, SMsgFiles: Widestring;
+begin
+  SMsg:= '';
+  SMsgFiles:= '';
+
   with fmSR do
   begin
     if Text1='' then
@@ -8791,7 +8909,7 @@ begin
     if cbWords.Checked then Finder.Flags:= Finder.Flags + [ftWholeWords];
     if cbRe.Checked then Finder.Flags:= Finder.Flags + [ftRegex];
     if cbReDot.Checked then Finder.Flags:= Finder.Flags + [ftRegex_s];
-    if cbReMulti.Checked then Finder.Flags:= Finder.Flags + [ftRegex_m];
+    //if cbReMulti.Checked then Finder.Flags:= Finder.Flags + [ftRegex_m];
     if cbSel.Checked then Finder.Flags:= Finder.Flags + [ftSelectedText];
     if bBack.Checked then Finder.Flags:= Finder.Flags + [ftBackward];
     if cbCfm.Checked then Finder.Flags:= Finder.Flags + [ftPromtOnReplace];
@@ -8811,77 +8929,29 @@ begin
       Finder.FindText:= SDecodeSpecChars(Finder.FindText);
       Finder.ReplaceText:= SDecodeSpecChars(Finder.ReplaceText);
     end;
-  end;
 
-  Finder.OnCanAccept:= FinderCanAccept;
+    Finder.OnCanAccept:= FinderCanAccept;
+  end;
 
   case act of
     arFindNext:
       begin
-        Finder.FindAgain;
-        Ok:= Finder.Matches>0;
-        if Ok then
-          EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
-        if Ok then
-          fmSR.ShowStatus(DKLangConstW('zMResFound'))
-        else
-          fmSR.ShowStatus(DKLangConstW('zMResFoundNo'));
+        DoFindNextMatch;
       end;
     //
     arReplaceNext,
     arSkip:
       begin
-        Finder.Flags:= Finder.Flags-[ftPromtOnReplace];
-
-        //move to sel start
-        if (CurrentEditor.SelLength>0) then
-          DoFixReplaceCaret(CurrentEditor);
-
-        //replace only when sel present
-        OkReplaced:= false;
-        Ok:= (CurrentEditor.SelLength>0) or (Finder.Matches>0);
-        if Ok then
-          if (act<>arSkip) then
-          begin
-            //Bug1: RepAgain doesn't replace 1st match if caret
-            //already at match and match_len =0 (search for '^')
-            Finder.ReplaceAgain;
-            OkReplaced:= Finder.Matches>0;
-            CurrentFrame.DoTitleChanged;
-          end;
-
-        //sel next match
-        Finder.FindAgain;
-        //workaround for Bug1
-        DoWorkaround_FindNext1;
-
-        //show msg
-        Ok:= Finder.Matches>0;
-        if Ok and (CurrentEditor.SelLength>0) then
-          DoFixReplaceCaret(CurrentEditor);
-        if Ok then
-          EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
-
-        if not OkReplaced then
-        begin
-          if Ok then
-            fmSR.ShowStatus(DKLangConstW('zMResRepNoFoundYes'))
-          else
-            fmSR.ShowStatus(DKLangConstW('zMResRepNoFoundNo'));
-        end
-        else
-        begin
-          if Ok then
-            fmSR.ShowStatus(DKLangConstW('zMResRepYesFoundYes'))
-          else
-            fmSR.ShowStatus(DKLangConstW('zMResRepYesFoundNo'));
-        end;
+        DoReplaceOrSkipMatch(act<>arSkip);
       end;
     //
     arFindAll:
       begin
         CurrentEditor.ResetSearchMarks;
-        DoFindAllInCurrentTab(fmSR.cbBk.Checked);
+        CurrentEditor.RemoveCarets;
+        DoFindAllInCurrentTab(fmSR.cbBkmkAll.Checked);
+        if fmSR.cbSelectAll.Checked then
+          CurrentEditor.ExecCommand(smCaretsFromMarksRight);
       end;
     //
     arCount:
@@ -8897,54 +8967,28 @@ begin
     //
     arReplaceAll:
       begin
-        Ok:= ftPromtOnReplace in Finder.Flags;
-        OkSel:= ftSelectedText in Finder.Flags;
-        if Ok then
-          begin fmSR.Hide; s:= fmSR.Text1; end;
-        if OkSel then
-          EditorSaveSel(CurrentEditor, Sel);
-        OldScrollPosY:= CurrentEditor.ScrollPosY;
-        //
-        Finder.ReplaceAll;
-        if Finder.Matches>0 then
-          CurrentFrame.DoTitleChanged;
-        //
-        CurrentEditor.ScrollPosY:= OldScrollPosY;
-        if OkSel then
-          EditorRestoreSel(CurrentEditor, Sel);
-        fmSR.ShowError(Finder.Matches=0);
-        if Ok then
-        begin
-          fmSR.Show;
-          fmSR.Text1:= s;
-        end;
+        DoReplaceAllMatches;
       end;
     //
     arReplaceAllInAll:
-      if FrameAllCount<2 then
-        MsgWarn(DKLangConstW('fnMul'), Handle)
-      else
       begin
-        ReplaceInAllTabs(n, nf);
-        Finder.Matches:= n;
-        fmSR.ShowError(Finder.Matches=0);
-        Sfiles:= WideFormat(DKLangConstW('fn_f'), [nf]);
+        DoReplaceAllMatchesInTabs(SMsgFiles);
       end;
     end;
 
   Finder.OnCanAccept:= nil;
-  if Finder.Matches > 0 then
+  if Finder.Matches>0 then
   begin
-    S:= WideFormat(DKLangConstW('Found'), [Finder.Matches]) + ' ' + Sfiles;
-    DoHint(S);
+    SMsg:= WideFormat(DKLangConstW('Found'), [Finder.Matches]) + ' ' + SMsgFiles;
+    DoHint(SMsg);
     if act in [arCount, arFindAll, arReplaceAll, arReplaceAllInAll] then
-      fmSR.ShowStatus(S);
+      fmSR.ShowStatus(SMsg);
   end;
 end;
 
 //Reason of this:
-//1- Plugin doesnt handle some keys
-//2- QS focused doesnt handle keys
+//1- Lister plugin doesnt handle some keys
+//2- QuickSearch edit focused doesnt handle keys
 procedure TfmMain.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 var
