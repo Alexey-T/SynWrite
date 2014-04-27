@@ -12716,9 +12716,8 @@ begin
     if cbWords.Checked then Finder.Flags:= Finder.Flags + [ftWholeWords];
 
     if cbRe.Checked then Finder.Flags:= Finder.Flags + [ftRegex];
-    //if cbReDot.Checked then Finder.Flags:= Finder.Flags + [ftRegexDot];
-    //if cbReMLine.Checked then
-      Finder.Flags:= Finder.Flags + [ftRegex_m];
+    //if cbReDot.Checked then Finder.Flags:= Finder.Flags + [ftRegex_s];
+    //if cbReMLine.Checked then Finder.Flags:= Finder.Flags + [ftRegex_m];
 
     if cbSpec.Checked then
     begin

@@ -416,7 +416,7 @@ const
   cFlag_Entire   = 1 shl 4;
   cFlag_Regex    = 1 shl 5;
   cFlag_Regex_S  = 1 shl 6;
-  cFlag_Regex_M  = 1 shl 7;
+  //cFlag_Regex_M  = 1 shl 7;
   cFlag_Prompt   = 1 shl 8;
   cFlag_Wrap     = 1 shl 9;
   cFlag_SkipCol  = 1 shl 10;
@@ -455,7 +455,7 @@ begin
       if (NOptions and cFlag_Entire)<>0 then Include(AOptions, ftEntireScope);
       if (NOptions and cFlag_Regex)<>0 then Include(AOptions, ftRegex);
       if (NOptions and cFlag_Regex_S)<>0 then Include(AOptions, ftRegex_s);
-      if (NOptions and cFlag_Regex_M)<>0 then Include(AOptions, ftRegex_m);
+      //if (NOptions and cFlag_Regex_M)<>0 then Include(AOptions, ftRegex_m);
       if (NOptions and cFlag_Prompt)<>0 then Include(AOptions, ftPromtOnReplace);
       if (NOptions and cFlag_Wrap)<>0 then Include(AOptions, ftWrapSearch);
       if (NOptions and cFlag_SkipCol)<>0 then Include(AOptions, ftSkipCollapsed);

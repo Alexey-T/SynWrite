@@ -33,7 +33,7 @@ type
     ftEntireScope,    //else From caret
     ftRegex,          //use regular expressions
     ftRegex_s,        //regex: dot matches newline
-    ftRegex_m,        //regex: ^ and $ matches lines
+    //ftRegex_m,        //regex: ^ and $ matches lines
     ftPromtOnReplace,
     ftWrapSearch,
     ftSkipCollapsed

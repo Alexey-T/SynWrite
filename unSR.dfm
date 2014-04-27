@@ -249,7 +249,7 @@ object fmSR: TfmSR
     TabOrder = 2
     object cbRe: TTntCheckBox
       Left = 8
-      Top = 86
+      Top = 80
       Width = 160
       Height = 17
       Caption = 'Regular e&xpressions'
@@ -258,7 +258,7 @@ object fmSR: TfmSR
     end
     object cbCase: TTntCheckBox
       Left = 8
-      Top = 20
+      Top = 16
       Width = 160
       Height = 17
       Caption = '&Case sensitive'
@@ -266,7 +266,7 @@ object fmSR: TfmSR
     end
     object cbWords: TTntCheckBox
       Left = 8
-      Top = 38
+      Top = 34
       Width = 160
       Height = 17
       Caption = '&Whole words'
@@ -274,7 +274,7 @@ object fmSR: TfmSR
     end
     object cbSpec: TTntCheckBox
       Left = 8
-      Top = 68
+      Top = 62
       Width = 160
       Height = 17
       Caption = 'Special chars (\n \r \t...)'
@@ -283,7 +283,7 @@ object fmSR: TfmSR
     end
     object cbCfm: TTntCheckBox
       Left = 8
-      Top = 138
+      Top = 122
       Width = 160
       Height = 17
       Caption = 'Pro&mpt on replace'
@@ -291,7 +291,7 @@ object fmSR: TfmSR
     end
     object cbBkmkAll: TTntCheckBox
       Left = 8
-      Top = 142
+      Top = 140
       Width = 160
       Height = 17
       Caption = 'Boo&kmark results'
@@ -300,7 +300,7 @@ object fmSR: TfmSR
     end
     object cbExtSel: TTntCheckBox
       Left = 8
-      Top = 160
+      Top = 158
       Width = 160
       Height = 17
       Caption = 'Extend selecti&on'
@@ -308,7 +308,7 @@ object fmSR: TfmSR
     end
     object cbReDot: TTntCheckBox
       Left = 24
-      Top = 104
+      Top = 98
       Width = 142
       Height = 17
       Caption = 'Dot matches newlines'
@@ -316,10 +316,10 @@ object fmSR: TfmSR
     end
     object cbSelectAll: TTntCheckBox
       Left = 8
-      Top = 124
+      Top = 122
       Width = 160
       Height = 17
-      Caption = 'Select results'
+      Caption = 'Select res&ults'
       TabOrder = 6
       OnClick = cbSelectAllClick
     end

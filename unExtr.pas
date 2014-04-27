@@ -93,7 +93,7 @@ begin
   begin
     Control:= Self.Memo;
     FindText:= ed.Text;
-    Flags:= [ftRegex, ftRegex_m];
+    Flags:= [ftRegex{, ftRegex_m}];
     if bCase.Checked then Flags:= Flags + [ftCaseSens];
     if bSel.Checked then Flags:= Flags + [ftSelectedText];
     if not bCur.Checked then Flags:= Flags + [ftEntireScope];

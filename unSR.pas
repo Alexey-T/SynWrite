@@ -885,6 +885,7 @@ begin
   if FIsReplace then
     if H(cbCfm, ch1, ch2) then begin Handled:= true; Exit end;
   if H(cbBkmkAll, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbSelectAll, ch1, ch2) then begin Handled:= true; Exit end;
   if H(cbExtSel, ch1, ch2) then begin Handled:= true; Exit end;
   if H(cbLoose, ch1, ch2) then begin Handled:= true; Exit end;
 
@@ -1279,7 +1280,6 @@ const
   cFindOptWords = 'w';
   cFindOptRegex = 're';
   cFindOptRegex_s = 're_s';
-  cFindOptRegex_m = 're_m';
   cFindOptSpec = 'spec';
   cFindOptConfirm = 'cfm';
   cFindOptBookmk = 'bk';
@@ -1363,7 +1363,7 @@ begin
     if S=cFindOptWords then Include(Opt, ftWholeWords);
     if S=cFindOptRegex then Include(Opt, ftRegex);
     if S=cFindOptRegex_s then Include(Opt, ftRegex_s);
-    if S=cFindOptRegex_m then Include(Opt, ftRegex_m);
+    //if S=cFindOptRegex_m then Include(Opt, ftRegex_m);
     if S=cFindOptSpec then OptSpec:= true;
     if S=cFindOptConfirm then Include(Opt, ftPromtOnReplace);
     if S=cFindOptBookmk then OptBkmk:= true;
