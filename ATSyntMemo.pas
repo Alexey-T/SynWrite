@@ -2063,6 +2063,8 @@ begin
     end
     else
       SetSelection(NStart, NSize);
+
+    ResetSearchMarks;
     Exit
   end;
 
@@ -2099,9 +2101,10 @@ begin
           DoShiftCarets(StrPosToCaretPos(NStart), -NSize, 0);
       end;
     CaretStrPos:= NCaret;
+    ResetSearchMarks;
   finally
     EndUpdate;
-  end;  
+  end;
 
   DoUpdateCarets;
 

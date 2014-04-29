@@ -29,6 +29,8 @@ type
     procedure edNumChange(Sender: TObject);
     procedure ButtonOkClick(Sender: TObject);
     procedure labBookmkClick(Sender: TObject);
+    procedure TntFormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
   public
     FMaxLine: integer;
@@ -113,6 +115,19 @@ procedure TfmGoto.labBookmkClick(Sender: TObject);
 begin
   PanelPos.Visible:= false;
   PanelBookmk.Visible:= true;
+  if cbPrev.CanFocus then
+    cbPrev.SetFocus;
+end;
+
+procedure TfmGoto.TntFormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=Ord('G')) and (Shift=[ssCtrl]) then
+  begin
+    if labBookmk.Enabled then
+      labBookmkClick(Self);
+    Key:= 0;
+  end;
 end;
 
 initialization
