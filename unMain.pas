@@ -2334,6 +2334,7 @@ type
     procedure DoFindDialog_ReplaceAllInCurrentTab;
     procedure DoFindDialog_ReplaceAllInAllTabs(var AFilesReport: Widestring);
     procedure DoFindDialog_FindNext;
+    procedure DoFindDialog_CountAllInCurrentTab;
     procedure DoFindDialog_ReplaceOrSkip(ADoReplace: boolean);
     procedure DoFindDialog_FindAllInAllTabs;
     procedure DoFindDialog_FindAllInCurrentTab(AWithBkmk, ASelectResults: boolean);
@@ -8844,6 +8845,12 @@ begin
     fmSR.ShowStatus(DKLangConstW('zMResFoundNo'));
 end;
 
+procedure TfmMain.DoFindDialog_CountAllInCurrentTab;
+begin
+  Finder.CountAll;
+  fmSR.ShowError(Finder.Matches=0);
+end;
+
 procedure TfmMain.DoFindDialog_ReplaceAllInCurrentTab;
 var
   Ok, OkSel: boolean;
@@ -8935,44 +8942,29 @@ begin
 
   case act of
     arFindNext:
-      begin
-        DoFindDialog_FindNext;
-      end;
+      DoFindDialog_FindNext;
     //
     arReplaceNext,
     arSkip:
-      begin
-        DoFindDialog_ReplaceOrSkip(act<>arSkip);
-      end;
+      DoFindDialog_ReplaceOrSkip(act<>arSkip);
     //
     arFindAll:
-      begin
-        DoFindDialog_FindAllInCurrentTab(
-          fmSR.cbBkmkAll.Checked,
-          fmSR.cbSelectAll.Checked);
-      end;
+      DoFindDialog_FindAllInCurrentTab(
+        fmSR.cbBkmkAll.Checked,
+        fmSR.cbSelectAll.Checked);
     //
     arCount:
-      begin
-        Finder.CountAll;
-        fmSR.ShowError(Finder.Matches=0);
-      end;
+      DoFindDialog_CountAllInCurrentTab;
     //
     arFindInTabs:
-      begin
-        DoFindDialog_FindAllInAllTabs;
-      end;
+      DoFindDialog_FindAllInAllTabs;
     //
     arReplaceAll:
-      begin
-        DoFindDialog_ReplaceAllInCurrentTab;
-      end;
+      DoFindDialog_ReplaceAllInCurrentTab;
     //
     arReplaceAllInAll:
-      begin
-        DoFindDialog_ReplaceAllInAllTabs(SMsgFiles);
-      end;
-    end;
+      DoFindDialog_ReplaceAllInAllTabs(SMsgFiles);
+  end;
 
   Finder.OnCanAccept:= nil;
   if Finder.Matches>0 then
