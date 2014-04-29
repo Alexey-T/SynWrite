@@ -2782,16 +2782,9 @@ begin
 end;
 
 {
-procedure TfmSetup.MenuLexersClick(Sender: TObject);
-var S: string;
-begin
-  S:= (Sender as TTntMenuItem).Caption;
-  with edAcpFixCase do
-    Text:= Text + IfThen(Text<>'', ',') + S;
-end;
-}
-
-{
+//deprecated code.
+//shows menu with all lexest list.
+//may be useful later.
 procedure TfmSetup.bAcpFixCaseClick(Sender: TObject);
 var
   L: TTntStringList;

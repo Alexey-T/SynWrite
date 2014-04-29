@@ -2331,12 +2331,12 @@ type
     function SGetFrameIndexFromPrefixedStr(const InfoFN: Widestring): Integer;
     function SGetTabPrefix: Widestring;
     procedure DoFindCommandFromString(const S: Widestring);
-    procedure DoReplaceOrSkipMatch(ADoReplace: boolean);
-    procedure DoReplaceAllMatches;
-    procedure DoReplaceAllMatchesInTabs(var AFilesReport: Widestring);
-    procedure DoFindNextMatch;
-    procedure DoFindAllInTabs;
-    procedure DoFindAllInCurrentTab(AWithBkmk: boolean);
+    procedure DoFindDialog_ReplaceAllInCurrentTab;
+    procedure DoFindDialog_ReplaceAllInAllTabs(var AFilesReport: Widestring);
+    procedure DoFindDialog_FindNext;
+    procedure DoFindDialog_ReplaceOrSkip(ADoReplace: boolean);
+    procedure DoFindDialog_FindAllInAllTabs;
+    procedure DoFindDialog_FindAllInCurrentTab(AWithBkmk, ASelectResults: boolean);
     procedure DoFindInClipPanel;
     procedure DoFindInFindResults;
     procedure DoFindInOutPanel;
@@ -8778,7 +8778,7 @@ begin
 end;
 
 
-procedure TfmMain.DoReplaceOrSkipMatch(ADoReplace: boolean);
+procedure TfmMain.DoFindDialog_ReplaceOrSkip(ADoReplace: boolean);
 var
   Ok, OkReplaced: boolean;
 begin
@@ -8830,7 +8830,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoFindNextMatch;
+procedure TfmMain.DoFindDialog_FindNext;
 var
   Ok: boolean;
 begin
@@ -8844,7 +8844,7 @@ begin
     fmSR.ShowStatus(DKLangConstW('zMResFoundNo'));
 end;
 
-procedure TfmMain.DoReplaceAllMatches;
+procedure TfmMain.DoFindDialog_ReplaceAllInCurrentTab;
 var
   Ok, OkSel: boolean;
   SText: Widestring;
@@ -8877,7 +8877,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoReplaceAllMatchesInTabs(var AFilesReport: Widestring);
+procedure TfmMain.DoFindDialog_ReplaceAllInAllTabs(var AFilesReport: Widestring);
 var
   nMatches, nFiles: Integer;
 begin
@@ -8936,22 +8936,20 @@ begin
   case act of
     arFindNext:
       begin
-        DoFindNextMatch;
+        DoFindDialog_FindNext;
       end;
     //
     arReplaceNext,
     arSkip:
       begin
-        DoReplaceOrSkipMatch(act<>arSkip);
+        DoFindDialog_ReplaceOrSkip(act<>arSkip);
       end;
     //
     arFindAll:
       begin
-        CurrentEditor.ResetSearchMarks;
-        CurrentEditor.RemoveCarets;
-        DoFindAllInCurrentTab(fmSR.cbBkmkAll.Checked);
-        if fmSR.cbSelectAll.Checked then
-          CurrentEditor.ExecCommand(smCaretsFromMarksRight);
+        DoFindDialog_FindAllInCurrentTab(
+          fmSR.cbBkmkAll.Checked,
+          fmSR.cbSelectAll.Checked);
       end;
     //
     arCount:
@@ -8962,17 +8960,17 @@ begin
     //
     arFindInTabs:
       begin
-        DoFindAllInTabs;
+        DoFindDialog_FindAllInAllTabs;
       end;
     //
     arReplaceAll:
       begin
-        DoReplaceAllMatches;
+        DoFindDialog_ReplaceAllInCurrentTab;
       end;
     //
     arReplaceAllInAll:
       begin
-        DoReplaceAllMatchesInTabs(SMsgFiles);
+        DoFindDialog_ReplaceAllInAllTabs(SMsgFiles);
       end;
     end;
 
@@ -22457,7 +22455,7 @@ begin
   Result:= DKLangConstW('Tab') + ':';
 end;
 
-procedure TfmMain.DoFindAllInTabs;
+procedure TfmMain.DoFindDialog_FindAllInAllTabs;
 var
   NTotalSize, NDoneSize: Int64;
   ADir: Widestring;
@@ -28544,12 +28542,15 @@ begin
     end;
 end;
 
-procedure TfmMain.DoFindAllInCurrentTab(AWithBkmk: boolean);
+procedure TfmMain.DoFindDialog_FindAllInCurrentTab(AWithBkmk, ASelectResults: boolean);
 var
   ADir: Widestring;
   AFrame: TEditorFrame;
   AFrameIndex: Integer;
 begin
+  CurrentEditor.ResetSearchMarks;
+  CurrentEditor.RemoveCarets;
+
   ADir:= '';
   AFrame:= CurrentFrame;
   AFrameIndex:= FrameIndex(AFrame);
@@ -28588,6 +28589,9 @@ begin
   UpdateTreeFind(Finder.FindText, ADir, false, true);
   UpdatePanelOut(tbFind);
   plOut.Show;
+
+  if ASelectResults then
+    CurrentEditor.ExecCommand(smCaretsFromMarksRight);
 end;
 
 procedure TfmMain.DoPyStringToEvents(const Str: string;

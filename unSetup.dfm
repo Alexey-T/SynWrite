@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabNewOpen
+    ActivePage = tabFolders
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -2018,13 +2018,12 @@ object fmSetup: TfmSetup
           Caption = 
             'Folders, which are looked by command "Open <selection>" of edito' +
             'r context menu:'
-          WordWrap = True
         end
         object edFolders: TTntMemo
           Left = 8
-          Top = 36
+          Top = 32
           Width = 497
-          Height = 205
+          Height = 209
           ScrollBars = ssBoth
           TabOrder = 0
           OnKeyDown = edFoldersKeyDown
