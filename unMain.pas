@@ -18144,16 +18144,19 @@ var
 begin
   with TfmGoto.Create(nil) do
    try
+     PanelPos.Visible:= AMode=goLine;
+     PanelBookmk.Visible:= not PanelPos.Visible;
      case AMode of
-       goLine: cbPos.Checked:= true;
        goPrevBk: cbPrev.Checked:= true;
        goNextBk: cbNext.Checked:= true;
        goNumBk: cbNum.Checked:= true;
      end;
+     
      edLine.Text:= IntToStr(ALine);
      edCol.Text:= IntToStr(ACol);
      FMaxLine:= CurrentEditor.Lines.Count;
 
+     //init list of numbered bookmarks
      edNum.Items.Clear;
      for i:= 0 to 9 do
      begin
@@ -18161,29 +18164,30 @@ begin
        FBookSet[i]:= CurrentEditor.Bookmarks[i]>=0;
      end;
 
+     //numbered bookmarks enabled?
      en:= false;
      edNum.ItemIndex:= 0;
      for i:= 0 to 9 do
        if FBookSet[i] then
          begin en:= true; edNum.ItemIndex:= i; Break end;
      cbNum.Enabled:= en;
+     edNum.Enabled:= en;
 
+     //any bookmarks enabled?
      en:= CurrentEditor.BookmarkObj.Count>0;
      cbPrev.Enabled:= en;
      cbNext.Enabled:= en;
-
-     if not cbPrev.Enabled and not cbNext.Enabled and not cbNum.Enabled then
-       cbPos.Enabled:= false;
+     labBookmk.Enabled:= en;
 
      Result:= ShowModal = mrOk;
      if Result then
      begin
-       if cbPos.Checked then AMode:= goLine else
+       if PanelPos.Visible then AMode:= goLine else
        if cbPrev.Checked then AMode:= goPrevBk else
        if cbNext.Checked then AMode:= goNextBk else
        if cbNum.Checked then AMode:= goNumBk;
 
-       //calc line num
+       //calc line number
        //limit by [1, Count]
        s:= edLine.Text;
        s:= Trim(s);
@@ -18193,7 +18197,7 @@ begin
          ALine:= StrToIntDef(s, ALine);
        ALine:= Min2(Max2(ALine, 1), CurrentEditor.Lines.Count);
 
-       //calc col num
+       //calc column number
        //limit by [1, inf]
        s:= edCol.Text;
        s:= Trim(s);

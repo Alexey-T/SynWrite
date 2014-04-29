@@ -9,26 +9,26 @@ uses
 
 type
   TfmGoto = class(TTntForm)
-    Label1: TTntLabel;
-    edLine: TComboBox;
     ButtonOk: TTntButton;
     ButtonCan: TTntButton;
     DKLanguageController1: TDKLanguageController;
-    edCol: TComboBox;
-    Label2: TTntLabel;
     cbExtSel: TTntCheckBox;
-    Bevel1: TBevel;
-    cbPos: TTntRadioButton;
+    PanelPos: TPanel;
+    Label1: TTntLabel;
+    Label2: TTntLabel;
+    labBookmk: TTntLabel;
+    edLine: TComboBox;
+    edCol: TComboBox;
+    PanelBookmk: TPanel;
+    cbNum: TTntRadioButton;
     cbPrev: TTntRadioButton;
     cbNext: TTntRadioButton;
-    cbNum: TTntRadioButton;
     edNum: TTntComboBox;
-    Bevel2: TBevel;
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
-    procedure cbPosClick(Sender: TObject);
     procedure edNumChange(Sender: TObject);
     procedure ButtonOkClick(Sender: TObject);
+    procedure labBookmkClick(Sender: TObject);
   private
   public
     FMaxLine: integer;
@@ -51,7 +51,7 @@ procedure TfmGoto.FormCloseQuery(Sender: TObject;
 var n: integer;
 begin
   if ModalResult = mrOK then
-    if cbPos.Checked then
+    if PanelPos.Visible then
     begin
       if (edLine.Text<>'') and (char(edLine.Text[1]) in ['+', '-']) then
         CanClose:= true
@@ -60,7 +60,7 @@ begin
         n:= StrToIntDef(edLine.Text, -1);
         CanClose:= (n>=1) and (n<=FMaxLine);
         if not CanClose then
-          MsgError(WideFormat(DKLangConstW('MLn'), [FMaxLine]));
+          MsgError(WideFormat(DKLangConstW('MLn'), [FMaxLine]), Handle);
       end;    
     end
     else
@@ -68,12 +68,13 @@ begin
     begin
       CanClose:= FBookSet[edNum.ItemIndex];
       if not CanClose then
-        MsgError(WideFormat(DKLangConstW('MErBk'), [edNum.ItemIndex]));
+        MsgError(WideFormat(DKLangConstW('MErBk'), [edNum.ItemIndex]), Handle);
     end;
 end;
 
 procedure TfmGoto.FormShow(Sender: TObject);
-var i: integer;
+var
+  i: integer;
 begin
   edLine.Items.Clear;
   if LineList<>nil then
@@ -85,22 +86,14 @@ begin
     for i:= 0 to ColList.Count-1 do
       edCol.Items.Add(ColList[i]);
 
-  cbPosClick(Self);  
-end;
-
-procedure TfmGoto.cbPosClick(Sender: TObject);
-begin
-  edLine.Enabled:= cbPos.Checked;
-  edCol.Enabled:= edLine.Enabled;
-  Label1.Enabled:= edLine.Enabled;
-  Label2.Enabled:= edLine.Enabled;
-  edNum.Enabled:= cbNum.Checked;
+  if PanelPos.Visible then
+    if edLine.CanFocus then
+      edLine.SetFocus;
 end;
 
 procedure TfmGoto.edNumChange(Sender: TObject);
 begin
   cbNum.Checked:= true;
-  cbPosClick(Self);
 end;
 
 procedure TfmGoto.ButtonOkClick(Sender: TObject);
@@ -114,6 +107,12 @@ begin
   n:= ColList.IndexOf(edCol.Text);
   if n>=0 then ColList.Delete(n);
   ColList.Insert(0, edCol.Text);
+end;
+
+procedure TfmGoto.labBookmkClick(Sender: TObject);
+begin
+  PanelPos.Visible:= false;
+  PanelBookmk.Visible:= true;
 end;
 
 initialization
