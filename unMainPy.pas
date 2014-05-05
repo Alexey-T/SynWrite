@@ -386,11 +386,19 @@ begin
 end;
 
 function Py_ed_focus(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H: Integer;
+  Ed: TSyntaxMemo;
 begin
-  fmMain.FocusEditor;
   with GetPythonEngine do
-    Result:= ReturnNone;
-end;    
+    if Bool(PyArg_ParseTuple(Args, 'i:focus', @H)) then
+    begin
+      Ed:= PyEditor(H);
+      fmMain.CurrentFrame:= fmMain.FrameOfEditor(Ed);
+      fmMain.FocusEditor;
+      Result:= ReturnNone;
+    end;
+end;
 
 function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
 var
