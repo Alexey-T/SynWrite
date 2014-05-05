@@ -28,6 +28,11 @@ function Py_lexer_proc(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_set_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_app_proc(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_handles(Self, Args : PPyObject): PPyObject; cdecl;
+
+const
+  cPyEditorHandleMin = 20;
+  cPyEditorHandleMax = 1000;
 
 implementation
 
@@ -35,6 +40,7 @@ uses
   SysUtils,
   Windows,
   Classes,
+  Math,
   Types,
   Controls,
   Forms,
@@ -1014,6 +1020,18 @@ begin
       end;
     end;
   end;
+end;
+
+
+function Py_ed_handles(Self, Args : PPyObject): PPyObject; cdecl;
+var
+  nMin, nMax: Integer;
+begin
+  nMin:= cPyEditorHandleMin;
+  nMax:= Min(cPyEditorHandleMin + fmMain.FrameAllCount - 1, cPyEditorHandleMax);
+
+  with GetPythonEngine do
+    Result:= Py_BuildValue('(ii)', nMin, nMax);
 end;
 
 

@@ -3224,8 +3224,8 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.940';
-  cSynPyVer = '1.0.128';
+  cSynVer = '6.5.945';
+  cSynPyVer = '1.0.129';
 
 const
   cSynParamRO = '/ro';
@@ -27858,6 +27858,7 @@ begin
     AddMethod('app_lock', Py_app_lock, ''); //deprecated, remove later
     AddMethod('app_proc', Py_app_proc, '');
     AddMethod('lexer_proc', Py_lexer_proc, '');
+    AddMethod('ed_handles', Py_ed_handles, '');
 
     AddMethod('ini_read', Py_ini_read, '');
     AddMethod('ini_write', Py_ini_write, '');
@@ -28357,16 +28358,32 @@ begin
 end;
 
 function MainPyEditor(H: Integer): TSyntaxMemo;
+var
+  nTab: Integer;
 begin
   Result:= nil;
   if Assigned(fmMain) then
   begin
     case H of
-      0: Result:= fmMain.CurrentEditor;
-      1: Result:= fmMain.BrotherEditor(fmMain.CurrentEditor);
-      2: Result:= fmMain.OppositeFrame.EditorMaster;
-      3: Result:= fmMain.OppositeFrame.EditorSlave;
-      else Result:= TSyntaxMemo(Pointer(H));
+      0:
+        Result:= fmMain.CurrentEditor;
+      1:
+        Result:= fmMain.BrotherEditor(fmMain.CurrentEditor);
+      2:
+        Result:= fmMain.OppositeFrame.EditorMaster;
+      3:
+        Result:= fmMain.OppositeFrame.EditorSlave;
+      cPyEditorHandleMin..
+      cPyEditorHandleMax:
+        begin
+          nTab:= H-cPyEditorHandleMin;
+          if (nTab>=0) and (nTab<fmMain.FrameAllCount) then
+            Result:= fmMain.FramesAll[nTab].EditorMaster
+          else
+            Result:= nil;  
+        end;
+      else
+        Result:= TSyntaxMemo(Pointer(H));
     end;
   end;
 end;
