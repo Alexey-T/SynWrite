@@ -9,8 +9,9 @@ This will replace ecSyntMemo.TSyntaxMemo with this TSyntaxMemo
 (it's descendant of usual TSyntaxMemo).
 
 Usage in app:
-- Ctrl+click to set additional carets
-- click then Ctrl+Shift+click to set carets aligned in column
+- Ctrl+click to add multi-caret w/o selection
+- Ctrl+drag to add multi-caret with selection
+- click then Ctrl+Shift+click to set multi-carets aligned in column
 - Ctrl+click a caret to remove it
 
 Additional properties:
@@ -82,7 +83,6 @@ type
     FCaretsGutterBand: Integer;
     FCaretsGutterColor: TColor;
     FTextExt: TSize;
-    FDefaultCaret: TPoint;
     FPrevReplaceMode: boolean;
     FPrevDrawFocus,
     FPrevDrawLine: boolean;
@@ -495,7 +495,7 @@ begin
 
   if (CaretsCount=0) and AddDefaultPos then
   begin
-    DoAddCaretInt(FDefaultCaret, GetSelCountForUsualCaret);
+    DoAddCaretInt(CaretPos, GetSelCountForUsualCaret);
     DoUpdateLastCaret;
   end;
 
@@ -1473,6 +1473,7 @@ procedure TSyntaxMemo.MouseDown(Button: TMouseButton; Shift: TShiftState;
   X, Y: Integer);
 var
   PTo, PEnd: TPoint;
+  PDefCaret: TPoint;
   bDoubleClick: boolean;
   nStart, nEnd: Integer;
 begin
@@ -1481,7 +1482,7 @@ begin
 
   if CanSetCarets then
   begin
-    FDefaultCaret:= CaretPos;
+    PDefCaret:= CaretPos;
     PTo:= MouseToCaret(X, Y);
 
     //detect double-click
@@ -1504,7 +1505,7 @@ begin
       //Ctrl+Shift+click - make carets column
       if (ssShift in Shift) then
       begin
-        AddCaretsColumn(FDefaultCaret, PTo, FDefaultCaret.X<=PTo.X);
+        AddCaretsColumn(PDefCaret, PTo, PDefCaret.X<=PTo.X);
       end
       else
       //main form handled Ctrl+click (e.g. URL)
