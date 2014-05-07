@@ -804,13 +804,45 @@ var
       NShiftY:= NShiftY-1;
   end;
   //-----------------------------
+  procedure DoBackspace(var P: TPoint);
+  var
+    Len: Integer;
+  begin
+    //padding with spaces, for virtual caret pos
+    Len:= Lines.LineLength(P.Y);
+    if (P.X>Len) and not (soKeepCaretInText in Options) then
+      ReplaceText(CaretPosToStrPos(Point(Len, P.Y)), 0, StringOfChar(' ', P.X - Len));
+
+    if P.X>0 then
+    begin
+      Dec(P.X);
+      if ReplaceText(CaretPosToStrPos(P), 1, '') then
+        NShiftX:= -1;
+    end
+    else
+    if P.Y>0 then
+    begin
+      Dec(P.Y);
+      P.X:= Lines.LineLength(P.Y);
+      if ReplaceText(CaretPosToStrPos(P),
+        {Lines.LineSpace(PCur.Y)-Lines.LineLength(PCur.Y)}Length(Lines.LineEndStr(P.Y)), '') then
+      begin
+        NShiftX:= 1;
+        NShiftY:= -1;
+      end;
+    end;
+  end;
+  //-----------------------------
   procedure DoInputText(const S: Widestring; var P: TPoint);
   var
     Len, RepLen: Integer;
   begin
+    //padding with spaces, for virtual caret pos
     Len:= Lines.LineLength(P.Y);
     if (P.X>Len) and not (soKeepCaretInText in Options) then
       ReplaceText(CaretPosToStrPos(Point(Len, P.Y)), 0, StringOfChar(' ', P.X - Len));
+
+    //calc replace-length
     RepLen:= IfThen(ReplaceMode, Min(Length(S), Max(0, Len-P.X)), 0);
 
     if ReplaceText(CaretPosToStrPos(P), RepLen, S) then
@@ -1072,23 +1104,7 @@ begin
 
           smDeleteLastChar:
             begin
-              if PCur.X>0 then
-              begin
-                Dec(PCur.X);
-                if ReplaceText(CaretPosToStrPos(PCur), 1, '') then
-                  NShiftX:= -1;
-              end
-              else
-              if PCur.Y>0 then
-              begin
-                Dec(PCur.Y);
-                PCur.X:= Lines.LineLength(PCur.Y);
-                if ReplaceText(CaretPosToStrPos(PCur), {Lines.LineSpace(PCur.Y)-Lines.LineLength(PCur.Y)}Length(Lines.LineEndStr(PCur.Y)), '') then
-                begin
-                  NShiftX:= 1;
-                  NShiftY:= -1;
-                end;
-              end;
+              DoBackSpace(PCur);
             end;
 
           smChar:

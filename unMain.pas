@@ -3224,7 +3224,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.945';
+  cSynVer = '6.5.950';
   cSynPyVer = '1.0.129';
 
 const
@@ -24414,7 +24414,7 @@ begin
   try
     Caption:= DKLangConstW('zMCmdList');
     cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
-    labHelp.Caption:= DKLangConstW('zMHelp');
+    //labHelp.Caption:= DKLangConstW('zMHelp');
 
     UpdateMacroKeynames;
     //1) add commands
@@ -24481,7 +24481,7 @@ begin
     try
       Caption:= DKLangConstW('zMProjList');
       cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
-      labHelp.Caption:= DKLangConstW('zMHelp');
+      //labHelp.Caption:= DKLangConstW('zMHelp');
 
       FIniFN:= Self.SynHistoryIni;
       fmProj:= Self.fmProj;
