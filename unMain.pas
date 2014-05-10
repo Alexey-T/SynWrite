@@ -2396,6 +2396,7 @@ type
     procedure DoSaveStringToIni(const fn: string; const Str: string);
 
     //private UpdateNNN
+    procedure UpdateNewDocTemplatesMenu();
     procedure UpdateTreeProps;
     procedure UpdateTitle(Sender: TFrame);
     procedure UpdateAcp(const Lexer: string);
@@ -2534,12 +2535,12 @@ type
     procedure DoRecordToMacro(Cmd: integer; Data: PWChar);
     procedure DoFindClip(Next: boolean);
     function SNewDocName(const fn: Widestring): string;
-    procedure NewDocClick(Sender: TObject);
-    procedure NewDocFolderClick(Sender: TObject);
-    procedure TabClickN(n: integer);
-    procedure TabRightClickN(n: integer);
+    procedure DoNewDocClick(Sender: TObject);
+    procedure DoNewDocFolderClick(Sender: TObject);
+    procedure DoTabIndexClick(n: integer);
+    procedure DoTabIndexRightClick(n: integer);
     procedure DoTidy(const Cfg: string);
-    procedure TidyClick(Sender: TObject);
+    procedure DoTidyClick(Sender: TObject);
 
     procedure DoBkDelete(Ed: TSyntaxMemo; DelUnmarked: boolean);
     procedure DoBkNext(Ed: TSyntaxMemo; Next: boolean);
@@ -3224,7 +3225,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.950';
+  cSynVer = '6.5.960';
   cSynPyVer = '1.0.129';
 
 const
@@ -6084,27 +6085,27 @@ begin
     sm_Macro30: ecMacro30.Execute;
 
     //tabs 0-9
-    sm_Tab0: TabClickN(0);
-    sm_Tab1: TabClickN(1);
-    sm_Tab2: TabClickN(2);
-    sm_Tab3: TabClickN(3);
-    sm_Tab4: TabClickN(4);
-    sm_Tab5: TabClickN(5);
-    sm_Tab6: TabClickN(6);
-    sm_Tab7: TabClickN(7);
-    sm_Tab8: TabClickN(8);
-    sm_Tab9: TabClickN(9);
+    sm_Tab0: DoTabIndexClick(0);
+    sm_Tab1: DoTabIndexClick(1);
+    sm_Tab2: DoTabIndexClick(2);
+    sm_Tab3: DoTabIndexClick(3);
+    sm_Tab4: DoTabIndexClick(4);
+    sm_Tab5: DoTabIndexClick(5);
+    sm_Tab6: DoTabIndexClick(6);
+    sm_Tab7: DoTabIndexClick(7);
+    sm_Tab8: DoTabIndexClick(8);
+    sm_Tab9: DoTabIndexClick(9);
 
-    sm_TabRt0: TabRightClickN(0);
-    sm_TabRt1: TabRightClickN(1);
-    sm_TabRt2: TabRightClickN(2);
-    sm_TabRt3: TabRightClickN(3);
-    sm_TabRt4: TabRightClickN(4);
-    sm_TabRt5: TabRightClickN(5);
-    sm_TabRt6: TabRightClickN(6);
-    sm_TabRt7: TabRightClickN(7);
-    sm_TabRt8: TabRightClickN(8);
-    sm_TabRt9: TabRightClickN(9);
+    sm_TabRt0: DoTabIndexRightClick(0);
+    sm_TabRt1: DoTabIndexRightClick(1);
+    sm_TabRt2: DoTabIndexRightClick(2);
+    sm_TabRt3: DoTabIndexRightClick(3);
+    sm_TabRt4: DoTabIndexRightClick(4);
+    sm_TabRt5: DoTabIndexRightClick(5);
+    sm_TabRt6: DoTabIndexRightClick(6);
+    sm_TabRt7: DoTabIndexRightClick(7);
+    sm_TabRt8: DoTabIndexRightClick(8);
+    sm_TabRt9: DoTabIndexRightClick(9);
 
     //split
     sm_Split2080: ecSplit20_80.Execute;
@@ -11185,6 +11186,7 @@ procedure TfmMain.DoNewDoc(const fn: Widestring);
 var
   Enc: Integer;
   Ini: TIniFile;
+  Ed: TSyntaxMemo;
 begin
   if not IsFileExist(fn) then Exit;
 
@@ -11197,19 +11199,25 @@ begin
     FreeAndNil(Ini);
   end;
 
+  //calculate encoding, consider "_UTF8" filename suffix
   Enc:= CP_ACP;
   if Pos('_UTF8', ExtractFileName(fn))>0 then
     Enc:= cp__UTF8_noBOM;
 
+  //need new tab?
   if (CurrentFrame.FileName<>'') or (CurrentEditor.Lines.Count>0) then
     acNew.Execute;
-  CurrentEditor.LoadFromFile(fn);
 
-  CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(fn);
-  UpdateLexerTo(CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer);
+  //load template file
+  Ed:= CurrentEditor;
+  Ed.LoadFromFile(fn);
+  Ed.Modified:= true;
 
+  Ed.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(fn);
+  UpdateLexerTo(Ed.TextSource.SyntaxAnalyzer);
+
+  //apply encoding
   ApplyFrameEncodingAndReload(CurrentFrame, Enc);
-  //EditorSetModified(CurrentFrame.EditorMaster);
 end;
 
 //tab X button rect
@@ -11944,10 +11952,10 @@ var
   n: integer;
 begin
   n:= (Sender as TComponent).Tag - 1;
-  TabClickN(n);
+  DoTabIndexClick(n);
 end;
 
-procedure TfmMain.TabClickN(n: integer);
+procedure TfmMain.DoTabIndexClick(n: integer);
 begin
   if (n>=0) and (n<FrameAllCount) then
   begin
@@ -11958,7 +11966,7 @@ begin
     MsgBeep;
 end;
 
-procedure TfmMain.TabRightClickN(n: integer);
+procedure TfmMain.DoTabIndexRightClick(n: integer);
 var
   PrevPages: TTntPageControl;
 begin
@@ -13356,7 +13364,7 @@ begin
   for i:= 0 to 9 do
     if IsShortcutOfCmd(sh, sm_Tab0+i) then
     begin
-      TabClickN(i);
+      DoTabIndexClick(i);
       Key:= 0;
       Exit
     end;
@@ -17095,7 +17103,7 @@ begin
       MI:= TSpTbxItem.Create(Self);
       MI.Caption:= L[i];
       MI.Tag:= 1;
-      MI.OnClick:= TidyClick;
+      MI.OnClick:= DoTidyClick;
       MI.Enabled:= en;
       Add(MI);
     end;
@@ -17109,7 +17117,7 @@ begin
   CurrentEditor.ExecCommand(sm_TidyConfig);
 end;
 
-procedure TfmMain.TidyClick(Sender: TObject);
+procedure TfmMain.DoTidyClick(Sender: TObject);
 begin
   DoTidy((Sender as TTbCustomItem).Caption);
 end;
@@ -17473,6 +17481,11 @@ end;
 
 procedure TfmMain.TBXSubmenuItemFNewPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
+begin
+  UpdateNewDocTemplatesMenu();
+end;
+
+procedure TfmMain.UpdateNewDocTemplatesMenu();
 var
   i: Integer;
   mi: TSpTbxItem;
@@ -17539,7 +17552,7 @@ begin
         if UpCase(Names[i][1]) = ch then
         begin
           mi:= TSpTbxItem.Create(Self);
-          mi.OnClick:= NewDocClick;
+          mi.OnClick:= DoNewDocClick;
           mi.Caption:= Names[i];
           mi.Tag:= Integer(Names.Objects[i]) + 1;
           miSub.Add(mi);
@@ -17549,7 +17562,7 @@ begin
   //add "Browse folder"
   TbxSubmenuItemFNew.Add(TSpTbxSeparatorItem.Create(Self));
   mi:= TSpTbxItem.Create(Self);
-  mi.OnClick:= NewDocFolderClick;
+  mi.OnClick:= DoNewDocFolderClick;
   mi.Caption:= DKLangConstW('OpNew');
   mi.Tag:= 1;
   TbxSubmenuItemFNew.Add(mi);
@@ -17579,12 +17592,12 @@ begin
       Items[i].Images:= ImageListStatus;
 end;
 
-procedure TfmMain.NewDocFolderClick(Sender: TObject);
+procedure TfmMain.DoNewDocFolderClick(Sender: TObject);
 begin
   FOpenURL(SynDir + 'Template\newdoc', Handle);
 end;
 
-procedure TfmMain.NewDocClick(Sender: TObject);
+procedure TfmMain.DoNewDocClick(Sender: TObject);
 var
   n: Integer;
 begin

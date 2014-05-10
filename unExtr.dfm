@@ -1,7 +1,7 @@
 object fmExtract: TfmExtract
   Left = 305
   Top = 426
-  Width = 453
+  Width = 548
   Height = 349
   ActiveControl = ed
   BorderIcons = [biSystemMenu, biMaximize]
@@ -21,10 +21,10 @@ object fmExtract: TfmExtract
   PixelsPerInch = 96
   TextHeight = 13
   object PanelRt: TPanel
-    Left = 321
+    Left = 408
     Top = 0
     Width = 124
-    Height = 296
+    Height = 292
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 2
@@ -82,21 +82,21 @@ object fmExtract: TfmExtract
   object PanelMid: TPanel
     Left = 9
     Top = 0
-    Width = 312
-    Height = 296
+    Width = 399
+    Height = 292
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
     object b1: TTntGroupBox
       Left = 0
       Top = 0
-      Width = 312
+      Width = 399
       Height = 113
       Align = alTop
       Caption = 'Search'
       TabOrder = 0
       DesignSize = (
-        312
+        399
         113)
       object TntLabel1: TTntLabel
         Left = 8
@@ -108,7 +108,7 @@ object fmExtract: TfmExtract
       object ed: TTntComboBox
         Left = 8
         Top = 32
-        Width = 297
+        Width = 385
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         ItemHeight = 13
@@ -119,7 +119,7 @@ object fmExtract: TfmExtract
       object bCase: TTntCheckBox
         Left = 8
         Top = 56
-        Width = 299
+        Width = 380
         Height = 17
         Anchors = [akLeft, akTop, akRight]
         Caption = 'Case sensitive'
@@ -128,7 +128,7 @@ object fmExtract: TfmExtract
       object bSel: TTntCheckBox
         Left = 8
         Top = 72
-        Width = 299
+        Width = 380
         Height = 17
         Anchors = [akLeft, akTop, akRight]
         Caption = 'Search in selection only'
@@ -137,7 +137,7 @@ object fmExtract: TfmExtract
       object bCur: TTntCheckBox
         Left = 8
         Top = 88
-        Width = 299
+        Width = 380
         Height = 17
         Anchors = [akLeft, akTop, akRight]
         Caption = 'Search from caret'
@@ -147,16 +147,16 @@ object fmExtract: TfmExtract
     object b2: TTntGroupBox
       Left = 0
       Top = 113
-      Width = 312
-      Height = 183
+      Width = 399
+      Height = 179
       Align = alClient
       Caption = 'Found strings'
       TabOrder = 1
       object List: TTntListBox
         Left = 2
         Top = 15
-        Width = 308
-        Height = 166
+        Width = 395
+        Height = 162
         Style = lbOwnerDrawFixed
         Align = alClient
         ItemHeight = 13
@@ -169,15 +169,15 @@ object fmExtract: TfmExtract
     Left = 0
     Top = 0
     Width = 9
-    Height = 296
+    Height = 292
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 0
   end
   object Status: TTntStatusBar
     Left = 0
-    Top = 296
-    Width = 445
+    Top = 292
+    Width = 532
     Height = 19
     Panels = <>
     SimplePanel = True

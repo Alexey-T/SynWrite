@@ -999,6 +999,7 @@ begin
         PROC_UNLOCK_STATUS:
           begin
             fmMain.FLockUpdate:= false;
+            fmMain.UpdateStatusBar;
             Result:= ReturnNone;
           end;
         PROC_SOUND:

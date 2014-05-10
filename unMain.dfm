@@ -5554,13 +5554,7 @@ object fmMain: TfmMain
       end
       item
         Command = 565
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 24641
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Miscellaneous'
         DisplayName = 'Align tokens'
       end
