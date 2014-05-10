@@ -2396,7 +2396,7 @@ type
     procedure DoSaveStringToIni(const fn: string; const Str: string);
 
     //private UpdateNNN
-    procedure UpdateNewDocTemplatesMenu();
+    procedure UpdateNewDocMenu();
     procedure UpdateTreeProps;
     procedure UpdateTitle(Sender: TFrame);
     procedure UpdateAcp(const Lexer: string);
@@ -2538,7 +2538,7 @@ type
     procedure DoNewDocClick(Sender: TObject);
     procedure DoNewDocFolderClick(Sender: TObject);
     procedure DoTabIndexClick(n: integer);
-    procedure DoTabIndexRightClick(n: integer);
+    procedure DoRtTabIndexClick(n: integer);
     procedure DoTidy(const Cfg: string);
     procedure DoTidyClick(Sender: TObject);
 
@@ -6096,16 +6096,16 @@ begin
     sm_Tab8: DoTabIndexClick(8);
     sm_Tab9: DoTabIndexClick(9);
 
-    sm_TabRt0: DoTabIndexRightClick(0);
-    sm_TabRt1: DoTabIndexRightClick(1);
-    sm_TabRt2: DoTabIndexRightClick(2);
-    sm_TabRt3: DoTabIndexRightClick(3);
-    sm_TabRt4: DoTabIndexRightClick(4);
-    sm_TabRt5: DoTabIndexRightClick(5);
-    sm_TabRt6: DoTabIndexRightClick(6);
-    sm_TabRt7: DoTabIndexRightClick(7);
-    sm_TabRt8: DoTabIndexRightClick(8);
-    sm_TabRt9: DoTabIndexRightClick(9);
+    sm_TabRt0: DoRtTabIndexClick(0);
+    sm_TabRt1: DoRtTabIndexClick(1);
+    sm_TabRt2: DoRtTabIndexClick(2);
+    sm_TabRt3: DoRtTabIndexClick(3);
+    sm_TabRt4: DoRtTabIndexClick(4);
+    sm_TabRt5: DoRtTabIndexClick(5);
+    sm_TabRt6: DoRtTabIndexClick(6);
+    sm_TabRt7: DoRtTabIndexClick(7);
+    sm_TabRt8: DoRtTabIndexClick(8);
+    sm_TabRt9: DoRtTabIndexClick(9);
 
     //split
     sm_Split2080: ecSplit20_80.Execute;
@@ -11966,7 +11966,7 @@ begin
     MsgBeep;
 end;
 
-procedure TfmMain.DoTabIndexRightClick(n: integer);
+procedure TfmMain.DoRtTabIndexClick(n: integer);
 var
   PrevPages: TTntPageControl;
 begin
@@ -17482,10 +17482,10 @@ end;
 procedure TfmMain.TBXSubmenuItemFNewPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
-  UpdateNewDocTemplatesMenu();
+  UpdateNewDocMenu;
 end;
 
-procedure TfmMain.UpdateNewDocTemplatesMenu();
+procedure TfmMain.UpdateNewDocMenu();
 var
   i: Integer;
   mi: TSpTbxItem;
