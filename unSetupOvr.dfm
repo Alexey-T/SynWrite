@@ -49,14 +49,14 @@ object fmSetupOvr: TfmSetupOvr
   end
   object LabelMargin: TTntLabel
     Left = 184
-    Top = 148
+    Top = 172
     Width = 64
     Height = 13
     Caption = 'Right margin:'
   end
   object LabelSp: TTntLabel
     Left = 184
-    Top = 172
+    Top = 196
     Width = 62
     Height = 13
     Caption = 'Line spacing:'
@@ -64,13 +64,13 @@ object fmSetupOvr: TfmSetupOvr
   object LabelOptFill: TTntLabel
     Left = 184
     Top = 100
-    Width = 53
+    Width = 102
     Height = 13
-    Caption = 'Optimal fill:'
+    Caption = 'Optimal fill with Tabs:'
   end
   object LabelWordChars: TTntLabel
     Left = 184
-    Top = 196
+    Top = 220
     Width = 116
     Height = 13
     Caption = 'Word chars (additional):'
@@ -93,7 +93,7 @@ object fmSetupOvr: TfmSetupOvr
   end
   object labAutoCloseHelp: TTntLabel
     Left = 400
-    Top = 218
+    Top = 242
     Width = 13
     Height = 13
     Cursor = crHandPoint
@@ -105,6 +105,13 @@ object fmSetupOvr: TfmSetupOvr
     Font.Style = [fsUnderline]
     ParentFont = False
     OnClick = labAutoCloseHelpClick
+  end
+  object LabelIndent: TTntLabel
+    Left = 184
+    Top = 148
+    Width = 61
+    Height = 13
+    Caption = 'Block indent:'
   end
   object ListLex: TTntListBox
     Left = 8
@@ -146,7 +153,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 21
     ParentColor = True
     ReadOnly = True
-    TabOrder = 11
+    TabOrder = 12
     Visible = False
   end
   object cbOvr: TTntCheckBox
@@ -177,23 +184,23 @@ object fmSetupOvr: TfmSetupOvr
   end
   object edMargin: TSpinEdit
     Left = 376
-    Top = 144
+    Top = 168
     Width = 57
     Height = 22
     MaxValue = 300
     MinValue = 1
-    TabOrder = 7
+    TabOrder = 8
     Value = 1
     OnChange = edTabChange
   end
   object edSpacing: TSpinEdit
     Left = 376
-    Top = 168
+    Top = 192
     Width = 57
     Height = 22
     MaxValue = 10
     MinValue = 0
-    TabOrder = 8
+    TabOrder = 9
     Value = 0
     OnChange = edTabChange
   end
@@ -214,13 +221,13 @@ object fmSetupOvr: TfmSetupOvr
   end
   object edWordChars: TTntEdit
     Left = 376
-    Top = 192
+    Top = 216
     Width = 153
     Height = 21
     Hint = 
       'Additional chars, which will be treated as part of words, by wor' +
       'd double-clicking, smart highlighting, etc.'
-    TabOrder = 9
+    TabOrder = 10
     OnChange = edTabChange
   end
   object edKeepBlanks: TTntComboBox
@@ -240,19 +247,30 @@ object fmSetupOvr: TfmSetupOvr
   end
   object cbAutoCase: TTntCheckBox
     Left = 184
-    Top = 216
+    Top = 240
     Width = 205
     Height = 17
     Alignment = taLeftJustify
     Caption = 'Auto-correct identifier case'
-    TabOrder = 10
+    TabOrder = 11
     OnClick = edTabChange
+  end
+  object edIndent: TSpinEdit
+    Left = 376
+    Top = 144
+    Width = 57
+    Height = 22
+    MaxValue = 80
+    MinValue = 1
+    TabOrder = 7
+    Value = 1
+    OnChange = edTabChange
   end
   object DKLanguageController1: TDKLanguageController
     Left = 144
     Top = 192
     LangData = {
-      0A00666D53657475704F7672010100000001000000070043617074696F6E0117
+      0A00666D53657475704F7672010100000001000000070043617074696F6E0119
       00000006004C6162656C31010100000002000000070043617074696F6E000C00
       4C6162656C54616253746F70010100000003000000070043617074696F6E000C
       004C6162656C5461624D6F6465010100000004000000070043617074696F6E00
@@ -270,6 +288,8 @@ object fmSetupOvr: TfmSetupOvr
       6162656C426C616E6B73010100000013000000070043617074696F6E000C0065
       644B656570426C616E6B7301010000001400000005004974656D73000D004C61
       62656C5465787453686F7700000A0063624175746F4361736501010000001500
-      0000070043617074696F6E0010006C61624175746F436C6F736548656C700000}
+      0000070043617074696F6E0010006C61624175746F436C6F736548656C700000
+      0B004C6162656C496E64656E74010100000016000000070043617074696F6E00
+      08006564496E64656E740000}
   end
 end

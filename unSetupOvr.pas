@@ -33,6 +33,8 @@ type
     LabelTextShow: TLabel;
     cbAutoCase: TTntCheckBox;
     labAutoCloseHelp: TTntLabel;
+    LabelIndent: TTntLabel;
+    edIndent: TSpinEdit;
     procedure cbOvrClick(Sender: TObject);
     procedure ListLexClick(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
@@ -48,6 +50,7 @@ type
     FString: string;
     FDefTabStop: string;
     FDefTabMode,
+    FDefIndent,
     FDefMargin,
     FDefSpacing,
     FDefOptFill: integer;
@@ -70,6 +73,7 @@ begin
   edTab.Enabled:= en;
   edTabMode.Enabled:= en;
   edWrap.Enabled:= en;
+  edIndent.Enabled:= en;
   edMargin.Enabled:= en;
   edSpacing.Enabled:= en;
   edOptFill.Enabled:= en;
@@ -80,6 +84,7 @@ begin
   LabelTabMode.Enabled:= en;
   LabelWrap.Enabled:= en;
   LabelMargin.Enabled:= en;
+  LabelIndent.Enabled:= en;
   LabelOptFill.Enabled:= en;
   LabelSp.Enabled:= en;
   LabelWordChars.Enabled:= en;
@@ -88,10 +93,11 @@ begin
   if not en then
   begin
     if ListLex.ItemIndex>=0 then
-      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '', '', '');
+      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '', '', '', '');
     edTab.Text:= FDefTabStop;
     edTabMode.ItemIndex:= FDefTabMode;
     edWrap.ItemIndex:= 0;
+    edIndent.Value:= FDefIndent;
     edMargin.Value:= FDefMargin;
     edSpacing.Value:= FDefSpacing;
     edOptFill.ItemIndex:= 0;
@@ -104,13 +110,13 @@ procedure TfmSetupOvr.ListLexClick(Sender: TObject);
 var
   Ovr: boolean;
   ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-  AOptWordChars, AKeepBlanks, ACaseCorrect: string;
+  AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent: string;
 begin
   if ListLex.ItemIndex>=0 then
   begin
     Ovr:= SGetLexerOverride(FString, ListLex.Items[ListLex.ItemIndex],
       ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-      AOptWordChars, AKeepBlanks, ACaseCorrect);
+      AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent);
     cbOvr.Enabled:= true;
   end
   else
@@ -126,6 +132,7 @@ begin
     edTab.Text:= ATabStops;
     edTabMode.ItemIndex:= StrToIntDef(ATabMode, FDefTabMode);
     edWrap.ItemIndex:= StrToIntDef(AWrap, 0);
+    edIndent.Value:= StrToIntDef(AIndent, FDefIndent);
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
     edSpacing.Value:= StrToIntDef(ASpacing, FDefSpacing);
     edOptFill.ItemIndex:= StrToIntDef(AOptFill, 0);
@@ -138,6 +145,7 @@ begin
     edTab.Text:= FDefTabStop;
     edTabMode.ItemIndex:= FDefTabMode;
     edWrap.ItemIndex:= 0;
+    edIndent.Value:= FDefIndent;
     edMargin.Value:= FDefMargin;
     edSpacing.Value:= FDefSpacing;
     edOptFill.ItemIndex:= 0;
@@ -155,6 +163,7 @@ begin
   edTab.Text:= FDefTabStop;
   edTabMode.ItemIndex:= FDefTabMode;
   edWrap.ItemIndex:= 0;
+  edIndent.Value:= FDefIndent;
   edMargin.Value:= FDefMargin;
   edSpacing.Value:= FDefSpacing;
   edOptFill.ItemIndex:= 0;
@@ -198,7 +207,8 @@ begin
         {Op6}IntToStr(edOptFill.ItemIndex),
         {Op7}edWordChars.Text,
         {Op8}IntToStr(edKeepBlanks.ItemIndex),
-        {Op9}IntToStr(Ord(cbAutoCase.Checked))
+        {Op9}IntToStr(Ord(cbAutoCase.Checked)),
+        {Op10}IntToStr(edIndent.Value)
         );
       edText.Text:= FString;
     end;

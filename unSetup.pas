@@ -2128,6 +2128,8 @@ begin
       tmTabChar: FDefTabMode:= 1;
       tmSmartTab: FDefTabMode:= 2;
     end;
+
+    FDefIndent:= fmMain.TemplateEditor.BlockIndent;
     FDefMargin:= fmMain.TemplateEditor.RightMargin;
     FDefSpacing:= fmMain.TemplateEditor.LineSpacing;
 

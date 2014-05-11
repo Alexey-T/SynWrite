@@ -3225,7 +3225,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.960';
+  cSynVer = '6.5.965';
   cSynPyVer = '1.0.129';
 
 const
@@ -3301,6 +3301,7 @@ const
 
 const
   cThemeWindows = 'Windows';
+  cThemeDefault = 'Office XP';
   cThemes: array[0..12] of string = (
     cThemeWindows,
     'Aluminum',
@@ -4803,7 +4804,7 @@ begin
     opUTF8:= ReadString('Setup', 'UTF8', '');
 
     if not QuickView then
-      Theme:= ReadString('Setup', 'Theme', 'Aluminum')
+      Theme:= ReadString('Setup', 'Theme', cThemeDefault)
 	  else
       Theme:= cThemeWindows;
     Icons:= ReadInteger('Setup', 'Icons', 2{Fogue 24x24});
@@ -8038,7 +8039,7 @@ var
   en: boolean;
   Lexer: string;
   ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-  AOptWordChars, AKeepBlanks, AAutoCase: string;
+  AOptWordChars, AKeepBlanks, AAutoCase, AIndent: string;
 begin
   UpdateTools;
   acSetupLexHL.Enabled:= SyntaxManager.CurrentLexer<>nil;
@@ -8121,7 +8122,7 @@ begin
       //optional overrides
       if SGetLexerOverride(opLexersOverride, Lexer,
         ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-        AOptWordChars, AKeepBlanks, AAutoCase) then
+        AOptWordChars, AKeepBlanks, AAutoCase, AIndent) then
       begin
         //1) override TabStops
         EditorMaster.TabList.AsString:= ATabStop;
@@ -8196,6 +8197,11 @@ begin
 
         //9) override "Auto-correct case"
         opAutoCase:= AAutoCase='1';
+
+        //10) override "Block indent"
+        EditorMaster.BlockIndent:= StrToIntDef(AIndent, TemplateEditor.BlockIndent);
+        EditorSlave.BlockIndent:= EditorMaster.BlockIndent;
+
       end;
 
       //overrides for "NFO files"
