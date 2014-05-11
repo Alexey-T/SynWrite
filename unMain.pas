@@ -100,6 +100,7 @@ type
     cSynEventOnComplete,
     cSynEventOnFuncHint,
     cSynEventOnGotoDef,
+    cSynEventOnConsole,
     cSynEventOnCompare
     );
   TSynPyEvents = set of TSynPyEvent;
@@ -119,6 +120,7 @@ const
     'on_complete',
     'on_func_hint',
     'on_goto_def',
+    'on_console',
     'on_compare'
     );
 
@@ -3225,8 +3227,8 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.965';
-  cSynPyVer = '1.0.129';
+  cSynVer = '6.5.970';
+  cSynPyVer = '1.0.130';
 
 const
   cSynParamRO = '/ro';
@@ -27721,9 +27723,14 @@ end;
 procedure TfmMain.DoPyConsole_EnterCommand(const Str: Widestring);
 var
   SNew: Widestring;
+  IsHandled: boolean;
 begin
   DoPyConsole_LogString(cPyConsolePrompt + Str);
 
+  IsHandled:= DoPyEvent(CurrentEditor, cSynEventOnConsole,
+    ['r'''+UTF8Encode(Str)+'''']) = cPyTrue;
+
+  if not IsHandled then
   try
     with GetPythonEngine do
     begin
