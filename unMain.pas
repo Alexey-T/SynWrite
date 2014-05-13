@@ -26155,7 +26155,7 @@ begin
   Ed.NonPrinted.Color:= C[14];
   Ed.StaplePen.Color:= C[15];
   //Ed.Gutter.Bands[1].GradientRight:= C[16];
-  Ed.Gutter.Bands[2].Color:= C[16];
+  //Ed.Gutter.Bands[2].Color:= C[16];
   Tree.Font.Color:= C[17];
   Tree.Color:= C[18];
   Ed.HorzRuler.Font.Color:= C[19];

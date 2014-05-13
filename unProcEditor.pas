@@ -14,6 +14,9 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
+function EditorGetColorPropertyById(Ed: TSyntaxMemo; const Id: string): Longint;
+procedure EditorSetColorPropertyById(Ed: TSyntaxMemo; const Id: string; Color: Longint);
+
 function EditorFormatHexCode(Ed: TSyntaxMemo; const SHexCode: string): string;
 procedure EditorInsertColorCode(Ed: TSyntaxMemo; Code: Integer);
 procedure EditorGetColorCodeRange(Ed: TSyntaxMemo; var NStart, NEnd: integer; var NColor: integer);
@@ -3076,6 +3079,213 @@ begin
       SFormat:= '0'+SFormat;
     Result:= SFormat;
   end
+end;
+
+const
+  PROP_COLOR_TEXT                  = 'text';
+  PROP_COLOR_TEXT_BG               = 'text_bg';
+  PROP_COLOR_SELECTION_TEXT        = 'sel_text';
+  PROP_COLOR_SELECTION_BG          = 'sel_bg';
+  PROP_COLOR_CURRENT_LINE_TEXT     = 'curline_text';
+  PROP_COLOR_CURRENT_LINE_BG       = 'curline_bg';
+  PROP_COLOR_LINE_NUMBERS_TEXT     = 'numbers_text';
+  PROP_COLOR_LINE_NUMBERS_BG       = 'numbers_bg';
+  PROP_COLOR_COLLAPSE_LINE         = 'collapse_line';
+  PROP_COLOR_COLLAPSE_MARK         = 'collapse_mark';
+  PROP_COLOR_FOLDING_LINES         = 'folding_lines';
+  PROP_COLOR_FOLDING_BAR_BG        = 'folding_bar_bg';
+  PROP_COLOR_GUTTER_SEPARATOR      = 'gutter_sep';
+  PROP_COLOR_MARGIN                = 'margin';
+  PROP_COLOR_HINTS_TEXT            = 'hints_text';
+  PROP_COLOR_HINTS_BG              = 'hints_bg';
+  PROP_COLOR_NON_PRINTABLE         = 'non_printable';
+  PROP_COLOR_INDENT_STAPLES        = 'indent_staples';
+  PROP_COLOR_RULER_TEXT            = 'ruler_text';
+  PROP_COLOR_RULER_BG              = 'ruler_bg';
+  PROP_COLOR_MARKS_TEXT            = 'marks_text';
+  PROP_COLOR_MARKS_BG              = 'marks_bg';
+  PROP_COLOR_LINE_STATE_MODIFIED   = 'state_mod';
+  PROP_COLOR_LINE_STATE_NEW        = 'state_new';
+  PROP_COLOR_LINE_STATE_SAVED      = 'state_saved';
+  PROP_COLOR_LINE_STATE_UNCHANGED  = 'state_unchanged';
+  PROP_COLOR_LINE_STATE_DEFAULT    = 'state_def';
+
+procedure EditorSetColorPropertyById(Ed: TSyntaxMemo; const Id: string; Color: Longint);
+begin
+  if Id=PROP_COLOR_TEXT then
+    Ed.Font.Color:= Color
+  else
+  if Id=PROP_COLOR_TEXT_BG then
+    Ed.Color:= Color
+  else
+  if Id=PROP_COLOR_SELECTION_TEXT then
+    Ed.DefaultStyles.SelectioMark.Font.Color:= Color
+  else
+  if Id=PROP_COLOR_SELECTION_BG then
+    Ed.DefaultStyles.SelectioMark.BgColor:= Color
+  else
+  if Id=PROP_COLOR_CURRENT_LINE_TEXT then
+    Ed.DefaultStyles.CurrentLine.Font.Color:= Color
+  else
+  if Id=PROP_COLOR_CURRENT_LINE_BG then
+    Ed.DefaultStyles.CurrentLine.BgColor:= Color
+  else
+  if Id=PROP_COLOR_LINE_NUMBERS_TEXT then
+  begin
+    Ed.LineNumbers.Font.Color:= Color;
+    Ed.LineNumbers.UnderColor:= Color;
+  end
+  else
+  if Id=PROP_COLOR_LINE_NUMBERS_BG then
+  begin
+    Ed.Gutter.Bands[0].Color:= Color;
+    Ed.Gutter.Bands[1].Color:= Color;
+  end
+  else
+  if Id=PROP_COLOR_COLLAPSE_LINE then
+    Ed.CollapseBreakColor:= Color
+  else
+  if Id=PROP_COLOR_COLLAPSE_MARK then
+    Ed.DefaultStyles.CollapseMark.Font.Color:= Color
+  else
+  if Id=PROP_COLOR_FOLDING_LINES then
+    Ed.Gutter.CollapsePen.Color:= Color
+  else
+  if Id=PROP_COLOR_FOLDING_BAR_BG then
+    Ed.Gutter.Bands[3].Color:= Color
+  else
+  if Id=PROP_COLOR_GUTTER_SEPARATOR then
+    Ed.Gutter.SeparatorColor:= Color
+  else
+  if Id=PROP_COLOR_MARGIN then
+    Ed.RightMarginColor:= Color
+  else
+  if Id=PROP_COLOR_HINTS_TEXT then
+    Ed.HintProps.Font.Color:= Color
+  else
+  if Id=PROP_COLOR_HINTS_BG then
+    Ed.HintProps.Color:= Color
+  else
+  if Id=PROP_COLOR_NON_PRINTABLE then
+    Ed.NonPrinted.Color:= Color
+  else
+  if Id=PROP_COLOR_INDENT_STAPLES then
+    Ed.StaplePen.Color:= Color
+  else
+  if Id=PROP_COLOR_RULER_TEXT then
+    Ed.HorzRuler.Font.Color:= Color
+  else
+  if Id=PROP_COLOR_RULER_BG then
+    Ed.HorzRuler.Color:= Color
+  else
+  if Id=PROP_COLOR_MARKS_TEXT then
+    Ed.DefaultStyles.SearchMark.Font.Color:= Color
+  else
+  if Id=PROP_COLOR_MARKS_BG then
+    Ed.DefaultStyles.SearchMark.BgColor:= Color
+  else
+  if Id=PROP_COLOR_LINE_STATE_MODIFIED then
+    Ed.LineStateDisplay.ModifiedColor:= Color
+  else
+  if Id=PROP_COLOR_LINE_STATE_NEW then
+    Ed.LineStateDisplay.NewColor:= Color
+  else
+  if Id=PROP_COLOR_LINE_STATE_SAVED then
+    Ed.LineStateDisplay.SavedColor:= Color
+  else
+  if Id=PROP_COLOR_LINE_STATE_UNCHANGED then
+    Ed.LineStateDisplay.UnchangedColor:= Color
+  else
+  if Id=PROP_COLOR_LINE_STATE_DEFAULT then
+    Ed.Gutter.Bands[2].Color:= Color
+  else
+  ;
+end;
+
+function EditorGetColorPropertyById(Ed: TSyntaxMemo; const Id: string): Longint;
+begin
+  if Id=PROP_COLOR_TEXT then
+    Result:= Ed.Font.Color
+  else
+  if Id=PROP_COLOR_TEXT_BG then
+    Result:= Ed.Color
+  else
+  if Id=PROP_COLOR_SELECTION_TEXT then
+    Result:= Ed.DefaultStyles.SelectioMark.Font.Color
+  else
+  if Id=PROP_COLOR_SELECTION_BG then
+    Result:= Ed.DefaultStyles.SelectioMark.BgColor
+  else
+  if Id=PROP_COLOR_CURRENT_LINE_TEXT then
+    Result:= Ed.DefaultStyles.CurrentLine.Font.Color
+  else
+  if Id=PROP_COLOR_CURRENT_LINE_BG then
+    Result:= Ed.DefaultStyles.CurrentLine.BgColor
+  else
+  if Id=PROP_COLOR_LINE_NUMBERS_TEXT then
+    Result:= Ed.LineNumbers.Font.Color
+  else
+  if Id=PROP_COLOR_LINE_NUMBERS_BG then
+    Result:= Ed.Gutter.Bands[1].Color
+  else
+  if Id=PROP_COLOR_COLLAPSE_LINE then
+    Result:= Ed.CollapseBreakColor
+  else
+  if Id=PROP_COLOR_COLLAPSE_MARK then
+    Result:= Ed.DefaultStyles.CollapseMark.Font.Color
+  else
+  if Id=PROP_COLOR_FOLDING_LINES then
+    Result:= Ed.Gutter.CollapsePen.Color
+  else
+  if Id=PROP_COLOR_FOLDING_BAR_BG then
+    Result:= Ed.Gutter.Bands[3].Color
+  else
+  if Id=PROP_COLOR_GUTTER_SEPARATOR then
+    Result:= Ed.Gutter.SeparatorColor
+  else
+  if Id=PROP_COLOR_MARGIN then
+    Result:= Ed.RightMarginColor
+  else
+  if Id=PROP_COLOR_HINTS_TEXT then
+    Result:= Ed.HintProps.Font.Color
+  else
+  if Id=PROP_COLOR_HINTS_BG then
+    Result:= Ed.HintProps.Color
+  else
+  if Id=PROP_COLOR_NON_PRINTABLE then
+    Result:= Ed.NonPrinted.Color
+  else
+  if Id=PROP_COLOR_INDENT_STAPLES then
+    Result:= Ed.StaplePen.Color
+  else
+  if Id=PROP_COLOR_RULER_TEXT then
+    Result:= Ed.HorzRuler.Font.Color
+  else
+  if Id=PROP_COLOR_RULER_BG then
+    Result:= Ed.HorzRuler.Color
+  else
+  if Id=PROP_COLOR_MARKS_TEXT then
+    Result:= Ed.DefaultStyles.SearchMark.Font.Color
+  else
+  if Id=PROP_COLOR_MARKS_BG then
+    Result:= Ed.DefaultStyles.SearchMark.BgColor
+  else
+  if Id=PROP_COLOR_LINE_STATE_MODIFIED then
+    Result:= Ed.LineStateDisplay.ModifiedColor
+  else
+  if Id=PROP_COLOR_LINE_STATE_NEW then
+    Result:= Ed.LineStateDisplay.NewColor
+  else
+  if Id=PROP_COLOR_LINE_STATE_SAVED then
+    Result:= Ed.LineStateDisplay.SavedColor
+  else
+  if Id=PROP_COLOR_LINE_STATE_UNCHANGED then
+    Result:= Ed.LineStateDisplay.UnchangedColor
+  else
+  if Id=PROP_COLOR_LINE_STATE_DEFAULT then
+    Result:= Ed.Gutter.Bands[2].Color
+  else
+    Result:= 0;
 end;
 
 

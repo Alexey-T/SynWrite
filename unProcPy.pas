@@ -107,6 +107,7 @@ uses
   ecStrUtils,
   ecLists,
   ATxFProc,
+  ATxSProc,
   unProc,
   unProcHelp,
   unProcEditor,
@@ -1146,6 +1147,7 @@ const
   PROP_LEXER_FILE  = 22;
   PROP_LEXER_CARET = 23;
   PROP_LEXER_POS   = 24;
+  PROP_COLOR       = 25;
 
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1238,18 +1240,24 @@ begin
             Result:= PyUnicode_FromWideString(Str);
           end;
 
+        PROP_COLOR:
+          begin
+            Result:= PyInt_FromLong(EditorGetColorPropertyById(Ed, Str));
+          end;
+
         else
           Result:= ReturnNone;
       end;
     end;
 end;
 
+
 function Py_ed_set_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H, Id: Integer;
   Ed: TSyntaxMemo;
   P: PAnsiChar;
-  StrVal: Widestring;
+  StrVal, Str1, Str2: Widestring;
   NumVal: Integer;
 begin
   with GetPythonEngine do
@@ -1296,6 +1304,13 @@ begin
           Ed.TopLine:= NumVal;
         PROP_RULER:
           Ed.HorzRuler.Visible:= Bool(NumVal);
+        PROP_COLOR:
+          begin
+            Str1:= SGetItem(StrVal);
+            Str2:= SGetItem(StrVal);
+            NumVal:= StrToIntDef(Str2, $FF{red color});
+            EditorSetColorPropertyById(Ed, Str1, NumVal);
+          end;
       end;
 
       Result:= ReturnNone;
@@ -1414,5 +1429,6 @@ begin
         Result:= ReturnNone;
     end;
 end;
+
 
 end.
