@@ -25991,7 +25991,7 @@ begin
   SplitterLeft.Left:= ClientWidth;
   SplitterRight.Left:= 0;
 
-  TbxDockLeft1.Left:= ClientWidth;
+  TbxDockLeft1.Left:= SplitterLeft.Left+4;
   TbxDockRight1.Left:= 0;
 
   SplitterBottom.Visible:= TbxDockBottom.Height>0;

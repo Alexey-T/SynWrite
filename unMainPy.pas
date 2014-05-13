@@ -625,6 +625,10 @@ end;
 
 
 function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
+const
+  MENU_SIMPLE = 0;
+  MENU_DOUBLE = 1;
+  MENU_STD    = 2;
 var
   Id: Integer;
   PCaption, PText: PAnsiChar;
@@ -638,10 +642,12 @@ begin
       StrCaption:= UTF8Decode(AnsiString(PCaption));
       StrText:= UTF8Decode(AnsiString(PText));
       MenuItems:= TTntStringList.Create;
+
       try
         MenuItems.Text:= StrText;
         case Id of
-          0, 1:
+          MENU_SIMPLE,
+          MENU_DOUBLE:
           begin
             with TfmMenuPy.Create(nil) do
             try
@@ -672,7 +678,8 @@ begin
               Free
             end;
           end;
-          2:
+          
+          MENU_STD:
           begin
             NResult:= DoShowPopupMenu(MenuItems, CenterPoint(Screen.DesktopRect), fmMain.Handle);
             if NResult>=0 then
