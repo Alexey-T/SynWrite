@@ -14457,8 +14457,14 @@ begin
 
       Ini:= TIniFile.Create(SynIni);
       try
-        FProjPreviewEditor.Zoom:= Ini.ReadInteger('Pre', 'Zoom', 100);
         LoadPanelProp(FProjPreview, Ini, 'Pre', true{DefFloating});
+      finally
+        FreeAndNil(Ini);
+      end;
+
+      Ini:= TIniFile.Create(SynHistoryIni);
+      try
+        FProjPreviewEditor.Zoom:= Ini.ReadInteger('Win', 'PreviewZoom', 100);
       finally
         FreeAndNil(Ini);
       end;
@@ -14475,13 +14481,14 @@ begin
   if Assigned(FProjPreviewEditor) then
   begin
     FProjPreviewEditor.Zoom:= NValue;
-    Ini:= TIniFile.Create(SynIni);
+
+    Ini:= TIniFile.Create(SynHistoryIni);
     try
-      Ini.WriteInteger('Pre', 'Zoom', NValue);
+      Ini.WriteInteger('Win', 'PreviewZoom', NValue);
     finally
       FreeAndNil(Ini);
     end;
-  end;  
+  end;
 end;
 
 procedure TfmMain.LoadMap;
@@ -23805,7 +23812,7 @@ begin
       scmdAlignWithSep:
         begin
           //read separator from ini
-          with TIniFile.Create(SynIni) do
+          with TIniFile.Create(SynHistoryIni) do
           try
             Sep:= UTF8Decode(ReadString('Win', 'AlignSep', '='));
             ok:= DoInputString(DKLangConstW('zMEnterSep'), Sep) and (Sep<>'');
