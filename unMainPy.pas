@@ -8,7 +8,6 @@ uses
 function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_app_api_version(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_app_log(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_app_lock(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_split(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_split(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
@@ -694,23 +693,6 @@ begin
         FreeAndNil(MenuItems);
       end;
     end;
-end;
-
-function Py_app_lock(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  Id: Integer;
-begin
-  with GetPythonEngine do
-  begin
-    if Bool(PyArg_ParseTuple(Args, 'i:app_lock', @Id)) then
-    begin
-      case Id of
-        0: fmMain.FLockUpdate:= true;
-        1: fmMain.FLockUpdate:= false;
-      end;
-      Result:= ReturnNone;
-    end;
-  end;
 end;
 
 function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;

@@ -27927,7 +27927,6 @@ begin
     AddMethod('app_exe_dir', Py_app_exe_dir, '');
     AddMethod('app_ini_dir', Py_app_ini_dir, '');
     AddMethod('app_log', Py_app_log, '');
-    AddMethod('app_lock', Py_app_lock, ''); //deprecated, remove later
     AddMethod('app_proc', Py_app_proc, '');
     AddMethod('lexer_proc', Py_lexer_proc, '');
     AddMethod('ed_handles', Py_ed_handles, '');
@@ -29213,6 +29212,9 @@ begin
   //captions
   TbxItemPreCopy.Caption:= TBXItemECopy.Caption;
   TbxItemPreSelect.Caption:= TBXItemESelectAll.Caption;
+  UpdKey_String(TbxItemPreCopy, ''); //remove text "Ctrl+C"
+  UpdKey_String(TbxItemPreSelect, ''); //remove text "Ctrl+A"
+
   TbxItemPreZoom25.Caption:= '25%';
   TbxItemPreZoom50.Caption:= '50%';
   TbxItemPreZoom75.Caption:= '75%';
@@ -29229,6 +29231,11 @@ begin
     TbxItemPreZoom50.Checked:= Ed.Zoom=50;
     TbxItemPreZoom75.Checked:= Ed.Zoom=75;
     TbxItemPreZoom100.Checked:= Ed.Zoom=100;
+    TbxItemPreZoomOther.Checked:= not (
+      TbxItemPreZoom25.Checked or
+      TbxItemPreZoom50.Checked or
+      TbxItemPreZoom75.Checked or
+      TbxItemPreZoom100.Checked );
   end;
 end;
 
