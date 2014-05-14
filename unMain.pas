@@ -2868,6 +2868,7 @@ type
     SynMruNewdoc: TSynMruList;
 
     FProjPreview: TSpTBXDockablePanel;
+    FProjPreviewFilename: Widestring;
     FProjPreviewEditor: TSyntaxMemo;
     FProjPreviewButton: TSpTbxItem;
 
@@ -7336,6 +7337,7 @@ begin
   fmSR:= nil;
   FProjPreview:= nil;
   FProjPreviewEditor:= nil;
+  FProjPreviewFilename:= '';
 
   TabSwitcher:= TTabSwitcher.Create(0);
   TabSwitcher2:= TTabSwitcher.Create(1);
@@ -26996,6 +26998,7 @@ procedure TfmMain.ProjPreview(Sender: TObject; const AFilename: Widestring; ATog
 var
   Ed: TSyntaxMemo;
 begin
+  FProjPreviewFilename:= '';
   if Assigned(FProjPreview) then
     with FProjPreview do
     begin
@@ -27038,6 +27041,8 @@ begin
       finally
         Screen.Cursor:= crDefault;
       end;
+
+      FProjPreviewFilename:= AFilename;
     end;
 end;
 
@@ -27091,16 +27096,15 @@ procedure TfmMain.ProjPreviewButtonClick(Sender: TObject);
 var
   fn: Widestring;
 begin
-  fn:= '';
-  with fmProj do
-    if TreeProj.Selected<>nil then
-      fn:= GetFN(TreeProj.Selected);
-
+  fn:= FProjPreviewFilename;
   if (fn<>'') and IsFileExist(fn) then
   begin
     FProjPreview.Hide;
     DoOpenFile(fn);
     FocusEditor;
+    
+    CurrentEditor.CaretPos:= FProjPreviewEditor.CaretPos;
+    EditorCenterPos(CurrentEditor, true, opSrOffsetY);
   end
   else
     MsgBeep;
