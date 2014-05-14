@@ -3091,14 +3091,16 @@ const
   PROP_COLOR_LINE_NUMBERS_TEXT     = 'numbers_text';
   PROP_COLOR_LINE_NUMBERS_BG       = 'numbers_bg';
   PROP_COLOR_COLLAPSE_LINE         = 'collapse_line';
-  PROP_COLOR_COLLAPSE_MARK         = 'collapse_mark';
+  PROP_COLOR_COLLAPSE_MARK_TEXT    = 'collapse_mark_text';
+  PROP_COLOR_COLLAPSE_MARK_BG      = 'collapse_mark_bg';
   PROP_COLOR_FOLDING_LINES         = 'folding_lines';
   PROP_COLOR_FOLDING_BAR_BG        = 'folding_bar_bg';
   PROP_COLOR_GUTTER_SEPARATOR      = 'gutter_sep';
   PROP_COLOR_MARGIN                = 'margin';
   PROP_COLOR_HINTS_TEXT            = 'hints_text';
   PROP_COLOR_HINTS_BG              = 'hints_bg';
-  PROP_COLOR_NON_PRINTABLE         = 'non_printable';
+  PROP_COLOR_NONPRINTABLE_TEXT     = 'nonprint_text';
+  PROP_COLOR_NONPRINTABLE_BG       = 'nonprint_bg';
   PROP_COLOR_INDENT_STAPLES        = 'indent_staples';
   PROP_COLOR_RULER_TEXT            = 'ruler_text';
   PROP_COLOR_RULER_BG              = 'ruler_bg';
@@ -3109,6 +3111,7 @@ const
   PROP_COLOR_LINE_STATE_SAVED      = 'state_saved';
   PROP_COLOR_LINE_STATE_UNCHANGED  = 'state_unchanged';
   PROP_COLOR_LINE_STATE_DEFAULT    = 'state_def';
+  PROP_COLOR_SYNCEDIT_BG           = 'syncedit_bg';   
 
 procedure EditorSetColorPropertyById(Ed: TSyntaxMemo; const Id: string; Color: Longint);
 begin
@@ -3145,8 +3148,11 @@ begin
   if Id=PROP_COLOR_COLLAPSE_LINE then
     Ed.CollapseBreakColor:= Color
   else
-  if Id=PROP_COLOR_COLLAPSE_MARK then
+  if Id=PROP_COLOR_COLLAPSE_MARK_TEXT then
     Ed.DefaultStyles.CollapseMark.Font.Color:= Color
+  else
+  if Id=PROP_COLOR_COLLAPSE_MARK_BG then
+    Ed.DefaultStyles.CollapseMark.BgColor:= Color
   else
   if Id=PROP_COLOR_FOLDING_LINES then
     Ed.Gutter.CollapsePen.Color:= Color
@@ -3166,8 +3172,11 @@ begin
   if Id=PROP_COLOR_HINTS_BG then
     Ed.HintProps.Color:= Color
   else
-  if Id=PROP_COLOR_NON_PRINTABLE then
+  if Id=PROP_COLOR_NONPRINTABLE_TEXT then
     Ed.NonPrinted.Color:= Color
+  else
+  if Id=PROP_COLOR_NONPRINTABLE_BG then
+    ecSyntMemo.opColorNonPrintedBG:= Color
   else
   if Id=PROP_COLOR_INDENT_STAPLES then
     Ed.StaplePen.Color:= Color
@@ -3199,7 +3208,10 @@ begin
   if Id=PROP_COLOR_LINE_STATE_DEFAULT then
     Ed.Gutter.Bands[2].Color:= Color
   else
-  ;
+  if Id=PROP_COLOR_SYNCEDIT_BG then
+    Ed.SyncEditing.SyncRangeStyle.BgColor:= Color
+  else
+    begin end;
 end;
 
 function EditorGetColorPropertyById(Ed: TSyntaxMemo; const Id: string): Longint;
@@ -3231,8 +3243,11 @@ begin
   if Id=PROP_COLOR_COLLAPSE_LINE then
     Result:= Ed.CollapseBreakColor
   else
-  if Id=PROP_COLOR_COLLAPSE_MARK then
+  if Id=PROP_COLOR_COLLAPSE_MARK_TEXT then
     Result:= Ed.DefaultStyles.CollapseMark.Font.Color
+  else
+  if Id=PROP_COLOR_COLLAPSE_MARK_BG then
+    Result:= Ed.DefaultStyles.CollapseMark.BgColor
   else
   if Id=PROP_COLOR_FOLDING_LINES then
     Result:= Ed.Gutter.CollapsePen.Color
@@ -3252,8 +3267,11 @@ begin
   if Id=PROP_COLOR_HINTS_BG then
     Result:= Ed.HintProps.Color
   else
-  if Id=PROP_COLOR_NON_PRINTABLE then
+  if Id=PROP_COLOR_NONPRINTABLE_TEXT then
     Result:= Ed.NonPrinted.Color
+  else
+  if Id=PROP_COLOR_NONPRINTABLE_BG then
+    Result:= ecSyntMemo.opColorNonPrintedBG
   else
   if Id=PROP_COLOR_INDENT_STAPLES then
     Result:= Ed.StaplePen.Color
@@ -3284,6 +3302,9 @@ begin
   else
   if Id=PROP_COLOR_LINE_STATE_DEFAULT then
     Result:= Ed.Gutter.Bands[2].Color
+  else
+  if Id=PROP_COLOR_SYNCEDIT_BG then
+    Result:= Ed.SyncEditing.SyncRangeStyle.BgColor
   else
     Result:= 0;
 end;
