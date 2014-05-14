@@ -21,6 +21,7 @@ procedure DoClearSnippet(var AInfo: TSynSnippetInfo);
 function DoLoadSnippetFromFile(const fn: string; var Info: TSynSnippetInfo): boolean;
 procedure DoSaveSnippetToFile(const fn: string; var Info: TSynSnippetInfo);
 
+function SWideStringToPythonString(const Str: Widestring): string;
 function STruncateLong(const Str: Widestring; MaxLen: Integer; CutMiddle: boolean): Widestring;
 procedure SReplaceAllPercentChars(var S: string);
 function SReplaceAllEols(const S, SReplace: Widestring): Widestring;
@@ -1549,6 +1550,15 @@ begin
     else
       Result:= Copy(Str, 1, MaxLen) + cDots;
   end;
+end;
+
+function SWideStringToPythonString(const Str: Widestring): string;
+const
+  Decode: array[0..0] of TStringDecodeRecW =
+    ((SFrom: '"'; STo: '"+''"''+"'));
+begin
+  Result:= UTF8Encode(SDecodeW(Str, Decode));
+  Result:= 'r"'+Result+'"';
 end;
 
 end.

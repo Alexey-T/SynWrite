@@ -1337,7 +1337,7 @@ var
 begin
   Str:= '';
   for i:= 0 to Length(Dirs)-1 do
-    Str:= Str + Format('r"%s", ', [UTF8Encode(Dirs[i])]);
+    Str:= Str + SWideStringToPythonString(Dirs[i]) + ',';
   Str:= Format('sys.path = [%s]', [Str]);
   GetPythonEngine.ExecString(Str);
 end;

@@ -3248,7 +3248,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.970';
+  cSynVer = '6.5.980';
   cSynPyVer = '1.0.130';
 
 const
@@ -27193,8 +27193,8 @@ begin
       acCloseAll.Execute;
 
       DoPyEvent(CurrentEditor, cSynEventOnCompare,
-        ['r"'+SName1+'"',
-         'r"'+SName2+'"']);
+        [SWideStringToPythonString(SName1),
+         SWideStringToPythonString(SName2)]);
     end;  
   end;
 end;
@@ -27769,14 +27769,14 @@ end;
 procedure TfmMain.DoPyConsole_EnterCommand(const Str: Widestring);
 var
   SNew: Widestring;
-  IsHandled: boolean;
+  Handled: boolean;
 begin
   DoPyConsole_LogString(cPyConsolePrompt + Str);
 
-  IsHandled:= DoPyEvent(CurrentEditor, cSynEventOnConsole,
-    ['r'''+UTF8Encode(Str)+'''']) = cPyTrue;
+  Handled:= DoPyEvent(CurrentEditor, cSynEventOnConsole,
+    [SWideStringToPythonString(Str)]) = cPyTrue;
 
-  if not IsHandled then
+  if not Handled then
   try
     with GetPythonEngine do
     begin
