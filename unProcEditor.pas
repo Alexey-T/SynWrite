@@ -3095,7 +3095,6 @@ const
   PROP_COLOR_COLLAPSE_MARK_BG      = 'collapse_mark_bg';
   PROP_COLOR_FOLDING_LINES         = 'folding_lines';
   PROP_COLOR_FOLDING_BAR_BG        = 'folding_bar_bg';
-  PROP_COLOR_GUTTER_SEPARATOR      = 'gutter_sep';
   PROP_COLOR_MARGIN                = 'margin';
   PROP_COLOR_HINTS_TEXT            = 'hints_text';
   PROP_COLOR_HINTS_BG              = 'hints_bg';
@@ -3159,9 +3158,6 @@ begin
   else
   if Id=PROP_COLOR_FOLDING_BAR_BG then
     Ed.Gutter.Bands[3].Color:= Color
-  else
-  if Id=PROP_COLOR_GUTTER_SEPARATOR then
-    Ed.Gutter.SeparatorColor:= Color
   else
   if Id=PROP_COLOR_MARGIN then
     Ed.RightMarginColor:= Color
@@ -3254,9 +3250,6 @@ begin
   else
   if Id=PROP_COLOR_FOLDING_BAR_BG then
     Result:= Ed.Gutter.Bands[3].Color
-  else
-  if Id=PROP_COLOR_GUTTER_SEPARATOR then
-    Result:= Ed.Gutter.SeparatorColor
   else
   if Id=PROP_COLOR_MARGIN then
     Result:= Ed.RightMarginColor

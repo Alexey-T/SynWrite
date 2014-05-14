@@ -656,7 +656,7 @@ type
     TBXItemZSet100: TSpTbxItem;
     TBXItemZSet75: TSpTbxItem;
     TBXItemZSet50: TSpTbxItem;
-    TBXItemZSet: TSpTbxItem;
+    TBXItemZSet25: TSpTBXItem;
     TBXItemZOther: TSpTbxItem;
     plClip: TSpTbxDockablePanel;
     ecShowClip: TAction;
@@ -1350,6 +1350,17 @@ type
     ecToggleProjPreview: TAction;
     TbxItemCtxPlugins: TSpTBXSubmenuItem;
     TbxSubmenuItemProjTools: TSpTBXSubmenuItem;
+    PopupPreviewEditor: TSpTBXPopupMenu;
+    TbxItemPreSelect: TSpTBXItem;
+    TbxItemPreCopy: TSpTBXItem;
+    SpTBXSeparatorItem30: TSpTBXSeparatorItem;
+    TbxItemPreZoomOther: TSpTBXItem;
+    TbxItemPreZoom100: TSpTBXItem;
+    TbxItemPreZoom75: TSpTBXItem;
+    TbxItemPreZoom50: TSpTBXItem;
+    TbxItemPreZoom25: TSpTBXItem;
+    TbxItemPreEdit: TSpTBXItem;
+    SpTBXSeparatorItem31: TSpTBXSeparatorItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -1550,7 +1561,7 @@ type
     procedure TBXItemEExtrClick(Sender: TObject);
     procedure PopupCPPopup(Sender: TObject);
     procedure ecSentCaseExecute(Sender: TObject);
-    procedure TBXItemZSetClick(Sender: TObject);
+    procedure TBXItemZSet25Click(Sender: TObject);
     procedure TBXItemZOtherClick(Sender: TObject);
     procedure ListClipDblClick(Sender: TObject);
     procedure plClipResize(Sender: TObject);
@@ -2116,6 +2127,15 @@ type
     procedure acExportHTMLBeforeExecute(Sender: TObject);
     procedure TBXSubmenuItemBkPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
+    procedure TbxItemPreCopyClick(Sender: TObject);
+    procedure TbxItemPreSelectClick(Sender: TObject);
+    procedure TbxItemPreZoom25Click(Sender: TObject);
+    procedure TbxItemPreZoom50Click(Sender: TObject);
+    procedure TbxItemPreZoom75Click(Sender: TObject);
+    procedure TbxItemPreZoom100Click(Sender: TObject);
+    procedure TbxItemPreEditClick(Sender: TObject);
+    procedure TbxItemPreZoomOtherClick(Sender: TObject);
+    procedure PopupPreviewEditorPopup(Sender: TObject);
 
   private
     cStatLine,
@@ -2698,7 +2718,8 @@ type
       ACanReload: boolean = true);
     procedure MenuitemSetEncoding(Sender: TObject);
     procedure MenuitemConvertEncoding(Sender: TObject);
-    
+
+    procedure ApplyPreviewZoom(NValue: Integer);
     procedure DoCheckAutoShowACP(Ed: TSyntaxMemo);
     procedure DoLinesCommand(Cmd: TSynLineCmd);
     procedure DoToggleLineComment(Alt: boolean);
@@ -14245,7 +14266,7 @@ begin
   StatusItemZoom.Caption:= IntToStr(CurrentEditor.Zoom) + '%';
 end;
 
-procedure TfmMain.TBXItemZSetClick(Sender: TObject);
+procedure TfmMain.TBXItemZSet25Click(Sender: TObject);
 begin
   DoZoomEditor((Sender as TComponent).Tag);
 end;
@@ -14420,6 +14441,7 @@ begin
         BorderStyle:= bsNone;
         ReadOnly:= true;
         Gutter.Visible:= false;
+        PopupMenu:= PopupPreviewEditor;
         Options:= Options + [soAlwaysShowCaret] - [soScrollLastLine];
         Lines.Clear;
         OnKeyDown:= ProjPreviewKeyDown;
@@ -14435,6 +14457,7 @@ begin
 
       Ini:= TIniFile.Create(SynIni);
       try
+        FProjPreviewEditor.Zoom:= Ini.ReadInteger('Pre', 'Zoom', 100);
         LoadPanelProp(FProjPreview, Ini, 'Pre', true{DefFloating});
       finally
         FreeAndNil(Ini);
@@ -14443,6 +14466,22 @@ begin
       Hide;
     end;
   end;
+end;
+
+procedure TfmMain.ApplyPreviewZoom(NValue: Integer);
+var
+  Ini: TIniFile;
+begin
+  if Assigned(FProjPreviewEditor) then
+  begin
+    FProjPreviewEditor.Zoom:= NValue;
+    Ini:= TIniFile.Create(SynIni);
+    try
+      Ini.WriteInteger('Pre', 'Zoom', NValue);
+    finally
+      FreeAndNil(Ini);
+    end;
+  end;  
 end;
 
 procedure TfmMain.LoadMap;
@@ -29108,6 +29147,82 @@ procedure TfmMain.DoToggleTabDirs;
 begin
   opTabDirs:= not opTabDirs;
   ApplyTabOptions;
+end;
+
+procedure TfmMain.TbxItemPreCopyClick(Sender: TObject);
+begin
+  if Assigned(FProjPreviewEditor) then
+    FProjPreviewEditor.CopyToClipboard;
+end;
+
+procedure TfmMain.TbxItemPreSelectClick(Sender: TObject);
+begin
+  if Assigned(FProjPreviewEditor) then
+    FProjPreviewEditor.SelectAll;
+end;
+
+
+procedure TfmMain.TbxItemPreZoom25Click(Sender: TObject);
+begin
+  ApplyPreviewZoom(25);
+end;
+
+procedure TfmMain.TbxItemPreZoom50Click(Sender: TObject);
+begin
+  ApplyPreviewZoom(50);
+end;
+
+procedure TfmMain.TbxItemPreZoom75Click(Sender: TObject);
+begin
+  ApplyPreviewZoom(75);
+end;
+
+procedure TfmMain.TbxItemPreZoom100Click(Sender: TObject);
+begin
+  ApplyPreviewZoom(100);
+end;
+
+procedure TfmMain.TbxItemPreEditClick(Sender: TObject);
+begin
+  ProjPreviewButtonClick(Self);
+end;
+
+procedure TfmMain.TbxItemPreZoomOtherClick(Sender: TObject);
+var
+  Str: Widestring;
+begin
+  if Assigned(FProjPreviewEditor) then
+  begin
+    Str:= IntToStr(FProjPreviewEditor.Zoom);
+    if DoInputString(TbxItemPreZoomOther.Caption, Str) then
+      ApplyPreviewZoom(StrToIntDef(Str, FProjPreviewEditor.Zoom));
+  end;    
+end;
+
+procedure TfmMain.PopupPreviewEditorPopup(Sender: TObject);
+var
+  Ed: TSyntaxMemo;
+begin
+  //captions
+  TbxItemPreCopy.Caption:= TBXItemECopy.Caption;
+  TbxItemPreSelect.Caption:= TBXItemESelectAll.Caption;
+  TbxItemPreZoom25.Caption:= '25%';
+  TbxItemPreZoom50.Caption:= '50%';
+  TbxItemPreZoom75.Caption:= '75%';
+  TbxItemPreZoom100.Caption:= '100%';
+  TbxItemPreZoomOther.Caption:= TBXItemZOther.Caption;
+  TbxItemPreEdit.Caption:= DKLangConstW('MPreButton');
+
+  //checked states
+  Ed:= FProjPreviewEditor;
+  if Assigned(Ed) then
+  begin
+    TbxItemPreCopy.Enabled:= Ed.HaveSelection;
+    TbxItemPreZoom25.Checked:= Ed.Zoom=25;
+    TbxItemPreZoom50.Checked:= Ed.Zoom=50;
+    TbxItemPreZoom75.Checked:= Ed.Zoom=75;
+    TbxItemPreZoom100.Checked:= Ed.Zoom=100;
+  end;
 end;
 
 initialization
