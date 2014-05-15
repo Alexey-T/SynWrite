@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabFolders
+    ActivePage = tabCarets
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -669,7 +669,9 @@ object fmSetup: TfmSetup
           ParentFont = False
           TabOrder = 0
           Items.Strings = (
-            '  '#9474
+            ' '#9474'x1'
+            ' '#9474'x2'
+            ' '#9474'x3'
             '  '#9612
             '  '#9608
             '  _'

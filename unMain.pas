@@ -349,8 +349,8 @@ type
     TimerTick: TTimer;
     TBXItem11: TSpTbxItem;
     TBXItem15: TSpTbxItem;
-    PopupCP: TSpTbxPopupMenu;
-    PopupLE: TSpTbxPopupMenu;
+    PopupStatusEnc: TSpTBXPopupMenu;
+    PopupStatusLineEnds: TSpTBXPopupMenu;
     ecReadOnly: TAction;
     tbEdit: TSpTbxToolbar;
     TBXItemTbCopy: TSpTbxItem;
@@ -403,7 +403,7 @@ type
     TBXSeparatorItem1: TSpTbxSeparatorItem;
     TBXItemOOLex: TSpTbxItem;
     TBXItemOOLexLib: TSpTbxItem;
-    PopupLex: TSpTbxPopupMenu;
+    PopupLexers: TSpTBXPopupMenu;
     ecWrap: TAction;
     ecLineNums: TAction;
     ecFolding: TAction;
@@ -1370,7 +1370,7 @@ type
     procedure acSaveAsExecute(Sender: TObject);
     procedure MRUClick(Sender: TObject; const S: WideString);
     procedure MRU_SessClick(Sender: TObject; const S: WideString);
-    procedure PopupLexPopup(Sender: TObject);
+    procedure PopupLexersPopup(Sender: TObject);
     procedure acSetupExecute(Sender: TObject);
     procedure TimerTickTimer(Sender: TObject);
     procedure acExportRTFBeforeExecute(Sender: TObject);
@@ -1559,7 +1559,7 @@ type
     procedure ecCopyAsRTFExecute(Sender: TObject);
     procedure acSetupLexHLExecute(Sender: TObject);
     procedure TBXItemEExtrClick(Sender: TObject);
-    procedure PopupCPPopup(Sender: TObject);
+    procedure PopupStatusEncPopup(Sender: TObject);
     procedure ecSentCaseExecute(Sender: TObject);
     procedure TBXItemZSet25Click(Sender: TObject);
     procedure TBXItemZOtherClick(Sender: TObject);
@@ -1899,7 +1899,7 @@ type
     procedure ecPageSetupActionBeforeExecute(Sender: TObject);
     procedure ecPreviewActionExecuteOK(Sender: TObject);
     procedure TimerTreeTimer(Sender: TObject);
-    procedure PopupLEPopup(Sender: TObject);
+    procedure PopupStatusLineEndsPopup(Sender: TObject);
     procedure TBXItemFoldAllClick(Sender: TObject);
     procedure TBXItemUnfoldAllClick(Sender: TObject);
     procedure TBXItemUnfoldLineClick(Sender: TObject);
@@ -2151,6 +2151,7 @@ type
     cStatCaretsTopLn,
     cStatCaretsBotLn: Widestring;
 
+    //FPopupEncVisible: boolean;
     FListSnippets: TList;
     FListLexersSorted: TTntStringList;
     FTempFilenames: TTntStringList;
@@ -2887,7 +2888,7 @@ type
     opNonPrintSpaces,
     opNonPrintEol,
     opNonPrintEolDetail: boolean;
-    opCaretType: integer;
+    opCaretShape: integer;
     opMaxTreeMatches: integer;
     opCaretsEnabled: boolean;
     opCaretsIndicator: integer;
@@ -3958,39 +3959,6 @@ begin
   Ed.NonPrinted.TabChar:= #187;
 end;  
 
-procedure EditorCaretUpdate(Ed: TSyntaxMemo; Opt: Integer);
-begin
-  case Opt of
-    0:
-      begin
-        Ed.Caret.Insert.Width:= -2; //negative default value
-        Ed.Caret.Insert.Height:= 100;
-      end;
-    1:
-      begin
-        Ed.Caret.Insert.Width:= 50;
-        Ed.Caret.Insert.Height:= 100;
-      end;
-    2:
-      begin
-        Ed.Caret.Insert.Width:= 100;
-        Ed.Caret.Insert.Height:= 100;
-      end;
-    3:
-      begin
-        Ed.Caret.Insert.Width:= 100;
-        Ed.Caret.Insert.Height:= 20;
-      end;
-    4:
-      begin
-        Ed.Caret.Insert.Width:= 100;
-        Ed.Caret.Insert.Height:= 50;
-      end;
-    else
-      raise Exception.Create('Unknown caret type');  
-  end;
-end;
-
 function TfmMain.CreateFrame: TEditorFrame;
 begin
   Result:= TEditorFrame.Create(Self);
@@ -4025,8 +3993,8 @@ begin
   Result.CaretsGutterColor:= opColorCaretsGutter;
   Result.CaretsIndicator:= opCaretsIndicator;
 
-  EditorCaretUpdate(Result.EditorMaster, opCaretType);
-  EditorCaretUpdate(Result.EditorSlave, opCaretType);
+  EditorSetCaretShape(Result.EditorMaster, opCaretShape);
+  EditorSetCaretShape(Result.EditorSlave, opCaretShape);
 
   PropsManager.Add(Result.EditorMaster);
   PropsManager.Add(Result.EditorSlave);
@@ -4781,7 +4749,7 @@ begin
     opMicroMap:= ReadBool('View', 'MicroMap', false);
     opColorMap:= ReadInteger('View', 'MapColor', clSkyBlue);
     opShowCurrentColumn:= ReadBool('View', 'CurrCol', false);
-    opCaretType:= ReadInteger('View', 'CarWidth', 0);
+    opCaretShape:= ReadInteger('View', 'CaretType', 1);
 
     NCount:= ReadInteger('View', 'NPrint', 0+2+4);
     opNonPrint:=       (NCount and 1)<>0;
@@ -5031,7 +4999,7 @@ begin
     WriteInteger('View', 'MapColor', opColorMap);
     WriteBool('View', 'MicroMap', opMicroMap);
     WriteBool('View', 'CurrCol', opShowCurrentColumn);
-    WriteInteger('View', 'CarWidth', opCaretType);
+    WriteInteger('View', 'CaretType', opCaretShape);
     WriteInteger('View', 'NPrint',
       Ord(opNonPrint)*1 +
       Ord(opNonPrintSpaces)*2 +
@@ -6156,17 +6124,17 @@ begin
     sm_Menu_Encodings:
       begin
         p:= Mouse.CursorPos;
-        PopupCP.Popup(p.x, p.y);
+        PopupStatusEnc.Popup(p.x, p.y);
       end;
     sm_Menu_Lexers:
       begin
         p:= Mouse.CursorPos;
-        PopupLex.Popup(p.x, p.y);
+        PopupLexers.Popup(p.x, p.y);
       end;
     sm_Menu_LineEnds:
       begin
         p:= Mouse.CursorPos;
-        PopupLE.Popup(p.x, p.y);
+        PopupStatusLineEnds.Popup(p.x, p.y);
       end;
 
     sm_QuickSearch:
@@ -6586,11 +6554,11 @@ var
   i, nTag: integer;
   ch: char;
 begin
-  PopupLex.Items.Clear;
+  PopupLexers.Items.Clear;
   if SyntaxManager.AnalyzerCount=0 then Exit;
 
   ACurLexer:= CurrentLexerForFile;
-  PopupLex.Items.Add(DoMakeItem('', -1));
+  PopupLexers.Items.Add(DoMakeItem('', -1));
 
   s:= TStringList.Create;
   try
@@ -6606,7 +6574,7 @@ begin
       begin
         menu:= TSpTbxSubmenuItem.Create(Self);
         menu.Caption:= ch;
-        PopupLex.Items.Add(menu);
+        PopupLexers.Items.Add(menu);
 
         for i:= 0 to s.Count-1 do
           if (UpCase(s[i][1]) = UpCase(ch)) then
@@ -6624,7 +6592,7 @@ begin
       begin
         nTag:= integer(s.Objects[i]);
         if SyntaxManager.Analyzers[nTag].Internal then Continue;
-        PopupLex.Items.Add(DoMakeItem(s[i], nTag));
+        PopupLexers.Items.Add(DoMakeItem(s[i], nTag));
       end;
   finally
     FreeAndNil(s);
@@ -6707,7 +6675,7 @@ begin
   end;
 end;
 
-procedure TfmMain.PopupLexPopup(Sender: TObject);
+procedure TfmMain.PopupLexersPopup(Sender: TObject);
 begin
   UpdateLexList;
 end;
@@ -10291,7 +10259,7 @@ procedure TfmMain.TBXSubmenuItemLexerPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
   UpdateLexList;
-  TbxSubmenuItemLexer.LinkSubitems:= PopupLex.Items;
+  TbxSubmenuItemLexer.LinkSubitems:= PopupLexers.Items;
 end;
 
 procedure TfmMain.TBXItemEDupClick(Sender: TObject);
@@ -14071,9 +14039,9 @@ begin
   end;
 end;
 
-procedure TfmMain.PopupCPPopup(Sender: TObject);
+procedure TfmMain.PopupStatusEncPopup(Sender: TObject);
 begin
-  UpdateEncMenu(PopupCP);
+  UpdateEncMenu(PopupStatusEnc);
 end;
 
 procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
@@ -24058,7 +24026,7 @@ begin
 end;
 
 
-procedure TfmMain.PopupLEPopup(Sender: TObject);
+procedure TfmMain.PopupStatusLineEndsPopup(Sender: TObject);
 begin
   case CurrentFrame.EditorMaster.TextSource.Lines.TextFormat of
     tfCR: TbxItemEndMac.Checked:= true;
@@ -24590,7 +24558,8 @@ begin
 end;
 
 procedure TfmMain.ApplyCarets;
-var i: Integer;
+var
+  i: Integer;
 begin
   for i:= 0 to FrameAllCount-1 do
     with FramesAll[i] do
@@ -24601,8 +24570,8 @@ begin
       CaretsIndicator:= opCaretsIndicator;
 
       //apply "Block caret"
-      EditorCaretUpdate(EditorMaster, opCaretType);
-      EditorCaretUpdate(EditorSlave, opCaretType);
+      EditorSetCaretShape(EditorMaster, opCaretShape);
+      EditorSetCaretShape(EditorSlave, opCaretShape);
     end;
 end;
 
@@ -26055,19 +26024,19 @@ end;
 procedure TfmMain.StatusItemEncClick(Sender: TObject);
 begin
   with Mouse.CursorPos do
-    PopupCP.Popup(X, Y);
+    PopupStatusEnc.Popup(X, Y);
 end;
 
 procedure TfmMain.StatusItemEndsClick(Sender: TObject);
 begin
   with Mouse.CursorPos do
-    PopupLE.Popup(X, Y);
+    PopupStatusLineEnds.Popup(X, Y);
 end;
 
 procedure TfmMain.StatusItemLexerClick(Sender: TObject);
 begin
   with Mouse.CursorPos do
-    PopupLex.Popup(X, Y);
+    PopupLexers.Popup(X, Y);
 end;
 
 procedure TfmMain.StatusItemCharClick(Sender: TObject);

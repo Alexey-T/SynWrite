@@ -14,6 +14,7 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
+procedure EditorSetCaretShape(Ed: TSyntaxMemo; Opt: Integer);
 function EditorGetColorPropertyById(Ed: TSyntaxMemo; const Id: string): Longint;
 procedure EditorSetColorPropertyById(Ed: TSyntaxMemo; const Id: string; Color: Longint);
 
@@ -3301,6 +3302,50 @@ begin
   else
     Result:= 0;
 end;
+
+procedure EditorSetCaretShape(Ed: TSyntaxMemo; Opt: Integer);
+begin
+  case Opt of
+    0:
+      begin
+        Ed.Caret.Insert.Width:= -1; //negative: vertical line x1
+        Ed.Caret.Insert.Height:= 100;
+      end;
+    1:
+      begin
+        Ed.Caret.Insert.Width:= -2; //negative: vertical line x2
+        Ed.Caret.Insert.Height:= 100;
+      end;
+    2:
+      begin
+        Ed.Caret.Insert.Width:= -3; //negative: vertical line x3
+        Ed.Caret.Insert.Height:= 100;
+      end;
+    3:
+      begin
+        Ed.Caret.Insert.Width:= 50; //percents
+        Ed.Caret.Insert.Height:= 100;
+      end;
+    4:
+      begin
+        Ed.Caret.Insert.Width:= 100;
+        Ed.Caret.Insert.Height:= 100;
+      end;
+    5:
+      begin
+        Ed.Caret.Insert.Width:= 100;
+        Ed.Caret.Insert.Height:= 20;
+      end;
+    6:
+      begin
+        Ed.Caret.Insert.Width:= 100;
+        Ed.Caret.Insert.Height:= 50;
+      end;
+    else
+      raise Exception.Create('Unknown caret shape');
+  end;
+end;
+
 
 
 initialization

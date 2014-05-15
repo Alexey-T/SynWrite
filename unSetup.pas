@@ -1791,7 +1791,7 @@ begin
      if cbCaretIndLine.Checked then opCaretsIndicator:= 1 else
       if cbCaretIndGutter.Checked then opCaretsIndicator:= 2;
     opCaretsGutterBand:= edCaretGutterCol.Value;
-    opCaretType:= edCaretType.ItemIndex; //cbCaretWidth.Position;
+    opCaretShape:= edCaretType.ItemIndex; //cbCaretWidth.Position;
 
     if cbCaretSmart.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soSmartCaret]
@@ -2103,7 +2103,7 @@ begin
     cbCaretIndLine.Checked:= opCaretsIndicator=1;
     cbCaretIndGutter.Checked:= opCaretsIndicator=2;
     edCaretGutterCol.Value:= opCaretsGutterBand;
-    edCaretType.ItemIndex:= opCaretType;
+    edCaretType.ItemIndex:= opCaretShape;
 
     cbCaretSmart.Checked:= soSmartCaret in TemplateEditor.Options;
     cbCaretInText.Checked:= soKeepCaretInText in TemplateEditor.Options;
