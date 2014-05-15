@@ -9895,6 +9895,7 @@ object fmMain: TfmMain
   end
   object PopupStatusEnc: TSpTBXPopupMenu
     OnPopup = PopupStatusEncPopup
+    OnClosePopup = PopupStatusEncClosePopup
     Left = 288
     Top = 304
   end

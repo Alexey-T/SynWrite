@@ -1821,13 +1821,11 @@ begin
 end;
 
 procedure TSyntaxMemo.GetDrawCoord(var NSize: TSize; var RClient: TRect);
-const
-  cDefCaretWidth = 2;
 var
-  NDefWidth: Integer;
+  NWidth: Integer;
 begin
-  NDefWidth:= IfThen(Caret.Insert.Width<0, cDefCaretWidth, FTextExt.cx * Caret.Insert.Width div 100);
-  NSize.cx:= IfThen(ReplaceMode, FTextExt.cx, NDefWidth);
+  NWidth:= IfThen(Caret.Insert.Width<0, Abs(Caret.Insert.Width), FTextExt.cx * Caret.Insert.Width div 100);
+  NSize.cx:= IfThen(ReplaceMode, FTextExt.cx, NWidth);
   NSize.cy:= IfThen(ReplaceMode, FTextExt.cy + LineSpacing, (FTextExt.cy + LineSpacing) * Caret.Insert.Height div 100);
 
   RClient:= ClientRect;

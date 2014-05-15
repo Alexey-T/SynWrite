@@ -2136,6 +2136,7 @@ type
     procedure TbxItemPreEditClick(Sender: TObject);
     procedure TbxItemPreZoomOtherClick(Sender: TObject);
     procedure PopupPreviewEditorPopup(Sender: TObject);
+    procedure PopupStatusEncClosePopup(Sender: TObject);
 
   private
     cStatLine,
@@ -2151,7 +2152,9 @@ type
     cStatCaretsTopLn,
     cStatCaretsBotLn: Widestring;
 
-    //FPopupEncVisible: boolean;
+    FPopupEncVisible: boolean;
+    //FPopupEncVisibleDown: boolean;
+
     FListSnippets: TList;
     FListLexersSorted: TTntStringList;
     FTempFilenames: TTntStringList;
@@ -4749,7 +4752,7 @@ begin
     opMicroMap:= ReadBool('View', 'MicroMap', false);
     opColorMap:= ReadInteger('View', 'MapColor', clSkyBlue);
     opShowCurrentColumn:= ReadBool('View', 'CurrCol', false);
-    opCaretShape:= ReadInteger('View', 'CaretType', 1);
+    opCaretShape:= ReadInteger('View', 'CaretType', 0);
 
     NCount:= ReadInteger('View', 'NPrint', 0+2+4);
     opNonPrint:=       (NCount and 1)<>0;
@@ -14042,6 +14045,7 @@ end;
 procedure TfmMain.PopupStatusEncPopup(Sender: TObject);
 begin
   UpdateEncMenu(PopupStatusEnc);
+  FPopupEncVisible:= true;
 end;
 
 procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
@@ -29210,6 +29214,11 @@ begin
       TbxItemPreZoom75.Checked or
       TbxItemPreZoom100.Checked );
   end;
+end;
+
+procedure TfmMain.PopupStatusEncClosePopup(Sender: TObject);
+begin
+  FPopupEncVisible:= false;
 end;
 
 initialization
