@@ -169,7 +169,6 @@ type
     procedure DoCombo(ed: TTntCombobox; edMemo: TTntMemo; edNum: integer);
     procedure ReClick(Sender: TObject);
     procedure DoAct(act: TSRAction);
-    procedure SetOrig;
     procedure SetIsReplace(Value: boolean);
     procedure SetIsMultiline(Value: boolean);
     procedure UpdTr;
@@ -202,6 +201,7 @@ type
     property IsMultiline: boolean read FIsMultiline write SetIsMultiline;
     procedure ShowError(b: boolean);
     procedure ShowStatus(const s: Widestring);
+    procedure SetFromCaret;
   end;
 
   const
@@ -430,6 +430,8 @@ begin
 end;
 
 procedure TfmSR.cbReClick(Sender: TObject);
+const
+  cColorHiliteBG = $B0FFFF; //pale yellow
 var
   re: boolean;
   C: TColor;
@@ -443,7 +445,7 @@ begin
   cbWords.Enabled:= not re;
   cbReDot.Enabled:= re;
 
-  C:= IfThen(re, $B0FFFF, clWindow);
+  C:= IfThen(re, cColorHiliteBG, clWindow);
   ed1.Color:= C;
   ed2.Color:= C;
   ed1Memo.Color:= C;
@@ -521,11 +523,11 @@ end;
 procedure TfmSR.bFindNextClick(Sender: TObject);
 begin
   DoAct(arFindNext);
-  SetOrig;
 end;
 
-procedure TfmSR.SetOrig;
-var b: boolean;
+procedure TfmSR.SetFromCaret;
+var
+  b: boolean;
 begin
   b:= CurChecked;
   cbSel.Checked:= false;
@@ -541,13 +543,11 @@ end;
 procedure TfmSR.bSkipClick(Sender: TObject);
 begin
   DoAct(arSkip);
-  SetOrig;
 end;
 
 procedure TfmSR.bRepNextClick(Sender: TObject);
 begin
   DoAct(arReplaceNext);
-  SetOrig;
 end;
 
 procedure TfmSR.bRepAllClick(Sender: TObject);

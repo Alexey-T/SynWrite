@@ -8780,6 +8780,12 @@ begin
     EditorExtendSelectionByPosition(Ed,
       oldStart, oldLength,
       Ed.SelStart, Ed.SelLength);
+
+  //set "From caret" dialog option
+  if act in [arFindNext, arSkip, arReplaceNext] then
+    if Finder.Matches>0 then
+      if Assigned(fmSR) then
+        fmSR.SetFromCaret;
 end;
 
 
@@ -29205,6 +29211,8 @@ begin
   if Assigned(Ed) then
   begin
     TbxItemPreCopy.Enabled:= Ed.HaveSelection;
+    TbxItemPreEdit.Enabled:= FProjPreviewFilename<>'';
+
     TbxItemPreZoom25.Checked:= Ed.Zoom=25;
     TbxItemPreZoom50.Checked:= Ed.Zoom=50;
     TbxItemPreZoom75.Checked:= Ed.Zoom=75;
