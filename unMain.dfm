@@ -6745,6 +6745,12 @@ object fmMain: TfmMain
               item
                 ShortCut = 13
               end>
+          end
+          item
+            KeyDefs = <
+              item
+                ShortCut = 16397
+              end>
           end>
         Caption = 'New Line'
         Category = 'Inserting text'
@@ -6843,6 +6849,12 @@ object fmMain: TfmMain
             KeyDefs = <
               item
                 ShortCut = 8
+              end>
+          end
+          item
+            KeyDefs = <
+              item
+                ShortCut = 8200
               end>
           end>
         Caption = 'Back Delete Char'
@@ -15978,6 +15990,7 @@ object fmMain: TfmMain
       000000000000000000000000000000000000000000000000000000000000}
   end
   object PopupClips: TSpTBXPopupMenu
+    OnPopup = PopupClipsPopup
     Left = 448
     Top = 304
     object TBXItemClipsAddText: TSpTBXItem

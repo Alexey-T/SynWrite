@@ -2137,6 +2137,7 @@ type
     procedure TbxItemPreZoomOtherClick(Sender: TObject);
     procedure PopupPreviewEditorPopup(Sender: TObject);
     procedure PopupStatusEncClosePopup(Sender: TObject);
+    procedure PopupClipsPopup(Sender: TObject);
 
   private
     cStatLine,
@@ -29219,6 +29220,11 @@ end;
 procedure TfmMain.PopupStatusEncClosePopup(Sender: TObject);
 begin
   FPopupEncVisible:= false;
+end;
+
+procedure TfmMain.PopupClipsPopup(Sender: TObject);
+begin
+  TBXItemClipsDelText.Enabled:= fmClips.GetCurrentClip<>'';
 end;
 
 initialization

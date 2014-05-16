@@ -37,7 +37,7 @@ const
     'DialogFind.html',
     'DialogCmdList.html',
     'HelperZenCoding.html',
-    'ProjMan.html#prop',
+    'DialogProjOpt.html',
     'Keys.html'
   );
 
