@@ -166,6 +166,7 @@ type
     FTopGScope,
     FHeight0: Integer;
     procedure mnuComboClick(Sender: TObject);
+    procedure DoInsertCharCode;
     procedure DoCombo(ed: TTntCombobox; edMemo: TTntMemo; edNum: integer);
     procedure ReClick(Sender: TObject);
     procedure DoAct(act: TSRAction);
@@ -212,7 +213,9 @@ implementation
 uses
   IniFiles, ShellApi,
   Math, StrUtils,
-  ATxFProc, ATxSProc,
+  ATxFProc,
+  ATxSProc,
+  cUtils,
   unProc,
   unProcHelp;
 
@@ -769,6 +772,14 @@ begin
   if (Key=vk_f4) and (Shift=[]) then
   begin
     cbRE.Checked:= not cbRE.Checked;
+    Handled:= true;
+    Exit
+  end;
+
+  //F5: insert char by code
+  if (Key=vk_f5) and (Shift=[]) then
+  begin
+    DoInsertCharCode;
     Handled:= true;
     Exit
   end;
@@ -1511,6 +1522,30 @@ procedure TfmSR.cbSelectAllClick(Sender: TObject);
 begin
   if cbSelectAll.Checked then
     cbBkmkAll.Checked:= false;
+end;
+
+procedure TfmSR.DoInsertCharCode;
+var
+  IsRepl: boolean;
+  Str, StrChar: Widestring;
+  Num: LongWord;
+  Ok: boolean;
+begin
+  IsRepl:= ed2.Focused or ed2Memo.Focused;
+  if IsRepl then Str:= Text2 else Str:= Text1;
+
+  repeat
+    if not DoInputString('Unicode hex:', StrChar, SRIni, 'UnicodeHexInput') then Exit;
+    Num:= HexStrToLongWord(StrChar, Ok);
+    if not Ok then MsgBeep(true);
+  until Ok;
+    
+  StrChar:= WideChar(Num);
+  Str:= Str+StrChar;
+
+  if IsRepl then Text2:= Str else Text1:= Str;
+  ShowStatus(WideFormat(DKLangConstW('zMInputUnicodeHex'),
+    [StrChar, IntToHex(Num, 4)]));
 end;
 
 end.

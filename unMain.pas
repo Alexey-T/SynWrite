@@ -3250,7 +3250,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.980';
+  cSynVer = '6.5.1010';
   cSynPyVer = '1.0.130';
 
 const
@@ -14885,23 +14885,6 @@ begin
   FNeedRepaint:= true;
 end;
 
-(*
-procedure TfmMain.SDTypeChange(Sender: TObject);
-var ext: Widestring;
-begin
-  Exit;//TODO
-  with SD do
-  begin
-    if FileName='' then Exit;
-    ext:= '.' + SFilterIdxToExt(Filter, FilterIndex);
-    if WideExtractFileExt(FileName)='' then
-      FileName:= FileName+ ext
-    else
-      FileName:= WideChangeFileExt(FileName, ext);
-  end;
-end;
-*)
-
 procedure TfmMain.FocusEditor;
 var
   Ed: TSyntaxMemo;
@@ -14922,6 +14905,7 @@ begin
     EraseSection('FilesExcHist');
     EraseSection('FilesDirHist');
     EraseSection('ExtractHist');
+    EraseSection('UnicodeHexInput');
   finally
     Free;
   end;
@@ -29157,7 +29141,7 @@ begin
   if Assigned(FProjPreviewEditor) then
   begin
     Str:= IntToStr(FProjPreviewEditor.Zoom);
-    if DoInputString(TbxItemPreZoomOther.Caption, Str) then
+    if DoInputString(DKLangConstW('ZmIn'), Str) then
       ApplyPreviewZoom(StrToIntDef(Str, FProjPreviewEditor.Zoom));
   end;    
 end;
