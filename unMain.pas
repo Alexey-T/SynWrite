@@ -2841,6 +2841,7 @@ type
     procedure DoConfigHideItems;
     procedure DoConfigRestoreStyles;
     procedure DoToggleTabDirs;
+    procedure DoInsertUnicodeHexDialog;
     //end of private
 
   protected
@@ -6508,6 +6509,8 @@ begin
 
     sm_ToggleShowFoldersOnTabs:
       DoToggleTabDirs;  
+    sm_InsertUnicodeHexDialog:
+      DoInsertUnicodeHexDialog;
 
     //end of commands list
     else
@@ -14231,7 +14234,7 @@ var
   n: Integer;
 begin
   S:= '';
-  if MsgInput('ZmIn', S) then
+  if MsgInput('zMZoomPrompt', S) then
   begin
     n:= StrToIntDef(S, 0);
     if (n >= 20) and (n <= 500) then
@@ -29141,7 +29144,7 @@ begin
   if Assigned(FProjPreviewEditor) then
   begin
     Str:= IntToStr(FProjPreviewEditor.Zoom);
-    if DoInputString(DKLangConstW('ZmIn'), Str) then
+    if DoInputString(DKLangConstW('zMZoomPrompt'), Str) then
       ApplyPreviewZoom(StrToIntDef(Str, FProjPreviewEditor.Zoom));
   end;    
 end;
@@ -29190,6 +29193,17 @@ end;
 procedure TfmMain.PopupClipsPopup(Sender: TObject);
 begin
   TBXItemClipsDelText.Enabled:= fmClips.GetCurrentClip<>'';
+end;
+
+procedure TfmMain.DoInsertUnicodeHexDialog;
+var
+  Str: Widestring;
+  Num: LongWord;
+begin
+  if not DoInputUnicodeHexCode(Str, Num, SynHistoryIni) then Exit;
+  CurrentEditor.InsertText(Str);
+  DoHint(WideFormat(DKLangConstW('zMInputUnicodeHex'),
+    [Str, IntToHex(Num, 4)]));
 end;
 
 initialization

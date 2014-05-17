@@ -22,6 +22,8 @@ uses
 
 function IsMouseOverControl(Control: TControl): boolean;
 function IsElevationNeededForFolder(const Dir: Widestring): boolean;
+
+function DoInputUnicodeHexCode(var Str: Widestring; var Num: LongWord; const fnIni: string): boolean;
 function DoShowPopupMenu(List: TTntStringList; Pnt: TPoint; hWnd: THandle): Integer;
 procedure MemoScrollToBottom(Memo: TTntMemo);
 function SZenFindLeft(const s: ecString; iFrom: integer): integer;
@@ -258,9 +260,11 @@ uses
   TntClipbrd, TntSysUtils,
   DKLang,
   PngImage,
+  cUtils,
   unSRTree,
   unInputSimple,
-  unInputFilename, unTool;
+  unInputFilename,
+  unTool;
 
 procedure MsgInfo(const S: WideString; H: THandle);
 begin
@@ -433,18 +437,22 @@ begin
   end;
 end;
 
+(*
 procedure _Log(const s: string);
-var fn:string; f:Text;
+var
+  fn: string;
+  f: System.Text;
 begin
   fn:= 'c:\SynWr.log';
-  Assign(f, fn);
+  AssignFile(f, fn);
   {$I-}
-  Append(f);
+  System.Append(f);
   if IOREsult<>0 then Rewrite(f);
   {$I+}
   Writeln(f, s);
-  Close(f);
+  CloseFile(f);
 end;
+*)
 
 procedure SetFormStyle(Form: TForm; Value: Boolean);
 const
@@ -2066,6 +2074,25 @@ begin
     IfThen(ssShift in Shift, 's')+
     IfThen(ssCtrl in Shift, 'c')+
     IfThen(ssAlt in Shift, 'a');
+end;
+
+
+function DoInputUnicodeHexCode(var Str: Widestring; var Num: LongWord; const fnIni: string): boolean;
+var
+  Ok: boolean;
+begin
+  Result:= false;
+  Str:= '';
+  Num:= 0;
+
+  repeat
+    if not DoInputString('Unicode hex:', Str, fnIni, 'UnicodeHexInput') then Exit;
+    Num:= HexStrToLongWord(Str, Ok);
+    if not Ok then MsgBeep(true);
+  until Ok;
+
+  Str:= WideChar(Num);
+  Result:= true;
 end;
 
 

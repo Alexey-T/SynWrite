@@ -387,6 +387,7 @@ const
   sm_GotoNextSearchOrOutputResult = 1054;
   sm_GotoPrevSearchOrOutputResult = 1055;
   sm_ToggleShowFoldersOnTabs = 1056;
+  sm_InsertUnicodeHexDialog = 1057;
   //free
 
   //Tree commands

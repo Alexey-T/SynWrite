@@ -1529,21 +1529,16 @@ var
   IsRepl: boolean;
   Str, StrChar: Widestring;
   Num: LongWord;
-  Ok: boolean;
 begin
   IsRepl:= ed2.Focused or ed2Memo.Focused;
   if IsRepl then Str:= Text2 else Str:= Text1;
 
-  repeat
-    if not DoInputString('Unicode hex:', StrChar, SRIni, 'UnicodeHexInput') then Exit;
-    Num:= HexStrToLongWord(StrChar, Ok);
-    if not Ok then MsgBeep(true);
-  until Ok;
+  if not DoInputUnicodeHexCode(StrChar, Num, SRIni) then
+    begin ShowStatus(''); Exit end;
     
-  StrChar:= WideChar(Num);
   Str:= Str+StrChar;
-
   if IsRepl then Text2:= Str else Text1:= Str;
+  
   ShowStatus(WideFormat(DKLangConstW('zMInputUnicodeHex'),
     [StrChar, IntToHex(Num, 4)]));
 end;
