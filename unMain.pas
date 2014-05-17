@@ -2525,10 +2525,6 @@ type
     procedure DoFrameReloadInt(F: TEditorFrame);
     procedure DoFrameReloadWrapper(F: TEditorFrame);
     procedure DoFindAndExtendSel(ANext: boolean);
-    function BookmarkDesc(i: integer;
-      ALenLimit: integer = 30;
-      AShowLineNum: boolean = false;
-      AShowNumberedChar: boolean = false): WideString;
     function ShowGotoForm(
       var ALine, ACol: integer;
       var AExtSel: boolean;
@@ -9551,37 +9547,13 @@ begin
   UpdateBookmarkMenus;
 end;
 
-  function TfmMain.BookmarkDesc(i: integer;
-    ALenLimit: integer;
-    AShowLineNum, AShowNumberedChar: boolean): WideString;
-  var
-    NLine: integer;
-    SMark: string;
-  begin
-    Result:= '';
-    NLine:= 0;
-    if (i<=9) and AShowNumberedChar then SMark:= '*' else SMark:= '';
-    with CurrentEditor do
-      if Bookmarks[i]<>-1 then
-      begin
-        NLine:= StrPosToCaretPos(Bookmarks[i]).Y;
-        Result:= Lines[NLine];
-      end;
-
-    SReplaceAllW(Result, #9, EditorTabExpansion(CurrentEditor));
-
-    if Length(Result)>ALenLimit then
-      Result:= Copy(Result, 1, ALenLimit) + '...';
-
-    if AShowLineNum then
-      Result:= WideFormat('%d%s: %s', [NLine+1, SMark, Result])
-    else
-      Result:= WideFormat('%d: %s', [i, Result]);
-  end;
 
 procedure TfmMain.UpdateBookmarkMenus;
+var
+  Ed: TSyntaxMemo;
 begin
-  with CurrentEditor do
+  Ed:= CurrentEditor;
+  with Ed do
   begin
     TbxItemB0.Enabled:= Bookmarks[0] <> -1;
     TbxItemB1.Enabled:= Bookmarks[1] <> -1;
@@ -9594,16 +9566,16 @@ begin
     TbxItemB8.Enabled:= Bookmarks[8] <> -1;
     TbxItemB9.Enabled:= Bookmarks[9] <> -1;
 
-    TbxItemB0.Caption:= BookmarkDesc(0);
-    TbxItemB1.Caption:= BookmarkDesc(1);
-    TbxItemB2.Caption:= BookmarkDesc(2);
-    TbxItemB3.Caption:= BookmarkDesc(3);
-    TbxItemB4.Caption:= BookmarkDesc(4);
-    TbxItemB5.Caption:= BookmarkDesc(5);
-    TbxItemB6.Caption:= BookmarkDesc(6);
-    TbxItemB7.Caption:= BookmarkDesc(7);
-    TbxItemB8.Caption:= BookmarkDesc(8);
-    TbxItemB9.Caption:= BookmarkDesc(9);
+    TbxItemB0.Caption:= EditorGetBookmarkDesc(Ed, 0);
+    TbxItemB1.Caption:= EditorGetBookmarkDesc(Ed, 1);
+    TbxItemB2.Caption:= EditorGetBookmarkDesc(Ed, 2);
+    TbxItemB3.Caption:= EditorGetBookmarkDesc(Ed, 3);
+    TbxItemB4.Caption:= EditorGetBookmarkDesc(Ed, 4);
+    TbxItemB5.Caption:= EditorGetBookmarkDesc(Ed, 5);
+    TbxItemB6.Caption:= EditorGetBookmarkDesc(Ed, 6);
+    TbxItemB7.Caption:= EditorGetBookmarkDesc(Ed, 7);
+    TbxItemB8.Caption:= EditorGetBookmarkDesc(Ed, 8);
+    TbxItemB9.Caption:= EditorGetBookmarkDesc(Ed, 9);
 
     TbxItemG0.Checked:= Bookmarks[0] <> -1;
     TbxItemG1.Checked:= Bookmarks[1] <> -1;
@@ -18209,7 +18181,7 @@ begin
      edNum.Items.Clear;
      for i:= 0 to 9 do
      begin
-       edNum.Items.Add(BookmarkDesc(i));
+       edNum.Items.Add(EditorGetBookmarkDesc(CurrentEditor, i));
        FBookSet[i]:= CurrentEditor.Bookmarks[i]>=0;
      end;
 
@@ -20538,7 +20510,7 @@ begin
       List.Font.Assign(ed.Font);
       List.Items.Clear;
       for i:= 0 to L.Count-1 do
-        List.Items.Add(BookmarkDesc(Integer(L[i]), 60, true, true));
+        List.Items.Add(EditorGetBookmarkDesc(Ed, Integer(L[i]), 60, true, true));
 
       //select curr bookmk
       List.ItemIndex:= 0;

@@ -26,15 +26,21 @@ function DoReadLexersCfg(const ASection, AId: string): string;
 function EditorGetTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
 procedure EditorGetTokenType(Ed: TSyntaxMemo; StartPos, EndPos: Integer; var IsCmt, IsStr: boolean);
 
-function EditorMouseCursorOnNumbers(Ed: TSyntaxMemo): boolean;
 procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer; const SHint: string);
 procedure EditorClearBookmarks(Ed: TSyntaxMemo);
 procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos, NIcon, NColor: Integer; const SHint: string);
+function EditorGetBookmarkDesc(Ed: TSyntaxMemo;
+  AIndex: Integer;
+  ALenLimit: Integer = 30;
+  AShowLineNum: boolean = false;
+  AShowNumberedChar: boolean = false): WideString;
+
 procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
 function EditorGetBottomLineIndex(Ed: TSyntaxMemo): Integer;
 function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
 procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText: Widestring);
 
+function EditorMouseCursorOnNumbers(Ed: TSyntaxMemo): boolean;
 function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
 procedure EditorUpdateCaretPosFromMousePos(Ed: TSyntaxMemo);
 procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
@@ -3346,6 +3352,36 @@ begin
   end;
 end;
 
+
+function EditorGetBookmarkDesc(Ed: TSyntaxMemo;
+  AIndex: Integer;
+  ALenLimit: Integer;
+  AShowLineNum, AShowNumberedChar: boolean): WideString;
+var
+  NLine: integer;
+  SMark: Widestring;
+begin
+  Result:= '';
+  NLine:= 0;
+  if (AIndex<=9) and AShowNumberedChar then SMark:= '*' else SMark:= '';
+
+  with Ed do
+    if Bookmarks[AIndex]<>-1 then
+    begin
+      NLine:= StrPosToCaretPos(Bookmarks[AIndex]).Y;
+      Result:= Lines[NLine];
+    end;
+
+  SReplaceAllW(Result, #9, EditorTabExpansion(Ed));
+
+  if Length(Result)>ALenLimit then
+    Result:= Copy(Result, 1, ALenLimit) + '...';
+
+  if AShowLineNum then
+    Result:= WideFormat('%d%s: %s', [NLine+1, SMark, Result])
+  else
+    Result:= WideFormat('%d: %s', [AIndex, Result]);
+end;
 
 
 initialization

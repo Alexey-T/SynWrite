@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabCarets
+    ActivePage = tabPath
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -1994,23 +1994,24 @@ object fmSetup: TfmSetup
         end
       end
     end
-    object tabFolders: TTntTabSheet
+    object tabPath: TTntTabSheet
       Caption = 'Path Environment'
       TabVisible = False
-      OnShow = tabFoldersShow
+      OnShow = tabPathShow
       object boxFolders: TTntGroupBox
         Left = 8
         Top = 0
         Width = 529
-        Height = 297
+        Height = 281
         Caption = 'Folders'
         TabOrder = 0
-        object TntLabel14: TTntLabel
-          Left = 8
-          Top = 276
+        object LabelPathHint: TTntLabel
+          Left = 168
+          Top = 252
           Width = 286
           Height = 13
           Caption = 'Tip: add * after folder name to search also in all subfolders.'
+          Visible = False
         end
         object TntLabel15: TTntLabel
           Left = 8
@@ -3115,9 +3116,9 @@ object fmSetup: TfmSetup
       00BA01000005004974656D7300060063625461696C0101000000BB0100000700
       43617074696F6E00080063624F766572524F0101000000BC0100000700436170
       74696F6E000D004C697374546162436F6C6F727300000A00546E744C6162656C
-      31330101000000CD010000070043617074696F6E000A00746162466F6C646572
-      730101000000CF010000070043617074696F6E000A00626F78466F6C64657273
-      0101000000D3010000070043617074696F6E000A00546E744C6162656C313401
+      31330101000000CD010000070043617074696F6E000700746162506174680101
+      000000CF010000070043617074696F6E000A00626F78466F6C64657273010100
+      0000D3010000070043617074696F6E000D004C6162656C5061746848696E7401
       01000000D0010000070043617074696F6E000A00546E744C6162656C31350101
       000000D1010000070043617074696F6E0009006564466F6C6465727300000A00
       62416464466F6C6465720101000000D2010000070043617074696F6E00080074

@@ -182,9 +182,9 @@ type
     cbOverRO: TTntCheckBox;
     ListTabColors: TTntListBox;
     TntLabel13: TTntLabel;
-    tabFolders: TTntTabSheet;
+    tabPath: TTntTabSheet;
     boxFolders: TTntGroupBox;
-    TntLabel14: TTntLabel;
+    LabelPathHint: TTntLabel;
     TntLabel15: TTntLabel;
     edFolders: TTntMemo;
     bAddFolder: TTntButton;
@@ -431,7 +431,7 @@ type
     procedure bAddFolderClick(Sender: TObject);
     procedure edFoldersKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure tabFoldersShow(Sender: TObject);
+    procedure tabPathShow(Sender: TObject);
     procedure tabSpellShow(Sender: TObject);
     procedure labDictWwwClick(Sender: TObject);
     procedure labDictDirClick(Sender: TObject);
@@ -685,7 +685,7 @@ begin
   if tabFonts.Tag   <>0 then ApplyFonts;
   if tabColors.Tag  <>0 then ApplyColors;
   if tabKey.Tag     <>0 then ApplyKeys;
-  if tabFolders.Tag <>0 then ApplySearchFolders;
+  if tabPath.Tag    <>0 then ApplySearchFolders;
   if tabSpell.Tag   <>0 then ApplySpell;
   if tabFiles.Tag   <>0 then ApplyFiles;
   if tabProgSett.Tag<>0 then ApplyProgSett;
@@ -1117,7 +1117,7 @@ begin
   AddTab(tabHist);
   AddTab(tabFiles);
   AddTab(tabSess);
-  AddTab(tabFolders);
+  AddTab(tabPath);
 
   //activate last used category
   if fmMain.opTabOptionsIndex<0 then
@@ -1639,10 +1639,10 @@ begin
   end;
 end;
 
-procedure TfmSetup.tabFoldersShow(Sender: TObject);
+procedure TfmSetup.tabPathShow(Sender: TObject);
 begin
-  if tabFolders.Tag<>0 then Exit;
-  tabFolders.Tag:= 1;
+  if tabPath.Tag<>0 then Exit;
+  tabPath.Tag:= 1;
   InitSearchFolders;
 end;
 
