@@ -3102,7 +3102,7 @@ type
     procedure ApplyMap;
     procedure ApplyBorders;
 
-    procedure DoSpellCfg(Sender: TObject);
+    procedure DoSpellConfig(Sender: TObject);
     procedure DoAutoSave;
     procedure DoBackup(const AFilename: Widestring);
     procedure DoRepaint;
@@ -6341,6 +6341,7 @@ begin
     sm_EditSynPluginsIni:         DoOpenFile(SynPluginsIni);
     sm_OpenBySelection:           acOpenBySelection.Execute;
     sm_CustomizeStylesDialog:     acSetupLexHL.Execute;
+    sm_CustomizeSpellCheckDialog: DoSpellConfig(nil);
 
     //Options dialog tabs
     sm_OptionsTab_ProgramOpt: DoOptionsDialog(1);
@@ -16429,7 +16430,7 @@ begin
   {$endif}
 end;
 
-procedure TfmMain.DoSpellCfg(Sender: TObject);
+procedure TfmMain.DoSpellConfig(Sender: TObject);
 begin
   {$ifdef SPELL}
   if Assigned(FSpell) then

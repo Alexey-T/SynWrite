@@ -1665,7 +1665,7 @@ end;
 
 procedure TfmSetup.bSpellOptClick(Sender: TObject);
 begin
-  fmMain.DoSpellCfg(nil);
+  fmMain.DoSpellConfig(nil);
 end;
 
 procedure TfmSetup.tabOvrShow(Sender: TObject);
