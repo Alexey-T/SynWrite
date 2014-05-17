@@ -65,6 +65,7 @@ var
 
 type
   TCaretsColorIndicator = (cciNone, cciLineBg, cciGutterBg);
+  TCaretsColumnSelectionType = (ccsSelEmpty, ccsSelToLeft, ccsSelToRight);
   TIntRec2 = record N1, N2: Integer end;
 
 type
@@ -107,7 +108,8 @@ type
     procedure CaretTimerTimer(Sender: TObject);
     procedure DoUpdateCarets;
     procedure DoUpdateCaretsSelections;
-    procedure EdGetGutterBandColor(Sender: TObject; NBand: Integer; NLine: Integer; var NColor: TColor);
+    procedure EdGetGutterBandColor(Sender: TObject;
+      NBand, NLine: Integer; var NColor: TColor);
     function IsDuplicateCaret(Cmd, NCaret: Integer): boolean;
     function IsCaretOnLine(NLine: Integer): boolean;
     function IsCaretAt(const P: TPoint): boolean;
@@ -126,7 +128,7 @@ type
     function GetCaretCoord(N: Integer): TPoint;
     procedure SetCaretCoord(N: Integer; const P: TPoint);
     procedure SetCaretSel(N, Value: Integer);
-    procedure GetDrawCoord(var NSize: TSize; var RClient: TRect);
+    procedure GetDrawCoord(var ACaretSize: TSize; var AClientRect: TRect);
     procedure DoDrawCarets;
     procedure DoSaveBaseEditor;
     procedure DoInitBaseEditor;
@@ -136,8 +138,8 @@ type
     procedure DoClearCaretsUndo;
     procedure DoAddCaretsUndo;
     procedure DoCaretsUndo;
-    procedure DoCaretsFromSel(ALeft, AClearSel: boolean);
-    procedure DoCaretsFromMarks(ALeft, AClear: boolean);
+    procedure DoCaretsFromSel(ALeftSide, AClearSel: boolean);
+    procedure DoCaretsFromMarks(ALeftSide, AClear: boolean);
     procedure DoCaretsExtend(ToUp: boolean; NLines: Integer);
     procedure DoAddCaretInt(P: TPoint; NSelCount: Integer = 0);
     function IsCtrlClickHandled(const P: TPoint): boolean;
@@ -167,7 +169,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure AddCaret(const P: TPoint; ASelCount: Integer = 0; AddDefaultPos: boolean = true);
-    procedure AddCaretsColumn(const PntFrom, PntTo: TPoint; ALeftSide: boolean);
+    procedure AddCaretsColumn(const PntFrom, PntTo: TPoint; ASelType: TCaretsColumnSelectionType);
     function GetCaret(N: Integer): TPoint;
     function GetCaretSel(N: Integer): Integer;
     procedure RemoveCarets(LeaveFirst: boolean = true);
@@ -577,8 +579,8 @@ begin
   DoUpdateCarets;
 end;
 
-procedure TSyntaxMemo.EdGetGutterBandColor(Sender: TObject; NBand,
-  NLine: Integer; var NColor: TColor);
+procedure TSyntaxMemo.EdGetGutterBandColor(Sender: TObject;
+  NBand, NLine: Integer; var NColor: TColor);
 begin
   NColor:= clNone;
   if (CaretsColorIndicator = cciGutterBg) and
@@ -1505,7 +1507,7 @@ begin
       //Ctrl+Shift+click - make carets column
       if (ssShift in Shift) then
       begin
-        AddCaretsColumn(PDefCaret, PTo, PDefCaret.X<=PTo.X);
+        AddCaretsColumn(PDefCaret, PTo, ccsSelEmpty);
       end
       else
       //main form handled Ctrl+click (e.g. URL)
@@ -1684,7 +1686,8 @@ begin
     RemoveCarets;
 end;
 
-procedure TSyntaxMemo.AddCaretsColumn(const PntFrom, PntTo: TPoint; ALeftSide: boolean);
+procedure TSyntaxMemo.AddCaretsColumn(const PntFrom, PntTo: TPoint;
+  ASelType: TCaretsColumnSelectionType);
 var
   i, NLine1, NLine2, NCol1, NCol2, NCol, NSelCount: Integer;
   PntCurr: TPoint;
@@ -1701,8 +1704,13 @@ begin
 
   NCol1:= LinesPosToLog(PntFrom).X;
   NCol2:= LinesPosToLog(PntTo).X;
-  NCol:= IfThen(ALeftSide, NCol1, NCol2);
-  NSelCount:= (NCol2-NCol1) * IfThen(ALeftSide, 1, -1);
+  NCol:= IfThen(ASelType<>ccsSelToRight, NCol1, NCol2);
+
+  case ASelType of
+    ccsSelToLeft: NSelCount:= (NCol2-NCol1) * 1;
+    ccsSelToRight: NSelCount:= (NCol2-NCol1) * -1;
+    else NSelCount:= 0;
+  end;
 
   for i:= NLine1 to NLine2 do
   begin
@@ -1820,16 +1828,16 @@ begin
     end;
 end;
 
-procedure TSyntaxMemo.GetDrawCoord(var NSize: TSize; var RClient: TRect);
+procedure TSyntaxMemo.GetDrawCoord(var ACaretSize: TSize; var AClientRect: TRect);
 var
   NWidth: Integer;
 begin
   NWidth:= IfThen(Caret.Insert.Width<0, Abs(Caret.Insert.Width), FTextExt.cx * Caret.Insert.Width div 100);
-  NSize.cx:= IfThen(ReplaceMode, FTextExt.cx, NWidth);
-  NSize.cy:= IfThen(ReplaceMode, FTextExt.cy + LineSpacing, (FTextExt.cy + LineSpacing) * Caret.Insert.Height div 100);
+  ACaretSize.cx:= IfThen(ReplaceMode, FTextExt.cx, NWidth);
+  ACaretSize.cy:= IfThen(ReplaceMode, FTextExt.cy + LineSpacing, (FTextExt.cy + LineSpacing) * Caret.Insert.Height div 100);
 
-  RClient:= ClientRect;
-  Inc(RClient.Left, Gutter.Width);
+  AClientRect:= ClientRect;
+  Inc(AClientRect.Left, Gutter.Width);
 end;
 
 procedure TSyntaxMemo.DoDrawCarets;
@@ -1952,12 +1960,19 @@ begin
   end;
 end;
 
-procedure TSyntaxMemo.DoCaretsFromSel(ALeft, AClearSel: boolean);
+procedure TSyntaxMemo.DoCaretsFromSel(ALeftSide, AClearSel: boolean);
 var
   NCol, NColLeft, NColRight,
   NTop, NBottom, i: Integer;
+  NSelType: TCaretsColumnSelectionType;
 begin
   if not CanSetCarets then Exit;
+
+  if ALeftSide then
+    NSelType:= ccsSelToLeft
+  else
+    NSelType:= ccsSelToRight;
+
   if HaveSelection then
     if (SelectMode=msColumn) then
     begin
@@ -1973,7 +1988,7 @@ begin
       AddCaretsColumn(
         Point(NColLeft, NTop),
         Point(IfThen(AClearSel, NColLeft, NColRight), NBottom),
-        ALeft);
+        NSelType);
     end
     else
     begin
@@ -1982,7 +1997,7 @@ begin
       //special case, seltext in 1 line
       if NTop=NBottom then
       begin
-        if ALeft then
+        if ALeftSide then
           i:= SelStart
         else
           i:= SelStart+SelLength;
@@ -1997,7 +2012,7 @@ begin
       //several lines selected
       begin
         NCol:= 0;
-        if not ALeft then
+        if not ALeftSide then
           for i:= NTop to NBottom do
             NCol:= Max(NCol, Lines.LineLength(i));
 
@@ -2009,7 +2024,7 @@ begin
           EndUpdate;
         end;
 
-        AddCaretsColumn(Point(NCol, NTop), Point(NCol, NBottom), ALeft);
+        AddCaretsColumn(Point(NCol, NTop), Point(NCol, NBottom), NSelType);
       end;
     end;
 end;
@@ -2050,7 +2065,7 @@ begin
     FOnCtrlClick(Self, P, Result);
 end;
 
-procedure TSyntaxMemo.DoCaretsFromMarks(ALeft, AClear: boolean);
+procedure TSyntaxMemo.DoCaretsFromMarks(ALeftSide, AClear: boolean);
 var
   i, NStart, NEnd, NCaret, NSize: Integer;
 begin
@@ -2071,7 +2086,7 @@ begin
       ReplaceText(NStart, NSize, '');
     end
     else
-    if ALeft then
+    if ALeftSide then
     begin
       CaretStrPos:= NStart;
       SetSelection(NStart, NSize, true);
@@ -2107,7 +2122,7 @@ begin
           DoAddCaretInt(StrPosToCaretPos(NStart));
         end
         else
-        if ALeft then
+        if ALeftSide then
           DoAddCaretInt(StrPosToCaretPos(NStart), NSize)
         else
           DoAddCaretInt(StrPosToCaretPos(NEnd), -NSize);
