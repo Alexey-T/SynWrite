@@ -102,29 +102,24 @@ end;
 procedure TfmNumConv.ShowRes(const S: string; Typ: TSynNumType);
 var
   N: LongWord;
-  V: boolean;
+  Ok: boolean;
 begin
   case Typ of
     numChar,
-    numDec: N:= DecStrToLongWord(S, V);
-    numHex: N:= HexStrToLongWord(S, V);
-    numBin: N:= BinStrToLongWord(S, V);
-    numOct: N:= OctStrToLongWord(S, V);
+    numDec: N:= DecStrToLongWord(S, Ok);
+    numHex: N:= HexStrToLongWord(S, Ok);
+    numBin: N:= BinStrToLongWord(S, Ok);
+    numOct: N:= OctStrToLongWord(S, Ok);
     else N:= 0;
   end;
-  LabelErr.Visible:= not V;
+  LabelErr.Visible:= not Ok;
 
   FLock:= true;
-  if Typ<>numChar then
-    edChar.Text:= IfThen((N>0) and (N<256), Chr(N), '');
-  if Typ<>numDec then
-    edDec.Text:= IfThen(V, LongWordToStr(N), '');
-  if Typ<>numHex then
-    edHex.Text:= IfThen(V, LongWordToHex(N), '');;
-  if Typ<>numBin then
-    edBin.Text:= IfThen(V, LongWordToBin(N), '');;
-  if Typ<>numOct then
-    edOct.Text:= IfThen(V, LongWordToOct(N), '');;
+  if Typ<>numChar then edChar.Text:= IfThen((N>0) and (N<256), Chr(N), '');
+  if Typ<>numDec then edDec.Text:= IfThen(Ok, LongWordToStr(N), '');
+  if Typ<>numHex then edHex.Text:= IfThen(Ok, LongWordToHex(N), '');;
+  if Typ<>numBin then edBin.Text:= IfThen(Ok, LongWordToBin(N), '');;
+  if Typ<>numOct then edOct.Text:= IfThen(Ok, LongWordToOct(N), '');;
   FLock:= false;
 end;
 
