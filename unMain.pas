@@ -8340,7 +8340,7 @@ begin
   if Frame<>nil then
   with Frame do
   begin
-    SkipSign:= False;
+    SkipBom:= False;
     case AEnc of
     cp__UTF8:
       begin
@@ -8349,7 +8349,7 @@ begin
       end;
     cp__UTF8_noBOM:
       begin
-        SkipSign:= True;
+        SkipBom:= True;
         EditorMaster.TextSource.Lines.CodePage:= 0;
         EditorMaster.TextSource.Lines.TextCoding:= tcUTF8;
       end;
@@ -8440,7 +8440,7 @@ begin
       StatusItemEnc.Caption:= 'UTF-16 BE';
     tcUTF8:
     begin
-      if SkipSign then
+      if SkipBom then
         StatusItemEnc.Caption:= DKLangConstW('cpUTF8no')
       else
         StatusItemEnc.Caption:= 'UTF-8';
@@ -11823,7 +11823,7 @@ begin
         F.EditorSlave.SelectModeDefault:= TSyntSelectionMode(ReadInteger('SelMode2', IntToStr(i), 0));
         F.TabColor:= StringToColor(ReadString('Color', IntToStr(i), ColorToString(clNone)));
         F.EditorMaster.ColMarkersString:= ReadString('ColMarkers', IntToStr(i), '');
-        F.CollapsedString:= ReadString('Collapsed', IntToStr(i), '');
+        F.CollapsedString1:= ReadString('Collapsed', IntToStr(i), '');
         F.CollapsedString2:= ReadString('Collapsed2', IntToStr(i), '');
       end;
 
@@ -14178,12 +14178,7 @@ function TfmMain.GetFrameEncoding(F: TEditorFrame): integer;
 begin
   case F.EditorMaster.TextSource.Lines.TextCoding of
     tcUTF8:
-    begin
-      if F.SkipSign then
-        Result:= cp__UTF8_noBOM
-      else
-        Result:= cp__UTF8;
-    end;
+      Result:= IfThen(F.SkipBom, cp__UTF8_noBOM, cp__UTF8);
     tcUnicode:
       Result:= cp__Unicode;
     tcSwapUnicode:
@@ -16507,7 +16502,7 @@ begin
     UpdateBusyIco;
     F.ShowMap:= AMap;
     if AMap then
-      F.SyncMap;
+      F.DoSyncMicromap;
   end;
   {$endif}
 end;
@@ -23581,7 +23576,7 @@ end;
 
 procedure TfmMain.UpdateFrameMicroMap(F: TEditorFrame);
 begin
-  F.SyncMap;
+  F.DoSyncMicromap;
 end;
 
 procedure TfmMain.ProjLoadMRU(List: TSynMruList);
@@ -27471,7 +27466,7 @@ begin
           EditorSetCollapsedRanges(Ed, SVal);
           //this works if not
           if EdIndex=1 then
-            F.CollapsedString:= SVal
+            F.CollapsedString1:= SVal
           else
             F.CollapsedString2:= SVal;
         end;
@@ -29200,6 +29195,7 @@ var
   Str: Widestring;
   Num: LongWord;
 begin
+  if CurrentEditor.ReadOnly then Exit;
   if not DoInputUnicodeHexCode(Str, Num, SynHistoryIni) then Exit;
   CurrentEditor.InsertText(Str);
   DoHint(WideFormat(DKLangConstW('zMInputUnicodeHex'),

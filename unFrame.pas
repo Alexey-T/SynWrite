@@ -120,9 +120,9 @@ type
     FNotifAllYes,
     FNotifAllNo: boolean;
     FNotif: TATFileNotificationSimple;
-    FCollapsedString: Widestring;
+    FCollapsedString1: Widestring;
     FCollapsedString2: Widestring;
-    FCollapsedRestored: boolean;
+    FCollapsedRestored1: boolean;
     FCollapsedRestored2: boolean;
     FFtpInfoPtr: Pointer;
     FFtpInfoSize: Integer;
@@ -189,12 +189,12 @@ type
     property IsAlertEnabled: boolean read FAlertEnabled write FAlertEnabled;
     property IsMasterFocused: boolean read FIsMasterFocused;
     property IsTreeSorted: boolean read FTreeSorted write FTreeSorted;
-    function CurrentLexer: string;
-    property CollapsedString: Widestring read FCollapsedString write FCollapsedString;
-    property CollapsedString2: Widestring read FCollapsedString2 write FCollapsedString2;
     function IsEditorPosMisspelled(APos: Integer): boolean;
+    function CurrentLexer: string;
+    property CollapsedString1: Widestring read FCollapsedString1 write FCollapsedString1;
+    property CollapsedString2: Widestring read FCollapsedString2 write FCollapsedString2;
     function DoSpellContinue(AFromPos: Integer): Integer;
-    procedure SyncMap;
+    procedure DoSyncMicromap;
     property ShowMap: boolean read GetShowMap write SetShowMap;
     property MapColor: TColor read FMapColor write SetMapColor;
     property TabColor: TColor read FTabColor write FTabColor;
@@ -217,7 +217,7 @@ type
     property SplitHorz: boolean read FSplitHorz write SetSplitHorz;
     property LineEndsChg: boolean read FLineEndsChg write FLineEndsChg;
     property SpellLive: boolean read FSpell write SetSpell;
-    property SkipSign: boolean read FNoBOM write FNoBOM;
+    property SkipBom: boolean read FNoBOM write FNoBOM;
     property FileName: Widestring read FFileName write FFileName;
     property Modified: boolean read GetModified write SetModified;
     property ModifiedClr: boolean read FModifiedClr write FModifiedClr;
@@ -257,7 +257,7 @@ uses
 procedure TEditorFrame.FrameResize(Sender: TObject);
 begin
   SplitPos:= SplitPos;
-  SyncMap;
+  DoSyncMicromap;
 end;
 
 const
@@ -271,7 +271,7 @@ begin
     Result:= EditorMaster;
 end;
 
-procedure TEditorFrame.SyncMap;
+procedure TEditorFrame.DoSyncMicromap;
 begin
   //prevent "Control EditorFrame has no parent window" for Wlx
   if Parent=nil then
@@ -284,7 +284,7 @@ begin
   if EditorMaster.TextSource.Lines.Count<=cManyLines then
     UpdateMap(FocusedEditor)
   else
-    TimerMap.Enabled:= true;
+    TimerMap.Enabled:= True;
 end;
 
 // Initializing events
@@ -310,24 +310,26 @@ begin
   FNotif.Timer.Interval:= 1000;
   FNotif.OnChanged:= FileReload;
 
-  FAlertEnabled:= true;
+  FAlertEnabled:= True;
   FPyChangeTick:= 0;  
   FFtpInfoPtr:= nil;
   FFtpInfoSize:= 0;
   FMapColor:= clLtGray;
   FTabColor:= clNone;
-  FSpell:= false;
-  FLineEndsChg:= false;
-  FModifiedClr:= false;
-  FSplitHorz:= true;
+  FSpell:= False;
+  FLineEndsChg:= False;
+  FModifiedClr:= False;
+  FSplitHorz:= True;
   FSplitPos:= 0;
-  FNotInRecents:= false;
-  FLockMapUpdate:= false;
-  FSavingBusy:= false;
-  FIsMasterFocused:= true;
+  FNotInRecents:= False;
+  FLockMapUpdate:= False;
+  FSavingBusy:= False;
+  FIsMasterFocused:= True;
 
-  FCollapsedString:= '';
-  FCollapsedRestored:= false;
+  FCollapsedString1:= '';
+  FCollapsedString2:= '';
+  FCollapsedRestored1:= False;
+  FCollapsedRestored2:= False;
 
   EditorMaster.TextSource.Lines.SetObjectsStore;
   EditorMaster.PopupMenu:= TfmMain(Owner).PopupEditor;
@@ -360,7 +362,7 @@ begin
 
   FMouseClickOnNumbers:= EditorMouseCursorOnNumbers(Ed);
   FIsMasterFocused:= Ed=EditorMaster;
-  SyncMap;
+  DoSyncMicromap;
 end;
 
 procedure TEditorFrame.EditorMasterSetBookmark(Snder: TObject;
@@ -429,8 +431,8 @@ begin
   if IsFileExist(AFileName) and not IsFileWritable(AFileName) then
     begin ErrorWritable; Exit end;
 
-  FSavingBusy:= true;
-  EditorMaster.TextSource.Lines.SkipSignature:= SkipSign;
+  FSavingBusy:= True;
+  EditorMaster.TextSource.Lines.SkipSignature:= SkipBom;
   ext:= Copy(WideExtractFileExt(AFileName), 2, MaxInt);
 
   repeat
@@ -441,10 +443,10 @@ begin
       ErrorCantSave;
     end;
     if not Modified then Break;
-    if not WidePromptForFileName(AFileName, '', ext, '', '', true) then Break;
-  until false;
+    if not WidePromptForFileName(AFileName, '', ext, '', '', True) then Break;
+  until False;
 
-  FSavingBusy:= false;
+  FSavingBusy:= False;
   EditorMaster.TextSource.Lines.SkipSignature:= False;
 
   FFileName:= AFileName;
@@ -458,9 +460,14 @@ end;
 
 procedure TEditorFrame.LoadFile(const AFileName: Widestring);
 begin
-  SkipSign:= False;
+  //before loading text
+  SkipBom:= False;
   EditorMaster.TextSource.Lines.SkipSignature:= False;
 
+  FCollapsedRestored1:= False;
+  FCollapsedRestored2:= False;
+
+  //load text
   if (AFileName = '') then
     EditorMaster.TextSource.Lines.Clear
   else
@@ -472,6 +479,7 @@ begin
     Screen.Cursor:= crDefault;
   end;
 
+  //after loading
   Modified:= False;
   ModifiedClr:= False;
   FFileName:= AFileName;
@@ -538,7 +546,7 @@ var
   S: string;
   AMod: boolean;
 begin
-  AMod:= false;
+  AMod:= False;
   for i:= Ed.Collapsed.Count-1 downto 0 do
     with Ed.Collapsed[i] do
     begin
@@ -546,7 +554,7 @@ begin
       if S='Comment' then
       begin
         Ed.Collapsed.Delete(i);
-        AMod:= true;
+        AMod:= True;
       end;
     end;
   if AMod then
@@ -564,7 +572,7 @@ begin
   TfmMain(Owner).UpdateStatusBar;
   TfmMain(Owner).SynChange(Sender);
   TfmMain(Owner).DoPyEvent(Sender as TSyntaxMemo, cSynEventOnChange, []);
-  SyncMap;
+  DoSyncMicromap;
 
   FPyChangeTick:= GetTickCount;
 end;
@@ -740,7 +748,7 @@ end;
 procedure TEditorFrame.EditorScroll(Sender: TObject);
 begin
   TfmMain(Owner).SynScroll(Sender);
-  SyncMap;
+  DoSyncMicromap;
 end;
 
 procedure TEditorFrame.EditorMasterGutterClick(Sender: TObject;
@@ -832,8 +840,8 @@ destructor TEditorFrame.Destroy;
 begin
   FreeFtpInfo;
 
-  ecSpellChecker.Active:= false;
-  FNotif.Timer.Enabled:= false;
+  ecSpellChecker.Active:= False;
+  FNotif.Timer.Enabled:= False;
   FreeAndNil(FNotif);
 
   inherited;
@@ -858,7 +866,7 @@ begin
     Msg;
     //mark deleted file as modified
     if TfmMain(Owner).opMarkDeletedAsModified then
-      Modified:= true;
+      Modified:= True;
     EditorMasterChange(EditorMaster);
     Exit
   end;
@@ -879,10 +887,10 @@ begin
   else
   begin
     if FNotifAllYes then
-      Cfm:= true
+      Cfm:= True
     else
     if FNotifAllNo then
-      Cfm:= false
+      Cfm:= False
     else
     begin
       Cfm:= (TfmMain(Owner).opReloadMode = cReloadAuto);
@@ -948,8 +956,8 @@ begin
     EditorSlave.ResetSearchMarks;
 
     //mark file as non-modified
-    Modified:= false;
-    ModifiedClr:= false;
+    Modified:= False;
+    ModifiedClr:= False;
     DoTitleChanged;
   end;
 
@@ -970,7 +978,7 @@ begin
   if TfmMain(Owner).opHiliteSmart then
   begin
     if Ed.HaveSelection then
-      TfmMain(Owner).TimerSel.Enabled:= true;
+      TfmMain(Owner).TimerSel.Enabled:= True;
     if SelCleared then
     begin
       Ed.ResetSearchMarks;
@@ -1075,12 +1083,12 @@ end;
 
 procedure TEditorFrame.TBXItemSplitHorzClick(Sender: TObject);
 begin
-  SplitHorz:= true;
+  SplitHorz:= True;
 end;
 
 procedure TEditorFrame.TBXItemSplitVertClick(Sender: TObject);
 begin
-  SplitHorz:= false;
+  SplitHorz:= False;
 end;
 
 procedure TEditorFrame.PopupSplitEditorsPopup(Sender: TObject);
@@ -1312,14 +1320,14 @@ end;
 
 procedure TEditorFrame.TimerMapTimer(Sender: TObject);
 begin
-  TimerMap.Enabled:= false;
+  TimerMap.Enabled:= False;
   UpdateMap(FocusedEditor);
 end;
 
 procedure TEditorFrame.SetMapColor(C: TColor);
 begin
   FMapColor:= C;
-  SyncMap;
+  DoSyncMicromap;
 end;
 
 procedure TEditorFrame.PanelMapPaint(Sender: TObject);
@@ -1330,7 +1338,7 @@ begin
       Canvas.Brush.Color:= clBtnFace;
       Canvas.FillRect(Rect(0, 0, ClientWidth, ClientHeight));
     end;
-  SyncMap;
+  DoSyncMicromap;
 end;
 
 procedure TEditorFrame.PanelMapMouseDown(Sender: TObject;
@@ -1383,7 +1391,7 @@ begin
     FSpell:= Value;
     ecSpellChecker.Active:= FSpell;
     //also update micromap after a delay
-    TimerMap.Enabled:= true;
+    TimerMap.Enabled:= True;
   end;
 end;
 
@@ -1396,14 +1404,14 @@ begin
 
   //needed to show spell-check menu?
   if not FSpell then
-    begin Handled:= false; Exit end;
+    begin Handled:= False; Exit end;
 
   TfmMain(Owner).SynContextPopup(Self, MousePos, Handled);
   if Handled then
   begin
-    ecSpellChecker.Active:= false;
-    ecSpellChecker.Active:= true;
-    TimerMap.Enabled:= true;
+    ecSpellChecker.Active:= False;
+    ecSpellChecker.Active:= True;
+    TimerMap.Enabled:= True;
   end;
 end;
 
@@ -1411,7 +1419,7 @@ function TEditorFrame.IsEditorPosMisspelled(APos: Integer): boolean;
 var
   i, NStart, NEnd: Integer;
 begin
-  Result:= false;
+  Result:= False;
   if not FSpell then Exit;
   with TecSpellCheckerCrack(ecSpellChecker) do
     for i:= 0 to FRanges.Count-1 do
@@ -1420,7 +1428,7 @@ begin
       NEnd:= FRanges[i].EndPos;
       if (APos>=NStart) and (APos<NEnd) then
       begin
-        Result:= true;
+        Result:= True;
         Break
       end;
     end;
@@ -1447,12 +1455,12 @@ end;
 
 procedure TEditorFrame.EditorMasterFinishAnalysis(Sender: TObject);
 begin
-  if not FCollapsedRestored then
+  if not FCollapsedRestored1 then
   begin
-    if FCollapsedString<>'' then
-      EditorSetCollapsedRanges(EditorMaster, FCollapsedString);
-    FCollapsedString:= '';
-    FCollapsedRestored:= true;
+    if FCollapsedString1<>'' then
+      EditorSetCollapsedRanges(EditorMaster, FCollapsedString1);
+    FCollapsedString1:= '';
+    FCollapsedRestored1:= True;
   end;
 end;
 
@@ -1463,7 +1471,7 @@ begin
     if FCollapsedString2<>'' then
       EditorSetCollapsedRanges(EditorSlave, FCollapsedString2);
     FCollapsedString2:= '';
-    FCollapsedRestored2:= true;
+    FCollapsedRestored2:= True;
   end;
 end;
 
@@ -1638,7 +1646,7 @@ begin
 
     Inc(NCount);
     if NCount>cMaxCount then Break;
-  until false;
+  until False;
 
   //rgb(nnn,nnn,nnn)
   NCount:= 0;
@@ -1651,7 +1659,7 @@ begin
 
     Inc(NCount);
     if NCount>cMaxCount then Break;
-  until false;
+  until False;
 end;
 
 procedure TEditorFrame.DoChangeTick;
