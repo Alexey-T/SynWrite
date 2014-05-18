@@ -1617,6 +1617,8 @@ begin
 end;
 
 procedure EditorInsertTextData(Ed: TSyntaxMemo; const Data: TSynEditorInsertData);
+const
+  cBulletStr = WideString(#$2022);
 var
   iFrom, iTo, iCnt, i, n: Integer;
   IsSel: boolean;
@@ -1640,13 +1642,14 @@ begin
         begin
           case InsMode of
             mTxt: S:= SText1 + SText2;
-            mBul: S:= WideString(#$2022) + ' ';
+            mBul: S:= cBulletStr + ' ';
             mNum: S:= NBegin + SFormatNum(NStart+i-1, NDigits) + NTail;
             else S:= '';
-          end;//case
+          end;
           InsertText(
             StringOfChar(' ', InsCol-1)
             + S + EditorEOL(Ed));
+          Application.ProcessMessages; //needed for huge counter values  
         end;
       end
       else
@@ -1696,7 +1699,7 @@ begin
         //Bullets
         mBul:
           begin
-            InsertText(WideString(#$2022) + ' ');
+            InsertText(cBulletStr + ' ');
           end;
         //Nums
         mNum:

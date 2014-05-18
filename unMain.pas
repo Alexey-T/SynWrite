@@ -15424,9 +15424,11 @@ begin
   end;
 
   F.LockMapUpdate:= true;
+  FLockUpdate:= true;
   try
     EditorInsertTextData(Ed, Data);
   finally
+    FLockUpdate:= false;
     F.LockMapUpdate:= false;
   end;
 end;
