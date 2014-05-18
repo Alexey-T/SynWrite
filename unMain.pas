@@ -3251,7 +3251,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.1010';
+  cSynVer = '6.5.1012';
   cSynPyVer = '1.0.130';
 
 const
@@ -29198,7 +29198,7 @@ var
   Num: LongWord;
 begin
   if CurrentEditor.ReadOnly then Exit;
-  if not DoInputUnicodeHexCode(Str, Num, SynHistoryIni) then Exit;
+  if not DoInputCharCode(Str, Num, SynHistoryIni) then Exit;
   CurrentEditor.InsertText(Str);
   DoHint(WideFormat(DKLangConstW('zMInputUnicodeHex'),
     [Str, IntToHex(Num, 4)]));

@@ -23,7 +23,6 @@ uses
 function IsMouseOverControl(Control: TControl): boolean;
 function IsElevationNeededForFolder(const Dir: Widestring): boolean;
 
-function DoInputUnicodeHexCode(var Str: Widestring; var Num: LongWord; const fnIni: string): boolean;
 function DoShowPopupMenu(List: TTntStringList; Pnt: TPoint; hWnd: THandle): Integer;
 procedure MemoScrollToBottom(Memo: TTntMemo);
 function SZenFindLeft(const s: ecString; iFrom: integer): integer;
@@ -76,6 +75,9 @@ procedure SaveMruList(List: TSynMruList; Ini: TCustomIniFile; const Section: str
   
 //function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
 function LoadPngIconEx(ImageList: TPngImageList; const fn: string): boolean;
+
+function DoInputCharCode(
+  var Str: Widestring; var Num: LongWord; const fnIni: string): boolean;
 function DoInputFilename(
   const SCaption: Widestring;
   var SValue: Widestring): boolean;
@@ -2077,7 +2079,8 @@ begin
 end;
 
 
-function DoInputUnicodeHexCode(var Str: Widestring; var Num: LongWord; const fnIni: string): boolean;
+function DoInputCharCode(var Str: Widestring; var Num: LongWord;
+  const fnIni: string): boolean;
 var
   Ok: boolean;
 begin
@@ -2086,8 +2089,11 @@ begin
   Num:= 0;
 
   repeat
-    if not DoInputString('Unicode hex:', Str, fnIni, 'UnicodeHexInput') then Exit;
-    Num:= HexStrToLongWord(Str, Ok);
+    if not DoInputString(DKLangConstW('zMInputCharCode'), Str, fnIni, 'CharCode') then Exit;
+    if SBegin(Str, '.') then
+      Num:= DecStrToLongWord(Copy(Str, 2, MaxInt), Ok)
+    else
+      Num:= HexStrToLongWord(Str, Ok);
     if not Ok then MsgBeep(true);
   until Ok;
 

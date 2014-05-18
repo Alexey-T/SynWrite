@@ -230,6 +230,7 @@ begin
   cbREClick(Self);
   cbSelClick(Self);
   cbFromCurClick(Self);
+  ShowStatus('');
 end;
 
 procedure TfmSR.SetIsReplace(Value: boolean);
@@ -1533,7 +1534,7 @@ begin
   IsRepl:= ed2.Focused or ed2Memo.Focused;
   if IsRepl then Str:= Text2 else Str:= Text1;
 
-  if not DoInputUnicodeHexCode(StrChar, Num, SRIni) then
+  if not DoInputCharCode(StrChar, Num, SRIni) then
     begin ShowStatus(''); Exit end;
     
   Str:= Str+StrChar;
