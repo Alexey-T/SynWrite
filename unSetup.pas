@@ -147,12 +147,12 @@ type
     cbIcons: TTntComboBox;
     tabFonts: TTntTabSheet;
     gFont: TTntGroupBox;
-    b1: TTntButton;
-    b2: TTntButton;
-    b4: TTntButton;
-    b3: TTntButton;
-    b5: TTntButton;
-    b6: TTntButton;
+    bFontText: TTntButton;
+    bFontNumbers: TTntButton;
+    bFontRuler: TTntButton;
+    bFontTree: TTntButton;
+    bFontAcp: TTntButton;
+    bFontOutput: TTntButton;
     tabTree: TTntTabSheet;
     boxTree: TTntGroupBox;
     cbTreeSync: TTntCheckBox;
@@ -338,7 +338,7 @@ type
     cbProjCloseTabs: TTntCheckBox;
     bKeyExtend: TTntButton;
     labHelpKeys: TTntLabel;
-    bPy: TTntButton;
+    bFontConsole: TTntButton;
     edColorUnder: TSpinEdit;
     LabelUnderline: TTntLabel;
     edNoSnippetsExt: TEdit;
@@ -378,9 +378,9 @@ type
     procedure bKeyClearClick(Sender: TObject);
     procedure ecHotKeyChange(Sender: TObject);
     procedure tabFilesShow(Sender: TObject);
-    procedure b1Click(Sender: TObject);
-    procedure b2Click(Sender: TObject);
-    procedure b3Click(Sender: TObject);
+    procedure bFontTextClick(Sender: TObject);
+    procedure bFontNumbersClick(Sender: TObject);
+    procedure bFontTreeClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FontDialogShow(Sender: TObject);
     procedure tabProgSettShow(Sender: TObject);
@@ -388,10 +388,10 @@ type
     procedure bClrFSClick(Sender: TObject);
     procedure bClrSRClick(Sender: TObject);
     procedure bKeyFindClick(Sender: TObject);
-    procedure b4Click(Sender: TObject);
-    procedure b5Click(Sender: TObject);
+    procedure bFontRulerClick(Sender: TObject);
+    procedure bFontAcpClick(Sender: TObject);
     procedure edTabModeChange(Sender: TObject);
-    procedure b6Click(Sender: TObject);
+    procedure bFontOutputClick(Sender: TObject);
     procedure bColorSaveClick(Sender: TObject);
     procedure bColorLoadClick(Sender: TObject);
     procedure bDirLastClick(Sender: TObject);
@@ -449,7 +449,7 @@ type
     procedure tabUndoShow(Sender: TObject);
     procedure bKeyExtendClick(Sender: TObject);
     procedure labHelpKeysClick(Sender: TObject);
-    procedure bPyClick(Sender: TObject);
+    procedure bFontConsoleClick(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
@@ -459,6 +459,7 @@ type
 
     //procedure MenuLexersClick(Sender: TObject);
     function MsgConfirmKeyOvr(const SCategory, SName: Widestring): boolean;
+    procedure DoFontConfig(btn: TTntButton);
     function DoCheckKeyDups(const KeyStr: string): boolean;
     procedure UpdateKeyButtons;
     procedure ListKeys;
@@ -745,11 +746,46 @@ begin
   ListColors.Invalidate;
 end;
 
-procedure TfmSetup.b1Click(Sender: TObject);
+procedure TfmSetup.DoFontConfig(btn: TTntButton);
 begin
-  FontDialog.Font:= b1.Font;
+  FontDialog.Font:= btn.Font;
   if FontDialog.Execute then
-    b1.Font:= FontDialog.Font;
+    btn.Font:= FontDialog.Font;
+end;
+
+procedure TfmSetup.bFontTextClick(Sender: TObject);
+begin
+  DoFontConfig(bFontText);
+end;
+
+procedure TfmSetup.bFontNumbersClick(Sender: TObject);
+begin
+  DoFontConfig(bFontNumbers);
+end;
+
+procedure TfmSetup.bFontTreeClick(Sender: TObject);
+begin
+  DoFontConfig(bFontTree);
+end;
+
+procedure TfmSetup.bFontRulerClick(Sender: TObject);
+begin
+  DoFontConfig(bFontRuler);
+end;
+
+procedure TfmSetup.bFontAcpClick(Sender: TObject);
+begin
+  DoFontConfig(bFontAcp);
+end;
+
+procedure TfmSetup.bFontOutputClick(Sender: TObject);
+begin
+  DoFontConfig(bFontOutput);
+end;
+
+procedure TfmSetup.bFontConsoleClick(Sender: TObject);
+begin
+  DoFontConfig(bFontConsole);
 end;
 
 procedure TfmSetup.tabKeyShow(Sender: TObject);
@@ -1063,20 +1099,6 @@ begin
   InitFiles;
 end;
 
-procedure TfmSetup.b2Click(Sender: TObject);
-begin
-  FontDialog.Font:= b2.Font;
-  if FontDialog.Execute then
-    b2.Font:= FontDialog.Font;
-end;
-
-procedure TfmSetup.b3Click(Sender: TObject);
-begin
-  FontDialog.Font:= b3.Font;
-  if FontDialog.Execute then
-    b3.Font:= FontDialog.Font;
-end;
-
 procedure TfmSetup.InitSidebar;
   //----
   procedure AddTab(tab: TTntTabSheet);
@@ -1198,30 +1220,9 @@ begin
   MsgInfo(DKLangConstW('zKeyNotUsed'), Handle);
 end;
 
-procedure TfmSetup.b4Click(Sender: TObject);
-begin
-  FontDialog.Font:= b4.Font;
-  if FontDialog.Execute then
-    b4.Font:= FontDialog.Font;
-end;
-
-procedure TfmSetup.b5Click(Sender: TObject);
-begin
-  FontDialog.Font:= b5.Font;
-  if FontDialog.Execute then
-    b5.Font:= FontDialog.Font;
-end;
-
 procedure TfmSetup.edTabModeChange(Sender: TObject);
 begin
   cbReplaceTabs.Enabled:= edTabMode.ItemIndex=0;
-end;
-
-procedure TfmSetup.b6Click(Sender: TObject);
-begin
-  FontDialog.Font:= b6.Font;
-  if FontDialog.Execute then
-    b6.Font:= FontDialog.Font;
 end;
 
 procedure TfmSetup.bColorSaveClick(Sender: TObject);
@@ -1827,21 +1828,21 @@ begin
   with fmMain do
   begin
     //editor
-    TemplateEditor.Font:= b1.Font;
+    TemplateEditor.Font:= bFontText.Font;
     //line nums
-    TemplateEditor.LineNumbers.Font:= b2.Font;
+    TemplateEditor.LineNumbers.Font:= bFontNumbers.Font;
     //tree
-    Tree.Font:= b3.Font;
+    Tree.Font:= bFontTree.Font;
     //ruler
-    TemplateEditor.HorzRuler.Font:= b4.Font;
+    TemplateEditor.HorzRuler.Font:= bFontRuler.Font;
     //auto-complete
-    ecACP.Font:= b5.Font;
+    ecACP.Font:= bFontAcp.Font;
     ApplyACP;
     //output panel
-    ListOut.Font:= b6.Font;
+    ListOut.Font:= bFontOutput.Font;
     ApplyOut;
     //console
-    opFontConsole:= bPy.Font.Name+','+IntToStr(bPy.Font.Size);
+    opFontConsole:= bFontConsole.Font.Name+','+IntToStr(bFontConsole.Font.Size);
     ApplyFontConsole;
     
     ApplyFonts;
@@ -2157,13 +2158,13 @@ procedure TfmSetup.InitFonts;
 begin
   with fmMain do
   begin
-    b1.Font:= TemplateEditor.Font;
-    b2.Font:= TemplateEditor.LineNumbers.Font;
-    b3.Font:= Tree.Font;
-    b4.Font:= TemplateEditor.HorzRuler.Font;
-    b5.Font:= ecACP.Font;
-    b6.Font:= ListOut.Font;
-    bPy.Font:= MemoConsole.Font;
+    bFontText.Font:= TemplateEditor.Font;
+    bFontNumbers.Font:= TemplateEditor.LineNumbers.Font;
+    bFontTree.Font:= Tree.Font;
+    bFontRuler.Font:= TemplateEditor.HorzRuler.Font;
+    bFontAcp.Font:= ecACP.Font;
+    bFontOutput.Font:= ListOut.Font;
+    bFontConsole.Font:= MemoConsole.Font;
   end;
 end;
 
@@ -2774,13 +2775,6 @@ end;
 procedure TfmSetup.labHelpKeysClick(Sender: TObject);
 begin
   SynHelpTopic(helpKeys, Handle);
-end;
-
-procedure TfmSetup.bPyClick(Sender: TObject);
-begin
-  FontDialog.Font:= bPy.Font;
-  if FontDialog.Execute then
-    bPy.Font:= FontDialog.Font;
 end;
 
 {

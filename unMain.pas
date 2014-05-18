@@ -1236,7 +1236,7 @@ type
     TbxTabClipboard: TSpTBXTabItem;
     tbTabsOut: TSpTBXTabSet;
     TbxTabPlugins: TSpTBXTabItem;
-    TbxTabTidy: TSpTBXTabItem;
+    TbxTabValidate: TSpTBXTabItem;
     TbxTabResults: TSpTBXTabItem;
     TbxTabOutput: TSpTBXTabItem;
     tbTabsLeft: TSpTBXTabSet;
@@ -9822,7 +9822,7 @@ begin
   //
   TbxTabOutput.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusOutput);
   TbxTabResults.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusFindRes);
-  TbxTabTidy.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusValidate);
+  TbxTabValidate.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusValidate);
   TbxTabConsole.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusConsole);
 
   UpdKey(TBXItemHelpTopics, sm_HelpFileContents);
