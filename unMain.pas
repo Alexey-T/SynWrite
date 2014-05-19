@@ -3250,7 +3250,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.1015';
+  cSynVer = '6.5.1020';
   cSynPyVer = '1.0.130';
 
 const
@@ -11220,17 +11220,22 @@ procedure TfmMain.PageControl1DrawTab(Control: TCustomTabControl;
   TabIndex: Integer; const Rect: TRect; Active: Boolean);
 var
   F: TEditorFrame;
-  R, RLine: TRect;
+  R, RectLine, RectTotal: TRect;
   SCaption: Widestring;
-  c, ColorMisc: TColor;
+  C, ColorMisc: TColor;
   PageControl: TTntPageControl;
-  AFtp, ATabActive, ATabLast, ATabMouseOver, APagesActive: boolean;
+  AFtp, ATabActive, ATabLast, ATabMouseOver, APagesActive, ATabsAtTop: boolean;
+const
+  cSpaceAboveTabs = 1; //only take 1px from tree space abve (2px gives paint bugs with multiline tabs)
+  cSpaceActiveHigher = 1; //active tab higher by 1px
+  cSpaceLineWidth = 3; //active-tab line is 3px
 begin
   PageControl:= Control as TTntPageControl;
   APagesActive:= PageControl = Self.PageControl;
   ATabActive:= TabIndex = PageControl.ActivePageIndex;
   ATabLast:= TabIndex = PageControl.PageCount-1;
   ATabMouseOver:= TabIndex = FPagesNTab;
+  ATabsAtTop:= PageControl.TabPosition=tpTop;
 
   //get frame properties
   ColorMisc:= clNone;
@@ -11255,75 +11260,93 @@ begin
     SCaption:= '  ' + IfThen(opTabNums, ' ') + SCaption; //add 2+1 spaces
 
   //paint theme on PageControl
+  TabCtrl_GetItemRect(Control.Handle, TabIndex, RectTotal);
+  Dec(RectTotal.Top, cSpaceAboveTabs); //increase space (coz of cn_drawitem)
+
+  //paint tab bg
+  R:= RectTotal;
+  if ATabActive then
+    Control.Canvas.Brush.Color:= IfThen(ColorMisc<>clNone, ColorMisc, opColorTab2)
+  else
+    Control.Canvas.Brush.Color:= IfThen(ColorMisc<>clNone, ColorMisc, opColorTab1);
+  Control.Canvas.FillRect(R);
+
+  Dec(RectTotal.Right, 1); //small fix
+  
   if not FPanelDrawBusy then
   if ATabLast then
   begin
-    TabCtrl_GetItemRect(Control.Handle, TabIndex, R);
-
-    if PageControl.TabPosition=tpTop then
+    R:= RectTotal;
+    if ATabsAtTop then
       R:= Types.Rect(R.Right, R.Top-2, ClientWidth, R.Bottom)
     else
       R:= Types.Rect(R.Right, R.Top, ClientWidth, R.Bottom+2);
-    Inc(R.Left, 2); //prevent visual glitch with Aluminum theme:
-      //if you hover over X button of last tab, theme BG drawn little over last tab
+    //prevent visual glitch with Aluminum theme:
+    //if you hover over X button of last tab, theme BG drawn little over last tab
+    Inc(R.Left, 1);
 
     if R.Left<=R.Right then
-      (*
-      CurrentSkin.PaintThemedElementBackground(
-        PageControl.Canvas, R,
-        skncTab, true, false{Pushed}, false{Hottrack}, false{Checked}, false, false, false);
-        *)
       CurrentSkin.PaintBackground(
         PageControl.Canvas, R,
         skncDock, sknsNormal, true{BG}, false{Borders});
   end;
 
-  //Paint tab
-  TabCtrl_GetItemRect(Control.Handle, TabIndex, R);
+  R:= RectTotal;
+  if not ATabActive then
+    if ATabsAtTop then
+      Inc(R.Top, cSpaceActiveHigher);
 
-  if ATabActive then
+  //paint 1px frame
+  with Control.Canvas do
   begin
-    Control.Canvas.Brush.Color:= IfThen(ColorMisc<>clNone, ColorMisc, opColorTab2);
-  end
-  else
-  begin
-    Control.Canvas.Brush.Color:= IfThen(ColorMisc<>clNone, ColorMisc, opColorTab1);
-    InflateRect(R, -2, -1);
+    Pen.Color:= clGray;
+
+    if ATabsAtTop then
+    begin
+      MoveTo(R.Left, R.Top);
+      LineTo(R.Right, R.Top);
+    end
+    else
+    begin
+      MoveTo(R.Left, R.Bottom);
+      LineTo(R.Right, R.Bottom);
+    end;
+
+    MoveTo(R.Left, R.Top);
+    LineTo(R.Left, R.Bottom);
+
+    MoveTo(R.Right, R.Top);
+    LineTo(R.Right, R.Bottom);
   end;
-  Control.Canvas.FillRect(R);
 
-  //tab top line
+  Inc(R.Left, 1); //small fix
+  Inc(R.Top, 1);
+
+  //paint tab line
   if ATabActive and APagesActive then
   begin
     C:= Control.Canvas.Brush.Color;
     Control.Canvas.Brush.Color:= opColorTab3;
-    if PageControl.TabPosition=tpTop then
-      RLine:= Types.Rect(R.Left,R.Top,R.Right,R.Top+3)
+    if ATabsAtTop then
+      RectLine:= Types.Rect(R.Left, R.Top, R.Right, R.Top+cSpaceLineWidth)
     else
-      RLine:= Types.Rect(R.Left,R.Bottom-3,R.Right,R.Bottom);
-    Control.Canvas.FillRect(RLine);
+      RectLine:= Types.Rect(R.Left, R.Bottom-cSpaceLineWidth+1, R.Right, R.Bottom);
+    Control.Canvas.FillRect(RectLine);
     Control.Canvas.Brush.Color:= C;
   end;
 
-  //tab caption
+  //paint tab caption
   if Pos('*', SCaption)>0 then
     Control.Canvas.Font.Color:= opColorTabFont2
   else
     Control.Canvas.Font.Color:= opColorTabFont1;
   TextOutW(Control.Canvas.Handle, R.Left+6, R.Top+3, PWChar(SCaption), Length(SCaption));
 
-  //tab ftp icon
+  //paint ftp icon
   if AFtp then
     ImageListFtp.Draw(Control.Canvas, R.Left+3, R.Top+5, 0);
 
-  //tab X button
-  {
-  if opTabBtn then
-  begin
-    TabCtrl_GetXRect(Control.Handle, TabIndex, ImageListCloseBtn.Width, R);
-    ImageListCloseBtn.Draw(Control.Canvas, R.Left, R.Top, Ord(ATabMouseOver));
-  end;
-  }
+  //paint [x] button
   if opTabBtn then
   begin
     TabCtrl_GetXRect(Control.Handle, TabIndex, R);
@@ -11337,9 +11360,12 @@ end;
 procedure TfmMain.PageControl1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-  i:Integer;
-  r:TRect;
   PageControl: TTntPageControl;
+  R: TRect;
+  i: Integer;
+const
+  cDragThreshold = 20; //px
+  cDblClickRange = 10; //px
 begin
   PageControl:= Sender as TTntPageControl;
 
@@ -11347,14 +11373,14 @@ begin
   FocusPages(PageControl);
 
   //drag start
-  if opTabDragDrop and
-    (Button = mbLeft) then
-    PageControl.BeginDrag(false, 20); //20px threshold: tryin to solve issue
+  if opTabDragDrop and (Button = mbLeft) then
+    PageControl.BeginDrag(false, cDragThreshold);
 
   //double click
   if (Button = mbLeft) and
     (GetTickCount-FPagesDblClickTime < GetDoubleClickTime) and
-    (Abs(FPagesDblClickPoint.X-X)<10) and (Abs(FPagesDblClickPoint.Y-Y)<10) then
+    (Abs(FPagesDblClickPoint.X-X) < cDblClickRange) and
+    (Abs(FPagesDblClickPoint.Y-Y) < cDblClickRange) then
   begin
     FPagesDblClickTime:= 0;
     //double click on a tab -> close this tab

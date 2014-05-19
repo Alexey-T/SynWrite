@@ -20,12 +20,12 @@ type
     Label1: TTntLabel;
     cbTags: TTntCheckBox;
     DKLanguageController1: TDKLanguageController;
-    Label2: TTntLabel;
+    LabelHelp: TTntLabel;
     procedure edCountKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure cbWordsClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure Label2Click(Sender: TObject);
+    procedure LabelHelpClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -35,7 +35,7 @@ type
 implementation
 
 uses
-  ATxFProc;
+  unProcHelp;
 
 {$R *.dfm}
 
@@ -66,9 +66,9 @@ begin
   cbWordsClick(Self);
 end;
 
-procedure TfmLoremIpsum.Label2Click(Sender: TObject);
+procedure TfmLoremIpsum.LabelHelpClick(Sender: TObject);
 begin
-  FOpenURL('http://en.wikipedia.org/wiki/Lorem_ipsum', Handle);
+  SynHelpTopic(helpLoremIpsum, Handle);
 end;
 
 end.

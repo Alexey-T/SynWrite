@@ -21,6 +21,7 @@ type
     helpCmdListDlg,
     helpEmmet,
     helpProjOpts,
+    helpLoremIpsum,
     helpKeys
   );
 const
@@ -38,6 +39,7 @@ const
     'DialogCmdList.html',
     'HelperZenCoding.html',
     'DialogProjOpt.html',
+    'DialogLorem.html',
     'Keys.html'
   );
 

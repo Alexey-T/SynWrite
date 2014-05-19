@@ -17,7 +17,7 @@ object fmLoremIpsum: TfmLoremIpsum
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object Label2: TTntLabel
+  object LabelHelp: TTntLabel
     Left = 280
     Top = 100
     Width = 19
@@ -30,7 +30,7 @@ object fmLoremIpsum: TfmLoremIpsum
     Font.Name = 'Tahoma'
     Font.Style = [fsUnderline]
     ParentFont = False
-    OnClick = Label2Click
+    OnClick = LabelHelpClick
   end
   object bOk: TTntButton
     Left = 240
@@ -115,6 +115,8 @@ object fmLoremIpsum: TfmLoremIpsum
     end
   end
   object DKLanguageController1: TDKLanguageController
+    IgnoreList.Strings = (
+      'LabelHelp*')
     Left = 240
     Top = 92
     LangData = {
@@ -125,6 +127,7 @@ object fmLoremIpsum: TfmLoremIpsum
       6253656E74010100000005000000070043617074696F6E000600636250617261
       010100000006000000070043617074696F6E0007006564436F756E7400000600
       4C6162656C31010100000008000000070043617074696F6E0006006362546167
-      73010100000009000000070043617074696F6E0006004C6162656C320000}
+      73010100000009000000070043617074696F6E0009004C6162656C48656C7000
+      00}
   end
 end

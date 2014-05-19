@@ -169,7 +169,8 @@ type
   TTntPageControl = class(TntComCtrls.TTntPageControl)
   protected
     procedure AdjustClientRect(var Rect: TRect); override;
-    procedure WMNCHitTest(var Message: TWMNCHitTest); message WM_NCHITTEST; //Info url below
+    procedure WMNCHitTest(var Message: TWMNCHitTest); message WM_NCHITTEST; //URL below
+    procedure CNDrawitem(var Message: TWMDrawItem); message CN_DRAWITEM; //URL below
   end;
 
 function FFreeFN(const Name, ext, Dir: Widestring): Widestring;
@@ -1036,6 +1037,31 @@ begin
   if Message.Result = HTTRANSPARENT then
     Message.Result := HTCLIENT;
 end;
+
+procedure TTntPageControl.CNDrawitem(var Message: TWMDrawItem);
+// http://stackoverflow.com/questions/18282728/make-owner-drawn-tpagecontrol-tabs-look-nicer-like-without-owner-draw
+var
+  Rgn: HRgn;
+begin
+  //we don't want to get clipped in the passed rectangle
+  SelectClipRgn(Message.DrawItemStruct.hDC, 0);
+
+  //we want to clip the DC so that the borders to be drawn are out of region
+  Rgn:= CreateRectRgn(0, 0, 0, 0);
+  SelectClipRgn(Message.DrawItemStruct.hDC, Rgn);
+  DeleteObject(Rgn);
+
+  Message.Result:= 1;
+  inherited;
+
+  if Assigned(OnDrawTab) then
+    OnDrawTab(Self,
+      Message.DrawItemStruct.itemID,
+      Message.DrawItemStruct.rcItem,
+      Bool(Message.DrawItemStruct.itemState and ODS_FOCUS)
+      );
+end;
+
 
 //-----------------------------------------------
 const
