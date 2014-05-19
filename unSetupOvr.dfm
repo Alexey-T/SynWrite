@@ -91,20 +91,20 @@ object fmSetupOvr: TfmSetupOvr
     Caption = '+'
     OnClick = LabelTextShowClick
   end
-  object labAutoCloseHelp: TTntLabel
+  object LabelHelpAutoCase: TTntLabel
     Left = 400
     Top = 242
-    Width = 13
+    Width = 19
     Height = 13
     Cursor = crHandPoint
-    Caption = '(?)'
+    Caption = '( ? )'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlue
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsUnderline]
     ParentFont = False
-    OnClick = labAutoCloseHelpClick
+    OnClick = LabelHelpAutoCaseClick
   end
   object LabelIndent: TTntLabel
     Left = 184
@@ -288,8 +288,8 @@ object fmSetupOvr: TfmSetupOvr
       6162656C426C616E6B73010100000013000000070043617074696F6E000C0065
       644B656570426C616E6B7301010000001400000005004974656D73000D004C61
       62656C5465787453686F7700000A0063624175746F4361736501010000001500
-      0000070043617074696F6E0010006C61624175746F436C6F736548656C700000
-      0B004C6162656C496E64656E74010100000016000000070043617074696F6E00
-      08006564496E64656E740000}
+      0000070043617074696F6E0011004C6162656C48656C704175746F4361736500
+      000B004C6162656C496E64656E74010100000016000000070043617074696F6E
+      0008006564496E64656E740000}
   end
 end

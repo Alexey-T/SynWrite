@@ -118,13 +118,13 @@ type
     cbAcpHtm: TTntCheckBox;
     cbAcpTabbing: TTntCheckBox;
     cbAcpCss: TTntCheckBox;
-    labSmTabHelp: TTntLabel;
+    LabelHelpTabbin: TTntLabel;
     cbHTemp: TTntCheckBox;
     cbAcpUseSingle: TTntCheckBox;
     cbACloseTags: TTntCheckBox;
     TntLabel7: TTntLabel;
     TntLabel12: TTntLabel;
-    labAutoCloseHelp: TTntLabel;
+    LabelHelpAClose: TTntLabel;
     cbACloseBr: TTntCheckBox;
     cbACloseBrEsc: TTntCheckBox;
     cbACloseQ: TTntCheckBox;
@@ -216,8 +216,8 @@ type
     cbCaretIndGutter: TTntRadioButton;
     TntLabel31: TTntLabel;
     edCaretGutterCol: TSpinEdit;
-    labCaretHelp: TTntLabel;
-    labAcpHelp: TTntLabel;
+    LabelHelpCarets: TTntLabel;
+    LabelHelpAcpHtml: TTntLabel;
     boxFindTree: TTntGroupBox;
     cbSrExpand: TTntCheckBox;
     edSrMaxTreeMatches: TSpinEdit;
@@ -254,10 +254,10 @@ type
     cbRecColors: TTntComboBox;
     boxDateFormat: TTntGroupBox;
     cbZenProfile: TTntComboBox;
-    labEmmet: TTntLabel;
+    LabelHelpEmmet: TTntLabel;
     TntLabel18: TTntLabel;
     edDateFmt: TTntEdit;
-    labDate: TTntLabel;
+    LabelHelpDateFmt: TTntLabel;
     TntLabel20: TTntLabel;
     edDateFmtP: TTntEdit;
     TntLabel33: TTntLabel;
@@ -397,7 +397,7 @@ type
     procedure bDirLastClick(Sender: TObject);
     procedure tabHistShow(Sender: TObject);
     procedure cbKeyCatChange(Sender: TObject);
-    procedure labDateClick(Sender: TObject);
+    procedure LabelHelpDateFmtClick(Sender: TObject);
     procedure tabSearchShow(Sender: TObject);
     procedure cbSessSaveClick(Sender: TObject);
     procedure edFilterChange(Sender: TObject);
@@ -411,8 +411,8 @@ type
     procedure bUnnamedBrowseClick(Sender: TObject);
     procedure cbASaveUnnamedClick(Sender: TObject);
     procedure cbASaveTimerClick(Sender: TObject);
-    procedure labSmTabHelpClick(Sender: TObject);
-    procedure labAutoCloseHelpClick(Sender: TObject);
+    procedure LabelHelpTabbinClick(Sender: TObject);
+    procedure LabelHelpACloseClick(Sender: TObject);
     procedure cbACloseBrClick(Sender: TObject);
     procedure cbAcpFileClick(Sender: TObject);
     procedure ListColorsDrawItem(Control: TWinControl; Index: Integer;
@@ -438,10 +438,10 @@ type
     procedure bSpellOptClick(Sender: TObject);
     procedure tabOvrShow(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
-    procedure labEmmetClick(Sender: TObject);
+    procedure LabelHelpEmmetClick(Sender: TObject);
     procedure tabCaretsShow(Sender: TObject);
-    procedure labCaretHelpClick(Sender: TObject);
-    procedure labAcpHelpClick(Sender: TObject);
+    procedure LabelHelpCaretsClick(Sender: TObject);
+    procedure LabelHelpAcpHtmlClick(Sender: TObject);
     procedure tabNewOpenShow(Sender: TObject);
     procedure tabViewShow(Sender: TObject);
     procedure tabSelHLShow(Sender: TObject);
@@ -1336,7 +1336,7 @@ begin
       end;
 end;
 
-procedure TfmSetup.labDateClick(Sender: TObject);
+procedure TfmSetup.LabelHelpDateFmtClick(Sender: TObject);
 begin
   SynHelpTopic(helpDateFmt, Handle);
 end;
@@ -1446,12 +1446,12 @@ begin
   labASaveTime.Enabled:= en;
 end;
 
-procedure TfmSetup.labSmTabHelpClick(Sender: TObject);
+procedure TfmSetup.LabelHelpTabbinClick(Sender: TObject);
 begin
   SynHelpTopic(helpSmartTabbing, Handle);
 end;
 
-procedure TfmSetup.labAutoCloseHelpClick(Sender: TObject);
+procedure TfmSetup.LabelHelpACloseClick(Sender: TObject);
 begin
   SynHelpTopic(helpAutoClose, Handle);
 end;
@@ -1688,7 +1688,7 @@ begin
   SaveDialogPre.Filter:= cColorFilter;
 end;
 
-procedure TfmSetup.labEmmetClick(Sender: TObject);
+procedure TfmSetup.LabelHelpEmmetClick(Sender: TObject);
 begin
   SynHelpTopic(helpEmmet, Handle);
 end;
@@ -1700,12 +1700,12 @@ begin
   InitEditorCarets;
 end;
 
-procedure TfmSetup.labCaretHelpClick(Sender: TObject);
+procedure TfmSetup.LabelHelpCaretsClick(Sender: TObject);
 begin
   SynHelpTopic(helpCarets, Handle);
 end;
 
-procedure TfmSetup.labAcpHelpClick(Sender: TObject);
+procedure TfmSetup.LabelHelpAcpHtmlClick(Sender: TObject);
 begin
   SynHelpTopic(helpAcp, Handle);
 end;

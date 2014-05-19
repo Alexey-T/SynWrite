@@ -32,7 +32,7 @@ type
     edKeepBlanks: TTntComboBox;
     LabelTextShow: TLabel;
     cbAutoCase: TTntCheckBox;
-    labAutoCloseHelp: TTntLabel;
+    LabelHelpAutoCase: TTntLabel;
     LabelIndent: TTntLabel;
     edIndent: TSpinEdit;
     procedure cbOvrClick(Sender: TObject);
@@ -41,7 +41,7 @@ type
     procedure TntFormCreate(Sender: TObject);
     procedure edTabChange(Sender: TObject);
     procedure LabelTextShowClick(Sender: TObject);
-    procedure labAutoCloseHelpClick(Sender: TObject);
+    procedure LabelHelpAutoCaseClick(Sender: TObject);
   private
     { Private declarations }
     FUpdLock: boolean;
@@ -220,7 +220,7 @@ begin
     Visible:= not Visible; 
 end;
 
-procedure TfmSetupOvr.labAutoCloseHelpClick(Sender: TObject);
+procedure TfmSetupOvr.LabelHelpAutoCaseClick(Sender: TObject);
 begin
   SynHelpTopic(helpAutoCase, Handle);
 end;
