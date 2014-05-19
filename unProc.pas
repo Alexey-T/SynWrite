@@ -182,6 +182,7 @@ procedure MsgWarn(const S: WideString; H: THandle);
 procedure MsgError(const S: WideString; H: THandle);
 function MsgConfirm(const S: Widestring; H: THandle; IsQuestion: boolean = false): boolean;
 procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);
+procedure MsgRenameError(const fnPrev, fnNew: Widestring; H: THandle);
 
 procedure SetFormStyle(Form: TForm; Value: Boolean);
 procedure SetFormOnTop(H: THandle; V: boolean);
@@ -266,7 +267,7 @@ uses
   unSRTree,
   unInputSimple,
   unInputFilename,
-  unTool;
+  unTool, ComCtrls;
 
 procedure MsgInfo(const S: WideString; H: THandle);
 begin
@@ -285,6 +286,14 @@ begin
   MessageBoxW(H, PWChar(S), 'SynWrite',
     mb_ok or mb_iconerror or mb_taskmodal);
 end;
+
+procedure MsgRenameError(const fnPrev, fnNew: Widestring; H: THandle);
+const
+  cArrow = #151'>';
+begin
+  MsgError(DKLangConstW('zMRenameErr')+#13+fnPrev+#13+cArrow+#13+fnNew, H);
+end;
+
 
 function MsgConfirm(const S: Widestring; H: THandle; IsQuestion: boolean = false): boolean;
 var

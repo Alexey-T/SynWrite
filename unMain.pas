@@ -2504,7 +2504,6 @@ type
     procedure MsgDelLines(N: integer);
     procedure MsgDoneLines(N: integer);
     procedure MsgTabbing(const s: Widestring);
-    procedure MsgRenameError(const fn, fn_new: Widestring);
 
     procedure DoClearTreeFind;
     procedure DoCopyFindResultToTab(ALastSearch, AFilesOnly: boolean;
@@ -4750,7 +4749,7 @@ begin
     opMicroMap:= ReadBool('View', 'MicroMap', false);
     opColorMap:= ReadInteger('View', 'MapColor', clSkyBlue);
     opShowCurrentColumn:= ReadBool('View', 'CurrCol', false);
-    opCaretShape:= ReadInteger('View', 'CaretType', 0);
+    opCaretShape:= ReadInteger('View', 'CaretType', 1);
 
     NCount:= ReadInteger('View', 'NPrint', 0+2+4);
     opNonPrint:=       (NCount and 1)<>0;
@@ -11260,6 +11259,7 @@ begin
   if ATabLast then
   begin
     TabCtrl_GetItemRect(Control.Handle, TabIndex, R);
+
     if PageControl.TabPosition=tpTop then
       R:= Types.Rect(R.Right, R.Top-2, ClientWidth, R.Bottom)
     else
@@ -19242,13 +19242,6 @@ begin
   DoHint('[SmartTagTabbing] ' + s);
 end;
 
-procedure TfmMain.MsgRenameError(const fn, fn_new: Widestring);
-const
-  cArrow = #151'>';
-begin
-  MsgError(DKLangConstW('zMRenameErr')+#13+fn+#13+cArrow+#13+fn_new, Handle);
-end;
-
 {
 procedure TfmMain.MsgID(const s: Widestring);
 begin
@@ -21580,7 +21573,7 @@ begin
   acClose.Execute;
   if not MoveFileW(PWChar(fn), PWChar(fn_new)) then
   begin
-    MsgRenameError(fn, fn_new);
+    MsgRenameError(fn, fn_new, Handle);
     DoOpenFile(fn);
   end
   else

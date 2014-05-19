@@ -245,6 +245,8 @@ type
     procedure DoOpenFiles;
     procedure DoRefresh;
     procedure DoRename;
+    procedure DoRenameFile(const fn, fn_new: Widestring);
+    procedure DoRenameFileNode(Node: TTntTreeNode);
     procedure DoRemove;
     procedure DoOpenProject;
     procedure DoNewProject;
@@ -277,7 +279,6 @@ type
     procedure UpdateTitle;
     procedure DoDropItem(const fn: Widestring);
     procedure DoSaveProjectIfNeeded;
-    procedure DoRenameFile(const fn, fn_new: Widestring);
   end;
 
 procedure SStringToList(s: Widestring; L: TTntStrings);
@@ -293,7 +294,9 @@ uses
   ATxIconProc,
   TntWideStrUtils,
   TntFileCtrl,
-  TntSysUtils, unProjAddDir, unProjProps;
+  TntSysUtils,
+  unProjAddDir,
+  unProjProps;
 
 {$R *.dfm}
 
@@ -504,11 +507,39 @@ begin
   DoRename;
 end;
 
+procedure TfmProj.DoRenameFileNode(Node: TTntTreeNode);
+var
+  SDir, SPrevFN, SNewFN: Widestring;
+begin
+  SPrevFN:= GetFN(Node);
+  if not IsFileExist(SPrevFN) then
+    begin MsgBeep; Exit end;
+
+  SDir:= WideExtractFileDir(SPrevFN);
+  SPrevFN:= WideExtractFileName(SPrevFN);
+  SNewFN:= SPrevFN;
+  if not DoInputFilename(DKLangConstW('zMRename'), SNewFN) then Exit;
+
+  if not FFileMove(SDir+'\'+SPrevFN, SDir+'\'+SNewFN) then
+  begin
+    MsgRenameError(SPrevFN, SNewFN, Handle);
+    Exit
+  end;
+  DoRenameFile(SDir+'\'+SPrevFN, SDir+'\'+SNewFN);
+end;
+
 procedure TfmProj.DoRename;
 begin
   with TreeProj do
-    if (Selected<>nil) and (SelectionCount=1) and CanRename(Selected) then
-      TreeView_EditLabel(Handle, Selected.ItemId)
+    if (Selected<>nil) and (SelectionCount=1) and not IsRoot(Selected) then
+    begin
+      if IsDir(Selected) or IsRoot(Selected) then
+        //inplace rename of folder or root
+        TreeView_EditLabel(Handle, Selected.ItemId)
+      else
+        //rename file
+        DoRenameFileNode(Selected)
+    end
     else
       MsgBeep;
 end;
@@ -1323,7 +1354,7 @@ begin
   TbxItemMnuProjClose.Visible:= pr;
   TbxItemMnuProjProp.Visible:= pr;
 
-  TbxItemMnuRename.Enabled:= not pr and dir;
+  TbxItemMnuRename.Enabled:= not pr;
   TbxItemMnuRemove.Enabled:= not pr;
   TbxItemMnuSetMain.Enabled:= not dir;
   TbxItemMnuProps.Enabled:= not dir;
