@@ -11226,6 +11226,7 @@ var
   PageControl: TTntPageControl;
   AFtp, ATabActive, ATabLast, ATabMouseOver, APagesActive, ATabsAtTop: boolean;
 const
+  cColorTabFrame = $A0A0A0;
   cSpaceAboveTabs = 1; //only take 1px from tree space abve (2px gives paint bugs with multiline tabs)
   cSpaceActiveHigher = 1; //active tab higher by 1px
   cSpaceLineWidth = 3; //active-tab line is 3px
@@ -11257,7 +11258,7 @@ begin
     SCaption:= Format('%d.', [TabIndex+1]) + SCaption;
   end;
   if AFtp then
-    SCaption:= '  ' + IfThen(opTabNums, ' ') + SCaption; //add 2+1 spaces
+    SCaption:= '  ' + IfThen(opTabNums, ' ') + TrimRight(SCaption); //add 2+1 spaces
 
   //paint theme on PageControl
   TabCtrl_GetItemRect(Control.Handle, TabIndex, RectTotal);
@@ -11299,22 +11300,24 @@ begin
   //paint 1px frame
   with Control.Canvas do
   begin
-    Pen.Color:= clGray;
+    Pen.Color:= cColorTabFrame;
 
-    if ATabsAtTop then
+    //top line
+    MoveTo(R.Left, R.Top);
+    LineTo(R.Right, R.Top);
+
+    if not ATabsAtTop then
     begin
-      MoveTo(R.Left, R.Top);
-      LineTo(R.Right, R.Top);
-    end
-    else
-    begin
+      //bottom line
       MoveTo(R.Left, R.Bottom);
       LineTo(R.Right, R.Bottom);
     end;
 
+    //left line
     MoveTo(R.Left, R.Top);
     LineTo(R.Left, R.Bottom);
 
+    //right line
     MoveTo(R.Right, R.Top);
     LineTo(R.Right, R.Bottom);
   end;
