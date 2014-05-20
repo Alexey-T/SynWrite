@@ -9905,7 +9905,7 @@ object fmMain: TfmMain
         Command = 1057
         KeyStrokes = <>
         Category = 'Inserting text'
-        DisplayName = 'Dialog "Insert Unicode hex code"'
+        DisplayName = 'Dialog "Insert char code"'
       end>
     UseFirstControlKeys = True
     Left = 360

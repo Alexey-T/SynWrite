@@ -3016,11 +3016,11 @@ type
     opTextOnly: integer; //dont-open/ open/ prompt
     opShowTitleFull: boolean;
     opShowQsCaptions: boolean;
-    opColorTab1,
-    opColorTab2,
-    opColorTab3,
-    opColorTabFont1,
-    opColorTabFont2: integer;
+    opColorTabBgPassive,
+    opColorTabBgActive,
+    opColorTabLine,
+    opColorTabFontNormal,
+    opColorTabFontUnsav: integer;
     opChInf: boolean;
     opOem,
     opUTF8: string;
@@ -3250,7 +3250,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.1020';
+  cSynVer = '6.5.1030';
   cSynPyVer = '1.0.130';
 
 const
@@ -4780,11 +4780,11 @@ begin
     opColorMapMarks:= ReadInteger('View', 'MapMkC', clGreen);
     opColorBkmk:= ReadInteger('View', 'BkC', RGB(200, 240, 200));
     opColorNonPrintedBG:= ReadInteger('View', 'NPrintBG', clSilver);
-    opColorTab1:= ReadInteger('View', 'TabC1', clBtnFace);
-    opColorTab2:= ReadInteger('View', 'TabC2', clBtnHighlight);
-    opColorTab3:= ReadInteger('View', 'TabC3', $80DDDD);
-    opColorTabFont1:= ReadInteger('View', 'TabCF1', clBlack);
-    opColorTabFont2:= ReadInteger('View', 'TabCF2', clNavy);
+    opColorTabBgPassive:= ReadInteger('View', 'TabC1', clBtnFace);
+    opColorTabBgActive:= ReadInteger('View', 'TabC2', clBtnHighlight);
+    opColorTabLine:= ReadInteger('View', 'TabC3', $80DDDD);
+    opColorTabFontNormal:= ReadInteger('View', 'TabCF1', clBlack);
+    opColorTabFontUnsav:= ReadInteger('View', 'TabCF2', clNavy);
     TabColorsString:= ReadString('View', 'TabMisc', '');
 
     opChInf:= ReadBool('Setup', 'ChInf', false);
@@ -5157,11 +5157,11 @@ begin
     WriteInteger('View', 'MapMkC', opColorMapMarks);
     WriteInteger('View', 'BkC', opColorBkmk);
     WriteInteger('View', 'NPrintBG', opColorNonPrintedBG);
-    WriteInteger('View', 'TabC1', opColorTab1);
-    WriteInteger('View', 'TabC2', opColorTab2);
-    WriteInteger('View', 'TabC3', opColorTab3);
-    WriteInteger('View', 'TabCF1', opColorTabFont1);
-    WriteInteger('View', 'TabCF2', opColorTabFont2);
+    WriteInteger('View', 'TabC1', opColorTabBgPassive);
+    WriteInteger('View', 'TabC2', opColorTabBgActive);
+    WriteInteger('View', 'TabC3', opColorTabLine);
+    WriteInteger('View', 'TabCF1', opColorTabFontNormal);
+    WriteInteger('View', 'TabCF2', opColorTabFontUnsav);
     WriteString('View', 'TabMisc', TabColorsString);
 
     WriteBool('Setup', 'ChInf', opChInf);
@@ -11267,9 +11267,10 @@ begin
   //paint tab bg
   R:= RectTotal;
   if ATabActive then
-    Control.Canvas.Brush.Color:= IfThen(ColorMisc<>clNone, ColorMisc, opColorTab2)
+    C:= IfThen(ColorMisc<>clNone, ColorMisc, opColorTabBgActive)
   else
-    Control.Canvas.Brush.Color:= IfThen(ColorMisc<>clNone, ColorMisc, opColorTab1);
+    C:= IfThen(ColorMisc<>clNone, ColorMisc, opColorTabBgPassive);
+  Control.Canvas.Brush.Color:= C;
   Control.Canvas.FillRect(R);
 
   Dec(RectTotal.Right, 1); //small fix
@@ -11297,30 +11298,10 @@ begin
     if ATabsAtTop then
       Inc(R.Top, cSpaceActiveHigher);
 
-  //paint 1px frame
-  with Control.Canvas do
-  begin
-    Pen.Color:= cColorTabFrame;
-
-    //top line
-    MoveTo(R.Left, R.Top);
-    LineTo(R.Right, R.Top);
-
-    if not ATabsAtTop then
-    begin
-      //bottom line
-      MoveTo(R.Left, R.Bottom);
-      LineTo(R.Right, R.Bottom);
-    end;
-
-    //left line
-    MoveTo(R.Left, R.Top);
-    LineTo(R.Left, R.Bottom);
-
-    //right line
-    MoveTo(R.Right, R.Top);
-    LineTo(R.Right, R.Bottom);
-  end;
+  //paint frame
+  Control.Canvas.Pen.Color:= cColorTabFrame;
+  Control.Canvas.Pen.Width:= 1;
+  Control.Canvas.Rectangle(R.Left, R.Top, R.Right+1, R.Bottom+1);
 
   Inc(R.Left, 1); //small fix
   Inc(R.Top, 1);
@@ -11329,7 +11310,7 @@ begin
   if ATabActive and APagesActive then
   begin
     C:= Control.Canvas.Brush.Color;
-    Control.Canvas.Brush.Color:= opColorTab3;
+    Control.Canvas.Brush.Color:= opColorTabLine;
     if ATabsAtTop then
       RectLine:= Types.Rect(R.Left, R.Top, R.Right, R.Top+cSpaceLineWidth)
     else
@@ -11340,9 +11321,9 @@ begin
 
   //paint tab caption
   if Pos('*', SCaption)>0 then
-    Control.Canvas.Font.Color:= opColorTabFont2
+    Control.Canvas.Font.Color:= opColorTabFontUnsav
   else
-    Control.Canvas.Font.Color:= opColorTabFont1;
+    Control.Canvas.Font.Color:= opColorTabFontNormal;
   TextOutW(Control.Canvas.Handle, R.Left+6, R.Top+3, PWChar(SCaption), Length(SCaption));
 
   //paint ftp icon
@@ -26167,9 +26148,9 @@ begin
   Tree.Color:= C[18];
   Ed.HorzRuler.Font.Color:= C[19];
   Ed.HorzRuler.Color:= C[20];
-  opColorTab1:= C[21];
-  opColorTab2:= C[22];
-  opColorTab3:= C[23];
+  opColorTabBgPassive:= C[21];
+  opColorTabBgActive:= C[22];
+  opColorTabLine:= C[23];
   Ed.DefaultStyles.SearchMark.Font.Color:= C[24];
   Ed.DefaultStyles.SearchMark.BgColor:= C[25];
   ListOut.Font.Color:= C[26];
@@ -26190,8 +26171,8 @@ begin
   Ed.LineStateDisplay.NewColor:= C[39];
   Ed.LineStateDisplay.SavedColor:= C[40];
   Ed.LineStateDisplay.UnchangedColor:= C[41];
-  opColorTabFont1:= C[42];
-  opColorTabFont2:= C[43];
+  opColorTabFontNormal:= C[42];
+  opColorTabFontUnsav:= C[43];
   opColorBkmk:= C[44];
   opColorMap:= C[45];
   Ed.DefaultStyles.CollapseMark.Font.Color:= C[46];
@@ -26229,9 +26210,9 @@ begin
   C[18]:= Tree.Color;
   C[19]:= TemplateEditor.HorzRuler.Font.Color;
   C[20]:= TemplateEditor.HorzRuler.Color;
-  C[21]:= opColorTab1;
-  C[22]:= opColorTab2;
-  C[23]:= opColorTab3;
+  C[21]:= opColorTabBgPassive;
+  C[22]:= opColorTabBgActive;
+  C[23]:= opColorTabLine;
   C[24]:= TemplateEditor.DefaultStyles.SearchMark.Font.Color;
   C[25]:= TemplateEditor.DefaultStyles.SearchMark.BgColor;
   C[26]:= ListOut.Font.Color;
@@ -26250,8 +26231,8 @@ begin
   C[39]:= TemplateEditor.LineStateDisplay.NewColor;
   C[40]:= TemplateEditor.LineStateDisplay.SavedColor;
   C[41]:= TemplateEditor.LineStateDisplay.UnchangedColor;
-  C[42]:= opColorTabFont1;
-  C[43]:= opColorTabFont2;
+  C[42]:= opColorTabFontNormal;
+  C[43]:= opColorTabFontUnsav;
   C[44]:= opColorBkmk;
   C[45]:= opColorMap;
   C[46]:= TemplateEditor.DefaultStyles.CollapseMark.Font.Color;
