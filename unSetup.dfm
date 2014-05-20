@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabCarets
+    ActivePage = tabColors
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -217,7 +217,7 @@ object fmSetup: TfmSetup
       end
     end
     object tabColors: TTntTabSheet
-      Caption = 'Colors'
+      Caption = 'Themes/Colors'
       ImageIndex = 1
       TabVisible = False
       OnShow = tabColorsShow

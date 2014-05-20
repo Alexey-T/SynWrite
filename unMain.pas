@@ -14913,7 +14913,7 @@ begin
     EraseSection('FilesExcHist');
     EraseSection('FilesDirHist');
     EraseSection('ExtractHist');
-    EraseSection('UnicodeHexInput');
+    EraseSection('CharCode');
   finally
     Free;
   end;
