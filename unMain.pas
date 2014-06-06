@@ -2994,7 +2994,7 @@ type
     opAcpTabbing: boolean; //Special SmartTagTabbing feature
     opAcpFile: boolean; //ACP from curr file
     opAcpFileChars: integer; //Min word length for ACP from file
-    opAcpFileSize: integer; //Max file size for ACP from file
+    opAcpFileSize: real; //Max file size for ACP from file
     opAcpNum: integer; //Num of chars that starts ACP
     opSingleInstance: boolean; //single instance
     opLang: integer;
@@ -3250,7 +3250,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.1030';
+  cSynVer = '6.5.1035';
   cSynPyVer = '1.0.130';
 
 const
@@ -4699,7 +4699,7 @@ begin
     opAcpTabbing:= ReadBool('ACP', 'Tabbing', true);
     opAcpFile:= ReadBool('ACP', 'File', true);
     opAcpFileChars:= ReadInteger('ACP', 'FChars', 3);
-    opAcpFileSize:= ReadInteger('ACP', 'FSize', 2);
+    opAcpFileSize:= ReadFloat('ACP', 'FSize', 2.0);
     opAcpNum:= ReadInteger('ACP', 'Num', 0);
     ecACP.ShowWhenNone:= ReadBool('ACP', 'IfNone', true);
     opTemplateTabbing:= true; //ReadBool('ACP', 'TplTab', true);
@@ -5132,7 +5132,7 @@ begin
     WriteBool('ACP', 'Tabbing', opAcpTabbing);
     WriteBool('ACP', 'File', opAcpFile);
     WriteInteger('ACP', 'FChars', opAcpFileChars);
-    WriteInteger('ACP', 'FSize', opAcpFileSize);
+    WriteFloat('ACP', 'FSize', opAcpFileSize);
     WriteInteger('ACP', 'Num', opAcpNum);
     WriteBool('ACP', 'IfNone', ecACP.ShowWhenNone);
     WriteBool('ACP', 'ParamHints', ParamCompletion.Enabled);
@@ -15736,7 +15736,7 @@ begin
     Exit;
 
   S:= CurrentEditor.Text;
-  i:= opAcpFileSize * (1024*1024);
+  i:= Round(opAcpFileSize * (1024*1024));
   if Length(S) > i then
     SetLength(S, i);
 

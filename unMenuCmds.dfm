@@ -60,13 +60,13 @@ object fmMenuCmds: TfmMenuCmds
     ParentFont = False
     TabOrder = 2
     object labHelp: TLabel
-      Left = 480
+      Left = 475
       Top = 0
-      Width = 14
+      Width = 19
       Height = 16
       Cursor = crHandPoint
       Align = alRight
-      Caption = #187'? '
+      Caption = '( ? )'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlue
       Font.Height = -11

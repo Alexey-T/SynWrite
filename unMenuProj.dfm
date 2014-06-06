@@ -24,8 +24,8 @@ object fmMenuProj: TfmMenuProj
   object List: TTntListBox
     Left = 0
     Top = 24
-    Width = 502
-    Height = 248
+    Width = 494
+    Height = 244
     Style = lbOwnerDrawFixed
     Align = alClient
     ItemHeight = 33
@@ -37,7 +37,7 @@ object fmMenuProj: TfmMenuProj
   object Edit: TTntEdit
     Left = 0
     Top = 0
-    Width = 502
+    Width = 494
     Height = 24
     Align = alTop
     TabOrder = 0
@@ -46,8 +46,8 @@ object fmMenuProj: TfmMenuProj
   end
   object Panel1: TPanel
     Left = 0
-    Top = 272
-    Width = 502
+    Top = 268
+    Width = 494
     Height = 16
     Align = alBottom
     BevelOuter = bvNone
@@ -59,13 +59,13 @@ object fmMenuProj: TfmMenuProj
     ParentFont = False
     TabOrder = 2
     object labHelp: TLabel
-      Left = 488
+      Left = 475
       Top = 0
-      Width = 14
+      Width = 19
       Height = 16
       Cursor = crHandPoint
       Align = alRight
-      Caption = #187'? '
+      Caption = '( ? )'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlue
       Font.Height = -11

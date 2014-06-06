@@ -1619,15 +1619,12 @@ object fmSetup: TfmSetup
           Value = 2
           OnKeyDown = edIndentKeyDown
         end
-        object edAcpFileSize: TSpinEdit
+        object edAcpFileSize: TEdit
           Left = 8
           Top = 60
           Width = 49
           Height = 22
-          MaxValue = 20
-          MinValue = 1
           TabOrder = 2
-          Value = 1
           OnKeyDown = edIndentKeyDown
         end
       end

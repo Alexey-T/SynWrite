@@ -79,7 +79,7 @@ type
     gAcp2: TTntGroupBox;
     cbAcpFile: TTntCheckBox;
     edAcpFileChars: TSpinEdit;
-    edAcpFileSize: TSpinEdit;
+    edAcpFileSize: TEdit;
     LabelAcpFileChars: TTntLabel;
     LabelAcpFileSize: TTntLabel;
     cbKeyCat: TTntComboBox;
@@ -1745,7 +1745,7 @@ begin
     ApplyACP;
     opAcpFile:= cbAcpFile.Checked;
     opAcpFileChars:= edAcpFileChars.Value;
-    opAcpFileSize:= edAcpFileSize.Value;
+    opAcpFileSize:= StrToFloatDef(edAcpFileSize.Text, opAcpFileSize);
 
     opTemplateTabbingExcept:= edNoSnippetsExt.Text;
   end;
@@ -2043,7 +2043,7 @@ begin
     cbAcpFile.Checked:= opAcpFile;
     cbAcpFileClick(Self);
     edAcpFileChars.Value:= opAcpFileChars;
-    edAcpFileSize.Value:= opAcpFileSize;
+    edAcpFileSize.Text:= FloatToStrF(opAcpFileSize, ffGeneral, 2{precision}, 8{digits});
     edAcpDrop.Value:= ecACP.DropDownCount;
 
     edNoSnippetsExt.Text:= opTemplateTabbingExcept;

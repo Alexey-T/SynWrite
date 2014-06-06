@@ -70,19 +70,20 @@ begin
   for i:= 1 to ParamCount do
   begin
     s:= ParamStr(i);
-    if Copy(s, 1, 3) = '/N=' then
+    if SBegin(s, cSynParamLineNum) then
     begin
-      Result:= StrToIntDef(Copy(s, 4, MaxInt), 1);
+      Delete(s, 1, Length(cSynParamLineNum));
+      Result:= StrToIntDef(s, 0);
       Exit
     end;
   end;
 end;
 
 function IsUnneededParam(var S: Widestring): boolean;
+//need to skip parameter with filename of "notepad.exe",
+//special case for debugger under Win
 begin
-  Result:=
-    (S='') or
-    (S[1]='/') or
+  Result:= (S='') or (S[1]='/') or
     (WideLowerCase(WideExtractFileName(S))='notepad.exe');
   if not Result then
     FixFilenamePath(S);
