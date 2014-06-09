@@ -13,7 +13,7 @@ object fmGoto: TfmGoto
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = True
-  Position = poScreenCenter
+  Position = poMainFormCenter
   ShowHint = True
   OnCloseQuery = FormCloseQuery
   OnKeyDown = TntFormKeyDown

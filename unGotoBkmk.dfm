@@ -15,6 +15,7 @@ object fmGotoBkmk: TfmGotoBkmk
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnClose = TntFormClose
   OnKeyDown = TntFormKeyDown
   OnShow = TntFormShow
