@@ -1494,7 +1494,7 @@ begin
         SDeleteToW(S2, cEnd);
       end
       else
-      //no, usual line
+      //no, usual space separated
       begin
         SDeleteFromW(S1, ' ');
         SDeleteToW(S2, ' ');
