@@ -1458,6 +1458,9 @@ end;
 
 
 function SDecodeUsingFileTable(const SData, fn: Widestring; ToBack: boolean): Widestring;
+const
+  cStart = ';;{';
+  cEnd = '} ';
 var
   L: TTntStringList;
   S1, S2: Widestring;
@@ -1470,19 +1473,33 @@ begin
   L:= TTntStringList.Create;
   try
     L.LoadFromFile(fn);
+
     //delete empty/commented lines
     for i:= L.Count-1 downto 0 do
-      if (L[i]='') or (L[i][1]=';') then
+      if (L[i]='') or ((L[i][1]=';') and not SBegin(L[i], cStart)) then
         L.Delete(i);
     if L.Count=0 then Exit;
-    
+
     SetLength(Decode, L.Count);
     for i:= 0 to L.Count-1 do
     begin
-      S1:= WideTrim(L[i]);
+      S1:= Trim(L[i]);
       S2:= S1;
-      SDeleteFromW(S1, ' ');
-      SDeleteToW(S2, ' ');
+
+      //is line started with ";;{" ?
+      if SBegin(S1, cStart) then
+      begin
+        SDeleteToW(S1, cStart);
+        SDeleteFromW(S1, cEnd);
+        SDeleteToW(S2, cEnd);
+      end
+      else
+      //no, usual line
+      begin
+        SDeleteFromW(S1, ' ');
+        SDeleteToW(S2, ' ');
+      end;
+
       if not ToBack then
       begin
         Decode[i].SFrom:= S1;
