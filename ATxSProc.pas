@@ -239,7 +239,7 @@ begin
     DoDecode := False;
     for j := Low(Decode) to High(Decode) do
       with Decode[j] do
-        if SFrom = Copy(S, i, Length(SFrom)) then
+        if (SFrom <> '') and (SFrom = Copy(S, i, Length(SFrom))) then
         begin
           DoDecode := True;
           Result := Result + STo;

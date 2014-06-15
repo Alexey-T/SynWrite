@@ -51,10 +51,18 @@ uses
 {$R *.dfm}
 
 procedure SGetNameValue(const s: Widestring; var sName, sValue: Widestring);
+const
+  Decode: array[0..0] of TStringDecodeRecW =
+    ((SFrom: '\='; STo: '='));
 var
-  n: Integer;
+  i, n: Integer;
 begin
-  n:= Pos('=', s);
+  n:= 0;
+  //allow to separate with "=" but not with "\="
+  for i:= 2 to Length(s) do
+    if (s[i]='=') and (s[i-1]<>'\') then
+      begin n:= i; Break end;
+
   if n>0 then
   begin
     sName:= Copy(s, 1, n-1);
@@ -65,6 +73,10 @@ begin
     sName:= s;
     sValue:= s;
   end;
+
+  //replace escaped "\=" to usual "="
+  sName:= SDecodeW(sName, Decode);
+  sValue:= SDecodeW(sValue, Decode);
 end;
 
 function SGetHotkey(const s: Widestring): Widechar;

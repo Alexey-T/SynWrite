@@ -1483,7 +1483,7 @@ begin
     SetLength(Decode, L.Count);
     for i:= 0 to L.Count-1 do
     begin
-      S1:= Trim(L[i]);
+      S1:= L[i];
       S2:= S1;
 
       //is line started with ";;{" ?
