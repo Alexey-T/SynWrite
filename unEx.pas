@@ -286,7 +286,7 @@ var
 begin
   fmMain.hLister:= Handle;
   fmMain.Show;
-  fmMain.acNew.Execute;
+  fmMain.acNewTab.Execute;
   fmMain.DoCheckCommandLineTwo;
 
   LoadPos;

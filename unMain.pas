@@ -412,7 +412,7 @@ type
     ImageListIconsStd: TImageList;
     TbxSubmenuItemTblFind: TSpTBXSubmenuItem;
     TBXItem2: TSpTbxItem;
-    acNew: TAction;
+    acNewTab: TAction;
     TBXItemToolNew: TSpTbxSubmenuItem;
     TBXItemCCInv: TSpTbxItem;
     TBXSeparatorItem10: TSpTbxSeparatorItem;
@@ -437,7 +437,7 @@ type
     TBXSubmenuItemEd: TSpTbxSubmenuItem;
     TBXSubmenuItemFile: TSpTbxSubmenuItem;
     TBXItemFOpen: TSpTbxItem;
-    acNewWin: TAction;
+    acNewWindow: TAction;
     TBXItemFExit: TSpTbxItem;
     TBXItemFSaveAs: TSpTbxItem;
     TBXItemFSave: TSpTbxItem;
@@ -600,7 +600,7 @@ type
     TBXItem8: TSpTbxItem;
     acExit: TAction;
     TBXItemFCloseDel: TSpTbxItem;
-    acCloseAndDel: TAction;
+    acCloseAndDelete: TAction;
     TBXItemRFiles: TSpTbxItem;
     ecReplaceInFiles: TAction;
     TBXItemSRepFiles: TSpTbxItem;
@@ -1416,7 +1416,7 @@ type
     procedure ecACPListClick(Sender: TObject);
     procedure ecACPListKeyDown(Sender: TObject;
       var key: Word; Shift: TShiftState);
-    procedure acNewExecute(Sender: TObject);
+    procedure acNewTabExecute(Sender: TObject);
     procedure TBXItemWPriorClick(Sender: TObject);
     procedure TBXItemWNextClick(Sender: TObject);
     procedure TBXItemFNextClick(Sender: TObject);
@@ -1432,7 +1432,7 @@ type
       FromLink: Boolean);
     procedure ODShow(Sender: TObject);
     procedure SDShow(Sender: TObject);
-    procedure acNewWinExecute(Sender: TObject);
+    procedure acNewWindowExecute(Sender: TObject);
     procedure TBXItemFExitClick(Sender: TObject);
     procedure ecCharPopupChange(Sender: TObject);
     procedure ecCharPopupShow(Sender: TObject);
@@ -1522,7 +1522,7 @@ type
     procedure ecReplaceExecute(Sender: TObject);
     procedure TBXItemRunFindMSDNClick(Sender: TObject);
     procedure acExitExecute(Sender: TObject);
-    procedure acCloseAndDelExecute(Sender: TObject);
+    procedure acCloseAndDeleteExecute(Sender: TObject);
     procedure ecReplaceInFilesExecute(Sender: TObject);
     procedure TimerSelTimer(Sender: TObject);
     procedure TBXItemCtxCopyAppendClick(Sender: TObject);
@@ -3708,7 +3708,7 @@ begin
 
   if AFileName = '' then
   begin
-    acNew.Execute;
+    acNewTab.Execute;
     Result:= CurrentFrame;
     Exit
   end;
@@ -4396,10 +4396,10 @@ begin
   UpdateStatusbarLineEnds;
 
   acSave.Enabled:= not ro;
-  acNew.Enabled:= not Quickview;
+  acNewTab.Enabled:= not Quickview;
   acClose.Enabled:= not Quickview;
   acOpen.Enabled:= not Quickview;
-  acNewWin.Enabled:= SynExe;
+  acNewWindow.Enabled:= SynExe;
   acSetupLexHL.Enabled:= en_lex;
   ecFullScr.Enabled:= SynExe;
   ecOnTop.Enabled:= SynExe;
@@ -6198,8 +6198,8 @@ begin
       ecToggleStreamComment.Execute;
 
     //file
-    sm_FileNew: acNew.Execute;
-    sm_FileNewWindow: acNewWin.Execute;
+    sm_FileNew: acNewTab.Execute;
+    sm_FileNewWindow: acNewWindow.Execute;
     sm_FileOpen: acOpen.Execute;
     sm_FileReopen: acReread.Execute;
     sm_FileSave: if acSave.Enabled then acSave.Execute;
@@ -6796,9 +6796,9 @@ begin
 
   P:= PageControl;
   PageControl:= PageControl2;
-  if FrameCount = 0 then acNew.Execute;
+  if FrameCount = 0 then acNewTab.Execute;
   PageControl:= PageControl1;
-  if FrameCount = 0 then acNew.Execute;
+  if FrameCount = 0 then acNewTab.Execute;
   PageControl:= P;
   FocusEditor;
 
@@ -7088,7 +7088,7 @@ begin
   if PageControl2.PageCount=0 then
   begin
     PageControl:= PageControl2;
-    acNew.Execute;
+    acNewTab.Execute;
     PageControl:= PageControl1;
   end;
 
@@ -9436,7 +9436,7 @@ begin
   }
 end;
 
-procedure TfmMain.acNewExecute(Sender: TObject);
+procedure TfmMain.acNewTabExecute(Sender: TObject);
 begin
   CreateFrame;
   UpdateEditorCaret(CurrentEditor);
@@ -9614,7 +9614,7 @@ begin
   DoCenterForm(SD.Handle, Self);
 end;
 
-procedure TfmMain.acNewWinExecute(Sender: TObject);
+procedure TfmMain.acNewWindowExecute(Sender: TObject);
 begin
   if SynExe then
     FExecute(Application.ExeName, '', '', 0);
@@ -11148,7 +11148,7 @@ end;
 
 procedure TfmMain.TBXItemTabNewClick(Sender: TObject);
 begin
-  acNew.Execute;
+  acNewTab.Execute;
 end;
 
 function TfmMain.SNewDocName(const fn: Widestring): string;
@@ -11190,7 +11190,7 @@ begin
 
   //need new tab?
   if (CurrentFrame.FileName<>'') or (CurrentEditor.Lines.Count>0) then
-    acNew.Execute;
+    acNewTab.Execute;
 
   //load template file
   Ed:= CurrentEditor;
@@ -11382,7 +11382,7 @@ begin
       end;
     end;
     //double click, but not on tabs -> create new tab
-    acNew.Execute;
+    acNewTab.Execute;
     Exit
   end;
 
@@ -12293,17 +12293,23 @@ begin
   Finder.OnNotFound:= FinderFail;
 end;
 
-procedure TfmMain.acCloseAndDelExecute(Sender: TObject);
+procedure TfmMain.acCloseAndDeleteExecute(Sender: TObject);
 var
   fn: Widestring;
 begin
-  if CurrentFrame.FileName <> '' then
+  fn:= CurrentFrame.FileName;
+  if fn='' then Exit;
   if MsgConfirm(DKLangConstW('mdel'), Handle) then
   begin
-    fn:= CurrentFrame.FileName;
+    //close
     acClose.Execute;
+    //delete file
     if not FDeleteToRecycle(Handle, fn, true) then
       MsgError(WideFormat(DKLangConstW('mdeln'), [WideExtractFileName(fn)]), Handle);
+    //delete proj item
+    if Assigned(fmProj) then
+      fmProj.DoRemoveFile(fn);
+
     SynMruFiles.DeleteItem(fn);
     DoRefreshPluginsFiles(fn);
   end;
@@ -12315,7 +12321,7 @@ begin
     sm_FileClose:
       acClose.Execute;
     sm_FileCloseAndDelete:
-      acCloseAndDel.Execute;
+      acCloseAndDelete.Execute;
     sm_FileCloseAll:
       acCloseAll.Execute;
     sm_FileCloseOthers:
@@ -14026,7 +14032,7 @@ begin
     case ShowModal of
       mrYes:
       begin
-        acNew.Execute;
+        acNewTab.Execute;
         Frames[FrameCount-1].EditorMaster.Text:= List.Items.Text;
       end;
     end;
@@ -15081,7 +15087,7 @@ begin
 
   Page_S.Pages[NTab].Free;
   if Page_S.PageCount=0 then
-    acNew.Execute;
+    acNewTab.Execute;
   Page_S.Invalidate; //To draw themed bkgnd
 
   PageControl:= Page_D;
@@ -19085,7 +19091,7 @@ begin
     end
     else
     begin
-      acNew.Execute;
+      acNewTab.Execute;
       CurrentEditor.Lines.AddStrings(L);
       //EditorSetModified(CurrentEditor);
     end;
@@ -19261,7 +19267,7 @@ end;
 
 procedure TfmMain.TBXItemFNewClick(Sender: TObject);
 begin
-  acNew.Execute;
+  acNewTab.Execute;
 end;
 
 procedure TfmMain.TBXItemTreeFindExpandCurClick(Sender: TObject);
@@ -20000,7 +20006,7 @@ begin
 
       outToNewDoc:
         begin
-          acNew.Execute;
+          acNewTab.Execute;
           CurrentEditor.Lines.AddStrings(List);
           //EditorSetModified(CurrentEditor);
         end;
@@ -22773,7 +22779,7 @@ begin
     begin
       CloseFrameWithCfm(FramesAll[N]);
       if FrameAllCount=0 then
-        acNew.Execute;
+        acNewTab.Execute;
       UpdatePages;
       
       if ListTabs.CanFocus then
@@ -23744,7 +23750,7 @@ begin
           ok:= false;
           if i>0 then
           begin
-            acNew.Execute;
+            acNewTab.Execute;
             CurrentEditor.InsertText(L.Text);
           end;  
           MsgDoneLines(i);
@@ -27109,7 +27115,7 @@ begin
       end
       else
       begin
-        acNew.Execute;
+        acNewTab.Execute;
         F:= CurrentFrame;
         F.EditorMaster.Lines.Text:= DKLangConstW('MNFound')+' '+SName2;
         F.Modified:= true;

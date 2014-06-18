@@ -245,6 +245,7 @@ type
     procedure DoOpenFiles;
     procedure DoRefresh;
     procedure DoRename;
+    procedure DoRemoveFile(const fn: Widestring);
     procedure DoRenameFile(const fn, fn_new: Widestring);
     procedure DoRenameFileNode(Node: TTntTreeNode);
     procedure DoRemove;
@@ -2036,6 +2037,19 @@ end;
 procedure TfmProj.TBXItemMnuSortByPathClick(Sender: TObject);
 begin
   DoSortBy(srFullPath);
+end;
+
+procedure TfmProj.DoRemoveFile(const fn: Widestring);
+var
+  i: Integer;
+begin
+  with TreeProj do
+    for i:= Items.Count-1 downto 0 do
+      if WideUpperCase(GetFN(Items[i])) = WideUpperCase(fn) then
+      begin
+        Items.Delete(Items[i]);
+        SetModified;
+      end;
 end;
 
 procedure TfmProj.DoRenameFile(const fn, fn_new: Widestring);
