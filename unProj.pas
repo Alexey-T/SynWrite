@@ -197,7 +197,6 @@ type
     FOnSetProjDir: TListProc;
     FShellIcons: boolean;
     fmProgress: TfmProgress;
-    procedure DoUpdateProject;
     function GetExtensionsMask: Widestring;
     function GetRealDirFromDir(Node: TTntTreeNode): Widestring;
     function GetCurrentLexer: string;
@@ -257,6 +256,7 @@ type
     procedure DoOpenProject;
     procedure DoNewProject;
     procedure DoSaveProject;
+    procedure DoUpdateProject;
     procedure DoAddEditorFiles(All: boolean);
     procedure ReplaceUserVars(var SValue: Widestring;
       const AVarName: Widestring; var AVarValue: Widestring);

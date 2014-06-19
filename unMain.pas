@@ -3116,6 +3116,7 @@ type
     procedure DoOpenFolder(const dir: Widestring);
     procedure DoNewProject;
     procedure DoSaveProject;
+    procedure DoUpdateProject;
     procedure SaveOptionsAll;
     procedure SaveSession(const fn: string);
     procedure SaveProjectSession;
@@ -6388,6 +6389,7 @@ begin
     sm_AddFilesToProject: DoAddFilesToProject;
     sm_FavoriteProjects: DoFavoriteProjects;
     sm_SaveProject: DoSaveProject;
+    sm_UpdateProject: DoUpdateProject;
 
     sm_PasteAndSelect: DoPasteAndSelect;
     sm_InsertBlankLineAbove: EditorInsertBlankLineAboveOrBelow(Ed, false);
@@ -26587,6 +26589,12 @@ procedure TfmMain.DoSaveProject;
 begin
   if Assigned(fmProj) then
     fmProj.DoSaveProject;
+end;
+
+procedure TfmMain.DoUpdateProject;
+begin
+  if Assigned(fmProj) then
+    fmProj.DoUpdateProject;
 end;
 
 procedure TfmMain.TBXItemProjOpenClick(Sender: TObject);

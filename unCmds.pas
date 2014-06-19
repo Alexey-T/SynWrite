@@ -388,6 +388,7 @@ const
   sm_GotoPrevSearchOrOutputResult = 1055;
   sm_ToggleShowFoldersOnTabs = 1056;
   sm_InsertUnicodeHexDialog = 1057;
+  sm_UpdateProject = 1058;
   //free
 
   //Tree commands

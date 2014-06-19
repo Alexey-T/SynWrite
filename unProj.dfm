@@ -988,13 +988,13 @@ object fmProj: TfmProj
       Caption = 'Close project'
       OnClick = TBXItemMnuProjCloseClick
     end
+    object TbxItemMnuProjUpdate: TSpTBXItem
+      Caption = 'Update (add missing files)'
+      OnClick = TbxItemMnuProjUpdateClick
+    end
     object TBXItemMnuProjProp: TSpTBXItem
       Caption = 'Show project properties...'
       OnClick = TBXItemMnuProjPropClick
-    end
-    object TbxItemMnuProjUpdate: TSpTBXItem
-      Caption = 'Update project'
-      OnClick = TbxItemMnuProjUpdateClick
     end
     object TBXSeparatorItem1: TSpTBXSeparatorItem
     end
