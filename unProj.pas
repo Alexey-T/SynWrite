@@ -104,6 +104,7 @@ type
     TbxItemProjOptions: TSpTBXItem;
     TbxItemProjTools: TSpTBXItem;
     SpTBXSeparatorItem1: TSpTBXSeparatorItem;
+    TbxItemMnuProjUpdate: TSpTBXItem;
     procedure TBXItemProjAddVirtDirClick(Sender: TObject);
     procedure TBXItemProjDelFilesClick(Sender: TObject);
     procedure TBXItemProjAddFilesClick(Sender: TObject);
@@ -168,6 +169,7 @@ type
     procedure TbxItemProjToolsClick(Sender: TObject);
     procedure TBXItemProjPropPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
+    procedure TbxItemMnuProjUpdateClick(Sender: TObject);
   private
     { Private declarations }
     FProjectFN: Widestring;
@@ -195,6 +197,9 @@ type
     FOnSetProjDir: TListProc;
     FShellIcons: boolean;
     fmProgress: TfmProgress;
+    procedure DoUpdateProject;
+    function GetExtensionsMask: Widestring;
+    function GetRealDirFromDir(Node: TTntTreeNode): Widestring;
     function GetCurrentLexer: string;
     function GetFileNodeCaption(const fn: Widestring): Widestring;
     function GetCollapsedList: string;
@@ -863,9 +868,9 @@ begin
   N:= Node.GetFirstChild;
   while N<>nil do
   begin
-    if not IsDir(N) and
-      (UpperCase(fn) = UpperCase(GetFN(N))) then
-      begin Result:= true; Exit end;
+    if not IsDir(N) then
+      if WideUpperCase(fn) = WideUpperCase(GetFN(N)) then
+        begin Result:= true; Exit end;
     N:= Node.GetNextChild(N);
   end;
 end;
@@ -1354,6 +1359,7 @@ begin
   TbxItemMnuProjSaveAs.Visible:= pr;
   TbxItemMnuProjClose.Visible:= pr;
   TbxItemMnuProjProp.Visible:= pr;
+  TbxItemMnuProjUpdate.Visible:= pr;
 
   TbxItemMnuRename.Enabled:= not pr;
   TbxItemMnuRemove.Enabled:= not pr;
@@ -2165,6 +2171,91 @@ procedure TfmProj.TBXItemProjPropPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
   UpdateProjectToolsMenu;
+end;
+
+function TfmProj.GetRealDirFromDir(Node: TTntTreeNode): Widestring;
+var
+  N: TTntTreeNode;
+begin
+  Result:= '';
+  N:= Node.GetLastChild;
+  if N<>nil then
+    if not IsDir(N) then
+      Result:= WideExtractFileDir(GetFN(N));
+end;
+
+function TfmProj.GetExtensionsMask: Widestring;
+var
+  List: TStringList;
+  S: string;
+  i: Integer;
+begin
+  Result:= '';
+  List:= TStringList.Create;
+  try
+    List.Sorted:= true;
+    List.Duplicates:= dupIgnore;
+
+    with TreeProj do
+      for i:= 0 to Items.Count-1 do
+        if not IsDir(Items[i]) then
+        begin
+          S:= LowerCase(ExtractFileExt(GetFN(Items[i])));
+          if S<>'' then
+            if Pos(' ', S)=0 then
+              List.Add(S);
+        end;
+
+    for i:= 0 to List.Count-1 do
+      Result:= Result + '*' + List[i] + ' ';
+  finally
+    FreeAndNil(List);
+  end;
+end;  
+
+procedure TfmProj.DoUpdateProject;
+var
+  Dir, Masks: Widestring;
+  List: TTntStringList;
+  i, j, FileCount: Integer;
+begin
+  FileCount:= 0;
+  Masks:= GetExtensionsMask;
+  //MsgInfo('masks: '+Masks, Handle);
+
+  with TreeProj do
+    for i:= Items.Count-1 downto 0 do
+      if IsDir(Items[i]) then
+      begin
+        Dir:= GetRealDirFromDir(Items[i]);
+        if Dir<>'' then
+        begin
+          //MsgInfo('Dir: '+Dir, Handle);
+          List:= TTntStringList.Create;
+          try
+            FFindToList(List, Dir, Masks, '', false, false, false, false);
+            for j:= 0 to List.Count-1 do
+              if not IsFilenameListed(Items[i], List[j]) then
+              begin
+                DoAddFile(Items[i], List[j]);
+                Inc(FileCount);
+              end;
+          finally
+            FreeAndNil(List);
+          end;
+        end;
+      end;
+
+  if FileCount>0 then
+    MsgInfo(WideFormat(DKLangConstW('zMProjUpdate'), [FileCount]), Handle)
+  else
+    MsgInfo(DKLangConstW('zMProjNotAdded'), Handle);      
+end;
+
+
+procedure TfmProj.TbxItemMnuProjUpdateClick(Sender: TObject);
+begin
+  DoUpdateProject;
 end;
 
 end.
