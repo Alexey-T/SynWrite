@@ -165,11 +165,24 @@ begin
   end;
 end;
 
+procedure InitLang;
+var
+  Num: Integer;
+begin
+  with TIniFile.Create(SynIni) do
+  try
+    LangManager.ScanForLangFiles(ExtractFilePath(ParamStr(0))+'Lang', '*.lng', false);
+    Num:= ReadInteger('Setup', 'Lang', LangManager.LanguageID);
+    LangManager.LanguageID:= Num;
+  finally
+    Free;
+  end;
+end;
+
 procedure InitSynTextOnly;
 begin
   with TIniFile.Create(SynIni) do
   try
-    LangManager.LanguageID:= ReadInteger('Setup', 'Lang', LangManager.LanguageID);
     SynTextOnly:= ReadInteger('Setup', 'TxOnly', 0);
   finally
     Free;
@@ -181,7 +194,7 @@ function CheckFile(const SF: Widestring): boolean;
 begin
   Result:= true;
 
-  if (SF <> '') and (not IsFileExist(SF)) then
+  if (SF<>'') and not IsFileExist(SF) then
   begin
     if MsgConfirmCreate(SF, 0) then
     begin
@@ -195,17 +208,21 @@ begin
     end;
   end;
 
-  if (SF <> '') and IsFileTooBig(SF) then
+  if (SF<>'') and IsFileTooBig(SF) then
   begin
+    InitLang;
     MsgFileTooBig(SF, 0);
     Result:= false;
     Exit
   end;
 
-  if (SF <> '') and (SynTextOnly<>1) and (not IsFileText(SF)) then
+  if (SF<>'') and (SynTextOnly<>1) and (not IsFileText(SF)) then
     if not IsFileArchive(SF) then
+    begin
+      InitLang;
       if not MsgConfirmBinary(SF, 0) then
         Result:= false;
+    end;
 end;
 
 function SynParamsOK: boolean;
