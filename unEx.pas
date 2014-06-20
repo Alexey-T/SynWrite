@@ -55,8 +55,9 @@ uses
 {$R *.dfm}
 
 var
-  SynIniPath: string;
-  SynIni: string;
+  SynExePath,
+  SynIniPath,
+  SynIni,
   SynHistoryIni: string;
   SynTextOnly: integer;
 
@@ -171,7 +172,7 @@ var
 begin
   with TIniFile.Create(SynIni) do
   try
-    LangManager.ScanForLangFiles(ExtractFilePath(ParamStr(0))+'Lang', '*.lng', false);
+    LangManager.ScanForLangFiles(SynExePath+'Lang', '*.lng', false);
     Num:= ReadInteger('Setup', 'Lang', LangManager.LanguageID);
     LangManager.LanguageID:= Num;
   finally
@@ -562,7 +563,6 @@ end;
 
 procedure InitPaths;
 var
-  SynExePath,
   SynSampleIni,
   SynHideIni,
   SynHideSampleIni: string;
