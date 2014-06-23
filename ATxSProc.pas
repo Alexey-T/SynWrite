@@ -109,8 +109,6 @@ procedure SReplaceZeros(var S: AnsiString);
 procedure SReplaceZerosW(var S: WideString);
 procedure SDelLastSpace(var S: AnsiString);
 procedure SDelLastSpaceW(var S: WideString);
-procedure SDelLastSlash(var S: AnsiString);
-procedure SDelLastSlashW(var S: WideString);
 procedure SDelLastComma(var S: AnsiString);
 function STabReplacement(const TabOptions: TStringTabOptions): WideString;
 procedure SReplaceTabsW(var S: WideString; var TabOptions: TStringTabOptions);
@@ -591,18 +589,6 @@ end;
 procedure SDelLastSpace(var S: AnsiString);
 begin
   if (S <> '') and (S[Length(S)] = ' ') then
-    SetLength(S, Length(S) - 1);
-end;
-
-procedure SDelLastSlashW(var S: WideString);
-begin
-  if (S <> '') and (S[Length(S)] = '\') then
-    SetLength(S, Length(S) - 1);
-end;
-
-procedure SDelLastSlash(var S: AnsiString);
-begin
-  if (S <> '') and (S[Length(S)] = '\') then
     SetLength(S, Length(S) - 1);
 end;
 

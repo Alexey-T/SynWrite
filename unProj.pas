@@ -2181,7 +2181,10 @@ begin
   N:= Node.GetLastChild;
   if N<>nil then
     if not IsDir(N) then
+    begin
       Result:= WideExtractFileDir(GetFN(N));
+      Result:= WideExcludeTrailingPathDelimiter(Result);
+    end;
 end;
 
 function TfmProj.GetExtensionsMask: Widestring;

@@ -154,13 +154,6 @@ begin
   Result := IsFileExist(FileName, IsDir);
 end;
 
-function SDelLastSlashW(const S: WideString): WideString;
-begin
-  Result := S;
-  if (Result <> '') and (Result[Length(Result)] = '\') then
-    SetLength(Result, Length(Result) - 1);
-end;
-
 function IsDirRoot(const s: Widestring): boolean;
 begin
   Result :=
@@ -173,7 +166,7 @@ var
   IsDir: Boolean;
 begin
   Result :=
-    (IsFileExist(SDelLastSlashW(DirName), IsDir) and IsDir) or
+    (IsFileExist(WideExcludeTrailingPathDelimiter(DirName), IsDir) and IsDir) or
     (IsDirRoot(DirName));
 end;
 
