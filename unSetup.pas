@@ -1896,7 +1896,7 @@ begin
   
   with fmMain do
   begin
-    opChInf:= cbChar.Checked;
+    opShowCharInfo:= cbChar.Checked;
     UpdateStatusbar;
 
     Menu.Visible:= cbMenu.Checked;
@@ -2206,7 +2206,7 @@ begin
   begin
     cbMenu.Checked:= Menu.Visible;
     cbStat.Checked:= Status.Visible;
-    cbChar.Checked:= opChInf;
+    cbChar.Checked:= opShowCharInfo;
 
     cbEsc.ItemIndex:= Ord(opEsc);
     cbInst.Checked:= opSingleInstance;

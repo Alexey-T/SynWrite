@@ -3021,7 +3021,7 @@ type
     opColorTabLine,
     opColorTabFontNormal,
     opColorTabFontUnsav: integer;
-    opChInf: boolean;
+    opShowCharInfo: boolean;
     opOem,
     opUTF8: string;
 
@@ -4457,7 +4457,7 @@ begin
 
     with StatusItemChar do
     begin
-      if opChInf then
+      if opShowCharInfo then
       begin
         CustomWidth:= 100;
         ImageIndex:= -1;
@@ -4468,10 +4468,12 @@ begin
         ImageIndex:= 2;
       end;
 
-      if opChInf and (Ed.TextLength>0) and (not EditorHasNoCaret(Ed)) then
+      if opShowCharInfo and (Ed.TextLength>0) and (not EditorHasNoCaret(Ed)) then
         Caption:= SStatusCharInfo(Ed)
       else
         Caption:= '';
+
+      Visible:= opShowCharInfo;  
     end;
   end;
 end;
@@ -4788,7 +4790,7 @@ begin
     opColorTabFontUnsav:= ReadInteger('View', 'TabCF2', clNavy);
     TabColorsString:= ReadString('View', 'TabMisc', '');
 
-    opChInf:= ReadBool('Setup', 'ChInf', false);
+    opShowCharInfo:= ReadBool('Setup', 'ChInf', false);
     opLang:= ReadInteger('Setup', 'Lang', 0);
     Status.Visible:= ReadBool('Setup', 'Stat', true);
     if not QuickView then
@@ -5165,7 +5167,7 @@ begin
     WriteInteger('View', 'TabCF2', opColorTabFontUnsav);
     WriteString('View', 'TabMisc', TabColorsString);
 
-    WriteBool('Setup', 'ChInf', opChInf);
+    WriteBool('Setup', 'ChInf', opShowCharInfo);
     WriteInteger('Setup', 'Lang', opLang);
     if not QuickView then
       WriteBool('Setup', 'Menu' + cExeSuffix[SynExe], Menu.Visible);
