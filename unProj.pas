@@ -865,6 +865,14 @@ var
   N: TTntTreeNode;
 begin
   Result:= false;
+
+  if not IsDir(Node) then
+    if Node.Parent<>nil then
+    begin
+      Result:= IsFilenameListed(Node.Parent, fn);
+      Exit
+    end;
+
   N:= Node.GetFirstChild;
   while N<>nil do
   begin

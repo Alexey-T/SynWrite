@@ -11605,7 +11605,7 @@ begin
   en_all:= F<>nil;//FPagesNTabCtx>=0;
   en:= en_all and (F<>nil) and (F.FileName<>'');
   en2:= en_all and (F<>nil) and (F.Modified or (F.FileName<>''));
-  enProj:= en_all and Assigned(fmProj) and fmProj.Visible and plTree.Visible;
+  enProj:= en_all and Assigned(fmProj) and plTree.Visible;
   enWinOpen:= en_all and SynExe and not opSingleInstance;
   enWinMove:= en_all and enWinOpen and not F.Modified and (FrameAllCount>1);
 
