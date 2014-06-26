@@ -3251,7 +3251,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.1062';
+  cSynVer = '6.5.1065';
   cSynPyVer = '1.0.130';
 
 const
@@ -15766,6 +15766,7 @@ begin
       if i<=Length(S) then
         IsWord:= IsWordChar(S[i]) or
           (Pos(S[i], opAcpChars)>0) or
+          (S[i]='%') or
           ((S[i]='.') and (i<Length(S)) and IsWordChar(S[i+1]))
       else
         IsWord:= false;
@@ -17029,6 +17030,7 @@ end;
 
 procedure TfmMain.ecGotoExecute(Sender: TObject);
 var
+  Ed: TSyntaxMemo;
   oldSelStart, oldSelLength,
   n, m: Integer;
   AExt: boolean;
@@ -17036,38 +17038,38 @@ var
   ABkNum: integer;
   Pnt: TPoint;
 begin
-  with CurrentEditor do
+  Ed:= CurrentEditor;
+
+  n:= Ed.CaretPos.Y + 1;
+  m:= Ed.CaretPos.X + 1;
+  oldSelStart:= Ed.SelStart;
+  oldSelLength:= Ed.SelLength;
+  AMode:= goLine;
+
+  if ShowGotoForm(n, m, AExt, AMode, ABkNum) then
   begin
-    n:= CaretPos.Y + 1;
-    m:= CaretPos.X + 1;
-    oldSelStart:= SelStart;
-    oldSelLength:= SelLength;
-    AMode:= goLine;
-    if ShowGotoForm(n, m, AExt, AMode, ABkNum) then
-    begin
-      case AMode of
-        goLine:
-          begin
-            Pnt:= Point(m-1, n-1);
-            DoRecordToMacro(smGotoXY, @Pnt);
-            CaretPos:= Point(m-1, n-1);
-          end;
-        goPrevBk:
-          ecBkPrev.Execute;
-        goNextBk:
-          ecBkNext.Execute;
-        goNumBk:
-          CurrentEditor.ExecCommand(smGotoBookmark0+ABkNum);
-      end;
-
-      if AExt then
-        EditorExtendSelectionByPosition(CurrentEditor,
-          oldSelStart, oldSelLength,
-          CaretStrPos, 0);
-
-      EditorCenterPos(CurrentEditor, true{GotoMode}, opSrOffsetY);
-      FocusEditor;
+    case AMode of
+      goLine:
+        begin
+          Pnt:= Point(m-1, n-1);
+          DoRecordToMacro(smGotoXY, @Pnt);
+          Ed.CaretPos:= Ed.LogToLinesPos(Pnt);
+        end;
+      goPrevBk:
+        ecBkPrev.Execute;
+      goNextBk:
+        ecBkNext.Execute;
+      goNumBk:
+        Ed.ExecCommand(smGotoBookmark0+ABkNum);
     end;
+
+    if AExt then
+      EditorExtendSelectionByPosition(Ed,
+        oldSelStart, oldSelLength,
+        Ed.CaretStrPos, 0);
+
+    EditorCenterPos(Ed, true{GotoMode}, opSrOffsetY);
+    FocusEditor;
   end;
 end;
 
