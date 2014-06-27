@@ -3251,7 +3251,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.1065';
+  cSynVer = '6.5.1070';
   cSynPyVer = '1.0.130';
 
 const
@@ -7040,6 +7040,12 @@ begin
   begin
     Font.Size:= ScaleFontSize(Font.Size, Self);
     with Status do
+      Height:= ScaleFontSize(Height, Self);
+    with tbTabsOut do
+      Height:= ScaleFontSize(Height, Self);
+    with tbTabsLeft do
+      Height:= ScaleFontSize(Height, Self);
+    with tbTabsRight do
       Height:= ScaleFontSize(Height, Self);
   end;
 
