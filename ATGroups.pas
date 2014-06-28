@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Forms, Types, Controls, Graphics,
-  ExtCtrls, ATTabs, SpTbxDkPanels;
+  ExtCtrls, ATTabs, SpTbxDkPanels, SpTbxItem;
 
 type
   TATPages = class(TPanel)
@@ -50,6 +50,7 @@ type
     FOnPopup: TNotifyEvent;
     FMode: TATGroupsMode;
     FPos1, FPos2, FPos3: Real;
+    FSplitterPopup: TSpTbxPopupMenu;
     procedure TabEmpty(Sender: TObject);
     procedure TabPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure SetMode(Value: TATGroupsMode);
@@ -58,6 +59,8 @@ type
     procedure Split3Moved(Sender: TObject);
     procedure SaveSplitPos;
     procedure RestoreSplitPos;
+    procedure InitSplitterPopup;
+    procedure SplitClick(Sender: TObject);
   protected
     procedure Resize; override;
   public
@@ -76,7 +79,7 @@ implementation
 
 uses
   SysUtils, Windows, Dialogs,
-  SpTbxSkins, SpTbxItem;
+  SpTbxSkins;
 
 function PtInControl(Control: TControl; const Pnt: TPoint): boolean;
 begin
@@ -226,14 +229,57 @@ begin
   FPanel2.BevelOuter:= bvNone;
   FPanel2.Visible:= false;
 
+  InitSplitterPopup;
+
   FMode:= gmNone;
 end;
 
+procedure TATGroups.InitSplitterPopup;
+  //
+  procedure Add(N: Integer);
+  var
+    MI: TSpTbxItem;
+  begin
+    MI:= TSpTbxItem.Create(Self);
+    MI.Caption:= Format('%d/%d', [N, 100-N]);
+    MI.Tag:= N;
+    MI.OnClick:= SplitClick;
+    FSplitterPopup.Items.Add(MI);
+  end;
+  //
+begin
+  FSplitterPopup:= TSpTbxPopupMenu.Create(Self);
+  Add(20);
+  Add(30);
+  Add(40);
+  Add(50);
+  Add(60);
+  Add(70);
+  Add(80);
+end;
+
+
 procedure TATGroups.SetMode(Value: TATGroupsMode);
+var
+  FSplitDiv: Real;
 begin
   if Value<>FMode then
   begin
+    case FMode of
+      gmTwoHorz:
+        FSplitDiv:= Pages1.Width / ClientWidth;
+      gmTwoVert:
+        FSplitDiv:= Pages1.Height / ClientHeight;
+      else
+        FSplitDiv:= 0.5;
+    end;
+
     FMode:= Value;
+
+    if FMode in [gmTwoHorz, gmTwoVert] then
+      FSplit1.PopupMenu:= FSplitterPopup
+    else
+      FSplit1.PopupMenu:= nil;
 
     if FMode=gmFourGrid then
     begin
@@ -281,7 +327,7 @@ begin
           Pages2.Align:= alClient;
           FSplit1.Align:= alLeft;
           //size
-          Pages1.Width:= ClientWidth div 2;
+          Pages1.Width:= Trunc(ClientWidth * FSplitDiv);
           //pos
           FSplit1.Left:= ClientWidth;
           Pages2.Left:= ClientWidth;
@@ -298,7 +344,7 @@ begin
           Pages2.Align:= alClient;
           FSplit1.Align:= alTop;
           //size
-          Pages1.Height:= ClientHeight div 2;
+          Pages1.Height:= Trunc(ClientHeight * FSplitDiv);
           //pos
           FSplit1.Top:= ClientHeight;
           Pages2.Top:= ClientHeight;
@@ -599,6 +645,25 @@ begin
   begin
     if Pages1.Tabs.TabCount>0 then
       Pages1.Tabs.OnTabClick(nil);
+  end;
+end;
+
+procedure TATGroups.SplitClick(Sender: TObject);
+var
+  N: Integer;
+begin
+  N:= (Sender as TComponent).Tag;
+  case FMode of
+    gmTwoHorz:
+      begin
+        Pages1.Width:= ClientWidth * N div 100;
+        SaveSplitPos;
+      end;
+    gmTwoVert:
+      begin
+        Pages1.Height:= ClientHeight * N div 100;
+        SaveSplitPos;
+      end;
   end;
 end;
 
