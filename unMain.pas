@@ -13507,8 +13507,8 @@ begin
   ListVal.Color:= ListOut.Color;
   ListVal.Font:= ListOut.Font;
 
-  ListTabs.Color:= ListOut.Color;
-  ListTabs.Font:= ListOut.Font;
+  ListTabs.Color:= Tree.Color;
+  ListTabs.Font:= Tree.Font;
 
   TreeFind.Color:= ListOut.Color;
   TreeFind.Font:= ListOut.Font;
@@ -13532,8 +13532,8 @@ begin
 
   if Assigned(fmProj) then
   begin
-    fmProj.TreeProj.Font:= ListOut.Font;
-    fmProj.TreeProj.Color:= ListOut.Color;
+    fmProj.TreeProj.Font:= Tree.Font;
+    fmProj.TreeProj.Color:= Tree.Color;
     fmProj.TreeProj.Invalidate;
   end;
 
@@ -17046,8 +17046,9 @@ var
 begin
   Ed:= CurrentEditor;
 
-  n:= Ed.CaretPos.Y + 1;
-  m:= Ed.CaretPos.X + 1;
+  Pnt:= Ed.LinesPosToLog(Ed.CaretPos);
+  n:= Pnt.Y+1;
+  m:= Pnt.X+1;
   oldSelStart:= Ed.SelStart;
   oldSelLength:= Ed.SelLength;
   AMode:= goLine;
