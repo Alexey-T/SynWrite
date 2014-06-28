@@ -22,7 +22,8 @@ type
     procedure TabEmpty(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
-    procedure AddTab(AControl: TControl; const ACaption: Widestring);
+    procedure AddTab(AControl: TControl; const ACaption: Widestring;
+      AColor: TColor = clNone);
     property Tabs: TATTabs read FTabs;
     property OnTabClose: TATTabCloseEvent read FOnTabClose write SetOnTabClose;
     property OnTabAdd: TNotifyEvent read FOnTabAdd write SetOnTabAdd;
@@ -72,6 +73,8 @@ type
     Pages3,
     Pages4: TATPages;
     constructor Create(AOwner: TComponent); override;
+    procedure MoveTab(AFromPages: TATPages; AFromIndex: Integer;
+      AToPages: TATPages; AToIndex: Integer);
     property Mode: TATGroupsMode read FMode write SetMode;
     property PopupPages: TATPages read FPopupPages;
     property PopupTabIndex: Integer read FPopupTabIndex;
@@ -116,7 +119,7 @@ begin
 end;
 
 procedure TATPages.AddTab(AControl: TControl;
-  const ACaption: Widestring);
+  const ACaption: Widestring; AColor: TColor);
 begin
   FTabs.AddTab(-1, ACaption, AControl);
   AControl.Parent:= Self;
@@ -673,6 +676,18 @@ begin
       end;
   end;
 end;
+
+procedure TATGroups.MoveTab(AFromPages: TATPages; AFromIndex: Integer;
+  AToPages: TATPages; AToIndex: Integer);
+var
+  D: TATTabData;
+begin
+  D:= AFromPages.Tabs.GetTabData(AFromIndex);
+  if D=nil then Exit;
+  AToPages.AddTab(D.TabObject as TControl, D.TabCaption, D.TabColor);
+  AFromPages.Tabs.DeleteTab(AFromIndex, false);
+end;
+
 
 end.
 
