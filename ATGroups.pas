@@ -33,13 +33,13 @@ type
   TATGroupsMode = (
     gmNone,
     gmOne,
-    gmTwoHorz,
-    gmTwoVert,
-    gmThreeHorz,
-    gmThreeVert,
-    gmFourHorz,
-    gmFourVert,
-    gmFourGrid
+    gm2Horz,
+    gm2Vert,
+    gm3Horz,
+    gm3Vert,
+    gm4Horz,
+    gm4Vert,
+    gm4Grid
     );
 
 type
@@ -47,10 +47,10 @@ type
   private
     FSplit1, FSplit2, FSplit3: TSpTbxSplitter;
     FPanel1, FPanel2: TPanel;
-    FOnPopup: TNotifyEvent;
+    FSplitPopup: TSpTbxPopupMenu;
     FMode: TATGroupsMode;
     FPos1, FPos2, FPos3: Real;
-    FSplitterPopup: TSpTbxPopupMenu;
+    FOnPopup: TNotifyEvent;
     procedure TabEmpty(Sender: TObject);
     procedure TabPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure SetMode(Value: TATGroupsMode);
@@ -244,11 +244,11 @@ procedure TATGroups.InitSplitterPopup;
     MI.Caption:= Format('%d/%d', [N, 100-N]);
     MI.Tag:= N;
     MI.OnClick:= SplitClick;
-    FSplitterPopup.Items.Add(MI);
+    FSplitPopup.Items.Add(MI);
   end;
   //
 begin
-  FSplitterPopup:= TSpTbxPopupMenu.Create(Self);
+  FSplitPopup:= TSpTbxPopupMenu.Create(Self);
   Add(20);
   Add(30);
   Add(40);
@@ -266,9 +266,9 @@ begin
   if Value<>FMode then
   begin
     case FMode of
-      gmTwoHorz:
+      gm2Horz:
         FSplitDiv:= Pages1.Width / ClientWidth;
-      gmTwoVert:
+      gm2Vert:
         FSplitDiv:= Pages1.Height / ClientHeight;
       else
         FSplitDiv:= 0.5;
@@ -276,12 +276,12 @@ begin
 
     FMode:= Value;
 
-    if FMode in [gmTwoHorz, gmTwoVert] then
-      FSplit1.PopupMenu:= FSplitterPopup
+    if FMode in [gm2Horz, gm2Vert] then
+      FSplit1.PopupMenu:= FSplitPopup
     else
       FSplit1.PopupMenu:= nil;
 
-    if FMode=gmFourGrid then
+    if FMode=gm4Grid then
     begin
       FPanel1.Visible:= true;
       FPanel2.Visible:= true;
@@ -315,7 +315,7 @@ begin
           FSplit3.Visible:= false;
           Pages1.Align:= alClient;
         end;
-      gmTwoHorz:
+      gm2Horz:
         begin
           Pages2.Visible:= true;
           Pages3.Visible:= false;
@@ -332,7 +332,7 @@ begin
           FSplit1.Left:= ClientWidth;
           Pages2.Left:= ClientWidth;
         end;
-      gmTwoVert:
+      gm2Vert:
         begin
           Pages2.Visible:= true;
           Pages3.Visible:= false;
@@ -349,7 +349,7 @@ begin
           FSplit1.Top:= ClientHeight;
           Pages2.Top:= ClientHeight;
         end;
-      gmThreeHorz:
+      gm3Horz:
         begin
           Pages2.Visible:= true;
           Pages3.Visible:= true;
@@ -371,7 +371,7 @@ begin
           FSplit2.Left:= ClientWidth;
           Pages3.Left:= ClientWidth;
         end;
-      gmThreeVert:
+      gm3Vert:
         begin
           Pages2.Visible:= true;
           Pages3.Visible:= true;
@@ -393,7 +393,7 @@ begin
           FSplit2.Top:= ClientHeight;
           Pages3.Top:= ClientHeight;
         end;
-      gmFourHorz:
+      gm4Horz:
         begin
           Pages2.Visible:= true;
           Pages3.Visible:= true;
@@ -420,7 +420,7 @@ begin
           FSplit3.Left:= ClientWidth;
           Pages4.Left:= ClientWidth;
         end;
-      gmFourVert:
+      gm4Vert:
         begin
           Pages2.Visible:= true;
           Pages3.Visible:= true;
@@ -447,7 +447,7 @@ begin
           FSplit3.Top:= ClientHeight;
           Pages4.Top:= ClientHeight;
         end;
-      gmFourGrid:
+      gm4Grid:
         begin
           Pages2.Visible:= true;
           Pages3.Visible:= true;
@@ -480,14 +480,14 @@ end;
 
 procedure TATGroups.Split1Moved(Sender: TObject);
 begin
-  if FMode=gmFourGrid then
+  if FMode=gm4Grid then
     Pages3.Width:= Pages1.Width;
   SaveSplitPos;
 end;
 
 procedure TATGroups.Split2Moved(Sender: TObject);
 begin
-  if FMode=gmFourGrid then
+  if FMode=gm4Grid then
     Pages1.Width:= Pages3.Width;
   SaveSplitPos;
 end;
@@ -571,23 +571,23 @@ begin
   FPos3:= 0;
 
   case FMode of
-    gmTwoHorz,
-    gmThreeHorz,
-    gmFourHorz:
+    gm2Horz,
+    gm3Horz,
+    gm4Horz:
       begin
         FPos1:= Pages1.Width / ClientWidth;
         FPos2:= Pages2.Width / ClientWidth;
         FPos3:= Pages3.Width / ClientWidth;
       end;
-    gmTwoVert,
-    gmThreeVert,
-    gmFourVert:
+    gm2Vert,
+    gm3Vert,
+    gm4Vert:
       begin
         FPos1:= Pages1.Height / ClientHeight;
         FPos2:= Pages2.Height / ClientHeight;
         FPos3:= Pages3.Height / ClientHeight;
       end;
-    gmFourGrid:
+    gm4Grid:
       begin
         FPos1:= Pages1.Width / ClientWidth;
         FPos2:= Pages3.Width / ClientWidth;
@@ -602,23 +602,23 @@ begin
   if ClientHeight<=0 then Exit;
 
   case FMode of
-    gmTwoHorz,
-    gmThreeHorz,
-    gmFourHorz:
+    gm2Horz,
+    gm3Horz,
+    gm4Horz:
       begin
         Pages1.Width:= Trunc(FPos1 * ClientWidth);
         Pages2.Width:= Trunc(FPos2 * ClientWidth);
         Pages3.Width:= Trunc(FPos3 * ClientWidth);
       end;
-    gmTwoVert,
-    gmThreeVert,
-    gmFourVert:
+    gm2Vert,
+    gm3Vert,
+    gm4Vert:
       begin
         Pages1.Height:= Trunc(FPos1 * ClientHeight);
         Pages2.Height:= Trunc(FPos2 * ClientHeight);
         Pages3.Height:= Trunc(FPos3 * ClientHeight);
       end;
-    gmFourGrid:
+    gm4Grid:
       begin
         Pages1.Width:= Trunc(FPos1 * ClientWidth);
         Pages3.Width:= Trunc(FPos2 * ClientWidth);
@@ -654,12 +654,12 @@ var
 begin
   N:= (Sender as TComponent).Tag;
   case FMode of
-    gmTwoHorz:
+    gm2Horz:
       begin
         Pages1.Width:= ClientWidth * N div 100;
         SaveSplitPos;
       end;
-    gmTwoVert:
+    gm2Vert:
       begin
         Pages1.Height:= ClientHeight * N div 100;
         SaveSplitPos;
