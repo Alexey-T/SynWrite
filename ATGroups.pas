@@ -12,18 +12,21 @@ type
     FTabs: TATTabs;
     FOnTabClose: TATTabCloseEvent;
     FOnTabAdd: TNotifyEvent;
+    FOnTabEmpty: TNotifyEvent;
     procedure SetOnTabClose(AEvent: TATTabCloseEvent);
     procedure SetOnTabAdd(AEvent: TNotifyEvent);
     procedure TabClick(Sender: TObject);
     procedure TabDrawBefore(Sender: TObject;
       AType: TATTabElemType; ATabIndex: Integer;
       C: TCanvas; const ARect: TRect; var ACanDraw: boolean);
+    procedure TabEmpty(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     procedure AddTab(AControl: TControl; const ACaption: Widestring);
     property Tabs: TATTabs read FTabs;
     property OnTabClose: TATTabCloseEvent read FOnTabClose write SetOnTabClose;
     property OnTabAdd: TNotifyEvent read FOnTabAdd write SetOnTabAdd;
+    property OnTabEmpty: TNotifyEvent read FOnTabEmpty write FOnTabEmpty;
   end;
 
 type
@@ -47,17 +50,21 @@ type
     FOnPopup: TNotifyEvent;
     FMode: TATGroupsMode;
     FPos1, FPos2, FPos3: Real;
-    procedure SetMode(Value: TATGroupsMode);
+    procedure TabEmpty(Sender: TObject);
     procedure TabPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+    procedure SetMode(Value: TATGroupsMode);
     procedure Split1Moved(Sender: TObject);
     procedure Split2Moved(Sender: TObject);
     procedure Split3Moved(Sender: TObject);
     procedure SaveSplitPos;
     procedure RestoreSplitPos;
   protected
-    procedure Resize; override;  
+    procedure Resize; override;
   public
-    Pages1, Pages2, Pages3, Pages4: TATPages;
+    Pages1,
+    Pages2,
+    Pages3,
+    Pages4: TATPages;
     PopupPages: TATPages;
     PopupTabIndex: Integer;
     constructor Create(AOwner: TComponent); override;
@@ -90,9 +97,9 @@ begin
   FTabs:= TATTabs.Create(Self);
   FTabs.Parent:= Self;
   FTabs.Align:= alTop;
-  FTabs.TabNonEmpty:= true;
   FTabs.OnTabClick:= TabClick;
   FTabs.OnTabDrawBefore:= TabDrawBefore;
+  FTabs.OnTabEmpty:= TabEmpty;
 
   FTabs.TabAngle:= 0;
   FTabs.TabIndentTop:= 1;
@@ -148,6 +155,12 @@ begin
   FTabs.OnTabPlusClick:= AEvent;
 end;
 
+procedure TATPages.TabEmpty(Sender: TObject);
+begin
+  if Assigned(FOnTabEmpty) then
+    FOnTabEmpty(Sender);
+end;
+
 { TATGroups }
 
 constructor TATGroups.Create(AOwner: TComponent);
@@ -163,21 +176,25 @@ begin
   Pages1.Parent:= Self;
   Pages1.Align:= alLeft;
   Pages1.OnContextPopup:= TabPopup;
+  Pages1.OnTabEmpty:= TabEmpty;
 
   Pages2:= TATPages.Create(Self);
   Pages2.Parent:= Self;
   Pages2.Align:= alLeft;
   Pages2.OnContextPopup:= TabPopup;
+  Pages2.OnTabEmpty:= TabEmpty;
 
   Pages3:= TATPages.Create(Self);
   Pages3.Parent:= Self;
   Pages3.Align:= alLeft;
   Pages3.OnContextPopup:= TabPopup;
+  Pages3.OnTabEmpty:= TabEmpty;
 
   Pages4:= TATPages.Create(Self);
   Pages4.Parent:= Self;
   Pages4.Align:= alLeft;
   Pages4.OnContextPopup:= TabPopup;
+  Pages4.OnTabEmpty:= TabEmpty;
 
   FSplit1:= TSpTbxSplitter.Create(Self);
   FSplit1.Parent:= Self;
@@ -567,6 +584,22 @@ end;
 procedure TATGroups.Resize;
 begin
   RestoreSplitPos;
+end;
+
+
+procedure TATGroups.TabEmpty(Sender: TObject);
+begin
+  //if last tab closed on Pages1, add new tab
+  //if last tab closed on Pages2..Pages4, activate Pages1
+  if Sender=Pages1.Tabs then
+  begin
+    Pages1.OnTabAdd(Pages1.Tabs);
+  end
+  else
+  begin
+    if Pages1.Tabs.TabCount>0 then
+      Pages1.Tabs.OnTabClick(nil);
+  end;
 end;
 
 end.
