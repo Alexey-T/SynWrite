@@ -51,16 +51,19 @@ type
     FMode: TATGroupsMode;
     FPos1, FPos2, FPos3: Real;
     FOnPopup: TNotifyEvent;
+    FPopupPages: TATPages;
+    FPopupTabIndex: Integer;
     procedure TabEmpty(Sender: TObject);
     procedure TabPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure SetMode(Value: TATGroupsMode);
+    procedure SetSplitPercent(N: Integer);
     procedure Split1Moved(Sender: TObject);
     procedure Split2Moved(Sender: TObject);
     procedure Split3Moved(Sender: TObject);
+    procedure SplitClick(Sender: TObject);
     procedure SaveSplitPos;
     procedure RestoreSplitPos;
     procedure InitSplitterPopup;
-    procedure SplitClick(Sender: TObject);
   protected
     procedure Resize; override;
   public
@@ -68,11 +71,12 @@ type
     Pages2,
     Pages3,
     Pages4: TATPages;
-    PopupPages: TATPages;
-    PopupTabIndex: Integer;
     constructor Create(AOwner: TComponent); override;
     property Mode: TATGroupsMode read FMode write SetMode;
-    property OnPopup: TNotifyEvent read FOnPopup write FOnPopup;
+    property PopupPages: TATPages read FPopupPages;
+    property PopupTabIndex: Integer read FPopupTabIndex;
+    property SplitPercent: Integer write SetSplitPercent;
+    property OnTabPopup: TNotifyEvent read FOnPopup write FOnPopup;
   end;
 
 implementation
@@ -230,7 +234,8 @@ begin
   FPanel2.Visible:= false;
 
   InitSplitterPopup;
-
+  FPopupPages:= nil;
+  FPopupTabIndex:= -1;
   FMode:= gmNone;
 end;
 
@@ -504,25 +509,25 @@ begin
   Pnt:= (Sender as TControl).ClientToScreen(MousePos);
 
   if PtInControl(Pages1.Tabs, Pnt) then
-    PopupPages:= Pages1
+    FPopupPages:= Pages1
   else
   if PtInControl(Pages2.Tabs, Pnt) then
-    PopupPages:= Pages2
+    FPopupPages:= Pages2
   else
   if PtInControl(Pages3.Tabs, Pnt) then
-    PopupPages:= Pages3
+    FPopupPages:= Pages3
   else
   if PtInControl(Pages4.Tabs, Pnt) then
-    PopupPages:= Pages4
+    FPopupPages:= Pages4
   else
   begin
-    PopupPages:= nil;
-    PopupTabIndex:= -1;
+    FPopupPages:= nil;
+    FPopupTabIndex:= -1;
     Exit;
   end;
 
   PntC:= PopupPages.Tabs.ScreenToClient(Pnt);
-  PopupTabIndex:= PopupPages.Tabs.GetTabAt(PntC.X, PntC.Y);
+  FPopupTabIndex:= FPopupPages.Tabs.GetTabAt(PntC.X, PntC.Y);
 
   if Assigned(FOnPopup) then
     FOnPopup(Self);
@@ -649,10 +654,12 @@ begin
 end;
 
 procedure TATGroups.SplitClick(Sender: TObject);
-var
-  N: Integer;
 begin
-  N:= (Sender as TComponent).Tag;
+  SetSplitPercent((Sender as TComponent).Tag);
+end;
+
+procedure TATGroups.SetSplitPercent(N: Integer);
+begin
   case FMode of
     gm2Horz:
       begin
