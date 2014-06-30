@@ -2462,9 +2462,9 @@ type
     procedure UpdateTabList(TopItem, NewItem, DelItem: integer);
     procedure UpdateSaveIco;
     procedure UpdateBusyIco;
-    procedure UpdateTreeInit(AStr: Widestring; const ADir: Widestring; AInTabs: boolean = false);
-    procedure UpdateTreeFind(AStr: Widestring; const ADir: Widestring; AStopped: boolean; AInTabs: boolean = false);
-    procedure UpdateTreeReplace(const ANodeText: Widestring; ANumFiles, ANumItems: integer; AStopped: boolean);
+    procedure UpdateTreeFind_Initial(AStr: Widestring; const ADir: Widestring; AInTabs: boolean = false);
+    procedure UpdateTreeFind_Results(AStr: Widestring; const ADir: Widestring; AStopped: boolean; AInTabs: boolean = false);
+    procedure UpdateTreeFind_ReplaceResults(const ANodeText: Widestring; ANumFiles, ANumItems: integer; AStopped: boolean);
     procedure UpdateMacroKeynames;
 
     function SStatusText(Ed: TSyntaxMemo): Widestring;
@@ -2474,18 +2474,18 @@ type
     procedure DoHandleToolOutput(const ft: Widestring; const ATool: TSynTool);
     function IsShowColor(s: string; var NColor, NColorText: TColor): boolean;
     procedure GetTabName(APagesNumber, ATabIndex: Integer; var AName, AFN, ALex: Widestring);
-    procedure ClearTabList;
-    procedure MoveTabInList(FromN, ToN: integer);
+    procedure DoClearTabSwitcherList;
+    procedure DoMoveTabInList(FromN, ToN: integer);
 
     function GetAcpFN(const LexerName: string): string;
     function GetSpecialHiliteFN(const Id: string): string;
     function GetHtmlListFN: string;
     function GetCssListFN: string;
     function GetHtmlTabbingFN: string;
+    function GetLexerComment(const Lexer: string): string;
 
     function CurrentLexer: string;
     function CurrentLexerForFile: string;
-    function SLexerComment(const Lexer: string): string;
     function DoSnippetTabbing: boolean;
     function DoSmartTagTabbing: boolean;
     procedure DoSmartHilite;
@@ -3251,7 +3251,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.1070';
+  cSynVer = '6.5.1080';
   cSynPyVer = '1.0.130';
 
 const
@@ -6808,7 +6808,7 @@ begin
 
   if (PageControl1.PageCount<=1) and
     (PageControl2.PageCount<=1) then
-    ClearTabList;
+    DoClearTabSwitcherList;
 end;
 
 procedure TfmMain.TimerTickTimer(Sender: TObject);
@@ -12761,7 +12761,7 @@ begin
     //init TreeRoot, show Output pane
     if not AOutAppend then
       DoClearTreeFind;
-    UpdateTreeInit(Finder.FindText, ADir);
+    UpdateTreeFind_Initial(Finder.FindText, ADir);
     UpdatePanelOut(tbFind);
     plOut.Show;
 
@@ -12832,7 +12832,7 @@ begin
     //if "Find in files" stopped
     if StopFind then
     begin
-      UpdateTreeFind(Finder.FindText, ADir, true);
+      UpdateTreeFind_Results(Finder.FindText, ADir, true);
       goto _Exit;
     end;
 
@@ -12841,12 +12841,12 @@ begin
       raise Exception.Create('TreeRoot nil');
     if FTreeRoot.GetFirstChild=nil then
     begin
-      UpdateTreeFind(Finder.FindText, ADir, false);
+      UpdateTreeFind_Results(Finder.FindText, ADir, false);
       MsgNoLines;
     end
     else
     begin
-      UpdateTreeFind(Finder.FindText, ADir, false);
+      UpdateTreeFind_Results(Finder.FindText, ADir, false);
       if AToTab then
       begin
         DoCopyFindResultToTab(true, AFnOnly);
@@ -12898,7 +12898,7 @@ begin
             Inc(ACountFiles);
             Inc(ACountMatches, Finder.Matches);
             //update TreeFind
-            UpdateTreeReplace(ANodeText, ACountFiles, ACountMatches, false);
+            UpdateTreeFind_ReplaceResults(ANodeText, ACountFiles, ACountMatches, false);
             FTreeRoot.Expand(false);
 
             TreeFind.Selected:= TreeFind.Items.AddChild(FTreeRoot,
@@ -12914,7 +12914,7 @@ begin
         if IsProgressStopped(i+1, FListFiles.Count) then
         begin
           DoProgressHide;
-          UpdateTreeReplace(ANodeText, ACountFiles, ACountMatches, true);
+          UpdateTreeFind_ReplaceResults(ANodeText, ACountFiles, ACountMatches, true);
           Break;
         end;
       end;
@@ -16279,7 +16279,7 @@ begin
 
   if UseDefault then
   begin
-    sStart:= SLexerComment(Lexer);
+    sStart:= GetLexerComment(Lexer);
     if sStart<>'' then Exit;
   end;
 
@@ -17488,7 +17488,7 @@ begin
 
   if APages.ActivePage.PageIndex<>nIndex then
   begin
-    MoveTabInList(APages.ActivePage.PageIndex, nIndex);
+    DoMoveTabInList(APages.ActivePage.PageIndex, nIndex);
     APages.ActivePage.PageIndex:= nIndex;
   end;
 end;
@@ -18828,7 +18828,7 @@ begin
   Len:= 0;
 end;
 
-procedure TfmMain.UpdateTreeFind(
+procedure TfmMain.UpdateTreeFind_Results(
   AStr: Widestring; const ADir: Widestring;
   AStopped: boolean; AInTabs: boolean = false);
   //-------------------
@@ -18898,7 +18898,7 @@ begin
   FTreeRoot.Expand(false);
 end;
 
-procedure TfmMain.UpdateTreeInit(AStr: Widestring; const ADir: Widestring; AInTabs: boolean = false);
+procedure TfmMain.UpdateTreeFind_Initial(AStr: Widestring; const ADir: Widestring; AInTabs: boolean = false);
 begin
   AStr:= SReplaceAllEols(AStr, '¶');
 
@@ -19033,7 +19033,7 @@ begin
   DoHandleKeysInPanels(Key, Shift);
 end;
 
-procedure TfmMain.UpdateTreeReplace(const ANodeText: Widestring; ANumFiles, ANumItems: integer; AStopped: boolean);
+procedure TfmMain.UpdateTreeFind_ReplaceResults(const ANodeText: Widestring; ANumFiles, ANumItems: integer; AStopped: boolean);
 var
   SEnd: Widestring;
 begin
@@ -19339,7 +19339,7 @@ begin
     Result:= SyntaxManager.CurrentLexer.LexerName;
 end;
 
-function TfmMain.SLexerComment(const Lexer: string): string;
+function TfmMain.GetLexerComment(const Lexer: string): string;
 var
   An: TSyntAnalyzer;
 begin
@@ -19589,7 +19589,7 @@ begin
 end;
 
 
-procedure TfmMain.MoveTabInList(FromN, ToN: integer);
+procedure TfmMain.DoMoveTabInList(FromN, ToN: integer);
 begin
   if PageControl=PageControl1 then
     TabSwitcher.MoveTabInList(FromN, ToN)
@@ -19601,7 +19601,7 @@ begin
   UpdateListTabs;
 end;
 
-procedure TfmMain.ClearTabList;
+procedure TfmMain.DoClearTabSwitcherList;
 begin
   TabSwitcher.InitTabList(1);
   TabSwitcher2.InitTabList(1);
@@ -22500,7 +22500,7 @@ begin
   ADir:= '';
 
   //init TreeRoot, show pane
-  UpdateTreeInit(Finder.FindText, ADir, true);
+  UpdateTreeFind_Initial(Finder.FindText, ADir, true);
   UpdatePanelOut(tbFind);
   plOut.Show;
 
@@ -22545,7 +22545,7 @@ begin
   if StopFind then
   begin
     StopFind:= false;
-    UpdateTreeFind(Finder.FindText, ADir, true, true);
+    UpdateTreeFind_Results(Finder.FindText, ADir, true, true);
     Exit
   end;
 
@@ -22553,11 +22553,11 @@ begin
     raise Exception.Create('TreeRoot nil');
   if FTreeRoot.GetFirstChild=nil then
   begin
-    UpdateTreeFind(Finder.FindText, ADir, false, true);
+    UpdateTreeFind_Results(Finder.FindText, ADir, false, true);
   end
   else
   begin
-    UpdateTreeFind(Finder.FindText, ADir, false, true);
+    UpdateTreeFind_Results(Finder.FindText, ADir, false, true);
     UpdatePanelOut(tbFind);
     plOut.Show;
   end;
@@ -28614,7 +28614,7 @@ begin
   AFrameIndex:= FrameIndex(AFrame);
 
   //init TreeRoot, show pane
-  UpdateTreeInit(Finder.FindText, ADir, true);
+  UpdateTreeFind_Initial(Finder.FindText, ADir, true);
   UpdatePanelOut(tbFind);
   plOut.Show;
 
@@ -28644,7 +28644,7 @@ begin
   //update "Search Results" pane
   if FTreeRoot=nil then
     raise Exception.Create('TreeRoot nil');
-  UpdateTreeFind(Finder.FindText, ADir, false, true);
+  UpdateTreeFind_Results(Finder.FindText, ADir, false, true);
   UpdatePanelOut(tbFind);
   plOut.Show;
 
