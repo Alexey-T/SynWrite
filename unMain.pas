@@ -2462,8 +2462,8 @@ type
     procedure UpdateTabList(TopItem, NewItem, DelItem: integer);
     procedure UpdateSaveIco;
     procedure UpdateBusyIco;
-    procedure UpdateTreeInit(const AStr, ADir: Widestring; AInTabs: boolean = false);
-    procedure UpdateTreeFind(const AStr, ADir: Widestring; AStopped: boolean; AInTabs: boolean = false);
+    procedure UpdateTreeInit(AStr: Widestring; const ADir: Widestring; AInTabs: boolean = false);
+    procedure UpdateTreeFind(AStr: Widestring; const ADir: Widestring; AStopped: boolean; AInTabs: boolean = false);
     procedure UpdateTreeReplace(const ANodeText: Widestring; ANumFiles, ANumItems: integer; AStopped: boolean);
     procedure UpdateMacroKeynames;
 
@@ -18828,7 +18828,8 @@ begin
   Len:= 0;
 end;
 
-procedure TfmMain.UpdateTreeFind(const AStr, ADir: Widestring;
+procedure TfmMain.UpdateTreeFind(
+  AStr: Widestring; const ADir: Widestring;
   AStopped: boolean; AInTabs: boolean = false);
   //-------------------
   function STreeText(SEnd: Widestring): Widestring;
@@ -18870,6 +18871,8 @@ var
   NFiles, NItems: integer;
   SEnd: Widestring;
 begin
+  AStr:= SReplaceAllEols(AStr, '¶');
+
   NFiles:= 0;
   NItems:= 0;
   if FTreeRoot=nil then
@@ -18895,8 +18898,10 @@ begin
   FTreeRoot.Expand(false);
 end;
 
-procedure TfmMain.UpdateTreeInit(const AStr, ADir: Widestring; AInTabs: boolean = false);
+procedure TfmMain.UpdateTreeInit(AStr: Widestring; const ADir: Widestring; AInTabs: boolean = false);
 begin
+  AStr:= SReplaceAllEols(AStr, '¶');
+
   if not AInTabs then
     FTreeRoot:= TreeFind.Items.Add(nil,
       WideFormat(DKLangConstW('O_fnode'), [AStr, ADir]) + '...')
