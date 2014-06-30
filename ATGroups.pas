@@ -1,10 +1,29 @@
+{
+ATGroups - several page-controls, each based on ATTabs
+Copyright (c) Alexey Torgashin
+License: MPL 2.0
+}
+
+{$ifdef FPC}
+  {$mode delphi}
+{$else}
+  {$define SP} //Allow using SpTBX
+{$endif}
+
 unit ATGroups;
 
 interface
 
 uses
   Classes, Forms, Types, Controls, Graphics,
-  ExtCtrls, ATTabs, SpTbxDkPanels, SpTbxItem;
+  ExtCtrls, Menus,
+  {$ifdef SP}
+  SpTbxDkPanels, SpTbxItem,
+  {$endif}
+  ATTabs;
+
+type
+  TMySplitter = {$ifdef SP}TSpTbxSplitter{$else}TSplitter{$endif};
 
 type
   TATPages = class(TPanel)
@@ -46,9 +65,9 @@ type
 type
   TATGroups = class(TPanel)
   private
-    FSplit1, FSplit2, FSplit3: TSpTbxSplitter;
+    FSplit1, FSplit2, FSplit3: TMySplitter;
     FPanel1, FPanel2: TPanel;
-    FSplitPopup: TSpTbxPopupMenu;
+    FSplitPopup: {$ifdef SP} TSpTbxPopupMenu {$else} TPopupMenu {$endif};
     FMode: TATGroupsMode;
     FPos1, FPos2, FPos3: Real;
     FOnPopup: TNotifyEvent;
@@ -85,8 +104,11 @@ type
 implementation
 
 uses
-  SysUtils, Windows, Dialogs,
-  SpTbxSkins;
+  SysUtils, Windows,
+  {$ifdef SP}
+  SpTbxSkins,
+  {$endif}
+  Dialogs;
 
 function PtInControl(Control: TControl; const Pnt: TPoint): boolean;
 begin
@@ -206,15 +228,28 @@ begin
   Pages4.OnContextPopup:= TabPopup;
   Pages4.OnTabEmpty:= TabEmpty;
 
-  FSplit1:= TSpTbxSplitter.Create(Self);
+  Pages1.Name:= 'aPages1';
+  Pages2.Name:= 'aPages2';
+  Pages3.Name:= 'aPages3';
+  Pages4.Name:= 'aPages4';
+  Pages1.Caption:= '';
+  Pages2.Caption:= '';
+  Pages3.Caption:= '';
+  Pages4.Caption:= '';
+  Pages1.Tabs.Name:= 'aTabs1';
+  Pages2.Tabs.Name:= 'aTabs2';
+  Pages3.Tabs.Name:= 'aTabs3';
+  Pages4.Tabs.Name:= 'aTabs4';
+
+  FSplit1:= TMySplitter.Create(Self);
   FSplit1.Parent:= Self;
   FSplit1.OnMoved:= Split1Moved;
 
-  FSplit2:= TSpTbxSplitter.Create(Self);
+  FSplit2:= TMySplitter.Create(Self);
   FSplit2.Parent:= Self;
   FSplit2.OnMoved:= Split2Moved;
 
-  FSplit3:= TSpTbxSplitter.Create(Self);
+  FSplit3:= TMySplitter.Create(Self);
   FSplit3.Parent:= Self;
   FSplit3.OnMoved:= Split3Moved;
 
@@ -246,9 +281,9 @@ procedure TATGroups.InitSplitterPopup;
   //
   procedure Add(N: Integer);
   var
-    MI: TSpTbxItem;
+    MI: {$ifdef SP}TSpTbxItem{$else}TMenuItem{$endif};
   begin
-    MI:= TSpTbxItem.Create(Self);
+    MI:= {$ifdef SP}TSpTbxItem{$else}TMenuItem{$endif}.Create(Self);
     MI.Caption:= Format('%d/%d', [N, 100-N]);
     MI.Tag:= N;
     MI.OnClick:= SplitClick;
@@ -256,7 +291,7 @@ procedure TATGroups.InitSplitterPopup;
   end;
   //
 begin
-  FSplitPopup:= TSpTbxPopupMenu.Create(Self);
+  FSplitPopup:= {$ifdef SP}TSpTbxPopupMenu{$else}TPopupMenu{$endif}.Create(Self);
   Add(20);
   Add(30);
   Add(40);
@@ -266,6 +301,17 @@ begin
   Add(80);
 end;
 
+type
+  TControlHack = class(TSplitter);
+
+procedure SetSplitterPopup(ASplitter: TMySplitter; APopup: TPopupMenu);
+begin
+  {$ifdef SP}
+  ASplitter.PopupMenu:= APopup;
+  {$else}
+  TControlHack(ASplitter).PopupMenu:= APopup;
+  {$endif}
+end;
 
 procedure TATGroups.SetMode(Value: TATGroupsMode);
 var
@@ -285,9 +331,9 @@ begin
     FMode:= Value;
 
     if FMode in [gm2Horz, gm2Vert] then
-      FSplit1.PopupMenu:= FSplitPopup
+      SetSplitterPopup(FSplit1, FSplitPopup)
     else
-      FSplit1.PopupMenu:= nil;
+      SetSplitterPopup(FSplit1, nil);
 
     if FMode=gm4Grid then
     begin
@@ -541,6 +587,9 @@ procedure TATPages.TabDrawBefore(Sender: TObject;
   AType: TATTabElemType; ATabIndex: Integer;
   C: TCanvas; const ARect: TRect; var ACanDraw: boolean);
 begin
+  {$ifndef SP}
+  ACanDraw:= true;
+  {$else}
   case AType of
     aeBackground:
     begin
@@ -567,7 +616,8 @@ begin
       ACanDraw:= false;
     end;
   end;
-end;  
+  {$endif}
+end;
 
 procedure TATGroups.SaveSplitPos;
 begin
