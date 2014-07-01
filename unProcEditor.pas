@@ -80,7 +80,7 @@ procedure EditorMoveCaretByNChars(Ed: TSyntaxMemo; DX, DY: Integer);
 procedure EditorCommentUncommentLines(Ed: TSyntaxMemo; AComment: boolean);
 function EditorToggleSyncEditing(Ed: TSyntaxMemo): boolean;
 procedure EditorKeepCaretOnScreen(Ed: TSyntaxMemo);
-procedure EditorIndentBlock(Ed: TSyntaxMemo; shift: boolean);
+//procedure EditorIndentBlock(Ed: TSyntaxMemo; shift: boolean);
 procedure EditorChangeBlockCase(Ed: TSyntaxMemo; Cmd: TChangeCase);
 procedure EditorDoHomeKey(Ed: TSyntaxMemo);
 procedure EditorInsertBlankLineAboveOrBelow(Ed: TSyntaxMemo; ABelow: boolean);
@@ -1829,6 +1829,8 @@ begin
   EditorRestoreSel(Ed, Sel);
 end;
 
+(*
+//slow on 400 lines
 procedure EditorIndentBlock(Ed: TSyntaxMemo; shift: boolean);
 var
   p, pp: TPoint;
@@ -1872,7 +1874,7 @@ begin
     Ed.SelRect:= R;
   end;
 end;
-
+*)
 
 procedure EditorKeepCaretOnScreen(Ed: TSyntaxMemo);
 var

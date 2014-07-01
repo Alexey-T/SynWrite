@@ -210,7 +210,9 @@ type
     scmdReverse,
     scmdShuffle,
     scmdExtractDupsCase,
-    scmdExtractDupsNoCase
+    scmdExtractDupsNoCase,
+    scmdIndent,
+    scmdUnIndent
     );
 
   TSynCopyNameCmd = (
@@ -3251,7 +3253,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.1080';
+  cSynVer = '6.5.1090';
   cSynPyVer = '1.0.130';
 
 const
@@ -5656,7 +5658,12 @@ begin
     smBlockUnindent:
       begin
         if Ed.SelLength>0 then //only for stream blocks it works ok
-          EditorIndentBlock(Ed, Command=smBlockIndent)
+        begin
+          if Command=smBlockIndent then
+            DoLinesCommand(scmdIndent)
+          else
+            DoLinesCommand(scmdUnIndent);
+        end
         else
           Handled:= false;
       end;
@@ -23738,6 +23745,14 @@ begin
           ok:= i>0;
           MsgDoneLines(i);
         end;
+
+      scmdIndent:
+        ok:= DoListCommand_Indent(L, EditorTabSize(Ed),
+               Ed.BlockIndent, Ed.TabMode=tmTabChar);
+      scmdUnIndent:
+        ok:= DoListCommand_UnIndent(L, EditorTabSize(Ed),
+               Ed.BlockIndent, Ed.TabMode=tmTabChar,
+               soUnindentKeepAlign in Ed.Options);
 
       scmdSpacesToTabs:
         begin

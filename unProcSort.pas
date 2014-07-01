@@ -31,6 +31,18 @@ function DoListCommand_AlignWithSep(
   const Sep: Widestring;
   TabSize: Integer): Integer;
 
+function DoListCommand_Indent(
+  List: TTntStringList;
+  TabSize: Integer;
+  IndentSize: Integer;
+  UseTabChar: boolean): boolean;
+function DoListCommand_UnIndent(
+  List: TTntStringList;
+  TabSize: Integer;
+  IndentSize: Integer;
+  UseTabChar: boolean;
+  KeepAlign: boolean): boolean;
+
 function DoListCommand_Unspace(
   List: TTntStringList;
   TabSize: Integer;
@@ -593,6 +605,72 @@ begin
   finally
     FreeAndNil(L);
   end;
+end;
+
+function DoListCommand_Indent(
+  List: TTntStringList;
+  TabSize: Integer;
+  IndentSize: Integer;
+  UseTabChar: boolean): boolean;
+var
+  i: Integer;
+  SAdd: Widestring;
+begin
+  Result:= false;
+
+  SAdd:= StringOfChar(' ', IndentSize);
+  if UseTabChar then
+    SReplaceSpToTabLeading(SAdd, StringOfChar(' ', TabSize));
+
+  for i:= 0 to List.Count-1 do
+    if List[i]<>'' then
+    begin
+      List[i]:= SAdd+List[i];
+      Result:= true;
+    end;
+end;
+
+
+function DoListCommand_UnIndent(
+  List: TTntStringList;
+  TabSize: Integer;
+  IndentSize: Integer;
+  UseTabChar: boolean;
+  KeepAlign: boolean): boolean;
+var
+  i, Num: Integer;
+  S, SNew: Widestring;
+begin
+  Result:= false;
+
+  if KeepAlign then
+    for i:= 0 to List.Count-1 do
+    begin
+      Num:= SSpacesAtStart(List[i]);
+      //only spaces in line- skip line
+      if Num>=Length(List[i]) then Continue;
+      
+      S:= Copy(List[i], 1, Num);
+      S:= SUntab(S, TabSize);
+      if Length(S)<IndentSize then
+        Exit;
+    end;
+
+  for i:= 0 to List.Count-1 do
+    if List[i]<>'' then
+    begin
+      S:= List[i];
+      Num:= SSpacesAtStart(S);
+      S:= Copy(S, 1, Num);
+      S:= SUntab(S, TabSize);
+      Delete(S, 1, IndentSize);
+      SNew:= S+Copy(List[i], Num+1, MaxInt);
+      if SNew<>List[i] then
+      begin
+        List[i]:= SNew;
+        Result:= true;
+      end;  
+    end;
 end;
 
 end.
