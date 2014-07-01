@@ -613,20 +613,32 @@ function DoListCommand_Indent(
   IndentSize: Integer;
   UseTabChar: boolean): boolean;
 var
-  i: Integer;
-  SAdd: Widestring;
+  i, Num: Integer;
+  SAdd, STabString, SIndent, SData, SNew: Widestring;
 begin
   Result:= false;
-
   SAdd:= StringOfChar(' ', IndentSize);
-  if UseTabChar then
-    SReplaceSpToTabLeading(SAdd, StringOfChar(' ', TabSize));
+  STabString:= StringOfChar(' ', TabSize);
 
   for i:= 0 to List.Count-1 do
     if List[i]<>'' then
     begin
-      List[i]:= SAdd+List[i];
-      Result:= true;
+      //get indent part, data part
+      Num:= SSpacesAtStart(List[i]);
+      SData:= Copy(List[i], Num+1, MaxInt);
+      SIndent:= Copy(List[i], 1, Num);
+
+      //add spaces to indent, and reapply tabs to whole indent
+      SIndent:= SAdd+SUntab(SIndent, TabSize);
+      if UseTabChar then
+        SReplaceSpToTabLeading(SIndent, STabString);
+
+      SNew:= SIndent+SData;
+      if SNew<>List[i] then
+      begin
+        List[i]:= SNew;
+        Result:= true;
+      end;  
     end;
 end;
 
@@ -639,7 +651,7 @@ function DoListCommand_UnIndent(
   KeepAlign: boolean): boolean;
 var
   i, Num: Integer;
-  S, SNew: Widestring;
+  S, SIndent, SData, SNew: Widestring;
 begin
   Result:= false;
 
@@ -649,7 +661,7 @@ begin
       Num:= SSpacesAtStart(List[i]);
       //only spaces in line- skip line
       if Num>=Length(List[i]) then Continue;
-      
+
       S:= Copy(List[i], 1, Num);
       S:= SUntab(S, TabSize);
       if Length(S)<IndentSize then
@@ -659,17 +671,23 @@ begin
   for i:= 0 to List.Count-1 do
     if List[i]<>'' then
     begin
-      S:= List[i];
-      Num:= SSpacesAtStart(S);
-      S:= Copy(S, 1, Num);
-      S:= SUntab(S, TabSize);
-      Delete(S, 1, IndentSize);
-      SNew:= S+Copy(List[i], Num+1, MaxInt);
+      //get indent part, data part
+      Num:= SSpacesAtStart(List[i]);
+      SData:= Copy(List[i], Num+1, MaxInt);
+      SIndent:= Copy(List[i], 1, Num);
+
+      //decrease indent, reapply tabs to indent
+      SIndent:= SUntab(SIndent, TabSize);
+      Delete(SIndent, 1, IndentSize);
+      if UseTabChar then
+        SReplaceSpToTabLeading(SIndent, StringOfChar(' ', TabSize));
+
+      SNew:= SIndent+SData;
       if SNew<>List[i] then
       begin
         List[i]:= SNew;
         Result:= true;
-      end;  
+      end;
     end;
 end;
 
