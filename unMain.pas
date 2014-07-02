@@ -33,14 +33,14 @@ uses
   unProj,
   unProgress,
   unSR,
-  unProcSort,
+  unProcLines,
   unTabSw,
 
   TB2Item, TB2Dock, TB2Toolbar,
   TB2MDI, TB2ExtItems,
 
   SpTBXItem, SpTbxMDIMRU, SpTBXDkPanels, SpTBXSkins,
-  SpTBXControls, SpTBXTabs, SpTBXEditors, 
+  SpTBXControls, SpTBXTabs, SpTBXEditors,
 
   ecActns, ecPrint, ecSyntMemo, ecKeyMap, ecPropManager, ecSyntAnal,
   ecSyntTree, ecStrUtils, ecPopupCtrl, ecUnicode,
@@ -73,7 +73,7 @@ const
   cDefaultCursor: array[boolean] of TCursor = (crHourGlass, crDefault);
   SynDefaultSyn = '(default).syn';
 
-const  
+const
   cPyConsoleMaxCount = 1000;
   cPyConsolePrompt = '>>> ';
   cPyConsoleInit = 'print("Python", sys.version)';
@@ -265,7 +265,7 @@ type
     DefFilename: Widestring;
     ZeroBase: boolean;
     Encoding: TOutputEnc;
-  end;  
+  end;
 
   TSynLogPanelKind = (
     cSynLogOutput,
@@ -2187,7 +2187,7 @@ type
     FPluginsCommand: TPluginList_Command;
     FPluginsEvent: TPluginList_Event;
     FPluginsAcp: TPluginList_Acp;
-    
+
     FPanelDrawBusy: boolean;
     FSyncBusy: boolean;
     FSplitHorz: boolean; //views splitter is horizontal
@@ -2243,7 +2243,7 @@ type
     FTreeRoot: TTntTreeNode; //root tree node of last find result
     FListResFN,              //current filename for mass search/replace operation
     FListResFN_Prev: Widestring; //previous filename for mass search/replace
-    FOutItem: Integer; //ListOut item index for right-click 
+    FOutItem: Integer; //ListOut item index for right-click
     FOutVisible: boolean; //Visible state for Output panel
 
     FPagesDblClickTime: Dword; //PageControl dbl-click time
@@ -2264,7 +2264,7 @@ type
     FUpdatePluginsLang: boolean; //need to update plugins' language ASAP
     FNeedRepaint: boolean;   //need full repaint ASAP
     FEnableRepaint: boolean; //enable repaint, it's set after 500ms
-    
+
     FToolbarMoved: boolean;  //set when toolbars are moved
     FPopupUrl: string;       //current URL for editor popup menu
     FPopupColor: integer;    //current color-id-in-text for editor popup menu
@@ -2570,7 +2570,7 @@ type
     procedure DoBkNext(Ed: TSyntaxMemo; Next: boolean);
     procedure DoDeleteLine(Ed: TSyntaxMemo; NLine: integer; ForceUndo: boolean = false);
     procedure DoReplaceLine(Ed: TSyntaxMemo; NLine: integer; const S: Widestring; ForceUndo: boolean = false);
-    
+
     procedure InitSpell;
     procedure DoZenExpand;
     procedure DoZenWrap;
@@ -3132,7 +3132,7 @@ type
     procedure DoSaveSessionAs;
     procedure DoSessionOpenDialog;
     procedure DoSessionAddDialog;
-    
+
     //event handlers
     procedure SynCaretPosChanged(Sender: TObject);
     procedure SynKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -3253,7 +3253,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.1090';
+  cSynVer = '6.5.1085';
   cSynPyVer = '1.0.130';
 
 const
@@ -3304,7 +3304,7 @@ uses
   unSetup, unAb, unEnc, unTool, unSRFiles, unExtr, unShell, unInsTxt,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
-  unMenuCmds, unMenuProj, unMenuSnippets, 
+  unMenuCmds, unMenuProj, unMenuSnippets,
   unToolbarProp, unHideItems,
   unProcPy,
   unMainPy,
@@ -3732,7 +3732,7 @@ begin
     Result:= F
   else
     Result:= CreateFrame;
-  //reset encoding for new frame  
+  //reset encoding for new frame
   ApplyFrameEncoding(Result, 0);
 
   if FCanUseLexer(AFileName) then
@@ -3816,7 +3816,7 @@ begin
     else
       SD.InitialDir:= LastDir;
     SD.Filter:= SynFilesFilter;
-                     
+
     ALexerName:= Frame.CurrentLexer;
     if ALexerName<>'' then
       SD.FilterIndex:= SFilterNameToIdx(SD.Filter, ALexerName)
@@ -3960,7 +3960,7 @@ begin
 
   Ed.NonPrinted.SpaceChar:= #183;
   Ed.NonPrinted.TabChar:= #187;
-end;  
+end;
 
 function TfmMain.CreateFrame: TEditorFrame;
 begin
@@ -4475,7 +4475,7 @@ begin
       else
         Caption:= '';
 
-      Visible:= opShowCharInfo;  
+      Visible:= opShowCharInfo;
     end;
   end;
 end;
@@ -4579,7 +4579,7 @@ begin
     opHistFilter:= ReadInteger('Hist', 'Filter', 0);
 
     if SynExe then
-    begin                                       
+    begin
       opHistSessionSave:= ReadBool('Hist', 'SessSave', false);
       opHistSessionLoad:= ReadBool('Hist', 'SessLoad', false);
       opHistSessionProjSave:= ReadBool('Hist', 'SessProjSave', false);
@@ -4714,7 +4714,7 @@ begin
     opReloadMode:= TSynReloadMode(ReadInteger('Setup', 'Notif', Ord(cReloadAsk)));
     ApplyIntf;
     ApplyBorders;
-    
+
     opTipsToken:= ReadBool('Setup', 'Tooltips', true);
     opTipsPanels:= opTipsToken;
     ApplyTips;
@@ -5381,7 +5381,7 @@ begin
 
     for i:= L.Count-1 downto 0 do
       if IsFramePropertiesStringForFilename(F.FileName, L[i]) then
-        L.Delete(i);  
+        L.Delete(i);
     L.Insert(0, sData);
 
     while L.Count>opSaveState do
@@ -5432,7 +5432,7 @@ end;
 function TfmMain.SynLexLib: string;
 begin
   Result:= SynDir + 'HL\LexLib.LXL';
-end;  
+end;
 
 procedure TfmMain.SaveLexLib;
 begin
@@ -5548,7 +5548,7 @@ begin
   if n>=3 then
     EditorSplitLinesByPosition(Ed, n)
   else
-    MsgBeep;  
+    MsgBeep;
 end;
 
 procedure TfmMain.SynExecuteCommand(Sender: TObject; Command: Integer;
@@ -6462,7 +6462,7 @@ begin
           DropMarker(Ed.CaretPos);
           if Markers.Count>=2 then
             Markers.Delete(Markers.Count-2);
-          Invalidate;  
+          Invalidate;
         end;
         //consider snippets
         Ed.MarkersLen.Clear;
@@ -6518,7 +6518,7 @@ begin
       end;
 
     sm_ToggleShowFoldersOnTabs:
-      DoToggleTabDirs;  
+      DoToggleTabDirs;
     sm_InsertUnicodeHexDialog:
       DoInsertUnicodeHexDialog;
 
@@ -6600,7 +6600,7 @@ begin
         if menu.Count=0 then
           FreeAndNil(menu);
       end;
-    end  
+    end
     else //not opLexerGroups
       for i:= 0 to s.Count-1 do
       begin
@@ -6824,7 +6824,7 @@ begin
   if GetCurrentThreadId = MainThreadID then
     CheckSynchronize;
 
-  //update icons  
+  //update icons
   UpdateSaveIco;
   UpdateBusyIco;
 
@@ -6881,7 +6881,7 @@ begin
   Ed:= CurrentEditor;
   if DoPyEvent(Ed, cSynEventOnState, [cSynPropRO]) = cPyFalse then Exit;
   Ed.ReadOnly:= not Ed.ReadOnly;
-  
+
   UpdateStatusbar;
   UpdateEditorCaret(Ed);
   UpdateTitle(CurrentFrame);
@@ -6975,7 +6975,7 @@ begin
   begin
     TimerMinimap.Enabled:= false;
     TimerMinimap.Enabled:= true;
-  end;  
+  end;
 end;
 
 procedure TfmMain.plTreeResize(Sender: TObject);
@@ -7373,7 +7373,7 @@ begin
 
   //others
   FUserToolbarCommands:= TTntStringList.Create;
-  FTempFilenames:= TTntStringList.Create;  
+  FTempFilenames:= TTntStringList.Create;
 end;
 
 procedure TfmMain.ecPrinterSetupExecute(Sender: TObject);
@@ -7438,7 +7438,7 @@ begin
         IfThen(Ed.TabMode=tmSpaces, '_');
     end;
   end;
-end;  
+end;
 
 function TfmMain.GetAcpFN(const LexerName: string): string;
 begin
@@ -7508,7 +7508,7 @@ begin
   begin
     opAcpChars:= '';
     LoadAcpFromFile(fn, Lexer);
-  end;  
+  end;
 
   //load user ACP file (specified in project)
   if Assigned(fmProj) then
@@ -7520,7 +7520,7 @@ begin
         fn:= ExtractFilePath(fmProj.ProjectFN)+fn;
       if IsFileExist(fn) then
         LoadAcpFromFile(fn, Lexer);
-    end;    
+    end;
   end;
 end;
 
@@ -7802,7 +7802,7 @@ begin
         List.Add(Str+': ');
         Display.Add(SAcpItem('css', Str));
       end;
-    end;  
+    end;
   end;
 end;
 
@@ -7835,7 +7835,7 @@ begin
   opAcpChars:= cAcpCharsHtm;
   AddBr:= EditorNeedsHtmlOpeningBracket(CurrentEditor);
   AcpStr:= '';
-  
+
   if STag<>'' then
   begin
     NTag:= FAcpIntHtml.IndexOfName(STag);
@@ -8104,7 +8104,7 @@ begin
   begin
     if CurrentFrame<>nil then
       StatusItemLexer.Caption:= CurrentFrame.CurrentLexer;
-    if StatusItemLexer.Caption='' then   
+    if StatusItemLexer.Caption='' then
       StatusItemLexer.Caption:= DKLangConstW('None');
   end;
 
@@ -8233,7 +8233,7 @@ begin
     end;
 
   //update statusbar
-  UpdateStatusbarTabsize;  
+  UpdateStatusbarTabsize;
 end;
 
 procedure TfmMain.DoRepaintTBs;
@@ -8506,7 +8506,7 @@ begin
     begin
       IsCase:= ReadBool('Search', 'Case', false);
       IsWords:= ReadBool('Search', 'Words', false);
-    end;  
+    end;
     IsWrap:= ReadBool('Search', 'Wrap', false);
     IsSpec:= ReadBool('Search', 'Spec', false);
     IsSkipCol:= ReadBool('Search', 'SkipCol', false);
@@ -8549,7 +8549,7 @@ begin
   begin
     //handle RedirectSection
     FixTcIni(fnTC, 'SearchText');
-    
+
     //read TC ini
     with TIniFile.Create(fnTC) do
     try
@@ -9210,7 +9210,7 @@ begin
     EditorMaster.DisableFolding:= not EditorMaster.DisableFolding;
     EditorSlave.DisableFolding:= EditorMaster.DisableFolding;
   end;
-  
+
   UpdateGutter(CurrentFrame);
   UpdateStatusbar;
 end;
@@ -9281,7 +9281,7 @@ end;
 procedure TfmMain.TBXItemClrClick(Sender: TObject);
 begin
   DoClearFilesHistory;
-end;  
+end;
 
 procedure TfmMain.DoClearFilesHistory;
 begin
@@ -10284,7 +10284,7 @@ begin
   begin
     SkinManager.SetToDefaultSkin;
     SkinManager.LoadFromFile(SynSkinFilename(S));
-  end  
+  end
   else
     SkinManager.SetSkin(S);
 
@@ -10663,7 +10663,7 @@ begin
     if ToolCommand = '' then
       begin MsgBeep; Exit end;
 
-    //expand macros in "File name", "Initial dir" fields  
+    //expand macros in "File name", "Initial dir" fields
     fexe:= ToolCommand;
     SReplaceW(fexe, '{SynDir}', ExtractFileDir(SynDir));
     SReplaceW(fexe, '{SynIniDir}', ExtractFileDir(SynIni));
@@ -10695,11 +10695,11 @@ begin
       SDeleteFromW(SCurWord, #10);
       if Trim(SCurWord)='' then
         begin MsgNoSelectionForHelp; Exit end;
-        
+
       frun:= SynDir + 'Tools\HtmlHelpView.exe';
       if not IsFileExist(frun) then
         begin MsgNoFile(frun); Exit end;
-        
+
       FExecute(frun,
         '"'+fexe+'" "'+SCurWord+'"',
         '', Handle);
@@ -10720,7 +10720,7 @@ begin
       SDeleteFromW(SCurWord, #10);
       if Trim(SCurWord)='' then
         begin MsgNoSelectionForHelp; Exit end;
-        
+
       Application.HelpSystem.Hook(
         Longint(Handle),
         string(fexe),
@@ -10996,7 +10996,7 @@ begin
       end;
     finally
       opBeep:= bBeep;
-    end;  
+    end;
 
     if not bFound then
       edQs.Color:= cColorNotFound
@@ -11160,7 +11160,7 @@ begin
   begin
     CloseFrameWithCfm(F);
     UpdatePages;
-  end;  
+  end;
 end;
 
 procedure TfmMain.TBXItemTabNewClick(Sender: TObject);
@@ -11291,7 +11291,7 @@ begin
   Control.Canvas.FillRect(R);
 
   Dec(RectTotal.Right, 1); //small fix
-  
+
   if not FPanelDrawBusy then
   if ATabLast then
   begin
@@ -11597,7 +11597,7 @@ begin
         FClickedFrame:= FramesAll[N]
       else
         FClickedFrame:= nil;
-      Exit;  
+      Exit;
     end;
   end;
 
@@ -11729,7 +11729,7 @@ end;
 procedure TfmMain.TBXItemFSesOpenClick(Sender: TObject);
 begin
   DoSessionOpenDialog;
-end;  
+end;
 
 
 procedure TfmMain.DoSessionOpenDialog;
@@ -11866,7 +11866,7 @@ begin
       if N <= PageControl2.PageCount-1 then
         PageControl2.ActivePageIndex:= N;
 
-      //bad session file  
+      //bad session file
       if (PageControl=PageControl2) and (PageControl2.PageCount=0) then
         PageControl:= PageControl1;
 
@@ -12260,7 +12260,7 @@ begin
     SDir:= WideExtractFileDir(CurrentFrame.FileName)
   else
     SDir:= GetCurrentDir;
-  FExecute('cmd.exe', '', SDir, Handle);  
+  FExecute('cmd.exe', '', SDir, Handle);
 end;
 
 procedure TfmMain.TimerLoadTimer(Sender: TObject);
@@ -12820,7 +12820,7 @@ begin
         end;
 
         Inc(NDoneSize, DWORD(FListFiles.Objects[i]));
-        FFinderDoneSize:= NDoneSize;  
+        FFinderDoneSize:= NDoneSize;
         if IsProgressStopped(NDoneSize, NTotalSize) then
           Break;
       end;
@@ -12915,7 +12915,7 @@ begin
         except
           on E: Exception do
             MsgExcept('Error on adding result'#13+FListFiles[i], E, Handle);
-        end;    
+        end;
 
         //if "Replace in files" stopped
         if IsProgressStopped(i+1, FListFiles.Count) then
@@ -13041,7 +13041,7 @@ begin
     //Selection must be a word
     for i:= 1 to Length(s) do
       if not IsWordChar(s[i]) then Exit;
-  end;    
+  end;
 
   DoMarkAll(s);
   UpdateFrameMicroMap(CurrentFrame);
@@ -13077,7 +13077,7 @@ var
 begin
   en:= CurrentEditor.HaveSelection;
   ro:= CurrentEditor.ReadOnly;
-  
+
   ////Need enabled items for S/R dialog:
   //TBXItemECut.Enabled:= en and not ro;
   //TBXItemECopy.Enabled:= en;
@@ -13140,7 +13140,7 @@ end;
 procedure TfmMain.plOutVisibleChanged(Sender: TObject);
 begin
   FixSplitters;
-  
+
   ecShowOut.Checked:= plOut.Visible;
   if not plOut.Visible then //Apply when X icon pressed
   begin
@@ -13639,7 +13639,7 @@ begin
     finally
       Items.EndUpdate;
     end;
-  end;  
+  end;
 end;
 
 procedure TfmMain.ListOutMouseDown(Sender: TObject; Button: TMouseButton;
@@ -13803,7 +13803,7 @@ begin
   if n=tbConsole then
     tbTabsOut.ActiveTabIndex:= 4;
 
-  plOut.Caption:= tbTabsOut.ActiveTab.Caption;  
+  plOut.Caption:= tbTabsOut.ActiveTab.Caption;
 end;
 
 procedure TfmMain.UpdatePanelLeft(n: TSynTabLeft);
@@ -14085,7 +14085,7 @@ procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
       MI.RadioItem:= true;
       MI.Checked:= GetFrameEncoding(CurrentFrame) = Tag;
     end;
-    
+
     if M is TSpTbxPopupMenu then
       (M as TSpTbxPopupMenu).Items.Add(Item)
     else
@@ -14231,7 +14231,7 @@ begin
   Result:= s;
   //encoding translations are in DKLang resource
   SL:= DKLangConstW('cpLn');
-  
+
   n:= Pos(','+s+'=', SL);
   if n=0 then Exit;
   Delete(SL, 1, n+Length(s)+1);
@@ -14586,7 +14586,7 @@ begin
   else
     List:= ListVal;
 
-  //previous index (will be increased or decreased)  
+  //previous index (will be increased or decreased)
   if ANext then
     N:= -1
   else
@@ -14619,7 +14619,7 @@ end;
 procedure TfmMain.TBXItemESyncEdClick(Sender: TObject);
 begin
   DoToggleSyncEditing;
-end;  
+end;
 
 procedure TfmMain.DoToggleSyncEditing;
 begin
@@ -14770,7 +14770,7 @@ end;
 procedure TfmMain.SaveLastDir(const FN, Filter: Widestring; FilterIndex: integer);
 begin
   if opLastDir<>cLastDirRemember then Exit;
-  
+
   opLastDirPath:= WideExtractFileDir(FN);
   opHistFilter:= FilterIndex;
   if FilterIndex >= SFilterNum(Filter) then
@@ -14940,7 +14940,7 @@ begin
   finally
     Free;
   end;
-  
+
   if Assigned(fmSR) then
     with fmSR do
     begin
@@ -15295,7 +15295,7 @@ end;
 procedure TfmMain.TBXItemOShellClick(Sender: TObject);
 begin
   DoConfigShellOptions;
-end;  
+end;
 
 procedure TfmMain.DoConfigShellOptions;
 var
@@ -15532,7 +15532,7 @@ begin
   if (sel='') or (Pos(#13, sel)>0) or (Pos(#10, sel)>0) then
     begin MsgBeep; Exit end;
 
-  //parse text "filename(LineNum)"  
+  //parse text "filename(LineNum)"
   if sel[Length(sel)]=')' then
   begin
     n:= Length(sel);
@@ -15573,7 +15573,7 @@ begin
   try
     Dirs:= TTntStringList.Create;
     Dirs2:= TTntStringList.Create;
-    
+
     SStringToList(opProjPaths, Dirs);
     if Assigned(fmProj) and (fmProj.FOpts.SearchDirs<>'') then
     begin
@@ -15724,12 +15724,12 @@ begin
   begin
     if MaxPos=0 then
       Inc(MaxPos);
-      
+
     if FFinderTotalSize>0 then
       N:= Int64(FFinderDoneSize + CurPos) * 100 div FFinderTotalSize
     else
       N:= Int64(CurPos) * 100 div MaxPos;
-  
+
     //don't check "if FinderProNum<>N", this slows down
     FinderProNum:= N;
     FinderPro.Progress:= N;
@@ -15921,7 +15921,7 @@ begin
     Key:= 0;
     Exit;
   end;
-  
+
   DoHandleKeysInPanels(Key, Shift);
 end;
 
@@ -16076,7 +16076,7 @@ begin
         CaretStrPos:= iSt+i-1;
     finally
       EndUpdate;
-    end;  
+    end;
   end;
 end;
 
@@ -16137,7 +16137,7 @@ begin
     if ReadOnly then Exit;
     if SelLength=0 then
       begin MsgNoSelection; Exit end;
-      
+
     abbr:= '';
     if not MsgInput('zenIn', abbr) then Exit;
 
@@ -16219,7 +16219,7 @@ begin
       Ed.CaretStrPos:= Ed.SelStart;
       Ed.ResetSelection;
     end;
-  end;    
+  end;
 
   //toggle comment
   if NeedUncomm then
@@ -16917,7 +16917,7 @@ begin
     finally
       EditorMaster.EndUpdate;
       EditorSlave.EndUpdate;
-    end;  
+    end;
   end;
 
   UpdateStatusbar;
@@ -17385,7 +17385,7 @@ end;
 procedure TfmMain.TBXItemFSesSaveClick(Sender: TObject);
 begin
   DoSaveSession;
-end;  
+end;
 
 procedure TfmMain.DoSaveSession;
 begin
@@ -17491,7 +17491,7 @@ begin
 
   if nIndex<0 then
     nIndex:= APages.PageCount-1;
-  if nIndex<0 then Exit;  
+  if nIndex<0 then Exit;
 
   if APages.ActivePage.PageIndex<>nIndex then
   begin
@@ -18192,7 +18192,7 @@ begin
        goNextBk: cbNext.Checked:= true;
        goNumBk: cbNum.Checked:= true;
      end;
-     
+
      edLine.Text:= IntToStr(ALine);
      edCol.Text:= IntToStr(ACol);
      FMaxLine:= CurrentEditor.Lines.Count;
@@ -18384,7 +18384,7 @@ end;
 procedure TfmMain.TBXItemClipFindClick(Sender: TObject);
 begin
   DoFindInClipPanel;
-end;  
+end;
 
 procedure TfmMain.DoFindInClipPanel;
 begin
@@ -18933,7 +18933,7 @@ begin
     Info:= Obj as TSynFindInfo
   else
     Info:= nil;
-      
+
   if Info=nil then
   begin
     //maybe clicked on Replace result: "filename (NN)"
@@ -19065,7 +19065,7 @@ end;
 procedure TfmMain.TBXItemTreeFindFindClick(Sender: TObject);
 begin
   DoFindInFindResults;
-end;  
+end;
 
 procedure TfmMain.DoFindInFindResults;
 begin
@@ -19336,7 +19336,7 @@ begin
   if Assigned(Ed) then
     Result:= EditorCurrentLexerForPos(Ed, Ed.CaretStrPos)
   else
-    Result:= '';  
+    Result:= '';
 end;
 
 function TfmMain.CurrentLexerForFile: string;
@@ -19922,7 +19922,7 @@ begin
     while Count>1 do
       Delete(Count-1);
 
-  ApplyShowRecentColors;    
+  ApplyShowRecentColors;
 end;
 
 //index in "Recent colors" after "Clear list" and separator
@@ -20795,7 +20795,7 @@ begin
     begin
       L.Add(fn);
       L.SaveToFile(fn_ini);
-    end;  
+    end;
   finally
     FreeAndNil(L);
   end;
@@ -21045,7 +21045,7 @@ begin
     end;
   finally
     FreeAndNil(Bads);
-  end;  
+  end;
 end;
 
 procedure TfmMain.ProjGetLexers(Sender: TObject; Files: TTntStrings);
@@ -21057,7 +21057,7 @@ end;
 procedure TfmMain.ProjGetLexer(Sender: TObject; Files: TTntStrings);
 begin
   Files.Add(CurrentLexerForFile);
-end;  
+end;
 
 procedure TfmMain.TBXItemFavAddProjClick(Sender: TObject);
 begin
@@ -21153,7 +21153,7 @@ begin
     ApplyFonts;
     fmProj.UpdateTitle;
   end;
-end;  
+end;
 
 procedure TfmMain.TBXItemRightClipsClick(Sender: TObject);
 begin
@@ -21167,7 +21167,7 @@ begin
     begin
       InsertText(S);
       FocusEditor;
-    end;  
+    end;
 end;
 
 procedure TfmMain.ecToggleFocusClipsExecute(Sender: TObject);
@@ -21221,7 +21221,7 @@ begin
     end;
 
     fmClips.ComboChange(nil);
-    fmClips.List.ItemIndex:= fmClips.List.Count-1; 
+    fmClips.List.ItemIndex:= fmClips.List.Count-1;
     fmClips.List.SetFocus;
   end;
 end;
@@ -21386,7 +21386,7 @@ begin
   FClickedFrame:= CurrentFrame;
   DoSetTabColorIndex(NIndex);
 end;
-  
+
 procedure TfmMain.DoSetTabColorIndex(NIndex: Integer);
 var
   NColor: TColor;
@@ -21477,7 +21477,7 @@ end;
 function TfmMain.CurrentSessionFN: string;
 begin
   Result:= FSessionFN;
-end;  
+end;
 
 function TfmMain.CurrentContentFN(Unicode: boolean): Widestring;
 var
@@ -21694,14 +21694,14 @@ begin
     fmNumConv:= TfmNumConv.Create(Self);
     fmNumConv.FormStyle:= fsStayOnTop;
     fmNumConv.OnInsert:= NumConvInsert;
-	
+
     with TIniFile.Create(SynHistoryIni) do
     try
       fmNumConv.Left:= ReadInteger('Win', 'NConvX', 400);
       fmNumConv.Top:= ReadInteger('Win', 'NConvY', 300);
     finally
       Free
-    end;    
+    end;
   end;
   fmNumConv.Show;
 end;
@@ -21745,7 +21745,7 @@ begin
   with ed do
   begin
     Ind_Old:= SIndentOf(Lines[Ln1]);
-      
+
     BeginUpdate;
     DoProgressShow;
 
@@ -21755,13 +21755,13 @@ begin
         if IsProgressStopped(i-Ln1+1, Ln2-Ln1+1) then
           Break;
 
-        s:= Lines[i];  
+        s:= Lines[i];
         Ind_New:= SIndentOf(s);
         if Ind_New<>Ind_Old then
         begin
           s:= Ind_Old + Copy(s, Length(Ind_New)+1, MaxInt);
           DoReplaceLine(ed, i, s, true{ForceUndo});
-        end;  
+        end;
       end;
     finally
       DoProgressHide;
@@ -22027,7 +22027,7 @@ begin
     Result:= cSynOK;
   end
   else
-    Result:= cSynError;  
+    Result:= cSynError;
 end;
 
 function TfmMain.PluginAction_OpenFtpFile(const fn: Widestring; AInfoPtr: Pointer; AInfoSize: Integer): Integer;
@@ -22788,7 +22788,7 @@ begin
     if ListTabs.CanFocus then
       ListTabs.SetFocus;
       }
-    FocusEditor;  
+    FocusEditor;
   end;
 end;
 
@@ -22806,7 +22806,7 @@ begin
       if FrameAllCount=0 then
         acNewTab.Execute;
       UpdatePages;
-      
+
       if ListTabs.CanFocus then
         ListTabs.SetFocus;
     end;
@@ -22991,7 +22991,7 @@ begin
   begin
     CurrentEditor.ResetSelection; //reset selection caused by Ctrl+Alt+click
     Exit;
-  end;  
+  end;
 
   for i:= Low(FPluginsFindid) to High(FPluginsFindid) do
     with FPluginsFindid[i] do
@@ -23145,7 +23145,7 @@ begin
       Result:= Widestring(AText);
   finally
     FreeLibrary(FDll);
-  end;  
+  end;
 end;
 
 
@@ -23184,7 +23184,7 @@ begin
         nil,
         nil,
         nil);
-    end;    
+    end;
   end;
 end;
 
@@ -23785,7 +23785,7 @@ begin
           begin
             acNewTab.Execute;
             CurrentEditor.InsertText(L.Text);
-          end;  
+          end;
           MsgDoneLines(i);
         end;
 
@@ -24083,7 +24083,7 @@ begin
     Valid:= true;
   {$else}
   Valid:= true;
-  {$endif}  
+  {$endif}
 end;
 
 procedure TfmMain.SynContextGutterPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
@@ -24315,7 +24315,7 @@ begin
   Finder.OnBeforeExecute:= nil;
   Finder.OnCanAccept:= FinderCanAccept;
   Finder.Control:= Ed;
-  
+
   if OptBkmk then
     Finder.OnFind:= FinderFind_WithBkmk
   else
@@ -24360,7 +24360,7 @@ begin
     //stop macro if not found
     ecMacroRecorder1.AtFileEnd:= true;
     ecMacroRecorder1.StopPlayback:= true;
-  end;  
+  end;
 end;
 
 procedure TfmMain.ecSortAscendingExecute(Sender: TObject);
@@ -24905,7 +24905,7 @@ end;
 procedure TfmMain.TBXItemMenuSplitClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_ToggleView2);
-end;  
+end;
 
 procedure TfmMain.TBXItemTabToggleSplitClick(Sender: TObject);
 begin
@@ -25097,10 +25097,10 @@ begin
             Items[i].Collapse(true);
         Selected:= Items[0];
         Selected.MakeVisible;
-      end;  
+      end;
     finally
       Items.EndUpdate;
-    end;  
+    end;
   end;
 end;
 
@@ -25324,7 +25324,7 @@ begin
       Ini.WriteInteger('pl'+Id, 'FlY', FloatingPosition.Y);
     end;
   except
-  end;  
+  end;
 end;
 
 procedure TfmMain.LoadPanelProp(
@@ -26307,7 +26307,7 @@ begin
       ecACP.CloseUp(false);
       Result:= true;
     end;
-  end;  
+  end;
 end;
 
 
@@ -26442,7 +26442,7 @@ procedure TfmMain.TBXSubmenuItemConvPopup(Sender: TTBCustomItem;
     begin
       Delete(Cap, Length(Cap), 1);
       if AConvBack then Exit;
-    end;  
+    end;
 
     MI:= TSpTbxItem.Create(Self);
     MI.Caption:=
@@ -26741,7 +26741,7 @@ begin
   begin
     Ed.ResetSearchMarks;
     Exit
-  end;  
+  end;
 
   if opHiliteSmartOnClick then
   begin
@@ -26779,7 +26779,7 @@ begin
   if S<>'' then
     Clipboard.AsText:= S
   else
-    MsgBeep;  
+    MsgBeep;
 end;
 
 procedure TfmMain.DoOpenURL;
@@ -26966,7 +26966,7 @@ begin
       begin
         fn:= Items[i];
         Break
-      end;  
+      end;
 
   if fn<>'' then
   begin
@@ -27087,7 +27087,7 @@ begin
     FProjPreview.Hide;
     DoOpenFile(fn);
     FocusEditor;
-    
+
     CurrentEditor.CaretPos:= FProjPreviewEditor.CaretPos;
     EditorCenterPos(CurrentEditor, true, opSrOffsetY);
   end
@@ -27184,7 +27184,7 @@ begin
       DoPyEvent(CurrentEditor, cSynEventOnCompare,
         [SWideStringToPythonString(SName1),
          SWideStringToPythonString(SName2)]);
-    end;  
+    end;
   end;
 end;
 
@@ -27408,7 +27408,7 @@ begin
     AddEd(Result, F.EditorMaster, '1');
     AddEd(Result, F.EditorSlave, '2');
     Add(Result, cFramePropBk, EditorGetBookmarksAsString(F.EditorMaster));
-  end;  
+  end;
 end;
 
 function TfmMain.IsFramePropertiesStringForFilename(const fn: Widestring; const Str: string): boolean;
@@ -27720,7 +27720,7 @@ begin
     cAddonTypeTemplate:
       dir_to:= SynDir + 'Template\' + s_subdir;
     cAddonTypeRoot:
-      dir_to:= ExcludeTrailingPathDelimiter(SynDir)  
+      dir_to:= ExcludeTrailingPathDelimiter(SynDir)
     else
       dir_to:= '?';
   end;
@@ -28033,7 +28033,7 @@ begin
 
   SId:= 'my_sample';
   if not MsgInput('zMPyNew', SId) then Exit;
-  
+
   SId:= Trim(SId);
   if SId='' then Exit;
   SId:= 'syn_' + SId; //add prefix, so plugin module name won't mess with default names
@@ -28396,7 +28396,7 @@ begin
   plClip.ShowCaptionWhenDocked:= en;
   if Assigned(FProjPreview) then
     FProjPreview.ShowCaptionWhenDocked:= en;
-  DoResizePlugins;  
+  DoResizePlugins;
 end;
 
 procedure TfmMain.TbxItemPanelTitleBarClick(Sender: TObject);
@@ -28409,7 +28409,7 @@ begin
     WriteBool('View', 'PaneTitle', opShowPanelTitles);
   finally
     Free
-  end;    
+  end;
 end;
 
 procedure TfmMain.PopupPanelTitlePopup(Sender: TObject);
@@ -28440,7 +28440,7 @@ begin
           if (nTab>=0) and (nTab<fmMain.FrameAllCount) then
             Result:= fmMain.FramesAll[nTab].EditorMaster
           else
-            Result:= nil;  
+            Result:= nil;
         end;
       else
         Result:= TSyntaxMemo(Pointer(H));
@@ -29080,7 +29080,7 @@ end;
 procedure TfmMain.TBXSubmenuItemBkPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
-  bk, ro: boolean;  
+  bk, ro: boolean;
 begin
   ro:= CurrentEditor.ReadOnly;
   bk:= CurrentEditor.BookmarkObj.Count>0;
@@ -29191,7 +29191,7 @@ begin
     Str:= IntToStr(FProjPreviewEditor.Zoom);
     if DoInputString(DKLangConstW('zMZoomPrompt'), Str) then
       ApplyPreviewZoom(StrToIntDef(Str, FProjPreviewEditor.Zoom));
-  end;    
+  end;
 end;
 
 procedure TfmMain.PopupPreviewEditorPopup(Sender: TObject);

@@ -822,7 +822,6 @@ procedure FFindToList(List: TTntStringList;
   AEnableProcMsg: boolean = true);
 var
   f: TSearchRecW;
-  s, msk: WideString;
   a: integer;
 begin
   if AEnableProcMsg then
@@ -1206,7 +1205,6 @@ end;
 function FormatFileTimeFmt(const ft: TFileTime; const Fmt: string): string;
 var
   lt: TFileTime;
-  st: TSystemTime;
   time: Longint;
   dt: TDateTime;
 begin

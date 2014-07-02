@@ -648,7 +648,7 @@ uses
   unProc,
   unProcHelp,
   unProj,
-  unProcSort,
+  unProcLines,
 
   TntClasses,
   TntFileCtrl;
@@ -852,7 +852,7 @@ begin
             Inc(j);
             RowCount:= j+1;
           end;
-          
+
           //add item
           Cells[0,j]:= IntToStr(i);
           Cells[1,j]:= KeyMapping.Items[i].DisplayName;
@@ -1079,7 +1079,7 @@ begin
   if keyindex=0 then
     KeyList.Cells[2, r]:= KeyList.Cells[3, r];
   KeyList.Cells[3, r]:= '';
-  
+
   KeyMapping.Items[mapindex].KeyStrokes.Delete(keyindex);
 
   ecHotKey.Text:= '';
@@ -1765,7 +1765,7 @@ begin
       if cbASaveUnSaveToDir.Checked then opASaveUnnamed:= cAutoSaveSaveToDir;
     opASaveUnnamedDir:= edASaveUnnamedDir.Text;
     ApplyAutoSave;
-  end;  
+  end;
 end;
 
 procedure TfmSetup.ApplyColors;
@@ -1844,7 +1844,7 @@ begin
     //console
     opFontConsole:= bFontConsole.Font.Name+','+IntToStr(bFontConsole.Font.Size);
     ApplyFontConsole;
-    
+
     ApplyFonts;
   end;
 end;
@@ -1893,7 +1893,7 @@ end;
 procedure TfmSetup.ApplyProgSett;
 begin
   ApplyLang;
-  
+
   with fmMain do
   begin
     opShowCharInfo:= cbChar.Checked;
@@ -2240,7 +2240,7 @@ begin
     cbKeyCat.ItemIndex:= 0;
   finally
     FreeandNil(L);
-  end;  
+  end;
 
   //list keys
   ListKeys;
@@ -2628,7 +2628,7 @@ begin
       begin
         Items.LoadFromFile(fn);
         ItemIndex:= Items.IndexOf(opZenProfile);
-      end;  
+      end;
     end;
   end;
 end;
@@ -2697,7 +2697,7 @@ begin
     if soBreakOnRightMargin in TemplateEditor.Options then
       edWrap.ItemIndex:= 1
     else
-      edWrap.ItemIndex:= 0;  
+      edWrap.ItemIndex:= 0;
 
     cbFold.Checked:= not TemplateEditor.DisableFolding;
     cbFixLineSize.Checked:= soFixedLineHeight in TemplateEditor.Options;

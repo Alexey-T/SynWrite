@@ -48,7 +48,7 @@ uses
   ATSynPlugins in 'ATSynPlugins.pas',
   unFillBlock in 'unFillBlock.pas' {fmFillBlock},
   unSort in 'unSort.pas' {fmSort},
-  unProcSort in 'unProcSort.pas',
+  unProcLines in 'unProcLines.pas',
   unMenuCmds in 'unMenuCmds.pas' {fmMenuCmds: TTntForm},
   unMenuProj in 'unMenuProj.pas' {fmMenuProj: TTntForm},
   unInputSimple in 'unInputSimple.pas' {fmInputSimple: TTntForm},

@@ -1,4 +1,4 @@
-unit unProcSort;
+unit unProcLines;
 
 interface
 
@@ -25,7 +25,7 @@ function DoListCommand_RemoveDupBlanks(
 function DoListCommand_Trim(
   L: TTntStringList;
   Mode: TSynTrimMode): Integer;
-  
+
 function DoListCommand_AlignWithSep(
   L: TTntStringList;
   const Sep: Widestring;
@@ -116,7 +116,7 @@ begin
       begin
         Result:= Ord(S1[i])-Ord(S2[i]);
         Exit
-      end;  
+      end;
     end
     else
     begin
@@ -364,7 +364,7 @@ begin
               begin
                 List.Delete(i);
                 Inc(Result);
-              end;  
+              end;
           finally
             FreeAndNil(L);
           end;
@@ -435,7 +435,7 @@ begin
     //force space before separator:
     if (N>1) and not IsSpaceChar(L[i][N-1]) then
       Inc(N);
-    //remember max  
+    //remember max
     if N>NSize then
       NSize:= N;
   end;
@@ -638,7 +638,7 @@ begin
       begin
         List[i]:= SNew;
         Result:= true;
-      end;  
+      end;
     end;
 end;
 
@@ -651,9 +651,10 @@ function DoListCommand_UnIndent(
   KeepAlign: boolean): boolean;
 var
   i, Num: Integer;
-  S, SIndent, SData, SNew: Widestring;
+  S, STabString, SIndent, SData, SNew: Widestring;
 begin
   Result:= false;
+  STabString:= StringOfChar(' ', TabSize);
 
   if KeepAlign then
     for i:= 0 to List.Count-1 do
@@ -680,7 +681,7 @@ begin
       SIndent:= SUntab(SIndent, TabSize);
       Delete(SIndent, 1, IndentSize);
       if UseTabChar then
-        SReplaceSpToTabLeading(SIndent, StringOfChar(' ', TabSize));
+        SReplaceSpToTabLeading(SIndent, STabString);
 
       SNew:= SIndent+SData;
       if SNew<>List[i] then

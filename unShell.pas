@@ -74,7 +74,7 @@ procedure TfmShell.cbShellClick(Sender: TObject);
 begin
   if FLock then Exit;
   if not ApplyShellExtension(cbShell.Checked) then
-    MsgError(DKLangConstW('shNN'));
+    MsgError(DKLangConstW('shNN'), Handle);
 end;
 
 procedure TfmShell.DoAssoc(const ext: string; en: boolean);

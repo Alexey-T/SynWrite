@@ -80,7 +80,6 @@ procedure EditorMoveCaretByNChars(Ed: TSyntaxMemo; DX, DY: Integer);
 procedure EditorCommentUncommentLines(Ed: TSyntaxMemo; AComment: boolean);
 function EditorToggleSyncEditing(Ed: TSyntaxMemo): boolean;
 procedure EditorKeepCaretOnScreen(Ed: TSyntaxMemo);
-//procedure EditorIndentBlock(Ed: TSyntaxMemo; shift: boolean);
 procedure EditorChangeBlockCase(Ed: TSyntaxMemo; Cmd: TChangeCase);
 procedure EditorDoHomeKey(Ed: TSyntaxMemo);
 procedure EditorInsertBlankLineAboveOrBelow(Ed: TSyntaxMemo; ABelow: boolean);
@@ -1828,53 +1827,6 @@ begin
   end;
   EditorRestoreSel(Ed, Sel);
 end;
-
-(*
-//slow on 400 lines
-procedure EditorIndentBlock(Ed: TSyntaxMemo; shift: boolean);
-var
-  p, pp: TPoint;
-  n, i, Ln1, Ln2: integer;
-  R: TRect;
-  spaces: string;
-begin
-  if not Ed.HaveSelection then Exit;
-  if Ed.SelLength>0 then
-  begin
-    if Shift then
-      n:= Ed.BlockIndent
-    else
-      n:= -Ed.BlockIndent;
-    p:= Ed.StrPosToCaretPos(Ed.SelStart);
-    Ed.ShiftSelection(n, not (soUnindentKeepAlign in Ed.Options));
-    pp:= Ed.StrPosToCaretPos(Ed.SelStart+Ed.SelLength);
-    Ed.SelStart:= Ed.CaretPosToStrPos(p);
-    Ed.SelLength:= Ed.CaretPosToStrPos(pp)-Ed.SelStart;
-  end
-  else
-  begin
-    //Selrect.Left incorrect for Tabs present at line begin.
-    //so bug like EC's
-    n:= Ed.SelRect.Left;
-    Ln1:= Ed.SelRect.Top;
-    Ln2:= Ed.SelRect.Bottom;
-    R:= Ed.SelRect;
-    p:= Ed.CaretPos;
-    spaces:= StringOfChar(' ', Ed.BlockIndent);
-
-    Ed.BeginUpdate;
-    for i:= Ln1 to Ln2 do
-    begin
-      Ed.CaretPos:= Point(n, i);
-      Ed.InsertText(spaces);
-    end;
-    Ed.EndUpdate;
-
-    Ed.CaretPos:= p;
-    Ed.SelRect:= R;
-  end;
-end;
-*)
 
 procedure EditorKeepCaretOnScreen(Ed: TSyntaxMemo);
 var
