@@ -311,7 +311,7 @@ begin
   FNotif.OnChanged:= FileReload;
 
   FAlertEnabled:= True;
-  FPyChangeTick:= 0;  
+  FPyChangeTick:= 0;
   FFtpInfoPtr:= nil;
   FFtpInfoSize:= 0;
   FMapColor:= clLtGray;
@@ -336,6 +336,9 @@ begin
   EditorSlave.PopupMenu:= TfmMain(Owner).PopupEditor;
   EditorMaster.Gutter.Images:= TfmMain(Owner).ImgListGutter;
   EditorSlave.Gutter.Images:= TfmMain(Owner).ImgListGutter;
+
+  EditorMaster.HintProps.DelayBefore:= TfmMain(Owner).opAcpHintDelay;
+  EditorSlave.HintProps.DelayBefore:= TfmMain(Owner).opAcpHintDelay;
 
   //special events
   EditorMaster.OnShowHint:= EditorShowHint;

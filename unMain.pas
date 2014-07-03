@@ -2998,6 +2998,7 @@ type
     opAcpFileChars: integer; //Min word length for ACP from file
     opAcpFileSize: real; //Max file size for ACP from file
     opAcpNum: integer; //Num of chars that starts ACP
+    opAcpHintDelay: integer;
     opSingleInstance: boolean; //single instance
     opLang: integer;
     opLexerGroups: boolean;
@@ -4706,6 +4707,7 @@ begin
     opAcpFileChars:= ReadInteger('ACP', 'FChars', 3);
     opAcpFileSize:= ReadFloat('ACP', 'FSize', 2.0);
     opAcpNum:= ReadInteger('ACP', 'Num', 0);
+    opAcpHintDelay:= ReadInteger('ACP', 'HintDelay', 1500);
     ecACP.ShowWhenNone:= ReadBool('ACP', 'IfNone', true);
     opTemplateTabbing:= true; //ReadBool('ACP', 'TplTab', true);
     opTemplateTabbingExcept:= ReadString('ACP', 'TplTabEx', 'txt,nfo,diz');

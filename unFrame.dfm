@@ -108,7 +108,7 @@ object EditorFrame: TEditorFrame
       Gutter.LineBreakObj = 0
       HintProps.Font.Charset = DEFAULT_CHARSET
       HintProps.Font.Color = clWindowText
-      HintProps.Font.Height = -13
+      HintProps.Font.Height = -12
       HintProps.Font.Name = 'Tahoma'
       HintProps.Font.Style = []
       HintProps.Color = clCream
@@ -314,7 +314,7 @@ object EditorFrame: TEditorFrame
       Gutter.LineBreakObj = 0
       HintProps.Font.Charset = DEFAULT_CHARSET
       HintProps.Font.Color = clWindowText
-      HintProps.Font.Height = -11
+      HintProps.Font.Height = -12
       HintProps.Font.Name = 'Tahoma'
       HintProps.Font.Style = []
       HintProps.Color = clCream
