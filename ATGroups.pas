@@ -7,7 +7,7 @@ License: MPL 2.0
 {$ifdef FPC}
   {$mode delphi}
 {$else}
-  {$define SP} //Allow using SpTBX
+  {$define SP} //Allow using SpTBXLib
 {$endif}
 
 unit ATGroups;
@@ -29,6 +29,7 @@ type
   TATPages = class(TPanel)
   private
     FTabs: TATTabs;
+    FOnTabFocus: TNotifyEvent;
     FOnTabClose: TATTabCloseEvent;
     FOnTabAdd: TNotifyEvent;
     FOnTabEmpty: TNotifyEvent;
@@ -44,10 +45,21 @@ type
     procedure AddTab(AControl: TControl; const ACaption: Widestring;
       AColor: TColor = clNone);
     property Tabs: TATTabs read FTabs;
+    property OnTabFocus: TNotifyEvent read FOnTabFocus write FOnTabFocus;
     property OnTabClose: TATTabCloseEvent read FOnTabClose write SetOnTabClose;
     property OnTabAdd: TNotifyEvent read FOnTabAdd write SetOnTabAdd;
     property OnTabEmpty: TNotifyEvent read FOnTabEmpty write FOnTabEmpty;
   end;
+
+type
+  TATTabsColorId = (
+    tabColorActive,
+    tabColorPassive,
+    tabColorPassiveOver,
+    tabColorFont,
+    tabColorBorderActive,
+    tabColorBorderPassive
+    );
 
 type
   TATGroupsMode = (
@@ -59,52 +71,109 @@ type
     gm3Vert,
     gm4Horz,
     gm4Vert,
-    gm4Grid
+    gm4Grid,
+    gm6Grid
     );
+
+const
+  cModesGroupsCount: array[TATGroupsMode] of Integer = (
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    4,
+    6
+    );
+
+type
+  TATGroupsNums = 1..6;
 
 type
   TATGroups = class(TPanel)
   private
-    FSplit1, FSplit2, FSplit3: TMySplitter;
-    FPanel1, FPanel2: TPanel;
+    FSplit1,
+    FSplit2,
+    FSplit3,
+    FSplit4,
+    FSplit5: TMySplitter;
+    FPanel1,
+    FPanel2: TPanel;
+    FPos1,
+    FPos2,
+    FPos3,
+    FPos4,
+    FPos5: Real;
     FSplitPopup: {$ifdef SP} TSpTbxPopupMenu {$else} TPopupMenu {$endif};
     FMode: TATGroupsMode;
-    FPos1, FPos2, FPos3: Real;
-    FOnPopup: TNotifyEvent;
+    FOnTabPopup: TNotifyEvent;
+    FOnTabFocus: TNotifyEvent;
+    FOnTabClose: TATTabCloseEvent;
+    FOnTabAdd: TNotifyEvent;
     FPopupPages: TATPages;
     FPopupTabIndex: Integer;
+    procedure TabFocus(Sender: TObject);
     procedure TabEmpty(Sender: TObject);
     procedure TabPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+    procedure TabClose(Sender: TObject; ATabIndex: Integer; var ACanClose: boolean);
+    procedure TabAdd(Sender: TObject);
     procedure SetMode(Value: TATGroupsMode);
     procedure SetSplitPercent(N: Integer);
     procedure Split1Moved(Sender: TObject);
     procedure Split2Moved(Sender: TObject);
     procedure Split3Moved(Sender: TObject);
+    procedure Split4Moved(Sender: TObject);
+    procedure Split5Moved(Sender: TObject);
     procedure SplitClick(Sender: TObject);
     procedure SaveSplitPos;
     procedure RestoreSplitPos;
     procedure InitSplitterPopup;
+    procedure MoveTabsOnModeChanging(Value: TATGroupsMode);
   protected
     procedure Resize; override;
   public
     Pages1,
     Pages2,
     Pages3,
-    Pages4: TATPages;
+    Pages4,
+    Pages5,
+    Pages6,
+    PagesCurrent: TATPages;
+    Pages: array[TATGroupsNums] of TATPages;
     constructor Create(AOwner: TComponent); override;
+    //
+    function PagesSetIndex(ANum: Integer): boolean;
+    procedure PagesSetNext(ANext: boolean);
+    function PagesIndexOf(APages: TATPages): Integer;
+    function PagesIndexOfControl(ACtl: TControl): Integer;
+    function PagesNextIndex(AIndex: Integer; ANext: boolean; AEnableEmpty: boolean): Integer;
+    //
     procedure MoveTab(AFromPages: TATPages; AFromIndex: Integer;
-      AToPages: TATPages; AToIndex: Integer);
+      AToPages: TATPages; AToIndex: Integer; AActivateTabAfter: boolean);
+    procedure MovePopupTabToNext(ANext: boolean);
+    procedure MoveCurrentTabToNext(ANext: boolean);
+    procedure MoveCurrentTabToOpposite;
+    //
     property Mode: TATGroupsMode read FMode write SetMode;
     property PopupPages: TATPages read FPopupPages;
     property PopupTabIndex: Integer read FPopupTabIndex;
     property SplitPercent: Integer write SetSplitPercent;
-    property OnTabPopup: TNotifyEvent read FOnPopup write FOnPopup;
+    procedure SetTabFont(AFont: TFont);
+    procedure SetTabColor(Id: TATTabsColorId; N: TColor);
+    //
+    property OnTabPopup: TNotifyEvent read FOnTabPopup write FOnTabPopup;
+    property OnTabFocus: TNotifyEvent read FOnTabFocus write FOnTabFocus;
+    property OnTabClose: TATTabCloseEvent read FOnTabClose write FOnTabClose;
+    property OnTabAdd: TNotifyEvent read FOnTabAdd write FOnTabAdd;
   end;
 
 implementation
 
 uses
-  SysUtils, Windows,
+  Windows, SysUtils,
   {$ifdef SP}
   SpTbxSkins,
   {$endif}
@@ -112,7 +181,7 @@ uses
 
 function PtInControl(Control: TControl; const Pnt: TPoint): boolean;
 begin
-  Result:= PtInRect(Control.BoundsRect, Control.ScreenToClient(Pnt));
+  Result:= PtInRect(Control.ClientRect, Control.ScreenToClient(Pnt));
 end;
 
 { TATPages }
@@ -170,9 +239,9 @@ begin
   begin
     Ctl:= D.TabObject as TWinControl;
     if Ctl.Showing then
-      if Ctl.CanFocus then
-        Ctl.SetFocus;
-  end;      
+      if Assigned(FOnTabFocus) then
+        FOnTabFocus(FTabs);
+  end;
 end;
 
 procedure TATPages.SetOnTabClose(AEvent: TATTabCloseEvent);
@@ -196,6 +265,10 @@ end;
 { TATGroups }
 
 constructor TATGroups.Create(AOwner: TComponent);
+const
+  cMinSize = 60;
+var
+  i: Integer;
 begin
   inherited;
 
@@ -205,53 +278,61 @@ begin
   BevelOuter:= bvNone;
 
   Pages1:= TATPages.Create(Self);
-  Pages1.Parent:= Self;
-  Pages1.Align:= alLeft;
-  Pages1.OnContextPopup:= TabPopup;
-  Pages1.OnTabEmpty:= TabEmpty;
-
   Pages2:= TATPages.Create(Self);
-  Pages2.Parent:= Self;
-  Pages2.Align:= alLeft;
-  Pages2.OnContextPopup:= TabPopup;
-  Pages2.OnTabEmpty:= TabEmpty;
-
   Pages3:= TATPages.Create(Self);
-  Pages3.Parent:= Self;
-  Pages3.Align:= alLeft;
-  Pages3.OnContextPopup:= TabPopup;
-  Pages3.OnTabEmpty:= TabEmpty;
-
   Pages4:= TATPages.Create(Self);
-  Pages4.Parent:= Self;
-  Pages4.Align:= alLeft;
-  Pages4.OnContextPopup:= TabPopup;
-  Pages4.OnTabEmpty:= TabEmpty;
+  Pages5:= TATPages.Create(Self);
+  Pages6:= TATPages.Create(Self);
 
-  Pages1.Name:= 'aPages1';
-  Pages2.Name:= 'aPages2';
-  Pages3.Name:= 'aPages3';
-  Pages4.Name:= 'aPages4';
-  Pages1.Caption:= '';
-  Pages2.Caption:= '';
-  Pages3.Caption:= '';
-  Pages4.Caption:= '';
-  Pages1.Tabs.Name:= 'aTabs1';
-  Pages2.Tabs.Name:= 'aTabs2';
-  Pages3.Tabs.Name:= 'aTabs3';
-  Pages4.Tabs.Name:= 'aTabs4';
+  PagesCurrent:= Pages1;
+  Pages[1]:= Pages1;
+  Pages[2]:= Pages2;
+  Pages[3]:= Pages3;
+  Pages[4]:= Pages4;
+  Pages[5]:= Pages5;
+  Pages[6]:= Pages6;
+
+  for i:= Low(Pages) to High(Pages) do
+    with Pages[i] do
+    begin
+      Name:= 'aPages'+IntToStr(i);
+      Caption:= '';
+      Tabs.Name:= 'aPagesTabs'+IntToStr(i);
+      //
+      Parent:= Self;
+      Align:= alLeft;
+      //
+      OnContextPopup:= Self.TabPopup;
+      OnTabEmpty:= Self.TabEmpty;
+      OnTabFocus:= Self.TabFocus;
+      OnTabClose:= Self.TabClose;
+      OnTabAdd:= Self.TabAdd;
+    end;
 
   FSplit1:= TMySplitter.Create(Self);
   FSplit1.Parent:= Self;
   FSplit1.OnMoved:= Split1Moved;
+  FSplit1.MinSize:= cMinSize;
 
   FSplit2:= TMySplitter.Create(Self);
   FSplit2.Parent:= Self;
   FSplit2.OnMoved:= Split2Moved;
+  FSplit2.MinSize:= cMinSize;
 
   FSplit3:= TMySplitter.Create(Self);
   FSplit3.Parent:= Self;
   FSplit3.OnMoved:= Split3Moved;
+  FSplit3.MinSize:= cMinSize;
+
+  FSplit4:= TMySplitter.Create(Self);
+  FSplit4.Parent:= Self;
+  FSplit4.OnMoved:= Split4Moved;
+  FSplit4.MinSize:= cMinSize;
+
+  FSplit5:= TMySplitter.Create(Self);
+  FSplit5.Parent:= Self;
+  FSplit5.OnMoved:= Split5Moved;
+  FSplit5.MinSize:= cMinSize;
 
   FPanel1:= TPanel.Create(Self);
   FPanel1.Parent:= Self;
@@ -313,12 +394,29 @@ begin
   {$endif}
 end;
 
+procedure TATGroups.MoveTabsOnModeChanging(Value: TATGroupsMode);
+var
+  NCountBefore, NCountAfter: Integer;
+  i, j: Integer;
+begin
+  NCountBefore:= cModesGroupsCount[FMode];
+  NCountAfter:= cModesGroupsCount[Value];
+
+  for i:= NCountAfter+1 to NCountBefore do
+    for j:= 0 to Pages[i].Tabs.TabCount-1 do
+      MoveTab(Pages[i], 0{first tab}, Pages[NCountAfter], -1, false);
+end;
+
 procedure TATGroups.SetMode(Value: TATGroupsMode);
 var
   FSplitDiv: Real;
+  i: Integer;
 begin
   if Value<>FMode then
   begin
+    //actions before changing FMode
+    MoveTabsOnModeChanging(Value);
+
     case FMode of
       gm2Horz:
         FSplitDiv:= Pages1.Width / ClientWidth;
@@ -328,6 +426,7 @@ begin
         FSplitDiv:= 0.5;
     end;
 
+    //changing FMode and actions after changing
     FMode:= Value;
 
     if FMode in [gm2Horz, gm2Vert] then
@@ -335,48 +434,77 @@ begin
     else
       SetSplitterPopup(FSplit1, nil);
 
-    if FMode=gm4Grid then
-    begin
-      FPanel1.Visible:= true;
-      FPanel2.Visible:= true;
-      Pages1.Parent:= FPanel1;
-      Pages2.Parent:= FPanel1;
-      Pages3.Parent:= FPanel2;
-      Pages4.Parent:= FPanel2;
-      FSplit1.Parent:= FPanel1;
-      FSplit2.Parent:= FPanel2;
-    end
-    else
-    begin
-      FPanel1.Visible:= false;
-      FPanel2.Visible:= false;
-      Pages1.Parent:= Self;
-      Pages2.Parent:= Self;
-      Pages3.Parent:= Self;
-      Pages4.Parent:= Self;
-      FSplit1.Parent:= Self;
-      FSplit2.Parent:= Self;
+    for i:= Low(Pages) to High(Pages) do
+      Pages[i].Visible:= i<=cModesGroupsCount[FMode];
+
+    case FMode of
+      gm4Grid:
+      begin
+        FPanel1.Visible:= true;
+        FPanel2.Visible:= true;
+        Pages1.Parent:= FPanel1;
+        Pages2.Parent:= FPanel1;
+        Pages3.Parent:= FPanel2;
+        Pages4.Parent:= FPanel2;
+        Pages5.Parent:= FPanel2;
+        Pages6.Parent:= FPanel2;
+        FSplit1.Parent:= FPanel1;
+        FSplit2.Parent:= FPanel2;
+        FSplit3.Parent:= Self;
+        FSplit4.Parent:= Self;
+        FSplit5.Parent:= Self;
+      end;
+      gm6Grid:
+      begin
+        FPanel1.Visible:= true;
+        FPanel2.Visible:= true;
+        Pages1.Parent:= FPanel1;
+        Pages2.Parent:= FPanel1;
+        Pages3.Parent:= FPanel1;
+        Pages4.Parent:= FPanel2;
+        Pages5.Parent:= FPanel2;
+        Pages6.Parent:= FPanel2;
+        FSplit1.Parent:= FPanel1;
+        FSplit2.Parent:= FPanel1;
+        FSplit3.Parent:= Self;
+        FSplit4.Parent:= FPanel2;
+        FSplit5.Parent:= FPanel2;
+      end
+      else
+      begin
+        FPanel1.Visible:= false;
+        FPanel2.Visible:= false;
+        Pages1.Parent:= Self;
+        Pages2.Parent:= Self;
+        Pages3.Parent:= Self;
+        Pages4.Parent:= Self;
+        Pages5.Parent:= Self;
+        Pages6.Parent:= Self;
+        FSplit1.Parent:= Self;
+        FSplit2.Parent:= Self;
+        FSplit3.Parent:= Self;
+        FSplit4.Parent:= Self;
+        FSplit5.Parent:= Self;
+      end;
     end;
 
     case FMode of
       gmOne:
         begin
-          Pages2.Visible:= false;
-          Pages3.Visible:= false;
-          Pages4.Visible:= false;
           FSplit1.Visible:= false;
           FSplit2.Visible:= false;
           FSplit3.Visible:= false;
+          FSplit4.Visible:= false;
+          FSplit5.Visible:= false;
           Pages1.Align:= alClient;
         end;
       gm2Horz:
         begin
-          Pages2.Visible:= true;
-          Pages3.Visible:= false;
-          Pages4.Visible:= false;
           FSplit1.Visible:= true;
           FSplit2.Visible:= false;
           FSplit3.Visible:= false;
+          FSplit4.Visible:= false;
+          FSplit5.Visible:= false;
           Pages1.Align:= alLeft;
           Pages2.Align:= alClient;
           FSplit1.Align:= alLeft;
@@ -388,12 +516,11 @@ begin
         end;
       gm2Vert:
         begin
-          Pages2.Visible:= true;
-          Pages3.Visible:= false;
-          Pages4.Visible:= false;
           FSplit1.Visible:= true;
           FSplit2.Visible:= false;
           FSplit3.Visible:= false;
+          FSplit4.Visible:= false;
+          FSplit5.Visible:= false;
           Pages1.Align:= alTop;
           Pages2.Align:= alClient;
           FSplit1.Align:= alTop;
@@ -405,12 +532,11 @@ begin
         end;
       gm3Horz:
         begin
-          Pages2.Visible:= true;
-          Pages3.Visible:= true;
-          Pages4.Visible:= false;
           FSplit1.Visible:= true;
           FSplit2.Visible:= true;
           FSplit3.Visible:= false;
+          FSplit4.Visible:= false;
+          FSplit5.Visible:= false;
           Pages1.Align:= alLeft;
           Pages2.Align:= alLeft;
           Pages3.Align:= alClient;
@@ -427,12 +553,11 @@ begin
         end;
       gm3Vert:
         begin
-          Pages2.Visible:= true;
-          Pages3.Visible:= true;
-          Pages4.Visible:= false;
           FSplit1.Visible:= true;
           FSplit2.Visible:= true;
           FSplit3.Visible:= false;
+          FSplit4.Visible:= false;
+          FSplit5.Visible:= false;
           Pages1.Align:= alTop;
           Pages2.Align:= alTop;
           Pages3.Align:= alClient;
@@ -449,12 +574,11 @@ begin
         end;
       gm4Horz:
         begin
-          Pages2.Visible:= true;
-          Pages3.Visible:= true;
-          Pages4.Visible:= true;
           FSplit1.Visible:= true;
           FSplit2.Visible:= true;
           FSplit3.Visible:= true;
+          FSplit4.Visible:= false;
+          FSplit5.Visible:= false;
           Pages1.Align:= alLeft;
           Pages2.Align:= alLeft;
           Pages3.Align:= alLeft;
@@ -476,12 +600,11 @@ begin
         end;
       gm4Vert:
         begin
-          Pages2.Visible:= true;
-          Pages3.Visible:= true;
-          Pages4.Visible:= true;
           FSplit1.Visible:= true;
           FSplit2.Visible:= true;
           FSplit3.Visible:= true;
+          FSplit4.Visible:= false;
+          FSplit5.Visible:= false;
           Pages1.Align:= alTop;
           Pages2.Align:= alTop;
           Pages3.Align:= alTop;
@@ -503,12 +626,11 @@ begin
         end;
       gm4Grid:
         begin
-          Pages2.Visible:= true;
-          Pages3.Visible:= true;
-          Pages4.Visible:= true;
           FSplit1.Visible:= true;
           FSplit2.Visible:= true;
           FSplit3.Visible:= true;
+          FSplit4.Visible:= false;
+          FSplit5.Visible:= false;
           Pages1.Align:= alLeft;
           Pages2.Align:= alClient;
           Pages3.Align:= alLeft;
@@ -520,11 +642,53 @@ begin
           Pages1.Width:= ClientWidth div 2;
           Pages3.Width:= ClientWidth div 2;
           FPanel1.Height:= ClientHeight div 2;
-          //pos
+          //pos-a
+          FSplit1.Left:= ClientWidth;
+          Pages2.Left:= ClientWidth;
+          //pos-b
+          FSplit2.Left:= ClientWidth;
+          Pages4.Left:= ClientWidth;
+          //pos-c
+          FSplit3.Top:= ClientHeight;
+          FPanel2.Top:= ClientHeight;
+        end;
+      gm6Grid:
+        begin
+          FSplit1.Visible:= true;
+          FSplit2.Visible:= true;
+          FSplit3.Visible:= true;
+          FSplit4.Visible:= true;
+          FSplit5.Visible:= true;
+          Pages1.Align:= alLeft;
+          Pages2.Align:= alLeft;
+          Pages3.Align:= alClient;
+          Pages4.Align:= alLeft;
+          Pages5.Align:= alLeft;
+          Pages6.Align:= alClient;
+          FSplit1.Align:= alLeft;
+          FSplit2.Align:= alLeft;
+          FSplit3.Align:= alTop;
+          FSplit4.Align:= alLeft;
+          FSplit5.Align:= alLeft;
+          //size
+          Pages1.Width:= ClientWidth div 3;
+          Pages2.Width:= ClientWidth div 3;
+          Pages4.Width:= ClientWidth div 3;
+          Pages5.Width:= ClientWidth div 3;
+          FPanel1.Height:= ClientHeight div 2;
+          //pos-a
           FSplit1.Left:= ClientWidth;
           Pages2.Left:= ClientWidth;
           FSplit2.Left:= ClientWidth;
-          Pages4.Left:= ClientWidth;
+          Pages3.Left:= ClientWidth;
+          //pos-b
+          FSplit4.Left:= ClientWidth;
+          Pages5.Left:= ClientWidth;
+          FSplit5.Left:= ClientWidth;
+          Pages6.Left:= ClientWidth;
+          //pos-c
+          FSplit3.Top:= ClientHeight;
+          FPanel2.Top:= ClientHeight;
         end;
     end;
 
@@ -536,6 +700,9 @@ procedure TATGroups.Split1Moved(Sender: TObject);
 begin
   if FMode=gm4Grid then
     Pages3.Width:= Pages1.Width;
+  if FMode=gm6Grid then
+    Pages4.Width:= Pages1.Width;
+
   SaveSplitPos;
 end;
 
@@ -543,6 +710,9 @@ procedure TATGroups.Split2Moved(Sender: TObject);
 begin
   if FMode=gm4Grid then
     Pages1.Width:= Pages3.Width;
+  if FMode=gm6Grid then
+    Pages5.Width:= Pages2.Width;
+
   SaveSplitPos;
 end;
 
@@ -551,36 +721,45 @@ begin
   SaveSplitPos;
 end;
 
+procedure TATGroups.Split4Moved(Sender: TObject);
+begin
+  if FMode=gm6Grid then
+    Pages1.Width:= Pages4.Width;
+
+  SaveSplitPos;
+end;
+
+procedure TATGroups.Split5Moved(Sender: TObject);
+begin
+  if FMode=gm6Grid then
+    Pages2.Width:= Pages5.Width;
+
+  SaveSplitPos;
+end;
+
 procedure TATGroups.TabPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 var
   Pnt, PntC: TPoint;
+  i: Integer;
 begin
-  Pnt:= (Sender as TControl).ClientToScreen(MousePos);
+  FPopupPages:= nil;
+  FPopupTabIndex:= -1;
 
-  if PtInControl(Pages1.Tabs, Pnt) then
-    FPopupPages:= Pages1
-  else
-  if PtInControl(Pages2.Tabs, Pnt) then
-    FPopupPages:= Pages2
-  else
-  if PtInControl(Pages3.Tabs, Pnt) then
-    FPopupPages:= Pages3
-  else
-  if PtInControl(Pages4.Tabs, Pnt) then
-    FPopupPages:= Pages4
-  else
-  begin
-    FPopupPages:= nil;
-    FPopupTabIndex:= -1;
-    Exit;
-  end;
+  Pnt:= (Sender as TControl).ClientToScreen(MousePos);
+  for i:= Low(Pages) to High(Pages) do
+    if PtInControl(Pages[i].Tabs, Pnt) then
+    begin
+      FPopupPages:= Pages[i];
+      Break
+    end;
+  if FPopupPages=nil then Exit;
 
   PntC:= PopupPages.Tabs.ScreenToClient(Pnt);
   FPopupTabIndex:= FPopupPages.Tabs.GetTabAt(PntC.X, PntC.Y);
 
-  if Assigned(FOnPopup) then
-    FOnPopup(Self);
-  Handled:= true;  
+  if Assigned(FOnTabPopup) then
+    FOnTabPopup(Self);
+  Handled:= true;
 end;
 
 procedure TATPages.TabDrawBefore(Sender: TObject;
@@ -627,6 +806,8 @@ begin
   FPos1:= 0;
   FPos2:= 0;
   FPos3:= 0;
+  FPos4:= 0;
+  FPos5:= 0;
 
   case FMode of
     gm2Horz,
@@ -650,6 +831,14 @@ begin
         FPos1:= Pages1.Width / ClientWidth;
         FPos2:= Pages3.Width / ClientWidth;
         FPos3:= FPanel1.Height / ClientHeight;
+      end;
+    gm6Grid:
+      begin
+        FPos1:= Pages1.Width / ClientWidth;
+        FPos2:= Pages2.Width / ClientWidth;
+        FPos3:= FPanel1.Height / ClientHeight;
+        FPos4:= Pages4.Width / ClientWidth;
+        FPos5:= Pages5.Width / ClientWidth;
       end;
   end;
 end;
@@ -681,6 +870,14 @@ begin
         Pages1.Width:= Trunc(FPos1 * ClientWidth);
         Pages3.Width:= Trunc(FPos2 * ClientWidth);
         FPanel1.Height:= Trunc(FPos3 * ClientHeight);
+      end;
+    gm6Grid:
+      begin
+        Pages1.Width:= Trunc(FPos1 * ClientWidth);
+        Pages2.Width:= Trunc(FPos2 * ClientWidth);
+        FPanel1.Height:= Trunc(FPos3 * ClientHeight);
+        Pages4.Width:= Trunc(FPos4 * ClientWidth);
+        Pages5.Width:= Trunc(FPos5 * ClientWidth);
       end;
   end;
 end;
@@ -728,7 +925,7 @@ begin
 end;
 
 procedure TATGroups.MoveTab(AFromPages: TATPages; AFromIndex: Integer;
-  AToPages: TATPages; AToIndex: Integer);
+  AToPages: TATPages; AToIndex: Integer; AActivateTabAfter: boolean);
 var
   D: TATTabData;
 begin
@@ -736,8 +933,173 @@ begin
   if D=nil then Exit;
   AToPages.AddTab(D.TabObject as TControl, D.TabCaption, D.TabColor);
   AFromPages.Tabs.DeleteTab(AFromIndex, false);
+
+  if AActivateTabAfter then
+    with AToPages.Tabs do
+      TabIndex:= TabCount-1;
 end;
 
+
+function TATGroups.PagesSetIndex(ANum: Integer): boolean;
+var
+  APages: TATPages;
+begin
+  if (ANum>=Low(Pages)) and (ANum<=High(Pages)) then
+    APages:= Pages[ANum]
+  else
+    APages:= nil;
+
+  Result:= (APages<>nil) and APages.Visible and (APages.Tabs.TabCount>0);
+  if Result then
+    APages.Tabs.OnTabClick(nil);
+end;
+
+procedure TATGroups.PagesSetNext(ANext: boolean);
+var
+  Num0, Num1: Integer;
+begin
+  Num0:= PagesIndexOf(PagesCurrent);
+  if Num0<0 then Exit;
+  Num1:= PagesNextIndex(Num0, ANext, false);
+  if Num1<0 then Exit;
+  PagesSetIndex(Num1);
+end;
+
+
+function TATGroups.PagesIndexOfControl(ACtl: TControl): Integer;
+var
+  i, j: Integer;
+begin
+  for i:= Low(Pages) to High(Pages) do
+    with Pages[i] do
+      for j:= 0 to Tabs.TabCount-1 do
+        if Tabs.GetTabData(j).TabObject = ACtl then
+        begin
+          Result:= i;
+          Exit
+        end;
+  Result:= -1;
+end;
+
+function TATGroups.PagesIndexOf(APages: TATPages): Integer;
+var
+  i: Integer;
+begin
+  Result:= -1;
+  for i:= Low(Pages) to High(Pages) do
+    if Pages[i] = APages then
+    begin
+      Result:= i;
+      Exit
+    end;
+end;
+
+function TATGroups.PagesNextIndex(AIndex: Integer; ANext: boolean;
+  AEnableEmpty: boolean): Integer;
+var
+  N: Integer;
+begin
+  Result:= -1;
+  N:= AIndex;
+
+  repeat
+    if ANext then Inc(N) else Dec(N);
+    if N>High(Pages) then N:= Low(Pages) else
+      if N<Low(Pages) then N:= High(Pages);
+
+    if N=AIndex then Exit; //don't return same index
+
+    if Pages[N].Visible then
+      if (Pages[N].Tabs.TabCount>0) or AEnableEmpty then
+      begin
+        Result:= N;
+        Exit
+      end;
+  until false;
+end;
+
+
+procedure TATGroups.TabFocus(Sender: TObject);
+begin
+  if Assigned(FOnTabFocus) then
+    FOnTabFocus(Sender);
+end;
+
+procedure TATGroups.MovePopupTabToNext(ANext: boolean);
+var
+  N0, N1: Integer;
+begin
+  N0:= PagesIndexOf(PopupPages);
+  if N0<0 then Exit;
+  N1:= PagesNextIndex(N0, ANext, true);
+  if N1<0 then Exit;
+  MoveTab(PopupPages, PopupTabIndex, Pages[N1], -1, false);
+end;
+
+procedure TATGroups.MoveCurrentTabToNext(ANext: boolean);
+var
+  N0, N1: Integer;
+begin
+  N0:= PagesIndexOf(PagesCurrent);
+  if N0<0 then Exit;
+  N1:= PagesNextIndex(N0, ANext, true);
+  if N1<0 then Exit;
+  MoveTab(PagesCurrent, PagesCurrent.Tabs.TabIndex, Pages[N1], -1, true);
+end;
+
+procedure TATGroups.TabClose(Sender: TObject; ATabIndex: Integer;
+  var ACanClose: boolean);
+begin
+  if Assigned(FOnTabClose) then
+    FOnTabClose(Sender, ATabIndex, ACanClose);
+end;
+
+procedure TATGroups.TabAdd(Sender: TObject);
+begin
+  if Assigned(FOnTabAdd) then
+    FOnTabAdd(Sender);
+end;
+
+procedure TATGroups.SetTabFont(AFont: TFont);
+var
+  i: Integer;
+begin
+  for i:= Low(Pages) to High(Pages) do
+    Pages[i].Tabs.Font.Assign(AFont);
+end;
+
+procedure TATGroups.SetTabColor(Id: TATTabsColorId; N: TColor);
+var
+  i: Integer;
+begin
+  for i:= Low(Pages) to High(Pages) do
+    with Pages[i].Tabs do
+      case Id of
+        tabColorActive: ColorTabActive:= N;
+        tabColorPassive: ColorTabPassive:= N;
+        tabColorPassiveOver: ColorTabOver:= N;
+        tabColorFont: Font.Color:= N;
+        tabColorBorderActive: ColorBorderActive:= N;
+        tabColorBorderPassive: ColorBorderPassive:= N;
+      end;
+end;
+
+procedure TATGroups.MoveCurrentTabToOpposite;
+var
+  NFrom, NTo, NTabIndex: Integer;
+begin
+  NFrom:= PagesIndexOf(PagesCurrent);
+  if NFrom<0 then Exit;
+  if NFrom=1 then NTo:= 2 else NTo:= 1;
+
+  NTabIndex:= Pages[NFrom].Tabs.TabIndex;
+  if NTabIndex<0 then Exit;
+
+  if (NTo>1) and (FMode<=gmOne) then
+    SetMode(gm2Horz);
+
+  MoveTab(Pages[NFrom], NTabIndex, Pages[NTo], -1, true);
+end;
 
 end.
 
