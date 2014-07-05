@@ -3254,7 +3254,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.5.1085';
+  cSynVer = '6.5.1090';
   cSynPyVer = '1.0.130';
 
 const
@@ -23750,11 +23750,15 @@ begin
 
       scmdIndent:
         ok:= DoListCommand_Indent(L, EditorTabSize(Ed),
-               Ed.BlockIndent, Ed.TabMode=tmTabChar);
+               Ed.BlockIndent,
+               {Ed.TabMode=tmTabChar}false
+               );
       scmdUnIndent:
         ok:= DoListCommand_UnIndent(L, EditorTabSize(Ed),
-               Ed.BlockIndent, Ed.TabMode=tmTabChar,
-               soUnindentKeepAlign in Ed.Options);
+               Ed.BlockIndent,
+               {Ed.TabMode=tmTabChar}false,
+               soUnindentKeepAlign in Ed.Options
+               );
 
       scmdSpacesToTabs:
         begin
