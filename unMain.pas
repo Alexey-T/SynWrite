@@ -3084,6 +3084,7 @@ type
     procedure ApplySpell;
     procedure ApplyProj;
     procedure ApplyFrames;
+    procedure ApplyFramesGutters;
     procedure ApplyTips;
     procedure ApplyAutoSave;
     procedure ApplyDefaultFonts;
@@ -20849,6 +20850,14 @@ begin
       //apply tab caption options
       DoTitleChanged;
     end;
+end;
+
+procedure TfmMain.ApplyFramesGutters;
+var
+  i: Integer;
+begin
+  for i:= 0 to FrameAllCount-1 do
+    UpdateGutter(FramesAll[i]);
 end;
 
 procedure TfmMain.TBXItemCtxAddColorClick(Sender: TObject);

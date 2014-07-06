@@ -1,7 +1,6 @@
 {
 SynWrite main Options dialog.
 }
-//{$define NOSEQ}
 
 unit unSetup;
 
@@ -15,8 +14,8 @@ uses
   TntStdCtrls, TntComCtrls, TntForms, TntGrids,
   DKLang,
 
-  unMain,
-  unSetupOvr, Menus, TntMenus;
+  unMain, unSetupOvr,
+  Menus, TntMenus;
 
 type
   TfmSetup = class(TTntForm)
@@ -659,6 +658,12 @@ const
   cColorExt = 'synw-colors';
   cColorFilter = '*.'+cColorExt+'|*.'+cColorExt;
 
+function _ColorIndexToDklangID(n: integer): string;
+begin
+  Result:= 'zzc_' + cColors[n];
+  SReplaceAll(Result, '-', '_');
+end;
+
 procedure TfmSetup.bOkClick(Sender: TObject);
 begin
   Apply;
@@ -676,8 +681,6 @@ begin
 end;
 
 procedure TfmSetup.Apply;
-var
-  i: integer;
 begin
   if tabCarets.Tag  <>0 then ApplyEditorCarets;
   if tabOvr.Tag     <>0 then ApplyEditorOverrides;
@@ -705,8 +708,7 @@ begin
   begin
     //update from template
     PropsManager.UpdateAll;
-    for i:= 0 to FrameAllCount-1 do
-      UpdateGutter(FramesAll[i]);
+    ApplyFramesGutters;
 
     //save
     opTabOptionsLast:= ListCat.ItemIndex;
@@ -716,16 +718,9 @@ end;
 
 procedure TfmSetup.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  Action := caFree;
+  Action:= caFree;
 end;
 
-function ColorNumToLngID(n: integer): string;
-begin
-  Result:= 'zzc_' + cColors[n];
-  SReplaceAll(Result, '-', '_');
-end;
-
-//view
 procedure TfmSetup.tabColorsShow(Sender: TObject);
 begin
   if tabColors.Tag<>0 then Exit;
@@ -2074,7 +2069,7 @@ var
   i: Integer;
 begin
   for i:= Low(cColorsOrder) to High(cColorsOrder) do
-    ListColors.Items.Add(DKLangConstW(ColorNumToLngId(cColorsOrder[i])));
+    ListColors.Items.Add(DKLangConstW(_ColorIndexToDklangID(cColorsOrder[i])));
   ListColors.Selected[0]:= true;
 
   with fmMain do
