@@ -870,7 +870,7 @@ begin
         PROP_SPLIT_MAIN_POS:
           Result:= PyInt_FromLong(Trunc(fmMain.MainSplitterPos));
         PROP_SPLIT_MAIN_HORZ:
-          Result:= PyBool_FromLong(Ord(fmMain.MainSplitterHorz));
+          Result:= PyInt_FromLong(0); ///////////PyBool_FromLong(Ord(fmMain.MainSplitterHorz));
 
         PROP_RECENT_FILES:
           Result:= Py_StringList(fmMain.SynMruFiles.Items);  
@@ -939,7 +939,8 @@ begin
         PROP_SPLIT_MAIN_POS:
           fmMain.MainSplitterPos:= StrToIntDef(Str, 50);
         PROP_SPLIT_MAIN_HORZ:
-          fmMain.MainSplitterHorz:= Bool(StrToIntDef(Str, 0));
+          /////////fmMain.MainSplitterHorz:= Bool(StrToIntDef(Str, 0));
+          begin end;
 
         PROP_FILENAME_SESSION:
           begin

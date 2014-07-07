@@ -555,7 +555,7 @@ type
     TBXItemHelpTopics: TSpTBXItem;
     TBXItemFClose: TSpTbxItem;
     acClose: TAction;
-    PopupTb: TSpTbxPopupMenu;
+    PopupTabContext: TSpTBXPopupMenu;
     TBXItemTabCloseOthers: TSpTBXItem;
     TBXItemTabClose: TSpTBXItem;
     TBXItemTabNew: TSpTBXItem;
@@ -1120,7 +1120,6 @@ type
     TBXSeparatorItem95: TSpTbxSeparatorItem;
     TBXItemEAlignWithSep: TSpTbxItem;
     ecAlignWithSep: TAction;
-    TBXItemMenuSplit: TSpTBXItem;
     TBXItemTabToggleSplit: TSpTBXItem;
     ecToggleView2: TAction;
     TBXItemSSelExtend: TSpTbxItem;
@@ -1473,7 +1472,7 @@ type
     procedure acCloseAllExecute(Sender: TObject);
     procedure acCloseOthersExecute(Sender: TObject);
     procedure TBXItemTabCloseOthersClick(Sender: TObject);
-    procedure PopupTbPopup(Sender: TObject);
+    procedure PopupTabContextPopup(Sender: TObject);
     procedure TBXItemFSesSaveAsClick(Sender: TObject);
     procedure TBXItemFSesOpenClick(Sender: TObject);
     procedure TBXItemFClrClick(Sender: TObject);
@@ -1555,10 +1554,8 @@ type
     procedure TBXItemTabCopyFNClick(Sender: TObject);
     procedure TBXItemTabCopyFullClick(Sender: TObject);
     procedure TBXItemTabCopyDirClick(Sender: TObject);
-    procedure TBXItemTabMoveToViewClick(Sender: TObject);
     procedure TBXItemSp50Click(Sender: TObject);
     procedure TBXItemTbCloseAllClick(Sender: TObject);
-    procedure TBXItemSpHorzClick(Sender: TObject);
     procedure ecSyncScrollHExecute(Sender: TObject);
     procedure ecSyncScrollVExecute(Sender: TObject);
     procedure TBXItemOShellClick(Sender: TObject);
@@ -1946,7 +1943,6 @@ type
     procedure TBXItemEUncommClick(Sender: TObject);
     procedure TBXItemHtmlEmmetExpandClick(Sender: TObject);
     procedure TBXItemHtmlEmmetWrapClick(Sender: TObject);
-    procedure TBXItemMenuSplitClick(Sender: TObject);
     procedure TBXItemTabToggleSplitClick(Sender: TObject);
     procedure TBXItemCtxCopyClick(Sender: TObject);
     procedure TBXItemCtxCutClick(Sender: TObject);
@@ -2083,7 +2079,6 @@ type
     procedure TbxItemPanelTitleBarClick(Sender: TObject);
     procedure PopupPanelTitlePopup(Sender: TObject);
     procedure TBXItemMarkGoLastClick(Sender: TObject);
-    procedure TBXItemSpVertClick(Sender: TObject);
     procedure TBXItemMarkClearClick(Sender: TObject);
     procedure TbxItemWinSplitHClick(Sender: TObject);
     procedure TbxItemWinSplitVClick(Sender: TObject);
@@ -2248,7 +2243,6 @@ type
     procedure SetCurrentEditor(Value: TSyntaxMemo);
     function GetFrameCount: integer;
     function GetFrameAllCount: integer;
-    function PagesToFrame(APages: TTntPageControl; ATabIndex: Integer): TEditorFrame;
     function GetFrames(Index: integer): TEditorFrame;
     function GetFramesAll(Index: integer): TEditorFrame;
     procedure SetCurrentFrame(Value: TEditorFrame);
@@ -2258,7 +2252,6 @@ type
     function FrameAskToSave(Frame: TEditorFrame; AllowAll: Boolean; AllowCancel: boolean=true): TModalResult;
     procedure InitFrameTab(Frame: TEditorFrame);
     function SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
-    function FramesModifiedCount(FExcept: TEditorFrame = nil): integer;
     function OppositeFrame: TEditorFrame;
     function LeftFrame: TEditorFrame;
     function RightFrame: TEditorFrame;
@@ -2269,7 +2262,6 @@ type
     //frame related------------------------------
 
     //private methods
-    procedure DoTest;
     procedure DoDelayedCommandAny(Command: Integer);
     procedure DoDelayedCommandWithClose(Command: Integer);
     function ListTab_FrameIndex: integer;
@@ -2545,10 +2537,8 @@ type
     function DoCloseOtherTabs(AForPopupMenu: boolean): boolean;
     function GetSplitterPos: Double;
     procedure SetSplitterPos(const Pos: Double);
-    function GetSplitterHorz: boolean;
-    procedure SetSplitterHorz(Val: boolean);
     procedure DoMoveTabToOtherView(NTab: integer);
-    procedure DoMoveTabToWindow(NTab: integer; AndClose: boolean);
+    procedure DoMoveTabToWindow(Frame: TEditorFrame; AndClose: boolean);
     function LastDir: Widestring;
     function LastDir_UntitledFile: Widestring;
     procedure SaveLastDir(const FN, Filter: Widestring; FilterIndex: integer);
@@ -2696,7 +2686,6 @@ type
     procedure FixMenuBigImageList(Menu: TSpTbxSubmenuItem);
     procedure FixMruBigImageList(Menu: TSpTbxMruListItem);
     procedure FixSplitters;
-    procedure FocusPages(Pages: TTntPageControl);
     function SynFilesFilter: Widestring;
     procedure DoOptionsDialog(tabId: Integer);
     procedure DoTreeFocus;
@@ -3181,7 +3170,6 @@ type
       OptBkmk, OptExtSel: boolean): Integer;
     procedure DoPyConsole_LogString(const Str: Widestring);
     property MainSplitterPos: Double read GetSplitterPos write SetSplitterPos;
-    property MainSplitterHorz: boolean read GetSplitterHorz write SetSplitterHorz;
     //end of public
   end;
 
@@ -3863,19 +3851,6 @@ begin
     Result:= Groups.TabTotalCount
   else
     Result:= 0;
-end;
-
-function TfmMain.PagesToFrame(APages: TTntPageControl; ATabIndex: Integer): TEditorFrame;
-begin
-  ////////////
-  Result:= nil;
-  {
-  if (APages<>nil) and (ATabIndex>=0) and (ATabIndex<APages.PageCount) and
-    (APages.Pages[ATabIndex].ControlCount>0) then
-    Result:= APages.Pages[ATabIndex].Controls[0] as TEditorFrame
-  else
-    Result:= nil;
-    }
 end;
 
 function TfmMain.GetFrames(Index: integer): TEditorFrame;
@@ -5281,16 +5256,6 @@ begin
   finally
     FreeAndNil(L);
   end;
-end;
-
-function TfmMain.FramesModifiedCount(FExcept: TEditorFrame = nil): integer;
-var
-  i: integer;
-begin
-  Result:= 0;
-  for i:= 0 to FrameAllCount-1 do
-    if FramesAll[i] <> FExcept then
-      if FramesAll[i].Modified then Inc(Result);
 end;
 
 function TfmMain.DoConfirmClose: boolean;
@@ -7186,11 +7151,8 @@ begin
   TabSwitcher:= TTabSwitcher.Create(0);
   TabSwitcher2:= TTabSwitcher.Create(1);
 
-  ///////////////
-  {
   TabSwitcher.OnGetTab:= GetTabName;
   TabSwitcher2.OnGetTab:= GetTabName;
-  }
 
   opAcpForceText:= false;
   FFullScr:= false;
@@ -10966,10 +10928,8 @@ begin
 end;
 
 procedure TfmMain.TBXItemTabCloseClick(Sender: TObject);
-var
-  CanClose, CanContinue: boolean;
 begin
-  CloseFrameWithCfm(FClickedFrame, CanClose, CanContinue);
+  Groups.CloseTabs(tabCloseCurrent, true);
 end;
 
 procedure TfmMain.TBXItemTabNewClick(Sender: TObject);
@@ -11116,16 +11076,10 @@ begin
     end;
   end;
 
-  {
-  ///////////////
-  if FPagesNTabCtx >= 0 then
-    FClickedFrame:= Frames[FPagesNTabCtx]
-  else
-    FClickedFrame:= CurrentFrame;
-    }
+  FClickedFrame:= Groups.PopupPages.Tabs.GetTabData(Groups.PopupTabIndex).TabObject as TEditorFrame;
 end;
 
-procedure TfmMain.PopupTbPopup(Sender: TObject);
+procedure TfmMain.PopupTabContextPopup(Sender: TObject);
 var
   en_all, en, en2, enProj, enWinMove, enWinOpen: boolean;
   F: TEditorFrame;
@@ -11149,7 +11103,10 @@ begin
   TBXItemTabCopyFN.Enabled:= en;
   TBXItemTabCopyFull.Enabled:= en;
   TBXItemTabCopyDir.Enabled:= en;
-  TBXItemTabMoveToView.Enabled:= en2;
+
+  //////////need submenu
+  TBXItemTabMoveToView.Enabled:= false;
+
   TBXItemTabMoveToWindow.Enabled:= en and enWinMove;
   TBXItemTabOpenInWindow.Enabled:= en and enWinOpen;
   TBXItemTabAddToProj.Enabled:= en and enProj;
@@ -11213,7 +11170,7 @@ begin
       WriteInteger('Ini', 'Page2', 0); //////////////PageControl2.ActivePageIndex);
       WriteInteger('Ini', 'PageCount', 0); ////////////////PageControl1.PageCount);
       WriteBool('Ini', 'PageActive', true); //////////////PageControl=PageControl2
-      WriteBool('Ini', 'SplitHorz', MainSplitterHorz);
+      ///////////WriteBool('Ini', 'SplitHorz', MainSplitterHorz);
       WriteFloat('Ini', 'SplitPos', MainSplitterPos);
       for i:= 0 to FrameAllCount-1 do
       begin
@@ -14553,41 +14510,19 @@ begin
 end;
 *)
 
-procedure TfmMain.TBXItemTabMoveToViewClick(Sender: TObject);
-begin
-  {
-  //////////////
-  DoMoveTabToOtherView(FPagesNTabCtx);
-  }
-end;
-
-
 procedure TfmMain.DoMoveTabToOtherView(NTab: integer);
 begin
-  //////////////
+  Groups.MoveCurrentTabToOpposite;
 end;
 
 function TfmMain.GetSplitterPos: Double;
 begin
-  ////////////////////
-  Result:= 0.0;
+  Result:= Groups.SplitPercent;
 end;
 
 procedure TfmMain.SetSplitterPos(const Pos: Double);
 begin
-  ///////////////
-end;
-
-function TfmMain.GetSplitterHorz: boolean;
-begin
-  ///////////
-  Result:= false;
-end;  
-
-procedure TfmMain.SetSplitterHorz(Val: boolean);
-begin
-  if GetSplitterHorz<>Val then
-    ecSplitViewsVertHorz.Execute;
+  Groups.SplitPercent:= Trunc(Pos);
 end;
 
 procedure TfmMain.TBXItemSp50Click(Sender: TObject);
@@ -14598,16 +14533,6 @@ end;
 procedure TfmMain.TBXItemTbCloseAllClick(Sender: TObject);
 begin
   acCloseAll.Execute;
-end;
-
-procedure TfmMain.TBXItemSpHorzClick(Sender: TObject);
-begin
-  SetSplitterHorz(true);
-end;
-
-procedure TfmMain.TBXItemSpVertClick(Sender: TObject);
-begin
-  SetSplitterHorz(false);
 end;
 
 procedure TfmMain.ecSplitViewsVertHorzExecute(Sender: TObject);
@@ -17058,32 +16983,32 @@ end;
 
 procedure TfmMain.ecSplit40_60Execute(Sender: TObject);
 begin
-  SetSplitterPos(60.0);
+  SetSplitterPos(40.0);
 end;
 
 procedure TfmMain.ecSplit60_40Execute(Sender: TObject);
 begin
-  SetSplitterPos(40.0);
+  SetSplitterPos(60.0);
 end;
 
 procedure TfmMain.ecSplit30_70Execute(Sender: TObject);
 begin
-  SetSplitterPos(70.0);
+  SetSplitterPos(30.0);
 end;
 
 procedure TfmMain.ecSplit70_30Execute(Sender: TObject);
 begin
-  SetSplitterPos(30.0);
+  SetSplitterPos(70.0);
 end;
 
 procedure TfmMain.ecSplit20_80Execute(Sender: TObject);
 begin
-  SetSplitterPos(80.0);
+  SetSplitterPos(20.0);
 end;
 
 procedure TfmMain.ecSplit80_20Execute(Sender: TObject);
 begin
-  SetSplitterPos(20.0);
+  SetSplitterPos(80.0);
 end;
 
 {
@@ -17450,38 +17375,14 @@ begin
     fmNumConv.ActiveControl.Focused;
 end;
 
-const
-  cMinSplitter: double = 5.0;
-
 procedure TfmMain.ecSplitLeftExecute(Sender: TObject);
 begin
-  //////////////
-  {
-  if SplitterMain.Visible then
-  begin
-    if FSplitter <= (100.0-cMinSplitter*2) then
-      FSplitter:= Round(FSplitter) + cMinSplitter
-    else
-      FSplitter:= 100.0-cMinSplitter;
-    SetSplitter_(FSplitter);
-  end;
-  }
+  Groups.SplitPercentDecrease;
 end;
 
 procedure TfmMain.ecSplitRightExecute(Sender: TObject);
 begin
-  //decrease FSplitter
-  ///////////////
-  {
-  if SplitterMain.Visible then
-  begin
-    if FSplitter >= cMinSplitter*2 then
-      FSplitter:= Round(FSplitter) - cMinSplitter
-    else
-      FSplitter:= cMinSplitter;
-    SetSplitter_(FSplitter);
-  end;
-  }
+  Groups.SplitPercentIncrease;
 end;
 
 function TfmMain.ShowGotoForm(
@@ -18823,53 +18724,26 @@ procedure TfmMain.DoTabSwitch(ANext: boolean; AAllowModernSwitch: boolean = true
 var
   nTabs: integer;
 begin
-  ////////////
-  nTabs:= 0; ///////////PageControl.PageCount;
+  nTabs:= FrameCount;
   if nTabs<=1 then Exit;
 
   if opTabSwitcher and (nTabs>2) and AAllowModernSwitch then
-  //////////////
-  {
   begin
-    if PageControl=PageControl1 then
-      PageControl.ActivePageIndex:= TabSwitcher.TabSwitch(ANext, Application.MainForm)
-    else
-      PageControl.ActivePageIndex:= TabSwitcher2.TabSwitch(ANext, Application.MainForm);
+    case Groups.PagesIndexOf(Groups.PagesCurrent) of
+      1: Groups.PagesCurrent.Tabs.TabIndex:= TabSwitcher.TabSwitch(ANext, Application.MainForm);
+      2: Groups.PagesCurrent.Tabs.TabIndex:= TabSwitcher2.TabSwitch(ANext, Application.MainForm);
+    end;
   end
   else
-  with PageControl do
-    if ANext then
-    begin
-      //next tab
-      if ActivePageIndex < PageCount-1 then
-        ActivePageIndex:= ActivePageIndex+1
-      else
-        ActivePageIndex:= 0;
-    end
-    else
-    begin
-      //prev tab
-      if ActivePageIndex >0  then
-        ActivePageIndex:= ActivePageIndex-1
-      else
-        ActivePageIndex:= PageCount-1;
-    end;
-
-  CurrentFrame:= Frames[PageControl.ActivePageIndex];
-  FocusEditor;
-  PageControl1Change(PageControl);
-  }
+    Groups.PagesCurrent.Tabs.SwitchTab(ANext);
 end;
 
 procedure TfmMain.UpdateTabList(TopItem, NewItem, DelItem: integer);
 begin
-  /////////////
-  {
-  if PageControl=PageControl1 then
-    TabSwitcher.UpdateTabList(TopItem, NewItem, DelItem)
-  else
-    TabSwitcher2.UpdateTabList(TopItem, NewItem, DelItem);
-    }
+  case Groups.PagesIndexOf(Groups.PagesCurrent) of
+    1: TabSwitcher.UpdateTabList(TopItem, NewItem, DelItem);
+    2: TabSwitcher2.UpdateTabList(TopItem, NewItem, DelItem);
+  end;
 
   UpdateTitle(CurrentFrame);
 end;
@@ -20430,7 +20304,8 @@ begin
 end;
 
 procedure TfmMain.TBXItemTabAddToProjClick(Sender: TObject);
-var F: TEditorFrame;
+var
+  F: TEditorFrame;
 begin
   F:= FClickedFrame;
   if (F<>nil) and (F.FileName<>'') then
@@ -20691,11 +20566,20 @@ begin
 end;
 
 procedure TfmMain.DoSetFrameTabColor(F: TEditorFrame; NColor: Longint);
+var
+  Index: Integer;
+  D: TATTabData;
 begin
   if F<>nil then
   begin
     F.TabColor:= NColor;
-    ///////////
+
+    Index:= FrameIndex(F);
+    if Index<0 then Exit;
+    D:= Groups.TabDataOfTotalIndex(Index);
+    if D=nil then Exit;
+    D.TabColor:= NColor;
+    Groups.Invalidate;
   end;
 end;
 
@@ -22853,37 +22737,18 @@ end;
 
 procedure TfmMain.TBXItemTabMoveToWindowClick(Sender: TObject);
 begin
-  {
-  //////////////////
-  DoMoveTabToWindow(FPagesNTabCtx, true);
-  }
+  DoMoveTabToWindow(FClickedFrame, true);
 end;
 
 procedure TfmMain.TBXItemTabOpenInWindowClick(Sender: TObject);
 begin
-  {
-  ////////////////
-  DoMoveTabToWindow(FPagesNTabCtx, false);
-  }
+  DoMoveTabToWindow(FClickedFrame, false);
 end;
 
-procedure TfmMain.DoMoveTabToWindow(NTab: integer; AndClose: boolean);
-var
-  CanClose, CanContinue: boolean;
-  Frame: TEditorFrame;
+procedure TfmMain.DoMoveTabToWindow(Frame: TEditorFrame; AndClose: boolean);
 begin
   if not SynExe then
     begin MsgBeep; Exit; end;
-
-
-  Exit;
-  ///////////
-  //if NTab<0 then
-  //  NTab:= PageControl.ActivePageIndex;
-
-  if NTab<0 then
-    begin MsgBeep; Exit; end;
-  Frame:= Frames[NTab];
 
   if Frame.FileName='' then
     begin MsgBeep; Exit; end;
@@ -22894,7 +22759,7 @@ begin
     begin MsgBeep; Exit end;
 
   if AndClose then
-    CloseFrameWithCfm(Frame, CanClose, CanContinue);
+    Groups.CloseTabs(tabCloseCurrent, true);
 end;
 
 
@@ -24223,11 +24088,6 @@ begin
   CurrentEditor.ExecCommand(sm_Emmet_Wrap);
 end;
 
-procedure TfmMain.TBXItemMenuSplitClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ToggleView2);
-end;
-
 procedure TfmMain.TBXItemTabToggleSplitClick(Sender: TObject);
 begin
   if Assigned(FClickedFrame) then
@@ -25167,7 +25027,7 @@ begin
   with FMenuItems[10] do begin Id:= 'window'; Item:= TbxWin; end;
   with FMenuItems[11] do begin Id:= 'help'; Item:= TbxSubmenuItemHelp; end;
 
-  with FMenuItems[12] do begin Id:= 'split'; Item:= TbxItemMenuSplit; end;
+  //with FMenuItems[12] do begin Id:= 'split'; Item:= TbxItemMenuSplit; end;
   with FMenuItems[13] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
   with FMenuItems[14] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
 
@@ -25296,17 +25156,18 @@ begin
   Groups.SetTabOption(tabColorPassiveOver, clLtGray);
   Groups.SetTabOption(tabColorBorderActive, clLtGray);
   Groups.SetTabOption(tabColorBorderPassive, clLtGray);
+  {
+  opColorTabBgPassive,
+  opColorTabBgActive,
+  }
 
-  if Assigned(Groups) then
-  begin
-    Groups.SetTabOption(tabOptionShowTabs, Ord(opTabVisible));
-    Groups.SetTabOption(tabOptionShowXButtons, Ord(opTabBtn));
-    Groups.SetTabOption(tabOptionShowPlus, Ord(opTabPlus));
-    Groups.SetTabOption(tabOptionShowNums, Ord(opTabNums));
-    Groups.SetTabOption(tabOptionBottomTabs, Ord(opTabAtBottom));
-    Groups.SetTabOption(tabOptionDragDrop, Ord(opTabDragDrop));
-    Groups.SetTabOption(tabOptionWidthMax, Ord(opTabMaxLen));
-  end;
+  Groups.SetTabOption(tabOptionShowTabs, Ord(opTabVisible));
+  Groups.SetTabOption(tabOptionShowXButtons, Ord(opTabBtn));
+  Groups.SetTabOption(tabOptionShowPlus, Ord(opTabPlus));
+  Groups.SetTabOption(tabOptionShowNums, Ord(opTabNums));
+  Groups.SetTabOption(tabOptionBottomTabs, Ord(opTabAtBottom));
+  Groups.SetTabOption(tabOptionDragDrop, Ord(opTabDragDrop));
+  Groups.SetTabOption(tabOptionWidthMax, Ord(opTabMaxLen));
 
   for i:= 0 to FrameAllCount-1 do
     FramesAll[i].DoTitleChanged;
@@ -26841,40 +26702,6 @@ begin
   *)
 end;
 
-procedure TfmMain.DoTest;
-begin
-end;
-(*
-var
-  S, S2: string;
-  F: TEditorFrame;
-begin
-  F:= CurrentFrame;
-  S:= FrameGetPropertiesString(F);
-
-  //change frame here in any manner
-  ApplyFrameEncoding(F, 10);
-  F.EditorMaster.WordWrap:= not F.EditorMaster.WordWrap;
-  //F.SplitHorz:= not F.SplitHorz;
-  //F.SplitPos:= F.SplitPos+5.0;
-  F.EditorMaster.ClearBookmarks;
-  F.EditorSlave.ClearBookmarks;
-  F.EditorMaster.TopLine:= F.EditorMaster.TopLine-2;
-  F.EditorSlave.TopLine:= F.EditorSlave.TopLine-2;
-  F.EditorMaster.CaretPos:= Point(10, 20);
-  F.EditorMaster.ResetSelection;
-  //end of change
-
-  FrameSetPropertiesString(F, S, false);
-  S2:= FrameGetPropertiesString(F);
-
-  if S<>S2 then
-    MsgError('test err'#13#13+'S:'#13+S+#13'S2:'#13+S2, Handle)
-  else
-    MsgInfo('test ok'#13#13{+S}, Handle);
-end;
-*)
-
 procedure TfmMain.StatusItemBusyClick(Sender: TObject);
 begin
   {$ifdef DebugAbout}
@@ -27440,18 +27267,6 @@ end;
 procedure TfmMain.TbxItemHelpPyDirClick(Sender: TObject);
 begin
   FOpenURL(SynPyDir, Handle);
-end;
-
-procedure TfmMain.FocusPages(Pages: TTntPageControl);
-begin
-  //this method needed for activating other view by clicking its tab [x] btn.
-  //first focus PageControl, then focus editor.
-
-  with Pages do
-    if (ActivePage<>nil) and (ActivePage.CanFocus) then
-      ActivePage.SetFocus;
-
-  FocusEditor;
 end;
 
 procedure TfmMain.PythonGUIInputOutput1ReceiveUniData(Sender: TObject;
@@ -28554,7 +28369,10 @@ begin
   Groups.OnTabClose:= TabClose;
   Groups.OnTabPopup:= TabPopup;
 
-  Groups.Mode:= gm2Horz;
+  Groups.Mode:=
+    //gmOne;
+    gm2Horz;
+  Groups.SplitPercent:= 80;
 end;
 
 function TfmMain.DoAddTab(Pages: TATPages): TEditorFrame;
@@ -28600,11 +28418,11 @@ var
   P: TPoint;
 begin
   P:= Mouse.CursorPos;
-  PopupTb.Popup(P.X, P.Y);
+  PopupTabContext.Popup(P.X, P.Y);
 end;
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
 
 end.
-
+           
