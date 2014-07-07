@@ -17,7 +17,6 @@ uses
 
 const
   cMaxBk = 1*1000*1000; //max bookmarks count
-  cTabNumPrefix = 3; //3 spaces before tab caption for "NN."
 
 type
   TEditorEvent = procedure(Sender: TFrame) of object;
@@ -137,7 +136,6 @@ type
     FOnSaveState: TNotifyEvent;
     FOnGetTabCaption: TGetTabCaptionEvent;
     FModifiedPrev: Boolean;
-    FModifiedClr: Boolean;
     FSplitHorz: boolean;
     FSplitPos: Double;
     FNotInRecents: boolean;
@@ -220,8 +218,6 @@ type
     property SkipBom: boolean read FNoBOM write FNoBOM;
     property FileName: Widestring read FFileName write FFileName;
     property Modified: boolean read GetModified write SetModified;
-    property ModifiedClr: boolean read FModifiedClr write FModifiedClr;
-    //property Closing: boolean read FClosing write FClosing;
     property LockMapUpdate: boolean read FLockMapUpdate write FLockMapUpdate;
     property TabCaption: Widestring read GetTabCaption;
     property OnTitleChanged: TEditorEvent read FOnTitleChanged write FOnTitleChanged;
@@ -242,6 +238,7 @@ uses
   unProc,
   unProcEditor,
   ATxFProc, ATxSProc, ATxImgHint,
+  ATTabs, ATGroups,
   DKLang,
 
   TntComCtrls,
@@ -318,7 +315,6 @@ begin
   FTabColor:= clNone;
   FSpell:= False;
   FLineEndsChg:= False;
-  FModifiedClr:= False;
   FSplitHorz:= True;
   FSplitPos:= 0;
   FNotInRecents:= False;
@@ -353,6 +349,7 @@ var
 begin
   Ed:= Sender as TSyntaxMemo;
   TfmMain(Owner).CurrentEditor:= Ed;
+  TfmMain(Owner).Groups.PagesCurrent:= TfmMain(Owner).FrameOfEditor(Ed).Parent as TATPages; 
 
   //Ctrl+Alt+click -- find id
   //(if no line selection is made with Ctrl+Alt+drag)
@@ -484,7 +481,6 @@ begin
 
   //after loading
   Modified:= False;
-  ModifiedClr:= False;
   FFileName:= AFileName;
   DoTitleChanged;
 end;
@@ -492,10 +488,7 @@ end;
 
 function TEditorFrame.GetModified: boolean;
 begin
-  if FModifiedClr then
-    Result:= False
-  else
-    Result:= EditorMaster.Modified;
+  Result:= EditorMaster.Modified;
 end;
 
 procedure TEditorFrame.SetModified(Value: boolean);
@@ -514,15 +507,22 @@ end;
 
 procedure TEditorFrame.DoTitleChanged;
 var
-  FTab: TTntTabSheet;
+  D: TATTabData;
 begin
   FTreeSorted:= SFileExtensionMatch(FFileName, TfmMain(Owner).opTreeSorted);
 
   if Parent<>nil then
-    if Parent is TTntTabSheet then
+    if Parent is TATPages then
     begin
-      FTab:= (Parent as TTntTabSheet);
-      FTab.Caption:= TabCaption;
+      with (Parent as TATPages) do
+      begin
+        D:= Tabs.GetTabData(Tabs.TabIndex);
+        if D<>nil then
+        begin
+          D.TabCaption:= TabCaption;
+          Tabs.Invalidate;
+        end;
+      end;  
     end;
 
   if Assigned(FOnTitleChanged) then
@@ -960,7 +960,6 @@ begin
 
     //mark file as non-modified
     Modified:= False;
-    ModifiedClr:= False;
     DoTitleChanged;
   end;
 
@@ -1099,8 +1098,11 @@ begin
   TbxItemSplitHorz.Checked:= SplitHorz;
   TbxItemSplitVert.Checked:= not SplitHorz;
 
+  //////////////////
+  {
   TbxItemSplitHorz.Caption:= TfmMain(Owner).TBXItemSpHorz.Caption;
   TbxItemSplitVert.Caption:= TfmMain(Owner).TBXItemSpVert.Caption;
+  }
 
   TbxItemSplitCaption.Caption:= DKLangConstW('Split_Ed');
   TbxItemSplitCancel.Caption:= DKLangConstW('Split_Cancel');

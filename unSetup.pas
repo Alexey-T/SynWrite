@@ -130,15 +130,12 @@ type
     ListCat: TTntListBox;
     tabTabs: TTntTabSheet;
     boxTabs: TTntGroupBox;
-    TntLabel3: TTntLabel;
     cbTabBtn: TTntCheckBox;
-    cbTabMul: TTntCheckBox;
     cbTabDown: TTntCheckBox;
     cbTabNums: TTntCheckBox;
     cbTabSw: TTntCheckBox;
     cbTabDnD: TTntCheckBox;
     edTabMaxLen: TSpinEdit;
-    cbTabDbl: TTntCheckBox;
     boxToolbar: TTntGroupBox;
     Label2: TTntLabel;
     cbTheme: TTntComboBox;
@@ -201,7 +198,6 @@ type
     tabOvr: TTntTabSheet;
     edSrOffsetY: TSpinEdit;
     TntLabel32: TTntLabel;
-    cbTabVis: TTntComboBox;
     TntLabel36: TTntLabel;
     cbUniNeed: TTntComboBox;
     cbTreeDelay: TSpinEdit;
@@ -328,7 +324,6 @@ type
     boxLang: TTntGroupBox;
     labLangInfo: TTntLabel;
     cbLang: TTntComboBox;
-    cbTabStyle: TTntComboBox;
     cbAcpParamHints: TTntCheckBox;
     cbHiliteSmartClick: TTntCheckBox;
     cbHiliteSmartWords: TTntCheckBox;
@@ -353,6 +348,9 @@ type
     boxOpen: TTntGroupBox;
     edBigSize: TSpinEdit;
     TntLabel23: TTntLabel;
+    TntLabel14: TTntLabel;
+    cbTabVis: TTntCheckBox;
+    cbTabPlus: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1978,15 +1976,13 @@ var
 begin
   with fmMain do
   begin
-    opTabVisible:= cbTabVis.ItemIndex;
-    opTabStyle:= cbTabStyle.ItemIndex;
+    opTabVisible:= cbTabVis.Checked;
     opTabBtn:= cbTabBtn.Checked;
+    opTabPlus:= cbTabPlus.Checked;
     opTabNums:= cbTabNums.Checked;
     opTabSwitcher:= cbTabSw.Checked;
     opTabDragDrop:= cbTabDnD.Checked;
-    opTabDblClick:= cbTabDbl.Checked;
     opTabMaxLen:= edTabMaxLen.Value;
-    opTabMultiLine:= cbTabMul.Checked;
     opTabAtBottom:= cbTabDown.Checked;
     opTabDirs:= cbTabDirs.Checked;
 
@@ -2293,14 +2289,12 @@ begin
   with fmMain do
   begin
     cbTabBtn.Checked:= opTabBtn;
-    cbTabVis.ItemIndex:= opTabVisible;
-    cbTabStyle.ItemIndex:= opTabStyle;
+    cbTabPlus.Checked:= opTabPlus;
+    cbTabVis.Checked:= opTabVisible;
     cbTabNums.Checked:= opTabNums;
-    cbTabMul.Checked:= opTabMultiLine;
     cbTabDown.Checked:= opTabAtBottom;
     cbTabSw.Checked:= opTabSwitcher;
     cbTabDnD.Checked:= opTabDragDrop;
-    cbTabDbl.Checked:= opTabDblClick;
     cbTabDirs.Checked:= opTabDirs;
     edTabMaxLen.Value:= opTabMaxLen;
 

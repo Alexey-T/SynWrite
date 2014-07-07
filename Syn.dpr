@@ -67,7 +67,8 @@ uses
   unSnipEd in 'unSnipEd.pas' {fmSnippetEditor},
   unMenuPy in 'unMenuPy.pas' {fmMenuPy: TTntForm},
   unSRFiles in 'unSRFiles.pas' {fmSRFiles: TTntForm},
-  unMainPy in 'unMainPy.pas';
+  unMainPy in 'unMainPy.pas',
+  unSaveTabs in 'unSaveTabs.pas' {fmSaveTabs};
 
 {$R *.res}
 {$R *.dkl_const.res}
