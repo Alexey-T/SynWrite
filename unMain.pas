@@ -696,7 +696,6 @@ type
     TBXItemEInsText: TSpTbxItem;
     TBXSeparatorItem23: TSpTbxSeparatorItem;
     TBXItemCtxOpenSel: TSpTbxItem;
-    TBXItemFEmail: TSpTbxItem;
     TBXSeparatorItem45: TSpTbxSeparatorItem;
     TBXItemCtxTool12: TSpTBXItem;
     TBXItemCtxTool11: TSpTBXItem;
@@ -1281,7 +1280,6 @@ type
     TBXItemEncodeHtmlAll: TSpTBXItem;
     ecEncodeHtmlChars2: TAction;
     SpTBXSeparatorItem18: TSpTBXSeparatorItem;
-    SpTBXSeparatorItem20: TSpTBXSeparatorItem;
     TBXSubmenuItemPrint: TSpTBXSubmenuItem;
     TbxItemMenuXX: TSpTBXItem;
     TbxItemMenuX: TSpTBXItem;
@@ -1569,7 +1567,6 @@ type
     procedure TBXItemEFillBlockClick(Sender: TObject);
     procedure TBXItemEInsTextClick(Sender: TObject);
     procedure TBXItemCtxOpenSelClick(Sender: TObject);
-    procedure TBXItemFEmailClick(Sender: TObject);
     procedure TBXItemCtxTool1Click(Sender: TObject);
     procedure TBXItemCtxTool2Click(Sender: TObject);
     procedure TBXItemCtxTool3Click(Sender: TObject);
@@ -3238,7 +3235,6 @@ uses
   TntWideStrUtils,
 
   ATxFProc,
-  ATxUtilMail,
   ATxColorCodes,
   ATxLoremIpsum,
   ATxUnpack,
@@ -3951,6 +3947,7 @@ begin
   Result.EditorSlave.BorderStyle:= SynBorderStyleEditor;
   Result.EditorMaster.KeyMapping:= SyntKeyMapping;
   Result.EditorSlave.KeyMapping:= SyntKeyMapping;
+
   Result.HyperlinkHighlighter.Active:= opHiliteUrls;
   Result.HyperlinkHighlighter.Style.Font.Color:= opColorLink;
   Result.HyperlinkHighlighter.SingleClick:= opSingleClickURL;
@@ -6880,10 +6877,7 @@ end;
 
 function TfmMain.SynBorderStyleEditor: TBorderStyle;
 begin
-  {if opShowBorders then
-    Result:= bsSingle
-  else}
-    Result:= bsNone;
+  Result:= bsNone;
 end;
 
 procedure TfmMain.ApplyBorders;
@@ -15006,15 +15000,6 @@ begin
         CurrentEditor.CaretPos:= Point(0, LnNum-1);
     end;
   end;
-end;
-
-procedure TfmMain.TBXItemFEmailClick(Sender: TObject);
-begin
-  with CurrentFrame do
-    if FileName<>'' then
-      FSendEmail('', '', '', '', FileName)
-    else
-      MsgBeep;
 end;
 
 procedure TfmMain.TBXItemCtxTool1Click(Sender: TObject);

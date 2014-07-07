@@ -194,6 +194,7 @@ object EditorFrame: TEditorFrame
       DragTypeOLE = True
       Options = [soOverwriteBlocks, soEnableBlockSel, soHideSelection, soHideDynamic, soAutoIndentMode, soBackUnindent, soGroupUndo, soDragText, soCallapseEmptyLines, soDrawCurLineFocus]
       OptionsEx = [soSmartPaste, soKeepSearchMarks, soCorrectNonPrinted, soRightClickMoveCaret]
+      BorderStyle = bsNone
       DoubleBuffered = True
       HorzRuler.Font.Charset = DEFAULT_CHARSET
       HorzRuler.Font.Color = clWindowText
@@ -212,6 +213,9 @@ object EditorFrame: TEditorFrame
       Transparent = False
       Alignment = taLeftJustify
       Align = alClient
+      BevelEdges = []
+      BevelInner = bvNone
+      BevelOuter = bvNone
       Ctl3D = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -397,6 +401,7 @@ object EditorFrame: TEditorFrame
       SyncEditing.InactiveWordsStyle.BorderColorBottom = clBtnFace
       Options = [soOverwriteBlocks, soEnableBlockSel, soHideSelection, soHideDynamic, soAutoIndentMode, soBackUnindent, soGroupUndo, soDragText, soCallapseEmptyLines, soDrawCurLineFocus]
       OptionsEx = [soSmartPaste, soKeepSearchMarks, soCorrectNonPrinted, soRightClickMoveCaret]
+      BorderStyle = bsNone
       DoubleBuffered = True
       HorzRuler.Font.Charset = DEFAULT_CHARSET
       HorzRuler.Font.Color = clWindowText
@@ -415,6 +420,9 @@ object EditorFrame: TEditorFrame
       Transparent = False
       Alignment = taLeftJustify
       Align = alBottom
+      BevelEdges = []
+      BevelInner = bvNone
+      BevelOuter = bvNone
       Ctl3D = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
