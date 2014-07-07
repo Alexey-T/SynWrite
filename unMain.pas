@@ -2112,6 +2112,7 @@ type
     cStatCaretsTopLn,
     cStatCaretsBotLn: Widestring;
 
+    TabSwitchers: array[TATGroupsNums] of TTabSwitcher;
     FListSnippets: TList;
     FListLexersSorted: TTntStringList;
     FTempFilenames: TTntStringList;
@@ -2159,9 +2160,6 @@ type
     fmMap: TfmMap;
     fmProj: TfmProj;
     fmSR: TfmSR;
-
-    TabSwitcher,
-    TabSwitcher2: TTabSwitcher;
 
     //original options values
     orig_Zoom: integer;
@@ -2245,7 +2243,7 @@ type
     function GetFrameAllCount: integer;
     function GetFrames(Index: integer): TEditorFrame;
     function GetFramesAll(Index: integer): TEditorFrame;
-    procedure SetCurrentFrame(Value: TEditorFrame);
+    procedure SetCurrentFrame(Frame: TEditorFrame);
     function GetCurrentFrame: TEditorFrame;
     procedure FrameChanged;
     procedure FrameSaveState(Sender: TObject);
@@ -2259,6 +2257,8 @@ type
     function FrameGetPropertiesString(F: TEditorFrame): string;
     procedure FrameSetPropertiesString(F: TEditorFrame; const Str: string; EncodingOnly: boolean);
     procedure FrameGetTabCaption(Sender: TFrame; var Str: Widestring);
+    procedure GetTabIndexForFrame(Frame: TEditorFrame; var NPages, NTab: Integer);
+    procedure FocusFrame(Frame: TEditorFrame);
     //frame related------------------------------
 
     //private methods
@@ -2427,6 +2427,7 @@ type
     function GetHtmlTabbingFN: string;
     function GetLexerComment(const Lexer: string): string;
 
+    function CurrentTabSwitcher: TTabSwitcher;
     function CurrentLexer: string;
     function CurrentLexerForFile: string;
     function DoSnippetTabbing: boolean;
@@ -3661,9 +3662,7 @@ begin
   begin
     Result:= F;
     CurrentFrame:= F;
-    {/////////////
-    UpdateTabList(PageControl.ActivePageIndex, -1, -1);
-    }
+    UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
     Exit;
   end;
 
@@ -3872,21 +3871,57 @@ begin
   if Assigned(Groups) then
     Result:= Groups.TabDataOfTotalIndex(Index).TabObject as TEditorFrame
   else
-    Result:= nil;  
+    Result:= nil;
 end;
 
-procedure TfmMain.SetCurrentFrame(Value: TEditorFrame);
+procedure TfmMain.GetTabIndexForFrame(Frame: TEditorFrame;
+  var NPages, NTab: Integer);
+var
+  i, j: Integer;
+  D: TATTabData;
+begin
+  NPages:= -1;
+  NTab:= -1;
+  if Frame=nil then Exit;
+
+  for i:= Low(Groups.Pages) to High(Groups.Pages) do
+    with Groups.Pages[i].Tabs do
+      for j:= 0 to TabCount-1 do
+      begin
+        D:= GetTabData(j);
+        if D<>nil then
+          if D.TabObject=Frame then
+          begin
+            NPages:= i;
+            NTab:= j;
+            Exit
+          end;
+      end;
+end;
+
+
+procedure TfmMain.SetCurrentFrame(Frame: TEditorFrame);
+var
+  NPages, NTab: Integer;
+begin
+  if Frame=nil then Exit;
+  GetTabIndexForFrame(Frame, NPages, NTab);
+  if NTab>=0 then
+    Groups.Pages[NPages].Tabs.TabIndex:= NTab;
+end;
+
+procedure TfmMain.FocusFrame(Frame: TEditorFrame);
 var
   Ed: TSyntaxMemo;
 begin
-  with Value do
-  begin
-    if IsMasterFocused then
-      Ed:= EditorMaster
-    else
-      Ed:= EditorSlave;
-  end;
-  if Value.Enabled and Value.Visible then
+  if Frame=nil then Exit;
+
+  if Frame.IsMasterFocused then
+    Ed:= Frame.EditorMaster
+  else
+    Ed:= Frame.EditorSlave;
+
+  if Frame.Enabled and Frame.Visible then
     if Ed.Enabled and Ed.Visible and Ed.CanFocus then
       Ed.SetFocus;
 end;
@@ -3961,8 +3996,7 @@ begin
   CurrentFrame:= Result;
   UpdateNewFrame(Result);
 
-  /////////////
-  //UpdateTabList(PageControl.PageCount-1, -1, -1);
+  UpdateTabList(Groups.PagesCurrent.Tabs.TabCount-1, -1, -1);
 end;
 
 procedure TfmMain.UpdateNewFrame(F: TEditorFrame);
@@ -4037,8 +4071,7 @@ begin
   //free directory of closed file
   WideSetCurrentDir(FInitialDir);
 
-  /////////
-  //UpdateTabList(PageControl.ActivePageIndex, -1, nTab);
+  /////////////UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, nTab);
 end;
 
 procedure TfmMain.UpdateTreeProps;
@@ -7148,11 +7181,11 @@ begin
   FProjPreviewEditor:= nil;
   FProjPreviewFilename:= '';
 
-  TabSwitcher:= TTabSwitcher.Create(0);
-  TabSwitcher2:= TTabSwitcher.Create(1);
-
-  TabSwitcher.OnGetTab:= GetTabName;
-  TabSwitcher2.OnGetTab:= GetTabName;
+  for i:= Low(TabSwitchers) to High(TabSwitchers) do
+  begin
+    TabSwitchers[i]:= TTabSwitcher.Create(i);
+    TabSwitchers[i].OnGetTab:= GetTabName;
+  end;  
 
   opAcpForceText:= false;
   FFullScr:= false;
@@ -7395,6 +7428,8 @@ begin
 end;
 
 procedure TfmMain.FormDestroy(Sender: TObject);
+var
+  i: Integer;
 begin
   FreeAndNil(SynMruFiles);
   FreeAndNil(SynMruSessions);
@@ -7405,8 +7440,8 @@ begin
   FreeAndNil(FTempFilenames);
   FreeAndNil(FUserToolbarCommands);
 
-  FreeAndNil(TabSwitcher2);
-  FreeAndNil(TabSwitcher);
+  for i:= Low(TabSwitchers) to High(TabSwitchers) do
+    FreeAndNil(TabSwitchers[i]);
 
   FreeAndNil(FAcpList_Display);
   FreeAndNil(FAcpList_Items);
@@ -10923,8 +10958,7 @@ begin
   if ACanClose then
     CloseFrame(F);
 
-  ////////////
-  //UpdateTabList(PageControl.ActivePageIndex, -1, -1);
+  UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
 end;
 
 procedure TfmMain.TBXItemTabCloseClick(Sender: TObject);
@@ -11457,8 +11491,7 @@ begin
   if (n>=0) and (n<FrameAllCount) then
   begin
     CurrentFrame:= FramesAll[n];
-    ///////////////
-    //UpdateTabList(PageControl.ActivePageIndex, -1, -1);
+    UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
   end
   else
     MsgBeep;
@@ -11475,7 +11508,7 @@ begin
   if (n>=0) and (n<FrameCount) then //not FrameAllCount
   begin
     CurrentFrame:= Frames[n]; //not FramesAll
-    UpdateTabList(PageControl.ActivePageIndex, -1, -1);
+    UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
   end
   else
   begin
@@ -18720,19 +18753,23 @@ begin
     DoCopyFindResultNode;
 end;
 
+function TfmMain.CurrentTabSwitcher: TTabSwitcher;
+begin
+  Result:= TabSwitchers[Groups.PagesIndexOf(Groups.PagesCurrent)];
+end;  
+
 procedure TfmMain.DoTabSwitch(ANext: boolean; AAllowModernSwitch: boolean = true);
 var
-  nTabs: integer;
+  NTabs: integer;
 begin
-  nTabs:= FrameCount;
-  if nTabs<=1 then Exit;
+  NTabs:= FrameCount;
+  if NTabs<=1 then Exit;
 
-  if opTabSwitcher and (nTabs>2) and AAllowModernSwitch then
+  if opTabSwitcher and (NTabs>2) and AAllowModernSwitch then
   begin
-    case Groups.PagesIndexOf(Groups.PagesCurrent) of
-      1: Groups.PagesCurrent.Tabs.TabIndex:= TabSwitcher.TabSwitch(ANext, Application.MainForm);
-      2: Groups.PagesCurrent.Tabs.TabIndex:= TabSwitcher2.TabSwitch(ANext, Application.MainForm);
-    end;
+    NTabs:= CurrentTabSwitcher.TabSwitch(ANext, Application.MainForm);
+    if NTabs>=0 then
+      Groups.PagesCurrent.Tabs.TabIndex:= NTabs;
   end
   else
     Groups.PagesCurrent.Tabs.SwitchTab(ANext);
@@ -18740,12 +18777,7 @@ end;
 
 procedure TfmMain.UpdateTabList(TopItem, NewItem, DelItem: integer);
 begin
-  case Groups.PagesIndexOf(Groups.PagesCurrent) of
-    1: TabSwitcher.UpdateTabList(TopItem, NewItem, DelItem);
-    2: TabSwitcher2.UpdateTabList(TopItem, NewItem, DelItem);
-  end;
-
-  UpdateTitle(CurrentFrame);
+  CurrentTabSwitcher.UpdateTabList(TopItem, NewItem, DelItem);
 end;
 
 procedure TfmMain.UpdateListTabs;
@@ -18805,9 +18837,12 @@ begin
 end;
 
 procedure TfmMain.DoClearTabSwitcherList;
+var
+  i: Integer;
 begin
-  TabSwitcher.InitTabList(1);
-  TabSwitcher2.InitTabList(1);
+  for i:= Low(TabSwitchers) to High(TabSwitchers) do
+    TabSwitchers[i].InitTabList(1);
+
   {$ifdef TabOrder}
   UpdateTitle(CurrentFrame);
   {$endif}
@@ -18816,12 +18851,14 @@ end;
 procedure TfmMain.GetTabName(
   APagesNumber, ATabIndex: Integer;
   var AName, AFN, ALex: Widestring);
+var
+  F: TEditorFrame;
+  D: TATTabData;
 begin
-  /////////////
-  {
-  if (ATabIndex>=0) and (ATabIndex<NFrames) then
+  D:= Groups.Pages[APagesNumber].Tabs.GetTabData(ATabIndex);
+  if D<>nil then
   begin
-    F:= PagesToFrame(P, ATabIndex);
+    F:= D.TabObject as TEditorFrame;
     AName:= WideFormat('[%d] ', [ATabIndex+1]) + F.TabCaption;
     AFN:= F.FileName;
     if AFN='' then
@@ -18831,10 +18868,9 @@ begin
   else
   begin
     AName:= WideFormat('[%d]', [ATabIndex+1]);
-    AFN:= WideFormat('(index=%d, FrameCount=%d)', [ATabIndex, NFrames]);
+    AFN:= WideFormat('(index=%d, FrameCount=%d)', [ATabIndex, FrameAllCount]);
     ALex:= '';
   end;
-  }
 end;
 
 procedure TfmMain.TBXItemFPropsClick(Sender: TObject);
@@ -21973,12 +22009,10 @@ begin
   begin
     CurrentFrame:= FramesAll[N];
 
-    //////////////
-    //UpdateTabList(PageControl.ActivePageIndex, -1, -1);
-    {
+    UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
+    
     if ListTabs.CanFocus then
       ListTabs.SetFocus;
-      }
     FocusEditor;
   end;
 end;
@@ -28400,7 +28434,7 @@ var
 begin
   D:= (Sender as TATTabs).GetTabData((Sender as TATTabs).TabIndex);
   if D<>nil then
-    CurrentFrame:= D.TabObject as TEditorFrame;
+    FocusFrame(D.TabObject as TEditorFrame);
 end;
 
 procedure TfmMain.TabClose(Sender: TObject; ATabIndex: Integer;

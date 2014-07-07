@@ -26,7 +26,6 @@ object fmTabSw: TfmTabSw
     Width = 520
     Height = 164
     Align = alClient
-    BevelInner = bvRaised
     Caption = 'Panel1'
     TabOrder = 0
     DesignSize = (
@@ -38,17 +37,18 @@ object fmTabSw: TfmTabSw
       Width = 249
       Height = 113
       Anchors = [akLeft, akTop, akRight, akBottom]
+      BevelKind = bkFlat
+      BorderStyle = bsNone
       ItemHeight = 16
       TabOrder = 0
       OnClick = ListClick
     end
     object Panel2: TPanel
-      Left = 2
-      Top = 120
-      Width = 516
+      Left = 1
+      Top = 121
+      Width = 518
       Height = 42
       Align = alBottom
-      BevelInner = bvLowered
       BevelOuter = bvLowered
       TabOrder = 1
       object Label1: TTntLabel
