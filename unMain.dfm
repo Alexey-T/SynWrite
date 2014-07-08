@@ -2247,61 +2247,61 @@ object fmMain: TfmMain
           Tag = 1
           Caption = '-'
           Visible = False
-          OnClick = TabClick
+          OnClick = WindowItemClick
         end
         object TBXItemWin1: TSpTBXItem
           Tag = 2
           Caption = '-'
           Visible = False
-          OnClick = TabClick
+          OnClick = WindowItemClick
         end
         object TBXItemWin2: TSpTBXItem
           Tag = 3
           Caption = '-'
           Visible = False
-          OnClick = TabClick
+          OnClick = WindowItemClick
         end
         object TBXItemWin3: TSpTBXItem
           Tag = 4
           Caption = '-'
           Visible = False
-          OnClick = TabClick
+          OnClick = WindowItemClick
         end
         object TBXItemWin4: TSpTBXItem
           Tag = 5
           Caption = '-'
           Visible = False
-          OnClick = TabClick
+          OnClick = WindowItemClick
         end
         object TBXItemWin5: TSpTBXItem
           Tag = 6
           Caption = '-'
           Visible = False
-          OnClick = TabClick
+          OnClick = WindowItemClick
         end
         object TBXItemWin6: TSpTBXItem
           Tag = 7
           Caption = '-'
           Visible = False
-          OnClick = TabClick
+          OnClick = WindowItemClick
         end
         object TBXItemWin7: TSpTBXItem
           Tag = 8
           Caption = '-'
           Visible = False
-          OnClick = TabClick
+          OnClick = WindowItemClick
         end
         object TBXItemWin8: TSpTBXItem
           Tag = 9
           Caption = '-'
           Visible = False
-          OnClick = TabClick
+          OnClick = WindowItemClick
         end
         object TBXItemWin9: TSpTBXItem
           Tag = 10
           Caption = '-'
           Visible = False
-          OnClick = TabClick
+          OnClick = WindowItemClick
         end
       end
       object TBXSubmenuItemHTML: TSpTBXSubmenuItem

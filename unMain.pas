@@ -1369,7 +1369,7 @@ type
     SpTBXSeparatorItem20: TSpTBXSeparatorItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
-    procedure TabClick(Sender: TObject);
+    procedure WindowItemClick(Sender: TObject);
     procedure acSaveExecute(Sender: TObject);
     procedure acSaveAsExecute(Sender: TObject);
     procedure MRUClick(Sender: TObject; const S: WideString);
@@ -11438,15 +11438,26 @@ end;
 
 
 procedure TfmMain.TbxSubmenuItemWindowPopup(Sender: TTBCustomItem; FromLink: Boolean);
-  function Sh(i: integer): string;
+  //
+  function _Sh(i: Integer): string;
   begin
     if (i>=0) and (i<=9) then
-      Result:= GetShortcutTextOfCmd(sm_Tab0+i)
+      Result:= #9 + GetShortcutTextOfCmd(sm_Tab0+i)
     else
       Result:= '';
-    if Result<>'' then
-      Result:= #9 + Result;
   end;
+  //
+  function _AccPrefix(i: Integer): string;
+  begin
+    if i < 9 then
+      Result:= Format('&%d   ', [i+1])
+    else
+    if i < 10 + Ord('Z') - Ord('A') then
+      Result:= Format('&%s   ', [Chr(i-9 + Ord('A'))])
+    else
+      Result:= '';
+  end;
+  //
 var
   mi: TSpTbxItem;
   Frame: TEditorFrame;
@@ -11458,39 +11469,24 @@ begin
     TbxItemWinSplitV.Checked:= IsSplitted and not SplitHorz;
   end;
 
-  //clear
+  //clear previous items (with Tag>0)
   with TbxSubmenuItemWindow do
     for i:= Count-1 downto 0 do
       if Items[i].Tag>0 then
         Items[i].Free;
 
-  //add tabs
+  //add items for all frames
   for i:= 0 to FrameAllCount-1 do
   begin
     Frame:= FramesAll[i];
-    {
-    if ...
-    begin
-      bSep:= TSpTbxSeparatorItem.Create(Self);
-      bSep.Tag:= 1;
-      tbxWin.Add(bSep);
-    end;
-    }
     mi:= TSpTbxItem.Create(Self);
-    mi.Caption:= Frame.TabCaption + Sh(i);
-
-    if i < 9 then
-      mi.Caption:= WideFormat('&%d   ', [i+1]) + mi.Caption
-    else
-    if i < 10 + Ord('Z') - Ord('A') then
-      mi.Caption:= WideFormat('&%s   ', [Chr(i-9 + Ord('A'))]) + mi.Caption;
-
+    mi.Caption:= _AccPrefix(i) + Frame.TabCaption + _Sh(i);
+    mi.RadioItem:= true;
     mi.Checked:= Frame.Visible;
     mi.Hint:= Frame.FileName;
     mi.Tag:= i+1;
-    mi.OnClick:= TabClick;
+    mi.OnClick:= WindowItemClick;
     mi.OnSelect:= ButtonOnSelect;
-    mi.RadioItem:= true;
     TbxSubmenuItemWindow.Add(mi);
   end;
 
@@ -11500,9 +11496,7 @@ begin
       Move(0, Count-1);
 end;
 
-procedure TfmMain.TabClick(Sender: TObject);
-//Note: TabClick called by TbxItemWin0..TbxItemWin9
-//which are hidden in the Tools menu
+procedure TfmMain.WindowItemClick(Sender: TObject);
 var
   N: integer;
 begin
