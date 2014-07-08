@@ -14328,11 +14328,11 @@ object fmMain: TfmMain
       OnClick = TBXItemTabCloseClick
     end
     object TBXItemTabCloseOthers: TSpTBXItem
-      Caption = 'Close other tabs'
+      Caption = 'Close others'
       OnClick = TBXItemTabCloseOthersClick
     end
     object TBXItemTabCloseOthersAllGroups: TSpTBXItem
-      Caption = 'Close other tabs (all groups)'
+      Caption = 'Close others (all groups)'
       OnClick = TBXItemTabCloseOthersAllGroupsClick
     end
     object TBXItemTabNew: TSpTBXItem

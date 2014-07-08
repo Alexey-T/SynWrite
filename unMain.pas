@@ -2804,7 +2804,7 @@ type
     procedure DoConfigRestoreStyles;
     procedure DoToggleTabDirs;
     procedure DoInsertUnicodeHexDialog;
-    procedure DoSetTabIndexOnGroupIndex(APageIndex, ATabIndex: Integer);
+    procedure DoSetPagesAndTabIndex(APageIndex, ATabIndex: Integer);
 
     function DoAddTab(Pages: TATPages): TEditorFrame;
     procedure TabAdd(Sender: TObject);
@@ -3874,7 +3874,7 @@ end;
 function TfmMain.GetFrameAllCount: integer;
 begin
   if Assigned(Groups) then
-    Result:= Groups.TabTotalCount
+    Result:= Groups.GetTabTotalCount
   else
     Result:= 0;
 end;
@@ -3896,7 +3896,7 @@ end;
 function TfmMain.GetFramesAll(Index: integer): TEditorFrame;
 begin
   if Assigned(Groups) then
-    Result:= Groups.TabDataOfTotalIndex(Index).TabObject as TEditorFrame
+    Result:= Groups.GetTabDataOfTotalIndex(Index).TabObject as TEditorFrame
   else
     Result:= nil;
 end;
@@ -11488,12 +11488,12 @@ end;
 
 procedure TfmMain.DoTabIndexClick(n: integer);
 begin
-  DoSetTabIndexOnGroupIndex(1, n);
+  DoSetPagesAndTabIndex(1, n);
 end;
 
 procedure TfmMain.DoRtTabIndexClick(n: integer);
 begin
-  DoSetTabIndexOnGroupIndex(2, n);
+  DoSetPagesAndTabIndex(2, n);
 end;
 
 procedure TfmMain.TBXSubmenuEnc2Popup(Sender: TTBCustomItem;
@@ -20595,7 +20595,7 @@ begin
 
     Index:= FrameIndex(F);
     if Index<0 then Exit;
-    D:= Groups.TabDataOfTotalIndex(Index);
+    D:= Groups.GetTabDataOfTotalIndex(Index);
     if D=nil then Exit;
     D.TabColor:= NColor;
     Groups.Invalidate;
@@ -25165,7 +25165,7 @@ procedure TfmMain.ApplyTabOptions;
 var
   i: Integer;
 begin
-  Groups.SetTabFont(Font);
+  Groups.Font.Assign(Font);
   Groups.SetTabOption(tabColorFont, clBlack);
   Groups.SetTabOption(tabColorActive, clBtnFace);
   Groups.SetTabOption(tabColorPassive, $d8d8d8);
@@ -28535,16 +28535,10 @@ begin
   TbxItemToGroupPrev.Enabled:= Cnt>=2;
 end;
 
-procedure TfmMain.DoSetTabIndexOnGroupIndex(APageIndex, ATabIndex: Integer);
+procedure TfmMain.DoSetPagesAndTabIndex(APageIndex, ATabIndex: Integer);
 begin
-  if (APageIndex>=1) and
-    (APageIndex<=Groups.PagesVisibleCount) and
-    (ATabIndex>=0) and
-    (ATabIndex<Groups.Pages[APageIndex].Tabs.TabCount) then
-  begin
-    Groups.Pages[APageIndex].Tabs.TabIndex:= ATabIndex;
-    UpdateTabList(ATabIndex, -1, -1);
-  end
+  if Groups.SetPagesAndTabIndex(APageIndex, ATabIndex) then
+    UpdateTabList(ATabIndex, -1, -1)
   else
     MsgBeep;
 end;
