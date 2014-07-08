@@ -10978,7 +10978,8 @@ end;
 
 procedure TfmMain.TBXItemTabNewClick(Sender: TObject);
 begin
-  acNewTab.Execute;
+  if Groups.PopupPages<>nil then
+    DoAddTab(Groups.PopupPages);
 end;
 
 function TfmMain.SNewDocName(const fn: Widestring): string;
@@ -10987,13 +10988,13 @@ var
   s: string;
 begin
   Result:= ChangeFileExt(ExtractFileName(fn), '');
-  SDeleteFrom(Result, '_'); //_UTF8 may exist
+  SDeleteFrom(Result, '_'); //"_UTF8" suffix may exist
 
   s:= '?';
   an:= SyntaxManager.AnalyzerForFile(fn);
   if an<>nil then s:= an.LexerName;
 
-  Result:= s + #9 {or ' '#151' '} + Result;
+  Result:= s + #9 + Result;
 end;
 
 procedure TfmMain.DoNewDoc(const fn: Widestring);
@@ -11112,11 +11113,13 @@ begin
       N:= ListTab_FrameIndex;
       if N>=0 then
         FClickedFrame:= FramesAll[N];
-      Groups.PopupTabIndex:= -1; //disable items which depend on PopupTabIndex  
+      Groups.PopupTabIndex:= -1; //disable popup items which depend on PopupTabIndex  
       Exit;
     end;
 
-  FClickedFrame:= Groups.PopupPages.Tabs.GetTabData(Groups.PopupTabIndex).TabObject as TEditorFrame;
+  with Groups do
+    if (PopupPages<>nil) and (PopupTabIndex>=0) then
+      FClickedFrame:= PopupPages.Tabs.GetTabData(PopupTabIndex).TabObject as TEditorFrame;
 end;
 
 procedure TfmMain.PopupTabContextPopup(Sender: TObject);
