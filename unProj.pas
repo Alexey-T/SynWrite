@@ -301,6 +301,7 @@ uses
   TntWideStrUtils,
   TntFileCtrl,
   TntSysUtils,
+  unFrame,
   unProjAddDir,
   unProjProps;
 
@@ -678,15 +679,22 @@ procedure TfmProj.TreeProjDragDrop(Sender, Source: TObject; X, Y: Integer);
 var
   TargetNode, SourceNode: TTntTreeNode;
   List: TList;
+  Str: Widestring;
   i: Integer;
 begin
-  //drag-drop of a tab
-  if (Source is TTntPageControl) then
+  //drag-drop of tab
+  if (Source is TEditorFrame) then
   begin
-    TargetNode:= TreeProj.GetNodeAt(X, Y);
-    if TargetNode<>nil then
-      TreeProj.Selected:= TargetNode;
-    DoAddEditorFiles(false);
+    Str:= (Source as TEditorFrame).FileName;
+    if Str<>'' then
+    begin
+      TargetNode:= TreeProj.GetNodeAt(X, Y);
+      if TargetNode<>nil then
+        TreeProj.Selected:= TargetNode;
+      DoAddFile(TreeProj.Selected, Str);
+    end
+    else
+      MsgBeep;
     Exit;
   end;
 

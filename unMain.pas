@@ -4104,23 +4104,23 @@ begin
 end;
 
 procedure TfmMain.FrameChanged;
+var
+  F: TEditorFrame;
 begin
-  if CurrentFrame<>nil then
-    with CurrentFrame do
-    begin
-      if IsMasterFocused or not IsSplitted then
-        CurrentEditor:= EditorMaster
-      else
-        CurrentEditor:= EditorSlave;
+  F:= CurrentFrame;
+  if F<>nil then
+  begin
+    /////////
+    //was: setting CurrentEditor to F.EditorMaster or Slave
 
-      UpdateLexerTo(EditorMaster.TextSource.SyntaxAnalyzer);
-      UpdateTitle(CurrentFrame);
-      UpdateStatusbar;
-      SynScroll(CurrentEditor);
-      UpdateTabList(-1, -1, -1);
-      UpdateTreeProps;
-      ecSyntPrinter.Title:= WideExtractFileName(CurrentFrame.FileName);
-    end
+    UpdateLexerTo(F.EditorMaster.TextSource.SyntaxAnalyzer);
+    UpdateTitle(F);
+    UpdateStatusbar;
+    SynScroll(CurrentEditor);
+    UpdateTabList(-1, -1, -1);
+    UpdateTreeProps;
+    ecSyntPrinter.Title:= WideExtractFileName(F.FileName);
+  end
   else
     CurrentEditor:= nil;
 end;
@@ -4531,7 +4531,7 @@ begin
     opTabVisible:= ReadBool('Setup', 'TabShow', true);
     opTabMaxLen:= ReadInteger('Setup', 'TabSize', 130);
     opTabDragDrop:= true; //ReadBool('Setup', 'TabDnD', true);
-    opTabSwitcher:= ReadBool('Setup', 'TabSw', true);
+    opTabSwitcher:= false; ///////////ReadBool('Setup', 'TabSw', true);
     opTabDirs:= ReadBool('View', 'TabDirs', false);
     opTabNums:= ReadBool('View', 'TabNum', false);
     opTabBtn:= ReadBool('View', 'TabBtn', true);
@@ -20188,6 +20188,8 @@ begin
 end;
 
 procedure TfmMain.DoDropFile(const fn: Widestring; IntoProj: boolean = false);
+var
+  i: Integer;
 begin
   //drop item to Project tree
   if IntoProj then
@@ -20211,15 +20213,16 @@ begin
     Exit
   else
   begin
-    /////////////
-    {
-    if IsMouseOverControl(PageControl1) then
-      PageControl:= PageControl1
-    else
-    if IsMouseOverControl(PageControl2) then
-      PageControl:= PageControl2;
-      }
-    DoOpenFile(fn);
+    for i:= Low(Groups.Pages) to High(Groups.Pages) do
+      if IsMouseOverControl(Groups.Pages[i]) then
+      begin
+        //issue: if pages1 is empty (one empty tab), pages2 empty, then
+        //dropped on pages1 all times (even with mouse on pages2). maybe leave it.
+        //
+        Groups.PagesCurrent:= Groups.Pages[i];
+        DoOpenFile(fn);
+        Break
+      end;
   end;
 end;
 

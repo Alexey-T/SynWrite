@@ -423,7 +423,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 249
+        Height = 217
         Caption = 'Tabs'
         TabOrder = 0
         object TntLabel13: TTntLabel
@@ -436,14 +436,14 @@ object fmSetup: TfmSetup
         end
         object TntLabel14: TTntLabel
           Left = 72
-          Top = 192
+          Top = 144
           Width = 85
           Height = 13
           Caption = 'Tab width (pixels)'
         end
         object cbTabBtn: TTntCheckBox
           Left = 8
-          Top = 48
+          Top = 32
           Width = 380
           Height = 17
           Caption = 'Show "x" buttons on tabs'
@@ -451,7 +451,7 @@ object fmSetup: TfmSetup
         end
         object cbTabDown: TTntCheckBox
           Left = 8
-          Top = 80
+          Top = 64
           Width = 380
           Height = 17
           Caption = 'Show tabs at bottom'
@@ -459,7 +459,7 @@ object fmSetup: TfmSetup
         end
         object cbTabNums: TTntCheckBox
           Left = 8
-          Top = 96
+          Top = 80
           Width = 380
           Height = 17
           Caption = 'Show numbers on tabs'
@@ -467,15 +467,16 @@ object fmSetup: TfmSetup
         end
         object cbTabSw: TTntCheckBox
           Left = 8
-          Top = 224
+          Top = 176
           Width = 433
           Height = 17
           Caption = 'Use modern tab switcher (Ctrl+Tab)'
+          Enabled = False
           TabOrder = 8
         end
         object cbTabDnD: TTntCheckBox
-          Left = 32
-          Top = 152
+          Left = 56
+          Top = 112
           Width = 380
           Height = 17
           Caption = 'Allow drag&&drop'
@@ -484,7 +485,7 @@ object fmSetup: TfmSetup
         end
         object edTabMaxLen: TSpinEdit
           Left = 8
-          Top = 188
+          Top = 140
           Width = 57
           Height = 22
           Increment = 10
@@ -508,7 +509,7 @@ object fmSetup: TfmSetup
         end
         object cbTabDirs: TTntCheckBox
           Left = 8
-          Top = 112
+          Top = 96
           Width = 380
           Height = 17
           Caption = 'Show file+folder names on tabs'
@@ -516,7 +517,7 @@ object fmSetup: TfmSetup
         end
         object cbTabVis: TTntCheckBox
           Left = 8
-          Top = 32
+          Top = 16
           Width = 380
           Height = 17
           Caption = 'Show tabs'
@@ -524,7 +525,7 @@ object fmSetup: TfmSetup
         end
         object cbTabPlus: TTntCheckBox
           Left = 8
-          Top = 64
+          Top = 48
           Width = 380
           Height = 17
           Caption = 'Show "+" tabs'
