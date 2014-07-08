@@ -2280,7 +2280,6 @@ type
     function GetFramesAll(Index: integer): TEditorFrame;
     procedure SetCurrentFrame(Frame: TEditorFrame);
     function GetCurrentFrame: TEditorFrame;
-    procedure FrameChanged;
     procedure FrameSaveState(Sender: TObject);
     function FrameAskToSave(Frame: TEditorFrame; AllowAll: Boolean; AllowCancel: boolean=true): TModalResult;
     procedure InitFrameTab(Frame: TEditorFrame);
@@ -3048,6 +3047,7 @@ type
     procedure UpdateQVTree(const fn: Widestring);
     procedure UpdateStatusBar;
     procedure UpdateLexerTo(An: TSyntAnalyzer);
+    procedure UpdateOnFrameChanged;
 
     property opTabsWidths: Widestring read GetTabsWidths write SetTabsWidths;
     property ShowFullScreen: boolean read FFullScr write SetFS;
@@ -3721,7 +3721,7 @@ begin
   Result.LoadFile(AFileName);
   Result.DoStartNotif;
 
-  FrameChanged;
+  UpdateOnFrameChanged;
   UpdateFrameEnc(Result);
   UpdateFrameSpell(Result);
   UpdateFrameZoom(Result);
@@ -4102,7 +4102,7 @@ begin
 
   CurrentEditor:= nil;
   Frame.Free;
-  FrameChanged;
+  UpdateOnFrameChanged;
 
   //free directory of closed file
   WideSetCurrentDir(FInitialDir);
@@ -4139,7 +4139,7 @@ begin
     Tree.Images:= nil;
 end;
 
-procedure TfmMain.FrameChanged;
+procedure TfmMain.UpdateOnFrameChanged;
 var
   F: TEditorFrame;
 begin
@@ -28461,7 +28461,10 @@ var
 begin
   D:= (Sender as TATTabs).GetTabData((Sender as TATTabs).TabIndex);
   if D<>nil then
+  begin
     FocusFrame(D.TabObject as TEditorFrame);
+    UpdateOnFrameChanged;
+  end;
 end;
 
 procedure TfmMain.TabClose(Sender: TObject; ATabIndex: Integer;
