@@ -575,7 +575,7 @@ type
     TBXSubmenuItemFRecents: TSpTbxSubmenuItem;
     TBXSeparatorItem30: TSpTbxSeparatorItem;
     TBXItemFClr: TSpTbxItem;
-    tbxWin: TSpTbxSubmenuItem;
+    TbxSubmenuItemWindow: TSpTBXSubmenuItem;
     TBXItemETime: TSpTbxItem;
     TBXSubmenuItemRun: TSpTbxSubmenuItem;
     TBXItemTool1: TSpTBXItem;
@@ -1496,7 +1496,7 @@ type
     procedure TBXItemFSesSaveAsClick(Sender: TObject);
     procedure TBXItemFSesOpenClick(Sender: TObject);
     procedure TBXItemFClrClick(Sender: TObject);
-    procedure tbxWinPopup(Sender: TTBCustomItem; FromLink: Boolean);
+    procedure TbxSubmenuItemWindowPopup(Sender: TTBCustomItem; FromLink: Boolean);
     procedure TBXSubmenuEnc2Popup(Sender: TTBCustomItem; FromLink: Boolean);
     procedure TBXItemETimeClick(Sender: TObject);
     procedure TBXItemEPasteClick(Sender: TObject);
@@ -2814,6 +2814,7 @@ type
     procedure DoConfigRestoreStyles;
     procedure DoToggleTabDirs;
     procedure DoInsertUnicodeHexDialog;
+    procedure DoSetTabIndexOnGroupIndex(APageIndex, ATabIndex: Integer);
 
     function DoAddTab(Pages: TATPages): TEditorFrame;
     procedure TabAdd(Sender: TObject);
@@ -11436,7 +11437,7 @@ begin
 end;
 
 
-procedure TfmMain.tbxWinPopup(Sender: TTBCustomItem; FromLink: Boolean);
+procedure TfmMain.TbxSubmenuItemWindowPopup(Sender: TTBCustomItem; FromLink: Boolean);
   function Sh(i: integer): string;
   begin
     if (i>=0) and (i<=9) then
@@ -11448,8 +11449,8 @@ procedure TfmMain.tbxWinPopup(Sender: TTBCustomItem; FromLink: Boolean);
   end;
 var
   i: integer;
-  b: TSpTbxItem;
-  bSep: TSpTbxSeparatorItem;
+  mi: TSpTbxItem;
+  //bSep: TSpTbxSeparatorItem;
 begin
   with CurrentFrame do
   begin
@@ -11458,7 +11459,7 @@ begin
   end;
 
   //clear
-  with tbxWin do
+  with TbxSubmenuItemWindow do
     for i:= Count-1 downto 0 do
       if Items[i].Tag>0 then
         Items[i].Free;
@@ -11466,40 +11467,34 @@ begin
   //add tabs
   for i:= 0 to FrameAllCount-1 do
   begin
-    ///////////////
     {
-    if i = PageControl1.PageCount then
+    if ...
     begin
       bSep:= TSpTbxSeparatorItem.Create(Self);
       bSep.Tag:= 1;
       tbxWin.Add(bSep);
     end;
     }
-    b:= TSpTbxItem.Create(Self);
-    b.Caption:= FramesAll[i].TabCaption + Sh(i);
+    mi:= TSpTbxItem.Create(Self);
+    mi.Caption:= FramesAll[i].TabCaption + Sh(i);
+
     if i < 9 then
-      b.Caption:= WideFormat('&%d   ', [i+1]) + b.Caption
+      mi.Caption:= WideFormat('&%d   ', [i+1]) + mi.Caption
     else
     if i < 10 + Ord('Z') - Ord('A') then
-      b.Caption:= WideFormat('&%s   ', [Chr(i-9 + Ord('A'))]) + b.Caption;
-    b.Hint:= FramesAll[i].FileName;
-    b.Tag:= i+1;
-    b.OnClick:= TabClick;
-    b.OnSelect:= ButtonOnSelect;
-    b.RadioItem:= true;
-    ///////////////
-    {
-    if i < PageControl1.PageCount then
-      b.Checked:= i = PageControl1.ActivePageIndex
-    else
-      b.Checked:= i-PageControl1.PageCount = PageControl2.ActivePageIndex;
-      }
-    tbxWin.Add(b);
+      mi.Caption:= WideFormat('&%s   ', [Chr(i-9 + Ord('A'))]) + mi.Caption;
+      
+    mi.Hint:= FramesAll[i].FileName;
+    mi.Tag:= i+1;
+    mi.OnClick:= TabClick;
+    mi.OnSelect:= ButtonOnSelect;
+    mi.RadioItem:= true;
+    TbxSubmenuItemWindow.Add(mi);
   end;
 
   //move lower Window items to end
   for i:= 1 to cFixedWindowItems do
-    with TbxWin do
+    with TbxSubmenuItemWindow do
       Move(0, Count-1);
 end;
 
@@ -11507,42 +11502,20 @@ procedure TfmMain.TabClick(Sender: TObject);
 //Note: TabClick called by TbxItemWin0..TbxItemWin9
 //which are hidden in the Tools menu
 var
-  n: integer;
+  N: integer;
 begin
-  n:= (Sender as TComponent).Tag - 1;
-  DoTabIndexClick(n);
+  N:= (Sender as TComponent).Tag - 1;
+  CurrentFrame:= FramesAll[N];
 end;
 
 procedure TfmMain.DoTabIndexClick(n: integer);
 begin
-  if (n>=0) and (n<FrameAllCount) then
-  begin
-    CurrentFrame:= FramesAll[n];
-    UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
-  end
-  else
-    MsgBeep;
+  DoSetTabIndexOnGroupIndex(1, n);
 end;
 
 procedure TfmMain.DoRtTabIndexClick(n: integer);
 begin
-  ////////////
-  {
-  if PagesEmpty(PageControl2) then
-    begin MsgBeep; Exit end;
-  PrevPages:= PageControl;
-  PageControl:= PageControl2;
-  if (n>=0) and (n<FrameCount) then //not FrameAllCount
-  begin
-    CurrentFrame:= Frames[n]; //not FramesAll
-    UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
-  end
-  else
-  begin
-    MsgBeep;
-    PageControl:= PrevPages;
-  end;
-  }
+  DoSetTabIndexOnGroupIndex(2, n);
 end;
 
 procedure TfmMain.TBXSubmenuEnc2Popup(Sender: TTBCustomItem;
@@ -25088,10 +25061,10 @@ begin
   with FMenuItems[7] do begin Id:= 'macros'; Item:= TbxSubmenuItemMacros; end;
   with FMenuItems[8] do begin Id:= 'options'; Item:= TbxSubmenuItemOpt; end;
   with FMenuItems[9] do begin Id:= 'view'; Item:= TbxSubmenuItemView; end;
-  with FMenuItems[10] do begin Id:= 'window'; Item:= TbxWin; end;
+  with FMenuItems[10] do begin Id:= 'window'; Item:= TbxSubmenuItemWindow; end;
   with FMenuItems[11] do begin Id:= 'help'; Item:= TbxSubmenuItemHelp; end;
 
-  //with FMenuItems[12] do begin Id:= 'split'; Item:= TbxItemMenuSplit; end;
+  with FMenuItems[12] do begin Id:= 'gr'; Item:= TBXSubmenuItemGroups; end;
   with FMenuItems[13] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
   with FMenuItems[14] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
 
@@ -28570,7 +28543,7 @@ procedure TfmMain.TBXSubmenuItemToGroupPopup(Sender: TTBCustomItem;
 var
   Cnt, N: Integer;
 begin
-  Cnt:= cModesGroupsCount[Groups.Mode]; //total groups
+  Cnt:= Groups.PagesVisibleCount; //visible groups
   N:= Groups.PagesIndexOf(Groups.PopupPages); //current group
 
   TbxItemToGroup1.Enabled:= (Cnt>=2) and (N<>1);
@@ -28583,8 +28556,23 @@ begin
   TbxItemToGroupPrev.Enabled:= Cnt>=2;
 end;
 
+procedure TfmMain.DoSetTabIndexOnGroupIndex(APageIndex, ATabIndex: Integer);
+begin
+  if (APageIndex>=1) and
+    (APageIndex<=Groups.PagesVisibleCount) and
+    (ATabIndex>=0) and
+    (ATabIndex<Groups.Pages[APageIndex].Tabs.TabCount) then
+  begin
+    Groups.Pages[APageIndex].Tabs.TabIndex:= ATabIndex;
+    UpdateTabList(ATabIndex, -1, -1);
+  end
+  else
+    MsgBeep;
+end;
+
+
 initialization
   unProcPy.PyEditor:= MainPyEditor;
 
 end.
-           
+
