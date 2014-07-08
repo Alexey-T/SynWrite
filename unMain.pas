@@ -828,17 +828,6 @@ type
     ecToggleFocusValidate: TAction;
     TBXItemEDedupAdjacent: TSpTbxItem;
     TBXItemTbDedupAdjacent: TSpTbxItem;
-    TBXSeparatorItem58: TSpTbxSeparatorItem;
-    TBXItemWin9: TSpTbxItem;
-    TBXItemWin8: TSpTbxItem;
-    TBXItemWin7: TSpTbxItem;
-    TBXItemWin6: TSpTbxItem;
-    TBXItemWin5: TSpTbxItem;
-    TBXItemWin4: TSpTbxItem;
-    TBXItemWin3: TSpTbxItem;
-    TBXItemWin2: TSpTbxItem;
-    TBXItemWin1: TSpTbxItem;
-    TBXItemWin0: TSpTbxItem;
     TBXSubmenuItemSess: TSpTbxSubmenuItem;
     TBXSeparatorItem59: TSpTbxSeparatorItem;
     TBXItemSessClr: TSpTbxItem;
@@ -2572,7 +2561,6 @@ type
     function DoCloseOtherTabs(AForPopupMenu: boolean): boolean;
     function GetSplitterPos: Double;
     procedure SetSplitterPos(const Pos: Double);
-    procedure DoMoveTabToOtherView(NTab: integer);
     procedure DoMoveTabToWindow(Frame: TEditorFrame; AndClose: boolean);
     function LastDir: Widestring;
     function LastDir_UntitledFile: Widestring;
@@ -6184,7 +6172,7 @@ begin
       DoDelayedCommandWithClose(Command);
 
     sm_FileMoveToOtherView:
-      DoMoveTabToOtherView(-1);
+      Groups.MoveCurrentTabToOpposite;
 
     sm_FileExit: acExit.Execute;
     sm_FileSaveSession: DoSaveSession;
@@ -8161,12 +8149,13 @@ begin
     fmClip.ListClip.Invalidate;
   if Assigned(fmClips) then
     fmClips.List.Invalidate;
-  DoPluginsRepaint;
 
   tbTabsLeft.Invalidate;
   tbTabsOut.Invalidate;
   tbTabsRight.Invalidate;
   {$endif}
+
+  DoPluginsRepaint;
 end;
 
 procedure TfmMain.DoRepaintTBs2;
@@ -9842,18 +9831,6 @@ begin
   UpdKey(TbxItemMacro29, sm_Macro29);
   UpdKey(TbxItemMacro30, sm_Macro30);
 
-  //tabs
-  UpdKey(TbxItemWin0, sm_Tab0);
-  UpdKey(TbxItemWin1, sm_Tab1);
-  UpdKey(TbxItemWin2, sm_Tab2);
-  UpdKey(TbxItemWin3, sm_Tab3);
-  UpdKey(TbxItemWin4, sm_Tab4);
-  UpdKey(TbxItemWin5, sm_Tab5);
-  UpdKey(TbxItemWin6, sm_Tab6);
-  UpdKey(TbxItemWin7, sm_Tab7);
-  UpdKey(TbxItemWin8, sm_Tab8);
-  UpdKey(TbxItemWin9, sm_Tab9);
-
   //view
   UpdKey(TbxItemVSyncHorz, sm_SyncScrollHorz);
   UpdKey(TbxItemVSyncVert, sm_SyncScrollVert);
@@ -11123,55 +11100,52 @@ end;
 
 procedure TfmMain.UpdateClickedFrame;
 var
-  P: TPoint;
   N: Integer;
 begin
   FClickedFrame:= nil;
+
   if ListTabs.Visible and plTree.Visible then
-  begin
-    P:= ListTabs.ScreenToClient(Mouse.CursorPos);
-    if PtInRect(ListTabs.BoundsRect, P) then
+    if PtInControl(ListTabs, Mouse.CursorPos) then
     begin
       N:= ListTab_FrameIndex;
       if N>=0 then
-        FClickedFrame:= FramesAll[N]
-      else
-        FClickedFrame:= nil;
+        FClickedFrame:= FramesAll[N];
+      Groups.PopupTabIndex:= -1; //disable items which depend on PopupTabIndex  
       Exit;
     end;
-  end;
 
   FClickedFrame:= Groups.PopupPages.Tabs.GetTabData(Groups.PopupTabIndex).TabObject as TEditorFrame;
 end;
 
 procedure TfmMain.PopupTabContextPopup(Sender: TObject);
 var
-  en_all, en, en2, enProj, enWinMove, enWinOpen: boolean;
+  en_all, en_named, enProj, enWinMove, enWinOpen: boolean;
   F: TEditorFrame;
 begin
   UpdateClickedFrame;
   F:= FClickedFrame;
 
-  en_all:= F<>nil;//FPagesNTabCtx>=0;
-  en:= en_all and (F<>nil) and (F.FileName<>'');
-  en2:= en_all and (F<>nil) and (F.Modified or (F.FileName<>''));
+  en_all:= F<>nil;
+  en_named:= en_all and (F.FileName<>'');
   enProj:= en_all and Assigned(fmProj) and plTree.Visible;
   enWinOpen:= en_all and SynExe and not opSingleInstance;
   enWinMove:= en_all and enWinOpen and not F.Modified and (FrameAllCount>1);
 
+  TBXSubmenuItemToGroup.Enabled:= en_all and (Groups.PopupTabIndex>=0);
   TBXItemTabClose.Enabled:= en_all;
   TBXItemTabCloseOthers.Enabled:= en_all and (FrameAllCount>1);
   TBXItemTabReload.Enabled:= en_all;
   TBXSubmenuTabColor.Enabled:= en_all;
   TBXItemTabToggleSplit.Enabled:= en_all;
-  TBXItemTabToggleSplit.Checked:= (F<>nil) and F.IsSplitted;
-  TBXItemTabCopyFN.Enabled:= en;
-  TBXItemTabCopyFull.Enabled:= en;
-  TBXItemTabCopyDir.Enabled:= en;
+  TBXItemTabToggleSplit.Checked:= en_all and F.IsSplitted;
 
-  TBXItemTabMoveToWindow.Enabled:= en and enWinMove;
-  TBXItemTabOpenInWindow.Enabled:= en and enWinOpen;
-  TBXItemTabAddToProj.Enabled:= en and enProj;
+  TBXItemTabCopyFN.Enabled:= en_named;
+  TBXItemTabCopyFull.Enabled:= en_named;
+  TBXItemTabCopyDir.Enabled:= en_named;
+
+  TBXItemTabMoveToWindow.Enabled:= en_named and enWinMove;
+  TBXItemTabOpenInWindow.Enabled:= en_named and enWinOpen;
+  TBXItemTabAddToProj.Enabled:= en_named and enProj;
 end;
 
 procedure TfmMain.TBXItemFSesSaveAsClick(Sender: TObject);
@@ -11441,9 +11415,12 @@ procedure TfmMain.TbxSubmenuItemWindowPopup(Sender: TTBCustomItem; FromLink: Boo
   //
   function _Sh(i: Integer): string;
   begin
+    {
+    //this is wrong: sm_TabN call left-tabs, while menuitems call FramesAll[i]
     if (i>=0) and (i<=9) then
       Result:= #9 + GetShortcutTextOfCmd(sm_Tab0+i)
     else
+    }
       Result:= '';
   end;
   //
@@ -14539,10 +14516,6 @@ begin
 end;
 *)
 
-procedure TfmMain.DoMoveTabToOtherView(NTab: integer);
-begin
-  Groups.MoveCurrentTabToOpposite;
-end;
 
 function TfmMain.GetSplitterPos: Double;
 begin
@@ -18778,9 +18751,12 @@ end;
 
 procedure TfmMain.UpdateListTabs;
 var
-  i: Integer;
-  F: TEditorFrame;
+  F, FCurrent: TEditorFrame;
+  i, NUnnamed: Integer;
 begin
+  NUnnamed:= 0;
+  FCurrent:= CurrentFrame;
+
   with ListTabs do
   begin
     Items.BeginUpdate;
@@ -18790,11 +18766,14 @@ begin
         with Items.Add do
         begin
           F:= FramesAll[i];
-          if F=CurrentFrame then
+          if F=FCurrent then
             ListTabs.Selected:= Items[i];
 
           if F.FileName='' then
-            Caption:= DKLangConstW('Untitled')
+          begin
+            Inc(NUnnamed);
+            Caption:= DKLangConstW('Untitled') + ' ['+IntToStr(NUnnamed)+']';
+          end
           else
             Caption:= WideExtractFileName(F.FileName);
 
