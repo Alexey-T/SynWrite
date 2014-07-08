@@ -1347,6 +1347,17 @@ type
     TbxItemPreZoom25: TSpTBXItem;
     TbxItemPreEdit: TSpTBXItem;
     SpTBXSeparatorItem31: TSpTBXSeparatorItem;
+    TBXSubmenuItemGroups: TSpTBXSubmenuItem;
+    TbxItemGroup2H: TSpTBXItem;
+    TbxItemGroup2V: TSpTBXItem;
+    TbxItemGroupOne: TSpTBXItem;
+    TbxItemGroup3H: TSpTBXItem;
+    TbxItemGroup3V: TSpTBXItem;
+    TbxItemGroup6Grid: TSpTBXItem;
+    TbxItemGroup4Grid: TSpTBXItem;
+    TbxItemGroup4V: TSpTBXItem;
+    TbxItemGroup4H: TSpTBXItem;
+    TbxItemGroup3as1p2: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2097,6 +2108,18 @@ type
     procedure PopupPreviewEditorPopup(Sender: TObject);
     procedure PopupStatusEncClosePopup(Sender: TObject);
     procedure PopupClipsPopup(Sender: TObject);
+    procedure TbxItemGroupOneClick(Sender: TObject);
+    procedure TbxItemGroup2HClick(Sender: TObject);
+    procedure TbxItemGroup2VClick(Sender: TObject);
+    procedure TbxItemGroup3HClick(Sender: TObject);
+    procedure TbxItemGroup3VClick(Sender: TObject);
+    procedure TbxItemGroup3as1p2Click(Sender: TObject);
+    procedure TbxItemGroup4HClick(Sender: TObject);
+    procedure TbxItemGroup4VClick(Sender: TObject);
+    procedure TbxItemGroup4GridClick(Sender: TObject);
+    procedure TbxItemGroup6GridClick(Sender: TObject);
+    procedure TBXSubmenuItemGroupsPopup(Sender: TTBCustomItem;
+      FromLink: Boolean);
 
   private
     cStatLine,
@@ -2821,6 +2844,7 @@ type
     FProjPreviewButton: TSpTbxItem;
 
     //opt
+    opGroupMode: TATGroupsMode;
     opHintScroll: boolean;
     opPyChangeDelay: DWORD;
     opAutoCase: boolean;
@@ -4752,6 +4776,8 @@ begin
     Ini:= TMemIniFile.Create(SynHistoryIni);
     with Ini do
     try
+      opGroupMode:= TATGroupsMode(ReadInteger('Win', 'Groups', Ord(gmOne)));
+
       //load recent files
       LoadMruList(SynMruFiles, Ini, 'MRU', opSaveState, opMruCheck);
 
@@ -4843,6 +4869,8 @@ begin
   Ini:= TIniFile.Create(SynHistoryIni);
   with Ini do
   try
+    WriteInteger('Win', 'Groups', Ord(Groups.Mode));
+
     //save Clipbd panel
     if Assigned(fmClips) then
       WriteString('Win', 'Clip', fmClips.Combo.Text);
@@ -28406,9 +28434,7 @@ begin
   Groups.OnTabClose:= TabClose;
   Groups.OnTabPopup:= TabPopup;
 
-  Groups.Mode:=
-    //gmOne;
-    gm2Horz;
+  Groups.Mode:= opGroupMode;
   Groups.SplitPercent:= 80;
 end;
 
@@ -28456,6 +28482,71 @@ var
 begin
   P:= Mouse.CursorPos;
   PopupTabContext.Popup(P.X, P.Y);
+end;
+
+procedure TfmMain.TbxItemGroupOneClick(Sender: TObject);
+begin
+  Groups.Mode:= gmOne;
+end;
+
+procedure TfmMain.TbxItemGroup2HClick(Sender: TObject);
+begin
+  Groups.Mode:= gm2Horz;
+end;
+
+procedure TfmMain.TbxItemGroup2VClick(Sender: TObject);
+begin
+  Groups.Mode:= gm2Vert;
+end;
+
+procedure TfmMain.TbxItemGroup3HClick(Sender: TObject);
+begin
+  Groups.Mode:= gm3Horz;
+end;
+
+procedure TfmMain.TbxItemGroup3VClick(Sender: TObject);
+begin
+  Groups.Mode:= gm3Vert;
+end;
+
+procedure TfmMain.TbxItemGroup3as1p2Click(Sender: TObject);
+begin
+  Groups.Mode:= gm3Plus;
+end;
+
+procedure TfmMain.TbxItemGroup4HClick(Sender: TObject);
+begin
+  Groups.Mode:= gm4Horz;
+end;
+
+procedure TfmMain.TbxItemGroup4VClick(Sender: TObject);
+begin
+  Groups.Mode:= gm4Vert;
+end;
+
+procedure TfmMain.TbxItemGroup4GridClick(Sender: TObject);
+begin
+  Groups.Mode:= gm4Grid;
+end;
+
+procedure TfmMain.TbxItemGroup6GridClick(Sender: TObject);
+begin
+  Groups.Mode:= gm6Grid;
+end;
+
+procedure TfmMain.TBXSubmenuItemGroupsPopup(Sender: TTBCustomItem;
+  FromLink: Boolean);
+begin
+  TbxItemGroupOne.Checked:= Groups.Mode=gmOne;
+  TbxItemGroup2H.Checked:= Groups.Mode=gm2Horz;
+  TbxItemGroup2V.Checked:= Groups.Mode=gm2Vert;
+  TbxItemGroup3H.Checked:= Groups.Mode=gm3Horz;
+  TbxItemGroup3V.Checked:= Groups.Mode=gm3Vert;
+  TbxItemGroup3as1p2.Checked:= Groups.Mode=gm3Plus;
+  TbxItemGroup4H.Checked:= Groups.Mode=gm4Horz;
+  TbxItemGroup4V.Checked:= Groups.Mode=gm4Vert;
+  TbxItemGroup4Grid.Checked:= Groups.Mode=gm4Grid;
+  TbxItemGroup6Grid.Checked:= Groups.Mode=gm6Grid;
 end;
 
 initialization
