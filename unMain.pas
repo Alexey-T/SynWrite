@@ -1356,6 +1356,7 @@ type
     TbxItemToGroup2: TSpTBXItem;
     TbxItemToGroup1: TSpTBXItem;
     SpTBXSeparatorItem20: TSpTBXSeparatorItem;
+    TBXItemTabCloseOthersAllGroups: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2121,6 +2122,7 @@ type
     procedure TbxItemToGroup1Click(Sender: TObject);
     procedure TBXSubmenuItemToGroupPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
+    procedure TBXItemTabCloseOthersAllGroupsClick(Sender: TObject);
 
   private
     cStatLine,
@@ -11132,10 +11134,13 @@ begin
   enWinMove:= en_all and enWinOpen and not F.Modified and (FrameAllCount>1);
 
   TBXSubmenuItemToGroup.Enabled:= en_all and (Groups.PopupTabIndex>=0);
+  TBXSubmenuTabColor.Enabled:= en_all;
+
   TBXItemTabClose.Enabled:= en_all;
   TBXItemTabCloseOthers.Enabled:= en_all and (FrameAllCount>1);
+  TBXItemTabCloseOthersAllGroups.Enabled:= TBXItemTabCloseOthers.Enabled and (Groups.PagesVisibleCount>1);
+
   TBXItemTabReload.Enabled:= en_all;
-  TBXSubmenuTabColor.Enabled:= en_all;
   TBXItemTabToggleSplit.Enabled:= en_all;
   TBXItemTabToggleSplit.Checked:= en_all and F.IsSplitted;
 
@@ -28545,6 +28550,11 @@ begin
     MsgBeep;
 end;
 
+
+procedure TfmMain.TBXItemTabCloseOthersAllGroupsClick(Sender: TObject);
+begin
+  Groups.CloseTabs(tabCloseOthersAllPages, true);
+end;
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
