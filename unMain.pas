@@ -682,7 +682,6 @@ type
     TBXItemTabCopyFull: TSpTBXItem;
     TBXItemTabCopyFN: TSpTBXItem;
     TBXSeparatorItem42: TSpTbxSeparatorItem;
-    TBXItemTabMoveToView: TSpTBXItem;
     TBXSeparatorItem44: TSpTbxSeparatorItem;
     TBXItemVSyncH: TSpTbxItem;
     TBXItemVSyncV: TSpTbxItem;
@@ -1358,6 +1357,16 @@ type
     TbxItemGroup4V: TSpTBXItem;
     TbxItemGroup4H: TSpTBXItem;
     TbxItemGroup3as1p2: TSpTBXItem;
+    TBXSubmenuItemToGroup: TSpTBXSubmenuItem;
+    TbxItemToGroupPrev: TSpTBXItem;
+    TbxItemToGroupNext: TSpTBXItem;
+    TbxItemToGroup6: TSpTBXItem;
+    TbxItemToGroup5: TSpTBXItem;
+    TbxItemToGroup4: TSpTBXItem;
+    TbxItemToGroup3: TSpTBXItem;
+    TbxItemToGroup2: TSpTBXItem;
+    TbxItemToGroup1: TSpTBXItem;
+    SpTBXSeparatorItem20: TSpTBXSeparatorItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure TabClick(Sender: TObject);
@@ -2119,6 +2128,9 @@ type
     procedure TbxItemGroup4GridClick(Sender: TObject);
     procedure TbxItemGroup6GridClick(Sender: TObject);
     procedure TBXSubmenuItemGroupsPopup(Sender: TTBCustomItem;
+      FromLink: Boolean);
+    procedure TbxItemToGroup1Click(Sender: TObject);
+    procedure TBXSubmenuItemToGroupPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
 
   private
@@ -4134,9 +4146,6 @@ begin
   F:= CurrentFrame;
   if F<>nil then
   begin
-    /////////
-    //was: setting CurrentEditor to F.EditorMaster or Slave
-
     UpdateLexerTo(F.EditorMaster.TextSource.SyntaxAnalyzer);
     UpdateTitle(F);
     UpdateStatusbar;
@@ -8562,13 +8571,12 @@ end;
 
   procedure TfmMain.UpdateFormEnabled(En: boolean);
   begin
+    Groups.Enabled:= En;
     plTree.Enabled:= En;
     plClip.Enabled:= En;
     plOut.Enabled:= En;
 
-    ////////////////
-    //enable groups
-
+    Menu.Enabled:= En;
     TbxDockTop.Enabled:= En;
     TbxDockLeft.Enabled:= En;
     TbxDockLeft1.Enabled:= En;
@@ -8576,8 +8584,6 @@ end;
     TbxDockRight1.Enabled:= En;
     TbxDockBottom.Enabled:= En;
     TbxDockBottom1.Enabled:= En;
-    Menu.Enabled:= En;
-    //Status.Enabled:= En;
 
     if Assigned(fmSR) then
     begin
@@ -8894,9 +8900,6 @@ begin
 
   //Ctrl+Space
   if (Key = vk_space) and (Shift = [ssCtrl]) then Exit;
-
-  //Ctrl+BkSp may produce #127 char
-  ////if (Key = vk_back) and (Shift=[ssCtrl]) then begin Key:= 0; MsgBeep); Exit; end;
 
   //PgUp/PgDn on ACP list shown
   if (Key = vk_prior) or (Key = vk_next) then
@@ -10098,7 +10101,6 @@ begin
   UpdKey(TBXItemTabClose, sm_FileClose);
   UpdKey(TBXItemTabCloseOthers, sm_FileCloseOthers);
   UpdKey(TBXItemTabNew, sm_FileNew);
-  UpdKey(TBXItemTabMoveToView, sm_FileMoveToOtherView);
   UpdKey(TBXItemTabCopyFN, sm_CopyFilename);
   UpdKey(TBXItemTabCopyFull, sm_CopyFullPath);
   UpdKey(TBXItemTabCopyDir, sm_CopyDirPath);
@@ -10285,7 +10287,7 @@ begin
 
   //other
   StatusItemBusy.Hint:= DKLangConstW('MBusyIco');
-  /////////////TbxItemSplitCaption.Caption:= DKLangConstW('Split_Vw');
+  //TbxItemSplitCaption.Caption:= DKLangConstW('Split_Vw');
   if SyntaxManager.CurrentLexer = nil then
     StatusItemLexer.Caption:= DKLangConstW('None');
 
@@ -11165,9 +11167,6 @@ begin
   TBXItemTabCopyFN.Enabled:= en;
   TBXItemTabCopyFull.Enabled:= en;
   TBXItemTabCopyDir.Enabled:= en;
-
-  //////////need submenu
-  TBXItemTabMoveToView.Enabled:= false;
 
   TBXItemTabMoveToWindow.Enabled:= en and enWinMove;
   TBXItemTabOpenInWindow.Enabled:= en and enWinOpen;
@@ -28427,15 +28426,14 @@ begin
   Groups.Parent:= Panel1;
   Groups.Align:= alClient;
 
-  ApplyTabOptions;
-
   Groups.OnTabAdd:= TabAdd;
   Groups.OnTabFocus:= TabFocus;
   Groups.OnTabClose:= TabClose;
   Groups.OnTabPopup:= TabPopup;
 
+  ApplyTabOptions;
   Groups.Mode:= opGroupMode;
-  Groups.SplitPercent:= 80;
+  //Groups.SplitPercent:= 80;
 end;
 
 function TfmMain.DoAddTab(Pages: TATPages): TEditorFrame;
@@ -28547,6 +28545,39 @@ begin
   TbxItemGroup4V.Checked:= Groups.Mode=gm4Vert;
   TbxItemGroup4Grid.Checked:= Groups.Mode=gm4Grid;
   TbxItemGroup6Grid.Checked:= Groups.Mode=gm6Grid;
+end;
+
+procedure TfmMain.TbxItemToGroup1Click(Sender: TObject);
+var
+  N: Integer;
+begin
+  N:= (Sender as TComponent).Tag;
+  if N>0 then
+    Groups.MoveTab(Groups.PopupPages, Groups.PopupTabIndex, Groups.Pages[N], -1, false)
+  else
+  if (N=-1) then
+    Groups.MovePopupTabToNext(true)
+  else
+  if (N=-2) then
+    Groups.MovePopupTabToNext(false);
+end;
+
+procedure TfmMain.TBXSubmenuItemToGroupPopup(Sender: TTBCustomItem;
+  FromLink: Boolean);
+var
+  Cnt, N: Integer;
+begin
+  Cnt:= cModesGroupsCount[Groups.Mode]; //total groups
+  N:= Groups.PagesIndexOf(Groups.PopupPages); //current group
+
+  TbxItemToGroup1.Enabled:= (Cnt>=2) and (N<>1);
+  TbxItemToGroup2.Enabled:= (Cnt>=2) and (N<>2);
+  TbxItemToGroup3.Enabled:= (Cnt>=3) and (N<>3);
+  TbxItemToGroup4.Enabled:= (Cnt>=4) and (N<>4);
+  TbxItemToGroup5.Enabled:= (Cnt>=5) and (N<>5);
+  TbxItemToGroup6.Enabled:= (Cnt>=6) and (N<>6);
+  TbxItemToGroupNext.Enabled:= Cnt>=2;
+  TbxItemToGroupPrev.Enabled:= Cnt>=2;
 end;
 
 initialization
