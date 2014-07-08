@@ -11448,9 +11448,9 @@ procedure TfmMain.TbxSubmenuItemWindowPopup(Sender: TTBCustomItem; FromLink: Boo
       Result:= #9 + Result;
   end;
 var
-  i: integer;
   mi: TSpTbxItem;
-  //bSep: TSpTbxSeparatorItem;
+  Frame: TEditorFrame;
+  i: integer;
 begin
   with CurrentFrame do
   begin
@@ -11467,6 +11467,7 @@ begin
   //add tabs
   for i:= 0 to FrameAllCount-1 do
   begin
+    Frame:= FramesAll[i];
     {
     if ...
     begin
@@ -11476,15 +11477,16 @@ begin
     end;
     }
     mi:= TSpTbxItem.Create(Self);
-    mi.Caption:= FramesAll[i].TabCaption + Sh(i);
+    mi.Caption:= Frame.TabCaption + Sh(i);
 
     if i < 9 then
       mi.Caption:= WideFormat('&%d   ', [i+1]) + mi.Caption
     else
     if i < 10 + Ord('Z') - Ord('A') then
       mi.Caption:= WideFormat('&%s   ', [Chr(i-9 + Ord('A'))]) + mi.Caption;
-      
-    mi.Hint:= FramesAll[i].FileName;
+
+    mi.Checked:= Frame.Visible;
+    mi.Hint:= Frame.FileName;
     mi.Tag:= i+1;
     mi.OnClick:= TabClick;
     mi.OnSelect:= ButtonOnSelect;
