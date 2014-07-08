@@ -25029,12 +25029,12 @@ end;
 
 procedure TfmMain.InitMenuItemsList;
 begin
-  SetLength(FMenuItems, 19);
+  SetLength(FMenuItems, 18);
+  //
   with FMenuItems[0] do begin Id:= 'file'; Item:= TbxSubmenuItemFile; end;
   with FMenuItems[1] do begin Id:= 'edit'; Item:= TbxSubmenuItemEd; end;
   with FMenuItems[2] do begin Id:= 'search'; Item:= TbxSubmenuItemSr; end;
   with FMenuItems[3] do begin Id:= 'encoding'; Item:= TbxSubmenuItemEnc; end;
-  //with FMenuItems[4] do begin Id:= 'lexer'; Item:= TbxSubmenuItemLexer; end;
   with FMenuItems[4] do begin Id:= 'bookmarks'; Item:= TbxSubmenuItemBk; end;
   with FMenuItems[5] do begin Id:= 'run'; Item:= TbxSubmenuItemRun; end;
   with FMenuItems[6] do begin Id:= 'html'; Item:= TbxSubmenuItemHTML; end;
@@ -25043,15 +25043,14 @@ begin
   with FMenuItems[9] do begin Id:= 'view'; Item:= TbxSubmenuItemView; end;
   with FMenuItems[10] do begin Id:= 'window'; Item:= TbxSubmenuItemWindow; end;
   with FMenuItems[11] do begin Id:= 'help'; Item:= TbxSubmenuItemHelp; end;
-
-  with FMenuItems[12] do begin Id:= 'gr'; Item:= TBXSubmenuItemGroups; end;
-  with FMenuItems[13] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
-  with FMenuItems[14] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
-
-  with FMenuItems[15] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
-  with FMenuItems[16] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
-  with FMenuItems[17] do begin Id:= 'toolbar-view'; Item:= tbView; end;
-  with FMenuItems[18] do begin Id:= 'context'; Item:= PopupEditor; end;
+  //
+  with FMenuItems[12] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
+  with FMenuItems[13] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
+  //
+  with FMenuItems[14] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
+  with FMenuItems[15] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
+  with FMenuItems[16] do begin Id:= 'toolbar-view'; Item:= tbView; end;
+  with FMenuItems[17] do begin Id:= 'context'; Item:= PopupEditor; end;
 end;
 
 procedure TfmMain.TBXItemOHideItemsClick(Sender: TObject);
