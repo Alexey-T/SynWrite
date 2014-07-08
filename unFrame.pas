@@ -509,22 +509,24 @@ end;
 procedure TEditorFrame.DoTitleChanged;
 var
   D: TATTabData;
+  i: Integer;
 begin
   FTreeSorted:= SFileExtensionMatch(FFileName, TfmMain(Owner).opTreeSorted);
 
   if Parent<>nil then
     if Parent is TATPages then
-    begin
       with (Parent as TATPages) do
       begin
-        D:= Tabs.GetTabData(Tabs.TabIndex);
-        if D<>nil then
+        for i:= 0 to Tabs.TabCount-1 do
         begin
-          D.TabCaption:= TabCaption;
-          Tabs.Invalidate;
+          D:= Tabs.GetTabData(i);
+          if (D<>nil) and (D.TabObject=Self) then
+          begin
+            D.TabCaption:= TabCaption;
+            Tabs.Invalidate;
+          end;
         end;
-      end;  
-    end;
+      end;
 
   if Assigned(FOnTitleChanged) then
     FOnTitleChanged(Self);

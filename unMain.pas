@@ -2891,7 +2891,7 @@ type
     opTabPlus: boolean;
     opTabOptionsIndex: integer; //id of active tab in Options dialog
     opTabOptionsLast: integer; //index of last closed tab in Options dialog
-    opTabMaxLen: integer; //max width of tabs
+    opTabMaxWidth: integer; //max width of tabs
     opTabDragDrop: boolean; //allow D&D of tabs
     opTabsSortMode: integer; //sort mode for Tabs panel
     opTabSwitcher: boolean; //use modern tab switcher (Ctrl+Tab)
@@ -4553,7 +4553,7 @@ begin
     opLexersOverride:= ReadString('Setup', 'LexOvr', '');
 
     opTabVisible:= ReadBool('Setup', 'TabShow', true);
-    opTabMaxLen:= ReadInteger('Setup', 'TabSize', 130);
+    opTabMaxWidth:= ReadInteger('Setup', 'TabSize', 130);
     opTabDragDrop:= true; //ReadBool('Setup', 'TabDnD', true);
     opTabSwitcher:= false; ///////////ReadBool('Setup', 'TabSw', true);
     opTabDirs:= ReadBool('View', 'TabDirs', false);
@@ -4987,7 +4987,7 @@ begin
     WriteBool('Setup', 'ACloseQ', opAutoCloseQuotes);
 
     WriteBool('Setup', 'TabShow', opTabVisible);
-    WriteInteger('Setup', 'TabSize', opTabMaxLen);
+    WriteInteger('Setup', 'TabSize', opTabMaxWidth);
     WriteBool('Setup', 'TabDnD', opTabDragDrop);
     WriteBool('Setup', 'TabSw', opTabSwitcher);
 
@@ -25175,10 +25175,8 @@ begin
   Groups.SetTabOption(tabColorPassiveOver, clLtGray);
   Groups.SetTabOption(tabColorBorderActive, clLtGray);
   Groups.SetTabOption(tabColorBorderPassive, clLtGray);
-  {
-  opColorTabBgPassive,
-  opColorTabBgActive,
-  }
+  //opColorTabBgPassive,
+  //opColorTabBgActive,
 
   Groups.SetTabOption(tabOptionShowTabs, Ord(opTabVisible));
   Groups.SetTabOption(tabOptionShowXButtons, Ord(opTabBtn));
@@ -25186,10 +25184,13 @@ begin
   Groups.SetTabOption(tabOptionShowNums, Ord(opTabNums));
   Groups.SetTabOption(tabOptionBottomTabs, Ord(opTabAtBottom));
   Groups.SetTabOption(tabOptionDragDrop, Ord(opTabDragDrop));
-  Groups.SetTabOption(tabOptionWidthMax, Ord(opTabMaxLen));
+  Groups.SetTabOption(tabOptionWidthMax, Ord(opTabMaxWidth));
 
   for i:= 0 to FrameAllCount-1 do
-    FramesAll[i].DoTitleChanged;
+    with FramesAll[i] do
+    begin
+      DoTitleChanged;
+    end;  
 end;
 
 procedure TfmMain.FixSplitters;
@@ -28236,10 +28237,10 @@ end;
 
 
 procedure TfmMain.FrameGetTabCaption(Sender: TFrame; var Str: Widestring);
-  //-----
   function SCut(const S: Widestring): Widestring;
   begin
-    Result:= STruncateLong(S, opTabMaxLen, true);
+    //Result:= STruncateLong(S, 40, true); //not needed with new tabs
+    Result:= S;
   end;
 var
   Frame: TEditorFrame;
@@ -28249,16 +28250,15 @@ begin
     Str:= DKLangConstW('Untitled')
   else
   begin
-    Str:= WideExtractFileName(Frame.FileName);
-    if not opTabDirs then
-      Str:= SCut(Str)
-    else
-      Str:= SCut(WideExtractFileName(WideExtractFileDir(Frame.FileName))) +
-        '\' + SCut(Str);
+    Str:= SCut(WideExtractFileName(Frame.FileName));
+    if opTabDirs then
+      Str:= SCut(WideExtractFileName(WideExtractFileDir(Frame.FileName))) + '\' + Str;
   end;
 
-  if Frame.Modified then
-    Str:= Str + '*';
+  Str:=
+    IfThen(Frame.IsFtp, 'ftp: ') +
+    IfThen(Frame.Modified, '*') +
+    Str;
 end;
 
 procedure TfmMain.DoToggleTabDirs;

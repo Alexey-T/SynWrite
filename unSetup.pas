@@ -1982,7 +1982,7 @@ begin
     opTabNums:= cbTabNums.Checked;
     opTabSwitcher:= cbTabSw.Checked;
     opTabDragDrop:= cbTabDnD.Checked;
-    opTabMaxLen:= edTabMaxLen.Value;
+    opTabMaxWidth:= edTabMaxLen.Value;
     opTabAtBottom:= cbTabDown.Checked;
     opTabDirs:= cbTabDirs.Checked;
 
@@ -2296,7 +2296,7 @@ begin
     cbTabSw.Checked:= opTabSwitcher;
     cbTabDnD.Checked:= opTabDragDrop;
     cbTabDirs.Checked:= opTabDirs;
-    edTabMaxLen.Value:= opTabMaxLen;
+    edTabMaxLen.Value:= opTabMaxWidth;
 
     ListTabColors.Items.Clear;
     for i:= 0 to High(ColorsOfTabs) do
