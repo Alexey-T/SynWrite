@@ -4082,12 +4082,19 @@ begin
 end;
 
 procedure TfmMain.CloseFrame(Frame: TEditorFrame);
+var
+  NPageIndex, NTabIndex: Integer;
 begin
   if opSaveState>0 then
     SaveFrameState(Frame);
+
   if Frame.FileName<>'' then
     if not Frame.NotInRecents then
       SynMruFiles.AddItem(Frame.FileName);
+
+  NPageIndex:= Groups.PagesIndexOf(Frame.Parent as TATPages);
+  NTabIndex:= (Frame.Parent as TATPages).Tabs.TabIndex;
+  TabSwitchers[NPageIndex].UpdateTabList(-1, -1, NTabIndex);
 
   CurrentEditor:= nil;
   Frame.Free;
@@ -4095,8 +4102,6 @@ begin
 
   //free directory of closed file
   WideSetCurrentDir(FInitialDir);
-
-  ////////UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, nTab);
 end;
 
 procedure TfmMain.UpdateTreeProps;
@@ -10060,17 +10065,6 @@ begin
 
   //tree popup menu
   UpdKey(TBXItemTreeFind, smFindDialog);
-
-  ///////////splitter popup menu
-  {
-  UpdKey(Groups.SplitterPopupMenu.Items[0] as TSpTbxItem, sm_Split2080);
-  UpdKey(TBXItemSp30, sm_Split3070);
-  UpdKey(TBXItemSp40, sm_Split4060);
-  UpdKey(TBXItemSp50, sm_Split5050);
-  UpdKey(TBXItemSp60, sm_Split6040);
-  UpdKey(TBXItemSp70, sm_Split7030);
-  UpdKey(TBXItemSp80, sm_Split8020);
-  }
 
   //tab popup menu
   UpdKey(TBXItemTabClose, sm_FileClose);
@@ -25084,7 +25078,7 @@ var
   i: Integer;
 begin
   with Groups do
-    for i:= Low(Groups.Pages) to High(Groups.Pages) do
+    for i:= Low(Pages) to High(Pages) do
       Pages[i].Tabs.Font.Assign(ToolbarFont);
 
   if opTabFontSize>0 then
@@ -25112,6 +25106,17 @@ begin
     begin
       DoTitleChanged;
     end;
+
+  //splitter popup menu
+  {
+  UpdKey(Groups.SplitterPopupMenu.Items[0] as TSpTbxItem, sm_Split2080);
+  UpdKey(TBXItemSp30, sm_Split3070);
+  UpdKey(TBXItemSp40, sm_Split4060);
+  UpdKey(TBXItemSp50, sm_Split5050);
+  UpdKey(TBXItemSp60, sm_Split6040);
+  UpdKey(TBXItemSp70, sm_Split7030);
+  UpdKey(TBXItemSp80, sm_Split8020);
+  }
 end;
 
 procedure TfmMain.FixSplitters;
