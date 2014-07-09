@@ -1767,7 +1767,6 @@ begin
   begin
     Theme:= cbTheme.Text;
     Icons:= cbIcons.ItemIndex;
-    ApplyIntf;
     ApplyColorsArrayToEditor(Colors, TemplateEditor);
     ApplyColors;
     ApplyOut;

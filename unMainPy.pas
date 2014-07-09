@@ -871,7 +871,7 @@ begin
           Result:= Py_rect_monitor(3);
 
         PROP_SPLIT_MAIN_POS:
-          Result:= PyInt_FromLong(Trunc(fmMain.MainSplitterPos));
+          Result:= PyInt_FromLong(fmMain.Groups.SplitPos);
         PROP_GROUP_MODE:
           Result:= PyInt_FromLong(Ord(fmMain.Groups.Mode));
         PROP_GROUP_INDEX:
@@ -942,7 +942,7 @@ begin
           _SetPanelDock(fmMain.FProjPreview, Str);
 
         PROP_SPLIT_MAIN_POS:
-          fmMain.MainSplitterPos:= StrToIntDef(Str, 50);
+          fmMain.Groups.SplitPos:= StrToIntDef(Str, 50);
         PROP_GROUP_MODE:
           fmMain.Groups.Mode:= TATGroupsMode(StrToIntDef(Str, 1));
 

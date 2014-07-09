@@ -2562,8 +2562,6 @@ type
     procedure DoSyncScroll(EdSrc: TSyntaxMemo);
     function DoCloseAllTabs: boolean;
     function DoCloseOtherTabs(AForPopupMenu: boolean): boolean;
-    function GetSplitterPos: Double;
-    procedure SetSplitterPos(const Pos: Double);
     procedure DoMoveTabToWindow(Frame: TEditorFrame; AndClose: boolean);
     function LastDir: Widestring;
     function LastDir_UntitledFile: Widestring;
@@ -3059,7 +3057,6 @@ type
     procedure ApplyAutoSave;
     procedure ApplyDefaultFonts;
     procedure ApplyInst;
-    procedure ApplyIntf;
     procedure ApplyQs;
     procedure ApplyEdOptions;
     procedure ApplyFonts;
@@ -3198,7 +3195,6 @@ type
       const Tok: TSearchTokens;
       OptBkmk, OptExtSel: boolean): Integer;
     procedure DoPyConsole_LogString(const Str: Widestring);
-    property MainSplitterPos: Double read GetSplitterPos write SetSplitterPos;
     //end of public
   end;
 
@@ -4633,7 +4629,6 @@ begin
     ParamCompletion.Enabled:= ReadBool('ACP', 'ParamHints', true);
 
     opReloadMode:= TSynReloadMode(ReadInteger('Setup', 'Notif', Ord(cReloadAsk)));
-    ApplyIntf;
     ApplyBorders;
 
     opTipsToken:= ReadBool('Setup', 'Tooltips', true);
@@ -11211,7 +11206,7 @@ begin
     try
       WriteInteger(cSess, 'gr_mode', Ord(Groups.Mode));
       WriteInteger(cSess, 'gr_act', Groups.PagesIndexOf(Groups.PagesCurrent));
-      WriteInteger(cSess, 'split', Groups.SplitPercent);
+      WriteInteger(cSess, 'split', Groups.SplitPos);
 
       Str:= '';
       for i:= Low(Groups.Pages) to High(Groups.Pages) do
@@ -11317,7 +11312,7 @@ begin
     
     try
       Groups.Mode:= TATGroupsMode(ReadInteger(cSess, 'gr_mode', 1));
-      Groups.SplitPercent:= ReadInteger(cSess, 'split', 50);
+      Groups.SplitPos:= ReadInteger(cSess, 'split', 50);
 
       Num:= -1;
       repeat
@@ -12567,7 +12562,7 @@ begin
   en:= CurrentEditor.HaveSelection;
   ro:= CurrentEditor.ReadOnly;
 
-  ////Need enabled items for S/R dialog:
+  //Need enabled items for S/R dialog:
   //TBXItemECut.Enabled:= en and not ro;
   //TBXItemECopy.Enabled:= en;
   //TBXItemEDelete.Enabled:= en and not ro;
@@ -14461,66 +14456,6 @@ end;
 procedure TfmMain.TBXItemTabCopyDirClick(Sender: TObject);
 begin
   DoCopyFilenameToClipboard(FClickedFrame, scmdCopyFilePath);
-end;
-
-procedure TfmMain.ApplyIntf;
-begin
-  {///////////
-  apply tab-controls props
-  }
-end;
-
-(*
-//nice splitter paint. maybe good for future.
-procedure TfmMain.Splitter1Paint(Sender: TObject);
-const
-  c=3; //Size of dot
-  cc=8; //Num of dots
-  procedure D(Y: integer);
-  begin
-    with Sender as TSplitter do
-    begin
-      Canvas.Pen.Color:= clGray;
-      Canvas.Rectangle(1, y, 1+c, y+c);
-    end;
-  end;
-  procedure DH(X: integer);
-  begin
-    with Sender as TSplitter do
-    begin
-      Canvas.Pen.Color:= clGray;
-      Canvas.Rectangle(x, 1, x+c, 1+c);
-    end;
-  end;
-var
-  i: integer;
-begin
-  with Sender as TSplitter do
-  begin
-    Color:= opColorSplitViews;
-    if FSplitHorz then
-    begin
-      for i:= 0 to cc-1 do
-        DH((Width - cc*(c+1)) div 2 + (c+1)*i)
-    end
-    else
-    begin
-      for i:= 0 to cc-1 do
-        D((Height - cc*(c+1)) div 2 + (c+1)*i);
-    end;
-  end;
-end;
-*)
-
-
-function TfmMain.GetSplitterPos: Double;
-begin
-  Result:= Groups.SplitPercent;
-end;
-
-procedure TfmMain.SetSplitterPos(const Pos: Double);
-begin
-  Groups.SplitPercent:= Trunc(Pos);
 end;
 
 procedure TfmMain.TBXItemSp50Click(Sender: TObject);
@@ -16991,37 +16926,37 @@ end;
 
 procedure TfmMain.ecSplit50_50Execute(Sender: TObject);
 begin
-  SetSplitterPos(50.0);
+  Groups.SplitPos:= 50;
 end;
 
 procedure TfmMain.ecSplit40_60Execute(Sender: TObject);
 begin
-  SetSplitterPos(40.0);
+  Groups.SplitPos:= 40;
 end;
 
 procedure TfmMain.ecSplit60_40Execute(Sender: TObject);
 begin
-  SetSplitterPos(60.0);
+  Groups.SplitPos:= 60;
 end;
 
 procedure TfmMain.ecSplit30_70Execute(Sender: TObject);
 begin
-  SetSplitterPos(30.0);
+  Groups.SplitPos:= 30;
 end;
 
 procedure TfmMain.ecSplit70_30Execute(Sender: TObject);
 begin
-  SetSplitterPos(70.0);
+  Groups.SplitPos:= 70;
 end;
 
 procedure TfmMain.ecSplit20_80Execute(Sender: TObject);
 begin
-  SetSplitterPos(20.0);
+  Groups.SplitPos:= 20;
 end;
 
 procedure TfmMain.ecSplit80_20Execute(Sender: TObject);
 begin
-  SetSplitterPos(80.0);
+  Groups.SplitPos:= 80;
 end;
 
 {
@@ -17390,12 +17325,12 @@ end;
 
 procedure TfmMain.ecSplitLeftExecute(Sender: TObject);
 begin
-  Groups.SplitPercentDecrease;
+  Groups.SplitPosDecrease;
 end;
 
 procedure TfmMain.ecSplitRightExecute(Sender: TObject);
 begin
-  Groups.SplitPercentIncrease;
+  Groups.SplitPosIncrease;
 end;
 
 function TfmMain.ShowGotoForm(
@@ -28392,7 +28327,7 @@ begin
 
   ApplyTabOptions;
   Groups.Mode:= opGroupMode;
-  //Groups.SplitPercent:= 80;
+  //Groups.SplitPos:= 80;
 end;
 
 function TfmMain.DoAddTab(Pages: TATPages): TEditorFrame;
