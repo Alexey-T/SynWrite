@@ -56,6 +56,7 @@ uses
   unMenuPy,
   ecSyntAnal,
   ecSyntMemo,
+  ATGroups,
   ATSyntMemo,
   ATxFProc,
   ATxSProc,
@@ -810,8 +811,10 @@ const
   PROP_COORD_MONITOR2 = 124;
   PROP_COORD_MONITOR3 = 125;
 
-  PROP_SPLIT_MAIN_POS  = 130;
-  PROP_SPLIT_MAIN_HORZ = 131;
+  PROP_SPLIT_MAIN_POS = 129;
+  PROP_GROUP_MODE     = 130;
+  PROP_GROUP_INDEX    = 131;
+
   PROP_FILENAME_SESSION = 132;
   PROP_FILENAME_PROJECT = 133;
 
@@ -869,11 +872,13 @@ begin
 
         PROP_SPLIT_MAIN_POS:
           Result:= PyInt_FromLong(Trunc(fmMain.MainSplitterPos));
-        PROP_SPLIT_MAIN_HORZ:
-          Result:= PyInt_FromLong(0); ///////////PyBool_FromLong(Ord(fmMain.MainSplitterHorz));
+        PROP_GROUP_MODE:
+          Result:= PyInt_FromLong(Ord(fmMain.Groups.Mode));
+        PROP_GROUP_INDEX:
+          Result:= PyInt_FromLong(fmMain.Groups.PagesIndexOf(fmMain.Groups.PagesCurrent));
 
         PROP_RECENT_FILES:
-          Result:= Py_StringList(fmMain.SynMruFiles.Items);  
+          Result:= Py_StringList(fmMain.SynMruFiles.Items);
         PROP_RECENT_SESSIONS:
           Result:= Py_StringList(fmMain.SynMruSessions.Items);
         PROP_RECENT_PROJECTS:
@@ -938,9 +943,8 @@ begin
 
         PROP_SPLIT_MAIN_POS:
           fmMain.MainSplitterPos:= StrToIntDef(Str, 50);
-        PROP_SPLIT_MAIN_HORZ:
-          /////////fmMain.MainSplitterHorz:= Bool(StrToIntDef(Str, 0));
-          begin end;
+        PROP_GROUP_MODE:
+          fmMain.Groups.Mode:= TATGroupsMode(StrToIntDef(Str, 1));
 
         PROP_FILENAME_SESSION:
           begin
