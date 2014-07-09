@@ -2271,6 +2271,7 @@ type
     function GetFramesAll(Index: integer): TEditorFrame;
     procedure SetCurrentFrame(Frame: TEditorFrame);
     function GetCurrentFrame: TEditorFrame;
+    function GetCurrentFrameInPages(Pages: TATPages): TEditorFrame;
     procedure FrameSaveState(Sender: TObject);
     function FrameAskToSave(Frame: TEditorFrame; AllowAll: Boolean; AllowCancel: boolean=true): TModalResult;
     procedure InitFrameTab(Frame: TEditorFrame);
@@ -2715,10 +2716,10 @@ type
     procedure DoOptionsDialog(tabId: Integer);
     procedure DoTreeFocus;
     procedure DoGetOppositeEditor(
-      EdSrc: TSyntaxMemo;
+      const EdSrc: TSyntaxMemo;
       var EdOther: TSyntaxMemo;
-      var DiffY: Integer;
-      var View1st: boolean);
+      var DiffInTopLines: Integer;
+      var EdSrcOnGroup1: boolean);
     procedure LoadAcpFromFile(const fn, Lexer: string);
     procedure DoOpenBrowserPreview;
     procedure DoOpenCurrentFile;
@@ -4372,7 +4373,7 @@ begin
   TBXItemVUncom.Enabled:= TBXItemVComm.Enabled;
 
   ecSpellLive.Checked:= Frame.SpellLive;
-  ecSyncScrollV.Enabled:= false; /////////////////
+  ecSyncScrollV.Enabled:= (Groups.PagesVisibleCount=2) and (Groups.Pages2.Tabs.TabCount>0);
   ecSyncScrollH.Enabled:= ecSyncScrollV.Enabled;
 
   ecPrintAction.Update;
@@ -14557,13 +14558,28 @@ begin
 end;
 
 procedure TfmMain.DoGetOppositeEditor(
-  EdSrc: TSyntaxMemo;
+  const EdSrc: TSyntaxMemo;
   var EdOther: TSyntaxMemo;
-  var DiffY: Integer;
-  var View1st: boolean);
+  var DiffInTopLines: Integer;
+  var EdSrcOnGroup1: boolean);
+var
+  F: TEditorFrame;
 begin
   EdOther:= nil;
-  //////////////
+
+  EdSrcOnGroup1:= (FrameOfEditor(EdSrc).Parent as TATPages) = Groups.Pages1;
+  if EdSrcOnGroup1 then
+    F:= GetCurrentFrameInPages(Groups.Pages2)
+  else
+    F:= GetCurrentFrameInPages(Groups.Pages1);
+
+  if F<>nil then
+  begin
+    EdOther:= F.EditorMaster;
+    DiffInTopLines:= EdOther.TopLine - EdSrc.TopLine;
+    if not EdSrcOnGroup1 then
+      DiffInTopLines:= -DiffInTopLines;
+  end;
 end;
 
 procedure TfmMain.DoSyncScroll(EdSrc: TSyntaxMemo);
@@ -20854,22 +20870,23 @@ begin
 end;
 
 
-function TfmMain.OppositeFrame: TEditorFrame;
-begin
-  ///////////
-  Result:= nil;
-end;
-
 function TfmMain.LeftFrame: TEditorFrame;
 begin
-  /////////
-  Result:= nil;
+  Result:= GetCurrentFrameInPages(Groups.Pages1);
 end;
 
 function TfmMain.RightFrame: TEditorFrame;
 begin
-  /////////
-  Result:= nil;
+  Result:= GetCurrentFrameInPages(Groups.Pages2);
+end;
+
+function TfmMain.OppositeFrame: TEditorFrame;
+begin
+  case Groups.PagesIndexOf(Groups.PagesCurrent) of
+    1: Result:= LeftFrame;
+    2: Result:= RightFrame;
+    else Result:= nil;
+  end;
 end;
 
 function TfmMain.CurrentFileName(Id: TSynViewId): Widestring;
@@ -28538,6 +28555,22 @@ procedure TfmMain.TBXItemTabCloseOthersAllGroupsClick(Sender: TObject);
 begin
   Groups.CloseTabs(tabCloseOthersAllPages, true);
 end;
+
+function TfmMain.GetCurrentFrameInPages(Pages: TATPages): TEditorFrame;
+var
+  D: TATTabData;
+begin
+  Result:= nil;
+  if Pages<>nil then
+    with Pages do
+      if Tabs.TabCount>0 then
+      begin
+        D:= Tabs.GetTabData(Tabs.TabIndex);
+        if D<>nil then
+          Result:= D.TabObject as TEditorFrame;
+      end;
+end;
+
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;

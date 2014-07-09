@@ -2560,7 +2560,7 @@ object fmMain: TfmMain
       object TBXSubmenuItemView: TSpTBXSubmenuItem
         Caption = '&View'
         object TBXSubmenuItemGroups: TSpTBXSubmenuItem
-          Caption = 'Groups'
+          Caption = '&Groups'
           Hint = 'Choose grouping mode'
           OnSelect = ButtonOnSelect
           OnPopup = TBXSubmenuItemGroupsPopup
@@ -2615,24 +2615,6 @@ object fmMain: TfmMain
             OnClick = TbxItemGroup6GridClick
           end
         end
-        object TBXItemOTree: TSpTBXItem
-          Caption = 'Toggle &structure/project panel'
-          Hint = 'Show/hide structure/project panel'
-          Action = ecShowTree
-          OnSelect = ButtonOnSelect
-        end
-        object TBXItemOOut: TSpTBXItem
-          Caption = 'Toggle &output panel'
-          Hint = 'Show/hide output window'
-          Action = ecShowOut
-          OnSelect = ButtonOnSelect
-        end
-        object TBXItemOClip: TSpTBXItem
-          Caption = 'Toggle clipboar&d/minimap panel'
-          Hint = 'Show/hide clipboard and mini-map panel'
-          Action = ecShowClip
-          OnSelect = ButtonOnSelect
-        end
         object TBXSubmenuItemToolbars: TSpTBXSubmenuItem
           Caption = 'Tool&bars'
           OnSelect = ButtonOnSelect
@@ -2675,6 +2657,24 @@ object fmMain: TfmMain
             Caption = '3'
             OnClick = TBXItemTUser3Click
           end
+        end
+        object TBXItemOTree: TSpTBXItem
+          Caption = 'Toggle &structure/project panel'
+          Hint = 'Show/hide structure and project panel'
+          Action = ecShowTree
+          OnSelect = ButtonOnSelect
+        end
+        object TBXItemOOut: TSpTBXItem
+          Caption = 'Toggle &output panel'
+          Hint = 'Show/hide output panel'
+          Action = ecShowOut
+          OnSelect = ButtonOnSelect
+        end
+        object TBXItemOClip: TSpTBXItem
+          Caption = 'Toggle clipboar&d/minimap panel'
+          Hint = 'Show/hide clipboard and mini-map panel'
+          Action = ecShowClip
+          OnSelect = ButtonOnSelect
         end
         object TBXSeparatorItem25: TSpTBXSeparatorItem
         end
