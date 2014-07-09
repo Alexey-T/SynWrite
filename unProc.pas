@@ -72,7 +72,7 @@ type
 procedure LoadMruList(List: TSynMruList; Ini: TCustomIniFile; const Section: string;
   MaxCount: Integer; CheckExist: boolean);
 procedure SaveMruList(List: TSynMruList; Ini: TCustomIniFile; const Section: string);
-  
+
 //function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
 function LoadPngIconEx(ImageList: TPngImageList; const fn: string): boolean;
 
@@ -118,7 +118,7 @@ procedure FixTcIni(var fnTC: string; const section: string);
 
 type
   TSynIntArray4 = array[0..4] of Integer;
-  
+
 function SFindRegex(
   const Str, StrRegex: Widestring): Widestring;
 function SFindRegexEx(
@@ -163,14 +163,6 @@ type
     procedure SetDlgControls(Dlg: TCustomForm); override;
     procedure GetDlgControls(Dlg: TCustomForm); override;
     function CreateDlg: TCustomForm; override;
-  end;
-
-type
-  TTntPageControl = class(TntComCtrls.TTntPageControl)
-  protected
-    procedure AdjustClientRect(var Rect: TRect); override;
-    procedure WMNCHitTest(var Message: TWMNCHitTest); message WM_NCHITTEST; //URL below
-    procedure CNDrawitem(var Message: TWMDrawItem); message CN_DRAWITEM; //URL below
   end;
 
 function FFreeFN(const Name, ext, Dir: Widestring): Widestring;
@@ -249,7 +241,7 @@ function DoCustomizeToolList(var AToolList: TSynToolList;
   ALexersList: TTntStringList;
   AKeyEnabled: boolean;
   const ACurrentLexer: string): boolean;
-  
+
 var
   opSrOffsetY: integer = 6;
 
@@ -311,12 +303,6 @@ end;
 procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);
 begin
   MsgError(S + #13#13 + E.ClassName + #13 + E.Message, H);
-end;
-
-procedure TTntPageControl.AdjustClientRect(var Rect: TRect);
-begin
-  Rect:= DisplayRect;
-  Rect:= Types.Rect(Rect.Left-4, Rect.Top-4, Rect.Right+4, Rect.Bottom+4);
 end;
 
 function IsStringRegex(const S, Regex: Widestring): boolean;
@@ -852,7 +838,7 @@ begin
     FreeAndNil(LCat);
     FreeAndNil(LKeys);
     FreeAndNil(LKeysText);
-  end;  
+  end;
 end;
 
 
@@ -1030,47 +1016,13 @@ begin
   end;
 end;
 
-procedure TTntPageControl.WMNCHitTest(var Message: TWMNCHitTest);
-// http://stackoverflow.com/questions/14283304/delphi-how-to-handle-click-on-pagecontrols-empty-space
-begin
-  inherited;
-  if Message.Result = HTTRANSPARENT then
-    Message.Result := HTCLIENT;
-end;
-
-procedure TTntPageControl.CNDrawitem(var Message: TWMDrawItem);
-// http://stackoverflow.com/questions/18282728/make-owner-drawn-tpagecontrol-tabs-look-nicer-like-without-owner-draw
-var
-  Rgn: HRgn;
-begin
-  //we don't want to get clipped in the passed rectangle
-  SelectClipRgn(Message.DrawItemStruct.hDC, 0);
-
-  //we want to clip the DC so that the borders to be drawn are out of region
-  Rgn:= CreateRectRgn(0, 0, 0, 0);
-  SelectClipRgn(Message.DrawItemStruct.hDC, Rgn);
-  DeleteObject(Rgn);
-
-  Message.Result:= 1;
-  inherited;
-
-  if Assigned(OnDrawTab) then
-    OnDrawTab(Self,
-      Message.DrawItemStruct.itemID,
-      Message.DrawItemStruct.rcItem,
-      Bool(Message.DrawItemStruct.itemState and ODS_FOCUS)
-      );
-end;
-
-
 //-----------------------------------------------
+function IsImageHint(const S: string): boolean;
 const
   cImageHintList = 'jpg,jpeg,jpe,jfif,bmp,png,gif,ico';
-
-function IsImageHint(const S: string): boolean;
 begin
   Result:= SFileExtensionMatch(S, cImageHintList);
-end;  
+end;
 
 function IsImageHint(S: string; const SFilename: Widestring; var SResult: Widestring): boolean;
 begin
@@ -1101,10 +1053,10 @@ end;
 function IsDirInWindowsDir(const S: Widestring): boolean;
 begin
   Result:= Pos(
-    WideUpperCase(SExpandVars('%windir%\')), 
+    WideUpperCase(SExpandVars('%windir%\')),
     WideUpperCase(S)+'\')
     = 1;
-end;  
+end;
 
 function IsDirOkForSaving(const S: Widestring): boolean;
 begin
@@ -1416,7 +1368,7 @@ begin
       NPos:= Pos(WideUpperCase(Str), WideUpperCase(AllText))
     else
       NPos:= Pos(Str, AllText);
-      
+
     if NPos>0 then
     begin
       Result:= true;
@@ -2090,7 +2042,7 @@ begin
 
     Left:= AParentForm.Monitor.Left + (AParentForm.Monitor.Width - Width) div 2;
     Top:= AParentForm.Monitor.Top + (AParentForm.Monitor.Height - Height) div 2;
-    
+
     Result:= ShowModal = mrOk;
     if Result then
     begin

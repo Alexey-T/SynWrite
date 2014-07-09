@@ -3955,7 +3955,7 @@ begin
   if CurrentEditor<>nil then
     Result:= FrameOfEditor(CurrentEditor)
   else
-    Result:= nil;  
+    Result:= nil;
 end;
 
 procedure TfmMain.UpdateEditorNonPrinted(Ed: TSyntaxMemo);
@@ -7209,7 +7209,7 @@ begin
   begin
     TabSwitchers[i]:= TTabSwitcher.Create(i);
     TabSwitchers[i].OnGetTab:= GetTabName;
-  end;  
+  end;
 
   opAcpForceText:= false;
   FFullScr:= false;
@@ -11109,7 +11109,7 @@ begin
       N:= ListTab_FrameIndex;
       if N>=0 then
         FClickedFrame:= FramesAll[N];
-      Groups.PopupTabIndex:= -1; //disable popup items which depend on PopupTabIndex  
+      Groups.PopupTabIndex:= -1; //disable popup items which depend on PopupTabIndex
       Exit;
     end;
 
@@ -11309,7 +11309,7 @@ begin
     //lock redrawing for slow sessions
     DoControlLock(Groups);
     FLockUpdate:= true;
-    
+
     try
       Groups.Mode:= TATGroupsMode(ReadInteger(cSess, 'gr_mode', 1));
       Groups.SplitPos:= ReadInteger(cSess, 'split', 50);
@@ -18671,7 +18671,7 @@ end;
 function TfmMain.CurrentTabSwitcher: TTabSwitcher;
 begin
   Result:= TabSwitchers[Groups.PagesIndexOf(Groups.PagesCurrent)];
-end;  
+end;
 
 procedure TfmMain.DoTabSwitch(ANext: boolean; AAllowModernSwitch: boolean = true);
 var
@@ -18745,10 +18745,7 @@ procedure TfmMain.DoMoveTabInList(FromN, ToN: integer);
 begin
   //////////////
   {
-  if PageControl=PageControl1 then
     TabSwitcher.MoveTabInList(FromN, ToN)
-  else
-    TabSwitcher2.MoveTabInList(FromN, ToN);
     }
 
   {$ifdef TabOrder}
@@ -21935,7 +21932,7 @@ begin
     CurrentFrame:= FramesAll[N];
 
     UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
-    
+
     if ListTabs.CanFocus then
       ListTabs.SetFocus;
     FocusEditor;
@@ -25129,7 +25126,7 @@ begin
     with FramesAll[i] do
     begin
       DoTitleChanged;
-    end;  
+    end;
 end;
 
 procedure TfmMain.FixSplitters;
