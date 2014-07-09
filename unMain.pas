@@ -574,7 +574,7 @@ type
     SD_Session: TTntSaveDialog;
     TBXSubmenuItemFRecents: TSpTbxSubmenuItem;
     TBXSeparatorItem30: TSpTbxSeparatorItem;
-    TBXItemFClr: TSpTbxItem;
+    TBXItemFClearRecents: TSpTBXItem;
     TbxSubmenuItemWindow: TSpTBXSubmenuItem;
     TBXItemETime: TSpTbxItem;
     TBXSubmenuItemRun: TSpTbxSubmenuItem;
@@ -1485,7 +1485,7 @@ type
     procedure PopupTabContextPopup(Sender: TObject);
     procedure TBXItemFSesSaveAsClick(Sender: TObject);
     procedure TBXItemFSesOpenClick(Sender: TObject);
-    procedure TBXItemFClrClick(Sender: TObject);
+    procedure TBXItemFClearRecentsClick(Sender: TObject);
     procedure TbxSubmenuItemWindowPopup(Sender: TTBCustomItem; FromLink: Boolean);
     procedure TBXSubmenuEnc2Popup(Sender: TTBCustomItem; FromLink: Boolean);
     procedure TBXItemETimeClick(Sender: TObject);
@@ -3091,14 +3091,14 @@ type
     procedure DoSaveProject;
     procedure DoUpdateProject;
     procedure SaveOptionsAll;
-    procedure SaveSession(const fn: string);
-    procedure SaveProjectSession;
+    procedure DoSaveProjectSession;
     procedure DoOpenProjectSession;
     procedure SaveFrameState(F: TEditorFrame);
     function LoadFrameState(Frame: TEditorFrame; const fn: WideString): boolean;
 
-    procedure DoOpenSession(const fn: string; AddMode: boolean = False);
+    procedure DoOpenSession(const AFilename: string; AddMode: boolean = false);
     procedure DoCloseSession(PromptToSave: boolean);
+    procedure DoSaveSessionToFile(const fn: string);
     procedure DoSaveSession;
     procedure DoSaveSessionAs;
     procedure DoSessionOpenDialog;
@@ -9867,7 +9867,7 @@ begin
   UpdKey(TbxItemHtmlInsImage, sm_InsertImage);
 
   UpdKey(TBXItemFExit, sm_FileExit);
-  UpdKey(TBXItemFClr, sm_ClearFilesHistory);
+  UpdKey(TBXItemFClearRecents, sm_ClearFilesHistory);
   UpdKey(TbxItemFClose, sm_FileClose);
   UpdKey(TbxItemFCloseDel, sm_FileCloseAndDelete);
   UpdKey(TbxItemFCloseAll, sm_FileCloseAll);
@@ -11183,65 +11183,73 @@ begin
     if Execute then
     begin
       SaveLastDir_Session(FileName);
-      SaveSession(FileName);
+      DoSaveSessionToFile(FileName);
       SynMruSessions.AddItem(FileName);
       UpdateTitle(CurrentFrame);
     end;
   end;
 end;
 
-procedure TfmMain.SaveSession(const fn: string);
+procedure TfmMain.DoSaveSessionToFile(const fn: string);
+const
+  cSess = 'sess';
 var
-  i: Integer;
+  i, Num: Integer;
   F: TEditorFrame;
-  dir: string;
+  Str, SSec: string;
 begin
-  //confirmation not really needed here, commented
-  //if not MsgConfirmOpenSaveSession(FrameAllCount, fn, true) then Exit;
-
   FSessionFN:= fn;
 
   //session dir may not exist, for portable install
-  dir:= SExtractFileDir(fn);
-  if not IsDirExist(dir) then
-    CreateDir(dir);
+  Str:= SExtractFileDir(fn);
+  if not IsDirExist(Str) then
+    CreateDir(Str);
 
   try
     with TIniFile.Create(fn) do
     try
-      WriteInteger('Ini', 'Files', FrameAllCount);
-      WriteInteger('Ini', 'Page', 0); //////////////PageControl1.ActivePageIndex);
-      WriteInteger('Ini', 'Page2', 0); //////////////PageControl2.ActivePageIndex);
-      WriteInteger('Ini', 'PageCount', 0); ////////////////PageControl1.PageCount);
-      WriteBool('Ini', 'PageActive', true); //////////////PageControl=PageControl2
-      ///////////WriteBool('Ini', 'SplitHorz', MainSplitterHorz);
-      WriteFloat('Ini', 'SplitPos', MainSplitterPos);
+      WriteInteger(cSess, 'gr_mode', Ord(Groups.Mode));
+      WriteInteger(cSess, 'gr_act', Groups.PagesIndexOf(Groups.PagesCurrent));
+      WriteInteger(cSess, 'split', Groups.SplitPercent);
+
+      Str:= '';
+      for i:= Low(Groups.Pages) to High(Groups.Pages) do
+        Str:= Str+IntToStr(Groups.Pages[i].Tabs.TabIndex)+',';
+      WriteString(cSess, 'tab_act', Str);
+
+      Num:= -1;
       for i:= 0 to FrameAllCount-1 do
       begin
         F:= FramesAll[i];
-        WriteString('FN', IntToStr(i), SCollapseFN(UTF8Encode(F.FileName), fn));
-        WriteInteger('Top', IntToStr(i), F.EditorMaster.TopLine);
-        WriteInteger('Top2', IntToStr(i), F.EditorSlave.TopLine);
-        WriteInteger('Cur', IntToStr(i), F.EditorMaster.CaretStrPos);
-        WriteInteger('Cur2', IntToStr(i), F.EditorSlave.CaretStrPos);
-        WriteBool('RO', IntToStr(i), F.EditorMaster.TextSource.ReadOnly);
-        WriteBool('Wrap', IntToStr(i), F.EditorMaster.WordWrap);
-        WriteBool('Wrap2', IntToStr(i), F.EditorSlave.WordWrap);
-        WriteBool('Line', IntToStr(i), F.EditorMaster.LineNumbers.Visible);
-        WriteBool('Fold', IntToStr(i), F.EditorMaster.DisableFolding);
-        WriteInteger('SelMode', IntToStr(i), Ord(F.EditorMaster.SelectModeDefault));
-        WriteInteger('SelMode2', IntToStr(i), Ord(F.EditorSlave.SelectModeDefault));
-        WriteString('Color', IntToStr(i), ColorToString(F.TabColor));
-        WriteString('ColMarkers', IntToStr(i), F.EditorMaster.ColMarkersString);
-        WriteString('Collapsed', IntToStr(i), EditorGetCollapsedRanges(F.EditorMaster));
-        WriteString('Collapsed2', IntToStr(i), EditorGetCollapsedRanges(F.EditorSlave));
+        if F.FileName='' then Continue; //don't save untitled tabs
+
+        Inc(Num); //start with 0
+        SSec:= 'f'+IntToStr(Num);
+
+        WriteInteger(SSec, 'gr', Groups.PagesIndexOf(F.Parent as TATPages));
+        WriteString(SSec, 'fn', SCollapseFN(UTF8Encode(F.FileName), fn));
+        WriteString(SSec, 'top', Format('%d,%d', [F.EditorMaster.TopLine, F.EditorSlave.TopLine]));
+        WriteString(SSec, 'caret', Format('%d,%d', [F.EditorMaster.CaretStrPos, F.EditorSlave.CaretStrPos]));
+        WriteString(SSec, 'wrap', Format('%d,%d', [Ord(F.EditorMaster.WordWrap), Ord(F.EditorSlave.WordWrap)]));
+        WriteString(SSec, 'prop', Format('%d,%d,%d,%d,', [
+                                    Ord(F.EditorMaster.TextSource.ReadOnly),
+                                    Ord(F.EditorMaster.LineNumbers.Visible),
+                                    Ord(not F.EditorMaster.DisableFolding),
+                                    Ord(F.EditorMaster.SelectModeDefault)
+                                    ]));
+        WriteString(SSec, 'color', ColorToString(F.TabColor));
+        WriteString(SSec, 'colmark', F.EditorMaster.ColMarkersString);
+        WriteString(SSec, 'folded', EditorGetCollapsedRanges(F.EditorMaster)+';'+
+                                    EditorGetCollapsedRanges(F.EditorSlave));
       end;
+
+      WriteInteger(cSess, 'tabs', Num+1);
     finally
       Free;
     end;
   except
-    //better not show this msg, for R/O ini folder
-    //MsgError(WideFormat(DKLangConstW('AppNSes'), [fn]), Handle);
+    //better not show msg, for R/O ini folder
+    //MsgError(WideFormat(DKLangConstW('AppNSes'), [fn]), ...
   end;
 end;
 
@@ -11280,140 +11288,95 @@ begin
   end;
 end;
 
-procedure TfmMain.DoOpenSession(const fn: string; AddMode: boolean = False);
+procedure TfmMain.DoOpenSession(const AFilename: string; AddMode: boolean = false);
+const
+  cSess = 'sess';
 var
   F: TEditorFrame;
-  NFiles, NPage1, NPage2, NPageCount: integer;
-  NPageAct, NSplitHorz: boolean;
-  NSplitPos: Double;
-  i, NTabCount1, NTabCount2, N: Integer;
-  s, sdir: Widestring;
+  SSec: string;
+  Str, SFilename, SDir: Widestring;
+  Num, NGroup: Integer;
 begin
-  if AddMode then
-  begin
-    NTabCount1:= 0; /////////////PageControl1.PageCount;
-    NTabCount2:= 0; /////////////PageControl2.PageCount;
-  end
-  else
-  begin
-    NTabCount1:= 0;
-    NTabCount2:= 0;
-  end;
-
-  with TIniFile.Create(fn) do
+  with TMemIniFile.Create(AFilename) do
     try
-      {
-      Page: active page index for left view
-      Page2: --""--           for right view
-      PageCount: left view pages count
-      PageActive: active view number (0/1)
-      }
-      NFiles:= ReadInteger('Ini', 'Files', 0);
-      NPage1:= ReadInteger('Ini', 'Page', 0);
-      NPage2:= ReadInteger('Ini', 'Page2', 0);
-      NPageCount:= ReadInteger('Ini', 'PageCount', NFiles);
-      NPageAct:= ReadBool('Ini', 'PageActive', false);
-      NSplitHorz:= ReadBool('Ini', 'SplitHorz', false);
-      NSplitPos:= ReadFloat('Ini', 'SplitPos', 50.0);
-
-      if not MsgConfirmOpenSaveSession(NFiles, fn, false) then
+      Num:= ReadInteger(cSess, 'tabs', 1);
+      if not MsgConfirmOpenSaveSession(Num, AFilename, false) then
         Exit;
 
       if not AddMode then
       begin
         if not DoCloseAllTabs then Exit;
-        FSessionFN:= fn;
+        FSessionFN:= AFilename;
       end;
 
-      for i:= 0 to NFiles-1 do
-      begin
-        s:= UTF8Decode(ReadString('FN', IntToStr(i), ''));
+      Groups.Mode:= TATGroupsMode(ReadInteger(cSess, 'gr_mode', 1));
+      Groups.SplitPercent:= ReadInteger(cSess, 'split', 50);
 
+      Num:= -1;
+      repeat
+        Inc(Num); //start with 0
+        SSec:= 'f'+IntToStr(Num);
+
+        SFilename:= UTF8Decode(ReadString(SSec, 'fn', ''));
+        if SFilename='' then Break; //empty filename means stop reading
+        
         //get session dir, w/o last slash
-        sdir:= WideExcludeTrailingBackslash(WideExtractFileDir(fn));
-
+        SDir:= WideExcludeTrailingBackslash(WideExtractFileDir(AFilename));
         //filename stored with ".\"
-        if SBegin(s, '.\') then
-          SReplaceW(s, '.', sdir)
+        if SBegin(SFilename, '.\') then
+          SReplaceW(SFilename, '.', SDir)
         else
         //filename stored without path
-        if WideExtractFileDir(s) = '' then
-          s:= sdir + '\' + s;
-
+        if WideExtractFileDir(SFilename) = '' then
+          SFilename:= SDir + '\' + SFilename;
         //test filename
-        if not IsFileExist(s) then
-          Continue;
+        if not IsFileExist(SFilename) then Continue;
 
-          ////////////
-          {
-        if i<NPageCount then
-          PageControl:= PageControl1
-        else
-          PageControl:= PageControl2;
-          }
-        DoOpenFile(s);
-        ///////////////UpdatePages;
+        NGroup:= ReadInteger(SSec, 'gr', 1);
+        if (NGroup>=1) and (NGroup<=Groups.PagesVisibleCount) then
+          Groups.PagesCurrent:= Groups.Pages[NGroup];
 
-        F:= CurrentFrame;
+        F:= DoOpenFile(SFilename);
+        if F=nil then Continue;
         F.NotInRecents:= true;
+
         if opSaveEdCaret then
         begin
-          F.EditorMaster.TopLine:= ReadInteger('Top', IntToStr(i), 0);
-          F.EditorSlave.TopLine:= ReadInteger('Top2', IntToStr(i), 0);
-          F.EditorMaster.CaretStrPos:= ReadInteger('Cur', IntToStr(i), 0);
-          F.EditorSlave.CaretStrPos:= ReadInteger('Cur2', IntToStr(i), 0);
+          Str:= ReadString(SSec, 'top', '');
+          F.EditorMaster.TopLine:= StrToIntDef(SGetItem(Str), 0);
+          F.EditorSlave.TopLine:= StrToIntDef(SGetItem(Str), 0);
+
+          Str:= ReadString(SSec, 'caret', '');
+          F.EditorMaster.CaretStrPos:= StrToIntDef(SGetItem(Str), 0);
+          F.EditorSlave.CaretStrPos:= StrToIntDef(SGetItem(Str), 0);
         end;
-        F.EditorMaster.TextSource.ReadOnly:= ReadBool('RO', IntToStr(i), false);
-        F.EditorMaster.WordWrap:= ReadBool('Wrap', IntToStr(i), false);
-        F.EditorSlave.WordWrap:= ReadBool('Wrap2', IntToStr(i), false);
-        F.EditorMaster.LineNumbers.Visible:= ReadBool('Line', IntToStr(i), false);
-        F.EditorMaster.DisableFolding:= ReadBool('Fold', IntToStr(i), false);
-        F.EditorMaster.SelectModeDefault:= TSyntSelectionMode(ReadInteger('SelMode', IntToStr(i), 0));
-        F.EditorSlave.SelectModeDefault:= TSyntSelectionMode(ReadInteger('SelMode2', IntToStr(i), 0));
-        F.TabColor:= StringToColor(ReadString('Color', IntToStr(i), ColorToString(clNone)));
-        F.EditorMaster.ColMarkersString:= ReadString('ColMarkers', IntToStr(i), '');
-        F.CollapsedString1:= ReadString('Collapsed', IntToStr(i), '');
-        F.CollapsedString2:= ReadString('Collapsed2', IntToStr(i), '');
-      end;
 
-      //restore active frame
-      ////////////
-      {
-      if NPageAct then
-        PageControl:= PageControl2
-      else
-        PageControl:= PageControl1;
-      N:= NPage1+NTabCount1;
-      if N <= PageControl1.PageCount-1 then
-        PageControl1.ActivePageIndex:= N;
-      N:= NPage2+NTabCount2;
-      if N <= PageControl2.PageCount-1 then
-        PageControl2.ActivePageIndex:= N;
+        Str:= ReadString(SSec, 'wrap', '');
+        F.EditorMaster.WordWrap:= Bool(StrToIntDef(SGetItem(Str), 0));
+        F.EditorSlave.WordWrap:= Bool(StrToIntDef(SGetItem(Str), 0));
 
-      //bad session file
-      if (PageControl=PageControl2) and (PageControl2.PageCount=0) then
-        PageControl:= PageControl1;
+        Str:= ReadString(SSec, 'prop', '');
+        F.EditorMaster.TextSource.ReadOnly:= Bool(StrToIntDef(SGetItem(Str), 0));
+        F.EditorMaster.LineNumbers.Visible:= Bool(StrToIntDef(SGetItem(Str), 0));
+        F.EditorMaster.DisableFolding:= not Bool(StrToIntDef(SGetItem(Str), 0));
+        F.EditorMaster.SelectModeDefault:= TSyntSelectionMode(StrToIntDef(SGetItem(Str), 0));
+        UpdateGutter(F); //apply folding
 
-      N:= PageControl.ActivePageIndex;
-      if N<0 then N:= 0;
-      if (N>=FrameCount) then
-        MsgError('Incorrect tab index to set', Handle)
-      else
-        CurrentFrame:= Frames[N];
+        DoSetFrameTabColor(F, StringToColor(ReadString(SSec, 'color', ColorToString(clNone))));
+        F.EditorMaster.ColMarkersString:= ReadString(SSec, 'colmark', '');
 
-      FSplitter:= NSplitPos;
-      SetSplitter_(FSplitter);
-      SetSplitterHorz(NSplitHorz);
-      }
+        Str:= ReadString(SSec, 'folded', '');
+        F.CollapsedString1:= SGetItem(Str, ';');
+        F.CollapsedString2:= SGetItem(Str, ';');
+      until false;
     finally
       Free;
     end;
 
-  FocusEditor;
   DoRepaint;
 end;
 
-procedure TfmMain.TBXItemFClrClick(Sender: TObject);
+procedure TfmMain.TBXItemFClearRecentsClick(Sender: TObject);
 begin
   TBXItemClrClick(Self);
 end;
@@ -16691,7 +16654,7 @@ end;
 procedure TfmMain.DoSaveSession;
 begin
   if FSessionFN<>'' then
-    SaveSession(FSessionFN)
+    DoSaveSessionToFile(FSessionFN)
   else
     DoSaveSessionAs;
 end;
@@ -16724,7 +16687,7 @@ begin
       fn:= SynIniDir + SynDefaultSyn //default
     else
       fn:= FSessionFN; //named
-    SaveSession(fn);
+    DoSaveSessionToFile(fn);
     SynMruSessions.AddItem(fn);
     Exit
   end;
@@ -16733,7 +16696,7 @@ begin
   if FSessionFN='' then Exit;
   if opHistSessionSave then
   begin
-    SaveSession(FSessionFN);
+    DoSaveSessionToFile(FSessionFN);
     SynMruSessions.AddItem(FSessionFN);
     Exit
   end;
@@ -16749,7 +16712,7 @@ begin
          mtConfirmation, Buttons, 0) of
     mrYes:
       begin
-        SaveSession(FSessionFN);
+        DoSaveSessionToFile(FSessionFN);
         SynMruSessions.AddItem(FSessionFN);
       end;
     mrCancel:
@@ -20150,7 +20113,7 @@ begin
   if TbxSubmenuItemRecentColors.Count>0 then
     if FMenuItem_Colors_Clear<>nil then
     begin
-      FMenuItem_Colors_Clear.Caption:= SStripFromTab(TBXItemFClr.Caption);
+      FMenuItem_Colors_Clear.Caption:= SStripFromTab(TBXItemFClearRecents.Caption);
       FMenuItem_Colors_Save.Caption:= SStripFromTab(TBXItemFSaveAs.Caption);
       FMenuItem_Colors_Open.Caption:= SStripFromTab(TBXItemFOpen.Caption);
       FMenuItem_Colors_Select.Caption:= SStripFromTab(TBXItemHtmlInsColor.Caption);
@@ -26387,14 +26350,14 @@ begin
     Result:= ChangeFileExt(Result, '.synw-session');
 end;
 
-procedure TfmMain.SaveProjectSession;
+procedure TfmMain.DoSaveProjectSession;
 var
   fn: string;
 begin
   fn:= CurrentProjectSessionFN;
   if fn<>'' then
   begin
-    SaveSession(fn);
+    DoSaveSessionToFile(fn);
     SynMruSessions.AddItem(fn);
   end;
 end;
@@ -26458,7 +26421,7 @@ begin
   if fn<>'' then
   begin
     //MsgInfo('save sess '+fn, Handle);
-    SaveSession(fn);
+    DoSaveSessionToFile(fn);
     DoCloseSession(false);
     DoCloseTabsOnProjectClosingIfNeeded;
   end;
