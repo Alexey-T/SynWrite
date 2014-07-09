@@ -11295,20 +11295,26 @@ var
   F: TEditorFrame;
   SSec: string;
   Str, SFilename, SDir: Widestring;
-  Num, NGroup: Integer;
+  Num, NGroup, i: Integer;
+  Nums: array[TATGroupsNums] of Integer;
 begin
   with TMemIniFile.Create(AFilename) do
+  try
+    Num:= ReadInteger(cSess, 'tabs', 1);
+    if not MsgConfirmOpenSaveSession(Num, AFilename, false) then
+      Exit;
+
+    if not AddMode then
+    begin
+      if not DoCloseAllTabs then Exit;
+      FSessionFN:= AFilename;
+    end;
+
+    //lock redrawing for slow sessions
+    DoControlLock(Groups);
+    FLockUpdate:= true;
+    
     try
-      Num:= ReadInteger(cSess, 'tabs', 1);
-      if not MsgConfirmOpenSaveSession(Num, AFilename, false) then
-        Exit;
-
-      if not AddMode then
-      begin
-        if not DoCloseAllTabs then Exit;
-        FSessionFN:= AFilename;
-      end;
-
       Groups.Mode:= TATGroupsMode(ReadInteger(cSess, 'gr_mode', 1));
       Groups.SplitPercent:= ReadInteger(cSess, 'split', 50);
 
@@ -11319,7 +11325,7 @@ begin
 
         SFilename:= UTF8Decode(ReadString(SSec, 'fn', ''));
         if SFilename='' then Break; //empty filename means stop reading
-        
+
         //get session dir, w/o last slash
         SDir:= WideExcludeTrailingBackslash(WideExtractFileDir(AFilename));
         //filename stored with ".\"
@@ -11369,9 +11375,27 @@ begin
         F.CollapsedString1:= SGetItem(Str, ';');
         F.CollapsedString2:= SGetItem(Str, ';');
       until false;
+
+      //restore current TabIndex'es and PageIndex
+      //
+      NGroup:= ReadInteger(cSess, 'gr_act', 1);
+      //
+      Str:= ReadString(cSess, 'tab_act', '');
+      for i:= Low(Groups.Pages) to High(Groups.Pages) do
+      begin
+        Nums[i]:= StrToIntDef(SGetItem(Str), 0);
+        DoSetPagesAndTabIndex(i, Nums[i]);
+      end;
+      i:= NGroup;
+      DoSetPagesAndTabIndex(i, Nums[i]);
+
     finally
-      Free;
+      FLockUpdate:= false;
+      DoControlUnlock(Groups);
     end;
+  finally
+    Free;
+  end;
 
   DoRepaint;
 end;
