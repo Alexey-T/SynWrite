@@ -127,11 +127,15 @@ const
     );
 
 type
-  TSynViewId = (
-    cSynViewActive,
-    cSynViewOpposite,
-    cSynViewLeft,
-    cSynViewRight
+  TSynGroupId = (
+    cSynGroupCurrent,
+    cSynGroupOpposite,
+    cSynGroup1,
+    cSynGroup2,
+    cSynGroup3,
+    cSynGroup4,
+    cSynGroup5,
+    cSynGroup6
     );
 
 type
@@ -2277,8 +2281,6 @@ type
     procedure InitFrameTab(Frame: TEditorFrame);
     function SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
     function OppositeFrame: TEditorFrame;
-    function LeftFrame: TEditorFrame;
-    function RightFrame: TEditorFrame;
     function IsFramePropertiesStringForFilename(const fn: Widestring; const Str: string): boolean;
     function FrameGetPropertiesString(F: TEditorFrame): string;
     procedure FrameSetPropertiesString(F: TEditorFrame; const Str: string; EncodingOnly: boolean);
@@ -2795,7 +2797,7 @@ type
     function DoCheckAutoCorrectCase(Ed: TSyntaxMemo): boolean;
     procedure DoClearFindDialogStatus;
     procedure ProjPreviewVisibleChanged(Sender: TObject);
-    procedure DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynViewId);
+    procedure DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
     procedure UpadateFilenameForExport;
     procedure DoConfigTools;
     procedure DoConfigShellOptions;
@@ -3044,7 +3046,6 @@ type
     property ShowOnTop: boolean read FOnTop write SetOnTop;
 
     procedure ApplyFontConsole;
-    procedure ApplyTabFontSize;
     procedure ApplyTabOptions;
     procedure ApplyCarets;
     procedure ApplyUrlClick;
@@ -3153,7 +3154,7 @@ type
     function FrameOfEditor(Ed: TSyntaxMemo): TEditorFrame;
     function BrotherEditor(Ed: TSyntaxMemo): TSyntaxMemo;
     function DoGetProjectFilename(id: Integer): Widestring;
-    function CurrentFileName(Id: TSynViewId): Widestring;
+    function CurrentFileName(Id: TSynGroupId): Widestring;
     function CurrentSessionFN: string;
     function CurrentContentFN(Unicode: boolean): Widestring;
     function CurrentSelectionFN(Unicode: boolean): Widestring;
@@ -4095,7 +4096,7 @@ begin
   //free directory of closed file
   WideSetCurrentDir(FInitialDir);
 
-  /////////////UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, nTab);
+  ////////UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, nTab);
 end;
 
 procedure TfmMain.UpdateTreeProps;
@@ -4532,8 +4533,6 @@ begin
     opSyncEditIcon:= ReadBool('Setup', 'SyncEditIcon', true);
 
     opTabFontSize:= ReadInteger('Setup', 'TabFontSize', 0);
-    ApplyTabFontSize;
-
     opFontConsole:= ReadString('View', 'PyFont', 'Consolas,10,');
     ApplyFontConsole;
 
@@ -5334,11 +5333,6 @@ begin
       if F.Modified then
         List.Items.AddObject(S, F);
     end;
-
-    {////////needed now??
-    for i:= 0 to FrameAllCount-1 do
-      SaveFrameState(FramesAll[i]);
-    }
 
     if List.Items.Count>0 then
       case ShowModal of
@@ -9364,9 +9358,15 @@ begin
 end;
 
 procedure TfmMain.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+  i: Integer;
 begin
   Action:= caFree;
   UpdateRecentsOnClose;
+
+  //was in FormCloseConfirm before
+  for i:= 0 to FrameAllCount-1 do
+    SaveFrameState(FramesAll[i]);
 
   //save ini
   if not QuickView then
@@ -10061,10 +10061,9 @@ begin
   //tree popup menu
   UpdKey(TBXItemTreeFind, smFindDialog);
 
-  //splitter popup menu
-  ////////////
+  ///////////splitter popup menu
   {
-  UpdKey(TBXItemSp20, sm_Split2080);
+  UpdKey(Groups.SplitterPopupMenu.Items[0] as TSpTbxItem, sm_Split2080);
   UpdKey(TBXItemSp30, sm_Split3070);
   UpdKey(TBXItemSp40, sm_Split4060);
   UpdKey(TBXItemSp50, sm_Split5050);
@@ -10398,7 +10397,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynViewId);
+procedure TfmMain.DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
   //
   function SMacro(const MacroName: string): string;
   begin
@@ -10425,10 +10424,14 @@ procedure TfmMain.RunTool(const ATool: TSynTool);
     Result:= S;
     p:= CurrentEditor.CaretPos;
     //
-    DoReplaceFileNameMacro(Result, '', cSynViewActive);
-    DoReplaceFileNameMacro(Result, '2', cSynViewOpposite);
-    DoReplaceFileNameMacro(Result, 'L', cSynViewLeft);
-    DoReplaceFileNameMacro(Result, 'R', cSynViewRight);
+    DoReplaceFileNameMacro(Result, '', cSynGroupCurrent);
+    DoReplaceFileNameMacro(Result, '2', cSynGroupOpposite);
+    DoReplaceFileNameMacro(Result, 'N1', cSynGroup1);
+    DoReplaceFileNameMacro(Result, 'N2', cSynGroup2);
+    DoReplaceFileNameMacro(Result, 'N3', cSynGroup3);
+    DoReplaceFileNameMacro(Result, 'N4', cSynGroup4);
+    DoReplaceFileNameMacro(Result, 'N5', cSynGroup5);
+    DoReplaceFileNameMacro(Result, 'N6', cSynGroup6);
     //
     SReplaceW(Result, '{ProjectDir}', CurrentProjectDir);
     SReplaceW(Result, '{ProjectWorkDir}', CurrentProjectWorkDir);
@@ -14470,7 +14473,10 @@ end;
 
 procedure TfmMain.ecSplitViewsVertHorzExecute(Sender: TObject);
 begin
-  //////////////////
+  case Groups.Mode of
+    gm2Horz: Groups.Mode:= gm2Vert;
+    gm2Vert: Groups.Mode:= gm2Horz;
+  end;  
 end;
 
 procedure TfmMain.ecSyncScrollHExecute(Sender: TObject);
@@ -18743,10 +18749,7 @@ end;
 
 procedure TfmMain.DoMoveTabInList(FromN, ToN: integer);
 begin
-  //////////////
-  {
-    TabSwitcher.MoveTabInList(FromN, ToN)
-    }
+  CurrentTabSwitcher.MoveTabInList(FromN, ToN);
 
   {$ifdef TabOrder}
   UpdateTitle(CurrentFrame);
@@ -20802,35 +20805,29 @@ begin
 end;
 
 
-function TfmMain.LeftFrame: TEditorFrame;
-begin
-  Result:= GetCurrentFrameInPages(Groups.Pages1);
-end;
-
-function TfmMain.RightFrame: TEditorFrame;
-begin
-  Result:= GetCurrentFrameInPages(Groups.Pages2);
-end;
-
 function TfmMain.OppositeFrame: TEditorFrame;
 begin
   case Groups.PagesIndexOf(Groups.PagesCurrent) of
-    1: Result:= LeftFrame;
-    2: Result:= RightFrame;
+    1: Result:= GetCurrentFrameInPages(Groups.Pages2);
+    2: Result:= GetCurrentFrameInPages(Groups.Pages1);
     else Result:= nil;
   end;
 end;
 
-function TfmMain.CurrentFileName(Id: TSynViewId): Widestring;
+function TfmMain.CurrentFileName(Id: TSynGroupId): Widestring;
 var
   F: TEditorFrame;
 begin
   Result:= '';
   case Id of
-    cSynViewActive:   F:= CurrentFrame;
-    cSynViewOpposite: F:= OppositeFrame;
-    cSynViewLeft:     F:= LeftFrame;
-    cSynViewRight:    F:= RightFrame;
+    cSynGroupCurrent: F:= CurrentFrame;
+    cSynGroupOpposite: F:= OppositeFrame;
+    cSynGroup1: F:= GetCurrentFrameInPages(Groups.Pages1);
+    cSynGroup2: F:= GetCurrentFrameInPages(Groups.Pages2);
+    cSynGroup3: F:= GetCurrentFrameInPages(Groups.Pages3);
+    cSynGroup4: F:= GetCurrentFrameInPages(Groups.Pages4);
+    cSynGroup5: F:= GetCurrentFrameInPages(Groups.Pages5);
+    cSynGroup6: F:= GetCurrentFrameInPages(Groups.Pages6);
     else F:= nil;
   end;
   if F<>nil then
@@ -21940,29 +21937,7 @@ begin
 end;
 
 procedure TfmMain.ListTabsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-var
-  CanClose, CanContinue: boolean;
-  N: Integer;
 begin
-  if (Key=vk_delete) and (Shift=[]) then
-  begin
-    N:= ListTab_FrameIndex;
-    if (N>=0) and (N<FrameAllCount) then
-    begin
-      CloseFrameWithCfm(FramesAll[N], CanClose, CanContinue);
-      ////////??
-      {
-      if FrameAllCount=0 then
-        acNewTab.Execute;
-        }
-
-      if ListTabs.CanFocus then
-        ListTabs.SetFocus;
-    end;
-    Key:= 0;
-    Exit;
-  end;
-
   DoHandleKeysInPanels(Key, Shift);
 end;
 
@@ -24100,7 +24075,11 @@ end;
 
 procedure TfmMain.ecToggleView2Execute(Sender: TObject);
 begin
-  /////////////
+  case Groups.Mode of
+    gmOne: Groups.Mode:= gm2Horz;
+    gm2Horz,
+    gm2Vert: Groups.Mode:= gmOne;
+  end;
 end;
 
 procedure TfmMain.DoAcpCommand;
@@ -25104,7 +25083,13 @@ procedure TfmMain.ApplyTabOptions;
 var
   i: Integer;
 begin
-  Groups.Font.Assign(Font);
+  with Groups do
+    for i:= Low(Groups.Pages) to High(Groups.Pages) do
+      Pages[i].Tabs.Font.Assign(ToolbarFont);
+
+  if opTabFontSize>0 then
+    Groups.SetTabOption(tabOptionFontSize, opTabFontSize);
+
   Groups.SetTabOption(tabColorFont, clBlack);
   Groups.SetTabOption(tabColorActive, clBtnFace);
   Groups.SetTabOption(tabColorPassive, $d8d8d8);
@@ -25871,18 +25856,6 @@ begin
 		if S<>'' then
 		  DoMarkAll(S);
 	  end;
-  end;
-end;
-
-procedure TfmMain.ApplyTabFontSize;
-begin
-  if opTabFontSize>0 then
-  begin
-    ///////////
-    {
-    PageControl1.Font.Size:= opTabFontSize;
-    PageControl2.Font.Size:= opTabFontSize;
-    }
   end;
 end;
 

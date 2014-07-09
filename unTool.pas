@@ -71,8 +71,8 @@ type
     pSelFNAnsi: TMenuItem;
     N5: TMenuItem;
     pFileName2: TMenuItem;
-    pFileNameL: TMenuItem;
-    pFileNameR: TMenuItem;
+    pFileNameN1: TMenuItem;
+    pFileNameN2: TMenuItem;
     N6: TMenuItem;
     pSynDir: TMenuItem;
     pSynIniDir: TMenuItem;
@@ -143,8 +143,8 @@ const
     '"{FileExt}"',
     //
     '"{FileName2}"',
-    '"{FileNameL}"',
-    '"{FileNameR}"',
+    '"{FileNameN1}"',
+    '"{FileNameN2}"',
     //
     '"{ProjectDir}"',
     '"{ProjectWorkDir}"',
@@ -356,8 +356,8 @@ begin
   s(pFileExt, 4);
   //
   s(pFileName2, 5);
-  s(pFileNameL, 6);
-  s(pFileNameR, 7);
+  s(pFileNameN1, 6);
+  s(pFileNameN2, 7);
   //
   s(pProj1, 8);
   s(pProj2, 9);

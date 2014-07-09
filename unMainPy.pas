@@ -338,7 +338,7 @@ begin
       else
       case N of
         -1: Str:= fmMain.CurrentFrame.FileName;
-        -2: Str:= fmMain.CurrentFileName(cSynViewOpposite);
+        -2: Str:= fmMain.CurrentFileName(cSynGroupOpposite);
         -3: Str:= fmMain.CurrentSessionFN;
         -10: Str:= fmMain.CurrentProjectFN;
         -11: Str:= fmMain.CurrentProjectMainFN;
