@@ -73,7 +73,7 @@ const
   cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
   cBandFolding = 3; //index of gutter band for folding
   cDefaultCursor: array[boolean] of TCursor = (crHourGlass, crDefault);
-  SynDefaultSyn = '(default).syn';
+  SynDefaultSyn = '(default).synw-session';
 
 const
   cPyConsoleMaxCount = 1000;
@@ -26384,7 +26384,7 @@ function TfmMain.CurrentProjectSessionFN: string;
 begin
   Result:= CurrentProjectFN;
   if Result<>'' then
-    Result:= ChangeFileExt(Result, '.syn');
+    Result:= ChangeFileExt(Result, '.synw-session');
 end;
 
 procedure TfmMain.SaveProjectSession;

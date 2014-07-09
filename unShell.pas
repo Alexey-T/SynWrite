@@ -60,8 +60,8 @@ begin
   cbShell.Checked:= IsShellExtensionEnabled;
   cbTxt.Checked:= IsFileAssocEnabled('txt');
   cbIni.Checked:= IsFileAssocEnabled('ini');
-  cbProj.Checked:= IsFileAssocEnabled('synwproj') or IsFileAssocEnabled('synw-proj');
-  cbSession.Checked:= IsFileAssocEnabled('syn');
+  cbProj.Checked:= IsFileAssocEnabled('synw-proj');
+  cbSession.Checked:= IsFileAssocEnabled('synw-session');
 
   for i:= 0 to FLex.Count-1 do
     ed.Items.Add(Copy(FLex[i], 1, Pos('=', FLex[i])-1));
@@ -99,7 +99,6 @@ end;
 
 procedure TfmShell.cbProjClick(Sender: TObject);
 begin
-  DoAssoc('synwproj', cbProj.Checked);
   DoAssoc('synw-proj', cbProj.Checked);
 end;
 
@@ -112,7 +111,7 @@ begin
   cbTxt.Caption:= WideFormat(DKLangConstW('ZMAssoc'), ['TXT']);
   cbIni.Caption:= WideFormat(DKLangConstW('ZMAssoc'), ['INI']);
   cbProj.Caption:= WideFormat(DKLangConstW('ZMAssoc'), ['Synw-proj']);
-  cbSession.Caption:= WideFormat(DKLangConstW('ZMAssoc'), ['Syn']);
+  cbSession.Caption:= WideFormat(DKLangConstW('ZMAssoc'), ['Synw-session']);
 end;
 
 procedure TfmShell.FormDestroy(Sender: TObject);
@@ -166,8 +165,8 @@ begin
   FLock:= true;
   cbTxt.Checked:= IsFileAssocEnabled('txt');
   cbIni.Checked:= IsFileAssocEnabled('ini');
-  cbProj.Checked:= IsFileAssocEnabled('synwproj') or IsFileAssocEnabled('synw-proj');
-  cbSession.Checked:= IsFileAssocEnabled('syn');
+  cbProj.Checked:= IsFileAssocEnabled('synw-proj');
+  cbSession.Checked:= IsFileAssocEnabled('synw-session');
   edChange(Self);
   FLock:= false;
 end;
@@ -175,7 +174,7 @@ end;
 
 procedure TfmShell.cbSessionClick(Sender: TObject);
 begin
-  DoAssoc('syn', cbSession.Checked);
+  DoAssoc('synw-session', cbSession.Checked);
 end;
 
 end.

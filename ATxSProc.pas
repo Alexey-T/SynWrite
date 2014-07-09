@@ -849,7 +849,7 @@ const
      (sFrom: #9; sTo: '\t'),
      (sFrom: '\'; sTo: '\\')
      );
-   *)  
+   *)
 
   cRecodeRegex: array[0..15] of TEscapeRec = (
      (sFrom: #13; sTo: '\r'),
@@ -1019,12 +1019,12 @@ end;
 
 function IsFileProject(const fn: Widestring): boolean;
 begin
-  Result:= SFileExtensionMatch(fn, 'synwproj,synw-proj');
+  Result:= SFileExtensionMatch(fn, 'synw-proj');
 end;
 
 function IsFileSession(const fn: Widestring): boolean;
 begin
-  Result:= SFileExtensionMatch(fn, 'syn');
+  Result:= SFileExtensionMatch(fn, 'synw-session');
 end;
 
 function IsFileSnippet(const fn: Widestring): boolean;
@@ -1074,7 +1074,7 @@ begin
   begin
     SetLength(Result, BufSize);
     Move(BufPtr^, Result[1], BufSize*SizeOf(WideChar));
-  end;  
+  end;
 end;
 
 
@@ -1258,7 +1258,7 @@ begin
     if ch1=')' then begin ch2:= '('; fw:= false; end else
     if ch1='}' then begin ch2:= '{'; fw:= false; end else
       Exit;
-      
+
     n:= FromPos;
     nLock:= 0;
 
@@ -1269,7 +1269,7 @@ begin
       if (S[n]=ch1) then Inc(nLock);
       if (S[n]=ch2) then Dec(nLock);
     end;
-    
+
     if (n>0) and (n<=Length(S)) then
     begin
       Pos1:= FromPos;
