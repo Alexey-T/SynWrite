@@ -572,11 +572,14 @@ const
     'Map-marks-BG', //52
     'Carets-gutter-BG', //53
     'Auto-complete-text', //54
-    'Auto-complete-BG' //55
+    'Auto-complete-BG', //55
+    'Tab-BG-passive-over', //56
+    'Tab-border-active', //57
+    'Tab-border-passive' //58
     );
 
 const
-  cColorsOrder: array[0..cColorsNum-7] of integer = (
+  cColorsOrder: array[0..50] of integer = (
     0,
     1,
     9,
@@ -597,11 +600,12 @@ const
     24,
     25,
     44,
-    42,
-    43,
-    21,
-    22,
-    23,
+    42, //tab caption
+    22, //tab active bg
+    21, //tab passive bg
+    56, //tab passive over bg
+    57, //tab border active
+    58, //tab border passive
     17,
     18,
     19,

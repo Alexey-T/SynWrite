@@ -302,7 +302,7 @@ type
   TSynCpOverride = (cp_sr_Def, cp_sr_OEM, cp_sr_UTF8, cp_sr_UTF16);
 
 const
-  cColorsNum = 56;
+  cColorsNum = 59;
 type
   TSynColors = array[0..cColorsNum-1] of TColor;
 
@@ -2990,11 +2990,12 @@ type
     opTextOnly: integer; //dont-open/ open/ prompt
     opShowTitleFull: boolean;
     opShowQsCaptions: boolean;
-    opColorTabBgPassive,
+    opColorTabText,
     opColorTabBgActive,
-    opColorTabLine,
-    opColorTabFontNormal,
-    opColorTabFontUnsav: integer;
+    opColorTabBgPassive,
+    opColorTabBgPassiveOver,
+    opColorTabBorderActive,
+    opColorTabBorderPassive: integer;
     opShowCharInfo: boolean;
     opOem,
     opUTF8: string;
@@ -4706,13 +4707,15 @@ begin
     opColorMapMarks:= ReadInteger('View', 'MapMkC', clGreen);
     opColorBkmk:= ReadInteger('View', 'BkC', RGB(200, 240, 200));
     opColorNonPrintedBG:= ReadInteger('View', 'NPrintBG', clSilver);
-    opColorTabBgPassive:= ReadInteger('View', 'TabC1', clBtnFace);
-    opColorTabBgActive:= ReadInteger('View', 'TabC2', clBtnHighlight);
-    opColorTabLine:= ReadInteger('View', 'TabC3', $80DDDD);
-    opColorTabFontNormal:= ReadInteger('View', 'TabCF1', clBlack);
-    opColorTabFontUnsav:= ReadInteger('View', 'TabCF2', clNavy);
-    TabColorsString:= ReadString('View', 'TabMisc', '');
 
+    opColorTabText:= ReadInteger('View', 'TabText', clBlack);
+    opColorTabBgActive:= ReadInteger('View', 'TabBgAct', clBtnFace);
+    opColorTabBgPassive:= ReadInteger('View', 'TabBgPas', $d8d8d8);
+    opColorTabBgPassiveOver:= ReadInteger('View', 'TabBgPas2', clLtGray);
+    opColorTabBorderActive:= ReadInteger('View', 'TabBorAct', clLtGray);
+    opColorTabBorderPassive:= ReadInteger('View', 'TabBorPas', clLtGray);
+    TabColorsString:= ReadString('View', 'TabMisc', '');
+    
     opShowCharInfo:= ReadBool('Setup', 'ChInf', false);
     opLang:= ReadInteger('Setup', 'Lang', 0);
     Status.Visible:= ReadBool('Setup', 'Stat', true);
@@ -5085,11 +5088,13 @@ begin
     WriteInteger('View', 'MapMkC', opColorMapMarks);
     WriteInteger('View', 'BkC', opColorBkmk);
     WriteInteger('View', 'NPrintBG', opColorNonPrintedBG);
-    WriteInteger('View', 'TabC1', opColorTabBgPassive);
-    WriteInteger('View', 'TabC2', opColorTabBgActive);
-    WriteInteger('View', 'TabC3', opColorTabLine);
-    WriteInteger('View', 'TabCF1', opColorTabFontNormal);
-    WriteInteger('View', 'TabCF2', opColorTabFontUnsav);
+
+    WriteInteger('View', 'TabText', opColorTabText);
+    WriteInteger('View', 'TabBgAct', opColorTabBgActive);
+    WriteInteger('View', 'TabBgPas', opColorTabBgPassive);
+    WriteInteger('View', 'TabBgPas2', opColorTabBgPassiveOver);
+    WriteInteger('View', 'TabBorAct', opColorTabBorderActive);
+    WriteInteger('View', 'TabBorPas', opColorTabBorderPassive);
     WriteString('View', 'TabMisc', TabColorsString);
 
     WriteBool('Setup', 'ChInf', opShowCharInfo);
@@ -25082,14 +25087,12 @@ begin
   if opTabFontSize>0 then
     Groups.SetTabOption(tabOptionFontSize, opTabFontSize);
 
-  Groups.SetTabOption(tabColorFont, clBlack);
-  Groups.SetTabOption(tabColorActive, clBtnFace);
-  Groups.SetTabOption(tabColorPassive, $d8d8d8);
-  Groups.SetTabOption(tabColorPassiveOver, clLtGray);
-  Groups.SetTabOption(tabColorBorderActive, clLtGray);
-  Groups.SetTabOption(tabColorBorderPassive, clLtGray);
-  //opColorTabBgPassive,
-  //opColorTabBgActive,
+  Groups.SetTabOption(tabColorFont, opColorTabText);
+  Groups.SetTabOption(tabColorActive, opColorTabBgActive);
+  Groups.SetTabOption(tabColorPassive, opColorTabBgPassive);
+  Groups.SetTabOption(tabColorPassiveOver, opColorTabBgPassiveOver);
+  Groups.SetTabOption(tabColorBorderActive, opColorTabBorderActive);
+  Groups.SetTabOption(tabColorBorderPassive, opColorTabBorderPassive);
 
   Groups.SetTabOption(tabOptionShowTabs, Ord(opTabVisible));
   Groups.SetTabOption(tabOptionShowXButtons, Ord(opTabBtn));
@@ -25294,7 +25297,7 @@ begin
   Ed.HorzRuler.Color:= C[20];
   opColorTabBgPassive:= C[21];
   opColorTabBgActive:= C[22];
-  opColorTabLine:= C[23];
+  //opColorTabLine:= C[23];
   Ed.DefaultStyles.SearchMark.Font.Color:= C[24];
   Ed.DefaultStyles.SearchMark.BgColor:= C[25];
   ListOut.Font.Color:= C[26];
@@ -25315,8 +25318,8 @@ begin
   Ed.LineStateDisplay.NewColor:= C[39];
   Ed.LineStateDisplay.SavedColor:= C[40];
   Ed.LineStateDisplay.UnchangedColor:= C[41];
-  opColorTabFontNormal:= C[42];
-  opColorTabFontUnsav:= C[43];
+  opColorTabText:= C[42];
+  //opColorTabFontUnsav:= C[43];
   opColorBkmk:= C[44];
   opColorMap:= C[45];
   Ed.DefaultStyles.CollapseMark.Font.Color:= C[46];
@@ -25329,6 +25332,9 @@ begin
   opColorCaretsGutter:= C[53];
   opColorAcpText:= C[54];
   opColorAcpBg:= C[55];
+  opColorTabBgPassiveOver:= C[56];
+  opColorTabBorderActive:= C[57];
+  opColorTabBorderPassive:= C[58];
 end;
 
 procedure TfmMain.InitColorsArray(var C: TSynColors);
@@ -25356,7 +25362,7 @@ begin
   C[20]:= TemplateEditor.HorzRuler.Color;
   C[21]:= opColorTabBgPassive;
   C[22]:= opColorTabBgActive;
-  C[23]:= opColorTabLine;
+  //C[23]:= opColorTabLine;
   C[24]:= TemplateEditor.DefaultStyles.SearchMark.Font.Color;
   C[25]:= TemplateEditor.DefaultStyles.SearchMark.BgColor;
   C[26]:= ListOut.Font.Color;
@@ -25375,8 +25381,8 @@ begin
   C[39]:= TemplateEditor.LineStateDisplay.NewColor;
   C[40]:= TemplateEditor.LineStateDisplay.SavedColor;
   C[41]:= TemplateEditor.LineStateDisplay.UnchangedColor;
-  C[42]:= opColorTabFontNormal;
-  C[43]:= opColorTabFontUnsav;
+  C[42]:= opColorTabText;
+  //C[43]:= opColorTabFontUnsav;
   C[44]:= opColorBkmk;
   C[45]:= opColorMap;
   C[46]:= TemplateEditor.DefaultStyles.CollapseMark.Font.Color;
@@ -25389,6 +25395,9 @@ begin
   C[53]:= opColorCaretsGutter;
   C[54]:= opColorAcpText;
   C[55]:= opColorAcpBg;
+  C[56]:= opColorTabBgPassiveOver;
+  C[57]:= opColorTabBorderActive;
+  C[58]:= opColorTabBorderPassive;
 end;
 
 procedure TfmMain.DoHandleQuickSearchEscape;
