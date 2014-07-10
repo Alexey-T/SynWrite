@@ -44,7 +44,6 @@ type
     cbStat: TTntCheckBox;
     tabACP: TTntTabSheet;
     bKeyFind: TTntButton;
-    cbMenu: TTntCheckBox;
     DKLanguageController1: TDKLanguageController;
     ColorBox1: TColorBox;
     cbInst: TTntCheckBox;
@@ -1895,7 +1894,7 @@ begin
     opShowCharInfo:= cbChar.Checked;
     UpdateStatusbar;
 
-    Menu.Visible:= cbMenu.Checked;
+    //Menu.Visible:= cbMenu.Checked;
     Status.Visible:= cbStat.Checked;
     opEsc:= TSynEscMode(cbEsc.ItemIndex);
     opSingleInstance:= cbInst.Checked;
@@ -2198,7 +2197,7 @@ begin
 
   with fmMain do
   begin
-    cbMenu.Checked:= Menu.Visible;
+    //cbMenu.Checked:= Menu.Visible;
     cbStat.Checked:= Status.Visible;
     cbChar.Checked:= opShowCharInfo;
 

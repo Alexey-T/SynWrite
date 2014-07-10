@@ -4558,7 +4558,11 @@ begin
     opLexerGroups:= ReadBool('Setup', 'LexCat', true);
     opLexersOverride:= ReadString('Setup', 'LexOvr', '');
 
-    opTabVisible:= ReadBool('Setup', 'TabShow', true);
+    if QuickView then
+      opTabVisible:= false
+    else
+      opTabVisible:= ReadBool('Setup', 'TabShow', true);
+
     opTabMaxWidth:= ReadInteger('Setup', 'TabSize', 130);
     opTabDragDrop:= true; //ReadBool('Setup', 'TabDnD', true);
     opTabSwitcher:= false; ///////////ReadBool('Setup', 'TabSw', true);
@@ -4722,8 +4726,8 @@ begin
     opShowCharInfo:= ReadBool('Setup', 'ChInf', false);
     opLang:= ReadInteger('Setup', 'Lang', 0);
     Status.Visible:= ReadBool('Setup', 'Stat', true);
-    if not QuickView then
-      Menu.Visible:= ReadBool('Setup', 'Menu' + cExeSuffix[SynExe], true);
+    //if not QuickView then
+    //  Menu.Visible:= ReadBool('Setup', 'Menu' + cExeSuffix[SynExe], true);
     opOem:= ReadString('Setup', 'Oem', 'bat,cmd,nfo,diz');
     opUTF8:= ReadString('Setup', 'UTF8', '');
 
@@ -5104,8 +5108,8 @@ begin
 
     WriteBool('Setup', 'ChInf', opShowCharInfo);
     WriteInteger('Setup', 'Lang', opLang);
-    if not QuickView then
-      WriteBool('Setup', 'Menu' + cExeSuffix[SynExe], Menu.Visible);
+    //if not QuickView then
+    //  WriteBool('Setup', 'Menu' + cExeSuffix[SynExe], Menu.Visible);
     WriteBool('Setup', 'Stat', Status.Visible);
     WriteString('Setup', 'Oem', opOem);
     WriteString('Setup', 'UTF8', opUTF8);
