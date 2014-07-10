@@ -813,7 +813,7 @@ type
     TBXSeparatorItem12: TSpTbxSeparatorItem;
     TBXItemVSyncVert: TSpTbxItem;
     TBXItemVSyncHorz: TSpTbxItem;
-    ecToggleView: TAction;
+    ecToggleFocusGroups: TAction;
     TBXSeparatorItem54: TSpTbxSeparatorItem;
     TBXItemECutLine: TSpTbxItem;
     TBXItemECopyLine: TSpTbxItem;
@@ -1113,7 +1113,7 @@ type
     TBXItemEAlignWithSep: TSpTbxItem;
     ecAlignWithSep: TAction;
     TBXItemTabToggleSplit: TSpTBXItem;
-    ecToggleView2: TAction;
+    ecToggleShowGroup2: TAction;
     TBXItemSSelExtend: TSpTbxItem;
     TBXItemTreeCollapseAll: TSpTbxItem;
     TBXItemTreeExpandAll: TSpTbxItem;
@@ -1648,7 +1648,7 @@ type
     procedure ecBkDeleteUnmkExecute(Sender: TObject);
     procedure ecBkPasteExecute(Sender: TObject);
     procedure ecGotoExecute(Sender: TObject);
-    procedure ecToggleViewExecute(Sender: TObject);
+    procedure ecToggleFocusGroupsExecute(Sender: TObject);
     procedure TBXSubmenuItemTidyPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemTidyCfgClick(Sender: TObject);
@@ -1965,7 +1965,7 @@ type
     procedure TBXItemCtxDelClick(Sender: TObject);
     procedure TBXItemCtxSelectAllClick(Sender: TObject);
     procedure TBXItemERedoClick(Sender: TObject);
-    procedure ecToggleView2Execute(Sender: TObject);
+    procedure ecToggleShowGroup2Execute(Sender: TObject);
     procedure PluginACPAfterComplete(Sender: TObject;
       const Item: WideString);
     procedure TBXItemSSelExtendClick(Sender: TObject);
@@ -5966,7 +5966,7 @@ begin
     sm_CollapseParent: ecCollapseParent.Execute;
     sm_CollapseWithNested: ecCollapseWithNested.Execute;
     sm_AlignWithSeparator: ecAlignWithSep.Execute;
-    sm_ToggleView2: ecToggleView2.Execute;
+    sm_ToggleShowGroup2: ecToggleShowGroup2.Execute;
     sm_SelectionExtend: DoExtendSelection(Ed);
     //sm_SelectionShrink: ecSelShrink.Execute;
     sm_ReverseLines: ecReverseLines.Execute;
@@ -6215,7 +6215,6 @@ begin
     sm_ToggleFocusClips: ecToggleFocusClips.Execute;
     sm_ToggleFocusOutput: ecToggleFocusOutput.Execute;
     sm_ToggleFocusFindRes: ecToggleFocusFindRes.Execute;
-    sm_ToggleFocusView: ecToggleView.Execute;
     sm_ToggleFocusValidate: ecToggleFocusValidate.Execute;
     sm_ToggleFocusMap: ecToggleFocusMap.Execute;
     sm_ToggleFocusProj: ecToggleFocusProject.Execute;
@@ -6223,6 +6222,7 @@ begin
     sm_ToggleSlaveView: ecToggleSlave.Execute;
     sm_ToggleFocusMasterSlave: ecToggleFocusMasterSlave.Execute;
     sm_ToggleFocusConsole: ecToggleFocusConsole.Execute;
+    sm_ToggleFocusGroups: ecToggleFocusGroups.Execute;
 
     sm_SplitViewsVertHorz: ecSplitViewsVertHorz.Execute;
     sm_SplitSlaveVertHorz: ecSplitSlaveVertHorz.Execute;
@@ -16363,18 +16363,9 @@ begin
   end;
 end;
 
-procedure TfmMain.ecToggleViewExecute(Sender: TObject);
-var
-  F: TEditorFrame;
+procedure TfmMain.ecToggleFocusGroupsExecute(Sender: TObject);
 begin
-  F:= OppositeFrame;
-  if F<>nil then
-  begin
-    CurrentFrame:= F;
-    FocusEditor;
-  end
-  else
-    MsgBeep;
+  Groups.PagesSetNext(true);
 end;
 
 procedure TfmMain.TBXSubmenuItemTidyPopup(Sender: TTBCustomItem;
@@ -24104,7 +24095,7 @@ begin
   CurrentEditor.ExecCommand(smRedo);
 end;
 
-procedure TfmMain.ecToggleView2Execute(Sender: TObject);
+procedure TfmMain.ecToggleShowGroup2Execute(Sender: TObject);
 begin
   case Groups.Mode of
     gmOne: Groups.Mode:= gm2Horz;
@@ -26273,19 +26264,18 @@ begin
       //  begin MsgNoFile(SName2); Exit end;
 
       //close all tabs
-      acCloseAll.Execute;
+      if not DoCloseAllTabs then Exit;
+      Groups.Mode:= gmOne;
 
       //open 1st file
-      DoOpenFile(SName1);
-      F:= CurrentFrame;
+      F:= DoOpenFile(SName1);
       F.EditorMaster.TopLine:= NLine1 - NDelta;
       F.EditorMaster.CaretPos:= Point(NCol1, NLine1);
 
       //open 2nd file
       if IsFileExist(SName2) then
       begin
-        DoOpenFile(SName2);
-        F:= CurrentFrame;
+        F:= DoOpenFile(SName2);
         F.EditorMaster.TopLine:= NLine2 - NDelta;
         F.EditorMaster.CaretPos:= Point(NCol2, NLine2);
       end
@@ -26297,9 +26287,12 @@ begin
         F.Modified:= true;
       end;
 
-      //update state
-      ecToggleView2.Execute; //move tab to 2nd view
-      CurrentFrame:= FramesAll[0]; //activate 1st view
+      //move last file to group2
+      with Groups do
+      begin
+        Mode:= gm2Horz;
+        MoveTab(Pages1, Pages1.Tabs.TabCount-1, Pages2, -1, false);
+      end;
     end;
 
     if IsParamCmp then
@@ -26316,7 +26309,8 @@ begin
         begin MsgNoFile(SName2); Exit end;
 
       //close all tabs
-      acCloseAll.Execute;
+      if not DoCloseAllTabs then Exit;
+      Groups.Mode:= gmOne;
 
       DoPyEvent(CurrentEditor, cSynEventOnCompare,
         [SWideStringToPythonString(SName1),

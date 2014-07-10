@@ -93,7 +93,7 @@ const
   sm_CopyFullPath = 753;
   sm_CopyDirPath = 754;
   sm_ToggleFocusFindRes = 755;
-  sm_ToggleFocusView = 756;
+  sm_ToggleFocusGroups = 756;
   sm_ToggleFocusValidate = 757;
   sm_ToggleFocusMap = 758;
   sm_ToggleFocusProj = 759;
@@ -136,7 +136,7 @@ const
   sm_ScrollToSel = 795;
   sm_ProjectList = 796;
   sm_AlignWithSeparator = 797;
-  sm_ToggleView2 = 798;
+  sm_ToggleShowGroup2 = 798;
   sm_PasteAsColumnBlock = 799;
 
   sm_Encoding_Ansi = 800;
