@@ -2813,6 +2813,7 @@ type
     procedure TabClose(Sender: TObject; ATabIndex: Integer;
       var ACanClose, ACanContinue: boolean);
     procedure TabPopup(Sender: TObject);
+    procedure TabOver(Sender: TObject; ATabIndex: Integer);
     //end of private
 
   protected
@@ -25077,10 +25078,7 @@ procedure TfmMain.ApplyTabOptions;
 var
   i: Integer;
 begin
-  with Groups do
-    for i:= Low(Pages) to High(Pages) do
-      Pages[i].Tabs.Font.Assign(ToolbarFont);
-
+  Groups.SetTabFont(ToolbarFont);
   if opTabFontSize>0 then
     Groups.SetTabOption(tabOptionFontSize, opTabFontSize);
 
@@ -28299,6 +28297,7 @@ begin
   Groups.OnTabFocus:= TabFocus;
   Groups.OnTabClose:= TabClose;
   Groups.OnTabPopup:= TabPopup;
+  Groups.OnTabOver:= TabOver;
 
   ApplyTabOptions;
   Groups.Mode:= opGroupMode;
@@ -28481,6 +28480,21 @@ begin
       end;
 end;
 
+
+procedure TfmMain.TabOver(Sender: TObject; ATabIndex: Integer);
+var
+  D: TATTabData;
+begin
+  if ATabIndex>=0 then //discard -1, -2
+    with (Sender as TATTabs) do
+    begin
+      D:= GetTabData(ATabIndex);
+      if D<>nil then
+        DoShowHintFilename((D.TabObject as TEditorFrame).FileName);
+    end
+  else
+    DoHint('');
+end;
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
