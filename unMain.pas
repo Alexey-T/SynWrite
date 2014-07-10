@@ -3949,8 +3949,10 @@ begin
     Ed:= Frame.EditorSlave;
 
   if Frame.Enabled and Frame.Visible then
+  begin
     if Ed.Enabled and Ed.Visible and Ed.CanFocus then
       Ed.SetFocus;
+  end;
 end;
 
 function TfmMain.GetCurrentFrame: TEditorFrame;
@@ -3975,6 +3977,7 @@ end;
 function TfmMain.CreateFrame: TEditorFrame;
 begin
   Result:= TEditorFrame.Create(Self);
+  Result.Visible:= false; //fix flicker on new-tab
   Result.Name:= '';
   Result.OnTitleChanged:= UpdateTitle;
   Result.OnSaveState:= FrameSaveState;
@@ -4775,12 +4778,14 @@ begin
     Free;
   end;
 
+  opGroupMode:= gmOne;
+
   if SynExe or opMruForPlugin then
   begin
     Ini:= TMemIniFile.Create(SynHistoryIni);
     with Ini do
     try
-      opGroupMode:= TATGroupsMode(ReadInteger('Win', 'Groups', Ord(gmOne)));
+      opGroupMode:= TATGroupsMode(ReadInteger('Win', 'Groups', Ord(opGroupMode)));
 
       //load recent files
       LoadMruList(SynMruFiles, Ini, 'MRU', opSaveState, opMruCheck);

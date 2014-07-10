@@ -538,9 +538,9 @@ const
     'Tree-BG', //18
     'Ruler-text', //19
     'Ruler-BG', //20
-    'Passive-tabs', //21
-    'Active-tab', //22
-    'Active-tab-line', //23
+    'Tab-BG-passive', //21
+    'Tab-BG-active', //22
+    'Tab-BG-active-line', //23
     'Search-marks-text', //24
     'Search-marks-BG', //25
     'Output-panel-text', //26
