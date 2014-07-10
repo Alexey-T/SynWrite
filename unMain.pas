@@ -569,7 +569,7 @@ type
     TBXItemFSaveAll: TSpTbxItem;
     acCloseAll: TAction;
     TBXItemFCloseAll: TSpTbxItem;
-    acCloseOthers: TAction;
+    acCloseOthersThisGroup: TAction;
     TBXItemFCloseOth: TSpTbxItem;
     TBXSeparatorItem29: TSpTbxSeparatorItem;
     TBXItemFSesOpen: TSpTbxItem;
@@ -1361,6 +1361,7 @@ type
     TbxItemToGroup1: TSpTBXItem;
     SpTBXSeparatorItem20: TSpTBXSeparatorItem;
     TBXItemTabCloseOthersAllGroups: TSpTBXItem;
+    acCloseOthersAllGroups: TAction;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1484,7 +1485,7 @@ type
     procedure acCloseExecute(Sender: TObject);
     procedure acSaveAllExecute(Sender: TObject);
     procedure acCloseAllExecute(Sender: TObject);
-    procedure acCloseOthersExecute(Sender: TObject);
+    procedure acCloseOthersThisGroupExecute(Sender: TObject);
     procedure TBXItemTabCloseOthersClick(Sender: TObject);
     procedure PopupTabContextPopup(Sender: TObject);
     procedure TBXItemFSesSaveAsClick(Sender: TObject);
@@ -2127,6 +2128,7 @@ type
     procedure TBXSubmenuItemToGroupPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemTabCloseOthersAllGroupsClick(Sender: TObject);
+    procedure acCloseOthersAllGroupsExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -2563,7 +2565,7 @@ type
     procedure DoRepaintTBs2;
     procedure DoSyncScroll(EdSrc: TSyntaxMemo);
     function DoCloseAllTabs: boolean;
-    function DoCloseOtherTabs(AForPopupMenu: boolean): boolean;
+    function DoCloseOtherTabs(AAllGroups, AForPopupMenu: boolean): boolean;
     procedure DoMoveTabToWindow(Frame: TEditorFrame; AndClose: boolean);
     function LastDir: Widestring;
     function LastDir_UntitledFile: Widestring;
@@ -2818,8 +2820,8 @@ type
 
   protected
     procedure CreateParams(var Params: TCreateParams); override;
-    procedure WMCommandAny(var m: TMessage); message WM_USER + 1;
-    procedure WMCommandWithClose(var m: TMessage); message WM_USER + 2;
+    procedure WMCommandAny(var Msg: TMessage); message WM_USER + 1;
+    procedure WMCommandWithClose(var Msg: TMessage); message WM_USER + 2;
     //end of protected
 
   public
@@ -6177,6 +6179,7 @@ begin
     sm_FileCloseAndDelete,
     sm_FileCloseAll,
     sm_FileCloseOthers,
+    sm_FileCloseOthersAllGroups,
     sm_FileRenameDialog,
     sm_FileOpenSession,
     sm_FileAddSession,
@@ -6714,9 +6717,15 @@ begin
   Result:= Groups.CloseTabs(tabCloseAll, false);
 end;
 
-function TfmMain.DoCloseOtherTabs(AForPopupMenu: boolean): boolean;
+function TfmMain.DoCloseOtherTabs(AAllGroups, AForPopupMenu: boolean): boolean;
+var
+  Id: TATTabCloseId;
 begin
-  Result:= Groups.CloseTabs(tabCloseOthersThisPage, AForPopupMenu);
+  if AAllGroups then
+    Id:= tabCloseOthersAllPages
+  else
+    Id:= tabCloseOthersThisPage;
+  Result:= Groups.CloseTabs(Id, AForPopupMenu);
 end;
 
 
@@ -9434,10 +9443,10 @@ begin
       DoConfirmSaveSession(true, true);
 end;
 
-procedure TfmMain.WMCommandAny(var m: TMessage);
+procedure TfmMain.WMCommandAny(var Msg: TMessage);
 begin
   if CurrentEditor<>nil then
-    CurrentEditor.ExecCommand(m.wParam);
+    CurrentEditor.ExecCommand(Msg.wParam);
 end;
 
 procedure TfmMain.bBk0Click(Sender: TObject);
@@ -11099,14 +11108,24 @@ begin
   DoCloseAllTabs;
 end;
 
-procedure TfmMain.acCloseOthersExecute(Sender: TObject);
+procedure TfmMain.acCloseOthersThisGroupExecute(Sender: TObject);
 begin
-  DoCloseOtherTabs(false);
+  DoCloseOtherTabs(false, false);
+end;
+
+procedure TfmMain.acCloseOthersAllGroupsExecute(Sender: TObject);
+begin
+  DoCloseOtherTabs(true, false);
 end;
 
 procedure TfmMain.TBXItemTabCloseOthersClick(Sender: TObject);
 begin
-  DoCloseOtherTabs(true);
+  DoCloseOtherTabs(false, true);
+end;
+
+procedure TfmMain.TBXItemTabCloseOthersAllGroupsClick(Sender: TObject);
+begin
+  DoCloseOtherTabs(true, true);
 end;
 
 procedure TfmMain.UpdateClickedFrame;
@@ -11827,9 +11846,9 @@ begin
   end;
 end;
 
-procedure TfmMain.WMCommandWithClose(var m: TMessage);
+procedure TfmMain.WMCommandWithClose(var Msg: TMessage);
 begin
-  case m.WParam of
+  case Msg.WParam of
     sm_FileClose:
       acClose.Execute;
     sm_FileCloseAndDelete:
@@ -11837,7 +11856,9 @@ begin
     sm_FileCloseAll:
       acCloseAll.Execute;
     sm_FileCloseOthers:
-      acCloseOthers.Execute;
+      acCloseOthersThisGroup.Execute;
+    sm_FileCloseOthersAllGroups:
+      acCloseOthersAllGroups.Execute;  
     sm_FileRenameDialog:
       acRename.Execute;
     sm_FileOpenSession:
@@ -11847,10 +11868,10 @@ begin
     sm_FileCloseSession:
       DoCloseSession(true);
   end;
-  m.Result:= 1;
+  Msg.Result:= 1;
 end;
 
-//Finder must be setup
+//Finder must be set-up
 procedure TfmMain.ReplaceInFile(const fn: Widestring);
 var
   Attr: Dword;
@@ -28479,11 +28500,6 @@ begin
     MsgBeep;
 end;
 
-
-procedure TfmMain.TBXItemTabCloseOthersAllGroupsClick(Sender: TObject);
-begin
-  Groups.CloseTabs(tabCloseOthersAllPages, true);
-end;
 
 function TfmMain.GetCurrentFrameInPages(Pages: TATPages): TEditorFrame;
 var

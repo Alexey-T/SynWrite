@@ -389,6 +389,7 @@ const
   sm_ToggleShowFoldersOnTabs = 1056;
   sm_InsertUnicodeHexDialog = 1057;
   sm_UpdateProject = 1058;
+  sm_FileCloseOthersAllGroups = 1059;
   //free
 
   //Tree commands
