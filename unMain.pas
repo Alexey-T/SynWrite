@@ -461,7 +461,7 @@ type
     TBXSubmenuItemExport: TSpTBXSubmenuItem;
     TBXItemFExpRtf: TSpTbxItem;
     TBXItemFExpHtml: TSpTbxItem;
-    Panel1: TPanel;
+    PanelBg: TPanel;
     TemplateEditor: TSyntaxMemo;
     TBXSubmenuItemBk: TSpTbxSubmenuItem;
     TBXSubmenuItemBkGoto: TSpTbxSubmenuItem;
@@ -11311,11 +11311,10 @@ begin
     if not AddMode then
     begin
       if not DoCloseAllTabs then Exit;
-      FSessionFN:= AFilename;
+      FSessionFN:= AFilename; //remember fname: after close-all
     end;
 
-    //lock redrawing for slow sessions
-    DoControlLock(Groups);
+    DoControlLock(Self); //fix flicker
     FLockUpdate:= true;
 
     try
@@ -11395,7 +11394,7 @@ begin
 
     finally
       FLockUpdate:= false;
-      DoControlUnlock(Groups);
+      DoControlUnlock(Self);
     end;
   finally
     Free;
@@ -28304,7 +28303,7 @@ end;
 procedure TfmMain.InitGroups;
 begin
   Groups:= TATGroups.Create(Self);
-  Groups.Parent:= Panel1;
+  Groups.Parent:= PanelBg;
   Groups.Align:= alClient;
 
   Groups.OnTabAdd:= TabAdd;
