@@ -390,6 +390,8 @@ const
   sm_InsertUnicodeHexDialog = 1057;
   sm_UpdateProject = 1058;
   sm_FileCloseOthersAllGroups = 1059;
+  sm_MoveCurrentTabToNextGroup = 1060;
+  sm_MoveCurrentTabToPrevGroup = 1061;
   //free
 
   //Tree commands

@@ -3225,7 +3225,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.aaa';
+  cSynVer = '6.6.1200';
   cSynPyVer = '1.0.131';
 
 const
@@ -6475,6 +6475,11 @@ begin
       DoToggleTabDirs;
     sm_InsertUnicodeHexDialog:
       DoInsertUnicodeHexDialog;
+
+    sm_MoveCurrentTabToNextGroup:
+      Groups.MoveCurrentTabToNext(true);
+    sm_MoveCurrentTabToPrevGroup:
+      Groups.MoveCurrentTabToNext(false);
 
     //end of commands list
     else
