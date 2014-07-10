@@ -14322,12 +14322,14 @@ end;
 
 procedure TfmMain.ApplyColors;
 begin
-  Groups.Invalidate;
   ListOut.Invalidate;
   TreeFind.Invalidate;
   ListVal.Invalidate;
   ListPLog.Invalidate;
   MemoConsole.Invalidate;
+
+  ApplyTabOptions;
+  Groups.Invalidate;
 
   ApplyFrames;
   ApplyAcpColors;
@@ -24955,7 +24957,7 @@ end;
 
 procedure TfmMain.InitMenuItemsList;
 begin
-  SetLength(FMenuItems, 18);
+  SetLength(FMenuItems, 19);
   //
   with FMenuItems[0] do begin Id:= 'file'; Item:= TbxSubmenuItemFile; end;
   with FMenuItems[1] do begin Id:= 'edit'; Item:= TbxSubmenuItemEd; end;
@@ -24970,13 +24972,14 @@ begin
   with FMenuItems[10] do begin Id:= 'window'; Item:= TbxSubmenuItemWindow; end;
   with FMenuItems[11] do begin Id:= 'help'; Item:= TbxSubmenuItemHelp; end;
   //
-  with FMenuItems[12] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
-  with FMenuItems[13] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
+  with FMenuItems[12] do begin Id:= 'g'; Item:= TBXSubmenuItemGroups; end;
+  with FMenuItems[13] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
+  with FMenuItems[14] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
   //
-  with FMenuItems[14] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
-  with FMenuItems[15] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
-  with FMenuItems[16] do begin Id:= 'toolbar-view'; Item:= tbView; end;
-  with FMenuItems[17] do begin Id:= 'context'; Item:= PopupEditor; end;
+  with FMenuItems[15] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
+  with FMenuItems[16] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
+  with FMenuItems[17] do begin Id:= 'toolbar-view'; Item:= tbView; end;
+  with FMenuItems[18] do begin Id:= 'context'; Item:= PopupEditor; end;
 end;
 
 procedure TfmMain.TBXItemOHideItemsClick(Sender: TObject);

@@ -2559,62 +2559,6 @@ object fmMain: TfmMain
       end
       object TBXSubmenuItemView: TSpTBXSubmenuItem
         Caption = '&View'
-        object TBXSubmenuItemGroups: TSpTBXSubmenuItem
-          Caption = '&Groups'
-          Hint = 'Choose grouping mode'
-          OnSelect = ButtonOnSelect
-          OnPopup = TBXSubmenuItemGroupsPopup
-          object TbxItemGroupOne: TSpTBXItem
-            Caption = 'One group'
-            RadioItem = True
-            OnClick = TbxItemGroupOneClick
-          end
-          object TbxItemGroup2H: TSpTBXItem
-            Caption = '2 horz'
-            RadioItem = True
-            OnClick = TbxItemGroup2HClick
-          end
-          object TbxItemGroup2V: TSpTBXItem
-            Caption = '2 vert'
-            RadioItem = True
-            OnClick = TbxItemGroup2VClick
-          end
-          object TbxItemGroup3H: TSpTBXItem
-            Caption = '3 horz'
-            RadioItem = True
-            OnClick = TbxItemGroup3HClick
-          end
-          object TbxItemGroup3V: TSpTBXItem
-            Caption = '3 vert'
-            RadioItem = True
-            OnClick = TbxItemGroup3VClick
-          end
-          object TbxItemGroup3as1p2: TSpTBXItem
-            Caption = '3 as 1+2'
-            RadioItem = True
-            OnClick = TbxItemGroup3as1p2Click
-          end
-          object TbxItemGroup4H: TSpTBXItem
-            Caption = '4 horz'
-            RadioItem = True
-            OnClick = TbxItemGroup4HClick
-          end
-          object TbxItemGroup4V: TSpTBXItem
-            Caption = '4 vert'
-            RadioItem = True
-            OnClick = TbxItemGroup4VClick
-          end
-          object TbxItemGroup4Grid: TSpTBXItem
-            Caption = '4 grid'
-            RadioItem = True
-            OnClick = TbxItemGroup4GridClick
-          end
-          object TbxItemGroup6Grid: TSpTBXItem
-            Caption = '6 grid'
-            RadioItem = True
-            OnClick = TbxItemGroup6GridClick
-          end
-        end
         object TBXSubmenuItemToolbars: TSpTBXSubmenuItem
           Caption = 'Tool&bars'
           OnSelect = ButtonOnSelect
@@ -2909,6 +2853,63 @@ object fmMain: TfmMain
           Hint = 'Dialog "About"'
           OnClick = TBXItemAbClick
           OnSelect = ButtonOnSelect
+        end
+      end
+      object TBXSubmenuItemGroups: TSpTBXSubmenuItem
+        Hint = 'Choose grouping mode'
+        ImageIndex = 1
+        Images = ImageListCloseBtn
+        OnSelect = ButtonOnSelect
+        OnPopup = TBXSubmenuItemGroupsPopup
+        object TbxItemGroupOne: TSpTBXItem
+          Caption = 'One group'
+          RadioItem = True
+          OnClick = TbxItemGroupOneClick
+        end
+        object TbxItemGroup2H: TSpTBXItem
+          Caption = '2 horz'
+          RadioItem = True
+          OnClick = TbxItemGroup2HClick
+        end
+        object TbxItemGroup2V: TSpTBXItem
+          Caption = '2 vert'
+          RadioItem = True
+          OnClick = TbxItemGroup2VClick
+        end
+        object TbxItemGroup3H: TSpTBXItem
+          Caption = '3 horz'
+          RadioItem = True
+          OnClick = TbxItemGroup3HClick
+        end
+        object TbxItemGroup3V: TSpTBXItem
+          Caption = '3 vert'
+          RadioItem = True
+          OnClick = TbxItemGroup3VClick
+        end
+        object TbxItemGroup3as1p2: TSpTBXItem
+          Caption = '3 as 1+2'
+          RadioItem = True
+          OnClick = TbxItemGroup3as1p2Click
+        end
+        object TbxItemGroup4H: TSpTBXItem
+          Caption = '4 horz'
+          RadioItem = True
+          OnClick = TbxItemGroup4HClick
+        end
+        object TbxItemGroup4V: TSpTBXItem
+          Caption = '4 vert'
+          RadioItem = True
+          OnClick = TbxItemGroup4VClick
+        end
+        object TbxItemGroup4Grid: TSpTBXItem
+          Caption = '4 grid'
+          RadioItem = True
+          OnClick = TbxItemGroup4GridClick
+        end
+        object TbxItemGroup6Grid: TSpTBXItem
+          Caption = '6 grid'
+          RadioItem = True
+          OnClick = TbxItemGroup6GridClick
         end
       end
       object TbxItemMenuX: TSpTBXItem
@@ -8329,43 +8330,43 @@ object fmMain: TfmMain
         Command = 920
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Split views 20/80'
+        DisplayName = 'Split groups 20/80'
       end
       item
         Command = 921
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Split views 30/70'
+        DisplayName = 'Split groups 30/70'
       end
       item
         Command = 922
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Split views 40/60'
+        DisplayName = 'Split groups 40/60'
       end
       item
         Command = 923
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Split views 50/50'
+        DisplayName = 'Split groups 50/50'
       end
       item
         Command = 924
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Split views 60/40'
+        DisplayName = 'Split groups 60/40'
       end
       item
         Command = 925
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Split views 70/30'
+        DisplayName = 'Split groups 70/30'
       end
       item
         Command = 926
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Split views 80/20'
+        DisplayName = 'Split groups 80/20'
       end
       item
         Command = 900
@@ -8491,13 +8492,13 @@ object fmMain: TfmMain
         Command = 927
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Move views splitter left'
+        DisplayName = 'Split groups - splitter lefter'
       end
       item
         Command = 928
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Move views splitter right'
+        DisplayName = 'Split groups - splitter righter'
       end
       item
         Command = 873
@@ -8773,7 +8774,7 @@ object fmMain: TfmMain
         Command = 768
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Toggle split view - same file'
+        DisplayName = 'Split tab - toggle split'
       end
       item
         Command = 769
@@ -8803,13 +8804,13 @@ object fmMain: TfmMain
         Command = 770
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Toggle splitter vert/horz - main'
+        DisplayName = 'Split groups - toggle splitter vert/horz'
       end
       item
         Command = 771
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Toggle splitter vert/horz - same file'
+        DisplayName = 'Split tab - toggle splitter vert/horz'
       end
       item
         Command = 772
@@ -9133,7 +9134,7 @@ object fmMain: TfmMain
         Command = 798
         KeyStrokes = <>
         Category = 'Split view'
-        DisplayName = 'Toggle split view - main'
+        DisplayName = 'Split groups - toggle split'
       end
       item
         Command = 893
@@ -14286,32 +14287,31 @@ object fmMain: TfmMain
       62784974656D5072655A6F6F6D3530000010005462784974656D5072655A6F6F
       6D323500000E005462784974656D507265456469740000140053705442585365
       70617261746F724974656D3331000014005442585375626D656E754974656D47
-      726F75707301020000000A0B0000070043617074696F6EF50A0000040048696E
-      74000E005462784974656D47726F757032480101000000F60A00000700436170
-      74696F6E000E005462784974656D47726F757032560101000000F70A00000700
-      43617074696F6E000F005462784974656D47726F75704F6E650101000000F80A
-      0000070043617074696F6E000E005462784974656D47726F7570334801010000
-      00F90A0000070043617074696F6E000E005462784974656D47726F7570335601
-      01000000FA0A0000070043617074696F6E0011005462784974656D47726F7570
-      36477269640101000000FB0A0000070043617074696F6E001100546278497465
-      6D47726F757034477269640101000000FC0A0000070043617074696F6E000E00
-      5462784974656D47726F757034560101000000FD0A0000070043617074696F6E
-      000E005462784974656D47726F757034480101000000FE0A0000070043617074
-      696F6E0012005462784974656D47726F75703361733170320101000000FF0A00
-      00070043617074696F6E0015005442585375626D656E754974656D546F47726F
-      75700101000000000B0000070043617074696F6E0012005462784974656D546F
-      47726F7570507265760101000000070B0000070043617074696F6E0012005462
-      784974656D546F47726F75704E6578740101000000080B000007004361707469
-      6F6E000F005462784974656D546F47726F7570360101000000010B0000070043
-      617074696F6E000F005462784974656D546F47726F7570350101000000020B00
-      00070043617074696F6E000F005462784974656D546F47726F75703401010000
-      00030B0000070043617074696F6E000F005462784974656D546F47726F757033
-      0101000000040B0000070043617074696F6E000F005462784974656D546F4772
-      6F7570320101000000050B0000070043617074696F6E000F005462784974656D
-      546F47726F7570310101000000060B0000070043617074696F6E001400537054
-      4258536570617261746F724974656D323000001E005442584974656D54616243
-      6C6F73654F7468657273416C6C47726F7570730101000000090B000007004361
-      7074696F6E00}
+      726F7570730101000000F50A0000040048696E74000E005462784974656D4772
+      6F757032480101000000F60A0000070043617074696F6E000E00546278497465
+      6D47726F757032560101000000F70A0000070043617074696F6E000F00546278
+      4974656D47726F75704F6E650101000000F80A0000070043617074696F6E000E
+      005462784974656D47726F757033480101000000F90A0000070043617074696F
+      6E000E005462784974656D47726F757033560101000000FA0A00000700436170
+      74696F6E0011005462784974656D47726F757036477269640101000000FB0A00
+      00070043617074696F6E0011005462784974656D47726F757034477269640101
+      000000FC0A0000070043617074696F6E000E005462784974656D47726F757034
+      560101000000FD0A0000070043617074696F6E000E005462784974656D47726F
+      757034480101000000FE0A0000070043617074696F6E0012005462784974656D
+      47726F75703361733170320101000000FF0A0000070043617074696F6E001500
+      5442585375626D656E754974656D546F47726F75700101000000000B00000700
+      43617074696F6E0012005462784974656D546F47726F75705072657601010000
+      00070B0000070043617074696F6E0012005462784974656D546F47726F75704E
+      6578740101000000080B0000070043617074696F6E000F005462784974656D54
+      6F47726F7570360101000000010B0000070043617074696F6E000F0054627849
+      74656D546F47726F7570350101000000020B0000070043617074696F6E000F00
+      5462784974656D546F47726F7570340101000000030B0000070043617074696F
+      6E000F005462784974656D546F47726F7570330101000000040B000007004361
+      7074696F6E000F005462784974656D546F47726F7570320101000000050B0000
+      070043617074696F6E000F005462784974656D546F47726F7570310101000000
+      060B0000070043617074696F6E0014005370544258536570617261746F724974
+      656D323000001E005442584974656D546162436C6F73654F7468657273416C6C
+      47726F7570730101000000090B0000070043617074696F6E00}
   end
   object TimerHint: TTimer
     Enabled = False
