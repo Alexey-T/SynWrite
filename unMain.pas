@@ -2834,6 +2834,7 @@ type
     Groups: TATGroups;
     fmProgress: TfmProgress;
     hLister: HWnd;
+    ColorsArray: TSynColors;
 
     SynPyLog: TSynLogPanelKind;
     SynPanelPropsOut,
@@ -2856,7 +2857,7 @@ type
     opAutoCase: boolean;
     opShowPanelTitles: boolean;
     opTreeSorted: string;
-    opColorUnderline: integer;
+    opUnderlineColored: integer;
     opFontConsole: string;
     opSyncEditIcon: boolean;
     opTabFontSize: integer;
@@ -3066,13 +3067,16 @@ type
     procedure ApplyEdOptions;
     procedure ApplyFonts;
     procedure ApplyColors;
-    procedure ApplyColorsArrayToEditor(var C: TSynColors; Ed: TSyntaxMemo);
-    procedure InitColorsArray(var C: TSynColors);
     procedure ApplyACP;
     procedure ApplyAcpColors;
     procedure ApplyOut;
     procedure ApplyMap;
     procedure ApplyBorders;
+
+    procedure DoColorsArrayInit(var C: TSynColors);
+    procedure DoColorsArrayRead(var C: TSynColors; const StrIni: string);
+    function DoColorsArrayAsString(const C: TSynColors): string;
+    procedure DoColorsArrayApply(const C: TSynColors; Ed: TSyntaxMemo);
 
     procedure DoSpellConfig(Sender: TObject);
     procedure DoAutoSave;
@@ -4020,8 +4024,8 @@ begin
 
   PropsManager.Add(Result.EditorMaster);
   PropsManager.Add(Result.EditorSlave);
-  //Result.EditorMaster.OnIncSearchChange:= IncSearchChange; //inc-search not used yet
-  //Result.EditorSlave.OnIncSearchChange:= IncSearchChange;
+  DoColorsArrayApply(ColorsArray, Result.EditorMaster);
+  DoColorsArrayApply(ColorsArray, Result.EditorSlave);
 
   Result.EditorMaster.Gutter.LineBreakObj:= IfThen(opShowWrapMark, 0, -1);
   Result.EditorSlave.Gutter.LineBreakObj:= Result.EditorMaster.Gutter.LineBreakObj;
@@ -4543,8 +4547,13 @@ begin
     opShowPanelTitles:= ReadBool('View', 'PaneTitle', true);
     ApplyPanelTitles;
 
+    //color array
+    DoColorsArrayInit(ColorsArray);
+    DoColorsArrayRead(ColorsArray, ReadString('View', 'Colors', ''));
+    DoColorsArrayApply(ColorsArray, TemplateEditor);
+
     opTreeSorted:= ReadString('Setup', 'TreeSorted', '');
-    opColorUnderline:= ReadInteger('Setup', 'ColorUnd', 3);
+    opUnderlineColored:= ReadInteger('Setup', 'ColorUnd', 3);
     opSyncEditIcon:= ReadBool('Setup', 'SyncEditIcon', true);
 
     opTabFontSize:= ReadInteger('Setup', 'TabFontSize', 0);
@@ -4582,7 +4591,6 @@ begin
     opShowQsCaptions:= ReadBool('Setup', 'QsCap', false);
     ApplyQs;
     opHiliteUrls:= ReadBool('Setup', 'Link', true);
-    opColorLink:= ReadInteger('Setup', 'LinkCl', clBlue);
     opKeepCaretOnScreen:= false;
     ApplyEdOptions;
 
@@ -4686,7 +4694,6 @@ begin
     //opMapVScroll:= ReadBool('View', 'MapVSc', true);
     opMapZoom:= ReadInteger('View', 'MapZoom', 25);
     opMicroMap:= ReadBool('View', 'MicroMap', false);
-    opColorMap:= ReadInteger('View', 'MapColor', clSkyBlue);
     opShowCurrentColumn:= ReadBool('View', 'CurrCol', false);
     opCaretShape:= ReadInteger('View', 'CaretType', 1);
 
@@ -4702,30 +4709,11 @@ begin
     opProjPaths:= UTF8Decode(ReadString('Setup', 'Paths', ''));
     opHiliteBrackets:= ReadBool('Setup', 'BrHi', true);
 
-    opColorOutSelBk:= ReadInteger('Setup', 'OutCSelBk', clDkGray);
-    opColorOutSelText:= ReadInteger('Setup', 'OutCSelT', clHighlighttext);
-    opColorOutRedText:= ReadInteger('Setup', 'OutCRedT', clNavy);
-    opColorOutRedSelText:= ReadInteger('Setup', 'OutCRedSelT', clYellow);
-    opColorOutHi:= ReadInteger('Setup', 'OutCHi', clSkyBlue);
-
     opCaretsEnabled:= ReadBool('View', 'CaretsEn', true);
     opCaretsIndicator:= ReadInteger('View', 'CaretsInd', 2);
     opCaretsGutterBand:= ReadInteger('View', 'CaretsGBand', 0);
     ApplyCarets;
 
-    opColorAcpText:= ReadInteger('View', 'AcpColorFg', clWindowText);
-    opColorAcpBg:= ReadInteger('View', 'AcpColorBg', clWindow);
-    opColorCaretsGutter:= ReadInteger('View', 'CaretsGut', clLtGray);
-    opColorMapMarks:= ReadInteger('View', 'MapMkC', clGreen);
-    opColorBkmk:= ReadInteger('View', 'BkC', RGB(200, 240, 200));
-    opColorNonPrintedBG:= ReadInteger('View', 'NPrintBG', clSilver);
-
-    opColorTabText:= ReadInteger('View', 'TabText', clBlack);
-    opColorTabBgActive:= ReadInteger('View', 'TabBgAct', clBtnFace);
-    opColorTabBgPassive:= ReadInteger('View', 'TabBgPas', $d8d8d8);
-    opColorTabBgPassiveOver:= ReadInteger('View', 'TabBgPas2', clLtGray);
-    opColorTabBorderActive:= ReadInteger('View', 'TabBorAct', clLtGray);
-    opColorTabBorderPassive:= ReadInteger('View', 'TabBorPas', clLtGray);
     TabColorsString:= ReadString('View', 'TabMisc', '');
     
     opShowCharInfo:= ReadBool('Setup', 'ChInf', false);
@@ -4943,7 +4931,6 @@ begin
     //view
     //WriteBool('View', 'MapVSc', opMapVScroll);
     WriteInteger('View', 'MapZoom', opMapZoom);
-    WriteInteger('View', 'MapColor', opColorMap);
     WriteBool('View', 'MicroMap', opMicroMap);
     WriteBool('View', 'CurrCol', opShowCurrentColumn);
     WriteInteger('View', 'CaretType', opCaretShape);
@@ -4971,14 +4958,6 @@ begin
     WriteString('Setup', 'Paths', UTF8Encode(opProjPaths));
     WriteBool('Setup', 'SpellEn', opSpellEn);
     WriteString('Setup', 'SpellExt', opSpellExt);
-
-    //WriteInteger('Setup', 'BrCl', opColorBracket);
-    //WriteInteger('Setup', 'BrClBg', opColorBracketBg);
-    WriteInteger('Setup', 'OutCSelBk', opColorOutSelBk);
-    WriteInteger('Setup', 'OutCSelT', opColorOutSelText);
-    WriteInteger('Setup', 'OutCRedT', opColorOutRedText);
-    WriteInteger('Setup', 'OutCRedSelT', opColorOutRedSelText);
-    WriteInteger('Setup', 'OutCHi', opColorOutHi);
 
     if SynExe then
     begin
@@ -5014,7 +4993,6 @@ begin
     WriteBool('Setup', 'QsCap', opShowQsCaptions);
     WriteBool('Setup', 'LexCat', opLexerGroups);
     WriteBool('Setup', 'Link', opHiliteUrls);
-    WriteInteger('Setup', 'LinkCl', opColorLink);
     WriteBool('Setup', 'WrapMk', opShowWrapMark);
     WriteInteger('Setup', 'TxOnly', opTextOnly);
 
@@ -5051,9 +5029,10 @@ begin
     WriteBool('Setup', 'CopyLnNoSel', opCopyLineIfNoSel);
     WriteInteger('Setup', 'SortM', Ord(opSortMode));
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
-    WriteInteger('Setup', 'ColorUnd', opColorUnderline);
+    WriteInteger('Setup', 'ColorUnd', opUnderlineColored);
     WriteString('Setup', 'TreeSorted', opTreeSorted);
 
+    WriteString('View', 'Colors', DoColorsArrayAsString(ColorsArray));
     WriteString('View', 'PyFont', opFontConsole);
     WriteBool('View', 'CaretsEn', opCaretsEnabled);
     WriteInteger('View', 'CaretsInd', opCaretsIndicator);
@@ -5095,20 +5074,6 @@ begin
     WriteBool('View', 'TabBtn', opTabBtn);
     WriteBool('View', 'TabPlus', opTabPlus);
     WriteBool('View', 'TabDown', opTabAtBottom);
-
-    WriteInteger('View', 'AcpColorFg', opColorAcpText);
-    WriteInteger('View', 'AcpColorBg', opColorAcpBg);
-    WriteInteger('View', 'CaretsGut', opColorCaretsGutter);
-    WriteInteger('View', 'MapMkC', opColorMapMarks);
-    WriteInteger('View', 'BkC', opColorBkmk);
-    WriteInteger('View', 'NPrintBG', opColorNonPrintedBG);
-
-    WriteInteger('View', 'TabText', opColorTabText);
-    WriteInteger('View', 'TabBgAct', opColorTabBgActive);
-    WriteInteger('View', 'TabBgPas', opColorTabBgPassive);
-    WriteInteger('View', 'TabBgPas2', opColorTabBgPassiveOver);
-    WriteInteger('View', 'TabBorAct', opColorTabBorderActive);
-    WriteInteger('View', 'TabBorPas', opColorTabBorderPassive);
     WriteString('View', 'TabMisc', TabColorsString);
 
     WriteBool('Setup', 'ChInf', opShowCharInfo);
@@ -25300,7 +25265,7 @@ begin
   Result:= SynSkinsDir + '\' + Copy(Name, 2, MaxInt) + '.skn';
 end;
 
-procedure TfmMain.ApplyColorsArrayToEditor(var C: TSynColors; Ed: TSyntaxMemo);
+procedure TfmMain.DoColorsArrayApply(const C: TSynColors; Ed: TSyntaxMemo);
 begin
   Ed.Font.Color:= C[0];
   Ed.Color:= C[1];
@@ -25368,8 +25333,31 @@ begin
   opColorTabBorderPassive:= C[58];
 end;
 
-procedure TfmMain.InitColorsArray(var C: TSynColors);
+procedure TfmMain.DoColorsArrayInit(var C: TSynColors);
 begin
+  opColorAcpText:= clWindowText;
+  opColorAcpBg:= clWindow;
+  opColorCaretsGutter:= clLtGray;
+  opColorMapMarks:= clGreen;
+  opColorBkmk:= RGB(200, 240, 200);
+  opColorNonPrintedBG:= clSilver;
+
+  opColorTabText:= clBlack;
+  opColorTabBgActive:= clBtnFace;
+  opColorTabBgPassive:= $d8d8d8;
+  opColorTabBgPassiveOver:= clLtGray;
+  opColorTabBorderActive:= clLtGray;
+  opColorTabBorderPassive:= clLtGray;
+
+  opColorOutSelBk:= clDkGray;
+  opColorOutSelText:= clHighlighttext;
+  opColorOutRedText:= clNavy;
+  opColorOutRedSelText:= clYellow;
+  opColorOutHi:= clSkyBlue;
+
+  opColorLink:= clBlue;
+  opColorMap:= clSkyBlue;
+
   C[0]:= TemplateEditor.Font.Color;
   C[1]:= TemplateEditor.Color;
   C[2]:= TemplateEditor.DefaultStyles.CurrentLine.BgColor;
@@ -28532,6 +28520,25 @@ begin
     end
   else
     DoHint('');
+end;
+
+procedure TfmMain.DoColorsArrayRead(var C: TSynColors; const StrIni: string);
+var
+  i: Integer;
+  Str: Widestring;
+begin
+  Str:= StrIni;
+  for i:= Low(C) to High(C) do
+    C[i]:= StrToIntDef(SGetItem(Str), C[i]);
+end;
+
+function TfmMain.DoColorsArrayAsString(const C: TSynColors): string;
+var
+  i: Integer;
+begin
+  Result:= '';
+  for i:= Low(C) to High(C) do
+    Result:= Result+IntToStr(C[i])+',';
 end;
 
 initialization

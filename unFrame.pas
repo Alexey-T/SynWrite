@@ -1627,7 +1627,7 @@ var
   NPos, NPosStart, NCount, NUnderSize: Integer;
   ResStart, ResLen: TSynIntArray4;
 begin
-  NUnderSize:= TfmMain(Owner).opColorUnderline;
+  NUnderSize:= TfmMain(Owner).opUnderlineColored;
   if NUnderSize<=0 then Exit;
 
   Ed:= Sender as TSyntaxMemo;

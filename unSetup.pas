@@ -449,7 +449,7 @@ type
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
-    Colors: TSynColors;
+    ColorsSetup: TSynColors;
     ColorsOfTabs: array[0..Pred(cTabColors)] of TColor;
     FLangChanged: boolean;
 
@@ -731,14 +731,14 @@ end;
 
 procedure TfmSetup.ListColorsClick(Sender: TObject);
 begin
-  ColorBox1.Selected:= Colors[cColorsOrder[ListColors.ItemIndex]];
+  ColorBox1.Selected:= ColorsSetup[cColorsOrder[ListColors.ItemIndex]];
   ColorBox1.Items.Objects[0]:= TObject(ColorBox1.Selected); //set Custom color
   ColorBox1.Invalidate;
 end;
 
 procedure TfmSetup.ColorBox1Select(Sender: TObject);
 begin
-  Colors[cColorsOrder[ListColors.ItemIndex]]:= ColorBox1.Selected;
+  ColorsSetup[cColorsOrder[ListColors.ItemIndex]]:= ColorBox1.Selected;
   ListColors.Invalidate;
 end;
 
@@ -1241,7 +1241,7 @@ begin
     try
       EraseSection('Colors');
       for i:= 0 to cColorsNum-1 do
-        WriteString('Colors_', cColors[i], ColorToString(Colors[i]));
+        WriteString('Colors_', cColors[i], ColorToString(ColorsSetup[i]));
     finally
       Free
     end;
@@ -1282,7 +1282,7 @@ begin
       begin
         s:= ReadString('Colors_', cColors[i], '');
         if s<>'' then
-          Colors[i]:= StringToColor(s);
+          ColorsSetup[i]:= StringToColor(s);
       end;
     finally
       Free
@@ -1482,7 +1482,7 @@ begin
   begin
     Brush.Color:= clWindow;
     FillRect(Rect);
-    Brush.Color:= Colors[cColorsOrder[Index]];
+    Brush.Color:= ColorsSetup[cColorsOrder[Index]];
     if Brush.Color<>clNone then
       FillRect(R1)
     else
@@ -1765,12 +1765,23 @@ begin
 end;
 
 procedure TfmSetup.ApplyColors;
+var
+  i: Integer;
 begin
   with fmMain do
   begin
     Theme:= cbTheme.Text;
     Icons:= cbIcons.ItemIndex;
-    ApplyColorsArrayToEditor(Colors, TemplateEditor);
+
+    Move(ColorsSetup, ColorsArray, SizeOf(TSynColors));
+    //DoColorsArrayApply(ColorsSetup, TemplateEditor);
+    for i:= 0 to FrameAllCount-1 do
+      with FramesAll[i] do
+      begin
+        DoColorsArrayApply(ColorsArray, EditorMaster);
+        DoColorsArrayApply(ColorsArray, EditorSlave);
+      end;  
+
     ApplyColors;
     ApplyOut;
     ApplyMap;
@@ -2082,7 +2093,7 @@ begin
     cbIcons.Items.Add('Tango 22x22');
     cbIcons.ItemIndex:= Icons;
 
-    InitColorsArray(Colors);
+    Move(ColorsArray, ColorsSetup, SizeOf(TSynColors));
   end;
 
   ListColorsClick(Self);
@@ -2573,7 +2584,7 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soVariableHorzScrollBar];
 
-    opColorUnderline:= edColorUnder.Value;
+    opUnderlineColored:= edColorUnder.Value;
 
     opNonPrint:= cbNPrintShow.Checked;
     opNonPrintSpaces:= cbNPrintSp.Checked;
@@ -2677,7 +2688,7 @@ begin
     edLSpace.Value:= TemplateEditor.LineSpacing;
     edLineNums.ItemIndex:= Ord(TemplateEditor.LineNumbers.NumberingStyle);
     edStapleOffset.Value:= TemplateEditor.StapleOffset;
-    edColorUnder.Value:= opColorUnderline;
+    edColorUnder.Value:= opUnderlineColored;
     cbStaples.ItemIndex:= Ord(TemplateEditor.StaplePen.Style);
     cbDrawWrapMark.Checked:= opShowWrapMark;
     cbDrawCol.Checked:= opShowCurrentColumn;
