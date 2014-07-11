@@ -3295,8 +3295,9 @@ const
   cConverterHtml2 = 'HTML - entities except brackets';
 
 const
-  cSynColorSwatch = 'synw-colorstring';
+  cSynColorSwatchExt = 'synw-colorstring';
   cSynSnippetExt = 'synw-snippet';
+  cSynSessionExt = 'synw-session';
 
 const
   cRegexColorCode = '\#\w{3,6}';
@@ -7149,12 +7150,16 @@ begin
   LangManager.ScanForLangFiles(SynDir + 'Lang', '*.lng', False);
   ecOnSavingLexer:= DoSaveStyles;
 
-  OD_Swatch.DefaultExt:= cSynColorSwatch;
-  OD_Swatch.Filter:= Format('*.%s|*.%s', [cSynColorSwatch, cSynColorSwatch]);
-  SD_Swatch.DefaultExt:= cSynColorSwatch;
+  OD_Swatch.DefaultExt:= cSynColorSwatchExt;
+  OD_Swatch.Filter:= Format('*.%s|*.%s', [cSynColorSwatchExt, cSynColorSwatchExt]);
+  SD_Swatch.DefaultExt:= cSynColorSwatchExt;
   SD_Swatch.Filter:= OD_Swatch.Filter;
   SD_Snippets.DefaultExt:= cSynSnippetExt;
   SD_Snippets.Filter:= Format('*.%s|*.%s', [cSynSnippetExt, cSynSnippetExt]);
+  OD_Session.DefaultExt:= cSynSessionExt;
+  OD_Session.Filter:= 'Sessions|*.'+cSynSessionExt+';*.syn';
+  SD_Session.DefaultExt:= cSynSessionExt;
+  SD_Session.Filter:= 'Sessions|*.'+cSynSessionExt;
 
   ListOut.Align:= alClient;
   ListVal.Align:= alClient;
@@ -11288,7 +11293,7 @@ begin
       DoOpenSession(FileName);
 
       if ExtractFileExt(FileName)='.syn' then
-        FileName:= ChangeFileExt(FileName, '.synw-session');
+        FileName:= ChangeFileExt(FileName, '.'+cSynSessionExt);
       SynMruSessions.AddItem(FileName);
     end;
   end;
@@ -11307,7 +11312,7 @@ begin
   //support prev session format (using Py script)
   if ExtractFileExt(AFilename)='.syn' then
   begin
-    AConvName:= ChangeFileExt(AFilename, '.synw-session');
+    AConvName:= ChangeFileExt(AFilename, '.'+cSynSessionExt);
     if not FileExists(AConvName) then
     begin
       Py_ConvertSessionToNewFormat(AFilename, AConvName);
@@ -26349,7 +26354,7 @@ function TfmMain.CurrentProjectSessionFN: string;
 begin
   Result:= CurrentProjectFN;
   if Result<>'' then
-    Result:= ChangeFileExt(Result, '.synw-session');
+    Result:= ChangeFileExt(Result, '.'+cSynSessionExt);
 end;
 
 procedure TfmMain.DoSaveProjectSession;
