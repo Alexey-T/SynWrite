@@ -14754,7 +14754,7 @@ object fmMain: TfmMain
   end
   object OD_Session: TTntOpenDialog
     DefaultExt = 'synw-session'
-    Filter = 'Session files|*.synw-session'
+    Filter = 'Session files|*.synw-session;*.syn'
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Left = 585
     Top = 333

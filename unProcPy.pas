@@ -24,6 +24,7 @@ function Py_text_convert(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
 
 procedure Py_SetSysPath(const Dirs: array of string);
+procedure Py_ConvertSessionToNewFormat(const fnIn, fnOut: string);
 function Py_RunPlugin_Command(const SId, SCmd: string): string;
 function Py_RunPlugin_Event(const SId, SCmd: string;
   AEd: TSyntaxMemo; const AParams: array of string): Widestring;
@@ -1339,6 +1340,14 @@ begin
   for i:= 0 to Length(Dirs)-1 do
     Str:= Str + SWideStringToPythonString(Dirs[i]) + ',';
   Str:= Format('sys.path = [%s]', [Str]);
+  GetPythonEngine.ExecString(Str);
+end;
+
+procedure Py_ConvertSessionToNewFormat(const fnIn, fnOut: string);
+var
+  Str: AnsiString;
+begin
+  Str:= 'import sw_session_conv; sw_session_conv.convert(r"'+fnIn+'", r"'+fnOut+'");'; 
   GetPythonEngine.ExecString(Str);
 end;
 

@@ -3104,7 +3104,7 @@ type
     procedure SaveFrameState(F: TEditorFrame);
     function LoadFrameState(Frame: TEditorFrame; const fn: WideString): boolean;
 
-    procedure DoOpenSession(const AFilename: string; AddMode: boolean = false);
+    procedure DoOpenSession(AFilename: string; AddMode: boolean = false);
     procedure DoCloseSession(PromptToSave: boolean);
     procedure DoSaveSessionToFile(const fn: string);
     procedure DoSaveSession;
@@ -11286,21 +11286,40 @@ begin
 
       SaveLastDir_Session(FileName);
       DoOpenSession(FileName);
+
+      if ExtractFileExt(FileName)='.syn' then
+        FileName:= ChangeFileExt(FileName, '.synw-session');
       SynMruSessions.AddItem(FileName);
     end;
   end;
 end;
 
-procedure TfmMain.DoOpenSession(const AFilename: string; AddMode: boolean = false);
+procedure TfmMain.DoOpenSession(AFilename: string; AddMode: boolean = false);
 const
   cSess = 'sess';
 var
   F: TEditorFrame;
-  SSec: string;
+  SSec, AConvName: string;
   Str, SFilename, SDir: Widestring;
   NTabs, NGroup, i: Integer;
   Nums: array[TATGroupsNums] of Integer;
 begin
+  //support prev session format (using Py script)
+  if ExtractFileExt(AFilename)='.syn' then
+  begin
+    AConvName:= ChangeFileExt(AFilename, '.synw-session');
+    if not FileExists(AConvName) then
+    begin
+      Py_ConvertSessionToNewFormat(AFilename, AConvName);
+      if not FileExists(AConvName) then
+      begin
+        MsgError('Cannot convert session file to new format', Handle);
+        Exit
+      end;  
+    end;
+    AFilename:= AConvName;
+  end;
+
   //get session dir, w/o last slash
   SDir:= WideExcludeTrailingBackslash(WideExtractFileDir(AFilename));
 
