@@ -2852,6 +2852,7 @@ type
 
     //opt
     opGroupMode: TATGroupsMode;
+    opGroupSplit: Integer;
     opHintScroll: boolean;
     opPyChangeDelay: DWORD;
     opAutoCase: boolean;
@@ -4782,7 +4783,9 @@ begin
     Ini:= TMemIniFile.Create(SynHistoryIni);
     with Ini do
     try
-      opGroupMode:= TATGroupsMode(ReadInteger('Win', 'Groups', Ord(opGroupMode)));
+      S:= ReadString('Win', 'Groups', '');
+      opGroupMode:= TATGroupsMode(StrToIntDef(SGetItem(S), Ord(gmOne)));
+      opGroupSplit:= StrToIntDef(SGetItem(S), 50);
 
       //load recent files
       LoadMruList(SynMruFiles, Ini, 'MRU', opSaveState, opMruCheck);
@@ -4875,7 +4878,7 @@ begin
   Ini:= TIniFile.Create(SynHistoryIni);
   with Ini do
   try
-    WriteInteger('Win', 'Groups', Ord(Groups.Mode));
+    WriteString('Win', 'Groups', Format('%d,%d', [Ord(Groups.Mode), Groups.SplitPos]));
 
     //save Clipbd panel
     if Assigned(fmClips) then
@@ -28332,7 +28335,7 @@ begin
 
   ApplyTabOptions;
   Groups.Mode:= opGroupMode;
-  //Groups.SplitPos:= 80;
+  Groups.SplitPos:= opGroupSplit;
 end;
 
 function TfmMain.DoAddTab(Pages: TATPages): TEditorFrame;
