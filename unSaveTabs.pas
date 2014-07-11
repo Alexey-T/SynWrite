@@ -4,15 +4,17 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, CheckLst, TntCheckLst, TntForms, TntStdCtrls, DKLang;
+  Dialogs, StdCtrls, CheckLst, TntCheckLst, TntForms, TntStdCtrls, DKLang,
+  ExtCtrls;
 
 type
   TfmSaveTabs = class(TTntForm)
+    List: TTntCheckListBox;
+    DKLanguageController1: TDKLanguageController;
+    Panel1: TPanel;
     bYes: TTntButton;
     bNo: TTntButton;
-    List: TTntCheckListBox;
     bCancel: TTntButton;
-    DKLanguageController1: TDKLanguageController;
     procedure TntFormShow(Sender: TObject);
   private
     { Private declarations }

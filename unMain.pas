@@ -3507,10 +3507,13 @@ begin
         Result:= 0;
         Exit;
   end;
+  {
+  //already done this in FormCloseQuery
   if (Msg = WM_CLOSE) and (not p^.PlugForm.DoConfirmClose) then begin
     Result:= 0;
     Exit;
   end;
+  }
   Result:= CallWindowProc(p^.PlugWinProc, hWin, Msg, wParam, lParam);
 end;
 
