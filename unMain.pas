@@ -11295,13 +11295,16 @@ var
   F: TEditorFrame;
   SSec: string;
   Str, SFilename, SDir: Widestring;
-  Num, NGroup, i: Integer;
+  NTabs, NGroup, i: Integer;
   Nums: array[TATGroupsNums] of Integer;
 begin
+  //get session dir, w/o last slash
+  SDir:= WideExcludeTrailingBackslash(WideExtractFileDir(AFilename));
+
   with TMemIniFile.Create(AFilename) do
   try
-    Num:= ReadInteger(cSess, 'tabs', 1);
-    if not MsgConfirmOpenSaveSession(Num, AFilename, false) then
+    NTabs:= ReadInteger(cSess, 'tabs', 1);
+    if not MsgConfirmOpenSaveSession(NTabs, AFilename, false) then
       Exit;
 
     if not AddMode then
@@ -11317,16 +11320,13 @@ begin
       Groups.Mode:= TATGroupsMode(ReadInteger(cSess, 'gr_mode', 1));
       Groups.SplitPos:= ReadInteger(cSess, 'split', 50);
 
-      Num:= -1;
-      repeat
-        Inc(Num); //start with 0
-        SSec:= 'f'+IntToStr(Num);
+      for i:= 0 to NTabs-1 do
+      begin
+        SSec:= 'f'+IntToStr(i);
 
         SFilename:= UTF8Decode(ReadString(SSec, 'fn', ''));
-        if SFilename='' then Break; //empty filename means stop reading
+        if SFilename='' then Continue;
 
-        //get session dir, w/o last slash
-        SDir:= WideExcludeTrailingBackslash(WideExtractFileDir(AFilename));
         //filename stored with ".\"
         if SBegin(SFilename, '.\') then
           SReplaceW(SFilename, '.', SDir)
@@ -11373,9 +11373,9 @@ begin
         Str:= ReadString(SSec, 'folded', '');
         F.CollapsedString1:= SGetItem(Str, ';');
         F.CollapsedString2:= SGetItem(Str, ';');
-      until false;
+      end;
 
-      //restore current TabIndex'es and PageIndex
+      //restore TabIndex'es and PageIndex
       //
       NGroup:= ReadInteger(cSess, 'gr_act', 1);
       //
