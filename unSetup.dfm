@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabProgSett
+    ActivePage = tabFonts
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -380,29 +380,29 @@ object fmSetup: TfmSetup
         end
         object bFontAcp: TTntButton
           Left = 10
-          Top = 112
+          Top = 160
           Width = 242
           Height = 23
           Caption = 'Auto-complete'
-          TabOrder = 4
+          TabOrder = 6
           OnClick = bFontAcpClick
         end
         object bFontOutput: TTntButton
           Left = 10
-          Top = 136
+          Top = 112
           Width = 242
           Height = 23
           Caption = 'Output panel'
-          TabOrder = 5
+          TabOrder = 4
           OnClick = bFontOutputClick
         end
         object bFontConsole: TTntButton
           Left = 10
-          Top = 160
+          Top = 136
           Width = 242
           Height = 23
           Caption = 'Console panel'
-          TabOrder = 6
+          TabOrder = 5
           OnClick = bFontConsoleClick
         end
       end
