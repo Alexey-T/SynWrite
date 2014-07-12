@@ -2859,7 +2859,6 @@ type
     opShowPanelTitles: boolean;
     opTreeSorted: string;
     opUnderlineColored: integer;
-    opFontConsole: string;
     opSyncEditIcon: boolean;
     opTabFontSize: integer;
     opWordChars: Widestring;
@@ -3051,7 +3050,6 @@ type
     property ShowFullScreen: boolean read FFullScr write SetFS;
     property ShowOnTop: boolean read FOnTop write SetOnTop;
 
-    procedure ApplyFontConsole;
     procedure ApplyTabOptions;
     procedure ApplyCarets;
     procedure ApplyUrlClick;
@@ -3073,6 +3071,7 @@ type
     procedure ApplyOut;
     procedure ApplyMap;
     procedure ApplyBorders;
+    procedure ApplyColorsFontsToFrames;
 
     procedure DoColorsArrayInit(var C: TSynColors);
     procedure DoColorsArrayRead(var C: TSynColors; const StrIni: string);
@@ -4557,10 +4556,7 @@ begin
     opTreeSorted:= ReadString('Setup', 'TreeSorted', '');
     opUnderlineColored:= ReadInteger('Setup', 'ColorUnd', 3);
     opSyncEditIcon:= ReadBool('Setup', 'SyncEditIcon', true);
-
     opTabFontSize:= ReadInteger('Setup', 'TabFontSize', 0);
-    opFontConsole:= ReadString('View', 'PyFont', 'Consolas,10,');
-    ApplyFontConsole;
 
     opNewEnc:= ReadInteger('Setup', 'NEnc', 0);
     opNewLineEnds:= ReadInteger('Setup', 'NLe', 0);
@@ -4605,8 +4601,20 @@ begin
     opAskOverwrite:= true; //ReadBool('Setup', 'AskRO', true);
     opShowTitleFull:= ReadBool('Setup', 'TitleFull', false);
 
+    //fonts
+    StringToFont(TemplateEditor.Font,             ReadString('Fonts', 'Ed', ''));
+    StringToFont(TemplateEditor.HorzRuler.Font,   ReadString('Fonts', 'Ruler', ''));
+    StringToFont(TemplateEditor.LineNumbers.Font, ReadString('Fonts', 'Nums', ''));
+    StringToFont(ListOut.Font,                    ReadString('Fonts', 'Out', ''));
+    StringToFont(ecACP.Font,                      ReadString('Fonts', 'Acp', ''));
+    StringToFont(Tree.Font,                       ReadString('Fonts', 'Tree', ''));
+    StringToFont(MemoConsole.Font,                ReadString('Fonts', 'Con', ''));
+    edConsole.Font.Assign(MemoConsole.Font);
+
+    //keys
     SyntKeyMapping.UseFirstControlKeys:= ReadBool('Setup', 'KeyComboIgnoreCtrl', true);
 
+    //status props
     opStatusText[selNone]:= ReadString('View', 'StatusNoSel', '{LineNum} : {ColNum} ({TotalLines})');
     opStatusText[selSmall]:= ReadString('View', 'StatusSmallSel', '{LineNum} : {ColNum} ({SelLines}x{SelCols}/{TotalLines})');
     opStatusText[selStream]:= ReadString('View', 'StatusStreamSel', '{LineNum} : {ColNum} ({SelLines}/{TotalLines})');
@@ -4674,9 +4682,6 @@ begin
 
     Tree.ClickAction:= TSyntaxTreeAction(ReadInteger('Tree', 'Click', Ord(Tree.ClickAction)));
     Tree.Color:= ReadInteger('Tree', 'Color', Tree.Color);
-    Tree.Font.Name:= ReadString('Tree', 'FontName', Tree.Font.Name);
-    Tree.Font.Size:= ReadInteger('Tree', 'FontSize', Tree.Font.Size);
-    Tree.Font.Color:= ReadInteger('Tree', 'FontColor', Tree.Font.Color);
     Tree.AutoSynchronize:= ReadBool('Tree', 'ASync', true);
     Tree.AutoCollapse:= ReadBool('Tree', 'ACollapse', false);
     Tree.AutoExpand:= ReadBool('Tree', 'AExpand', false);
@@ -4744,7 +4749,6 @@ begin
       FTabOut:= tbOut;
 
     //opt
-    ApplyDefaultFonts;
     PropsManager.LoadProps(ini); //20ms
 
     //force KeepSelMode and FloatMarkers
@@ -5037,16 +5041,12 @@ begin
     WriteString('Setup', 'TreeSorted', opTreeSorted);
 
     WriteString('View', 'Colors', DoColorsArrayAsString(ColorsArray));
-    WriteString('View', 'PyFont', opFontConsole);
     WriteBool('View', 'CaretsEn', opCaretsEnabled);
     WriteInteger('View', 'CaretsInd', opCaretsIndicator);
     WriteInteger('View', 'CaretsGBand', opCaretsGutterBand);
 
     WriteInteger('Tree', 'Click', Ord(Tree.ClickAction));
     WriteInteger('Tree', 'Color', Tree.Color);
-    WriteString('Tree', 'FontName', Tree.Font.Name);
-    WriteInteger('Tree', 'FontSize', Tree.Font.Size);
-    WriteInteger('Tree', 'FontColor', Tree.Font.Color);
     WriteBool('Tree', 'ASync', Tree.AutoSynchronize);
     WriteBool('Tree', 'ACollapse', Tree.AutoCollapse);
     WriteBool('Tree', 'AExpand', Tree.AutoExpand);
@@ -5089,6 +5089,16 @@ begin
     WriteString('Setup', 'UTF8', opUTF8);
     WriteString('Setup', 'Theme', Theme);
     WriteInteger('Setup', 'Icons', Icons);
+
+    //fonts
+    WriteString('Fonts', 'Ed', FontToString(TemplateEditor.Font));
+    WriteString('Fonts', 'Ruler', FontToString(TemplateEditor.HorzRuler.Font));
+    WriteString('Fonts', 'Nums', FontToString(TemplateEditor.LineNumbers.Font));
+    WriteString('Fonts', 'Out', FontToString(ListOut.Font));
+    WriteString('Fonts', 'Acp', FontToString(ecACP.Font));
+    WriteString('Fonts', 'Tree', FontToString(Tree.Font));
+    WriteString('Fonts', 'Con', FontToString(MemoConsole.Font));
+
   finally
     Free;
   end;
@@ -6916,6 +6926,7 @@ end;
 procedure TfmMain.FormShow(Sender: TObject);
 begin
   FixSplitters;
+  ApplyDefaultFonts;
 
   {
   //TabAutoFit:= true setting gives exception in SpTBX, sometimes...
@@ -14331,14 +14342,27 @@ end;
 procedure TfmMain.ApplyFonts;
 begin
   TemplateEditor.HorzRuler.Height:=
-    5 + Round(Abs(TemplateEditor.HorzRuler.Font.Height) *
-      TemplateEditor.Zoom / 100);
+    5 + Round(Abs(TemplateEditor.HorzRuler.Font.Height) * TemplateEditor.Zoom / 100);
 
   if Assigned(fmProj) then
   begin
-    fmProj.TreeProj.Font.Assign(Tree.Font);
+    fmProj.TreeProj.Font:= Tree.Font;
     fmProj.TreeProj.Color:= Tree.Color;
   end;
+
+  ApplyColorsFontsToFrames;
+end;
+
+procedure TfmMain.ApplyColorsFontsToFrames;
+var
+  i: Integer;
+begin
+  for i:= 0 to FrameAllCount-1 do
+    with FramesAll[i] do
+    begin
+      DoColorsArrayApply(ColorsArray, EditorMaster);
+      DoColorsArrayApply(ColorsArray, EditorSlave);
+    end;
 end;
 
 procedure TfmMain.ApplyColors;
@@ -20534,6 +20558,8 @@ begin
     TemplateEditor.Font.Name:= cc;
     TemplateEditor.LineNumbers.Font.Name:= cc;
     TemplateEditor.HorzRuler.Font.Name:= cc;
+    MemoConsole.Font.Name:= cc;
+    edConsole.Font.Name:= cc;
   end;
 end;
 
@@ -23007,12 +23033,30 @@ procedure TfmMain.LoadPrintOptions;
 begin
   PropsManagerPrint.IniFileName:= SynIni;
   PropsManagerPrint.LoadProps;
+
+  with TIniFile.Create(SynIni) do
+  try
+    StringToFont(ecSyntPrinter.FontFooter, ReadString('Fonts', 'P_Footer', ''));
+    StringToFont(ecSyntPrinter.FontHeader, ReadString('Fonts', 'P_Header', ''));
+    StringToFont(ecSyntPrinter.FontLineNumders, ReadString('Fonts', 'P_Nums', ''));
+  finally
+    Free;  
+  end;
 end;
 
 procedure TfmMain.SavePrintOptions;
 begin
   PropsManagerPrint.IniFileName:= SynIni;
   PropsManagerPrint.SaveProps;
+
+  with TIniFile.Create(SynIni) do
+  try
+    WriteString('Fonts', 'P_Footer', FontToString(ecSyntPrinter.FontFooter));
+    WriteString('Fonts', 'P_Header', FontToString(ecSyntPrinter.FontHeader));
+    WriteString('Fonts', 'P_Nums', FontToString(ecSyntPrinter.FontLineNumders));
+  finally
+    Free;
+  end;
 end;
 
 procedure TfmMain.ecPageSetupActionBeforeExecute(Sender: TObject);
@@ -23306,10 +23350,7 @@ end;
 procedure TfmMain.SpellDialogShow(Sender: TObject);
 begin
   {$ifdef SPELL}
-  {
-  if Assigned(FSpell) and Assigned(FSpell.DialogForm) then
-    FSpell.DialogForm.Font.Name:= Self.Font.Name;
-    }
+  //not needed
   {$endif}
 end;
 
@@ -25358,6 +25399,11 @@ begin
   opColorTabBgPassiveOver:= C[56];
   opColorTabBorderActive:= C[57];
   opColorTabBorderPassive:= C[58];
+
+  //fonts
+  Ed.Font.Assign(TemplateEditor.Font);
+  Ed.HorzRuler.Font.Assign(TemplateEditor.HorzRuler.Font);
+  Ed.LineNumbers.Font.Assign(TemplateEditor.LineNumbers.Font);
 end;
 
 procedure TfmMain.DoColorsArrayInit(var C: TSynColors);
@@ -27264,22 +27310,6 @@ procedure TfmMain.PythonGUIInputOutput1ReceiveUniData(Sender: TObject;
 begin
   Data:= '';
   if DoInputString('Python prompt:', Data) then begin end;
-end;
-
-procedure TfmMain.ApplyFontConsole;
-var
-  S, SName, SSize: Widestring;
-  NSize: Integer;
-begin
-  S:= opFontConsole;
-  SName:= SGetItem(S);
-  SSize:= SGetItem(S);
-  NSize:= StrToIntDef(SSize, MemoConsole.Font.Size);
-
-  MemoConsole.Font.Name:= SName;
-  MemoConsole.Font.Size:= NSize;
-  edConsole.Font.Name:= SName;
-  edConsole.Font.Size:= NSize;
 end;
 
 procedure TfmMain.MemoConsoleDblClick(Sender: TObject);

@@ -20,6 +20,11 @@ uses
   IniFiles,
   PngImageList;
 
+function FontStylesToString(const f: TFontStyles): string;
+function StringToFontStyles(const s: string): TFontStyles;
+function FontToString(F: TFont): string;
+procedure StringToFont(F: TFont; const Str: string);
+
 function IsMouseOverControl(Control: TControl): boolean;
 function IsElevationNeededForFolder(const Dir: Widestring): boolean;
 
@@ -2105,5 +2110,49 @@ begin
   Result:= true;
 end;
 
+
+function FontStylesToString(const f: TFontStyles): string;
+begin
+  Result:= '';
+  if fsBold in f then Result:= Result+'b';
+  if fsItalic in f then Result:= Result+'i';
+  if fsUnderline in f then Result:= Result+'u';
+  if fsStrikeout in f then Result:= Result+'s';
+end;
+
+function StringToFontStyles(const s: string): TFontStyles;
+var
+  i: Integer;
+begin
+  Result:= [];
+  for i:= 1 to Length(s) do
+    case s[i] of
+      'b': Include(Result, fsBold);
+      'i': Include(Result, fsItalic);
+      'u': Include(Result, fsUnderline);
+      's': Include(Result, fsStrikeout);
+    end;
+end;
+
+function FontToString(F: TFont): string;
+begin
+  Result:= F.Name+','+IntToStr(F.Size)+','+FontStylesToString(F.Style);
+end;
+
+procedure StringToFont(F: TFont; const Str: string);
+var
+  S, S1: Widestring;
+begin
+  S:= Str;
+
+  S1:= SGetItem(S);
+  if S1<>'' then F.Name:= S1;
+
+  S1:= SGetItem(S);
+  F.Size:= StrToIntDef(S1, F.Size);
+
+  S1:= SGetItem(S);
+  F.Style:= StringToFontStyles(S1);
+end;
 
 end.

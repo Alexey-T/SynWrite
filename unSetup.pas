@@ -1765,8 +1765,6 @@ begin
 end;
 
 procedure TfmSetup.ApplyColors;
-var
-  i: Integer;
 begin
   with fmMain do
   begin
@@ -1774,13 +1772,7 @@ begin
     Icons:= cbIcons.ItemIndex;
 
     Move(ColorsSetup, ColorsArray, SizeOf(TSynColors));
-    //DoColorsArrayApply(ColorsSetup, TemplateEditor);
-    for i:= 0 to FrameAllCount-1 do
-      with FramesAll[i] do
-      begin
-        DoColorsArrayApply(ColorsArray, EditorMaster);
-        DoColorsArrayApply(ColorsArray, EditorSlave);
-      end;  
+    ApplyColorsFontsToFrames;
 
     ApplyColors;
     ApplyOut;
@@ -1833,24 +1825,17 @@ procedure TfmSetup.ApplyFonts;
 begin
   with fmMain do
   begin
-    //editor
     TemplateEditor.Font:= bFontText.Font;
-    //line nums
     TemplateEditor.LineNumbers.Font:= bFontNumbers.Font;
-    //tree
-    Tree.Font:= bFontTree.Font;
-    //ruler
     TemplateEditor.HorzRuler.Font:= bFontRuler.Font;
-    //auto-complete
+    Tree.Font:= bFontTree.Font;
     ecACP.Font:= bFontAcp.Font;
-    ApplyACP;
-    //output panel
     ListOut.Font:= bFontOutput.Font;
-    ApplyOut;
-    //console
-    opFontConsole:= bFontConsole.Font.Name+','+IntToStr(bFontConsole.Font.Size);
-    ApplyFontConsole;
+    MemoConsole.Font:= bFontConsole.Font;
+    EdConsole.Font:= MemoConsole.Font;
 
+    ApplyACP;
+    ApplyOut;
     ApplyFonts;
   end;
 end;
@@ -2164,8 +2149,8 @@ begin
   begin
     bFontText.Font:= TemplateEditor.Font;
     bFontNumbers.Font:= TemplateEditor.LineNumbers.Font;
-    bFontTree.Font:= Tree.Font;
     bFontRuler.Font:= TemplateEditor.HorzRuler.Font;
+    bFontTree.Font:= Tree.Font;
     bFontAcp.Font:= ecACP.Font;
     bFontOutput.Font:= ListOut.Font;
     bFontConsole.Font:= MemoConsole.Font;

@@ -10,8 +10,9 @@ procedure LoadLexerStylesFromFile(f: TSyntAnalyzer; const fn: string);
 
 implementation
 
-uses SysUtils, Graphics, IniFiles,
-  ecStrUtils, ATxSProc, ATxIniFile;
+uses
+  SysUtils, Graphics, IniFiles,
+  ecStrUtils, ATxSProc, ATxIniFile, unProc;
 
 function FormatFlagsToStr(const f: TFormatFlags): string;
 begin
@@ -44,28 +45,6 @@ begin
       'S': Include(Result, ffFontSize);
       'C': Include(Result, ffFontCharset);
       'v': Include(Result, ffVertAlign);
-    end;  
-end;
-
-function FontStylesToStr(const f: TFontStyles): string;
-begin
-  Result:= '';
-  if fsBold in f then Result:= Result+'b';
-  if fsItalic in f then Result:= Result+'i';
-  if fsUnderline in f then Result:= Result+'u';
-  if fsStrikeout in f then Result:= Result+'s';
-end;
-
-function StrToFontStyles(const s: string): TFontStyles;
-var i:Integer;
-begin
-  Result:= [];
-  for i:= 1 to Length(s) do
-    case s[i] of
-      'b': Include(Result, fsBold);
-      'i': Include(Result, fsItalic);
-      'u': Include(Result, fsUnderline);
-      's': Include(Result, fsStrikeout);
     end;
 end;
 
@@ -88,7 +67,7 @@ begin
       WriteString(s, si+'_FontName', Font.Name);
       WriteInteger(s, si+'_FontSize', Font.Size);
       WriteString(s, si+'_FontColor', ColorToString(Font.Color));
-      WriteString(s, si+'_FontStyles', FontStylesToStr(Font.Style));
+      WriteString(s, si+'_FontStyles', FontStylesToString(Font.Style));
       WriteString(s, si+'_BgColor', ColorToString(BgColor));
 
       WriteString(s, si+'_BorderColorBottom', ColorToString(BorderColorBottom));
@@ -150,7 +129,7 @@ begin
       fm.Font.Name:= ReadString(s, si+'_FontName', '');
       fm.Font.Size:= ReadInteger(s, si+'_FontSize', 10);
       fm.Font.Color:= StringToColor(ReadString(s, si+'_FontColor', ''));
-      fm.Font.Style:= StrToFontStyles(ReadString(s, si+'_FontStyles', ''));
+      fm.Font.Style:= StringToFontStyles(ReadString(s, si+'_FontStyles', ''));
       fm.BgColor:= StringToColor(ReadString(s, si+'_BgColor', ''));
 
       fm.BorderColorBottom:= StringToColor(ReadString(s, si+'_BorderColorBottom', ''));
