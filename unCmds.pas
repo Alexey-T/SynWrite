@@ -181,16 +181,16 @@ const
   sm_MacrosDialog = 839;
   sm_OpenBrowserPreview = 840;
 
-  sm_BkClear = 841;
-  sm_BkToggle = 842;
-  sm_BkNext = 843;
-  sm_BkPrev = 844;
-  sm_BkCopy = 845;
-  sm_BkCut = 846;
-  sm_BkDelete = 847;
-  sm_BkDeleteUnmarked = 848;
-  sm_BkPaste = 849;
-  sm_BkInverse = 850;
+  sm_BookmarksClear = 841;
+  sm_BookmarksToggle = 842;
+  sm_BookmarksNext = 843;
+  sm_BookmarksPrev = 844;
+  sm_BookmarksCopy = 845;
+  sm_BookmarksCut = 846;
+  sm_BookmarksDelete = 847;
+  sm_BookmarksDeleteUnmarked = 848;
+  sm_BookmarksPaste = 849;
+  sm_BookmarksInverse = 850;
 
   sm_RemoveDupsAll = 851;
   sm_ConvertSpacesToTabsLeading = 852;

@@ -5621,25 +5621,25 @@ begin
       DoAcpCommand;
 
     //bkmarks
-    sm_BkClear:
+    sm_BookmarksClear:
       ecBkClearAll.Execute;
-    sm_BkToggle:
+    sm_BookmarksToggle:
       ecBkToggle.Execute;
-    sm_BkPrev:
+    sm_BookmarksPrev:
       ecBkPrev.Execute;
-    sm_BkNext:
+    sm_BookmarksNext:
       ecBkNext.Execute;
-    sm_BkCopy:
+    sm_BookmarksCopy:
       ecBkCopy.Execute;
-    sm_BkCut:
+    sm_BookmarksCut:
       ecBkCut.Execute;
-    sm_BkDelete:
+    sm_BookmarksDelete:
       ecBkDelete.Execute;
-    sm_BkDeleteUnmarked:
+    sm_BookmarksDeleteUnmarked:
       ecBkDeleteUnmk.Execute;
-    sm_BkPaste:
+    sm_BookmarksPaste:
       ecBkPaste.Execute;
-    sm_BkInverse:
+    sm_BookmarksInverse:
       ecBkInverse.Execute;
 
     smPrint:
@@ -8642,11 +8642,14 @@ end;
       fmProgress.Hide;
       DoRepaint; //needed anyway, even if controls not resized
     end;
+
     if Assigned(fmSR) then
     begin
       if fmSR.Enabled and fmSR.Visible and fmSR.CanFocus then
         fmSR.SetFocus;
     end;
+
+    FocusEditor;
   end;
 
 procedure TfmMain.FindActionWrapper(act: TSRAction);
@@ -9996,16 +9999,16 @@ begin
   UpdKey(TBXItemBkGotoPortable, sm_GotoPortableBk);
   UpdKey(TBXItemBkDropPortable, sm_DropPortableBk);
   UpdKey(TbxItemBkGoto, sm_GotoBookmarkDialog);
-  UpdKey(tbxItemBkClear, sm_BkClear);
-  UpdKey(tbxItemBkToggle, sm_BkToggle);
-  UpdKey(tbxItemBkNext, sm_BkNext);
-  UpdKey(tbxItemBkPrev, sm_BkPrev);
-  UpdKey(tbxItemBkCopy, sm_BkCopy);
-  UpdKey(tbxItemBkCut, sm_BkCut);
-  UpdKey(tbxItemBkDel, sm_BkDelete);
-  UpdKey(tbxItemBkDelUnmk, sm_BkDeleteUnmarked);
-  UpdKey(tbxItemBkPaste, sm_BkPaste);
-  UpdKey(tbxItemBkInverse, sm_BkInverse);
+  UpdKey(tbxItemBkClear, sm_BookmarksClear);
+  UpdKey(tbxItemBkToggle, sm_BookmarksToggle);
+  UpdKey(tbxItemBkNext, sm_BookmarksNext);
+  UpdKey(tbxItemBkPrev, sm_BookmarksPrev);
+  UpdKey(tbxItemBkCopy, sm_BookmarksCopy);
+  UpdKey(tbxItemBkCut, sm_BookmarksCut);
+  UpdKey(tbxItemBkDel, sm_BookmarksDelete);
+  UpdKey(tbxItemBkDelUnmk, sm_BookmarksDeleteUnmarked);
+  UpdKey(tbxItemBkPaste, sm_BookmarksPaste);
+  UpdKey(tbxItemBkInverse, sm_BookmarksInverse);
 
   //opt
   UpdKey(tbxItemOSetup, sm_OptSetup);
@@ -10050,7 +10053,7 @@ begin
   UpdKey(TbxItemCtxPasteNoCurChange, sm_PasteNoCursorChange);
   UpdKey(TBXItemCtxPasteToColumn1, sm_PasteToColumn1);
   UpdKey(TBXItemCtxPasteAsColumn, sm_PasteAsColumnBlock);
-  UpdKey(TBXItemCtxPasteBkmkLines, sm_BkPaste);
+  UpdKey(TBXItemCtxPasteBkmkLines, sm_BookmarksPaste);
 
   //clip popup menu
   UpdKey(TBXItemClipFind, smFindDialog);
@@ -24995,7 +24998,7 @@ end;
 
 procedure TfmMain.TBXItemCtxPasteBkmkLinesClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_BkPaste);
+  CurrentEditor.ExecCommand(sm_BookmarksPaste);
 end;
 
 procedure TfmMain.ecNonPrintEolDetailsExecute(Sender: TObject);
