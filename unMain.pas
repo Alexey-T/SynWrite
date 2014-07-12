@@ -4609,7 +4609,7 @@ begin
     StringToFont(ecACP.Font,                      ReadString('Fonts', 'Acp', ''));
     StringToFont(Tree.Font,                       ReadString('Fonts', 'Tree', ''));
     StringToFont(MemoConsole.Font,                ReadString('Fonts', 'Con', ''));
-    edConsole.Font.Assign(MemoConsole.Font);
+    EdConsole.Font:= MemoConsole.Font;
 
     //keys
     SyntKeyMapping.UseFirstControlKeys:= ReadBool('Setup', 'KeyComboIgnoreCtrl', true);
@@ -4722,7 +4722,7 @@ begin
     ApplyCarets;
 
     TabColorsString:= ReadString('View', 'TabMisc', '');
-    
+
     opShowCharInfo:= ReadBool('Setup', 'ChInf', false);
     opLang:= ReadInteger('Setup', 'Lang', 0);
     Status.Visible:= ReadBool('Setup', 'Stat', true);
@@ -11331,7 +11331,7 @@ begin
       begin
         MsgError('Cannot convert session file to new format', Handle);
         Exit
-      end;  
+      end;
     end;
     AFilename:= AConvName;
   end;
@@ -11869,7 +11869,7 @@ begin
     sm_FileCloseOthers:
       acCloseOthersThisGroup.Execute;
     sm_FileCloseOthersAllGroups:
-      acCloseOthersAllGroups.Execute;  
+      acCloseOthersAllGroups.Execute;
     sm_FileRenameDialog:
       acRename.Execute;
     sm_FileOpenSession:
@@ -14531,7 +14531,7 @@ begin
   case Groups.Mode of
     gm2Horz: Groups.Mode:= gm2Vert;
     gm2Vert: Groups.Mode:= gm2Horz;
-  end;  
+  end;
 end;
 
 procedure TfmMain.ecSyncScrollHExecute(Sender: TObject);
@@ -23040,7 +23040,7 @@ begin
     StringToFont(ecSyntPrinter.FontHeader, ReadString('Fonts', 'P_Header', ''));
     StringToFont(ecSyntPrinter.FontLineNumders, ReadString('Fonts', 'P_Nums', ''));
   finally
-    Free;  
+    Free;
   end;
 end;
 
