@@ -6836,7 +6836,10 @@ end;
 
 procedure TfmMain.ButtonOnSelect(Sender: TTBCustomItem; Viewer: TTBItemViewer; Selecting: Boolean);
 begin
-  DoHint(Sender.Hint);
+  if Sender is TSpTbxItem then
+    DoHint((Sender as TSpTbxitem).Hint)
+  else
+    DoHint(Sender.Hint);
 end;
 
 procedure TfmMain.SynScroll(Sender: TObject);
