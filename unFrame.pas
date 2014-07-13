@@ -111,6 +111,7 @@ type
     procedure EditorMasterGetLineNumberStr(Sender: TObject; Line: Integer;
       var NumberStr: String);
   private
+    FBitmapMap: TBitmap;
     FMouseClickOnNumbers: boolean;
     FAlertEnabled: boolean;
     FPyChangeTick: DWORD;
@@ -301,6 +302,10 @@ begin
     BevelOuter:= bvNone;
     BevelKind:= bkSoft;
   end;
+
+  FBitmapMap:= TBitmap.Create;
+  FBitmapMap.Width:= 20;
+  FBitmapMap.Height:= 300;
 
   FNotif:= TATFileNotificationSimple.Create(Self);
   FNotif.Timer.Enabled:= False;
@@ -849,6 +854,7 @@ begin
   ecSpellChecker.Active:= False;
   FNotif.Timer.Enabled:= False;
   FreeAndNil(FNotif);
+  FreeAndNil(FBitmapMap);
 
   inherited;
 end;
@@ -1239,9 +1245,14 @@ var
 begin
   if not PanelMap.Visible then Exit;
 
-  C:= PanelMap.Canvas;
+  C:= FBitmapMap.Canvas;
   NCliWidth:= PanelMap.ClientWidth;
   NCliHeight:= PanelMap.ClientHeight;
+
+  if FBitmapMap.Width<NCliWidth then
+    FBitmapMap.Width:= NCliWidth;
+  if FBitmapMap.Height<NCliHeight then
+    FBitmapMap.Height:= NCliHeight;
 
   //draw backgnd
   C.Brush.Color:= clBtnFace;
@@ -1323,6 +1334,12 @@ begin
     FreeAndNil(LinesSpell);
     FreeAndNil(LinesMarked);
   end;
+
+  PanelMap.Canvas.CopyRect(
+    Rect(0, 0, NCliWidth, NCliHeight),
+    FBitmapMap.Canvas,
+    Rect(0, 0, NCliWidth, NCliHeight)
+    );
 end;
 
 
