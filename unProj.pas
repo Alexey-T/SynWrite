@@ -203,7 +203,7 @@ type
     function GetFileNodeCaption(const fn: Widestring): Widestring;
     function GetCollapsedList: string;
     procedure SetCollapsedList(S: Widestring);
-    function DoSortCfm: boolean;
+    function DoConfirmSort: boolean;
     procedure ShowProgress(M: TProgressType);
     procedure HideProgress;
     function IsProgressStopped(Cnt, CntAll: integer): boolean;
@@ -979,7 +979,7 @@ begin
   Result:= StopFind;
 end;
 
-function TfmProj.DoSortCfm: boolean;
+function TfmProj.DoConfirmSort: boolean;
 const
   cItems = 1000;
 begin
@@ -989,10 +989,9 @@ begin
     begin Result:= true; Exit end;
 
   SMsgProjSortCfm:= DKLangConstW('zMSortProj');
-  Result:= MessageBoxW(Handle,
-    PWChar(WideFormat(SMsgProjSortCfm, [cItems])),
-    PWChar(SMsgProjCaption),
-    mb_yesno or mb_iconwarning or mb_taskmodal)=id_yes;
+  Result:= MsgConfirm(
+    WideFormat(SMsgProjSortCfm, [cItems]),
+    Handle);
 end;
 
 procedure TfmProj.DoAddDirDlg(const SDir: Widestring);
@@ -1026,7 +1025,7 @@ begin
       SDir, SubDirs, NoBin, ExtInc, ExtExc);
     HideProgress;
 
-    if (Node<>nil) and DoSortCfm then
+    if (Node<>nil) and DoConfirmSort then
     begin
       ShowProgress(proSortFolders);
       DoSortDir(Node, true, FOpts.SortType);
@@ -1781,10 +1780,7 @@ begin
     fn:= WideExtractFileName(FProjectFN);
 
   SMsgProjSaveCfm:= DKLangConstW('zMSaveProj');
-  if MessageBoxW(Handle,
-    PWChar(WideFormat(SMsgProjSaveCfm, [fn])),
-    PWChar(SMsgProjcaption),
-    mb_yesno or mb_iconwarning or mb_taskmodal)=id_yes then
+  if MsgConfirm(WideFormat(SMsgProjSaveCfm, [fn]), Handle) then
     DoSaveProject;
 
   if ClearModified then

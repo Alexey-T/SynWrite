@@ -2763,7 +2763,8 @@ type
     procedure DoZoomEditorInc(AInc: boolean);
     procedure DoZoomEditor(NZoom: Integer);
     procedure DoExtendSelection(Ed: TSyntaxMemo);
-    function MsgConfirmOpenSaveSession(AFilesCount: Integer; const AFileName: string; ASaveMode: boolean): boolean;
+    function MsgConfirmOpenSaveSession(AFilesCount: Integer;
+      const AFileName: string; ASaveMode: boolean): boolean;
 
     //python group
     procedure DoPyConsole_EnterCommand(const Str: Widestring);
@@ -26751,7 +26752,10 @@ begin
   {$endif}
 end;
 
-function TfmMain.MsgConfirmOpenSaveSession(AFilesCount: Integer; const AFileName: string; ASaveMode: boolean): boolean;
+function TfmMain.MsgConfirmOpenSaveSession(
+  AFilesCount: Integer;
+  const AFileName: string;
+  ASaveMode: boolean): boolean;
 const
   cMsg: array[boolean] of string = ('zMCfmSessionLoad', 'zMCfmSessionSave');
 var

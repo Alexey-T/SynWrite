@@ -21,7 +21,7 @@ type
      procedure ComboWndProc(var Message: TMessage; ComboWnd: HWnd;
        ComboProc: Pointer); override;
    end;
-  
+
 type
   TfmSRFiles = class(TTntForm)
     Label2: TTntLabel;
@@ -182,7 +182,7 @@ const
 implementation
 
 uses
-  IniFiles, 
+  IniFiles,
   unSR, unProc,
   TntFileCtrl, TntSysUtils,
   ATxFProc,
@@ -238,7 +238,7 @@ begin
   }
   if IsRegex or IsSpec then
     ed.Text:= SEscapeEols(Str)
-  else  
+  else
     ed.Text:= Str;
 end;
 
@@ -455,7 +455,7 @@ begin
   cbWords.Enabled:= not re;
 
   ed1.Color:= C[re];
-  ed2.Color:= C[re];  
+  ed2.Color:= C[re];
 end;
 
 procedure TfmSRFiles.cbSpecClick(Sender: TObject);
@@ -499,8 +499,7 @@ begin
     if not Execute then Exit;
 
     if edFileInc.Text<>'' then
-      CfmAppend:= MessageBoxW(Self.Handle, PWChar(DKLangConstW('zMAddMask')), 'SynWrite',
-        mb_iconquestion or mb_yesno) = id_yes
+      CfmAppend:= MsgConfirm(DKLangConstW('zMAddMask'), Handle)
     else
       CfmAppend:= false;
 
@@ -835,7 +834,7 @@ begin
     if (N>=0) and (N<L.Count) then
       DoLoadFav(L[N])
     else
-      MessageBeep(mb_iconwarning);  
+      MessageBeep(mb_iconwarning);
   finally
     FreeAndNil(L);
   end;
