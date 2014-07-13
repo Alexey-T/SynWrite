@@ -69,13 +69,14 @@ end;
 
 //============================================================================
 function ListLoadW(ListerWin: HWND; FileToLoad: PWideChar; ShowFlags: integer): HWND; stdcall;
-var S: WideString;
+var
+  S: WideString;
 begin
   S:= FileToLoad;
-  if (S <> '') and ((S[Length(S)] = '\') or IsFileTooBig(S) or IsNotTextFile(S)) then
+  if (S<>'') and ((S[Length(S)]='\') or IsFileTooBig(S) or IsNotTextFile(S)) then
     Result:= 0
   else
-    Result:= StartSyn(ListerWin, S);
+    Result:= SynStart(ListerWin, S);
 end;
 
 function ListLoad(ListerWin: HWND; FileToLoad: PAnsiChar; ShowFlags: integer): HWND; stdcall;
@@ -118,7 +119,7 @@ end;
 //============================================================================
 procedure ListCloseWindow(PluginWin: HWND); stdcall;
 begin
-  StopSyn(PluginWin);
+  SynStop(PluginWin);
 end;
 
 //============================================================================

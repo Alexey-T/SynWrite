@@ -3218,8 +3218,8 @@ var
   opListerTextOnly: integer;
   opListerStartRO: boolean;
 
-function StartSyn(ListerWin: HWND; const FileToLoad: WideString): HWND;
-procedure StopSyn(hWin: HWND);
+function SynStart(ListerWin: HWND; const FileToLoad: WideString): HWND;
+procedure SynStop(hWin: HWND);
 function IsFileTooBig(const fn: WideString): boolean;
 
 function MsgConfirmBinary(const fn: WideString; H: THandle): boolean;
@@ -3230,7 +3230,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1200';
+  cSynVer = '6.6.1220';
   cSynPyVer = '1.0.131';
 
 const
@@ -3488,30 +3488,31 @@ end;
 
 //hook form messages
 function HookDestroy(hWin: HWND; Msg, wParam, lParam: LongInt): LongInt; stdcall;
-var p: ^TPlugInfo;
-begin //hook destroy our window
-  p:= Pointer(GetWindowLong(hWin, GWL_USERDATA));
+var
+  p: ^TPlugInfo;
+begin
   Result:= 0;
-  if Msg = WM_DESTROY then StopSyn(hWin) //plugin close
+  p:= Pointer(GetWindowLong(hWin, GWL_USERDATA));
+  if Msg = WM_DESTROY then
+    SynStop(hWin)
   else
-  if Msg = WM_SETFOCUS then begin
-    if (p^.PlugForm.CurrentEditor <> nil) then
-      p^.PlugForm.FocusEditor;
-  end
+  if Msg = WM_SETFOCUS then
+    p^.PlugForm.FocusEditor
   else
     Result:= CallWindowProc(p^.PlugWinProc, hWin, Msg, wParam, lParam);
 end;
 
 //hook close button of lister window to make 'Cancel' possible
 function HookList(hWin: HWND; Msg, wParam, lParam: LongInt): LongInt; stdcall;
-var p: ^TPlugInfo;
+var
+  p: ^TPlugInfo;
 begin
   p:= Pointer(GetWindowLong(hWin, GWL_USERDATA));
-  if (Msg = WM_ACTIVATE) and (wParam<>0) and
-     (not p^.PlugForm.CurrentEditor.Focused) then begin
-        p^.PlugForm.FocusEditor;
-        Result:= 0;
-        Exit;
+  if (Msg=WM_ACTIVATE) and (wParam<>0) then
+  begin
+    p^.PlugForm.FocusEditor;
+    Result:= 0;
+    Exit;
   end;
   {
   //already done this in FormCloseQuery
@@ -3523,7 +3524,7 @@ begin
   Result:= CallWindowProc(p^.PlugWinProc, hWin, Msg, wParam, lParam);
 end;
 
-procedure StopSyn(hWin: HWND);
+procedure SynStop(hWin: HWND);
 var
   p: ^TPlugInfo;
   N: integer;
@@ -3557,7 +3558,7 @@ begin
   end;
 end;
 
-function StartSyn(ListerWin: HWND; const FileToLoad: WideString): HWND;
+function SynStart(ListerWin: HWND; const FileToLoad: WideString): HWND;
 var
   fmMain: TfmMain;
   p: ^TPlugInfo;
@@ -6703,6 +6704,7 @@ end;
 function TfmMain.DoCloseAllTabs: boolean;
 begin
   Result:= Groups.CloseTabs(tabCloseAll, false);
+  UpdateListTabs;
 end;
 
 function TfmMain.DoCloseOtherTabs(AAllGroups, AForPopupMenu: boolean): boolean;
@@ -6714,6 +6716,7 @@ begin
   else
     Id:= tabCloseOthersThisPage;
   Result:= Groups.CloseTabs(Id, AForPopupMenu);
+  UpdateListTabs;
 end;
 
 
@@ -28427,10 +28430,17 @@ var
 begin
   D:= (Sender as TATTabs).GetTabData((Sender as TATTabs).TabIndex);
   if D<>nil then
-  begin
-    FocusFrame(D.TabObject as TEditorFrame);
-    UpdateOnFrameChanged;
-  end;
+    if D.TabObject<>nil then
+    begin
+      if QuickView then
+      begin
+        //don't focus! but set CurrentEditor.
+        CurrentEditor:= (D.TabObject as TEditorFrame).EditorMaster;
+      end
+      else
+        FocusFrame(D.TabObject as TEditorFrame);
+      UpdateOnFrameChanged;
+    end;
 end;
 
 procedure TfmMain.TabClose(Sender: TObject; ATabIndex: Integer;

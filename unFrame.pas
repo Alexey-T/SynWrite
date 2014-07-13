@@ -1107,12 +1107,8 @@ begin
   TbxItemSplitHorz.Checked:= SplitHorz;
   TbxItemSplitVert.Checked:= not SplitHorz;
 
-  //////////////////
-  {
-  TbxItemSplitHorz.Caption:= TfmMain(Owner).TBXItemSpHorz.Caption;
-  TbxItemSplitVert.Caption:= TfmMain(Owner).TBXItemSpVert.Caption;
-  }
-
+  TbxItemSplitHorz.Caption:= DKLangConstW('Split_h');
+  TbxItemSplitVert.Caption:= DKLangConstW('Split_v');
   TbxItemSplitCaption.Caption:= DKLangConstW('Split_Ed');
   TbxItemSplitCancel.Caption:= DKLangConstW('Split_Cancel');
 end;
