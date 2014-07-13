@@ -28532,7 +28532,11 @@ var
 begin
   N:= (Sender as TComponent).Tag;
   if N>0 then
-    Groups.MoveTab(Groups.PopupPages, Groups.PopupTabIndex, Groups.Pages[N], -1, false)
+  begin
+    if (N=2) and (Groups.Mode=gmOne) then
+      Groups.Mode:= gm2Horz;
+    Groups.MoveTab(Groups.PopupPages, Groups.PopupTabIndex, Groups.Pages[N], -1, false);
+  end
   else
   if (N=-1) then
     Groups.MovePopupTabToNext(true)
@@ -28550,7 +28554,7 @@ begin
   N:= Groups.PagesIndexOf(Groups.PopupPages); //current group
 
   TbxItemToGroup1.Enabled:= (Cnt>=2) and (N<>1);
-  TbxItemToGroup2.Enabled:= (Cnt>=2) and (N<>2);
+  TbxItemToGroup2.Enabled:= {(Cnt>=2) and} (N<>2);
   TbxItemToGroup3.Enabled:= (Cnt>=3) and (N<>3);
   TbxItemToGroup4.Enabled:= (Cnt>=4) and (N<>4);
   TbxItemToGroup5.Enabled:= (Cnt>=5) and (N<>5);
