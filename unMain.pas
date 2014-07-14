@@ -3230,7 +3230,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1220';
+  cSynVer = '6.6.1225';
   cSynPyVer = '1.0.131';
 
 const
@@ -7137,8 +7137,8 @@ end;
 
 const
   cDefColors: array[0..Pred(cTabColors)] of TColor =
-    ($9999FF, $CC99FF, $99CCFF, $99FFFF, $CCFFCC, $FFFFCC,
-     $FFCC99, $FF9999, $FF99CC, $DDDDDD);
+    ($0000FF, $007FFF, $00FFFF, $00FF00, $007F00,
+     $FFFFFF, $FFFF7F, $FF0000, $FF7F7F, $7F7F7F);
 
 procedure TfmMain.FormCreate(Sender: TObject);
 var
@@ -8650,13 +8650,12 @@ end;
       DoRepaint; //needed anyway, even if controls not resized
     end;
 
-    if Assigned(fmSR) then
-    begin
-      if fmSR.Enabled and fmSR.Visible and fmSR.CanFocus then
-        fmSR.SetFocus;
-    end;
-
-    FocusEditor;
+    if Assigned(fmSR) and fmSR.Enabled and fmSR.Visible and fmSR.CanFocus then
+      fmSR.SetFocus
+    else
+    //test it
+    if not edQs.Focused then
+      FocusEditor;
   end;
 
 procedure TfmMain.FindActionWrapper(act: TSRAction);
