@@ -8869,7 +8869,7 @@ begin
       fmSR.ShowStatus(DKLangConstW('zMRegexInvalid'));
       MsgBeep;
       Exit
-    end;  
+    end;
 
   case act of
     arFindNext:
@@ -10371,14 +10371,12 @@ end;
 
 procedure FixListScroll(L: TTntListBox);
 var
-  i, n, n2: integer;
+  i, n: integer;
 begin
   n:= 50;
+  L.Canvas.Font.Assign(L.Font);
   for i:= 0 to L.Count-1 do
-  begin
-    n2:= ecTextExtent(L.Canvas, L.Items[i]).cx;
-    if n2>n then n:= n2;
-  end;
+    n:= Max(n, ecTextExtent(L.Canvas, L.Items[i]).cx);
   L.ScrollWidth:= n+4;
 end;
 
