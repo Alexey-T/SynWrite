@@ -54,6 +54,9 @@ type
     var Accept: Boolean) of object;
   TOnFindContinue = procedure(Sender: TObject; var ACanContinue: boolean) of object;
 
+function IsRegexValid(const Str: string): boolean;
+
+type
   TSynFinder = class(TComponent)
   private
     FFlags: TSearchOptions;
@@ -895,6 +898,27 @@ begin
     (FFindText[1] = '^') and
     (FReplaceText = '');
 end;
+
+{$ifdef PERLRE}
+function IsRegexValid(const Str: string): boolean;
+var
+  Re: TPerlRegEx;
+begin
+  Re:= TPerlRegEx.Create;
+  try
+    Re.RegEx:= Str;
+    Re.Compile;
+    Result:= true;
+  except
+    Result:= false;
+  end;
+end;
+{$else}
+function IsRegexValid(const Str: string): boolean;
+begin
+  Result:= true;
+end;
+{$endif}
 
 end.
 

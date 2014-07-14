@@ -8862,6 +8862,15 @@ begin
     Finder.OnCanAccept:= FinderCanAccept;
   end;
 
+  //check regex valid
+  if ftRegex in Finder.Flags then
+    if not IsRegexValid(Finder.FindText) then
+    begin
+      fmSR.ShowStatus(DKLangConstW('zMRegexInvalid'));
+      MsgBeep;
+      Exit
+    end;  
+
   case act of
     arFindNext:
       DoFindDialog_FindNext;
@@ -12174,13 +12183,21 @@ begin
           end;
       end;
 
-      //if dir exists, break and start work,
-      //if not then goto ShowModal
+      //if dir not exists, goto ShowModal
       edDir.Text:= WideExcludeTrailingBackslash(edDir.Text);
-      if IsDirExist(edDir.Text) then
-        Break
-      else
+      if not IsDirExist(edDir.Text) then
+      begin
         ShowErr(DKLangConstW('MNFoundFold'));
+        Continue
+      end;
+
+      if cbRE.Checked and not IsRegexValid(ed1.Text) then
+      begin
+        ShowErr(DKLangConstW('zMRegexInvalid'));
+        Continue
+      end;
+
+      Break;
     until false;
 
     //confirm mass replace
