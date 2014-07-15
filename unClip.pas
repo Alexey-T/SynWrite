@@ -127,7 +127,7 @@ procedure TfmClip.FormDestroy(Sender : TObject);
 begin
   FreeAndNil(FItems);
 end;
- 
+
 procedure TfmClip.FormShow(Sender: TObject);
 begin
 //
@@ -135,9 +135,12 @@ end;
 
 procedure TfmClip.ListClipDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
-var c: TColor;
+const
+  cDx = 4; //indent (px) to output "/" with a little shift after text  
+var
+  c: TColor;
   S, SS:Widestring;
-  n:Integer;
+  n: Integer;
 begin
   with TTntListbox(Control) do
   begin
@@ -166,10 +169,10 @@ begin
         SS:= Copy(S, 1, n-1);
         Canvas.Font.Color:= c;
         Inc(Rect.Left, 2);
-        ecTextOut(Canvas, rect.left, rect.top, SS);
-        Inc(Rect.Left, ecTextExtent(Canvas, SS).cx);
+        ecTextOut(Canvas, Rect.Left, Rect.Top, SS);
+        Inc(Rect.Left, ecTextExtent(Canvas, SS).cx + cDx);
         Canvas.Font.Color:= clBlue;
-        ecTextOut(Canvas, rect.left, rect.top, '/');
+        ecTextOut(Canvas, Rect.Left, Rect.Top, '/');
         Inc(Rect.Left, ecTextExtent(Canvas, '/').cx);
         Delete(S, 1, n);
       end
@@ -178,7 +181,7 @@ begin
         SS:= S;
         Canvas.Font.Color:= c;
         Inc(Rect.Left, 2);
-        ecTextOut(Canvas, rect.left, rect.top, SS);
+        ecTextOut(Canvas, Rect.Left, Rect.Top, SS);
         Break
       end;
     until False;  
