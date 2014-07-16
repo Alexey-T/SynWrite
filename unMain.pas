@@ -3230,7 +3230,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1225';
+  cSynVer = '6.6.1230';
   cSynPyVer = '1.0.131';
 
 const
@@ -11138,20 +11138,29 @@ end;
 
 procedure TfmMain.UpdateClickedFrame;
 var
-  N: Integer;
+  N, NPages, NTab: Integer;
 begin
   FClickedFrame:= nil;
 
+  //handle right-click over Tabs panel
   if ListTabs.Visible and plTree.Visible then
     if PtInControl(ListTabs, Mouse.CursorPos) then
     begin
       N:= ListTab_FrameIndex;
       if N>=0 then
+      begin
         FClickedFrame:= FramesAll[N];
-      Groups.PopupTabIndex:= -1; //disable popup items which depend on PopupTabIndex
+
+        //set PopupPages/PopupTabIndex props, so context menu will work on Tabs panel
+        GetTabIndexForFrame(FClickedFrame, NPages, NTab);
+        if NPages>0 then
+          Groups.PopupPages:= Groups.Pages[NPages];
+        Groups.PopupTabIndex:= NTab;
+      end;
       Exit;
     end;
 
+  //handle right-click over tabs  
   with Groups do
     if (PopupPages<>nil) and (PopupTabIndex>=0) then
       FClickedFrame:= PopupPages.Tabs.GetTabData(PopupTabIndex).TabObject as TEditorFrame;
@@ -11174,6 +11183,7 @@ begin
   TBXSubmenuItemToGroup.Enabled:= en_all and (Groups.PopupTabIndex>=0);
   TBXSubmenuTabColor.Enabled:= en_all;
 
+  TBXItemTabNew.Enabled:= en_all;
   TBXItemTabClose.Enabled:= en_all;
   TBXItemTabCloseOthers.Enabled:= en_all and (FrameAllCount>1);
   TBXItemTabCloseOthersAllGroups.Enabled:= TBXItemTabCloseOthers.Enabled and (Groups.PagesVisibleCount>1);
