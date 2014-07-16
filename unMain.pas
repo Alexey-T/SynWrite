@@ -2287,7 +2287,6 @@ type
     function FrameGetPropertiesString(F: TEditorFrame): string;
     procedure FrameSetPropertiesString(F: TEditorFrame; const Str: string; EncodingOnly: boolean);
     procedure FrameGetTabCaption(Sender: TFrame; var Str: Widestring);
-    procedure GetTabIndexForFrame(Frame: TEditorFrame; var NPages, NTab: Integer);
     procedure FocusFrame(Frame: TEditorFrame);
     //frame related------------------------------
 
@@ -3913,38 +3912,13 @@ begin
     Result:= nil;
 end;
 
-procedure TfmMain.GetTabIndexForFrame(Frame: TEditorFrame;
-  var NPages, NTab: Integer);
-var
-  i, j: Integer;
-  D: TATTabData;
-begin
-  NPages:= -1;
-  NTab:= -1;
-  if Frame=nil then Exit;
-
-  for i:= Low(Groups.Pages) to High(Groups.Pages) do
-    with Groups.Pages[i].Tabs do
-      for j:= 0 to TabCount-1 do
-      begin
-        D:= GetTabData(j);
-        if D<>nil then
-          if D.TabObject=Frame then
-          begin
-            NPages:= i;
-            NTab:= j;
-            Exit
-          end;
-      end;
-end;
-
 
 procedure TfmMain.SetCurrentFrame(Frame: TEditorFrame);
 var
   NPages, NTab: Integer;
 begin
   if Frame=nil then Exit;
-  GetTabIndexForFrame(Frame, NPages, NTab);
+  Groups.PagesAndTabIndexOfControl(Frame, NPages, NTab);
   if NTab>=0 then
     Groups.Pages[NPages].Tabs.TabIndex:= NTab;
 end;
@@ -11151,8 +11125,8 @@ begin
       begin
         FClickedFrame:= FramesAll[N];
 
-        //set PopupPages/PopupTabIndex props, so context menu will work on Tabs panel
-        GetTabIndexForFrame(FClickedFrame, NPages, NTab);
+        //set PopupPages/PopupTabIndex, so context menu will work on Tabs panel
+        Groups.PagesAndTabIndexOfControl(FClickedFrame, NPages, NTab);
         if NPages>0 then
           Groups.PopupPages:= Groups.Pages[NPages];
         Groups.PopupTabIndex:= NTab;
