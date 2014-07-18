@@ -2807,7 +2807,7 @@ type
     procedure DoConfigRestoreStyles;
     procedure DoToggleTabDirs;
     procedure DoInsertUnicodeHexDialog;
-    procedure DoSetPagesAndTabIndex(APageIndex, ATabIndex: Integer);
+    function DoSetPagesAndTabIndex(APageIndex, ATabIndex: Integer): boolean;
 
     function DoAddTab(Pages: TATPages): TEditorFrame;
     procedure TabAdd(Sender: TObject);
@@ -11434,6 +11434,7 @@ begin
     Free;
   end;
 
+  UpdateStatusBar;
   DoRepaint;
 end;
 
@@ -11515,12 +11516,14 @@ end;
 
 procedure TfmMain.DoTabIndexClick(n: integer);
 begin
-  DoSetPagesAndTabIndex(1, n);
+  if not DoSetPagesAndTabIndex(1, n) then
+    MsgBeep;
 end;
 
 procedure TfmMain.DoRtTabIndexClick(n: integer);
 begin
-  DoSetPagesAndTabIndex(2, n);
+  if not DoSetPagesAndTabIndex(2, n) then
+    MsgBeep;
 end;
 
 procedure TfmMain.TBXSubmenuEnc2Popup(Sender: TTBCustomItem;
@@ -28561,12 +28564,11 @@ begin
   TbxItemToGroupPrev.Enabled:= Cnt>=2;
 end;
 
-procedure TfmMain.DoSetPagesAndTabIndex(APageIndex, ATabIndex: Integer);
+function TfmMain.DoSetPagesAndTabIndex(APageIndex, ATabIndex: Integer): boolean;
 begin
-  if Groups.SetPagesAndTabIndex(APageIndex, ATabIndex) then
-    UpdateTabList(ATabIndex, -1, -1)
-  else
-    MsgBeep;
+  Result:= Groups.SetPagesAndTabIndex(APageIndex, ATabIndex);
+  if Result then
+    UpdateTabList(ATabIndex, -1, -1);
 end;
 
 
