@@ -2995,6 +2995,7 @@ type
     opShowQsCaptions: boolean;
     opColorTabText,
     opColorTabBgActive,
+    opColorTabBgActive2,
     opColorTabBgPassive,
     opColorTabBgPassiveOver,
     opColorTabBorderActive,
@@ -3051,6 +3052,7 @@ type
     property ShowOnTop: boolean read FOnTop write SetOnTop;
 
     procedure ApplyTabOptions;
+    procedure UpdateActiveTabColors;
     procedure ApplyCarets;
     procedure ApplyUrlClick;
     procedure ApplyShowRecentColors;
@@ -25372,7 +25374,7 @@ begin
   Ed.HorzRuler.Color:= C[20];
   opColorTabBgPassive:= C[21];
   opColorTabBgActive:= C[22];
-  //opColorTabLine:= C[23];
+  opColorTabBgActive2:= C[23];
   Ed.DefaultStyles.SearchMark.Font.Color:= C[24];
   Ed.DefaultStyles.SearchMark.BgColor:= C[25];
   ListOut.Font.Color:= C[26];
@@ -25428,6 +25430,7 @@ begin
 
   opColorTabText:= clBlack;
   opColorTabBgActive:= clBtnFace;
+  opColorTabBgActive2:= clBtnFace;
   opColorTabBgPassive:= $d8d8d8;
   opColorTabBgPassiveOver:= clLtGray;
   opColorTabBorderActive:= clLtGray;
@@ -25465,7 +25468,7 @@ begin
   C[20]:= TemplateEditor.HorzRuler.Color;
   C[21]:= opColorTabBgPassive;
   C[22]:= opColorTabBgActive;
-  //C[23]:= opColorTabLine;
+  C[23]:= opColorTabBgActive2;
   C[24]:= TemplateEditor.DefaultStyles.SearchMark.Font.Color;
   C[25]:= TemplateEditor.DefaultStyles.SearchMark.BgColor;
   C[26]:= ListOut.Font.Color;
@@ -28441,6 +28444,7 @@ begin
       end
       else
         FocusFrame(D.TabObject as TEditorFrame);
+
       UpdateOnFrameChanged;
     end;
 end;
@@ -28621,6 +28625,21 @@ begin
   Result:= '';
   for i:= Low(C) to High(C) do
     Result:= Result+IntToStr(C[i])+',';
+end;
+
+procedure TfmMain.UpdateActiveTabColors;
+var
+  i: Integer;
+begin
+  for i:= Low(Groups.Pages) to High(Groups.Pages) do
+    with Groups.Pages[i] do
+    begin
+      Tabs.ColorTabActive:= IfThen(
+        Groups.Pages[i]=Groups.PagesCurrent,
+        opColorTabBgActive2,
+        opColorTabBgActive);
+      Tabs.Invalidate;
+    end;
 end;
 
 initialization

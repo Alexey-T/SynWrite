@@ -539,7 +539,7 @@ const
     'Ruler-BG', //20
     'Tab-BG-passive', //21
     'Tab-BG-active', //22
-    'Tab-BG-active-line', //23
+    'Tab-BG-active-alt', //23
     'Search-marks-text', //24
     'Search-marks-BG', //25
     'Output-panel-text', //26
@@ -578,7 +578,7 @@ const
     );
 
 const
-  cColorsOrder: array[0..50] of integer = (
+  cColorsOrder: array[0..51] of Integer = (
     0,
     1,
     9,
@@ -601,6 +601,7 @@ const
     44,
     42, //tab caption
     22, //tab active bg
+    23, //tab active bg, alt
     21, //tab passive bg
     56, //tab passive over bg
     57, //tab border active

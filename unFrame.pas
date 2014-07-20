@@ -355,7 +355,8 @@ begin
   Ed:= Sender as TSyntaxMemo;
   TfmMain(Owner).CurrentEditor:= Ed;
   TfmMain(Owner).Groups.PagesCurrent:= TfmMain(Owner).FrameOfEditor(Ed).Parent as TATPages;
-  TfmMain(Owner).UpdateOnFrameChanged; 
+  TfmMain(Owner).UpdateOnFrameChanged;
+  TfmMain(Owner).UpdateActiveTabColors;
 
   //Ctrl+Alt+click -- find id
   //(if no line selection is made with Ctrl+Alt+drag)
