@@ -32,6 +32,7 @@ function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
 
+function Py_ed_get_staple(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_bk(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_sync_ranges(Self, Args: PPyObject): PPyObject; cdecl;
@@ -1439,5 +1440,22 @@ begin
     end;
 end;
 
+function Py_ed_get_staple(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, PosX, PosY: Integer;
+  Ed: TSyntaxMemo;
+  Staple: TBlockStaple;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iii:get_staple', @H, @PosX, @PosY)) then
+    begin
+      Ed:= PyEditor(H);
+      Staple:= EditorGetBlockStaple(Ed, PosX, PosY);
+      if Staple=nil then
+        Result:= ReturnNone
+      else
+        Result:= Py_BuildValue('(ii)', Staple.StartPos, Staple.EndPos);
+    end;
+end;    
 
 end.

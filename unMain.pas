@@ -3230,7 +3230,7 @@ function SynAppdataDir: string;
 
 const
   cSynVer = '6.6.1230';
-  cSynPyVer = '1.0.131';
+  cSynPyVer = '1.0.132';
 
 const
   cSynParamRO = '/ro';
@@ -27113,6 +27113,7 @@ begin
     AddMethod('get_app_prop', Py_get_app_prop, '');
     AddMethod('set_app_prop', Py_set_app_prop, '');
 
+    AddMethod('ed_get_staple', Py_ed_get_staple, '');
     AddMethod('ed_get_bk', Py_ed_get_bk, '');
     AddMethod('ed_set_bk', Py_ed_set_bk, '');
     AddMethod('ed_get_sync_ranges', Py_ed_get_sync_ranges, '');

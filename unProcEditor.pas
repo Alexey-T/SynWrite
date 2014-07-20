@@ -14,6 +14,7 @@ uses
   ecMemoStrings,
   ecStrUtils;
 
+function EditorGetBlockStaple(Ed: TSyntaxMemo; PosX, PosY: Integer): TBlockStaple;
 procedure EditorSetCaretShape(Ed: TSyntaxMemo; Opt: Integer);
 function EditorGetColorPropertyById(Ed: TSyntaxMemo; const Id: string): Longint;
 procedure EditorSetColorPropertyById(Ed: TSyntaxMemo; const Id: string; Color: Longint);
@@ -3338,6 +3339,14 @@ begin
     Result:= WideFormat('%d%s: %s', [NLine+1, SMark, Result])
   else
     Result:= WideFormat('%d: %s', [AIndex, Result]);
+end;
+
+function EditorGetBlockStaple(Ed: TSyntaxMemo; PosX, PosY: Integer): TBlockStaple;
+var
+  P: TPoint;
+begin
+  P:= Ed.CaretToMouse(PosX, PosY);
+  Result:= Ed.IsOverStaple(P.X, P.Y); //move IsOverStaple from "private" to "public"
 end;
 
 
