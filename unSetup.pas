@@ -600,8 +600,8 @@ const
     25,
     44,
     42, //tab caption
-    22, //tab active bg
     23, //tab active bg, alt
+    22, //tab active bg
     21, //tab passive bg
     56, //tab passive over bg
     57, //tab border active
