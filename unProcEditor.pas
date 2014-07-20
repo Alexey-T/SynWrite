@@ -3346,7 +3346,8 @@ var
   P: TPoint;
 begin
   P:= Ed.CaretToMouse(PosX, PosY);
-  Result:= Ed.IsOverStaple(P.X, P.Y); //move IsOverStaple from "private" to "public"
+  Result:= Ed.IsOverStaple(P.X - Ed.StapleOffset, P.Y);
+    //move TSyntaxMemo.IsOverStaple from "private" to "public"
 end;
 
 
