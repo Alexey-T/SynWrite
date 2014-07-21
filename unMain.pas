@@ -28665,8 +28665,8 @@ begin
     begin
       Tabs.ColorTabActive:= IfThen(
         Groups.Pages[i]=Groups.PagesCurrent,
-        opColorTabBgActive2,
-        opColorTabBgActive);
+        opColorTabBgActive,
+        opColorTabBgActive2);
       Tabs.Invalidate;
     end;
 end;
