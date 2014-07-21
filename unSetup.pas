@@ -539,7 +539,7 @@ const
     'Ruler-BG', //20
     'Tab-BG-passive', //21
     'Tab-BG-active', //22
-    'Tab-BG-active-alt', //23
+    'Tab-BG-active-oth', //23
     'Search-marks-text', //24
     'Search-marks-BG', //25
     'Output-panel-text', //26
@@ -600,10 +600,10 @@ const
     25,
     44,
     42, //tab caption
-    23, //tab active bg, alt
-    22, //tab active bg
-    21, //tab passive bg
-    56, //tab passive over bg
+    22, //tab bg active, active group
+    23, //tab bg active, other groups
+    21, //tab bg passive
+    56, //tab bg passive hover
     57, //tab border active
     58, //tab border passive
     17,
