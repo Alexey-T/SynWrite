@@ -1326,7 +1326,7 @@ type
     TbxItemWinSplitH: TSpTBXItem;
     TbxItemWinProjPre: TSpTBXItem;
     ecToggleProjPreview: TAction;
-    TbxItemCtxPlugins: TSpTBXSubmenuItem;
+    TbxSubmenuItemCtxPlugins: TSpTBXSubmenuItem;
     TbxSubmenuItemProjTools: TSpTBXSubmenuItem;
     PopupPreviewEditor: TSpTBXPopupMenu;
     TbxItemPreSelect: TSpTBXItem;
@@ -2325,7 +2325,9 @@ type
     procedure LoadPluginsInfo;
     procedure PluginPanelItemClick(Sender: TObject);
     procedure PluginCommandItemClick(Sender: TObject);
-    procedure DoAddPluginMenuItem(const SKey, SShortcut: Widestring; NIndex: Integer);
+    procedure DoAddPluginMenuItem(
+      ASubmenu: TSpTbxSubmenuitem;
+      const SKey, SShortcut: Widestring; NIndex: Integer);
     //-------------------------------------------
     //
     procedure DoCheckIfBookmarkSetHere(Ed: TSyntaxMemo; NPos: Integer);
@@ -22390,17 +22392,18 @@ begin
   end;
 end;
 
-procedure TfmMain.DoAddPluginMenuItem(const SKey, SShortcut: Widestring; NIndex: Integer);
+procedure TfmMain.DoAddPluginMenuItem(
+  ASubmenu: TSpTbxSubmenuitem;
+  const SKey, SShortcut: Widestring; NIndex: Integer);
 var
   ItemSub: TSpTbxSubmenuItem;
   Item: TSpTbxItem;
   S, CapMenu, CapItem: Widestring;
   N, i: Integer;
 begin
-  with TbxSubmenuItemPlugins do
+  with ASubmenu do
   begin
     Enabled:= true;
-    TbxItemCtxPlugins.Visible:= true;
 
     S:= SKey;
     CapMenu:= SGetItem(S, '\');
@@ -22414,7 +22417,7 @@ begin
     if N<0 then
     begin
       if CapItem='' then
-        ItemSub:= TbxSubmenuItemPlugins
+        ItemSub:= ASubmenu
       else
       begin
         ItemSub:= TSpTbxSubmenuItem.Create(Self);
@@ -28020,7 +28023,16 @@ begin
         FPluginsCommand[NIndex].SCaption:= sKey;
         FPluginsCommand[NIndex].SHotkey:= sValueHotkey;
 
-        DoAddPluginMenuItem(sKey, sValueHotkey, NIndex);
+        //a) add to main-menu always
+        DoAddPluginMenuItem(TBXSubmenuItemPlugins, sKey, sValueHotkey, NIndex);
+
+        //b) add to context menu - if enabled
+        if Pos('-', sValueFlags)=0 then
+        begin
+          TBXSubmenuItemCtxPlugins.Visible:= true;
+          DoAddPluginMenuItem(TBXSubmenuItemCtxPlugins, sKey, sValueHotkey, NIndex);
+        end;
+        
         Inc(NIndex);
       end;
     end;
