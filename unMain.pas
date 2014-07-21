@@ -11335,6 +11335,10 @@ begin
         Exit
       end;
     end;
+
+    //rename old .syn file
+    FFileMove(AFilename, AFilename+'.bak');
+
     AFilename:= AConvName;
   end;
 
