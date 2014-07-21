@@ -3231,7 +3231,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1235';
+  cSynVer = '6.6.1240';
   cSynPyVer = '1.0.132';
 
 const
@@ -6440,6 +6440,19 @@ begin
       Groups.MoveCurrentTabToNext(true);
     sm_MoveCurrentTabToPrevGroup:
       Groups.MoveCurrentTabToNext(false);
+
+    smDeleteLastWord:
+      begin
+        //override to make it work at line-start: move to end of previous line
+        P:= Ed.CaretPos;
+        if P.X=0 then
+        begin
+          if P.Y>0 then
+            Ed.CaretPos:= Point(Ed.Lines.LineLength(P.Y-1), P.Y-1);
+        end
+        else
+          Handled:= false;
+      end;
 
     //end of commands list
     else
