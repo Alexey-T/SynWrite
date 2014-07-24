@@ -22941,14 +22941,16 @@ begin
         end;
 
       scmdIndent:
-        ok:= DoListCommand_Indent(L, EditorTabSize(Ed),
+        ok:= DoListCommand_Indent(L,
+               EditorTabSize(Ed),
                Ed.BlockIndent,
-               {Ed.TabMode=tmTabChar}false
+               soOptimalFill in Ed.Options
                );
       scmdUnIndent:
-        ok:= DoListCommand_UnIndent(L, EditorTabSize(Ed),
+        ok:= DoListCommand_UnIndent(L,
+               EditorTabSize(Ed),
                Ed.BlockIndent,
-               {Ed.TabMode=tmTabChar}false,
+               soOptimalFill in Ed.Options,
                soUnindentKeepAlign in Ed.Options
                );
 
