@@ -21,6 +21,9 @@ procedure DoClearSnippet(var AInfo: TSynSnippetInfo);
 function DoLoadSnippetFromFile(const fn: string; var Info: TSynSnippetInfo): boolean;
 procedure DoSaveSnippetToFile(const fn: string; var Info: TSynSnippetInfo);
 
+function SWrapText(const S, SInsertBreak, SSeparators, SEol: WideString;
+  NTabSize, NMaxCol: Integer): WideString;
+function SCountOccurrences(const Text, Substring: Widestring): integer;
 function SWideStringToPythonString(const Str: Widestring): string;
 function STruncateLong(const Str: Widestring; MaxLen: Integer; CutMiddle: boolean): Widestring;
 procedure SReplaceAllPercentChars(var S: string);
@@ -155,6 +158,7 @@ implementation
 uses
   Classes,
   StrUtils,
+  TntWideStrUtils,
   ecStrUtils;
 
 procedure SReplace(var S: string; const SFrom, STo: string);
@@ -1546,5 +1550,111 @@ begin
   Result:= UTF8Encode(SDecodeW(Str, Decode));
   Result:= 'r"'+Result+'"';
 end;
+
+
+function SCountOccurrences(const Text, Substring: Widestring): integer;
+var
+  offset: Integer;
+begin
+  Result:= 0;
+  offset:= PosEx(Substring, Text, 1);
+  while offset<>0 do
+  begin
+    Inc(Result);
+    offset:= PosEx(Substring, Text, offset + length(Substring));
+  end;
+end;
+
+
+//modified function SysUtils.WrapText from Delphi, got it somewhere
+function SWrapText(const S, SInsertBreak, SSeparators, SEol: WideString;
+  NTabSize, NMaxCol: Integer): WideString;
+var
+  NCol, NPos: Integer;
+  LinePos, LineLen: Integer;
+  BreakLen, BreakPos: Integer;
+  QuoteChar, CurChar: WideChar;
+  ExistingBreak: Boolean;
+begin
+  NCol := 1;
+  NPos := 1;
+  LinePos := 1;
+  BreakPos := 0;
+  QuoteChar := #0;
+  ExistingBreak := False;
+  LineLen := Length(S);
+  BreakLen := Length(SInsertBreak);
+  Result := '';
+  while NPos <= LineLen do
+  begin
+    CurChar := S[NPos];
+    if CurChar = #9 then
+      Inc(NCol, NTabSize - 1)
+    else  
+    begin
+    if IsQuoteChar(CurChar) then
+      if QuoteChar = #0 then
+        QuoteChar := CurChar
+      else if CurChar = QuoteChar then
+        QuoteChar := #0;
+    if QuoteChar = #0 then
+    begin
+      if CurChar = SInsertBreak[1] then
+      begin
+        ExistingBreak := WStrLComp(PWChar(SInsertBreak), PWChar(@S[NPos]), BreakLen) = 0;
+        if ExistingBreak then
+        begin
+          Inc(NPos, BreakLen-1);
+          BreakPos := NPos;
+        end;
+      end;
+
+      if not ExistingBreak then
+        if System.Pos(CurChar, SSeparators)>0 then
+          BreakPos := NPos;
+      end;
+    end;
+
+    Inc(NPos);
+    Inc(NCol);
+
+    if not (IsQuoteChar(QuoteChar)) and (ExistingBreak or
+      ((NCol > NMaxCol) and (BreakPos > LinePos))) then
+    begin
+      NCol := 1;
+      Result := Result + Copy(S, LinePos, BreakPos - LinePos + 1);
+      if not IsQuoteChar(CurChar) then
+      begin
+        while NPos <= LineLen do
+        begin
+          if System.Pos(S[NPos], SSeparators)>0 then
+          begin
+            Inc(NPos);
+            ExistingBreak := False;
+          end
+          else
+          begin
+            if WStrLComp(PWChar(@S[NPos]), PWChar(SEol), Length(SEol)) = 0 then
+            begin
+              Inc(NPos, Length(SEol));
+              ExistingBreak := True;
+            end
+            else
+              Break;
+          end;
+        end;
+      end;
+      if (NPos <= LineLen) and not ExistingBreak then
+        Result := Result + SInsertBreak;
+
+      Inc(BreakPos);
+      LinePos := BreakPos;
+      NPos := LinePos;
+      ExistingBreak := False;
+    end;
+  end;
+  Result := Result + Copy(S, LinePos, MaxInt);
+end;
+
 
 end.

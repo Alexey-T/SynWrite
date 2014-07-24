@@ -1501,116 +1501,33 @@ begin
 end;
 
 
-//modified function SysUtils.WrapText from Delphi, got it somewhere
-function SWrapText(const S, SInsertBreak, SSeparators, SEol: WideString;
-  NTabSize, NMaxCol: Integer): WideString;
-var
-  NCol, NPos: Integer;
-  LinePos, LineLen: Integer;
-  BreakLen, BreakPos: Integer;
-  QuoteChar, CurChar: WideChar;
-  ExistingBreak: Boolean;
-begin
-  NCol := 1;
-  NPos := 1;
-  LinePos := 1;
-  BreakPos := 0;
-  QuoteChar := #0;
-  ExistingBreak := False;
-  LineLen := Length(S);
-  BreakLen := Length(SInsertBreak);
-  Result := '';
-  while NPos <= LineLen do
-  begin
-    CurChar := S[NPos];
-    if CurChar = #9 then
-      Inc(NCol, NTabSize - 1)
-    else  
-    begin
-    if IsQuoteChar(CurChar) then
-      if QuoteChar = #0 then
-        QuoteChar := CurChar
-      else if CurChar = QuoteChar then
-        QuoteChar := #0;
-    if QuoteChar = #0 then
-    begin
-      if CurChar = SInsertBreak[1] then
-      begin
-        ExistingBreak := WStrLComp(PWChar(SInsertBreak), PWChar(@S[NPos]), BreakLen) = 0;
-        if ExistingBreak then
-        begin
-          Inc(NPos, BreakLen-1);
-          BreakPos := NPos;
-        end;
-      end;
-
-      if not ExistingBreak then
-        if System.Pos(CurChar, SSeparators)>0 then
-          BreakPos := NPos;
-      end;
-    end;
-
-    Inc(NPos);
-    Inc(NCol);
-
-    if not (IsQuoteChar(QuoteChar)) and (ExistingBreak or
-      ((NCol > NMaxCol) and (BreakPos > LinePos))) then
-    begin
-      NCol := 1;
-      Result := Result + Copy(S, LinePos, BreakPos - LinePos + 1);
-      if not IsQuoteChar(CurChar) then
-      begin
-        while NPos <= LineLen do
-        begin
-          if System.Pos(S[NPos], SSeparators)>0 then
-          begin
-            Inc(NPos);
-            ExistingBreak := False;
-          end
-          else
-          begin
-            if WStrLComp(PWChar(@S[NPos]), PWChar(SEol), Length(SEol)) = 0 then
-            begin
-              Inc(NPos, Length(SEol));
-              ExistingBreak := True;
-            end
-            else
-              Break;
-          end;
-        end;
-      end;
-      if (NPos <= LineLen) and not ExistingBreak then
-        Result := Result + SInsertBreak;
-
-      Inc(BreakPos);
-      LinePos := BreakPos;
-      NPos := LinePos;
-      ExistingBreak := False;
-    end;
-  end;
-  Result := Result + Copy(S, LinePos, MaxInt);
-end;
-
 procedure EditorSplitLinesByPosition(Ed: TSyntaxMemo; nCol: Integer);
 var
   Ln1, Ln2, i: Integer;
-  s, sCR: Widestring;
+  s, sEol: Widestring;
   nTabSize: Integer;
+  nTotalLines: Integer;
 begin
   if Ed.ReadOnly then Exit;
   EditorGetSelLines(Ed, Ln1, Ln2);
-  sCR:= EditorEOL(Ed);
+  sEol:= EditorEOL(Ed);
   nTabSize:= EditorTabSize(Ed);
+  nTotalLines:= 0;
 
   Ed.BeginUpdate;
   try
     for i:= Ln2 downto Ln1 do
     begin
       //WideWrapText is bad in Tnt Controls, doesn't count leading line spaces
-      s:= SWrapText(Ed.Lines[i], sCR, ' -+'#9, sCR, nTabSize, nCol);
+      s:= SWrapText(Ed.Lines[i], sEol, ' -+'#9, sEol, nTabSize, nCol);
+      SReplaceAllW(s, ' '+sEol, sEol); //trim trailing blanks
+
+      Inc(nTotalLines, 1+SCountOccurrences(s, sEol));
 
       EditorReplaceLine(Ed, i, s, true{Undo});
     end;
+
+    Ed.SelectLines(Ln1, Ln1+nTotalLines-1);
   finally
     Ed.EndUpdate;
   end;
@@ -1946,6 +1863,7 @@ procedure EditorJoinLines(Ed: TSyntaxMemo);
 var
   Ln1, Ln2, i: Integer;
   S, SEol: Widestring;
+  P: TPoint;
 begin
   if Ed.ReadOnly then Exit;
   with Ed do
@@ -1961,13 +1879,20 @@ begin
 
       BeginUpdate;
       try
+        //delete block
         SelectLines(Ln1, Ln2);
         ClearSelection;
-        CaretPos:= Point(0, Ln1);
+
+        //insert new line
+        P:= Point(0, Ln1);
+        CaretPos:= P;
         InsertText(S);
+
+        //select inserted line
+        SetSelection(CaretPosToStrPos(P), Length(S));
       finally
         EndUpdate;
-      end;    
+      end;
     end;
 end;
 
