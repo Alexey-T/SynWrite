@@ -8236,7 +8236,10 @@ procedure TfmMain.MenuitemConvertEncoding(Sender: TObject);
 begin
   if Sender is TSpTbxItem then
     if not (Sender as TSpTbxItem).Checked then
+    begin
       ApplyFrameEncodingAndReload(CurrentFrame, (Sender as TComponent).Tag, false{ACanReload});
+      CurrentFrame.Modified:= true;
+    end;
 end;
 
 procedure TfmMain.ApplyFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
