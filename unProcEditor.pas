@@ -1862,7 +1862,8 @@ end;
 procedure EditorJoinLines(Ed: TSyntaxMemo);
 var
   Ln1, Ln2, i: Integer;
-  S, SEol: Widestring;
+  S, SLine, SEol: Widestring;
+  SpaceNeeded: boolean;
   P: TPoint;
 begin
   if Ed.ReadOnly then Exit;
@@ -1875,7 +1876,12 @@ begin
       S:= '';
       SEol:= EditorEOL(Ed);
       for i:= Ln1 to Ln2 do
-        S:= S + Lines[i] + IfThen(i<Ln2, ' ', SEol);
+      begin
+        SLine:= Lines[i];
+        SpaceNeeded:= (SLine<>'') and
+          not (SEnd(SLine, '-') or SEnd(SLine, '+'));
+        S:= S + SLine + IfThen(i<Ln2, IfThen(SpaceNeeded, ' '), SEol);
+      end;
 
       BeginUpdate;
       try

@@ -3233,7 +3233,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1240';
+  cSynVer = '6.6.1245';
   cSynPyVer = '1.0.132';
 
 const
