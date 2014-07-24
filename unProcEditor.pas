@@ -1860,6 +1860,8 @@ begin
 end;
 
 procedure EditorJoinLines(Ed: TSyntaxMemo);
+const
+  cSep = '-+'; //after these chars don't add space
 var
   Ln1, Ln2, i: Integer;
   S, SLine, SEol: Widestring;
@@ -1878,8 +1880,7 @@ begin
       for i:= Ln1 to Ln2 do
       begin
         SLine:= Lines[i];
-        SpaceNeeded:= (SLine<>'') and
-          not (SEnd(SLine, '-') or SEnd(SLine, '+'));
+        SpaceNeeded:= (SLine<>'') and (Pos(SLine[Length(SLine)], cSep)=0);
         S:= S + SLine + IfThen(i<Ln2, IfThen(SpaceNeeded, ' '), SEol);
       end;
 
@@ -1894,8 +1895,8 @@ begin
         CaretPos:= P;
         InsertText(S);
 
-        //select inserted line
-        SetSelection(CaretPosToStrPos(P), Length(S));
+        //select it
+        SelectLines(Ln1, Ln1);
       finally
         EndUpdate;
       end;
