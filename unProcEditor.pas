@@ -2227,15 +2227,62 @@ begin
   end;
 end;
 
+procedure EditorFindBracketFromPos(Ed: TSyntaxMemo; const FromPos: Integer; var Pos1, Pos2: Integer);
+var
+  S: ecString;
+  ch1, ch2: ecChar;
+  fw: Boolean;
+  n, nLock: integer;
+  TokenName: string;
+begin
+  Pos1:= 0;
+  Pos2:= 0;
+  S:= Ed.Lines.FText;
+
+  if (FromPos>0) and (FromPos<=Length(S)) then
+  begin
+    ch1:= S[FromPos];
+    TokenName:= EditorGetTokenName(Ed, FromPos, FromPos);
+
+    if ch1='[' then begin ch2:= ']'; fw:= true; end else
+    if ch1='(' then begin ch2:= ')'; fw:= true; end else
+    if ch1='{' then begin ch2:= '}'; fw:= true; end else
+    if ch1=']' then begin ch2:= '['; fw:= false; end else
+    if ch1=')' then begin ch2:= '('; fw:= false; end else
+    if ch1='}' then begin ch2:= '{'; fw:= false; end else
+      Exit;
+
+    n:= FromPos;
+    nLock:= 0;
+
+    while (n>0) and (n<=Length(S)) do
+    begin
+      if fw then Inc(n) else Dec(n);
+      if EditorGetTokenName(Ed, n, n) = TokenName then
+      begin
+        if (S[n]=ch2) and (nLock<=0) then Break;
+        if (S[n]=ch1) then Inc(nLock);
+        if (S[n]=ch2) then Dec(nLock);
+      end;  
+    end;
+
+    if (n>0) and (n<=Length(S)) then
+    begin
+      Pos1:= FromPos;
+      Pos2:= n;
+    end;
+  end;
+end;
+
 
 procedure EditorFindBrackets(Ed: TSyntaxMemo; var Pos1, Pos2: Integer);
 var
   NStart: Integer;
 begin
   NStart:= Ed.CaretStrPos;
-  SFindBrackets(Ed.Lines.FText, NStart+1, Pos1, Pos2);
+  EditorFindBracketFromPos(Ed, NStart+1, Pos1, Pos2);
   if Pos2=0 then
-    SFindBrackets(Ed.Lines.FText, NStart, Pos1, Pos2);
+    EditorFindBracketFromPos(Ed, NStart, Pos1, Pos2);
   Dec(Pos1);
   Dec(Pos2);
 end;

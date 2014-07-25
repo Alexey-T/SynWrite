@@ -29,7 +29,6 @@ function STruncateLong(const Str: Widestring; MaxLen: Integer; CutMiddle: boolea
 procedure SReplaceAllPercentChars(var S: string);
 function SReplaceAllEols(const S, SReplace: Widestring): Widestring;
 function SStripFromTab(const S: Widestring): Widestring;
-procedure SFindBrackets(const S: Widestring; const FromPos: Integer; var Pos1, Pos2: Integer);
 function SFindOpeningBracket(const S: Widestring; nFromPos: Integer): Integer;
 
 function SColorToHtmlCode(C: Integer): string;
@@ -1242,44 +1241,6 @@ function IsStringListed(const S, List: string): boolean;
 begin
   Result:= (S <> '') and
     (Pos(','+S+',', ','+List+',') > 0);
-end;
-
-procedure SFindBrackets(const S: Widestring; const FromPos: Integer; var Pos1, Pos2: Integer);
-var
-  ch1, ch2: ecChar;
-  fw: Boolean;
-  n, nLock: integer;
-begin
-  Pos1:= 0;
-  Pos2:= 0;
-  if (FromPos>0) and (FromPos<=Length(S)) then
-  begin
-    ch1:= S[FromPos];
-    if ch1='[' then begin ch2:= ']'; fw:= true; end else
-    if ch1='(' then begin ch2:= ')'; fw:= true; end else
-    if ch1='{' then begin ch2:= '}'; fw:= true; end else
-    if ch1=']' then begin ch2:= '['; fw:= false; end else
-    if ch1=')' then begin ch2:= '('; fw:= false; end else
-    if ch1='}' then begin ch2:= '{'; fw:= false; end else
-      Exit;
-
-    n:= FromPos;
-    nLock:= 0;
-
-    while (n>0) and (n<=Length(S)) do
-    begin
-      if fw then Inc(n) else Dec(n);
-      if (S[n]=ch2) and (nLock<=0) then Break;
-      if (S[n]=ch1) then Inc(nLock);
-      if (S[n]=ch2) then Dec(nLock);
-    end;
-
-    if (n>0) and (n<=Length(S)) then
-    begin
-      Pos1:= FromPos;
-      Pos2:= n;
-    end;
-  end;
 end;
 
 function SFindOpeningBracket(const S: Widestring; nFromPos: Integer): Integer;
