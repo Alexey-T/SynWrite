@@ -62,6 +62,7 @@ function EditorGetSelCoordAsString(Ed: TSyntaxMemo): string;
 procedure EditorSetBookmarksAsString(Ed: TSyntaxMemo; const Str: string);
 function EditorGetBookmarksAsString(Ed: TSyntaxMemo): string;
 procedure EditorGetBookmarksAsSortedList(Ed: TSyntaxMemo; L: TList);
+procedure EditorGetBookmarksAsSortedList_Ex(Ed: TSyntaxMemo; L: TList);
 
 function EditorPasteAsColumnBlock(Ed: TSyntaxMemo): boolean;
 procedure EditorPasteToFirstColumn(Ed: TSyntaxMemo);
@@ -876,6 +877,12 @@ begin
     Result:= Bookmarks[Integer(N1)] - Bookmarks[Integer(N2)];
 end;
 
+function _BookmarkCompareEx(N1, N2: Pointer): Integer;
+begin
+  Result:= TBookmark(N1).Position - TBookmark(N2).Position;
+end;
+
+
 procedure EditorGetBookmarksAsSortedList(Ed: TSyntaxMemo; L: TList);
 var
   i: Integer;
@@ -887,6 +894,18 @@ begin
   _CmpMemo:= Ed;
   L.Sort(_BookmarkCompare);
 end;
+
+procedure EditorGetBookmarksAsSortedList_Ex(Ed: TSyntaxMemo; L: TList);
+var
+  i: Integer;
+begin
+  with Ed.BookmarkObj do
+    for i:= 0 to Count-1 do
+      L.Add(Items[i]);
+
+  L.Sort(_BookmarkCompareEx);
+end;
+
 
 function EditorCaretAfterUnclosedQuote(Ed: TSyntaxMemo; var QuoteChar: WideChar): boolean;
 var

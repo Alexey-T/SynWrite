@@ -376,22 +376,22 @@ procedure TEditorFrame.EditorMasterSetBookmark(Snder: TObject;
   Bookmark: TBookmark; var Accept: Boolean);
 begin
   with Bookmark do
-   begin
-     Band:= 1; //Band index for Bookmarks
-     ImageList:= TfmMain(Owner).ImgListGutter;
-     if (BmIndex >= 0) and (BmIndex < 10) then
-     begin
-       ImageIndex:= BmIndex;
-       Hint:= '\s5\' + Format(DKLangConstW('Bk'), [BmIndex]);
-     end
-     else
-     begin
-       ImageIndex:= 12;
-       Hint:= '\s5\' + DKLangConstW('BkUn');
-     end;
-     Cursor:= crHandPoint;
-     BgColor:= TfmMain(Self.Owner).opColorBkmk;
-   end;
+  begin
+    Band:= 1; //Band index for Bookmarks
+    ImageList:= TfmMain(Owner).ImgListGutter;
+    if (BmIndex >= 0) and (BmIndex < 10) then
+    begin
+      ImageIndex:= BmIndex;
+      Hint:= '\s5\' + Format(DKLangConstW('Bk'), [BmIndex]);
+    end
+    else
+    begin
+      ImageIndex:= 12;
+      Hint:= '\s5\' + DKLangConstW('BkUn');
+    end;
+    Cursor:= crHandPoint;
+    BgColor:= TfmMain(Self.Owner).opColorBkmk;
+  end;
 end;
 
 {$warnings off}
@@ -781,6 +781,7 @@ begin
   begin
     DoBkToggle(Ed, Line);
     TfmMain(Owner).UpdateStatusBar;
+    TfmMain(Owner).UpdateListBookmarks;
   end;
 end;
 

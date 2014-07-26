@@ -713,6 +713,8 @@ begin
       EditorBookmarkCommand(Ed2, NId, NPos, NIcon, NColor, SHint);
       Result:= ReturnNone;
     end;
+
+  fmMain.UpdateListBookmarks;  
 end;
 
 

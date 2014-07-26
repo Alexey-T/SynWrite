@@ -296,7 +296,7 @@ type
   TSynSelState = (selNone, selSmall, selStream, selColumn, selCarets);
   TSynGotoTree = (tgoNext, tgoPrev, tgoParent, tgoNextBro, tgoPrevBro);
   TSynGotoMode = (goLine, goPrevBk, goNextBk, goNumBk);
-  TSynTabOut = (tbOut, tbFind, tbVal, tbPluginsLog, tbConsole);
+  TSynTabOut = (tbOut, tbFind, tbVal, tbPluginsLog, tbConsole, tbBookmarks);
   TSynTabRight = (tbClip, tbMap, tbTextClips);
   TSynTabLeft = (tbTree, tbProj, tbTabs, tbPugin1, tbPugin2, tbPugin3, tbPugin4, tbPugin5);
   TSynCpOverride = (cp_sr_Def, cp_sr_OEM, cp_sr_UTF8, cp_sr_UTF16);
@@ -1362,6 +1362,8 @@ type
     SpTBXSeparatorItem20: TSpTBXSeparatorItem;
     TBXItemTabCloseOthersAllGroups: TSpTBXItem;
     acCloseOthersAllGroups: TAction;
+    TbxTabBookmarks: TSpTBXTabItem;
+    ListBookmarks: TTntListView;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2129,6 +2131,8 @@ type
       FromLink: Boolean);
     procedure TBXItemTabCloseOthersAllGroupsClick(Sender: TObject);
     procedure acCloseOthersAllGroupsExecute(Sender: TObject);
+    procedure TbxTabBookmarksClick(Sender: TObject);
+    procedure ListBookmarksClick(Sender: TObject);
 
   private
     cStatLine,
@@ -3048,6 +3052,7 @@ type
     procedure UpdateStatusBar;
     procedure UpdateLexerTo(An: TSyntAnalyzer);
     procedure UpdateOnFrameChanged;
+    procedure UpdateListBookmarks;
 
     property opTabsWidths: Widestring read GetTabsWidths write SetTabsWidths;
     property ShowFullScreen: boolean read FFullScr write SetFS;
@@ -6696,6 +6701,7 @@ function TfmMain.DoCloseAllTabs: boolean;
 begin
   Result:= Groups.CloseTabs(tabCloseAll, false);
   UpdateListTabs;
+  UpdateListBookmarks;
 end;
 
 function TfmMain.DoCloseOtherTabs(AAllGroups, AForPopupMenu: boolean): boolean;
@@ -6708,6 +6714,7 @@ begin
     Id:= tabCloseOthersThisPage;
   Result:= Groups.CloseTabs(Id, AForPopupMenu);
   UpdateListTabs;
+  UpdateListBookmarks;
 end;
 
 
@@ -7176,6 +7183,7 @@ begin
   Tree.Align:= alClient;
   ListPLog.Align:= alClient;
   ListTabs.Align:= alClient;
+  ListBookmarks.Align:= alClient;
   plConsole.Align:= alClient;
 
   //init colors
@@ -9509,8 +9517,12 @@ begin
 end;
 
 procedure TfmMain.bbg0Click(Sender: TObject);
+var
+  N: Integer;
 begin
-  CurrentEditor.ExecCommand(smSetBookmark0 + (Sender as TComponent).Tag);
+  N:= (Sender as TComponent).Tag;
+  CurrentEditor.ExecCommand(smSetBookmark0 + N);
+  UpdateListBookmarks;
 end;
 
 procedure TfmMain.TBXSubmenuItemBkSetPopup(Sender: TTBCustomItem;
@@ -10987,6 +10999,7 @@ begin
   if ACanClose then
     CloseFrame(F);
 
+  UpdateListBookmarks;/////////////////////  
   UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
 end;
 
@@ -13079,6 +13092,9 @@ begin
   ListTabs.Color:= Tree.Color;
   ListTabs.Font:= Tree.Font;
 
+  ListBookmarks.Color:= Tree.Color;
+  ListBookmarks.Font:= Tree.Font;
+
   TreeFind.Color:= ListOut.Color;
   TreeFind.Font:= ListOut.Font;
 
@@ -13349,6 +13365,7 @@ begin
   TreeFind.Visible:= n=tbFind;
   ListPLog.Visible:= n=tbPluginsLog;
   plConsole.Visible:= n=tbConsole;
+  ListBookmarks.Visible:= n=tbBookmarks;
 
   if n=tbOut then
     tbTabsOut.ActiveTabIndex:= 0
@@ -13356,14 +13373,17 @@ begin
   if n=tbFind then
     tbTabsOut.ActiveTabIndex:= 1
   else
-  if n=tbVal then
+  if n=tbBookmarks then
     tbTabsOut.ActiveTabIndex:= 2
   else
-  if n=tbPluginsLog then
+  if n=tbVal then
     tbTabsOut.ActiveTabIndex:= 3
   else
+  if n=tbPluginsLog then
+    tbTabsOut.ActiveTabIndex:= 4
+  else
   if n=tbConsole then
-    tbTabsOut.ActiveTabIndex:= 4;
+    tbTabsOut.ActiveTabIndex:= 5;
 
   plOut.Caption:= tbTabsOut.ActiveTab.Caption;
 end;
@@ -16156,6 +16176,7 @@ begin
     EditorClearBookmarks(CurrentFrame.EditorMaster);
     EditorClearBookmarks(CurrentFrame.EditorSlave);
     UpdateStatusbar;
+    UpdateListBookmarks;
   end;
 end;
 
@@ -16165,6 +16186,7 @@ begin
     with CurrentFrame do
       DoBkToggle(CurrentEditor, CurrentEditor.CurrentLine);
   UpdateStatusbar;
+  UpdateListBookmarks;
 end;
 
 procedure TfmMain.ecBkNextExecute(Sender: TObject);
@@ -16256,25 +16278,29 @@ begin
   end;
 
   UpdateStatusbar;
+  UpdateListBookmarks;
   DoProgressHide;
 end;
 
 procedure TfmMain.ecBkCopyExecute(Sender: TObject);
 var
   List: TWideStringList;
-  i:Integer;
+  i: Integer;
 begin
   List:= TWideStringList.Create;
-  with CurrentEditor do
-    for i:= 0 to Lines.Count-1 do
-      if BookmarkForLine(i)>=0 then
-        List.Add(Lines[i]);
+  try
+    with CurrentEditor do
+      for i:= 0 to Lines.Count-1 do
+        if BookmarkForLine(i)>=0 then
+          List.Add(Lines[i]);
 
-  if List.Count>0 then
-    TntClipboard.AsWideText:= List.Text
-  else
-    MsgBeep;
-  FreeAndNil(List);
+    if List.Count>0 then
+      TntClipboard.AsWideText:= List.Text
+    else
+      MsgBeep;
+  finally
+    FreeAndNil(List);
+  end;
 end;
 
 procedure TfmMain.ecBkCutExecute(Sender: TObject);
@@ -16326,6 +16352,7 @@ begin
   MsgDelLines(NDel);
   DoProgressHide;
   UpdateStatusbar;
+  UpdateListBookmarks;
 end;
 
 procedure TfmMain.DoDeleteLine(Ed: TSyntaxMemo; NLine: integer;
@@ -16374,6 +16401,7 @@ begin
 
   DoProgressHide;
   UpdateStatusbar;
+  UpdateListBookmarks;
 end;
 
 procedure TfmMain.ecGotoExecute(Sender: TObject);
@@ -26734,6 +26762,7 @@ begin
         begin
           EditorSetBookmarksAsString(F.EditorMaster, SVal);
           EditorSetBookmarksAsString(F.EditorSlave, SVal);
+          UpdateListBookmarks;
         end
       else
       if (SId=cFramePropPos) and opSaveEdCaret then
@@ -28673,6 +28702,77 @@ begin
         opColorTabBgActive,
         opColorTabBgActive2);
       Tabs.Invalidate;
+    end;
+end;
+
+procedure TfmMain.TbxTabBookmarksClick(Sender: TObject);
+begin
+  UpdatePanelOut(tbBookmarks);
+end;
+
+procedure TfmMain.UpdateListBookmarks;
+var
+  L: TList;
+  F: TEditorFrame;
+  Ed: TSyntaxMemo;
+  i, j, LineNum: Integer;
+  bm: TBookmark;
+begin
+  ListBookmarks.Items.BeginUpdate;
+  ListBookmarks.Items.Clear;
+
+  L:= TList.Create;
+  try
+    for j:= 0 to FrameAllCount-1 do
+    begin
+      F:= FramesAll[j];
+      if F=nil then Continue;
+      Ed:= F.EditorMaster;
+      if Ed=nil then Continue;
+
+      L.Clear;
+      EditorGetBookmarksAsSortedList_Ex(Ed, L);
+
+      for i:= 0 to L.Count-1 do
+      begin
+        bm:= TBookmark(L[i]);
+        if bm=nil then Continue;
+        LineNum:= Ed.StrPosToCaretPos(bm.Position).Y+1;
+        with ListBookmarks.Items.Add do
+        begin
+          if F.FileName<>'' then
+            Caption:= F.FileName
+          else
+            Caption:= DKLangConstW('Untitled');
+          SubItems.Add(IntToStr(LineNum));
+          ImageIndex:= bm.ImageIndex;
+        end;
+      end;
+    end;
+  finally
+    FreeAndNil(L);
+  end;
+
+  ListBookmarks.Items.EndUpdate;
+end;
+
+procedure TfmMain.ListBookmarksClick(Sender: TObject);
+var
+  fn: Widestring;
+  Num: Integer;
+  F: TEditorFrame;
+begin
+  with ListBookmarks do
+    if Selected<>nil then
+    begin
+      fn:= Selected.Caption;
+      Num:= StrToIntDef(Selected.SubItems[0], -1);
+      if (fn<>DKLangConstW('Untitled')) and (Num>=0) then
+      begin
+        F:= DoOpenFile(fn);
+        if F<>nil then
+          F.EditorMaster.CaretPos:= Point(0, Num-1);
+      end;
     end;
 end;
 

@@ -630,7 +630,7 @@ object fmMain: TfmMain
         Height = 21
         Align = alBottom
         PopupMenu = PopupPanelTitle
-        ActiveTabIndex = 2
+        ActiveTabIndex = 3
         TabPosition = ttpBottom
         HiddenItems = <>
         object TbxTabOutput: TSpTBXTabItem
@@ -640,6 +640,10 @@ object fmMain: TfmMain
         object TbxTabResults: TSpTBXTabItem
           Caption = 'Search Results'
           OnClick = TBXItemOOFindClick
+        end
+        object TbxTabBookmarks: TSpTBXTabItem
+          Caption = 'Bookmarks'
+          OnClick = TbxTabBookmarksClick
         end
         object TbxTabValidate: TSpTBXTabItem
           Caption = 'Validation'
@@ -699,6 +703,29 @@ object fmMain: TfmMain
           OnDblClick = MemoConsoleDblClick
           OnKeyDown = MemoConsoleKeyDown
         end
+      end
+      object ListBookmarks: TTntListView
+        Left = 664
+        Top = 16
+        Width = 137
+        Height = 145
+        BorderStyle = bsNone
+        Columns = <
+          item
+            Caption = 'Filename'
+            Width = 500
+          end
+          item
+            Alignment = taRightJustify
+            Caption = 'Line'
+            Width = 70
+          end>
+        ReadOnly = True
+        RowSelect = True
+        SmallImages = ImgListGutter
+        TabOrder = 7
+        ViewStyle = vsReport
+        OnClick = ListBookmarksClick
       end
     end
   end
@@ -12215,7 +12242,7 @@ object fmMain: TfmMain
     Left = 577
     Top = 233
     LangData = {
-      0600666D4D61696E0001190400000A00544258446F636B546F70000006007462
+      0600666D4D61696E00011B0400000A00544258446F636B546F70000006007462
       46696C650101000000B5020000070043617074696F6E000E005442584974656D
       546F6F6C4E65770102000000B6020000070043617074696F6EB7020000040048
       696E740016005442585375626D656E754974656D546F6F6C4F70656E01020000
@@ -14290,7 +14317,10 @@ object fmMain: TfmMain
       0043617074696F6E0014005370544258536570617261746F724974656D323000
       001E005442584974656D546162436C6F73654F7468657273416C6C47726F7570
       730101000000090B0000070043617074696F6E0016006163436C6F73654F7468
-      657273416C6C47726F7570730000}
+      657273416C6C47726F75707300000F00546278546162426F6F6B6D61726B7301
+      01000000100B0000070043617074696F6E000D004C697374426F6F6B6D61726B
+      730102000000110B00001200436F6C756D6E735B305D2E43617074696F6E120B
+      00001200436F6C756D6E735B315D2E43617074696F6E00}
   end
   object TimerHint: TTimer
     Enabled = False
