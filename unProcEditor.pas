@@ -2258,12 +2258,13 @@ begin
     while (n>0) and (n<=Length(S)) do
     begin
       if fw then Inc(n) else Dec(n);
-      if EditorGetTokenName(Ed, n, n) = TokenName then
-      begin
-        if (S[n]=ch2) and (nLock<=0) then Break;
-        if (S[n]=ch1) then Inc(nLock);
-        if (S[n]=ch2) then Dec(nLock);
-      end;  
+      if (S[n]=ch1) or (S[n]=ch2) then
+        if EditorGetTokenName(Ed, n, n) = TokenName then
+        begin
+          if (S[n]=ch2) and (nLock<=0) then Break;
+          if (S[n]=ch1) then Inc(nLock);
+          if (S[n]=ch2) then Dec(nLock);
+        end;
     end;
 
     if (n>0) and (n<=Length(S)) then

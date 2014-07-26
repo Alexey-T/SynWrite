@@ -4711,7 +4711,7 @@ begin
     opOem:= ReadString('Setup', 'Oem', 'bat,cmd,nfo,diz');
     opUTF8:= ReadString('Setup', 'UTF8', '');
 
-    if not QuickView then
+    if SynExe or not QuickView then
       Theme:= ReadString('Setup', 'Theme', cThemeDefault)
 	  else
       Theme:= cThemeWindows;
