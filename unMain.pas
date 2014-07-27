@@ -289,17 +289,17 @@ type
   end;
 
 type
-  TSynUserToolbarId = (synToolbar1, synToolbar2, synToolbar3);
-  TSynDock = (sdockTop, sdockLeft, sdockRight, sdockBottom);
   TSynPanelType = (plTypeTree, plTypeClip, plTypeOut);
   TSynFileSort = (sortNone, sortDate, sortDateDesc);
   TSynSelState = (selNone, selSmall, selStream, selColumn, selCarets);
   TSynGotoTree = (tgoNext, tgoPrev, tgoParent, tgoNextBro, tgoPrevBro);
   TSynGotoMode = (goLine, goPrevBk, goNextBk, goNumBk);
-  TSynTabOut = (tbOut, tbFind, tbVal, tbPluginsLog, tbConsole, tbBookmarks);
-  TSynTabRight = (tbClip, tbMap, tbTextClips);
+  TSynTabOut = (tbOutput, tbFindRes, tbValidate, tbPluginsLog, tbConsole, tbBookmarks);
+  TSynTabRight = (tbClipbd, tbMinimap, tbTextClips);
   TSynTabLeft = (tbTree, tbProj, tbTabs, tbPugin1, tbPugin2, tbPugin3, tbPugin4, tbPugin5);
-  TSynCpOverride = (cp_sr_Def, cp_sr_OEM, cp_sr_UTF8, cp_sr_UTF16);
+  TSynEncOverride = (cp_sr_Def, cp_sr_OEM, cp_sr_UTF8, cp_sr_UTF16);
+  TSynUserToolbarId = (synToolbar1, synToolbar2, synToolbar3);
+  TSynDock = (sdockTop, sdockLeft, sdockRight, sdockBottom);
 
 const
   cColorsNum = 59;
@@ -2211,7 +2211,8 @@ type
     orig_TabLeft: TSynTabLeft;
     orig_TabOut: TSynTabOut;
     orig_TabsSort: integer;
-    orig_TabsWidths: string;
+    orig_ListTabsCols: string;
+    orig_ListBkmkCols: string;
 
     //auto-complete lists
     FAcpIntHtml,
@@ -2298,8 +2299,10 @@ type
     procedure DoDelayedCommandAny(Command: Integer);
     procedure DoDelayedCommandWithClose(Command: Integer);
     function ListTab_FrameIndex: integer;
-    function GetTabsWidths: Widestring;
-    procedure SetTabsWidths(const S: Widestring);
+    function GetListTabsColumns: string;
+    procedure SetListTabsColumns(const S: string);
+    function GetListBkmkColumns: string;
+    procedure SetListBkmkColumns(const S: string);
 
     //plugins related----------------------------
     procedure DoRefreshPluginsFiles(const fn: Widestring);
@@ -2628,7 +2631,7 @@ type
     procedure FindActionWrapper(act: TSRAction);
     procedure FindFocusEditor(Sender: TObject);
     procedure FindDialog(AReplaceMode: boolean);
-    procedure FindInFile(const fn: Widestring; InCodepage: TSynCpOverride = cp_sr_Def);
+    procedure FindInFile(const fn: Widestring; InCodepage: TSynEncOverride = cp_sr_Def);
     procedure FindInFrame(F: TEditorFrame;
       AMarkAll: boolean = false;
       AWithBkmk: boolean = false);
@@ -3054,7 +3057,8 @@ type
     procedure UpdateOnFrameChanged;
     procedure UpdateListBookmarks;
 
-    property opTabsWidths: Widestring read GetTabsWidths write SetTabsWidths;
+    property ListTabsColumns: string read GetListTabsColumns write SetListTabsColumns;
+    property ListBkmkColumns: string read GetListBkmkColumns write SetListBkmkColumns;
     property ShowFullScreen: boolean read FFullScr write SetFS;
     property ShowOnTop: boolean read FOnTop write SetOnTop;
 
@@ -3779,7 +3783,6 @@ begin
   end;
 end;
 
-//Save specified frame
 function TfmMain.SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
 var
   AUntitled: boolean;
@@ -3792,7 +3795,7 @@ begin
   if not DoCheckUnicodeNeeded(Frame) then Exit;
   if DoPyEvent(Frame.EditorMaster, cSynEventOnSaveBefore, [])=cPyFalse then Exit;
 
-  AUntitled:= Frame.IsNewFile;
+  AUntitled:= Frame.FileName='';
   if not PromtDialog then
     PromtDialog:= AUntitled;
 
@@ -3868,19 +3871,24 @@ begin
   //repaint editor (coz line states not redrawn)
   Frame.EditorMaster.Invalidate;
   Frame.EditorSlave.Invalidate;
+
   //start notifications
   if IsFileExist(Frame.FileName) then
     Frame.DoStartNotif;
+
   //send "reread panel" to plugins
   DoRefreshPluginsFiles(Frame.FileName);
 
-  //Need to reload, as Line Ends changed?
+  //need to reload, as line-ends changed?
   if Frame.LineEndsChg then
   begin
     Frame.LineEndsChg:= false;
     DoFrameReloadInt(Frame);
     UpdateFrameEnc(Frame);
   end;
+
+  if AUntitled then
+    UpdateListBookmarks;
 end;
 
 function TfmMain.GetFrameCount: integer;
@@ -4681,7 +4689,6 @@ begin
 
     opTabOptionsLast:= ReadInteger('View', 'TabLast', 0);
     opTabsSortMode:= ReadInteger('View', 'TabSort', 0);
-    opTabsWidths:= ReadString('View', 'TabWdt', '100,400,');
 
     //opMapVScroll:= ReadBool('View', 'MapVSc', true);
     opMapZoom:= ReadInteger('View', 'MapZoom', 25);
@@ -4690,9 +4697,9 @@ begin
     opCaretShape:= ReadInteger('View', 'CaretType', 1);
 
     NCount:= ReadInteger('View', 'NPrint', 0+2+4);
-    opNonPrint:=       (NCount and 1)<>0;
-    opNonPrintSpaces:= (NCount and 2)<>0;
-    opNonPrintEol:=    (NCount and 4)<>0;
+    opNonPrint:=          (NCount and 1)<>0;
+    opNonPrintSpaces:=    (NCount and 2)<>0;
+    opNonPrintEol:=       (NCount and 4)<>0;
     opNonPrintEolDetail:= (NCount and 8)<>0;
 
     opBigSize:= ReadInteger('Setup', 'BigSize', 4);
@@ -4731,7 +4738,7 @@ begin
     FTabRight:= TSynTabRight(ReadInteger('plClip', 'Tab', 0));
     FTabOut:= TSynTabOut(ReadInteger('plOut', 'Tab', 0));
     if FTabOut=tbPluginsLog then //don't restore last avtive Log panel
-      FTabOut:= tbOut;
+      FTabOut:= tbOutput;
 
     //opt
     PropsManager.LoadProps(ini); //20ms
@@ -4761,7 +4768,8 @@ begin
     orig_TabLeft:= FTabLeft;
     orig_TabOut:= FTabOut;
     orig_TabsSort:= opTabsSortMode;
-    orig_TabsWidths:= opTabsWidths;
+    orig_ListTabsCols:= ListTabsColumns;
+    orig_ListBkmkCols:= ListBkmkColumns;
   finally
     Free;
   end;
@@ -4776,6 +4784,9 @@ begin
       S:= ReadString('Win', 'Groups', '');
       opGroupMode:= TATGroupsMode(StrToIntDef(SGetItem(S), Ord(gmOne)));
       opGroupSplit:= StrToIntDef(SGetItem(S), 50);
+
+      ListTabsColumns:= ReadString('Win', 'ColsTabs', '');
+      ListBkmkColumns:= ReadString('Win', 'ColsBkmk', '');
 
       //load recent files
       LoadMruList(SynMruFiles, Ini, 'MRU', opSaveState, opMruCheck);
@@ -4849,8 +4860,6 @@ begin
       WriteInteger('plOut', 'Tab', Ord(FTabOut));
     if opTabsSortMode <> orig_TabsSort then
       WriteInteger('View', 'TabSort', opTabsSortMode);
-    if opTabsWidths <> orig_TabsWidths then
-      WriteString('View', 'TabWdt', opTabsWidths);
 
     //save toolbars and panels
     if not ShowFullScreen then
@@ -4869,6 +4878,11 @@ begin
   with Ini do
   try
     WriteString('Win', 'Groups', Format('%d,%d', [Ord(Groups.Mode), Groups.SplitPos]));
+
+    if ListTabsColumns <> orig_ListTabsCols then
+      WriteString('Win', 'ColsTabs', ListTabsColumns);
+    if ListBkmkColumns <> orig_ListBkmkCols then
+      WriteString('Win', 'ColsBkmk', ListBkmkColumns);
 
     //save Clipbd panel
     if Assigned(fmClips) then
@@ -7211,8 +7225,8 @@ begin
   FListLexersSorted:= TTntStringList.Create;
   FListSnippets:= nil;
 
-  FTabOut:= tbOut;
-  FTabRight:= tbClip;
+  FTabOut:= tbOutput;
+  FTabRight:= tbClipbd;
   FTabLeft:= tbTree;
 
   fmNumConv:= nil;
@@ -11970,7 +11984,7 @@ begin
   end;
 end;
 
-procedure TfmMain.FindInFile(const fn: Widestring; InCodepage: TSynCpOverride = cp_sr_Def);
+procedure TfmMain.FindInFile(const fn: Widestring; InCodepage: TSynEncOverride = cp_sr_Def);
 var
   Op: TSyntaxMemoOptions;
   OpWrap: boolean;
@@ -12344,7 +12358,7 @@ begin
     if not AOutAppend then
       DoClearTreeFind;
     UpdateTreeFind_Initial(Finder.FindText, ADir);
-    UpdatePanelOut(tbFind);
+    UpdatePanelOut(tbFindRes);
     plOut.Show;
 
     fmProgress.SetMode(proFindText);
@@ -12436,7 +12450,7 @@ begin
       else
       begin
         ANeedFocusResult:= true;
-        UpdatePanelOut(tbFind);
+        UpdatePanelOut(tbFindRes);
         plOut.Show;
       end;
     end;
@@ -12456,7 +12470,7 @@ begin
         [Finder.FindText, Finder.ReplaceText, ADir]);
     FTreeRoot:= TreeFind.Items.Add(nil, ANodeText);
 
-    UpdatePanelOut(tbFind);
+    UpdatePanelOut(tbFindRes);
     plOut.Show;
 
     ACountFiles:= 0;
@@ -12523,7 +12537,7 @@ begin
       else
       begin
         ANeedFocusResult:= true;
-        UpdatePanelOut(tbFind);
+        UpdatePanelOut(tbFindRes);
         plOut.Show;
       end;
     end;
@@ -13360,23 +13374,26 @@ end;
 procedure TfmMain.UpdatePanelOut(n: TSynTabOut);
 begin
   FTabOut:= n;
-  ListOut.Visible:= n=tbOut;
-  ListVal.Visible:= n=tbVal;
-  TreeFind.Visible:= n=tbFind;
+  ListOut.Visible:= n=tbOutput;
+  ListVal.Visible:= n=tbValidate;
+  TreeFind.Visible:= n=tbFindRes;
   ListPLog.Visible:= n=tbPluginsLog;
   plConsole.Visible:= n=tbConsole;
   ListBookmarks.Visible:= n=tbBookmarks;
 
-  if n=tbOut then
+  if ListBookmarks.Visible then
+    UpdateListBookmarks;
+
+  if n=tbOutput then
     tbTabsOut.ActiveTabIndex:= 0
   else
-  if n=tbFind then
+  if n=tbFindRes then
     tbTabsOut.ActiveTabIndex:= 1
   else
   if n=tbBookmarks then
     tbTabsOut.ActiveTabIndex:= 2
   else
-  if n=tbVal then
+  if n=tbValidate then
     tbTabsOut.ActiveTabIndex:= 3
   else
   if n=tbPluginsLog then
@@ -13460,8 +13477,8 @@ var
   IsMap, IsClip, IsClips: boolean;
 begin
   FTabRight:= n;
-  IsMap:= n=tbMap;
-  IsClip:= n=tbClip;
+  IsMap:= n=tbMinimap;
+  IsClip:= n=tbClipbd;
   IsClips:= n=tbTextClips;
 
   if IsMap then
@@ -13505,12 +13522,12 @@ end;
 
 procedure TfmMain.TBXItemOOOutClick(Sender: TObject);
 begin
-  UpdatePanelOut(tbOut);
+  UpdatePanelOut(tbOutput);
 end;
 
 procedure TfmMain.TBXItemOOFindClick(Sender: TObject);
 begin
-  UpdatePanelOut(tbFind);
+  UpdatePanelOut(tbFindRes);
 end;
 
 (*
@@ -15372,7 +15389,7 @@ begin
   if not plClip.Visible then
   begin
     ecShowClip.Execute;
-    UpdatePanelRight(tbClip);
+    UpdatePanelRight(tbClipbd);
     if fmClip.ListClip.CanFocus then
       fmClip.ListClip.SetFocus;
   end
@@ -15381,7 +15398,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelRight(tbClip);
+    UpdatePanelRight(tbClipbd);
     if fmClip.ListClip.CanFocus then
       fmClip.ListClip.SetFocus
   end;
@@ -15591,7 +15608,7 @@ begin
   if not plOut.Visible then
   begin
     ecShowOut.Execute;
-    UpdatePanelOut(tbOut);
+    UpdatePanelOut(tbOutput);
     if Self.Enabled and ListOut.CanFocus then
       ListOut.SetFocus;
   end
@@ -15600,7 +15617,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelOut(tbOut);
+    UpdatePanelOut(tbOutput);
     if Self.Enabled and ListOut.CanFocus then
       ListOut.SetFocus
   end;
@@ -15726,7 +15743,7 @@ begin
   if not plOut.Visible then
   begin
     ecShowOut.Execute;
-    UpdatePanelOut(tbFind);
+    UpdatePanelOut(tbFindRes);
     if Self.Enabled and TreeFind.CanFocus then
       TreeFind.SetFocus;
   end
@@ -15735,7 +15752,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelOut(tbFind);
+    UpdatePanelOut(tbFindRes);
     if Self.Enabled and TreeFind.CanFocus then
       TreeFind.SetFocus
   end;
@@ -16563,7 +16580,7 @@ begin
     SynPanelPropsVal.ZeroBase:= false;
 
     ListVal.Items.LoadFromFile(fn_err);
-    UpdatePanelOut(tbVal);
+    UpdatePanelOut(tbValidate);
     plOut.Show;
   end
   else
@@ -16597,7 +16614,7 @@ end;
 
 procedure TfmMain.TBXItemOOValClick(Sender: TObject);
 begin
-  UpdatePanelOut(tbVal);
+  UpdatePanelOut(tbValidate);
 end;
 
 procedure TfmMain.ListValDblClick(Sender: TObject);
@@ -16704,7 +16721,7 @@ begin
   if not plOut.Visible then
   begin
     ecShowOut.Execute;
-    UpdatePanelOut(tbVal);
+    UpdatePanelOut(tbValidate);
     if Self.Enabled and ListVal.CanFocus then
       ListVal.SetFocus;
   end
@@ -16713,7 +16730,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelOut(tbVal);
+    UpdatePanelOut(tbValidate);
     if Self.Enabled and ListVal.CanFocus then
       ListVal.SetFocus
   end;
@@ -17237,12 +17254,12 @@ end;
 
 procedure TfmMain.TBXItemRightClipClick(Sender: TObject);
 begin
-  UpdatePanelRight(tbClip);
+  UpdatePanelRight(tbClipbd);
 end;
 
 procedure TfmMain.TBXItemRightMapClick(Sender: TObject);
 begin
-  UpdatePanelRight(tbMap);
+  UpdatePanelRight(tbMinimap);
 end;
 
 procedure TfmMain.MapClick(Sender: TObject);
@@ -17294,7 +17311,7 @@ begin
   if not plClip.Visible then
   begin
     ecShowClip.Execute;
-    UpdatePanelRight(tbMap);
+    UpdatePanelRight(tbMinimap);
     if Assigned(fmMap) and fmMap.edMap.CanFocus then
       fmMap.edMap.SetFocus;
   end
@@ -17303,7 +17320,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelRight(tbMap);
+    UpdatePanelRight(tbMinimap);
     if Assigned(fmMap) and fmMap.edMap.CanFocus then
       fmMap.edMap.SetFocus
   end;
@@ -19278,7 +19295,7 @@ begin
           SynPanelPropsOut.ZeroBase:= false;
 
           UpdatePanelOutFromList(List);
-          UpdatePanelOut(tbOut);
+          UpdatePanelOut(tbOutput);
           plOut.Show;
         end;
 
@@ -19575,7 +19592,7 @@ begin
       SynPanelPropsOut.Encoding,
       EditorTabExpansion(CurrentEditor));
     UpdatePanelOutFromList(List);
-    UpdatePanelOut(tbOut);
+    UpdatePanelOut(tbOutput);
     plOut.Show;
   finally
     FreeAndNil(List);
@@ -21630,7 +21647,7 @@ begin
     cSynLogCmdHide:
       begin
         TbxTabPlugins.Visible:= false;
-        UpdatePanelOut(tbOut);
+        UpdatePanelOut(tbOutput);
       end;
     cSynLogCmdShow:
       begin
@@ -21763,7 +21780,7 @@ begin
 
   //init TreeRoot, show pane
   UpdateTreeFind_Initial(Finder.FindText, ADir, true);
-  UpdatePanelOut(tbFind);
+  UpdatePanelOut(tbFindRes);
   plOut.Show;
 
   DoProgressShow(proFindText);
@@ -21820,7 +21837,7 @@ begin
   else
   begin
     UpdateTreeFind_Results(Finder.FindText, ADir, false, true);
-    UpdatePanelOut(tbFind);
+    UpdatePanelOut(tbFindRes);
     plOut.Show;
   end;
 end;
@@ -22062,21 +22079,40 @@ begin
   UpdateListTabs;
 end;
 
-function TfmMain.GetTabsWidths: Widestring;
+function TfmMain.GetListTabsColumns: string;
 begin
   with ListTabs do
     Result:= Format('%d,%d,', [Columns[0].Width, Columns[1].Width]);
 end;
 
-procedure TfmMain.SetTabsWidths(const S: Widestring);
+function TfmMain.GetListBkmkColumns: string;
+begin
+  with ListBookmarks do
+    Result:= Format('%d,%d,%d,', [Columns[0].Width, Columns[1].Width, Columns[2].Width]);
+end;
+
+procedure TfmMain.SetListTabsColumns(const S: string);
 var
   S1: Widestring;
 begin
   S1:= S;
   with ListTabs do
   begin
-    Columns[0].Width:= StrToIntDef(SGetItem(S1), 100);
-    Columns[1].Width:= StrToIntDef(SGetItem(S1), 400);
+    with Columns[0] do Width:= StrToIntDef(SGetItem(S1), Width);
+    with Columns[1] do Width:= StrToIntDef(SGetItem(S1), Width);
+  end;
+end;
+
+procedure TfmMain.SetListBkmkColumns(const S: string);
+var
+  S1: Widestring;
+begin
+  S1:= S;
+  with ListBookmarks do
+  begin
+    with Columns[0] do Width:= StrToIntDef(SGetItem(S1), Width);
+    with Columns[1] do Width:= StrToIntDef(SGetItem(S1), Width);
+    with Columns[2] do Width:= StrToIntDef(SGetItem(S1), Width);
   end;
 end;
 
@@ -27840,7 +27876,7 @@ begin
 
   //init TreeRoot, show pane
   UpdateTreeFind_Initial(Finder.FindText, ADir, true);
-  UpdatePanelOut(tbFind);
+  UpdatePanelOut(tbFindRes);
   plOut.Show;
 
   FListFiles.Clear;
@@ -27870,7 +27906,7 @@ begin
   if FTreeRoot=nil then
     raise Exception.Create('TreeRoot nil');
   UpdateTreeFind_Results(Finder.FindText, ADir, false, true);
-  UpdatePanelOut(tbFind);
+  UpdatePanelOut(tbFindRes);
   plOut.Show;
 
   if ASelectResults then
@@ -28711,13 +28747,17 @@ begin
 end;
 
 procedure TfmMain.UpdateListBookmarks;
+const
+  cMaxLen = 100;
 var
   L: TList;
   F: TEditorFrame;
   Ed: TSyntaxMemo;
-  i, j, LineNum: Integer;
+  i, j, NLine: Integer;
   bm: TBookmark;
+  SDesc: Widestring;
 begin
+  if not ListBookmarks.Visible then Exit;
   ListBookmarks.Items.BeginUpdate;
   ListBookmarks.Items.Clear;
 
@@ -28737,15 +28777,25 @@ begin
       begin
         bm:= TBookmark(L[i]);
         if bm=nil then Continue;
-        LineNum:= Ed.StrPosToCaretPos(bm.Position).Y+1;
+        NLine:= Ed.StrPosToCaretPos(bm.Position).Y;
+
+        SDesc:= '';
+        if (NLine>=0) and (NLine<Ed.Lines.Count) then
+        begin
+          SDesc:= Ed.Lines[NLine];
+          SDesc:= Copy(SDesc, 1, cMaxLen);
+          SReplaceAllW(SDesc, #9, '    '{not exact len});
+        end;
+
         with ListBookmarks.Items.Add do
         begin
+          ImageIndex:= bm.ImageIndex;
           if F.FileName<>'' then
             Caption:= F.FileName
           else
             Caption:= DKLangConstW('Untitled');
-          SubItems.Add(IntToStr(LineNum));
-          ImageIndex:= bm.ImageIndex;
+          SubItems.Add(IntToStr(NLine+1));
+          SubItems.Add(SDesc);
         end;
       end;
     end;

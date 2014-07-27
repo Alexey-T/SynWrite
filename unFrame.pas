@@ -206,7 +206,6 @@ type
     procedure SaveFile(AFileName: Widestring);
     procedure LoadFile(const AFileName: Widestring);
     function IsTheFile(const AFileName: Widestring): Boolean;
-    function IsNewFile: Boolean;
     function IsSplitted: boolean;
     procedure ToggleSplitted;
     procedure UpdateGutterWidth(Sender: TObject);
@@ -544,39 +543,6 @@ begin
   Result:= (FFileName <> '') and
     (WideUpperCase(FFileName) = WideUpperCase(AFileName));
 end;
-
-//is frame hold untitled document?
-function TEditorFrame.IsNewFile: Boolean;
-begin
-  Result:= FFileName = '';
-end;
-
-{
-procedure TEditorFrame.FixEditorCollapsed(Ed: TSyntaxMemo);
-var
-  i: Integer;
-  S: string;
-  AMod: boolean;
-begin
-  AMod:= False;
-  for i:= Ed.Collapsed.Count-1 downto 0 do
-    with Ed.Collapsed[i] do
-    begin
-      S:= EditorTokenName(Ed, StartPos+1, EndPos+1);
-      if S='Comment' then
-      begin
-        Ed.Collapsed.Delete(i);
-        AMod:= True;
-      end;
-    end;
-  if AMod then
-  begin
-    //TfmMain(Owner).SHint[-1]:= 'Adjust';
-    //Ed.DoScroll;
-    MsgBeep;
-  end;
-end;
-}
 
 procedure TEditorFrame.EditorMasterChange(Sender: TObject);
 begin
