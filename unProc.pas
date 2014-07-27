@@ -20,6 +20,7 @@ uses
   IniFiles,
   PngImageList;
 
+procedure DoUpdateIniFileForNewRelease(const SynIni: string);
 function FontStylesToString(const f: TFontStyles): string;
 function StringToFontStyles(const s: string): TFontStyles;
 function FontToString(F: TFont): string;
@@ -2154,5 +2155,117 @@ begin
   S1:= SGetItem(S);
   F.Style:= StringToFontStyles(S1);
 end;
+
+
+function StringToEditorOptionsEx(const S: string): TSyntaxMemoOptionsEx;
+begin
+  Result:= [];
+  if Pos('soSmartPaste', S)>0 then Include(Result, soSmartPaste);
+  if Pos('soUseCaseFormat', S)>0 then Include(Result, soUseCaseFormat);
+  if Pos('soAutoFormat', S)>0 then Include(Result, soAutoFormat);
+  if Pos('soKeepSearchMarks', S)>0 then Include(Result, soKeepSearchMarks);
+  if Pos('soExtractAnsiParts', S)>0 then Include(Result, soExtractAnsiParts);
+  if Pos('soCorrectNonPrinted', S)>0 then Include(Result, soCorrectNonPrinted);
+  if Pos('soVirtualCaretPos', S)>0 then Include(Result, soVirtualCaretPos);
+  if Pos('soUnlimitedCaretPos', S)>0 then Include(Result, soUnlimitedCaretPos);
+  if Pos('soNormalSelToLineEnd', S)>0 then Include(Result, soNormalSelToLineEnd);
+  if Pos('soRightClickMoveCaret', S)>0 then Include(Result, soRightClickMoveCaret);
+  if Pos('soDisableAutoClose', S)>0 then Include(Result, soDisableAutoClose);
+  if Pos('soAllowZeroTab', S)>0 then Include(Result, soAllowZeroTab);
+  if Pos('soNotSuppressAltNNNN', S)>0 then Include(Result, soNotSuppressAltNNNN);
+  if Pos('eoShowCaretWhenUnfocused', S)>0 then Include(Result, eoShowCaretWhenUnfocused);
+  if Pos('soKeepCaretPaste', S)>0 then Include(Result, soKeepCaretPaste);
+end;
+
+function StringToEditorOptions(const S: string): TSyntaxMemoOptions;
+begin
+  Result:= [];
+  if Pos('soOverwriteBlocks', S)>0 then Include(Result, soOverwriteBlocks);
+  if Pos('soPersistentBlocks', S)>0 then Include(Result, soPersistentBlocks);
+  if Pos('soEnableBlockSel', S)>0 then Include(Result, soEnableBlockSel);
+  if Pos('soDoubleClickLine', S)>0 then Include(Result, soDoubleClickLine);
+  if Pos('soKeepCaretInText', S)>0 then Include(Result, soKeepCaretInText);
+  if Pos('soCopyAsRTF', S)>0 then Include(Result, soCopyAsRTF);
+  if Pos('soHideSelection', S)>0 then Include(Result, soHideSelection);
+  if Pos('soHideDynamic', S)>0 then Include(Result, soHideDynamic);
+  if Pos('soAutoIndentMode', S)>0 then Include(Result, soAutoIndentMode);
+  if Pos('soBackUnindent', S)>0 then Include(Result, soBackUnindent);
+  if Pos('soGroupUndo', S)>0 then Include(Result, soGroupUndo);
+  if Pos('soGroupRedo', S)>0 then Include(Result, soGroupRedo);
+  if Pos('soFixedLineHeight', S)>0 then Include(Result, soFixedLineHeight);
+  if Pos('soDragText', S)>0 then Include(Result, soDragText);
+  if Pos('soCallapseEmptyLines', S)>0 then Include(Result, soCallapseEmptyLines);
+  if Pos('soAutoSelect', S)>0 then Include(Result, soAutoSelect);
+  if Pos('soKeepTrailingBlanks', S)>0 then Include(Result, soKeepTrailingBlanks);
+  if Pos('soFloatMarkers', S)>0 then Include(Result, soFloatMarkers);
+  if Pos('soUndoAfterSave', S)>0 then Include(Result, soUndoAfterSave);
+  if Pos('soDisableSelection', S)>0 then Include(Result, soDisableSelection);
+  if Pos('soAlwaysShowCaret', S)>0 then Include(Result, soAlwaysShowCaret);
+  if Pos('soDrawCurLineFocus', S)>0 then Include(Result, soDrawCurLineFocus);
+  if Pos('soHideCursorOnType', S)>0 then Include(Result, soHideCursorOnType);
+  if Pos('soScrollLastLine', S)>0 then Include(Result, soScrollLastLine);
+  if Pos('soGreedySelect', S)>0 then Include(Result, soGreedySelect);
+  if Pos('soKeepSelMode', S)>0 then Include(Result, soKeepSelMode);
+  if Pos('soSmartCaret', S)>0 then Include(Result, soSmartCaret);
+  if Pos('soBreakOnRightMargin', S)>0 then Include(Result, soBreakOnRightMargin);
+  if Pos('soOptimalFill', S)>0 then Include(Result, soOptimalFill);
+  if Pos('soFixedColumnMove', S)>0 then Include(Result, soFixedColumnMove);
+  if Pos('soVariableHorzScrollBar', S)>0 then Include(Result, soVariableHorzScrollBar);
+  if Pos('soUnindentKeepAlign', S)>0 then Include(Result, soUnindentKeepAlign);
+end;
+
+function DoReadIniString_LargeData(const fn, section, key: string): string;
+var
+  i: Integer;
+begin
+  with TIniFile.Create(fn) do
+  try
+    Result:= ReadString(section, key, '');
+    if Result='LARGE_DATA' then
+      for i:= 0 to ReadInteger(section+'__'+key, 'COUNT', 0)-1 do
+        Result:= Result + ReadString(section+'__'+key, 'DATA'+IntToStr(i), '');
+  finally
+    Free
+  end;
+end;
+
+
+procedure DoUpdateIniFileForNewRelease(const SynIni: string);
+const
+  secTpl = 'Template';
+var
+  Op: TSyntaxMemoOptions;
+  OpEx: TSyntaxMemoOptionsEx;
+  S: string;
+begin
+  with TIniFile.Create(SynIni) do
+  try
+    //1) Options
+    S:= DoReadIniString_LargeData(SynIni, secTpl, 'Options');
+    if S='' then
+    begin
+      MsgInfo('Ini file doesn''t need an update. Command ignored.', 0);
+      Exit
+    end;
+
+    Op:= StringToEditorOptions(S);
+    WriteString('Setup', 'Flags', IntToHex(LongWord(Op), 8));
+
+    //2) OptionsEx
+    S:= DoReadIniString_LargeData(SynIni, secTpl, 'OptionsEx');
+    OpEx:= StringToEditorOptionsEx(S);
+    WriteString('Setup', 'FlagsEx', IntToHex(Word(OpEx), 8));
+
+    //Erase old
+    DeleteKey(secTpl, 'Options');
+    DeleteKey(secTpl, 'OptionsEx');
+    EraseSection('Template__Options');
+
+    MsgInfo('Ini file updated, restart SynWrite now without saving options', 0);
+  finally
+    Free
+  end;
+end;
+
 
 end.

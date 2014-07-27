@@ -447,6 +447,7 @@ const
   sm_OptionsTab_EditorInsertFmt = 1136;
   sm_OptionsTab_NewOpen = 1137;
 
+  sm_UpdateIniFile = 1900;
   //end of list
 
 implementation

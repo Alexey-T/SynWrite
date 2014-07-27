@@ -1814,6 +1814,7 @@ begin
       TemplateEditor.Options:= TemplateEditor.Options - [soAlwaysShowCaret];
 
     ApplyCarets;
+    ApplyColorsFontsToFrames;
   end;
 end;
 
@@ -1878,6 +1879,8 @@ begin
       TemplateEditor.Options:= TemplateEditor.Options + [soUndoAfterSave]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soUndoAfterSave];
+
+    ApplyColorsFontsToFrames;  
   end;
 end;
 
@@ -1989,7 +1992,7 @@ begin
       opTabColors[i]:= ColorsOfTabs[i];
 
     ApplyTabOptions;
-    ApplyFrames;
+    ApplyFramesOptions;
   end;
 end;
 
@@ -2007,7 +2010,7 @@ begin
     ApplyMap;
 
     opMicroMap:= cbMicroMap.Checked;
-    ApplyFrames;
+    ApplyFramesOptions;
   end;
 end;
 
@@ -2439,7 +2442,8 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soKeepTrailingBlanks];
 
-    ApplyFrames;
+    ApplyFramesOptions;
+    ApplyColorsFontsToFrames;
 
     opDateFmt:= edDateFmt.Text;
     opDateFmtPLog:= edDateFmtP.Text;
@@ -2516,7 +2520,8 @@ begin
     end;
 
     ApplyEdOptions;
-    ApplyFrames;
+    ApplyFramesOptions;
+    ApplyColorsFontsToFrames;
   end;
 end;
 
@@ -2579,8 +2584,10 @@ begin
 
     opShowWrapMark:= cbDrawWrapMark.Checked;
     opShowCurrentColumn:= cbDrawCol.Checked;
+
     ApplyEdOptions;
-    ApplyFrames;
+    ApplyFramesOptions;
+    ApplyColorsFontsToFrames;
   end;
 end;
 

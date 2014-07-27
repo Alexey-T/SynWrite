@@ -3076,7 +3076,7 @@ type
     procedure ApplyShowRecentColors;
     procedure ApplySpell;
     procedure ApplyProj;
-    procedure ApplyFrames;
+    procedure ApplyFramesOptions;
     procedure ApplyFramesGutters;
     procedure ApplyTips;
     procedure ApplyAutoSave;
@@ -3293,6 +3293,7 @@ uses
   ecZRegExpr,
   ecCmdConst,
   ecLists,
+  cUtils,
 
   unSaveLex,
   unProcImg,
@@ -4469,6 +4470,8 @@ var
   ini: TMemIniFile;
   NCount: integer;
   s: Widestring;
+  NFlags: LongWord;
+  Ok: boolean;
 begin
   //get all options from Syn.ini
   ini:= TMemIniFile.Create(SynIni);
@@ -4547,6 +4550,15 @@ begin
 
     opShowPanelTitles:= ReadBool('View', 'PaneTitle', true);
     ApplyPanelTitles;
+
+    //Options and OptionsEx
+    NFlags:= HexStrToLongWord(ReadString('Setup', 'Flags', ''), Ok);
+    if Ok then
+      TemplateEditor.Options:= TSyntaxMemoOptions(NFlags);
+
+    NFlags:= HexStrToLongWord(ReadString('Setup', 'FlagsEx', ''), Ok);
+    if Ok then
+      TemplateEditor.OptionsEx:= TSyntaxMemoOptionsEx(Word(NFlags));
 
     //color array
     DoColorsArrayInit(ColorsArray);
@@ -5045,6 +5057,9 @@ begin
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
     WriteInteger('Setup', 'ColorUnd', opUnderlineColored);
     WriteString('Setup', 'TreeSorted', opTreeSorted);
+
+    WriteString('Setup', 'Flags', IntToHex(LongWord(TemplateEditor.Options), 8));
+    WriteString('Setup', 'FlagsEx', IntToHex(Word(TemplateEditor.OptionsEx), 8));
 
     WriteString('View', 'Colors', DoColorsArrayAsString(ColorsArray));
     WriteBool('View', 'CaretsEn', opCaretsEnabled);
@@ -6482,6 +6497,9 @@ begin
         else
           Handled:= false;
       end;
+
+    sm_UpdateIniFile:
+      DoUpdateIniFileForNewRelease(SynIni);
 
     //end of commands list
     else
@@ -14464,7 +14482,7 @@ begin
   ApplyTabOptions;
   Groups.Invalidate;
 
-  ApplyFrames;
+  ApplyFramesOptions;
   ApplyAcpColors;
 
   if Assigned(fmClip) then
@@ -20125,7 +20143,7 @@ begin
   end;
 end;
 
-procedure TfmMain.ApplyFrames;
+procedure TfmMain.ApplyFramesOptions;
 var
   i: Integer;
 begin
@@ -25529,6 +25547,10 @@ begin
   Ed.Font.Assign(TemplateEditor.Font);
   Ed.HorzRuler.Font.Assign(TemplateEditor.HorzRuler.Font);
   Ed.LineNumbers.Font.Assign(TemplateEditor.LineNumbers.Font);
+
+  //options
+  Ed.Options:= TemplateEditor.Options;
+  Ed.OptionsEx:= TemplateEditor.OptionsEx;
 end;
 
 procedure TfmMain.DoColorsArrayInit(var C: TSynColors);
