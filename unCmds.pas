@@ -392,6 +392,7 @@ const
   sm_FileCloseOthersAllGroups = 1059;
   sm_MoveCurrentTabToNextGroup = 1060;
   sm_MoveCurrentTabToPrevGroup = 1061;
+  sm_ToggleFocusBookmarks = 1062;
   //free
 
   //Tree commands

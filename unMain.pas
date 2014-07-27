@@ -1364,6 +1364,8 @@ type
     acCloseOthersAllGroups: TAction;
     TbxTabBookmarks: TSpTBXTabItem;
     ListBookmarks: TTntListView;
+    TbxItemWinBkmk: TSpTBXItem;
+    ecToggleFocusBookmarks: TAction;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2132,7 +2134,10 @@ type
     procedure TBXItemTabCloseOthersAllGroupsClick(Sender: TObject);
     procedure acCloseOthersAllGroupsExecute(Sender: TObject);
     procedure TbxTabBookmarksClick(Sender: TObject);
-    procedure ListBookmarksClick(Sender: TObject);
+    procedure ListBookmarksDblClick(Sender: TObject);
+    procedure ListBookmarksKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure ecToggleFocusBookmarksExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -2725,6 +2730,7 @@ type
     function SynFilesFilter: Widestring;
     procedure DoOptionsDialog(tabId: Integer);
     procedure DoTreeFocus;
+    procedure DoBookmarksFocus;
     procedure DoGetOppositeEditor(
       const EdSrc: TSyntaxMemo;
       var EdOther: TSyntaxMemo;
@@ -2817,6 +2823,7 @@ type
     procedure DoToggleTabDirs;
     procedure DoInsertUnicodeHexDialog;
     function DoSetPagesAndTabIndex(APageIndex, ATabIndex: Integer): boolean;
+    procedure DoListBookmarksNavigate;
 
     function DoAddTab(Pages: TATPages): TEditorFrame;
     procedure TabAdd(Sender: TObject);
@@ -3242,7 +3249,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1250';
+  cSynVer = '6.6.1260';
   cSynPyVer = '1.0.132';
 
 const
@@ -6204,6 +6211,7 @@ begin
     sm_ToggleFocusMasterSlave: ecToggleFocusMasterSlave.Execute;
     sm_ToggleFocusConsole: ecToggleFocusConsole.Execute;
     sm_ToggleFocusGroups: ecToggleFocusGroups.Execute;
+    sm_ToggleFocusBookmarks: ecToggleFocusBookmarks.Execute;
 
     sm_SplitViewsVertHorz: ecSplitViewsVertHorz.Execute;
     sm_SplitSlaveVertHorz: ecSplitSlaveVertHorz.Execute;
@@ -9818,6 +9826,7 @@ begin
   UpdKey(TbxItemWinProj, sm_ToggleFocusProj);
   UpdKey(TbxItemWinTabs, sm_ToggleFocusTabs);
   UpdKey(TbxItemWinConsole, sm_ToggleFocusConsole);
+  UpdKey(TbxItemWinBkmk, sm_ToggleFocusBookmarks);
 
   //sort
   UpdKey(TBXItemEDedupAll, sm_RemoveDupsAll);
@@ -12872,6 +12881,13 @@ begin
     Exit
   end;
   //
+  if IsShortcutOfCmd(sh, sm_ToggleFocusBookmarks) then
+  begin
+    ecToggleFocusBookmarks.Execute;
+    Key:= 0;
+    Exit
+  end;
+  //
   if IsShortcutOfCmd(sh, sm_ToggleFocusValidate) then
   begin
     ecToggleFocusValidate.Execute;
@@ -15368,6 +15384,13 @@ begin
   UpdatePanelLeft(tbTree);
   if Self.Enabled and Tree.CanFocus then
     Tree.SetFocus;
+end;
+
+procedure TfmMain.DoBookmarksFocus;
+begin
+  UpdatePanelOut(tbBookmarks);
+  if Self.Enabled and ListBookmarks.CanFocus then
+    ListBookmarks.SetFocus;
 end;
 
 procedure TfmMain.ecToggleFocusTreeExecute(Sender: TObject);
@@ -28806,7 +28829,7 @@ begin
   ListBookmarks.Items.EndUpdate;
 end;
 
-procedure TfmMain.ListBookmarksClick(Sender: TObject);
+procedure TfmMain.DoListBookmarksNavigate;
 var
   fn: Widestring;
   Num: Integer;
@@ -28824,6 +28847,36 @@ begin
           F.EditorMaster.CaretPos:= Point(0, Num-1);
       end;
     end;
+end;
+
+procedure TfmMain.ListBookmarksDblClick(Sender: TObject);
+begin
+  DoListBookmarksNavigate;
+end;
+
+procedure TfmMain.ListBookmarksKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key=vk_space) and (Shift=[]) then
+  begin
+    DoListBookmarksNavigate;
+    Key:= 0;
+    Exit
+  end;  
+end;
+
+procedure TfmMain.ecToggleFocusBookmarksExecute(Sender: TObject);
+begin
+  if not plOut.Visible then
+  begin
+    ecShowOut.Execute;
+    DoBookmarksFocus;
+  end
+  else
+  if ListBookmarks.Focused then
+    FocusEditor
+  else
+    DoBookmarksFocus;
 end;
 
 initialization
