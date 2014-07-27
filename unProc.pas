@@ -2217,13 +2217,18 @@ end;
 function DoReadIniString_LargeData(const fn, section, key: string): string;
 var
   i: Integer;
+  sSec: string;
 begin
   with TIniFile.Create(fn) do
   try
     Result:= ReadString(section, key, '');
     if Result='LARGE_DATA' then
-      for i:= 0 to ReadInteger(section+'__'+key, 'COUNT', 0)-1 do
-        Result:= Result + ReadString(section+'__'+key, 'DATA'+IntToStr(i), '');
+    begin
+      Result:= '';
+      sSec:= section+'__'+key;
+      for i:= 0 to Pred(ReadInteger(sSec, 'COUNT', 0)) do
+        Result:= Result + ReadString(sSec, 'DATA'+IntToStr(i), '');
+    end;
   finally
     Free
   end;
