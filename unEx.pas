@@ -594,6 +594,7 @@ begin
 end;
 
 initialization
+  CreateMutex(nil, false, 'UVViewSoft.SynWrite');
   InitPaths;
   InitApi;
 
