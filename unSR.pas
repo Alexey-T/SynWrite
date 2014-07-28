@@ -1497,11 +1497,11 @@ begin
   //Ctrl+E - paste escaped string
   if (Key=Ord('E')) and (Shift=[ssCtrl]) then
   begin
-    Str:= SEscapeRegex(TntClipboard.AsWideText);
-    if ed1.Focused then ed1.SelText:= Str else
-     if ed1Memo.Focused then ed1Memo.SelText:= Str else
-      if ed2.Focused then ed2.SelText:= Str else
-       if ed2Memo.Focused then ed2Memo.SelText:= Str;
+    Str:= TntClipboard.AsWideText;
+    if ed1.Focused then ed1.SelText:= SEscapeRegex(Str) else
+     if ed1Memo.Focused then ed1Memo.SelText:= SEscapeRegex(Str) else
+      if ed2.Focused then ed2.SelText:= SEscapeRegexAlt(Str) else
+       if ed2Memo.Focused then ed2Memo.SelText:= SEscapeRegexAlt(Str);
     Key:= 0;
     Exit
   end;
