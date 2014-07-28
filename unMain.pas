@@ -3249,7 +3249,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1260';
+  cSynVer = '6.6.1270';
   cSynPyVer = '1.0.132';
 
 const
@@ -9789,6 +9789,7 @@ begin
   //
   TbxTabOutput.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusOutput);
   TbxTabResults.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusFindRes);
+  TbxTabBookmarks.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusBookmarks);
   TbxTabValidate.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusValidate);
   TbxTabConsole.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusConsole);
 
