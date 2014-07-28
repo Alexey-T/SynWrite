@@ -79,6 +79,6 @@ begin
   Application.Initialize;
   Application.Title := 'SynWrite';
   Application.HintHidePause := 5000;
-  Application.CreateForm(TfmSynEx, fmSynEx);
+  Application.CreateForm(TfmSynEx, fmSynEx); //550ms
   Application.Run;
 end.
