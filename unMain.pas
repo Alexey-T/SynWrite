@@ -4112,11 +4112,12 @@ begin
   NTabIndex:= (Frame.Parent as TATPages).Tabs.TabIndex;
   TabSwitchers[NPageIndex].UpdateTabList(-1, -1, NTabIndex);
 
-  CurrentEditor:= nil;
-  Frame.Free;
-  UpdateOnFrameChanged;
+  if (Frame.EditorMaster=CurrentEditor) or (Frame.EditorSlave=CurrentEditor) then
+    CurrentEditor:= nil;
 
-  //free directory of closed file
+  Frame.Free;
+
+  //release directory of closed file
   WideSetCurrentDir(FInitialDir);
 end;
 
@@ -11041,7 +11042,7 @@ begin
   if ACanClose then
     CloseFrame(F);
 
-  UpdateListBookmarks;/////////////////////  
+  UpdateListBookmarks;  
   UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
 end;
 
@@ -11094,6 +11095,7 @@ begin
     Enc:= cp__UTF8_noBOM;
 
   //need new tab?
+  if CurrentEditor=nil then Exit;
   if (CurrentFrame.FileName<>'') or (CurrentEditor.Lines.Count>0) then
     acNewTab.Execute;
 

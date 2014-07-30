@@ -46,7 +46,7 @@ object fmSaveTabs: TfmSaveTabs
       Top = 72
       Width = 120
       Height = 23
-      Caption = 'Save'
+      Caption = '&Save'
       Default = True
       ModalResult = 6
       TabOrder = 0
@@ -56,7 +56,7 @@ object fmSaveTabs: TfmSaveTabs
       Top = 102
       Width = 120
       Height = 23
-      Caption = 'Don'#39't save'
+      Caption = '&Don'#39't save'
       ModalResult = 7
       TabOrder = 1
     end
