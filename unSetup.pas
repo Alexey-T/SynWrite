@@ -2075,10 +2075,8 @@ begin
     cbTheme.ItemIndex:= cbTheme.Items.IndexOf(Theme);
 
     cbIcons.Items.Clear;
-    cbIcons.Items.Add('Standard');
     cbIcons.Items.Add('Fogue 16x16');
     cbIcons.Items.Add('Fogue 24x24');
-    cbIcons.Items.Add('Tango 16x16');
     cbIcons.Items.Add('Tango 22x22');
     cbIcons.ItemIndex:= Icons;
 

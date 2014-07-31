@@ -318,7 +318,7 @@ type
     acOpen: TAction;
     acSave: TAction;
     acSaveAs: TAction;
-    TBXItem4: TSpTbxItem;
+    TBXItemToolSaveAs: TSpTBXItem;
     SD: TTntSaveDialog;
     OD: TTntOpenDialog;
     SyntaxManager: TSyntaxManager;
@@ -355,8 +355,6 @@ type
     ecSortDescending: TAction;
     acSetupLexLib: TAction;
     TimerTick: TTimer;
-    TBXItem11: TSpTbxItem;
-    TBXItem15: TSpTbxItem;
     PopupStatusEnc: TSpTBXPopupMenu;
     PopupStatusLineEnds: TSpTBXPopupMenu;
     ecReadOnly: TAction;
@@ -417,7 +415,6 @@ type
     ecFolding: TAction;
     ecNonPrint: TAction;
     acReread: TAction;
-    ImageListIconsStd: TImageList;
     TbxSubmenuItemTblFind: TSpTBXSubmenuItem;
     TBXItem2: TSpTbxItem;
     acNewTab: TAction;
@@ -604,11 +601,9 @@ type
     ecReplace: TAction;
     TBXItemSRep: TSpTbxItem;
     TBXItemSFind: TSpTbxItem;
-    TBXItem8: TSpTbxItem;
     acExit: TAction;
     TBXItemFCloseDel: TSpTbxItem;
     acCloseAndDelete: TAction;
-    TBXItemRFiles: TSpTbxItem;
     ecReplaceInFiles: TAction;
     TBXItemSRepFiles: TSpTbxItem;
     TimerSel: TTimer;
@@ -1171,8 +1166,6 @@ type
     TBXSeparatorItem100: TSpTbxSeparatorItem;
     TBXItemOEditSynIni: TSpTbxItem;
     acOpenBySelection: TAction;
-    ImageListIconsTango22b: TPngImageList;
-    ImageListIconsTango16b: TPngImageList;
     ImageListIconsFogue24b: TPngImageList;
     ImageListIconsFogue16b: TPngImageList;
     ImageListUser1: TPngImageList;
@@ -1362,6 +1355,7 @@ type
     ListBookmarks: TTntListView;
     TbxItemWinBkmk: TSpTBXItem;
     ecToggleFocusBookmarks: TAction;
+    ImageListIconsTango22b: TPngImageList;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2440,7 +2434,6 @@ type
     procedure UpdateColorHint(AClearHint: boolean = true);
     procedure UpdateListTabs;
     procedure UpdateTabList(TopItem, NewItem, DelItem: integer);
-    procedure UpdateSaveIco;
     procedure UpdateBusyIco;
     procedure UpdateTreeFind_Initial(AStr: Widestring; const ADir: Widestring; AInTabs: boolean = false);
     procedure UpdateTreeFind_Results(AStr: Widestring; const ADir: Widestring; AStopped: boolean; AInTabs: boolean = false);
@@ -2640,7 +2633,7 @@ type
 
     function GetIcons: integer;
     function GetTheme: string;
-    procedure SetIcons(A: integer);
+    procedure SetIcons(Num: integer);
     procedure SetTheme(const S: string);
     procedure LoadTools;
     procedure SaveTools;
@@ -3243,7 +3236,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1270';
+  cSynVer = '6.6.1280';
   cSynPyVer = '1.0.132';
 
 const
@@ -3321,7 +3314,7 @@ const
 const
   cThemeWindows = 'Windows';
   cThemeDefault = 'Office XP';
-  cThemes: array[0..12] of string = (
+  cThemes: array[0..9] of string = (
     cThemeWindows,
     'Aluminum',
     'Athen',
@@ -3329,11 +3322,8 @@ const
     'Eos',
     'Human',
     'Leopard',
-    'Xito',
     'Office XP',
-    'Office 2003',
     'Office 2007 Blue',
-    'Office 2007 Black',
     'Office 2007 Silver'
     );
 
@@ -4288,10 +4278,7 @@ begin
   sel2:= ed.HaveSelection;
   en_lex:= SyntaxManager.CurrentLexer<>nil;
 
-  if frame.Modified then
-    acSave.ImageIndex:= 1
-  else
-    acSave.ImageIndex:= 2;
+  TBXSubmenuItemToolSave.ImageIndex:= IfThen(frame.Modified, 2, 3);
 
   //Hilite brackets
   TimerBrackets.Enabled:= true;
@@ -6762,7 +6749,6 @@ begin
     CheckSynchronize;
 
   //update icons
-  UpdateSaveIco;
   UpdateBusyIco;
 
   if StatusItemTabsize.ImageIndex>=0 then
@@ -9248,34 +9234,30 @@ end;
 
 function tfmMain.GetIcons: integer;
 begin
-  if tbFile.Images = ImageListIconsStd then Result:= 0
+  if tbFile.Images = ImageListIconsFogue16b then Result:= 0
   else
-  if tbFile.Images = ImageListIconsFogue16b then Result:= 1
+  if tbFile.Images = ImageListIconsFogue24b then Result:= 1
   else
-  if tbFile.Images = ImageListIconsFogue24b then Result:= 2
-  else
-  if tbFile.Images = ImageListIconsTango16b then Result:= 3
-  else
-  if tbFile.Images = ImageListIconsTango22b then Result:= 4
+  if tbFile.Images = ImageListIconsTango22b then Result:= 2
   else
     Result:= -1;
 end;
 
-procedure TfmMain.SetIcons(A: integer);
-var L: TCustomImageList;
+procedure TfmMain.SetIcons(Num: integer);
+var
+  L: TCustomImageList;
 begin
-  case A of
-    0: L:= ImageListIconsStd;
-    1: L:= ImageListIconsFogue16b;
-    2: L:= ImageListIconsFogue24b;
-    3: L:= ImageListIconsTango16b;
-    4: L:= ImageListIconsTango22b;
-    else L:= nil;
+  case Num of
+    0: L:= ImageListIconsFogue16b;
+    1: L:= ImageListIconsFogue24b;
+    else L:= ImageListIconsTango22b;
   end;
+
   tbFile.Images:= L;
   tbEdit.Images:= L;
   tbView.Images:= L;
   tbQs.Images:= L;
+
   if opShowMenuIcons then
     PopupEditor.Images:= L
   else
@@ -23510,18 +23492,6 @@ begin
   else
   {$endif}
     StatusItemBusy.ImageIndex:= 6;
-end;
-
-procedure TfmMain.UpdateSaveIco;
-var
-  F: TEditorFrame;
-begin
-  F:= CurrentFrame;
-  if F<>nil then
-    if F.Modified then
-      acSave.ImageIndex:= 1
-    else
-      acSave.ImageIndex:= 2;
 end;
 
 procedure TfmMain.TBXItemFoldAllClick(Sender: TObject);
