@@ -1979,14 +1979,14 @@ begin
   with fmMain do
   begin
     opTabVisible:= cbTabVis.Checked;
-    opTabBtn:= cbTabBtn.Checked;
+    opTabXButtons:= cbTabBtn.Checked;
     opTabPlus:= cbTabPlus.Checked;
     opTabNums:= cbTabNums.Checked;
     opTabSwitcher:= cbTabSw.Checked;
     opTabDragDrop:= cbTabDnD.Checked;
     opTabMaxWidth:= edTabMaxLen.Value;
     opTabAtBottom:= cbTabDown.Checked;
-    opTabDirs:= cbTabDirs.Checked;
+    opTabFolders:= cbTabDirs.Checked;
 
     for i:= 0 to High(ColorsOfTabs) do
       opTabColors[i]:= ColorsOfTabs[i];
@@ -2290,14 +2290,14 @@ var
 begin
   with fmMain do
   begin
-    cbTabBtn.Checked:= opTabBtn;
+    cbTabBtn.Checked:= opTabXButtons;
     cbTabPlus.Checked:= opTabPlus;
     cbTabVis.Checked:= opTabVisible;
     cbTabNums.Checked:= opTabNums;
     cbTabDown.Checked:= opTabAtBottom;
     cbTabSw.Checked:= opTabSwitcher;
     cbTabDnD.Checked:= opTabDragDrop;
-    cbTabDirs.Checked:= opTabDirs;
+    cbTabDirs.Checked:= opTabFolders;
     edTabMaxLen.Value:= opTabMaxWidth;
 
     ListTabColors.Items.Clear;

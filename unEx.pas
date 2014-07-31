@@ -383,8 +383,6 @@ begin
       WindowState:= wsMaximized;
       fmMain.DoRepaint; //need repaintin for Maximized window
     end;
-    //if ReadBool('Win', 'FScr', false) then
-    //  fmMain.ecFullScr.Execute;
     if ReadBool('Win', 'OnTop', false) then
       fmMain.ecOnTop.Execute;
   finally
@@ -395,7 +393,7 @@ begin
   if ClientHeight=0 then
   begin
     SetBounds(20, 20, 780, 560);
-    WindowState := wsNormal;
+    WindowState:= wsNormal;
   end;
 end;
 
@@ -404,7 +402,6 @@ begin
   try
     with TIniFile.Create(SynHistoryIni) do
     try
-      //WriteBool('Win', 'FScr', fmMain.ShowFullScreen); //don't save full-screen
       WriteBool('Win', 'OnTop', fmMain.ShowOnTop);
       if fmMain.ShowFullScreen then Exit;
       if not fmMain.opSaveWndPos then Exit;
@@ -588,15 +585,15 @@ begin
       CopyFile(PChar(SynHideSampleIni), PChar(SynHideIni), true);
 end;
 
-procedure InitApi;
+procedure InitAll;
 begin
+  CreateMutex(nil, false, 'UVViewSoft.SynWrite');
   _SynActionProc:= @PluginAction;
 end;
 
 initialization
-  CreateMutex(nil, false, 'UVViewSoft.SynWrite');
+  InitAll;
   InitPaths;
-  InitApi;
 
 finalization
   SynIni:= '';

@@ -656,7 +656,6 @@ type
     TBXItemCCSent: TSpTbxItem;
     ecSentCase: TAction;
     PopupZoom: TSpTbxPopupMenu;
-    TBXSeparatorItem5: TSpTbxSeparatorItem;
     TBXItemZSet300: TSpTbxItem;
     TBXItemZSet200: TSpTbxItem;
     TBXItemZSet150: TSpTbxItem;
@@ -1228,9 +1227,6 @@ type
     SpTBXSeparatorItem14: TSpTBXSeparatorItem;
     TBXMRUListItemFNew: TSpTBXMRUListItem;
     TbxItemVPanelClip: TSpTBXItem;
-    TBXItemZIn: TSpTBXItem;
-    TBXItemZOut: TSpTBXItem;
-    SpTBXSeparatorItem15: TSpTBXSeparatorItem;
     TBXSubmenuMarkers: TSpTBXSubmenuItem;
     TBXSubmenuBkOps: TSpTBXSubmenuItem;
     TBXSubmenuBkPortable: TSpTBXSubmenuItem;
@@ -1462,8 +1458,6 @@ type
     procedure TbxItemTool4Click(Sender: TObject);
     procedure TBXSubmenuItemRunPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
-    procedure TBXItemZInClick(Sender: TObject);
-    procedure TBXItemZOutClick(Sender: TObject);
     procedure TBXItemZ0Click(Sender: TObject);
     procedure TBXItemMarkDropClick(Sender: TObject);
     procedure TBXItemMarkCollClick(Sender: TObject);
@@ -2906,9 +2900,9 @@ type
     opShowWrapMark: boolean;
     opTabVisible: boolean;
     opTabAtBottom: boolean;
-    opTabDirs: boolean; //show folder names before file names on tabs
+    opTabFolders: boolean; //show folder names before file names on tabs
     opTabNums: boolean; //show numbers on tabs
-    opTabBtn: boolean; //show [x] button on tabs
+    opTabXButtons: boolean; //show [x] button on tabs
     opTabPlus: boolean;
     opTabOptionsIndex: integer; //id of active tab in Options dialog
     opTabOptionsLast: integer; //index of last closed tab in Options dialog
@@ -4591,9 +4585,9 @@ begin
     opTabMaxWidth:= ReadInteger('Setup', 'TabSize', 130);
     opTabDragDrop:= true; //ReadBool('Setup', 'TabDnD', true);
     opTabSwitcher:= false; ///////////ReadBool('Setup', 'TabSw', true);
-    opTabDirs:= ReadBool('View', 'TabDirs', false);
+    opTabFolders:= ReadBool('View', 'TabDirs', false);
     opTabNums:= ReadBool('View', 'TabNum', false);
-    opTabBtn:= ReadBool('View', 'TabBtn', true);
+    opTabXButtons:= ReadBool('View', 'TabBtn', true);
     opTabPlus:= ReadBool('View', 'TabPlus', true);
     opTabAtBottom:= ReadBool('View', 'TabDown', false);
 
@@ -5095,9 +5089,9 @@ begin
     WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
 
     WriteInteger('View', 'TabLast', opTabOptionsLast);
-    WriteBool('View', 'TabDirs', opTabDirs);
+    WriteBool('View', 'TabDirs', opTabFolders);
     WriteBool('View', 'TabNum', opTabNums);
-    WriteBool('View', 'TabBtn', opTabBtn);
+    WriteBool('View', 'TabBtn', opTabXButtons);
     WriteBool('View', 'TabPlus', opTabPlus);
     WriteBool('View', 'TabDown', opTabAtBottom);
     WriteString('View', 'TabMisc', TabColorsString);
@@ -5350,6 +5344,8 @@ begin
 
   with TfmSaveTabs.Create(Self) do
   try
+    bCancel.Enabled:= SynExe;
+
     for i:= 0 to FrameAllCount-1 do
     begin
       F:= FramesAll[i];
@@ -9971,8 +9967,6 @@ begin
   UpdKey(tbxItemMarkDrop, smDropMarker);
   UpdKey(tbxItemMarkColl, smCollectMarker);
   UpdKey(tbxItemMarkSwap, smSwapMarker);
-  UpdKey(tbxItemZIn, sm_ZoomIn);
-  UpdKey(tbxItemZOut, sm_ZoomOut);
 
   UpdKey(TbxItemHtmlPreview, sm_OpenBrowserPreview);
   UpdKey(TbxItemHtmlLoremIpsum, sm_LoremIpsumDialog);
@@ -10810,16 +10804,6 @@ begin
   TBXItemRunOpenDir.Enabled:= CurrentFrame.Filename <> '';
   TBXItemRunOpenFile.Enabled:= TBXItemRunOpenDir.Enabled;
   UpdateTools;
-end;
-
-procedure TfmMain.TBXItemZInClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ZoomIn);
-end;
-
-procedure TfmMain.TBXItemZOutClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ZoomOut);
 end;
 
 procedure TfmMain.TBXItemZ0Click(Sender: TObject);
@@ -25305,7 +25289,7 @@ begin
   Groups.SetTabOption(tabColorBorderPassive, opColorTabBorderPassive);
 
   Groups.SetTabOption(tabOptionShowTabs, Ord(opTabVisible));
-  Groups.SetTabOption(tabOptionShowXButtons, Ord(opTabBtn));
+  Groups.SetTabOption(tabOptionShowXButtons, Ord(opTabXButtons));
   Groups.SetTabOption(tabOptionShowPlus, Ord(opTabPlus));
   Groups.SetTabOption(tabOptionShowNums, Ord(opTabNums));
   Groups.SetTabOption(tabOptionBottomTabs, Ord(opTabAtBottom));
@@ -25317,17 +25301,6 @@ begin
     begin
       DoTitleChanged;
     end;
-
-  //splitter popup menu
-  {
-  UpdKey(Groups.SplitterPopupMenu.Items[0] as TSpTbxItem, sm_Split2080);
-  UpdKey(TBXItemSp30, sm_Split3070);
-  UpdKey(TBXItemSp40, sm_Split4060);
-  UpdKey(TBXItemSp50, sm_Split5050);
-  UpdKey(TBXItemSp60, sm_Split6040);
-  UpdKey(TBXItemSp70, sm_Split7030);
-  UpdKey(TBXItemSp80, sm_Split8020);
-  }
 end;
 
 procedure TfmMain.FixSplitters;
@@ -28416,7 +28389,7 @@ begin
   else
   begin
     Str:= SCut(WideExtractFileName(Frame.FileName));
-    if opTabDirs then
+    if opTabFolders then
       Str:= SCut(WideExtractFileName(WideExtractFileDir(Frame.FileName))) + '\' + Str;
   end;
 
@@ -28428,7 +28401,7 @@ end;
 
 procedure TfmMain.DoToggleTabDirs;
 begin
-  opTabDirs:= not opTabDirs;
+  opTabFolders:= not opTabFolders;
   ApplyTabOptions;
 end;
 
