@@ -2891,6 +2891,7 @@ type
     opColorMapMarks: integer;
     opColorBkmk: integer;
     opShowWrapMark: boolean;
+    opTabAngle: integer;
     opTabVisible: boolean;
     opTabAtBottom: boolean;
     opTabFolders: boolean; //show folder names before file names on tabs
@@ -4570,13 +4571,14 @@ begin
       opTabVisible:= ReadBool('Setup', 'TabShow', true);
 
     opTabMaxWidth:= ReadInteger('Setup', 'TabSize', 130);
-    opTabDragDrop:= true; //ReadBool('Setup', 'TabDnD', true);
-    opTabSwitcher:= false; ///////////ReadBool('Setup', 'TabSw', true);
+    opTabAngle:= ReadInteger('View', 'TabAngle', 0);
+    opTabDragDrop:= true;
     opTabFolders:= ReadBool('View', 'TabDirs', false);
     opTabNums:= ReadBool('View', 'TabNum', false);
     opTabXButtons:= ReadBool('View', 'TabBtn', true);
     opTabPlus:= ReadBool('View', 'TabPlus', true);
     opTabAtBottom:= ReadBool('View', 'TabDown', false);
+    opTabSwitcher:= false; ///////////ReadBool('Setup', 'TabSw', true);
 
     opSingleInstance:= ReadBool('Setup', 'Inst', false);
     ApplyInst;
@@ -5075,6 +5077,7 @@ begin
     WriteBool('SR', 'SugWord', opSrSuggestWord);
     WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
 
+    WriteInteger('View', 'TabAngle', opTabAngle);
     WriteInteger('View', 'TabLast', opTabOptionsLast);
     WriteBool('View', 'TabDirs', opTabFolders);
     WriteBool('View', 'TabNum', opTabNums);
@@ -25265,6 +25268,7 @@ begin
   Groups.SetTabOption(tabOptionBottomTabs, Ord(opTabAtBottom));
   Groups.SetTabOption(tabOptionDragDrop, Ord(opTabDragDrop));
   Groups.SetTabOption(tabOptionWidthMax, Ord(opTabMaxWidth));
+  Groups.SetTabOption(tabOptionAngle, opTabAngle);
 
   for i:= 0 to FrameAllCount-1 do
     with FramesAll[i] do

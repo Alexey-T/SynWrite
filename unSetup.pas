@@ -133,7 +133,6 @@ type
     cbTabDown: TTntCheckBox;
     cbTabNums: TTntCheckBox;
     cbTabSw: TTntCheckBox;
-    cbTabDnD: TTntCheckBox;
     edTabMaxLen: TSpinEdit;
     boxToolbar: TTntGroupBox;
     Label2: TTntLabel;
@@ -350,6 +349,8 @@ type
     TntLabel14: TTntLabel;
     cbTabVis: TTntCheckBox;
     cbTabPlus: TTntCheckBox;
+    edTabAngle: TSpinEdit;
+    TntLabel3: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1983,10 +1984,10 @@ begin
     opTabPlus:= cbTabPlus.Checked;
     opTabNums:= cbTabNums.Checked;
     opTabSwitcher:= cbTabSw.Checked;
-    opTabDragDrop:= cbTabDnD.Checked;
-    opTabMaxWidth:= edTabMaxLen.Value;
     opTabAtBottom:= cbTabDown.Checked;
     opTabFolders:= cbTabDirs.Checked;
+    opTabAngle:= edTabAngle.Value;
+    opTabMaxWidth:= edTabMaxLen.Value;
 
     for i:= 0 to High(ColorsOfTabs) do
       opTabColors[i]:= ColorsOfTabs[i];
@@ -2294,9 +2295,9 @@ begin
     cbTabNums.Checked:= opTabNums;
     cbTabDown.Checked:= opTabAtBottom;
     cbTabSw.Checked:= opTabSwitcher;
-    cbTabDnD.Checked:= opTabDragDrop;
     cbTabDirs.Checked:= opTabFolders;
     edTabMaxLen.Value:= opTabMaxWidth;
+    edTabAngle.Value:= opTabAngle;
 
     ListTabColors.Items.Clear;
     for i:= 0 to High(ColorsOfTabs) do
