@@ -2670,13 +2670,21 @@ object fmMain: TfmMain
             Caption = 'Project panel'
             Action = ecToggleFocusProject
           end
-          object TbxItemWinProjPre: TSpTBXItem
-            Caption = 'Preview panel'
-            Action = ecToggleProjPreview
-          end
           object TbxItemWinTabs: TSpTBXItem
             Caption = 'Tabs panel'
             Action = ecToggleFocusTabs
+          end
+          object TbxItemWinExplorer: TSpTBXItem
+            Caption = 'Explorer plugin panel'
+            OnClick = TbxItemWinExplorerClick
+          end
+          object TbxItemWinFtp: TSpTBXItem
+            Caption = 'FTP plugin panel'
+            OnClick = TbxItemWinFtpClick
+          end
+          object TbxItemWinProjPre: TSpTBXItem
+            Caption = 'Preview panel'
+            Action = ecToggleProjPreview
           end
           object SpTBXSeparatorItem13: TSpTBXSeparatorItem
           end
@@ -10406,7 +10414,7 @@ object fmMain: TfmMain
     Left = 577
     Top = 233
     LangData = {
-      0600666D4D61696E0001040400000A00544258446F636B546F70000006007462
+      0600666D4D61696E0001060400000A00544258446F636B546F70000006007462
       46696C650101000000B5020000070043617074696F6E000E005442584974656D
       546F6F6C4E65770102000000B6020000070043617074696F6EB7020000040048
       696E740016005442585375626D656E754974656D546F6F6C4F70656E01020000
@@ -12461,7 +12469,9 @@ object fmMain: TfmMain
       696F6E130B00001200436F6C756D6E735B325D2E43617074696F6E000E005462
       784974656D57696E426B6D6B0101000000140B0000070043617074696F6E0016
       006563546F67676C65466F637573426F6F6B6D61726B7300001600496D616765
-      4C69737449636F6E7354616E676F3232620000}
+      4C69737449636F6E7354616E676F32326200000D005462784974656D57696E46
+      74700101000000190B0000070043617074696F6E0012005462784974656D5769
+      6E4578706C6F72657201010000001A0B0000070043617074696F6E00}
   end
   object TimerHint: TTimer
     Enabled = False

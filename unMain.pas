@@ -1339,6 +1339,8 @@ type
     TbxItemWinBkmk: TSpTBXItem;
     ecToggleFocusBookmarks: TAction;
     ImageListIconsTango22b: TPngImageList;
+    TbxItemWinFtp: TSpTBXItem;
+    TbxItemWinExplorer: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2109,6 +2111,8 @@ type
       Shift: TShiftState);
     procedure ecToggleFocusBookmarksExecute(Sender: TObject);
     procedure PopupPluginsLogPopup(Sender: TObject);
+    procedure TbxItemWinExplorerClick(Sender: TObject);
+    procedure TbxItemWinFtpClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2288,6 +2292,7 @@ type
     procedure DoRefreshPluginsLang;
     procedure DoPluginSaveFtpFile(F: TEditorFrame);
     procedure DoPluginsRepaint;
+    procedure DoOpenPanelPluginByName(const AName: string; var AIndex: Integer);
     function DoOpenPluginFavorite(const AFileName: Widestring): boolean;
     procedure DoShowPlugin(N: Integer);
     procedure DoClosePlugins;
@@ -6953,16 +6958,6 @@ begin
   FixSplitters;
   ApplyDefaultFonts;
 
-  {
-  //TabAutoFit:= true setting gives exception in SpTBX, sometimes...
-  tbTabsLeft.TabAutofit:= true;
-  tbTabsRight.TabAutofit:= true;
-  tbTabsOut.TabAutofit:= true;
-  tbTabsLeft.TabAutofitMaxSize:= 150;
-  tbTabsRight.TabAutofitMaxSize:= 150;
-  tbTabsOut.TabAutofitMaxSize:= 150;
-  }
-
   //scale sizes for 150% DPI
   if PixelsPerInch<>96 then
   begin
@@ -6995,6 +6990,9 @@ begin
   TbxItemOShell.Enabled:= SynExe;
   TBXItemOEditSynPluginsIni.Enabled:= SynExe;
   TbxItemCtxCustomize.Visible:= QuickView;
+  TbxItemWinExplorer.Enabled:= SynExe;
+  TbxItemWinFtp.Enabled:= SynExe;
+  TBXItemWinConsole.Enabled:= SynExe;
 
   //init plugins before LoadIni
   LoadPluginsInfo;
@@ -21146,7 +21144,7 @@ end;
 
 function TfmMain.DoOpenPluginFavorite(const AFileName: Widestring): boolean;
 var
-  N, i: Integer;
+  N: Integer;
   AName: string;
   ADir: Widestring;
 begin
@@ -21157,6 +21155,20 @@ begin
   AName:= Copy(AFileName, 1, N-1);
   ADir:= Copy(AFileName, N+2, MaxInt);
 
+  DoOpenPanelPluginByName(AName, N);
+  if N>=0 then
+  begin
+     with FPluginsPanel[N] do
+       if (FForm<>nil) and Assigned(FSynAction) then
+         FSynAction(FForm, cActionNavigateToFile, PWChar(ADir), nil, nil, nil);
+  end;
+end;
+
+procedure TfmMain.DoOpenPanelPluginByName(const AName: string; var AIndex: Integer);
+var
+  i: Integer;
+begin
+  AIndex:= -1;
   for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
     with FPluginsPanel[i] do
       if SCaption=AName then
@@ -21164,11 +21176,8 @@ begin
         if not plTree.Visible then
           ecShowTree.Execute;
 
+        AIndex:= i;
         TabsLeft.TabIndex:= cFixedLeftTabs+i;
-
-        with FPluginsPanel[i] do
-          if (FForm<>nil) and Assigned(FSynAction) then
-            FSynAction(FForm, cActionNavigateToFile, PWChar(ADir), nil, nil, nil);
         Exit
       end;
 end;
@@ -28752,7 +28761,7 @@ begin
   TabsOut.AddTab(-1, DKLangConstW('cap_FRes'));
   TabsOut.AddTab(-1, DKLangConstW('cap_Bk'));
   TabsOut.AddTab(-1, DKLangConstW('cap_Valid'));
-  TabsOut.AddTab(-1, 'Plugins Log');
+  TabsOut.AddTab(-1, 'Log');
   TabsOut.AddTab(-1, DKLangConstW('cap_Con'));
 end;
 
@@ -28830,6 +28839,20 @@ begin
     TBXItemPLogFind.Enabled:= Items.Count>0;
     TBXItemPLogSaveAs.Enabled:= Items.Count>0;
   end;
+end;
+
+procedure TfmMain.TbxItemWinExplorerClick(Sender: TObject);
+var
+  Index: Integer;
+begin
+  DoOpenPanelPluginByName('Explorer', Index);
+end;
+
+procedure TfmMain.TbxItemWinFtpClick(Sender: TObject);
+var
+  Index: Integer;
+begin
+  DoOpenPanelPluginByName('SynFTP', Index);
 end;
 
 initialization
