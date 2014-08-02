@@ -785,7 +785,6 @@ object fmMain: TfmMain
     object StatusItemBusy: TSpTBXLabelItem
       Wrapping = twNone
       ImageIndex = 6
-      OnClick = StatusItemBusyClick
       Alignment = taCenter
     end
     object SpTBXSeparatorItem27: TSpTBXSeparatorItem

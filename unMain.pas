@@ -5,7 +5,6 @@ SynWrite main UI form.
 //PERLRE word must be defined in project options
 {$Q-} //Disable int-checks to avoid integer exception in TabCtrl_GetXRect
 //{$define TabOrder} //Debug: show tabs switch-order in form caption
-//{$define DebugAbout} //Debug: show debug info by click on "busy signal" status field
 {$define FixRepaint} //Fix repaint problem when resizing SpTBX panels and moving toolbars
 
 unit unMain;
@@ -2046,7 +2045,6 @@ type
     procedure plTreeDockChanged(Sender: TObject);
     procedure TBXItemProjAddAllFilesClick(Sender: TObject);
     procedure TbxItemProjSaveClick(Sender: TObject);
-    procedure StatusItemBusyClick(Sender: TObject);
     procedure TbxTabConsoleClick(Sender: TObject);
     procedure edConsoleKeyPress(Sender: TObject; var Key: Char);
     procedure ecToggleFocusConsoleExecute(Sender: TObject);
@@ -2126,9 +2124,9 @@ type
     cStatCaretsTopLn,
     cStatCaretsBotLn: Widestring;
 
-    TabsRight: TATTabs;
+    TabsLeft,
+    TabsRight,
     TabsOut: TATTabs;
-    TabsLeft: TATTabs;
     TabSwitchers: array[TATGroupsNums] of TTabSwitcher;
     FListSnippets: TList;
     FListLexersSorted: TTntStringList;
@@ -3051,7 +3049,6 @@ type
 
     procedure ApplyTabOptions;
     procedure ApplyTabOptionsTo(ATabs: TATTabs);
-    procedure ApplyPanelsTabs;
     procedure UpdateActiveTabColors;
     procedure ApplyCarets;
     procedure ApplyUrlClick;
@@ -7024,6 +7021,10 @@ begin
 
   //init groups
   InitGroups;
+
+  TabsLeft.TabIndex:= FTabLeft;
+  TabsRight.TabIndex:= FTabRight;
+  TabsOut.TabIndex:= FTabOut;
 end;
 
 procedure TfmMain.LoadLexLib;
@@ -25167,7 +25168,9 @@ begin
       DoTitleChanged;
     end;
 
-  ApplyPanelsTabs;  
+  ApplyTabOptionsTo(TabsLeft);
+  ApplyTabOptionsTo(TabsRight);
+  ApplyTabOptionsTo(TabsOut);
 end;
 
 procedure TfmMain.FixSplitters;
@@ -26728,13 +26731,6 @@ begin
   F.EditorMaster.TopLine:= NVal;
   F.EditorSlave.TopLine:= NVal2;
   *)
-end;
-
-procedure TfmMain.StatusItemBusyClick(Sender: TObject);
-begin
-  {$ifdef DebugAbout}
-  DoTest;
-  {$endif}
 end;
 
 function TfmMain.MsgConfirmOpenSaveSession(
@@ -28746,6 +28742,10 @@ end;
 
 procedure TfmMain.InitPanelsTabs;
 begin
+  TabsLeft:= TATTabs.Create(Self);
+  TabsLeft.Parent:= plTree;
+  TabsLeft.OnTabClick:= TabsLeftClick;
+
   TabsRight:= TATTabs.Create(Self);
   TabsRight.Parent:= plClip;
   TabsRight.OnTabClick:= TabsRightClick;
@@ -28753,10 +28753,6 @@ begin
   TabsOut:= TATTabs.Create(Self);
   TabsOut.Parent:= plOut;
   TabsOut.OnTabClick:= TabsOutClick;
-
-  TabsLeft:= TATTabs.Create(Self);
-  TabsLeft.Parent:= plTree;
-  TabsLeft.OnTabClick:= TabsLeftClick;
 
   TabsLeft.AddTab(-1, 'Tree');
   TabsLeft.AddTab(-1, 'Project');
@@ -28772,17 +28768,6 @@ begin
   TabsOut.AddTab(-1, 'Validation');
   TabsOut.AddTab(-1, 'Plugins Log');
   TabsOut.AddTab(-1, 'Console');
-end;
-
-procedure TfmMain.ApplyPanelsTabs;
-begin
-  ApplyTabOptionsTo(TabsLeft);
-  ApplyTabOptionsTo(TabsRight);
-  ApplyTabOptionsTo(TabsOut);
-
-  TabsLeft.TabIndex:= FTabLeft;
-  TabsRight.TabIndex:= FTabRight;
-  TabsOut.TabIndex:= FTabOut;
 end;
 
 procedure TfmMain.ApplyTabOptionsTo(ATabs: TATTabs);
@@ -28815,6 +28800,11 @@ begin
   ATabs.ColorTabOver:= Groups.Pages1.Tabs.ColorTabOver;
 end;
 
+procedure TfmMain.TabsLeftClick(Sender: TObject);
+begin
+  UpdatePanelLeft(TSynTabLeft(TabsLeft.TabIndex));
+end;
+
 procedure TfmMain.TabsRightClick(Sender: TObject);
 begin
   UpdatePanelRight(TSynTabRight(TabsRight.TabIndex));
@@ -28823,11 +28813,6 @@ end;
 procedure TfmMain.TabsOutClick(Sender: TObject);
 begin
   UpdatePanelOut(TSynTabOut(TabsOut.TabIndex));
-end;
-
-procedure TfmMain.TabsLeftClick(Sender: TObject);
-begin
-  UpdatePanelLeft(TSynTabLeft(TabsLeft.TabIndex));
 end;
 
 procedure TfmMain.PopupPluginsLogPopup(Sender: TObject);
