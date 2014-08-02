@@ -28802,6 +28802,7 @@ begin
   ATabs.TabAngle:= Groups.Pages1.Tabs.TabAngle;
   ATabs.TabIndentTop:= 0;
   ATabs.TabIndentLeft:= 3;
+  ATabs.TabIndentInit:= 0;
   ATabs.TabHeight:= Groups.Pages1.Tabs.TabHeight;
   ATabs.Height:= Groups.Pages1.Tabs.Height;
 
