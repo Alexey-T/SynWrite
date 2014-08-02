@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabTabs
+    ActivePage = tabFonts
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -339,7 +339,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = -3
         Width = 529
-        Height = 192
+        Height = 220
         Caption = 'Fonts'
         TabOrder = 0
         object bFontText: TTntButton
@@ -404,6 +404,15 @@ object fmSetup: TfmSetup
           Caption = 'Console panel'
           TabOrder = 5
           OnClick = bFontConsoleClick
+        end
+        object bFontTabs: TTntButton
+          Left = 10
+          Top = 184
+          Width = 242
+          Height = 23
+          Caption = 'Tabs headers'
+          TabOrder = 7
+          OnClick = bFontTabsClick
         end
       end
     end
@@ -2960,7 +2969,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E014B010000
+      0700666D5365747570010100000001000000070043617074696F6E014C010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3259,7 +3268,8 @@ object fmSetup: TfmSetup
       D7020000070043617074696F6E00080063625461625669730101000000D80200
       00070043617074696F6E0009006362546162506C75730101000000D902000007
       0043617074696F6E000A006564546162416E676C6500000900546E744C616265
-      6C330101000000DA020000070043617074696F6E00}
+      6C330101000000DA020000070043617074696F6E00090062466F6E7454616273
+      0101000000DB020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

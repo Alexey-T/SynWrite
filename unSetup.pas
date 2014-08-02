@@ -351,6 +351,7 @@ type
     cbTabPlus: TTntCheckBox;
     edTabAngle: TSpinEdit;
     TntLabel3: TTntLabel;
+    bFontTabs: TTntButton;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -447,6 +448,7 @@ type
     procedure bKeyExtendClick(Sender: TObject);
     procedure labHelpKeysClick(Sender: TObject);
     procedure bFontConsoleClick(Sender: TObject);
+    procedure bFontTabsClick(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
@@ -1836,6 +1838,7 @@ begin
     ListOut.Font:= bFontOutput.Font;
     MemoConsole.Font:= bFontConsole.Font;
     EdConsole.Font:= MemoConsole.Font;
+    FFontTabs.Assign(bFontTabs.Font);
 
     ApplyACP;
     ApplyOut;
@@ -2157,6 +2160,7 @@ begin
     bFontAcp.Font:= ecACP.Font;
     bFontOutput.Font:= ListOut.Font;
     bFontConsole.Font:= MemoConsole.Font;
+    bFontTabs.Font:= FFontTabs;
   end;
 end;
 
@@ -2812,6 +2816,11 @@ begin
   PopupLexers.Popup(P.X, P.Y);
 end;
 }
+
+procedure TfmSetup.bFontTabsClick(Sender: TObject);
+begin
+  DoFontConfig(bFontTabs);
+end;
 
 end.
 

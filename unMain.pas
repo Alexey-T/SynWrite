@@ -2828,6 +2828,7 @@ type
     fmProgress: TfmProgress;
     hLister: HWnd;
     ColorsArray: TSynColors;
+    FFontTabs: TFont;
 
     SynPyLog: TSynLogPanelKind;
     SynPanelPropsOut,
@@ -2853,7 +2854,6 @@ type
     opTreeSorted: string;
     opUnderlineColored: integer;
     opSyncEditIcon: boolean;
-    opTabFontSize: integer;
     opWordChars: Widestring;
     opNonPrint,
     opNonPrintSpaces,
@@ -4542,7 +4542,6 @@ begin
     opTreeSorted:= ReadString('Setup', 'TreeSorted', '');
     opUnderlineColored:= ReadInteger('Setup', 'ColorUnd', 3);
     opSyncEditIcon:= ReadBool('Setup', 'SyncEditIcon', true);
-    opTabFontSize:= ReadInteger('Setup', 'TabFontSize', 0);
 
     opNewEnc:= ReadInteger('Setup', 'NEnc', 0);
     opNewLineEnds:= ReadInteger('Setup', 'NLe', 0);
@@ -4596,6 +4595,7 @@ begin
     StringToFont(ecACP.Font,                      ReadString('Fonts', 'Acp', ''));
     StringToFont(Tree.Font,                       ReadString('Fonts', 'Tree', ''));
     StringToFont(MemoConsole.Font,                ReadString('Fonts', 'Con', ''));
+    StringToFont(FFontTabs,                       ReadString('Fonts', 'Tabs', ''));
     EdConsole.Font:= MemoConsole.Font;
 
     //keys
@@ -5095,6 +5095,7 @@ begin
     WriteString('Fonts', 'Acp', FontToString(ecACP.Font));
     WriteString('Fonts', 'Tree', FontToString(Tree.Font));
     WriteString('Fonts', 'Con', FontToString(MemoConsole.Font));
+    WriteString('Fonts', 'Tabs', FontToString(FFontTabs));
 
   finally
     Free;
@@ -7223,6 +7224,8 @@ begin
   FListFiles:= TTntStringList.Create;
   FListLexersSorted:= TTntStringList.Create;
   FListSnippets:= nil;
+  FFontTabs:= TFont.Create;
+  FFontTabs.Assign(ToolbarFont);
 
   fmNumConv:= nil;
   fmClip:= nil;
@@ -7509,6 +7512,7 @@ begin
   FreeAndNil(FListNewDocs);
   FreeAndNil(FListConv);
   FreeAndNil(FListLexersSorted);
+  FreeAndNil(FFontTabs);
 
   if Assigned(FListSnippets) then
   begin
@@ -14330,6 +14334,7 @@ begin
   end;
 
   ApplyColorsFontsToFrames;
+  ApplyTabOptions;
 end;
 
 procedure TfmMain.ApplyColorsFontsToFrames;
@@ -25142,10 +25147,11 @@ procedure TfmMain.ApplyTabOptions;
 var
   i: Integer;
 begin
-  Groups.SetTabFont(ToolbarFont);
-  if opTabFontSize>0 then
-    Groups.SetTabOption(tabOptionFontSize, opTabFontSize);
+  if not Assigned(Groups) then Exit;
 
+  Groups.SetTabFont(FFontTabs);
+  Groups.SetTabOption(tabOptionFontSize, FFontTabs.Size);
+  
   Groups.SetTabOption(tabColorFont, opColorTabText);
   Groups.SetTabOption(tabColorActive, opColorTabBgActive);
   Groups.SetTabOption(tabColorPassive, opColorTabBgPassive);
@@ -28773,7 +28779,7 @@ end;
 procedure TfmMain.ApplyTabOptionsTo(ATabs: TATTabs);
 begin
   ATabs.Align:= alBottom;
-  ATabs.Font:= ToolbarFont;
+  ATabs.Font:= FFontTabs;
   ATabs.OnTabDrawBefore:= Groups.Pages1.Tabs.OnTabDrawBefore;
 
   ATabs.TabBottom:= true;
