@@ -252,7 +252,6 @@ type
   TPluginList_Panel = array[0..10] of record
     SCaption: string;
     SFileName: string;
-    FToolButton: TSpTbxTabItem;
     FDll: THandle;
     FWindow: THandle;
     FForm: Pointer;
@@ -294,9 +293,9 @@ type
   TSynSelState = (selNone, selSmall, selStream, selColumn, selCarets);
   TSynGotoTree = (tgoNext, tgoPrev, tgoParent, tgoNextBro, tgoPrevBro);
   TSynGotoMode = (goLine, goPrevBk, goNextBk, goNumBk);
-  TSynTabOut = (tbOutput, tbFindRes, tbValidate, tbPluginsLog, tbConsole, tbBookmarks);
+  TSynTabOut = (tbOutput, tbFindRes, tbBookmarks, tbValidate, tbPluginsLog, tbConsole);
   TSynTabRight = (tbClipbd, tbMinimap, tbTextClips);
-  TSynTabLeft = (tbTree, tbProj, tbTabs, tbPugin1, tbPugin2, tbPugin3, tbPugin4, tbPugin5);
+  TSynTabLeft = (tbTree, tbProj, tbTabs, tbPlugin1, tbPlugin2, tbPlugin3, tbPlugin4, tbPlugin5);
   TSynEncOverride = (cp_sr_Def, cp_sr_OEM, cp_sr_UTF8, cp_sr_UTF16);
   TSynUserToolbarId = (synToolbar1, synToolbar2, synToolbar3);
   TSynDock = (sdockTop, sdockLeft, sdockRight, sdockBottom);
@@ -1202,19 +1201,6 @@ type
     StatusItemHint: TSpTBXLabelItem;
     TBXMRUListItemFRecents: TSpTBXMRUListItem;
     TBXMRUListItem_Sess: TSpTBXMRUListItem;
-    tbTabsRight: TSpTBXTabSet;
-    TbxTabMinimap: TSpTBXTabItem;
-    TbxTabClips: TSpTBXTabItem;
-    TbxTabClipboard: TSpTBXTabItem;
-    tbTabsOut: TSpTBXTabSet;
-    TbxTabPlugins: TSpTBXTabItem;
-    TbxTabValidate: TSpTBXTabItem;
-    TbxTabResults: TSpTBXTabItem;
-    TbxTabOutput: TSpTBXTabItem;
-    tbTabsLeft: TSpTBXTabSet;
-    TbxTabTabs: TSpTBXTabItem;
-    TbxTabProject: TSpTBXTabItem;
-    TbxTabTree: TSpTBXTabItem;
     SpTBXSeparatorItem12: TSpTBXSeparatorItem;
     SpTBXSeparatorItem13: TSpTBXSeparatorItem;
     SpTBXSeparatorItem14: TSpTBXSeparatorItem;
@@ -1286,7 +1272,6 @@ type
     SpTBXSeparatorItem22: TSpTBXSeparatorItem;
     plConsole: TPanel;
     edConsole: TTntComboBox;
-    TbxTabConsole: TSpTBXTabItem;
     ecToggleFocusConsole: TAction;
     TBXItemWinConsole: TSpTBXItem;
     PythonGUIInputOutput1: TPythonGUIInputOutput;
@@ -1351,7 +1336,6 @@ type
     SpTBXSeparatorItem20: TSpTBXSeparatorItem;
     TBXItemTabCloseOthersAllGroups: TSpTBXItem;
     acCloseOthersAllGroups: TAction;
-    TbxTabBookmarks: TSpTBXTabItem;
     ListBookmarks: TTntListView;
     TbxItemWinBkmk: TSpTBXItem;
     ecToggleFocusBookmarks: TAction;
@@ -2126,6 +2110,7 @@ type
     procedure ListBookmarksKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure ecToggleFocusBookmarksExecute(Sender: TObject);
+    procedure PopupPluginsLogPopup(Sender: TObject);
 
   private
     cStatLine,
@@ -2141,6 +2126,9 @@ type
     cStatCaretsTopLn,
     cStatCaretsBotLn: Widestring;
 
+    TabsRight: TATTabs;
+    TabsOut: TATTabs;
+    TabsLeft: TATTabs;
     TabSwitchers: array[TATGroupsNums] of TTabSwitcher;
     FListSnippets: TList;
     FListLexersSorted: TTntStringList;
@@ -2200,9 +2188,9 @@ type
     orig_LNum,
     orig_NPrint,
     orig_Ruler: boolean;
-    orig_TabRight: TSynTabRight;
-    orig_TabLeft: TSynTabLeft;
-    orig_TabOut: TSynTabOut;
+    orig_TabRight: Integer;
+    orig_TabLeft: Integer;
+    orig_TabOut: Integer;
     orig_TabsSort: integer;
     orig_ListTabsCols: string;
     orig_ListBkmkCols: string;
@@ -2216,9 +2204,9 @@ type
     FAcpList_Desc: //ACP: descriptions (text after "|")
       TStringList;
 
-    FTabOut: TSynTabOut;
-    FTabRight: TSynTabRight;
-    FTabLeft: TSynTabLeft;
+    FTabLeft,
+    FTabOut,
+    FTabRight: Integer;
     FTreeRoot: TTntTreeNode; //root tree node of last find result
     FListResFN,              //current filename for mass search/replace operation
     FListResFN_Prev: Widestring; //previous filename for mass search/replace
@@ -2323,7 +2311,7 @@ type
     procedure DoLoadPlugins_Events(const fn_plug_ini: string);
     procedure DoTestPlugins;
     procedure LoadPluginsInfo;
-    procedure PluginPanelItemClick(Sender: TObject);
+    procedure PluginPanelItemClick(N: Integer);
     procedure PluginCommandItemClick(Sender: TObject);
     procedure DoAddPluginMenuItem(
       ASubmenu: TSpTbxSubmenuitem;
@@ -2407,7 +2395,6 @@ type
     procedure UpdatePanelOut(n: TSynTabOut);
     procedure UpdatePanelLeft(n: TSynTabLeft);
     procedure UpdatePanelRight(n: TSynTabRight);
-    procedure UpdateCheckLeftTabs(IsTree, IsProj, IsTabs: boolean);
     procedure UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
     procedure UpdateBookmarkMenus;
     procedure UpdateShortcuts;
@@ -2819,6 +2806,11 @@ type
       var ACanClose, ACanContinue: boolean);
     procedure TabPopup(Sender: TObject);
     procedure TabOver(Sender: TObject; ATabIndex: Integer);
+
+    procedure InitPanelsTabs;
+    procedure TabsRightClick(Sender: TObject);
+    procedure TabsOutClick(Sender: TObject);
+    procedure TabsLeftClick(Sender: TObject);
     //end of private
 
   protected
@@ -3058,6 +3050,8 @@ type
     property ShowOnTop: boolean read FOnTop write SetOnTop;
 
     procedure ApplyTabOptions;
+    procedure ApplyTabOptionsTo(ATabs: TATTabs);
+    procedure ApplyPanelsTabs;
     procedure UpdateActiveTabColors;
     procedure ApplyCarets;
     procedure ApplyUrlClick;
@@ -3237,7 +3231,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1280';
+  cSynVer = '6.6.1290';
   cSynPyVer = '1.0.132';
 
 const
@@ -4737,11 +4731,11 @@ begin
     LoadPanelProp(plClip, Ini, 'Clip');
     FOutVisible:= plOut.Visible;
 
-    FTabLeft:= TSynTabLeft(ReadInteger('plTree', 'Tab', 0));
-    FTabRight:= TSynTabRight(ReadInteger('plClip', 'Tab', 0));
-    FTabOut:= TSynTabOut(ReadInteger('plOut', 'Tab', 0));
-    if FTabOut=tbPluginsLog then //don't restore last avtive Log panel
-      FTabOut:= tbOutput;
+    FTabLeft:= ReadInteger('plTree', 'Tab', 0);
+    FTabRight:= ReadInteger('plClip', 'Tab', 0);
+    FTabOut:= ReadInteger('plOut', 'Tab', 0);
+    if FTabOut=Ord(tbPluginsLog) then //don't restore last avtive Log panel
+      FTabOut:= Ord(tbOutput);
 
     //opt
     PropsManager.LoadProps(ini); //20ms
@@ -4767,8 +4761,8 @@ begin
     orig_Tree:= plTree.Visible;
     orig_Out:= {plOut.Visible}FOutVisible;
     orig_Clip:= plClip.Visible;
-    orig_TabRight:= FTabRight;
     orig_TabLeft:= FTabLeft;
+    orig_TabRight:= FTabRight;
     orig_TabOut:= FTabOut;
     orig_TabsSort:= opTabsSortMode;
     orig_ListTabsCols:= ListTabsColumns;
@@ -4855,12 +4849,12 @@ begin
       WriteBool('plOut', 'Vis', FOutVisible);
     if plClip.Visible <> orig_Clip then
       WriteBool('plClip', 'Vis', plClip.Visible);
-    if FTabRight <> orig_TabRight then
-      WriteInteger('plClip', 'Tab', Ord(FTabRight));
-    if FTabLeft <> orig_TabLeft then
-      WriteInteger('plTree', 'Tab', Ord(FTabLeft));
-    if FTabOut <> orig_TabOut then
-      WriteInteger('plOut', 'Tab', Ord(FTabOut));
+    if TabsLeft.TabIndex <> orig_TabLeft then
+      WriteInteger('plTree', 'Tab', TabsLeft.TabIndex);
+    if TabsRight.TabIndex <> orig_TabRight then
+      WriteInteger('plClip', 'Tab', TabsRight.TabIndex);
+    if TabsOut.TabIndex <> orig_TabOut then
+      WriteInteger('plOut', 'Tab', TabsOut.TabIndex);
     if opTabsSortMode <> orig_TabsSort then
       WriteInteger('View', 'TabSort', opTabsSortMode);
 
@@ -6913,7 +6907,9 @@ begin
   plTree.Invalidate;
   tbTabsLeft.Invalidate;
   {$endif}
+
   DoResizePlugins;
+
   tbViewMove(Self);
 end;
 
@@ -6975,12 +6971,6 @@ begin
     Font.Size:= ScaleFontSize(Font.Size, Self);
     with Status do
       Height:= ScaleFontSize(Height, Self);
-    with tbTabsOut do
-      Height:= ScaleFontSize(Height, Self);
-    with tbTabsLeft do
-      Height:= ScaleFontSize(Height, Self);
-    with tbTabsRight do
-      Height:= ScaleFontSize(Height, Self);
   end;
 
   {$ifndef SPELL}
@@ -7012,9 +7002,9 @@ begin
   LoadPluginsInfo;
 
   //init main
-  LoadIni; //230 msec
+  LoadIni;
   PropsManager.UpdateAll;
-  LoadLexLib; //80 msec
+  LoadLexLib;
   LoadMacros;
   LoadClip;
   LoadHideIni;
@@ -7027,11 +7017,6 @@ begin
   //init spell-checker
   InitSpell;
   UpdateSpellLang;
-
-  //update panels
-  UpdatePanelOut(FTabOut);
-  UpdatePanelRight(FTabRight);
-  UpdatePanelLeft(FTabLeft);
 
   //Py fields
   PyExeDir:= ExcludeTrailingPathDelimiter(SynDir);
@@ -7174,6 +7159,7 @@ begin
   SynDirForHelpFiles:= SynDir + 'Readme';
   SynIsPortable:= IsFileExist(SynDir + 'Portable.ini');
   InitSynIniDir;
+  InitPanelsTabs;
 
   EditorSynLexersCfg:= SynLexersCfg;
   EditorSynLexersExCfg:= SynLexersExCfg;
@@ -7236,10 +7222,6 @@ begin
   FListFiles:= TTntStringList.Create;
   FListLexersSorted:= TTntStringList.Create;
   FListSnippets:= nil;
-
-  FTabOut:= tbOutput;
-  FTabRight:= tbClipbd;
-  FTabLeft:= tbTree;
 
   fmNumConv:= nil;
   fmClip:= nil;
@@ -9760,20 +9742,6 @@ begin
   plTree.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowLeftPanel);
   plClip.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowRightPanel);
   plOut.Options.CloseButton.Hint:= GetShortcutTextOfCmd(sm_OptShowOutputPanel);
-
-  TbxTabTree.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusTree);
-  TbxTabProject.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusProj);
-  TbxTabTabs.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusTabs);
-  //
-  TbxTabClipboard.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusClip);
-  TbxTabClips.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusClips);
-  TbxTabMinimap.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusMap);
-  //
-  TbxTabOutput.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusOutput);
-  TbxTabResults.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusFindRes);
-  TbxTabBookmarks.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusBookmarks);
-  TbxTabValidate.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusValidate);
-  TbxTabConsole.Hint:= GetShortcutTextOfCmd(sm_ToggleFocusConsole);
 
   UpdKey(TBXItemHelpTopics, sm_HelpFileContents);
   UpdKey(TbxItemRunSnippets, sm_SnippetsDialog);
@@ -12357,7 +12325,7 @@ begin
     if not AOutAppend then
       DoClearTreeFind;
     UpdateTreeFind_Initial(Finder.FindText, ADir);
-    UpdatePanelOut(tbFindRes);
+    TabsOut.TabIndex:= Ord(tbFindRes);
     plOut.Show;
 
     fmProgress.SetMode(proFindText);
@@ -12449,7 +12417,7 @@ begin
       else
       begin
         ANeedFocusResult:= true;
-        UpdatePanelOut(tbFindRes);
+        TabsOut.TabIndex:= Ord(tbFindRes);
         plOut.Show;
       end;
     end;
@@ -12469,7 +12437,7 @@ begin
         [Finder.FindText, Finder.ReplaceText, ADir]);
     FTreeRoot:= TreeFind.Items.Add(nil, ANodeText);
 
-    UpdatePanelOut(tbFindRes);
+    TabsOut.TabIndex:= Ord(tbFindRes);
     plOut.Show;
 
     ACountFiles:= 0;
@@ -12536,7 +12504,7 @@ begin
       else
       begin
         ANeedFocusResult:= true;
-        UpdatePanelOut(tbFindRes);
+        TabsOut.TabIndex:= Ord(tbFindRes);
         plOut.Show;
       end;
     end;
@@ -13379,7 +13347,6 @@ end;
 
 procedure TfmMain.UpdatePanelOut(n: TSynTabOut);
 begin
-  FTabOut:= n;
   ListOut.Visible:= n=tbOutput;
   ListVal.Visible:= n=tbValidate;
   TreeFind.Visible:= n=tbFindRes;
@@ -13389,26 +13356,6 @@ begin
 
   if ListBookmarks.Visible then
     UpdateListBookmarks;
-
-  if n=tbOutput then
-    tbTabsOut.ActiveTabIndex:= 0
-  else
-  if n=tbFindRes then
-    tbTabsOut.ActiveTabIndex:= 1
-  else
-  if n=tbBookmarks then
-    tbTabsOut.ActiveTabIndex:= 2
-  else
-  if n=tbValidate then
-    tbTabsOut.ActiveTabIndex:= 3
-  else
-  if n=tbPluginsLog then
-    tbTabsOut.ActiveTabIndex:= 4
-  else
-  if n=tbConsole then
-    tbTabsOut.ActiveTabIndex:= 5;
-
-  plOut.Caption:= tbTabsOut.ActiveTab.Caption;
 end;
 
 procedure TfmMain.UpdatePanelLeft(n: TSynTabLeft);
@@ -13417,20 +13364,13 @@ var
   i: Integer;
 begin
   //is it plugin tab?
-  if n>tbProj then
+  if n>=tbPlugin1 then
   begin
-    i:= Ord(n)-cFixedLeftTabs;
-    if (i>=Low(FPluginsPanel)) and (i<=High(FPluginsPanel)) then
-      if FPluginsPanel[i].FToolButton<>nil then
-      begin
-        PluginPanelItemClick(FPluginsPanel[i].FToolButton);
-        Exit
-      end
-      else
-        n:= TSynTabLeft(0);
+    i:= Ord(n)-Ord(tbPlugin1);
+    PluginPanelItemClick(i);
+    Exit
   end;
 
-  FTabLeft:= n;
   IsTree:= n=tbTree;
   IsProj:= n=tbProj;
   IsTabs:= n=tbTabs;
@@ -13445,8 +13385,6 @@ begin
   if Assigned(fmProj) then
     fmProj.Visible:= IsProj;
 
-  UpdateCheckLeftTabs(IsTree, IsProj, IsTabs);
-
   if IsTree then
     plTree.Caption:= DKLangConstW('capTree')
   else
@@ -13458,31 +13396,13 @@ begin
   else
     plTree.Caption:= '?';
 
-  //plugins
-  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
-    with FPluginsPanel[i] do
-      if FToolButton<>nil then
-        FToolButton.Checked:= false;
   DoShowPlugin(-1);
-end;
-
-procedure TfmMain.UpdateCheckLeftTabs(IsTree, IsProj, IsTabs: boolean);
-begin
-  if IsTree then
-    tbTabsLeft.ActiveTabIndex:= 0
-  else
-  if IsProj then
-    tbTabsLeft.ActiveTabIndex:= 1
-  else
-  if IsTabs then
-    tbTabsLeft.ActiveTabIndex:= 2;
 end;
 
 procedure TfmMain.UpdatePanelRight(n: TSynTabRight);
 var
   IsMap, IsClip, IsClips: boolean;
 begin
-  FTabRight:= n;
   IsMap:= n=tbMinimap;
   IsClip:= n=tbClipbd;
   IsClips:= n=tbTextClips;
@@ -13505,15 +13425,6 @@ begin
     SyncMapPos;
   end;
 
-  if IsClip then
-    tbTabsRight.ActiveTabIndex:= 0
-  else
-  if IsMap then
-    tbTabsRight.ActiveTabIndex:= 1
-  else
-  if IsClips then
-    tbTabsRight.ActiveTabIndex:= 2;
-
   if IsMap then
     plClip.Caption:= DKLangConstW('capMap')
   else
@@ -13528,12 +13439,12 @@ end;
 
 procedure TfmMain.TBXItemOOOutClick(Sender: TObject);
 begin
-  UpdatePanelOut(tbOutput);
+  TabsOut.TabIndex:= Ord(tbOutput);
 end;
 
 procedure TfmMain.TBXItemOOFindClick(Sender: TObject);
 begin
-  UpdatePanelOut(tbFindRes);
+  TabsOut.TabIndex:= Ord(tbFindRes);
 end;
 
 (*
@@ -13880,18 +13791,7 @@ begin
 end;
 
 procedure TfmMain.LoadClip;
-//var
-//  i: Integer;
 begin
-  {
-  //handle command-line parameter /noclip
-  if SynExe then
-  begin
-    for i:= 1 to ParamCount do
-      if ParamStr(i) = '/noclip' then Exit;
-  end;
-  }
-
   if Assigned(fmClip) then Exit;
   fmClip:= TfmClip.Create(Self);
   with fmClip do
@@ -15371,14 +15271,14 @@ end;
 
 procedure TfmMain.DoTreeFocus;
 begin
-  UpdatePanelLeft(tbTree);
+  TabsLeft.TabIndex:= Ord(tbTree);
   if Self.Enabled and Tree.CanFocus then
     Tree.SetFocus;
 end;
 
 procedure TfmMain.DoBookmarksFocus;
 begin
-  UpdatePanelOut(tbBookmarks);
+  TabsOut.TabIndex:= Ord(tbBookmarks);
   if Self.Enabled and ListBookmarks.CanFocus then
     ListBookmarks.SetFocus;
 end;
@@ -15402,7 +15302,7 @@ begin
   if not plClip.Visible then
   begin
     ecShowClip.Execute;
-    UpdatePanelRight(tbClipbd);
+    TabsRight.TabIndex:= Ord(tbClipbd);
     if fmClip.ListClip.CanFocus then
       fmClip.ListClip.SetFocus;
   end
@@ -15411,7 +15311,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelRight(tbClipbd);
+    TabsRight.TabIndex:= Ord(tbClipbd);
     if fmClip.ListClip.CanFocus then
       fmClip.ListClip.SetFocus
   end;
@@ -15621,7 +15521,7 @@ begin
   if not plOut.Visible then
   begin
     ecShowOut.Execute;
-    UpdatePanelOut(tbOutput);
+    TabsOut.TabIndex:= Ord(tbOutput);
     if Self.Enabled and ListOut.CanFocus then
       ListOut.SetFocus;
   end
@@ -15630,7 +15530,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelOut(tbOutput);
+    TabsOut.TabIndex:= Ord(tbOutput);
     if Self.Enabled and ListOut.CanFocus then
       ListOut.SetFocus
   end;
@@ -15756,7 +15656,7 @@ begin
   if not plOut.Visible then
   begin
     ecShowOut.Execute;
-    UpdatePanelOut(tbFindRes);
+    TabsOut.TabIndex:= Ord(tbFindRes);
     if Self.Enabled and TreeFind.CanFocus then
       TreeFind.SetFocus;
   end
@@ -15765,7 +15665,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelOut(tbFindRes);
+    TabsOut.TabIndex:= Ord(tbFindRes);
     if Self.Enabled and TreeFind.CanFocus then
       TreeFind.SetFocus
   end;
@@ -16593,7 +16493,7 @@ begin
     SynPanelPropsVal.ZeroBase:= false;
 
     ListVal.Items.LoadFromFile(fn_err);
-    UpdatePanelOut(tbValidate);
+    TabsOut.TabIndex:= Ord(tbValidate);
     plOut.Show;
   end
   else
@@ -16627,7 +16527,7 @@ end;
 
 procedure TfmMain.TBXItemOOValClick(Sender: TObject);
 begin
-  UpdatePanelOut(tbValidate);
+  TabsOut.TabIndex:= Ord(tbValidate);
 end;
 
 procedure TfmMain.ListValDblClick(Sender: TObject);
@@ -16734,7 +16634,7 @@ begin
   if not plOut.Visible then
   begin
     ecShowOut.Execute;
-    UpdatePanelOut(tbValidate);
+    TabsOut.TabIndex:= Ord(tbValidate);
     if Self.Enabled and ListVal.CanFocus then
       ListVal.SetFocus;
   end
@@ -16743,7 +16643,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelOut(tbValidate);
+    TabsOut.TabIndex:= Ord(tbValidate);
     if Self.Enabled and ListVal.CanFocus then
       ListVal.SetFocus
   end;
@@ -17267,12 +17167,12 @@ end;
 
 procedure TfmMain.TBXItemRightClipClick(Sender: TObject);
 begin
-  UpdatePanelRight(tbClipbd);
+  TabsRight.TabIndex:= Ord(tbClipbd);
 end;
 
 procedure TfmMain.TBXItemRightMapClick(Sender: TObject);
 begin
-  UpdatePanelRight(tbMinimap);
+  TabsRight.TabIndex:= Ord(tbMinimap);
 end;
 
 procedure TfmMain.MapClick(Sender: TObject);
@@ -17324,7 +17224,7 @@ begin
   if not plClip.Visible then
   begin
     ecShowClip.Execute;
-    UpdatePanelRight(tbMinimap);
+    TabsRight.TabIndex:= Ord(tbMinimap);
     if Assigned(fmMap) and fmMap.edMap.CanFocus then
       fmMap.edMap.SetFocus;
   end
@@ -17333,7 +17233,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelRight(tbMinimap);
+    TabsRight.TabIndex:= Ord(tbMinimap);
     if Assigned(fmMap) and fmMap.edMap.CanFocus then
       fmMap.edMap.SetFocus
   end;
@@ -19308,7 +19208,7 @@ begin
           SynPanelPropsOut.ZeroBase:= false;
 
           UpdatePanelOutFromList(List);
-          UpdatePanelOut(tbOutput);
+          TabsOut.TabIndex:= Ord(tbOutput);
           plOut.Show;
         end;
 
@@ -19605,7 +19505,7 @@ begin
       SynPanelPropsOut.Encoding,
       EditorTabExpansion(CurrentEditor));
     UpdatePanelOutFromList(List);
-    UpdatePanelOut(tbOutput);
+    TabsOut.TabIndex:= Ord(tbOutput);
     plOut.Show;
   finally
     FreeAndNil(List);
@@ -19614,12 +19514,12 @@ end;
 
 procedure TfmMain.TBXItemLeftTreeClick(Sender: TObject);
 begin
-  UpdatePanelLeft(tbTree);
+  TabsLeft.TabIndex:= Ord(tbTree);
 end;
 
 procedure TfmMain.TBXItemLeftProjClick(Sender: TObject);
 begin
-  UpdatePanelLeft(tbProj);
+  TabsLeft.TabIndex:= Ord(tbProj);
 end;
 
 procedure TfmMain.ecToggleFocusProjectExecute(Sender: TObject);
@@ -19627,7 +19527,7 @@ begin
   if not plTree.Visible then
   begin
     ecShowTree.Execute;
-    UpdatePanelLeft(tbProj);
+    TabsLeft.TabIndex:= Ord(tbProj);
     if Assigned(fmProj) then
       if fmProj.TreeProj.CanFocus then
         fmProj.TreeProj.SetFocus
@@ -19637,7 +19537,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelLeft(tbProj);
+    TabsLeft.TabIndex:= Ord(tbProj);
     if Assigned(fmProj) then
       if fmProj.TreeProj.CanFocus then
         fmProj.TreeProj.SetFocus
@@ -20455,7 +20355,7 @@ end;
 
 procedure TfmMain.TBXItemRightClipsClick(Sender: TObject);
 begin
-  UpdatePanelRight(tbTextClips);
+  TabsRight.TabIndex:= Ord(tbTextClips);
 end;
 
 procedure TfmMain.ClipsClick(Sender: TObject; const S: Widestring);
@@ -20473,7 +20373,7 @@ begin
   if not plClip.Visible then
   begin
     ecShowClip.Execute;
-    UpdatePanelRight(tbTextClips);
+    TabsRight.TabIndex:= Ord(tbTextClips);
     if Assigned(fmClips) then
       if fmClips.List.CanFocus then
         fmClips.List.SetFocus;
@@ -20483,7 +20383,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelRight(tbTextClips);
+    TabsRight.TabIndex:= Ord(tbTextClips);
     if Assigned(fmClips) then
       if fmClips.List.CanFocus then
         fmClips.List.SetFocus
@@ -21130,7 +21030,6 @@ end;
 procedure TfmMain.LoadPluginsInfo;
 var
   i: Integer;
-  Item: TSpTbxTabItem;
 begin
   //disable plugins in WLX
   if not SynExe then Exit;
@@ -21139,38 +21038,20 @@ begin
   for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
     with FPluginsPanel[i] do
       if SCaption<>'' then
-      begin
-        Item:= TSpTbxTabItem.Create(Self);
-        Item.Caption:= SCaption;
-        Item.Tag:= i;
-        Item.OnClick:= PluginPanelItemClick;
-        FToolButton:= Item;
-        tbTabsLeft.Items.Add(Item);
-      end;
+        TabsLeft.AddTab(-1, SCaption);
 end;
 
-procedure TfmMain.PluginPanelItemClick(Sender: TObject);
-var
-  N, i: Integer;
+procedure TfmMain.PluginPanelItemClick(N: Integer);
 begin
-  if (Sender=nil) then Exit;
-  N:= (Sender as TComponent).Tag;
+  if not ((N>=Low(FPluginsPanel)) and (N<=High(FPluginsPanel))) then Exit;
   if FPluginsPanel[N].SCaption='' then Exit;
 
   plTree.Caption:= FPluginsPanel[N].SCaption;
-  FTabLeft:= TSynTabLeft(N+cFixedLeftTabs);
 
   Tree.Visible:= false;
   Tree.SyntaxMemo:= nil;
   if Assigned(fmProj) then
     fmProj.Visible:= false;
-
-  //check buttons
-  UpdateCheckLeftTabs(false, false, false);
-  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
-    with FPluginsPanel[i] do
-      if FToolButton<>nil then
-        FToolButton.Checked:= i=N;
 
   DoLoadPlugin_Panel(N);
   DoShowPlugin(N);
@@ -21246,7 +21127,9 @@ begin
   X:= 0;
   Y:= IfThen(opShowPanelTitles, plTree.CaptionPanelSize.Y, 0);
   XSize:= plTree.ClientWidth;
-  YSize:= plTree.ClientHeight - Y - tbTabsLeft.Height;
+  YSize:= plTree.ClientHeight - Y;
+  if Assigned(TabsLeft) then
+    Dec(YSize, TabsLeft.Height);
 
   for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
     with FPluginsPanel[i] do
@@ -21293,11 +21176,13 @@ begin
       begin
         if not plTree.Visible then
           ecShowTree.Execute;
-        PluginPanelItemClick(FToolButton);
+
+        TabsLeft.TabIndex:= cFixedLeftTabs+i;
+
         with FPluginsPanel[i] do
           if (FForm<>nil) and Assigned(FSynAction) then
             FSynAction(FForm, cActionNavigateToFile, PWChar(ADir), nil, nil, nil);
-        Break
+        Exit
       end;
 end;
 
@@ -21642,7 +21527,7 @@ end;
 
 procedure TfmMain.TBXItemOOPLogClick(Sender: TObject);
 begin
-  UpdatePanelOut(tbPluginsLog);
+  TabsOut.TabIndex:= Ord(tbPluginsLog);
 end;
 
 function TfmMain.PluginAction_ShowHint(const AMsg: Widestring): Integer;
@@ -21654,18 +21539,17 @@ end;
 function TfmMain.PluginAction_ControlLog(const AMsg: Widestring; const ACmd: Integer; AColor: TColor): Integer;
 var
   S: Widestring;
+  D: TATTabData;
 begin
   Result:= cSynOK;
   case ACmd of
     cSynLogCmdHide:
       begin
-        TbxTabPlugins.Visible:= false;
-        UpdatePanelOut(tbOutput);
+        TabsOut.TabIndex:= Ord(tbOutput);
       end;
     cSynLogCmdShow:
       begin
-        TbxTabPlugins.Visible:= true;
-        UpdatePanelOut(tbPluginsLog);
+        TabsOut.TabIndex:= Ord(tbPluginsLog);
         plOut.Show;
       end;
     cSynLogCmdAddLine:
@@ -21680,7 +21564,14 @@ begin
     cSynLogCmdClear:
       ListPLog.Items.Clear;
     cSynLogCmdSetCaption:
-      TbxTabPlugins.Caption:= AMsg;
+      begin
+        D:= TabsOut.GetTabData(Ord(tbPluginsLog));
+        if D<>nil then
+        begin
+          D.TabCaption:= AMsg;
+          TabsOut.Invalidate;
+        end;
+      end;
     else
       Result:= cSynBadCmd;
   end;
@@ -21793,7 +21684,7 @@ begin
 
   //init TreeRoot, show pane
   UpdateTreeFind_Initial(Finder.FindText, ADir, true);
-  UpdatePanelOut(tbFindRes);
+  TabsOut.TabIndex:= Ord(tbFindRes);
   plOut.Show;
 
   DoProgressShow(proFindText);
@@ -21850,7 +21741,7 @@ begin
   else
   begin
     UpdateTreeFind_Results(Finder.FindText, ADir, false, true);
-    UpdatePanelOut(tbFindRes);
+    TabsOut.TabIndex:= Ord(tbFindRes);
     plOut.Show;
   end;
 end;
@@ -22049,7 +21940,7 @@ end;
 
 procedure TfmMain.TBXItemLeftTabsClick(Sender: TObject);
 begin
-  UpdatePanelLeft(tbTabs);
+  TabsLeft.TabIndex:= Ord(tbTabs);
 end;
 
 function TfmMain.ListTab_FrameIndex: integer;
@@ -22157,7 +22048,7 @@ begin
   if not plTree.Visible then
   begin
     ecShowTree.Execute;
-    UpdatePanelLeft(tbTabs);
+    TabsLeft.TabIndex:= Ord(tbTabs);
     if ListTabs.CanFocus then
       ListTabs.SetFocus
   end
@@ -22166,7 +22057,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelLeft(tbTabs);
+    TabsLeft.TabIndex:= Ord(tbTabs);
     if ListTabs.CanFocus then
       ListTabs.SetFocus
   end;
@@ -22813,7 +22704,7 @@ begin
     Options:= Options+[ofOverwritePrompt];
     Filter:= '*.log;*.txt|*.log;*.txt';
     InitialDir:= '';
-    FileName:= TbxTabPlugins.Caption;
+    FileName:= 'Log';
     if Execute then
     begin
       if ExtractFileExt(FileName)='' then
@@ -25275,6 +25166,8 @@ begin
     begin
       DoTitleChanged;
     end;
+
+  ApplyPanelsTabs;  
 end;
 
 procedure TfmMain.FixSplitters;
@@ -27020,7 +26913,7 @@ end;
 
 procedure TfmMain.TbxTabConsoleClick(Sender: TObject);
 begin
-  UpdatePanelOut(tbConsole);
+  TabsOut.TabIndex:= Ord(tbConsole);
 end;
 
 procedure TfmMain.DoPyConsole_EnterCommand(const Str: Widestring);
@@ -27091,7 +26984,7 @@ begin
   if not plOut.Visible then
   begin
     ecShowOut.Execute;
-    UpdatePanelOut(tbConsole);
+    TabsOut.TabIndex:= Ord(tbConsole);
     if Self.Enabled and edConsole.CanFocus then
       edConsole.SetFocus;
   end
@@ -27100,7 +26993,7 @@ begin
     FocusEditor
   else
   begin
-    UpdatePanelOut(tbConsole);
+    TabsOut.TabIndex:= Ord(tbConsole);
     if Self.Enabled and edConsole.CanFocus then
       edConsole.SetFocus;
   end;
@@ -27871,7 +27764,7 @@ begin
 
   //init TreeRoot, show pane
   UpdateTreeFind_Initial(Finder.FindText, ADir, true);
-  UpdatePanelOut(tbFindRes);
+  TabsOut.TabIndex:= Ord(tbFindRes);
   plOut.Show;
 
   FListFiles.Clear;
@@ -27901,7 +27794,7 @@ begin
   if FTreeRoot=nil then
     raise Exception.Create('TreeRoot nil');
   UpdateTreeFind_Results(Finder.FindText, ADir, false, true);
-  UpdatePanelOut(tbFindRes);
+  TabsOut.TabIndex:= Ord(tbFindRes);
   plOut.Show;
 
   if ASelectResults then
@@ -28738,7 +28631,7 @@ end;
 
 procedure TfmMain.TbxTabBookmarksClick(Sender: TObject);
 begin
-  UpdatePanelOut(tbBookmarks);
+  TabsOut.TabIndex:= Ord(tbBookmarks);
 end;
 
 procedure TfmMain.UpdateListBookmarks;
@@ -28849,6 +28742,104 @@ begin
     FocusEditor
   else
     DoBookmarksFocus;
+end;
+
+procedure TfmMain.InitPanelsTabs;
+begin
+  TabsRight:= TATTabs.Create(Self);
+  TabsRight.Parent:= plClip;
+  TabsRight.OnTabClick:= TabsRightClick;
+
+  TabsOut:= TATTabs.Create(Self);
+  TabsOut.Parent:= plOut;
+  TabsOut.OnTabClick:= TabsOutClick;
+
+  TabsLeft:= TATTabs.Create(Self);
+  TabsLeft.Parent:= plTree;
+  TabsLeft.OnTabClick:= TabsLeftClick;
+
+  TabsLeft.AddTab(-1, 'Tree');
+  TabsLeft.AddTab(-1, 'Project');
+  TabsLeft.AddTab(-1, 'Tabs');
+
+  TabsRight.AddTab(-1, 'Clipboard');
+  TabsRight.AddTab(-1, 'Minimap');
+  TabsRight.AddTab(-1, 'Clips');
+
+  TabsOut.AddTab(-1, 'Output');
+  TabsOut.AddTab(-1, 'Search Results');
+  TabsOut.AddTab(-1, 'Bookmarks');
+  TabsOut.AddTab(-1, 'Validation');
+  TabsOut.AddTab(-1, 'Plugins Log');
+  TabsOut.AddTab(-1, 'Console');
+end;
+
+procedure TfmMain.ApplyPanelsTabs;
+begin
+  ApplyTabOptionsTo(TabsLeft);
+  ApplyTabOptionsTo(TabsRight);
+  ApplyTabOptionsTo(TabsOut);
+
+  TabsLeft.TabIndex:= FTabLeft;
+  TabsRight.TabIndex:= FTabRight;
+  TabsOut.TabIndex:= FTabOut;
+end;
+
+procedure TfmMain.ApplyTabOptionsTo(ATabs: TATTabs);
+begin
+  ATabs.Align:= alBottom;
+  ATabs.Font:= ToolbarFont;
+  ATabs.OnTabDrawBefore:= Groups.Pages1.Tabs.OnTabDrawBefore;
+
+  ATabs.TabBottom:= true;
+  ATabs.TabShowPlus:= false;
+  ATabs.TabShowMenu:= false;
+  ATabs.TabShowClose:= tbShowNone;
+  ATabs.TabMiddleClickClose:= false;
+  ATabs.TabShowBorderActiveLow:= true;
+  ATabs.TabDragEnabled:= false;
+
+  ATabs.TabAngle:= Groups.Pages1.Tabs.TabAngle;
+  ATabs.TabIndentTop:= 0;
+  ATabs.TabIndentLeft:= 3;
+  ATabs.TabHeight:= Groups.Pages1.Tabs.TabHeight;
+  ATabs.Height:= Groups.Pages1.Tabs.Height;
+
+  ATabs.Color:= Groups.Pages1.Tabs.Color;
+  ATabs.ColorBg:= Groups.Pages1.Tabs.ColorBg;
+  ATabs.ColorBorderActive:= Groups.Pages1.Tabs.ColorBorderActive;
+  ATabs.ColorBorderPassive:= Groups.Pages1.Tabs.ColorBorderPassive;
+  ATabs.ColorTabActive:= Groups.Pages1.Tabs.ColorTabActive;
+  ATabs.ColorTabPassive:= Groups.Pages1.Tabs.ColorTabPassive;
+  ATabs.ColorTabOver:= Groups.Pages1.Tabs.ColorTabOver;
+end;
+
+procedure TfmMain.TabsRightClick(Sender: TObject);
+begin
+  UpdatePanelRight(TSynTabRight(TabsRight.TabIndex));
+end;
+
+procedure TfmMain.TabsOutClick(Sender: TObject);
+begin
+  UpdatePanelOut(TSynTabOut(TabsOut.TabIndex));
+end;
+
+procedure TfmMain.TabsLeftClick(Sender: TObject);
+begin
+  UpdatePanelLeft(TSynTabLeft(TabsLeft.TabIndex));
+end;
+
+procedure TfmMain.PopupPluginsLogPopup(Sender: TObject);
+begin
+  with ListPLog do
+  begin
+    TBXItemPLogCopySel.Enabled:= SelCount>0;
+    TBXItemPLogCopyAll.Enabled:= Items.Count>0;
+    TBXItemPLogDelete.Enabled:= Items.Count>0;
+    TBXItemPLogClear.Enabled:= Items.Count>0;
+    TBXItemPLogFind.Enabled:= Items.Count>0;
+    TBXItemPLogSaveAs.Enabled:= Items.Count>0;
+  end;
 end;
 
 initialization
