@@ -13390,17 +13390,6 @@ begin
   if Assigned(fmProj) then
     fmProj.Visible:= IsProj;
 
-  if IsTree then
-    plTree.Caption:= DKLangConstW('capTree')
-  else
-  if IsProj then
-    plTree.Caption:= DKLangConstW('capProj')
-  else
-  if IsTabs then
-    plTree.Caption:= DKLangConstW('capTabs')
-  else
-    plTree.Caption:= '?';
-
   DoShowPlugin(-1);
 end;
 
@@ -13429,17 +13418,6 @@ begin
     SyncMapData;
     SyncMapPos;
   end;
-
-  if IsMap then
-    plClip.Caption:= DKLangConstW('capMap')
-  else
-  if IsClip then
-    plClip.Caption:= DKLangConstW('capClip')
-  else
-  if IsClips then
-    plClip.Caption:= DKLangConstW('capClips')
-  else
-    plClip.Caption:= '?';
 end;
 
 procedure TfmMain.TBXItemOOOutClick(Sender: TObject);
@@ -14359,6 +14337,9 @@ begin
 
   ApplyTabOptions;
   Groups.Invalidate;
+  TabsLeft.Invalidate;
+  TabsRight.Invalidate;
+  TabsOut.Invalidate;
 
   ApplyFramesOptions;
   ApplyAcpColors;
@@ -24659,7 +24640,6 @@ begin
   SIni:= SynToolbarsIni;
   with TIniFile.Create(SIni) do
   try
-    //Toolbar.Caption:= UTF8Decode(ReadString(IntToStr(NIndex), 'cap', ''));
     if Toolbar is TSpTbxToolbar then
     begin
       ImgList.Width:= ReadInteger(Id, 'ix', 32);
@@ -28760,20 +28740,20 @@ begin
   TabsOut.Parent:= plOut;
   TabsOut.OnTabClick:= TabsOutClick;
 
-  TabsLeft.AddTab(-1, 'Tree');
-  TabsLeft.AddTab(-1, 'Project');
-  TabsLeft.AddTab(-1, 'Tabs');
+  TabsLeft.AddTab(-1, DKLangConstW('cap_Tree'));
+  TabsLeft.AddTab(-1, DKLangConstW('cap_Proj'));
+  TabsLeft.AddTab(-1, DKLangConstW('cap_Tabs'));
 
-  TabsRight.AddTab(-1, 'Clipboard');
-  TabsRight.AddTab(-1, 'Minimap');
-  TabsRight.AddTab(-1, 'Clips');
+  TabsRight.AddTab(-1, DKLangConstW('cap_Clip'));
+  TabsRight.AddTab(-1, DKLangConstW('cap_Minimap'));
+  TabsRight.AddTab(-1, DKLangConstW('cap_Clips'));
 
-  TabsOut.AddTab(-1, 'Output');
-  TabsOut.AddTab(-1, 'Search Results');
-  TabsOut.AddTab(-1, 'Bookmarks');
-  TabsOut.AddTab(-1, 'Validation');
+  TabsOut.AddTab(-1, DKLangConstW('cap_Out'));
+  TabsOut.AddTab(-1, DKLangConstW('cap_FRes'));
+  TabsOut.AddTab(-1, DKLangConstW('cap_Bk'));
+  TabsOut.AddTab(-1, DKLangConstW('cap_Valid'));
   TabsOut.AddTab(-1, 'Plugins Log');
-  TabsOut.AddTab(-1, 'Console');
+  TabsOut.AddTab(-1, DKLangConstW('cap_Con'));
 end;
 
 procedure TfmMain.ApplyTabOptionsTo(ATabs: TATTabs);
@@ -28807,18 +28787,36 @@ begin
 end;
 
 procedure TfmMain.TabsLeftClick(Sender: TObject);
+var
+  D: TATTabData;
 begin
   UpdatePanelLeft(TSynTabLeft(TabsLeft.TabIndex));
+
+  D:= TabsLeft.GetTabData(TabsLeft.TabIndex);
+  if D<>nil then
+    plTree.Caption:= D.TabCaption;
 end;
 
 procedure TfmMain.TabsRightClick(Sender: TObject);
+var
+  D: TATTabData;
 begin
   UpdatePanelRight(TSynTabRight(TabsRight.TabIndex));
+
+  D:= TabsRight.GetTabData(TabsRight.TabIndex);
+  if D<>nil then
+    plClip.Caption:= D.TabCaption;
 end;
 
 procedure TfmMain.TabsOutClick(Sender: TObject);
+var
+  D: TATTabData;
 begin
   UpdatePanelOut(TSynTabOut(TabsOut.TabIndex));
+
+  D:= TabsOut.GetTabData(TabsOut.TabIndex);
+  if D<>nil then
+    plOut.Caption:= D.TabCaption;
 end;
 
 procedure TfmMain.PopupPluginsLogPopup(Sender: TObject);
