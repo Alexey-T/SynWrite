@@ -66,7 +66,6 @@ const
   cMaxFilesInFolder = 50;
   opMruForPlugin = false; //use recent list for Lister-plugin
   cTabColors = 10; //number of user-defined tab colors
-  cFixedLeftTabs = 3; //number of fixed tabs on left panel (Tree+Project+Tabs = 3)
   cFixedWindowItems = 5; //number of fixed items in Window menu
   cMaxTreeLen = 250; //"find in files" result tree: max node length
   cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
@@ -2292,7 +2291,7 @@ type
     procedure DoRefreshPluginsLang;
     procedure DoPluginSaveFtpFile(F: TEditorFrame);
     procedure DoPluginsRepaint;
-    procedure DoOpenPanelPluginByName(const AName: string; var AIndex: Integer);
+    function DoOpenPanelPluginByName(const AName: string): Integer;
     function DoOpenPluginFavorite(const AFileName: Widestring): boolean;
     procedure DoShowPlugin(N: Integer);
     procedure DoClosePlugins;
@@ -3233,7 +3232,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1290';
+  cSynVer = '6.6.1300';
   cSynPyVer = '1.0.132';
 
 const
@@ -21155,7 +21154,7 @@ begin
   AName:= Copy(AFileName, 1, N-1);
   ADir:= Copy(AFileName, N+2, MaxInt);
 
-  DoOpenPanelPluginByName(AName, N);
+  N:= DoOpenPanelPluginByName(AName);
   if N>=0 then
   begin
      with FPluginsPanel[N] do
@@ -21164,22 +21163,21 @@ begin
   end;
 end;
 
-procedure TfmMain.DoOpenPanelPluginByName(const AName: string; var AIndex: Integer);
+function TfmMain.DoOpenPanelPluginByName(const AName: string): Integer;
 var
   i: Integer;
 begin
-  AIndex:= -1;
+  Result:= -1;
   for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
-    with FPluginsPanel[i] do
-      if SCaption=AName then
-      begin
-        if not plTree.Visible then
-          ecShowTree.Execute;
+    if FPluginsPanel[i].SCaption=AName then
+    begin
+      if not plTree.Visible then
+        ecShowTree.Execute;
 
-        AIndex:= i;
-        TabsLeft.TabIndex:= cFixedLeftTabs+i;
-        Exit
-      end;
+      Result:= i;
+      TabsLeft.TabIndex:= Ord(tbPlugin1)+i;
+      Exit
+    end;
 end;
 
 function TfmMain.PluginAction_OpenFile(const fn: Widestring): Integer;
@@ -28842,17 +28840,15 @@ begin
 end;
 
 procedure TfmMain.TbxItemWinExplorerClick(Sender: TObject);
-var
-  Index: Integer;
 begin
-  DoOpenPanelPluginByName('Explorer', Index);
+  if DoOpenPanelPluginByName('Explorer')<0 then
+    MsgBeep;
 end;
 
 procedure TfmMain.TbxItemWinFtpClick(Sender: TObject);
-var
-  Index: Integer;
 begin
-  DoOpenPanelPluginByName('SynFTP', Index);
+  if DoOpenPanelPluginByName('SynFTP')<0 then
+    MsgBeep;
 end;
 
 initialization
