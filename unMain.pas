@@ -6370,10 +6370,12 @@ begin
     sm_SnippetsDialog: DoSnippetListDialog('');
 
     //sync bookmarks of master/slave editors
-    smSetBookmark0 .. smSetBookmark9:
+    smSetBookmark0..smSetBookmark9:
       begin
-        BrotherEditor(Ed).Bookmarks[Command - smSetBookmark0]:= Ed.CaretStrPos;
-        Handled:= false;
+        Ed.ToggleBookmark(Command - smSetBookmark0);
+        BrotherEditor(Ed).Bookmarks[Command - smSetBookmark0]:= Ed.Bookmarks[Command - smSetBookmark0];
+        BrotherEditor(Ed).Invalidate;
+        UpdateListBookmarks;
       end;
 
     //sync markers of master/slave editors
@@ -9526,7 +9528,6 @@ var
 begin
   N:= (Sender as TComponent).Tag;
   CurrentEditor.ExecCommand(smSetBookmark0 + N);
-  UpdateListBookmarks;
 end;
 
 procedure TfmMain.TBXSubmenuItemBkSetPopup(Sender: TTBCustomItem;
