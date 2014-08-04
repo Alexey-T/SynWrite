@@ -3232,7 +3232,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1301';
+  cSynVer = '6.6.1302';
   cSynPyVer = '1.0.132';
 
 const
@@ -28744,6 +28744,10 @@ begin
   TabsOut:= TATTabs.Create(Self);
   TabsOut.Parent:= plOut;
   TabsOut.OnTabClick:= TabsOutClick;
+
+  TabsLeft.PopupMenu:= PopupPanelTitle;
+  TabsRight.PopupMenu:= PopupPanelTitle;
+  TabsOut.PopupMenu:= PopupPanelTitle;
 
   TabsLeft.AddTab(-1, DKLangConstW('cap_Tree'));
   TabsLeft.AddTab(-1, DKLangConstW('cap_Proj'));
