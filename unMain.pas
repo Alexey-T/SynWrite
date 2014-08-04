@@ -3232,7 +3232,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1300';
+  cSynVer = '6.6.1301';
   cSynPyVer = '1.0.132';
 
 const
@@ -6993,9 +6993,6 @@ begin
   TbxItemWinFtp.Enabled:= SynExe;
   TBXItemWinConsole.Enabled:= SynExe;
 
-  //init plugins before LoadIni
-  LoadPluginsInfo;
-
   //init main
   LoadIni;
   PropsManager.UpdateAll;
@@ -7017,9 +7014,11 @@ begin
   PyExeDir:= ExcludeTrailingPathDelimiter(SynDir);
   PyIniDir:= ExcludeTrailingPathDelimiter(SynIniDir);
 
-  //init groups
+  //init objects
+  InitPanelsTabs;
   InitGroups;
-
+  LoadPluginsInfo; //after InitPanelsTabs
+  
   TabsLeft.TabIndex:= FTabLeft;
   TabsRight.TabIndex:= FTabRight;
   TabsOut.TabIndex:= FTabOut;
@@ -7158,7 +7157,6 @@ begin
   SynDirForHelpFiles:= SynDir + 'Readme';
   SynIsPortable:= IsFileExist(SynDir + 'Portable.ini');
   InitSynIniDir;
-  InitPanelsTabs;
 
   EditorSynLexersCfg:= SynLexersCfg;
   EditorSynLexersExCfg:= SynLexersExCfg;
