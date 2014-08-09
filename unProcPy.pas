@@ -1131,7 +1131,7 @@ const
   PROP_RO          = 4;
   PROP_MARGIN      = 5;
   PROP_FOLDING     = 6;
-  PROP_NON_PRINTED = 7;
+  //free 7;
   PROP_TAB_SPACES  = 8;
   PROP_TAB_SIZE    = 9;
   PROP_COL_MARKERS = 10;
@@ -1150,6 +1150,10 @@ const
   PROP_LEXER_CARET = 23;
   PROP_LEXER_POS   = 24;
   PROP_COLOR       = 25;
+  PROP_NON_PRINTED         = 26;
+  PROP_NON_PRINTED_SPACES  = 27;
+  PROP_NON_PRINTED_ENDS    = 28;
+  PROP_NON_PRINTED_ENDS_EX = 29;
 
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1180,8 +1184,16 @@ begin
           Result:= PyInt_FromLong(Ed.RightMargin);
         PROP_FOLDING:
           Result:= PyBool_FromLong(Ord(not Ed.DisableFolding));
+
         PROP_NON_PRINTED:
           Result:= PyBool_FromLong(Ord(Ed.NonPrinted.Visible));
+        PROP_NON_PRINTED_SPACES:
+          Result:= PyBool_FromLong(Ord(Ed.NonPrintedSpaces));
+        PROP_NON_PRINTED_ENDS:
+          Result:= PyBool_FromLong(Ord(Ed.NonPrintedEol));
+        PROP_NON_PRINTED_ENDS_EX:
+          Result:= PyBool_FromLong(Ord(Ed.NonPrintedEolDetails));
+
         PROP_TAB_SPACES:
           Result:= PyBool_FromLong(Ord(Ed.TabMode = tmSpaces));
         PROP_TAB_SIZE:
@@ -1280,8 +1292,16 @@ begin
           Ed.RightMargin:= NumVal;
         PROP_FOLDING:
           Ed.DisableFolding:= not Bool(NumVal);
+
         PROP_NON_PRINTED:
           Ed.NonPrinted.Visible:= Bool(NumVal);
+        PROP_NON_PRINTED_SPACES:
+          Ed.NonPrintedSpaces:= Bool(NumVal);
+        PROP_NON_PRINTED_ENDS:
+          Ed.NonPrintedEol:= Bool(NumVal);
+        PROP_NON_PRINTED_ENDS_EX:
+          Ed.NonPrintedEolDetails:= Bool(NumVal);
+
         PROP_TAB_SPACES:
           begin
             if Bool(NumVal) then
