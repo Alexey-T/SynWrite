@@ -3207,6 +3207,7 @@ type
       const Tok: TSearchTokens;
       OptBkmk, OptExtSel: boolean): Integer;
     procedure DoPyConsole_LogString(const Str: Widestring);
+    function DoShowColorPickerEx(NColor: Integer): Integer;
     //end of public
   end;
 
@@ -19038,12 +19039,25 @@ begin
     DoHint('');
 end;
 
-procedure TfmMain.ecInsertColorExecute(Sender: TObject);
+function TfmMain.DoShowColorPickerEx(NColor: Integer): Integer;
 var
   fn: string;
   code: Cardinal;
-  wStart, wEnd: integer;
-  NColor: integer;
+begin
+  fn:= SynDir + 'Tools\ColorPicker.exe';
+  if not IsFileExist(fn) then
+    begin MsgNoFile(fn); Exit end;
+
+  if FExecuteGetCode(fn, IntToStr(NColor), sw_show, true, code) then
+    Result:= code
+  else
+    Result:= -1;
+end;
+
+procedure TfmMain.ecInsertColorExecute(Sender: TObject);
+var
+  code, NColor: Integer;
+  wStart, wEnd: Integer;
 begin
   //auto-compelete may mess up with color picker
   ecACP.CloseUp(false);
@@ -19051,20 +19065,17 @@ begin
   if CurrentEditor.ReadOnly then
     begin MsgBeep; Exit end;
 
-  fn:= SynDir + 'Tools\ColorPicker.exe';
-  if not IsFileExist(fn) then
-    begin MsgNoFile(fn); Exit end;
-
   EditorGetColorCodeRange(CurrentEditor, wStart, wEnd, NColor);
-  if FExecuteGetCode(fn, IntToStr(NColor), sw_show, true, code) then
-    if code<>Cardinal(-1) then
-    begin
-      EditorInsertColorCode(CurrentEditor, code);
-      DoAddRecentColor(code);
-      {$ifndef FixRepaint}
-      DoRepaintTBs;
-      {$endif}
-    end;
+  code:= DoShowColorPickerEx(NColor);
+
+  if code>=0 then
+  begin
+    EditorInsertColorCode(CurrentEditor, code);
+    DoAddRecentColor(code);
+    {$ifndef FixRepaint}
+    DoRepaintTBs;
+    {$endif}
+  end;
 end;
 
 procedure TfmMain.ApplyShowRecentColors;

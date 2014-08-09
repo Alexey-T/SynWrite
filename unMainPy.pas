@@ -39,6 +39,7 @@ uses
   SysUtils,
   Windows,
   Classes,
+  Dialogs,
   Math,
   Types,
   Controls,
@@ -968,11 +969,13 @@ begin
 end;
 
 const
-  PROC_GET_CLIP      = 1;
-  PROC_SET_CLIP      = 2;
-  PROC_LOCK_STATUS   = 3;
-  PROC_UNLOCK_STATUS = 4;
-  PROC_SOUND         = 5;
+  PROC_GET_CLIP        = 1;
+  PROC_SET_CLIP        = 2;
+  PROC_LOCK_STATUS     = 3;
+  PROC_UNLOCK_STATUS   = 4;
+  PROC_SOUND           = 5;
+  PROC_COLOR_PICKER    = 6;
+  PROC_COLOR_PICKER_EX = 7;
 
 function Py_app_proc(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -998,6 +1001,7 @@ begin
             fmMain.UpdateStatusBar;
             Result:= ReturnNone;
           end;
+
         PROC_SOUND:
           begin
             if (Str='') or IsFileExist(Str) then
@@ -1018,6 +1022,28 @@ begin
           begin
             TntClipboard.AsWideText:= Str;
             Result:= ReturnNone;
+          end;
+
+        PROC_COLOR_PICKER:
+          begin
+            NValue:= StrToIntDef(Str, 0);
+            with TColorDialog.Create(fmMain) do
+            try
+              Color:= NValue;
+              if Execute then
+                Result:= PyInt_FromLong(Color)
+              else
+                Result:= PyInt_FromLong(-1);
+            finally
+              Free
+            end;
+          end;
+
+        PROC_COLOR_PICKER_EX:
+          begin
+            NValue:= StrToIntDef(Str, 0);
+            NValue:= fmMain.DoShowColorPickerEx(NValue);
+            Result:= PyInt_FromLong(NValue);
           end;
 
         else
