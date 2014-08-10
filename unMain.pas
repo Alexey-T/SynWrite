@@ -6491,7 +6491,7 @@ begin
     sm_PrintNowSelection:
       EditorPrint(Ed,
         Command=sm_PrintNowSelection,
-        FrameOfEditor(Ed).FileName,
+        ExtractFileName(FrameOfEditor(Ed).FileName),
         ecSyntPrinter);
 
     //end of commands list
