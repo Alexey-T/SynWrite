@@ -393,6 +393,8 @@ const
   sm_MoveCurrentTabToNextGroup = 1060;
   sm_MoveCurrentTabToPrevGroup = 1061;
   sm_ToggleFocusBookmarks = 1062;
+  sm_PrintNowAll = 1063;
+  sm_PrintNowSelection = 1064;
   //free
 
   //Tree commands

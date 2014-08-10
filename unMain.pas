@@ -3233,7 +3233,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1303';
+  cSynVer = '6.6.1310';
   cSynPyVer = '1.0.133';
 
 const
@@ -6486,6 +6486,13 @@ begin
 
     sm_UpdateIniFile:
       DoUpdateIniFileForNewRelease(SynIni);
+
+    sm_PrintNowAll,
+    sm_PrintNowSelection:
+      EditorPrint(Ed,
+        Command=sm_PrintNowSelection,
+        FrameOfEditor(Ed).FileName,
+        ecSyntPrinter);
 
     //end of commands list
     else
@@ -19044,14 +19051,14 @@ var
   fn: string;
   code: Cardinal;
 begin
+  Result:= -1;
+
   fn:= SynDir + 'Tools\ColorPicker.exe';
-  if not IsFileExist(fn) then
-    begin MsgNoFile(fn); Exit end;
+  if not IsFileExist(fn) then Exit;
+    //begin MsgNoFile(fn); Exit end;
 
   if FExecuteGetCode(fn, IntToStr(NColor), sw_show, true, code) then
-    Result:= code
-  else
-    Result:= -1;
+    Result:= code;
 end;
 
 procedure TfmMain.ecInsertColorExecute(Sender: TObject);

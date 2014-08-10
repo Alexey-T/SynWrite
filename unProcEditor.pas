@@ -12,8 +12,12 @@ uses
   ecSyntMemo,
   ATSyntMemo,
   ecMemoStrings,
-  ecStrUtils;
+  ecStrUtils,
+  ecPrint;
 
+function EditorPrint(Ed: TSyntaxMemo; ASelOnly: boolean;
+  const ATitle: string;
+  APrinter: TecSyntPrinter): boolean;
 function EditorGetBlockStaple(Ed: TSyntaxMemo; PosX, PosY: Integer): TBlockStaple;
 procedure EditorSetCaretShape(Ed: TSyntaxMemo; Opt: Integer);
 function EditorGetColorPropertyById(Ed: TSyntaxMemo; const Id: string): Longint;
@@ -190,6 +194,7 @@ uses
   Windows,
   Math,
   Clipbrd,
+  Dialogs,
   TntClipbrd,
   SysUtils,
   StrUtils,
@@ -3347,6 +3352,27 @@ begin
   P:= Ed.CaretToMouse(PosX, PosY);
   Result:= Ed.IsOverStaple(P.X - Ed.StapleOffset, P.Y);
     //move TSyntaxMemo.IsOverStaple from "private" to "public"
+end;
+
+function EditorPrint(Ed: TSyntaxMemo; ASelOnly: boolean;
+  const ATitle: string;
+  APrinter: TecSyntPrinter): boolean;
+var
+  AEd: TCustomSyntaxMemo;
+begin
+  Result:= true;
+  with APrinter do
+  begin
+    Title:= ATitle;
+    AEd:= SyntMemo;
+    try
+      SyntMemo:= Ed;
+      PrintSelection:= ASelOnly;
+      Print;
+    finally
+      SyntMemo:= AEd;
+    end;
+  end;  
 end;
 
 
