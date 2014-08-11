@@ -21,29 +21,29 @@ type
     actExportLexer: TAction;
     actDeleteLexer: TAction;
     actNewLexer: TAction;
-    ToolButton1: TToolButton;
-    ToolButton2: TToolButton;
-    ToolButton3: TToolButton;
-    ToolButton4: TToolButton;
+    btnOpen: TToolButton;
+    btnSaveAs: TToolButton;
+    btnNew: TToolButton;
+    btnConf: TToolButton;
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
-    ToolButton7: TToolButton;
-    ToolButton8: TToolButton;
-    ToolButton9: TToolButton;
+    btnImport: TToolButton;
+    btnExport: TToolButton;
+    btnDelete: TToolButton;
     ToolButton10: TToolButton;
     ToolButton11: TToolButton;
     actClose: TAction;
-    ToolButton12: TToolButton;
+    btnClose: TToolButton;
     ToolButton13: TToolButton;
-    Open_Lib: TOpenDialog;
-    Save_Lib: TSaveDialog;
-    Open_Lexer: TOpenDialog;
-    Save_Lexer: TSaveDialog;
-    ToolButton15: TToolButton;
+    DlgOpenLib: TOpenDialog;
+    DlgSaveLib: TSaveDialog;
+    DlgOpenLexer: TOpenDialog;
+    DlgSaveLexer: TSaveDialog;
+    btnCopy: TToolButton;
     ToolButton16: TToolButton;
     actCopy: TAction;
     actClear: TAction;
-    ToolButton17: TToolButton;
+    btnClear: TToolButton;
     DKLanguageController1: TDKLanguageController;
     LV: TTntCheckListBox;
     procedure actLexerPropsUpdate(Sender: TObject);
@@ -62,6 +62,7 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure LVClickCheck(Sender: TObject);
+    procedure TntFormCreate(Sender: TObject);
   private
     FLexLib: TSyntaxManager;
     procedure UpdateTitle;
@@ -177,13 +178,13 @@ procedure TfmLexerLibrary.actOpenLibExecute(Sender: TObject);
 begin
   if FLexLib.FileName<>'' then
   begin
-    Open_Lib.InitialDir:= ExtractFileDir(FLexLib.FileName);
-    Open_Lib.FileName:= ExtractFileName(FLexLib.FileName);
+    DlgOpenLib.InitialDir:= ExtractFileDir(FLexLib.FileName);
+    DlgOpenLib.FileName:= ExtractFileName(FLexLib.FileName);
   end;
 
-  if Open_Lib.Execute then
+  if DlgOpenLib.Execute then
   begin
-    FLexLib.LoadFromFile(Open_Lib.FileName);
+    FLexLib.LoadFromFile(DlgOpenLib.FileName);
     UpdateList;
   end;
 end;
@@ -192,13 +193,13 @@ procedure TfmLexerLibrary.actSaveLibExecute(Sender: TObject);
 begin
   if FLexLib.FileName <> '' then
   begin
-    Save_Lib.InitialDir:= ExtractFileDir(FLexLib.FileName);
-    Save_Lib.FileName:= ExtractFileName(FLexLib.FileName);
+    DlgSaveLib.InitialDir:= ExtractFileDir(FLexLib.FileName);
+    DlgSaveLib.FileName:= ExtractFileName(FLexLib.FileName);
   end;
 
-  if Save_Lib.Execute then
+  if DlgSaveLib.Execute then
   begin
-    FLexLib.SaveToFile(Save_Lib.FileName);
+    FLexLib.SaveToFile(DlgSaveLib.FileName);
     UpdateTitle;
   end;
 end;
@@ -207,11 +208,11 @@ procedure TfmLexerLibrary.actImportLexerExecute(Sender: TObject);
 var
   an: TSyntAnalyzer;
 begin
-  if Open_Lexer.Execute then
+  if DlgOpenLexer.Execute then
   begin
     an:= FLexLib.AddAnalyzer;
     try
-      an.LoadFromFile(Open_Lexer.FileName);
+      an.LoadFromFile(DlgOpenLexer.FileName);
     except
       FreeAndNil(an);
     end;
@@ -245,9 +246,9 @@ begin
     S:= StringReplace(S, '\', '_', [rfReplaceAll]);
     S:= StringReplace(S, ':', '_', [rfReplaceAll]);
     S:= StringReplace(S, '|', '_', [rfReplaceAll]);
-    Save_Lexer.FileName:= S;
-    if Save_Lexer.Execute then
-      (LV.Items.Objects[LV.ItemIndex] as TSyntAnalyzer).SaveToFile(Save_Lexer.FileName);
+    DlgSaveLexer.FileName:= S;
+    if DlgSaveLexer.Execute then
+      (LV.Items.Objects[LV.ItemIndex] as TSyntAnalyzer).SaveToFile(DlgSaveLexer.FileName);
   end;
 end;
 
@@ -340,6 +341,20 @@ begin
     an.Internal:= not LV.Checked[LV.ItemIndex];
     FLexLib.Modified:= True;
   end;
+end;
+
+procedure TfmLexerLibrary.TntFormCreate(Sender: TObject);
+begin
+  DlgOpenLib.DefaultExt:= 'lxl';
+  DlgSaveLib.DefaultExt:= 'lxl';
+  DlgOpenLexer.DefaultExt:= 'lcf';
+  DlgSaveLexer.DefaultExt:= 'lcf';
+
+  DlgOpenLib.Filter:= '*.lxl|*.lxl';
+  DlgSaveLib.Filter:= DlgOpenLib.Filter;
+
+  DlgOpenLexer.Filter:= '*.lcf|*.lcf';
+  DlgSaveLexer.Filter:= DlgOpenLexer.Filter;
 end;
 
 end.

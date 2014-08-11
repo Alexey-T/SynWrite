@@ -1,6 +1,6 @@
 object fmLexerLibrary: TfmLexerLibrary
-  Left = 421
-  Top = 335
+  Left = 365
+  Top = 592
   Width = 447
   Height = 433
   BorderIcons = [biSystemMenu]
@@ -13,6 +13,7 @@ object fmLexerLibrary: TfmLexerLibrary
   KeyPreview = True
   OldCreateOrder = True
   Position = poScreenCenter
+  OnCreate = TntFormCreate
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
@@ -20,117 +21,120 @@ object fmLexerLibrary: TfmLexerLibrary
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
-    Width = 439
+    Width = 431
     Height = 29
-    Caption = 'ToolBar1'
     Images = ImageList1
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
-    object ToolButton1: TToolButton
+    object btnOpen: TToolButton
       Left = 0
       Top = 2
+      Hint = 'Choose another lexer library...'
       Action = actOpenLib
     end
-    object ToolButton2: TToolButton
+    object btnSaveAs: TToolButton
       Left = 23
       Top = 2
+      Hint = 'Save lexer library with another name...'
       Action = actSaveLib
     end
     object ToolButton5: TToolButton
       Left = 46
       Top = 2
-      Width = 8
-      Caption = 'ToolButton5'
+      Width = 12
       ImageIndex = 4
       Style = tbsSeparator
     end
-    object ToolButton3: TToolButton
-      Left = 54
+    object btnNew: TToolButton
+      Left = 58
       Top = 2
+      Hint = 'Create new lexer'
       Action = actNewLexer
     end
-    object ToolButton4: TToolButton
-      Left = 77
+    object btnConf: TToolButton
+      Left = 81
       Top = 2
+      Hint = 'Customize selected lexer'
       Action = actLexerProps
     end
     object ToolButton16: TToolButton
-      Left = 100
+      Left = 104
       Top = 2
-      Width = 8
-      Caption = 'ToolButton16'
+      Width = 12
       ImageIndex = 8
       Style = tbsSeparator
     end
-    object ToolButton15: TToolButton
-      Left = 108
+    object btnCopy: TToolButton
+      Left = 116
       Top = 2
+      Hint = 'Create a copy of selected lexer'
       Action = actCopy
     end
     object ToolButton6: TToolButton
-      Left = 131
+      Left = 139
       Top = 2
-      Width = 8
-      Caption = 'ToolButton6'
+      Width = 12
       ImageIndex = 3
       Style = tbsSeparator
     end
-    object ToolButton7: TToolButton
-      Left = 139
+    object btnImport: TToolButton
+      Left = 151
       Top = 2
+      Hint = 'Import lexer from a file...'
       Action = actImportLexer
     end
-    object ToolButton8: TToolButton
-      Left = 162
+    object btnExport: TToolButton
+      Left = 174
       Top = 2
+      Hint = 'Export lexer to file...'
       Action = actExportLexer
     end
     object ToolButton11: TToolButton
-      Left = 185
+      Left = 197
       Top = 2
-      Width = 8
-      Caption = 'ToolButton11'
+      Width = 12
       ImageIndex = 5
       Style = tbsSeparator
     end
-    object ToolButton9: TToolButton
-      Left = 193
+    object btnDelete: TToolButton
+      Left = 209
       Top = 2
+      Hint = 'Delete selected lexer'
       Action = actDeleteLexer
     end
     object ToolButton10: TToolButton
-      Left = 216
+      Left = 232
       Top = 2
-      Width = 8
-      Caption = 'ToolButton10'
+      Width = 12
       ImageIndex = 4
       Style = tbsSeparator
     end
-    object ToolButton17: TToolButton
-      Left = 224
+    object btnClear: TToolButton
+      Left = 244
       Top = 2
+      Hint = 'Remove all lexers (clear library)'
       Action = actClear
     end
     object ToolButton13: TToolButton
-      Left = 247
+      Left = 267
       Top = 2
-      Width = 8
-      Caption = 'ToolButton13'
+      Width = 12
       ImageIndex = 8
       Style = tbsSeparator
     end
-    object ToolButton12: TToolButton
-      Left = 255
+    object btnClose: TToolButton
+      Left = 279
       Top = 2
+      Hint = 'Close this dialog'
       Action = actClose
     end
   end
   object LV: TTntCheckListBox
     Left = 0
     Top = 29
-    Width = 439
-    Height = 370
+    Width = 431
+    Height = 366
     OnClickCheck = LVClickCheck
     Align = alClient
     ItemHeight = 13
@@ -682,97 +686,65 @@ object fmLexerLibrary: TfmLexerLibrary
     Left = 64
     Top = 80
     object actOpenLib: TAction
-      Caption = 'Open lexer library'
-      Hint = 'Open lexer library'
       ImageIndex = 0
       OnExecute = actOpenLibExecute
     end
     object actSaveLib: TAction
-      Caption = 'Save lexer library'
-      Hint = 'Save lexer library as...'
       ImageIndex = 1
       OnExecute = actSaveLibExecute
     end
     object actLexerProps: TAction
-      Caption = 'Lexer properties...'
-      Hint = 'Lexer properties...'
       ImageIndex = 2
       OnExecute = actLexerPropsExecute
       OnUpdate = actLexerPropsUpdate
     end
     object actImportLexer: TAction
-      Caption = 'Import Lexer'
-      Hint = 'Import Lexer'
       ImageIndex = 5
       OnExecute = actImportLexerExecute
     end
     object actExportLexer: TAction
-      Caption = 'Export Lexer'
-      Hint = 'Export Lexer'
       ImageIndex = 4
       OnExecute = actExportLexerExecute
       OnUpdate = actLexerPropsUpdate
     end
     object actDeleteLexer: TAction
-      Caption = 'Delete Lexer'
-      Hint = 'Delete Lexer'
       ImageIndex = 3
       OnExecute = actDeleteLexerExecute
       OnUpdate = actLexerPropsUpdate
     end
     object actClear: TAction
-      Caption = 'Clear'
-      Hint = 'Delete all lexers'
       ImageIndex = 9
       OnExecute = actClearExecute
       OnUpdate = actClearUpdate
     end
     object actNewLexer: TAction
-      Caption = 'New Lexer'
-      Hint = 'New Lexer'
       ImageIndex = 6
       OnExecute = actNewLexerExecute
     end
     object actClose: TAction
-      Caption = 'Close'
-      Hint = 'Close'
       ImageIndex = 7
       OnExecute = actCloseExecute
     end
     object actCopy: TAction
-      Caption = 'actCopy'
-      Hint = 'Create a copy of current lexer'
       ImageIndex = 8
       OnExecute = actCopyExecute
       OnUpdate = actLexerPropsUpdate
     end
   end
-  object Open_Lib: TOpenDialog
-    DefaultExt = 'lxl'
-    Filter = 'Lexer Library (*.LXL)|*LXL|All files (*.*)|*.*'
-    Title = 'Open lexer library'
+  object DlgOpenLib: TOpenDialog
     Left = 32
     Top = 116
   end
-  object Save_Lib: TSaveDialog
-    DefaultExt = 'lxl'
-    Filter = 'Lexer Library (*.LXL)|*LXL|All files (*.*)|*.*'
-    Title = 'Save lexer library'
-    Left = 68
+  object DlgSaveLib: TSaveDialog
+    Left = 60
     Top = 116
   end
-  object Open_Lexer: TOpenDialog
-    DefaultExt = 'lcf'
-    Filter = 'Lexer config (*.lcf)|*.lcf|All files (*.*)|*.*'
-    Title = 'Open lexer resource'
+  object DlgOpenLexer: TOpenDialog
     Left = 36
     Top = 148
   end
-  object Save_Lexer: TSaveDialog
-    DefaultExt = 'lcf'
-    Filter = 'Lexer config (*.lcf)|*.lcf|All files (*.*)|*.*'
-    Title = 'Save lexer resource'
-    Left = 68
+  object DlgSaveLexer: TSaveDialog
+    Left = 60
     Top = 148
   end
   object DKLanguageController1: TDKLanguageController
@@ -780,38 +752,24 @@ object fmLexerLibrary: TfmLexerLibrary
     Top = 80
     LangData = {
       0E00666D4C657865724C6962726172790001220000000800546F6F6C42617231
-      010100000008000000070043617074696F6E000B00546F6F6C427574746F6E31
-      00000B00546F6F6C427574746F6E3200000B00546F6F6C427574746F6E350101
-      00000009000000070043617074696F6E000B00546F6F6C427574746F6E330000
-      0B00546F6F6C427574746F6E3400000C00546F6F6C427574746F6E3136010100
-      00000A000000070043617074696F6E000C00546F6F6C427574746F6E31350000
-      0B00546F6F6C427574746F6E3601010000000B000000070043617074696F6E00
-      0B00546F6F6C427574746F6E3700000B00546F6F6C427574746F6E3800000C00
-      546F6F6C427574746F6E313101010000000C000000070043617074696F6E000B
-      00546F6F6C427574746F6E3900000C00546F6F6C427574746F6E313001010000
-      000D000000070043617074696F6E000C00546F6F6C427574746F6E313700000C
-      00546F6F6C427574746F6E313301010000000E000000070043617074696F6E00
-      0C00546F6F6C427574746F6E313200000A00496D6167654C6973743100000B00
-      416374696F6E4C6973743100000A006163744F70656E4C696201020000001000
-      0000070043617074696F6E11000000040048696E74000A00616374536176654C
-      6962010200000012000000070043617074696F6E13000000040048696E74000D
-      006163744C6578657250726F7073010200000014000000070043617074696F6E
-      15000000040048696E74000E00616374496D706F72744C657865720102000000
-      16000000070043617074696F6E17000000040048696E74000E00616374457870
-      6F72744C65786572010200000018000000070043617074696F6E190000000400
-      48696E74000E0061637444656C6574654C6578657201020000001A0000000700
-      43617074696F6E1B000000040048696E74000800616374436C65617201020000
-      001C000000070043617074696F6E1D000000040048696E74000B006163744E65
-      774C6578657201020000001E000000070043617074696F6E1F00000004004869
-      6E74000800616374436C6F7365010200000020000000070043617074696F6E21
-      000000040048696E74000700616374436F707901020000002200000007004361
-      7074696F6E23000000040048696E740008004F70656E5F4C6962010300000024
-      0000000A0044656661756C7445787425000000060046696C7465722600000005
-      005469746C65000800536176655F4C69620103000000270000000A0044656661
-      756C7445787428000000060046696C7465722900000005005469746C65000A00
-      4F70656E5F4C6578657201030000002A0000000A0044656661756C744578742B
-      000000060046696C7465722C00000005005469746C65000A00536176655F4C65
-      78657201030000002D0000000A0044656661756C744578742E00000006004669
-      6C7465722F00000005005469746C650002004C560000}
+      0000070062746E4F70656E010100000030000000040048696E7400090062746E
+      536176654173010100000034000000040048696E74000B00546F6F6C42757474
+      6F6E350000060062746E4E6577010100000031000000040048696E7400070062
+      746E436F6E66010100000032000000040048696E74000C00546F6F6C42757474
+      6F6E31360000070062746E436F7079010100000033000000040048696E74000B
+      00546F6F6C427574746F6E360000090062746E496D706F727401010000003500
+      0000040048696E7400090062746E4578706F7274010100000036000000040048
+      696E74000C00546F6F6C427574746F6E31310000090062746E44656C65746501
+      0100000037000000040048696E74000C00546F6F6C427574746F6E3130000008
+      0062746E436C656172010100000038000000040048696E74000C00546F6F6C42
+      7574746F6E31330000080062746E436C6F736501010000003900000004004869
+      6E74000A00496D6167654C6973743100000B00416374696F6E4C697374310000
+      0A006163744F70656E4C696200000A00616374536176654C696200000D006163
+      744C6578657250726F707300000E00616374496D706F72744C6578657200000E
+      006163744578706F72744C6578657200000E0061637444656C6574654C657865
+      7200000800616374436C65617200000B006163744E65774C6578657200000800
+      616374436C6F736500000700616374436F707900000A00446C674F70656E4C69
+      6200000A00446C67536176654C696200000C00446C674F70656E4C6578657200
+      000C00446C67536176654C65786572000002004C560000}
   end
 end
