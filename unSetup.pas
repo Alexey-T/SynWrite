@@ -352,6 +352,7 @@ type
     edTabAngle: TSpinEdit;
     TntLabel3: TTntLabel;
     bFontTabs: TTntButton;
+    LabelLangMore: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -449,6 +450,7 @@ type
     procedure labHelpKeysClick(Sender: TObject);
     procedure bFontConsoleClick(Sender: TObject);
     procedure bFontTabsClick(Sender: TObject);
+    procedure LabelLangMoreClick(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
@@ -2820,6 +2822,11 @@ end;
 procedure TfmSetup.bFontTabsClick(Sender: TObject);
 begin
   DoFontConfig(bFontTabs);
+end;
+
+procedure TfmSetup.LabelLangMoreClick(Sender: TObject);
+begin
+  FOpenUrl('https://sourceforge.net/projects/synwrite-addons/files/Languages/', Handle);
 end;
 
 end.

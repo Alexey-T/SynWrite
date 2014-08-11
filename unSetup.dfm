@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabFonts
+    ActivePage = tabProgSett
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -194,6 +194,21 @@ object fmSetup: TfmSetup
           Height = 13
           Caption = '----'
           Visible = False
+        end
+        object LabelLangMore: TTntLabel
+          Left = 286
+          Top = 20
+          Width = 36
+          Height = 13
+          Cursor = crHandPoint
+          Caption = 'More...'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlue
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsUnderline]
+          ParentFont = False
+          OnClick = LabelLangMoreClick
         end
         object cbLang: TTntComboBox
           Left = 8
@@ -2969,7 +2984,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E014C010000
+      0700666D5365747570010100000001000000070043617074696F6E014D010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3269,7 +3284,8 @@ object fmSetup: TfmSetup
       00070043617074696F6E0009006362546162506C75730101000000D902000007
       0043617074696F6E000A006564546162416E676C6500000900546E744C616265
       6C330101000000DA020000070043617074696F6E00090062466F6E7454616273
-      0101000000DB020000070043617074696F6E00}
+      0101000000DB020000070043617074696F6E000D004C6162656C4C616E674D6F
+      72650101000000DC020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
