@@ -1340,6 +1340,8 @@ type
     ImageListIconsTango22b: TPngImageList;
     TbxItemWinFtp: TSpTBXItem;
     TbxItemWinExplorer: TSpTBXItem;
+    TBXItemTabCloseRighter: TSpTBXItem;
+    TBXItemTabCloseLefter: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2112,6 +2114,8 @@ type
     procedure PopupPluginsLogPopup(Sender: TObject);
     procedure TbxItemWinExplorerClick(Sender: TObject);
     procedure TbxItemWinFtpClick(Sender: TObject);
+    procedure TBXItemTabCloseRighterClick(Sender: TObject);
+    procedure TBXItemTabCloseLefterClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2553,8 +2557,7 @@ type
     procedure DoRepaintTBs;
     procedure DoRepaintTBs2;
     procedure DoSyncScroll(EdSrc: TSyntaxMemo);
-    function DoCloseAllTabs: boolean;
-    function DoCloseOtherTabs(AAllGroups, AForPopupMenu: boolean): boolean;
+    function DoCloseTabs(Id: TATTabCloseId; AForPopupMenu: boolean): boolean;
     procedure DoMoveTabToWindow(Frame: TEditorFrame; AndClose: boolean);
     function LastDir: Widestring;
     function LastDir_UntitledFile: Widestring;
@@ -3233,7 +3236,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1316';
+  cSynVer = '6.6.1325';
   cSynPyVer = '1.0.133';
 
 const
@@ -6730,21 +6733,8 @@ begin
   SyntaxManagerChange(Self);
 end;
 
-function TfmMain.DoCloseAllTabs: boolean;
+function TfmMain.DoCloseTabs(Id: TATTabCloseId; AForPopupMenu: boolean): boolean;
 begin
-  Result:= Groups.CloseTabs(tabCloseAll, false);
-  UpdateListTabs;
-  UpdateListBookmarks;
-end;
-
-function TfmMain.DoCloseOtherTabs(AAllGroups, AForPopupMenu: boolean): boolean;
-var
-  Id: TATTabCloseId;
-begin
-  if AAllGroups then
-    Id:= tabCloseOthersAllPages
-  else
-    Id:= tabCloseOthersThisPage;
   Result:= Groups.CloseTabs(Id, AForPopupMenu);
   UpdateListTabs;
   UpdateListBookmarks;
@@ -9563,7 +9553,7 @@ end;
 
 procedure TfmMain.TBXItemFExitClick(Sender: TObject);
 begin
-  if DoCloseAllTabs then
+  if DoCloseTabs(tabCloseAll, false) then
     acExit.Execute;
 end;
 
@@ -11110,27 +11100,27 @@ end;
 
 procedure TfmMain.acCloseAllExecute(Sender: TObject);
 begin
-  DoCloseAllTabs;
+  DoCloseTabs(tabCloseAll, false);
 end;
 
 procedure TfmMain.acCloseOthersThisGroupExecute(Sender: TObject);
 begin
-  DoCloseOtherTabs(false, false);
+  DoCloseTabs(tabCloseOthersThisPage, false);
 end;
 
 procedure TfmMain.acCloseOthersAllGroupsExecute(Sender: TObject);
 begin
-  DoCloseOtherTabs(true, false);
+  DoCloseTabs(tabCloseOthersAllPages, false);
 end;
 
 procedure TfmMain.TBXItemTabCloseOthersClick(Sender: TObject);
 begin
-  DoCloseOtherTabs(false, true);
+  DoCloseTabs(tabCloseOthersThisPage, true);
 end;
 
 procedure TfmMain.TBXItemTabCloseOthersAllGroupsClick(Sender: TObject);
 begin
-  DoCloseOtherTabs(true, true);
+  DoCloseTabs(tabCloseOthersAllPages, true);
 end;
 
 procedure TfmMain.UpdateClickedFrame;
@@ -11184,6 +11174,8 @@ begin
   TBXItemTabClose.Enabled:= en_all;
   TBXItemTabCloseOthers.Enabled:= en_all and (FrameAllCount>1);
   TBXItemTabCloseOthersAllGroups.Enabled:= TBXItemTabCloseOthers.Enabled and (Groups.PagesVisibleCount>1);
+  TBXItemTabCloseLefter.Enabled:= TBXItemTabCloseOthers.Enabled;
+  TBXItemTabCloseRighter.Enabled:= TBXItemTabCloseOthers.Enabled;
 
   TBXItemTabReload.Enabled:= en_all;
   TBXItemTabToggleSplit.Enabled:= en_all;
@@ -11374,7 +11366,7 @@ begin
 
     if not AddMode then
     begin
-      if not DoCloseAllTabs then Exit;
+      if not DoCloseTabs(tabCloseAll, false) then Exit;
       FSessionFN:= AFilename; //remember fname: after close-all
     end;
 
@@ -26337,7 +26329,7 @@ begin
       //  begin MsgNoFile(SName2); Exit end;
 
       //close all tabs
-      if not DoCloseAllTabs then Exit;
+      if not DoCloseTabs(tabCloseAll, false) then Exit;
       Groups.Mode:= gmOne;
 
       //open 1st file
@@ -26382,7 +26374,7 @@ begin
         begin MsgNoFile(SName2); Exit end;
 
       //close all tabs
-      if not DoCloseAllTabs then Exit;
+      if not DoCloseTabs(tabCloseAll, false) then Exit;
       Groups.Mode:= gmOne;
 
       DoPyEvent(CurrentEditor, cSynEventOnCompare,
@@ -28870,6 +28862,16 @@ procedure TfmMain.TbxItemWinFtpClick(Sender: TObject);
 begin
   if DoOpenPanelPluginByName('SynFTP')<0 then
     MsgBeep;
+end;
+
+procedure TfmMain.TBXItemTabCloseRighterClick(Sender: TObject);
+begin
+  DoCloseTabs(tabCloseRighterThisPage, true);
+end;
+
+procedure TfmMain.TBXItemTabCloseLefterClick(Sender: TObject);
+begin
+  DoCloseTabs(tabCloseLefterThisPage, true);
 end;
 
 initialization
