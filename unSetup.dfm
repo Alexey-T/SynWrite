@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabProgSett
+    ActivePage = tabTabs
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -494,7 +494,6 @@ object fmSetup: TfmSetup
           Width = 433
           Height = 17
           Caption = 'Use modern tab switcher (Ctrl+Tab)'
-          Enabled = False
           TabOrder = 8
         end
         object edTabMaxLen: TSpinEdit

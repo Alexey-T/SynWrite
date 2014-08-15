@@ -2807,6 +2807,7 @@ type
       var ACanClose, ACanContinue: boolean);
     procedure TabPopup(Sender: TObject);
     procedure TabOver(Sender: TObject; ATabIndex: Integer);
+    procedure TabMove(Sender: TObject; NFrom, NTo: Integer);
 
     procedure InitPanelsTabs;
     procedure TabsRightClick(Sender: TObject);
@@ -3232,7 +3233,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1326';
+  cSynVer = '6.6.1330';
   cSynPyVer = '1.0.133';
 
 const
@@ -4132,7 +4133,6 @@ begin
     UpdateTitle(F);
     UpdateStatusbar;
     SynScroll(CurrentEditor);
-    /////////UpdateTabList(-1, -1, -1);
     UpdateTreeProps;
     ecSyntPrinter.Title:= WideExtractFileName(F.FileName);
   end
@@ -4563,7 +4563,7 @@ begin
     opTabXButtons:= ReadBool('View', 'TabBtn', true);
     opTabPlus:= ReadBool('View', 'TabPlus', true);
     opTabAtBottom:= ReadBool('View', 'TabDown', false);
-    opTabSwitcher:= false; ///////////ReadBool('Setup', 'TabSw', true);
+    opTabSwitcher:= ReadBool('Setup', 'TabSw', true);
 
     opSingleInstance:= ReadBool('Setup', 'Inst', false);
     ApplyInst;
@@ -7224,7 +7224,6 @@ begin
   begin
     TabSwitchers[i]:= TTabSwitcher.Create(i);
     TabSwitchers[i].OnGetTab:= GetTabName;
-    ///////TabSwitchers[i].InitTabList(1);
   end;
 
   opAcpForceText:= false;
@@ -10967,7 +10966,6 @@ begin
     CloseFrame(F);
 
   UpdateListBookmarks;  
-  /////////UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
 end;
 
 procedure TfmMain.TBXItemTabCloseClick(Sender: TObject);
@@ -28345,6 +28343,7 @@ begin
   Groups.OnTabClose:= TabClose;
   Groups.OnTabPopup:= TabPopup;
   Groups.OnTabOver:= TabOver;
+  Groups.OnTabMove:= TabMove;
 
   ApplyTabOptions;
   Groups.Mode:= opGroupMode;
@@ -28373,9 +28372,13 @@ end;
 procedure TfmMain.TabFocus(Sender: TObject);
 var
   ATabs: TATTabs;
+  APages: TATPages;
   D: TATTabData;
+  NPages: Integer;
 begin
   ATabs:= Sender as TATTabs;
+  APages:= ATabs.Parent as TATPages;
+
   D:= ATabs.GetTabData(ATabs.TabIndex);
   if D<>nil then
     if D.TabObject<>nil then
@@ -28389,6 +28392,10 @@ begin
         FocusFrame(D.TabObject as TEditorFrame);
 
       UpdateOnFrameChanged;
+
+      NPages:= Groups.PagesIndexOf(APages);
+      if NPages>=Low(TabSwitchers) then
+        TabSwitchers[NPages].UpdateTabList(ATabs.TabIndex, -1, -1);
     end;
 end;
 
@@ -28828,6 +28835,32 @@ end;
 procedure TfmMain.TBXItemTabCloseLefterClick(Sender: TObject);
 begin
   DoCloseTabs(tabCloseLefterThisPage, true);
+end;
+
+procedure TfmMain.TabMove(Sender: TObject; NFrom, NTo: Integer);
+var
+  Ctl: TControl;
+  NPages: Integer;
+  Sw: TTabSwitcher;
+begin
+  Ctl:= (Sender as TControl).Parent;
+  if Ctl is TATPages then
+    NPages:= Groups.PagesIndexOf(Ctl as TATPages)
+  else
+    begin MsgBeep; Exit end;
+
+  if NPages>=Low(TabSwitchers) then
+    Sw:= TabSwitchers[NPages]
+  else
+    begin MsgBeep; Exit end;
+
+  if NFrom=-1 then
+    Sw.UpdateTabList(-1, NTo, -1)
+  else
+  if NTo=-1 then
+    Sw.UpdateTabList(-1, -1, NFrom)
+  else
+    Sw.MoveTabInList(NFrom, NTo);
 end;
 
 initialization
