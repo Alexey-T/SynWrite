@@ -2426,7 +2426,6 @@ type
     procedure UpdateRecentsOnClose;
     procedure UpdateColorHint(AClearHint: boolean = true);
     procedure UpdateListTabs;
-    procedure UpdateTabList(TopItem, NewItem, DelItem: integer);
     procedure UpdateBusyIco;
     procedure UpdateTreeFind_Initial(AStr: Widestring; const ADir: Widestring; AInTabs: boolean = false);
     procedure UpdateTreeFind_Results(AStr: Widestring; const ADir: Widestring; AStopped: boolean; AInTabs: boolean = false);
@@ -2440,8 +2439,6 @@ type
     procedure DoHandleToolOutput(const ft: Widestring; const ATool: TSynTool);
     function IsShowColor(s: string; var NColor, NColorText: TColor): boolean;
     procedure GetTabName(APagesNumber, ATabIndex: Integer; var AName, AFN, ALex: Widestring);
-    procedure DoClearTabSwitcherList;
-    procedure DoMoveTabInList(FromN, ToN: integer);
 
     function GetAcpFN(const LexerName: string): string;
     function GetSpecialHiliteFN(const Id: string): string;
@@ -2450,7 +2447,6 @@ type
     function GetHtmlTabbingFN: string;
     function GetLexerComment(const Lexer: string): string;
 
-    function CurrentTabSwitcher: TTabSwitcher;
     function CurrentLexer: string;
     function CurrentLexerForFile: string;
     function DoSnippetTabbing: boolean;
@@ -3236,7 +3232,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1325';
+  cSynVer = '6.6.1326';
   cSynPyVer = '1.0.133';
 
 const
@@ -3705,7 +3701,6 @@ begin
   begin
     Result:= F;
     CurrentFrame:= F;
-    UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
     Exit;
   end;
 
@@ -4020,8 +4015,6 @@ begin
   UpdateGutter(Result, False);
   CurrentFrame:= Result;
   UpdateNewFrame(Result);
-
-  UpdateTabList(Groups.PagesCurrent.Tabs.TabCount-1, -1, -1);
 end;
 
 procedure TfmMain.UpdateNewFrame(F: TEditorFrame);
@@ -4082,8 +4075,6 @@ begin
 end;
 
 procedure TfmMain.CloseFrame(Frame: TEditorFrame);
-var
-  NPageIndex, NTabIndex: Integer;
 begin
   if opSaveState>0 then
     SaveFrameState(Frame);
@@ -4091,10 +4082,6 @@ begin
   if Frame.FileName<>'' then
     if not Frame.NotInRecents then
       SynMruFiles.AddItem(Frame.FileName);
-
-  NPageIndex:= Groups.PagesIndexOf(Frame.Parent as TATPages);
-  NTabIndex:= (Frame.Parent as TATPages).Tabs.TabIndex;
-  TabSwitchers[NPageIndex].UpdateTabList(-1, -1, NTabIndex);
 
   if (Frame.EditorMaster=CurrentEditor) or (Frame.EditorSlave=CurrentEditor) then
     CurrentEditor:= nil;
@@ -4145,7 +4132,7 @@ begin
     UpdateTitle(F);
     UpdateStatusbar;
     SynScroll(CurrentEditor);
-    UpdateTabList(-1, -1, -1);
+    /////////UpdateTabList(-1, -1, -1);
     UpdateTreeProps;
     ecSyntPrinter.Title:= WideExtractFileName(F.FileName);
   end
@@ -7237,6 +7224,7 @@ begin
   begin
     TabSwitchers[i]:= TTabSwitcher.Create(i);
     TabSwitchers[i].OnGetTab:= GetTabName;
+    ///////TabSwitchers[i].InitTabList(1);
   end;
 
   opAcpForceText:= false;
@@ -10979,7 +10967,7 @@ begin
     CloseFrame(F);
 
   UpdateListBookmarks;  
-  UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
+  /////////UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
 end;
 
 procedure TfmMain.TBXItemTabCloseClick(Sender: TObject);
@@ -18696,31 +18684,23 @@ begin
     DoCopyFindResultNode;
 end;
 
-function TfmMain.CurrentTabSwitcher: TTabSwitcher;
-begin
-  Result:= TabSwitchers[Groups.PagesIndexOf(Groups.PagesCurrent)];
-end;
-
 procedure TfmMain.DoTabSwitch(ANext: boolean; AAllowModernSwitch: boolean = true);
 var
   NTabs: integer;
+  Switcher: TTabSwitcher;
 begin
   NTabs:= FrameCount;
   if NTabs<=1 then Exit;
 
   if opTabSwitcher and (NTabs>2) and AAllowModernSwitch then
   begin
-    NTabs:= CurrentTabSwitcher.TabSwitch(ANext, Application.MainForm);
+    Switcher:= TabSwitchers[Groups.PagesIndexOf(Groups.PagesCurrent)];
+    NTabs:= Switcher.TabSwitch(ANext, Application.MainForm);
     if NTabs>=0 then
       Groups.PagesCurrent.Tabs.TabIndex:= NTabs;
   end
   else
     Groups.PagesCurrent.Tabs.SwitchTab(ANext);
-end;
-
-procedure TfmMain.UpdateTabList(TopItem, NewItem, DelItem: integer);
-begin
-  CurrentTabSwitcher.UpdateTabList(TopItem, NewItem, DelItem);
 end;
 
 procedure TfmMain.UpdateListTabs;
@@ -18768,28 +18748,6 @@ begin
   end;
 end;
 
-
-procedure TfmMain.DoMoveTabInList(FromN, ToN: integer);
-begin
-  CurrentTabSwitcher.MoveTabInList(FromN, ToN);
-
-  {$ifdef TabOrder}
-  UpdateTitle(CurrentFrame);
-  {$endif}
-  UpdateListTabs;
-end;
-
-procedure TfmMain.DoClearTabSwitcherList;
-var
-  i: Integer;
-begin
-  for i:= Low(TabSwitchers) to High(TabSwitchers) do
-    TabSwitchers[i].InitTabList(1);
-
-  {$ifdef TabOrder}
-  UpdateTitle(CurrentFrame);
-  {$endif}
-end;
 
 procedure TfmMain.GetTabName(
   APagesNumber, ATabIndex: Integer;
@@ -21962,8 +21920,6 @@ begin
   if (N>=0) and (N<FrameAllCount) then
   begin
     CurrentFrame:= FramesAll[N];
-
-    UpdateTabList(Groups.PagesCurrent.Tabs.TabIndex, -1, -1);
 
     if ListTabs.CanFocus then
       ListTabs.SetFocus;
@@ -28416,9 +28372,11 @@ end;
 
 procedure TfmMain.TabFocus(Sender: TObject);
 var
+  ATabs: TATTabs;
   D: TATTabData;
 begin
-  D:= (Sender as TATTabs).GetTabData((Sender as TATTabs).TabIndex);
+  ATabs:= Sender as TATTabs;
+  D:= ATabs.GetTabData(ATabs.TabIndex);
   if D<>nil then
     if D.TabObject<>nil then
     begin
@@ -28557,8 +28515,6 @@ end;
 function TfmMain.DoSetPagesAndTabIndex(APageIndex, ATabIndex: Integer): boolean;
 begin
   Result:= Groups.SetPagesAndTabIndex(APageIndex, ATabIndex);
-  if Result then
-    UpdateTabList(ATabIndex, -1, -1);
 end;
 
 
