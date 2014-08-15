@@ -77,7 +77,8 @@ end;
 
 
 procedure TTabSwitcher.UpdateTabList(TopItem, NewItem, DelItem: Integer);
-var i:Integer;
+var
+  i: Integer;
 begin
   with FTabList do
   begin
@@ -100,7 +101,8 @@ end;
 
 
 procedure TTabSwitcher.InitTabList(ACount: integer);
-var i:Integer;
+var
+  i: Integer;
 begin
   with FTabList do
   begin
@@ -112,7 +114,8 @@ end;
 
 
 function TTabSwitcher.GetTabList: string;
-var i:Integer;
+var
+  i: Integer;
 begin
   Result:= '';
   for i:= 0 to FTabList.Count-1 do

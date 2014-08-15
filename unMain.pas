@@ -28839,11 +28839,13 @@ end;
 
 procedure TfmMain.TabMove(Sender: TObject; NFrom, NTo: Integer);
 var
+  ATabs: TATTabs;
   Ctl: TControl;
   NPages: Integer;
   Sw: TTabSwitcher;
 begin
-  Ctl:= (Sender as TControl).Parent;
+  ATabs:= Sender as TATTabs;
+  Ctl:= ATabs.Parent;
   if Ctl is TATPages then
     NPages:= Groups.PagesIndexOf(Ctl as TATPages)
   else
@@ -28855,7 +28857,10 @@ begin
     begin MsgBeep; Exit end;
 
   if NFrom=-1 then
-    Sw.UpdateTabList(-1, NTo, -1)
+  begin
+    Sw.UpdateTabList(-1, ATabs.TabCount-1, -1);
+    Sw.MoveTabInList(ATabs.TabCount-1, NTo);
+  end
   else
   if NTo=-1 then
     Sw.UpdateTabList(-1, -1, NFrom)
