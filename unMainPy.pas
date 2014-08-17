@@ -827,6 +827,8 @@ const
   PROP_RECENT_NEWDOC   = 138;
   PROP_RECENT_COLORS   = 139;
 
+  PROP_EVENTS          = 140;
+
   
 function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 var
@@ -908,7 +910,7 @@ function Py_set_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 var
   Id: Integer;
   Ptr: PAnsiChar;
-  Str, SRect: Widestring;
+  Str, Str1, Str2, Str3, SRect: Widestring;
   R: TRect;
 begin
   with GetPythonEngine do
@@ -962,7 +964,15 @@ begin
               fmMain.DoOpenProject(Str)
             else
               fmMain.DoNewProject;
-          end;    
+          end;
+
+        PROP_EVENTS:
+          begin
+            Str1:= SGetItem(Str, ';');
+            Str2:= SGetItem(Str, ';');
+            Str3:= SGetItem(Str, ';');
+            fmMain.DoPyUpdateEvents('py:'+Str1, Str2, Str3);
+          end;
       end;
       Result:= ReturnNone;
     end;

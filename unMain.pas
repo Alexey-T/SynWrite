@@ -3208,6 +3208,7 @@ type
       OptBkmk, OptExtSel: boolean): Integer;
     procedure DoPyConsole_LogString(const Str: Widestring);
     function DoShowColorPickerEx(NColor: Integer): Integer;
+    procedure DoPyUpdateEvents(const APluginName, AEventStr, ALexersStr: string);
     //end of public
   end;
 
@@ -3234,7 +3235,7 @@ function SynAppdataDir: string;
 
 const
   cSynVer = '6.6.1330';
-  cSynPyVer = '1.0.133';
+  cSynPyVer = '1.0.134';
 
 const
   cSynParamRO = '/ro';
@@ -28866,6 +28867,26 @@ begin
     Sw.UpdateTabList(-1, -1, NFrom)
   else
     Sw.MoveTabInList(NFrom, NTo);
+end;
+
+procedure TfmMain.DoPyUpdateEvents(const APluginName, AEventStr, ALexersStr: string);
+var
+  i, N: Integer;
+begin
+  //find index of plugin APluginName
+  N:= -1;
+  for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
+    with FPluginsEvent[i] do
+      if (SFilename=APluginName) or (SFilename='') then
+        begin N:= i; Break end;
+  if N<0 then Exit;
+
+  //update record
+  with FPluginsEvent[N] do
+  begin
+    DoPyStringToEvents(AEventStr, Events, SKeycodes);
+    SLexers:= ALexersStr;
+  end;
 end;
 
 initialization
