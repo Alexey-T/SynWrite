@@ -27783,6 +27783,8 @@ end;
 
 function TfmMain.DoPyEvent(AEd: TSyntaxMemo; AEvent: TSynPyEvent;
   const AParams: array of string): Widestring;
+const
+  cTrueResultStopsThese = [cSynEventOnComplete, cSynEventOnFuncHint];  
 var
   SCurLexer: string;
   i: Integer;
@@ -27807,11 +27809,11 @@ begin
           //call Python
           Result:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, AParams);
 
-          //True for auto-complete means "stop"
+          //True for some events means "stop"
           if Result=cPyTrue then
-            if AEvent in [cSynEventOnComplete, cSynEventOnFuncHint] then Exit;
+            if AEvent in cTrueResultStopsThese then Exit;
 
-          //False means "stop", others ignored
+          //False means "stop", other results ignored
           if Result=cPyFalse then Exit;
         end;
     end;
