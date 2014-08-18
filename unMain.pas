@@ -3234,7 +3234,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1330';
+  cSynVer = '6.6.1335';
   cSynPyVer = '1.0.134';
 
 const
@@ -27810,7 +27810,12 @@ begin
 
           //call Python
           Result:= DoPyLoadPluginWithParams(SFilename, cSynPyEvent[AEvent], AEd, AParams);
-          //False result means "stop", others ignored
+
+          //True for auto-complete means "stop"
+          if Result=cPyTrue then
+            if AEvent in [cSynEventOnComplete, cSynEventOnFuncHint] then Exit;
+
+          //False means "stop", others ignored
           if Result=cPyFalse then Exit;
         end;
     end;
@@ -28873,7 +28878,7 @@ procedure TfmMain.DoPyUpdateEvents(const APluginName, AEventStr, ALexersStr: str
 var
   i, N: Integer;
 begin
-  //find index of plugin APluginName
+  //find index of plugin (get first empty index if not listed)
   N:= -1;
   for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
     with FPluginsEvent[i] do
