@@ -22152,11 +22152,7 @@ begin
   if AAction=cActionGetFunctionHint then
   begin
     Result:= DoPyEvent(CurrentEditor, cSynEventOnFuncHint, []);
-    if Result<>'' then
-    begin
-      //debug
-      Exit;
-    end;
+    if Result<>'' then Exit;
   end;
 
   Result:= '';
