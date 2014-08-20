@@ -3236,7 +3236,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1335';
+  cSynVer = '6.6.1345';
   cSynPyVer = '1.0.134';
 
 const
@@ -28641,20 +28641,36 @@ end;
 procedure TfmMain.DoListBookmarksNavigate;
 var
   fn: Widestring;
-  Num: Integer;
   F: TEditorFrame;
+  Num, i: Integer;
 begin
   with ListBookmarks do
     if Selected<>nil then
     begin
       fn:= Selected.Caption;
       Num:= StrToIntDef(Selected.SubItems[0], -1);
-      if IsFileExist(fn) and (Num>=0) then
+      if Num<0 then Exit;
+
+      //goto named tab
+      if IsFileExist(fn) then
       begin
         F:= DoOpenFile(fn);
         if F<>nil then
           F.EditorMaster.CaretPos:= Point(0, Num-1);
-      end;
+      end
+      else
+      //goto untitled tab
+      if SBegin(fn, DKLangConstW('UnTab')) then //more check, only untitled
+        for i:= 0 to FrameAllCount-1 do
+        begin
+          F:= FramesAll[i];
+          if (F.FileName='') and (F.TabCaption=fn) then
+          begin
+            CurrentFrame:= F;
+            F.EditorMaster.CaretPos:= Point(0, Num-1);
+            Break
+          end;
+        end;
     end;
 end;
 
