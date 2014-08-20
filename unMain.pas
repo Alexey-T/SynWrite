@@ -3811,7 +3811,7 @@ begin
     else
       SD.FileName:= DKLangConstW('newFnLatin');
 
-    //show Save As dialog
+    //show "Save as" dialog
     Result:= SD.Execute and (SD.FileName<>'');
     if Result then
     begin

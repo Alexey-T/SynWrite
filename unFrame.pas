@@ -457,7 +457,7 @@ begin
   EditorMaster.TextSource.Lines.SkipSignature:= False;
 
   FFileName:= AFileName;
-  DoTitleChanged;
+  TabCaption:= WideExtractFileName(FFileName);
 
   //restore ReadOnly/Hidden/System attribs
   if (attr <> -1) then
