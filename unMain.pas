@@ -2140,6 +2140,7 @@ type
     FTempFilenames: TTntStringList;
     FUserToolbarCommands: TTntStringList;
     FInitialDir: Widestring;
+    FLastUntitled: Integer;
     FLastOnContinueCheck: DWORD;
     FLastCmdId: integer;
     FLastCmdData: string;
@@ -2277,7 +2278,6 @@ type
     function IsFramePropertiesStringForFilename(const fn: Widestring; const Str: string): boolean;
     function FrameGetPropertiesString(F: TEditorFrame): string;
     procedure FrameSetPropertiesString(F: TEditorFrame; const Str: string; EncodingOnly: boolean);
-    procedure FrameGetTabCaption(Sender: TFrame; var Str: Widestring);
     procedure FocusFrame(Frame: TEditorFrame);
     //frame related------------------------------
 
@@ -2813,6 +2813,8 @@ type
     procedure TabsRightClick(Sender: TObject);
     procedure TabsOutClick(Sender: TObject);
     procedure TabsLeftClick(Sender: TObject);
+
+    function GetUntitledString: Widestring;
     //end of private
 
   protected
@@ -3697,7 +3699,7 @@ begin
     Exit
   end;
 
-  //is file is already opened?
+  //file already opened?
   F:= FrameForFilename(AFileName);
   if F<>nil then
   begin
@@ -3706,12 +3708,13 @@ begin
     Exit;
   end;
 
-  //Create new frame and load file
+  //create new frame and load file
   F:= CurrentFrame;
   if (F <> nil) and (F.FileName = '') and (not F.Modified) then
     Result:= F
   else
     Result:= DoAddTab(Groups.PagesCurrent);
+
   //reset encoding for new frame
   ApplyFrameEncoding(Result, 0);
 
@@ -3723,6 +3726,7 @@ begin
 
   Result.DoStopNotif;
   Result.LoadFile(AFileName);
+  Result.TabCaption:= WideExtractFileName(AFileName);
   Result.DoStartNotif;
 
   UpdateOnFrameChanged;
@@ -3973,7 +3977,6 @@ begin
   Result.Name:= '';
   Result.OnTitleChanged:= UpdateTitle;
   Result.OnSaveState:= FrameSaveState;
-  Result.OnGetTabCaption:= FrameGetTabCaption;
 
   Result.EditorMaster.BorderStyle:= SynBorderStyleEditor;
   Result.EditorSlave.BorderStyle:= SynBorderStyleEditor;
@@ -4161,7 +4164,7 @@ begin
   if not opShowTitleFull then
     s:= WideExtractFileName(s);
   if s = '' then
-    s:= DKLangConstW('Untitled');
+    s:= F.TabCaption;
   ecSyntPrinter.Title:= WideExtractFileName(s);
 
   if FSessionFN <> '' then
@@ -4242,7 +4245,7 @@ begin
   if AllowAll then Buttons:= Buttons + [mbYesToAll, mbNoToAll];
   if AllowCancel then Include(Buttons, mbCancel);
   if Frame.FileName = '' then
-    s:= DKLangConstW('Untitled')
+    s:= Frame.TabCaption
   else
     s:= WideExtractFileName(Frame.FileName);
   MsgBeep;
@@ -7192,6 +7195,7 @@ begin
   FillChar(FPluginsCommand, Sizeof(FPluginsCommand), 0);
   FillChar(FPluginsAcp, Sizeof(FPluginsAcp), 0);
 
+  FLastUntitled:= 0;
   FInitialDir:= 'C:\'; //used on file closing
   FLastCmdId:= 0;
   FLastCmdData:= '';
@@ -9350,9 +9354,14 @@ begin
 end;
 
 procedure TfmMain.acNewTabExecute(Sender: TObject);
+var
+  F: TEditorFrame;
 begin
   if Assigned(Groups) then
-    DoAddTab(Groups.PagesCurrent);
+  begin
+    F:= DoAddTab(Groups.PagesCurrent);
+    F.TabCaption:= GetUntitledString;
+  end;
 end;
 
 procedure TfmMain.DoHint(S: WideString);
@@ -18705,9 +18714,8 @@ end;
 procedure TfmMain.UpdateListTabs;
 var
   F, FCurrent: TEditorFrame;
-  i, NUnnamed: Integer;
+  i: Integer;
 begin
-  NUnnamed:= 0;
   FCurrent:= CurrentFrame;
 
   with ListTabs do
@@ -18722,14 +18730,7 @@ begin
           if F=FCurrent then
             ListTabs.Selected:= Items[i];
 
-          if F.FileName='' then
-          begin
-            Inc(NUnnamed);
-            Caption:= DKLangConstW('Untitled') + ' ['+IntToStr(NUnnamed)+']';
-          end
-          else
-            Caption:= WideExtractFileName(F.FileName);
-
+          Caption:= F.TabCaption;
           SubItems.Add(F.FileName);
           SubItems.Add(IntToStr(i));
 
@@ -18762,7 +18763,7 @@ begin
     AName:= WideFormat('[%d] ', [ATabIndex+1]) + F.TabCaption;
     AFN:= F.FileName;
     if AFN='' then
-      AFN:= DKLangConstW('Untitled');
+      AFN:= F.TabCaption;
     ALex:= F.CurrentLexer;
   end
   else
@@ -28197,31 +28198,6 @@ end;
 
 
 
-procedure TfmMain.FrameGetTabCaption(Sender: TFrame; var Str: Widestring);
-  function SCut(const S: Widestring): Widestring;
-  begin
-    //Result:= STruncateLong(S, 40, true); //not needed with new tabs
-    Result:= S;
-  end;
-var
-  Frame: TEditorFrame;
-begin
-  Frame:= Sender as TEditorFrame;
-  if Frame.FileName='' then
-    Str:= DKLangConstW('Untitled')
-  else
-  begin
-    Str:= SCut(WideExtractFileName(Frame.FileName));
-    if opTabFolders then
-      Str:= SCut(WideExtractFileName(WideExtractFileDir(Frame.FileName))) + '\' + Str;
-  end;
-
-  Str:=
-    IfThen(Frame.IsFtp, 'ftp: ') +
-    IfThen(Frame.Modified, '*') +
-    Str;
-end;
-
 procedure TfmMain.DoToggleTabDirs;
 begin
   opTabFolders:= not opTabFolders;
@@ -28365,12 +28341,15 @@ begin
   UpdateFrameZoom(Result);
   UpdateColorHint;
 
-  Pages.AddTab(Result, DKLangConstW('Untitled'));
+  Pages.AddTab(Result, '?');
 end;
 
 procedure TfmMain.TabAdd(Sender: TObject);
+var
+  F: TEditorFrame;
 begin
-  DoAddTab((Sender as TATTabs).Parent as TATPages);
+  F:= DoAddTab((Sender as TATTabs).Parent as TATPages);
+  F.TabCaption:= GetUntitledString;
 end;
 
 procedure TfmMain.TabFocus(Sender: TObject);
@@ -28646,7 +28625,7 @@ begin
           if F.FileName<>'' then
             Caption:= F.FileName
           else
-            Caption:= DKLangConstW('Untitled');
+            Caption:= F.TabCaption;
           SubItems.Add(IntToStr(NLine+1));
           SubItems.Add(SDesc);
         end;
@@ -28670,7 +28649,7 @@ begin
     begin
       fn:= Selected.Caption;
       Num:= StrToIntDef(Selected.SubItems[0], -1);
-      if (fn<>DKLangConstW('Untitled')) and (Num>=0) then
+      if IsFileExist(fn) and (Num>=0) then
       begin
         F:= DoOpenFile(fn);
         if F<>nil then
@@ -28890,6 +28869,12 @@ begin
     DoPyStringToEvents(AEventStr, Events, SKeycodes);
     SLexers:= ALexersStr;
   end;
+end;
+
+function TfmMain.GetUntitledString: Widestring;
+begin
+  Result:= DKLangConstW('UnTab')+IntToStr(FLastUntitled);
+  Inc(FLastUntitled);
 end;
 
 initialization

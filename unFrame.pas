@@ -111,6 +111,7 @@ type
     procedure EditorMasterGetLineNumberStr(Sender: TObject; Line: Integer;
       var NumberStr: String);
   private
+    FTabCaption: Widestring;
     FBitmapMap: TBitmap;
     FMouseClickOnNumbers: boolean;
     FAlertEnabled: boolean;
@@ -135,7 +136,6 @@ type
     FFileName: WideString;
     FOnTitleChanged: TEditorEvent;
     FOnSaveState: TNotifyEvent;
-    FOnGetTabCaption: TGetTabCaptionEvent;
     FModifiedPrev: Boolean;
     FSplitHorz: boolean;
     FSplitPos: Double;
@@ -148,7 +148,6 @@ type
     procedure SetSplitHorz(Value: boolean);
     function GetModified: boolean;
     procedure SetModified(Value: boolean);
-    function GetTabCaption: WideString;
     procedure FileReload(Sender: TObject);
     function GetShowMap: boolean;
     procedure SetShowMap(V: boolean);
@@ -209,6 +208,8 @@ type
     function IsSplitted: boolean;
     procedure ToggleSplitted;
     procedure UpdateGutterWidth(Sender: TObject);
+    procedure SetTabCaption(const Str: Widestring);
+    function GetTabCaptionEx: Widestring;
 
     property NotInRecents: boolean read FNotInRecents write FNotInRecents;
     property SplitPos: Double read FSplitPos write SetSplitPos;
@@ -219,10 +220,10 @@ type
     property FileName: Widestring read FFileName write FFileName;
     property Modified: boolean read GetModified write SetModified;
     property LockMapUpdate: boolean read FLockMapUpdate write FLockMapUpdate;
-    property TabCaption: Widestring read GetTabCaption;
+    property TabCaption: Widestring read FTabCaption write SetTabCaption;
+    property TabCaptionEx: Widestring read GetTabCaptionEx;
     property OnTitleChanged: TEditorEvent read FOnTitleChanged write FOnTitleChanged;
     property OnSaveState: TNotifyEvent read FOnSaveState write FOnSaveState;
-    property OnGetTabCaption: TGetTabCaptionEvent read FOnGetTabCaption write FOnGetTabCaption;
   end;
 
 const
@@ -504,13 +505,6 @@ begin
   FModifiedPrev:= Value;
 end;
 
-function TEditorFrame.GetTabCaption: Widestring;
-begin
-  Result:= '??';
-  if Assigned(FOnGetTabCaption) then
-    FOnGetTabCaption(Self, Result);
-end;
-
 procedure TEditorFrame.DoTitleChanged;
 var
   D: TATTabData;
@@ -527,7 +521,7 @@ begin
           D:= Tabs.GetTabData(i);
           if (D<>nil) and (D.TabObject=Self) then
           begin
-            D.TabCaption:= TabCaption;
+            D.TabCaption:= TabCaptionEx;
             Tabs.Invalidate;
           end;
         end;
@@ -1696,6 +1690,28 @@ procedure TEditorFrame.EditorMasterGetLineNumberStr(Sender: TObject;
 begin
   TfmMain(Owner).DoPyEvent_GetLineNumber((Sender as TSyntaxMemo), Line, NumberStr);
 end;
+
+procedure TEditorFrame.SetTabCaption(const Str: Widestring);
+begin
+  FTabCaption:= Str;
+  DoTitleChanged;
+end;
+
+function TEditorFrame.GetTabCaptionEx: Widestring;
+begin
+  Result:= TabCaption;
+
+  if FileName<>'' then
+    if TfmMain(Owner).opTabFolders then
+      Result:= WideExtractFileName(WideExtractFileDir(FileName)) + '\' + Result;
+
+  Result:=
+    IfThen(IsFtp, 'ftp: ') +
+    IfThen(Modified, '*') +
+    Result;
+end;
+
+
 
 initialization
   CF_DRAGCOLOR:= RegisterClipboardFormat(CFSTR_DRAGCOLOR);
