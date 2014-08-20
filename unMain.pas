@@ -6616,16 +6616,20 @@ begin
   if F<>nil then
   begin
     if F.IsFtp then
+    begin
       if not MsgConfirmFtp then
         Exit
       else
         F.FreeFtpInfo;
+    end;    
 
     //add to MRU old name
     if F.FileName<>'' then
       SynMruFiles.AddItem(F.FileName);
+
     //save-as
     SaveFrame(F, True);
+    UpdateListBookmarks;
   end;
 end;
 
