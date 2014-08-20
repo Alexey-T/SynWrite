@@ -1849,7 +1849,6 @@ type
     procedure ecEncodeHtmlCharsExecute(Sender: TObject);
     procedure ecSortDialogExecute(Sender: TObject);
     procedure TBXItemSSelBracketsClick(Sender: TObject);
-    procedure ecUndoExecuteOK(Sender: TObject);
     procedure ecPageSetupActionBeforeExecute(Sender: TObject);
     procedure ecPreviewActionExecuteOK(Sender: TObject);
     procedure TimerTreeTimer(Sender: TObject);
@@ -4071,7 +4070,6 @@ begin
   //other
   F.Modified:= false;
   F.LineEndsChg:= false;
-  F.DoTitleChanged;
 end;
 
 procedure TfmMain.InitFrameTab(Frame: TEditorFrame);
@@ -8710,16 +8708,18 @@ end;
 procedure TfmMain.DoFindDialog_ReplaceOrSkip(ADoReplace: boolean);
 var
   Ok, OkReplaced: boolean;
+  Ed: TSyntaxMemo;
 begin
+  Ed:= CurrentEditor;
   Finder.Flags:= Finder.Flags-[ftPromtOnReplace];
 
   //move to sel start
-  if (CurrentEditor.SelLength>0) then
-    DoFixReplaceCaret(CurrentEditor);
+  if (Ed.SelLength>0) then
+    DoFixReplaceCaret(Ed);
 
   //replace only when sel present
   OkReplaced:= false;
-  Ok:= (CurrentEditor.SelLength>0) or (Finder.Matches>0);
+  Ok:= (Ed.SelLength>0) or (Finder.Matches>0);
   if Ok then
     if ADoReplace then
     begin
@@ -8727,7 +8727,6 @@ begin
       //already at match and match_len =0 (search for '^')
       Finder.ReplaceAgain;
       OkReplaced:= Finder.Matches>0;
-      CurrentFrame.DoTitleChanged;
     end;
 
   //sel next match
@@ -8737,8 +8736,8 @@ begin
 
   //final actions
   Ok:= Finder.Matches>0;
-  if Ok and (CurrentEditor.SelLength>0) then
-    DoFixReplaceCaret(CurrentEditor);
+  if Ok and (Ed.SelLength>0) then
+    DoFixReplaceCaret(Ed);
   if Ok then
     EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
 
@@ -8785,7 +8784,9 @@ var
   SText: Widestring;
   Sel: TSynSelSave;
   OldScrollPosY: integer;
+  Ed: TSyntaxMemo;
 begin
+  Ed:= CurrentEditor;
   Ok:= ftPromtOnReplace in Finder.Flags;
   OkSel:= ftSelectedText in Finder.Flags;
   if Ok then
@@ -8794,16 +8795,14 @@ begin
     SText:= fmSR.Text1;
   end;
   if OkSel then
-    EditorSaveSel(CurrentEditor, Sel);
-  OldScrollPosY:= CurrentEditor.ScrollPosY;
+    EditorSaveSel(Ed, Sel);
+  OldScrollPosY:= Ed.ScrollPosY;
   //
   Finder.ReplaceAll;
-  if Finder.Matches>0 then
-    CurrentFrame.DoTitleChanged;
   //
-  CurrentEditor.ScrollPosY:= OldScrollPosY;
+  Ed.ScrollPosY:= OldScrollPosY;
   if OkSel then
-    EditorRestoreSel(CurrentEditor, Sel);
+    EditorRestoreSel(Ed, Sel);
   fmSR.ShowError(Finder.Matches=0);
   if Ok then
   begin
@@ -9181,7 +9180,6 @@ begin
     F.EditorSlave.TopLine:= p2;
 
     F.Modified:= False;
-    F.DoTitleChanged;
     UpdateStatusbar;
   end;
 end;
@@ -11849,7 +11847,6 @@ begin
     begin
       Inc(nFiles);
       Inc(nRep, Finder.Matches);
-      CurrentFrame.DoTitleChanged;
     end;
   end;
   CurrentFrame:= F;
@@ -22979,19 +22976,6 @@ begin
     Result:= Ed.Owner as TEditorFrame
   else
     raise Exception.Create('Unknown owner of editor');
-end;
-
-procedure TfmMain.ecUndoExecuteOK(Sender: TObject);
-//needed to work-around minor bug " * doesn't dissapear on tab header after ReplaceAll/Undo"
-//Note: tbMenu.ProcessShortcuts must be True
-var
-  Ed: TSyntaxMemo;
-begin
-  Ed:= ecUndo.SyntMemo as TSyntaxMemo;
-  if not Ed.Modified then
-  begin
-    FrameOfEditor(Ed).DoTitleChanged;
-  end;
 end;
 
 procedure TfmMain.LoadPrintOptions;

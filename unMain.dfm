@@ -3369,7 +3369,6 @@ object fmMain: TfmMain
       Hint = 'Undo last action'
       ImageIndex = 12
       ShortCut = 16474
-      OnExecuteOK = ecUndoExecuteOK
     end
     object ecRedo: TecRedo
       Tag = 305

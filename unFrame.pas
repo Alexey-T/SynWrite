@@ -487,9 +487,8 @@ begin
   end;
 
   //after loading
-  Modified:= False;
   FFileName:= AFileName;
-  DoTitleChanged;
+  Modified:= False;
 end;
 
 
@@ -931,7 +930,6 @@ begin
 
     //mark file as non-modified
     Modified:= False;
-    DoTitleChanged;
   end;
 
   DoStartNotif;
@@ -1143,7 +1141,7 @@ begin
   GetMem(FFtpInfoPtr, FFtpInfoSize);
   Move(AInfoPtr^, FFtpInfoPtr^, FFtpInfoSize);
 
-  DoTitleChanged; //to show more spaces on tab
+  DoTitleChanged; //show "ftp" mark
 end;
 
 procedure TEditorFrame.SetShowMap(V: boolean);
