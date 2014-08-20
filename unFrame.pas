@@ -1694,10 +1694,12 @@ end;
 procedure TEditorFrame.SetTabCaption(const Str: Widestring);
 begin
   FTabCaption:= Str;
-  DoTitleChanged;
+  DoTitleChanged; //update tabs canvas
 end;
 
 function TEditorFrame.GetTabCaptionEx: Widestring;
+//TabCaption is used in lists (Tabs, Bookmarks)
+//TabCaptionEx is used only to draw text on tabs canvas (in DoTitleChanged)
 begin
   Result:= TabCaption;
 
