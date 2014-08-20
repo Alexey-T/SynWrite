@@ -7195,8 +7195,8 @@ begin
   FillChar(FPluginsCommand, Sizeof(FPluginsCommand), 0);
   FillChar(FPluginsAcp, Sizeof(FPluginsAcp), 0);
 
-  FLastUntitled:= 0;
   FInitialDir:= 'C:\'; //used on file closing
+  FLastUntitled:= 0;
   FLastCmdId:= 0;
   FLastCmdData:= '';
   FLastCmdCount:= 0;
@@ -10287,7 +10287,7 @@ begin
     StatusItemLexer.Caption:= DKLangConstW('None');
 
   //Project items:
-  SMsgProjNew:= DKLangConstW('Untitled');
+  SMsgProjNew:= DKLangConstW('unnamed');
 
   //TBX toolbars:
   tbQS.ChevronHint:= DKLangConstW('MoreB');
@@ -28660,7 +28660,7 @@ begin
       end
       else
       //goto untitled tab
-      if SBegin(fn, DKLangConstW('UnTab')) then //more check, only untitled
+      if SBegin(fn, DKLangConstW('unnamed')) then //more check, only untitled
         for i:= 0 to FrameAllCount-1 do
         begin
           F:= FramesAll[i];
@@ -28889,7 +28889,7 @@ end;
 
 function TfmMain.GetUntitledString: Widestring;
 begin
-  Result:= DKLangConstW('UnTab')+IntToStr(FLastUntitled);
+  Result:= DKLangConstW('unnamed')+IntToStr(FLastUntitled);
   Inc(FLastUntitled);
 end;
 
