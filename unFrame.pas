@@ -358,6 +358,8 @@ begin
   TfmMain(Owner).UpdateOnFrameChanged;
   TfmMain(Owner).UpdateActiveTabColors;
 
+  TfmMain(Owner).DoPyEvent(Ed, cSynEventOnFocus, []);
+
   //Ctrl+Alt+click -- find id
   //(if no line selection is made with Ctrl+Alt+drag)
   if IsCtrlAltPressed then

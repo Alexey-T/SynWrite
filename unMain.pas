@@ -97,6 +97,7 @@ type
     cSynEventOnCaretMove,
     cSynEventOnNumber,
     cSynEventOnState,
+    cSynEventOnFocus,
     cSynEventOnComplete,
     cSynEventOnFuncHint,
     cSynEventOnGotoDef,
@@ -117,6 +118,7 @@ const
     'on_caret_move',
     'on_num',
     'on_state',
+    'on_focus',
     'on_complete',
     'on_func_hint',
     'on_goto_def',
@@ -3236,7 +3238,7 @@ function SynAppdataDir: string;
 
 const
   cSynVer = '6.6.1345';
-  cSynPyVer = '1.0.134';
+  cSynPyVer = '1.0.135';
 
 const
   cSynParamRO = '/ro';
