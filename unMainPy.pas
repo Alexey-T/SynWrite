@@ -829,14 +829,15 @@ const
 
   PROP_EVENTS          = 140;
   PROP_EDITOR_BY_INDEX = 141;
+  PROP_GROUPS          = 142;
 
   
 function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 var
   Id: Integer;
   Ptr: PAnsiChar;
-  Str, Str1, Str2: Widestring;
-  Num1, Num2: Integer;
+  Str, Str1, Str2, Str3: Widestring;
+  Num1, Num2, Num3, i: Integer;
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
@@ -910,14 +911,24 @@ begin
           begin
             Str1:= SGetItem(Str);
             Str2:= SGetItem(Str);
+            Str3:= SGetItem(Str);
             Num1:= StrToIntDef(Str1, -1);
             Num2:= StrToIntDef(Str2, -1);
-            Ed:= fmMain.GetEditorByIndex(Num1, Num2);
+            Num3:= StrToIntDef(Str3, -1);
+            Ed:= fmMain.GetEditorByIndex(Num1, Num2, Num3);
             if Ed=nil then
               Result:= PyInt_FromLong(-1)
             else
               Result:= PyInt_FromLong(Integer(Pointer(Ed)));
           end;
+
+        PROP_GROUPS:
+          begin
+            Str:= '';
+            for i:= Low(TATGroupsNums) to fmMain.Groups.PagesVisibleCount do
+              Str:= Str+IntToStr(fmMain.Groups.Pages[i].Tabs.TabCount)+',';
+            Result:= PyUnicode_FromWideString(Str);
+          end;  
       end;
     end;
 end;

@@ -3212,7 +3212,7 @@ type
     procedure DoPyConsole_LogString(const Str: Widestring);
     function DoShowColorPickerEx(NColor: Integer): Integer;
     procedure DoPyUpdateEvents(const APluginName, AEventStr, ALexersStr: string);
-    function GetEditorByIndex(APagesIndex, ATabIndex: Integer): TSyntaxMemo;
+    function GetEditorByIndex(APagesIndex, ATabIndex, AMasterIndex: Integer): TSyntaxMemo;
     //end of public
   end;
 
@@ -28886,7 +28886,7 @@ begin
   Inc(FLastUntitled);
 end;
 
-function TfmMain.GetEditorByIndex(APagesIndex, ATabIndex: Integer): TSyntaxMemo;
+function TfmMain.GetEditorByIndex(APagesIndex, ATabIndex, AMasterIndex: Integer): TSyntaxMemo;
 var
   F: TEditorFrame;
   D: TATTabData;
@@ -28897,7 +28897,7 @@ begin
   if APagesIndex=-1 then
     APagesIndex:= Groups.PagesIndexOf(Groups.PagesCurrent);
   if APagesIndex=-1 then
-    Exit;  
+    Exit;
 
   ATabs:= Groups.Pages[APagesIndex].Tabs;
   if ATabIndex=-1 then
@@ -28907,9 +28907,19 @@ begin
   if D<>nil then
   begin
     F:= D.TabObject as TEditorFrame;
-    Result:= F.EditorMaster;
+    case AMasterIndex of
+      1: Result:= F.EditorMaster;
+      2: Result:= F.EditorSlave;
+      else
+        begin
+          if F.IsMasterFocused then
+            Result:= F.EditorMaster
+          else
+            Result:= F.EditorSlave;
+        end;
+    end;
   end;
-end;    
+end;
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
