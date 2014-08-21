@@ -14,6 +14,7 @@ function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_filename(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_alerts(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_alerts(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_indexes(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_prop_wrapper(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_complete(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_focus(Self, Args: PPyObject): PPyObject; cdecl;
@@ -615,6 +616,22 @@ begin
       Result:= ReturnNone;
     end;
 end;
+
+function Py_ed_get_indexes(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H: Integer;
+  Ed: TSyntaxMemo;
+  Num1, Num2: Integer;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'i:get_indexes', @H)) then
+    begin
+      Ed:= PyEditor(H);
+      fmMain.GetEditorIndexes(Ed, Num1, Num2);
+      Result:= Py_BuildValue('(ii)', Num1, Num2);
+    end;
+end;
+
 
 
 function Py_ed_set_prop_wrapper(Self, Args: PPyObject): PPyObject; cdecl;

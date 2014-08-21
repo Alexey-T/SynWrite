@@ -3213,6 +3213,7 @@ type
     function DoShowColorPickerEx(NColor: Integer): Integer;
     procedure DoPyUpdateEvents(const APluginName, AEventStr, ALexersStr: string);
     function GetEditorByIndex(APagesIndex, ATabIndex, AMasterIndex: Integer): TSyntaxMemo;
+    procedure GetEditorIndexes(Ed: TSyntaxMemo; var AGroupIndex, ATabIndex: Integer);
     //end of public
   end;
 
@@ -3238,7 +3239,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1345';
+  cSynVer = '6.6.1355';
   cSynPyVer = '1.0.135';
 
 const
@@ -27073,6 +27074,7 @@ begin
     AddMethod('ed_get_filename', Py_ed_get_filename, '');
     AddMethod('ed_get_alerts', Py_ed_get_alerts, '');
     AddMethod('ed_set_alerts', Py_ed_set_alerts, '');
+    AddMethod('ed_get_indexes', Py_ed_get_indexes, '');
 
     AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
     AddMethod('ed_get_sel_lines', Py_ed_get_sel_lines, '');
@@ -28920,6 +28922,13 @@ begin
     end;
   end;
 end;
+
+procedure TfmMain.GetEditorIndexes(Ed: TSyntaxMemo;
+  var AGroupIndex, ATabIndex: Integer);
+begin
+  Groups.PagesAndTabIndexOfControl(FrameOfEditor(Ed), AGroupIndex, ATabIndex);
+end;    
+
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
