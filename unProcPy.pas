@@ -1154,6 +1154,7 @@ const
   PROP_NON_PRINTED_SPACES  = 27;
   PROP_NON_PRINTED_ENDS    = 28;
   PROP_NON_PRINTED_ENDS_EX = 29;
+  PROP_TAG         = 30;
 
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1259,6 +1260,9 @@ begin
             Result:= PyInt_FromLong(EditorGetColorPropertyById(Ed, Str));
           end;
 
+        PROP_TAG:
+          Result:= PyInt_FromLong(Ed.Tag);
+
         else
           Result:= ReturnNone;
       end;
@@ -1333,6 +1337,8 @@ begin
             NumVal:= StrToIntDef(Str2, $FF{red color});
             EditorSetColorPropertyById(Ed, Str1, NumVal);
           end;
+        PROP_TAG:
+          Ed.Tag:= NumVal;
       end;
 
       Result:= ReturnNone;

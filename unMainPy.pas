@@ -828,18 +828,22 @@ const
   PROP_RECENT_COLORS   = 139;
 
   PROP_EVENTS          = 140;
+  PROP_EDITOR_BY_INDEX = 141;
 
   
 function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 var
   Id: Integer;
   Ptr: PAnsiChar;
-  Str: Widestring;
+  Str, Str1, Str2: Widestring;
+  Num1, Num2: Integer;
+  Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'is:get_app_prop', @Id, @Ptr)) then
     begin
       Str:= UTF8Decode(AnsiString(Ptr));
+
       case Id of
         PROP_COORD_WINDOW:
           Result:= Py_rect(Application.MainForm.BoundsRect);
@@ -901,6 +905,19 @@ begin
           Result:= PyUnicode_FromWideString(fmMain.CurrentSessionFN);
         PROP_FILENAME_PROJECT:
           Result:= PyUnicode_FromWideString(fmMain.CurrentProjectFN);
+
+        PROP_EDITOR_BY_INDEX:
+          begin
+            Str1:= SGetItem(Str);
+            Str2:= SGetItem(Str);
+            Num1:= StrToIntDef(Str1, -1);
+            Num2:= StrToIntDef(Str2, -1);
+            Ed:= fmMain.GetEditorByIndex(Num1, Num2);
+            if Ed=nil then
+              Result:= PyInt_FromLong(-1)
+            else
+              Result:= PyInt_FromLong(Integer(Pointer(Ed)));
+          end;
       end;
     end;
 end;

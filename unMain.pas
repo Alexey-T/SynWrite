@@ -3212,6 +3212,7 @@ type
     procedure DoPyConsole_LogString(const Str: Widestring);
     function DoShowColorPickerEx(NColor: Integer): Integer;
     procedure DoPyUpdateEvents(const APluginName, AEventStr, ALexersStr: string);
+    function GetEditorByIndex(APagesIndex, ATabIndex: Integer): TSyntaxMemo;
     //end of public
   end;
 
@@ -28872,6 +28873,8 @@ begin
   //update record
   with FPluginsEvent[N] do
   begin
+    if SFilename='' then
+      SFilename:= APluginName;
     DoPyStringToEvents(AEventStr, Events, SKeycodes);
     SLexers:= ALexersStr;
   end;
@@ -28882,6 +28885,31 @@ begin
   Result:= DKLangConstW('unnamed')+IntToStr(FLastUntitled);
   Inc(FLastUntitled);
 end;
+
+function TfmMain.GetEditorByIndex(APagesIndex, ATabIndex: Integer): TSyntaxMemo;
+var
+  F: TEditorFrame;
+  D: TATTabData;
+  ATabs: TATTabs;
+begin
+  Result:= nil;
+
+  if APagesIndex=-1 then
+    APagesIndex:= Groups.PagesIndexOf(Groups.PagesCurrent);
+  if APagesIndex=-1 then
+    Exit;  
+
+  ATabs:= Groups.Pages[APagesIndex].Tabs;
+  if ATabIndex=-1 then
+    ATabIndex:= ATabs.TabIndex;
+
+  D:= ATabs.GetTabData(ATabIndex);
+  if D<>nil then
+  begin
+    F:= D.TabObject as TEditorFrame;
+    Result:= F.EditorMaster;
+  end;
+end;    
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
