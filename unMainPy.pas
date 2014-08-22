@@ -1031,6 +1031,7 @@ const
   PROC_SOUND           = 5;
   PROC_COLOR_PICKER    = 6;
   PROC_COLOR_PICKER_EX = 7;
+  PROC_REPORT_KEYS     = 8;
 
 function Py_app_proc(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1099,6 +1100,12 @@ begin
             NValue:= StrToIntDef(Str, 0);
             NValue:= fmMain.DoShowColorPickerEx(NValue);
             Result:= PyInt_FromLong(NValue);
+          end;
+
+        PROC_REPORT_KEYS:
+          begin
+            DoReportKeysHtml(fmMain.SyntKeyMapping, Str);
+            Result:= ReturnNone;
           end;
 
         else

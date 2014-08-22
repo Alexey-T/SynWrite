@@ -143,7 +143,7 @@ function IsCtrlAltPressed: boolean;
 procedure DoAddColorToImageList(ImageList: TImageList;
   NColor: Integer; NColorText: Integer = -1);
 
-procedure DoListKeys(SyntKeymapping: TSyntKeyMapping;
+procedure DoReportKeysHtml(SyntKeymapping: TSyntKeyMapping;
   const fn: string);
 procedure DoCopyToEdit(ed: TTntCombobox;
   IsSpec, IsRegex: boolean; const Str: Widestring);
@@ -738,7 +738,7 @@ begin
   end;
 end;
 
-procedure DoListKeys(SyntKeymapping: TSyntKeyMapping;
+procedure DoReportKeysHtml(SyntKeymapping: TSyntKeyMapping;
   const fn: string);
 var
   i, j, k: integer;

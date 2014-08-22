@@ -1261,7 +1261,7 @@ begin
           end;
 
         PROP_TAG:
-          Result:= PyInt_FromLong(Ed.Tag);
+          Result:= PyUnicode_FromWideString(Ed.UserTag);
 
         else
           Result:= ReturnNone;
@@ -1338,7 +1338,7 @@ begin
             EditorSetColorPropertyById(Ed, Str1, NumVal);
           end;
         PROP_TAG:
-          Ed.Tag:= NumVal;
+          Ed.UserTag:= StrVal;
       end;
 
       Result:= ReturnNone;

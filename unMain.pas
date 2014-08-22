@@ -3239,8 +3239,8 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1355';
-  cSynPyVer = '1.0.135';
+  cSynVer = '6.6.1358';
+  cSynPyVer = '1.0.136';
 
 const
   cSynParamRO = '/ro';
@@ -17498,7 +17498,7 @@ var
 begin
   fn:= FTempDir + '\SynWriteKeys.html';
   UpdateMacroKeynames;
-  DoListKeys(SyntKeyMapping, fn);
+  DoReportKeysHtml(SyntKeyMapping, fn);
   FExecute(fn, '', '', Handle);
 end;
 
