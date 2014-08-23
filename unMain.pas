@@ -228,14 +228,14 @@ type
     scmdCopyFilePath
     );
 
-  TPluginList_Command = array[0..100] of record
+  TPluginList_Command = array[0..150] of record
     SCaption: Widestring;
     SFilename: string;
     SLexers: string;
     SCmd: string;
   end;
 
-  TPluginList_Event = array[0..50] of record
+  TPluginList_Event = array[0..70] of record
     SFilename: string;
     SLexers: string;
     SKeycodes: string;
