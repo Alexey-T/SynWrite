@@ -2692,9 +2692,9 @@ type
     procedure LoadPanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile;
       const Id: string; DefFloating: boolean = false);
     procedure LoadToolbarContent(Toolbar: TObject; Id: string; AutoShow: boolean = false);
-    function DoShowCmdList: Integer;
-    function DoShowCmdListStr: string;
-    function DoShowCmdHint(Cmd: Widestring): Widestring;
+    function DoShowCmdList(AOnlyStdCommands: boolean = false): Integer;
+    function DoShowCmdList_ForTools: string;
+    function DoShowCmdHint_ForTools(Cmd: Widestring): Widestring;
     function DoCustomizeToolbar(const Id: string): boolean;
     procedure DoCustomizeAndReloadToolbar(Id: TSynUserToolbarId);
     procedure ToolbarUserClick(Sender: TObject);
@@ -23573,17 +23573,17 @@ begin
 end;
 
 
-function TfmMain.DoShowCmdListStr: string;
+function TfmMain.DoShowCmdList_ForTools: string;
 var
   Cmd: Integer;
 begin
   Result:= '';
-  Cmd:= DoShowCmdList;
+  Cmd:= DoShowCmdList(true{OnlyStdCommands});
   if Cmd>0 then
     Result:= 'cm:'+IntToStr(Cmd);
 end;
 
-function TfmMain.DoShowCmdList: Integer;
+function TfmMain.DoShowCmdList(AOnlyStdCommands: boolean = false): Integer;
 var
   i: Integer;
 begin
@@ -23596,17 +23596,23 @@ begin
     //labHelp.Caption:= DKLangConstW('zMHelp');
 
     UpdateMacroKeynames;
+
     //1) add commands
     KeysList.Assign(SyntKeyMapping);
 
-    //2) add lexers
-    FListLexersSorted.Clear;
-    FListLexersSorted.Sorted:= true;
-    for i:= 0 to SyntaxManager.AnalyzerCount-1 do
-      if not SyntaxManager.Analyzers[i].Internal then
-        FListLexersSorted.AddObject(SyntaxManager.Analyzers[i].LexerName, Pointer(i));
-    for i:= 0 to FListLexersSorted.Count-1 do
-      LexList.Add('Lexer: ' + FListLexersSorted[i]);
+    if AOnlyStdCommands then
+      DoKeymappingTruncate(KeysList, FInitialKeyCount)
+    else
+    begin
+      //2) add lexers
+      FListLexersSorted.Clear;
+      FListLexersSorted.Sorted:= true;
+      for i:= 0 to SyntaxManager.AnalyzerCount-1 do
+        if not SyntaxManager.Analyzers[i].Internal then
+          FListLexersSorted.AddObject(SyntaxManager.Analyzers[i].LexerName, Pointer(i));
+      for i:= 0 to FListLexersSorted.Count-1 do
+        LexList.Add('Lexer: ' + FListLexersSorted[i]);
+    end;    
 
     FIniFN:= Self.SynHistoryIni;
     FColorSel:= opColorOutSelText;
@@ -24543,8 +24549,8 @@ begin
     Result:= DoShowToolbarProp(
       SynToolbarsIni,
       Id,
-      DoShowCmdListStr,
-      DoShowCmdHint,
+      DoShowCmdList_ForTools,
+      DoShowCmdHint_ForTools,
       DoEnumExtTools,
       DoEnumPyTools,
       0, 0,
@@ -24555,7 +24561,7 @@ begin
   end;
 end;
 
-function TfmMain.DoShowCmdHint(Cmd: Widestring): Widestring;
+function TfmMain.DoShowCmdHint_ForTools(Cmd: Widestring): Widestring;
 var
   N, i: Integer;
 begin
