@@ -3245,7 +3245,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1370';
+  cSynVer = '6.7.1380';
   cSynPyVer = '1.0.136';
 
 const
@@ -24841,7 +24841,7 @@ begin
   end
   else
   //run py-plugin
-  if SBegin(Cmd, 'py:') then
+  if SBegin(Cmd, cPyPrefix) then
   begin
     PyCmd:= Cmd;
     PyFile:= SGetItem(PyCmd, '/');
@@ -26735,7 +26735,7 @@ const
       cAddonTypeBinPlugin:
         s_value:= subdir + '\' + s_file + ';' + s_params;
       cAddonTypePyPlugin:
-        s_value:= 'py:' + subdir + ';' + s_params;
+        s_value:= cPyPrefix + subdir + ';' + s_params;
       else
         Exit;
     end;

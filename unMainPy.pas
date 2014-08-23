@@ -1016,7 +1016,7 @@ begin
             Str1:= SGetItem(Str, ';');
             Str2:= SGetItem(Str, ';');
             Str3:= SGetItem(Str, ';');
-            fmMain.DoPyUpdateEvents('py:'+Str1, Str2, Str3);
+            fmMain.DoPyUpdateEvents(cPyPrefix+Str1, Str2, Str3);
           end;
       end;
       Result:= ReturnNone;
