@@ -230,11 +230,9 @@ type
 
   TPluginList_Command = array[0..100] of record
     SCaption: Widestring;
-    SHotkey: string;
     SFilename: string;
     SLexers: string;
     SCmd: string;
-    NCommandId: Integer;
   end;
 
   TPluginList_Event = array[0..50] of record
@@ -23558,15 +23556,6 @@ begin
   Cmd:= DoShowCmdList;
   if Cmd<=0 then Exit;
 
-  //command plugin selected?
-  if Cmd>=cPyListBase then
-  begin
-    Dec(Cmd, cPyListBase);
-    DoPyLoadPlugin(
-      FPluginsCommand[Cmd].SFilename,
-      FPluginsCommand[Cmd].SCmd);
-  end
-  else
   //lexer selected?
   if Cmd>=cLexListBase then
   begin
@@ -23610,13 +23599,7 @@ begin
     //1) add commands
     KeysList.Assign(SyntKeyMapping);
 
-    //2) add command-plugins
-    for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
-      with FPluginsCommand[i] do
-        if SCaption<>'' then
-          PyList.Add('Plugin: ' + SCaption + #9 + SHotkey);
-
-    //3) add lexers
+    //2) add lexers
     FListLexersSorted.Clear;
     FListLexersSorted.Sorted:= true;
     for i:= 0 to SyntaxManager.AnalyzerCount-1 do
@@ -27910,7 +27893,7 @@ end;
 procedure TfmMain.DoLoadPlugins_Commands(const fn_plug_ini: string);
 var
   ListSec: TStringList;
-  NIndex, i: Integer;
+  NIndex, NCommandId, i: Integer;
   sKey, sValue, sValue2, sValueLexers, sValueHotkey, sValueFlags: Widestring;
 begin
   //clear Command list
@@ -27918,7 +27901,6 @@ begin
     with FPluginsCommand[i] do
     begin
       SCaption:= '';
-      SHotkey:= '';
       SFileName:= '';
       SLexers:= '';
       SCmd:= '';
@@ -27951,26 +27933,19 @@ begin
         FPluginsCommand[NIndex].SCmd:= sValue2;
         FPluginsCommand[NIndex].SLexers:= sValueLexers;
         FPluginsCommand[NIndex].SCaption:= sKey;
-        FPluginsCommand[NIndex].SHotkey:= sValueHotkey;
-        FPluginsCommand[NIndex].NCommandId:= cPyCommandBase+NIndex;
+        NCommandId:= cPyCommandBase+NIndex;
 
-        //1) add keymapping item
-        DoAddKeymappingCommand(
-          FPluginsCommand[NIndex].NCommandId,
-          'py',
-          FPluginsCommand[NIndex].SCaption,
-          FPluginsCommand[NIndex].SHotkey);
+        //1) add to keymapping
+        DoAddKeymappingCommand(NCommandId, 'Plugin', sKey, sValueHotkey);
 
-        //2) add to main-menu always
-        DoAddPluginMenuItem(TBXSubmenuItemPlugins, sKey, NIndex,
-          FPluginsCommand[NIndex].NCommandId);
+        //2) add to main-menu
+        DoAddPluginMenuItem(TBXSubmenuItemPlugins, sKey, NIndex, NCommandId);
 
-        //3) add to context menu - if enabled
+        //3) add to context menu (if enabled)
         if Pos('-', sValueFlags)=0 then
         begin
           TBXSubmenuItemCtxPlugins.Visible:= true;
-          DoAddPluginMenuItem(TBXSubmenuItemCtxPlugins, sKey, NIndex,
-            FPluginsCommand[NIndex].NCommandId);
+          DoAddPluginMenuItem(TBXSubmenuItemCtxPlugins, sKey, NIndex, NCommandId);
         end;
 
         Inc(NIndex);

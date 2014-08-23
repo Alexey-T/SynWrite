@@ -40,7 +40,7 @@ type
     procedure DoFilter;
   public
     { Public declarations }
-    PyList: TTntStringList;
+    //PyList: TTntStringList;
     LexList: TTntStringList;
     FIniFN: string;
     FColorSel: TColor;
@@ -48,8 +48,7 @@ type
   end;
 
 const
-  cPyListBase = 5000;
-  cLexListBase = 4000;
+  cLexListBase = 6000; //must be bigger than cPyCommandBase=5000
 
 implementation
 
@@ -164,12 +163,14 @@ begin
           List.Items.AddObject(S, Pointer(cLexListBase+i));
       end;
 
+      {
       for i:= 0 to PyList.Count-1 do
       begin
         S:= PyList[i];
         if SFiltered(S) then
           List.Items.AddObject(S, Pointer(cPyListBase+i));
       end;
+      }
     finally
       List.Items.EndUpdate;
     end;
@@ -264,7 +265,7 @@ end;
 procedure TfmMenuCmds.TntFormCreate(Sender: TObject);
 begin
   List.ItemHeight:= ScaleFontSize(List.ItemHeight, Self);
-  PyList:= TTntStringList.Create;
+  //PyList:= TTntStringList.Create;
   LexList:= TTntStringList.Create;
 end;
 
@@ -296,7 +297,7 @@ end;
 
 procedure TfmMenuCmds.TntFormDestroy(Sender: TObject);
 begin
-  FreeAndNil(PyList);
+  //FreeAndNil(PyList);
   FreeAndNil(LexList);
 end;
 
