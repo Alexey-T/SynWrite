@@ -353,6 +353,7 @@ type
     TntLabel3: TTntLabel;
     bFontTabs: TTntButton;
     LabelLangMore: TTntLabel;
+    KeyMappingPy: TSyntKeyMapping;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1927,7 +1928,7 @@ end;
 
 procedure TfmSetup.ApplyKeys;
 begin
-  fmMain.SyntKeyMapping.Assign(Self.KeyMapping);
+  DoKeymappingJoin(KeyMapping, KeyMappingPy, fmMain.SyntKeyMapping);
 end;
 
 procedure TfmSetup.ApplySearch;
@@ -2224,7 +2225,11 @@ var
   L: TStringList;
   i: Integer;
 begin
-  KeyMapping.Assign(fmMain.SyntKeyMapping);
+  //copy keymapping from fmMain, only first InitialKeyCount items
+  DoKeymappingSplit(fmMain.SyntKeyMapping, KeyMapping, KeyMappingPy, fmMain.InitialKeyCount);
+
+    //debug
+    //ShowMessage('py keys: '+Inttostr(KeyMappingPy.Items.Count));
 
   //list categories
   L:= TStringList.Create;

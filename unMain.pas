@@ -84,6 +84,7 @@ const
   cPyTrue = 'True';
   cPyFalse = 'False';
   cPyNone = 'None';
+  cPyCommandBase = 5000;
 
 type
   TSynPyEvent = (
@@ -233,6 +234,7 @@ type
     SFilename: string;
     SLexers: string;
     SCmd: string;
+    NCommandId: Integer;
   end;
 
   TPluginList_Event = array[0..50] of record
@@ -2141,6 +2143,7 @@ type
     FTempFilenames: TTntStringList;
     FUserToolbarCommands: TTntStringList;
     FInitialDir: Widestring;
+    FInitialKeyCount: Integer;
     FLastUntitled: Integer;
     FLastOnContinueCheck: DWORD;
     FLastCmdId: integer;
@@ -2167,13 +2170,13 @@ type
     FPluginsEvent: TPluginList_Event;
     FPluginsAcp: TPluginList_Acp;
 
-    FPanelDrawBusy: boolean;
-    FSyncBusy: boolean;
     FListNewDocs: TTntStringList; //filenames list of templates (template\newdoc)
     FListConv: TTntStringList; //filenames of text converters (template\conv)
     FListFiles: TTntStringList; //filenames list of mass search/replace operation
+    FPanelDrawBusy: boolean;
+    FSyncBusy: boolean;
     FSelBlank: boolean; //selection is blank (for Smart Hilite)
-    FFullScr: boolean; //full-screen
+    FFullscreen: boolean; //full-screen
     FOnTop: boolean; //always-on-top
     FBoundsRectOld: TRect;
 
@@ -2322,7 +2325,8 @@ type
     procedure PluginCommandItemClick(Sender: TObject);
     procedure DoAddPluginMenuItem(
       ASubmenu: TSpTbxSubmenuitem;
-      const SKey, SShortcut: Widestring; NIndex: Integer);
+      const SKey: Widestring;
+      NIndex, NCommandId: Integer);
     //-------------------------------------------
     //
     procedure DoCheckIfBookmarkSetHere(Ed: TSyntaxMemo; NPos: Integer);
@@ -2561,7 +2565,7 @@ type
     procedure SaveLastDir(const FN, Filter: Widestring; FilterIndex: integer);
     procedure SaveLastDir_Session(const FN: Widestring);
     procedure SaveLastDir_UntitledFile(const FN: Widestring);
-    procedure SetFS(AValue: boolean);
+    procedure SetFullscreen(AValue: boolean);
     procedure SetOnTop(V: boolean);
     procedure DoBracketsHilite(Ed: TSyntaxMemo);
     procedure DoListCopy(Sender: TTntListbox);
@@ -2757,6 +2761,7 @@ type
       const AFileName: string; ASaveMode: boolean): boolean;
 
     //python group
+    procedure DoPyCommandPlugin(N: Integer);
     procedure DoPyConsole_EnterCommand(const Str: Widestring);
     procedure DoPyConsole_RepeatCommand;
     procedure DoPyNewPluginDialog;
@@ -2811,11 +2816,13 @@ type
     procedure TabMove(Sender: TObject; NFrom, NTo: Integer);
 
     procedure InitPanelsTabs;
+    procedure TabsLeftClick(Sender: TObject);
     procedure TabsRightClick(Sender: TObject);
     procedure TabsOutClick(Sender: TObject);
-    procedure TabsLeftClick(Sender: TObject);
 
     function GetUntitledString: Widestring;
+    procedure DoAddKeymappingCommand(const ACommand: Integer;
+      const ACategory, ACaption, AHotkey: Widestring);
     //end of private
 
   protected
@@ -3048,15 +3055,16 @@ type
     procedure UpdateLexerTo(An: TSyntAnalyzer);
     procedure UpdateOnFrameChanged;
     procedure UpdateListBookmarks;
+    procedure UpdateActiveTabColors;
 
+    property InitialKeyCount: Integer read FInitialKeyCount;
     property ListTabsColumns: string read GetListTabsColumns write SetListTabsColumns;
     property ListBkmkColumns: string read GetListBkmkColumns write SetListBkmkColumns;
-    property ShowFullScreen: boolean read FFullScr write SetFS;
+    property ShowFullScreen: boolean read FFullscreen write SetFullscreen;
     property ShowOnTop: boolean read FOnTop write SetOnTop;
 
     procedure ApplyTabOptions;
     procedure ApplyTabOptionsTo(ATabs: TATTabs);
-    procedure UpdateActiveTabColors;
     procedure ApplyCarets;
     procedure ApplyUrlClick;
     procedure ApplyShowRecentColors;
@@ -3239,7 +3247,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.6.1358';
+  cSynVer = '6.7.1370';
   cSynPyVer = '1.0.136';
 
 const
@@ -4736,7 +4744,9 @@ begin
       FTabOut:= Ord(tbOutput);
 
     //opt
-    PropsManager.LoadProps(ini); //20ms
+    FInitialKeyCount:= SyntKeymapping.Items.Count;
+    PropsManager.LoadProps(ini);
+    DoKeymappingTruncate(SyntKeyMapping, FInitialKeyCount);
 
     //force KeepSelMode and FloatMarkers
     with TemplateEditor do
@@ -6490,6 +6500,10 @@ begin
         ExtractFileName(FrameOfEditor(Ed).FileName),
         ecSyntPrinter);
 
+    cPyCommandBase..
+    cPyCommandBase+500:
+      DoPyCommandPlugin(Command-cPyCommandBase);
+
     //end of commands list
     else
       Handled:= false;
@@ -7238,7 +7252,7 @@ begin
   end;
 
   opAcpForceText:= false;
-  FFullScr:= false;
+  FFullscreen:= false;
   FOnTop:= false;
   FLockUpdate:= false;
   FToolbarMoved:= false;
@@ -14383,11 +14397,11 @@ begin
   end;
 end;
 
-procedure TfmMain.SetFS(AValue: boolean);
+procedure TfmMain.SetFullscreen(AValue: boolean);
 begin
-  if FFullScr <> AValue then
+  if FFullscreen <> AValue then
   begin
-    FFullScr:= AValue;
+    FFullscreen:= AValue;
     SetFormStyle(Application.MainForm, not AValue);
     if AValue then
     begin
@@ -22289,6 +22303,12 @@ var
   N: Integer;
 begin
   N:= (Sender as TComponent).Tag;
+  DoPyCommandPlugin(N);
+end;
+
+procedure TfmMain.DoPyCommandPlugin(N: Integer);
+begin
+  if (N>=Low(FPluginsCommand)) and (N<=High(FPluginsCommand)) then
   with FPluginsCommand[N] do
   begin
     if (SFileName='') then
@@ -22325,7 +22345,8 @@ end;
 
 procedure TfmMain.DoAddPluginMenuItem(
   ASubmenu: TSpTbxSubmenuitem;
-  const SKey, SShortcut: Widestring; NIndex: Integer);
+  const SKey: Widestring;
+  NIndex, NCommandId: Integer);
 var
   ItemSub: TSpTbxSubmenuItem;
   Item: TSpTbxItem;
@@ -22376,8 +22397,9 @@ begin
       else
         Item.Caption:= CapItem;
       Item.Tag:= NIndex;
-      Item.ShortCut:= TextToShortcut(SShortcut);
       Item.OnClick:= PluginCommandItemClick;
+      if NCommandId>0 then
+        UpdKey(Item, NCommandId);
       ItemSub.Add(Item);
     end;
   end;
@@ -27930,17 +27952,27 @@ begin
         FPluginsCommand[NIndex].SLexers:= sValueLexers;
         FPluginsCommand[NIndex].SCaption:= sKey;
         FPluginsCommand[NIndex].SHotkey:= sValueHotkey;
+        FPluginsCommand[NIndex].NCommandId:= cPyCommandBase+NIndex;
 
-        //a) add to main-menu always
-        DoAddPluginMenuItem(TBXSubmenuItemPlugins, sKey, sValueHotkey, NIndex);
+        //1) add keymapping item
+        DoAddKeymappingCommand(
+          FPluginsCommand[NIndex].NCommandId,
+          'py',
+          FPluginsCommand[NIndex].SCaption,
+          FPluginsCommand[NIndex].SHotkey);
 
-        //b) add to context menu - if enabled
+        //2) add to main-menu always
+        DoAddPluginMenuItem(TBXSubmenuItemPlugins, sKey, NIndex,
+          FPluginsCommand[NIndex].NCommandId);
+
+        //3) add to context menu - if enabled
         if Pos('-', sValueFlags)=0 then
         begin
           TBXSubmenuItemCtxPlugins.Visible:= true;
-          DoAddPluginMenuItem(TBXSubmenuItemCtxPlugins, sKey, sValueHotkey, NIndex);
+          DoAddPluginMenuItem(TBXSubmenuItemCtxPlugins, sKey, NIndex,
+            FPluginsCommand[NIndex].NCommandId);
         end;
-        
+
         Inc(NIndex);
       end;
     end;
@@ -28927,7 +28959,27 @@ procedure TfmMain.GetEditorIndexes(Ed: TSyntaxMemo;
   var AGroupIndex, ATabIndex: Integer);
 begin
   Groups.PagesAndTabIndexOfControl(FrameOfEditor(Ed), AGroupIndex, ATabIndex);
-end;    
+end;
+
+
+procedure TfmMain.DoAddKeymappingCommand(const ACommand: Integer;
+  const ACategory, ACaption, AHotkey: Widestring);
+var
+  S, SItem: Widestring;
+begin
+  SyntKeyMapping.Add(ACommand, ACategory, '', ACaption);
+  with SyntKeyMapping do
+    with Items[Items.Count-1] do
+    begin
+      S:= AHotkey;
+      with KeyStrokes.Add.KeyDefs do
+      repeat
+        SItem:= SGetItem(S, '|');
+        if SItem='' then Break;
+        Add.ShortCut:= TextToShortCut(SItem);
+      until false;  
+    end;  
+end;
 
 
 initialization

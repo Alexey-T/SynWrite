@@ -20,6 +20,10 @@ uses
   IniFiles,
   PngImageList;
 
+procedure DoKeymappingSplit(MapIn, MapOut1, MapOut2: TSyntKeyMapping; NCountInFirst: Integer);
+procedure DoKeymappingJoin(MapIn1, MapIn2, MapOut: TSyntKeyMapping);
+procedure DoKeymappingTruncate(Map: TSyntKeyMapping; NCount: Integer);
+  
 procedure DoUpdateIniFileForNewRelease(const SynIni: string);
 function FontStylesToString(const f: TFontStyles): string;
 function StringToFontStyles(const s: string): TFontStyles;
@@ -2272,5 +2276,41 @@ begin
   end;
 end;
 
+procedure DoKeymappingSplit(MapIn, MapOut1, MapOut2: TSyntKeyMapping; NCountInFirst: Integer);
+var
+  i: Integer;
+  MapOut: TSyntKeyMapping;
+begin
+  MapOut1.Items.Clear;
+  MapOut2.Items.Clear;
+
+  MapOut1.UseFirstControlKeys:= MapIn.UseFirstControlKeys;
+  MapOut2.UseFirstControlKeys:= MapIn.UseFirstControlKeys;
+
+  for i:= 0 to MapIn.Items.Count-1 do
+  begin
+    if i<NCountInFirst then
+      MapOut:= MapOut1
+    else
+      MapOut:= MapOut2;
+    MapOut.Items.Add.Assign(MapIn.Items[i]);
+  end;
+end;
+
+procedure DoKeymappingJoin(MapIn1, MapIn2, MapOut: TSyntKeyMapping);
+var
+  i: Integer;
+begin
+  MapOut.Items.Clear;
+  MapOut.Assign(MapIn1);
+  for i:= 0 to MapIn2.Items.Count-1 do
+    MapOut.Items.Add.Assign(MapIn2.Items[i]);
+end;    
+
+procedure DoKeymappingTruncate(Map: TSyntKeyMapping; NCount: Integer);
+begin
+  while Map.Items.Count>NCount do
+    Map.Items.Delete(Map.Items.Count-1);
+end;
 
 end.
