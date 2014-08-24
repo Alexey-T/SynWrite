@@ -3245,7 +3245,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1380';
+  cSynVer = '6.7.1390';
   cSynPyVer = '1.0.136';
 
 const
@@ -3822,6 +3822,7 @@ begin
 
     //show "Save as" dialog
     Result:= SD.Execute and (SD.FileName<>'');
+
     if Result then
     begin
       if WideExtractFileExt(SD.FileName)='' then
