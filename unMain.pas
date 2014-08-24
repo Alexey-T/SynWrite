@@ -4192,8 +4192,8 @@ begin
   sTabs:= '';
   {$endif}
 
-  sWin:= sSess + s + cMod[m] + ' - SynWrite' + sRO + sTabs;
-  sTask:= sSess + WideExtractFileName(s) + cMod[m] + ' - SynWrite';
+  sWin:= sSess + cMod[m] + s + ' - SynWrite' + sRO + sTabs;
+  sTask:= sSess + cMod[m] + WideExtractFileName(s) + ' - SynWrite';
 
   TTntForm(Parent).Caption:= sWin;
   TntApplication.Title:= sTask;
