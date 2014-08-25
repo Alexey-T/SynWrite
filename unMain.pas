@@ -21681,9 +21681,7 @@ begin
     for i:= 0 to FListFiles.Count-1 do
     begin
       F:= FramesAll[i];
-      FListResFN:= SGetTabPrefix + IntToStr(i+1);
-      if F.FileName<>'' then
-        FListResFN:= FListResFN + '[' + WideExtractFileName(F.FileName) + ']';
+      FListResFN:= SGetTabPrefix + IntToStr(i+1) + '[' + F.TabCaption + ']';
 
       FindInFrame(F);
 
