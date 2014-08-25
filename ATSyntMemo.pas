@@ -2100,16 +2100,20 @@ begin
   end;
 
   //multi search marks
-  ResetSelection;
   RemoveCarets;
   if not CanSetCarets then Exit;
+  if SearchMarks.Count<2 then Exit;
 
   DoInitBaseEditor;
   SetStaticDraw;
 
   BeginUpdate;
   try
-    NCaret:= SearchMarks[0].StartPos;
+    if SearchMarks.Count>0 then
+      NCaret:= SearchMarks[0].StartPos
+    else
+      NCaret:= CaretStrPos;
+
     for i:= SearchMarks.Count-1 downto 0 do
       with SearchMarks[i] do
       begin
@@ -2131,7 +2135,9 @@ begin
         if AClear then
           DoShiftCarets(StrPosToCaretPos(NStart), -NSize, 0);
       end;
+
     CaretStrPos:= NCaret;
+    ResetSelection;
     ResetSearchMarks;
   finally
     EndUpdate;
