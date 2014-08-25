@@ -1,9 +1,8 @@
 {
 SynWrite text finder/replacer class
-Original code was by: EControl Ltd.
-Modifications by: Alexey (SynWrite)
-
-2014-02-02 Modified by Zvezdan Dimitrijevic to allow use of TPerlRegEx instead of TecRegExpr
+Original code was by EControl Ltd.
+Modified heavily by Alexey (SynWrite)
+Modified 2014-02-02 by Zvezdan Dimitrijevic to allow use of TPerlRegEx instead of TecRegExpr
 }
 unit unSearch;
 
@@ -115,7 +114,7 @@ type
     //DoSearch calls Search
     function Search(StrtPos, EndPos: integer; ToBack, ToAll, Replace, CntOnly: boolean): Boolean; virtual;
     function DoSearch(ToAll, ToBack, FromCur: Boolean; Replace: Boolean=False; CntOnly: Boolean=False): Boolean;
-    function RepCfm(APos, ALen: integer; ToBack, ToAll: boolean): TModalResult;
+    function DoConfirmReplace(APos, ALen: integer; ToBack, ToAll: boolean): TModalResult;
     function StrReplaceWith: WideString;
     procedure CenterPos;
   public
@@ -147,7 +146,7 @@ implementation
 
 uses
   Windows, SysUtils,
-  Dialogs, TntDialogs,
+  Dialogs, //TntDialogs,
   DKLang,
   ATxFProc,
   ATxSProc,
@@ -481,9 +480,11 @@ begin
        else
        //show replace result
        begin
-         ACfm:= RepCfm(st - 1, FMatchLen, ToBack, ToAll);
+         ACfm:= DoConfirmReplace(st - 1, FMatchLen, ToBack, ToAll);
          case ACfm of
-           mrYes, mrAll:
+           mrOk,
+           mrYes,
+           mrYesToAll:
            begin
              S:= StrReplaceWith;
              FControl.ReplaceText(st - 1, FMatchLen, S);
@@ -498,9 +499,10 @@ begin
                if (FMatchLen=0) then
                  Inc(RepLen);
            end;
-           mrNo:
-             RepLen:= 1;
+           mrNo,
            mrCancel:
+             RepLen:= 1;
+           mrNoToAll:
              Break;
          end;//case
        end;
@@ -821,31 +823,35 @@ begin
     Result:= FReplaceText;
 end;
 
-function TSynFinderReplacer.RepCfm;
-var b: TMsgDlgButtons;
+function TSynFinderReplacer.DoConfirmReplace(APos, ALen: integer; ToBack, ToAll: boolean): TModalResult;
 begin
   if not (ftPromtOnReplace in FFlags) then
-    begin Result:= mrAll; Exit end;
+    begin Result:= mrYesToAll; Exit end;
   if FCfmAll then
-    begin Result:= mrAll; Exit end;
+    begin Result:= mrYesToAll; Exit end;
   with FControl do
   begin
-    EndUpdate;
-    if ToBack then
-      CaretPos:= StrPosToCaretPos(APos)
-    else
-      CaretPos:= StrPosToCaretPos(APos + ALen);
-    CenterPos;
+    EndUpdate; //unlock to show replace position with dialog
+    try
+      if ToBack then
+        CaretPos:= StrPosToCaretPos(APos)
+      else
+        CaretPos:= StrPosToCaretPos(APos + ALen);
+      CenterPos;
 
-    b:= [mbYes, mbNo];
-    if ToAll then b:= b+ [mbCancel, mbAll];
-
-    SetSearchMark(APos, ALen);
-    Result:= WideMessageDlg(DKLangConstW('Re'), mtConfirmation, b, -1);
-    ResetSearchMarks;
-    BeginUpdate;
+      SetSearchMark(APos, ALen); //show for dialog
+      Result:= MsgConfirmOkCancelForAll(
+        DKLangConstW('MRepMatch'),
+        '',
+        DKLangConstW('MRepAllNext'),
+        ToAll,
+        Handle);
+    finally
+      ResetSearchMarks;
+      BeginUpdate; //lock again to speedup
+    end;
   end;
-  FCfmAll:= Result = mrAll;
+  FCfmAll:= Result = mrYesToAll;
 end;
 
 procedure TSynFinderReplacer.CenterPos;

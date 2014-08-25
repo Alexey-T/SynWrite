@@ -186,7 +186,8 @@ procedure MsgError(const S: WideString; H: THandle);
 function MsgConfirm(const S: Widestring; H: THandle; IsQuestion: boolean = false): boolean;
 procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);
 procedure MsgRenameError(const fnPrev, fnNew: Widestring; H: THandle);
-function MsgConfirmYesNoAll(const Caption, Text, CheckText: Widestring; ParentWnd: THandle): TModalResult;
+function MsgConfirmOkCancelForAll(const Caption, Text, CheckText: Widestring;
+  CheckShow: boolean; ParentWnd: THandle): TModalResult;
 
 procedure SetFormStyle(Form: TForm; Value: Boolean);
 procedure SetFormOnTop(H: THandle; V: boolean);
@@ -260,21 +261,18 @@ implementation
 
 uses
   Windows,
-  ecZRegExpr,
-  ecUnicode,
-  ATxFProc, ATxSProc,
+  ecZRegExpr, ecUnicode,
   Math, Dialogs, CommCtrl, StrUtils,
+  ATxFProc, ATxSProc,
   TntClipbrd, TntSysUtils,
   DKLang,
   PngImage,
-  cUtils,
+  cUtils, //Fundamentals
   unSRTree,
   unInputSimple,
   unInputFilename,
   unTool,
-  
-  TntDialogs,
-  SynTaskDialog,
+  SynTaskDialog, //Synopse http://blog.synopse.info/post/2011/03/05/Open-Source-SynTaskDialog-unit-for-XP,Vista,Seven
   ComCtrls;
 
 procedure MsgInfo(const S: WideString; H: THandle);
@@ -2318,7 +2316,8 @@ begin
     Map.Items.Delete(Map.Items.Count-1);
 end;
 
-function MsgConfirmYesNoAll(const Caption, Text, CheckText: Widestring; ParentWnd: THandle): TModalResult;
+function MsgConfirmOkCancelForAll(const Caption, Text, CheckText: Widestring;
+  CheckShow: boolean; ParentWnd: THandle): TModalResult;
 var
   Task: TTaskDialog;
   Res: Integer;

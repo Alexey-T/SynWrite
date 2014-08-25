@@ -5385,16 +5385,11 @@ begin
 end;
 
 function TfmMain.DoConfirmSaveLexLib: boolean;
-var
-  buttons: TMsgDlgButtons;
 begin
   Result:= true;
   if SyntaxManager.Modified then
   begin
-    buttons:= [mbYes, mbNo];
-    //if CanCancel then
-    //  Include(buttons, mbCancel);
-    if WideMessageDlg(DKLangConstW('MSavLex'), mtConfirmation, buttons, 0) = mrYes then
+    if MsgConfirm(DKLangConstW('MSavLex'), Handle) then
       SaveLexLib;
     SyntaxManager.Modified:= false;
   end;
@@ -11217,8 +11212,7 @@ begin
   for i:= 0 to FrameCount-1 do
     if Frames[i].FileName = '' then
     begin
-      if WideMessageDlg(DKLangConstW('MEmp'), mtWarning, [mbOk, mbCancel], 0) = mrOk
-        then Break else Exit;
+      if MsgConfirm(DKLangConstW('MEmp'), Handle) then Break else Exit;
     end;
 
   with SD_Session do
@@ -16692,8 +16686,8 @@ end;
 
 function TfmMain.DoConfirmSaveSession(CanCancel: boolean; ExitCmd: boolean = false): boolean;
 var
-  Buttons: TMsgDlgButtons;
   sName, fn: WideString;
+  Buttons: DWORD;
 begin
   Result:= true;
 
@@ -16720,19 +16714,21 @@ begin
 
   //ask to save current named session
   sName:= WideChangeFileExt(WideExtractFileName(FSessionFN), '');
-  Buttons:= [mbYes, mbNo];
-  if CanCancel then
-    Include(Buttons, mbCancel);
+  Buttons:= IfThen(CanCancel, mb_yesnocancel, mb_yesno) or mb_iconwarning;
 
-  case WideMessageDlg(
-         WideFormat(DKLangConstW('MSessSav'), [sName]),
-         mtConfirmation, Buttons, 0) of
-    mrYes:
+  case MessageBoxW(
+         Handle,
+         PWChar(WideFormat(DKLangConstW('MSessSav'), [sName])),
+         'SynWrite', Buttons) of
+    id_yes:
       begin
         DoSaveSessionToFile(FSessionFN);
         SynMruSessions.AddItem(FSessionFN);
+        Result:= true;
       end;
-    mrCancel:
+    id_no:
+      Result:= true;
+    else
       Result:= false;
   end;
 end;

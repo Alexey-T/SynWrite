@@ -864,10 +864,11 @@ begin
       Cfm:= (TfmMain(Owner).opReloadMode = cReloadAuto);
       if not Cfm then
       begin
-        r:= MsgConfirmYesNoAll(
+        r:= MsgConfirmOkCancelForAll(
           DKLangConstW('MRelTitle'),
           WideFormat(DKLangConstW('MRelInf'), [WideExtractFileName(FileName)]),
           DKLangConstW('MRelInfAll'),
+          true,
           Handle
           );
         FNotifAllYes:= r = mrYesToAll;
