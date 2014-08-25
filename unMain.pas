@@ -2380,7 +2380,6 @@ type
     function GetRecentColors: string;
     procedure SetRecentColors(const Str: string);
     property RecentColorsStr: string read GetRecentColors write SetRecentColors;
-    procedure DoClearRecentColors;
     procedure RecentColorClick(Sender: TObject);
     procedure RecentColorOpen(Sender: TObject);
     procedure RecentColorSave(Sender: TObject);
@@ -2471,7 +2470,6 @@ type
     procedure MsgDoneLines(N: integer);
     procedure MsgTabbing(const s: Widestring);
 
-    procedure DoClearTreeFind;
     procedure DoCopyFindResultToTab(ALastSearch, AFilesOnly: boolean;
       AToClip: boolean = false);
     procedure DoCopyFindResultToList(ARootNode: TTntTreeNode;
@@ -2750,13 +2748,17 @@ type
     procedure DoProjectRenameFile(const fn, fn_new: Widestring);
     procedure UpdKey_String(Item: TSpTbxItem; const Cmd: Widestring);
     procedure UpdKey(Item: TSpTbxItem; CmdId: integer);
-    procedure DoClearFilesHistory;
     procedure DoToggleSyncEditing;
     procedure DoZoomEditorInc(AInc: boolean);
     procedure DoZoomEditor(NZoom: Integer);
     procedure DoExtendSelection(Ed: TSyntaxMemo);
     function MsgConfirmOpenSaveSession(AFilesCount: Integer;
       const AFileName: string; ASaveMode: boolean): boolean;
+
+    procedure DoClearFilesHistory;
+    procedure DoClearTreeFind;
+    procedure DoClearRecentColors;
+    procedure DoClearFindDialogStatus;
 
     //python group
     procedure DoPyCommandPlugin(N: Integer);
@@ -2791,7 +2793,6 @@ type
     procedure DoWorkaround_FindNext1;
     procedure DoShowHintFilename(const fn: Widestring);
     function DoCheckAutoCorrectCase(Ed: TSyntaxMemo): boolean;
-    procedure DoClearFindDialogStatus;
     procedure ProjPreviewVisibleChanged(Sender: TObject);
     procedure DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
     procedure UpadateFilenameForExport;
@@ -3160,16 +3161,14 @@ type
     procedure DoFindId;
     function FrameForFilename(const fn: Widestring): TEditorFrame;
     function DoCheckCommandLineTwo: boolean;
-    procedure DoClearSearchHistory;
     procedure DoEnumLexers(L: TTntStrings; AlsoDisabled: boolean = false);
-    function DoPyEvent(
-      AEd: TSyntaxMemo;
-      AEvent: TSynPyEvent;
+
+    //Python public
+    procedure DoPyConsole_LogString(const Str: Widestring);
+    function DoPyEvent(AEd: TSyntaxMemo; AEvent: TSynPyEvent;
       const AParams: array of string): Widestring;
-    procedure DoPyEvent_GetLineNumber(
-      AEd: TSyntaxMemo;
-      const ALineNum: Integer;
-      var AResult: string);
+    procedure DoPyEvent_GetLineNumber(AEd: TSyntaxMemo;
+      const ALineNum: Integer; var AResult: string);
 
     function FrameOfEditor(Ed: TSyntaxMemo): TEditorFrame;
     function BrotherEditor(Ed: TSyntaxMemo): TSyntaxMemo;
@@ -3215,11 +3214,11 @@ type
       const Opt: TSearchOptions;
       const Tok: TSearchTokens;
       OptBkmk, OptExtSel: boolean): Integer;
-    procedure DoPyConsole_LogString(const Str: Widestring);
     function DoShowColorPickerEx(NColor: Integer): Integer;
     procedure DoPyUpdateEvents(const APluginName, AEventStr, ALexersStr: string);
     function GetEditorByIndex(APagesIndex, ATabIndex, AMasterIndex: Integer): TSyntaxMemo;
     procedure GetEditorIndexes(Ed: TSyntaxMemo; var AGroupIndex, ATabIndex: Integer);
+    procedure DoClearSearchHistory;
     //end of public
   end;
 
