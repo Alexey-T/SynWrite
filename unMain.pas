@@ -2273,7 +2273,7 @@ type
     function GetCurrentFrame: TEditorFrame;
     function GetCurrentFrameInPages(Pages: TATPages): TEditorFrame;
     procedure FrameSaveState(Sender: TObject);
-    function FrameAskToSave(Frame: TEditorFrame; AllowAll: Boolean; AllowCancel: boolean=true): TModalResult;
+    function MsgConfirmSaveFrame(Frame: TEditorFrame; AllowAll: Boolean; AllowCancel: boolean=true): TModalResult;
     procedure InitFrameTab(Frame: TEditorFrame);
     function SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
     function OppositeFrame: TEditorFrame;
@@ -4146,7 +4146,7 @@ begin
     UpdateStatusbar;
     SynScroll(CurrentEditor);
     UpdateTreeProps;
-    ecSyntPrinter.Title:= WideExtractFileName(F.FileName);
+    ecSyntPrinter.Title:= F.TabCaption;
   end
   else
     CurrentEditor:= nil;
@@ -4244,20 +4244,15 @@ begin
   SyncTree;
 end;
 
-function TfmMain.FrameAskToSave(Frame: TEditorFrame; AllowAll: Boolean; AllowCancel: boolean=true): TModalResult;
+function TfmMain.MsgConfirmSaveFrame(Frame: TEditorFrame; AllowAll: Boolean; AllowCancel: boolean=true): TModalResult;
 var
   Buttons: TMsgDlgButtons;
-  s: WideString;
 begin
   Buttons:= [mbYes, mbNo];
   if AllowAll then Buttons:= Buttons + [mbYesToAll, mbNoToAll];
   if AllowCancel then Include(Buttons, mbCancel);
-  if Frame.FileName = '' then
-    s:= Frame.TabCaption
-  else
-    s:= WideExtractFileName(Frame.FileName);
   MsgBeep;
-  Result:= WideMessageDlg(WideFormat(DKLangConstW('MSave'), [s]), mtWarning, Buttons, 0);
+  Result:= WideMessageDlg(WideFormat(DKLangConstW('MSave'), [Frame.TabCaption]), mtWarning, Buttons, 0);
 end;
 
 procedure TfmMain.UpdateStatusBar;
@@ -9182,7 +9177,7 @@ begin
   if (F<>nil) and (F.FileName<>'') then
   begin
     if F.Modified then
-      case FrameAskToSave(F, False, True) of
+      case MsgConfirmSaveFrame(F, False, True) of
         mrCancel:
           Exit;
         mrYes:
@@ -10969,7 +10964,7 @@ begin
   if F=nil then Exit;
 
   if F.Modified and F.IsAlertEnabled then
-    case FrameAskToSave(F, False, ACanContinue) of
+    case MsgConfirmSaveFrame(F, False, ACanContinue) of
       mrYes:
       begin
         SaveFrame(F, False);
@@ -20818,8 +20813,7 @@ function TfmMain.OppositeFrame: TEditorFrame;
 begin
   case Groups.PagesIndexOf(Groups.PagesCurrent) of
     1: Result:= GetCurrentFrameInPages(Groups.Pages2);
-    2: Result:= GetCurrentFrameInPages(Groups.Pages1);
-    else Result:= nil;
+    else Result:= GetCurrentFrameInPages(Groups.Pages1);
   end;
 end;
 
