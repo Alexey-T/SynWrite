@@ -2273,7 +2273,7 @@ type
     function GetCurrentFrame: TEditorFrame;
     function GetCurrentFrameInPages(Pages: TATPages): TEditorFrame;
     procedure FrameSaveState(Sender: TObject);
-    function MsgConfirmSaveFrame(Frame: TEditorFrame; AllowAll: Boolean; AllowCancel: boolean=true): TModalResult;
+    function MsgConfirmSaveFrame(Frame: TEditorFrame; AllowCancel: boolean=true): TModalResult;
     procedure InitFrameTab(Frame: TEditorFrame);
     function SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
     function OppositeFrame: TEditorFrame;
@@ -3244,7 +3244,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1392';
+  cSynVer = '6.7.1394';
   cSynPyVer = '1.0.136';
 
 const
@@ -4244,15 +4244,21 @@ begin
   SyncTree;
 end;
 
-function TfmMain.MsgConfirmSaveFrame(Frame: TEditorFrame; AllowAll: Boolean; AllowCancel: boolean=true): TModalResult;
+function TfmMain.MsgConfirmSaveFrame(Frame: TEditorFrame; AllowCancel: boolean=true): TModalResult;
 var
-  Buttons: TMsgDlgButtons;
+  Str: Widestring;
+  Flags: DWORD;
+  Res: Integer;
 begin
-  Buttons:= [mbYes, mbNo];
-  if AllowAll then Buttons:= Buttons + [mbYesToAll, mbNoToAll];
-  if AllowCancel then Include(Buttons, mbCancel);
-  MsgBeep;
-  Result:= WideMessageDlg(WideFormat(DKLangConstW('MSave'), [Frame.TabCaption]), mtWarning, Buttons, 0);
+  Str:= WideFormat(DKLangConstW('MSave'), [Frame.TabCaption]);
+  Flags:= IfThen(AllowCancel, MB_YESNOCANCEL, MB_YESNO) or MB_ICONWARNING;
+  Res:= MessageBoxW(Handle, PWChar(Str), 'SynWrite', Flags);
+  case Res of
+    id_ok: Result:= mrOk;
+    id_yes: Result:= mrYes;
+    id_no: Result:= mrNo;
+    else Result:= mrCancel;
+  end;
 end;
 
 procedure TfmMain.UpdateStatusBar;
@@ -9177,7 +9183,7 @@ begin
   if (F<>nil) and (F.FileName<>'') then
   begin
     if F.Modified then
-      case MsgConfirmSaveFrame(F, False, True) of
+      case MsgConfirmSaveFrame(F, True) of
         mrCancel:
           Exit;
         mrYes:
@@ -10964,7 +10970,7 @@ begin
   if F=nil then Exit;
 
   if F.Modified and F.IsAlertEnabled then
-    case MsgConfirmSaveFrame(F, False, ACanContinue) of
+    case MsgConfirmSaveFrame(F, ACanContinue) of
       mrYes:
       begin
         SaveFrame(F, False);
