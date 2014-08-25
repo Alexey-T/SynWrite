@@ -27721,9 +27721,7 @@ begin
 
   FListFiles.Clear;
   FListResFN_Prev:= '';
-  FListResFN:= SGetTabPrefix + IntToStr(AFrameIndex+1);
-  if AFrame.FileName<>'' then
-    FListResFN:= FListResFN + '[' + WideExtractFileName(AFrame.FileName) + ']';
+  FListResFN:= SGetTabPrefix + IntToStr(AFrameIndex+1) + '[' + AFrame.TabCaption + ']';
 
   try
     FindInFrame(AFrame, true, AWithBkmk);
