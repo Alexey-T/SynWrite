@@ -853,13 +853,6 @@ begin
   end
   else
   //normal confirm
-  //use MsgBox for plugin, MsgDlg for exe
-  if not TfmMain(Owner).SynExe then
-  begin
-    Cfm:= (TfmMain(Owner).opReloadMode = cReloadAuto) or
-      MsgConfirm(WideFormat(DKLangConstW('MRel'), [WideExtractFileName(FileName)]), Handle);
-  end
-  else
   begin
     if FNotifAllYes then
       Cfm:= True
@@ -871,13 +864,15 @@ begin
       Cfm:= (TfmMain(Owner).opReloadMode = cReloadAuto);
       if not Cfm then
       begin
-        MsgBeep;
-        r:= WideMessageDlg(
-          WideFormat(DKLangConstW('MRel'), [WideExtractFileName(FileName)]),
-          mtWarning, [mbOk, mbCancel, mbYesToAll, mbNoToAll], 0);
+        r:= MsgConfirmYesNoAll(
+          DKLangConstW('MRelTitle'),
+          WideFormat(DKLangConstW('MRelInf'), [WideExtractFileName(FileName)]),
+          DKLangConstW('MRelInfAll'),
+          Handle
+          );
         FNotifAllYes:= r = mrYesToAll;
         FNotifAllNo:= r = mrNoToAll;
-        Cfm:= r in [mrOk, mrYesToAll];
+        Cfm:= r in [mrOk, mrYes, mrYesToAll];
       end;
     end;
   end;

@@ -186,6 +186,7 @@ procedure MsgError(const S: WideString; H: THandle);
 function MsgConfirm(const S: Widestring; H: THandle; IsQuestion: boolean = false): boolean;
 procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);
 procedure MsgRenameError(const fnPrev, fnNew: Widestring; H: THandle);
+function MsgConfirmYesNoAll(const Caption, Text, CheckText: Widestring; ParentWnd: THandle): TModalResult;
 
 procedure SetFormStyle(Form: TForm; Value: Boolean);
 procedure SetFormOnTop(H: THandle; V: boolean);
@@ -270,7 +271,11 @@ uses
   unSRTree,
   unInputSimple,
   unInputFilename,
-  unTool, ComCtrls;
+  unTool,
+  
+  TntDialogs,
+  SynTaskDialog,
+  ComCtrls;
 
 procedure MsgInfo(const S: WideString; H: THandle);
 begin
@@ -2311,6 +2316,26 @@ procedure DoKeymappingTruncate(Map: TSyntKeyMapping; NCount: Integer);
 begin
   while Map.Items.Count>NCount do
     Map.Items.Delete(Map.Items.Count-1);
+end;
+
+function MsgConfirmYesNoAll(const Caption, Text, CheckText: Widestring; ParentWnd: THandle): TModalResult;
+var
+  Task: TTaskDialog;
+  Res: Integer;
+begin
+  Task.Title:= 'SynWrite';
+  Task.Inst:= Caption;
+  Task.Content:= Text;
+  Task.Verify:= CheckText;
+  Task.VerifyChecked:= false;
+
+  Res:= Task.Execute([cbOK, cbCancel], 0, [], tiQuestion, tfiWarning, 0, 0, ParentWnd);
+
+  case Res of
+    1: Result:= IfThen(Task.VerifyChecked, mrYesToAll, mrOk);
+    2: Result:= IfThen(Task.VerifyChecked, mrNoToAll, mrCancel);
+    else Result:= mrCancel;
+  end;
 end;
 
 end.
