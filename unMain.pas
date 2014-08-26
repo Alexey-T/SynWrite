@@ -10317,17 +10317,6 @@ begin
   if Assigned(fmProj) then
     fmProj.tbProject.ChevronHint:= tbQS.ChevronHint;
 
-  //TNT Controls:
-  _SMsgDlgWarning:= DKLangConstW('sWarn');
-  _SMsgDlgConfirm:= DKLangConstW('sCf');
-  _SMsgDlgYes:= DKLangConstW('sy');
-  _SMsgDlgNo:= DKLangConstW('sn');
-  _SMsgDlgOK:= DKLangConstW('sOk');
-  _SMsgDlgCancel:= DKLangConstW('sCan');
-  _SMsgDlgAll:= DKLangConstW('sAll');
-  _SMsgDlgYesToAll:= DKLangConstW('sYAll');
-  _SMsgDlgNoToAll:= DKLangConstW('sNAll');
-
   //Statusbar items:
   cStatLine:=     ' '+DKLangConstW('stat_line')+' ';
   cStatCol:=      ' '+DKLangConstW('stat_col')+' ';

@@ -46,8 +46,8 @@ procedure TfmInputSimple.TntFormCreate(Sender: TObject);
 begin
   FEnablePrevValue:= false;
 
-  btnOK.Caption:= DKLangConstW('sOk');
-  btnCancel.Caption:= DKLangConstW('sCan');
+  btnOK.Caption:= DKLangConstW('MButtonOk');
+  btnCancel.Caption:= DKLangConstW('MButtonCancel');
 end;
 
 end.

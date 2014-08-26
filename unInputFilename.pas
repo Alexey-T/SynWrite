@@ -53,8 +53,8 @@ end;
 
 procedure TfmInputFilename.TntFormCreate(Sender: TObject);
 begin
-  btnOK.Caption:= DKLangConstW('sOk');
-  btnCancel.Caption:= DKLangConstW('sCan');
+  btnOK.Caption:= DKLangConstW('MButtonOk');
+  btnCancel.Caption:= DKLangConstW('MButtonCancel');
 end;
 
 end.
