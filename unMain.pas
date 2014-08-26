@@ -2351,8 +2351,8 @@ type
     function GetTabColors: Widestring;
     procedure SetTabColors(S: Widestring);
     property TabColorsString: Widestring read GetTabColors write SetTabColors;
-    procedure DoSetFrameTabColor(F: TEditorFrame; NColor: Longint);
-    procedure DoSetTabColorValue(NColor: Longint);
+    procedure DoSetFrameTabColor(F: TEditorFrame; NColor: TColor);
+    procedure DoSetTabColorValue(NColor: TColor);
     procedure DoSetTabColorIndex(NIndex: Integer);
     procedure DoSetTabColorIndex_Current(NIndex: Integer);
     procedure ClipsClick(Sender: TObject; const S: Widestring);
@@ -3214,7 +3214,7 @@ type
       const Opt: TSearchOptions;
       const Tok: TSearchTokens;
       OptBkmk, OptExtSel: boolean): Integer;
-    function DoShowColorPickerEx(NColor: Integer): Integer;
+    function DoShowColorPickerEx(NColor: TColor): Integer;
     procedure DoPyUpdateEvents(const APluginName, AEventStr, ALexersStr: string);
     function GetEditorByIndex(APagesIndex, ATabIndex, AMasterIndex: Integer): TSyntaxMemo;
     procedure GetEditorIndexes(Ed: TSyntaxMemo; var AGroupIndex, ATabIndex: Integer);
@@ -3244,7 +3244,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1410';
+  cSynVer = '6.7.1412';
   cSynPyVer = '1.0.136';
 
 const
@@ -18997,19 +18997,19 @@ begin
     DoHint('');
 end;
 
-function TfmMain.DoShowColorPickerEx(NColor: Integer): Integer;
+function TfmMain.DoShowColorPickerEx(NColor: TColor): Integer;
 var
   fn: string;
-  code: Cardinal;
+  Code: Cardinal;
 begin
   Result:= -1;
 
   fn:= SynDir + 'Tools\ColorPicker.exe';
-  if not IsFileExist(fn) then Exit;
-    //begin MsgNoFile(fn); Exit end;
+  if not IsFileExist(fn) then
+    begin MsgBeep; Exit end;
 
-  if FExecuteGetCode(fn, IntToStr(NColor), sw_show, true, code) then
-    Result:= code;
+  if FExecuteGetCode(fn, IntToStr(NColor), sw_show, true, Code) then
+    Result:= Code;
 end;
 
 procedure TfmMain.ecInsertColorExecute(Sender: TObject);
@@ -20518,25 +20518,22 @@ begin
   DoSetTabColorValue(TbxTabColor.Color);
 end;
 
-procedure TfmMain.DoSetFrameTabColor(F: TEditorFrame; NColor: Longint);
+procedure TfmMain.DoSetFrameTabColor(F: TEditorFrame; NColor: TColor);
 var
-  Index: Integer;
+  NPages, NTab: Integer;
   D: TATTabData;
 begin
-  if F<>nil then
-  begin
-    F.TabColor:= NColor;
+  Groups.PagesAndTabIndexOfControl(F, NPages, NTab);
+  if (NPages<0) or (NTab<0) then Exit;
+  D:= Groups.Pages[NPages].Tabs.GetTabData(NTab);
+  if D=nil then Exit;
 
-    Index:= FrameIndex(F);
-    if Index<0 then Exit;
-    D:= Groups.GetTabDataOfTotalIndex(Index);
-    if D=nil then Exit;
-    D.TabColor:= NColor;
-    Groups.Invalidate;
-  end;
+  F.TabColor:= NColor;
+  D.TabColor:= NColor;
+  Groups.Invalidate;
 end;
 
-procedure TfmMain.DoSetTabColorValue(NColor: Longint);
+procedure TfmMain.DoSetTabColorValue(NColor: TColor);
 begin
   DoSetFrameTabColor(FClickedFrame, NColor);
 end;
@@ -20786,7 +20783,8 @@ begin
     DoProjectRenameFile(fn, fn_new);
   end;
 
-  CurrentFrame.TabColor:= NColor;
+  if NColor<>clNone then
+    DoSetFrameTabColor(CurrentFrame, NColor);
 end;
 
 procedure TfmMain.ApplySpell;
