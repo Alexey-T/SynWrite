@@ -831,7 +831,7 @@ procedure TEditorFrame.FileReload(Sender: TObject);
 var
   Ln1, Ln2: integer;
   Cfm, WasEnd: boolean;
-  r: TModalResult;
+  Pressed: TSynTaskDialogResult;
   Ed, Ed2: TSyntaxMemo;
   P1, P2: TPoint;
 begin
@@ -864,16 +864,16 @@ begin
       Cfm:= (TfmMain(Owner).opReloadMode = cReloadAuto);
       if not Cfm then
       begin
-        r:= MsgConfirmOkCancelForAll(
+        Pressed:= MsgConfirmOkCancelForAll(
           DKLangConstW('MRelTitle'),
           WideFormat(DKLangConstW('MRelInf'), [WideExtractFileName(FileName)]),
           DKLangConstW('MRelInfAll'),
           true,
           Handle
           );
-        FNotifAllYes:= r = mrYesToAll;
-        FNotifAllNo:= r = mrNoToAll;
-        Cfm:= r in [mrOk, mrYes, mrYesToAll];
+        FNotifAllYes:= Pressed = taskResYesAll;
+        FNotifAllNo:= Pressed = taskResNoAll;
+        Cfm:= Pressed in [taskResYes, taskResYesAll];
       end;
     end;
   end;

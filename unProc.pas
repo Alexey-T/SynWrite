@@ -186,16 +186,18 @@ procedure MsgError(const S: WideString; H: THandle);
 function MsgConfirm(const S: Widestring; H: THandle; IsQuestion: boolean = false): boolean;
 procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);
 procedure MsgRenameError(const fnPrev, fnNew: Widestring; H: THandle);
+
+type
+  TSynTaskDialogResult = (taskResYes, taskResNo, taskResYesAll, taskResNoAll);
+
 function MsgConfirmOkCancelForAll(const Caption, Text, CheckText: Widestring;
-  CheckShow: boolean; ParentWnd: THandle): TModalResult;
+  CheckShow: boolean; ParentWnd: THandle): TSynTaskDialogResult;
 
 procedure SetFormStyle(Form: TForm; Value: Boolean);
 procedure SetFormOnTop(H: THandle; V: boolean);
 
 type
-  TSynToolSave = (
-    svNone, svCurrent, svAll
-    );
+  TSynToolSave = (svNone, svCurrent, svAll);
 
 type
   TSynOutputType = (
@@ -2317,7 +2319,7 @@ begin
 end;
 
 function MsgConfirmOkCancelForAll(const Caption, Text, CheckText: Widestring;
-  CheckShow: boolean; ParentWnd: THandle): TModalResult;
+  CheckShow: boolean; ParentWnd: THandle): TSynTaskDialogResult;
 var
   Task: TTaskDialog;
   Res: Integer;
@@ -2331,9 +2333,16 @@ begin
   Res:= Task.Execute([cbOK, cbCancel], 0, [], tiQuestion, tfiWarning, 0, 0, ParentWnd);
 
   case Res of
-    1: Result:= IfThen(Task.VerifyChecked, mrYesToAll, mrOk);
-    2: Result:= IfThen(Task.VerifyChecked, mrNoToAll, mrCancel);
-    else Result:= mrCancel;
+    1:
+      begin
+        if Task.VerifyChecked then Result:= taskResYesAll else Result:= taskResYes;
+      end;
+    2:
+      begin
+        if Task.VerifyChecked then Result:= taskResNoAll else Result:= taskResNo;
+      end
+    else
+      Result:= taskResNo;
   end;
 end;
 

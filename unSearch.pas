@@ -20,7 +20,9 @@ uses
   {$else}
   ecZRegExpr,
   {$endif}
-  ecSyntMemo, ecStrUtils;
+  unProc,
+  ecSyntMemo,
+  ecStrUtils;
 //ZD end
 
 type
@@ -105,7 +107,7 @@ type
     FSkipInit: boolean;
     function IntSearch(StrtPos, EndPos: integer; ToBack, ToAll, Replace, CntOnly: boolean): Boolean; virtual;
     function DoSearch(ToAll, ToBack, FromCur: Boolean; Replace: Boolean=False; CntOnly: Boolean=False): Boolean;
-    function DoConfirmReplace(APos, ALen: integer; ToBack, ToAll: boolean): TModalResult;
+    function DoConfirmReplace(APos, ALen: integer; ToBack, ToAll: boolean): TSynTaskDialogResult;
     function StrReplaceWith: WideString;
     procedure FixTextEOL;
     procedure DoBeforeExec;
@@ -146,7 +148,6 @@ uses
   ATxFProc,
   ATxSProc,
   cStrings, //Fundamentals
-  unProc,
   unProcEditor;
 
 { TSynFinder }
@@ -433,7 +434,7 @@ function TSynFinderReplacer.IntSearch(StrtPos, EndPos: integer;
 var
   st, en, RepLen: integer;
   s: WideString;
-  PressedRes: TModalResult;
+  PressedRes: TSynTaskDialogResult;
   PressedYesToAll: boolean;
 begin
   Result:= (FFindText <> '') and Assigned(FControl);
@@ -477,35 +478,33 @@ begin
        //show replace result
        begin
          if PressedYesToAll then
-           PressedRes:= mrYesToAll
+           PressedRes:= taskResYesAll
          else
          begin
            PressedRes:= DoConfirmReplace(st - 1, FMatchLen, ToBack, ToAll);
-           PressedYesToAll:= PressedRes=mrYesToAll;
+           PressedYesToAll:= PressedRes=taskResYesAll;
          end;
 
          case PressedRes of
-           mrOk,
-           mrYes,
-           mrYesToAll:
-           begin
-             S:= StrReplaceWith;
-             FControl.ReplaceText(st - 1, FMatchLen, S);
-             RepLen:= Length(S);
-             Inc(EndPos, RepLen - FMatchLen); //text may become longer
+           taskResYes,
+           taskResYesAll:
+             begin
+               S:= StrReplaceWith;
+               FControl.ReplaceText(st - 1, FMatchLen, S);
+               RepLen:= Length(S);
+               Inc(EndPos, RepLen - FMatchLen); //text may become longer
 
-             if not ToAll then
-               DoShowResult(st - 1, RepLen, ToBack);
+               if not ToAll then
+                 DoShowResult(st - 1, RepLen, ToBack);
 
-             //workaround for replacing regex ".*?" with some string
-             if (not ToBack) and (ftRegex in FFlags) then
-               if (FMatchLen=0) then
-                 Inc(RepLen);
-           end;
-           mrNo,
-           mrCancel:
+               //workaround for replacing regex ".*?" with some string
+               if (not ToBack) and (ftRegex in FFlags) then
+                 if (FMatchLen=0) then
+                   Inc(RepLen);
+             end;
+           taskResNo:
              RepLen:= 1;
-           mrNoToAll:
+           taskResNoAll:
              Break;
          end;//case
        end;
@@ -826,10 +825,11 @@ begin
     Result:= FReplaceText;
 end;
 
-function TSynFinderReplacer.DoConfirmReplace(APos, ALen: integer; ToBack, ToAll: boolean): TModalResult;
+function TSynFinderReplacer.DoConfirmReplace(APos, ALen: integer; ToBack, ToAll: boolean): TSynTaskDialogResult;
 begin
   if not (ftPromtOnReplace in FFlags) then
-    begin Result:= mrYesToAll; Exit end;
+    begin Result:= taskResYesAll; Exit end;
+
   with FControl do
   begin
     EndUpdate; //unlock to show replace position with dialog
