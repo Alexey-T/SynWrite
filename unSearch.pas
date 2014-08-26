@@ -15,11 +15,11 @@ uses
   //{$UnDef PERLRE}
   // Define FWDMATCH for forward searches with single Match, it is faster but cannot be canceled until it finishes
   //{$define FWDMATCH}
-{$ifdef PERLRE}
+  {$ifdef PERLRE}
   PerlRegEx,
-{$else}
+  {$else}
   ecZRegExpr,
-{$endif}
+  {$endif}
   ecSyntMemo, ecStrUtils;
 //ZD end
 
@@ -103,20 +103,16 @@ type
     FMatches: integer;
     FMatchLen: integer;
     FSkipInit: boolean;
-    FCfmAll: boolean;
-    FCfmReset: boolean;
+    function IntSearch(StrtPos, EndPos: integer; ToBack, ToAll, Replace, CntOnly: boolean): Boolean; virtual;
+    function DoSearch(ToAll, ToBack, FromCur: Boolean; Replace: Boolean=False; CntOnly: Boolean=False): Boolean;
+    function DoConfirmReplace(APos, ALen: integer; ToBack, ToAll: boolean): TModalResult;
+    function StrReplaceWith: WideString;
     procedure FixTextEOL;
     procedure DoBeforeExec;
     procedure DoAfterExec;
     procedure DoNotFound;
-  protected
-    procedure ShowRes(Pos, Count: integer; ToBack: Boolean);
-    //DoSearch calls Search
-    function Search(StrtPos, EndPos: integer; ToBack, ToAll, Replace, CntOnly: boolean): Boolean; virtual;
-    function DoSearch(ToAll, ToBack, FromCur: Boolean; Replace: Boolean=False; CntOnly: Boolean=False): Boolean;
-    function DoConfirmReplace(APos, ALen: integer; ToBack, ToAll: boolean): TModalResult;
-    function StrReplaceWith: WideString;
-    procedure CenterPos;
+    procedure DoShowResult(Pos, Count: integer; ToBack: Boolean);
+    procedure DoCenterPos;
   public
     constructor Create(AOwner: TComponent); override;
     function FindFirst: Boolean;
@@ -136,7 +132,6 @@ type
     property OnAfterExecute: TNotifyEvent read FOnAfterExecute write FOnAfterExecute;
     property OnBeforeExecute: TNotifyEvent read FOnBeforeExecute write FOnBeforeExecute;
     property ReplaceText: WideString read FReplaceText write FReplaceText;
-    property CfmReset: boolean read FCfmReset write FCfmReset;
     property Matches: integer read FMatches write FMatches;
     property MatchLen: integer read FMatchLen;
     property SkipInit: boolean read FSkipInit write FSkipInit;
@@ -433,11 +428,13 @@ end;
 
 {TSyntFindReplace}
 
-function TSynFinderReplacer.Search(StrtPos, EndPos: integer;
+function TSynFinderReplacer.IntSearch(StrtPos, EndPos: integer;
   ToBack, ToAll, Replace, CntOnly: boolean): Boolean;
 var
-  st, en, RepLen, ACfm: integer;
+  st, en, RepLen: integer;
   s: WideString;
+  PressedRes: TModalResult;
+  PressedYesToAll: boolean;
 begin
   Result:= (FFindText <> '') and Assigned(FControl);
   if not Result then Exit;
@@ -445,10 +442,9 @@ begin
   FixFPU; //to prevent "Floating point error"
   FixTextEOL; //adapt EOL chars in FindText/ReplaceText to Control
 
+  PressedYesToAll:= false;
   FMatches:= 0;
   FMatchLen:= 0;
-  if FCfmReset then
-    FCfmAll:= false;
 
   if Replace then
     FControl.BeginUpdate;
@@ -475,13 +471,20 @@ begin
        //show find result
        begin
          if not CntOnly then
-           ShowRes(st - 1, FMatchLen, ToBack)
+           DoShowResult(st - 1, FMatchLen, ToBack)
        end
        else
        //show replace result
        begin
-         ACfm:= DoConfirmReplace(st - 1, FMatchLen, ToBack, ToAll);
-         case ACfm of
+         if PressedYesToAll then
+           PressedRes:= mrYesToAll
+         else
+         begin
+           PressedRes:= DoConfirmReplace(st - 1, FMatchLen, ToBack, ToAll);
+           PressedYesToAll:= PressedRes=mrYesToAll;
+         end;
+
+         case PressedRes of
            mrOk,
            mrYes,
            mrYesToAll:
@@ -492,7 +495,7 @@ begin
              Inc(EndPos, RepLen - FMatchLen); //text may become longer
 
              if not ToAll then
-               ShowRes(st - 1, RepLen, ToBack);
+               DoShowResult(st - 1, RepLen, ToBack);
 
              //workaround for replacing regex ".*?" with some string
              if (not ToBack) and (ftRegex in FFlags) then
@@ -646,7 +649,7 @@ begin
           StrtPos:= FControl.CaretPosToStrPos(FControl.LogToLinesPos(Point(ASelRect.Left, i))) + 1;
           EndPos:= FControl.CaretPosToStrPos(FControl.LogToLinesPos(Point(ASelRect.Right, i)));
           ////Msg('"'+Copy(FControl.Text, StrtPos, EndPos-StrtPos+1)+'"');//////////
-          Search(StrtPos, EndPos, ToBack, ToAll, Replace, CntOnly);
+          IntSearch(StrtPos, EndPos, ToBack, ToAll, Replace, CntOnly);
           Inc(CntPrev, FMatches);
           if (FMatches>0) and not ToAll then Break;
         end
@@ -655,7 +658,7 @@ begin
         begin
           StrtPos:= FControl.CaretPosToStrPos(FControl.LogToLinesPos(Point(ASelRect.Left, i))) + 1;
           EndPos:= FControl.CaretPosToStrPos(FControl.LogToLinesPos(Point(ASelRect.Right, i)));
-          Search(StrtPos, EndPos, ToBack, ToAll, Replace, CntOnly);
+          IntSearch(StrtPos, EndPos, ToBack, ToAll, Replace, CntOnly);
           Inc(CntPrev, FMatches);
           if (FMatches>0) and not ToAll then Break;
         end;
@@ -665,7 +668,7 @@ begin
     else
     begin
       //B) normal search or replace (in selection or not)
-      Result:= Search(StrtPos, EndPos, ToBack, ToAll, Replace, CntOnly);
+      Result:= IntSearch(StrtPos, EndPos, ToBack, ToAll, Replace, CntOnly);
       CntPrev:= FMatches;
       //wrap search if needed
       if IsWrap and
@@ -673,7 +676,7 @@ begin
         (StrtPos2 > 0) and
         (EndPos2 >= StrtPos2) then
       begin
-        Search(StrtPos2, EndPos2, ToBack, ToAll, Replace, CntOnly);
+        IntSearch(StrtPos2, EndPos2, ToBack, ToAll, Replace, CntOnly);
         Inc(FMatches, CntPrev);
         Result:= FMatches>0;
       end;
@@ -688,7 +691,7 @@ begin
   DoAfterExec;
 end;
 
-procedure TSynFinderReplacer.ShowRes(Pos, Count: integer; ToBack: Boolean);
+procedure TSynFinderReplacer.DoShowResult(Pos, Count: integer; ToBack: Boolean);
 var
   NPos: Integer;
   P: TPoint;
@@ -708,7 +711,7 @@ begin
       SelectMode:= msNone;
       SetSelection(Pos, Count);
 
-      CenterPos;
+      DoCenterPos;
       Exclude(FFlags, ftSelectedText);
       //if not Focused then SetFocus;
     end
@@ -827,8 +830,6 @@ function TSynFinderReplacer.DoConfirmReplace(APos, ALen: integer; ToBack, ToAll:
 begin
   if not (ftPromtOnReplace in FFlags) then
     begin Result:= mrYesToAll; Exit end;
-  if FCfmAll then
-    begin Result:= mrYesToAll; Exit end;
   with FControl do
   begin
     EndUpdate; //unlock to show replace position with dialog
@@ -837,7 +838,7 @@ begin
         CaretPos:= StrPosToCaretPos(APos)
       else
         CaretPos:= StrPosToCaretPos(APos + ALen);
-      CenterPos;
+      DoCenterPos;
 
       SetSearchMark(APos, ALen); //show for dialog
       Result:= MsgConfirmOkCancelForAll(
@@ -851,10 +852,9 @@ begin
       BeginUpdate; //lock again to speedup
     end;
   end;
-  FCfmAll:= Result = mrYesToAll;
 end;
 
-procedure TSynFinderReplacer.CenterPos;
+procedure TSynFinderReplacer.DoCenterPos;
 begin
   EditorCenterPos(FControl, false{GotoMode}, opSrOffsetY);
 end;
@@ -862,8 +862,6 @@ end;
 constructor TSynFinderReplacer.Create(AOwner: TComponent);
 begin
   inherited;
-  FCfmReset:= true;
-  FCfmAll:= false;
 end;
 
 function SFixEOL(const S: Widestring; Ed: TCustomSyntaxMemo): Widestring;

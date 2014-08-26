@@ -3244,7 +3244,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1400';
+  cSynVer = '6.7.1410';
   cSynPyVer = '1.0.136';
 
 const
@@ -11842,7 +11842,6 @@ begin
   begin
     CurrentFrame:= FramesAll[i];
     Finder.ReplaceAll;
-    Finder.CfmReset:= false;
     if Finder.Matches>0 then
     begin
       Inc(nFiles);
@@ -11850,7 +11849,6 @@ begin
     end;
   end;
   CurrentFrame:= F;
-  Finder.CfmReset:= true;
   Finder.OnNotFound:= FinderFail;
 end;
 
