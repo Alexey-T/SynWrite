@@ -3244,7 +3244,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1412';
+  cSynVer = '6.7.1415';
   cSynPyVer = '1.0.136';
 
 const
@@ -20260,8 +20260,9 @@ var
 begin
   F:= FClickedFrame;
   if (F<>nil) and (F.FileName<>'') then
-    if Assigned(fmProj) then
-      fmProj.DoDropItem(F.FileName);
+    if not F.IsFtp then
+      if Assigned(fmProj) then
+        fmProj.DoDropItem(F.FileName);
 end;
 
 function TfmMain.CurrentProjectMainFN: Widestring;

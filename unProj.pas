@@ -678,6 +678,7 @@ end;
 procedure TfmProj.TreeProjDragDrop(Sender, Source: TObject; X, Y: Integer);
 var
   TargetNode, SourceNode: TTntTreeNode;
+  Frame: TEditorFrame;
   List: TList;
   Str: Widestring;
   i: Integer;
@@ -685,7 +686,10 @@ begin
   //drag-drop of tab
   if (Source is TEditorFrame) then
   begin
-    Str:= (Source as TEditorFrame).FileName;
+    Frame:= Source as TEditorFrame;
+    if Frame.IsFtp then
+      begin MsgBeep; Exit end;
+    Str:= Frame.FileName;
     if Str<>'' then
     begin
       TargetNode:= TreeProj.GetNodeAt(X, Y);
