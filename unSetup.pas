@@ -580,11 +580,12 @@ const
     'Auto-complete-BG', //55
     'Tab-BG-passive-over', //56
     'Tab-border-active', //57
-    'Tab-border-passive' //58
+    'Tab-border-passive', //58
+    'Tab-caption-modified' //59
     );
 
 const
-  cColorsOrder: array[0..51] of Integer = (
+  cColorsOrder: array[0..52] of Integer = (
     0,
     1,
     9,
@@ -606,6 +607,7 @@ const
     25,
     44,
     42, //tab caption
+    59, //tab caption modif
     22, //tab bg active, active group
     23, //tab bg active, other groups
     21, //tab bg passive

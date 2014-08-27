@@ -301,7 +301,7 @@ type
   TSynDock = (sdockTop, sdockLeft, sdockRight, sdockBottom);
 
 const
-  cColorsNum = 59;
+  cColorsNum = 60;
 type
   TSynColors = array[0..cColorsNum-1] of TColor;
 
@@ -3001,6 +3001,7 @@ type
     opShowTitleFull: boolean;
     opShowQsCaptions: boolean;
     opColorTabText,
+    opColorTabTextMod,
     opColorTabBgActive,
     opColorTabBgActive2,
     opColorTabBgPassive,
@@ -25084,6 +25085,7 @@ begin
   Groups.SetTabOption(tabOptionFontSize, FFontTabs.Size);
   
   Groups.SetTabOption(tabColorFont, opColorTabText);
+  Groups.SetTabOption(tabColorModified, opColorTabTextMod);
   Groups.SetTabOption(tabColorActive, opColorTabBgActive);
   Groups.SetTabOption(tabColorPassive, opColorTabBgPassive);
   Groups.SetTabOption(tabColorPassiveOver, opColorTabBgPassiveOver);
@@ -25325,6 +25327,7 @@ begin
   opColorTabBgPassiveOver:= C[56];
   opColorTabBorderActive:= C[57];
   opColorTabBorderPassive:= C[58];
+  opColorTabTextMod:= C[59];
 
   //fonts
   Ed.Font.Assign(TemplateEditor.Font);
@@ -25346,6 +25349,7 @@ begin
   opColorNonPrintedBG:= clSilver;
 
   opColorTabText:= clBlack;
+  opColorTabTextMod:= $a00000;
   opColorTabBgActive:= $f0f0f0;
   opColorTabBgActive2:= opColorTabBgActive;
   opColorTabBgPassive:= $d8d8d8;
@@ -25421,6 +25425,7 @@ begin
   C[56]:= opColorTabBgPassiveOver;
   C[57]:= opColorTabBorderActive;
   C[58]:= opColorTabBorderPassive;
+  C[59]:= opColorTabTextMod;
 end;
 
 procedure TfmMain.DoHandleQuickSearchEscape;
