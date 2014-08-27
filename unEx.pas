@@ -591,9 +591,16 @@ begin
   _SynActionProc:= @PluginAction;
 end;
 
+procedure InitEnv;
+begin
+  ////set variable for SynFTP
+  ////SetEnvironmentVariable('CONFIGDIR', PChar(ExtractFileDir(SynIni)));
+end;
+
 initialization
   InitAll;
   InitPaths;
+  InitEnv;
 
 finalization
   SynIni:= '';

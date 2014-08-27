@@ -523,6 +523,7 @@ begin
           if (D<>nil) and (D.TabObject=Self) then
           begin
             D.TabCaption:= TabCaptionEx;
+            D.TabModified:= Modified;
             Tabs.Invalidate;
           end;
         end;
@@ -1705,7 +1706,7 @@ begin
 
   Result:=
     IfThen(IsFtp, 'ftp: ') +
-    IfThen(Modified, '*') +
+    //IfThen(Modified, '*') +
     Result;
 end;
 
