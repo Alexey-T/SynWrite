@@ -25345,8 +25345,8 @@ begin
   opColorNonPrintedBG:= clSilver;
 
   opColorTabText:= clBlack;
-  opColorTabBgActive:= clBtnFace;
-  opColorTabBgActive2:= clBtnFace;
+  opColorTabBgActive:= $f0f0f0;
+  opColorTabBgActive2:= opColorTabBgActive;
   opColorTabBgPassive:= $d8d8d8;
   opColorTabBgPassiveOver:= clLtGray;
   opColorTabBorderActive:= clLtGray;
