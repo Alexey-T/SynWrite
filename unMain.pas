@@ -4155,26 +4155,25 @@ end;
 
 procedure TfmMain.UpdateTitle(Sender: TFrame);
 const
-  cMod: array[boolean] of string = ('', #$07);
+  cModified: array[boolean] of string = ('', #$07);
 var
-  s, sWin, sTask, sSess, sRO, sTabs: WideString;
-  m: boolean;
   F: TEditorFrame;
+  s, sWin, sTask, sSess, sRO, sDebug: WideString;
+  bMod: boolean;
 begin
   UpdateListTabs;
 
   if not SynExe then Exit;
   F:= CurrentFrame;
-  if (F = nil) or (F <> Sender) then Exit;
+  if (F=nil) or (F<>Sender) then Exit;
 
-  s:= F.FileName;
-  m:= F.Modified;
-
-  if not opShowTitleFull then
-    s:= WideExtractFileName(s);
-  if s = '' then
+  bMod:= F.Modified;
+  if (F.FileName<>'') and opShowTitleFull then
+    s:= F.FileName
+  else
     s:= F.TabCaption;
-  ecSyntPrinter.Title:= WideExtractFileName(s);
+
+  ecSyntPrinter.Title:= F.TabCaption;
 
   if FSessionFN <> '' then
     sSess:= '{' + WideChangeFileExt(WideExtractFileName(FSessionFN), '') + '} '
@@ -4187,14 +4186,13 @@ begin
     sRO:= '';
 
   {$ifdef TabOrder}
-  sTabs:= ' [' + TabSwitcher.GetTabList + ' , ' +
-                 TabSwitcher2.GetTabList + ']';
+  sDebug:= ' [' + TabSwitchers[1].GetTabList + ' , ' + TabSwitchers[2].GetTabList + ']';
   {$else}
-  sTabs:= '';
+  sDebug:= '';
   {$endif}
 
-  sWin:= sSess + cMod[m] + s + ' - SynWrite' + sRO + sTabs;
-  sTask:= sSess + cMod[m] + WideExtractFileName(s) + ' - SynWrite';
+  sWin:= sSess + cModified[bMod] + s + ' - SynWrite' + sRO + sDebug;
+  sTask:= sSess + cModified[bMod] + WideExtractFileName(s) + ' - SynWrite';
 
   TTntForm(Parent).Caption:= sWin;
   TntApplication.Title:= sTask;
