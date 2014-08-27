@@ -3245,7 +3245,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1415';
+  cSynVer = '6.7.1420';
   cSynPyVer = '1.0.136';
 
 const
@@ -4155,7 +4155,7 @@ end;
 
 procedure TfmMain.UpdateTitle(Sender: TFrame);
 const
-  cMod: array[boolean] of string = ('', '*');
+  cMod: array[boolean] of string = ('', #$07);
 var
   s, sWin, sTask, sSess, sRO, sTabs: WideString;
   m: boolean;
