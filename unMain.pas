@@ -20150,23 +20150,23 @@ begin
   end;
 end;
 
-procedure TfmMain.ProjAddEditorFile(Sender: TObject;
-  Files: TTntStrings);
+procedure TfmMain.ProjAddEditorFile(Sender: TObject; Files: TTntStrings);
 begin
   with CurrentFrame do
     if FileName<>'' then
-      Files.Add(FileName);
+      if not IsFtp then
+        Files.Add(FileName);
 end;
 
-procedure TfmMain.ProjAddEditorFiles(Sender: TObject;
-  Files: TTntStrings);
+procedure TfmMain.ProjAddEditorFiles(Sender: TObject; Files: TTntStrings);
 var
   i: Integer;
 begin
   for i:= 0 to FrameAllCount-1 do
     with FramesAll[i] do
       if FileName<>'' then
-        Files.Add(FileName);
+        if not IsFtp then
+          Files.Add(FileName);
 end;
 
 procedure TfmMain.ProjFileOpen(Sender: TObject; Files: TTntStrings);
