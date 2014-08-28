@@ -26513,6 +26513,7 @@ const
   cFramePropEnc      = 'enc';
   cFramePropSplit    = 'split';
   cFramePropBk       = 'bk';
+  cFramePropColor    = 'tabc';
   //these are for both master/slave:
   cFramePropPos      = 'pos';
   cFramePropSel      = 'sel';
@@ -26547,6 +26548,8 @@ begin
     AddEd(Result, F.EditorMaster, '1');
     AddEd(Result, F.EditorSlave, '2');
     Add(Result, cFramePropBk, EditorGetBookmarksAsString(F.EditorMaster));
+    if F.TabColor<>clNone then
+      Add(Result, cFramePropColor, IntToStr(F.TabColor));
   end;
 end;
 
@@ -26635,6 +26638,12 @@ begin
           EditorSetBookmarksAsString(F.EditorMaster, SVal);
           EditorSetBookmarksAsString(F.EditorSlave, SVal);
           UpdateListBookmarks;
+        end
+      else
+      if SId=cFramePropColor then
+        begin
+          if SVal<>'' then
+            DoSetFrameTabColor(F, StrToIntDef(SVal, clNone));
         end
       else
       if (SId=cFramePropPos) and opSaveEdCaret then
