@@ -1722,8 +1722,8 @@ begin
     opReloadMode:= TSynReloadMode(cbNotif.ItemIndex);
     opAskOverwrite:= cbOverRO.Checked;
     opTextOnly:= cbText_.ItemIndex;
-    opOem:= edOem.Text;
-    opUTF8:= edUTF8.Text;
+    opOpenAsOem:= edOem.Text;
+    opOpenAsUtf8:= edUTF8.Text;
     opFollowTail:= cbTail.Checked;
     opUnicodeNeeded:= cbUniNeed.ItemIndex;
   end;
@@ -2147,8 +2147,8 @@ begin
     cbNotif.ItemIndex:= Ord(opReloadMode);
     cbOverRO.Checked:= opAskOverwrite;
     cbText_.ItemIndex:= opTextOnly;
-    edOem.Text:= opOem;
-    edUTF8.Text:= opUTF8;
+    edOem.Text:= opOpenAsOem;
+    edUTF8.Text:= opOpenAsUtf8;
     cbTail.Checked:= opFollowTail;
     cbUniNeed.ItemIndex:= opUnicodeNeeded;
   end;

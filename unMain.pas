@@ -3009,8 +3009,8 @@ type
     opColorTabBorderActive,
     opColorTabBorderPassive: integer;
     opShowCharInfo: boolean;
-    opOem,
-    opUTF8: string;
+    opOpenAsOem,
+    opOpenAsUtf8: string;
 
     FLockUpdate: boolean;
     FFinderTotalSize: Int64;
@@ -3643,6 +3643,7 @@ procedure TfmMain.acOpenExecute(Sender: TObject);
 var
   i: Integer;
   s: Widestring;
+  cfm: boolean;
 begin
   OD.Filter:= SynFilesFilter;
   if (opLastDir=cLastDirRemember) and (opHistFilter>0) then
@@ -3671,7 +3672,14 @@ begin
     if IsFileTooBig(S) then
       MsgFileTooBig(S, Handle)
     else
-      DoOpenFile(S);
+    begin
+      if (opTextOnly<>1) and (not IsFileText(S)) then
+        cfm:= MsgConfirmBinary(S, Handle)
+      else
+        cfm:= true;
+      if cfm then
+        DoOpenFile(S);
+    end;
   end;
 
   //save last dir
@@ -3764,12 +3772,12 @@ begin
   //dont reread files with BOM
   if IsFileWithBOM(Frame.FileName) then Exit;
 
-  if SFileExtensionMatch(Frame.FileName, opOem) then
+  if SFileExtensionMatch(Frame.FileName, opOpenAsOem) then
   begin
     ApplyFrameEncodingAndReload(Frame, CP_OEMCP); //Reread as OEM
   end
   else
-  if SFileExtensionMatch(Frame.FileName, opUTF8) or (opUTF8 = '*')
+  if SFileExtensionMatch(Frame.FileName, opOpenAsUtf8) or (opOpenAsUtf8 = '*')
     or IsFileUTF8NoBOM(Frame.FileName)
     or IsFileXmlUTF8(Frame.FileName) then
   begin
@@ -4721,8 +4729,8 @@ begin
     Status.Visible:= ReadBool('Setup', 'Stat', true);
     //if not QuickView then
     //  Menu.Visible:= ReadBool('Setup', 'Menu' + cExeSuffix[SynExe], true);
-    opOem:= ReadString('Setup', 'Oem', 'bat,cmd,nfo,diz');
-    opUTF8:= ReadString('Setup', 'UTF8', '');
+    opOpenAsOem:= ReadString('Setup', 'Oem', 'bat,cmd,nfo,diz');
+    opOpenAsUtf8:= ReadString('Setup', 'UTF8', '');
 
     if SynExe or not QuickView then
       Theme:= ReadString('Setup', 'Theme', cThemeDefault)
@@ -5091,8 +5099,8 @@ begin
     //if not QuickView then
     //  WriteBool('Setup', 'Menu' + cExeSuffix[SynExe], Menu.Visible);
     WriteBool('Setup', 'Stat', Status.Visible);
-    WriteString('Setup', 'Oem', opOem);
-    WriteString('Setup', 'UTF8', opUTF8);
+    WriteString('Setup', 'Oem', opOpenAsOem);
+    WriteString('Setup', 'UTF8', opOpenAsUtf8);
     WriteString('Setup', 'Theme', Theme);
     WriteInteger('Setup', 'Icons', Icons);
 
