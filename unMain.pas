@@ -2822,6 +2822,7 @@ type
     function GetUntitledString: Widestring;
     procedure DoAddKeymappingCommand(const ACommand: Integer;
       const ACategory, ACaption, AHotkey: Widestring);
+    function DoConfirmMaybeBinaryFile(const fn: Widestring): boolean;
     //end of private
 
   protected
@@ -3643,7 +3644,6 @@ procedure TfmMain.acOpenExecute(Sender: TObject);
 var
   i: Integer;
   s: Widestring;
-  cfm: boolean;
 begin
   OD.Filter:= SynFilesFilter;
   if (opLastDir=cLastDirRemember) and (opHistFilter>0) then
@@ -3672,14 +3672,8 @@ begin
     if IsFileTooBig(S) then
       MsgFileTooBig(S, Handle)
     else
-    begin
-      if (opTextOnly<>1) and (not IsFileText(S)) then
-        cfm:= MsgConfirmBinary(S, Handle)
-      else
-        cfm:= true;
-      if cfm then
-        DoOpenFile(S);
-    end;
+    if DoConfirmMaybeBinaryFile(S) then
+      DoOpenFile(S);
   end;
 
   //save last dir
@@ -21154,19 +21148,14 @@ begin
 end;
 
 function TfmMain.PluginAction_OpenFile(const fn: Widestring): Integer;
-var
-  cfm: boolean;
 begin
   if fn='' then
   begin
     Result:= cSynError;
     Exit;
   end;
-  if (opTextOnly<>1) and (not IsFileText(fn)) then
-    cfm:= MsgConfirmBinary(fn, Handle)
-  else
-    cfm:= true;
-  if cfm then
+
+  if DoConfirmMaybeBinaryFile(fn) then
   begin
     DoOpenFile(fn);
     Result:= cSynOK;
@@ -28949,6 +28938,14 @@ begin
         Add.ShortCut:= TextToShortCut(SItem);
       until false;  
     end;  
+end;
+
+function TfmMain.DoConfirmMaybeBinaryFile(const fn: Widestring): boolean;
+begin
+  if (opTextOnly<>1) and (not IsFileText(fn)) then
+    Result:= MsgConfirmBinary(fn, Handle)
+  else
+    Result:= true;
 end;
 
 
