@@ -453,9 +453,9 @@ object fmSetup: TfmSetup
         object TntLabel14: TTntLabel
           Left = 72
           Top = 160
-          Width = 108
+          Width = 88
           Height = 13
-          Caption = 'Tab max width (pixels)'
+          Caption = 'Tab maximal width'
         end
         object TntLabel3: TTntLabel
           Left = 72
@@ -467,9 +467,9 @@ object fmSetup: TfmSetup
         object TntLabel29: TTntLabel
           Left = 72
           Top = 184
-          Width = 104
+          Width = 84
           Height = 13
-          Caption = 'Tab min width (pixels)'
+          Caption = 'Tab minimal width'
         end
         object cbTabBtn: TTntCheckBox
           Left = 8

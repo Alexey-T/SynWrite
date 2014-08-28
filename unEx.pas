@@ -593,8 +593,7 @@ end;
 
 procedure InitEnv;
 begin
-  ////set variable for SynFTP
-  ////SetEnvironmentVariable('CONFIGDIR', PChar(ExtractFileDir(SynIni)));
+  //for later
 end;
 
 initialization
