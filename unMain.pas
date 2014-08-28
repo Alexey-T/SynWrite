@@ -4164,7 +4164,7 @@ end;
 
 procedure TfmMain.UpdateTitle(Sender: TFrame);
 const
-  cModified: array[boolean] of string = ('', #$07);
+  cModified: array[boolean] of string = ('', #$95);
 var
   F: TEditorFrame;
   s, sWin, sTask, sSess, sRO, sDebug: WideString;
@@ -11261,7 +11261,8 @@ begin
       for i:= 0 to FrameAllCount-1 do
       begin
         F:= FramesAll[i];
-        if F.FileName='' then Continue; //don't save untitled tabs
+        if F.FileName='' then Continue; //skip untitled tabs
+        if F.IsFtp then Continue; //skip ftp tabs
 
         Inc(Num); //start with 0
         SSec:= 'f'+IntToStr(Num);
