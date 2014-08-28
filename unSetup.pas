@@ -354,6 +354,8 @@ type
     bFontTabs: TTntButton;
     LabelLangMore: TTntLabel;
     KeyMappingPy: TSyntKeyMapping;
+    edTabMinLen: TSpinEdit;
+    TntLabel29: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1995,7 +1997,8 @@ begin
     opTabAtBottom:= cbTabDown.Checked;
     opTabFolders:= cbTabDirs.Checked;
     opTabAngle:= edTabAngle.Value;
-    opTabMaxWidth:= edTabMaxLen.Value;
+    opTabWidthMin:= edTabMinLen.Value;
+    opTabWidthMax:= edTabMaxLen.Value;
 
     for i:= 0 to High(ColorsOfTabs) do
       opTabColors[i]:= ColorsOfTabs[i];
@@ -2309,7 +2312,8 @@ begin
     cbTabDown.Checked:= opTabAtBottom;
     cbTabSw.Checked:= opTabSwitcher;
     cbTabDirs.Checked:= opTabFolders;
-    edTabMaxLen.Value:= opTabMaxWidth;
+    edTabMinLen.Value:= opTabWidthMin;
+    edTabMaxLen.Value:= opTabWidthMax;
     edTabAngle.Value:= opTabAngle;
 
     ListTabColors.Items.Clear;

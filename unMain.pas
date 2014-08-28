@@ -2911,7 +2911,8 @@ type
     opTabPlus: boolean;
     opTabOptionsIndex: integer; //id of active tab in Options dialog
     opTabOptionsLast: integer; //index of last closed tab in Options dialog
-    opTabMaxWidth: integer; //max width of tabs
+    opTabWidthMin,
+    opTabWidthMax: integer;
     opTabDragDrop: boolean; //allow D&D of tabs
     opTabsSortMode: integer; //sort mode for Tabs panel
     opTabSwitcher: boolean; //use modern tab switcher (Ctrl+Tab)
@@ -4576,7 +4577,8 @@ begin
     else
       opTabVisible:= ReadBool('Setup', 'TabShow', true);
 
-    opTabMaxWidth:= ReadInteger('Setup', 'TabSize', 130);
+    opTabWidthMin:= ReadInteger('Setup', 'TabSizeMin', 20);
+    opTabWidthMax:= ReadInteger('Setup', 'TabSize', 130);
     opTabAngle:= ReadInteger('View', 'TabAngle', 0);
     opTabDragDrop:= true;
     opTabFolders:= ReadBool('View', 'TabDirs', false);
@@ -4737,7 +4739,7 @@ begin
       Theme:= ReadString('Setup', 'Theme', cThemeDefault)
 	  else
       Theme:= cThemeWindows;
-    Icons:= ReadInteger('Setup', 'Icons', 2{Fogue 24x24});
+    Icons:= ReadInteger('Setup', 'Icons', 1{Fogue 24x24});
 
     LoadPanelProp(plTree, Ini, 'Tree');
     LoadPanelProp(plOut, Ini, 'Out');
@@ -5003,7 +5005,8 @@ begin
     WriteBool('Setup', 'ACloseQ', opAutoCloseQuotes);
 
     WriteBool('Setup', 'TabShow', opTabVisible);
-    WriteInteger('Setup', 'TabSize', opTabMaxWidth);
+    WriteInteger('Setup', 'TabSizeMin', opTabWidthMin);
+    WriteInteger('Setup', 'TabSize', opTabWidthMax);
     WriteBool('Setup', 'TabDnD', opTabDragDrop);
     WriteBool('Setup', 'TabSw', opTabSwitcher);
 
@@ -6514,7 +6517,7 @@ begin
   //workaround for non-recorded commands
   //(EC issue)
   if Handled or IsCommandAllowedInMacro(Command) then
-    DoRecordToMacro(Command, nil);
+    DoRecordToMacro(Command, Data);
 end;
 
 function TfmMain.IsCommandAllowedInMacro(Cmd: Integer): boolean;
@@ -25101,7 +25104,8 @@ begin
   Groups.SetTabOption(tabOptionShowNums, Ord(opTabNums));
   Groups.SetTabOption(tabOptionBottomTabs, Ord(opTabAtBottom));
   Groups.SetTabOption(tabOptionDragDrop, Ord(opTabDragDrop));
-  Groups.SetTabOption(tabOptionWidthMax, Ord(opTabMaxWidth));
+  Groups.SetTabOption(tabOptionWidthMin, Ord(opTabWidthMin));
+  Groups.SetTabOption(tabOptionWidthMax, Ord(opTabWidthMax));
   Groups.SetTabOption(tabOptionAngle, opTabAngle);
 
   for i:= 0 to FrameAllCount-1 do

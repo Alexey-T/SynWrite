@@ -439,7 +439,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 217
+        Height = 241
         Caption = 'Tabs'
         TabOrder = 0
         object TntLabel13: TTntLabel
@@ -453,9 +453,9 @@ object fmSetup: TfmSetup
         object TntLabel14: TTntLabel
           Left = 72
           Top = 160
-          Width = 85
+          Width = 108
           Height = 13
-          Caption = 'Tab width (pixels)'
+          Caption = 'Tab max width (pixels)'
         end
         object TntLabel3: TTntLabel
           Left = 72
@@ -463,6 +463,13 @@ object fmSetup: TfmSetup
           Width = 112
           Height = 13
           Caption = 'Tab edge angle (pixels)'
+        end
+        object TntLabel29: TTntLabel
+          Left = 72
+          Top = 184
+          Width = 104
+          Height = 13
+          Caption = 'Tab min width (pixels)'
         end
         object cbTabBtn: TTntCheckBox
           Left = 8
@@ -490,11 +497,11 @@ object fmSetup: TfmSetup
         end
         object cbTabSw: TTntCheckBox
           Left = 8
-          Top = 192
+          Top = 216
           Width = 433
           Height = 17
           Caption = 'Use modern tab switcher (Ctrl+Tab)'
-          TabOrder = 8
+          TabOrder = 9
         end
         object edTabMaxLen: TSpinEdit
           Left = 8
@@ -515,7 +522,7 @@ object fmSetup: TfmSetup
           Height = 181
           Style = lbOwnerDrawFixed
           ItemHeight = 16
-          TabOrder = 9
+          TabOrder = 10
           OnDblClick = ListTabColorsDblClick
           OnDrawItem = ListTabColorsDrawItem
           OnKeyDown = ListTabColorsKeyDown
@@ -553,6 +560,18 @@ object fmSetup: TfmSetup
           MinValue = 0
           TabOrder = 6
           Value = 0
+          OnKeyDown = edIndentKeyDown
+        end
+        object edTabMinLen: TSpinEdit
+          Left = 8
+          Top = 180
+          Width = 57
+          Height = 22
+          Increment = 2
+          MaxValue = 100
+          MinValue = 4
+          TabOrder = 8
+          Value = 50
           OnKeyDown = edIndentKeyDown
         end
       end
@@ -2983,7 +3002,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E014E010000
+      0700666D5365747570010100000001000000070043617074696F6E0150010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3285,7 +3304,8 @@ object fmSetup: TfmSetup
       6C330101000000DA020000070043617074696F6E00090062466F6E7454616273
       0101000000DB020000070043617074696F6E000D004C6162656C4C616E674D6F
       72650101000000DC020000070043617074696F6E000C004B65794D617070696E
-      6750790000}
+      67507900000B0065645461624D696E4C656E00000A00546E744C6162656C3239
+      0101000000DD020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
