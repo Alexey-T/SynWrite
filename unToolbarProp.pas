@@ -157,7 +157,7 @@ var
   sCmd, sHint, sFN: Widestring;
   i: Integer;
 const
-  sSep = ' — ';
+  sSep = ' - ';
 begin
   //correct caption
   sCmd:= Caption;

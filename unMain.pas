@@ -28754,7 +28754,7 @@ begin
   ATabs.TabShowMenu:= false;
   ATabs.TabShowClose:= tbShowNone;
   ATabs.TabMiddleClickClose:= false;
-  ATabs.TabShowBorderActiveLow:= true;
+  //ATabs.TabShowBorderActiveLow:= true;
   ATabs.TabDragEnabled:= false;
 
   ATabs.TabAngle:= Groups.Pages1.Tabs.TabAngle;
