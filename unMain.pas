@@ -140,6 +140,13 @@ type
     );
 
 type
+  TSynBinaryAct = (
+    cBinaryDontOpen,
+    cBinaryAlwaysOpen,
+    cBinaryPrompt
+    );
+
+type
   TSynQuickSearchType = (
     cQsNext,
     cQsPrev,
@@ -2632,6 +2639,7 @@ type
     function DoConfirmClose: boolean;
     function DoConfirmSaveLexLib: boolean;
     function DoConfirmSaveSession(CanCancel: boolean; ExitCmd: boolean = false): boolean;
+    function DoConfirmMaybeBinaryFile(const fn: Widestring): boolean;
 
     procedure LoadClip;
     procedure LoadProj;
@@ -2822,7 +2830,6 @@ type
     function GetUntitledString: Widestring;
     procedure DoAddKeymappingCommand(const ACommand: Integer;
       const ACategory, ACaption, AHotkey: Widestring);
-    function DoConfirmMaybeBinaryFile(const fn: Widestring): boolean;
     //end of private
 
   protected
@@ -2998,7 +3005,7 @@ type
     opSaveEdCaret,
     opSaveEdEnc: boolean;
     opAskOverwrite: boolean;
-    opTextOnly: integer; //dont-open/ open/ prompt
+    opTextOnly: TSynBinaryAct;
     opShowTitleFull: boolean;
     opShowQsCaptions: boolean;
     opColorTabText,
@@ -3246,7 +3253,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1420';
+  cSynVer = '6.7.1430';
   cSynPyVer = '1.0.136';
 
 const
@@ -4588,7 +4595,7 @@ begin
     ApplyEdOptions;
 
     opShowWrapMark:= ReadBool('Setup', 'WrapMk', true);
-    opTextOnly:= ReadInteger('Setup', 'TxOnly', 0);
+    opTextOnly:= TSynBinaryAct(ReadInteger('Setup', 'TxOnly', 0));
     opSaveSRHist:= ReadInteger('Setup', 'SaveSRHist', 10);
     opSaveState:= ReadInteger('Setup', 'SaveFrameState', 10);
     opSaveEdCaret:= ReadBool('Setup', 'SaveCaret', true);
@@ -4928,7 +4935,7 @@ begin
   if not SynExe then
     with TIniFile.Create(SynListerIni) do
     try
-      WriteInteger('Syn2', 'TxOnly', opTextOnly);
+      WriteInteger('Syn2', 'TxOnly', Ord(opTextOnly));
     finally
       Free;
     end;
@@ -5006,7 +5013,7 @@ begin
     WriteBool('Setup', 'LexCat', opLexerGroups);
     WriteBool('Setup', 'Link', opHiliteUrls);
     WriteBool('Setup', 'WrapMk', opShowWrapMark);
-    WriteInteger('Setup', 'TxOnly', opTextOnly);
+    WriteInteger('Setup', 'TxOnly', Ord(opTextOnly));
 
     WriteInteger('Setup', 'SaveSRHist', opSaveSRHist);
     WriteInteger('Setup', 'SaveFrameState', opSaveState);
@@ -28942,7 +28949,7 @@ end;
 
 function TfmMain.DoConfirmMaybeBinaryFile(const fn: Widestring): boolean;
 begin
-  if (opTextOnly<>1) and (not IsFileText(fn)) then
+  if (opTextOnly<>cBinaryAlwaysOpen) and (not IsFileText(fn)) then
     Result:= MsgConfirmBinary(fn, Handle)
   else
     Result:= true;

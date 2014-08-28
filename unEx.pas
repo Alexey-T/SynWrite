@@ -59,7 +59,7 @@ var
   SynIniPath,
   SynIni,
   SynHistoryIni: string;
-  SynTextOnly: integer;
+  SynTextOnly: TSynBinaryAct;
 
 
 function GetPassedLineNumber: integer;
@@ -184,7 +184,7 @@ procedure InitSynTextOnly;
 begin
   with TIniFile.Create(SynIni) do
   try
-    SynTextOnly:= ReadInteger('Setup', 'TxOnly', 0);
+    SynTextOnly:= TSynBinaryAct(ReadInteger('Setup', 'TxOnly', 0));
   finally
     Free;
   end;
@@ -217,7 +217,7 @@ begin
     Exit
   end;
 
-  if (SF<>'') and (SynTextOnly<>1) and (not IsFileText(SF)) then
+  if (SF<>'') and (SynTextOnly<>cBinaryAlwaysOpen) and (not IsFileText(SF)) then
     if not IsFileArchive(SF) then
     begin
       InitLang;
