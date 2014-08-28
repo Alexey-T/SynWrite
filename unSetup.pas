@@ -1780,7 +1780,7 @@ begin
   with fmMain do
   begin
     Theme:= cbTheme.Text;
-    Icons:= cbIcons.ItemIndex;
+    Icons:= TSynIcons(cbIcons.ItemIndex);
 
     Move(ColorsSetup, ColorsArray, SizeOf(TSynColors));
     ApplyColorsFontsToFrames;
@@ -2077,6 +2077,7 @@ end;
 procedure TfmSetup.InitColors;
 var
   i: Integer;
+  id: TSynIcons;
 begin
   for i:= Low(cColorsOrder) to High(cColorsOrder) do
     ListColors.Items.Add(DKLangConstW(_ColorIndexToDklangID(cColorsOrder[i])));
@@ -2087,10 +2088,9 @@ begin
     cbTheme.ItemIndex:= cbTheme.Items.IndexOf(Theme);
 
     cbIcons.Items.Clear;
-    cbIcons.Items.Add('Fogue 16x16');
-    cbIcons.Items.Add('Fogue 24x24');
-    cbIcons.Items.Add('Tango 22x22');
-    cbIcons.ItemIndex:= Icons;
+    for id:= Low(TSynIcons) to High(TSynIcons) do
+      cbIcons.Items.Add(cIconsNames[id]);
+    cbIcons.ItemIndex:= Ord(Icons);
 
     Move(ColorsArray, ColorsSetup, SizeOf(TSynColors));
   end;

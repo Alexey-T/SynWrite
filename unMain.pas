@@ -87,6 +87,21 @@ const
   cPyCommandBase = 5000;
 
 type
+  TSynIcons = (
+    cIconsFog16x,
+    cIconsFog24x,
+    cIconsTango22x
+    );
+const
+  cIconsDefault = cIconsFog24x;
+  cIconsNames: array[TSynIcons] of string = (
+    'Fogue 16x16',
+    'Fogue 24x24',
+    'Tango 22x22'
+    );
+
+
+type
   TSynPyEvent = (
     cSynEventOnOpen,
     cSynEventOnSaveAfter,
@@ -2627,9 +2642,9 @@ type
     procedure ReplaceInAllTabs(var nRep, nFiles: integer);
     procedure DoMarkAll(const Str: Widestring);
 
-    function GetIcons: integer;
+    function GetIcons: TSynIcons;
     function GetTheme: string;
-    procedure SetIcons(Num: integer);
+    procedure SetIcons(Id: TSynIcons);
     procedure SetTheme(const S: string);
     procedure LoadTools;
     procedure SaveTools;
@@ -3159,7 +3174,7 @@ type
     procedure CloseFrameWithCfm(F: TEditorFrame; var ACanClose, ACanContinue: boolean);
     //---------------------------------------------------------------------
 
-    property Icons: integer read GetIcons write SetIcons;
+    property Icons: TSynIcons read GetIcons write SetIcons;
     property Theme: string read GetTheme write SetTheme;
     //procedure TestApi;
     function IsPluginWindowActive(var HWnd: THandle): boolean;
@@ -4739,7 +4754,7 @@ begin
       Theme:= ReadString('Setup', 'Theme', cThemeDefault)
 	  else
       Theme:= cThemeWindows;
-    Icons:= ReadInteger('Setup', 'Icons', 1{Fogue 24x24});
+    Icons:= TSynIcons(ReadInteger('Setup', 'Icons', Ord(cIconsDefault)));
 
     LoadPanelProp(plTree, Ini, 'Tree');
     LoadPanelProp(plOut, Ini, 'Out');
@@ -5106,7 +5121,7 @@ begin
     WriteString('Setup', 'Oem', opOpenAsOem);
     WriteString('Setup', 'UTF8', opOpenAsUtf8);
     WriteString('Setup', 'Theme', Theme);
-    WriteInteger('Setup', 'Icons', Icons);
+    WriteInteger('Setup', 'Icons', Ord(Icons));
 
     //fonts
     WriteString('Fonts', 'Ed', FontToString(TemplateEditor.Font));
@@ -9234,25 +9249,28 @@ begin
   end;
 end;
 
-function tfmMain.GetIcons: integer;
+function tfmMain.GetIcons: TSynIcons;
 begin
-  if tbFile.Images = ImageListIconsFogue16b then Result:= 0
+  if tbFile.Images = ImageListIconsFogue16b then Result:= cIconsFog16x
   else
-  if tbFile.Images = ImageListIconsFogue24b then Result:= 1
+  if tbFile.Images = ImageListIconsFogue24b then Result:= cIconsFog24x
   else
-  if tbFile.Images = ImageListIconsTango22b then Result:= 2
+  if tbFile.Images = ImageListIconsTango22b then Result:= cIconsTango22x
   else
-    Result:= -1;
+    Result:= cIconsDefault;
 end;
 
-procedure TfmMain.SetIcons(Num: integer);
+procedure TfmMain.SetIcons(Id: TSynIcons);
 var
   L: TCustomImageList;
 begin
-  case Num of
-    0: L:= ImageListIconsFogue16b;
-    1: L:= ImageListIconsFogue24b;
-    else L:= ImageListIconsTango22b;
+  case Id of
+    cIconsFog16x:
+      L:= ImageListIconsFogue16b;
+    cIconsFog24x:
+      L:= ImageListIconsFogue24b;
+    else
+      L:= ImageListIconsTango22b;
   end;
 
   tbFile.Images:= L;
