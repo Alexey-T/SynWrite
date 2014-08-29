@@ -15,9 +15,8 @@ uses
   ecStrUtils,
   ecPrint;
 
-function EditorPrint(Ed: TSyntaxMemo; ASelOnly: boolean;
-  const ATitle: string;
-  APrinter: TecSyntPrinter): boolean;
+procedure EditorPrint(Ed: TSyntaxMemo; ASelOnly: boolean;
+  const ATitle: string; APrinter: TecSyntPrinter);
 function EditorGetBlockStaple(Ed: TSyntaxMemo; PosX, PosY: Integer): TBlockStaple;
 procedure EditorSetCaretShape(Ed: TSyntaxMemo; Opt: Integer);
 function EditorGetColorPropertyById(Ed: TSyntaxMemo; const Id: string): Longint;
@@ -3354,23 +3353,24 @@ begin
     //move TSyntaxMemo.IsOverStaple from "private" to "public"
 end;
 
-function EditorPrint(Ed: TSyntaxMemo; ASelOnly: boolean;
-  const ATitle: string;
-  APrinter: TecSyntPrinter): boolean;
+procedure EditorPrint(Ed: TSyntaxMemo; ASelOnly: boolean;
+  const ATitle: string; APrinter: TecSyntPrinter);
 var
-  AEd: TCustomSyntaxMemo;
+  PrevTitle: string;
+  PrevEd: TCustomSyntaxMemo;
 begin
-  Result:= true;
   with APrinter do
   begin
-    Title:= ATitle;
-    AEd:= SyntMemo;
+    PrevTitle:= Title;
+    PrevEd:= SyntMemo;
     try
+      Title:= ATitle;
       SyntMemo:= Ed;
       PrintSelection:= ASelOnly;
       Print;
     finally
-      SyntMemo:= AEd;
+      SyntMemo:= PrevEd;
+      Title:= PrevTitle;
     end;
   end;  
 end;
