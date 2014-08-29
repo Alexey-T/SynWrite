@@ -4172,7 +4172,6 @@ begin
     UpdateStatusbar;
     SynScroll(CurrentEditor);
     UpdateTreeProps;
-    ecSyntPrinter.Title:= F.TabCaption;
   end
   else
     CurrentEditor:= nil;
@@ -4184,7 +4183,6 @@ const
 var
   F: TEditorFrame;
   s, sWin, sTask, sSess, sRO, sDebug: WideString;
-  bMod: boolean;
 begin
   UpdateListTabs;
 
@@ -4192,13 +4190,10 @@ begin
   F:= CurrentFrame;
   if (F=nil) or (F<>Sender) then Exit;
 
-  bMod:= F.Modified;
   if (F.FileName<>'') and opShowTitleFull then
     s:= F.FileName
   else
     s:= F.TabCaption;
-
-  ecSyntPrinter.Title:= F.TabCaption;
 
   if FSessionFN <> '' then
     sSess:= '{' + WideChangeFileExt(WideExtractFileName(FSessionFN), '') + '} '
@@ -4216,11 +4211,12 @@ begin
   sDebug:= '';
   {$endif}
 
-  sWin:= sSess + cModified[bMod] + s + ' - SynWrite' + sRO + sDebug;
-  sTask:= sSess + cModified[bMod] + WideExtractFileName(s) + ' - SynWrite';
+  sWin:= sSess + cModified[F.Modified] + s + ' - SynWrite' + sRO + sDebug;
+  sTask:= sSess + cModified[F.Modified] + WideExtractFileName(s) + ' - SynWrite';
 
   TTntForm(Parent).Caption:= sWin;
   TntApplication.Title:= sTask;
+  ecSyntPrinter.Title:= F.TabCaption;
 end;
 
 procedure TfmMain.SetCurrentEditor(Value: TSyntaxMemo);
