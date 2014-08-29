@@ -14,6 +14,8 @@ function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_filename(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_alerts(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_alerts(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_tabcolor(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_tabcolor(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_indexes(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_prop_wrapper(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_complete(Self, Args: PPyObject): PPyObject; cdecl;
@@ -616,6 +618,36 @@ begin
       Result:= ReturnNone;
     end;
 end;
+
+function Py_ed_get_tabcolor(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H: Integer;
+  Flag: Integer;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'i:get_tabcolor', @H)) then
+    begin
+      Ed:= PyEditor(H);
+      Flag:= fmMain.FrameOfEditor(Ed).TabColor;
+      Result:= PyInt_FromLong(Flag);
+    end;
+end;
+
+function Py_ed_set_tabcolor(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, Flag: Integer;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'ii:set_tabcolor', @H, @Flag)) then
+    begin
+      Ed:= PyEditor(H);
+      fmMain.DoSetFrameTabColor(fmMain.FrameOfEditor(Ed), Flag);
+      Result:= ReturnNone;
+    end;
+end;
+
 
 function Py_ed_get_indexes(Self, Args: PPyObject): PPyObject; cdecl;
 var

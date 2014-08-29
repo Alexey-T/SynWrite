@@ -2373,7 +2373,6 @@ type
     function GetTabColors: Widestring;
     procedure SetTabColors(S: Widestring);
     property TabColorsString: Widestring read GetTabColors write SetTabColors;
-    procedure DoSetFrameTabColor(F: TEditorFrame; NColor: TColor);
     procedure DoSetTabColorValue(NColor: TColor);
     procedure DoSetTabColorIndex(NIndex: Integer);
     procedure DoSetTabColorIndex_Current(NIndex: Integer);
@@ -3244,6 +3243,7 @@ type
     function GetEditorByIndex(APagesIndex, ATabIndex, AMasterIndex: Integer): TSyntaxMemo;
     procedure GetEditorIndexes(Ed: TSyntaxMemo; var AGroupIndex, ATabIndex: Integer);
     procedure DoClearSearchHistory;
+    procedure DoSetFrameTabColor(F: TEditorFrame; NColor: TColor);
     //end of public
   end;
 
@@ -3270,7 +3270,7 @@ function SynAppdataDir: string;
 
 const
   cSynVer = '6.7.1440';
-  cSynPyVer = '1.0.136';
+  cSynPyVer = '1.0.137';
 
 const
   cSynParamRO = '/ro';
@@ -27104,6 +27104,8 @@ begin
     AddMethod('ed_get_filename', Py_ed_get_filename, '');
     AddMethod('ed_get_alerts', Py_ed_get_alerts, '');
     AddMethod('ed_set_alerts', Py_ed_set_alerts, '');
+    AddMethod('ed_get_tabcolor', Py_ed_get_tabcolor, '');
+    AddMethod('ed_set_tabcolor', Py_ed_set_tabcolor, '');
     AddMethod('ed_get_indexes', Py_ed_get_indexes, '');
 
     AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
