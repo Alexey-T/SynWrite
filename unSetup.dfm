@@ -439,7 +439,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 241
+        Height = 257
         Caption = 'Tabs'
         TabOrder = 0
         object TntLabel13: TTntLabel
@@ -452,21 +452,21 @@ object fmSetup: TfmSetup
         end
         object TntLabel14: TTntLabel
           Left = 72
-          Top = 160
+          Top = 176
           Width = 88
           Height = 13
           Caption = 'Tab maximal width'
         end
         object TntLabel3: TTntLabel
           Left = 72
-          Top = 136
+          Top = 152
           Width = 112
           Height = 13
           Caption = 'Tab edge angle (pixels)'
         end
         object TntLabel29: TTntLabel
           Left = 72
-          Top = 184
+          Top = 200
           Width = 84
           Height = 13
           Caption = 'Tab minimal width'
@@ -497,21 +497,21 @@ object fmSetup: TfmSetup
         end
         object cbTabSw: TTntCheckBox
           Left = 8
-          Top = 216
+          Top = 232
           Width = 433
           Height = 17
           Caption = 'Use modern tab switcher (Ctrl+Tab)'
-          TabOrder = 9
+          TabOrder = 10
         end
         object edTabMaxLen: TSpinEdit
           Left = 8
-          Top = 156
+          Top = 172
           Width = 57
           Height = 22
           Increment = 10
           MaxValue = 350
           MinValue = 50
-          TabOrder = 7
+          TabOrder = 8
           Value = 50
           OnKeyDown = edIndentKeyDown
         end
@@ -522,7 +522,7 @@ object fmSetup: TfmSetup
           Height = 181
           Style = lbOwnerDrawFixed
           ItemHeight = 16
-          TabOrder = 10
+          TabOrder = 11
           OnDblClick = ListTabColorsDblClick
           OnDrawItem = ListTabColorsDrawItem
           OnKeyDown = ListTabColorsKeyDown
@@ -553,26 +553,34 @@ object fmSetup: TfmSetup
         end
         object edTabAngle: TSpinEdit
           Left = 8
-          Top = 132
+          Top = 148
           Width = 57
           Height = 22
           MaxValue = 80
           MinValue = 0
-          TabOrder = 6
+          TabOrder = 7
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
         object edTabMinLen: TSpinEdit
           Left = 8
-          Top = 180
+          Top = 196
           Width = 57
           Height = 22
           Increment = 2
           MaxValue = 100
           MinValue = 4
-          TabOrder = 8
+          TabOrder = 9
           Value = 50
           OnKeyDown = edIndentKeyDown
+        end
+        object cbTabEntire: TTntCheckBox
+          Left = 8
+          Top = 112
+          Width = 380
+          Height = 17
+          Caption = 'Show entire tab colored'
+          TabOrder = 6
         end
       end
     end
@@ -3002,7 +3010,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0150010000
+      0700666D5365747570010100000001000000070043617074696F6E0151010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3305,7 +3313,8 @@ object fmSetup: TfmSetup
       0101000000DB020000070043617074696F6E000D004C6162656C4C616E674D6F
       72650101000000DC020000070043617074696F6E000C004B65794D617070696E
       67507900000B0065645461624D696E4C656E00000A00546E744C6162656C3239
-      0101000000DD020000070043617074696F6E00}
+      0101000000DD020000070043617074696F6E000B006362546162456E74697265
+      0101000000DE020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

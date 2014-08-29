@@ -356,6 +356,7 @@ type
     KeyMappingPy: TSyntKeyMapping;
     edTabMinLen: TSpinEdit;
     TntLabel29: TTntLabel;
+    cbTabEntire: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1993,6 +1994,7 @@ begin
     opTabXButtons:= cbTabBtn.Checked;
     opTabPlus:= cbTabPlus.Checked;
     opTabNums:= cbTabNums.Checked;
+    opTabEntireColor:= cbTabEntire.Checked;
     opTabSwitcher:= cbTabSw.Checked;
     opTabAtBottom:= cbTabDown.Checked;
     opTabFolders:= cbTabDirs.Checked;
@@ -2309,6 +2311,7 @@ begin
     cbTabPlus.Checked:= opTabPlus;
     cbTabVis.Checked:= opTabVisible;
     cbTabNums.Checked:= opTabNums;
+    cbTabEntire.Checked:= opTabEntireColor;
     cbTabDown.Checked:= opTabAtBottom;
     cbTabSw.Checked:= opTabSwitcher;
     cbTabDirs.Checked:= opTabFolders;

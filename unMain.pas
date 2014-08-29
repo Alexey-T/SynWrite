@@ -2916,6 +2916,7 @@ type
     opColorMapMarks: integer;
     opColorBkmk: integer;
     opShowWrapMark: boolean;
+    opTabEntireColor: boolean;
     opTabAngle: integer;
     opTabVisible: boolean;
     opTabAtBottom: boolean;
@@ -4590,6 +4591,7 @@ begin
 
     opTabWidthMin:= ReadInteger('Setup', 'TabSizeMin', 20);
     opTabWidthMax:= ReadInteger('Setup', 'TabSize', 130);
+    opTabEntireColor:= ReadBool('View', 'TabEntire', false);
     opTabAngle:= ReadInteger('View', 'TabAngle', 0);
     opTabDragDrop:= true;
     opTabFolders:= ReadBool('View', 'TabDirs', false);
@@ -5100,6 +5102,7 @@ begin
     WriteBool('SR', 'SugWord', opSrSuggestWord);
     WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
 
+    WriteBool('View', 'TabEntire', opTabEntireColor);
     WriteInteger('View', 'TabAngle', opTabAngle);
     WriteInteger('View', 'TabLast', opTabOptionsLast);
     WriteBool('View', 'TabDirs', opTabFolders);
@@ -25112,15 +25115,16 @@ begin
   Groups.SetTabOption(tabColorBorderActive, opColorTabBorderActive);
   Groups.SetTabOption(tabColorBorderPassive, opColorTabBorderPassive);
 
+  Groups.SetTabOption(tabOptionAngle, opTabAngle);
   Groups.SetTabOption(tabOptionShowTabs, Ord(opTabVisible));
   Groups.SetTabOption(tabOptionShowXButtons, Ord(opTabXButtons));
   Groups.SetTabOption(tabOptionShowPlus, Ord(opTabPlus));
   Groups.SetTabOption(tabOptionShowNums, Ord(opTabNums));
+  Groups.SetTabOption(tabOptionShowEntireColor, Ord(opTabEntireColor));
   Groups.SetTabOption(tabOptionBottomTabs, Ord(opTabAtBottom));
   Groups.SetTabOption(tabOptionDragDrop, Ord(opTabDragDrop));
   Groups.SetTabOption(tabOptionWidthMin, Ord(opTabWidthMin));
   Groups.SetTabOption(tabOptionWidthMax, Ord(opTabWidthMax));
-  Groups.SetTabOption(tabOptionAngle, opTabAngle);
 
   for i:= 0 to FrameAllCount-1 do
     with FramesAll[i] do
