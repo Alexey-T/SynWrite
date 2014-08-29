@@ -25108,11 +25108,11 @@ begin
   Groups.SetTabFont(FFontTabs);
   Groups.SetTabOption(tabOptionFontSize, FFontTabs.Size);
   
-  Groups.SetTabOption(tabColorFont, opColorTabText);
-  Groups.SetTabOption(tabColorModified, opColorTabTextMod);
-  Groups.SetTabOption(tabColorActive, opColorTabBgActive);
-  Groups.SetTabOption(tabColorPassive, opColorTabBgPassive);
-  Groups.SetTabOption(tabColorPassiveOver, opColorTabBgPassiveOver);
+  Groups.SetTabOption(tabColorText, opColorTabText);
+  Groups.SetTabOption(tabColorTextModified, opColorTabTextMod);
+  Groups.SetTabOption(tabColorBgActive, opColorTabBgActive);
+  Groups.SetTabOption(tabColorBgPassive, opColorTabBgPassive);
+  Groups.SetTabOption(tabColorBgPassiveOver, opColorTabBgPassiveOver);
   Groups.SetTabOption(tabColorBorderActive, opColorTabBorderActive);
   Groups.SetTabOption(tabColorBorderPassive, opColorTabBorderPassive);
 
