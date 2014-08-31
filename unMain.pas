@@ -3270,7 +3270,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1440';
+  cSynVer = '6.7.1441';
   cSynPyVer = '1.0.137';
 
 const
@@ -28774,7 +28774,6 @@ begin
   ATabs.TabShowMenu:= false;
   ATabs.TabShowClose:= tbShowNone;
   ATabs.TabMiddleClickClose:= false;
-  //ATabs.TabShowBorderActiveLow:= true;
   ATabs.TabDragEnabled:= false;
 
   ATabs.TabAngle:= Groups.Pages1.Tabs.TabAngle;

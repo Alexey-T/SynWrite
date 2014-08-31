@@ -175,7 +175,6 @@ type
     cbTail: TTntCheckBox;
     cbOverRO: TTntCheckBox;
     ListTabColors: TTntListBox;
-    TntLabel13: TTntLabel;
     tabPath: TTntTabSheet;
     boxFolders: TTntGroupBox;
     LabelPathHint: TTntLabel;
@@ -357,6 +356,7 @@ type
     edTabMinLen: TSpinEdit;
     TntLabel29: TTntLabel;
     cbTabEntire: TTntCheckBox;
+    TntLabel13: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
