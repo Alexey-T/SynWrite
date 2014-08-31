@@ -470,8 +470,8 @@ object fmSetup: TfmSetup
           Height = 57
           AutoSize = False
           Caption = 
-            'User tab colors (double-click any color item, then use colors in' +
-            ' tab context menu)'
+            'User tab colors (double-click color items to change, then use co' +
+            'lors in tab context menu)'
           Layout = tlCenter
           WordWrap = True
         end
