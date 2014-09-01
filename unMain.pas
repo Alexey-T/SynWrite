@@ -3270,7 +3270,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1441';
+  cSynVer = '6.7.1442';
   cSynPyVer = '1.0.137';
 
 const
@@ -28411,10 +28411,20 @@ procedure TfmMain.TabClose(Sender: TObject; ATabIndex: Integer;
   var ACanClose, ACanContinue: boolean);
 var
   D: TATTabData;
+  F: TEditorFrame;
 begin
   D:= (Sender as TATTabs).GetTabData(ATabIndex);
   if D<>nil then
-    CloseFrameWithCfm(D.TabObject as TEditorFrame, ACanClose, ACanContinue);
+  begin
+    F:= D.TabObject as TEditorFrame;
+    
+    //don't allow to close last tab if it's empty and not modified
+    if (ATabIndex=0) and (not F.Modified) and (F.EditorMaster.TextLength=0) and
+      (Sender=Groups.Pages1.Tabs) then
+      ACanClose:= false
+    else
+      CloseFrameWithCfm(F, ACanClose, ACanContinue);
+  end;
 end;
 
 procedure TfmMain.TabPopup(Sender: TObject);

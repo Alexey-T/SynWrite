@@ -439,7 +439,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 257
+        Height = 265
         Caption = 'Tabs'
         TabOrder = 0
         object TntLabel14: TTntLabel
@@ -520,10 +520,10 @@ object fmSetup: TfmSetup
           OnKeyDown = edIndentKeyDown
         end
         object ListTabColors: TTntListBox
-          Left = 456
+          Left = 448
           Top = 68
           Width = 57
-          Height = 181
+          Height = 189
           Style = lbOwnerDrawFixed
           ItemHeight = 16
           TabOrder = 11
