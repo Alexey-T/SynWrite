@@ -28412,15 +28412,19 @@ procedure TfmMain.TabClose(Sender: TObject; ATabIndex: Integer;
 var
   D: TATTabData;
   F: TEditorFrame;
+  NotAllowed: boolean;
 begin
   D:= (Sender as TATTabs).GetTabData(ATabIndex);
   if D<>nil then
   begin
     F:= D.TabObject as TEditorFrame;
-    
-    //don't allow to close last tab if it's empty and not modified
-    if (ATabIndex=0) and (not F.Modified) and (F.EditorMaster.TextLength=0) and
-      (Sender=Groups.Pages1.Tabs) then
+
+    //don't close last tab if it's empty and not modified (for group1)
+    NotAllowed:= (ATabIndex=0) and
+      (not F.Modified) and (F.EditorMaster.TextLength=0) and
+      not ((Sender as TATTabs).Parent as TATPages).EnabledEmpty;
+      
+    if NotAllowed then  
       ACanClose:= false
     else
       CloseFrameWithCfm(F, ACanClose, ACanContinue);
