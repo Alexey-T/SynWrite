@@ -15034,6 +15034,8 @@ begin
 end;
 
 procedure TfmMain.DoAcpFromFile(List, Display: ecUnicode.TWideStrings);
+const
+  cNonWordChars = '''"';
 var
   S, SWord: Widestring;
   LL: TTntStringList;
@@ -15062,10 +15064,14 @@ begin
       //  MsgAcpFile('Searching '+IntToStr(i*100 div Length(s))+'%');
 
       if i<=Length(S) then
+      begin
         IsWord:= IsWordChar(S[i]) or
           (Pos(S[i], opAcpChars)>0) or
           (S[i]='%') or
-          ((S[i]='.') and (i<Length(S)) and IsWordChar(S[i+1]))
+          ((S[i]='.') and (i<Length(S)) and IsWordChar(S[i+1]));
+        if Pos(S[i], cNonWordChars)>0 then
+          IsWord:= false;  
+      end
       else
         IsWord:= false;
 
