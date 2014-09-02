@@ -7,7 +7,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ActnList, ecSyntMemo, ecMacroRec, ComCtrls, DKLang,
-  ecHotKeyEdit,
+  ecHotKeyEdit, ecKeyMap,
   TntStdCtrls, TntComCtrls, TntForms,
   Spin;
 
@@ -16,14 +16,14 @@ type
     boxList: TTntGroupBox;
     MacrosList: TTntListBox;
     boxCmd: TTntGroupBox;
-    ButtonOk: TTntButton;
-    ButtonCan: TTntButton;
-    ButtonMRen: TTntButton;
-    ButtonMDel: TTntButton;
-    ButtonCCh: TTntButton;
-    ButtonCDel: TTntButton;
-    ButtonCAdd: TTntButton;
-    ButtonCClr: TTntButton;
+    btnOk: TTntButton;
+    btnCancel: TTntButton;
+    btnMacroRen: TTntButton;
+    btnMacroDel: TTntButton;
+    btnCmdChange: TTntButton;
+    btnCmdDel: TTntButton;
+    btnCmdAdd: TTntButton;
+    btnCmdClear: TTntButton;
     ActionList1: TActionList;
     MacrosPlay: TAction;
     MacrosRename: TAction;
@@ -34,15 +34,15 @@ type
     CommandDelete: TAction;
     CommandClear: TAction;
     CmdList: TTntListView;
-    ButtonMAdd: TTntButton;
+    btnMacroAdd: TTntButton;
     MacrosAdd: TAction;
     DKLanguageController1: TDKLanguageController;
     boxKey: TTntGroupBox;
-    ecHotKey1: TecHotKey;
-    ButtonShClr: TTntButton;
-    ButtonShSet: TTntButton;
+    ecHotkey: TecHotKey;
+    btnKeyClear: TTntButton;
+    btnKeyAdd: TTntButton;
     boxPlay: TTntGroupBox;
-    ButtonMPlay: TTntButton;
+    btnPlay: TTntButton;
     edTimes: TSpinEdit;
     bPlayTimes: TTntRadioButton;
     bPlayEof: TTntRadioButton;
@@ -69,17 +69,18 @@ type
       State: TDragState; var Accept: Boolean);
     procedure MacrosListDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure MacrosAddExecute(Sender: TObject);
-    procedure ButtonShClrClick(Sender: TObject);
-    procedure ButtonShSetClick(Sender: TObject);
+    procedure btnKeyClearClick(Sender: TObject);
+    procedure btnKeyAddClick(Sender: TObject);
     procedure TntFormDestroy(Sender: TObject);
     procedure edTimesKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
   private
     FPlayIdx: integer;
     FCanPlay: Boolean;
-    FSh: TList;
+    FKeys: TList;
     procedure SetMacroRecorder(const Value: TecMacroRecorder);
-    function NameN(n: integer): string;
+    function NameStr(n: integer): string;
+    procedure DoAddKey(AKey: TShortcut);
   protected
     procedure FillMacrosList;
     procedure FillCommands;
@@ -90,15 +91,15 @@ type
   end;
 
 type
-  TShArray = array[1..30] of TShortcut;
+  TMacroKeysArray = array[1..30] of TKeyStroke;
 
-function EditMacro(AMacros: TecMacroRecorder;
-  var ASh: TShArray; var APlayIdx: integer): Boolean;
+function DoMacroEditDialog(AMacros: TecMacroRecorder;
+  var AKeys: TMacroKeysArray;
+  var APlayIdx: integer): Boolean;
 
 implementation
 
 uses
-  ecKeyMap,
   ecMacroCmdEditDlg,
   ecStrUtils,
   unProc,
@@ -107,9 +108,9 @@ uses
 
 {$R *.dfm}
 
-function EditMacro(
+function DoMacroEditDialog(
   AMacros: TecMacroRecorder;
-  var ASh: TShArray;
+  var AKeys: TMacroKeysArray;
   var APlayIdx: integer): Boolean;
 var
   i: Integer;
@@ -119,19 +120,19 @@ begin
   if AMacros <> nil then
   with TfmMacroEdit.Create(nil) do
     try
-      FSh.Clear;
-      for i:= Low(ASh) to High(ASh) do
-        FSh.Add(Pointer(ASh[i]));
+      FKeys.Clear;
+      for i:= Low(AKeys) to High(AKeys) do
+        FKeys.Add(AKeys[i]);
 
       MacroRecorder:= AMacros;
       FCanPlay:= true;
       if ShowModal = mrOK then
       begin
-        for i:= Low(ASh) to High(ASh) do
-          if (i-1 < FSh.Count) then
-            ASh[i]:= Integer(FSh[i-1])
+        for i:= Low(AKeys) to High(AKeys) do
+          if (i-1 < FKeys.Count) then
+            AKeys[i]:= FKeys[i-1]
           else
-            ASh[i]:= 0;
+            AKeys[i]:= nil;
 
         AMacros.Assign(MacroRecorder);
         APlayIdx:= PlayIdx;
@@ -170,7 +171,7 @@ end;
 procedure TfmMacroEdit.FormCreate(Sender: TObject);
 begin
   FPlayIdx:= -1;
-  FSh:= TList.Create;
+  FKeys:= TList.Create;
 end;
 
 procedure TfmMacroEdit.SetMacroRecorder(const Value: TecMacroRecorder);
@@ -183,14 +184,20 @@ begin
     end;
 end;
 
-function TfmMacroEdit.NameN(n: integer): string;
+function TfmMacroEdit.NameStr(n: integer): string;
+var
+  Str: string;
 begin
   Result:= Recorder[n].Name;
   if Result = '' then
-    Result:= DKLangConstW('macUn');
-  if (n >= 0) and (n < FSh.Count) then
-    if FSh[n] <> nil then
-      Result:= Result + '  ['+ShortcutToText(Integer(FSh[n]))+']';
+    Result:= DKLangConstW('unnamed');
+  if (n >= 0) and (n < FKeys.Count) then
+    if FKeys[n]<>nil then
+    begin
+      Str:= TKeyStroke(FKeys[n]).AsString;
+      if Str<>'' then
+        Result:= Result + '  ['+Str+']';
+    end;    
 end;
 
 procedure TfmMacroEdit.FillMacrosList;
@@ -198,7 +205,7 @@ var i: integer;
 begin
   MacrosList.Items.Clear;
   for i:= 0 to Recorder.Count - 1 do
-    MacrosList.Items.Add(NameN(i));
+    MacrosList.Items.Add(NameStr(i));
   if MacrosList.Items.Count > 0 then
   begin
     MacrosList.ItemIndex:= 0;
@@ -219,19 +226,17 @@ begin
 end;
 
 procedure TfmMacroEdit.FillCommands;
-var i: integer;
+var
+  i: integer;
   en: boolean;
 begin
   i:= MacrosList.ItemIndex;
-  en:= (i>=0) and (i<High(TShArray));
-  if en and (i<FSh.Count) then
-    ecHotKey1.HotKey:= Integer(FSh[i])
-  else
-    ecHotKey1.HotKey:= 0;
+  en:= (i>=0) and (i<High(TMacroKeysArray));
 
-  ecHotKey1.Enabled:= en;
-  ButtonShSet.Enabled:= en;
-  ButtonShClr.Enabled:= en;
+  ecHotkey.HotKey:= 0;
+  ecHotkey.Enabled:= en;
+  btnKeyClear.Enabled:= en;
+  btnKeyAdd.Enabled:= en;
 
   CmdList.Items.BeginUpdate;
   try
@@ -274,17 +279,18 @@ begin
   if DoInputString(DKLangConstW('zMMacroName'), S) then
   begin
     Recorder[MacrosList.ItemIndex].Name:= S;
-    MacrosList.Items[MacrosList.ItemIndex]:= NameN(MacrosList.ItemIndex);
+    MacrosList.Items[MacrosList.ItemIndex]:= NameStr(MacrosList.ItemIndex);
   end;
 end;
 
 procedure TfmMacroEdit.MacrosDeleteExecute(Sender: TObject);
-var idx: integer;
+var
+  idx: integer;
 begin
   idx:= MacrosList.ItemIndex;
   Recorder.DeleteMacro(idx);
   MacrosList.Items.Delete(idx);
-  FSh.Delete(idx);
+  FKeys.Delete(idx);
 
   if not ((idx >= 0) and (idx < MacrosList.Items.Count)) then
     idx:= MacrosList.Items.Count-1;
@@ -430,40 +436,53 @@ begin
       Idx:= MacrosList.ItemAtPos(Point(X, Y), True);
       MacrosList.Items.Move(CurIdx, Idx);
       Recorder.MoveMacro(CurIdx, Idx);
-      FSh.Move(CurIdx, Idx);
+      FKeys.Move(CurIdx, Idx);
     end;
 end;
 
 procedure TfmMacroEdit.MacrosAddExecute(Sender: TObject);
 begin
   Recorder.AddMacro(TMacroRecord.Create);
-  FSh.Add(nil);
+  FKeys.Add(nil);
   FillMacrosList;
   MacrosList.ItemIndex:= MacrosList.Items.Count - 1;
   MacrosListClick(Self);
 end;
 
-procedure TfmMacroEdit.ButtonShClrClick(Sender: TObject);
+procedure TfmMacroEdit.btnKeyClearClick(Sender: TObject);
 begin
-  ecHotKey1.HotKey:= 0;
-  ButtonShSetClick(Self);
+  DoAddKey(0);
 end;
 
-procedure TfmMacroEdit.ButtonShSetClick(Sender: TObject);
+procedure TfmMacroEdit.btnKeyAddClick(Sender: TObject);
+begin
+  DoAddKey(ecHotkey.HotKey);
+end;
+
+procedure TfmMacroEdit.DoAddKey(AKey: TShortcut);
 var
   i: integer;
 begin
   i:= MacrosList.ItemIndex;
   if i < 0 then Exit;
-  while FSh.Count-1 < i do
-    FSh.Add(nil);
-  FSh[i]:= Pointer(ecHotKey1.HotKey);
-  MacrosList.Items[i]:= NameN(i);
+
+  while FKeys.Count-1 < i do
+    FKeys.Add(nil);
+
+  if FKeys[i]=nil then
+    FKeys[i]:= TKeyStroke.Create(nil);
+
+  if AKey<>0 then
+    TKeyStroke(FKeys[i]).KeyDefs.Add.ShortCut:= AKey
+  else
+    TKeyStroke(FKeys[i]).KeyDefs.Clear;
+
+  MacrosList.Items[i]:= NameStr(i);
 end;
 
 procedure TfmMacroEdit.TntFormDestroy(Sender: TObject);
 begin
-  FreeAndNil(FSh);
+  FreeAndNil(FKeys);
 end;
 
 procedure TfmMacroEdit.edTimesKeyDown(Sender: TObject; var Key: Word;
@@ -471,7 +490,7 @@ procedure TfmMacroEdit.edTimesKeyDown(Sender: TObject; var Key: Word;
 begin
   if key=VK_RETURN then
   begin
-    ButtonMPlay.Click;
+    btnPlay.Click;
     Key:= 0;
     Exit
   end;

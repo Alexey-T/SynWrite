@@ -2498,8 +2498,6 @@ type
     procedure DoCopyFindResultNode;
 
     function SFindResPrefix(LineNum: integer): Widestring;
-    function MacroName(n: integer): Widestring;
-    function MacroCmdName(n: integer): Widestring;
     procedure SetLineEnds(Sender: TObject; AManual: boolean);
     function IsProjPreviewFocused: boolean;
     function IsListboxFocused: boolean;
@@ -2622,8 +2620,12 @@ type
     function IsShortcutOfCmd(sh: TShortcut; cmd: integer): boolean;
     function GetShortcutOfCmd(id: integer): TShortcut;
     function GetShortcutTextOfCmd(id: integer): string;
-    procedure GetShortcutOfMacro(n: integer; var sh: TShortcut);
-    procedure SetShortcutOfMacro(n: integer; const sh: TShortcut);
+
+    function GetCommandIdFromMacroId(n: Integer): Integer;
+    function GetShortcutOfMacro(n: integer): TKeyStroke;
+    procedure SetShortcutOfMacro(n: integer; AKey: TKeyStroke);
+    function GetMacroName(n: integer): Widestring;
+    function GetMacroCmdName(n: integer; AWithKey: boolean = False): Widestring;
 
     procedure DoReplaceTabsToSpaces(F: TEditorFrame);
     procedure DoOnlineWordHelp(const url: Widestring);
@@ -3270,7 +3272,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1442';
+  cSynVer = '6.7.1450';
   cSynPyVer = '1.0.137';
 
 const
@@ -9732,28 +9734,42 @@ end;
          (c.KeyStrokes[1].KeyDefs[0].Shortcut = sh));
   end;
 
-  //get macro's shortcut
-  procedure TfmMain.GetShortcutOfMacro(n: integer; var sh: TShortcut);
+  function TfmMain.GetCommandIdFromMacroId(n: Integer): Integer;
   begin
-    if n<=9 then
-      sh:= GetShortcutOfCmd(sm_Macro1+n-1)
+    if n<9 then
+      Result:= sm_Macro1+n
     else
-      sh:= GetShortcutOfCmd(sm_Macro10+n-10)
+      Result:= sm_Macro10+n-9;
   end;
 
-  //set marco shortcut
-  procedure TfmMain.SetShortcutOfMacro(n: integer; const sh: TShortcut);
+  function TfmMain.GetShortcutOfMacro(n: integer): TKeyStroke;
   var
-    c: TecCommandItem;
+    id: Integer;
+    cmd: TecCommandItem;
   begin
-    if n<=9 then
-      c:= SyntKeyMapping.CommandByID(sm_Macro1+n-1)
-    else
-      c:= SyntKeyMapping.CommandByID(sm_Macro10+n-10);
-    if Assigned(c) then
+    id:= GetCommandIdFromMacroId(n-1);
+    cmd:= SyntKeyMapping.CommandByID(id);
+    if cmd.KeyStrokes.Count>0 then
     begin
-      c.KeyStrokes.Clear;
-      c.KeyStrokes.Add.KeyDefs.Add.ShortCut:= sh;
+      Result:= TKeyStroke.Create(nil);
+      Result.Assign(cmd.KeyStrokes[0]);
+    end
+    else
+      Result:= nil;
+  end;
+
+  procedure TfmMain.SetShortcutOfMacro(n: integer; AKey: TKeyStroke);
+  var
+    id: Integer;
+    cmd: TecCommandItem;
+  begin
+    id:= GetCommandIdFromMacroId(n-1);
+    cmd:= SyntKeyMapping.CommandByID(id);
+    if Assigned(cmd) then
+    begin
+      cmd.KeyStrokes.Clear;
+      if AKey<>nil then
+        cmd.KeyStrokes.Add.Assign(AKey);
     end;
   end;
 
@@ -9816,7 +9832,6 @@ begin
   //folding
   UpdKey(TbxItemFoldAll, smFullCollapse);
   UpdKey(TbxItemUnFoldAll, smFullExpand);
-  //K(TbxItemUnFoldLine, sm_); //no sm command
   UpdKey(TbxItemFoldNearestBlock, smToggleCollapseNearest);
   UpdKey(TbxItemFoldSelBlock, smCollapseSelection);
   UpdKey(TbxItemFoldRangesInSel, smInSelCollapse);
@@ -9872,37 +9887,6 @@ begin
   UpdKey(TbxItemMacroCancel, smMacroRecCancel);
   UpdKey(TbxItemMacroPlay, smMacroPlay);
   UpdKey(TbxItemMacroDlg, sm_MacrosDialog);
-
-  UpdKey(TbxItemMacro1, sm_Macro1);
-  UpdKey(TbxItemMacro2, sm_Macro2);
-  UpdKey(TbxItemMacro3, sm_Macro3);
-  UpdKey(TbxItemMacro4, sm_Macro4);
-  UpdKey(TbxItemMacro5, sm_Macro5);
-  UpdKey(TbxItemMacro6, sm_Macro6);
-  UpdKey(TbxItemMacro7, sm_Macro7);
-  UpdKey(TbxItemMacro8, sm_Macro8);
-  UpdKey(TbxItemMacro9, sm_Macro9);
-  UpdKey(TbxItemMacro10, sm_Macro10);
-  UpdKey(TbxItemMacro11, sm_Macro11);
-  UpdKey(TbxItemMacro12, sm_Macro12);
-  UpdKey(TbxItemMacro13, sm_Macro13);
-  UpdKey(TbxItemMacro14, sm_Macro14);
-  UpdKey(TbxItemMacro15, sm_Macro15);
-  UpdKey(TbxItemMacro16, sm_Macro16);
-  UpdKey(TbxItemMacro17, sm_Macro17);
-  UpdKey(TbxItemMacro18, sm_Macro18);
-  UpdKey(TbxItemMacro19, sm_Macro19);
-  UpdKey(TbxItemMacro20, sm_Macro20);
-  UpdKey(TbxItemMacro21, sm_Macro21);
-  UpdKey(TbxItemMacro22, sm_Macro22);
-  UpdKey(TbxItemMacro23, sm_Macro23);
-  UpdKey(TbxItemMacro24, sm_Macro24);
-  UpdKey(TbxItemMacro25, sm_Macro25);
-  UpdKey(TbxItemMacro26, sm_Macro26);
-  UpdKey(TbxItemMacro27, sm_Macro27);
-  UpdKey(TbxItemMacro28, sm_Macro28);
-  UpdKey(TbxItemMacro29, sm_Macro29);
-  UpdKey(TbxItemMacro30, sm_Macro30);
 
   //view
   UpdKey(TbxItemVSyncHorz, sm_SyncScrollHorz);
@@ -15855,20 +15839,25 @@ end;
 
 procedure TfmMain.ecMacroDlgExecute(Sender: TObject);
 var
-  sh: TShArray;
+  keys: TMacroKeysArray;
   idx, i: Integer;
 begin
-  for i:= Low(sh) to High(sh) do
-    GetShortcutOfMacro(i, sh[i]);
-  if EditMacro(ecMacroRecorder1, sh, idx) then
+  for i:= Low(keys) to High(keys) do
+    keys[i]:= GetShortcutOfMacro(i);
+
+  if DoMacroEditDialog(ecMacroRecorder1, keys, idx) then
   begin
     if idx >= 0 then
       FLastMacro:= idx;
-    for i:= Low(sh) to High(sh) do
-      SetShortcutOfMacro(i, sh[i]);
+    for i:= Low(keys) to High(keys) do
+      SetShortcutOfMacro(i, keys[i]);
+
     UpdateShortcuts;
     SaveMacros;
   end;
+
+  for i:= Low(keys) to High(keys) do
+    FreeAndNil(keys[i]);
 end;
 
 procedure TfmMain.LoadMacros;
@@ -16020,7 +16009,7 @@ begin
   ecMacro9.Execute;
 end;
 
-  function TfmMain.MacroName(n: integer): Widestring;
+  function TfmMain.GetMacroName(n: integer): Widestring;
   begin
     with ecMacroRecorder1 do
       if (n>=0) and (n<Count) and (Macros[n].Name<>'') then
@@ -16029,9 +16018,11 @@ end;
         Result:= '#'+IntToStr(n+1);
   end;
 
-  function TfmMain.MacroCmdName(n: integer): Widestring;
+  function TfmMain.GetMacroCmdName(n: integer; AWithKey: boolean = False): Widestring;
   begin
-    Result:= WideFormat(DKLangConstW('macItem'), [MacroName(n)]);
+    Result:= WideFormat(DKLangConstW('macItem'), [GetMacroName(n)]);
+    if AWithKey then
+      Result:= Result + #9 + GetShortcutTextOfCmd(GetCommandIdFromMacroId(n));
   end;
 
 procedure TfmMain.TBXSubmenuItemMacrosPopup(Sender: TTBCustomItem;
@@ -16046,7 +16037,7 @@ begin
   TbxItemMacroRepeat.Enabled:= en;
   TbxItemMacroRepeat.Caption:= DKLangConstW('macRep');
   if en then TbxItemMacroRepeat.Caption:=
-    TbxItemMacroRepeat.Caption + ' ' + MacroName(FLastMacro);
+    TbxItemMacroRepeat.Caption + ' ' + GetMacroName(FLastMacro);
 
   TbxItemMacro1.Visible:= n>=1;
   TbxItemMacro2.Visible:= n>=2;
@@ -16079,36 +16070,36 @@ begin
   TbxItemMacro29.Visible:= n>=29;
   TbxItemMacro30.Visible:= n>=30;
 
-  TbxItemMacro1.Caption:= MacroCmdName(0);
-  TbxItemMacro2.Caption:= MacroCmdName(1);
-  TbxItemMacro3.Caption:= MacroCmdName(2);
-  TbxItemMacro4.Caption:= MacroCmdName(3);
-  TbxItemMacro5.Caption:= MacroCmdName(4);
-  TbxItemMacro6.Caption:= MacroCmdName(5);
-  TbxItemMacro7.Caption:= MacroCmdName(6);
-  TbxItemMacro8.Caption:= MacroCmdName(7);
-  TbxItemMacro9.Caption:= MacroCmdName(8);
-  TbxItemMacro10.Caption:= MacroCmdName(9);
-  TbxItemMacro11.Caption:= MacroCmdName(10);
-  TbxItemMacro12.Caption:= MacroCmdName(11);
-  TbxItemMacro13.Caption:= MacroCmdName(12);
-  TbxItemMacro14.Caption:= MacroCmdName(13);
-  TbxItemMacro15.Caption:= MacroCmdName(14);
-  TbxItemMacro16.Caption:= MacroCmdName(15);
-  TbxItemMacro17.Caption:= MacroCmdName(16);
-  TbxItemMacro18.Caption:= MacroCmdName(17);
-  TbxItemMacro19.Caption:= MacroCmdName(18);
-  TbxItemMacro20.Caption:= MacroCmdName(19);
-  TbxItemMacro21.Caption:= MacroCmdName(20);
-  TbxItemMacro22.Caption:= MacroCmdName(21);
-  TbxItemMacro23.Caption:= MacroCmdName(22);
-  TbxItemMacro24.Caption:= MacroCmdName(23);
-  TbxItemMacro25.Caption:= MacroCmdName(24);
-  TbxItemMacro26.Caption:= MacroCmdName(25);
-  TbxItemMacro27.Caption:= MacroCmdName(26);
-  TbxItemMacro28.Caption:= MacroCmdName(27);
-  TbxItemMacro29.Caption:= MacroCmdName(28);
-  TbxItemMacro30.Caption:= MacroCmdName(29);
+  TbxItemMacro1.Caption:= GetMacroCmdName(0, true);
+  TbxItemMacro2.Caption:= GetMacroCmdName(1, true);
+  TbxItemMacro3.Caption:= GetMacroCmdName(2, true);
+  TbxItemMacro4.Caption:= GetMacroCmdName(3, true);
+  TbxItemMacro5.Caption:= GetMacroCmdName(4, true);
+  TbxItemMacro6.Caption:= GetMacroCmdName(5, true);
+  TbxItemMacro7.Caption:= GetMacroCmdName(6, true);
+  TbxItemMacro8.Caption:= GetMacroCmdName(7, true);
+  TbxItemMacro9.Caption:= GetMacroCmdName(8, true);
+  TbxItemMacro10.Caption:= GetMacroCmdName(9, true);
+  TbxItemMacro11.Caption:= GetMacroCmdName(10, true);
+  TbxItemMacro12.Caption:= GetMacroCmdName(11, true);
+  TbxItemMacro13.Caption:= GetMacroCmdName(12, true);
+  TbxItemMacro14.Caption:= GetMacroCmdName(13, true);
+  TbxItemMacro15.Caption:= GetMacroCmdName(14, true);
+  TbxItemMacro16.Caption:= GetMacroCmdName(15, true);
+  TbxItemMacro17.Caption:= GetMacroCmdName(16, true);
+  TbxItemMacro18.Caption:= GetMacroCmdName(17, true);
+  TbxItemMacro19.Caption:= GetMacroCmdName(18, true);
+  TbxItemMacro20.Caption:= GetMacroCmdName(19, true);
+  TbxItemMacro21.Caption:= GetMacroCmdName(20, true);
+  TbxItemMacro22.Caption:= GetMacroCmdName(21, true);
+  TbxItemMacro23.Caption:= GetMacroCmdName(22, true);
+  TbxItemMacro24.Caption:= GetMacroCmdName(23, true);
+  TbxItemMacro25.Caption:= GetMacroCmdName(24, true);
+  TbxItemMacro26.Caption:= GetMacroCmdName(25, true);
+  TbxItemMacro27.Caption:= GetMacroCmdName(26, true);
+  TbxItemMacro28.Caption:= GetMacroCmdName(27, true);
+  TbxItemMacro29.Caption:= GetMacroCmdName(28, true);
+  TbxItemMacro30.Caption:= GetMacroCmdName(29, true);
 end;
 
 
@@ -17804,36 +17795,36 @@ procedure TfmMain.UpdateMacroKeynames;
         end;
   end;
 begin
-  KeyN(sm_Macro1, MacroCmdName(0));
-  KeyN(sm_Macro2, MacroCmdName(1));
-  KeyN(sm_Macro3, MacroCmdName(2));
-  KeyN(sm_Macro4, MacroCmdName(3));
-  KeyN(sm_Macro5, MacroCmdName(4));
-  KeyN(sm_Macro6, MacroCmdName(5));
-  KeyN(sm_Macro7, MacroCmdName(6));
-  KeyN(sm_Macro8, MacroCmdName(7));
-  KeyN(sm_Macro9, MacroCmdName(8));
-  KeyN(sm_Macro10, MacroCmdName(9));
-  KeyN(sm_Macro11, MacroCmdName(10));
-  KeyN(sm_Macro12, MacroCmdName(11));
-  KeyN(sm_Macro13, MacroCmdName(12));
-  KeyN(sm_Macro14, MacroCmdName(13));
-  KeyN(sm_Macro15, MacroCmdName(14));
-  KeyN(sm_Macro16, MacroCmdName(15));
-  KeyN(sm_Macro17, MacroCmdName(16));
-  KeyN(sm_Macro18, MacroCmdName(17));
-  KeyN(sm_Macro19, MacroCmdName(18));
-  KeyN(sm_Macro20, MacroCmdName(19));
-  KeyN(sm_Macro21, MacroCmdName(20));
-  KeyN(sm_Macro22, MacroCmdName(21));
-  KeyN(sm_Macro23, MacroCmdName(22));
-  KeyN(sm_Macro24, MacroCmdName(23));
-  KeyN(sm_Macro25, MacroCmdName(24));
-  KeyN(sm_Macro26, MacroCmdName(25));
-  KeyN(sm_Macro27, MacroCmdName(26));
-  KeyN(sm_Macro28, MacroCmdName(27));
-  KeyN(sm_Macro29, MacroCmdName(28));
-  KeyN(sm_Macro30, MacroCmdName(29));
+  KeyN(sm_Macro1, GetMacroCmdName(0));
+  KeyN(sm_Macro2, GetMacroCmdName(1));
+  KeyN(sm_Macro3, GetMacroCmdName(2));
+  KeyN(sm_Macro4, GetMacroCmdName(3));
+  KeyN(sm_Macro5, GetMacroCmdName(4));
+  KeyN(sm_Macro6, GetMacroCmdName(5));
+  KeyN(sm_Macro7, GetMacroCmdName(6));
+  KeyN(sm_Macro8, GetMacroCmdName(7));
+  KeyN(sm_Macro9, GetMacroCmdName(8));
+  KeyN(sm_Macro10, GetMacroCmdName(9));
+  KeyN(sm_Macro11, GetMacroCmdName(10));
+  KeyN(sm_Macro12, GetMacroCmdName(11));
+  KeyN(sm_Macro13, GetMacroCmdName(12));
+  KeyN(sm_Macro14, GetMacroCmdName(13));
+  KeyN(sm_Macro15, GetMacroCmdName(14));
+  KeyN(sm_Macro16, GetMacroCmdName(15));
+  KeyN(sm_Macro17, GetMacroCmdName(16));
+  KeyN(sm_Macro18, GetMacroCmdName(17));
+  KeyN(sm_Macro19, GetMacroCmdName(18));
+  KeyN(sm_Macro20, GetMacroCmdName(19));
+  KeyN(sm_Macro21, GetMacroCmdName(20));
+  KeyN(sm_Macro22, GetMacroCmdName(21));
+  KeyN(sm_Macro23, GetMacroCmdName(22));
+  KeyN(sm_Macro24, GetMacroCmdName(23));
+  KeyN(sm_Macro25, GetMacroCmdName(24));
+  KeyN(sm_Macro26, GetMacroCmdName(25));
+  KeyN(sm_Macro27, GetMacroCmdName(26));
+  KeyN(sm_Macro28, GetMacroCmdName(27));
+  KeyN(sm_Macro29, GetMacroCmdName(28));
+  KeyN(sm_Macro30, GetMacroCmdName(29));
 end;
 
 procedure TfmMain.ecMacro10Execute(Sender: TObject);
