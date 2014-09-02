@@ -24,6 +24,7 @@ procedure DoKeymappingSplit(MapIn, MapOut1, MapOut2: TSyntKeyMapping; NCountInFi
 procedure DoKeymappingJoin(MapIn1, MapIn2, MapOut: TSyntKeyMapping);
 procedure DoKeymappingTruncate(Map: TSyntKeyMapping; NCount: Integer);
   
+function DoGetLocalizedEncodingName(const Id: Widestring): Widestring;
 procedure DoUpdateIniFileForNewRelease(const SynIni: string);
 function FontStylesToString(const f: TFontStyles): string;
 function StringToFontStyles(const s: string): TFontStyles;
@@ -2344,6 +2345,22 @@ begin
     else
       Result:= taskResNo;
   end;
+end;
+
+function DoGetLocalizedEncodingName(const Id: Widestring): Widestring;
+var
+  SL: Widestring;
+  n: Integer;
+begin
+  Result:= Id;
+  //encoding translations are in DKLang resource
+  SL:= DKLangConstW('cpLn');
+
+  n:= Pos(','+Id+'=', SL);
+  if n=0 then Exit;
+  Delete(SL, 1, n+Length(Id)+1);
+  Delete(SL, Pos(',', SL), MaxInt);
+  Result:= SL;
 end;
 
 end.

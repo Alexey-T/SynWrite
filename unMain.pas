@@ -2537,7 +2537,6 @@ type
     procedure SpellDialogShow(Sender: TObject);
     procedure SpellPositionDialog(Sender: TObject);
 
-    procedure DoRecordToMacro(Cmd: integer; Data: PWChar);
     procedure DoFindClip(Next: boolean);
     function SNewDocName(const fn: Widestring): string;
     procedure DoNewDocClick(Sender: TObject);
@@ -2604,7 +2603,6 @@ type
     procedure DoNewDoc(const fn: Widestring);
     procedure RunBrowser(const fn: Widestring);
     procedure RunTool(const ATool: TSynTool);
-    procedure RunMacro(n: Integer);
     procedure AppException(Sender: TObject; E: Exception);
     function MsgEncReload: boolean;
     function MsgConfirmFtp: boolean;
@@ -2615,12 +2613,13 @@ type
     procedure FinderFail(Sender: TObject);
     procedure FinderProgress(CurPos, MaxPos: integer);
     procedure FindCurrentWord(ANext: boolean);
-    function LocalizedEncodingName(const s: Widestring): Widestring;
 
     function IsShortcutOfCmd(sh: TShortcut; cmd: integer): boolean;
     function GetShortcutOfCmd(id: integer): TShortcut;
     function GetShortcutTextOfCmd(id: integer): string;
 
+    procedure DoMacro_Run(n: Integer);
+    procedure DoMacro_RecordCommand(Cmd: integer; Data: PWChar);
     function DoMacro_GetCommandId(n: Integer): Integer;
     function DoMacro_GetHotkey(n: integer): TKeyStroke;
     procedure DoMacro_SetHotkey(n: integer; AKey: TKeyStroke);
@@ -6533,7 +6532,7 @@ begin
   //workaround for non-recorded commands
   //(EC issue)
   if Handled or IsCommandAllowedInMacro(Command) then
-    DoRecordToMacro(Command, Data);
+    DoMacro_RecordCommand(Command, Data);
 end;
 
 function TfmMain.IsCommandAllowedInMacro(Cmd: Integer): boolean;
@@ -8725,7 +8724,7 @@ begin
 
   //record find action in macro
   if Assigned(fmSR) then
-    DoRecordToMacro(
+    DoMacro_RecordCommand(
       sm_FindCommand,
       PWChar(WriteFindOptions(act, fmSR.TextOptions, fmSR.Text1, fmSR.Text2)));
 
@@ -13635,7 +13634,7 @@ procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
   function AddSub(const s: Widestring): TSpTbxSubmenuItem;
   begin
     Result:= TSpTbxSubmenuItem.Create(Self);
-    Result.Caption:= LocalizedEncodingName(S);
+    Result.Caption:= DoGetLocalizedEncodingName(S);
     if M is TSpTbxPopupMenu then
       (M as TSpTbxPopupMenu).Items.Add(Result)
     else
@@ -13725,21 +13724,6 @@ begin
   end;
 end;
 
-function TfmMain.LocalizedEncodingName(const s: Widestring): Widestring;
-var
-  SL: Widestring;
-  n: Integer;
-begin
-  Result:= s;
-  //encoding translations are in DKLang resource
-  SL:= DKLangConstW('cpLn');
-
-  n:= Pos(','+s+'=', SL);
-  if n=0 then Exit;
-  Delete(SL, 1, n+Length(s)+1);
-  Delete(SL, Pos(',', SL), MaxInt);
-  Result:= SL;
-end;
 
 procedure TfmMain.ecSentCaseExecute(Sender: TObject);
 begin
@@ -15909,7 +15893,7 @@ begin
     MsgBeep;
 end;
 
-procedure TfmMain.RunMacro(n: Integer);
+procedure TfmMain.DoMacro_Run(n: Integer);
 begin
   with ecMacroRec do
     if (n>=0) and (n<Count) then
@@ -15921,47 +15905,47 @@ end;
 
 procedure TfmMain.ecMacro1Execute(Sender: TObject);
 begin
-  RunMacro(0);
+  DoMacro_Run(0);
 end;
 
 procedure TfmMain.ecMacro2Execute(Sender: TObject);
 begin
-  RunMacro(1);
+  DoMacro_Run(1);
 end;
 
 procedure TfmMain.ecMacro3Execute(Sender: TObject);
 begin
-  RunMacro(2);
+  DoMacro_Run(2);
 end;
 
 procedure TfmMain.ecMacro4Execute(Sender: TObject);
 begin
-  RunMacro(3);
+  DoMacro_Run(3);
 end;
 
 procedure TfmMain.ecMacro5Execute(Sender: TObject);
 begin
-  RunMacro(4);
+  DoMacro_Run(4);
 end;
 
 procedure TfmMain.ecMacro6Execute(Sender: TObject);
 begin
-  RunMacro(5);
+  DoMacro_Run(5);
 end;
 
 procedure TfmMain.ecMacro7Execute(Sender: TObject);
 begin
-  RunMacro(6);
+  DoMacro_Run(6);
 end;
 
 procedure TfmMain.ecMacro8Execute(Sender: TObject);
 begin
-  RunMacro(7);
+  DoMacro_Run(7);
 end;
 
 procedure TfmMain.ecMacro9Execute(Sender: TObject);
 begin
-  RunMacro(8);
+  DoMacro_Run(8);
 end;
 
 procedure TfmMain.TBXItemMacro1Click(Sender: TObject);
@@ -16363,7 +16347,7 @@ begin
       goLine:
         begin
           Pnt:= Point(m-1, n-1);
-          DoRecordToMacro(smGotoXY, @Pnt);
+          DoMacro_RecordCommand(smGotoXY, @Pnt);
           Ed.CaretPos:= Ed.LogToLinesPos(Pnt);
         end;
       goPrevBk:
@@ -16967,7 +16951,7 @@ type
   TMacroHk = class(TecMacroRecorder);
 
 //Add Cmd to currently recorded macro (if not done by EC)
-procedure TfmMain.DoRecordToMacro(Cmd: integer; Data: PWChar);
+procedure TfmMain.DoMacro_RecordCommand(Cmd: integer; Data: PWChar);
 var
   h: boolean;
 begin
@@ -17135,7 +17119,7 @@ end;
 
 procedure TfmMain.ecMacroRepeatExecute(Sender: TObject);
 begin
-  RunMacro(FLastMacro);
+  DoMacro_Run(FLastMacro);
 end;
 
 procedure TfmMain.ecRepeatCmdExecute(Sender: TObject);
@@ -17829,107 +17813,107 @@ end;
 
 procedure TfmMain.ecMacro10Execute(Sender: TObject);
 begin
-  RunMacro(9);
+  DoMacro_Run(9);
 end;
 
 procedure TfmMain.ecMacro11Execute(Sender: TObject);
 begin
-  RunMacro(10);
+  DoMacro_Run(10);
 end;
 
 procedure TfmMain.ecMacro12Execute(Sender: TObject);
 begin
-  RunMacro(11);
+  DoMacro_Run(11);
 end;
 
 procedure TfmMain.ecMacro13Execute(Sender: TObject);
 begin
-  RunMacro(12);
+  DoMacro_Run(12);
 end;
 
 procedure TfmMain.ecMacro14Execute(Sender: TObject);
 begin
-  RunMacro(13);
+  DoMacro_Run(13);
 end;
 
 procedure TfmMain.ecMacro15Execute(Sender: TObject);
 begin
-  RunMacro(14);
+  DoMacro_Run(14);
 end;
 
 procedure TfmMain.ecMacro16Execute(Sender: TObject);
 begin
-  RunMacro(15);
+  DoMacro_Run(15);
 end;
 
 procedure TfmMain.ecMacro17Execute(Sender: TObject);
 begin
-  RunMacro(16);
+  DoMacro_Run(16);
 end;
 
 procedure TfmMain.ecMacro18Execute(Sender: TObject);
 begin
-  RunMacro(17);
+  DoMacro_Run(17);
 end;
 
 procedure TfmMain.ecMacro19Execute(Sender: TObject);
 begin
-  RunMacro(18);
+  DoMacro_Run(18);
 end;
 
 procedure TfmMain.ecMacro20Execute(Sender: TObject);
 begin
-  RunMacro(19);
+  DoMacro_Run(19);
 end;
 
 procedure TfmMain.ecMacro21Execute(Sender: TObject);
 begin
-  RunMacro(20);
+  DoMacro_Run(20);
 end;
 
 procedure TfmMain.ecMacro22Execute(Sender: TObject);
 begin
-  RunMacro(21);
+  DoMacro_Run(21);
 end;
 
 procedure TfmMain.ecMacro23Execute(Sender: TObject);
 begin
-  RunMacro(22);
+  DoMacro_Run(22);
 end;
 
 procedure TfmMain.ecMacro24Execute(Sender: TObject);
 begin
-  RunMacro(23);
+  DoMacro_Run(23);
 end;
 
 procedure TfmMain.ecMacro25Execute(Sender: TObject);
 begin
-  RunMacro(24);
+  DoMacro_Run(24);
 end;
 
 procedure TfmMain.ecMacro26Execute(Sender: TObject);
 begin
-  RunMacro(25);
+  DoMacro_Run(25);
 end;
 
 procedure TfmMain.ecMacro27Execute(Sender: TObject);
 begin
-  RunMacro(26);
+  DoMacro_Run(26);
 end;
 
 procedure TfmMain.ecMacro28Execute(Sender: TObject);
 begin
-  RunMacro(27);
+  DoMacro_Run(27);
 end;
 
 procedure TfmMain.ecMacro29Execute(Sender: TObject);
 begin
-  RunMacro(28);
+  DoMacro_Run(28);
 end;
 
 procedure TfmMain.ecMacro30Execute(Sender: TObject);
 begin
-  RunMacro(29);
+  DoMacro_Run(29);
 end;
 
 procedure TfmMain.TBXItemMacro10Click(Sender: TObject);
