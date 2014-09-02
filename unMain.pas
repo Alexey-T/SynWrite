@@ -776,23 +776,23 @@ type
     TBXItemMacroCancel: TSpTbxItem;
     TBXSeparatorItem51: TSpTbxSeparatorItem;
     TBXItemMacroDlg: TSpTbxItem;
-    ecMacroRecord1: TecMacroRecord;
-    ecMacroStop1: TecMacroStop;
-    ecMacroCancel1: TecMacroCancel;
-    ecMacroPlay1: TecMacroPlay;
-    ecMacroDlg: TAction;
+    acMacroRecord: TecMacroRecord;
+    acMacroStop: TecMacroStop;
+    acMacroCancel: TecMacroCancel;
+    acMacroPlay: TecMacroPlay;
+    acMacroDialog: TAction;
     ecMacroRec: TecMacroRecorder;
     TBXItemHtmlPreview: TSpTBXItem;
     TBXSeparatorItem52: TSpTbxSeparatorItem;
-    ecMacro1: TAction;
-    ecMacro2: TAction;
-    ecMacro3: TAction;
-    ecMacro4: TAction;
-    ecMacro5: TAction;
-    ecMacro6: TAction;
-    ecMacro7: TAction;
-    ecMacro8: TAction;
-    ecMacro9: TAction;
+    acMacro1: TAction;
+    acMacro2: TAction;
+    acMacro3: TAction;
+    acMacro4: TAction;
+    acMacro5: TAction;
+    acMacro6: TAction;
+    acMacro7: TAction;
+    acMacro8: TAction;
+    acMacro9: TAction;
     PropsManagerKeys: TPropsManager;
     TBXSeparatorItem53: TSpTbxSeparatorItem;
     TBXItemMacro9: TSpTbxItem;
@@ -881,7 +881,7 @@ type
     ecSplit20_80: TAction;
     ecSplit80_20: TAction;
     TBXItemMacroRepeat: TSpTbxItem;
-    ecMacroRepeat: TAction;
+    acMacroRepeat: TAction;
     TBXSeparatorItem62: TSpTbxSeparatorItem;
     ecRepeatCmd: TAction;
     TBXItemERepeatCmd: TSpTbxItem;
@@ -944,27 +944,27 @@ type
     TBXItemMacro11: TSpTbxItem;
     TBXItemMacro10: TSpTbxItem;
     TBXItemMacro30: TSpTbxItem;
-    ecMacro10: TAction;
-    ecMacro11: TAction;
-    ecMacro12: TAction;
-    ecMacro13: TAction;
-    ecMacro14: TAction;
-    ecMacro15: TAction;
-    ecMacro16: TAction;
-    ecMacro17: TAction;
-    ecMacro18: TAction;
-    ecMacro19: TAction;
-    ecMacro20: TAction;
-    ecMacro21: TAction;
-    ecMacro22: TAction;
-    ecMacro23: TAction;
-    ecMacro24: TAction;
-    ecMacro25: TAction;
-    ecMacro26: TAction;
-    ecMacro27: TAction;
-    ecMacro28: TAction;
-    ecMacro29: TAction;
-    ecMacro30: TAction;
+    acMacro10: TAction;
+    acMacro11: TAction;
+    acMacro12: TAction;
+    acMacro13: TAction;
+    acMacro14: TAction;
+    acMacro15: TAction;
+    acMacro16: TAction;
+    acMacro17: TAction;
+    acMacro18: TAction;
+    acMacro19: TAction;
+    acMacro20: TAction;
+    acMacro21: TAction;
+    acMacro22: TAction;
+    acMacro23: TAction;
+    acMacro24: TAction;
+    acMacro25: TAction;
+    acMacro26: TAction;
+    acMacro27: TAction;
+    acMacro28: TAction;
+    acMacro29: TAction;
+    acMacro30: TAction;
     TreeFind: TTntTreeView;
     TBXItemTreeFindCopyToTab: TSpTbxItem;
     TBXItemTreeFindClear: TSpTbxItem;
@@ -1618,16 +1618,16 @@ type
     procedure ecSpellCheckExecute(Sender: TObject);
     procedure ecSpellLiveExecute(Sender: TObject);
     procedure TBXItemSpellLiveClick(Sender: TObject);
-    procedure ecMacroDlgExecute(Sender: TObject);
-    procedure ecMacro1Execute(Sender: TObject);
-    procedure ecMacro2Execute(Sender: TObject);
-    procedure ecMacro3Execute(Sender: TObject);
-    procedure ecMacro4Execute(Sender: TObject);
-    procedure ecMacro5Execute(Sender: TObject);
-    procedure ecMacro6Execute(Sender: TObject);
-    procedure ecMacro7Execute(Sender: TObject);
-    procedure ecMacro8Execute(Sender: TObject);
-    procedure ecMacro9Execute(Sender: TObject);
+    procedure acMacroDialogExecute(Sender: TObject);
+    procedure acMacro1Execute(Sender: TObject);
+    procedure acMacro2Execute(Sender: TObject);
+    procedure acMacro3Execute(Sender: TObject);
+    procedure acMacro4Execute(Sender: TObject);
+    procedure acMacro5Execute(Sender: TObject);
+    procedure acMacro6Execute(Sender: TObject);
+    procedure acMacro7Execute(Sender: TObject);
+    procedure acMacro8Execute(Sender: TObject);
+    procedure acMacro9Execute(Sender: TObject);
     procedure TBXItemMacro1Click(Sender: TObject);
     procedure TBXItemMacro2Click(Sender: TObject);
     procedure TBXItemMacro3Click(Sender: TObject);
@@ -1687,8 +1687,8 @@ type
     procedure ecSplit70_30Execute(Sender: TObject);
     procedure ecSplit20_80Execute(Sender: TObject);
     procedure ecSplit80_20Execute(Sender: TObject);
-    procedure ecMacroPlay1BeforeExecute(Sender: TObject);
-    procedure ecMacroRepeatExecute(Sender: TObject);
+    procedure acMacroPlayBeforeExecute(Sender: TObject);
+    procedure acMacroRepeatExecute(Sender: TObject);
     procedure ecRepeatCmdExecute(Sender: TObject);
     procedure TBXItemRightClipClick(Sender: TObject);
     procedure TBXItemRightMapClick(Sender: TObject);
@@ -1717,27 +1717,27 @@ type
     procedure TBXItemTreeCollapseClick(Sender: TObject);
     procedure TBXItemTreeExpandClick(Sender: TObject);
     procedure TimerAutoSaveTimer(Sender: TObject);
-    procedure ecMacro10Execute(Sender: TObject);
-    procedure ecMacro11Execute(Sender: TObject);
-    procedure ecMacro12Execute(Sender: TObject);
-    procedure ecMacro13Execute(Sender: TObject);
-    procedure ecMacro14Execute(Sender: TObject);
-    procedure ecMacro15Execute(Sender: TObject);
-    procedure ecMacro16Execute(Sender: TObject);
-    procedure ecMacro17Execute(Sender: TObject);
-    procedure ecMacro18Execute(Sender: TObject);
-    procedure ecMacro19Execute(Sender: TObject);
-    procedure ecMacro20Execute(Sender: TObject);
-    procedure ecMacro21Execute(Sender: TObject);
-    procedure ecMacro22Execute(Sender: TObject);
-    procedure ecMacro23Execute(Sender: TObject);
-    procedure ecMacro24Execute(Sender: TObject);
-    procedure ecMacro25Execute(Sender: TObject);
-    procedure ecMacro26Execute(Sender: TObject);
-    procedure ecMacro27Execute(Sender: TObject);
-    procedure ecMacro28Execute(Sender: TObject);
-    procedure ecMacro29Execute(Sender: TObject);
-    procedure ecMacro30Execute(Sender: TObject);
+    procedure acMacro10Execute(Sender: TObject);
+    procedure acMacro11Execute(Sender: TObject);
+    procedure acMacro12Execute(Sender: TObject);
+    procedure acMacro13Execute(Sender: TObject);
+    procedure acMacro14Execute(Sender: TObject);
+    procedure acMacro15Execute(Sender: TObject);
+    procedure acMacro16Execute(Sender: TObject);
+    procedure acMacro17Execute(Sender: TObject);
+    procedure acMacro18Execute(Sender: TObject);
+    procedure acMacro19Execute(Sender: TObject);
+    procedure acMacro20Execute(Sender: TObject);
+    procedure acMacro21Execute(Sender: TObject);
+    procedure acMacro22Execute(Sender: TObject);
+    procedure acMacro23Execute(Sender: TObject);
+    procedure acMacro24Execute(Sender: TObject);
+    procedure acMacro25Execute(Sender: TObject);
+    procedure acMacro26Execute(Sender: TObject);
+    procedure acMacro27Execute(Sender: TObject);
+    procedure acMacro28Execute(Sender: TObject);
+    procedure acMacro29Execute(Sender: TObject);
+    procedure acMacro30Execute(Sender: TObject);
     procedure TBXItemMacro10Click(Sender: TObject);
     procedure TBXItemMacro11Click(Sender: TObject);
     procedure TBXItemMacro12Click(Sender: TObject);
@@ -6021,37 +6021,37 @@ begin
     sm_ExtractDupsNoCase: ecExtractDupsNoCase.Execute;
 
     //macros 1-9
-    sm_MacroRepeat: ecMacroRepeat.Execute;
-    sm_Macro1: ecMacro1.Execute;
-    sm_Macro2: ecMacro2.Execute;
-    sm_Macro3: ecMacro3.Execute;
-    sm_Macro4: ecMacro4.Execute;
-    sm_Macro5: ecMacro5.Execute;
-    sm_Macro6: ecMacro6.Execute;
-    sm_Macro7: ecMacro7.Execute;
-    sm_Macro8: ecMacro8.Execute;
-    sm_Macro9: ecMacro9.Execute;
-    sm_Macro10: ecMacro10.Execute;
-    sm_Macro11: ecMacro11.Execute;
-    sm_Macro12: ecMacro12.Execute;
-    sm_Macro13: ecMacro13.Execute;
-    sm_Macro14: ecMacro14.Execute;
-    sm_Macro15: ecMacro15.Execute;
-    sm_Macro16: ecMacro16.Execute;
-    sm_Macro17: ecMacro17.Execute;
-    sm_Macro18: ecMacro18.Execute;
-    sm_Macro19: ecMacro19.Execute;
-    sm_Macro20: ecMacro20.Execute;
-    sm_Macro21: ecMacro21.Execute;
-    sm_Macro22: ecMacro22.Execute;
-    sm_Macro23: ecMacro23.Execute;
-    sm_Macro24: ecMacro24.Execute;
-    sm_Macro25: ecMacro25.Execute;
-    sm_Macro26: ecMacro26.Execute;
-    sm_Macro27: ecMacro27.Execute;
-    sm_Macro28: ecMacro28.Execute;
-    sm_Macro29: ecMacro29.Execute;
-    sm_Macro30: ecMacro30.Execute;
+    sm_MacroRepeat: acMacroRepeat.Execute;
+    sm_Macro1: acMacro1.Execute;
+    sm_Macro2: acMacro2.Execute;
+    sm_Macro3: acMacro3.Execute;
+    sm_Macro4: acMacro4.Execute;
+    sm_Macro5: acMacro5.Execute;
+    sm_Macro6: acMacro6.Execute;
+    sm_Macro7: acMacro7.Execute;
+    sm_Macro8: acMacro8.Execute;
+    sm_Macro9: acMacro9.Execute;
+    sm_Macro10: acMacro10.Execute;
+    sm_Macro11: acMacro11.Execute;
+    sm_Macro12: acMacro12.Execute;
+    sm_Macro13: acMacro13.Execute;
+    sm_Macro14: acMacro14.Execute;
+    sm_Macro15: acMacro15.Execute;
+    sm_Macro16: acMacro16.Execute;
+    sm_Macro17: acMacro17.Execute;
+    sm_Macro18: acMacro18.Execute;
+    sm_Macro19: acMacro19.Execute;
+    sm_Macro20: acMacro20.Execute;
+    sm_Macro21: acMacro21.Execute;
+    sm_Macro22: acMacro22.Execute;
+    sm_Macro23: acMacro23.Execute;
+    sm_Macro24: acMacro24.Execute;
+    sm_Macro25: acMacro25.Execute;
+    sm_Macro26: acMacro26.Execute;
+    sm_Macro27: acMacro27.Execute;
+    sm_Macro28: acMacro28.Execute;
+    sm_Macro29: acMacro29.Execute;
+    sm_Macro30: acMacro30.Execute;
 
     //tabs 0-9
     sm_Tab0: DoTabIndexClick(0);
@@ -6272,7 +6272,7 @@ begin
     smMacroRecCancel: ecMacroCancel1.Execute;
     smMacroPlay:     ecMacroPlay1.Execute;
     }
-    sm_MacrosDialog: ecMacroDlg.Execute;
+    sm_MacrosDialog: acMacroDialog.Execute;
 
     sm_ZoomOriginal: DoZoomEditor(100);
     sm_ZoomIn:       DoZoomEditorInc(true);
@@ -15821,7 +15821,7 @@ begin
   ecSpellLive.Execute;
 end;
 
-procedure TfmMain.ecMacroDlgExecute(Sender: TObject);
+procedure TfmMain.acMacroDialogExecute(Sender: TObject);
 var
   keys: TMacroKeysArray;
   idx, i: Integer;
@@ -15903,94 +15903,94 @@ begin
     end;
 end;
 
-procedure TfmMain.ecMacro1Execute(Sender: TObject);
+procedure TfmMain.acMacro1Execute(Sender: TObject);
 begin
   DoMacro_Run(0);
 end;
 
-procedure TfmMain.ecMacro2Execute(Sender: TObject);
+procedure TfmMain.acMacro2Execute(Sender: TObject);
 begin
   DoMacro_Run(1);
 end;
 
-procedure TfmMain.ecMacro3Execute(Sender: TObject);
+procedure TfmMain.acMacro3Execute(Sender: TObject);
 begin
   DoMacro_Run(2);
 end;
 
-procedure TfmMain.ecMacro4Execute(Sender: TObject);
+procedure TfmMain.acMacro4Execute(Sender: TObject);
 begin
   DoMacro_Run(3);
 end;
 
-procedure TfmMain.ecMacro5Execute(Sender: TObject);
+procedure TfmMain.acMacro5Execute(Sender: TObject);
 begin
   DoMacro_Run(4);
 end;
 
-procedure TfmMain.ecMacro6Execute(Sender: TObject);
+procedure TfmMain.acMacro6Execute(Sender: TObject);
 begin
   DoMacro_Run(5);
 end;
 
-procedure TfmMain.ecMacro7Execute(Sender: TObject);
+procedure TfmMain.acMacro7Execute(Sender: TObject);
 begin
   DoMacro_Run(6);
 end;
 
-procedure TfmMain.ecMacro8Execute(Sender: TObject);
+procedure TfmMain.acMacro8Execute(Sender: TObject);
 begin
   DoMacro_Run(7);
 end;
 
-procedure TfmMain.ecMacro9Execute(Sender: TObject);
+procedure TfmMain.acMacro9Execute(Sender: TObject);
 begin
   DoMacro_Run(8);
 end;
 
 procedure TfmMain.TBXItemMacro1Click(Sender: TObject);
 begin
-  ecMacro1.Execute;
+  acMacro1.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro2Click(Sender: TObject);
 begin
-  ecMacro2.Execute;
+  acMacro2.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro3Click(Sender: TObject);
 begin
-  ecMacro3.Execute;
+  acMacro3.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro4Click(Sender: TObject);
 begin
-  ecMacro4.Execute;
+  acMacro4.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro5Click(Sender: TObject);
 begin
-  ecMacro5.Execute;
+  acMacro5.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro6Click(Sender: TObject);
 begin
-  ecMacro6.Execute;
+  acMacro6.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro7Click(Sender: TObject);
 begin
-  ecMacro7.Execute;
+  acMacro7.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro8Click(Sender: TObject);
 begin
-  ecMacro8.Execute;
+  acMacro8.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro9Click(Sender: TObject);
 begin
-  ecMacro9.Execute;
+  acMacro9.Execute;
 end;
 
   function TfmMain.DoMacro_GetName(n: integer): Widestring;
@@ -17112,12 +17112,12 @@ begin
 end;
 
 
-procedure TfmMain.ecMacroPlay1BeforeExecute(Sender: TObject);
+procedure TfmMain.acMacroPlayBeforeExecute(Sender: TObject);
 begin
   FLastMacro:= ecMacroRec.Count-1;
 end;
 
-procedure TfmMain.ecMacroRepeatExecute(Sender: TObject);
+procedure TfmMain.acMacroRepeatExecute(Sender: TObject);
 begin
   DoMacro_Run(FLastMacro);
 end;
@@ -17811,214 +17811,214 @@ begin
   KeyN(sm_Macro30, DoMacro_GetCommandName(29));
 end;
 
-procedure TfmMain.ecMacro10Execute(Sender: TObject);
+procedure TfmMain.acMacro10Execute(Sender: TObject);
 begin
   DoMacro_Run(9);
 end;
 
-procedure TfmMain.ecMacro11Execute(Sender: TObject);
+procedure TfmMain.acMacro11Execute(Sender: TObject);
 begin
   DoMacro_Run(10);
 end;
 
-procedure TfmMain.ecMacro12Execute(Sender: TObject);
+procedure TfmMain.acMacro12Execute(Sender: TObject);
 begin
   DoMacro_Run(11);
 end;
 
-procedure TfmMain.ecMacro13Execute(Sender: TObject);
+procedure TfmMain.acMacro13Execute(Sender: TObject);
 begin
   DoMacro_Run(12);
 end;
 
-procedure TfmMain.ecMacro14Execute(Sender: TObject);
+procedure TfmMain.acMacro14Execute(Sender: TObject);
 begin
   DoMacro_Run(13);
 end;
 
-procedure TfmMain.ecMacro15Execute(Sender: TObject);
+procedure TfmMain.acMacro15Execute(Sender: TObject);
 begin
   DoMacro_Run(14);
 end;
 
-procedure TfmMain.ecMacro16Execute(Sender: TObject);
+procedure TfmMain.acMacro16Execute(Sender: TObject);
 begin
   DoMacro_Run(15);
 end;
 
-procedure TfmMain.ecMacro17Execute(Sender: TObject);
+procedure TfmMain.acMacro17Execute(Sender: TObject);
 begin
   DoMacro_Run(16);
 end;
 
-procedure TfmMain.ecMacro18Execute(Sender: TObject);
+procedure TfmMain.acMacro18Execute(Sender: TObject);
 begin
   DoMacro_Run(17);
 end;
 
-procedure TfmMain.ecMacro19Execute(Sender: TObject);
+procedure TfmMain.acMacro19Execute(Sender: TObject);
 begin
   DoMacro_Run(18);
 end;
 
-procedure TfmMain.ecMacro20Execute(Sender: TObject);
+procedure TfmMain.acMacro20Execute(Sender: TObject);
 begin
   DoMacro_Run(19);
 end;
 
-procedure TfmMain.ecMacro21Execute(Sender: TObject);
+procedure TfmMain.acMacro21Execute(Sender: TObject);
 begin
   DoMacro_Run(20);
 end;
 
-procedure TfmMain.ecMacro22Execute(Sender: TObject);
+procedure TfmMain.acMacro22Execute(Sender: TObject);
 begin
   DoMacro_Run(21);
 end;
 
-procedure TfmMain.ecMacro23Execute(Sender: TObject);
+procedure TfmMain.acMacro23Execute(Sender: TObject);
 begin
   DoMacro_Run(22);
 end;
 
-procedure TfmMain.ecMacro24Execute(Sender: TObject);
+procedure TfmMain.acMacro24Execute(Sender: TObject);
 begin
   DoMacro_Run(23);
 end;
 
-procedure TfmMain.ecMacro25Execute(Sender: TObject);
+procedure TfmMain.acMacro25Execute(Sender: TObject);
 begin
   DoMacro_Run(24);
 end;
 
-procedure TfmMain.ecMacro26Execute(Sender: TObject);
+procedure TfmMain.acMacro26Execute(Sender: TObject);
 begin
   DoMacro_Run(25);
 end;
 
-procedure TfmMain.ecMacro27Execute(Sender: TObject);
+procedure TfmMain.acMacro27Execute(Sender: TObject);
 begin
   DoMacro_Run(26);
 end;
 
-procedure TfmMain.ecMacro28Execute(Sender: TObject);
+procedure TfmMain.acMacro28Execute(Sender: TObject);
 begin
   DoMacro_Run(27);
 end;
 
-procedure TfmMain.ecMacro29Execute(Sender: TObject);
+procedure TfmMain.acMacro29Execute(Sender: TObject);
 begin
   DoMacro_Run(28);
 end;
 
-procedure TfmMain.ecMacro30Execute(Sender: TObject);
+procedure TfmMain.acMacro30Execute(Sender: TObject);
 begin
   DoMacro_Run(29);
 end;
 
 procedure TfmMain.TBXItemMacro10Click(Sender: TObject);
 begin
-  ecMacro10.Execute;
+  acMacro10.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro11Click(Sender: TObject);
 begin
-  ecMacro11.Execute;
+  acMacro11.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro12Click(Sender: TObject);
 begin
-  ecMacro12.Execute;
+  acMacro12.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro13Click(Sender: TObject);
 begin
-  ecMacro13.Execute;
+  acMacro13.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro14Click(Sender: TObject);
 begin
-  ecMacro14.Execute;
+  acMacro14.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro15Click(Sender: TObject);
 begin
-  ecMacro15.Execute;
+  acMacro15.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro16Click(Sender: TObject);
 begin
-  ecMacro16.Execute;
+  acMacro16.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro17Click(Sender: TObject);
 begin
-  ecMacro17.Execute;
+  acMacro17.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro18Click(Sender: TObject);
 begin
-  ecMacro18.Execute;
+  acMacro18.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro19Click(Sender: TObject);
 begin
-  ecMacro19.Execute;
+  acMacro19.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro20Click(Sender: TObject);
 begin
-  ecMacro20.Execute;
+  acMacro20.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro21Click(Sender: TObject);
 begin
-  ecMacro21.Execute;
+  acMacro21.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro22Click(Sender: TObject);
 begin
-  ecMacro22.Execute;
+  acMacro22.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro23Click(Sender: TObject);
 begin
-  ecMacro23.Execute;
+  acMacro23.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro24Click(Sender: TObject);
 begin
-  ecMacro24.Execute;
+  acMacro24.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro25Click(Sender: TObject);
 begin
-  ecMacro25.Execute;
+  acMacro25.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro26Click(Sender: TObject);
 begin
-  ecMacro26.Execute;
+  acMacro26.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro27Click(Sender: TObject);
 begin
-  ecMacro27.Execute;
+  acMacro27.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro28Click(Sender: TObject);
 begin
-  ecMacro28.Execute;
+  acMacro28.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro29Click(Sender: TObject);
 begin
-  ecMacro29.Execute;
+  acMacro29.Execute;
 end;
 
 procedure TfmMain.TBXItemMacro30Click(Sender: TObject);
 begin
-  ecMacro30.Execute;
+  acMacro30.Execute;
 end;
 
 constructor TSynFindInfo.Create;
