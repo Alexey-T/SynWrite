@@ -10,6 +10,7 @@ uses
   TntComCtrls,
   TntStdCtrls,
   TntClasses,
+  TntCheckLst,
 
   ecSyntMemo,
   ecKeyMap,
@@ -230,6 +231,7 @@ type
   TSynToolOutputEnc = (encAnsi, encOem, encUtf8{, encUni, encUniBE});
 
 procedure FixListboxHorzScrollbar(L: TTntListBox);
+procedure FixCheckListboxHorzScrollbar(L: TTntCheckListBox);
 procedure FixListOutput(L: TWideStringList; NoTags, NoDups: boolean;
   Enc: TSynToolOutputEnc; const TabStr: Widestring);
 
@@ -2370,6 +2372,8 @@ begin
 end;
 
 procedure FixListboxHorzScrollbar(L: TTntListBox);
+const
+  cDelta = 5;
 var
   i, n: integer;
 begin
@@ -2377,8 +2381,22 @@ begin
   L.Canvas.Font.Assign(L.Font);
   for i:= 0 to L.Count-1 do
     n:= Max(n, ecTextExtent(L.Canvas, L.Items[i]).cx);
-  L.ScrollWidth:= n+4;
+  L.ScrollWidth:= n+cDelta;
 end;
+
+procedure FixCheckListboxHorzScrollbar(L: TTntCheckListBox);
+const
+  cDelta = 30;
+var
+  i, n: integer;
+begin
+  n:= 50;
+  L.Canvas.Font.Assign(L.Font);
+  for i:= 0 to L.Count-1 do
+    n:= Max(n, ecTextExtent(L.Canvas, L.Items[i]).cx);
+  L.ScrollWidth:= n+cDelta;
+end;
+
 
 procedure FixListOutput(L: TWideStringList; NoTags, NoDups: boolean;
   Enc: TSynToolOutputEnc; const TabStr: Widestring);

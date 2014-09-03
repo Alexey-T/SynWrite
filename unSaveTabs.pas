@@ -24,7 +24,8 @@ type
 
 implementation
 
-uses TntWideStrings;
+uses
+  TntWideStrings, unProc;
 
 {$R *.dfm}
 
@@ -34,6 +35,8 @@ var
 begin
   for i:= 0 to List.Items.Count-1 do
     List.Checked[i]:= true;
+
+  FixCheckListboxHorzScrollbar(List);
 end;
 
 end.
