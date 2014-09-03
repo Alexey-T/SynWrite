@@ -2462,7 +2462,8 @@ type
     procedure DoTool_Run(const ATool: TSynTool);
     procedure DoTool_HandleOutput(const ft: Widestring; const ATool: TSynTool);
     procedure DoTool_Enable(T: TSpTbxItem; Id: integer; ACtxMenu: boolean = false);
-    
+    procedure DoTool_ReplaceMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
+
     function IsShowColor(s: string; var NColor, NColorText: TColor): boolean;
     procedure GetTabName(APagesNumber, ATabIndex: Integer; var AName, AFN, ALex: Widestring);
     function GetAcpFN(const LexerName: string): string;
@@ -2817,7 +2818,6 @@ type
     procedure DoShowHintFilename(const fn: Widestring);
     function DoCheckAutoCorrectCase(Ed: TSyntaxMemo): boolean;
     procedure ProjPreviewVisibleChanged(Sender: TObject);
-    procedure DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
     procedure UpadateFilenameForExport;
     procedure DoConfigTools;
     procedure DoConfigShellOptions;
@@ -10434,7 +10434,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoReplaceFileNameMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
+procedure TfmMain.DoTool_ReplaceMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
   //
   function SMacro(const MacroName: string): string;
   begin
@@ -10461,14 +10461,14 @@ procedure TfmMain.DoTool_Run(const ATool: TSynTool);
     Result:= S;
     p:= CurrentEditor.CaretPos;
     //
-    DoReplaceFileNameMacro(Result, '', cSynGroupCurrent);
-    DoReplaceFileNameMacro(Result, '2', cSynGroupOpposite);
-    DoReplaceFileNameMacro(Result, 'N1', cSynGroup1);
-    DoReplaceFileNameMacro(Result, 'N2', cSynGroup2);
-    DoReplaceFileNameMacro(Result, 'N3', cSynGroup3);
-    DoReplaceFileNameMacro(Result, 'N4', cSynGroup4);
-    DoReplaceFileNameMacro(Result, 'N5', cSynGroup5);
-    DoReplaceFileNameMacro(Result, 'N6', cSynGroup6);
+    DoTool_ReplaceMacro(Result, '', cSynGroupCurrent);
+    DoTool_ReplaceMacro(Result, '2', cSynGroupOpposite);
+    DoTool_ReplaceMacro(Result, 'N1', cSynGroup1);
+    DoTool_ReplaceMacro(Result, 'N2', cSynGroup2);
+    DoTool_ReplaceMacro(Result, 'N3', cSynGroup3);
+    DoTool_ReplaceMacro(Result, 'N4', cSynGroup4);
+    DoTool_ReplaceMacro(Result, 'N5', cSynGroup5);
+    DoTool_ReplaceMacro(Result, 'N6', cSynGroup6);
     //
     SReplaceW(Result, '{ProjectDir}', CurrentProjectDir);
     SReplaceW(Result, '{ProjectWorkDir}', CurrentProjectWorkDir);
