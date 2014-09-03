@@ -57,7 +57,6 @@ object fmExtract: TfmExtract
       Enabled = False
       ModalResult = 6
       TabOrder = 2
-      OnClick = bTabClick
     end
     object bHelp: TTntButton
       Left = 8

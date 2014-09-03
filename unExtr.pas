@@ -37,7 +37,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
-    procedure bTabClick(Sender: TObject);
     procedure ListDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
     procedure edKeyDown(Sender: TObject; var Key: Word;
@@ -46,7 +45,7 @@ type
   private
     { Private declarations }
     Finder: TSynFinderReplacer;
-    procedure Clr;
+    procedure DoClear;
     procedure ReadIni;
     procedure SaveIni;
   public
@@ -79,7 +78,7 @@ begin
   Close;
 end;
 
-procedure TfmExtract.Clr;
+procedure TfmExtract.DoClear;
 begin
   Memo.ExecCommand(smSearchMarkReset);
 end;
@@ -88,7 +87,7 @@ procedure TfmExtract.bFindClick(Sender: TObject);
 begin
   ComboUpdate(ed, SRCount);
 
-  Clr;
+  DoClear;
   with Finder do
   begin
     Control:= Self.Memo;
@@ -106,7 +105,9 @@ begin
 
   bCopy.Enabled:= false;
   bTab.Enabled:= false;
+
   EditorSearchMarksToList(Memo, List.Items);
+  FixListboxHorzScrollbar(List);
 
   bCopy.Enabled:= List.Items.Count>0;
   bTab.Enabled:= bCopy.Enabled;
@@ -144,7 +145,7 @@ end;
 
 procedure TfmExtract.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  Clr;
+  DoClear;
   SaveIni;
 end;
 
@@ -172,16 +173,12 @@ begin
   bSel.Enabled:= Memo.HaveSelection;
 end;
 
-procedure TfmExtract.bTabClick(Sender: TObject);
-begin
-  //
-end;
-
 procedure TfmExtract.ListDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
-var c: TColor;
-  S, SS:Widestring;
-  n:Integer;
+var
+  c: TColor;
+  S, SS: Widestring;
+  n: Integer;
 begin
   with TTntListbox(Control) do
   begin
