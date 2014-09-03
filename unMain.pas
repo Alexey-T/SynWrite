@@ -2209,7 +2209,6 @@ type
     fmSR: TfmSR;
 
     //original options values
-    orig_Zoom: integer;
     orig_Tree,
     orig_Clip,
     orig_Out,
@@ -3271,7 +3270,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1450';
+  cSynVer = '6.7.1455';
   cSynPyVer = '1.0.137';
 
 const
@@ -4783,7 +4782,6 @@ begin
     ApplyFonts;
 
     //save orig opt
-    orig_Zoom:= TemplateEditor.Zoom;
     orig_Wrap:= TemplateEditor.WordWrap;
     orig_LNum:= TemplateEditor.LineNumbers.Visible;
     orig_NPrint:= TemplateEditor.NonPrinted.Visible;
@@ -4862,8 +4860,6 @@ begin
   Ini:= TIniFile.Create(SynIni);
   with Ini do
   try
-    if TemplateEditor.Zoom <> orig_Zoom then
-      WriteInteger('Template', 'Zoom', TemplateEditor.Zoom);
     if TemplateEditor.WordWrap <> orig_Wrap then
       WriteString('Template', 'WordWrap', S[TemplateEditor.WordWrap]);
     if TemplateEditor.LineNumbers.Visible <> orig_LNum then
@@ -11003,9 +10999,14 @@ begin
 end;
 
 procedure TfmMain.TBXItemTabNewClick(Sender: TObject);
+var
+  F: TEditorFrame;
 begin
   if Groups.PopupPages<>nil then
-    DoAddTab(Groups.PopupPages);
+  begin
+    F:= DoAddTab(Groups.PopupPages);
+    F.TabCaption:= GetUntitledString;
+  end;
 end;
 
 function TfmMain.SNewDocName(const fn: Widestring): string;
@@ -13738,7 +13739,6 @@ end;
 procedure TfmMain.DoZoomEditor(NZoom: Integer);
 begin
   CurrentEditor.Zoom:= NZoom;
-  TemplateEditor.Zoom:= CurrentEditor.Zoom;
   StatusItemZoom.Caption:= IntToStr(CurrentEditor.Zoom) + '%';
 end;
 
@@ -26524,6 +26524,7 @@ const
   cFramePropSplit    = 'split';
   cFramePropBk       = 'bk';
   cFramePropColor    = 'tabc';
+  cFramePropZoom     = 'zoom';
   //these are for both master/slave:
   cFramePropPos      = 'pos';
   cFramePropSel      = 'sel';
@@ -26560,6 +26561,8 @@ begin
     Add(Result, cFramePropBk, EditorGetBookmarksAsString(F.EditorMaster));
     if F.TabColor<>clNone then
       Add(Result, cFramePropColor, IntToStr(F.TabColor));
+    if F.EditorMaster.Zoom<>100 then
+      Add(Result, cFramePropZoom, IntToStr(F.EditorMaster.Zoom));
   end;
 end;
 
@@ -26654,6 +26657,12 @@ begin
         begin
           if SVal<>'' then
             DoSetFrameTabColor(F, StrToIntDef(SVal, clNone));
+        end
+      else
+      if SId=cFramePropZoom then
+        begin
+          F.EditorMaster.Zoom:= StrToIntDef(SVal, 100);
+          F.EditorSlave.Zoom:= F.EditorMaster.Zoom;
         end
       else
       if (SId=cFramePropPos) and opSaveEdCaret then
@@ -28351,8 +28360,8 @@ begin
 
   UpdateEditorCaret(Result.EditorMaster);
   UpdateEditorCaret(Result.EditorSlave);
-  UpdateFrameZoom(Result);
   UpdateColorHint;
+  UpdateFrameZoom(Result);
 
   Pages.AddTab(Result, '?', false);
 end;

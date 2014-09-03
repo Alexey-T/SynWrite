@@ -4199,10 +4199,10 @@ object fmMain: TfmMain
       'TabMode'
       'UndoLimit'
       'WordWrap'
-      'Zoom'
       'ecACP.FilterType'
       'ecACP.DropDownCount'
       'SyntKeyMapping.AsString'
+      ''
       ''
       '')
     Left = 368
