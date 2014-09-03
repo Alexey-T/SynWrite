@@ -10902,7 +10902,6 @@ end;
 procedure TfmMain.CloseFrameWithCfm(F: TEditorFrame;
   var ACanClose, ACanContinue: boolean);
 begin
-  UpdateColorHint;
   if QuickView then Exit;
   if F=nil then Exit;
 
@@ -10931,7 +10930,8 @@ begin
   if ACanClose then
     CloseFrame(F);
 
-  UpdateListBookmarks;  
+  UpdateColorHint;
+  UpdateListBookmarks;
 end;
 
 procedure TfmMain.TBXItemTabCloseClick(Sender: TObject);
@@ -28343,19 +28343,21 @@ end;
 procedure TfmMain.TabClose(Sender: TObject; ATabIndex: Integer;
   var ACanClose, ACanContinue: boolean);
 var
+  ATabs: TATTabs;
   D: TATTabData;
   F: TEditorFrame;
   NotAllowed: boolean;
 begin
-  D:= (Sender as TATTabs).GetTabData(ATabIndex);
+  ATabs:= Sender as TATTabs;
+  D:= ATabs.GetTabData(ATabIndex);
   if D<>nil then
   begin
     F:= D.TabObject as TEditorFrame;
 
     //don't close last tab if it's empty and not modified (for group1)
-    NotAllowed:= (ATabIndex=0) and
+    NotAllowed:= (ATabIndex=0) and (ATabs.TabCount=1) and
       (not F.Modified) and (F.EditorMaster.TextLength=0) and
-      not ((Sender as TATTabs).Parent as TATPages).EnabledEmpty;
+      not (ATabs.Parent as TATPages).EnabledEmpty;
       
     if NotAllowed then  
       ACanClose:= false
