@@ -2459,10 +2459,12 @@ type
     function SStatusCharInfo(Ed: TSyntaxMemo): Widestring;
     function SStatusHint(state: TSynSelState): Widestring;
 
-    procedure DoHandleToolOutput(const ft: Widestring; const ATool: TSynTool);
+    procedure DoTool_Run(const ATool: TSynTool);
+    procedure DoTool_HandleOutput(const ft: Widestring; const ATool: TSynTool);
+    procedure DoTool_Enable(T: TSpTbxItem; Id: integer; ACtxMenu: boolean = false);
+    
     function IsShowColor(s: string; var NColor, NColorText: TColor): boolean;
     procedure GetTabName(APagesNumber, ATabIndex: Integer; var AName, AFN, ALex: Widestring);
-
     function GetAcpFN(const LexerName: string): string;
     function GetSpecialHiliteFN(const Id: string): string;
     function GetHtmlListFN: string;
@@ -2602,7 +2604,6 @@ type
     function IsNavigatableLine(const Str: Widestring): boolean;
     procedure DoNewDoc(const fn: Widestring);
     procedure RunBrowser(const fn: Widestring);
-    procedure RunTool(const ATool: TSynTool);
     procedure AppException(Sender: TObject; E: Exception);
     function MsgEncReload: boolean;
     function MsgConfirmFtp: boolean;
@@ -2648,7 +2649,6 @@ type
     procedure SetTheme(const S: string);
     procedure LoadTools;
     procedure SaveTools;
-    procedure DoEnableTool(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
     procedure LoadHtmlAndCssLists;
 
     function DoConfirmClose: boolean;
@@ -9089,7 +9089,7 @@ begin
      if (ToolCaption<>'') and (ToolCommand<>'') and (S=ToolKeys) and
        ((ToolLexer='') or (CurrentFrame.CurrentLexer=ToolLexer)) then
     begin
-      RunTool(opTools[i]);
+      DoTool_Run(opTools[i]);
       Key:= 0;
       Exit
     end;
@@ -10195,17 +10195,22 @@ begin
   UpdateTools;
 end;
 
-procedure TfmMain.DoEnableTool(T: TSpTbxItem; n: integer; ForCtx: boolean = false);
+procedure TfmMain.DoTool_Enable(T: TSpTbxItem; Id: integer; ACtxMenu: boolean = false);
+var
+  Frame: TEditorFrame;
+  An: TSyntAnalyzer;
 begin
-  if CurrentFrame <> nil then
-  with CurrentFrame.EditorMaster.TextSource do
-  with opTools[n] do
-   if not ForCtx or ToolContextItem then
+  Frame:= CurrentFrame;
+  if Frame=nil then Exit;
+  An:= Frame.EditorMaster.TextSource.SyntaxAnalyzer;
+
+  with opTools[Id] do
+   if not ACtxMenu or ToolContextItem then
    begin
      T.Caption:= ToolCaption;
-     T.Enabled:= (ToolCaption <> '') and (ToolCommand <> '') and
-       ((ToolLexer = '') or ((SyntaxAnalyzer <> nil) and (SyntaxAnalyzer.LexerName = ToolLexer)));
-     if T.Enabled and not ForCtx then
+     T.Enabled:= (ToolCaption<>'') and (ToolCommand<>'') and
+       ((ToolLexer='') or ((An<>nil) and (An.LexerName=ToolLexer)));
+     if T.Enabled and not ACtxMenu then
        T.ShortCut:= TextToShortcut(ToolKeys)
      else
        T.ShortCut:= 0;
@@ -10222,39 +10227,39 @@ end;
 
 procedure TfmMain.UpdateTools;
 begin
-  DoEnableTool(TbxItemTool1, 1);
-  DoEnableTool(TbxItemTool2, 2);
-  DoEnableTool(TbxItemTool3, 3);
-  DoEnableTool(TbxItemTool4, 4);
-  DoEnableTool(TbxItemTool5, 5);
-  DoEnableTool(TbxItemTool6, 6);
-  DoEnableTool(TbxItemTool7, 7);
-  DoEnableTool(TbxItemTool8, 8);
-  DoEnableTool(TbxItemTool9, 9);
-  DoEnableTool(TbxItemTool10, 10);
-  DoEnableTool(TbxItemTool11, 11);
-  DoEnableTool(TbxItemTool12, 12);
-  DoEnableTool(TbxItemTool13, 13);
-  DoEnableTool(TbxItemTool14, 14);
-  DoEnableTool(TbxItemTool15, 15);
-  DoEnableTool(TbxItemTool16, 16);
+  DoTool_Enable(TbxItemTool1, 1);
+  DoTool_Enable(TbxItemTool2, 2);
+  DoTool_Enable(TbxItemTool3, 3);
+  DoTool_Enable(TbxItemTool4, 4);
+  DoTool_Enable(TbxItemTool5, 5);
+  DoTool_Enable(TbxItemTool6, 6);
+  DoTool_Enable(TbxItemTool7, 7);
+  DoTool_Enable(TbxItemTool8, 8);
+  DoTool_Enable(TbxItemTool9, 9);
+  DoTool_Enable(TbxItemTool10, 10);
+  DoTool_Enable(TbxItemTool11, 11);
+  DoTool_Enable(TbxItemTool12, 12);
+  DoTool_Enable(TbxItemTool13, 13);
+  DoTool_Enable(TbxItemTool14, 14);
+  DoTool_Enable(TbxItemTool15, 15);
+  DoTool_Enable(TbxItemTool16, 16);
 
-  DoEnableTool(TbxItemCtxTool1, 1, true);
-  DoEnableTool(TbxItemCtxTool2, 2, true);
-  DoEnableTool(TbxItemCtxTool3, 3, true);
-  DoEnableTool(TbxItemCtxTool4, 4, true);
-  DoEnableTool(TbxItemCtxTool5, 5, true);
-  DoEnableTool(TbxItemCtxTool6, 6, true);
-  DoEnableTool(TbxItemCtxTool7, 7, true);
-  DoEnableTool(TbxItemCtxTool8, 8, true);
-  DoEnableTool(TbxItemCtxTool9, 9, true);
-  DoEnableTool(TbxItemCtxTool10, 10, true);
-  DoEnableTool(TbxItemCtxTool11, 11, true);
-  DoEnableTool(TbxItemCtxTool12, 12, true);
-  DoEnableTool(TbxItemCtxTool13, 13, true);
-  DoEnableTool(TbxItemCtxTool14, 14, true);
-  DoEnableTool(TbxItemCtxTool15, 15, true);
-  DoEnableTool(TbxItemCtxTool16, 16, true);
+  DoTool_Enable(TbxItemCtxTool1, 1, true);
+  DoTool_Enable(TbxItemCtxTool2, 2, true);
+  DoTool_Enable(TbxItemCtxTool3, 3, true);
+  DoTool_Enable(TbxItemCtxTool4, 4, true);
+  DoTool_Enable(TbxItemCtxTool5, 5, true);
+  DoTool_Enable(TbxItemCtxTool6, 6, true);
+  DoTool_Enable(TbxItemCtxTool7, 7, true);
+  DoTool_Enable(TbxItemCtxTool8, 8, true);
+  DoTool_Enable(TbxItemCtxTool9, 9, true);
+  DoTool_Enable(TbxItemCtxTool10, 10, true);
+  DoTool_Enable(TbxItemCtxTool11, 11, true);
+  DoTool_Enable(TbxItemCtxTool12, 12, true);
+  DoTool_Enable(TbxItemCtxTool13, 13, true);
+  DoTool_Enable(TbxItemCtxTool14, 14, true);
+  DoTool_Enable(TbxItemCtxTool15, 15, true);
+  DoTool_Enable(TbxItemCtxTool16, 16, true);
 end;
 
 procedure TfmMain.SaveTools;
@@ -10446,7 +10451,7 @@ begin
   SReplaceW(Str, SMacro('FileExt'), Copy(WideExtractFileExt(fn), 2, MaxInt));
 end;
 
-procedure TfmMain.RunTool(const ATool: TSynTool);
+procedure TfmMain.DoTool_Run(const ATool: TSynTool);
   //
   function HandleParams(const s, dir: WideString): WideString;
   var
@@ -10677,89 +10682,89 @@ begin
         Screen.Cursor:= crDefault;
       end;
 
-      DoHandleToolOutput(ft, ATool);
+      DoTool_HandleOutput(ft, ATool);
     end;
   end;
 end;
 
 procedure TfmMain.TbxItemTool1Click(Sender: TObject);
 begin
-  RunTool(opTools[1]);
+  DoTool_Run(opTools[1]);
 end;
 
 procedure TfmMain.TbxItemTool2Click(Sender: TObject);
 begin
-  RunTool(opTools[2]);
+  DoTool_Run(opTools[2]);
 end;
 
 procedure TfmMain.TbxItemTool3Click(Sender: TObject);
 begin
-  RunTool(opTools[3]);
+  DoTool_Run(opTools[3]);
 end;
 
 procedure TfmMain.TbxItemTool4Click(Sender: TObject);
 begin
-  RunTool(opTools[4]);
+  DoTool_Run(opTools[4]);
 end;
 
 procedure TfmMain.TBXItemTool5Click(Sender: TObject);
 begin
-  RunTool(opTools[5]);
+  DoTool_Run(opTools[5]);
 end;
 
 procedure TfmMain.TBXItemTool6Click(Sender: TObject);
 begin
-  RunTool(opTools[6]);
+  DoTool_Run(opTools[6]);
 end;
 
 procedure TfmMain.TBXItemTool7Click(Sender: TObject);
 begin
-  RunTool(opTools[7]);
+  DoTool_Run(opTools[7]);
 end;
 
 procedure TfmMain.TBXItemTool8Click(Sender: TObject);
 begin
-  RunTool(opTools[8]);
+  DoTool_Run(opTools[8]);
 end;
 
 procedure TfmMain.TBXItemTool9Click(Sender: TObject);
 begin
-  RunTool(opTools[9]);
+  DoTool_Run(opTools[9]);
 end;
 
 procedure TfmMain.TBXItemTool10Click(Sender: TObject);
 begin
-  RunTool(opTools[10]);
+  DoTool_Run(opTools[10]);
 end;
 
 procedure TfmMain.TBXItemTool11Click(Sender: TObject);
 begin
-  RunTool(opTools[11]);
+  DoTool_Run(opTools[11]);
 end;
 
 procedure TfmMain.TBXItemTool12Click(Sender: TObject);
 begin
-  RunTool(opTools[12]);
+  DoTool_Run(opTools[12]);
 end;
 
 procedure TfmMain.TBXItemTool13Click(Sender: TObject);
 begin
-  RunTool(opTools[13]);
+  DoTool_Run(opTools[13]);
 end;
 
 procedure TfmMain.TBXItemTool14Click(Sender: TObject);
 begin
-  RunTool(opTools[14]);
+  DoTool_Run(opTools[14]);
 end;
 
 procedure TfmMain.TBXItemTool15Click(Sender: TObject);
 begin
-  RunTool(opTools[15]);
+  DoTool_Run(opTools[15]);
 end;
 
 procedure TfmMain.TBXItemTool16Click(Sender: TObject);
 begin
-  RunTool(opTools[16]);
+  DoTool_Run(opTools[16]);
 end;
 
 procedure TfmMain.TBXSubmenuItemRunPopup(Sender: TTBCustomItem; FromLink: Boolean);
@@ -14891,82 +14896,82 @@ end;
 
 procedure TfmMain.TBXItemCtxTool1Click(Sender: TObject);
 begin
-  RunTool(opTools[1]);
+  DoTool_Run(opTools[1]);
 end;
 
 procedure TfmMain.TBXItemCtxTool2Click(Sender: TObject);
 begin
-  RunTool(opTools[2]);
+  DoTool_Run(opTools[2]);
 end;
 
 procedure TfmMain.TBXItemCtxTool3Click(Sender: TObject);
 begin
-  RunTool(opTools[3]);
+  DoTool_Run(opTools[3]);
 end;
 
 procedure TfmMain.TBXItemCtxTool4Click(Sender: TObject);
 begin
-  RunTool(opTools[4]);
+  DoTool_Run(opTools[4]);
 end;
 
 procedure TfmMain.TBXItemCtxTool5Click(Sender: TObject);
 begin
-  RunTool(opTools[5]);
+  DoTool_Run(opTools[5]);
 end;
 
 procedure TfmMain.TBXItemCtxTool6Click(Sender: TObject);
 begin
-  RunTool(opTools[6]);
+  DoTool_Run(opTools[6]);
 end;
 
 procedure TfmMain.TBXItemCtxTool7Click(Sender: TObject);
 begin
-  RunTool(opTools[7]);
+  DoTool_Run(opTools[7]);
 end;
 
 procedure TfmMain.TBXItemCtxTool8Click(Sender: TObject);
 begin
-  RunTool(opTools[8]);
+  DoTool_Run(opTools[8]);
 end;
 
 procedure TfmMain.TBXItemCtxTool9Click(Sender: TObject);
 begin
-  RunTool(opTools[9]);
+  DoTool_Run(opTools[9]);
 end;
 
 procedure TfmMain.TBXItemCtxTool10Click(Sender: TObject);
 begin
-  RunTool(opTools[10]);
+  DoTool_Run(opTools[10]);
 end;
 
 procedure TfmMain.TBXItemCtxTool11Click(Sender: TObject);
 begin
-  RunTool(opTools[11]);
+  DoTool_Run(opTools[11]);
 end;
 
 procedure TfmMain.TBXItemCtxTool12Click(Sender: TObject);
 begin
-  RunTool(opTools[12]);
+  DoTool_Run(opTools[12]);
 end;
 
 procedure TfmMain.TbxItemCtxTool13Click(Sender: TObject);
 begin
-  RunTool(opTools[13]);
+  DoTool_Run(opTools[13]);
 end;
 
 procedure TfmMain.TbxItemCtxTool14Click(Sender: TObject);
 begin
-  RunTool(opTools[14]);
+  DoTool_Run(opTools[14]);
 end;
 
 procedure TfmMain.TbxItemCtxTool15Click(Sender: TObject);
 begin
-  RunTool(opTools[15]);
+  DoTool_Run(opTools[15]);
 end;
 
 procedure TfmMain.TbxItemCtxTool16Click(Sender: TObject);
 begin
-  RunTool(opTools[16]);
+  DoTool_Run(opTools[16]);
 end;
 
 procedure TfmMain.FinderProgress(CurPos, MaxPos: integer);
@@ -19126,7 +19131,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoHandleToolOutput(const ft: Widestring; const ATool: TSynTool);
+procedure TfmMain.DoTool_HandleOutput(const ft: Widestring; const ATool: TSynTool);
 var
   List: TWideStringList;
   AType: TSynOutputType;
@@ -24825,7 +24830,7 @@ begin
     for i:= Low(opTools) to High(opTools) do
       if opTools[i].ToolCaption=Cmd then
       begin
-        RunTool(opTools[i]);
+        DoTool_Run(opTools[i]);
         Exit
       end;
     MsgError(WideFormat(DKLangConstW('MRun'), [Cmd]), Handle);
@@ -28180,7 +28185,7 @@ end;
 
 procedure TfmMain.ProjRunTool(const ATool: TSynTool);
 begin
-  RunTool(ATool);
+  DoTool_Run(ATool);
 end;
 
 procedure TfmMain.TBXSubmenuItemBkPopup(Sender: TTBCustomItem;
