@@ -1999,8 +1999,11 @@ begin
     opTabAtBottom:= cbTabDown.Checked;
     opTabFolders:= cbTabDirs.Checked;
     opTabAngle:= edTabAngle.Value;
+
     opTabWidthMin:= edTabMinLen.Value;
     opTabWidthMax:= edTabMaxLen.Value;
+    if opTabWidthMin>opTabWidthMax then
+      opTabWidthMax:= opTabWidthMin;
 
     for i:= 0 to High(ColorsOfTabs) do
       opTabColors[i]:= ColorsOfTabs[i];

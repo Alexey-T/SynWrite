@@ -560,7 +560,7 @@ object fmSetup: TfmSetup
           Top = 148
           Width = 57
           Height = 22
-          MaxValue = 80
+          MaxValue = 20
           MinValue = 0
           TabOrder = 7
           Value = 0

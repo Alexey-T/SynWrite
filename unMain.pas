@@ -28354,7 +28354,7 @@ begin
   UpdateFrameZoom(Result);
   UpdateColorHint;
 
-  Pages.AddTab(Result, '?');
+  Pages.AddTab(Result, '?', false);
 end;
 
 procedure TfmMain.TabAdd(Sender: TObject);
