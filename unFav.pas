@@ -135,6 +135,7 @@ begin
     List.Items.EndUpdate;
   end;
 
+  FixListboxHorzScrollbar(List);
   ListClick(Self);
 end;
 

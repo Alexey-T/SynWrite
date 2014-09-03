@@ -16,6 +16,7 @@ uses
   ecStrUtils,
   ecMemoStrings,
   ecSyntDlg,
+  ecUnicode,
 
   IniFiles,
   PngImageList;
@@ -23,7 +24,7 @@ uses
 procedure DoKeymappingSplit(MapIn, MapOut1, MapOut2: TSyntKeyMapping; NCountInFirst: Integer);
 procedure DoKeymappingJoin(MapIn1, MapIn2, MapOut: TSyntKeyMapping);
 procedure DoKeymappingTruncate(Map: TSyntKeyMapping; NCount: Integer);
-  
+
 function DoGetLocalizedEncodingName(const Id: Widestring): Widestring;
 procedure DoUpdateIniFileForNewRelease(const SynIni: string);
 function FontStylesToString(const f: TFontStyles): string;
@@ -226,7 +227,12 @@ function OutputTypeStrToType(const s: string): TSynOutputType;
 function OutputTypeStrToOrder(const s: string): integer;
 
 type
-  TOutputEnc = (encAnsi, encOem, encUtf8{, encUni, encUniBE});
+  TSynToolOutputEnc = (encAnsi, encOem, encUtf8{, encUni, encUniBE});
+
+procedure FixListboxHorzScrollbar(L: TTntListBox);
+procedure FixListOutput(L: TWideStringList; NoTags, NoDups: boolean;
+  Enc: TSynToolOutputEnc; const TabStr: Widestring);
+
 type
   TSynTool = record
     ToolCaption,
@@ -237,7 +243,7 @@ type
     ToolKeys: WideString;
     ToolOutCapture: boolean;
     ToolOutType: string;
-    ToolOutEncoding: TOutputEnc;
+    ToolOutEncoding: TSynToolOutputEnc;
     ToolOutRegex: string;
     ToolOutNum_fn,
     ToolOutNum_line,
@@ -264,7 +270,7 @@ implementation
 
 uses
   Windows,
-  ecZRegExpr, ecUnicode,
+  ecZRegExpr,
   Math, Dialogs, CommCtrl, StrUtils,
   ATxFProc, ATxSProc,
   TntClipbrd, TntSysUtils,
@@ -1971,7 +1977,7 @@ begin
       ToolOutType:= SGetItem(S);
       if ToolOutType='' then
         ToolOutType:= cOutputTypeString[outToPanel];
-      ToolOutEncoding:= TOutputEnc(StrToIntDef(SGetItem(S), Ord(encOem)));
+      ToolOutEncoding:= TSynToolOutputEnc(StrToIntDef(SGetItem(S), Ord(encOem)));
     end;
   finally
     Free;
@@ -2082,7 +2088,7 @@ begin
           ToolNoTags:= Boolean(StrToIntDef(SubItems[9], 0));
           ToolContextItem:= Boolean(StrToIntDef(SubItems[10], 0));
           ToolOutType:= SubItems[11];
-          ToolOutEncoding:= TOutputEnc(StrToIntDef(SubItems[12], 0));
+          ToolOutEncoding:= TSynToolOutputEnc(StrToIntDef(SubItems[12], 0));
         end;
     end;
   finally
@@ -2362,5 +2368,61 @@ begin
   Delete(SL, Pos(',', SL), MaxInt);
   Result:= SL;
 end;
+
+procedure FixListboxHorzScrollbar(L: TTntListBox);
+var
+  i, n: integer;
+begin
+  n:= 50;
+  L.Canvas.Font.Assign(L.Font);
+  for i:= 0 to L.Count-1 do
+    n:= Max(n, ecTextExtent(L.Canvas, L.Items[i]).cx);
+  L.ScrollWidth:= n+4;
+end;
+
+procedure FixListOutput(L: TWideStringList; NoTags, NoDups: boolean;
+  Enc: TSynToolOutputEnc; const TabStr: Widestring);
+var
+  i: Integer;
+  S: Widestring;
+begin
+  L.BeginUpdate;
+  try
+    if NoTags then
+      for i:= 0 to L.Count-1 do
+        L[i]:= SDeleteTags(L[i]);
+    if NoDups then
+      for i:= L.Count-1 downto 1 do
+        if L[i-1] = L[i] then
+          L.Delete(i);
+    //Encoding
+    case Enc of
+      encOem:
+      begin
+        for i:= 0 to L.Count-1 do
+          L[i]:= AnsiToUnicodeCP(L[i], CP_OEMCP);
+      end;
+      encUtf8:
+      begin
+        for i:= 0 to L.Count-1 do
+          L[i]:= UTF8Decode(AnsiString(L[i]));
+      end;
+    end;
+    //TabSize
+    for i:= 0 to L.Count-1 do
+    begin
+      S:= L[i];
+      if Pos(#9, S)>0 then
+      begin
+        SReplaceAllW(S, #9, TabStr);
+        L[i]:= S;
+      end;
+    end;
+  finally
+    L.EndUpdate;
+  end;
+end;
+
+
 
 end.

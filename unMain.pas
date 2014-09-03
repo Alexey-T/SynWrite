@@ -291,7 +291,7 @@ type
     RegexIdName: Integer;
     DefFilename: Widestring;
     ZeroBase: boolean;
-    Encoding: TOutputEnc;
+    Encoding: TSynToolOutputEnc;
   end;
 
   TSynLogPanelKind = (
@@ -10371,60 +10371,6 @@ begin
 end;
 
 
-procedure FixListScroll(L: TTntListBox);
-var
-  i, n: integer;
-begin
-  n:= 50;
-  L.Canvas.Font.Assign(L.Font);
-  for i:= 0 to L.Count-1 do
-    n:= Max(n, ecTextExtent(L.Canvas, L.Items[i]).cx);
-  L.ScrollWidth:= n+4;
-end;
-
-procedure FixListOutput(L: TWideStringList; NoTags, NoDups: boolean;
-  Enc: TOutputEnc; const TabStr: Widestring);
-var
-  i: Integer;
-  S: Widestring;
-begin
-  L.BeginUpdate;
-  try
-    if NoTags then
-      for i:= 0 to L.Count-1 do
-        L[i]:= SDeleteTags(L[i]);
-    if NoDups then
-      for i:= L.Count-1 downto 1 do
-        if L[i-1] = L[i] then
-          L.Delete(i);
-    //Encoding
-    case Enc of
-      encOem:
-      begin
-        for i:= 0 to L.Count-1 do
-          L[i]:= AnsiToUnicodeCP(L[i], CP_OEMCP);
-      end;
-      encUtf8:
-      begin
-        for i:= 0 to L.Count-1 do
-          L[i]:= UTF8Decode(AnsiString(L[i]));
-      end;
-    end;
-    //TabSize
-    for i:= 0 to L.Count-1 do
-    begin
-      S:= L[i];
-      if Pos(#9, S)>0 then
-      begin
-        SReplaceAllW(S, #9, TabStr);
-        L[i]:= S;
-      end;
-    end;
-  finally
-    L.EndUpdate;
-  end;
-end;
-
 procedure TfmMain.DoTool_ReplaceMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
   //
   function SMacro(const MacroName: string): string;
@@ -19440,7 +19386,7 @@ begin
     ListOut.Items.Clear;
     for i:= 0 to List.Count-1 do
       ListOut.Items.Add(List[i]);
-    FixListScroll(ListOut);
+    FixListboxHorzScrollbar(ListOut);
   finally
     ListOut.Items.EndUpdate;
   end;
@@ -19955,6 +19901,7 @@ begin
     FIniFN:= SynFavIni;
     FOptFN:= SynHistoryIni;
     FFavTab:= ATab;
+    
     if ShowModal=mrOk then
     begin
       if FCurrentFileName<>'' then
