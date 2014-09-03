@@ -2827,7 +2827,7 @@ type
     function DoSetPagesAndTabIndex(APageIndex, ATabIndex: Integer): boolean;
     procedure DoListBookmarksNavigate;
 
-    function DoAddTab(Pages: TATPages): TEditorFrame;
+    function DoAddTab(Pages: TATPages; AUntitledStr: boolean): TEditorFrame;
     procedure TabAdd(Sender: TObject);
     procedure TabFocus(Sender: TObject);
     procedure TabClose(Sender: TObject; ATabIndex: Integer;
@@ -3748,7 +3748,7 @@ begin
   if (F <> nil) and (F.FileName = '') and (not F.Modified) then
     Result:= F
   else
-    Result:= DoAddTab(Groups.PagesCurrent);
+    Result:= DoAddTab(Groups.PagesCurrent, false);
 
   //reset encoding for new frame
   ApplyFrameEncoding(Result, 0);
@@ -9393,14 +9393,9 @@ begin
 end;
 
 procedure TfmMain.acNewTabExecute(Sender: TObject);
-var
-  F: TEditorFrame;
 begin
   if Assigned(Groups) then
-  begin
-    F:= DoAddTab(Groups.PagesCurrent);
-    F.TabCaption:= GetUntitledString;
-  end;
+    DoAddTab(Groups.PagesCurrent, true);
 end;
 
 procedure TfmMain.DoHint(S: WideString);
@@ -10999,14 +10994,9 @@ begin
 end;
 
 procedure TfmMain.TBXItemTabNewClick(Sender: TObject);
-var
-  F: TEditorFrame;
 begin
   if Groups.PopupPages<>nil then
-  begin
-    F:= DoAddTab(Groups.PopupPages);
-    F.TabCaption:= GetUntitledString;
-  end;
+    DoAddTab(Groups.PopupPages, true);
 end;
 
 function TfmMain.SNewDocName(const fn: Widestring): string;
@@ -28352,7 +28342,7 @@ begin
   Groups.SplitPos:= opGroupSplit;
 end;
 
-function TfmMain.DoAddTab(Pages: TATPages): TEditorFrame;
+function TfmMain.DoAddTab(Pages: TATPages; AUntitledStr: boolean): TEditorFrame;
 begin
   Result:= CreateFrame;
   Result.Parent:= Self;
@@ -28364,14 +28354,13 @@ begin
   UpdateFrameZoom(Result);
 
   Pages.AddTab(Result, '?', false);
+  if AUntitledStr then
+    Result.TabCaption:= GetUntitledString;
 end;
 
 procedure TfmMain.TabAdd(Sender: TObject);
-var
-  F: TEditorFrame;
 begin
-  F:= DoAddTab((Sender as TATTabs).Parent as TATPages);
-  F.TabCaption:= GetUntitledString;
+  DoAddTab((Sender as TATTabs).Parent as TATPages, true);
 end;
 
 procedure TfmMain.TabFocus(Sender: TObject);
