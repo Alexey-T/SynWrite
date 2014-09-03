@@ -19949,6 +19949,8 @@ begin
   finally
     FreeAndNil(L);
   end;
+
+  DoHint(WideFormat(DKLangConstW('zMFavAdded'), [fn]));
 end;
 
 procedure TfmMain.acFavManageExecute(Sender: TObject);
