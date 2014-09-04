@@ -3696,7 +3696,7 @@ begin
     if IsFileTooBig(S) then
       MsgFileTooBig(S, Handle)
     else
-    if DoConfirmMaybeBinaryFile(S) then
+    if IsFileArchive(S) or DoConfirmMaybeBinaryFile(S) then
       DoOpenFile(S);
   end;
 
