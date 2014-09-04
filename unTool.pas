@@ -4,15 +4,15 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, TntDialogs, StdCtrls, TntStdCtrls, TntForms, DKLang, ComCtrls,
-  TntComCtrls, Menus, ecHotKeyEdit;
+  Dialogs, TntDialogs, StdCtrls, TntStdCtrls, TntForms, DKLang,
+  Menus, ecHotKeyEdit, unProc;
 
 type
   TfmTools = class(TTntForm)
-    TntOpenDialog1: TTntOpenDialog;
-    TntGroupBox1: TTntGroupBox;
+    OpenDlg: TTntOpenDialog;
+    boxProp: TTntGroupBox;
     TntLabel1: TTntLabel;
-    edFN: TTntEdit;
+    edCmd: TTntEdit;
     bBr: TTntButton;
     TntLabel2: TTntLabel;
     edPar: TTntEdit;
@@ -21,8 +21,7 @@ type
     bOk: TTntButton;
     bCancel: TTntButton;
     DKLanguageController1: TDKLanguageController;
-    TntGroupBox2: TTntGroupBox;
-    List: TTntListView;
+    boxList: TTntGroupBox;
     bBr2: TTntButton;
     bUp: TTntButton;
     bDn: TTntButton;
@@ -35,7 +34,7 @@ type
     cbOut: TTntCheckBox;
     bOut: TTntButton;
     TntLabel4: TTntLabel;
-    edCap: TTntEdit;
+    edName: TTntEdit;
     bClr: TTntButton;
     labKey: TTntLabel;
     edKey: TecHotKey;
@@ -80,10 +79,11 @@ type
     pContFNAnsi: TMenuItem;
     pProj4: TMenuItem;
     pSynDrive: TMenuItem;
+    List: TTntListBox;
     procedure bBrClick(Sender: TObject);
     procedure bBr2Click(Sender: TObject);
     procedure ListClick(Sender: TObject);
-    procedure edFNChange(Sender: TObject);
+    procedure edCmdChange(Sender: TObject);
     procedure edParChange(Sender: TObject);
     procedure edDirChange(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
@@ -94,7 +94,7 @@ type
     procedure TntFormCreate(Sender: TObject);
     procedure bOutClick(Sender: TObject);
     procedure cbOutClick(Sender: TObject);
-    procedure edCapChange(Sender: TObject);
+    procedure edNameChange(Sender: TObject);
     procedure bClrClick(Sender: TObject);
     procedure edLexerChange(Sender: TObject);
     procedure edKeyChange(Sender: TObject);
@@ -106,30 +106,25 @@ type
     procedure bHelpClick(Sender: TObject);
     procedure edOutTypeChange(Sender: TObject);
     procedure edOutEncChange(Sender: TObject);
-    procedure ListChange(Sender: TObject; Item: TListItem;
-      Change: TItemChange);
   private
     { Private declarations }
-    procedure LSwap(n, m: Integer);
+    procedure ListFill;
+    procedure ListSwap(N, M: Integer);
+    function GetToolIndex: Integer;
   public
     { Public declarations }
-    SCurLex: string;
-    SRe,
-    SReNums: string;
+    FToolList: TSynToolList;
+    FCurrLexer: string;
   end;
-
-var
-  fmTools: TfmTools;
 
 implementation
 
 uses
   TntSysUtils,
   TntFileCtrl,
-  atxSProc,
-  atxFProc,
+  ATxSProc,
+  ATxFProc,
   unTool2,
-  unProc,
   unProcHelp;
 
 {$R *.dfm}
@@ -173,12 +168,12 @@ const
 
 procedure TfmTools.bBrClick(Sender: TObject);
 begin
-  with TntOpenDialog1 do
+  with OpenDlg do
     if Execute then
     begin
-      edFN.Text:= FileName;
+      edCmd.Text:= FileName;
       edDir.Text:= WideExtractFileDir(FileName);
-      edFNChange(Self);
+      edCmdChange(Self);
       edDirChange(Self);
       if SFileExtensionMatch(FileName, 'chm') then
       begin
@@ -202,72 +197,77 @@ begin
   SetFocus; //for TC
 end;
 
-procedure TfmTools.ListClick(Sender: TObject);
+function TfmTools.GetToolIndex: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-    begin
-      edCap.Text:= Caption;
-      edFN.Text:= SubItems[0];
-      edPar.Text:= SubItems[1];
-      edDir.Text:= SubItems[2];
-      cbOut.Checked:= Bool(StrTointdef(SubItems[3], 0));
-      SRe:= SubItems[4];
-      SReNums:= SubItems[5];
-
-      with edLexer do
-        if SubItems[6] = '' then
-          ItemIndex:= 0
-        else
-          ItemIndex:= Items.IndexOf(SubItems[6]);
-
-      edKey.HotKey:= TextToShortcut(SubItems[7]);
-      edSave.ItemIndex:= StrToIntDef(SubItems[8], 0);
-      cbCtx.Checked:= Bool(StrToIntDef(SubItems[10], 0));
-
-      edOutType.ItemIndex:= OutputTypeStrToOrder(SubItems[11]);
-      edOutEnc.ItemIndex:= StrToIntDef(SubItems[12], 0);
-      edOutType.Enabled:= cbOut.Checked;
-      edOutEnc.Enabled:= cbOut.Checked;
-      bOut.Enabled:= cbOut.Checked and
-        (cOutputTypeOrder[edOutType.ItemIndex] = outToPanel);
-
-      bUp.Enabled:= Index>0;
-      bDn.Enabled:= Index<List.Items.Count-1;
-    end;
+  Result:= List.ItemIndex+1;
 end;
 
-procedure TfmTools.edFNChange(Sender: TObject);
+procedure TfmTools.ListClick(Sender: TObject);
+var
+  N: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-     subItems[0]:= edFN.Text;
+  N:= GetToolIndex;
+  if N<Low(TSynToolList) then Exit;
+
+  edName.Text:= FToolList[N].ToolCaption;
+  edCmd.Text:= FToolList[N].ToolCommand;
+  edPar.Text:= FToolList[N].ToolParams;
+  edDir.Text:= FToolList[N].ToolDir;
+  cbOut.Checked:= FToolList[N].ToolOutCapture;
+
+  if FToolList[N].ToolLexer='' then
+    edLexer.ItemIndex:= 0
+  else
+    edLexer.ItemIndex:= edLexer.Items.IndexOf(FToolList[N].ToolLexer);
+
+  edKey.HotKey:= TextToShortcut(FToolList[N].ToolKeys);
+  edSave.ItemIndex:= Ord(FToolList[N].ToolSaveMode);
+  cbCtx.Checked:= FToolList[N].ToolContextItem;
+
+  edOutType.ItemIndex:= OutputTypeStrToOrder(FToolList[N].ToolOutType);
+  edOutEnc.ItemIndex:= Ord(FToolList[N].ToolOutEncoding);
+  
+  edOutType.Enabled:= cbOut.Checked;
+  edOutEnc.Enabled:= cbOut.Checked;
+  bOut.Enabled:= cbOut.Checked and
+    (cOutputTypeOrder[edOutType.ItemIndex] = outToPanel);
+
+  bUp.Enabled:= N>Low(TSynToolList);
+  bDn.Enabled:= N<High(TSynToolList);
+end;
+
+procedure TfmTools.edCmdChange(Sender: TObject);
+var
+  N: Integer;
+begin
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+    FToolList[N].ToolCommand:= edCmd.Text;
 end;
 
 procedure TfmTools.edParChange(Sender: TObject);
+var
+  N: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-     SubItems[1]:= edPar.Text;
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+    FToolList[N].ToolParams:= edPar.Text;
 end;
 
 procedure TfmTools.edDirChange(Sender: TObject);
+var
+  N: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-     SubItems[2]:= edDir.Text;
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+    FToolList[N].ToolDir:= edDir.Text;
 end;
 
 procedure TfmTools.TntFormShow(Sender: TObject);
 var
   i: integer;
 begin
-  with List do
-    Selected:= Items[0];
+  ListFill;
 
   //fill Output Type list
   with edOutType do
@@ -279,52 +279,44 @@ begin
   end;
 
   //init fields
+  List.ItemIndex:= 0;
   ListClick(Self);
 end;
 
-const cc=12;//List.SubItems.Count-1
-
-procedure TfmTools.LSwap(n, m: Integer);
-var s: array[0..cc] of WideString;
-  ss: Widestring;
-  i:Integer;
+procedure TfmTools.ListSwap(N, M: Integer);
+var
+  FTool: TSynTool;
 begin
-  with List do
+  if (N>=Low(TSynToolList)) and
+    (M>=Low(TSynToolList)) then
   begin
-    Items.BeginUpdate;
-
-    ss:= Items[n].Caption;
-    for i:= 0 to cc do
-      s[i]:= Items[n].SubItems[i];
-
-    Items[n].Caption:= Items[m].Caption;
-    for i:= 0 to cc do
-      Items[n].SubItems[i]:= Items[m].SubItems[i];
-
-    Items[m].Caption:= ss;
-    for i:= 0 to cc do
-      Items[m].SubItems[i]:= s[i];
-
-    Items.EndUpdate;
-    Selected:= Items[m];
+    DoCopyToolItem(FToolList[N], FTool);
+    DoCopyToolItem(FToolList[M], FToolList[N]);
+    DoCopyToolItem(FTool, FToolList[M]);
+    ListFill;
   end;
-  ListClick(Self);
 end;
 
 procedure TfmTools.bUpClick(Sender: TObject);
+var
+  N: Integer;
 begin
-  with list do
-   if Selected <>nil then
-    if Selected.Index>0 then
-     LSwap(Selected.Index, Selected.Index-1);
+  N:= GetToolIndex;
+  ListSwap(N, N-1);
+
+  List.ItemIndex:= List.ItemIndex-1;
+  ListClick(Self);
 end;
 
 procedure TfmTools.bDnClick(Sender: TObject);
+var
+  N: Integer;
 begin
-  with list do
-   if Selected <>nil then
-    if Selected.Index<Items.Count-1 then
-     LSwap(Selected.Index, Selected.Index+1);
+  N:= GetToolIndex;
+  ListSwap(N, N+1);
+
+  List.ItemIndex:= List.ItemIndex+1;
+  ListClick(Self);
 end;
 
 procedure TfmTools.p0Click(Sender: TObject);
@@ -335,20 +327,29 @@ begin
 end;
 
 procedure TfmTools.bParClick(Sender: TObject);
-var p:TPoint;
+var
+  p: TPoint;
 begin
   p:= bPar.ClientToScreen(Point(0, 0));
   mnuPar.Popup(p.x, p.y);
 end;
 
 procedure TfmTools.TntFormCreate(Sender: TObject);
- procedure S(m: TMenuItem; n: Integer);
- begin
-   m.Tag:= n;
-   m.OnClick:= p0Click;
-   m.Caption:= ccStr[n];
- end;
+  //
+  procedure S(m: TMenuItem; n: Integer);
+  begin
+    m.Tag:= n;
+    m.OnClick:= p0Click;
+    m.Caption:= ccStr[n];
+  end;
+  //
+var
+  i: Integer;
 begin
+  List.Items.Clear;
+  for i:= Low(FToolList) to High(FToolList) do
+    List.Items.Add('?');
+
   s(pFileName, 0);
   s(pFileDir, 1);
   s(pFileNameOnly, 2);
@@ -383,7 +384,7 @@ begin
   s(pSynIniDir, 25);
   s(pSynDrive, 26);
 
-  with TntOpenDialog1 do
+  with OpenDlg do
     Filter:= WideFormat(
       '%s (*.exe;*.bat;*.cmd)|*.exe;*.bat;*.cmd'+
       '|%s (*.chm)|*.chm'+
@@ -396,29 +397,26 @@ begin
 end;
 
 procedure TfmTools.bOutClick(Sender: TObject);
-var s: Widestring;
+var
+  N: Integer;
 begin
+  N:= GetToolIndex;
+  if N<Low(TSynToolList) then Exit;
+
   with TfmToolOutput.Create(nil) do
   try
-    edRE.Text:= SRe;
-    S:= SReNums;
-    edFN.ItemIndex:= StrToIntDef(SGetItem(S), 0);
-    edLn.ItemIndex:= StrToIntDef(SGetItem(S), 0);
-    edCol.ItemIndex:= StrToIntDef(SGetItem(S), 0);
-    if List.Selected<>nil then
-      cbNoTag.Checked:= Boolean(StrToIntDef(List.Selected.SubItems[9], 0));
+    edRE.Text:= FToolList[N].ToolOutRegex;
+    edFN.ItemIndex:= FToolList[N].ToolOutNum_fn;
+    edLn.ItemIndex:= FToolList[N].ToolOutNum_line;
+    edCol.ItemIndex:= FToolList[N].ToolOutNum_col;
+    cbNoTag.Checked:= FToolList[N].ToolNoTags;
     if ShowModal=mrOk then
     begin
-      SRe:= edRE.Text;
-      SReNums:= Format('%d,%d,%d', [edFN.ItemIndex, edLn.ItemIndex, edCol.ItemIndex]);
-      with List do
-       if Selected<>nil then
-        with Selected do
-        begin
-          subItems[4]:= SRe;
-          subItems[5]:= SReNums;
-          subItems[9]:= IntToStr(Ord(cbNoTag.Checked));
-        end;
+      FToolList[N].ToolOutRegex:= edRE.Text;
+      FToolList[N].ToolOutNum_fn:= edFN.ItemIndex;
+      FToolList[N].ToolOutNum_line:= edLn.ItemIndex;
+      FToolList[N].ToolOutNum_col:= edCol.ItemIndex;
+      FToolList[N].ToolNoTags:= cbNoTag.Checked;
     end;
   finally
     Release
@@ -426,70 +424,86 @@ begin
 end;
 
 procedure TfmTools.cbOutClick(Sender: TObject);
+var
+  N: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-    begin
-      SubItems[3]:= Inttostr(Ord(cbOut.Checked));
-      edOutType.Enabled:= cbOut.Checked;
-      edOutEnc.Enabled:= cbOut.Checked;
-      bOut.Enabled:= cbOut.Checked and
-        (cOutputTypeOrder[edOutType.ItemIndex] = outToPanel);
-    end;
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+  begin
+    FToolList[N].ToolOutCapture:= cbOut.Checked;
+    edOutType.Enabled:= cbOut.Checked;
+    edOutEnc.Enabled:= cbOut.Checked;
+    bOut.Enabled:= cbOut.Checked and
+      (cOutputTypeOrder[edOutType.ItemIndex] = outToPanel);
+  end;
 end;
 
-procedure TfmTools.edCapChange(Sender: TObject);
+procedure TfmTools.edNameChange(Sender: TObject);
+var
+  N: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-     Caption:= edCap.Text;
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+  begin
+    FToolList[N].ToolCaption:= edName.Text;
+    ListFill;
+  end;
 end;
 
 procedure TfmTools.bClrClick(Sender: TObject);
-var i:Integer;
+var
+  N: Integer;
 begin
-  with list do
-   if Selected <>nil then
-     with Selected do
-     begin
-       Caption:= '';
-       for i:= 0 to cc do SubItems[i]:= '';
-       ListClick(Self);
-       edOutType.ItemIndex:= 1; //"Send to Output"
-       edOutTypeChange(Self);
-       edOutEnc.ItemIndex:= 1; //OEM
-       edOutEncChange(Self);
-     end;
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+  begin
+    FToolList[N].ToolCaption:= '';
+    FToolList[N].ToolCommand:= '';
+    FToolList[N].ToolDir:= '';
+    FToolList[N].ToolParams:= '';
+    FToolList[N].ToolLexer:= '';
+    FToolList[N].ToolKeys:= '';
+    FToolList[N].ToolOutCapture:= false;
+    FToolList[N].ToolOutType:= '';
+    FToolList[N].ToolOutRegex:= '';
+    FToolList[N].ToolOutNum_fn:= 0;
+    FToolList[N].ToolOutNum_line:= 0;
+    FToolList[N].ToolOutNum_col:= 0;
+    FToolList[N].ToolOutEncoding:= Low(TSynToolOutputEnc);
+    FToolList[N].ToolContextItem:= false;
+    FToolList[N].ToolSaveMode:= Low(TSynToolSave);
+    ListClick(Self);
+  end;
 end;
 
 procedure TfmTools.edLexerChange(Sender: TObject);
+var
+  N: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-      if edLexer.ItemIndex=0 then
-        SubItems[6]:= ''
-      else
-        SubItems[6]:= edLexer.Text;
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+    if edLexer.ItemIndex=0 then
+      FToolList[N].ToolLexer:= ''
+    else
+      FToolList[N].ToolLexer:= edLexer.Text;
 end;
 
 procedure TfmTools.edKeyChange(Sender: TObject);
+var
+  N: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-      SubItems[7]:= ShortcutToText(edKey.HotKey);
-end;
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+    FToolList[N].ToolKeys:= ShortcutToText(edKey.HotKey);
+end;    
 
 procedure TfmTools.bLexClick(Sender: TObject);
 begin
   with edLexer do
-    if SCurLex = '' then
+    if FCurrLexer = '' then
       ItemIndex:= 0
     else
-      ItemIndex:= Items.IndexOf(SCurLex);
+      ItemIndex:= Items.IndexOf(FCurrLexer);
   edLexerChange(Self);
 end;
 
@@ -500,36 +514,37 @@ begin
 end;
 
 procedure TfmTools.edSaveChange(Sender: TObject);
+var
+  N: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-      SubItems[8]:= Inttostr(edSave.ItemIndex);
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+    FToolList[N].ToolSaveMode:= TSynToolSave(edSave.ItemIndex);
 end;
 
 procedure TfmTools.TntFormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
-var i:Integer;
+var
+  i: Integer;
 begin
   CanClose:= true;
-  for i:= 0 to List.Items.Count-1 do
-    with List.Items[i] do
-      if (Caption='') and (SubItems[0]<>'') then
+  for i:= Low(TSynToolList) to High(TSynToolList) do
+    with FToolList[i] do
+      if (ToolCaption='') and (ToolCommand<>'') then
       begin
-        MsgWarn(WideFormat(DKLangConstW('MNCap'), [SubItems[0]]), Handle);
+        MsgWarn(WideFormat(DKLangConstW('MNCap'), [ToolCommand]), Handle);
         CanClose:= false;
         Exit
       end;
 end;
 
 procedure TfmTools.cbCtxClick(Sender: TObject);
+var
+  N: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-    begin
-      SubItems[10]:= Inttostr(Ord(cbCtx.Checked));
-    end;
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+    FToolList[N].ToolContextItem:= cbCtx.Checked;
 end;
 
 procedure TfmTools.bHelpClick(Sender: TObject);
@@ -538,31 +553,33 @@ begin
 end;
 
 procedure TfmTools.edOutTypeChange(Sender: TObject);
+var
+  N: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-    begin
-      SubItems[11]:= cOutputTypeString[cOutputTypeOrder[edOutType.ItemIndex]];
-      bOut.Enabled:= cbOut.Checked and
-        (cOutputTypeOrder[edOutType.ItemIndex] = outToPanel);
-    end;
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+  begin
+    FToolList[N].ToolOutType:= cOutputTypeString[cOutputTypeOrder[edOutType.ItemIndex]];
+    bOut.Enabled:= cbOut.Checked and
+      (cOutputTypeOrder[edOutType.ItemIndex] = outToPanel);
+  end;
 end;
 
 procedure TfmTools.edOutEncChange(Sender: TObject);
+var
+  N: Integer;
 begin
-  with List do
-   if Selected<>nil then
-    with Selected do
-    begin
-      SubItems[12]:= IntToStr(edOutEnc.ItemIndex);
-    end;
+  N:= GetToolIndex;
+  if N>=Low(TSynToolList) then
+    FToolList[N].ToolOutEncoding:= TSynToolOutputEnc(edOutEnc.ItemIndex);
 end;
 
-procedure TfmTools.ListChange(Sender: TObject; Item: TListItem;
-  Change: TItemChange);
+procedure TfmTools.ListFill;
+var
+  i: Integer;
 begin
-  ListClick(Self);
+  for i:= Low(FToolList) to High(FToolList) do
+    List.Items[i-1]:= IntToStr(i)+': '+FToolList[i].ToolCaption;
 end;
 
 end.
