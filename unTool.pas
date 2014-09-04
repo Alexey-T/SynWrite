@@ -457,21 +457,7 @@ begin
   N:= GetToolIndex;
   if N>=Low(TSynToolList) then
   begin
-    FToolList[N].ToolCaption:= '';
-    FToolList[N].ToolCommand:= '';
-    FToolList[N].ToolDir:= '';
-    FToolList[N].ToolParams:= '';
-    FToolList[N].ToolLexer:= '';
-    FToolList[N].ToolKeys:= '';
-    FToolList[N].ToolOutCapture:= false;
-    FToolList[N].ToolOutType:= '';
-    FToolList[N].ToolOutRegex:= '';
-    FToolList[N].ToolOutNum_fn:= 0;
-    FToolList[N].ToolOutNum_line:= 0;
-    FToolList[N].ToolOutNum_col:= 0;
-    FToolList[N].ToolOutEncoding:= Low(TSynToolOutputEnc);
-    FToolList[N].ToolContextItem:= false;
-    FToolList[N].ToolSaveMode:= Low(TSynToolSave);
+    DoTool_ClearItem(FToolList[N]);
     ListClick(Self);
   end;
 end;

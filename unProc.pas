@@ -259,6 +259,7 @@ type
 
 procedure DoTool_CopyItem(var FIn, FOut: TSynTool);
 procedure DoTool_CopyList(var FIn, FOut: TSynToolList);
+procedure DoTool_ClearItem(var Item: TSynTool);
 procedure DoTool_LoadList(var AToolList: TSynToolList; const AIniFN, ASection: string);
 procedure DoTool_SaveList(var AToolList: TSynToolList; const AIniFN, ASection: string);
 function DoTool_ConfigList(var AToolList: TSynToolList;
@@ -2423,5 +2424,27 @@ begin
     DoTool_CopyItem(FIn[i], FOut[i]);
 end;
 
+procedure DoTool_ClearItem(var Item: TSynTool);
+begin
+  with Item do
+  begin
+    ToolCaption:= '';
+    ToolCommand:= '';
+    ToolDir:= '';
+    ToolParams:= '';
+    ToolLexer:= '';
+    ToolKeys:= '';
+    ToolOutCapture:= false;
+    ToolOutType:= '';
+    ToolOutEncoding:= Low(ToolOutEncoding);
+    ToolOutRegex:= '';
+    ToolOutNum_fn:= 0;
+    ToolOutNum_line:= 0;
+    ToolOutNum_col:= 0;
+    ToolSaveMode:= Low(ToolSaveMode);
+    ToolNoTags:= false;
+    ToolContextItem:= false;
+  end;
+end;
 
 end.
