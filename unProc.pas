@@ -257,18 +257,18 @@ type
 type
   TSynToolList = array[1..16] of TSynTool;
 
-procedure DoCopyToolItem(var FIn, FOut: TSynTool);
-procedure DoCopyToolList(var FIn, FOut: TSynToolList);
-procedure DoLoadToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
-procedure DoSaveToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
-function DoCustomizeToolList(var AToolList: TSynToolList;
+procedure DoTool_CopyItem(var FIn, FOut: TSynTool);
+procedure DoTool_CopyList(var FIn, FOut: TSynToolList);
+procedure DoTool_LoadList(var AToolList: TSynToolList; const AIniFN, ASection: string);
+procedure DoTool_SaveList(var AToolList: TSynToolList; const AIniFN, ASection: string);
+function DoTool_ConfigList(var AToolList: TSynToolList;
   AParentForm: TForm;
   ALexersList: TTntStringList;
   AKeyEnabled: boolean;
   const ACurrentLexer: string): boolean;
 
 var
-  opSrOffsetY: integer = 6;
+  opSearchOffsetTop: integer = 6;
 
 implementation
 
@@ -1952,7 +1952,7 @@ begin
 end;
 
 
-procedure DoLoadToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
+procedure DoTool_LoadList(var AToolList: TSynToolList; const AIniFN, ASection: string);
 var
   i: integer;
   s: Widestring;
@@ -1988,7 +1988,7 @@ begin
   end;
 end;
 
-procedure DoSaveToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
+procedure DoTool_SaveList(var AToolList: TSynToolList; const AIniFN, ASection: string);
 var
   i: Integer;
 begin
@@ -2021,7 +2021,7 @@ begin
 end;
 
 
-function DoCustomizeToolList(
+function DoTool_ConfigList(
   var AToolList: TSynToolList;
   AParentForm: TForm;
   ALexersList: TTntStringList;
@@ -2035,7 +2035,7 @@ begin
     bKey.Enabled:= AKeyEnabled;
     cbCtx.Enabled:= AKeyEnabled;
 
-    DoCopyToolList(AToolList, FToolList);
+    DoTool_CopyList(AToolList, FToolList);
 
     edLexer.Items.Add(DKLangConstW('AllL'));
     edLexer.Items.AddStrings(ALexersList);
@@ -2046,7 +2046,7 @@ begin
 
     Result:= ShowModal=mrOk;
     if Result then
-      DoCopyToolList(FToolList, AToolList);
+      DoTool_CopyList(FToolList, AToolList);
   finally
     Release;
   end;
@@ -2395,7 +2395,7 @@ begin
   end;
 end;
 
-procedure DoCopyToolItem(var FIn, FOut: TSynTool);
+procedure DoTool_CopyItem(var FIn, FOut: TSynTool);
 begin
   FOut.ToolCaption:= FIn.ToolCaption;
   FOut.ToolCommand:= FIn.ToolCommand;
@@ -2415,12 +2415,12 @@ begin
   FOut.ToolContextItem:= FIn.ToolContextItem;
 end;
 
-procedure DoCopyToolList(var FIn, FOut: TSynToolList);
+procedure DoTool_CopyList(var FIn, FOut: TSynToolList);
 var
   i: Integer;
 begin
   for i:= Low(TSynToolList) to High(TSynToolList) do
-    DoCopyToolItem(FIn[i], FOut[i]);
+    DoTool_CopyItem(FIn[i], FOut[i]);
 end;
 
 

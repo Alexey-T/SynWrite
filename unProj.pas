@@ -401,7 +401,7 @@ begin
   UpdateTitle;
 
   //clear tools
-  DoLoadToolList(FProjectTools, '??', '');
+  DoTool_LoadList(FProjectTools, '??', '');
 
   {$ifdef DD}
   {
@@ -1231,7 +1231,7 @@ begin
   TreeProj.Selected.MakeVisible;
 
   //3) load project tools
-  DoLoadToolList(FProjectTools, fn, 'Tools');
+  DoTool_LoadList(FProjectTools, fn, 'Tools');
 
   //finalize
   FModified:= false;
@@ -1320,7 +1320,7 @@ begin
     FreeAndNil(List);
   end;
 
-  DoSaveToolList(FProjectTools, fn, 'Tools');
+  DoTool_SaveList(FProjectTools, fn, 'Tools');
 end;
 
 procedure TfmProj.DoWriteNodesToList(L: TStringList; Node: TTntTreeNode; Level: integer);
@@ -2117,7 +2117,7 @@ begin
   try
     if Assigned(FOnGetLexers) then
       FOnGetLexers(Self, L);
-    if DoCustomizeToolList(FProjectTools, Self, L, false, GetCurrentLexer) then
+    if DoTool_ConfigList(FProjectTools, Self, L, false, GetCurrentLexer) then
     begin
       SetModified;
     end;

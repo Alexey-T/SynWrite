@@ -856,7 +856,7 @@ end;
 
 procedure TSynFinderReplacer.DoCenterPos;
 begin
-  EditorCenterPos(FControl, false{GotoMode}, opSrOffsetY);
+  EditorCenterPos(FControl, false{GotoMode}, opSearchOffsetTop);
 end;
 
 constructor TSynFinderReplacer.Create(AOwner: TComponent);

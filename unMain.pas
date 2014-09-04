@@ -4705,7 +4705,7 @@ begin
     Tree.AutoExpand:= ReadBool('Tree', 'AExpand', false);
     Tree.UpdateDelay:= ReadInteger('Tree', 'Delay', 1000);
 
-    opSrOffsetY:= ReadInteger('SR', 'OffY', 6);
+    opSearchOffsetTop:= ReadInteger('SR', 'OffY', 6);
     opSrExpand:= ReadBool('SR', 'Expand', false);
     opSrOnTop:= ReadBool('SR', 'ShowOnTop' + cExeSuffix[SynExe], SynExe);
     opSrSuggestSel:= ReadBool('SR', 'SugSel', false);
@@ -5092,7 +5092,7 @@ begin
     WriteBool('ACP', 'IfNone', ecACP.ShowWhenNone);
     WriteBool('ACP', 'ParamHints', ParamCompletion.Enabled);
 
-    WriteInteger('SR', 'OffY', opSrOffsetY);
+    WriteInteger('SR', 'OffY', opSearchOffsetTop);
     WriteBool('SR', 'Expand', opSrExpand);
     WriteBool('SR', 'ShowOnTop' + cExeSuffix[SynExe], opSrOnTop);
     WriteBool('SR', 'SugSel', opSrSuggestSel);
@@ -5994,8 +5994,8 @@ begin
     sm_ConvertSpacesToTabsAll: ecSpToTab.Execute;
     sm_ConvertSpacesToTabsLeading: ecSpToTabLeading.Execute;
 
-    sm_GotoNextBlank: begin if not EditorJumpBlankLine(Ed, opSrOffsetY, true) then MsgBeep; end;
-    sm_GotoPrevBlank: begin if not EditorJumpBlankLine(Ed, opSrOffsetY, false) then MsgBeep; end;
+    sm_GotoNextBlank: begin if not EditorJumpBlankLine(Ed, opSearchOffsetTop, true) then MsgBeep; end;
+    sm_GotoPrevBlank: begin if not EditorJumpBlankLine(Ed, opSearchOffsetTop, false) then MsgBeep; end;
     sm_SelectParagraph: EditorSelectParagraph(Ed);
     sm_SelectToken:         begin if not EditorSelectToken(Ed, false) then MsgBeep; end;
     sm_SelectTokenNoQuotes: begin if not EditorSelectToken(Ed, true) then MsgBeep; end;
@@ -6008,7 +6008,7 @@ begin
     sm_RepeatLastCommand: ecRepeatCmd.Execute;
     sm_FindCommand: DoFindCommandFromString(WideString(PWideChar(Data)));
     sm_CommandsList: ecCommandsList.Execute;
-    sm_ScrollToSel: EditorScrollToSelection(Ed, opSrOffsetY);
+    sm_ScrollToSel: EditorScrollToSelection(Ed, opSearchOffsetTop);
     sm_ProjectList: ecProjectList.Execute;
 
     sm_RemoveDupsAll: ecDedupAll.Execute;
@@ -9499,7 +9499,7 @@ end;
 procedure TfmMain.bBk0Click(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smGotoBookmark0 + (Sender as TComponent).Tag);
-  EditorCenterPos(CurrentEditor, true{GotoMode}, opSrOffsetY);
+  EditorCenterPos(CurrentEditor, true{GotoMode}, opSearchOffsetTop);
 end;
 
 procedure TfmMain.TBXSubmenuItemBkGotoPopup(Sender: TTBCustomItem;
@@ -10182,7 +10182,7 @@ end;
 
 procedure TfmMain.LoadTools;
 begin
-  DoLoadToolList(opTools, SynIni, 'Tool');
+  DoTool_LoadList(opTools, SynIni, 'Tool');
   UpdateTools;
 end;
 
@@ -10255,7 +10255,7 @@ end;
 
 procedure TfmMain.SaveTools;
 begin
-  DoSaveToolList(opTools, SynIni, 'Tool');
+  DoTool_SaveList(opTools, SynIni, 'Tool');
   UpdateTools;
 end;
 
@@ -10274,7 +10274,7 @@ begin
     L.Duplicates:= dupIgnore;
     DoEnumLexers(L);
 
-    if DoCustomizeToolList(opTools, Self, L, true, CurrentFrame.CurrentLexer) then
+    if DoTool_ConfigList(opTools, Self, L, true, CurrentFrame.CurrentLexer) then
     begin
       Application.ProcessMessages;
       SaveTools;
@@ -16106,7 +16106,7 @@ begin
   end;
 
   Ed.GotoBookmark(n);
-  EditorCenterPos(Ed, true{GotoMode}, opSrOffsetY);
+  EditorCenterPos(Ed, true{GotoMode}, opSearchOffsetTop);
   //Msg(Inttostr(n));
 end;
 
@@ -16304,7 +16304,7 @@ begin
         oldSelStart, oldSelLength,
         Ed.CaretStrPos, 0);
 
-    EditorCenterPos(Ed, true{GotoMode}, opSrOffsetY);
+    EditorCenterPos(Ed, true{GotoMode}, opSearchOffsetTop);
     FocusEditor;
   end;
 end;
@@ -18101,7 +18101,7 @@ begin
     CaretPos:= Point(Info.ColNum, Info.LineNum);
     SetSelection(CaretPosToStrPos(CaretPos), Info.Len);
   end;
-  EditorCenterPos(CurrentEditor, false, opSrOffsetY);
+  EditorCenterPos(CurrentEditor, false, opSearchOffsetTop);
   FocusEditor;
 end;
 
@@ -19635,7 +19635,7 @@ begin
           else
             ed.GotoBookmark(Integer(L[i]));
 
-          EditorCenterPos(ed, true{GotoMode}, opSrOffsetY);
+          EditorCenterPos(ed, true{GotoMode}, opSearchOffsetTop);
         end;
       end;
     finally
@@ -19768,7 +19768,7 @@ begin
           else
             ed.CaretPos:= Point(0, Integer(L[i]));
 
-          EditorCenterPos(ed, true{GotoMode}, opSrOffsetY);
+          EditorCenterPos(ed, true{GotoMode}, opSearchOffsetTop);
         end;
       end;
     finally
@@ -26172,7 +26172,7 @@ begin
     FocusEditor;
 
     CurrentEditor.CaretPos:= FProjPreviewEditor.CaretPos;
-    EditorCenterPos(CurrentEditor, true, opSrOffsetY);
+    EditorCenterPos(CurrentEditor, true, opSearchOffsetTop);
   end
   else
     MsgBeep;

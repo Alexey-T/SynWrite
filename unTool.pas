@@ -290,9 +290,9 @@ begin
   if (N>=Low(TSynToolList)) and
     (M>=Low(TSynToolList)) then
   begin
-    DoCopyToolItem(FToolList[N], FTool);
-    DoCopyToolItem(FToolList[M], FToolList[N]);
-    DoCopyToolItem(FTool, FToolList[M]);
+    DoTool_CopyItem(FToolList[N], FTool);
+    DoTool_CopyItem(FToolList[M], FToolList[N]);
+    DoTool_CopyItem(FTool, FToolList[M]);
     ListFill;
   end;
 end;

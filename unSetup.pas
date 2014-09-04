@@ -1941,7 +1941,7 @@ begin
   with fmMain do
   begin
     opMaxTreeMatches:= edSrMaxTreeMatches.Value;
-    opSrOffsetY:= edSrOffsetY.Value;
+    opSearchOffsetTop:= edSrOffsetY.Value;
     opSrExpand:= cbSrExpand.Checked;
     opSrOnTop:= cbSrOnTop.Checked;
     opSrSuggestWord:= cbSrWord.Checked;
@@ -2265,7 +2265,7 @@ begin
   with fmMain do
   begin
     edSrMaxTreeMatches.Value:= opMaxTreeMatches;
-    edSrOffsetY.Value:= opSrOffsetY;
+    edSrOffsetY.Value:= opSearchOffsetTop;
     cbSrExpand.Checked:= opSrExpand;
     cbSrOnTop.Checked:= opSrOnTop;
     cbSrWord.Checked:= opSrSuggestWord;
