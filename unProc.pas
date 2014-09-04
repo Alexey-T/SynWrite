@@ -268,7 +268,7 @@ function DoTool_ConfigList(var AToolList: TSynToolList;
   const ACurrentLexer: string): boolean;
 
 var
-  opSearchOffsetTop: integer = 6;
+  opFindOffsetTop: integer = 6;
 
 implementation
 

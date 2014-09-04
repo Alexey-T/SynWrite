@@ -1941,11 +1941,11 @@ begin
   with fmMain do
   begin
     opMaxTreeMatches:= edSrMaxTreeMatches.Value;
-    opSearchOffsetTop:= edSrOffsetY.Value;
-    opSrExpand:= cbSrExpand.Checked;
-    opSrOnTop:= cbSrOnTop.Checked;
-    opSrSuggestWord:= cbSrWord.Checked;
-    opSrSuggestSel:= cbSrSel.Checked;
+    opFindOffsetTop:= edSrOffsetY.Value;
+    opFindExpand:= cbSrExpand.Checked;
+    opFindOnTop:= cbSrOnTop.Checked;
+    opFindSuggestWord:= cbSrWord.Checked;
+    opFindSuggestSel:= cbSrSel.Checked;
     opShowQsCaptions:= cbSrQsCap.Checked;
     ApplyQs;
   end;
@@ -2265,11 +2265,11 @@ begin
   with fmMain do
   begin
     edSrMaxTreeMatches.Value:= opMaxTreeMatches;
-    edSrOffsetY.Value:= opSearchOffsetTop;
-    cbSrExpand.Checked:= opSrExpand;
-    cbSrOnTop.Checked:= opSrOnTop;
-    cbSrWord.Checked:= opSrSuggestWord;
-    cbSrSel.Checked:= opSrSuggestSel;
+    edSrOffsetY.Value:= opFindOffsetTop;
+    cbSrExpand.Checked:= opFindExpand;
+    cbSrOnTop.Checked:= opFindOnTop;
+    cbSrWord.Checked:= opFindSuggestWord;
+    cbSrSel.Checked:= opFindSuggestSel;
     cbSrQsCap.Checked:= opShowQsCaptions;
   end;
 end;

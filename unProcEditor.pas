@@ -51,7 +51,7 @@ procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
 function EditorJumpMixedCase(Ed: TSyntaxMemo; ARight: boolean): boolean;
 procedure EditorJumpColumnMarker(Ed: TSyntaxMemo; ALeft: boolean);
 procedure EditorJumpSelectionStartEnd(Ed: TSyntaxMemo);
-function EditorJumpBlankLine(Ed: TSyntaxMemo; opSrOffsetY: Integer; ANext: boolean): boolean;
+function EditorJumpBlankLine(Ed: TSyntaxMemo; AOffsetTop: Integer; ANext: boolean): boolean;
 function EditorJumpRange(Ed: TSyntaxMemo): boolean;
 function EditorJumpBracket(Ed: TSyntaxMemo): boolean;
 procedure EditorFindBrackets(Ed: TSyntaxMemo; var Pos1, Pos2: Integer);
@@ -2411,7 +2411,7 @@ begin
 end;
 
 
-function EditorJumpBlankLine(Ed: TSyntaxMemo; opSrOffsetY: Integer; ANext: boolean): boolean;
+function EditorJumpBlankLine(Ed: TSyntaxMemo; AOffsetTop: Integer; ANext: boolean): boolean;
 var
   n: Integer;
 begin
@@ -2426,7 +2426,7 @@ begin
     until false;
 
     CaretPos:= Point(0, n);
-    EditorCenterPos(Ed, true, opSrOffsetY);
+    EditorCenterPos(Ed, true, AOffsetTop);
     Result:= true;
   end;
 end;

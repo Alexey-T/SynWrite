@@ -2935,10 +2935,10 @@ type
     opTipsPanels: boolean;
     opTipsToken: boolean;
     opFollowTail: boolean;
-    opSrExpand: boolean; //Expand results tree on progress
-    opSrOnTop: boolean; //Find dlg on top
-    opSrSuggestSel: boolean; //Suggest selection
-    opSrSuggestWord: boolean; //Suggest current word
+    opFindExpand: boolean; //Expand results tree on progress
+    opFindOnTop: boolean; //Find dlg on top
+    opFindSuggestSel: boolean; //Suggest selection
+    opFindSuggestWord: boolean; //Suggest current word
     opASaveOnTimer,
     opASaveOnFocus,
     opASaveAllFiles: boolean;
@@ -4705,11 +4705,11 @@ begin
     Tree.AutoExpand:= ReadBool('Tree', 'AExpand', false);
     Tree.UpdateDelay:= ReadInteger('Tree', 'Delay', 1000);
 
-    opSearchOffsetTop:= ReadInteger('SR', 'OffY', 6);
-    opSrExpand:= ReadBool('SR', 'Expand', false);
-    opSrOnTop:= ReadBool('SR', 'ShowOnTop' + cExeSuffix[SynExe], SynExe);
-    opSrSuggestSel:= ReadBool('SR', 'SugSel', false);
-    opSrSuggestWord:= ReadBool('SR', 'SugWord', false);
+    opFindOffsetTop:= ReadInteger('SR', 'OffY', 6);
+    opFindExpand:= ReadBool('SR', 'Expand', false);
+    opFindOnTop:= ReadBool('SR', 'ShowOnTop' + cExeSuffix[SynExe], SynExe);
+    opFindSuggestSel:= ReadBool('SR', 'SugSel', false);
+    opFindSuggestWord:= ReadBool('SR', 'SugWord', false);
     opMaxTreeMatches:= ReadInteger('SR', 'MaxTreeMatches', 100);
 
     opTabOptionsLast:= ReadInteger('View', 'TabLast', 0);
@@ -5092,11 +5092,11 @@ begin
     WriteBool('ACP', 'IfNone', ecACP.ShowWhenNone);
     WriteBool('ACP', 'ParamHints', ParamCompletion.Enabled);
 
-    WriteInteger('SR', 'OffY', opSearchOffsetTop);
-    WriteBool('SR', 'Expand', opSrExpand);
-    WriteBool('SR', 'ShowOnTop' + cExeSuffix[SynExe], opSrOnTop);
-    WriteBool('SR', 'SugSel', opSrSuggestSel);
-    WriteBool('SR', 'SugWord', opSrSuggestWord);
+    WriteInteger('SR', 'OffY', opFindOffsetTop);
+    WriteBool('SR', 'Expand', opFindExpand);
+    WriteBool('SR', 'ShowOnTop' + cExeSuffix[SynExe], opFindOnTop);
+    WriteBool('SR', 'SugSel', opFindSuggestSel);
+    WriteBool('SR', 'SugWord', opFindSuggestWord);
     WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
 
     WriteBool('View', 'TabEntire', opTabEntireColor);
@@ -5815,10 +5815,10 @@ begin
     smFindAll:
     begin
       FindInit(true{KeepFlags});
-      if opSrSuggestSel and (Ed.SelLength>0) then
+      if opFindSuggestSel and (Ed.SelLength>0) then
         Finder.FindText:= Ed.SelText
       else
-      if opSrSuggestWord then
+      if opFindSuggestWord then
         Finder.FindText:= Ed.WordAtPos(Ed.CaretPos);
       if Finder.FindText='' then
         ecFind.Execute
@@ -5994,8 +5994,8 @@ begin
     sm_ConvertSpacesToTabsAll: ecSpToTab.Execute;
     sm_ConvertSpacesToTabsLeading: ecSpToTabLeading.Execute;
 
-    sm_GotoNextBlank: begin if not EditorJumpBlankLine(Ed, opSearchOffsetTop, true) then MsgBeep; end;
-    sm_GotoPrevBlank: begin if not EditorJumpBlankLine(Ed, opSearchOffsetTop, false) then MsgBeep; end;
+    sm_GotoNextBlank: begin if not EditorJumpBlankLine(Ed, opFindOffsetTop, true) then MsgBeep; end;
+    sm_GotoPrevBlank: begin if not EditorJumpBlankLine(Ed, opFindOffsetTop, false) then MsgBeep; end;
     sm_SelectParagraph: EditorSelectParagraph(Ed);
     sm_SelectToken:         begin if not EditorSelectToken(Ed, false) then MsgBeep; end;
     sm_SelectTokenNoQuotes: begin if not EditorSelectToken(Ed, true) then MsgBeep; end;
@@ -6008,7 +6008,7 @@ begin
     sm_RepeatLastCommand: ecRepeatCmd.Execute;
     sm_FindCommand: DoFindCommandFromString(WideString(PWideChar(Data)));
     sm_CommandsList: ecCommandsList.Execute;
-    sm_ScrollToSel: EditorScrollToSelection(Ed, opSearchOffsetTop);
+    sm_ScrollToSel: EditorScrollToSelection(Ed, opFindOffsetTop);
     sm_ProjectList: ecProjectList.Execute;
 
     sm_RemoveDupsAll: ecDedupAll.Execute;
@@ -8549,7 +8549,7 @@ begin
       if not ShowOnTop then
       begin
         //Seems it OK sets ShowOnTop style, only for app
-        if opSrOnTop then
+        if opFindOnTop then
           FormStyle:= fsStayOnTop
         else
           FormStyle:= fsNormal;
@@ -8569,10 +8569,10 @@ begin
 
     if (not SR_SuggestedSelScope){careful} then
     begin
-      if opSrSuggestSel and (Ed.SelLength>0) then
+      if opFindSuggestSel and (Ed.SelLength>0) then
         SR_SuggestedSel:= Ed.SelText
       else
-      if opSrSuggestWord then
+      if opFindSuggestWord then
         SR_SuggestedSel:= Ed.WordAtPos(Ed.CaretPos);
     end;
 
@@ -9499,7 +9499,7 @@ end;
 procedure TfmMain.bBk0Click(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smGotoBookmark0 + (Sender as TComponent).Tag);
-  EditorCenterPos(CurrentEditor, true{GotoMode}, opSearchOffsetTop);
+  EditorCenterPos(CurrentEditor, true{GotoMode}, opFindOffsetTop);
 end;
 
 procedure TfmMain.TBXSubmenuItemBkGotoPopup(Sender: TTBCustomItem;
@@ -12076,10 +12076,10 @@ begin
     if (AErrorMode = 0) then //Only suggest text for 1st search
       with CurrentEditor do
       begin
-        if opSrSuggestSel and (SelLength>0) then
+        if opFindSuggestSel and (SelLength>0) then
           SR_SuggestedSel:= SelText
         else
-        if opSrSuggestWord then
+        if opFindSuggestWord then
           SR_SuggestedSel:= WordAtPos(CaretPos);
       end;
 
@@ -13274,7 +13274,7 @@ begin
 
   //scroll to last file, update
   FTreeRoot.Expand(false);
-  if opSrExpand then
+  if opFindExpand then
     TreeFind.Selected:= TreeFind.Items[TreeFind.Items.Count-1]
   else
     TreeFind.Selected:= NodeFile;
@@ -16106,7 +16106,7 @@ begin
   end;
 
   Ed.GotoBookmark(n);
-  EditorCenterPos(Ed, true{GotoMode}, opSearchOffsetTop);
+  EditorCenterPos(Ed, true{GotoMode}, opFindOffsetTop);
   //Msg(Inttostr(n));
 end;
 
@@ -16304,7 +16304,7 @@ begin
         oldSelStart, oldSelLength,
         Ed.CaretStrPos, 0);
 
-    EditorCenterPos(Ed, true{GotoMode}, opSearchOffsetTop);
+    EditorCenterPos(Ed, true{GotoMode}, opFindOffsetTop);
     FocusEditor;
   end;
 end;
@@ -18101,7 +18101,7 @@ begin
     CaretPos:= Point(Info.ColNum, Info.LineNum);
     SetSelection(CaretPosToStrPos(CaretPos), Info.Len);
   end;
-  EditorCenterPos(CurrentEditor, false, opSearchOffsetTop);
+  EditorCenterPos(CurrentEditor, false, opFindOffsetTop);
   FocusEditor;
 end;
 
@@ -19635,7 +19635,7 @@ begin
           else
             ed.GotoBookmark(Integer(L[i]));
 
-          EditorCenterPos(ed, true{GotoMode}, opSearchOffsetTop);
+          EditorCenterPos(ed, true{GotoMode}, opFindOffsetTop);
         end;
       end;
     finally
@@ -19768,7 +19768,7 @@ begin
           else
             ed.CaretPos:= Point(0, Integer(L[i]));
 
-          EditorCenterPos(ed, true{GotoMode}, opSearchOffsetTop);
+          EditorCenterPos(ed, true{GotoMode}, opFindOffsetTop);
         end;
       end;
     finally
@@ -26172,7 +26172,7 @@ begin
     FocusEditor;
 
     CurrentEditor.CaretPos:= FProjPreviewEditor.CaretPos;
-    EditorCenterPos(CurrentEditor, true, opSearchOffsetTop);
+    EditorCenterPos(CurrentEditor, true, opFindOffsetTop);
   end
   else
     MsgBeep;
