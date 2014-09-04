@@ -4361,6 +4361,7 @@ begin
   acSetupLexHL.Enabled:= en_lex;
   ecFullScr.Enabled:= SynExe;
   ecOnTop.Enabled:= SynExe;
+  TbxItemRunNewPlugin.Enabled:= SynExe;
 
   ecCopy.Update;
   ecCut.Update;
