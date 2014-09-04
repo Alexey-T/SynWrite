@@ -258,6 +258,7 @@ type
   TSynToolList = array[1..16] of TSynTool;
 
 procedure DoCopyToolItem(var FIn, FOut: TSynTool);
+procedure DoCopyToolList(var FIn, FOut: TSynToolList);
 procedure DoLoadToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
 procedure DoSaveToolList(var AToolList: TSynToolList; const AIniFN, ASection: string);
 function DoCustomizeToolList(var AToolList: TSynToolList;
@@ -2026,8 +2027,6 @@ function DoCustomizeToolList(
   ALexersList: TTntStringList;
   AKeyEnabled: boolean;
   const ACurrentLexer: string): boolean;
-var
-  i: Integer;
 begin
   with TfmTools.Create(AParentForm) do
   try
@@ -2036,8 +2035,7 @@ begin
     bKey.Enabled:= AKeyEnabled;
     cbCtx.Enabled:= AKeyEnabled;
 
-    for i:= Low(AToolList) to High(AToolList) do
-      DoCopyToolItem(AToolList[i], FToolList[i]);
+    DoCopyToolList(AToolList, FToolList);
 
     edLexer.Items.Add(DKLangConstW('AllL'));
     edLexer.Items.AddStrings(ALexersList);
@@ -2046,10 +2044,9 @@ begin
     Left:= AParentForm.Monitor.Left + (AParentForm.Monitor.Width - Width) div 2;
     Top:= AParentForm.Monitor.Top + (AParentForm.Monitor.Height - Height) div 2;
 
-    Result:= ShowModal = mrOk;
+    Result:= ShowModal=mrOk;
     if Result then
-      for i:= Low(AToolList) to High(AToolList) do
-        DoCopyToolItem(FToolList[i], AToolList[i]);
+      DoCopyToolList(FToolList, AToolList);
   finally
     Release;
   end;
@@ -2416,6 +2413,14 @@ begin
   FOut.ToolSaveMode:= FIn.ToolSaveMode;
   FOut.ToolNoTags:= FIn.ToolNoTags;
   FOut.ToolContextItem:= FIn.ToolContextItem;
+end;
+
+procedure DoCopyToolList(var FIn, FOut: TSynToolList);
+var
+  i: Integer;
+begin
+  for i:= Low(TSynToolList) to High(TSynToolList) do
+    DoCopyToolItem(FIn[i], FOut[i]);
 end;
 
 
