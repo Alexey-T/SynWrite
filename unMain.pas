@@ -27866,6 +27866,9 @@ begin
       SCmd:= '';
     end;
 
+  TBXSubmenuItemPlugins.Clear;
+  TBXSubmenuItemCtxPlugins.Clear;
+
   //load section "Commands"
   ListSec:= TStringList.Create;
   with TIniFile.Create(fn_plug_ini) do
