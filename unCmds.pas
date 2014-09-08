@@ -28,6 +28,7 @@ const
   sm_CopyAsRtf = 310;
 
   sm_ReplaceInFiles = 617;
+  sm_ReplaceInProject = 618;
   sm_ListerFindDialog = 620;
   sm_ListerFindNext = 621;
   sm_ListerFindPrev = 622;

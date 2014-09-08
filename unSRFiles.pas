@@ -35,7 +35,7 @@ type
     cbCase: TTntCheckBox;
     cbWords: TTntCheckBox;
     cbSpec: TTntCheckBox;
-    TntLabel1: TTntLabel;
+    labInDir: TTntLabel;
     edDir: TTntComboBox;
     bBrowseDir: TTntButton;
     bRAll: TTntButton;
@@ -68,7 +68,7 @@ type
     TntLabel3: TTntLabel;
     edSort: TTntComboBox;
     cbCloseAfter: TTntCheckBox;
-    TntLabel4: TTntLabel;
+    labMaskExc: TTntLabel;
     edFileExc: TTntComboBox;
     labFav: TTntLabel;
     PopupFav: TTntPopupMenu;
@@ -99,6 +99,7 @@ type
     labPreset: TTntLabel;
     TimerPreset: TTimer;
     mnuLoadSort: TTntMenuItem;
+    labInProject: TTntLabel;
     procedure FormCreate(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
     procedure FormShow(Sender: TObject);

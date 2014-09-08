@@ -626,7 +626,7 @@ type
     TBXItemFCloseDel: TSpTbxItem;
     acCloseAndDelete: TAction;
     ecReplaceInFiles: TAction;
-    TBXItemSRepFiles: TSpTbxItem;
+    TBXItemSRepInFiles: TSpTBXItem;
     TimerSel: TTimer;
     TBXSubmenuItemCtxMore: TSpTbxSubmenuItem;
     TBXItemCtxCopyUrl: TSpTbxItem;
@@ -1366,6 +1366,8 @@ type
     TbxItemWinExplorer: TSpTBXItem;
     TBXItemTabCloseRighter: TSpTBXItem;
     TBXItemTabCloseLefter: TSpTBXItem;
+    ecReplaceInProject: TAction;
+    TbxItemSRepInProject: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2139,6 +2141,7 @@ type
     procedure TbxItemWinFtpClick(Sender: TObject);
     procedure TBXItemTabCloseRighterClick(Sender: TObject);
     procedure TBXItemTabCloseLefterClick(Sender: TObject);
+    procedure ecReplaceInProjectExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -2351,6 +2354,7 @@ type
     procedure DoCheckIfBookmarkSetHere(Ed: TSyntaxMemo; NPos: Integer);
     function SGetFrameIndexFromPrefixedStr(const InfoFN: Widestring): Integer;
     function SGetTabPrefix: Widestring;
+
     procedure DoFindCommandFromString(const S: Widestring);
     procedure DoFindDialog_ReplaceAllInCurrentTab;
     procedure DoFindDialog_ReplaceAllInAllTabs(var AFilesReport: Widestring);
@@ -2364,6 +2368,15 @@ type
     procedure DoFindInOutPanel;
     procedure DoFindInValidatePanel;
     procedure DoFindInPluginsLog;
+
+    procedure DoFindInFiles_Dialog(AInProject: boolean);
+    function DoFindInFiles_InitFilelist(
+      FListFiles: TTntStringList;
+      const SDir, SMaskInc, SMaskExc: Widestring;
+      bSubDirs, bNoRO, bNoHidFiles, bNoHidDirs, bNoBinary: boolean;
+      ASortMode: TSynFileSort;
+      AInProject: boolean): boolean;
+
     procedure DoAddFav(const fn: Widestring);
     procedure NumConvInsert(Sender: TObject; const S: string; Typ: TSynNumType);
     procedure DoGetCommentProps(const Lexer: string;
@@ -3270,7 +3283,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1465';
+  cSynVer = '6.7.1470';
   cSynPyVer = '1.0.137';
 
 const
@@ -5764,6 +5777,8 @@ begin
       ecReplace.Execute;
     sm_ReplaceInFiles:
       ecReplaceInFiles.Execute;
+    sm_ReplaceInProject:
+      ecReplaceInProject.Execute;  
 
     smFindNext:
     begin
@@ -10040,7 +10055,8 @@ begin
   UpdKey(tbxItemOLexerLib, sm_OptSetupLexerLib);
   //search
   UpdKey(tbxItemSRep, smReplaceDialog);
-  UpdKey(tbxItemSRepFiles, sm_ReplaceInFiles);
+  UpdKey(tbxItemSRepInFiles, sm_ReplaceInFiles);
+  UpdKey(tbxItemSRepInProject, sm_ReplaceInProject);
   UpdKey(tbxItemSFind, smFindDialog);
   UpdKey(tbxItemSNext, smFindNext);
   UpdKey(tbxItemSPrev, smFindPrev);
@@ -11980,6 +11996,16 @@ begin
 end;
 
 procedure TfmMain.ecReplaceInFilesExecute(Sender: TObject);
+begin
+  DoFindInFiles_Dialog(false);
+end;
+
+procedure TfmMain.ecReplaceInProjectExecute(Sender: TObject);
+begin
+  DoFindInFiles_Dialog(true);
+end;
+
+procedure TfmMain.DoFindInFiles_Dialog(AInProject: boolean);
 var
   OFlags: TSearchOptions;
   OTokens: TSearchTokens;
@@ -12099,6 +12125,20 @@ begin
     SR_LastMaskExc:= FDialogFFiles_MaskExc;
     SR_LastDir:= FDialogFFiles_Dir;
 
+    labInProject.Visible:= AInProject;
+    if AInProject then
+    begin
+      bBrowseFile.Visible:= false;
+      bBrowseDir.Visible:= false;
+      bCurFile.Visible:= false;
+      bCurrDir.Visible:= false;
+      labMaskExc.Visible:= false;
+      labInDir.Visible:= false;
+      edFileExc.Visible:= false;
+      edDir.Visible:= false;
+      cbSubDir.Visible:= false;
+    end;
+
     //center form
     Left:= Self.Monitor.Left + (Self.Monitor.Width - Width) div 2;
     Top:= Self.Monitor.Top + (Self.Monitor.Height - Height) div 2;
@@ -12177,57 +12217,15 @@ begin
     ACloseAfter:= cbCloseAfter.Checked;
     ASortMode:= TSynFileSort(edSort.ItemIndex);
 
-    DoProgressShow(proFindFiles);
-    try
-      FFindToList(FListFiles, edDir.Text, edFileInc.Text, edFileExc.Text,
-        cbSubDir.Checked, cbNoRO.Checked, cbNoHid.Checked, cbNoHid2.Checked);
-      if StopFind then
+    if not DoFindInFiles_InitFilelist(
+      FListFiles,
+      edDir.Text, edFileInc.Text, edFileExc.Text,
+      cbSubDir.Checked, cbNoRO.Checked, cbNoHid.Checked, cbNoHid2.Checked, cbNoBin.Checked,
+      ASortMode, AInProject) then
       begin
-        DoProgressHide;
         RestoreFinder;
         Exit
       end;
-    except
-      on E: Exception do
-      begin
-        MsgExcept('Error on searching for files', E, Handle);
-        DoProgressHide;
-        Exit;
-      end;
-    end;
-
-    //exclude binary files from StringList
-    if cbNoBin.Checked then
-    try
-      fmProgress.SetMode(proExclBinary);
-      N:= FListFiles.Count;
-      for i:= N-1 downto 0 do
-      begin
-        if not IsFileText(FListFiles[i]) then
-          FListFiles.Delete(i);
-        if IsProgressStopped(N-i, N) then
-        begin
-          DoProgressHide;
-          RestoreFinder;
-          Exit
-        end;
-      end;
-    except
-      on E: Exception do
-      begin
-        MsgExcept('Error on excluding binary files', E, Handle);
-        DoProgressHide;
-        Exit;
-      end;
-    end;
-
-    //sort file list
-    case ASortMode of
-      sortDate:
-        FListFiles.CustomSort(CompareListDate);
-      sortDateDesc:
-        FListFiles.CustomSort(CompareListDateDesc);
-    end;
 
     //set finder
     Finder.Control:= TemplateEditor;
@@ -12256,7 +12254,7 @@ begin
     InUTF8:= cbInUTF8.Checked;
     InUTF16:= cbInUTF16.Checked;
   finally
-    Free; //not Release
+    Free;
   end;
 
   //"Find in files" dialog is closed, Finder is set, FListFiles is filled,
@@ -12483,6 +12481,77 @@ begin
   end
   else
     FocusEditor;
+end;
+
+
+function TfmMain.DoFindInFiles_InitFilelist(
+  FListFiles: TTntStringList;
+  const SDir, SMaskInc, SMaskExc: Widestring;
+  bSubDirs, bNoRO, bNoHidFiles, bNoHidDirs, bNoBinary: boolean;
+  ASortMode: TSynFileSort;
+  AInProject: boolean): boolean;
+var
+  N, i: Integer;
+begin
+  Result:= true;
+  DoProgressShow(proFindFiles);
+
+  try
+    try
+      FFindToList(FListFiles, sDir, sMaskInc, sMaskExc,
+        bSubDirs, bNoRO, bNoHidFiles, bNoHidDirs);
+      if StopFind then
+      begin
+        DoProgressHide;
+        Result:= false;
+        Exit
+      end;
+    except
+      on E: Exception do
+      begin
+        MsgExcept('Error on searching for files', E, Handle);
+        DoProgressHide;
+        Result:= false;
+        Exit;
+      end;
+    end;
+
+    //exclude binary files from StringList
+    if bNoBinary then
+    try
+      fmProgress.SetMode(proExclBinary);
+      N:= FListFiles.Count;
+      for i:= N-1 downto 0 do
+      begin
+        if not IsFileText(FListFiles[i]) then
+          FListFiles.Delete(i);
+        if IsProgressStopped(N-i, N) then
+        begin
+          DoProgressHide;
+          Result:= false;
+          Exit
+        end;
+      end;
+    except
+      on E: Exception do
+      begin
+        MsgExcept('Error on excluding binary files', E, Handle);
+        DoProgressHide;
+        Result:= false;
+        Exit;
+      end;
+    end;
+  finally
+    //todo
+  end;
+
+  //sort file list
+  case ASortMode of
+    sortDate:
+      FListFiles.CustomSort(CompareListDate);
+    sortDateDesc:
+      FListFiles.CustomSort(CompareListDateDesc);
+  end;
 end;
 
 procedure TfmMain.DoMarkAll(const Str: Widestring);
@@ -12719,6 +12788,13 @@ begin
   if IsShortcutOfCmd(sh, sm_ReplaceInFiles) then
   begin
     ecReplaceInFiles.Execute;
+    Key:= 0;
+    Exit
+  end;
+
+  if IsShortcutOfCmd(sh, sm_ReplaceInProject) then
+  begin
+    ecReplaceInProject.Execute;
     Key:= 0;
     Exit
   end;
