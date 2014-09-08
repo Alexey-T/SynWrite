@@ -187,6 +187,7 @@ procedure MsgInfo(const S: WideString; H: THandle);
 procedure MsgWarn(const S: WideString; H: THandle);
 procedure MsgError(const S: WideString; H: THandle);
 function MsgConfirm(const S: Widestring; H: THandle; IsQuestion: boolean = false): boolean;
+function MsgConfirmYesNoCancel(const S: Widestring; H: THandle; CanCancel: boolean): Integer;
 procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);
 procedure MsgRenameError(const fnPrev, fnNew: Widestring; H: THandle);
 
@@ -326,6 +327,15 @@ begin
   Result:= MessageBoxW(H, PWChar(S), 'SynWrite',
     MB_okcancel or nIcon or mb_taskmodal) = id_ok;
 end;
+
+function MsgConfirmYesNoCancel(const S: Widestring; H: THandle; CanCancel: boolean): Integer;
+var
+  Flags: Integer;
+begin
+  Flags:= IfThen(CanCancel, mb_yesnocancel, mb_yesno) or mb_iconwarning;
+  Result:= MessageBoxW(H, PWChar(S), 'SynWrite', Flags);
+end;  
+
 
 procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);
 begin

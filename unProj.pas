@@ -369,7 +369,7 @@ end;
 
 procedure TfmProj.DoNewProject;
 begin
-  DoConfirmClose;
+  if not DoConfirmClose then Exit;
 
   if FProjectFN<>'' then
     if Assigned(FOnProjectClose) then
@@ -1787,7 +1787,7 @@ begin
 
   SMsgProjSaveCfm:= DKLangConstW('zMSaveProj');
   msg:= WideFormat(SMsgProjSaveCfm, [fn]);
-  res:= MessageBoxW(Handle, PWChar(msg), 'SynWrite', mb_yesnocancel or mb_iconwarning);
+  res:= MsgConfirmYesNoCancel(msg, Handle, true);
 
   case res of
     id_yes: DoSaveProject;

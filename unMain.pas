@@ -2294,7 +2294,7 @@ type
     function GetCurrentFrame: TEditorFrame;
     function GetCurrentFrameInPages(Pages: TATPages): TEditorFrame;
     procedure FrameSaveState(Sender: TObject);
-    function MsgConfirmSaveFrame(Frame: TEditorFrame; AllowCancel: boolean=true): TModalResult;
+    function MsgConfirmSaveFrame(Frame: TEditorFrame; CanCancel: boolean=true): TModalResult;
     procedure InitFrameTab(Frame: TEditorFrame);
     function SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
     function OppositeFrame: TEditorFrame;
@@ -3270,7 +3270,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1460';
+  cSynVer = '6.7.1465';
   cSynPyVer = '1.0.137';
 
 const
@@ -4265,15 +4265,13 @@ begin
   SyncTree;
 end;
 
-function TfmMain.MsgConfirmSaveFrame(Frame: TEditorFrame; AllowCancel: boolean=true): TModalResult;
+function TfmMain.MsgConfirmSaveFrame(Frame: TEditorFrame; CanCancel: boolean=true): TModalResult;
 var
   Str: Widestring;
-  Flags: DWORD;
   Res: Integer;
 begin
   Str:= WideFormat(DKLangConstW('MSave'), [Frame.TabCaption]);
-  Flags:= IfThen(AllowCancel, MB_YESNOCANCEL, MB_YESNO) or MB_ICONWARNING;
-  Res:= MessageBoxW(Handle, PWChar(Str), 'SynWrite', Flags);
+  Res:= MsgConfirmYesNoCancel(Str, Handle, CanCancel);
   case Res of
     id_ok: Result:= mrOk;
     id_yes: Result:= mrYes;
@@ -16628,7 +16626,6 @@ end;
 function TfmMain.DoConfirmSaveSession(CanCancel: boolean; ExitCmd: boolean = false): boolean;
 var
   sName, fn: WideString;
-  Buttons: DWORD;
 begin
   Result:= true;
 
@@ -16655,12 +16652,10 @@ begin
 
   //ask to save current named session
   sName:= WideChangeFileExt(WideExtractFileName(FSessionFN), '');
-  Buttons:= IfThen(CanCancel, mb_yesnocancel, mb_yesno) or mb_iconwarning;
 
-  case MessageBoxW(
-         Handle,
-         PWChar(WideFormat(DKLangConstW('MSessSav'), [sName])),
-         'SynWrite', Buttons) of
+  case MsgConfirmYesNoCancel(
+         WideFormat(DKLangConstW('MSessSav'), [sName]),
+         Handle, CanCancel) of
     id_yes:
       begin
         DoSaveSessionToFile(FSessionFN);
@@ -23078,11 +23073,10 @@ end;
 function TfmMain.DoCheckUnicodeNeeded(Frame: TEditorFrame): boolean;
   //
   function Cfm(const SEnc: Widestring): integer;
-  var
-    S: Widestring;
   begin
-    S:= WideFormat(DKLangConstW('zMUniNeed'), [SEnc]);
-    Result:= MessageBoxW(Handle, PWChar(S), 'SynWrite', mb_yesnocancel or mb_iconquestion);
+    Result:= MsgConfirmYesNoCancel(
+      WideFormat(DKLangConstW('zMUniNeed'), [SEnc]),
+      Handle, true);
   end;
   //
 begin
