@@ -154,7 +154,7 @@ begin
               Inc(i);
               if i > 1*1000*1000 then
               begin
-                Application.MessageBox('Macro seems to be looped forever. Stopped.', 'SynWrite', mb_ok or mb_iconwarning);
+                MsgWarn(DKLangConstW('zMMacroLooped'), Handle);
                 Break
               end;
             until AMacros.AtFileEnd;  

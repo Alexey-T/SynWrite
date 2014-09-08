@@ -142,7 +142,7 @@ begin
 
   if FileNameConverterImageToBmp='' then
   begin
-    MessageBox(0, 'ImageToBmp converter path not set', 'Image preview', mb_ok or mb_iconerror);
+    MsgError('ImageToBmp converter path not set', 0);
     Exit
   end;
 

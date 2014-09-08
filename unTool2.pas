@@ -189,7 +189,7 @@ begin
   end;
 
   if FileExists(fn) then
-    Application.MessageBox(PChar('File saved:'#13+fn), 'SynWrite', mb_iconinformation);
+    MsgInfo('File saved:'#13+fn, Handle);
 end;
 
 end.

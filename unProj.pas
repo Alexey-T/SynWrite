@@ -1191,8 +1191,7 @@ begin
       if Level>LevelDir then
       begin
         if (Level-LevelDir)>1 then
-          Application.MessageBox(PChar('Bad level for node:'#13+L[i]),
-            'Project loading', mb_ok or mb_iconerror);
+          MsgError('Bad level for node in project-file:'#13+L[i], Handle);
         Node:= NodeDir;
       end
       else

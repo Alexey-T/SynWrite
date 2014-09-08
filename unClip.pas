@@ -35,9 +35,10 @@ type
 
 implementation
 
-uses Clipbrd, TntClipbrd,
-  SysUtils,
-  Graphics, ATxSProc, ecStrUtils;
+uses
+  Clipbrd, TntClipbrd,
+  SysUtils, Graphics,
+  ATxSProc, ecStrUtils, unProc;
 {$R *.DFM}
 
 procedure TfmClip.FormCreate(Sender : TObject);
@@ -53,7 +54,7 @@ end;
 procedure TfmClip.Set_;
 begin 
   if FNextClipboardViewer <> 0 then 
-    MessageBox(0, 'Clipboard window is already registered!', 'SynWrite', 0) 
+    MsgWarn('Clipboard window is already registered!', Handle)
   else 
     { Add to clipboard chain }
     FNextClipboardViewer := SetClipboardViewer(Handle);
