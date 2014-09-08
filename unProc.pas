@@ -315,17 +315,12 @@ begin
   MsgError(DKLangConstW('zMRenameErr')+#13+fnPrev+#13+cArrow+#13+fnNew, H);
 end;
 
-
 function MsgConfirm(const S: Widestring; H: THandle; IsQuestion: boolean = false): boolean;
 var
-  nIcon: Integer;
+  Flags: Integer;
 begin
-  if IsQuestion then
-    nIcon:= mb_iconquestion
-  else
-    nIcon:= mb_iconwarning;
-  Result:= MessageBoxW(H, PWChar(S), 'SynWrite',
-    MB_okcancel or nIcon or mb_taskmodal) = id_ok;
+  Flags:= mb_okcancel or mb_taskmodal or IfThen(IsQuestion, mb_iconquestion, mb_iconwarning);
+  Result:= MessageBoxW(H, PWChar(S), 'SynWrite', Flags) = id_ok;
 end;
 
 function MsgConfirmYesNoCancel(const S: Widestring; H: THandle; CanCancel: boolean): Integer;
