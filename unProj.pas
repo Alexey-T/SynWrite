@@ -322,14 +322,6 @@ begin
   MessageBeep(mb_iconwarning);
 end;
 
-function MsgCfm(const S: Widestring; Handle: THandle): boolean;
-begin
-  Result:= MessageBoxW(Handle,
-    PWChar(S),
-    PWChar(SMsgProjCaption),
-    mb_okcancel or mb_iconwarning) = id_ok;
-end;
-
 function IsDir(Node: TTntTreeNode): boolean;
 begin
   if Node=nil then
@@ -480,7 +472,7 @@ begin
       MsgBeep
     else
     begin
-      if not MsgCfm(WideFormat(DKLangConstW('zMDelMany'), [SelectionCount]), Self.Handle) then Exit;
+      if not MsgConfirm(WideFormat(DKLangConstW('zMDelMany'), [SelectionCount]), Self.Handle) then Exit;
       for i:= SelectionCount-1 downto 0 do
         Items.Delete(Selections[i]);
       SetModified;
@@ -1108,7 +1100,7 @@ begin
   if not ODProj.Execute then Exit;
 
   if not FileExists(ODProj.FileName) then
-    if not MsgCfm(WideFormat(DKLangConstW('MCre'), [WideExtractFileName(ODProj.FileName)]), Handle) then Exit;
+    if not MsgConfirm(WideFormat(DKLangConstW('MCre'), [WideExtractFileName(ODProj.FileName)]), Handle) then Exit;
 
   SetProjDir(ExtractFileDir(ODProj.FileName));
   fn:= ODProj.FileName;

@@ -205,7 +205,6 @@ begin
     ModalResult:= mrOk;
   end
   else
-    //MessageBoxW(Handle, PWChar(Widestring(MsgIcoCannotSave)), 'SynWrite', mb_ok or mb_iconerror);
     MsgError(MsgIcoCannotSave);
 end;
 

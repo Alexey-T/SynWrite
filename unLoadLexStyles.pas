@@ -42,8 +42,9 @@ uses iniFiles, unProc;
 {$R *.dfm}
 
 procedure TfmLoadLex.FormShow(Sender: TObject);
-var L: TStringList;
-  i:Integer;
+var
+  L: TStringList;
+  i: Integer;
 begin
   if SIniStyles='' then Exit;
   List.Items.Clear;
@@ -66,7 +67,8 @@ begin
 end;
 
 procedure TfmLoadLex.bSAllClick(Sender: TObject);
-var i:Integer;
+var
+  i: Integer;
 begin
   with List do
     for i:= 0 to Items.Count-1 do
@@ -75,7 +77,8 @@ begin
 end;
 
 procedure TfmLoadLex.bSNoneClick(Sender: TObject);
-var i:Integer;
+var
+  i: Integer;
 begin
   with List do
     for i:= 0 to Items.Count-1 do
@@ -84,10 +87,10 @@ begin
 end;
 
 procedure TfmLoadLex.bRemClick(Sender: TObject);
-var i:Integer;
+var
+  i: Integer;
 begin
-  if MessageBoxW(Handle, PWChar(DKLangConstW('MDelSt')), 'SynWrite',
-    mb_okcancel or mb_iconwarning) <> idok then Exit;
+  if not MsgConfirm(DKLangConstW('MDelSt'), Handle) then Exit;
 
   with TIniFile.Create(SIniStyles) do
   try
@@ -103,8 +106,9 @@ begin
 end;
 
 procedure TfmLoadLex.ListClickCheck(Sender: TObject);
-var i:Integer;
-  en:Boolean;
+var
+  i: Integer;
+  en: boolean;
 begin
   en:= false;
   with List do

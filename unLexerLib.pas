@@ -75,7 +75,7 @@ procedure DoCustomizeLexerLibrary(LexerLib: TSyntaxManager);
 implementation
 
 uses
-  StrUtils;
+  StrUtils, unProc;
 
 {$R *.dfm}
 
@@ -266,8 +266,7 @@ end;
 procedure TfmLexerLibrary.actDeleteLexerExecute(Sender: TObject);
 begin
   if (LV.ItemIndex>=0) then
-    if (MessageBoxW(Handle, PWChar(DKLangConstW('MDLex')), PWChar(WideString(Caption)),
-               MB_okcancel or MB_ICONWARNING) = IDOK) then
+    if MsgConfirm(DKLangConstW('MDLex'), Handle) then
     begin
       LV.Items.Objects[LV.ItemIndex].Free;
       FLexLib.Modified:= True;
@@ -298,9 +297,7 @@ end;
 
 procedure TfmLexerLibrary.actClearExecute(Sender: TObject);
 begin
-  if MessageBoxW(Handle,
-    PWChar(DKLangConstW('MDLexx')), PWChar(Widestring(Caption)),
-    mb_iconwarning or mb_okcancel) = idok then
+  if MsgConfirm(DKLangConstW('MDLexx'), Handle) then
   begin
     FLexLib.Clear;
     UpdateList;
