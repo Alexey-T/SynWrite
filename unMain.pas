@@ -100,6 +100,12 @@ const
     'Tango 22x22'
     );
 
+type
+  TSynFindInFilesError = (
+    findInFilesOk,
+    findInFilesNoFiles,
+    findInFilesNoLines
+    );
 
 type
   TSynPyEvent = (
@@ -12012,7 +12018,7 @@ var
   OTxt, OTxt2: Widestring;
   ON1, ON2, ON3: TNotifyEvent;
   ON4: TOnFindEvent;
-  AErrorMode: integer;
+  AErrorMode: TSynFindInFilesError;
   //-------------
   procedure RestoreFinder;
   begin
@@ -12034,12 +12040,12 @@ var
   //-------------
   procedure MsgNoFiles;
   begin
-    AErrorMode:= 1;
+    AErrorMode:= findInFilesNoFiles;
   end;
   //-------------
   procedure MsgNoLines;
   begin
-    AErrorMode:= 2;
+    AErrorMode:= findInFilesNoLines;
   end;
   //-------------
 var
@@ -12059,7 +12065,7 @@ var
 label
   _Exit, _Show;
 begin
-  AErrorMode:= 0;
+  AErrorMode:= findInFilesOk;
 
   //save finder
   OFlags:= Finder.Flags;
@@ -12100,7 +12106,7 @@ begin
     SR_SuggestedFind:= ATextSearch;
     SR_SuggestedReplace:= ATextReplace;
 
-    if (AErrorMode = 0) then //Only suggest text for 1st search
+    if (AErrorMode = findInFilesOk) then //Only suggest text for 1st search
       with CurrentEditor do
       begin
         if opFindSuggestSel and (SelLength>0) then
@@ -12111,10 +12117,12 @@ begin
       end;
 
     case AErrorMode of
-      1: ShowErr(DKLangConstW('FF0')); //No files found
-      2: ShowErr(DKLangConstW('FF0_')); //No occurances found
+      findInFilesNoFiles:
+        ShowErr(DKLangConstW('MNFoundNoFiles'));
+      findInFilesNoLines:
+        ShowErr(DKLangConstW('MNFoundNoLines'));
     end;
-    AErrorMode:= 0;
+    AErrorMode:= findInFilesOk;
 
     //use last values of fields
     SR_LastLeft:= FDialogFFiles_Left;
@@ -12463,7 +12471,7 @@ begin
   //"Find/Replace in files" work is finished,
   //now a) exit or b) show red error line and goto ShowModal
 
-  if (AErrorMode>0) or (not ACloseAfter) then
+  if (AErrorMode<>findInFilesOk) or (not ACloseAfter) then
   begin
     DoProgressHide;
     goto _Show;
