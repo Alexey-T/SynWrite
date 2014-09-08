@@ -2355,7 +2355,6 @@ type
     function SGetFrameIndexFromPrefixedStr(const InfoFN: Widestring): Integer;
     function SGetTabPrefix: Widestring;
 
-    procedure DoFindCommandFromString(const S: Widestring);
     procedure DoFindDialog_ReplaceAllInCurrentTab;
     procedure DoFindDialog_ReplaceAllInAllTabs(var AFilesReport: Widestring);
     procedure DoFindDialog_FindNext;
@@ -2368,9 +2367,10 @@ type
     procedure DoFindInOutPanel;
     procedure DoFindInValidatePanel;
     procedure DoFindInPluginsLog;
+    procedure DoFindCommandFromString(const S: Widestring);
 
     procedure DoFindInFiles_Dialog(AInProject: boolean);
-    function DoFindInFiles_InitFilelist(
+    function DoFindInFiles_GetFileList(
       FListFiles: TTntStringList;
       const SDir, SMaskInc, SMaskExc: Widestring;
       bSubDirs, bNoRO, bNoHidFiles, bNoHidDirs, bNoBinary: boolean;
@@ -12125,6 +12125,7 @@ begin
     SR_LastMaskExc:= FDialogFFiles_MaskExc;
     SR_LastDir:= FDialogFFiles_Dir;
 
+    //apply in-project mode
     labInProject.Visible:= AInProject;
     if AInProject then
     begin
@@ -12217,7 +12218,7 @@ begin
     ACloseAfter:= cbCloseAfter.Checked;
     ASortMode:= TSynFileSort(edSort.ItemIndex);
 
-    if not DoFindInFiles_InitFilelist(
+    if not DoFindInFiles_GetFileList(
       FListFiles,
       edDir.Text, edFileInc.Text, edFileExc.Text,
       cbSubDir.Checked, cbNoRO.Checked, cbNoHid.Checked, cbNoHid2.Checked, cbNoBin.Checked,
@@ -12484,7 +12485,7 @@ begin
 end;
 
 
-function TfmMain.DoFindInFiles_InitFilelist(
+function TfmMain.DoFindInFiles_GetFileList(
   FListFiles: TTntStringList;
   const SDir, SMaskInc, SMaskExc: Widestring;
   bSubDirs, bNoRO, bNoHidFiles, bNoHidDirs, bNoBinary: boolean;
@@ -12497,55 +12498,50 @@ begin
   DoProgressShow(proFindFiles);
 
   try
-    try
-      FFindToList(FListFiles, sDir, sMaskInc, sMaskExc,
-        bSubDirs, bNoRO, bNoHidFiles, bNoHidDirs);
-      if StopFind then
+    FFindToList(FListFiles, sDir, sMaskInc, sMaskExc,
+      bSubDirs, bNoRO, bNoHidFiles, bNoHidDirs);
+    if StopFind then
+    begin
+      DoProgressHide;
+      Result:= false;
+      Exit
+    end;
+  except
+    on E: Exception do
+    begin
+      MsgExcept('Error on searching for files', E, Handle);
+      DoProgressHide;
+      Result:= false;
+      Exit;
+    end;
+  end;
+
+  //exclude binary files
+  if bNoBinary then
+  try
+    fmProgress.SetMode(proExclBinary);
+    N:= FListFiles.Count;
+    for i:= N-1 downto 0 do
+    begin
+      if not IsFileText(FListFiles[i]) then
+        FListFiles.Delete(i);
+      if IsProgressStopped(N-i, N) then
       begin
         DoProgressHide;
         Result:= false;
         Exit
       end;
-    except
-      on E: Exception do
-      begin
-        MsgExcept('Error on searching for files', E, Handle);
-        DoProgressHide;
-        Result:= false;
-        Exit;
-      end;
     end;
-
-    //exclude binary files from StringList
-    if bNoBinary then
-    try
-      fmProgress.SetMode(proExclBinary);
-      N:= FListFiles.Count;
-      for i:= N-1 downto 0 do
-      begin
-        if not IsFileText(FListFiles[i]) then
-          FListFiles.Delete(i);
-        if IsProgressStopped(N-i, N) then
-        begin
-          DoProgressHide;
-          Result:= false;
-          Exit
-        end;
-      end;
-    except
-      on E: Exception do
-      begin
-        MsgExcept('Error on excluding binary files', E, Handle);
-        DoProgressHide;
-        Result:= false;
-        Exit;
-      end;
+  except
+    on E: Exception do
+    begin
+      MsgExcept('Error on excluding binary files', E, Handle);
+      DoProgressHide;
+      Result:= false;
+      Exit;
     end;
-  finally
-    //todo
   end;
 
-  //sort file list
   case ASortMode of
     sortDate:
       FListFiles.CustomSort(CompareListDate);

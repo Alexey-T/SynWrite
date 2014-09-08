@@ -21,11 +21,11 @@ object fmSRFiles: TfmSRFiles
   PixelsPerInch = 96
   TextHeight = 13
   object labInProject: TTntLabel
-    Left = 24
+    Left = 16
     Top = 192
-    Width = 151
+    Width = 129
     Height = 13
-    Caption = 'Search in project files activated'
+    Caption = 'Search in project activated'
     FocusControl = edDir
     Visible = False
   end
