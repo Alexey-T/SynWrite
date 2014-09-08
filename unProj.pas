@@ -281,7 +281,7 @@ type
     property OnSetProjDir: TListProc read FOnSetProjDir write FOnSetProjDir;
     property OnGotoProjFile: TNotifyEvent read FOnGotoProj write FOnGotoProj;
     //
-    procedure CheckModified(ClearModified: boolean = false);
+    function DoConfirmClose(ClearModified: boolean = false): boolean;
     procedure UpdateTitle;
     procedure DoDropItem(const fn: Widestring);
     procedure DoSaveProjectIfNeeded;
@@ -369,7 +369,7 @@ end;
 
 procedure TfmProj.DoNewProject;
 begin
-  CheckModified;
+  DoConfirmClose;
 
   if FProjectFN<>'' then
     if Assigned(FOnProjectClose) then
@@ -1772,10 +1772,12 @@ begin
   UpdateTitle;
 end;
 
-procedure TfmProj.CheckModified(ClearModified: boolean);
+function TfmProj.DoConfirmClose(ClearModified: boolean): boolean;
 var
-  fn: Widestring;
+  fn, msg: Widestring;
+  res: Integer;
 begin
+  Result:= true;
   if not Modified then Exit;
 
   if FProjectFN='' then
@@ -1784,8 +1786,13 @@ begin
     fn:= WideExtractFileName(FProjectFN);
 
   SMsgProjSaveCfm:= DKLangConstW('zMSaveProj');
-  if MsgConfirm(WideFormat(SMsgProjSaveCfm, [fn]), Handle) then
-    DoSaveProject;
+  msg:= WideFormat(SMsgProjSaveCfm, [fn]);
+  res:= MessageBoxW(Handle, PWChar(msg), 'SynWrite', mb_yesnocancel or mb_iconwarning);
+
+  case res of
+    id_yes: DoSaveProject;
+    id_cancel: begin Result:= false; Exit end;
+  end;  
 
   if ClearModified then
     FModified:= false;

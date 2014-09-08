@@ -5391,7 +5391,9 @@ begin
     if opHistProjectSave then
       fmProj.DoSaveProjectIfNeeded
     else
-      fmProj.CheckModified(true);
+    begin
+      if not fmProj.DoConfirmClose(true) then Exit;
+    end;
   end;
 
   Result:= true;
