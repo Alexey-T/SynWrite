@@ -95,7 +95,7 @@ object fmProj: TfmProj
         OnClick = TBXItemProjAddFilesClick
       end
       object TBXItemProjRename: TSpTBXItem
-        Hint = 'Rename current project folder'
+        Hint = 'Rename current project item'
         ImageIndex = 4
         OnClick = TBXItemProjRenameClick
       end
