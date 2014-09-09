@@ -1859,8 +1859,8 @@ begin
   with fmMain do
   begin
     opMruCheck:= cbMru.Checked;
-    opSaveState:= edFS.Value;
-    opSaveSRHist:= edSR.Value;
+    opSaveFileCount:= edFS.Value;
+    opSaveFindCount:= edSR.Value;
     opSaveEdCaret:= cbHCaret.Checked;
     opSaveEdEnc:= cbHEnc.Checked;
     opStateForTemp:= cbHTemp.Checked;
@@ -2181,8 +2181,8 @@ procedure TfmSetup.InitHistory;
 begin
   with fmMain do
   begin
-    edFS.Value:= opSaveState;
-    edSR.Value:= opSaveSRHist;
+    edFS.Value:= opSaveFileCount;
+    edSR.Value:= opSaveFindCount;
     cbHCaret.Checked:= opSaveEdCaret;
     cbHEnc.Checked:= opSaveEdEnc;
     cbHTemp.Checked:= opStateForTemp;

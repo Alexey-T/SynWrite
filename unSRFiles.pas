@@ -147,15 +147,15 @@ type
     procedure FindFavs(L: TTntStringList);
   public
     { Public declarations }
-    SynIniDir,
-    SRCurrentDir,
-    SRCurrentFile: Widestring;
-    SRCount: integer;
-    SRIniS,
-    SRIni: string;
-    SRInProject: boolean;
-    ShFind, //shortcuts for Find/Replace dialogs
-    ShReplace: TShortcut;
+    SR_IniDir,
+    SR_CurrentDir,
+    SR_CurrentFile: Widestring;
+    SR_Count: integer;
+    SR_Ini,
+    SR_Ini_S: string;
+    SR_InProject: boolean;
+    FKeyGotoFind, //shortcuts for Find/Replace dialogs
+    FKeyGotoReplace: TShortcut;
 
     SR_SuggestedSel, //suggested selection text
     SR_SuggestedFind, //suggested search text
@@ -251,11 +251,11 @@ begin
   labFind.Caption:= #$00BB + DKLangConstW('fn');
   labFindRep.Caption:= #$00BB + DKLangConstW('fnR');
 
-  bCurrDir.Enabled:= SRCurrentDir <> '';
+  bCurrDir.Enabled:= SR_CurrentDir <> '';
   bCurFile.Enabled:= bCurrDir.Enabled;
 
-  labInProject.Visible:= SRInProject;
-  if SRInProject then
+  labInProject.Visible:= SR_InProject;
+  if SR_InProject then
   begin
     bBrowseFile.Visible:= false;
     bBrowseDir.Visible:= false;
@@ -271,7 +271,7 @@ begin
     cbNoHid2.Enabled:= false;
   end;
 
-  with TIniFile.Create(SRIni) do
+  with TIniFile.Create(SR_Ini) do
   try
     Left:= ReadInteger(cSecSR, 'WLeftFiles', Self.Monitor.Left + (Self.Monitor.Width - Width) div 2);
     Top:= ReadInteger(cSecSR, 'WTopFiles', Self.Monitor.Top + (Self.Monitor.Height - Height) div 2);
@@ -317,11 +317,11 @@ begin
     Free;
   end;
 
-  ComboLoadFromFile(ed1, SRIniS, 'SearchText');
-  ComboLoadFromFile(ed2, SRIni, 'ReplaceHist', False);
-  ComboLoadFromFile(edFileInc, SRIni, 'FilesIncHist');
-  ComboLoadFromFile(edFileExc, SRIni, 'FilesExcHist');
-  ComboLoadFromFile(edDir, SRIni, 'FilesDirHist'{, False});
+  ComboLoadFromFile(ed1, SR_Ini_S, 'SearchText');
+  ComboLoadFromFile(ed2, SR_Ini, 'ReplaceHist', False);
+  ComboLoadFromFile(edFileInc, SR_Ini, 'FilesIncHist');
+  ComboLoadFromFile(edFileExc, SR_Ini, 'FilesExcHist');
+  ComboLoadFromFile(edDir, SR_Ini, 'FilesDirHist'{, False});
 
   if edFileInc.Text='' then
     edFileInc.Text:= '*.*';
@@ -364,15 +364,15 @@ begin
   en:=
     (ed1.Text<>'') and
     (edFileInc.Text<>'') and
-    (SRInProject or ((edDir.Text<>'') and IsDirExist(edDir.Text)));
+    (SR_InProject or ((edDir.Text<>'') and IsDirExist(edDir.Text)));
   bFAll.Enabled:= en;
   bRAll.Enabled:= en;
 end;
 
 procedure TfmSRFiles.FormDestroy(Sender: TObject);
 begin
-  if SRIni<>'' then
-  with TIniFile.Create(SRIni) do
+  if SR_Ini<>'' then
+  with TIniFile.Create(SR_Ini) do
   try
     WriteInteger(cSecSR, 'WLeftFiles', Left);
     WriteInteger(cSecSR, 'WTopFiles', Top);
@@ -417,17 +417,17 @@ begin
     Free;
   end;
 
-  ComboUpdate(ed1, SRCount);
-  ComboUpdate(ed2, SRCount);
-  ComboUpdate(edFileInc, SRCount);
-  ComboUpdate(edFileExc, SRCount);
-  ComboUpdate(edDir, SRCount);
+  ComboUpdate(ed1, SR_Count);
+  ComboUpdate(ed2, SR_Count);
+  ComboUpdate(edFileInc, SR_Count);
+  ComboUpdate(edFileExc, SR_Count);
+  ComboUpdate(edDir, SR_Count);
 
-  ComboSaveToFile(ed1, SRIniS, 'SearchText');
-  ComboSaveToFile(ed2, SRIni, 'ReplaceHist');
-  ComboSaveToFile(edFileInc, SRIni, 'FilesIncHist');
-  ComboSaveToFile(edFileExc, SRIni, 'FilesExcHist');
-  ComboSaveToFile(edDir, SRIni, 'FilesDirHist');
+  ComboSaveToFile(ed1, SR_Ini_S, 'SearchText');
+  ComboSaveToFile(ed2, SR_Ini, 'ReplaceHist');
+  ComboSaveToFile(edFileInc, SR_Ini, 'FilesIncHist');
+  ComboSaveToFile(edFileExc, SR_Ini, 'FilesExcHist');
+  ComboSaveToFile(edDir, SR_Ini, 'FilesDirHist');
 end;
 
 procedure TfmSRFiles.edFileIncChange(Sender: TObject);
@@ -438,7 +438,7 @@ end;
 procedure TfmSRFiles.bCurrDirClick(Sender: TObject);
 var s: Widestring;
 begin
-  s:= SRCurrentDir;
+  s:= SR_CurrentDir;
   if (S<>'') and (S[Length(s)]=':') then
     S:= S+'\';
   edDir.Text:= S;
@@ -501,9 +501,9 @@ end;
 
 procedure TfmSRFiles.bCurFileClick(Sender: TObject);
 begin
-  edDir.Text:= SRCurrentDir;
+  edDir.Text:= SR_CurrentDir;
   edDirChange(Self);
-  edFileInc.Text:= '"'+SRCurrentFile+'"';
+  edFileInc.Text:= '"'+SR_CurrentFile+'"';
   edFileIncChange(Self);
   cbSubDir.Checked:= false;
 end;
@@ -514,7 +514,7 @@ var
 begin
   with TntOpenDialog1 do
   begin
-    InitialDir:= SRCurrentDir;
+    InitialDir:= SR_CurrentDir;
     if InitialDir='' then InitialDir:= 'C:\';
     FileName:= '';
     if not Execute then Exit;
@@ -586,14 +586,14 @@ begin
     Exit;
   end;
   //Ctrl+F
-  if Shortcut(Key, Shift)=ShFind then
+  if Shortcut(Key, Shift)=FKeyGotoFind then
   begin
     labFindClick(Self);
     key:= 0;
     Exit;
   end;
   //Ctrl+H
-  if Shortcut(Key, Shift)=ShReplace then
+  if Shortcut(Key, Shift)=FKeyGotoReplace then
   begin
     labFindRepClick(Self);
     key:= 0;
@@ -842,7 +842,7 @@ end;
 
 function TfmSRFiles.FavDir: string;
 begin
-  Result:= SynIniDir + 'IniPresets';
+  Result:= SR_IniDir + 'IniPresets';
 end;
 
 procedure TfmSRFIles.DoLoadFavIndex(N: Integer);

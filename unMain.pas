@@ -102,9 +102,9 @@ const
 
 type
   TSynFindInFilesError = (
-    findInFilesOk,
-    findInFilesNoFiles,
-    findInFilesNoLines
+    cFindFilesOk,
+    cFindFilesNoFiles,
+    cFindFilesNoLines
     );
 
 type
@@ -2382,9 +2382,9 @@ type
       bSubDirs, bNoRO, bNoHidFiles, bNoHidDirs, bNoBinary: boolean;
       ASortMode: TSynFileSort;
       AInProject: boolean): boolean;
-    function DoFindInFiles_FindAction(
+    procedure DoFindInFiles_FindAction(
       const ADir: Widestring;
-      AOutAppend, InOEM, InUTF8, InUTF16: boolean): boolean;
+      AOutAppend, InOEM, InUTF8, InUTF16: boolean);
     function DoFindInFiles_ReplaceAction(
       const ADir: Widestring;
       AOutAppend: boolean): boolean;
@@ -3040,8 +3040,8 @@ type
     opLastDirPath,
     opLastDirSession,
     opLastDirProject: Widestring;
-    opSaveSRHist,
-    opSaveState: integer;
+    opSaveFindCount,
+    opSaveFileCount: integer;
     opSaveWndPos,
     opSaveEdCaret,
     opSaveEdEnc: boolean;
@@ -4143,7 +4143,7 @@ end;
 
 procedure TfmMain.CloseFrame(Frame: TEditorFrame);
 begin
-  if opSaveState>0 then
+  if opSaveFileCount>0 then
     SaveFrameState(Frame);
 
   if Frame.FileName<>'' then
@@ -4637,8 +4637,8 @@ begin
 
     opShowWrapMark:= ReadBool('Setup', 'WrapMk', true);
     opTextOnly:= TSynBinaryAct(ReadInteger('Setup', 'TxOnly', 0));
-    opSaveSRHist:= ReadInteger('Setup', 'SaveSRHist', 10);
-    opSaveState:= ReadInteger('Setup', 'SaveFrameState', 10);
+    opSaveFindCount:= ReadInteger('Setup', 'SaveSRHist', 10);
+    opSaveFileCount:= ReadInteger('Setup', 'SaveFrameState', 10);
     opSaveEdCaret:= ReadBool('Setup', 'SaveCaret', true);
     opSaveEdEnc:= ReadBool('Setup', 'SaveEnc', true);
     opAskOverwrite:= true; //ReadBool('Setup', 'AskRO', true);
@@ -4841,10 +4841,10 @@ begin
       ListBkmkColumns:= ReadString('Win', 'ColsBkmk', '');
 
       //load recent files
-      LoadMruList(SynMruFiles, Ini, 'MRU', opSaveState, opMruCheck);
+      LoadMruList(SynMruFiles, Ini, 'MRU', opSaveFileCount, opMruCheck);
 
       //load recent sessions
-      LoadMruList(SynMruSessions, Ini, 'MRU_Sess', opSaveState, opMruCheck);
+      LoadMruList(SynMruSessions, Ini, 'MRU_Sess', opSaveFileCount, opMruCheck);
 
       //load recent project
       if opHistProjectLoad and (SynCommandlineProjectFN='') then
@@ -5054,8 +5054,8 @@ begin
     WriteBool('Setup', 'WrapMk', opShowWrapMark);
     WriteInteger('Setup', 'TxOnly', Ord(opTextOnly));
 
-    WriteInteger('Setup', 'SaveSRHist', opSaveSRHist);
-    WriteInteger('Setup', 'SaveFrameState', opSaveState);
+    WriteInteger('Setup', 'SaveSRHist', opSaveFindCount);
+    WriteInteger('Setup', 'SaveFrameState', opSaveFileCount);
     WriteBool('Setup', 'SaveCaret', opSaveEdCaret);
     WriteBool('Setup', 'SaveEnc', opSaveEdEnc);
     WriteBool('Setup', 'AskRO', opAskOverwrite);
@@ -5305,7 +5305,7 @@ var
   i: integer;
 begin
   Result:= false;
-  if (opSaveState=0) then Exit;
+  if (opSaveFileCount=0) then Exit;
   if (fn='') or (Frame=nil) then Exit;
   if (not opStateForTemp) and IsTempFN(fn) then Exit;
 
@@ -5344,7 +5344,7 @@ var
   L: TStringList;
   i: integer;
 begin
-  if (opSaveState=0) then Exit;
+  if (opSaveFileCount=0) then Exit;
   if (F=nil) or (F.FileName='') then Exit;
   if (not opStateForTemp) and IsTempFN(F.FileName) then Exit;
 
@@ -5361,7 +5361,7 @@ begin
         L.Delete(i);
     L.Insert(0, sData);
 
-    while L.Count>opSaveState do
+    while L.Count>opSaveFileCount do
       L.Delete(L.Count-1);
 
     try
@@ -8568,7 +8568,7 @@ begin
     with fmSR do
     begin
       SRHistTC:= opListerTcHistory and not SynExe;
-      SRCount:= opSaveSRHist;
+      SRCount:= opSaveFindCount;
       SRIni:= SynHistoryIni;
       SRIniS:= SynHistoryIni;
       SRProc:= Self.FindActionWrapper;
@@ -12048,12 +12048,12 @@ var
   //-------------
   procedure MsgNoFiles;
   begin
-    AErrorMode:= findInFilesNoFiles;
+    AErrorMode:= cFindFilesNoFiles;
   end;
   //-------------
   procedure MsgNoLines;
   begin
-    AErrorMode:= findInFilesNoLines;
+    AErrorMode:= cFindFilesNoLines;
   end;
   //-------------
 var
@@ -12066,9 +12066,9 @@ var
   ATextReplace: Widestring;
   ADir: Widestring;
 label
-  _Exit, _Show;
+  _Show;
 begin
-  AErrorMode:= findInFilesOk;
+  AErrorMode:= cFindFilesOk;
 
   //save finder
   OFlags:= Finder.Flags;
@@ -12097,20 +12097,20 @@ begin
   ANeedFocusResult:= false;
   with TfmSRFiles.Create(Self) do
   try
-    SynIniDir:= Self.SynIniDir;
-    SRInProject:= AInProject;
-    SRCurrentDir:= SExtractFileDir(CurrentFrame.FileName);
-    SRCurrentFile:= SExtractFileName(CurrentFrame.FileName);
-    SRCount:= opSaveSRHist;
-    SRIni:= SynHistoryIni;
-    SRIniS:= SynHistoryIni;
+    SR_IniDir:= Self.SynIniDir;
+    SR_InProject:= AInProject;
+    SR_CurrentDir:= SExtractFileDir(CurrentFrame.FileName);
+    SR_CurrentFile:= SExtractFileName(CurrentFrame.FileName);
+    SR_Count:= opSaveFindCount;
+    SR_Ini:= SynHistoryIni;
+    SR_Ini_S:= SynHistoryIni;
     SR_SuggestedSel:= '';
-    ShFind:= GetShortcutOfCmd(smFindDialog);
-    ShReplace:= GetShortcutOfCmd(smReplaceDialog);
     SR_SuggestedFind:= ATextSearch;
     SR_SuggestedReplace:= ATextReplace;
+    FKeyGotoFind:= GetShortcutOfCmd(smFindDialog);
+    FKeyGotoReplace:= GetShortcutOfCmd(smReplaceDialog);
 
-    if (AErrorMode = findInFilesOk) then //Only suggest text for 1st search
+    if (AErrorMode = cFindFilesOk) then //Only suggest text for 1st search
       with CurrentEditor do
       begin
         if opFindSuggestSel and (SelLength>0) then
@@ -12121,12 +12121,10 @@ begin
       end;
 
     case AErrorMode of
-      findInFilesNoFiles:
-        ShowErr(DKLangConstW('MNFoundNoFiles'));
-      findInFilesNoLines:
-        ShowErr(DKLangConstW('MNFoundNoLines'));
+      cFindFilesNoFiles: ShowErr(DKLangConstW('MNFoundNoFiles'));
+      cFindFilesNoLines: ShowErr(DKLangConstW('MNFoundNoLines'));
     end;
-    AErrorMode:= findInFilesOk;
+    AErrorMode:= cFindFilesOk;
 
     //use last values of fields
     SR_LastLeft:= FDialogFFiles_Left;
@@ -12273,12 +12271,13 @@ begin
       MsgNoFiles
     else
     begin
-      if not DoFindInFiles_FindAction(ADir, AOutAppend, InOEM, InUTF8, InUTF16) then
-        goto _Exit;
+      DoFindInFiles_FindAction(ADir, AOutAppend, InOEM, InUTF8, InUTF16);
 
       //show "Find in files" report in Output pane
       if FTreeRoot=nil then
         raise Exception.Create('TreeRoot nil');
+
+      if not StopFind then
       if FTreeRoot.GetFirstChild=nil then
       begin
         UpdateTreeFind_Results(Finder.FindText, ADir, false);
@@ -12326,17 +12325,15 @@ begin
       end;
     end;
 
-  //"Find/Replace in files" work is finished,
-  //now a) exit or b) show red error line and goto ShowModal
+  //"Find/Replace in files" work is finished
 
-  if (AErrorMode<>findInFilesOk) or (not ACloseAfter) then
+  if (AErrorMode<>cFindFilesOk) or (not ACloseAfter) then
   begin
     DoProgressHide;
     goto _Show;
   end;
 
-  //restore finder
-  _Exit:
+  //finalize
   DoProgressHide;
   StopFind:= false;
   RestoreFinder;
@@ -12424,16 +12421,15 @@ begin
   Result:= ACountMatches<>0;
 end;
 
-function TfmMain.DoFindInFiles_FindAction(
+procedure TfmMain.DoFindInFiles_FindAction(
   const ADir: Widestring;
-  AOutAppend, InOEM, InUTF8, InUTF16: boolean): boolean;
+  AOutAppend, InOEM, InUTF8, InUTF16: boolean);
 var
   NTotalSize, NDoneSize: Int64;
   AFn: Widestring;
   ThisInUTF8: boolean;
   i: Integer;
 begin
-  Result:= true;
   FListResFN:= '';
   FListResFN_Prev:= '';
 
@@ -12512,10 +12508,8 @@ begin
   if StopFind then
   begin
     UpdateTreeFind_Results(Finder.FindText, ADir, true);
-    Result:= false;
     Exit
   end;
-
 end;
 
 function TfmMain.DoFindInFiles_GetFileList(
@@ -13604,7 +13598,7 @@ begin
   with TfmExtract.Create(Self) do
   try
     FSynIni:= Self.SynHistoryIni;
-    SRCount:= opSaveSRHist;
+    SRCount:= opSaveFindCount;
     Memo:= Self.CurrentEditor;
     case ShowModal of
       mrYes:
@@ -22804,7 +22798,7 @@ var
 begin
   Ini:= TIniFile.Create(SynHistoryIni);
   try
-    LoadMruList(List, Ini, 'MRU_Proj', opSaveState, opMruCheck);
+    LoadMruList(List, Ini, 'MRU_Proj', opSaveFileCount, opMruCheck);
   finally
     FreeAndNil(Ini);
   end;
@@ -25856,7 +25850,7 @@ var
 begin
   Ini:= TIniFile.Create(SynHistoryIni);
   try
-    LoadMruList(SynMruProjects, Ini, 'MRU_Proj', opSaveState, opMruCheck);
+    LoadMruList(SynMruProjects, Ini, 'MRU_Proj', opSaveFileCount, opMruCheck);
   finally
     FreeAndNil(Ini);
   end;
@@ -26973,7 +26967,7 @@ begin
   end;
 
   edConsole.Text:= Str;
-  ComboUpdate(edConsole, opSaveSRHist);
+  ComboUpdate(edConsole, opSaveFindCount);
   edConsole.Text:= '';
   if edConsole.CanFocus then
     edConsole.SetFocus;

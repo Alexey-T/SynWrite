@@ -588,7 +588,7 @@ begin
           begin
             DoPyConsole_LogString(cPyConsolePrompt + Str);
             edConsole.Text:= Str;
-            ComboUpdate(edConsole, opSaveSRHist);
+            ComboUpdate(edConsole, opSaveFindCount);
             edConsole.Text:= '';
           end;
         LOG_CONSOLE_GET:
