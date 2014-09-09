@@ -28830,6 +28830,8 @@ begin
   ATabs.ColorTabActive:= Groups.Pages1.Tabs.ColorTabActive;
   ATabs.ColorTabPassive:= Groups.Pages1.Tabs.ColorTabPassive;
   ATabs.ColorTabOver:= Groups.Pages1.Tabs.ColorTabOver;
+
+  ATabs.Invalidate;
 end;
 
 procedure TfmMain.TabsLeftClick(Sender: TObject);
