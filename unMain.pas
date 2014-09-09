@@ -28804,10 +28804,13 @@ begin
 end;
 
 procedure TfmMain.ApplyTabOptionsTo(ATabs: TATTabs);
+var
+  RefTabs: TATTabs;
 begin
+  RefTabs:= Groups.Pages1.Tabs;
   ATabs.Align:= alBottom;
   ATabs.Font:= FFontTabs;
-  ATabs.OnTabDrawBefore:= Groups.Pages1.Tabs.OnTabDrawBefore;
+  ATabs.OnTabDrawBefore:= RefTabs.OnTabDrawBefore;
 
   ATabs.TabBottom:= true;
   ATabs.TabShowPlus:= false;
@@ -28816,20 +28819,20 @@ begin
   ATabs.TabMiddleClickClose:= false;
   ATabs.TabDragEnabled:= false;
 
-  ATabs.TabAngle:= Groups.Pages1.Tabs.TabAngle;
+  ATabs.TabAngle:= RefTabs.TabAngle;
   ATabs.TabIndentTop:= 0;
   ATabs.TabIndentLeft:= 3;
   ATabs.TabIndentInit:= 0;
-  ATabs.TabHeight:= Groups.Pages1.Tabs.TabHeight;
-  ATabs.Height:= Groups.Pages1.Tabs.Height;
+  ATabs.TabHeight:= RefTabs.TabHeight;
+  ATabs.Height:= RefTabs.Height;
 
-  ATabs.Color:= Groups.Pages1.Tabs.Color;
-  ATabs.ColorBg:= Groups.Pages1.Tabs.ColorBg;
-  ATabs.ColorBorderActive:= Groups.Pages1.Tabs.ColorBorderActive;
-  ATabs.ColorBorderPassive:= Groups.Pages1.Tabs.ColorBorderPassive;
-  ATabs.ColorTabActive:= Groups.Pages1.Tabs.ColorTabActive;
-  ATabs.ColorTabPassive:= Groups.Pages1.Tabs.ColorTabPassive;
-  ATabs.ColorTabOver:= Groups.Pages1.Tabs.ColorTabOver;
+  ATabs.Color:= RefTabs.Color;
+  ATabs.ColorBg:= RefTabs.ColorBg;
+  ATabs.ColorBorderActive:= RefTabs.ColorBorderActive;
+  ATabs.ColorBorderPassive:= RefTabs.ColorBorderPassive;
+  ATabs.ColorTabActive:= RefTabs.ColorTabActive;
+  ATabs.ColorTabPassive:= RefTabs.ColorTabPassive;
+  ATabs.ColorTabOver:= RefTabs.ColorTabOver;
 
   ATabs.Invalidate;
 end;
