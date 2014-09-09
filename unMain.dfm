@@ -9623,7 +9623,7 @@ object fmMain: TfmMain
         Command = 618
         KeyStrokes = <>
         Category = 'Search & Replace'
-        DisplayName = 'Dialog "Find/Replace in project files"'
+        DisplayName = 'Dialog "Find/Replace in project"'
       end>
     UseFirstControlKeys = True
     Left = 360
