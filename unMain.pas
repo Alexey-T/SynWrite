@@ -12147,6 +12147,9 @@ begin
       edFileExc.Visible:= false;
       edDir.Visible:= false;
       cbSubDir.Visible:= false;
+      cbNoRO.Enabled:= false;
+      cbNoHid.Enabled:= false;
+      cbNoHid2.Enabled:= false;
     end;
 
     //center form
@@ -12219,16 +12222,17 @@ begin
     FDialogFFiles_Top:= Top;
 
     //find files to StringList
-    FListFiles.Clear;
-    ADir:= edDir.Text;
+    if AInProject then
+      ADir:= DKLangConstW('zMProjectDir')
+    else
+      ADir:= edDir.Text;
     AFnOnly:= cbFnOnly.Checked;
     AToTab:= cbOutTab.Checked;
     AOutAppend:= cbOutAppend.Checked;
     ACloseAfter:= cbCloseAfter.Checked;
     ASortMode:= TSynFileSort(edSort.ItemIndex);
 
-    if not DoFindInFiles_GetFileList(
-      FListFiles,
+    if not DoFindInFiles_GetFileList(FListFiles,
       edDir.Text, edFileInc.Text, edFileExc.Text,
       cbSubDir.Checked, cbNoRO.Checked, cbNoHid.Checked, cbNoHid2.Checked, cbNoBin.Checked,
       ASortMode, AInProject) then
