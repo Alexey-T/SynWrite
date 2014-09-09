@@ -1635,6 +1635,7 @@ object fmMain: TfmMain
           Caption = 'Find/Replace in project...'
           Hint = 'Dialog "Find/Replace in project files"'
           Action = ecReplaceInProject
+          OnSelect = ButtonOnSelect
         end
         object TBXItemEExtr: TSpTBXItem
           Caption = 'E&xtract strings...'
