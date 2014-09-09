@@ -2740,6 +2740,7 @@ type
     procedure ToolbarUserClick(Sender: TObject);
     procedure DoEnumExtTools(L: TTntStringList);
     procedure DoEnumPyTools(L: TTntStringList);
+    procedure DoEnumProjFiles(L: TTntStringList);
     procedure InitMenuItemsList;
     procedure DoOpenBySelection;
     procedure FixMenuBigImageList(Menu: TSpTbxSubmenuItem);
@@ -12503,8 +12504,18 @@ var
   N, i: Integer;
 begin
   Result:= true;
+  FListFiles.Clear;
   DoProgressShow(proFindFiles);
 
+  if AInProject then
+  begin
+    DoEnumProjFiles(FListFiles);
+    if SMaskInc<>'' then
+      for i:= FListFiles.Count-1 downto 0 do
+        if not FFilenameMatchesMaskList(FListFiles[i], SMaskInc, false) then
+          FListFiles.Delete(i);
+  end
+  else
   try
     FFindToList(FListFiles, sDir, sMaskInc, sMaskExc,
       bSubDirs, bNoRO, bNoHidFiles, bNoHidDirs);
@@ -29017,6 +29028,21 @@ begin
     Result:= true;
 end;
 
+
+procedure TfmMain.DoEnumProjFiles(L: TTntStringList);
+var
+  i: Integer;
+  fn: Widestring;
+begin
+  L.Clear;
+  if Assigned(fmProj) then
+    for i:= 0 to fmProj.TreeProj.Items.Count-1 do
+    begin
+      fn:= fmProj.GetFN(fmProj.TreeProj.Items[i]);
+      if fn<>'' then
+        L.Add(fn);
+    end;
+end;
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
