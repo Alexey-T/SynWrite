@@ -237,6 +237,8 @@ type
       DoExpand: boolean = true): TTntTreeNode;
     procedure UpdateProjectToolsMenu;
     procedure DoRunProjectTool(Sender: TObject);
+    function DoCollapseFN(const fn: Widestring): Widestring;
+    function DoExpandFN(const fn: Widestring): Widestring;
   public
     { Public declarations }
     FOpts: TProjectOpts;
@@ -1117,17 +1119,6 @@ begin
 end;
 
 procedure TfmProj.DoLoadProjectFromFile(const fn: Widestring);
-  function FExpandFN(const fn: Widestring): Widestring;
-  var
-    dir: Widestring;
-  begin
-    Result:= fn;
-    if SBegin(Result, cProjVar) then
-    begin
-      dir:= WideExcludeTrailingBackslash(WideExtractFileDir(FProjectFN));
-      SReplaceW(Result, cProjVar, dir);
-    end;
-  end;
 var
   L: TStringList;
   i, j, n: integer;
@@ -1147,8 +1138,8 @@ begin
   //1) load project options
   with TIniFile.Create(fn) do
   try
-    FOpts.WorkDir:= UTF8Decode(ReadString('Ini', 'WorkDir', ''));
-    FOpts.MainFN:= UTF8Decode(ReadString('Ini', 'MainFile', ''));
+    FOpts.WorkDir:= DoExpandFN(UTF8Decode(ReadString('Ini', 'WorkDir', '')));
+    FOpts.MainFN:= DoExpandFN(UTF8Decode(ReadString('Ini', 'MainFile', '')));
     FOpts.DefLexer:= ReadString('Ini', 'DefLexer', '');
     FOpts.DefLineEnds:= ReadInteger('Ini', 'DefLineEnds', 0);
     FOpts.DefEnc:= ReadInteger('Ini', 'DefEnc', 0);
@@ -1203,7 +1194,7 @@ begin
         LevelDir:= Level;
       end
       else
-        DoAddFile(Node, FExpandFN(SName));
+        DoAddFile(Node, DoExpandFN(SName));
     end;
   finally
     FreeAndNil(L);
@@ -1280,8 +1271,8 @@ begin
   try
     List.Add(cUtfSign);
     List.Add('[Ini]');
-    Write('WorkDir', UTF8Encode(FOpts.WorkDir));
-    Write('MainFile', UTF8Encode(FOpts.MainFN));
+    Write('WorkDir', UTF8Encode(DoCollapseFN(FOpts.WorkDir)));
+    Write('MainFile', UTF8Encode(DoCollapseFN(FOpts.MainFN)));
     Write('DefLexer', FOpts.DefLexer);
     Write('DefLineEnds', IntToStr(FOpts.DefLineEnds));
     Write('DefEnc', IntToStr(FOpts.DefEnc));
@@ -1314,19 +1305,33 @@ begin
   DoTool_SaveList(FProjectTools, fn, 'Tools');
 end;
 
-procedure TfmProj.DoWriteNodesToList(L: TStringList; Node: TTntTreeNode; Level: integer);
-  function FCollapse(const fn: Widestring): Widestring;
-  var
-    dir: Widestring;
+function TfmProj.DoCollapseFN(const fn: Widestring): Widestring;
+var
+  dir: Widestring;
+begin
+  Result:= fn;
+  dir:= WideExtractFilePath(FProjectFN);
+  if SBegin(WideLowerCase(fn), WideLowerCase(dir)) then
   begin
-    Result:= fn;
-    dir:= WideExtractFilePath(FProjectFN);
-    if SBegin(WideLowerCase(fn), WideLowerCase(dir)) then
-    begin
-      Delete(Result, 1, Length(dir));
-      Insert(cProjVar+'\', Result, 1);
-    end;
+    Delete(Result, 1, Length(dir));
+    Insert(cProjVar+'\', Result, 1);
   end;
+end;
+
+function TfmProj.DoExpandFN(const fn: Widestring): Widestring;
+var
+  dir: Widestring;
+begin
+  Result:= fn;
+  if SBegin(Result, cProjVar) then
+  begin
+    dir:= WideExcludeTrailingBackslash(WideExtractFileDir(FProjectFN));
+    SReplaceW(Result, cProjVar, dir);
+  end;
+end;
+
+
+procedure TfmProj.DoWriteNodesToList(L: TStringList; Node: TTntTreeNode; Level: integer);
 var
   N: TTntTreeNode;
   pre: string;
@@ -1341,7 +1346,7 @@ begin
       DoWriteNodesToList(L, N, Level+1);
     end
     else
-      L.Add(pre+UTF8Encode(FCollapse(GetFN(N))));
+      L.Add(pre+UTF8Encode(DoCollapseFN(GetFN(N))));
 
     N:= Node.GetNextChild(N);
   end;
