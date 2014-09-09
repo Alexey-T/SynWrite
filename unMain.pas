@@ -2382,6 +2382,12 @@ type
       bSubDirs, bNoRO, bNoHidFiles, bNoHidDirs, bNoBinary: boolean;
       ASortMode: TSynFileSort;
       AInProject: boolean): boolean;
+    function DoFindInFiles_FindAction(
+      const ADir: Widestring;
+      AOutAppend, InOEM, InUTF8, InUTF16: boolean): boolean;
+    function DoFindInFiles_ReplaceAction(
+      const ADir: Widestring;
+      AOutAppend: boolean): boolean;
 
     procedure DoAddFav(const fn: Widestring);
     procedure NumConvInsert(Sender: TObject; const S: string; Typ: TSynNumType);
@@ -3291,7 +3297,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.7.1470';
+  cSynVer = '6.7.1475';
   cSynPyVer = '1.0.138';
 
 const
@@ -12055,15 +12061,10 @@ var
   ASortMode: TSynFileSort;
   ANeedFocusResult: boolean;
   AFnOnly, AToTab, AOutAppend, ACloseAfter: boolean;
-  InOEM, InUTF8, InUTF16, ThisInUTF8: boolean;
-  NTotalSize, NDoneSize: Int64;
+  InOEM, InUTF8, InUTF16: boolean;
   ATextSearch,
   ATextReplace: Widestring;
   ADir: Widestring;
-  ACountMatches,
-  ACountFiles: Integer;
-  ANodeText, AFn: Widestring;
-  i, N: Integer;
 label
   _Exit, _Show;
 begin
@@ -12268,201 +12269,62 @@ begin
   //--------------------------
   //"Find in files" work
   if AShowResult = resFindAll then
-  if FListFiles.Count = 0 then
-    MsgNoFiles
-  else
-  begin
-    FListResFN:= '';
-    FListResFN_Prev:= '';
-
-    //init TreeRoot, show Output pane
-    if not AOutAppend then
-      DoClearTreeFind;
-    UpdateTreeFind_Initial(Finder.FindText, ADir);
-    TabsOut.TabIndex:= Ord(tbFindRes);
-    plOut.Show;
-
-    fmProgress.SetMode(proFindText);
-    Application.ProcessMessages;
-    try
-      NTotalSize:= 0;
-      NDoneSize:= 0;
-      for i:= 0 to FListFiles.Count-1 do
-        Inc(NTotalSize, DWORD(FListFiles.Objects[i]));
-      if NTotalSize = 0 then
-        NTotalSize:= 1;
-
-      FFinderTotalSize:= NTotalSize;
-      FFinderDoneSize:= NDoneSize;
-
-      for i:= 0 to FListFiles.Count-1 do
-      begin
-        try
-          //show filename on progress form
-          if Assigned(fmProgress) then
-          begin
-            AFn:= FListFiles[i];
-            Delete(AFn, 1, Length(ADir)+1);
-            AFn:= WideMinimizeName(AFn, fmProgress.Canvas, Self.ClientWidth - fmProgress.labFilename.Left);
-            fmProgress.labFilename.Caption:= AFn;
-          end;
-
-          //first search in auto-detected encoding
-          ThisInUTF8:= IsFileUTF8NoBOM(FListFiles[i]);
-          if ThisInUTF8 then
-            FindInFile(FListFiles[i], cp_sr_UTF8)
-          else
-            FindInFile(FListFiles[i]);
-
-          //additional searches in OEM/UTF8/UTF16
-          if not IsFileWithBOM(FListFiles[i]) then
-          begin
-            if InOEM then
-              FindInFile(FListFiles[i], cp_sr_OEM);
-            if InUTF8 and not ThisInUTF8 then
-              FindInFile(FListFiles[i], cp_sr_UTF8);
-            if InUTF16 then
-              FindInFile(FListFiles[i], cp_sr_UTF16);
-          end;
-        except
-          on E: Exception do
-            MsgExcept('Error on finding in file'#13+FListFiles[i], E, Handle);
-        end;
-
-        Inc(NDoneSize, DWORD(FListFiles.Objects[i]));
-        FFinderDoneSize:= NDoneSize;
-        if IsProgressStopped(NDoneSize, NTotalSize) then
-          Break;
-      end;
-
-      FFinderTotalSize:= 0;
-      FFinderDoneSize:= 0;
-    except
-      on E: Exception do
-      begin
-        DoProgressHide;
-        MsgExcept('Error on finding in files', E, Handle);
-        Exit
-      end;
-    end;
-
-    //if "Find in files" stopped
-    if StopFind then
-    begin
-      UpdateTreeFind_Results(Finder.FindText, ADir, true);
-      goto _Exit;
-    end;
-
-    //show "Find in files" report in Output pane
-    if FTreeRoot=nil then
-      raise Exception.Create('TreeRoot nil');
-    if FTreeRoot.GetFirstChild=nil then
-    begin
-      UpdateTreeFind_Results(Finder.FindText, ADir, false);
-      MsgNoLines;
-    end
+    if FListFiles.Count = 0 then
+      MsgNoFiles
     else
     begin
-      UpdateTreeFind_Results(Finder.FindText, ADir, false);
-      if AToTab then
+      if not DoFindInFiles_FindAction(ADir, AOutAppend, InOEM, InUTF8, InUTF16) then
+        goto _Exit;
+
+      //show "Find in files" report in Output pane
+      if FTreeRoot=nil then
+        raise Exception.Create('TreeRoot nil');
+      if FTreeRoot.GetFirstChild=nil then
       begin
-        DoCopyFindResultToTab(true, AFnOnly);
+        UpdateTreeFind_Results(Finder.FindText, ADir, false);
+        MsgNoLines;
       end
       else
       begin
-        ANeedFocusResult:= true;
-        TabsOut.TabIndex:= Ord(tbFindRes);
-        plOut.Show;
+        UpdateTreeFind_Results(Finder.FindText, ADir, false);
+        if AToTab then
+        begin
+          DoCopyFindResultToTab(true, AFnOnly);
+        end
+        else
+        begin
+          ANeedFocusResult:= true;
+          TabsOut.TabIndex:= Ord(tbFindRes);
+          plOut.Show;
+        end;
       end;
     end;
-  end;
 
   //---------------------------
   //"Replace in files" work
   if AShowResult = resReplaceAll then
-  if FListFiles.Count = 0 then
-    MsgNoFiles
-  else
-  begin
-    //init FTreeRoot, show Output pane
-    if not AOutAppend then
-      DoClearTreeFind;
-    ANodeText:= WideFormat(DKLangConstW('O_fnode_r'),
-        [Finder.FindText, Finder.ReplaceText, ADir]);
-    FTreeRoot:= TreeFind.Items.Add(nil, ANodeText);
-
-    TabsOut.TabIndex:= Ord(tbFindRes);
-    plOut.Show;
-
-    ACountFiles:= 0;
-    ACountMatches:= 0;
-
-    fmProgress.SetMode(proFindText);
-    Application.ProcessMessages;
-    try
-      for i:= 0 to FListFiles.Count-1 do
-      begin
-        try
-          ReplaceInFile(FListFiles[i]);
-        except
-          on E: Exception do
-            MsgExcept('Error on replacing in file'#13+FListFiles[i], E, Handle);
-        end;
-
-        try
-          if Finder.Matches>0 then
-          begin
-            Inc(ACountFiles);
-            Inc(ACountMatches, Finder.Matches);
-            //update TreeFind
-            UpdateTreeFind_ReplaceResults(ANodeText, ACountFiles, ACountMatches, false);
-            FTreeRoot.Expand(false);
-
-            TreeFind.Selected:= TreeFind.Items.AddChild(FTreeRoot,
-              FListFiles[i] + Format(' (%d)', [Finder.Matches]));
-              //todo: make adding with prefix+str, using FinderFindWithResPane
-          end;
-        except
-          on E: Exception do
-            MsgExcept('Error on adding result'#13+FListFiles[i], E, Handle);
-        end;
-
-        //if "Replace in files" stopped
-        if IsProgressStopped(i+1, FListFiles.Count) then
-        begin
-          DoProgressHide;
-          UpdateTreeFind_ReplaceResults(ANodeText, ACountFiles, ACountMatches, true);
-          Break;
-        end;
-      end;
-    except
-      on E: Exception do
-      begin
-        DoProgressHide;
-        MsgExcept('Error on replacing in files', E, Handle);
-        Exit;
-      end;
-    end;
-
-    //show "Replace in files" report (activate Results tab)
-    if ACountMatches=0 then
-      MsgNoLines
+    if FListFiles.Count = 0 then
+      MsgNoFiles
     else
     begin
-      FTreeRoot.Expand(false);
-      TreeFind.Selected:= FTreeRoot;
-      if AToTab then
-      begin
-        DoCopyFindResultToTab(true, true{AFnOnly=true for replace});
-      end
+      if not DoFindInFiles_ReplaceAction(ADir, AOutAppend) then
+        MsgNoLines
       else
       begin
-        ANeedFocusResult:= true;
-        TabsOut.TabIndex:= Ord(tbFindRes);
-        plOut.Show;
+        FTreeRoot.Expand(false);
+        TreeFind.Selected:= FTreeRoot;
+        if AToTab then
+        begin
+          DoCopyFindResultToTab(true, true{AFnOnly=true for replace});
+        end
+        else
+        begin
+          ANeedFocusResult:= true;
+          TabsOut.TabIndex:= Ord(tbFindRes);
+          plOut.Show;
+        end;
       end;
     end;
-  end;
 
   //"Find/Replace in files" work is finished,
   //now a) exit or b) show red error line and goto ShowModal
@@ -12488,6 +12350,173 @@ begin
     FocusEditor;
 end;
 
+function TfmMain.DoFindInFiles_ReplaceAction(
+  const ADir: Widestring;
+  AOutAppend: boolean): boolean;
+var
+  ANodeText: Widestring;
+  ACountFiles,
+  ACountMatches: Integer;
+  i: Integer;
+begin
+  Result:= true;
+
+  //init FTreeRoot, show Output pane
+  if not AOutAppend then
+    DoClearTreeFind;
+  ANodeText:= WideFormat(DKLangConstW('O_fnode_r'),
+      [Finder.FindText, Finder.ReplaceText, ADir]);
+  FTreeRoot:= TreeFind.Items.Add(nil, ANodeText);
+
+  TabsOut.TabIndex:= Ord(tbFindRes);
+  plOut.Show;
+
+  ACountFiles:= 0;
+  ACountMatches:= 0;
+
+  fmProgress.SetMode(proFindText);
+  Application.ProcessMessages;
+  try
+    for i:= 0 to FListFiles.Count-1 do
+    begin
+      try
+        ReplaceInFile(FListFiles[i]);
+      except
+        on E: Exception do
+          MsgExcept('Error on replacing in file'#13+FListFiles[i], E, Handle);
+      end;
+
+      try
+        if Finder.Matches>0 then
+        begin
+          Inc(ACountFiles);
+          Inc(ACountMatches, Finder.Matches);
+          //update TreeFind
+          UpdateTreeFind_ReplaceResults(ANodeText, ACountFiles, ACountMatches, false);
+          FTreeRoot.Expand(false);
+
+          TreeFind.Selected:= TreeFind.Items.AddChild(FTreeRoot,
+            FListFiles[i] + Format(' (%d)', [Finder.Matches]));
+            //todo: make adding with prefix+str, using FinderFindWithResPane
+        end;
+      except
+        on E: Exception do
+          MsgExcept('Error on adding result'#13+FListFiles[i], E, Handle);
+      end;
+
+      //if "Replace in files" stopped
+      if IsProgressStopped(i+1, FListFiles.Count) then
+      begin
+        DoProgressHide;
+        UpdateTreeFind_ReplaceResults(ANodeText, ACountFiles, ACountMatches, true);
+        Break;
+      end;
+    end;
+  except
+    on E: Exception do
+    begin
+      DoProgressHide;
+      MsgExcept('Error on replacing in files', E, Handle);
+      Exit;
+    end;
+  end;
+
+  Result:= ACountMatches<>0;
+end;
+
+function TfmMain.DoFindInFiles_FindAction(
+  const ADir: Widestring;
+  AOutAppend, InOEM, InUTF8, InUTF16: boolean): boolean;
+var
+  NTotalSize, NDoneSize: Int64;
+  AFn: Widestring;
+  ThisInUTF8: boolean;
+  i: Integer;
+begin
+  Result:= true;
+  FListResFN:= '';
+  FListResFN_Prev:= '';
+
+  //init TreeRoot, show Output pane
+  if not AOutAppend then
+    DoClearTreeFind;
+  UpdateTreeFind_Initial(Finder.FindText, ADir);
+  TabsOut.TabIndex:= Ord(tbFindRes);
+  plOut.Show;
+
+  fmProgress.SetMode(proFindText);
+  Application.ProcessMessages;
+  try
+    NTotalSize:= 0;
+    NDoneSize:= 0;
+    for i:= 0 to FListFiles.Count-1 do
+      Inc(NTotalSize, DWORD(FListFiles.Objects[i]));
+    if NTotalSize = 0 then
+      NTotalSize:= 1;
+
+    FFinderTotalSize:= NTotalSize;
+    FFinderDoneSize:= NDoneSize;
+
+    for i:= 0 to FListFiles.Count-1 do
+    begin
+      try
+        //show filename on progress form
+        if Assigned(fmProgress) then
+        begin
+          AFn:= FListFiles[i];
+          Delete(AFn, 1, Length(ADir)+1);
+          AFn:= WideMinimizeName(AFn, fmProgress.Canvas, Self.ClientWidth - fmProgress.labFilename.Left);
+          fmProgress.labFilename.Caption:= AFn;
+        end;
+
+        //first search in auto-detected encoding
+        ThisInUTF8:= IsFileUTF8NoBOM(FListFiles[i]);
+        if ThisInUTF8 then
+          FindInFile(FListFiles[i], cp_sr_UTF8)
+        else
+          FindInFile(FListFiles[i]);
+
+        //additional searches in OEM/UTF8/UTF16
+        if not IsFileWithBOM(FListFiles[i]) then
+        begin
+          if InOEM then
+            FindInFile(FListFiles[i], cp_sr_OEM);
+          if InUTF8 and not ThisInUTF8 then
+            FindInFile(FListFiles[i], cp_sr_UTF8);
+          if InUTF16 then
+            FindInFile(FListFiles[i], cp_sr_UTF16);
+        end;
+      except
+        on E: Exception do
+          MsgExcept('Error on finding in file'#13+FListFiles[i], E, Handle);
+      end;
+
+      Inc(NDoneSize, DWORD(FListFiles.Objects[i]));
+      FFinderDoneSize:= NDoneSize;
+      if IsProgressStopped(NDoneSize, NTotalSize) then
+        Break;
+    end;
+
+    FFinderTotalSize:= 0;
+    FFinderDoneSize:= 0;
+  except
+    on E: Exception do
+    begin
+      DoProgressHide;
+      MsgExcept('Error on finding in files', E, Handle);
+      Exit
+    end;
+  end;
+
+  //if "Find in files" stopped
+  if StopFind then
+  begin
+    UpdateTreeFind_Results(Finder.FindText, ADir, true);
+    Result:= false;
+    Exit
+  end;
+
+end;
 
 function TfmMain.DoFindInFiles_GetFileList(
   FListFiles: TTntStringList;
@@ -14438,13 +14467,9 @@ begin
 end;
 
 procedure TfmMain.FocusEditor;
-var
-  Ed: TSyntaxMemo;
 begin
-  Ed:= CurrentEditor;
-  if Self.Enabled then
-    if (Ed<>nil) and Ed.CanFocus then
-      Ed.SetFocus;
+  with Groups.PagesCurrent.Tabs do
+    TabIndex:= TabIndex;
 end;
 
 procedure TfmMain.DoClearSearchHistory;
@@ -18308,6 +18333,7 @@ var
   Node: TTntTreeNode;
   L: TWideStringList;
   S: Widestring;
+  F: TEditorFrame;
 begin
   if ALastSearch then
   begin
@@ -18336,9 +18362,8 @@ begin
     end
     else
     begin
-      acNewTab.Execute;
-      CurrentEditor.Lines.AddStrings(L);
-      //EditorSetModified(CurrentEditor);
+      F:= DoAddTab(Groups.PagesCurrent, true);
+      F.EditorMaster.Lines.AddStrings(L);
     end;
   finally
     FreeAndNil(L);
