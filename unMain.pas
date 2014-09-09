@@ -12182,7 +12182,7 @@ begin
           ShowErr(DKLangConstW('MNFoundFold'));
           Continue
         end;
-      end;  
+      end;
 
       if cbRE.Checked and not IsRegexValid(ed1.Text) then
       begin
@@ -12194,9 +12194,17 @@ begin
     until false;
 
     //confirm mass replace
+    if AInProject then
+      ADir:= DKLangConstW('zMProjectDir')
+    else
+      ADir:= edDir.Text;
+
     if AShowResult = resReplaceAll then
-      if not MsgConfirm(WideFormat(DKLangConstW('FFCfm'), [edDir.Text, edFileInc.Text]), Handle) then
-        begin RestoreFinder; Exit end;
+      if not MsgConfirm(WideFormat(DKLangConstW('FFCfm'), [ADir, edFileInc.Text]), Self.Handle) then
+      begin
+        RestoreFinder;
+        Exit
+      end;
 
     //save last dialog field values
     FDialogFFiles_Find:= ed1.Text;
@@ -12208,10 +12216,6 @@ begin
     FDialogFFiles_Top:= Top;
 
     //find files to StringList
-    if AInProject then
-      ADir:= DKLangConstW('zMProjectDir')
-    else
-      ADir:= edDir.Text;
     AFnOnly:= cbFnOnly.Checked;
     AToTab:= cbOutTab.Checked;
     AOutAppend:= cbOutAppend.Checked;
