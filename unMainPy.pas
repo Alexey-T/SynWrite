@@ -311,9 +311,21 @@ begin
   end;
 end;
 
+const
+  FILENAME_CURRENT         = -1;
+  FILENAME_OPPOSITE        = -2;
+  FILENAME_SESSION         = -3;
+  FILENAME_PROJECT         = -10;
+  FILENAME_PROJECT_MAIN    = -11;
+  FILENAME_PROJECT_WORKDIR = -12;
+  FILENAME_PROJECT_SESSION = -13;
+  FILENAME_LEXLIB          = -20;
+  FILENAME_PATHS           = -21;
+  FILENAME_FAVS            = -22;
+  FILENAME_PROJECT_BASE    = 10000;
+
 function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
 const
-  cSynPyProjectIndexBase = 10000;
   cNone = '?';
 var
   N, Id: Integer;
@@ -326,9 +338,9 @@ begin
       Str:= cNone;
 
       //get project's file name
-      if (N >= cSynPyProjectIndexBase) then
+      if (N >= FILENAME_PROJECT_BASE) then
       begin
-        id:= N - cSynPyProjectIndexBase;
+        id:= N - FILENAME_PROJECT_BASE;
         Str:= fmMain.DoGetProjectFilename(id);
       end
       else
@@ -341,16 +353,16 @@ begin
       end
       else
       case N of
-        -1: Str:= fmMain.CurrentFrame.FileName;
-        -2: Str:= fmMain.CurrentFileName(cSynGroupOpposite);
-        -3: Str:= fmMain.CurrentSessionFN;
-        -10: Str:= fmMain.CurrentProjectFN;
-        -11: Str:= fmMain.CurrentProjectMainFN;
-        -12: Str:= fmMain.CurrentProjectWorkDir;
-        -13: Str:= fmMain.CurrentProjectSessionFN;
-        -20: Str:= fmMain.SynLexLib;
-        -21: Str:= fmMain.DoGetSearchPaths;
-        -22: Str:= fmMain.DoGetFavList;
+        FILENAME_CURRENT: Str:= fmMain.CurrentFrame.FileName;
+        FILENAME_OPPOSITE: Str:= fmMain.CurrentFileName(cSynGroupOpposite);
+        FILENAME_SESSION: Str:= fmMain.CurrentSessionFN;
+        FILENAME_PROJECT: Str:= fmMain.CurrentProjectFN;
+        FILENAME_PROJECT_MAIN: Str:= fmMain.CurrentProjectMainFN;
+        FILENAME_PROJECT_WORKDIR: Str:= fmMain.CurrentProjectWorkDir;
+        FILENAME_PROJECT_SESSION: Str:= fmMain.CurrentProjectSessionFN;
+        FILENAME_LEXLIB: Str:= fmMain.SynLexLib;
+        FILENAME_PATHS: Str:= fmMain.DoGetSearchPaths;
+        FILENAME_FAVS: Str:= fmMain.DoGetFavList;
       end;
 
       if Str=cNone then
