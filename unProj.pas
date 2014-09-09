@@ -246,6 +246,7 @@ type
     procedure DoAddFilesDir;
     procedure DoAddVirtualDir;
     procedure DoPreview(Toggle: boolean);
+    procedure DoUpdateNodeCaptions;
     procedure DoToggleShowPaths;
     function IsDirSelected: boolean;
     procedure DoOpenFiles;
@@ -311,6 +312,7 @@ uses
 
 const
   cProjVar = '{Proj}'; //used in Proj files
+  cMainMark = ' *';
   cHintTimer = 2000;
 
 const
@@ -1559,6 +1561,7 @@ begin
       if not IsDir(Selected) then
       begin
         FOpts.MainFN:= GetFN(Selected);
+        DoUpdateNodeCaptions;
         SetModified;
       end;
 end;
@@ -2041,17 +2044,25 @@ begin
     if SBegin(Result, SPath) then
       Delete(Result, 1, Length(SPath)-1);
   end;
+
+  if fn=FOpts.MainFN then
+    Result:= Result+cMainMark;
 end;
 
-procedure TfmProj.DoToggleShowPaths;
+procedure TfmProj.DoUpdateNodeCaptions;
 var
   i: Integer;
 begin
-  FShowPaths:= not FShowPaths;
   with TreeProj do
     for i:= 0 to Items.Count-1 do
       if not IsDir(Items[i]) then
         Items[i].Text:= GetFileNodeCaption(GetFN(Items[i]));
+end;
+
+procedure TfmProj.DoToggleShowPaths;
+begin
+  FShowPaths:= not FShowPaths;
+  DoUpdateNodeCaptions;
 end;
 
 procedure TfmProj.TBXItemMnuTogglePathsClick(Sender: TObject);
