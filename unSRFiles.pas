@@ -153,6 +153,7 @@ type
     SRCount: integer;
     SRIniS,
     SRIni: string;
+    SRInProject: boolean;
     ShFind, //shortcuts for Find/Replace dialogs
     ShReplace: TShortcut;
 
@@ -253,6 +254,23 @@ begin
   bCurrDir.Enabled:= SRCurrentDir <> '';
   bCurFile.Enabled:= bCurrDir.Enabled;
 
+  labInProject.Visible:= SRInProject;
+  if SRInProject then
+  begin
+    bBrowseFile.Visible:= false;
+    bBrowseDir.Visible:= false;
+    bCurFile.Visible:= false;
+    bCurrDir.Visible:= false;
+    labMaskExc.Visible:= false;
+    labInDir.Visible:= false;
+    edFileExc.Visible:= false;
+    edDir.Visible:= false;
+    cbSubDir.Visible:= false;
+    cbNoRO.Enabled:= false;
+    cbNoHid.Enabled:= false;
+    cbNoHid2.Enabled:= false;
+  end;
+
   with TIniFile.Create(SRIni) do
   try
     Left:= ReadInteger(cSecSR, 'WLeftFiles', Self.Monitor.Left + (Self.Monitor.Width - Width) div 2);
@@ -340,13 +358,15 @@ begin
 end;
 
 procedure TfmSRFiles.ed1Change(Sender: TObject);
+var
+  en: boolean;
 begin
-  bFAll.Enabled:=
-    (ed1.Text <> '') and
-    (edFileInc.Text <> '') and
-    (edDir.Text <> '') and
-    IsDirExist(edDir.Text);
-  bRAll.Enabled:= bFAll.Enabled;
+  en:=
+    (ed1.Text<>'') and
+    (edFileInc.Text<>'') and
+    (SRInProject or ((edDir.Text<>'') and IsDirExist(edDir.Text)));
+  bFAll.Enabled:= en;
+  bRAll.Enabled:= en;
 end;
 
 procedure TfmSRFiles.FormDestroy(Sender: TObject);

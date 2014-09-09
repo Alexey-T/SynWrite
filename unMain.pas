@@ -12096,6 +12096,7 @@ begin
   with TfmSRFiles.Create(Self) do
   try
     SynIniDir:= Self.SynIniDir;
+    SRInProject:= AInProject;
     SRCurrentDir:= SExtractFileDir(CurrentFrame.FileName);
     SRCurrentFile:= SExtractFileName(CurrentFrame.FileName);
     SRCount:= opSaveSRHist;
@@ -12133,24 +12134,6 @@ begin
     SR_LastMaskInc:= FDialogFFiles_MaskInc;
     SR_LastMaskExc:= FDialogFFiles_MaskExc;
     SR_LastDir:= FDialogFFiles_Dir;
-
-    //apply in-project mode
-    labInProject.Visible:= AInProject;
-    if AInProject then
-    begin
-      bBrowseFile.Visible:= false;
-      bBrowseDir.Visible:= false;
-      bCurFile.Visible:= false;
-      bCurrDir.Visible:= false;
-      labMaskExc.Visible:= false;
-      labInDir.Visible:= false;
-      edFileExc.Visible:= false;
-      edDir.Visible:= false;
-      cbSubDir.Visible:= false;
-      cbNoRO.Enabled:= false;
-      cbNoHid.Enabled:= false;
-      cbNoHid2.Enabled:= false;
-    end;
 
     //center form
     Left:= Self.Monitor.Left + (Self.Monitor.Width - Width) div 2;
@@ -12191,12 +12174,15 @@ begin
       end;
 
       //if dir not exists, goto ShowModal
-      edDir.Text:= WideExcludeTrailingBackslash(edDir.Text);
-      if not IsDirExist(edDir.Text) then
+      if not AInProject then
       begin
-        ShowErr(DKLangConstW('MNFoundFold'));
-        Continue
-      end;
+        edDir.Text:= WideExcludeTrailingBackslash(edDir.Text);
+        if not IsDirExist(edDir.Text) then
+        begin
+          ShowErr(DKLangConstW('MNFoundFold'));
+          Continue
+        end;
+      end;  
 
       if cbRE.Checked and not IsRegexValid(ed1.Text) then
       begin
