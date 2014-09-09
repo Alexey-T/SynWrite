@@ -2740,7 +2740,6 @@ type
     procedure ToolbarUserClick(Sender: TObject);
     procedure DoEnumExtTools(L: TTntStringList);
     procedure DoEnumPyTools(L: TTntStringList);
-    procedure DoEnumProjFiles(L: TTntStringList);
     procedure InitMenuItemsList;
     procedure DoOpenBySelection;
     procedure FixMenuBigImageList(Menu: TSpTbxSubmenuItem);
@@ -3207,6 +3206,8 @@ type
     function FrameForFilename(const fn: Widestring): TEditorFrame;
     function DoCheckCommandLineTwo: boolean;
     procedure DoEnumLexers(L: TTntStrings; AlsoDisabled: boolean = false);
+    procedure DoEnumFavs(L: TTntStringList);
+    procedure DoEnumProjFiles(L: TTntStringList);
 
     //Python public
     procedure DoPyConsole_LogString(const Str: Widestring);
@@ -3291,7 +3292,7 @@ function SynAppdataDir: string;
 
 const
   cSynVer = '6.7.1470';
-  cSynPyVer = '1.0.137';
+  cSynPyVer = '1.0.138';
 
 const
   cSynParamRO = '/ro';
@@ -25496,19 +25497,24 @@ begin
   Status.InvalidateBackground();
 end;
 
-function TfmMain.DoGetFavList: Widestring;
+procedure TfmMain.DoEnumFavs(L: TTntStringList);
 var
   fn: string;
+begin
+  L.Clear;
+  fn:= SynFavIni;
+  if IsFileExist(fn) then
+    L.LoadFromFile(fn);
+end;
+
+function TfmMain.DoGetFavList: Widestring;
+var
   L: TTntStringList;
 begin
   Result:= '';
-
-  fn:= SynFavIni;
-  if not IsFileExist(fn) then Exit;
-
   L:= TTntStringList.Create;
   try
-    L.LoadFromFile(fn);
+    DoEnumFavs(L);
     Result:= L.Text;
   finally
     FreeAndNil(L);

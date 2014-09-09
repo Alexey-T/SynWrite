@@ -140,9 +140,7 @@ begin
             List.Sorted:= true;
             try
               fmMain.DoEnumLexers(List, true);
-              Result:=
-                Py_StringList(List);
-                //PyUnicode_FromWideString(List.Text);
+              Result:= Py_StringList(List);
             finally
               FreeAndNil(List);
             end;
@@ -319,10 +317,10 @@ const
   FILENAME_PROJECT_MAIN    = -11;
   FILENAME_PROJECT_WORKDIR = -12;
   FILENAME_PROJECT_SESSION = -13;
+  FILENAME_PROJECT_FILES   = -14;
   FILENAME_LEXLIB          = -20;
   FILENAME_PATHS           = -21;
   FILENAME_FAVS            = -22;
-  FILENAME_PROJECT_BASE    = 10000;
 
 function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
 const
@@ -330,6 +328,7 @@ const
 var
   N, Id: Integer;
   Str: Widestring;
+  List: TTntStringList;
 begin
   with GetPythonEngine do
   begin
@@ -337,13 +336,6 @@ begin
     begin
       Str:= cNone;
 
-      //get project's file name
-      if (N >= FILENAME_PROJECT_BASE) then
-      begin
-        id:= N - FILENAME_PROJECT_BASE;
-        Str:= fmMain.DoGetProjectFilename(id);
-      end
-      else
       //get editor-tab filename
       if (N >= 0) then
       begin
@@ -362,7 +354,30 @@ begin
         FILENAME_PROJECT_SESSION: Str:= fmMain.CurrentProjectSessionFN;
         FILENAME_LEXLIB: Str:= fmMain.SynLexLib;
         FILENAME_PATHS: Str:= fmMain.DoGetSearchPaths;
-        FILENAME_FAVS: Str:= fmMain.DoGetFavList;
+
+        FILENAME_PROJECT_FILES:
+          begin
+            List:= TTntStringList.Create;
+            try
+              fmMain.DoEnumProjFiles(List);
+              Result:= Py_StringList(List);
+            finally
+              FreeAndNil(List);
+            end;
+            Exit
+          end;
+
+        FILENAME_FAVS:
+          begin
+            List:= TTntStringList.Create;
+            try
+              fmMain.DoEnumFavs(List);
+              Result:= Py_StringList(List);
+            finally
+              FreeAndNil(List);
+            end;
+            Exit
+          end;
       end;
 
       if Str=cNone then
