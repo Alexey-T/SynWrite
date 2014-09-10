@@ -321,11 +321,6 @@ type
   TSynUserToolbarId = (synToolbar1, synToolbar2, synToolbar3);
   TSynDock = (sdockTop, sdockLeft, sdockRight, sdockBottom);
 
-const
-  cColorsNum = 60;
-type
-  TSynColors = array[0..cColorsNum-1] of TColor;
-
 type
   TSynFindInFilesError = (
     cFindFilesOk,
@@ -346,6 +341,11 @@ type
     ASortMode: TSynFileSort;
     InOEM, InUTF8, InUTF16: boolean;
   end;
+
+const
+  cColorsNum = 60;
+type
+  TSynColors = array[0..cColorsNum-1] of TColor;
 
 var
   SynCommandlineSessionFN: string;
@@ -5172,43 +5172,13 @@ begin
     WriteString('Fonts', 'Tree', FontToString(Tree.Font));
     WriteString('Fonts', 'Con', FontToString(MemoConsole.Font));
     WriteString('Fonts', 'Tabs', FontToString(FFontTabs));
-
   finally
     Free;
   end;
  except
-   MsgError(DKLangConstW('Appn'), Handle);
+   MsgError(DKLangConstW('zMCannotSaveIni'), Handle);
  end;
 end;
-
-(*
-function IsWindowsVista: Boolean;
-begin
-  Result:=
-    (Win32Platform = VER_PLATFORM_WIN32_NT) and
-    (Win32MajorVersion >= 6);
-end;
-*)
-
-(*
-//http://www.delphi.int.ru/articles/41/
-function GetSpecialFolderPath(folder : integer) : string;
-const
-  SHGFP_TYPE_CURRENT = 0;
-var
-  path: array[0..MAX_PATH] of char;
-begin
-  if SUCCEEDED(SHGetFolderPath(0, folder, 0, SHGFP_TYPE_CURRENT, @path[0])) then
-    Result := path
-  else
-    Result := '';
-end;
-
-function FAppDataPath: string;
-begin
-  Result:= GetSpecialFolderPath(CSIDL_APPDATA) + '\';
-end;
-*)
 
 function FAppDataPath: string;
 begin
@@ -9498,7 +9468,7 @@ begin
     SaveOptionsRecent;
     SaveConsoleHist;
   except
-    MsgError(DKLangConstW('Appn'), Handle);
+    MsgError(DKLangConstW('zMCannotSaveIni'), Handle);
   end;
 
   //close Spell dialog
@@ -11283,8 +11253,7 @@ begin
       Free;
     end;
   except
-    //better not show msg, for R/O ini folder
-    //MsgError(WideFormat(DKLangConstW('AppNSes'), [fn]), ...
+    //don't show msg, for R/O ini folder
   end;
 end;
 
@@ -12154,8 +12123,9 @@ begin
 
     //confirm mass replace
     if Result=resReplaceAll then
-      if not MsgConfirm(WideFormat(DKLangConstW('FFCfm'),
-               [D.ADir, edFileInc.Text]), Self.Handle) then
+      if not MsgConfirm(
+        WideFormat(DKLangConstW('zMCfmMassReplace'), [D.ADir, edFileInc.Text]),
+        Self.Handle) then
       begin
         Result:= mrCancel;
         Exit

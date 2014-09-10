@@ -2452,4 +2452,32 @@ begin
   end;
 end;
 
+function IsWindowsVista: Boolean;
+begin
+  Result:=
+    (Win32Platform = VER_PLATFORM_WIN32_NT) and
+    (Win32MajorVersion >= 6);
+end;
+
+(*
+//http://www.delphi.int.ru/articles/41/
+function GetSpecialFolderPath(folder : integer) : string;
+const
+  SHGFP_TYPE_CURRENT = 0;
+var
+  path: array[0..MAX_PATH] of char;
+begin
+  if SUCCEEDED(SHGetFolderPath(0, folder, 0, SHGFP_TYPE_CURRENT, @path[0])) then
+    Result := path
+  else
+    Result := '';
+end;
+
+function FAppDataPath: string;
+begin
+  Result:= GetSpecialFolderPath(CSIDL_APPDATA) + '\';
+end;
+*)
+
+
 end.
