@@ -12615,14 +12615,14 @@ end;
 
 procedure TfmMain.DoMarkAll(const Str: Widestring);
 var
-  OFl: TSearchOptions;
-  OTxt, OTxt2: Widestring;
+  PrevFlags: TSearchOptions;
+  PrevText1, PrevText2: Widestring;
   PrevEvent1, PrevEvent2, PrevEvent3: TNotifyEvent;
 begin
   //save finder
-  OFl:= Finder.Flags;
-  OTxt:= Finder.FindText;
-  OTxt2:= Finder.ReplaceText;
+  PrevFlags:= Finder.Flags;
+  PrevText1:= Finder.FindText;
+  PrevText2:= Finder.ReplaceText;
   PrevEvent1:= Finder.OnAfterExecute;
   PrevEvent2:= Finder.OnBeforeExecute;
   PrevEvent3:= Finder.OnNotFound;
@@ -12650,9 +12650,9 @@ begin
     CurrentEditor.ResetSearchMarks;
 
   //restore finder
-  Finder.Flags:= OFl;
-  Finder.FindText:= OTxt;
-  Finder.ReplaceText:= OTxt2;
+  Finder.Flags:= PrevFlags;
+  Finder.FindText:= PrevText1;
+  Finder.ReplaceText:= PrevText2;
   Finder.OnAfterExecute:= PrevEvent1;
   Finder.OnBeforeExecute:= PrevEvent2;
   Finder.OnNotFound:= PrevEvent3;
