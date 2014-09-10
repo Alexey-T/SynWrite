@@ -154,8 +154,6 @@ type
     SR_Ini,
     SR_Ini_S: string;
     SR_InProject: boolean;
-    FKeyGotoFind, //shortcuts for Find/Replace dialogs
-    FKeyGotoReplace: TShortcut;
 
     SR_SuggestedSel, //suggested selection text
     SR_SuggestedFind, //suggested search text
@@ -169,7 +167,10 @@ type
     SR_LastLeft,
     SR_LastTop: Integer;
 
-    procedure ShowErr(const s: Widestring);
+    FKeyGotoFind, //shortcuts for Find/Replace dialogs
+    FKeyGotoReplace: TShortcut;
+    
+    procedure DoMessage(const S: Widestring);
   end;
 
 var
@@ -492,9 +493,9 @@ begin
   LabelErr.Caption:= '--';
 end;
 
-procedure TfmSRFIles.ShowErr(const s: Widestring);
+procedure TfmSRFiles.DoMessage(const S: Widestring);
 begin
-  LabelErr.Caption:= s;
+  LabelErr.Caption:= S;
   LabelErr.Show;
   TimerErr.Enabled:= true;
 end;

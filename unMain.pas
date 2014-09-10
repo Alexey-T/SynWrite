@@ -101,13 +101,6 @@ const
     );
 
 type
-  TSynFindInFilesError = (
-    cFindFilesOk,
-    cFindFilesNoFiles,
-    cFindFilesNoLines
-    );
-
-type
   TSynPyEvent = (
     cSynEventOnOpen,
     cSynEventOnSaveAfter,
@@ -332,6 +325,27 @@ const
   cColorsNum = 60;
 type
   TSynColors = array[0..cColorsNum-1] of TColor;
+
+type
+  TSynFindInFilesError = (
+    cFindFilesOk,
+    cFindFilesNoFiles,
+    cFindFilesNoLines
+    );
+
+type
+  TSynFindInFilesData = record
+    ATextSearch,
+    ATextReplace: Widestring;
+    ATextCase,
+    ATextWords,
+    ATextRegex,
+    ATextSpec: boolean;
+    ADir: Widestring;
+    AFnOnly, AToTab, AOutAppend, ACloseAfter: boolean;
+    ASortMode: TSynFileSort;
+    InOEM, InUTF8, InUTF16: boolean;
+  end;
 
 var
   SynCommandlineSessionFN: string;
@@ -2376,6 +2390,10 @@ type
     procedure DoFindCommandFromString(const S: Widestring);
 
     procedure DoFindInFiles_Dialog(AInProject: boolean);
+    function DoFindInFiles_InputData(
+      AInProject: boolean;
+      AError: TSynFindInFilesError;
+      var D: TSynFindInFilesData): TModalResult;
     function DoFindInFiles_GetFileList(
       FListFiles: TTntStringList;
       const SDir, SMaskInc, SMaskExc: Widestring;
@@ -3297,7 +3315,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.8.1480';
+  cSynVer = '6.8.1484';
   cSynPyVer = '1.0.138';
 
 const
@@ -12019,82 +12037,24 @@ begin
   DoFindInFiles_Dialog(true);
 end;
 
-procedure TfmMain.DoFindInFiles_Dialog(AInProject: boolean);
-var
-  OFlags: TSearchOptions;
-  OTokens: TSearchTokens;
-  OTxt, OTxt2: Widestring;
-  ON1, ON2, ON3: TNotifyEvent;
-  ON4: TOnFindEvent;
-  AErrorMode: TSynFindInFilesError;
-  //-------------
-  procedure RestoreFinder;
-  begin
-    Finder.Control:= CurrentEditor;
-    Finder.FindText:= '';
-    Finder.ReplaceText:= '';
-    Finder.Flags:= OFlags;
-    Finder.Tokens:= OTokens;
-    {
-    //leave text
-    Finder.FindText:= OTxt;
-    Finder.ReplaceText:= OTxt2;
-    }
-    Finder.OnAfterExecute:= ON1;
-    Finder.OnBeforeExecute:= ON2;
-    Finder.OnNotFound:= ON3;
-    Finder.OnCanAccept:= ON4;
-  end;
-  //-------------
-  procedure MsgNoFiles;
-  begin
-    AErrorMode:= cFindFilesNoFiles;
-  end;
-  //-------------
-  procedure MsgNoLines;
-  begin
-    AErrorMode:= cFindFilesNoLines;
-  end;
-  //-------------
-var
-  AShowResult: TModalResult;
-  ASortMode: TSynFileSort;
-  ANeedFocusResult: boolean;
-  AFnOnly, AToTab, AOutAppend, ACloseAfter: boolean;
-  InOEM, InUTF8, InUTF16: boolean;
-  ATextSearch,
-  ATextReplace: Widestring;
-  ADir: Widestring;
-label
-  _Show;
+function TfmMain.DoFindInFiles_InputData(
+  AInProject: boolean;
+  AError: TSynFindInFilesError;
+  var D: TSynFindInFilesData): TModalResult;
 begin
-  AErrorMode:= cFindFilesOk;
-
-  //save finder
-  OFlags:= Finder.Flags;
-  OTokens:= Finder.Tokens;
-  OTxt:= Finder.FindText;
-  OTxt2:= Finder.ReplaceText;
-  ON1:= Finder.OnAfterExecute;
-  ON2:= Finder.OnBeforeExecute;
-  ON3:= Finder.OnNotFound;
-  ON4:= Finder.OnCanAccept;
-
   //get text from "Find" dialog
   if Assigned(fmSR) and fmSR.Visible then
   begin
-    ATextSearch:= fmSR.Text1;
-    ATextReplace:= fmSR.Text2;
+    D.ATextSearch:= fmSR.Text1;
+    D.ATextReplace:= fmSR.Text2;
     fmSR.Hide;
   end
   else
   begin
-    ATextSearch:= '';
-    ATextReplace:= '';
+    D.ATextSearch:= '';
+    D.ATextReplace:= '';
   end;
 
-  _Show:
-  ANeedFocusResult:= false;
   with TfmSRFiles.Create(Self) do
   try
     SR_IniDir:= Self.SynIniDir;
@@ -12105,26 +12065,28 @@ begin
     SR_Ini:= SynHistoryIni;
     SR_Ini_S:= SynHistoryIni;
     SR_SuggestedSel:= '';
-    SR_SuggestedFind:= ATextSearch;
-    SR_SuggestedReplace:= ATextReplace;
+    SR_SuggestedFind:= D.ATextSearch;
+    SR_SuggestedReplace:= D.ATextReplace;
     FKeyGotoFind:= GetShortcutOfCmd(smFindDialog);
     FKeyGotoReplace:= GetShortcutOfCmd(smReplaceDialog);
 
-    if (AErrorMode = cFindFilesOk) then //Only suggest text for 1st search
-      with CurrentEditor do
-      begin
-        if opFindSuggestSel and (SelLength>0) then
-          SR_SuggestedSel:= SelText
-        else
-        if opFindSuggestWord then
-          SR_SuggestedSel:= WordAtPos(CaretPos);
-      end;
-
-    case AErrorMode of
-      cFindFilesNoFiles: ShowErr(DKLangConstW('MNFoundNoFiles'));
-      cFindFilesNoLines: ShowErr(DKLangConstW('MNFoundNoLines'));
+    case AError of
+      cFindFilesOk:
+        begin
+          with CurrentEditor do
+          begin
+            if opFindSuggestSel and (SelLength>0) then
+              SR_SuggestedSel:= SelText
+            else
+            if opFindSuggestWord then
+              SR_SuggestedSel:= WordAtPos(CaretPos);
+          end;
+        end;
+      cFindFilesNoFiles:
+        DoMessage(DKLangConstW('MNFoundNoFiles'));
+      cFindFilesNoLines:
+        DoMessage(DKLangConstW('MNFoundNoLines'));
     end;
-    AErrorMode:= cFindFilesOk;
 
     //use last values of fields
     SR_LastLeft:= FDialogFFiles_Left;
@@ -12140,37 +12102,29 @@ begin
     Top:= Self.Monitor.Top + (Self.Monitor.Height - Height) div 2;
 
     repeat
-      AShowResult:= ShowModal;
-      case AShowResult of
-        mrCancel:
-          begin
-            RestoreFinder;
-            Exit
-          end;
-        resGotoFind:
-          begin
-            RestoreFinder;
-            ecFind.Execute;
-            if Assigned(fmSR) then
-            begin
-              fmSR.Text1:= ed1.Text;
-              fmSR.Text2:= ed2.Text;
-            end;
-            Application.ProcessMessages;
-            Exit
-          end;
+      Result:= ShowModal;
+
+      D.ATextSearch:= ed1.Text;
+      D.ATextReplace:= ed2.Text;
+      D.ATextCase:= cbCase.Checked;
+      D.ATextWords:= cbWords.Checked;
+      D.ATextRegex:= cbRe.Checked;
+      D.ATextSpec:= cbSpec.Checked;
+      D.ADir:= edDir.Text;
+      D.AFnOnly:= cbFnOnly.Checked;
+      D.AToTab:= cbOutTab.Checked;
+      D.AOutAppend:= cbOutAppend.Checked;
+      D.ACloseAfter:= cbCloseAfter.Checked;
+      D.ASortMode:= TSynFileSort(edSort.ItemIndex);
+      D.InOEM:= cbInOEM.Checked;
+      D.InUTF8:= cbInUTF8.Checked;
+      D.InUTF16:= cbInUTF16.Checked;
+
+      case Result of
+        mrCancel,
+        resGotoFind,
         resGotoRep:
-          begin
-            RestoreFinder;
-            ecReplace.Execute;
-            if Assigned(fmSR) then
-            begin
-              fmSR.Text1:= ed1.Text;
-              fmSR.Text2:= ed2.Text;
-            end;
-            Application.ProcessMessages;
-            Exit
-          end;
+          Exit
       end;
 
       //if dir not exists, goto ShowModal
@@ -12179,30 +12133,31 @@ begin
         edDir.Text:= WideExcludeTrailingBackslash(edDir.Text);
         if not IsDirExist(edDir.Text) then
         begin
-          ShowErr(DKLangConstW('MNFoundFold'));
+          DoMessage(DKLangConstW('MNFoundFold'));
           Continue
         end;
       end;
 
       if cbRE.Checked and not IsRegexValid(ed1.Text) then
       begin
-        ShowErr(DKLangConstW('zMRegexInvalid'));
+        DoMessage(DKLangConstW('zMRegexInvalid'));
         Continue
       end;
 
       Break;
     until false;
 
-    //confirm mass replace
     if AInProject then
-      ADir:= DKLangConstW('zMProjectDir')
+      D.ADir:= DKLangConstW('zMProjectDir')
     else
-      ADir:= edDir.Text;
+      D.ADir:= edDir.Text;
 
-    if AShowResult = resReplaceAll then
-      if not MsgConfirm(WideFormat(DKLangConstW('FFCfm'), [ADir, edFileInc.Text]), Self.Handle) then
+    //confirm mass replace
+    if Result=resReplaceAll then
+      if not MsgConfirm(WideFormat(DKLangConstW('FFCfm'),
+               [D.ADir, edFileInc.Text]), Self.Handle) then
       begin
-        RestoreFinder;
+        Result:= mrCancel;
         Exit
       end;
 
@@ -12216,35 +12171,64 @@ begin
     FDialogFFiles_Top:= Top;
 
     //find files to StringList
-    AFnOnly:= cbFnOnly.Checked;
-    AToTab:= cbOutTab.Checked;
-    AOutAppend:= cbOutAppend.Checked;
-    ACloseAfter:= cbCloseAfter.Checked;
-    ASortMode:= TSynFileSort(edSort.ItemIndex);
-
     if not DoFindInFiles_GetFileList(FListFiles,
       edDir.Text, edFileInc.Text, edFileExc.Text,
       cbSubDir.Checked, cbNoRO.Checked, cbNoHid.Checked, cbNoHid2.Checked, cbNoBin.Checked,
-      ASortMode, AInProject) then
+      D.ASortMode, AInProject) then
       begin
-        RestoreFinder;
+        Result:= mrCancel;
         Exit
       end;
+  finally
+    Free;
+  end;
+end;
 
-    //set finder
+
+procedure TfmMain.DoFindInFiles_Dialog(AInProject: boolean);
+var
+  PrevFlags: TSearchOptions;
+  PrevTokens: TSearchTokens;
+  PrevText1, PrevText2: Widestring;
+  PrevEvent1, PrevEvent2, PrevEvent3: TNotifyEvent;
+  PrevEvent4: TOnFindEvent;
+  //-------------
+  procedure _SaveFinder;
+  begin
+    PrevFlags:= Finder.Flags;
+    PrevTokens:= Finder.Tokens;
+    PrevText1:= Finder.FindText;
+    PrevText2:= Finder.ReplaceText;
+    PrevEvent1:= Finder.OnAfterExecute;
+    PrevEvent2:= Finder.OnBeforeExecute;
+    PrevEvent3:= Finder.OnNotFound;
+    PrevEvent4:= Finder.OnCanAccept;
+  end;
+  //-------------
+  procedure _RestoreFinder;
+  begin
+    Finder.Control:= CurrentEditor;
+    Finder.Flags:= PrevFlags;
+    Finder.Tokens:= PrevTokens;
+    Finder.FindText:= ''; //don't restore find-text
+    Finder.ReplaceText:= '';
+    Finder.OnAfterExecute:= PrevEvent1;
+    Finder.OnBeforeExecute:= PrevEvent2;
+    Finder.OnNotFound:= PrevEvent3;
+    Finder.OnCanAccept:= PrevEvent4;
+  end;
+  //--------
+  procedure _SetFinder(const D: TSynFindInFilesData);
+  begin
     Finder.Control:= TemplateEditor;
-    Finder.FindText:= ed1.Text;
-    Finder.ReplaceText:= ed2.Text;
+    Finder.FindText:= D.ATextSearch;
+    Finder.ReplaceText:= D.ATextReplace;
     Finder.Tokens:= tokensAll;
     Finder.Flags:= [ftEntireScope];
-    if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSens];
-    if cbWords.Checked then Finder.Flags:= Finder.Flags + [ftWholeWords];
-
-    if cbRe.Checked then Finder.Flags:= Finder.Flags + [ftRegex];
-    //if cbReDot.Checked then Finder.Flags:= Finder.Flags + [ftRegex_s];
-    //if cbReMLine.Checked then Finder.Flags:= Finder.Flags + [ftRegex_m];
-
-    if cbSpec.Checked then
+    if D.ATextCase then Finder.Flags:= Finder.Flags + [ftCaseSens];
+    if D.ATextWords then Finder.Flags:= Finder.Flags + [ftWholeWords];
+    if D.ATextRegex then Finder.Flags:= Finder.Flags + [ftRegex];
+    if D.ATextSpec then
     begin
       Finder.FindText:= SDecodeSpecChars(Finder.FindText);
       Finder.ReplaceText:= SDecodeSpecChars(Finder.ReplaceText);
@@ -12254,24 +12238,67 @@ begin
     Finder.OnBeforeExecute:= nil;
     Finder.OnNotFound:= nil;
     Finder.OnCanAccept:= nil;
-    InOEM:= cbInOEM.Checked;
-    InUTF8:= cbInUTF8.Checked;
-    InUTF16:= cbInUTF16.Checked;
-  finally
-    Free;
+  end;
+  //---------
+var
+  D: TSynFindInFilesData;
+  AError: TSynFindInFilesError;
+  ARes: TModalResult;
+  ANeedFocusResult: boolean;
+label
+  _Show;
+begin
+  _SaveFinder;
+
+  ANeedFocusResult:= false;
+  AError:= cFindFilesOk;
+  _Show:
+  ARes:= DoFindInFiles_InputData(AInProject, AError, D);
+  AError:= cFindFilesOk;
+
+  case ARes of
+    mrCancel:
+      begin
+        _RestoreFinder;
+        Exit
+      end;
+    resGotoFind:
+      begin
+        _RestoreFinder;
+        ecFind.Execute;
+        if Assigned(fmSR) then
+        begin
+          fmSR.Text1:= D.ATextSearch;
+          fmSR.Text2:= D.ATextReplace;
+        end;
+        Application.ProcessMessages;
+        Exit
+      end;
+    resGotoRep:
+      begin
+        _RestoreFinder;
+        ecReplace.Execute;
+        if Assigned(fmSR) then
+        begin
+          fmSR.Text1:= D.ATextSearch;
+          fmSR.Text2:= D.ATextReplace;
+        end;
+        Application.ProcessMessages;
+        Exit
+      end;
   end;
 
-  //"Find in files" dialog is closed, Finder is set, FListFiles is filled,
-  //start the work
+  //set Finder and start work
+  _SetFinder(D);
 
   //--------------------------
   //"Find in files" work
-  if AShowResult = resFindAll then
+  if ARes=resFindAll then
     if FListFiles.Count = 0 then
-      MsgNoFiles
+      AError:= cFindFilesNoFiles
     else
     begin
-      DoFindInFiles_FindAction(ADir, AOutAppend, InOEM, InUTF8, InUTF16);
+      DoFindInFiles_FindAction(D.ADir, D.AOutAppend, D.InOEM, D.InUTF8, D.InUTF16);
 
       //show "Find in files" report in Output pane
       if FTreeRoot=nil then
@@ -12280,15 +12307,15 @@ begin
       if not StopFind then
       if FTreeRoot.GetFirstChild=nil then
       begin
-        UpdateTreeFind_Results(Finder.FindText, ADir, false);
-        MsgNoLines;
+        UpdateTreeFind_Results(Finder.FindText, D.ADir, false);
+        AError:= cFindFilesNoLines;
       end
       else
       begin
-        UpdateTreeFind_Results(Finder.FindText, ADir, false);
-        if AToTab then
+        UpdateTreeFind_Results(Finder.FindText, D.ADir, false);
+        if D.AToTab then
         begin
-          DoCopyFindResultToTab(true, AFnOnly);
+          DoCopyFindResultToTab(true, D.AFnOnly);
         end
         else
         begin
@@ -12301,18 +12328,18 @@ begin
 
   //---------------------------
   //"Replace in files" work
-  if AShowResult = resReplaceAll then
+  if ARes=resReplaceAll then
     if FListFiles.Count = 0 then
-      MsgNoFiles
+      AError:= cFindFilesNoFiles
     else
     begin
-      if not DoFindInFiles_ReplaceAction(ADir, AOutAppend) then
-        MsgNoLines
+      if not DoFindInFiles_ReplaceAction(D.ADir, D.AOutAppend) then
+        AError:= cFindFilesNoLines
       else
       begin
         FTreeRoot.Expand(false);
         TreeFind.Selected:= FTreeRoot;
-        if AToTab then
+        if D.AToTab then
         begin
           DoCopyFindResultToTab(true, true{AFnOnly=true for replace});
         end
@@ -12325,9 +12352,8 @@ begin
       end;
     end;
 
-  //"Find/Replace in files" work is finished
-
-  if (AErrorMode<>cFindFilesOk) or (not ACloseAfter) then
+  //search work is finished
+  if (AError<>cFindFilesOk) or (not D.ACloseAfter) then
   begin
     DoProgressHide;
     goto _Show;
@@ -12336,7 +12362,7 @@ begin
   //finalize
   DoProgressHide;
   StopFind:= false;
-  RestoreFinder;
+  _RestoreFinder;
 
   if ANeedFocusResult then
   begin
@@ -12591,15 +12617,15 @@ procedure TfmMain.DoMarkAll(const Str: Widestring);
 var
   OFl: TSearchOptions;
   OTxt, OTxt2: Widestring;
-  ON1, ON2, ON3: TNotifyEvent;
+  PrevEvent1, PrevEvent2, PrevEvent3: TNotifyEvent;
 begin
   //save finder
   OFl:= Finder.Flags;
   OTxt:= Finder.FindText;
   OTxt2:= Finder.ReplaceText;
-  ON1:= Finder.OnAfterExecute;
-  ON2:= Finder.OnBeforeExecute;
-  ON3:= Finder.OnNotFound;
+  PrevEvent1:= Finder.OnAfterExecute;
+  PrevEvent2:= Finder.OnBeforeExecute;
+  PrevEvent3:= Finder.OnNotFound;
 
   //set finder
   Finder.Control:= CurrentEditor;
@@ -12627,9 +12653,9 @@ begin
   Finder.Flags:= OFl;
   Finder.FindText:= OTxt;
   Finder.ReplaceText:= OTxt2;
-  Finder.OnAfterExecute:= ON1;
-  Finder.OnBeforeExecute:= ON2;
-  Finder.OnNotFound:= ON3;
+  Finder.OnAfterExecute:= PrevEvent1;
+  Finder.OnBeforeExecute:= PrevEvent2;
+  Finder.OnNotFound:= PrevEvent3;
 end;
 
 procedure TfmMain.DoSmartHilite;
