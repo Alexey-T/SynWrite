@@ -3706,7 +3706,7 @@ end;
 
 function TfmMain.SynFilesFilter: Widestring;
 begin
-  Result:= SyntaxManagerFilesFilter(SyntaxManager, DKLangConstW('AllF'));
+  Result:= SyntaxManagerFilesFilter(SyntaxManager, DKLangConstW('filAll'));
 end;
 
 procedure TfmMain.acOpenExecute(Sender: TObject);

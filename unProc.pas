@@ -2043,7 +2043,7 @@ begin
 
     DoTool_CopyList(AToolList, FToolList);
 
-    edLexer.Items.Add(DKLangConstW('AllL'));
+    edLexer.Items.Add(DKLangConstW('MAllLexers'));
     edLexer.Items.AddStrings(ALexersList);
     FCurrLexer:= ACurrentLexer;
 
