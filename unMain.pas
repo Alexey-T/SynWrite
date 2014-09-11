@@ -95,8 +95,8 @@ type
 const
   cIconsDefault = cIconsFog24x;
   cIconsNames: array[TSynIcons] of string = (
-    'Fogue 16x16',
-    'Fogue 24x24',
+    'Fugue 16x16',
+    'Fugue 24x24',
     'Tango 22x22'
     );
 
