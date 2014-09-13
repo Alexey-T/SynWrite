@@ -61,8 +61,8 @@ type
     Label8: TTntLabel;
     Label7: TTntLabel;
     TntLabel11: TTntLabel;
-    edFS: TSpinEdit;
-    edSR: TSpinEdit;
+    edFileCount: TSpinEdit;
+    edFindCount: TSpinEdit;
     cbHCaret: TTntCheckBox;
     cbHEnc: TTntCheckBox;
     bClrSR: TTntButton;
@@ -1859,8 +1859,8 @@ begin
   with fmMain do
   begin
     opMruCheck:= cbMru.Checked;
-    opSaveFileCount:= edFS.Value;
-    opSaveFindCount:= edSR.Value;
+    opSaveFileCount:= edFileCount.Value;
+    opSaveFindCount:= edFindCount.Value;
     opSaveEdCaret:= cbHCaret.Checked;
     opSaveEdEnc:= cbHEnc.Checked;
     opStateForTemp:= cbHTemp.Checked;
@@ -2181,8 +2181,8 @@ procedure TfmSetup.InitHistory;
 begin
   with fmMain do
   begin
-    edFS.Value:= opSaveFileCount;
-    edSR.Value:= opSaveFindCount;
+    edFileCount.Value:= opSaveFileCount;
+    edFindCount.Value:= opSaveFindCount;
     cbHCaret.Checked:= opSaveEdCaret;
     cbHEnc.Checked:= opSaveEdEnc;
     cbHTemp.Checked:= opStateForTemp;
