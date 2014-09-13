@@ -4207,11 +4207,11 @@ object fmMain: TfmMain
       'StaplePen.Style'
       'TabList.AsString'
       'TabMode'
-      'UndoLimit'
       'WordWrap'
       'ecACP.FilterType'
       'ecACP.DropDownCount'
       'SyntKeyMapping.AsString'
+      ''
       ''
       ''
       '')

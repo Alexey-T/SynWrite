@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabHist
+    ActivePage = tabUndo
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -2901,7 +2901,7 @@ object fmSetup: TfmSetup
           MaxValue = 100000
           MinValue = 10
           TabOrder = 0
-          Value = 10
+          Value = 1000
           OnKeyDown = edIndentKeyDown
         end
         object cbUndoMass: TTntCheckBox

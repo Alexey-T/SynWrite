@@ -4592,6 +4592,7 @@ begin
     opSaveWndPos:= ReadBool('Hist', 'SavePos', true);
 
     //setup
+    TemplateEditor.UndoLimit:= ReadInteger('Setup', 'Undo', 2000);
     opHintScroll:= ReadBool('Setup', 'HintScroll', false);
     opPyChangeDelay:= ReadInteger('Setup', 'PyChangeDelay', 3000);
 
@@ -5025,6 +5026,7 @@ begin
     WriteString('ASave', 'UnnmDir', opASaveUnnamedDir);
 
     //setup
+    WriteInteger('Setup', 'Undo', TemplateEditor.UndoLimit);
     WriteInteger('Setup', 'BigSize', opBigSize);
     WriteBool('Setup', 'BkUndo', opBkUndo);
     WriteString('Setup', 'ZenPr', opZenProfile);
@@ -25378,6 +25380,7 @@ begin
   //options
   Ed.Options:= TemplateEditor.Options;
   Ed.OptionsEx:= TemplateEditor.OptionsEx;
+  Ed.UndoLimit:= TemplateEditor.UndoLimit;
 end;
 
 procedure TfmMain.DoColorsArrayInit(var C: TSynColors);

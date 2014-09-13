@@ -1892,7 +1892,7 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soUndoAfterSave];
 
-    ApplyColorsFontsToFrames;  
+    ApplyColorsFontsToFrames;
   end;
 end;
 
