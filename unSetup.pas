@@ -306,12 +306,12 @@ type
     cbSelMode: TTntComboBox;
     TntLabel35: TTntLabel;
     cbCollap: TTntCheckBox;
-    cbDrag: TTntCheckBox;
+    cbSelDrag: TTntCheckBox;
     cbCopyRtf: TTntCheckBox;
-    cbGrSel: TTntCheckBox;
+    cbSelGreedy: TTntCheckBox;
     cbDClick: TTntCheckBox;
-    cbBPers: TTntCheckBox;
-    cbBOver: TTntCheckBox;
+    cbSelPers: TTntCheckBox;
+    cbSelOver: TTntCheckBox;
     boxTabs2: TTntGroupBox;
     edTabStops: TTntEdit;
     Label16: TTntLabel;
@@ -2493,12 +2493,12 @@ begin
     else
       TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx + [soNormalSelToLineEnd];
 
-    if cbBOver.Checked then
+    if cbSelOver.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soOverwriteBlocks]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soOverwriteBlocks];
 
-    if cbBPers.Checked then
+    if cbSelPers.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soPersistentBlocks]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soPersistentBlocks];
@@ -2513,7 +2513,7 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soCopyAsRTF];
 
-    if cbDrag.Checked then
+    if cbSelDrag.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soDragText]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soDragText];
@@ -2530,7 +2530,7 @@ begin
       TemplateEditor.Options:= TemplateEditor.Options - [soFloatMarkers];
       }
 
-    if cbGrSel.Checked then
+    if cbSelGreedy.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soGreedySelect]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soGreedySelect];
@@ -2666,14 +2666,13 @@ begin
     cbCopyLineNSel.Checked:= opCopyLineIfNoSel;
     cbColorOnEmpty.Checked:= not (soNormalSelToLineEnd in TemplateEditor.OptionsEx);
 
-    cbBOver.Checked:= sooverwriteBlocks in TemplateEditor.Options;
-    cbBPers.Checked:= soPersistentBlocks in TemplateEditor.Options;
+    cbSelOver.Checked:= sooverwriteBlocks in TemplateEditor.Options;
+    cbSelPers.Checked:= soPersistentBlocks in TemplateEditor.Options;
     cbDClick.Checked:= soDoubleClickLine in TemplateEditor.Options;
     cbCopyRtf.Checked:= soCopyAsRTF in TemplateEditor.Options;
-    cbDrag.Checked:= soDragText in TemplateEditor.Options;
+    cbSelDrag.Checked:= soDragText in TemplateEditor.Options;
     cbCollap.Checked:= soCallapseEmptyLines in TemplateEditor.Options;
-    //cbFloatM.Checked:= soFloatMarkers in TemplateEditor.Options;
-    cbGrSel.Checked:= soGreedySelect in TemplateEditor.Options;
+    cbSelGreedy.Checked:= soGreedySelect in TemplateEditor.Options;
 
     case TemplateEditor.SelectModeDefault of
       msNone,
