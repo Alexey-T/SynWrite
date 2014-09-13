@@ -28139,6 +28139,7 @@ begin
     begin
       SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4, sValue5);
       if (sKey='') or (sValue='') then Continue;
+      if (sKey='SynFTP') then sKey:= 'FTP'; //show simplier title
 
       if NIndex<=High(FPluginsPanel) then
       begin
@@ -28902,7 +28903,7 @@ end;
 
 procedure TfmMain.TbxItemWinFtpClick(Sender: TObject);
 begin
-  if DoOpenPanelPluginByName('SynFTP')<0 then
+  if DoOpenPanelPluginByName('FTP')<0 then
     MsgBeep;
 end;
 
