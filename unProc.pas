@@ -26,6 +26,7 @@ procedure DoKeymappingSplit(MapIn, MapOut1, MapOut2: TSyntKeyMapping; NCountInFi
 procedure DoKeymappingJoin(MapIn1, MapIn2, MapOut: TSyntKeyMapping);
 procedure DoKeymappingTruncate(Map: TSyntKeyMapping; NCount: Integer);
 
+function STrimFolderName(const s: Widestring): Widestring;
 function DoGetLocalizedEncodingName(const Id: Widestring): Widestring;
 procedure DoUpdateIniFileForNewRelease(const SynIni: string);
 function FontStylesToString(const f: TFontStyles): string;
@@ -2478,6 +2479,15 @@ begin
   Result:= GetSpecialFolderPath(CSIDL_APPDATA) + '\';
 end;
 *)
+
+function STrimFolderName(const s: Widestring): Widestring;
+begin
+  Result:= s;
+  while (Result<>'') and
+    (Char(Result[Length(Result)]) in ['*', '\', ' ']) do
+    SetLength(Result, Length(Result)-1);
+end;
+
 
 
 end.

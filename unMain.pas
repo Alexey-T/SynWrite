@@ -3315,7 +3315,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.8.1500';
+  cSynVer = '6.8.1520';
   cSynPyVer = '1.0.138';
 
 const
@@ -14771,28 +14771,19 @@ begin
   end;
 end;
 
-function SDirStrip(const s: Widestring): Widestring;
-  begin
-    Result:= s;
-    while (Result<>'') and
-      (char(Result[Length(Result)]) in ['*', '\', ' ']) do
-      SetLength(Result, Length(Result)-1);
-  end;
-
 function DoFindFileInSubdirs(
   const sel: Widestring;
   dir: Widestring;
   const def_ext: Widestring): Widestring;
 var
-  SubDirs, WithPath: boolean;
   fn: Widestring;
 begin
   Result:= '';
   if (sel='') or (dir='') then Exit;
 
-  WithPath:= WideExtractFileDir(sel) <> '';
-  SubDirs:= (dir[Length(dir)] = '*');
-  dir:= SDirStrip(dir);
+  //WithPath:= WideExtractFileDir(sel) <> '';
+  //SubDirs:= (dir[Length(dir)] = '*');
+  dir:= STrimFolderName(dir);
 
   //try exact name in dir
   fn:= dir + '\' + WideExtractFileName(sel);
@@ -14805,6 +14796,7 @@ begin
   if IsFileExist(fn) then
     begin Result:= fn; Exit end;
 
+  (*
   //try recursive search from dir (if * at end)
   if SubDirs and not WithPath then
   begin
@@ -14819,6 +14811,7 @@ begin
       if IsFileExist(Result) then Exit;
     end;
   end;
+  *)
 end;
 
 procedure TfmMain.TBXItemCtxOpenSelClick(Sender: TObject);
@@ -14890,7 +14883,7 @@ begin
     fn:= '';
     for n:= 0 to Dirs.Count-1 do
     begin
-      dir:= SDirStrip(Dirs[n]);
+      dir:= STrimFolderName(Dirs[n]);
       if Pos(
         LowerCase(dir + '\'),
         LowerCase(WideExtractFilePath(CurrentFrame.FileName))) > 0 then
