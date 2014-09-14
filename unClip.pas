@@ -25,7 +25,7 @@ type
   public
     FColorSel,
     FColorSelBk: integer;
-    procedure Set_;
+    procedure InitHook;
     procedure Clear;
     function ItemAt(n: Integer): Widestring;
   end;
@@ -51,7 +51,7 @@ begin
   FColorSelBk:= clHighlight;
 end;
 
-procedure TfmClip.Set_;
+procedure TfmClip.InitHook;
 begin 
   if FNextClipboardViewer <> 0 then 
     MsgWarn('Clipboard window is already registered!', Handle)

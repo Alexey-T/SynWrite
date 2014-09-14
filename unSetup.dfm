@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabSelHL
+    ActivePage = tabProgSett
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -104,7 +104,7 @@ object fmSetup: TfmSetup
           Height = 21
           Style = csDropDownList
           ItemHeight = 13
-          TabOrder = 8
+          TabOrder = 9
           Items.Strings = (
             'Do nothing'
             'Close editor'
@@ -159,7 +159,7 @@ object fmSetup: TfmSetup
           Height = 21
           Style = csDropDownList
           ItemHeight = 13
-          TabOrder = 10
+          TabOrder = 11
           Items.Strings = (
             'Unicode'
             'Unicode (Win API)'
@@ -173,11 +173,19 @@ object fmSetup: TfmSetup
           Height = 21
           Style = csDropDownList
           ItemHeight = 13
-          TabOrder = 9
+          TabOrder = 10
           Items.Strings = (
             'Auto-hide'
             'Always show'
             'Always hide')
+        end
+        object cbClipHook: TTntCheckBox
+          Left = 8
+          Top = 164
+          Width = 350
+          Height = 17
+          Caption = 'Allow system-level clipboard hook'
+          TabOrder = 8
         end
       end
       object boxLang: TTntGroupBox
@@ -3014,7 +3022,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0151010000
+      0700666D5365747570010100000001000000070043617074696F6E0152010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3319,7 +3327,8 @@ object fmSetup: TfmSetup
       0065645461624D696E4C656E00000A00546E744C6162656C32390101000000DD
       020000070043617074696F6E000B006362546162456E746972650101000000DE
       020000070043617074696F6E000A00546E744C6162656C31330101000000DF02
-      0000070043617074696F6E00}
+      0000070043617074696F6E000A006362436C6970486F6F6B0101000000E00200
+      00070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

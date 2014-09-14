@@ -357,6 +357,7 @@ type
     TntLabel29: TTntLabel;
     cbTabEntire: TTntCheckBox;
     TntLabel13: TTntLabel;
+    cbClipHook: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1921,6 +1922,7 @@ begin
     Icons:= Icons; //update menu
     opShowTitleFull:= cbFullTitle.Checked;
     opBeep:= cbBeep.Checked;
+    opClipHook:= cbClipHook.Checked;
 
     //redraw
     tbFile.Invalidate;
@@ -2227,6 +2229,7 @@ begin
     cbFullTitle.Checked:= opShowTitleFull;
     cbMenuIcon.Checked:= opShowMenuIcons;
     cbBeep.Checked:= opBeep;
+    cbClipHook.Checked:= opClipHook;
   end;
 end;
 

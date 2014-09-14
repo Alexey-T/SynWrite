@@ -2953,6 +2953,7 @@ type
     opShowRecentColors: TSynRecentColors;
     opUnicodeNeeded: integer;
     opTabColors: array[0..Pred(cTabColors)] of integer;
+    opClipHook: boolean;
     opColorAcpText: integer;
     opColorAcpBg: integer;
     opColorCaretsGutter: integer;
@@ -4592,6 +4593,7 @@ begin
     opSaveWndPos:= ReadBool('Hist', 'SavePos', true);
 
     //setup
+    opClipHook:= ReadBool('Setup', 'ClipHook', true);
     TemplateEditor.UndoLimit:= ReadInteger('Setup', 'Undo', 2000);
     opHintScroll:= ReadBool('Setup', 'HintScroll', false);
     opPyChangeDelay:= ReadInteger('Setup', 'PyChangeDelay', 3000);
@@ -4635,7 +4637,7 @@ begin
       opTabVisible:= ReadBool('Setup', 'TabShow', true);
 
     opTabWidthMin:= ReadInteger('Setup', 'TabSizeMin', 20);
-    opTabWidthMax:= ReadInteger('Setup', 'TabSize', 130);
+    opTabWidthMax:= ReadInteger('Setup', 'TabSize', 160);
     opTabEntireColor:= ReadBool('View', 'TabEntire', false);
     opTabAngle:= ReadInteger('View', 'TabAngle', 0);
     opTabDragDrop:= true;
@@ -5026,6 +5028,7 @@ begin
     WriteString('ASave', 'UnnmDir', opASaveUnnamedDir);
 
     //setup
+    WriteBool('Setup', 'ClipHook', opClipHook);
     WriteInteger('Setup', 'Undo', TemplateEditor.UndoLimit);
     WriteInteger('Setup', 'BigSize', opBigSize);
     WriteBool('Setup', 'BkUndo', opBkUndo);
@@ -13826,7 +13829,8 @@ begin
     ListClip.BorderStyle:= SynBorderStyle;
     ApplyOut;
     Show;
-    Set_;
+    if opClipHook then
+      InitHook;
   end;
 end;
 
