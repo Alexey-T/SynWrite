@@ -68,7 +68,8 @@ uses
   unMenuPy in 'unMenuPy.pas' {fmMenuPy: TTntForm},
   unSRFiles in 'unSRFiles.pas' {fmSRFiles: TTntForm},
   unMainPy in 'unMainPy.pas',
-  unSaveTabs in 'unSaveTabs.pas' {fmSaveTabs};
+  unSaveTabs in 'unSaveTabs.pas' {fmSaveTabs},
+  unPrintPreview in 'unPrintPreview.pas' {fmPreview};
 
 {$R *.res}
 {$R *.dkl_const.res}
@@ -79,6 +80,7 @@ begin
   Application.Initialize;
   Application.Title := 'SynWrite';
   Application.HintHidePause := 5000;
-  Application.CreateForm(TfmSynEx, fmSynEx); //550ms
+  Application.CreateForm(TfmSynEx, fmSynEx);
+  //550ms
   Application.Run;
 end.

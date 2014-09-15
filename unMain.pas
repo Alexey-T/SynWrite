@@ -430,7 +430,6 @@ type
     ecShowTree: TAction;
     TBXItemVPanelTree: TSpTBXItem;
     ecPrintAction: TecPrintAction;
-    ecPreviewAction: TecPreviewAction;
     ecPageSetupAction: TecPageSetupAction;
     ecPrinterSetup: TAction;
     PrinterSetupDialog: TPrinterSetupDialog;
@@ -1388,6 +1387,7 @@ type
     TBXItemTabCloseLefter: TSpTBXItem;
     ecReplaceInProject: TAction;
     TbxItemSRepInProject: TSpTBXItem;
+    ecPreviewActionNew: TAction;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1435,7 +1435,6 @@ type
     procedure TBXItemClrClick(Sender: TObject);
     procedure tbViewMove(Sender: TObject);
     procedure ecPrintActionBeforeExecute(Sender: TObject);
-    procedure ecPreviewActionBeforeExecute(Sender: TObject);
     procedure TBXItem2Click(Sender: TObject);
     procedure ecACPKeyPress(Sender: TObject; var Key: Char);
     procedure ecACPListClick(Sender: TObject);
@@ -1896,7 +1895,6 @@ type
     procedure ecSortDialogExecute(Sender: TObject);
     procedure TBXItemSSelBracketsClick(Sender: TObject);
     procedure ecPageSetupActionBeforeExecute(Sender: TObject);
-    procedure ecPreviewActionExecuteOK(Sender: TObject);
     procedure TimerTreeTimer(Sender: TObject);
     procedure PopupStatusLineEndsPopup(Sender: TObject);
     procedure TBXItemFoldAllClick(Sender: TObject);
@@ -2162,6 +2160,9 @@ type
     procedure TBXItemTabCloseRighterClick(Sender: TObject);
     procedure TBXItemTabCloseLefterClick(Sender: TObject);
     procedure ecReplaceInProjectExecute(Sender: TObject);
+    procedure ecPreviewActionNewExecute(Sender: TObject);
+    procedure TBXItemPreviewClick(Sender: TObject);
+    procedure TBXItemFPreviewClick(Sender: TObject);
 
   private
     cStatLine,
@@ -3371,7 +3372,7 @@ uses
   unToolbarProp, unHideItems,
   unProcPy,
   unMainPy,
-  unLexerLib, unSnipEd, unSaveTabs;
+  unLexerLib, unSnipEd, unSaveTabs, unPrintPreview;
 
 {$R *.dfm}
 {$R Cur.res}
@@ -4443,7 +4444,6 @@ begin
   ecSyncScrollH.Enabled:= ecSyncScrollV.Enabled;
 
   ecPrintAction.Update;
-  ecPreviewAction.Update;
   ecPageSetupAction.Update;
   ecPrinterSetup.Update;
 
@@ -5693,7 +5693,7 @@ begin
     smPrint:
       ecPrintAction.Execute;
     smPrintPreview:
-      ecPreviewAction.Execute;
+      ecPreviewActionNew.Execute;
     sm_PrinterSetup:
       ecPrinterSetup.Execute;
 
@@ -9314,21 +9314,6 @@ begin
   with ecPrintAction do
   begin
     PrintDialog:= nil;
-    SyntPrinter:= ecSyntPrinter;
-    SyntMemo:= nil; //runtime breaks this
-  end;
-end;
-
-procedure TfmMain.ecPreviewActionBeforeExecute(Sender: TObject);
-begin
-  LoadPrintOptions;
-  with ecSyntPrinter do
-  begin
-    SyntMemo:= CurrentEditor;
-    PrintSelection:= CurrentEditor.HaveSelection;
-  end;
-  with ecPreviewAction do
-  begin
     SyntPrinter:= ecSyntPrinter;
     SyntMemo:= nil; //runtime breaks this
   end;
@@ -23064,11 +23049,6 @@ begin
   LoadPrintOptions;
 end;
 
-procedure TfmMain.ecPreviewActionExecuteOK(Sender: TObject);
-begin
-  SavePrintOptions;
-end;
-
 procedure TfmMain.ecPageSetupActionExecuteOK(Sender: TObject);
 begin
   SavePrintOptions;
@@ -29063,6 +29043,29 @@ begin
       if fn<>'' then
         L.Add(fn);
     end;
+end;
+
+procedure TfmMain.ecPreviewActionNewExecute(Sender: TObject);
+begin
+  LoadPrintOptions;
+  with ecSyntPrinter do
+  begin
+    SyntMemo:= CurrentEditor;
+    PrintSelection:= CurrentEditor.HaveSelection;
+  end;
+
+  DoEditorPrintPreview(ecSyntPrinter, CurrentFrame.TabCaption);
+  SavePrintOptions;
+end;
+
+procedure TfmMain.TBXItemPreviewClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(smPrintPreview);
+end;
+
+procedure TfmMain.TBXItemFPreviewClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(smPrintPreview);
 end;
 
 initialization
