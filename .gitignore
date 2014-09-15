@@ -22,3 +22,5 @@ __history
 *.wlx64
 *.mes
 *.txt
+!Res/*
+!Setup/*
