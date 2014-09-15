@@ -40,7 +40,6 @@ type
     procedure FirstCmdExecute(Sender: TObject);
     procedure CloseCmdExecute(Sender: TObject);
     procedure PrintCmdExecute(Sender: TObject);
-    procedure edPageChange(Sender: TObject);
     procedure edPageExit(Sender: TObject);
     procedure OptCmdExecute(Sender: TObject);
     procedure OptCmdUpdate(Sender: TObject);
@@ -117,12 +116,6 @@ begin
   ecPreview.SyntPrinter.Print;
 end;
 
-procedure TfmPreview.edPageChange(Sender: TObject);
-begin
-  edPage.Text := IntToStr(ecPreview.Page);
-  edTotal.Text := IntToStr(ecPreview.PageCount);
-end;
-
 procedure TfmPreview.edPageExit(Sender: TObject);
 begin
   try
@@ -171,14 +164,28 @@ end;
 
 procedure TfmPreview.TntFormShow(Sender: TObject);
 begin
+  with edZoom.Items do
+  begin
+    Clear;
+    Add(DKLangConstW('MPreviewZoomWhole'));
+    Add(DKLangConstW('MPreviewZoomWidth'));
+    Add('');
+    Add('25%');
+    Add('50%');
+    Add('75%');
+    Add('100%');
+    Add('200%');
+  end;
+
   edView.ItemIndex := 0;
   edZoom.ItemIndex := 0;
-  edPageChange(Self);
+  ecPreviewPageChanged(Self);
 end;
 
 procedure TfmPreview.ecPreviewPageChanged(Sender: TObject);
 begin
-  edPageChange(Self);
+  edPage.Text := IntToStr(ecPreview.Page);
+  edTotal.Text := IntToStr(ecPreview.PageCount);
 end;
 
 end.
