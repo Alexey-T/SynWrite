@@ -5,8 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ecPrint, ExtCtrls, ComCtrls, Menus, ActnList,
-  StdCtrls, ecActns, DKLang, TB2Item, TntForms, Buttons,
-  TntButtons, TntStdCtrls, SpTBXItem;
+  StdCtrls, ecActns, DKLang, TntForms, Buttons,
+  TntButtons, TntStdCtrls;
 
 type
   TfmPreview = class(TTntForm)
@@ -27,7 +27,6 @@ type
     btnPrev: TTntSpeedButton;
     btnNext: TTntSpeedButton;
     btnLast: TTntSpeedButton;
-    btnZoom: TTntSpeedButton;
     btnOpt: TTntSpeedButton;
     btnPrint: TTntSpeedButton;
     btnClose: TTntSpeedButton;
@@ -35,33 +34,22 @@ type
     edPage: TTntEdit;
     Label1: TLabel;
     edTotal: TTntEdit;
-    mnuZoom: TSpTBXPopupMenu;
-    mnuWhole: TSpTBXItem;
-    mnuWidth: TSpTBXItem;
-    mnu25: TSpTBXItem;
-    mnu50: TSpTBXItem;
-    mnu75: TSpTBXItem;
-    mnu100: TSpTBXItem;
-    mnu200: TSpTBXItem;
-    mnu400: TSpTBXItem;
-    SpTBXSeparatorItem1: TSpTBXSeparatorItem;
-    procedure mnuWholeClick(Sender: TObject);
-    procedure mnuWidthClick(Sender: TObject);
-    procedure mnu400Click(Sender: TObject);
+    edZoom: TTntComboBox;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ActionListUpdate(Action: TBasicAction; var Handled: Boolean);
     procedure FirstCmdExecute(Sender: TObject);
     procedure CloseCmdExecute(Sender: TObject);
     procedure PrintCmdExecute(Sender: TObject);
-    procedure ecPreviewPageChanged(Sender: TObject);
+    procedure edPageChange(Sender: TObject);
     procedure edPageExit(Sender: TObject);
     procedure OptCmdExecute(Sender: TObject);
     procedure OptCmdUpdate(Sender: TObject);
     procedure edViewChange(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure FormCreate(Sender: TObject);
-    procedure ZoomCmdExecute(Sender: TObject);
+    procedure edZoomChange(Sender: TObject);
+    procedure TntFormShow(Sender: TObject);
+    procedure ecPreviewPageChanged(Sender: TObject);
   private
     //private
   public
@@ -78,29 +66,15 @@ procedure DoEditorPrintPreview(APrinter: TecCustomPrinter; const ATitle: Widestr
 begin
   with TfmPreview.Create(nil) do
   try
+    APrinter.Title:= ATitle;
     APrinter.UpdatePages;
     ecPreview.SyntPrinter := APrinter;
-    APrinter.Title:= ATitle;
+    ecPrint.SyntPrinter := APrinter;
     Caption := Caption + ' - ' + ATitle;
     ShowModal;
   finally
     Free;
   end;
-end;
-
-procedure TfmPreview.mnuWholeClick(Sender: TObject);
-begin
-  ecPreview.ZoomMode := zmWholePage;
-end;
-
-procedure TfmPreview.mnuWidthClick(Sender: TObject);
-begin
-  ecPreview.ZoomMode := zmPageWidth;
-end;
-
-procedure TfmPreview.mnu400Click(Sender: TObject);
-begin
-  ecPreview.Zoom := (Sender as TComponent).Tag;
 end;
 
 procedure TfmPreview.FormClose(Sender: TObject;
@@ -143,17 +117,16 @@ begin
   ecPreview.SyntPrinter.Print;
 end;
 
-procedure TfmPreview.ecPreviewPageChanged(Sender: TObject);
+procedure TfmPreview.edPageChange(Sender: TObject);
 begin
   edPage.Text := IntToStr(ecPreview.Page);
   edTotal.Text := IntToStr(ecPreview.PageCount);
-  ecPrint.SyntPrinter := ecPreview.SyntPrinter;
 end;
 
 procedure TfmPreview.edPageExit(Sender: TObject);
 begin
   try
-    ecPreview.Page := StrToInt(edPage.Text);
+    ecPreview.Page := StrToIntDef(edPage.Text, 1);
   finally
     edPage.Text := IntToStr(ecPreview.Page);
   end;
@@ -182,17 +155,30 @@ begin
     Close;
 end;
 
-procedure TfmPreview.FormCreate(Sender: TObject);
+procedure TfmPreview.edZoomChange(Sender: TObject);
 begin
-  edView.ItemIndex:= 0;
+  case edZoom.ItemIndex of
+    0: ecPreview.ZoomMode := zmWholePage;
+    1: ecPreview.ZoomMode := zmPageWidth;
+    //2: none
+    3: ecPreview.Zoom := 25;
+    4: ecPreview.Zoom := 50;
+    5: ecPreview.Zoom := 75;
+    6: ecPreview.Zoom := 100;
+    7: ecPreview.Zoom := 200;
+  end;
 end;
 
-procedure TfmPreview.ZoomCmdExecute(Sender: TObject);
-var
-  p: TPoint;
+procedure TfmPreview.TntFormShow(Sender: TObject);
 begin
-  p:= btnZoom.ClientToScreen(Point(0, btnZoom.Height));
-  mnuZoom.Popup(p.X, p.Y);
+  edView.ItemIndex := 0;
+  edZoom.ItemIndex := 0;
+  edPageChange(Self);
+end;
+
+procedure TfmPreview.ecPreviewPageChanged(Sender: TObject);
+begin
+  edPageChange(Self);
 end;
 
 end.

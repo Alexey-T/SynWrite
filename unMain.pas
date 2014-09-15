@@ -3116,8 +3116,8 @@ type
     function PluginAction_OpenFtpFile(const fn: Widestring; AInfoPtr: Pointer; AInfoSize: Integer): Integer;
     function PluginAction_OpenFile(const fn: Widestring): Integer;
     function PluginAction_SaveFile(id: Integer; ACanPrompt: boolean): Integer;
-    function PluginAction(AHandle: Pointer; AName: PWideChar; A1, A2, A3, A4: Pointer): Integer; stdcall;
     function PluginAction_SetState(Index: Integer; Ptr: PWideChar): Integer;
+    function PluginAction(AHandle: Pointer; AName: PWideChar; A1, A2, A3, A4: Pointer): Integer; stdcall;
     function Plugin_FrameById(id: Integer): TEditorFrame;
 
     function SynClipsDir: string;
