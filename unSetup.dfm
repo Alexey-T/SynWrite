@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabProgSett
+    ActivePage = tabHist
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -1285,9 +1285,9 @@ object fmSetup: TfmSetup
         object TntLabel11: TTntLabel
           Left = 8
           Top = 208
-          Width = 140
+          Width = 107
           Height = 13
-          Caption = 'Folder of Open/Save dialogs:'
+          Caption = 'Folder of Open dialog:'
         end
         object TntLabel10: TTntLabel
           Left = 8
