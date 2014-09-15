@@ -58,6 +58,7 @@ const
   cActionSaveFile           : PWideChar = 'SaveFile';
   cActionShowHint           : PWideChar = 'ShowHint';
   cActionGetProjectFileName : PWideChar = 'GetProjFN';
+  cActionSetState           : PWideChar = 'SetState';
 
   //editor-related
   cActionSuggestCompletion  : PWideChar = 'Complete';

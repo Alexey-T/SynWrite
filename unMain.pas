@@ -273,6 +273,7 @@ type
   TPluginList_Panel = array[0..10] of record
     SCaption: string;
     SFileName: string;
+    SState: Widestring;
     FDll: THandle;
     FWindow: THandle;
     FForm: Pointer;
@@ -2364,8 +2365,12 @@ type
     procedure DoLoadPlugins_Events(const fn_plug_ini: string);
     procedure DoTestPlugins;
     procedure LoadPluginsInfo;
+
+    function PluginPanelHandleToIndex(AHandle: Pointer): Integer;
+    function PluginPanelCaption(Index: Integer): Widestring;
     procedure PluginPanelItemClick(N: Integer);
     procedure PluginCommandItemClick(Sender: TObject);
+
     procedure DoAddPluginMenuItem(
       ASubmenu: TSpTbxSubmenuitem;
       const SKey: Widestring;
@@ -3112,6 +3117,7 @@ type
     function PluginAction_OpenFile(const fn: Widestring): Integer;
     function PluginAction_SaveFile(id: Integer; ACanPrompt: boolean): Integer;
     function PluginAction(AHandle: Pointer; AName: PWideChar; A1, A2, A3, A4: Pointer): Integer; stdcall;
+    function PluginAction_SetState(Index: Integer; Ptr: PWideChar): Integer;
     function Plugin_FrameById(id: Integer): TEditorFrame;
 
     function SynClipsDir: string;
@@ -21028,12 +21034,19 @@ begin
         TabsLeft.AddTab(-1, SCaption);
 end;
 
+function TfmMain.PluginPanelCaption(Index: Integer): Widestring;
+begin
+  Result:= '';
+  if Index<0 then Exit;
+  Result:= FPluginsPanel[Index].SCaption;
+  if FPluginsPanel[Index].SState<>'' then
+    Result:= Result + ' - ' + FPluginsPanel[Index].SState;
+end;
+
 procedure TfmMain.PluginPanelItemClick(N: Integer);
 begin
   if not ((N>=Low(FPluginsPanel)) and (N<=High(FPluginsPanel))) then Exit;
   if FPluginsPanel[N].SCaption='' then Exit;
-
-  plTree.Caption:= FPluginsPanel[N].SCaption;
 
   Tree.Visible:= false;
   Tree.SyntaxMemo:= nil;
@@ -21224,6 +21237,16 @@ begin
     Result:= cSynError;
 end;
 
+function TfmMain.PluginAction_SetState(Index: Integer; Ptr: PWideChar): Integer;
+begin
+  Result:= cSynOK;
+  if Index<0 then Exit;
+
+  FPluginsPanel[Index].SState:= Widestring(Ptr);
+  if TabsLeft.TabIndex=Ord(tbPlugin1)+Index then
+    plTree.Caption:= PluginPanelCaption(Index);
+end;
+
 function TfmMain.PluginAction_GetProjectFN(id: Integer; ptr: PWideChar): Integer;
 var
   fn: Widestring;
@@ -21311,6 +21334,16 @@ begin
 
   lstrcpynW(AResult, PWChar(S), cSynMaxMsg);
   Result:= cSynOK;
+end;
+
+function TfmMain.PluginPanelHandleToIndex(AHandle: Pointer): Integer;
+var
+  i: Integer;
+begin
+  Result:= -1;
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    if FPluginsPanel[i].FForm = AHandle then
+      begin Result:= i; Exit end;
 end;
 
 function TfmMain.PluginAction(AHandle: Pointer; AName: PWideChar; A1, A2, A3, A4: Pointer): Integer; stdcall;
@@ -21468,8 +21501,13 @@ begin
   end;
 
   //---------------------
-  //---------------------
+  if (act=cActionSetState) then
+  begin
+    Result:= PluginAction_SetState(PluginPanelHandleToIndex(AHandle), A1);
+    Exit
+  end;
 
+  //---------------------
   Result:= cSynBadCmd;
 end;
 
@@ -28835,13 +28873,20 @@ end;
 
 procedure TfmMain.TabsLeftClick(Sender: TObject);
 var
+  Index: Integer;
   D: TATTabData;
 begin
-  UpdatePanelLeft(TSynTabLeft(TabsLeft.TabIndex));
+  Index:= TabsLeft.TabIndex;
+  UpdatePanelLeft(TSynTabLeft(Index));
 
-  D:= TabsLeft.GetTabData(TabsLeft.TabIndex);
-  if D<>nil then
-    plTree.Caption:= D.TabCaption;
+  if Index<Ord(tbPlugin1) then
+  begin
+    D:= TabsLeft.GetTabData(Index);
+    if D<>nil then
+      plTree.Caption:= D.TabCaption;
+  end
+  else
+    plTree.Caption:= PluginPanelCaption(Index-Ord(tbPlugin1));
 end;
 
 procedure TfmMain.TabsRightClick(Sender: TObject);
