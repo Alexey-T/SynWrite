@@ -3,7 +3,7 @@ object fmPreview: TfmPreview
   Top = 289
   Width = 640
   Height = 470
-  ActiveControl = edPage
+  ActiveControl = ecPreview
   Caption = 'Print preview'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
