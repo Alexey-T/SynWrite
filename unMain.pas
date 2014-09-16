@@ -8055,7 +8055,7 @@ begin
   end;
 
   //update status hint
-  en:= SyntaxManager.AnalyzerCount > 0;
+  en:= SyntaxManager.AnalyzerCount>0;
   TbxSubmenuItemLexer.Enabled:= en;
   StatusItemLexer.Enabled:= en;
 
@@ -13931,9 +13931,7 @@ begin
       ShowCaptionWhenDocked:= opShowPanelTitles;
       DockMode:= dmCanFloat;
       HideWhenInactive:= false;
-
       OnClose:= ProjPreviewClose;
-      //OnVisibleChanged:= ProjPreviewVisibleChanged;
 
       ClientWidth:= 400;
       ClientHeight:= 300;

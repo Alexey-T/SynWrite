@@ -353,14 +353,18 @@ var
   Ed: TSyntaxMemo;
 begin
   Ed:= Sender as TSyntaxMemo;
+
+  //don't do event if clicked focused editor
+  if TfmMain(Owner).CurrentEditor=Ed then Exit;
   TfmMain(Owner).CurrentEditor:= Ed;
+
   TfmMain(Owner).Groups.PagesCurrent:= TfmMain(Owner).FrameOfEditor(Ed).Parent as TATPages;
   TfmMain(Owner).UpdateOnFrameChanged;
   TfmMain(Owner).UpdateActiveTabColors;
 
   TfmMain(Owner).DoPyEvent(Ed, cSynEventOnFocus, []);
 
-  //Ctrl+Alt+click -- find id
+  //Ctrl+Alt+click - goto-definition
   //(if no line selection is made with Ctrl+Alt+drag)
   if IsCtrlAltPressed then
     if not Ed.HaveSelection then
