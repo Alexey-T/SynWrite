@@ -8088,19 +8088,21 @@ begin
   if CurrentFrame<>nil then
     with CurrentFrame do
     begin
-      EditorMaster.TabList.AsString:= TemplateEditor.TabList.AsString;
-      EditorSlave.TabList.AsString:= TemplateEditor.TabList.AsString;
-
-      EditorMaster.TabMode:= TemplateEditor.TabMode;
-      EditorSlave.TabMode:= TemplateEditor.TabMode;
-
-      EditorMaster.LineSpacing:= TemplateEditor.LineSpacing;
-      EditorSlave.LineSpacing:= TemplateEditor.LineSpacing;
-
-      //optional overrides
-      if SGetLexerOverride(opLexersOverride, Lexer,
+      if not SGetLexerOverride(opLexersOverride, Lexer,
         ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
         AOptWordChars, AKeepBlanks, AAutoCase, AIndent) then
+      begin
+        EditorMaster.TabList.AsString:= TemplateEditor.TabList.AsString;
+        EditorSlave.TabList.AsString:= TemplateEditor.TabList.AsString;
+
+        EditorMaster.TabMode:= TemplateEditor.TabMode;
+        EditorSlave.TabMode:= TemplateEditor.TabMode;
+
+        EditorMaster.LineSpacing:= TemplateEditor.LineSpacing;
+        EditorSlave.LineSpacing:= TemplateEditor.LineSpacing;
+      end
+      else
+      //optional overrides
       begin
         //1) override TabStops
         EditorMaster.TabList.AsString:= ATabStop;
