@@ -2747,6 +2747,7 @@ type
     procedure MenuitemSetEncoding(Sender: TObject);
     procedure MenuitemConvertEncoding(Sender: TObject);
 
+    procedure ApplyLexerOverrides(F: TEditorFrame; const Lexer: string);
     procedure ApplyPreviewZoom(NValue: Integer);
     procedure DoCheckAutoShowACP(Ed: TSyntaxMemo);
     procedure DoLinesCommand(Cmd: TSynLineCmd);
@@ -2865,7 +2866,6 @@ type
     procedure DoWorkaround_FindNext1;
     procedure DoShowHintFilename(const fn: Widestring);
     function DoCheckAutoCorrectCase(Ed: TSyntaxMemo): boolean;
-    procedure ProjPreviewVisibleChanged(Sender: TObject);
     procedure UpadateFilenameForExport;
     procedure DoConfigTools;
     procedure DoConfigShellOptions;
@@ -8016,8 +8016,6 @@ procedure TfmMain.SyntaxManagerChange(Sender: TObject);
 var
   en: boolean;
   Lexer: string;
-  ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-  AOptWordChars, AKeepBlanks, AAutoCase, AIndent: string;
 begin
   UpdateTools;
   acSetupLexHL.Enabled:= SyntaxManager.CurrentLexer<>nil;
@@ -8080,128 +8078,133 @@ begin
   else
     ecACP.StartExpr:= '';
 
+  ApplyLexerOverrides(CurrentFrame, Lexer);
+  UpdateStatusbarTabsize;
+end;
+
+
+procedure TfmMain.ApplyLexerOverrides(F: TEditorFrame; const Lexer: string);
   //here we override editor options:
   //a) overrides for "Lexers overrides" option
   //b) need to reduce LineSpacing for NFO files
   //c) need to set TabMode=tabs for Make files
-
-  if CurrentFrame<>nil then
-    with CurrentFrame do
+var
+  ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
+  AOptWordChars, AKeepBlanks, AAutoCase, AIndent: string;
+begin
+  if F=nil then Exit;
+  with F do
+  begin
+    if not SGetLexerOverride(opLexersOverride, Lexer,
+      ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
+      AOptWordChars, AKeepBlanks, AAutoCase, AIndent) then
     begin
-      if not SGetLexerOverride(opLexersOverride, Lexer,
-        ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-        AOptWordChars, AKeepBlanks, AAutoCase, AIndent) then
-      begin
-        EditorMaster.TabList.AsString:= TemplateEditor.TabList.AsString;
-        EditorSlave.TabList.AsString:= TemplateEditor.TabList.AsString;
+      EditorMaster.TabList.AsString:= TemplateEditor.TabList.AsString;
+      EditorSlave.TabList.AsString:= TemplateEditor.TabList.AsString;
 
-        EditorMaster.TabMode:= TemplateEditor.TabMode;
-        EditorSlave.TabMode:= TemplateEditor.TabMode;
+      EditorMaster.TabMode:= TemplateEditor.TabMode;
+      EditorSlave.TabMode:= TemplateEditor.TabMode;
 
-        EditorMaster.LineSpacing:= TemplateEditor.LineSpacing;
-        EditorSlave.LineSpacing:= TemplateEditor.LineSpacing;
-      end
-      else
-      //optional overrides
-      begin
-        //1) override TabStops
-        EditorMaster.TabList.AsString:= ATabStop;
-        EditorSlave.TabList.AsString:= EditorMaster.TabList.AsString;
+      EditorMaster.LineSpacing:= TemplateEditor.LineSpacing;
+      EditorSlave.LineSpacing:= TemplateEditor.LineSpacing;
+    end
+    else
+    begin
+      //1) override TabStops
+      EditorMaster.TabList.AsString:= ATabStop;
+      EditorSlave.TabList.AsString:= EditorMaster.TabList.AsString;
 
-        //2) override TabMode
-        case StrToIntDef(ATabMode, 1) of
-          0: EditorMaster.TabMode:= tmSpaces;
-          1: EditorMaster.TabMode:= tmTabChar;
-          2: EditorMaster.TabMode:= tmSmartTab;
-        end;
-        EditorSlave.TabMode:= EditorMaster.TabMode;
+      //2) override TabMode
+      case StrToIntDef(ATabMode, 1) of
+        0: EditorMaster.TabMode:= tmSpaces;
+        1: EditorMaster.TabMode:= tmTabChar;
+        2: EditorMaster.TabMode:= tmSmartTab;
+      end;
+      EditorSlave.TabMode:= EditorMaster.TabMode;
 
-        //3) override "word wrap"
-        case StrToIntDef(AWrap, 0) of
-          0: //as is
-            begin end;
-          1: //wrap off
-            EditorMaster.WordWrap:= false;
-          2: //wrap by window edge
-            begin
-            EditorMaster.WordWrap:= true;
-            EditorMaster.Options:= EditorMaster.Options - [soBreakOnRightMargin];
-            end;
-          3: //wrap by right margin
-            begin
-            EditorMaster.WordWrap:= true;
-            EditorMaster.Options:= EditorMaster.Options + [soBreakOnRightMargin];
-            end;
-        end;
-        EditorSlave.WordWrap:= EditorMaster.WordWrap;
-        EditorSlave.Options:= EditorMaster.Options;
-
-        //4) override "Right margin"
-        EditorMaster.RightMargin:= StrToIntDef(AMargin, TemplateEditor.RightMargin);
-        EditorSlave.RightMargin:= EditorMaster.RightMargin;
-
-        //5) override "Line spacing"
-        EditorMaster.LineSpacing:= StrToIntDef(ASpacing, TemplateEditor.LineSpacing);
-        EditorSlave.LineSpacing:= EditorMaster.LineSpacing;
-
-        //6) override "Optimal fill"
-        case StrToIntDef(AOptFill, 0) of
-          1:
+      //3) override "word wrap"
+      case StrToIntDef(AWrap, 0) of
+        0: //as is
+          begin end;
+        1: //wrap off
+          EditorMaster.WordWrap:= false;
+        2: //wrap by window edge
           begin
-            EditorMaster.Options:= EditorMaster.Options - [soOptimalFill];
-            EditorSlave.Options:= EditorSlave.Options - [soOptimalFill];
+          EditorMaster.WordWrap:= true;
+          EditorMaster.Options:= EditorMaster.Options - [soBreakOnRightMargin];
           end;
-          2:
+        3: //wrap by right margin
           begin
-            EditorMaster.Options:= EditorMaster.Options + [soOptimalFill];
-            EditorSlave.Options:= EditorSlave.Options + [soOptimalFill];
-          end
-        end;
-
-        //7) override "Word chars"
-        opWordChars:= AOptWordChars;
-
-        //8) override "Keep trailing blanks"
-        case StrToIntDef(AKeepBlanks, 0) of
-          1:
-          begin
-            EditorMaster.Options:= EditorMaster.Options - [soKeepTrailingBlanks];
-            EditorSlave.Options:= EditorSlave.Options - [soKeepTrailingBlanks];
+          EditorMaster.WordWrap:= true;
+          EditorMaster.Options:= EditorMaster.Options + [soBreakOnRightMargin];
           end;
-          2:
-          begin
-            EditorMaster.Options:= EditorMaster.Options + [soKeepTrailingBlanks];
-            EditorSlave.Options:= EditorSlave.Options + [soKeepTrailingBlanks];
-          end
+      end;
+      EditorSlave.WordWrap:= EditorMaster.WordWrap;
+      EditorSlave.Options:= EditorMaster.Options;
+
+      //4) override "Right margin"
+      EditorMaster.RightMargin:= StrToIntDef(AMargin, TemplateEditor.RightMargin);
+      EditorSlave.RightMargin:= EditorMaster.RightMargin;
+
+      //5) override "Line spacing"
+      EditorMaster.LineSpacing:= StrToIntDef(ASpacing, TemplateEditor.LineSpacing);
+      EditorSlave.LineSpacing:= EditorMaster.LineSpacing;
+
+      //6) override "Optimal fill"
+      case StrToIntDef(AOptFill, 0) of
+        1:
+        begin
+          EditorMaster.Options:= EditorMaster.Options - [soOptimalFill];
+          EditorSlave.Options:= EditorSlave.Options - [soOptimalFill];
         end;
-
-        //9) override "Auto-correct case"
-        opAutoCase:= AAutoCase='1';
-
-        //10) override "Block indent"
-        EditorMaster.BlockIndent:= StrToIntDef(AIndent, TemplateEditor.BlockIndent);
-        EditorSlave.BlockIndent:= EditorMaster.BlockIndent;
-
+        2:
+        begin
+          EditorMaster.Options:= EditorMaster.Options + [soOptimalFill];
+          EditorSlave.Options:= EditorSlave.Options + [soOptimalFill];
+        end
       end;
 
-      //overrides for "NFO files"
-      if IsLexerNFO(Lexer) then
-      begin
-        EditorMaster.LineSpacing:= 0;
-        EditorSlave.LineSpacing:= 0;
+      //7) override "Word chars"
+      opWordChars:= AOptWordChars;
+
+      //8) override "Keep trailing blanks"
+      case StrToIntDef(AKeepBlanks, 0) of
+        1:
+        begin
+          EditorMaster.Options:= EditorMaster.Options - [soKeepTrailingBlanks];
+          EditorSlave.Options:= EditorSlave.Options - [soKeepTrailingBlanks];
+        end;
+        2:
+        begin
+          EditorMaster.Options:= EditorMaster.Options + [soKeepTrailingBlanks];
+          EditorSlave.Options:= EditorSlave.Options + [soKeepTrailingBlanks];
+        end
       end;
 
-      //overrides for "Make files"
-      if IsLexerMake(Lexer) then
-      begin
-        EditorMaster.TabMode:= tmTabChar;
-        EditorSlave.TabMode:= tmTabChar;
-      end;
+      //9) override "Auto-correct case"
+      opAutoCase:= AAutoCase='1';
+
+      //10) override "Block indent"
+      EditorMaster.BlockIndent:= StrToIntDef(AIndent, TemplateEditor.BlockIndent);
+      EditorSlave.BlockIndent:= EditorMaster.BlockIndent;
     end;
 
-  //update statusbar
-  UpdateStatusbarTabsize;
+    //overrides for "NFO files"
+    if IsLexerNFO(Lexer) then
+    begin
+      EditorMaster.LineSpacing:= 0;
+      EditorSlave.LineSpacing:= 0;
+    end;
+
+    //overrides for "Make files"
+    if IsLexerMake(Lexer) then
+    begin
+      EditorMaster.TabMode:= tmTabChar;
+      EditorSlave.TabMode:= tmTabChar;
+    end;
+  end;
 end;
+
 
 procedure TfmMain.DoRepaintTBs;
 begin
@@ -13930,7 +13933,7 @@ begin
       HideWhenInactive:= false;
 
       OnClose:= ProjPreviewClose;
-      OnVisibleChanged:= ProjPreviewVisibleChanged;
+      //OnVisibleChanged:= ProjPreviewVisibleChanged;
 
       ClientWidth:= 400;
       ClientHeight:= 300;
@@ -28227,10 +28230,6 @@ begin
     else
       ProjPreview(Sender, '', true{Toggle});
   end;
-end;
-
-procedure TfmMain.ProjPreviewVisibleChanged(Sender: TObject);
-begin
 end;
 
 procedure TfmMain.UpdateLexerTo(An: TSyntAnalyzer);
