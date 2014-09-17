@@ -76,7 +76,7 @@ procedure DoLexerLibraryDialog(ALexerLib: TSyntaxManager; ATreeImages: TImageLis
 implementation
 
 uses
-  StrUtils, unProc, unLexerProp;
+  StrUtils, unProc, unLexerProp, unLexerStyles;
 
 {$R *.dfm}
 
@@ -224,17 +224,14 @@ end;
 
 procedure TfmLexerLibrary.actLexerPropsExecute(Sender: TObject);
 var
-  an: TSyntAnalyzer;
+  An: TSyntAnalyzer;
 begin
   if LV.ItemIndex>=0 then
   begin
-    an:= LV.Items.Objects[LV.ItemIndex] as TSyntAnalyzer;
-    if DoLexerPropDialog(an, FTreeImages) then
+    An:= LV.Items.Objects[LV.ItemIndex] as TSyntAnalyzer;
+    if DoLexerPropDialog(An, FTreeImages) then
     begin
-      if Assigned(ecOnSavingLexer) then
-        ecOnSavingLexer(Self);
-
-      LV.Items[LV.ItemIndex]:= LexerNameWithLinks(an);
+      LV.Items[LV.ItemIndex]:= LexerNameWithLinks(An);
       FLexLib.Modified:= True;
     end;
   end;

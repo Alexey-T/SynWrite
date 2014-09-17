@@ -10,7 +10,6 @@ object fmMain: TfmMain
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  FormStyle = fsMDIForm
   KeyPreview = True
   OldCreateOrder = False
   Scaled = False

@@ -2611,7 +2611,7 @@ type
     procedure DoClipsItemCopy;
     procedure DoClipItemCopy;
     procedure DoClipItemIns;
-    procedure DoSaveStyles(Sender: TObject);
+    procedure DoBackupLexerStyles(ALexer: TSyntAnalyzer);
     procedure DoAcpCss(List, Display: ecUnicode.TWideStrings);
     procedure DoAcpHtm(List, Display: ecUnicode.TWideStrings);
     procedure DoAcpHtmForTag(const STag, SAtr: string; List, Display: ecUnicode.TWideStrings);
@@ -3378,7 +3378,8 @@ uses
   unToolbarProp, unHideItems,
   unProcPy,
   unMainPy,
-  unLexerLib, unSnipEd, unSaveTabs, unPrintPreview, unLexerProp;
+  unLexerLib, unSnipEd, unSaveTabs, unPrintPreview, unLexerProp,
+  unLexerStyles;
 
 {$R *.dfm}
 {$R Cur.res}
@@ -7229,7 +7230,7 @@ begin
 
   InitMenuItemsList;
   LangManager.ScanForLangFiles(SynDir + 'Lang', '*.lng', False);
-  ecOnSavingLexer:= DoSaveStyles;
+  OnBackupLexerStyles:= DoBackupLexerStyles;
 
   OD_Swatch.DefaultExt:= cSynColorSwatchExt;
   OD_Swatch.Filter:= Format('*.%s|*.%s', [cSynColorSwatchExt, cSynColorSwatchExt]);
@@ -13571,14 +13572,15 @@ begin
 end;
 
 procedure TfmMain.acSetupLexerStylesExecute(Sender: TObject);
+var
+  An: TSyntAnalyzer;
 begin
-  with SyntaxManager do
-    if CurrentLexer<>nil then
-      if CurrentLexer.Customize then
-      begin
-        SaveLexLib;
-        Modified:= False;
-      end;
+  An:= SyntaxManager.CurrentLexer;
+  if DoLexerStylesDialog(An) then
+  begin
+    SaveLexLib;
+    SyntaxManager.Modified:= false;
+  end;
 end;
 
 procedure TfmMain.TBXItemEExtrClick(Sender: TObject);
@@ -15108,9 +15110,9 @@ begin
   end;
 end;
 
-procedure TfmMain.DoSaveStyles(Sender: TObject);
+procedure TfmMain.DoBackupLexerStyles(ALexer: TSyntAnalyzer);
 begin
-  SaveLexerStylesToFile(Sender as TSyntAnalyzer, SynStylesIni);
+  SaveLexerStylesToFile(ALexer, SynStylesIni);
 end;
 
 procedure TfmMain.TBXItemORestoreStylesClick(Sender: TObject);

@@ -355,27 +355,32 @@ type
     property EditedLexer: TSyntAnalyzer read FEditSynt;
   end;
 
-function DoLexerPropDialog(SyntAnal: TSyntAnalyzer; AImages: TImageList): Boolean;
-//function CustomizeLexerLocal(SyntAnal: TSyntAnalyzer): Boolean;
+function DoLexerPropDialog(ALexer: TSyntAnalyzer; AImages: TImageList): Boolean;
 
 implementation
 
-uses ecCodeTemplDlg, ecEditsRes;
+uses
+  ecCodeTemplDlg, ecEditsRes,
+  unLexerStyles;
 
 {$R *.dfm}
-function DoLexerPropDialog(SyntAnal: TSyntAnalyzer; AImages: TImageList): Boolean;
+
+function DoLexerPropDialog(ALexer: TSyntAnalyzer; AImages: TImageList): Boolean;
 begin
   with TfmLexerProp.Create(nil) do
-   try
-    FSynt.Assign(SyntAnal);
-    FEditSynt := SyntAnal;
+  try
+    FSynt.Assign(ALexer);
+    FEditSynt := ALexer;
     SyntaxTreeView1.Images:= AImages;
     Result := ShowModal = mrOk;
     if Result then
-      SyntAnal.Assign(FSynt);
-   finally
+    begin
+      ALexer.Assign(FSynt);
+      OnBackupLexerStyles(ALexer);
+    end;
+  finally
     Free;
-   end;
+  end;
 end;
 
 var
