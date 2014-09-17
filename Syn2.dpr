@@ -20,7 +20,7 @@ uses
   unSetup in 'unSetup.pas' {fmSetup},
   unSearch in 'unSearch.pas',
   unSR in 'unSR.pas' {fmSR},
-  unAb in 'unAb.pas' {fmAb},
+  unAbout in 'unAbout.pas' {fmAb},
   iniFiles,
   ATxFProc,
   ATSynPlugins,
