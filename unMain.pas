@@ -371,7 +371,6 @@ type
     TBXItemCtxCopy: TSpTbxItem;
     TBXSubmenuItemToolOpen: TSpTbxSubmenuItem;
     SyntKeyMapping: TSyntKeyMapping;
-    acSetupLexer: TecCustomizeLexerPropertiesAction;
     ecCopy: TecCopy;
     ecCut: TecCut;
     ecPaste: TecPaste;
@@ -395,7 +394,7 @@ type
     ecUnCommentLines: TecUnCommentLines;
     ecSortAscending: TAction;
     ecSortDescending: TAction;
-    acSetupLexLib: TAction;
+    acSetupLexerLib: TAction;
     TimerTick: TTimer;
     PopupStatusEnc: TSpTBXPopupMenu;
     PopupStatusLineEnds: TSpTBXPopupMenu;
@@ -682,7 +681,7 @@ type
     TBXItemTreeFindNav: TSpTbxItem;
     TBXSeparatorItem36: TSpTbxSeparatorItem;
     TBXSeparatorItem37: TSpTbxSeparatorItem;
-    acSetupLexHL: TAction;
+    acSetupLexerStyles: TAction;
     TBXItemOLexerHi: TSpTbxItem;
     TBXSeparatorItem38: TSpTbxSeparatorItem;
     TBXItemOOLexSt: TSpTbxItem;
@@ -1389,6 +1388,7 @@ type
     ecReplaceInProject: TAction;
     TbxItemSRepInProject: TSpTBXItem;
     ecPreviewActionNew: TAction;
+    acSetupLexerNew: TAction;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1462,7 +1462,6 @@ type
     procedure ecCharPopupChange(Sender: TObject);
     procedure ecCharPopupShow(Sender: TObject);
     procedure ecACPShow(Sender: TObject);
-    procedure acSetupLexerExecuteOK(Sender: TObject);
     procedure TBXItemHelpReadmeDirClick(Sender: TObject);
     procedure TBXSubmenuLineEndsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
@@ -1572,7 +1571,7 @@ type
     procedure TBXItemOOFindClick(Sender: TObject);
     procedure PopupFindPopup(Sender: TObject);
     procedure ecCopyAsRTFExecute(Sender: TObject);
-    procedure acSetupLexHLExecute(Sender: TObject);
+    procedure acSetupLexerStylesExecute(Sender: TObject);
     procedure TBXItemEExtrClick(Sender: TObject);
     procedure PopupStatusEncPopup(Sender: TObject);
     procedure ecSentCaseExecute(Sender: TObject);
@@ -2058,7 +2057,7 @@ type
     procedure TBXMRUListItemFNewClick(Sender: TObject;
       const Filename: WideString);
     procedure StatusResize(Sender: TObject);
-    procedure acSetupLexLibExecute(Sender: TObject);
+    procedure acSetupLexerLibExecute(Sender: TObject);
     procedure TbxItemTabReloadClick(Sender: TObject);
     procedure TBXItemHtmlPreviewClick(Sender: TObject);
     procedure TBXSubmenuItemToolbarsPopup(Sender: TTBCustomItem;
@@ -2164,6 +2163,8 @@ type
     procedure ecPreviewActionNewExecute(Sender: TObject);
     procedure TBXItemPreviewClick(Sender: TObject);
     procedure TBXItemFPreviewClick(Sender: TObject);
+    procedure acSetupLexerNewExecute(Sender: TObject);
+    procedure TBXItemOLexerClick(Sender: TObject);
 
   private
     cStatLine,
@@ -3378,7 +3379,7 @@ uses
   unToolbarProp, unHideItems,
   unProcPy,
   unMainPy,
-  unLexerLib, unSnipEd, unSaveTabs, unPrintPreview;
+  unLexerLib, unSnipEd, unSaveTabs, unPrintPreview, unLexerProp;
 
 {$R *.dfm}
 {$R Cur.res}
@@ -4286,7 +4287,6 @@ begin
     if (ActionList.Actions[i] is TecBaseMemoAction) then
       (ActionList.Actions[i] as TecBaseMemoAction).SyntMemo:= Value;
 
-  acSetupLexer.SyntMemo:= Value;
   ecACP.SyntMemo:= Value;
   PluginACP.SyntMemo:= Value;
   ParamCompletion.SyntMemo:= Value;
@@ -4409,7 +4409,8 @@ begin
   acClose.Enabled:= not Quickview;
   acOpen.Enabled:= not Quickview;
   acNewWindow.Enabled:= SynExe;
-  acSetupLexHL.Enabled:= en_lex;
+  acSetupLexerNew.Enabled:= en_lex;
+  acSetupLexerStyles.Enabled:= en_lex;
   ecFullScr.Enabled:= SynExe;
   ecOnTop.Enabled:= SynExe;
   TbxItemRunNewPlugin.Enabled:= SynExe;
@@ -6235,8 +6236,8 @@ begin
     sm_FileExportHtml: acExportHTML.Execute;
 
     sm_OptSetup: acSetup.Execute;
-    sm_OptSetupLexer: acSetupLexer.Execute;
-    sm_OptSetupLexerLib: acSetupLexLib.Execute;
+    sm_OptSetupLexer: acSetupLexerNew.Execute;
+    sm_OptSetupLexerLib: acSetupLexerLib.Execute;
     sm_OptReadOnly: ecReadOnly.Execute;
     sm_OptShowLeftPanel: ecShowTree.Execute;
     sm_OptShowRightPanel: ecShowClip.Execute;
@@ -6339,7 +6340,7 @@ begin
     sm_EditSynIni:                DoOpenFile(SynIni);
     sm_EditSynPluginsIni:         DoOpenFile(SynPluginsIni);
     sm_OpenBySelection:           acOpenBySelection.Execute;
-    sm_CustomizeStylesDialog:     acSetupLexHL.Execute;
+    sm_CustomizeStylesDialog:     acSetupLexerStyles.Execute;
     sm_CustomizeSpellCheckDialog: DoSpellConfig(nil);
 
     //Options dialog tabs
@@ -8018,7 +8019,9 @@ var
   Lexer: string;
 begin
   UpdateTools;
-  acSetupLexHL.Enabled:= SyntaxManager.CurrentLexer<>nil;
+  acSetupLexerStyles.Enabled:= SyntaxManager.CurrentLexer<>nil;
+  acSetupLexerNew.Enabled:= acSetupLexerStyles.Enabled;
+  
   Lexer:= '';
   opWordChars:= '';
 
@@ -9676,12 +9679,6 @@ end;
 procedure TfmMain.FrameSaveState(Sender: TObject);
 begin
   SaveFrameState(Sender as TEditorFrame);
-end;
-
-procedure TfmMain.acSetupLexerExecuteOK(Sender: TObject);
-begin
-  SyntaxManager.Modified:= True;
-  DoConfirmSaveLexLib;
 end;
 
 procedure TfmMain.SaveLexLibFilename;
@@ -13574,7 +13571,7 @@ begin
   end;
 end;
 
-procedure TfmMain.acSetupLexHLExecute(Sender: TObject);
+procedure TfmMain.acSetupLexerStylesExecute(Sender: TObject);
 begin
   with SyntaxManager do
     if CurrentLexer<>nil then
@@ -25557,9 +25554,9 @@ begin
   end;
 end;
 
-procedure TfmMain.acSetupLexLibExecute(Sender: TObject);
+procedure TfmMain.acSetupLexerLibExecute(Sender: TObject);
 begin
-  DoCustomizeLexerLibrary(SyntaxManager);
+  DoLexerLibraryDialog(SyntaxManager, ImgListTree);
   SaveLexLibFilename;
   DoConfirmSaveLexLib;
 end;
@@ -29110,6 +29107,20 @@ end;
 procedure TfmMain.TBXItemFPreviewClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smPrintPreview);
+end;
+
+procedure TfmMain.acSetupLexerNewExecute(Sender: TObject);
+begin
+  if DoLexerPropDialog(SyntaxManager.CurrentLexer, ImgListTree) then
+  begin
+    SyntaxManager.Modified:= true;
+    DoConfirmSaveLexLib;
+  end;
+end;
+
+procedure TfmMain.TBXItemOLexerClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_OptSetupLexer);
 end;
 
 initialization

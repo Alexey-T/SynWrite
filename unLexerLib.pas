@@ -65,25 +65,27 @@ type
     procedure TntFormCreate(Sender: TObject);
   private
     FLexLib: TSyntaxManager;
+    FTreeImages: TImageList;
     procedure UpdateTitle;
     procedure UpdateList;
   public
   end;
 
-procedure DoCustomizeLexerLibrary(LexerLib: TSyntaxManager);
+procedure DoLexerLibraryDialog(ALexerLib: TSyntaxManager; ATreeImages: TImageList);
 
 implementation
 
 uses
-  StrUtils, unProc;
+  StrUtils, unProc, unLexerProp;
 
 {$R *.dfm}
 
-procedure DoCustomizeLexerLibrary(LexerLib: TSyntaxManager);
+procedure DoLexerLibraryDialog(ALexerLib: TSyntaxManager; ATreeImages: TImageList);
 begin
   with TfmLexerLibrary.Create(nil) do
   try
-    FLexLib:= LexerLib;
+    FLexLib:= ALexerLib;
+    FTreeImages:= ATreeImages;
     ShowModal;
   finally
     Free;
@@ -227,8 +229,11 @@ begin
   if LV.ItemIndex>=0 then
   begin
     an:= LV.Items.Objects[LV.ItemIndex] as TSyntAnalyzer;
-    if an.CustomizeLexer then
+    if DoLexerPropDialog(an, FTreeImages) then
     begin
+      if Assigned(ecOnSavingLexer) then
+        ecOnSavingLexer(Self);
+
       LV.Items[LV.ItemIndex]:= LexerNameWithLinks(an);
       FLexLib.Modified:= True;
     end;

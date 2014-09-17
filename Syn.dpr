@@ -69,7 +69,8 @@ uses
   unSRFiles in 'unSRFiles.pas' {fmSRFiles: TTntForm},
   unMainPy in 'unMainPy.pas',
   unSaveTabs in 'unSaveTabs.pas' {fmSaveTabs},
-  unPrintPreview in 'unPrintPreview.pas' {fmPreview};
+  unPrintPreview in 'unPrintPreview.pas' {fmPreview},
+  unLexerProp in 'unLexerProp.pas';
 
 {$R *.res}
 {$R *.dkl_const.res}
