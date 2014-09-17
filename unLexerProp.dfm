@@ -1,4 +1,4 @@
-object SyntLexerDlg: TfmLexerProp
+object fmLexerProp: TfmLexerProp
   Left = 314
   Top = 75
   Width = 570
@@ -29,7 +29,7 @@ object SyntLexerDlg: TfmLexerProp
     Cursor = crVSplit
     Align = alTop
   end
-  object PageControl1: TPageControl
+  object PageControl1: TTntPageControl
     Left = 0
     Top = 0
     Width = 554
@@ -37,13 +37,13 @@ object SyntLexerDlg: TfmLexerProp
     ActivePage = TabSheet5
     Align = alTop
     TabOrder = 0
-    object TabSheet5: TTabSheet
+    object TabSheet5: TTntTabSheet
       Caption = 'Common'
       ImageIndex = 4
       DesignSize = (
         546
         337)
-      object Label4: TLabel
+      object Label4: TTntLabel
         Left = 4
         Top = 64
         Width = 193
@@ -55,12 +55,12 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clYellow
         Font.Height = -12
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Consolas'
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
       end
-      object Label30: TLabel
+      object Label30: TTntLabel
         Left = 206
         Top = 88
         Width = 99
@@ -68,7 +68,7 @@ object SyntLexerDlg: TfmLexerProp
         Caption = 'Selection mark style:'
         FocusControl = ComboBox22
       end
-      object Label2: TLabel
+      object Label2: TTntLabel
         Left = 206
         Top = 268
         Width = 232
@@ -76,7 +76,7 @@ object SyntLexerDlg: TfmLexerProp
         Caption = 'Disable full refresh if text length is greater than:'
         FocusControl = Edit7
       end
-      object Label3: TLabel
+      object Label3: TTntLabel
         Left = 206
         Top = 112
         Width = 89
@@ -84,7 +84,7 @@ object SyntLexerDlg: TfmLexerProp
         Caption = 'Search mark style:'
         FocusControl = ComboBox1
       end
-      object Label5: TLabel
+      object Label5: TTntLabel
         Left = 206
         Top = 136
         Width = 86
@@ -92,7 +92,7 @@ object SyntLexerDlg: TfmLexerProp
         Caption = 'Current line style:'
         FocusControl = ComboBox2
       end
-      object Label6: TLabel
+      object Label6: TTntLabel
         Left = 206
         Top = 64
         Width = 65
@@ -100,7 +100,7 @@ object SyntLexerDlg: TfmLexerProp
         Caption = 'Default style:'
         FocusControl = ComboBox7
       end
-      object Label7: TLabel
+      object Label7: TTntLabel
         Left = 206
         Top = 292
         Width = 99
@@ -108,7 +108,7 @@ object SyntLexerDlg: TfmLexerProp
         Caption = 'Line comment string:'
         FocusControl = Edit14
       end
-      object Label31: TLabel
+      object Label31: TTntLabel
         Left = 206
         Top = 160
         Width = 96
@@ -116,14 +116,14 @@ object SyntLexerDlg: TfmLexerProp
         Caption = 'Collapse mark style:'
         FocusControl = ComboBox8
       end
-      object Label50: TLabel
+      object Label50: TTntLabel
         Left = 206
         Top = 316
         Width = 70
         Height = 13
         Caption = 'Character set:'
       end
-      object Panel_Common: TPanel
+      object Panel_Common: TTntPanel
         Left = 0
         Top = 0
         Width = 546
@@ -134,7 +134,7 @@ object SyntLexerDlg: TfmLexerProp
         DesignSize = (
           546
           61)
-        object Label33: TLabel
+        object Label33: TTntLabel
           Left = 4
           Top = 36
           Width = 75
@@ -142,7 +142,7 @@ object SyntLexerDlg: TfmLexerProp
           Caption = 'File extensions:'
           FocusControl = Edit3
         end
-        object Label34: TLabel
+        object Label34: TTntLabel
           Left = 4
           Top = 12
           Width = 60
@@ -150,7 +150,7 @@ object SyntLexerDlg: TfmLexerProp
           Caption = 'Lexer name:'
           FocusControl = Edit4
         end
-        object Edit3: TEdit
+        object Edit3: TTntEdit
           Left = 152
           Top = 32
           Width = 385
@@ -158,7 +158,7 @@ object SyntLexerDlg: TfmLexerProp
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
         end
-        object Edit4: TEdit
+        object Edit4: TTntEdit
           Left = 152
           Top = 8
           Width = 385
@@ -179,7 +179,7 @@ object SyntLexerDlg: TfmLexerProp
         TabOrder = 2
         OnChange = ComboBox7Change
       end
-      object CheckBox17: TCheckBox
+      object CheckBox17: TTntCheckBox
         Left = 204
         Top = 182
         Width = 334
@@ -199,13 +199,13 @@ object SyntLexerDlg: TfmLexerProp
         NonPrinted.Font.Charset = DEFAULT_CHARSET
         NonPrinted.Font.Color = clSilver
         NonPrinted.Font.Height = -11
-        NonPrinted.Font.Name = 'MS Sans Serif'
+        NonPrinted.Font.Name = 'Consolas'
         NonPrinted.Font.Style = []
         LineNumbers.Alignment = taLeftJustify
         LineNumbers.Font.Charset = DEFAULT_CHARSET
         LineNumbers.Font.Color = clWindowText
         LineNumbers.Font.Height = -12
-        LineNumbers.Font.Name = 'Courier New'
+        LineNumbers.Font.Name = 'Consolas'
         LineNumbers.Font.Style = []
         LineNumbers.Band = -1
         Gutter.Visible = False
@@ -227,7 +227,7 @@ object SyntLexerDlg: TfmLexerProp
         HintProps.Font.Charset = DEFAULT_CHARSET
         HintProps.Font.Color = clWindowText
         HintProps.Font.Height = -11
-        HintProps.Font.Name = 'MS Sans Serif'
+        HintProps.Font.Name = 'Consolas'
         HintProps.Font.Style = []
         HintProps.Color = 13041663
         HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
@@ -236,14 +236,14 @@ object SyntLexerDlg: TfmLexerProp
         DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.SelectioMark.Font.Color = clHighlightText
         DefaultStyles.SelectioMark.Font.Height = -13
-        DefaultStyles.SelectioMark.Font.Name = 'Courier New'
+        DefaultStyles.SelectioMark.Font.Name = 'Consolas'
         DefaultStyles.SelectioMark.Font.Style = []
         DefaultStyles.SelectioMark.BgColor = clHighlight
         DefaultStyles.SelectioMark.FormatType = ftColor
         DefaultStyles.SearchMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.SearchMark.Font.Color = clWhite
         DefaultStyles.SearchMark.Font.Height = -13
-        DefaultStyles.SearchMark.Font.Name = 'Courier New'
+        DefaultStyles.SearchMark.Font.Name = 'Consolas'
         DefaultStyles.SearchMark.Font.Style = []
         DefaultStyles.SearchMark.BgColor = clBlack
         DefaultStyles.SearchMark.FormatType = ftColor
@@ -251,13 +251,13 @@ object SyntLexerDlg: TfmLexerProp
         DefaultStyles.CurrentLine.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.CurrentLine.Font.Color = clWindowText
         DefaultStyles.CurrentLine.Font.Height = -13
-        DefaultStyles.CurrentLine.Font.Name = 'Courier New'
+        DefaultStyles.CurrentLine.Font.Name = 'Consolas'
         DefaultStyles.CurrentLine.Font.Style = []
         DefaultStyles.CurrentLine.FormatType = ftBackGround
         DefaultStyles.CollapseMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.CollapseMark.Font.Color = clSilver
         DefaultStyles.CollapseMark.Font.Height = -13
-        DefaultStyles.CollapseMark.Font.Name = 'Courier New'
+        DefaultStyles.CollapseMark.Font.Name = 'Consolas'
         DefaultStyles.CollapseMark.Font.Style = []
         DefaultStyles.CollapseMark.FormatType = ftColor
         DefaultStyles.CollapseMark.BorderTypeLeft = blSolid
@@ -271,14 +271,14 @@ object SyntLexerDlg: TfmLexerProp
         SyncEditing.SyncRangeStyle.Font.Charset = DEFAULT_CHARSET
         SyncEditing.SyncRangeStyle.Font.Color = clWindowText
         SyncEditing.SyncRangeStyle.Font.Height = -13
-        SyncEditing.SyncRangeStyle.Font.Name = 'Courier New'
+        SyncEditing.SyncRangeStyle.Font.Name = 'Consolas'
         SyncEditing.SyncRangeStyle.Font.Style = []
         SyncEditing.SyncRangeStyle.BgColor = 14745568
         SyncEditing.SyncRangeStyle.FormatType = ftBackGround
         SyncEditing.ActiveWordsStyle.Font.Charset = DEFAULT_CHARSET
         SyncEditing.ActiveWordsStyle.Font.Color = clWindowText
         SyncEditing.ActiveWordsStyle.Font.Height = -13
-        SyncEditing.ActiveWordsStyle.Font.Name = 'Courier New'
+        SyncEditing.ActiveWordsStyle.Font.Name = 'Consolas'
         SyncEditing.ActiveWordsStyle.Font.Style = []
         SyncEditing.ActiveWordsStyle.FormatType = ftBackGround
         SyncEditing.ActiveWordsStyle.BorderTypeLeft = blSolid
@@ -292,7 +292,7 @@ object SyntLexerDlg: TfmLexerProp
         SyncEditing.InactiveWordsStyle.Font.Charset = DEFAULT_CHARSET
         SyncEditing.InactiveWordsStyle.Font.Color = clWindowText
         SyncEditing.InactiveWordsStyle.Font.Height = -13
-        SyncEditing.InactiveWordsStyle.Font.Name = 'Courier New'
+        SyncEditing.InactiveWordsStyle.Font.Name = 'Consolas'
         SyncEditing.InactiveWordsStyle.Font.Style = []
         SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
         SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
@@ -301,7 +301,7 @@ object SyntLexerDlg: TfmLexerProp
         HorzRuler.Font.Charset = DEFAULT_CHARSET
         HorzRuler.Font.Color = clWindowText
         HorzRuler.Font.Height = -11
-        HorzRuler.Font.Name = 'MS Sans Serif'
+        HorzRuler.Font.Name = 'Consolas'
         HorzRuler.Font.Style = []
         TextMargins = <
           item
@@ -319,7 +319,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -12
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = []
         ParentColor = False
         ParentCtl3D = False
@@ -327,7 +327,7 @@ object SyntLexerDlg: TfmLexerProp
         TabOrder = 1
         OnExit = SyntaxMemo7Exit
       end
-      object Edit7: TEdit
+      object Edit7: TTntEdit
         Left = 456
         Top = 264
         Width = 83
@@ -359,7 +359,7 @@ object SyntLexerDlg: TfmLexerProp
         TabOrder = 4
         OnChange = ComboBox7Change
       end
-      object CheckBox2: TCheckBox
+      object CheckBox2: TTntCheckBox
         Left = 204
         Top = 222
         Width = 334
@@ -370,7 +370,7 @@ object SyntLexerDlg: TfmLexerProp
         TabOrder = 7
         OnClick = CheckBox2Click
       end
-      object CheckBox3: TCheckBox
+      object CheckBox3: TTntCheckBox
         Left = 204
         Top = 202
         Width = 334
@@ -392,7 +392,7 @@ object SyntLexerDlg: TfmLexerProp
         TabOrder = 9
         OnChange = ComboBox7Change
       end
-      object Edit14: TEdit
+      object Edit14: TTntEdit
         Left = 360
         Top = 288
         Width = 180
@@ -400,7 +400,7 @@ object SyntLexerDlg: TfmLexerProp
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 12
       end
-      object CheckBox28: TCheckBox
+      object CheckBox28: TTntCheckBox
         Left = 204
         Top = 242
         Width = 334
@@ -435,7 +435,7 @@ object SyntLexerDlg: TfmLexerProp
         OnChange = CharSet_ComboChange
       end
     end
-    object TabSheet1: TTabSheet
+    object TabSheet1: TTntTabSheet
       Caption = 'Styles'
       inline SyntColFrame1: TSyntColFrame
         Left = 0
@@ -514,7 +514,7 @@ object SyntLexerDlg: TfmLexerProp
         end
       end
     end
-    object TabSheet2: TTabSheet
+    object TabSheet2: TTntTabSheet
       Caption = 'Parser'
       ImageIndex = 1
       object Splitter3: TSplitter
@@ -547,7 +547,7 @@ object SyntLexerDlg: TfmLexerProp
           end
         end
       end
-      object Panel3: TPanel
+      object Panel3: TTntPanel
         Left = 192
         Top = 0
         Width = 354
@@ -555,7 +555,7 @@ object SyntLexerDlg: TfmLexerProp
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 1
-        object Label22: TLabel
+        object Label22: TTntLabel
           Left = 0
           Top = 213
           Width = 354
@@ -568,7 +568,7 @@ object SyntLexerDlg: TfmLexerProp
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clYellow
           Font.Height = -12
-          Font.Name = 'MS Sans Serif'
+          Font.Name = 'Consolas'
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
@@ -582,13 +582,13 @@ object SyntLexerDlg: TfmLexerProp
           NonPrinted.Font.Charset = DEFAULT_CHARSET
           NonPrinted.Font.Color = clSilver
           NonPrinted.Font.Height = -11
-          NonPrinted.Font.Name = 'MS Sans Serif'
+          NonPrinted.Font.Name = 'Consolas'
           NonPrinted.Font.Style = []
           LineNumbers.Alignment = taLeftJustify
           LineNumbers.Font.Charset = DEFAULT_CHARSET
           LineNumbers.Font.Color = clWindowText
           LineNumbers.Font.Height = -9
-          LineNumbers.Font.Name = 'Courier New'
+          LineNumbers.Font.Name = 'Consolas'
           LineNumbers.Font.Style = []
           LineNumbers.Band = -1
           Gutter.ExpandButtons.Data = {
@@ -608,7 +608,7 @@ object SyntLexerDlg: TfmLexerProp
           HintProps.Font.Charset = DEFAULT_CHARSET
           HintProps.Font.Color = clWindowText
           HintProps.Font.Height = -11
-          HintProps.Font.Name = 'MS Sans Serif'
+          HintProps.Font.Name = 'Consolas'
           HintProps.Font.Style = []
           HintProps.Color = 13041663
           HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
@@ -618,14 +618,14 @@ object SyntLexerDlg: TfmLexerProp
           DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.SelectioMark.Font.Color = clHighlightText
           DefaultStyles.SelectioMark.Font.Height = -13
-          DefaultStyles.SelectioMark.Font.Name = 'Courier New'
+          DefaultStyles.SelectioMark.Font.Name = 'Consolas'
           DefaultStyles.SelectioMark.Font.Style = []
           DefaultStyles.SelectioMark.BgColor = clHighlight
           DefaultStyles.SelectioMark.FormatType = ftColor
           DefaultStyles.SearchMark.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.SearchMark.Font.Color = clWhite
           DefaultStyles.SearchMark.Font.Height = -13
-          DefaultStyles.SearchMark.Font.Name = 'Courier New'
+          DefaultStyles.SearchMark.Font.Name = 'Consolas'
           DefaultStyles.SearchMark.Font.Style = []
           DefaultStyles.SearchMark.BgColor = clBlack
           DefaultStyles.SearchMark.FormatType = ftColor
@@ -633,13 +633,13 @@ object SyntLexerDlg: TfmLexerProp
           DefaultStyles.CurrentLine.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.CurrentLine.Font.Color = clWindowText
           DefaultStyles.CurrentLine.Font.Height = -13
-          DefaultStyles.CurrentLine.Font.Name = 'Courier New'
+          DefaultStyles.CurrentLine.Font.Name = 'Consolas'
           DefaultStyles.CurrentLine.Font.Style = []
           DefaultStyles.CurrentLine.FormatType = ftBackGround
           DefaultStyles.CollapseMark.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.CollapseMark.Font.Color = clSilver
           DefaultStyles.CollapseMark.Font.Height = -13
-          DefaultStyles.CollapseMark.Font.Name = 'Courier New'
+          DefaultStyles.CollapseMark.Font.Name = 'Consolas'
           DefaultStyles.CollapseMark.Font.Style = []
           DefaultStyles.CollapseMark.FormatType = ftColor
           DefaultStyles.CollapseMark.BorderTypeLeft = blSolid
@@ -653,14 +653,14 @@ object SyntLexerDlg: TfmLexerProp
           SyncEditing.SyncRangeStyle.Font.Charset = DEFAULT_CHARSET
           SyncEditing.SyncRangeStyle.Font.Color = clWindowText
           SyncEditing.SyncRangeStyle.Font.Height = -13
-          SyncEditing.SyncRangeStyle.Font.Name = 'Courier New'
+          SyncEditing.SyncRangeStyle.Font.Name = 'Consolas'
           SyncEditing.SyncRangeStyle.Font.Style = []
           SyncEditing.SyncRangeStyle.BgColor = 14745568
           SyncEditing.SyncRangeStyle.FormatType = ftBackGround
           SyncEditing.ActiveWordsStyle.Font.Charset = DEFAULT_CHARSET
           SyncEditing.ActiveWordsStyle.Font.Color = clWindowText
           SyncEditing.ActiveWordsStyle.Font.Height = -13
-          SyncEditing.ActiveWordsStyle.Font.Name = 'Courier New'
+          SyncEditing.ActiveWordsStyle.Font.Name = 'Consolas'
           SyncEditing.ActiveWordsStyle.Font.Style = []
           SyncEditing.ActiveWordsStyle.FormatType = ftBackGround
           SyncEditing.ActiveWordsStyle.BorderTypeLeft = blSolid
@@ -674,7 +674,7 @@ object SyntLexerDlg: TfmLexerProp
           SyncEditing.InactiveWordsStyle.Font.Charset = DEFAULT_CHARSET
           SyncEditing.InactiveWordsStyle.Font.Color = clWindowText
           SyncEditing.InactiveWordsStyle.Font.Height = -13
-          SyncEditing.InactiveWordsStyle.Font.Name = 'Courier New'
+          SyncEditing.InactiveWordsStyle.Font.Name = 'Consolas'
           SyncEditing.InactiveWordsStyle.Font.Style = []
           SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
           SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
@@ -684,7 +684,7 @@ object SyntLexerDlg: TfmLexerProp
           HorzRuler.Font.Charset = DEFAULT_CHARSET
           HorzRuler.Font.Color = clWindowText
           HorzRuler.Font.Height = -11
-          HorzRuler.Font.Name = 'MS Sans Serif'
+          HorzRuler.Font.Name = 'Consolas'
           HorzRuler.Font.Style = []
           TextMargins = <
             item
@@ -703,7 +703,7 @@ object SyntLexerDlg: TfmLexerProp
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -15
-          Font.Name = 'Courier New'
+          Font.Name = 'Consolas'
           Font.Style = []
           ParentColor = False
           ParentCtl3D = False
@@ -711,7 +711,7 @@ object SyntLexerDlg: TfmLexerProp
           TabOrder = 0
           OnExit = Memo1Exit
         end
-        object Panel4: TPanel
+        object Panel4: TTntPanel
           Left = 0
           Top = 0
           Width = 354
@@ -722,35 +722,35 @@ object SyntLexerDlg: TfmLexerProp
           DesignSize = (
             354
             213)
-          object Label21: TLabel
+          object Label21: TTntLabel
             Left = 8
             Top = 8
             Width = 54
             Height = 13
             Caption = 'Token type'
           end
-          object Label29: TLabel
+          object Label29: TTntLabel
             Left = 8
             Top = 32
             Width = 55
             Height = 13
             Caption = 'Token style'
           end
-          object Label35: TLabel
+          object Label35: TTntLabel
             Left = 8
             Top = 56
             Width = 59
             Height = 13
             Caption = 'Parent block'
           end
-          object Label11: TLabel
+          object Label11: TTntLabel
             Left = 8
             Top = 80
             Width = 71
             Height = 13
             Caption = 'Position in line:'
           end
-          object Label12: TLabel
+          object Label12: TTntLabel
             Left = 138
             Top = 80
             Width = 22
@@ -758,7 +758,7 @@ object SyntLexerDlg: TfmLexerProp
             Alignment = taRightJustify
             Caption = 'from'
           end
-          object Label13: TLabel
+          object Label13: TTntLabel
             Left = 279
             Top = 80
             Width = 10
@@ -816,7 +816,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 1
             OnChange = ComboBox21Change
           end
-          object CheckBox8: TCheckBox
+          object CheckBox8: TTntCheckBox
             Left = 6
             Top = 100
             Width = 171
@@ -826,7 +826,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 3
             OnClick = CheckBox8Click
           end
-          object CheckBox18: TCheckBox
+          object CheckBox18: TTntCheckBox
             Left = 184
             Top = 100
             Width = 163
@@ -837,7 +837,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 4
             OnClick = CheckBox18Click
           end
-          object CheckBox27: TCheckBox
+          object CheckBox27: TTntCheckBox
             Left = 6
             Top = 116
             Width = 171
@@ -847,7 +847,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 5
             OnClick = CheckBox27Click
           end
-          object Edit10: TEdit
+          object Edit10: TTntEdit
             Left = 168
             Top = 76
             Width = 49
@@ -855,7 +855,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 6
             OnExit = Edit10Exit
           end
-          object Edit11: TEdit
+          object Edit11: TTntEdit
             Left = 296
             Top = 76
             Width = 53
@@ -872,7 +872,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 8
             TabStop = True
             inherited GroupBox1: TGroupBox
-              Width = 362
+              Width = 354
               inherited Label1: TLabel
                 Width = 41
               end
@@ -885,17 +885,17 @@ object SyntLexerDlg: TfmLexerProp
                 Width = 49
               end
               inherited Edit2: TEdit
-                Left = 287
+                Left = 279
                 Width = 58
               end
             end
             inherited GroupBox2: TGroupBox
-              Width = 362
+              Width = 354
               inherited Label3: TLabel
                 Width = 20
               end
               inherited Label4: TLabel
-                Left = 184
+                Left = 176
                 Width = 32
               end
               inherited Edit3: TEdit
@@ -903,7 +903,7 @@ object SyntLexerDlg: TfmLexerProp
                 Width = 49
               end
               inherited Edit4: TEdit
-                Left = 288
+                Left = 280
                 Width = 58
               end
             end
@@ -911,7 +911,7 @@ object SyntLexerDlg: TfmLexerProp
         end
       end
     end
-    object TabSheet3: TTabSheet
+    object TabSheet3: TTntTabSheet
       Caption = 'Rules'
       ImageIndex = 2
       object Splitter2: TSplitter
@@ -941,7 +941,7 @@ object SyntLexerDlg: TfmLexerProp
           Width = 174
         end
       end
-      object PageControl2: TPageControl
+      object PageControl2: TTntPageControl
         Left = 177
         Top = 0
         Width = 369
@@ -949,12 +949,12 @@ object SyntLexerDlg: TfmLexerProp
         ActivePage = TabSheet7
         Align = alClient
         TabOrder = 1
-        object TabSheet7: TTabSheet
+        object TabSheet7: TTntTabSheet
           Caption = 'Properties'
           DesignSize = (
             361
             309)
-          object Label1: TLabel
+          object Label1: TTntLabel
             Left = 4
             Top = 56
             Width = 73
@@ -962,7 +962,7 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Identifier index'
             FocusControl = Edit1
           end
-          object Label20: TLabel
+          object Label20: TTntLabel
             Left = 158
             Top = 56
             Width = 56
@@ -972,7 +972,7 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Block offset'
             FocusControl = Edit2
           end
-          object Label28: TLabel
+          object Label28: TTntLabel
             Left = 4
             Top = 124
             Width = 98
@@ -980,7 +980,7 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Range end condition'
             FocusControl = ComboBox23
           end
-          object Label36: TLabel
+          object Label36: TTntLabel
             Left = 4
             Top = 8
             Width = 49
@@ -988,7 +988,7 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Block type'
             FocusControl = ComboBox25
           end
-          object Label37: TLabel
+          object Label37: TTntLabel
             Left = 4
             Top = 80
             Width = 59
@@ -996,7 +996,7 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Parent block'
             FocusControl = ComboBox26
           end
-          object Label8: TLabel
+          object Label8: TTntLabel
             Left = 257
             Top = 56
             Width = 58
@@ -1005,7 +1005,7 @@ object SyntLexerDlg: TfmLexerProp
             Anchors = [akTop, akRight]
             Caption = 'Group index'
           end
-          object Label10: TLabel
+          object Label10: TTntLabel
             Left = 4
             Top = 124
             Width = 103
@@ -1013,21 +1013,21 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Range start condition'
             Visible = False
           end
-          object Label14: TLabel
+          object Label14: TTntLabel
             Left = 4
             Top = 32
             Width = 64
             Height = 13
             Caption = 'Grammar rule'
           end
-          object Label15: TLabel
+          object Label15: TTntLabel
             Left = 4
             Top = 124
             Width = 92
             Height = 13
             Caption = 'Change token type'
           end
-          object Label23: TLabel
+          object Label23: TTntLabel
             Left = 4
             Top = 124
             Width = 89
@@ -1035,7 +1035,7 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Line break position'
             FocusControl = ComboBox18
           end
-          object CheckBox13: TCheckBox
+          object CheckBox13: TTntCheckBox
             Left = 184
             Top = 168
             Width = 169
@@ -1046,7 +1046,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 14
             OnClick = CheckBox13Click
           end
-          object CheckBox9: TCheckBox
+          object CheckBox9: TTntCheckBox
             Left = 184
             Top = 148
             Width = 169
@@ -1057,7 +1057,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 13
             OnClick = CheckBox9Click
           end
-          object Edit1: TEdit
+          object Edit1: TTntEdit
             Left = 112
             Top = 52
             Width = 33
@@ -1065,7 +1065,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 2
             OnExit = Edit1Exit
           end
-          object Edit2: TEdit
+          object Edit2: TTntEdit
             Tag = 1
             Left = 218
             Top = 52
@@ -1113,7 +1113,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 5
             OnChange = ComboBox26Change
           end
-          object CheckBox7: TCheckBox
+          object CheckBox7: TTntCheckBox
             Left = 2
             Top = 100
             Width = 175
@@ -1123,7 +1123,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 6
             OnClick = CheckBox7Click
           end
-          object CheckBox19: TCheckBox
+          object CheckBox19: TTntCheckBox
             Left = 184
             Top = 100
             Width = 169
@@ -1134,7 +1134,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 7
             OnClick = CheckBox19Click
           end
-          object CheckBox20: TCheckBox
+          object CheckBox20: TTntCheckBox
             Left = 4
             Top = 168
             Width = 173
@@ -1144,7 +1144,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 12
             OnClick = CheckBox20Click
           end
-          object CheckBox26: TCheckBox
+          object CheckBox26: TTntCheckBox
             Left = 4
             Top = 148
             Width = 173
@@ -1154,7 +1154,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 11
             OnClick = CheckBox26Click
           end
-          object Edit8: TEdit
+          object Edit8: TTntEdit
             Tag = 1
             Left = 318
             Top = 52
@@ -1246,13 +1246,13 @@ object SyntLexerDlg: TfmLexerProp
             end
           end
         end
-        object TabSheet12: TTabSheet
+        object TabSheet12: TTntTabSheet
           Caption = 'Text range'
           ImageIndex = 3
           DesignSize = (
             361
             309)
-          object Label38: TLabel
+          object Label38: TTntLabel
             Left = 4
             Top = 12
             Width = 92
@@ -1260,7 +1260,7 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Name format string'
             FocusControl = Edit5
           end
-          object Label39: TLabel
+          object Label39: TTntLabel
             Left = 4
             Top = 36
             Width = 94
@@ -1268,7 +1268,7 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Group format string'
             FocusControl = Edit6
           end
-          object Label9: TLabel
+          object Label9: TTntLabel
             Left = 4
             Top = 60
             Width = 91
@@ -1276,7 +1276,7 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Collapsed text icon'
             FocusControl = Edit9
           end
-          object Label42: TLabel
+          object Label42: TTntLabel
             Left = 4
             Top = 168
             Width = 85
@@ -1284,7 +1284,7 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Auto closing text:'
             FocusControl = ComboBox10
           end
-          object Edit5: TEdit
+          object Edit5: TTntEdit
             Left = 168
             Top = 8
             Width = 199
@@ -1293,7 +1293,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 0
             OnExit = Edit5Exit
           end
-          object Edit6: TEdit
+          object Edit6: TTntEdit
             Left = 168
             Top = 32
             Width = 199
@@ -1302,7 +1302,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 1
             OnExit = Edit6Exit
           end
-          object Edit9: TEdit
+          object Edit9: TTntEdit
             Left = 168
             Top = 56
             Width = 199
@@ -1311,7 +1311,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 2
             OnExit = Edit9Exit
           end
-          object CheckBox11: TCheckBox
+          object CheckBox11: TTntCheckBox
             Left = 4
             Top = 84
             Width = 181
@@ -1320,7 +1320,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 3
             OnClick = CheckBox11Click
           end
-          object CheckBox4: TCheckBox
+          object CheckBox4: TTntCheckBox
             Left = 4
             Top = 104
             Width = 181
@@ -1329,7 +1329,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 4
             OnClick = CheckBox4Click
           end
-          object CheckBox5: TCheckBox
+          object CheckBox5: TTntCheckBox
             Left = 4
             Top = 124
             Width = 181
@@ -1338,7 +1338,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 5
             OnClick = CheckBox5Click
           end
-          object CheckBox6: TCheckBox
+          object CheckBox6: TTntCheckBox
             Left = 184
             Top = 84
             Width = 183
@@ -1348,7 +1348,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 6
             OnClick = CheckBox6Click
           end
-          object CheckBox12: TCheckBox
+          object CheckBox12: TTntCheckBox
             Left = 184
             Top = 104
             Width = 183
@@ -1358,7 +1358,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 7
             OnClick = CheckBox12Click
           end
-          object CheckBox1: TCheckBox
+          object CheckBox1: TTntCheckBox
             Left = 184
             Top = 124
             Width = 183
@@ -1368,7 +1368,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 8
             OnClick = CheckBox1Click
           end
-          object CheckBox31: TCheckBox
+          object CheckBox31: TTntCheckBox
             Left = 4
             Top = 144
             Width = 181
@@ -1387,12 +1387,12 @@ object SyntLexerDlg: TfmLexerProp
             NonPrinted.Font.Charset = DEFAULT_CHARSET
             NonPrinted.Font.Color = clSilver
             NonPrinted.Font.Height = -11
-            NonPrinted.Font.Name = 'MS Sans Serif'
+            NonPrinted.Font.Name = 'Consolas'
             NonPrinted.Font.Style = []
             LineNumbers.Font.Charset = DEFAULT_CHARSET
             LineNumbers.Font.Color = clWindowText
             LineNumbers.Font.Height = -9
-            LineNumbers.Font.Name = 'Courier New'
+            LineNumbers.Font.Name = 'Consolas'
             LineNumbers.Font.Style = []
             LineNumbers.Band = 0
             LineNumbers.AutoSize = True
@@ -1417,7 +1417,7 @@ object SyntLexerDlg: TfmLexerProp
             HintProps.Font.Charset = DEFAULT_CHARSET
             HintProps.Font.Color = clWindowText
             HintProps.Font.Height = -11
-            HintProps.Font.Name = 'MS Sans Serif'
+            HintProps.Font.Name = 'Consolas'
             HintProps.Font.Style = []
             HintProps.Color = 13041663
             HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
@@ -1426,14 +1426,14 @@ object SyntLexerDlg: TfmLexerProp
             DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
             DefaultStyles.SelectioMark.Font.Color = clHighlightText
             DefaultStyles.SelectioMark.Font.Height = -13
-            DefaultStyles.SelectioMark.Font.Name = 'Courier New'
+            DefaultStyles.SelectioMark.Font.Name = 'Consolas'
             DefaultStyles.SelectioMark.Font.Style = []
             DefaultStyles.SelectioMark.BgColor = clHighlight
             DefaultStyles.SelectioMark.FormatType = ftColor
             DefaultStyles.SearchMark.Font.Charset = DEFAULT_CHARSET
             DefaultStyles.SearchMark.Font.Color = clWhite
             DefaultStyles.SearchMark.Font.Height = -13
-            DefaultStyles.SearchMark.Font.Name = 'Courier New'
+            DefaultStyles.SearchMark.Font.Name = 'Consolas'
             DefaultStyles.SearchMark.Font.Style = []
             DefaultStyles.SearchMark.BgColor = clBlack
             DefaultStyles.SearchMark.FormatType = ftColor
@@ -1441,13 +1441,13 @@ object SyntLexerDlg: TfmLexerProp
             DefaultStyles.CurrentLine.Font.Charset = DEFAULT_CHARSET
             DefaultStyles.CurrentLine.Font.Color = clWindowText
             DefaultStyles.CurrentLine.Font.Height = -13
-            DefaultStyles.CurrentLine.Font.Name = 'Courier New'
+            DefaultStyles.CurrentLine.Font.Name = 'Consolas'
             DefaultStyles.CurrentLine.Font.Style = []
             DefaultStyles.CurrentLine.FormatType = ftBackGround
             DefaultStyles.CollapseMark.Font.Charset = DEFAULT_CHARSET
             DefaultStyles.CollapseMark.Font.Color = clSilver
             DefaultStyles.CollapseMark.Font.Height = -13
-            DefaultStyles.CollapseMark.Font.Name = 'Courier New'
+            DefaultStyles.CollapseMark.Font.Name = 'Consolas'
             DefaultStyles.CollapseMark.Font.Style = []
             DefaultStyles.CollapseMark.FormatType = ftColor
             DefaultStyles.CollapseMark.BorderTypeLeft = blSolid
@@ -1461,14 +1461,14 @@ object SyntLexerDlg: TfmLexerProp
             SyncEditing.SyncRangeStyle.Font.Charset = DEFAULT_CHARSET
             SyncEditing.SyncRangeStyle.Font.Color = clWindowText
             SyncEditing.SyncRangeStyle.Font.Height = -13
-            SyncEditing.SyncRangeStyle.Font.Name = 'Courier New'
+            SyncEditing.SyncRangeStyle.Font.Name = 'Consolas'
             SyncEditing.SyncRangeStyle.Font.Style = []
             SyncEditing.SyncRangeStyle.BgColor = 14745568
             SyncEditing.SyncRangeStyle.FormatType = ftBackGround
             SyncEditing.ActiveWordsStyle.Font.Charset = DEFAULT_CHARSET
             SyncEditing.ActiveWordsStyle.Font.Color = clWindowText
             SyncEditing.ActiveWordsStyle.Font.Height = -13
-            SyncEditing.ActiveWordsStyle.Font.Name = 'Courier New'
+            SyncEditing.ActiveWordsStyle.Font.Name = 'Consolas'
             SyncEditing.ActiveWordsStyle.Font.Style = []
             SyncEditing.ActiveWordsStyle.FormatType = ftBackGround
             SyncEditing.ActiveWordsStyle.BorderTypeLeft = blSolid
@@ -1482,7 +1482,7 @@ object SyntLexerDlg: TfmLexerProp
             SyncEditing.InactiveWordsStyle.Font.Charset = DEFAULT_CHARSET
             SyncEditing.InactiveWordsStyle.Font.Color = clWindowText
             SyncEditing.InactiveWordsStyle.Font.Height = -13
-            SyncEditing.InactiveWordsStyle.Font.Name = 'Courier New'
+            SyncEditing.InactiveWordsStyle.Font.Name = 'Consolas'
             SyncEditing.InactiveWordsStyle.Font.Style = []
             SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
             SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
@@ -1491,7 +1491,7 @@ object SyntLexerDlg: TfmLexerProp
             HorzRuler.Font.Charset = DEFAULT_CHARSET
             HorzRuler.Font.Color = clWindowText
             HorzRuler.Font.Height = -11
-            HorzRuler.Font.Name = 'MS Sans Serif'
+            HorzRuler.Font.Name = 'Consolas'
             HorzRuler.Font.Style = []
             HorzRuler.Color = clBtnFace
             TextMargins = <
@@ -1510,7 +1510,7 @@ object SyntLexerDlg: TfmLexerProp
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -13
-            Font.Name = 'Courier New'
+            Font.Name = 'Consolas'
             Font.Style = []
             ParentColor = False
             ParentCtl3D = False
@@ -1534,13 +1534,13 @@ object SyntLexerDlg: TfmLexerProp
               'Close opened range')
           end
         end
-        object TabSheet9: TTabSheet
+        object TabSheet9: TTntTabSheet
           Caption = 'Highlight'
           ImageIndex = 2
           DesignSize = (
             361
             309)
-          object Label27: TLabel
+          object Label27: TTntLabel
             Left = 2
             Top = 8
             Width = 24
@@ -1548,7 +1548,7 @@ object SyntLexerDlg: TfmLexerProp
             Caption = 'Style'
             FocusControl = ComboBox20
           end
-          object Label44: TLabel
+          object Label44: TTntLabel
             Left = 2
             Top = 32
             Width = 66
@@ -1566,7 +1566,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 0
             OnChange = ComboBox20Change
           end
-          object CheckBox14: TCheckBox
+          object CheckBox14: TTntCheckBox
             Left = 2
             Top = 52
             Width = 183
@@ -1576,7 +1576,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 2
             OnClick = CheckBox14Click
           end
-          object CheckBox15: TCheckBox
+          object CheckBox15: TTntCheckBox
             Left = 192
             Top = 52
             Width = 172
@@ -1587,7 +1587,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 3
             OnClick = CheckBox15Click
           end
-          object GroupBox4: TGroupBox
+          object GroupBox4: TTntGroupBox
             Left = 0
             Top = 72
             Width = 366
@@ -1598,7 +1598,7 @@ object SyntLexerDlg: TfmLexerProp
             DesignSize = (
               366
               61)
-            object Label43: TLabel
+            object Label43: TTntLabel
               Left = 8
               Top = 20
               Width = 67
@@ -1623,7 +1623,7 @@ object SyntLexerDlg: TfmLexerProp
                 'Begin of bounding tokens'
                 'Out of range')
             end
-            object CheckBox16: TCheckBox
+            object CheckBox16: TTntCheckBox
               Left = 8
               Top = 40
               Width = 249
@@ -1649,7 +1649,7 @@ object SyntLexerDlg: TfmLexerProp
               'All tokens without bound'
               'All range')
           end
-          object GroupBox2: TGroupBox
+          object GroupBox2: TTntGroupBox
             Left = 0
             Top = 140
             Width = 365
@@ -1660,21 +1660,21 @@ object SyntLexerDlg: TfmLexerProp
             DesignSize = (
               365
               85)
-            object Label16: TLabel
+            object Label16: TTntLabel
               Left = 8
               Top = 36
               Width = 26
               Height = 13
               Caption = 'Item:'
             end
-            object Label17: TLabel
+            object Label17: TTntLabel
               Left = 8
               Top = 60
               Width = 33
               Height = 13
               Caption = 'Group:'
             end
-            object Label18: TLabel
+            object Label18: TTntLabel
               Left = 263
               Top = 16
               Width = 59
@@ -1682,7 +1682,7 @@ object SyntLexerDlg: TfmLexerProp
               Anchors = [akTop, akRight]
               Caption = 'Image index'
             end
-            object Label19: TLabel
+            object Label19: TTntLabel
               Left = 76
               Top = 16
               Width = 24
@@ -1711,7 +1711,7 @@ object SyntLexerDlg: TfmLexerProp
               TabOrder = 1
               OnChange = ComboBox6Change
             end
-            object Edit12: TEdit
+            object Edit12: TTntEdit
               Left = 263
               Top = 32
               Width = 97
@@ -1720,7 +1720,7 @@ object SyntLexerDlg: TfmLexerProp
               TabOrder = 2
               OnExit = Edit12Exit
             end
-            object Edit13: TEdit
+            object Edit13: TTntEdit
               Left = 263
               Top = 56
               Width = 97
@@ -1730,7 +1730,7 @@ object SyntLexerDlg: TfmLexerProp
               OnExit = Edit13Exit
             end
           end
-          object GroupBox1: TGroupBox
+          object GroupBox1: TTntGroupBox
             Left = 0
             Top = 228
             Width = 365
@@ -1741,7 +1741,7 @@ object SyntLexerDlg: TfmLexerProp
             DesignSize = (
               365
               65)
-            object Label32: TLabel
+            object Label32: TTntLabel
               Left = 8
               Top = 40
               Width = 28
@@ -1749,21 +1749,21 @@ object SyntLexerDlg: TfmLexerProp
               Caption = 'Width'
               FocusControl = Edit15
             end
-            object Label40: TLabel
+            object Label40: TTntLabel
               Left = 132
               Top = 16
               Width = 25
               Height = 13
               Caption = 'Color'
             end
-            object Label41: TLabel
+            object Label41: TTntLabel
               Left = 132
               Top = 40
               Width = 24
               Height = 13
               Caption = 'Style'
             end
-            object CheckBox30: TCheckBox
+            object CheckBox30: TTntCheckBox
               Left = 8
               Top = 16
               Width = 117
@@ -1773,7 +1773,7 @@ object SyntLexerDlg: TfmLexerProp
               TabOrder = 0
               OnClick = CheckBox30Click
             end
-            object Edit15: TEdit
+            object Edit15: TTntEdit
               Left = 64
               Top = 36
               Width = 61
@@ -1812,10 +1812,10 @@ object SyntLexerDlg: TfmLexerProp
             end
           end
         end
-        object TabSheet4: TTabSheet
+        object TabSheet4: TTntTabSheet
           Caption = 'Conditions'
           ImageIndex = 2
-          object GroupBox5: TGroupBox
+          object GroupBox5: TTntGroupBox
             Left = 0
             Top = 0
             Width = 361
@@ -1823,7 +1823,7 @@ object SyntLexerDlg: TfmLexerProp
             Align = alClient
             Caption = ' Conditions '
             TabOrder = 0
-            object Panel5: TPanel
+            object Panel5: TTntPanel
               Left = 2
               Top = 15
               Width = 185
@@ -1831,7 +1831,7 @@ object SyntLexerDlg: TfmLexerProp
               Align = alLeft
               BevelOuter = bvNone
               TabOrder = 0
-              object Panel7: TPanel
+              object Panel7: TTntPanel
                 Left = 0
                 Top = 0
                 Width = 185
@@ -1839,7 +1839,7 @@ object SyntLexerDlg: TfmLexerProp
                 Align = alTop
                 BevelOuter = bvLowered
                 TabOrder = 0
-                object Label24: TLabel
+                object Label24: TTntLabel
                   Left = 1
                   Top = 1
                   Width = 183
@@ -1852,12 +1852,12 @@ object SyntLexerDlg: TfmLexerProp
                   Font.Charset = DEFAULT_CHARSET
                   Font.Color = clYellow
                   Font.Height = -12
-                  Font.Name = 'MS Sans Serif'
+                  Font.Name = 'Consolas'
                   Font.Style = [fsBold]
                   ParentColor = False
                   ParentFont = False
                 end
-                object SpeedButton1: TSpeedButton
+                object SpeedButton1: TTntSpeedButton
                   Left = 159
                   Top = 16
                   Width = 23
@@ -1867,12 +1867,12 @@ object SyntLexerDlg: TfmLexerProp
                   Font.Charset = RUSSIAN_CHARSET
                   Font.Color = clWindowText
                   Font.Height = -19
-                  Font.Name = 'Courier New'
+                  Font.Name = 'Consolas'
                   Font.Style = [fsBold]
                   ParentFont = False
                   OnClick = SpeedButton1Click
                 end
-                object SpeedButton2: TSpeedButton
+                object SpeedButton2: TTntSpeedButton
                   Left = 159
                   Top = 42
                   Width = 23
@@ -1882,12 +1882,12 @@ object SyntLexerDlg: TfmLexerProp
                   Font.Charset = RUSSIAN_CHARSET
                   Font.Color = clWindowText
                   Font.Height = -19
-                  Font.Name = 'Courier New'
+                  Font.Name = 'Consolas'
                   Font.Style = [fsBold]
                   ParentFont = False
                   OnClick = SpeedButton2Click
                 end
-                object Label25: TLabel
+                object Label25: TTntLabel
                   Left = 4
                   Top = 131
                   Width = 45
@@ -1895,7 +1895,7 @@ object SyntLexerDlg: TfmLexerProp
                   Caption = 'Condition'
                   FocusControl = ComboBox19
                 end
-                object ListBox1: TListBox
+                object ListBox1: TTntListBox
                   Left = 3
                   Top = 18
                   Width = 154
@@ -1905,16 +1905,16 @@ object SyntLexerDlg: TfmLexerProp
                   Font.Charset = RUSSIAN_CHARSET
                   Font.Color = clWindowText
                   Font.Height = -15
-                  Font.Name = 'Courier New'
+                  Font.Name = 'Consolas'
                   Font.Style = []
-                  ItemHeight = 17
+                  ItemHeight = 18
                   ParentFont = False
                   TabOrder = 0
                   OnClick = ListBox1Click
                   OnDragDrop = ListBox1DragDrop
                   OnDragOver = ListBox1DragOver
                 end
-                object CheckBox10: TCheckBox
+                object CheckBox10: TTntCheckBox
                   Left = 5
                   Top = 109
                   Width = 175
@@ -1951,14 +1951,14 @@ object SyntLexerDlg: TfmLexerProp
                 NonPrinted.Font.Charset = DEFAULT_CHARSET
                 NonPrinted.Font.Color = clSilver
                 NonPrinted.Font.Height = -11
-                NonPrinted.Font.Name = 'MS Sans Serif'
+                NonPrinted.Font.Name = 'Consolas'
                 NonPrinted.Font.Style = []
                 LineNumbers.UnderColor = clBlack
                 LineNumbers.Alignment = taLeftJustify
                 LineNumbers.Font.Charset = DEFAULT_CHARSET
                 LineNumbers.Font.Color = clWindowText
                 LineNumbers.Font.Height = -9
-                LineNumbers.Font.Name = 'Courier New'
+                LineNumbers.Font.Name = 'Consolas'
                 LineNumbers.Font.Style = []
                 LineNumbers.Band = 1
                 Gutter.Images = ImageList1
@@ -1995,7 +1995,7 @@ object SyntLexerDlg: TfmLexerProp
                 HintProps.Font.Charset = DEFAULT_CHARSET
                 HintProps.Font.Color = clWindowText
                 HintProps.Font.Height = -11
-                HintProps.Font.Name = 'MS Sans Serif'
+                HintProps.Font.Name = 'Consolas'
                 HintProps.Font.Style = []
                 HintProps.Color = 13041663
                 HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
@@ -2006,14 +2006,14 @@ object SyntLexerDlg: TfmLexerProp
                 DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
                 DefaultStyles.SelectioMark.Font.Color = clHighlightText
                 DefaultStyles.SelectioMark.Font.Height = -13
-                DefaultStyles.SelectioMark.Font.Name = 'Courier New'
+                DefaultStyles.SelectioMark.Font.Name = 'Consolas'
                 DefaultStyles.SelectioMark.Font.Style = []
                 DefaultStyles.SelectioMark.BgColor = clHighlight
                 DefaultStyles.SelectioMark.FormatType = ftColor
                 DefaultStyles.SearchMark.Font.Charset = DEFAULT_CHARSET
                 DefaultStyles.SearchMark.Font.Color = clWhite
                 DefaultStyles.SearchMark.Font.Height = -13
-                DefaultStyles.SearchMark.Font.Name = 'Courier New'
+                DefaultStyles.SearchMark.Font.Name = 'Consolas'
                 DefaultStyles.SearchMark.Font.Style = []
                 DefaultStyles.SearchMark.BgColor = clBlack
                 DefaultStyles.SearchMark.FormatType = ftColor
@@ -2021,14 +2021,14 @@ object SyntLexerDlg: TfmLexerProp
                 DefaultStyles.CurrentLine.Font.Charset = DEFAULT_CHARSET
                 DefaultStyles.CurrentLine.Font.Color = clHighlightText
                 DefaultStyles.CurrentLine.Font.Height = -13
-                DefaultStyles.CurrentLine.Font.Name = 'Courier New'
+                DefaultStyles.CurrentLine.Font.Name = 'Consolas'
                 DefaultStyles.CurrentLine.Font.Style = []
                 DefaultStyles.CurrentLine.BgColor = clHighlight
                 DefaultStyles.CurrentLine.FormatType = ftColor
                 DefaultStyles.CollapseMark.Font.Charset = DEFAULT_CHARSET
                 DefaultStyles.CollapseMark.Font.Color = clSilver
                 DefaultStyles.CollapseMark.Font.Height = -13
-                DefaultStyles.CollapseMark.Font.Name = 'Courier New'
+                DefaultStyles.CollapseMark.Font.Name = 'Consolas'
                 DefaultStyles.CollapseMark.Font.Style = []
                 DefaultStyles.CollapseMark.FormatType = ftColor
                 DefaultStyles.CollapseMark.BorderTypeLeft = blSolid
@@ -2043,14 +2043,14 @@ object SyntLexerDlg: TfmLexerProp
                 SyncEditing.SyncRangeStyle.Font.Charset = DEFAULT_CHARSET
                 SyncEditing.SyncRangeStyle.Font.Color = clWindowText
                 SyncEditing.SyncRangeStyle.Font.Height = -13
-                SyncEditing.SyncRangeStyle.Font.Name = 'Courier New'
+                SyncEditing.SyncRangeStyle.Font.Name = 'Consolas'
                 SyncEditing.SyncRangeStyle.Font.Style = []
                 SyncEditing.SyncRangeStyle.BgColor = 14745568
                 SyncEditing.SyncRangeStyle.FormatType = ftBackGround
                 SyncEditing.ActiveWordsStyle.Font.Charset = DEFAULT_CHARSET
                 SyncEditing.ActiveWordsStyle.Font.Color = clWindowText
                 SyncEditing.ActiveWordsStyle.Font.Height = -13
-                SyncEditing.ActiveWordsStyle.Font.Name = 'Courier New'
+                SyncEditing.ActiveWordsStyle.Font.Name = 'Consolas'
                 SyncEditing.ActiveWordsStyle.Font.Style = []
                 SyncEditing.ActiveWordsStyle.FormatType = ftBackGround
                 SyncEditing.ActiveWordsStyle.BorderTypeLeft = blSolid
@@ -2064,7 +2064,7 @@ object SyntLexerDlg: TfmLexerProp
                 SyncEditing.InactiveWordsStyle.Font.Charset = DEFAULT_CHARSET
                 SyncEditing.InactiveWordsStyle.Font.Color = clWindowText
                 SyncEditing.InactiveWordsStyle.Font.Height = -13
-                SyncEditing.InactiveWordsStyle.Font.Name = 'Courier New'
+                SyncEditing.InactiveWordsStyle.Font.Name = 'Consolas'
                 SyncEditing.InactiveWordsStyle.Font.Style = []
                 SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
                 SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
@@ -2074,7 +2074,7 @@ object SyntLexerDlg: TfmLexerProp
                 HorzRuler.Font.Charset = DEFAULT_CHARSET
                 HorzRuler.Font.Color = clWindowText
                 HorzRuler.Font.Height = -11
-                HorzRuler.Font.Name = 'MS Sans Serif'
+                HorzRuler.Font.Name = 'Consolas'
                 HorzRuler.Font.Style = []
                 TextMargins = <
                   item
@@ -2092,7 +2092,7 @@ object SyntLexerDlg: TfmLexerProp
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
                 Font.Height = -15
-                Font.Name = 'Courier New'
+                Font.Name = 'Consolas'
                 Font.Style = []
                 ParentColor = False
                 ParentCtl3D = False
@@ -2102,7 +2102,7 @@ object SyntLexerDlg: TfmLexerProp
                 OnKeyDown = SyntaxMemo2KeyDown
               end
             end
-            object Panel6: TPanel
+            object Panel6: TTntPanel
               Left = 187
               Top = 15
               Width = 172
@@ -2111,10 +2111,10 @@ object SyntLexerDlg: TfmLexerProp
               BevelOuter = bvNone
               Caption = 'Panel6'
               TabOrder = 1
-              object Label26: TLabel
+              object Label26: TTntLabel
                 Left = 0
                 Top = 0
-                Width = 180
+                Width = 172
                 Height = 15
                 Align = alTop
                 Alignment = taCenter
@@ -2124,7 +2124,7 @@ object SyntLexerDlg: TfmLexerProp
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clYellow
                 Font.Height = -12
-                Font.Name = 'MS Sans Serif'
+                Font.Name = 'Consolas'
                 Font.Style = [fsBold]
                 ParentColor = False
                 ParentFont = False
@@ -2132,21 +2132,21 @@ object SyntLexerDlg: TfmLexerProp
               object SyntaxMemo4: TSyntaxMemo
                 Left = 0
                 Top = 15
-                Width = 180
+                Width = 172
                 Height = 277
                 TabList.AsString = '4'
                 NonPrinted.Visible = True
                 NonPrinted.Font.Charset = DEFAULT_CHARSET
                 NonPrinted.Font.Color = clSilver
                 NonPrinted.Font.Height = -11
-                NonPrinted.Font.Name = 'MS Sans Serif'
+                NonPrinted.Font.Name = 'Consolas'
                 NonPrinted.Font.Style = []
                 NonPrinted.LineBreakChar = ' '
                 LineNumbers.Alignment = taLeftJustify
                 LineNumbers.Font.Charset = DEFAULT_CHARSET
                 LineNumbers.Font.Color = clWindowText
                 LineNumbers.Font.Height = -9
-                LineNumbers.Font.Name = 'Courier New'
+                LineNumbers.Font.Name = 'Consolas'
                 LineNumbers.Font.Style = []
                 LineNumbers.Band = -1
                 Gutter.Width = 20
@@ -2167,7 +2167,7 @@ object SyntLexerDlg: TfmLexerProp
                 HintProps.Font.Charset = DEFAULT_CHARSET
                 HintProps.Font.Color = clWindowText
                 HintProps.Font.Height = -11
-                HintProps.Font.Name = 'MS Sans Serif'
+                HintProps.Font.Name = 'Consolas'
                 HintProps.Font.Style = []
                 HintProps.Color = 13041663
                 HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
@@ -2177,14 +2177,14 @@ object SyntLexerDlg: TfmLexerProp
                 DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
                 DefaultStyles.SelectioMark.Font.Color = clHighlightText
                 DefaultStyles.SelectioMark.Font.Height = -13
-                DefaultStyles.SelectioMark.Font.Name = 'Courier New'
+                DefaultStyles.SelectioMark.Font.Name = 'Consolas'
                 DefaultStyles.SelectioMark.Font.Style = []
                 DefaultStyles.SelectioMark.BgColor = clHighlight
                 DefaultStyles.SelectioMark.FormatType = ftColor
                 DefaultStyles.SearchMark.Font.Charset = DEFAULT_CHARSET
                 DefaultStyles.SearchMark.Font.Color = clWhite
                 DefaultStyles.SearchMark.Font.Height = -13
-                DefaultStyles.SearchMark.Font.Name = 'Courier New'
+                DefaultStyles.SearchMark.Font.Name = 'Consolas'
                 DefaultStyles.SearchMark.Font.Style = []
                 DefaultStyles.SearchMark.BgColor = clBlack
                 DefaultStyles.SearchMark.FormatType = ftColor
@@ -2192,13 +2192,13 @@ object SyntLexerDlg: TfmLexerProp
                 DefaultStyles.CurrentLine.Font.Charset = DEFAULT_CHARSET
                 DefaultStyles.CurrentLine.Font.Color = clWindowText
                 DefaultStyles.CurrentLine.Font.Height = -13
-                DefaultStyles.CurrentLine.Font.Name = 'Courier New'
+                DefaultStyles.CurrentLine.Font.Name = 'Consolas'
                 DefaultStyles.CurrentLine.Font.Style = []
                 DefaultStyles.CurrentLine.FormatType = ftBackGround
                 DefaultStyles.CollapseMark.Font.Charset = DEFAULT_CHARSET
                 DefaultStyles.CollapseMark.Font.Color = clSilver
                 DefaultStyles.CollapseMark.Font.Height = -13
-                DefaultStyles.CollapseMark.Font.Name = 'Courier New'
+                DefaultStyles.CollapseMark.Font.Name = 'Consolas'
                 DefaultStyles.CollapseMark.Font.Style = []
                 DefaultStyles.CollapseMark.FormatType = ftColor
                 DefaultStyles.CollapseMark.BorderTypeLeft = blSolid
@@ -2212,14 +2212,14 @@ object SyntLexerDlg: TfmLexerProp
                 SyncEditing.SyncRangeStyle.Font.Charset = DEFAULT_CHARSET
                 SyncEditing.SyncRangeStyle.Font.Color = clWindowText
                 SyncEditing.SyncRangeStyle.Font.Height = -13
-                SyncEditing.SyncRangeStyle.Font.Name = 'Courier New'
+                SyncEditing.SyncRangeStyle.Font.Name = 'Consolas'
                 SyncEditing.SyncRangeStyle.Font.Style = []
                 SyncEditing.SyncRangeStyle.BgColor = 14745568
                 SyncEditing.SyncRangeStyle.FormatType = ftBackGround
                 SyncEditing.ActiveWordsStyle.Font.Charset = DEFAULT_CHARSET
                 SyncEditing.ActiveWordsStyle.Font.Color = clWindowText
                 SyncEditing.ActiveWordsStyle.Font.Height = -13
-                SyncEditing.ActiveWordsStyle.Font.Name = 'Courier New'
+                SyncEditing.ActiveWordsStyle.Font.Name = 'Consolas'
                 SyncEditing.ActiveWordsStyle.Font.Style = []
                 SyncEditing.ActiveWordsStyle.FormatType = ftBackGround
                 SyncEditing.ActiveWordsStyle.BorderTypeLeft = blSolid
@@ -2233,7 +2233,7 @@ object SyntLexerDlg: TfmLexerProp
                 SyncEditing.InactiveWordsStyle.Font.Charset = DEFAULT_CHARSET
                 SyncEditing.InactiveWordsStyle.Font.Color = clWindowText
                 SyncEditing.InactiveWordsStyle.Font.Height = -13
-                SyncEditing.InactiveWordsStyle.Font.Name = 'Courier New'
+                SyncEditing.InactiveWordsStyle.Font.Name = 'Consolas'
                 SyncEditing.InactiveWordsStyle.Font.Style = []
                 SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
                 SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
@@ -2242,7 +2242,7 @@ object SyntLexerDlg: TfmLexerProp
                 HorzRuler.Font.Charset = DEFAULT_CHARSET
                 HorzRuler.Font.Color = clWindowText
                 HorzRuler.Font.Height = -11
-                HorzRuler.Font.Name = 'MS Sans Serif'
+                HorzRuler.Font.Name = 'Consolas'
                 HorzRuler.Font.Style = []
                 TextMargins = <
                   item
@@ -2260,7 +2260,7 @@ object SyntLexerDlg: TfmLexerProp
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
                 Font.Height = -12
-                Font.Name = 'Courier New'
+                Font.Name = 'Consolas'
                 Font.Style = []
                 ParentColor = False
                 ParentCtl3D = False
@@ -2273,7 +2273,7 @@ object SyntLexerDlg: TfmLexerProp
         end
       end
     end
-    object TabSheet8: TTabSheet
+    object TabSheet8: TTntTabSheet
       Caption = 'Sub lexers'
       ImageIndex = 5
       object Splitter4: TSplitter
@@ -2303,7 +2303,7 @@ object SyntLexerDlg: TfmLexerProp
           Width = 174
         end
       end
-      object Panel8: TPanel
+      object Panel8: TTntPanel
         Left = 177
         Top = 0
         Width = 369
@@ -2311,7 +2311,7 @@ object SyntLexerDlg: TfmLexerProp
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 1
-        object Label47: TLabel
+        object Label47: TTntLabel
           Left = 0
           Top = 205
           Width = 369
@@ -2324,7 +2324,7 @@ object SyntLexerDlg: TfmLexerProp
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clYellow
           Font.Height = -12
-          Font.Name = 'MS Sans Serif'
+          Font.Name = 'Consolas'
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
@@ -2337,7 +2337,7 @@ object SyntLexerDlg: TfmLexerProp
           Cursor = crVSplit
           Align = alTop
         end
-        object Label49: TLabel
+        object Label49: TTntLabel
           Left = 0
           Top = 272
           Width = 369
@@ -2350,12 +2350,12 @@ object SyntLexerDlg: TfmLexerProp
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clYellow
           Font.Height = -12
-          Font.Name = 'MS Sans Serif'
+          Font.Name = 'Consolas'
           Font.Style = [fsBold]
           ParentColor = False
           ParentFont = False
         end
-        object Panel9: TPanel
+        object Panel9: TTntPanel
           Left = 0
           Top = 0
           Width = 369
@@ -2366,21 +2366,21 @@ object SyntLexerDlg: TfmLexerProp
           DesignSize = (
             369
             205)
-          object Label45: TLabel
+          object Label45: TTntLabel
             Left = 8
             Top = 32
             Width = 24
             Height = 13
             Caption = 'Style'
           end
-          object Label46: TLabel
+          object Label46: TTntLabel
             Left = 8
             Top = 56
             Width = 59
             Height = 13
             Caption = 'Parent block'
           end
-          object Label48: TLabel
+          object Label48: TTntLabel
             Left = 8
             Top = 8
             Width = 45
@@ -2409,7 +2409,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 2
             OnChange = ComboBox31Change
           end
-          object CheckBox21: TCheckBox
+          object CheckBox21: TTntCheckBox
             Left = 184
             Top = 92
             Width = 169
@@ -2420,7 +2420,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 6
             OnClick = CheckBox21Click
           end
-          object CheckBox22: TCheckBox
+          object CheckBox22: TTntCheckBox
             Left = 184
             Top = 76
             Width = 169
@@ -2442,7 +2442,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 0
             OnChange = ComboBox32Change
           end
-          object CheckBox23: TCheckBox
+          object CheckBox23: TTntCheckBox
             Left = 8
             Top = 92
             Width = 177
@@ -2452,7 +2452,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 4
             OnClick = CheckBox23Click
           end
-          object CheckBox24: TCheckBox
+          object CheckBox24: TTntCheckBox
             Left = 8
             Top = 76
             Width = 177
@@ -2462,7 +2462,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 3
             OnClick = CheckBox24Click
           end
-          object CheckBox25: TCheckBox
+          object CheckBox25: TTntCheckBox
             Left = 184
             Top = 108
             Width = 169
@@ -2473,7 +2473,7 @@ object SyntLexerDlg: TfmLexerProp
             TabOrder = 7
             OnClick = CheckBox25Click
           end
-          object CheckBox29: TCheckBox
+          object CheckBox29: TTntCheckBox
             Left = 8
             Top = 108
             Width = 177
@@ -2540,13 +2540,13 @@ object SyntLexerDlg: TfmLexerProp
           NonPrinted.Font.Charset = DEFAULT_CHARSET
           NonPrinted.Font.Color = clSilver
           NonPrinted.Font.Height = -11
-          NonPrinted.Font.Name = 'MS Sans Serif'
+          NonPrinted.Font.Name = 'Consolas'
           NonPrinted.Font.Style = []
           LineNumbers.Alignment = taLeftJustify
           LineNumbers.Font.Charset = DEFAULT_CHARSET
           LineNumbers.Font.Color = clWindowText
           LineNumbers.Font.Height = -9
-          LineNumbers.Font.Name = 'Courier New'
+          LineNumbers.Font.Name = 'Consolas'
           LineNumbers.Font.Style = []
           LineNumbers.Band = -1
           Gutter.ExpandButtons.Data = {
@@ -2566,7 +2566,7 @@ object SyntLexerDlg: TfmLexerProp
           HintProps.Font.Charset = DEFAULT_CHARSET
           HintProps.Font.Color = clWindowText
           HintProps.Font.Height = -11
-          HintProps.Font.Name = 'MS Sans Serif'
+          HintProps.Font.Name = 'Consolas'
           HintProps.Font.Style = []
           HintProps.Color = 13041663
           HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
@@ -2575,14 +2575,14 @@ object SyntLexerDlg: TfmLexerProp
           DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.SelectioMark.Font.Color = clHighlightText
           DefaultStyles.SelectioMark.Font.Height = -13
-          DefaultStyles.SelectioMark.Font.Name = 'Courier New'
+          DefaultStyles.SelectioMark.Font.Name = 'Consolas'
           DefaultStyles.SelectioMark.Font.Style = []
           DefaultStyles.SelectioMark.BgColor = clHighlight
           DefaultStyles.SelectioMark.FormatType = ftColor
           DefaultStyles.SearchMark.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.SearchMark.Font.Color = clWhite
           DefaultStyles.SearchMark.Font.Height = -13
-          DefaultStyles.SearchMark.Font.Name = 'Courier New'
+          DefaultStyles.SearchMark.Font.Name = 'Consolas'
           DefaultStyles.SearchMark.Font.Style = []
           DefaultStyles.SearchMark.BgColor = clBlack
           DefaultStyles.SearchMark.FormatType = ftColor
@@ -2590,13 +2590,13 @@ object SyntLexerDlg: TfmLexerProp
           DefaultStyles.CurrentLine.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.CurrentLine.Font.Color = clWindowText
           DefaultStyles.CurrentLine.Font.Height = -13
-          DefaultStyles.CurrentLine.Font.Name = 'Courier New'
+          DefaultStyles.CurrentLine.Font.Name = 'Consolas'
           DefaultStyles.CurrentLine.Font.Style = []
           DefaultStyles.CurrentLine.FormatType = ftBackGround
           DefaultStyles.CollapseMark.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.CollapseMark.Font.Color = clSilver
           DefaultStyles.CollapseMark.Font.Height = -13
-          DefaultStyles.CollapseMark.Font.Name = 'Courier New'
+          DefaultStyles.CollapseMark.Font.Name = 'Consolas'
           DefaultStyles.CollapseMark.Font.Style = []
           DefaultStyles.CollapseMark.FormatType = ftColor
           DefaultStyles.CollapseMark.BorderTypeLeft = blSolid
@@ -2610,14 +2610,14 @@ object SyntLexerDlg: TfmLexerProp
           SyncEditing.SyncRangeStyle.Font.Charset = DEFAULT_CHARSET
           SyncEditing.SyncRangeStyle.Font.Color = clWindowText
           SyncEditing.SyncRangeStyle.Font.Height = -13
-          SyncEditing.SyncRangeStyle.Font.Name = 'Courier New'
+          SyncEditing.SyncRangeStyle.Font.Name = 'Consolas'
           SyncEditing.SyncRangeStyle.Font.Style = []
           SyncEditing.SyncRangeStyle.BgColor = 14745568
           SyncEditing.SyncRangeStyle.FormatType = ftBackGround
           SyncEditing.ActiveWordsStyle.Font.Charset = DEFAULT_CHARSET
           SyncEditing.ActiveWordsStyle.Font.Color = clWindowText
           SyncEditing.ActiveWordsStyle.Font.Height = -13
-          SyncEditing.ActiveWordsStyle.Font.Name = 'Courier New'
+          SyncEditing.ActiveWordsStyle.Font.Name = 'Consolas'
           SyncEditing.ActiveWordsStyle.Font.Style = []
           SyncEditing.ActiveWordsStyle.FormatType = ftBackGround
           SyncEditing.ActiveWordsStyle.BorderTypeLeft = blSolid
@@ -2631,7 +2631,7 @@ object SyntLexerDlg: TfmLexerProp
           SyncEditing.InactiveWordsStyle.Font.Charset = DEFAULT_CHARSET
           SyncEditing.InactiveWordsStyle.Font.Color = clWindowText
           SyncEditing.InactiveWordsStyle.Font.Height = -13
-          SyncEditing.InactiveWordsStyle.Font.Name = 'Courier New'
+          SyncEditing.InactiveWordsStyle.Font.Name = 'Consolas'
           SyncEditing.InactiveWordsStyle.Font.Style = []
           SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
           SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
@@ -2641,7 +2641,7 @@ object SyntLexerDlg: TfmLexerProp
           HorzRuler.Font.Charset = DEFAULT_CHARSET
           HorzRuler.Font.Color = clWindowText
           HorzRuler.Font.Height = -11
-          HorzRuler.Font.Name = 'MS Sans Serif'
+          HorzRuler.Font.Name = 'Consolas'
           HorzRuler.Font.Style = []
           TextMargins = <
             item
@@ -2659,7 +2659,7 @@ object SyntLexerDlg: TfmLexerProp
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -15
-          Font.Name = 'Courier New'
+          Font.Name = 'Consolas'
           Font.Style = []
           ParentColor = False
           ParentCtl3D = False
@@ -2678,13 +2678,13 @@ object SyntLexerDlg: TfmLexerProp
           NonPrinted.Font.Charset = DEFAULT_CHARSET
           NonPrinted.Font.Color = clSilver
           NonPrinted.Font.Height = -11
-          NonPrinted.Font.Name = 'MS Sans Serif'
+          NonPrinted.Font.Name = 'Consolas'
           NonPrinted.Font.Style = []
           LineNumbers.Alignment = taLeftJustify
           LineNumbers.Font.Charset = DEFAULT_CHARSET
           LineNumbers.Font.Color = clWindowText
           LineNumbers.Font.Height = -9
-          LineNumbers.Font.Name = 'Courier New'
+          LineNumbers.Font.Name = 'Consolas'
           LineNumbers.Font.Style = []
           LineNumbers.Band = -1
           Gutter.ExpandButtons.Data = {
@@ -2704,7 +2704,7 @@ object SyntLexerDlg: TfmLexerProp
           HintProps.Font.Charset = DEFAULT_CHARSET
           HintProps.Font.Color = clWindowText
           HintProps.Font.Height = -11
-          HintProps.Font.Name = 'MS Sans Serif'
+          HintProps.Font.Name = 'Consolas'
           HintProps.Font.Style = []
           HintProps.Color = 13041663
           HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
@@ -2713,14 +2713,14 @@ object SyntLexerDlg: TfmLexerProp
           DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.SelectioMark.Font.Color = clHighlightText
           DefaultStyles.SelectioMark.Font.Height = -13
-          DefaultStyles.SelectioMark.Font.Name = 'Courier New'
+          DefaultStyles.SelectioMark.Font.Name = 'Consolas'
           DefaultStyles.SelectioMark.Font.Style = []
           DefaultStyles.SelectioMark.BgColor = clHighlight
           DefaultStyles.SelectioMark.FormatType = ftColor
           DefaultStyles.SearchMark.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.SearchMark.Font.Color = clWhite
           DefaultStyles.SearchMark.Font.Height = -13
-          DefaultStyles.SearchMark.Font.Name = 'Courier New'
+          DefaultStyles.SearchMark.Font.Name = 'Consolas'
           DefaultStyles.SearchMark.Font.Style = []
           DefaultStyles.SearchMark.BgColor = clBlack
           DefaultStyles.SearchMark.FormatType = ftColor
@@ -2728,13 +2728,13 @@ object SyntLexerDlg: TfmLexerProp
           DefaultStyles.CurrentLine.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.CurrentLine.Font.Color = clWindowText
           DefaultStyles.CurrentLine.Font.Height = -13
-          DefaultStyles.CurrentLine.Font.Name = 'Courier New'
+          DefaultStyles.CurrentLine.Font.Name = 'Consolas'
           DefaultStyles.CurrentLine.Font.Style = []
           DefaultStyles.CurrentLine.FormatType = ftBackGround
           DefaultStyles.CollapseMark.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.CollapseMark.Font.Color = clSilver
           DefaultStyles.CollapseMark.Font.Height = -13
-          DefaultStyles.CollapseMark.Font.Name = 'Courier New'
+          DefaultStyles.CollapseMark.Font.Name = 'Consolas'
           DefaultStyles.CollapseMark.Font.Style = []
           DefaultStyles.CollapseMark.FormatType = ftColor
           DefaultStyles.CollapseMark.BorderTypeLeft = blSolid
@@ -2748,14 +2748,14 @@ object SyntLexerDlg: TfmLexerProp
           SyncEditing.SyncRangeStyle.Font.Charset = DEFAULT_CHARSET
           SyncEditing.SyncRangeStyle.Font.Color = clWindowText
           SyncEditing.SyncRangeStyle.Font.Height = -13
-          SyncEditing.SyncRangeStyle.Font.Name = 'Courier New'
+          SyncEditing.SyncRangeStyle.Font.Name = 'Consolas'
           SyncEditing.SyncRangeStyle.Font.Style = []
           SyncEditing.SyncRangeStyle.BgColor = 14745568
           SyncEditing.SyncRangeStyle.FormatType = ftBackGround
           SyncEditing.ActiveWordsStyle.Font.Charset = DEFAULT_CHARSET
           SyncEditing.ActiveWordsStyle.Font.Color = clWindowText
           SyncEditing.ActiveWordsStyle.Font.Height = -13
-          SyncEditing.ActiveWordsStyle.Font.Name = 'Courier New'
+          SyncEditing.ActiveWordsStyle.Font.Name = 'Consolas'
           SyncEditing.ActiveWordsStyle.Font.Style = []
           SyncEditing.ActiveWordsStyle.FormatType = ftBackGround
           SyncEditing.ActiveWordsStyle.BorderTypeLeft = blSolid
@@ -2769,7 +2769,7 @@ object SyntLexerDlg: TfmLexerProp
           SyncEditing.InactiveWordsStyle.Font.Charset = DEFAULT_CHARSET
           SyncEditing.InactiveWordsStyle.Font.Color = clWindowText
           SyncEditing.InactiveWordsStyle.Font.Height = -13
-          SyncEditing.InactiveWordsStyle.Font.Name = 'Courier New'
+          SyncEditing.InactiveWordsStyle.Font.Name = 'Consolas'
           SyncEditing.InactiveWordsStyle.Font.Style = []
           SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
           SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
@@ -2779,7 +2779,7 @@ object SyntLexerDlg: TfmLexerProp
           HorzRuler.Font.Charset = DEFAULT_CHARSET
           HorzRuler.Font.Color = clWindowText
           HorzRuler.Font.Height = -11
-          HorzRuler.Font.Name = 'MS Sans Serif'
+          HorzRuler.Font.Name = 'Consolas'
           HorzRuler.Font.Style = []
           TextMargins = <
             item
@@ -2797,7 +2797,7 @@ object SyntLexerDlg: TfmLexerProp
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -15
-          Font.Name = 'Courier New'
+          Font.Name = 'Consolas'
           Font.Style = []
           ParentColor = False
           ParentCtl3D = False
@@ -2807,7 +2807,7 @@ object SyntLexerDlg: TfmLexerProp
         end
       end
     end
-    object TabSheet11: TTabSheet
+    object TabSheet11: TTntTabSheet
       Caption = 'Grammar'
       ImageIndex = 7
       OnExit = TabSheet11Exit
@@ -2817,7 +2817,7 @@ object SyntLexerDlg: TfmLexerProp
         Width = 4
         Height = 337
       end
-      object Panel1: TPanel
+      object Panel1: TTntPanel
         Left = 0
         Top = 0
         Width = 145
@@ -2836,7 +2836,7 @@ object SyntLexerDlg: TfmLexerProp
           TabOrder = 0
           OnCustomDrawItem = TreeView1CustomDrawItem
         end
-        object Panel10: TPanel
+        object Panel10: TTntPanel
           Left = 0
           Top = 0
           Width = 145
@@ -2847,7 +2847,7 @@ object SyntLexerDlg: TfmLexerProp
           DesignSize = (
             145
             25)
-          object SpeedButton3: TSpeedButton
+          object SpeedButton3: TTntSpeedButton
             Left = 0
             Top = 0
             Width = 143
@@ -2882,14 +2882,14 @@ object SyntLexerDlg: TfmLexerProp
         NonPrinted.Font.Charset = DEFAULT_CHARSET
         NonPrinted.Font.Color = clSilver
         NonPrinted.Font.Height = -11
-        NonPrinted.Font.Name = 'MS Sans Serif'
+        NonPrinted.Font.Name = 'Consolas'
         NonPrinted.Font.Style = []
         LineNumbers.Visible = False
         LineNumbers.Alignment = taLeftJustify
         LineNumbers.Font.Charset = DEFAULT_CHARSET
         LineNumbers.Font.Color = clWindowText
         LineNumbers.Font.Height = -9
-        LineNumbers.Font.Name = 'Courier New'
+        LineNumbers.Font.Name = 'Consolas'
         LineNumbers.Font.Style = []
         LineNumbers.Band = -1
         Gutter.Visible = False
@@ -2911,7 +2911,7 @@ object SyntLexerDlg: TfmLexerProp
         HintProps.Font.Charset = DEFAULT_CHARSET
         HintProps.Font.Color = clWindowText
         HintProps.Font.Height = -11
-        HintProps.Font.Name = 'MS Sans Serif'
+        HintProps.Font.Name = 'Consolas'
         HintProps.Font.Style = []
         HintProps.Color = 13041663
         HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
@@ -2920,14 +2920,14 @@ object SyntLexerDlg: TfmLexerProp
         DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.SelectioMark.Font.Color = clHighlightText
         DefaultStyles.SelectioMark.Font.Height = -13
-        DefaultStyles.SelectioMark.Font.Name = 'Courier New'
+        DefaultStyles.SelectioMark.Font.Name = 'Consolas'
         DefaultStyles.SelectioMark.Font.Style = []
         DefaultStyles.SelectioMark.BgColor = clHighlight
         DefaultStyles.SelectioMark.FormatType = ftColor
         DefaultStyles.SearchMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.SearchMark.Font.Color = clWhite
         DefaultStyles.SearchMark.Font.Height = -13
-        DefaultStyles.SearchMark.Font.Name = 'Courier New'
+        DefaultStyles.SearchMark.Font.Name = 'Consolas'
         DefaultStyles.SearchMark.Font.Style = []
         DefaultStyles.SearchMark.BgColor = clBlack
         DefaultStyles.SearchMark.FormatType = ftColor
@@ -2935,13 +2935,13 @@ object SyntLexerDlg: TfmLexerProp
         DefaultStyles.CurrentLine.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.CurrentLine.Font.Color = clWindowText
         DefaultStyles.CurrentLine.Font.Height = -13
-        DefaultStyles.CurrentLine.Font.Name = 'Courier New'
+        DefaultStyles.CurrentLine.Font.Name = 'Consolas'
         DefaultStyles.CurrentLine.Font.Style = []
         DefaultStyles.CurrentLine.FormatType = ftBackGround
         DefaultStyles.CollapseMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.CollapseMark.Font.Color = clSilver
         DefaultStyles.CollapseMark.Font.Height = -13
-        DefaultStyles.CollapseMark.Font.Name = 'Courier New'
+        DefaultStyles.CollapseMark.Font.Name = 'Consolas'
         DefaultStyles.CollapseMark.Font.Style = []
         DefaultStyles.CollapseMark.FormatType = ftColor
         DefaultStyles.CollapseMark.BorderTypeLeft = blSolid
@@ -2955,14 +2955,14 @@ object SyntLexerDlg: TfmLexerProp
         SyncEditing.SyncRangeStyle.Font.Charset = DEFAULT_CHARSET
         SyncEditing.SyncRangeStyle.Font.Color = clWindowText
         SyncEditing.SyncRangeStyle.Font.Height = -13
-        SyncEditing.SyncRangeStyle.Font.Name = 'Courier New'
+        SyncEditing.SyncRangeStyle.Font.Name = 'Consolas'
         SyncEditing.SyncRangeStyle.Font.Style = []
         SyncEditing.SyncRangeStyle.BgColor = 14745568
         SyncEditing.SyncRangeStyle.FormatType = ftBackGround
         SyncEditing.ActiveWordsStyle.Font.Charset = DEFAULT_CHARSET
         SyncEditing.ActiveWordsStyle.Font.Color = clWindowText
         SyncEditing.ActiveWordsStyle.Font.Height = -13
-        SyncEditing.ActiveWordsStyle.Font.Name = 'Courier New'
+        SyncEditing.ActiveWordsStyle.Font.Name = 'Consolas'
         SyncEditing.ActiveWordsStyle.Font.Style = []
         SyncEditing.ActiveWordsStyle.FormatType = ftBackGround
         SyncEditing.ActiveWordsStyle.BorderTypeLeft = blSolid
@@ -2976,7 +2976,7 @@ object SyntLexerDlg: TfmLexerProp
         SyncEditing.InactiveWordsStyle.Font.Charset = DEFAULT_CHARSET
         SyncEditing.InactiveWordsStyle.Font.Color = clWindowText
         SyncEditing.InactiveWordsStyle.Font.Height = -13
-        SyncEditing.InactiveWordsStyle.Font.Name = 'Courier New'
+        SyncEditing.InactiveWordsStyle.Font.Name = 'Consolas'
         SyncEditing.InactiveWordsStyle.Font.Style = []
         SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
         SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
@@ -2985,7 +2985,7 @@ object SyntLexerDlg: TfmLexerProp
         HorzRuler.Font.Charset = DEFAULT_CHARSET
         HorzRuler.Font.Color = clWindowText
         HorzRuler.Font.Height = -11
-        HorzRuler.Font.Name = 'MS Sans Serif'
+        HorzRuler.Font.Name = 'Consolas'
         HorzRuler.Font.Style = []
         TextMargins = <
           item
@@ -3003,7 +3003,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -12
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = []
         ParentColor = False
         ParentCtl3D = False
@@ -3011,67 +3011,26 @@ object SyntLexerDlg: TfmLexerProp
         TabOrder = 1
       end
     end
-    object TabSheet6: TTabSheet
-      Caption = 'Code templates'
-      ImageIndex = 5
-      TabVisible = False
-      inline SyntCodeTemplFrame1: TSyntCodeTemplFrame
-        Left = 0
-        Top = 0
-        Width = 546
-        Height = 337
-        Align = alClient
-        TabOrder = 0
-        TabStop = True
-        inherited Splitter6: TSplitter
-          Width = 546
-        end
-        inherited Label32: TLabel
-          Width = 546
-          Font.Height = -12
-        end
-        inherited Panel_Template: TPanel
-          Width = 546
-          inherited Label31: TLabel
-            Width = 546
-            Font.Height = -12
-          end
-          inherited LV: TListView
-            Width = 455
-          end
-          inherited Panel1: TPanel
-            Left = 455
-            Width = 91
-          end
-        end
-        inherited SyntaxMemo2: TSyntaxMemo
-          Width = 546
-          Height = 174
-          TabMode = tmTabChar
-          Options = [soOverwriteBlocks, soEnableBlockSel, soHideSelection, soHideDynamic, soAutoIndentMode, soBackUnindent, soGroupUndo, soDragText, soScrollLastLine, soVariableHorzScrollBar]
-        end
-      end
-    end
-    object TabSheet10: TTabSheet
+    object TabSheet10: TTntTabSheet
       Caption = 'Notes'
       ImageIndex = 6
       object SyntaxMemo8: TSyntaxMemo
         Left = 0
         Top = 0
-        Width = 554
+        Width = 546
         Height = 337
         TabList.AsString = '4'
         NonPrinted.Font.Charset = DEFAULT_CHARSET
         NonPrinted.Font.Color = clSilver
         NonPrinted.Font.Height = -11
-        NonPrinted.Font.Name = 'MS Sans Serif'
+        NonPrinted.Font.Name = 'Consolas'
         NonPrinted.Font.Style = []
         LineNumbers.Visible = False
         LineNumbers.Alignment = taLeftJustify
         LineNumbers.Font.Charset = DEFAULT_CHARSET
         LineNumbers.Font.Color = clWindowText
         LineNumbers.Font.Height = -9
-        LineNumbers.Font.Name = 'Courier New'
+        LineNumbers.Font.Name = 'Consolas'
         LineNumbers.Font.Style = []
         LineNumbers.Band = -1
         Gutter.Visible = False
@@ -3092,7 +3051,7 @@ object SyntLexerDlg: TfmLexerProp
         HintProps.Font.Charset = DEFAULT_CHARSET
         HintProps.Font.Color = clWindowText
         HintProps.Font.Height = -11
-        HintProps.Font.Name = 'MS Sans Serif'
+        HintProps.Font.Name = 'Consolas'
         HintProps.Font.Style = []
         HintProps.Color = 13041663
         HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
@@ -3101,14 +3060,14 @@ object SyntLexerDlg: TfmLexerProp
         DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.SelectioMark.Font.Color = clHighlightText
         DefaultStyles.SelectioMark.Font.Height = -13
-        DefaultStyles.SelectioMark.Font.Name = 'Courier New'
+        DefaultStyles.SelectioMark.Font.Name = 'Consolas'
         DefaultStyles.SelectioMark.Font.Style = []
         DefaultStyles.SelectioMark.BgColor = clHighlight
         DefaultStyles.SelectioMark.FormatType = ftColor
         DefaultStyles.SearchMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.SearchMark.Font.Color = clWhite
         DefaultStyles.SearchMark.Font.Height = -13
-        DefaultStyles.SearchMark.Font.Name = 'Courier New'
+        DefaultStyles.SearchMark.Font.Name = 'Consolas'
         DefaultStyles.SearchMark.Font.Style = []
         DefaultStyles.SearchMark.BgColor = clBlack
         DefaultStyles.SearchMark.FormatType = ftColor
@@ -3116,13 +3075,13 @@ object SyntLexerDlg: TfmLexerProp
         DefaultStyles.CurrentLine.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.CurrentLine.Font.Color = clWindowText
         DefaultStyles.CurrentLine.Font.Height = -13
-        DefaultStyles.CurrentLine.Font.Name = 'Courier New'
+        DefaultStyles.CurrentLine.Font.Name = 'Consolas'
         DefaultStyles.CurrentLine.Font.Style = []
         DefaultStyles.CurrentLine.FormatType = ftBackGround
         DefaultStyles.CollapseMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.CollapseMark.Font.Color = clSilver
         DefaultStyles.CollapseMark.Font.Height = -13
-        DefaultStyles.CollapseMark.Font.Name = 'Courier New'
+        DefaultStyles.CollapseMark.Font.Name = 'Consolas'
         DefaultStyles.CollapseMark.Font.Style = []
         DefaultStyles.CollapseMark.FormatType = ftColor
         DefaultStyles.CollapseMark.BorderTypeLeft = blSolid
@@ -3136,14 +3095,14 @@ object SyntLexerDlg: TfmLexerProp
         SyncEditing.SyncRangeStyle.Font.Charset = DEFAULT_CHARSET
         SyncEditing.SyncRangeStyle.Font.Color = clWindowText
         SyncEditing.SyncRangeStyle.Font.Height = -13
-        SyncEditing.SyncRangeStyle.Font.Name = 'Courier New'
+        SyncEditing.SyncRangeStyle.Font.Name = 'Consolas'
         SyncEditing.SyncRangeStyle.Font.Style = []
         SyncEditing.SyncRangeStyle.BgColor = 14745568
         SyncEditing.SyncRangeStyle.FormatType = ftBackGround
         SyncEditing.ActiveWordsStyle.Font.Charset = DEFAULT_CHARSET
         SyncEditing.ActiveWordsStyle.Font.Color = clWindowText
         SyncEditing.ActiveWordsStyle.Font.Height = -13
-        SyncEditing.ActiveWordsStyle.Font.Name = 'Courier New'
+        SyncEditing.ActiveWordsStyle.Font.Name = 'Consolas'
         SyncEditing.ActiveWordsStyle.Font.Style = []
         SyncEditing.ActiveWordsStyle.FormatType = ftBackGround
         SyncEditing.ActiveWordsStyle.BorderTypeLeft = blSolid
@@ -3157,7 +3116,7 @@ object SyntLexerDlg: TfmLexerProp
         SyncEditing.InactiveWordsStyle.Font.Charset = DEFAULT_CHARSET
         SyncEditing.InactiveWordsStyle.Font.Color = clWindowText
         SyncEditing.InactiveWordsStyle.Font.Height = -13
-        SyncEditing.InactiveWordsStyle.Font.Name = 'Courier New'
+        SyncEditing.InactiveWordsStyle.Font.Name = 'Consolas'
         SyncEditing.InactiveWordsStyle.Font.Style = []
         SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
         SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
@@ -3165,7 +3124,7 @@ object SyntLexerDlg: TfmLexerProp
         HorzRuler.Font.Charset = DEFAULT_CHARSET
         HorzRuler.Font.Color = clWindowText
         HorzRuler.Font.Height = -11
-        HorzRuler.Font.Name = 'MS Sans Serif'
+        HorzRuler.Font.Name = 'Consolas'
         HorzRuler.Font.Style = []
         TextMargins = <
           item
@@ -3183,7 +3142,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = []
         ParentColor = False
         ParentCtl3D = False
@@ -3192,7 +3151,7 @@ object SyntLexerDlg: TfmLexerProp
       end
     end
   end
-  object Panel_Buttons: TPanel
+  object Panel_Buttons: TTntPanel
     Left = 0
     Top = 563
     Width = 554
@@ -3203,7 +3162,7 @@ object SyntLexerDlg: TfmLexerProp
     DesignSize = (
       554
       31)
-    object Button9: TButton
+    object Button9: TTntButton
       Left = 8
       Top = 4
       Width = 85
@@ -3212,7 +3171,7 @@ object SyntLexerDlg: TfmLexerProp
       TabOrder = 3
       OnClick = Button9Click
     end
-    object Button8: TButton
+    object Button8: TTntButton
       Left = 293
       Top = 4
       Width = 85
@@ -3222,7 +3181,7 @@ object SyntLexerDlg: TfmLexerProp
       TabOrder = 0
       OnClick = Button8Click
     end
-    object Button2: TButton
+    object Button2: TTntButton
       Left = 469
       Top = 4
       Width = 85
@@ -3233,7 +3192,7 @@ object SyntLexerDlg: TfmLexerProp
       ModalResult = 2
       TabOrder = 2
     end
-    object Button10: TButton
+    object Button10: TTntButton
       Left = 96
       Top = 4
       Width = 85
@@ -3242,7 +3201,7 @@ object SyntLexerDlg: TfmLexerProp
       TabOrder = 4
       OnClick = Button10Click
     end
-    object Button1: TButton
+    object Button1: TTntButton
       Left = 381
       Top = 4
       Width = 85
@@ -3253,7 +3212,7 @@ object SyntLexerDlg: TfmLexerProp
       TabOrder = 1
     end
   end
-  object Panel_Preview: TPanel
+  object Panel_Preview: TTntPanel
     Left = 0
     Top = 368
     Width = 554
@@ -3276,14 +3235,14 @@ object SyntLexerDlg: TfmLexerProp
       NonPrinted.Font.Charset = DEFAULT_CHARSET
       NonPrinted.Font.Color = clSilver
       NonPrinted.Font.Height = -11
-      NonPrinted.Font.Name = 'MS Sans Serif'
+      NonPrinted.Font.Name = 'Consolas'
       NonPrinted.Font.Style = []
       LineNumbers.Visible = False
       LineNumbers.Alignment = taLeftJustify
       LineNumbers.Font.Charset = DEFAULT_CHARSET
       LineNumbers.Font.Color = clWindowText
       LineNumbers.Font.Height = -9
-      LineNumbers.Font.Name = 'Courier New'
+      LineNumbers.Font.Name = 'Consolas'
       LineNumbers.Font.Style = []
       LineNumbers.Band = 0
       LineNumbers.AutoSize = True
@@ -3333,7 +3292,7 @@ object SyntLexerDlg: TfmLexerProp
       HintProps.Font.Charset = DEFAULT_CHARSET
       HintProps.Font.Color = clWindowText
       HintProps.Font.Height = -11
-      HintProps.Font.Name = 'MS Sans Serif'
+      HintProps.Font.Name = 'Consolas'
       HintProps.Font.Style = []
       HintProps.Color = 13041663
       HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
@@ -3343,14 +3302,14 @@ object SyntLexerDlg: TfmLexerProp
       DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
       DefaultStyles.SelectioMark.Font.Color = clHighlightText
       DefaultStyles.SelectioMark.Font.Height = -13
-      DefaultStyles.SelectioMark.Font.Name = 'Courier New'
+      DefaultStyles.SelectioMark.Font.Name = 'Consolas'
       DefaultStyles.SelectioMark.Font.Style = []
       DefaultStyles.SelectioMark.BgColor = clHighlight
       DefaultStyles.SelectioMark.FormatType = ftColor
       DefaultStyles.SearchMark.Font.Charset = DEFAULT_CHARSET
       DefaultStyles.SearchMark.Font.Color = clWhite
       DefaultStyles.SearchMark.Font.Height = -13
-      DefaultStyles.SearchMark.Font.Name = 'Courier New'
+      DefaultStyles.SearchMark.Font.Name = 'Consolas'
       DefaultStyles.SearchMark.Font.Style = []
       DefaultStyles.SearchMark.BgColor = clBlack
       DefaultStyles.SearchMark.FormatType = ftColor
@@ -3358,14 +3317,14 @@ object SyntLexerDlg: TfmLexerProp
       DefaultStyles.CurrentLine.Font.Charset = DEFAULT_CHARSET
       DefaultStyles.CurrentLine.Font.Color = clWindowText
       DefaultStyles.CurrentLine.Font.Height = -13
-      DefaultStyles.CurrentLine.Font.Name = 'Courier New'
+      DefaultStyles.CurrentLine.Font.Name = 'Consolas'
       DefaultStyles.CurrentLine.Font.Style = []
       DefaultStyles.CurrentLine.FormatType = ftBackGround
       DefaultStyles.CurrentLine.FormatFlags = [ffBold, ffItalic, ffUnderline, ffStrikeOut]
       DefaultStyles.CollapseMark.Font.Charset = DEFAULT_CHARSET
       DefaultStyles.CollapseMark.Font.Color = clSilver
       DefaultStyles.CollapseMark.Font.Height = -13
-      DefaultStyles.CollapseMark.Font.Name = 'Courier New'
+      DefaultStyles.CollapseMark.Font.Name = 'Consolas'
       DefaultStyles.CollapseMark.Font.Style = []
       DefaultStyles.CollapseMark.FormatType = ftColor
       DefaultStyles.CollapseMark.BorderTypeLeft = blSolid
@@ -3379,14 +3338,14 @@ object SyntLexerDlg: TfmLexerProp
       SyncEditing.SyncRangeStyle.Font.Charset = DEFAULT_CHARSET
       SyncEditing.SyncRangeStyle.Font.Color = clWindowText
       SyncEditing.SyncRangeStyle.Font.Height = -13
-      SyncEditing.SyncRangeStyle.Font.Name = 'Courier New'
+      SyncEditing.SyncRangeStyle.Font.Name = 'Consolas'
       SyncEditing.SyncRangeStyle.Font.Style = []
       SyncEditing.SyncRangeStyle.BgColor = 14745568
       SyncEditing.SyncRangeStyle.FormatType = ftBackGround
       SyncEditing.ActiveWordsStyle.Font.Charset = DEFAULT_CHARSET
       SyncEditing.ActiveWordsStyle.Font.Color = clWindowText
       SyncEditing.ActiveWordsStyle.Font.Height = -13
-      SyncEditing.ActiveWordsStyle.Font.Name = 'Courier New'
+      SyncEditing.ActiveWordsStyle.Font.Name = 'Consolas'
       SyncEditing.ActiveWordsStyle.Font.Style = []
       SyncEditing.ActiveWordsStyle.FormatType = ftBackGround
       SyncEditing.ActiveWordsStyle.BorderTypeLeft = blSolid
@@ -3400,7 +3359,7 @@ object SyntLexerDlg: TfmLexerProp
       SyncEditing.InactiveWordsStyle.Font.Charset = DEFAULT_CHARSET
       SyncEditing.InactiveWordsStyle.Font.Color = clWindowText
       SyncEditing.InactiveWordsStyle.Font.Height = -13
-      SyncEditing.InactiveWordsStyle.Font.Name = 'Courier New'
+      SyncEditing.InactiveWordsStyle.Font.Name = 'Consolas'
       SyncEditing.InactiveWordsStyle.Font.Style = []
       SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
       SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
@@ -3409,7 +3368,7 @@ object SyntLexerDlg: TfmLexerProp
       HorzRuler.Font.Charset = DEFAULT_CHARSET
       HorzRuler.Font.Color = clWindowText
       HorzRuler.Font.Height = -11
-      HorzRuler.Font.Name = 'MS Sans Serif'
+      HorzRuler.Font.Name = 'Consolas'
       HorzRuler.Font.Style = []
       TextMargins = <
         item
@@ -3427,7 +3386,7 @@ object SyntLexerDlg: TfmLexerProp
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
-      Font.Name = 'Courier New'
+      Font.Name = 'Consolas'
       Font.Style = []
       ParentColor = False
       ParentCtl3D = False
@@ -3467,7 +3426,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = []
         FormatType = ftCustomFont
       end
@@ -3476,7 +3435,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clHighlightText
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = []
         BgColor = clHighlight
         FormatType = ftColor
@@ -3506,7 +3465,7 @@ object SyntLexerDlg: TfmLexerProp
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
-    Font.Name = 'MS Sans Serif'
+    Font.Name = 'Consolas'
     Font.Style = []
     Left = 40
     Top = 184
@@ -3744,7 +3703,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = []
         FormatType = ftCustomFont
       end
@@ -3753,7 +3712,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clHighlightText
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = []
         BgColor = clHighlight
         FormatType = ftColor
@@ -3763,7 +3722,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = []
       end
       item
@@ -3771,7 +3730,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlue
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = [fsBold]
       end
       item
@@ -3779,7 +3738,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clNavy
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = [fsBold]
       end
       item
@@ -3787,7 +3746,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clRed
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = []
       end
       item
@@ -3795,7 +3754,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clPurple
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = [fsBold]
       end
       item
@@ -3803,7 +3762,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clGreen
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = []
       end
       item
@@ -3811,7 +3770,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = [fsBold]
       end
       item
@@ -3819,7 +3778,7 @@ object SyntLexerDlg: TfmLexerProp
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
-        Font.Name = 'Courier New'
+        Font.Name = 'Consolas'
         Font.Style = []
         BgColor = 15794175
         FormatType = ftBackGround
@@ -3998,7 +3957,7 @@ object SyntLexerDlg: TfmLexerProp
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
-    Font.Name = 'MS Sans Serif'
+    Font.Name = 'Consolas'
     Font.Style = []
     IntegralHeight = True
     ItemHeight = 16
@@ -4018,297 +3977,289 @@ object SyntLexerDlg: TfmLexerProp
     IgnoreList.Strings = (
       'SyntaxMemo*'
       'SyntaxTree*')
+    SectionName = 'SyntLexerDlg'
     Left = 480
     Top = 392
     LangData = {
-      0C0053796E744C65786572446C67010100000001000000070043617074696F6E
-      01C6000000090053706C69747465723100000C0050616765436F6E74726F6C31
-      00000900546162536865657435010100000002000000070043617074696F6E00
-      06004C6162656C34010100000003000000070043617074696F6E0007004C6162
-      656C3330010100000004000000070043617074696F6E0006004C6162656C3201
-      0100000005000000070043617074696F6E0006004C6162656C33010100000006
-      000000070043617074696F6E0006004C6162656C350101000000070000000700
-      43617074696F6E0006004C6162656C3601010000000800000007004361707469
-      6F6E0006004C6162656C37010100000009000000070043617074696F6E000700
-      4C6162656C333101010000000A000000070043617074696F6E0007004C616265
-      6C353001010000000B000000070043617074696F6E000C0050616E656C5F436F
-      6D6D6F6E000007004C6162656C333301010000000C000000070043617074696F
-      6E0007004C6162656C333401010000000D000000070043617074696F6E000500
-      456469743300000500456469743400000A00436F6D626F426F78323200000A00
-      436865636B426F78313701010000000E000000070043617074696F6E000B0053
-      796E7461784D656D6F3700000500456469743700000900436F6D626F426F7831
-      00000900436F6D626F426F783200000900436865636B426F783201010000000F
-      000000070043617074696F6E000900436865636B426F78330101000000100000
-      00070043617074696F6E000900436F6D626F426F783700000600456469743134
-      00000A00436865636B426F783238010100000011000000070043617074696F6E
-      000900436F6D626F426F783800000D00436861725365745F436F6D626F000009
-      00546162536865657431010100000012000000070043617074696F6E000D0053
-      796E74436F6C4672616D653100010B00000002004C420000060050616E656C31
-      00000C005370656564427574746F6E31010100000013000000040048696E7400
-      0C005370656564427574746F6E36010100000014000000040048696E74000C00
-      5370656564427574746F6E35010100000015000000040048696E74000C005370
-      656564427574746F6E34010100000016000000040048696E74000C0053706565
-      64427574746F6E33010100000017000000040048696E74000C00537065656442
-      7574746F6E32010100000018000000040048696E74000C005370656564427574
-      746F6E37010100000019000000040048696E7400060050616E656C3200000400
-      4564697400000F0053796E745374796C654672616D653100012100000006004C
-      6162656C3201010000001A000000070043617074696F6E0006004C6162656C33
-      01010000001B000000070043617074696F6E0006004C6162656C310101000000
-      1C000000070043617074696F6E0006004C6162656C3401010000001D00000007
-      0043617074696F6E0006004C6162656C3901010000001E000000070043617074
-      696F6E000900436F6C6F72426F783101010000001F000000040048696E740007
-      00427574746F6E33010100000020000000070043617074696F6E000900436F6C
-      6F72426F7832010100000021000000040048696E7400090047726F7570426F78
-      31010200000023000000070043617074696F6E22000000040048696E74000900
-      436865636B426F7832010200000025000000070043617074696F6E2400000004
-      0048696E74000900436865636B426F7833010200000027000000070043617074
-      696F6E26000000040048696E74000900436865636B426F783401020000002900
-      0000070043617074696F6E28000000040048696E74000900436865636B426F78
-      3501020000002B000000070043617074696F6E2A000000040048696E74000900
-      436F6D626F426F783101020000002C000000040048696E742D00000005004974
-      656D73000900436F6D626F426F783201020000002E000000040048696E742F00
-      000005004974656D73000900436865636B426F78310102000000310000000700
-      43617074696F6E30000000040048696E7400090047726F7570426F7832010100
-      000032000000070043617074696F6E0006004C6162656C350101000000330000
-      00070043617074696F6E0006004C6162656C3601010000003400000007004361
-      7074696F6E0006004C6162656C37010100000035000000070043617074696F6E
-      0006004C6162656C38010100000036000000070043617074696F6E000900436F
-      6C6F72426F7833010100000037000000040048696E74000900436F6D626F426F
-      7833010200000038000000040048696E743900000005004974656D7300090043
-      6F6C6F72426F783401010000003A000000040048696E74000900436F6D626F42
-      6F783401020000003B000000040048696E743C00000005004974656D73000900
-      436F6C6F72426F783501010000003D000000040048696E74000900436F6D626F
-      426F783501020000003E000000040048696E743F00000005004974656D730009
-      00436F6C6F72426F7836010100000040000000040048696E74000900436F6D62
-      6F426F7836010200000041000000040048696E744200000005004974656D7300
-      0900436865636B426F7836010200000044000000070043617074696F6E430000
-      00040048696E74000900436865636B426F783701020000004600000007004361
-      7074696F6E45000000040048696E74000900436F6D626F426F78370102000000
-      47000000040048696E744800000005004974656D73000B00466F6E744469616C
-      6F67310000090054616253686565743201010000004900000007004361707469
-      6F6E00090053706C69747465723300000D0053796E74436F6C4672616D653200
-      010B00000002004C420000060050616E656C3100000C00537065656442757474
-      6F6E3101010000004A000000040048696E74000C005370656564427574746F6E
-      3601010000004B000000040048696E74000C005370656564427574746F6E3501
-      010000004C000000040048696E74000C005370656564427574746F6E34010100
-      00004D000000040048696E74000C005370656564427574746F6E330101000000
-      4E000000040048696E74000C005370656564427574746F6E3201010000004F00
-      0000040048696E74000C005370656564427574746F6E37010100000050000000
-      040048696E7400060050616E656C3200000400456469740000060050616E656C
-      33000007004C6162656C3232010100000051000000070043617074696F6E000B
-      0053796E7461784D656D6F330000060050616E656C34000007004C6162656C32
-      31010100000052000000070043617074696F6E0007004C6162656C3239010100
-      000053000000070043617074696F6E0007004C6162656C333501010000005400
-      0000070043617074696F6E0007004C6162656C31310101000000550000000700
-      43617074696F6E0007004C6162656C3132010100000056000000070043617074
-      696F6E0007004C6162656C3133010100000057000000070043617074696F6E00
-      0A00436F6D626F426F78323400000A00436F6D626F426F783137010100000058
-      00000005004974656D73000A00436F6D626F426F78323100000900436865636B
-      426F7838010100000059000000070043617074696F6E000A00436865636B426F
-      78313801010000005A000000070043617074696F6E000A00436865636B426F78
-      323701010000005B000000070043617074696F6E000600456469743130000006
-      004564697431310000100052756C655374617465734672616D653200010A0000
-      00090047726F7570426F783101010000005E000000070043617074696F6E0006
-      004C6162656C3101010000005F000000070043617074696F6E0006004C616265
-      6C32010100000060000000070043617074696F6E000500456469743100000500
-      45646974320000090047726F7570426F78320101000000610000000700436170
-      74696F6E0006004C6162656C33010100000062000000070043617074696F6E00
-      06004C6162656C34010100000063000000070043617074696F6E000500456469
-      7433000005004564697434000009005461625368656574330101000000640000
-      00070043617074696F6E00090053706C69747465723200000D0053796E74436F
-      6C4672616D653300010B00000002004C420000060050616E656C3100000C0053
-      70656564427574746F6E31010100000065000000040048696E74000C00537065
-      6564427574746F6E36010100000066000000040048696E74000C005370656564
-      427574746F6E35010100000067000000040048696E74000C0053706565644275
-      74746F6E34010100000068000000040048696E74000C00537065656442757474
-      6F6E33010100000069000000040048696E74000C005370656564427574746F6E
-      3201010000006A000000040048696E74000C005370656564427574746F6E3701
-      010000006B000000040048696E7400060050616E656C32000004004564697400
-      000C0050616765436F6E74726F6C320000090054616253686565743701010000
-      006C000000070043617074696F6E0006004C6162656C3101010000006D000000
-      070043617074696F6E0007004C6162656C323001010000006E00000007004361
-      7074696F6E0007004C6162656C323801010000006F000000070043617074696F
-      6E0007004C6162656C3336010100000070000000070043617074696F6E000700
-      4C6162656C3337010100000071000000070043617074696F6E0006004C616265
-      6C38010100000072000000070043617074696F6E0007004C6162656C31300101
-      00000073000000070043617074696F6E0007004C6162656C3134010100000074
-      000000070043617074696F6E0007004C6162656C313501010000007500000007
-      0043617074696F6E0007004C6162656C32330101000000760000000700436170
-      74696F6E000A00436865636B426F783133010100000077000000070043617074
-      696F6E000900436865636B426F7839010100000078000000070043617074696F
-      6E000500456469743100000500456469743200000A00436F6D626F426F783233
-      00000A00436F6D626F426F78323501010000007900000005004974656D73000A
-      00436F6D626F426F78323600000900436865636B426F783701010000007A0000
-      00070043617074696F6E000A00436865636B426F78313901010000007B000000
-      070043617074696F6E000A00436865636B426F78323001010000007C00000007
-      0043617074696F6E000A00436865636B426F78323601010000007D0000000700
-      43617074696F6E000500456469743800000900436F6D626F426F783300000900
-      436F6D626F426F783400000A00436F6D626F426F78313801010000007E000000
-      05004974656D7300100052756C655374617465734672616D653300010A000000
-      090047726F7570426F783101010000007F000000070043617074696F6E000600
-      4C6162656C31010100000080000000070043617074696F6E0006004C6162656C
-      32010100000081000000070043617074696F6E00050045646974310000050045
-      646974320000090047726F7570426F7832010100000082000000070043617074
-      696F6E0006004C6162656C33010100000083000000070043617074696F6E0006
-      004C6162656C34010100000084000000070043617074696F6E00050045646974
-      3300000500456469743400000A00546162536865657431320101000000850000
-      00070043617074696F6E0007004C6162656C3338010100000086000000070043
-      617074696F6E0007004C6162656C333901010000008700000007004361707469
-      6F6E0006004C6162656C39010100000088000000070043617074696F6E000700
-      4C6162656C3432010100000089000000070043617074696F6E00050045646974
-      3500000500456469743600000500456469743900000A00436865636B426F7831
-      3101010000008A000000070043617074696F6E000900436865636B426F783401
-      010000008B000000070043617074696F6E000900436865636B426F7835010100
-      00008C000000070043617074696F6E000900436865636B426F78360101000000
-      8D000000070043617074696F6E000A00436865636B426F78313201010000008E
-      000000070043617074696F6E000900436865636B426F783101010000008F0000
-      00070043617074696F6E000A00436865636B426F783331010100000090000000
-      070043617074696F6E000C0053796E7461784D656D6F313000000A00436F6D62
-      6F426F78313001010000009100000005004974656D7300090054616253686565
-      7439010100000092000000070043617074696F6E0007004C6162656C32370101
-      00000093000000070043617074696F6E0007004C6162656C3434010100000094
-      000000070043617074696F6E000A00436F6D626F426F78323000000A00436865
-      636B426F783134010100000095000000070043617074696F6E000A0043686563
-      6B426F783135010100000096000000070043617074696F6E00090047726F7570
-      426F7834010100000097000000070043617074696F6E0007004C6162656C3433
-      010100000098000000070043617074696F6E000A00436F6D626F426F78323801
-      010000009900000005004974656D73000A00436865636B426F78313601010000
-      009A000000070043617074696F6E000A00436F6D626F426F7832390101000000
-      9B00000005004974656D7300090047726F7570426F783201010000009C000000
-      070043617074696F6E0007004C6162656C313601010000009D00000007004361
-      7074696F6E0007004C6162656C313701010000009E000000070043617074696F
-      6E0007004C6162656C313801010000009F000000070043617074696F6E000700
-      4C6162656C31390101000000A0000000070043617074696F6E000900436F6D62
-      6F426F783500000900436F6D626F426F78360000060045646974313200000600
-      4564697431330000090047726F7570426F78310101000000A100000007004361
-      7074696F6E0007004C6162656C33320101000000A2000000070043617074696F
-      6E0007004C6162656C34300101000000A3000000070043617074696F6E000700
-      4C6162656C34310101000000A4000000070043617074696F6E000A0043686563
-      6B426F7833300101000000A5000000070043617074696F6E0006004564697431
-      3500000900436F6C6F72426F783100000900436F6D626F426F78390101000000
-      A700000005004974656D730009005461625368656574340101000000A8000000
-      070043617074696F6E00090047726F7570426F78350101000000A90000000700
-      43617074696F6E00060050616E656C350000060050616E656C37000007004C61
-      62656C32340101000000AA000000070043617074696F6E000C00537065656442
-      7574746F6E3100000C005370656564427574746F6E32000007004C6162656C32
-      350101000000AB000000070043617074696F6E0008004C697374426F78310000
-      0A00436865636B426F7831300101000000AC000000070043617074696F6E000A
-      00436F6D626F426F7831390101000000AD00000005004974656D73000B005379
-      6E7461784D656D6F320000060050616E656C360101000000AE00000007004361
-      7074696F6E0007004C6162656C32360101000000AF000000070043617074696F
-      6E000B0053796E7461784D656D6F340000090054616253686565743801010000
-      00B0000000070043617074696F6E00090053706C69747465723400000D005379
-      6E74436F6C4672616D653400010B00000002004C420000060050616E656C3100
-      000C005370656564427574746F6E310101000000B1000000040048696E74000C
-      005370656564427574746F6E360101000000B2000000040048696E74000C0053
-      70656564427574746F6E350101000000B3000000040048696E74000C00537065
-      6564427574746F6E340101000000B4000000040048696E74000C005370656564
-      427574746F6E330101000000B5000000040048696E74000C0053706565644275
-      74746F6E320101000000B6000000040048696E74000C00537065656442757474
-      6F6E370101000000B7000000040048696E7400060050616E656C320000040045
-      6469740000060050616E656C38000007004C6162656C34370101000000B80000
-      00070043617074696F6E00090053706C697474657235000007004C6162656C34
-      390101000000B9000000070043617074696F6E00060050616E656C3900000700
-      4C6162656C34350101000000BA000000070043617074696F6E0007004C616265
-      6C34360101000000BB000000070043617074696F6E0007004C6162656C343801
-      01000000BC000000070043617074696F6E000A00436F6D626F426F7833300000
-      0A00436F6D626F426F78333100000A00436865636B426F7832310101000000BD
-      000000070043617074696F6E000A00436865636B426F7832320101000000BE00
-      0000070043617074696F6E000A00436F6D626F426F78333200000A0043686563
-      6B426F7832330101000000BF000000070043617074696F6E000A00436865636B
-      426F7832340101000000C0000000070043617074696F6E000A00436865636B42
-      6F7832350101000000C1000000070043617074696F6E000A00436865636B426F
-      7832390101000000C2000000070043617074696F6E00100052756C6553746174
-      65734672616D653100010A000000090047726F7570426F78310101000000C300
-      0000070043617074696F6E0006004C6162656C310101000000C4000000070043
-      617074696F6E0006004C6162656C320101000000C5000000070043617074696F
-      6E00050045646974310000050045646974320000090047726F7570426F783201
-      01000000C6000000070043617074696F6E0006004C6162656C330101000000C7
-      000000070043617074696F6E0006004C6162656C340101000000C80000000700
-      43617074696F6E000500456469743300000500456469743400000B0053796E74
-      61784D656D6F3600000B0053796E7461784D656D6F3500000A00546162536865
-      657431310101000000C9000000070043617074696F6E00090053706C69747465
-      72360000060050616E656C310101000000CA000000070043617074696F6E0009
-      005472656556696577310000070050616E656C313000000C0053706565644275
-      74746F6E330101000000CB000000070043617074696F6E000B0053796E746178
-      4D656D6F39000009005461625368656574360101000000CC0000000700436170
-      74696F6E00130053796E74436F646554656D706C4672616D653100010A000000
-      090053706C697474657236000007004C6162656C33320101000000CD00000007
-      0043617074696F6E000E0050616E656C5F54656D706C617465000007004C6162
-      656C33310101000000CE000000070043617074696F6E0002004C560102000000
-      CF0000001200436F6C756D6E735B305D2E43617074696F6ED00000001200436F
-      6C756D6E735B315D2E43617074696F6E00060050616E656C3100000700427574
-      746F6E340101000000D1000000070043617074696F6E000700427574746F6E36
-      0101000000D2000000070043617074696F6E000700427574746F6E3501010000
-      00D3000000070043617074696F6E000B0053796E7461784D656D6F3200000A00
-      546162536865657431300101000000D4000000070043617074696F6E000B0053
-      796E7461784D656D6F3800000D0050616E656C5F427574746F6E730000070042
-      7574746F6E390101000000D5000000070043617074696F6E000700427574746F
-      6E380101000000D6000000070043617074696F6E000700427574746F6E320101
-      000000D7000000070043617074696F6E000800427574746F6E31300101000000
-      D8000000070043617074696F6E000700427574746F6E310101000000D9000000
-      070043617074696F6E000D0050616E656C5F507265766965770000090053706C
-      69747465723700000B0053796E7461784D656D6F3100000F0053796E74617854
-      7265655669657731000002004F440103000000DA0000000A0044656661756C74
-      457874DB000000060046696C746572DC00000005005469746C65000200534401
-      03000000DD0000000A0044656661756C74457874DE000000060046696C746572
-      DF00000005005469746C650005004653796E740105000000E400000010004465
-      6661756C745374796C654E616D65E00000001600466F726D6174735B305D2E44
-      6973706C61794E616D65E10000001600466F726D6174735B315D2E446973706C
-      61794E616D65E300000010004D61726B6564426C6F636B5374796C65E2000000
-      0E00546F6B656E547970654E616D6573000B00466F6E744469616C6F67310000
-      0A00496D6167654C6973743100000D0053796E74416E616C797A657232012E00
-      0000070100001900426C6F636B52756C65735B305D2E446973706C61794E616D
-      65080100001700426C6F636B52756C65735B305D2E5374796C654E616D650B01
-      00001600426C6F636B52756C65735B315D2E426C6F636B456E640C0100001900
-      426C6F636B52756C65735B315D2E436F6C6C61707365466D7409010000190042
-      6C6F636B52756C65735B315D2E446973706C61794E616D650A0100001700426C
-      6F636B52756C65735B315D2E5374796C654E616D650D0100001900426C6F636B
-      52756C65735B325D2E446973706C61794E616D6511010000100044656661756C
-      745374796C654E616D65E50000001600466F726D6174735B305D2E446973706C
-      61794E616D65E60000001600466F726D6174735B315D2E446973706C61794E61
-      6D65E70000001600466F726D6174735B325D2E446973706C61794E616D65E800
-      00001600466F726D6174735B335D2E446973706C61794E616D65E90000001600
-      466F726D6174735B345D2E446973706C61794E616D65EA0000001600466F726D
-      6174735B355D2E446973706C61794E616D65EB0000001600466F726D6174735B
-      365D2E446973706C61794E616D65EC0000001600466F726D6174735B375D2E44
-      6973706C61794E616D65ED0000001600466F726D6174735B385D2E446973706C
-      61794E616D65EE0000001600466F726D6174735B395D2E446973706C61794E61
-      6D651201000009004C657865724E616D651001000010004D61726B6564426C6F
-      636B5374796C650E0100000A0053616D706C6554657874EF0000001900546F6B
-      656E52756C65735B305D2E446973706C61794E616D65F00000001700546F6B65
-      6E52756C65735B305D2E5374796C654E616D65050100001A00546F6B656E5275
-      6C65735B31305D2E446973706C61794E616D65060100001800546F6B656E5275
-      6C65735B31305D2E5374796C654E616D65F10000001900546F6B656E52756C65
-      735B315D2E446973706C61794E616D65F30000001800546F6B656E52756C6573
-      5B315D2E45787072657373696F6EF20000001700546F6B656E52756C65735B31
-      5D2E5374796C654E616D65F40000001900546F6B656E52756C65735B325D2E44
-      6973706C61794E616D65F50000001700546F6B656E52756C65735B325D2E5374
-      796C654E616D65F60000001900546F6B656E52756C65735B335D2E446973706C
-      61794E616D65F70000001700546F6B656E52756C65735B335D2E5374796C654E
-      616D65F80000001900546F6B656E52756C65735B345D2E446973706C61794E61
-      6D65F90000001700546F6B656E52756C65735B345D2E5374796C654E616D65FA
-      0000001900546F6B656E52756C65735B355D2E446973706C61794E616D65FC00
-      00001800546F6B656E52756C65735B355D2E45787072657373696F6EFB000000
-      1700546F6B656E52756C65735B355D2E5374796C654E616D65FD000000190054
-      6F6B656E52756C65735B365D2E446973706C61794E616D65FE0000001700546F
-      6B656E52756C65735B365D2E5374796C654E616D65FF0000001900546F6B656E
-      52756C65735B375D2E446973706C61794E616D65000100001700546F6B656E52
-      756C65735B375D2E5374796C654E616D65010100001900546F6B656E52756C65
-      735B385D2E446973706C61794E616D65020100001700546F6B656E52756C6573
-      5B385D2E5374796C654E616D65030100001900546F6B656E52756C65735B395D
-      2E446973706C61794E616D65040100001700546F6B656E52756C65735B395D2E
-      5374796C654E616D650F0100000E00546F6B656E547970654E616D6573001200
-      4175746F436F6D706C657465506F70757031000101000000040048696E740000
-      140048797065726C696E6B486967686C696768746572010A0000001301000014
-      0052756C65735B305D2E446973706C61794E616D6514010000130052756C6573
-      5B305D2E45787072657373696F6E15010000140052756C65735B315D2E446973
-      706C61794E616D6516010000130052756C65735B315D2E45787072657373696F
-      6E17010000150052756C65735B315D2E5368656C6C436F6D6D616E6418010000
-      140052756C65735B325D2E446973706C61794E616D6519010000130052756C65
-      735B325D2E45787072657373696F6E1A010000140052756C65735B335D2E4469
-      73706C61794E616D651B010000130052756C65735B335D2E4578707265737369
-      6F6E1C010000150052756C65735B335D2E5368656C6C436F6D6D616E6400}
+      0B00666D4C6578657250726F70010100000001000000070043617074696F6E01
+      C4000000090053706C69747465723100000C0050616765436F6E74726F6C3100
+      000900546162536865657435010100000002000000070043617074696F6E0006
+      004C6162656C34010100000003000000070043617074696F6E0007004C616265
+      6C3330010100000004000000070043617074696F6E0006004C6162656C320101
+      00000005000000070043617074696F6E0006004C6162656C3301010000000600
+      0000070043617074696F6E0006004C6162656C35010100000007000000070043
+      617074696F6E0006004C6162656C36010100000008000000070043617074696F
+      6E0006004C6162656C37010100000009000000070043617074696F6E0007004C
+      6162656C333101010000000A000000070043617074696F6E0007004C6162656C
+      353001010000000B000000070043617074696F6E000C0050616E656C5F436F6D
+      6D6F6E000007004C6162656C333301010000000C000000070043617074696F6E
+      0007004C6162656C333401010000000D000000070043617074696F6E00050045
+      6469743300000500456469743400000A00436F6D626F426F78323200000A0043
+      6865636B426F78313701010000000E000000070043617074696F6E000B005379
+      6E7461784D656D6F3700000500456469743700000900436F6D626F426F783100
+      000900436F6D626F426F783200000900436865636B426F783201010000000F00
+      0000070043617074696F6E000900436865636B426F7833010100000010000000
+      070043617074696F6E000900436F6D626F426F78370000060045646974313400
+      000A00436865636B426F783238010100000011000000070043617074696F6E00
+      0900436F6D626F426F783800000D00436861725365745F436F6D626F00000900
+      546162536865657431010100000012000000070043617074696F6E000D005379
+      6E74436F6C4672616D653100010B00000002004C420000060050616E656C3100
+      000C005370656564427574746F6E31010100000013000000040048696E74000C
+      005370656564427574746F6E36010100000014000000040048696E74000C0053
+      70656564427574746F6E35010100000015000000040048696E74000C00537065
+      6564427574746F6E34010100000016000000040048696E74000C005370656564
+      427574746F6E33010100000017000000040048696E74000C0053706565644275
+      74746F6E32010100000018000000040048696E74000C00537065656442757474
+      6F6E37010100000019000000040048696E7400060050616E656C320000040045
+      64697400000F0053796E745374796C654672616D653100012100000006004C61
+      62656C3201010000001A000000070043617074696F6E0006004C6162656C3301
+      010000001B000000070043617074696F6E0006004C6162656C3101010000001C
+      000000070043617074696F6E0006004C6162656C3401010000001D0000000700
+      43617074696F6E0006004C6162656C3901010000001E00000007004361707469
+      6F6E000900436F6C6F72426F783101010000001F000000040048696E74000700
+      427574746F6E33010100000020000000070043617074696F6E000900436F6C6F
+      72426F7832010100000021000000040048696E7400090047726F7570426F7831
+      010200000023000000070043617074696F6E22000000040048696E7400090043
+      6865636B426F7832010200000025000000070043617074696F6E240000000400
+      48696E74000900436865636B426F783301020000002700000007004361707469
+      6F6E26000000040048696E74000900436865636B426F78340102000000290000
+      00070043617074696F6E28000000040048696E74000900436865636B426F7835
+      01020000002B000000070043617074696F6E2A000000040048696E7400090043
+      6F6D626F426F783101020000002C000000040048696E742D0000000500497465
+      6D73000900436F6D626F426F783201020000002E000000040048696E742F0000
+      0005004974656D73000900436865636B426F7831010200000031000000070043
+      617074696F6E30000000040048696E7400090047726F7570426F783201010000
+      0032000000070043617074696F6E0006004C6162656C35010100000033000000
+      070043617074696F6E0006004C6162656C360101000000340000000700436170
+      74696F6E0006004C6162656C37010100000035000000070043617074696F6E00
+      06004C6162656C38010100000036000000070043617074696F6E000900436F6C
+      6F72426F7833010100000037000000040048696E74000900436F6D626F426F78
+      33010200000038000000040048696E743900000005004974656D73000900436F
+      6C6F72426F783401010000003A000000040048696E74000900436F6D626F426F
+      783401020000003B000000040048696E743C00000005004974656D7300090043
+      6F6C6F72426F783501010000003D000000040048696E74000900436F6D626F42
+      6F783501020000003E000000040048696E743F00000005004974656D73000900
+      436F6C6F72426F7836010100000040000000040048696E74000900436F6D626F
+      426F7836010200000041000000040048696E744200000005004974656D730009
+      00436865636B426F7836010200000044000000070043617074696F6E43000000
+      040048696E74000900436865636B426F78370102000000460000000700436170
+      74696F6E45000000040048696E74000900436F6D626F426F7837010200000047
+      000000040048696E744800000005004974656D73000B00466F6E744469616C6F
+      673100000900546162536865657432010100000049000000070043617074696F
+      6E00090053706C69747465723300000D0053796E74436F6C4672616D65320001
+      0B00000002004C420000060050616E656C3100000C005370656564427574746F
+      6E3101010000004A000000040048696E74000C005370656564427574746F6E36
+      01010000004B000000040048696E74000C005370656564427574746F6E350101
+      0000004C000000040048696E74000C005370656564427574746F6E3401010000
+      004D000000040048696E74000C005370656564427574746F6E3301010000004E
+      000000040048696E74000C005370656564427574746F6E3201010000004F0000
+      00040048696E74000C005370656564427574746F6E3701010000005000000004
+      0048696E7400060050616E656C3200000400456469740000060050616E656C33
+      000007004C6162656C3232010100000051000000070043617074696F6E000B00
+      53796E7461784D656D6F330000060050616E656C34000007004C6162656C3231
+      010100000052000000070043617074696F6E0007004C6162656C323901010000
+      0053000000070043617074696F6E0007004C6162656C33350101000000540000
+      00070043617074696F6E0007004C6162656C3131010100000055000000070043
+      617074696F6E0007004C6162656C313201010000005600000007004361707469
+      6F6E0007004C6162656C3133010100000057000000070043617074696F6E000A
+      00436F6D626F426F78323400000A00436F6D626F426F78313701010000005800
+      000005004974656D73000A00436F6D626F426F78323100000900436865636B42
+      6F7838010100000059000000070043617074696F6E000A00436865636B426F78
+      313801010000005A000000070043617074696F6E000A00436865636B426F7832
+      3701010000005B000000070043617074696F6E00060045646974313000000600
+      4564697431310000100052756C655374617465734672616D653200010A000000
+      090047726F7570426F783101010000005E000000070043617074696F6E000600
+      4C6162656C3101010000005F000000070043617074696F6E0006004C6162656C
+      32010100000060000000070043617074696F6E00050045646974310000050045
+      646974320000090047726F7570426F7832010100000061000000070043617074
+      696F6E0006004C6162656C33010100000062000000070043617074696F6E0006
+      004C6162656C34010100000063000000070043617074696F6E00050045646974
+      3300000500456469743400000900546162536865657433010100000064000000
+      070043617074696F6E00090053706C69747465723200000D0053796E74436F6C
+      4672616D653300010B00000002004C420000060050616E656C3100000C005370
+      656564427574746F6E31010100000065000000040048696E74000C0053706565
+      64427574746F6E36010100000066000000040048696E74000C00537065656442
+      7574746F6E35010100000067000000040048696E74000C005370656564427574
+      746F6E34010100000068000000040048696E74000C005370656564427574746F
+      6E33010100000069000000040048696E74000C005370656564427574746F6E32
+      01010000006A000000040048696E74000C005370656564427574746F6E370101
+      0000006B000000040048696E7400060050616E656C3200000400456469740000
+      0C0050616765436F6E74726F6C32000009005461625368656574370101000000
+      6C000000070043617074696F6E0006004C6162656C3101010000006D00000007
+      0043617074696F6E0007004C6162656C323001010000006E0000000700436170
+      74696F6E0007004C6162656C323801010000006F000000070043617074696F6E
+      0007004C6162656C3336010100000070000000070043617074696F6E0007004C
+      6162656C3337010100000071000000070043617074696F6E0006004C6162656C
+      38010100000072000000070043617074696F6E0007004C6162656C3130010100
+      000073000000070043617074696F6E0007004C6162656C313401010000007400
+      0000070043617074696F6E0007004C6162656C31350101000000750000000700
+      43617074696F6E0007004C6162656C3233010100000076000000070043617074
+      696F6E000A00436865636B426F78313301010000007700000007004361707469
+      6F6E000900436865636B426F7839010100000078000000070043617074696F6E
+      000500456469743100000500456469743200000A00436F6D626F426F78323300
+      000A00436F6D626F426F78323501010000007900000005004974656D73000A00
+      436F6D626F426F78323600000900436865636B426F783701010000007A000000
+      070043617074696F6E000A00436865636B426F78313901010000007B00000007
+      0043617074696F6E000A00436865636B426F78323001010000007C0000000700
+      43617074696F6E000A00436865636B426F78323601010000007D000000070043
+      617074696F6E000500456469743800000900436F6D626F426F78330000090043
+      6F6D626F426F783400000A00436F6D626F426F78313801010000007E00000005
+      004974656D7300100052756C655374617465734672616D653300010A00000009
+      0047726F7570426F783101010000007F000000070043617074696F6E0006004C
+      6162656C31010100000080000000070043617074696F6E0006004C6162656C32
+      010100000081000000070043617074696F6E0005004564697431000005004564
+      6974320000090047726F7570426F783201010000008200000007004361707469
+      6F6E0006004C6162656C33010100000083000000070043617074696F6E000600
+      4C6162656C34010100000084000000070043617074696F6E0005004564697433
+      00000500456469743400000A0054616253686565743132010100000085000000
+      070043617074696F6E0007004C6162656C333801010000008600000007004361
+      7074696F6E0007004C6162656C3339010100000087000000070043617074696F
+      6E0006004C6162656C39010100000088000000070043617074696F6E0007004C
+      6162656C3432010100000089000000070043617074696F6E0005004564697435
+      00000500456469743600000500456469743900000A00436865636B426F783131
+      01010000008A000000070043617074696F6E000900436865636B426F78340101
+      0000008B000000070043617074696F6E000900436865636B426F783501010000
+      008C000000070043617074696F6E000900436865636B426F783601010000008D
+      000000070043617074696F6E000A00436865636B426F78313201010000008E00
+      0000070043617074696F6E000900436865636B426F783101010000008F000000
+      070043617074696F6E000A00436865636B426F78333101010000009000000007
+      0043617074696F6E000C0053796E7461784D656D6F313000000A00436F6D626F
+      426F78313001010000009100000005004974656D730009005461625368656574
+      39010100000092000000070043617074696F6E0007004C6162656C3237010100
+      000093000000070043617074696F6E0007004C6162656C343401010000009400
+      0000070043617074696F6E000A00436F6D626F426F78323000000A0043686563
+      6B426F783134010100000095000000070043617074696F6E000A00436865636B
+      426F783135010100000096000000070043617074696F6E00090047726F757042
+      6F7834010100000097000000070043617074696F6E0007004C6162656C343301
+      0100000098000000070043617074696F6E000A00436F6D626F426F7832380101
+      0000009900000005004974656D73000A00436865636B426F7831360101000000
+      9A000000070043617074696F6E000A00436F6D626F426F78323901010000009B
+      00000005004974656D7300090047726F7570426F783201010000009C00000007
+      0043617074696F6E0007004C6162656C313601010000009D0000000700436170
+      74696F6E0007004C6162656C313701010000009E000000070043617074696F6E
+      0007004C6162656C313801010000009F000000070043617074696F6E0007004C
+      6162656C31390101000000A0000000070043617074696F6E000900436F6D626F
+      426F783500000900436F6D626F426F7836000006004564697431320000060045
+      64697431330000090047726F7570426F78310101000000A10000000700436170
+      74696F6E0007004C6162656C33320101000000A2000000070043617074696F6E
+      0007004C6162656C34300101000000A3000000070043617074696F6E0007004C
+      6162656C34310101000000A4000000070043617074696F6E000A00436865636B
+      426F7833300101000000A5000000070043617074696F6E000600456469743135
+      00000900436F6C6F72426F783100000900436F6D626F426F78390101000000A7
+      00000005004974656D730009005461625368656574340101000000A800000007
+      0043617074696F6E00090047726F7570426F78350101000000A9000000070043
+      617074696F6E00060050616E656C350000060050616E656C37000007004C6162
+      656C32340101000000AA000000070043617074696F6E000C0053706565644275
+      74746F6E3100000C005370656564427574746F6E32000007004C6162656C3235
+      0101000000AB000000070043617074696F6E0008004C697374426F783100000A
+      00436865636B426F7831300101000000AC000000070043617074696F6E000A00
+      436F6D626F426F7831390101000000AD00000005004974656D73000B0053796E
+      7461784D656D6F320000060050616E656C360101000000AE0000000700436170
+      74696F6E0007004C6162656C32360101000000AF000000070043617074696F6E
+      000B0053796E7461784D656D6F34000009005461625368656574380101000000
+      B0000000070043617074696F6E00090053706C69747465723400000D0053796E
+      74436F6C4672616D653400010B00000002004C420000060050616E656C310000
+      0C005370656564427574746F6E310101000000B1000000040048696E74000C00
+      5370656564427574746F6E360101000000B2000000040048696E74000C005370
+      656564427574746F6E350101000000B3000000040048696E74000C0053706565
+      64427574746F6E340101000000B4000000040048696E74000C00537065656442
+      7574746F6E330101000000B5000000040048696E74000C005370656564427574
+      746F6E320101000000B6000000040048696E74000C005370656564427574746F
+      6E370101000000B7000000040048696E7400060050616E656C32000004004564
+      69740000060050616E656C38000007004C6162656C34370101000000B8000000
+      070043617074696F6E00090053706C697474657235000007004C6162656C3439
+      0101000000B9000000070043617074696F6E00060050616E656C39000007004C
+      6162656C34350101000000BA000000070043617074696F6E0007004C6162656C
+      34360101000000BB000000070043617074696F6E0007004C6162656C34380101
+      000000BC000000070043617074696F6E000A00436F6D626F426F78333000000A
+      00436F6D626F426F78333100000A00436865636B426F7832310101000000BD00
+      0000070043617074696F6E000A00436865636B426F7832320101000000BE0000
+      00070043617074696F6E000A00436F6D626F426F78333200000A00436865636B
+      426F7832330101000000BF000000070043617074696F6E000A00436865636B42
+      6F7832340101000000C0000000070043617074696F6E000A00436865636B426F
+      7832350101000000C1000000070043617074696F6E000A00436865636B426F78
+      32390101000000C2000000070043617074696F6E00100052756C655374617465
+      734672616D653100010A000000090047726F7570426F78310101000000C30000
+      00070043617074696F6E0006004C6162656C310101000000C400000007004361
+      7074696F6E0006004C6162656C320101000000C5000000070043617074696F6E
+      00050045646974310000050045646974320000090047726F7570426F78320101
+      000000C6000000070043617074696F6E0006004C6162656C330101000000C700
+      0000070043617074696F6E0006004C6162656C340101000000C8000000070043
+      617074696F6E000500456469743300000500456469743400000B0053796E7461
+      784D656D6F3600000B0053796E7461784D656D6F3500000A0054616253686565
+      7431310101000000C9000000070043617074696F6E00090053706C6974746572
+      360000060050616E656C310101000000CA000000070043617074696F6E000900
+      5472656556696577310000070050616E656C313000000C005370656564427574
+      746F6E330101000000CB000000070043617074696F6E000B0053796E7461784D
+      656D6F3900000A00546162536865657431300101000000D40000000700436170
+      74696F6E000B0053796E7461784D656D6F3800000D0050616E656C5F42757474
+      6F6E7300000700427574746F6E390101000000D5000000070043617074696F6E
+      000700427574746F6E380101000000D6000000070043617074696F6E00070042
+      7574746F6E320101000000D7000000070043617074696F6E000800427574746F
+      6E31300101000000D8000000070043617074696F6E000700427574746F6E3101
+      01000000D9000000070043617074696F6E000D0050616E656C5F507265766965
+      770000090053706C69747465723700000B0053796E7461784D656D6F3100000F
+      0053796E746178547265655669657731000002004F440103000000DA0000000A
+      0044656661756C74457874DB000000060046696C746572DC0000000500546974
+      6C6500020053440103000000DD0000000A0044656661756C74457874DE000000
+      060046696C746572DF00000005005469746C650005004653796E740105000000
+      E4000000100044656661756C745374796C654E616D65E00000001600466F726D
+      6174735B305D2E446973706C61794E616D65E10000001600466F726D6174735B
+      315D2E446973706C61794E616D65E300000010004D61726B6564426C6F636B53
+      74796C65E20000000E00546F6B656E547970654E616D6573000B00466F6E7444
+      69616C6F673100000A00496D6167654C6973743100000D0053796E74416E616C
+      797A657232012E000000070100001900426C6F636B52756C65735B305D2E4469
+      73706C61794E616D65080100001700426C6F636B52756C65735B305D2E537479
+      6C654E616D650B0100001600426C6F636B52756C65735B315D2E426C6F636B45
+      6E640C0100001900426C6F636B52756C65735B315D2E436F6C6C61707365466D
+      74090100001900426C6F636B52756C65735B315D2E446973706C61794E616D65
+      0A0100001700426C6F636B52756C65735B315D2E5374796C654E616D650D0100
+      001900426C6F636B52756C65735B325D2E446973706C61794E616D6511010000
+      100044656661756C745374796C654E616D65E50000001600466F726D6174735B
+      305D2E446973706C61794E616D65E60000001600466F726D6174735B315D2E44
+      6973706C61794E616D65E70000001600466F726D6174735B325D2E446973706C
+      61794E616D65E80000001600466F726D6174735B335D2E446973706C61794E61
+      6D65E90000001600466F726D6174735B345D2E446973706C61794E616D65EA00
+      00001600466F726D6174735B355D2E446973706C61794E616D65EB0000001600
+      466F726D6174735B365D2E446973706C61794E616D65EC0000001600466F726D
+      6174735B375D2E446973706C61794E616D65ED0000001600466F726D6174735B
+      385D2E446973706C61794E616D65EE0000001600466F726D6174735B395D2E44
+      6973706C61794E616D651201000009004C657865724E616D651001000010004D
+      61726B6564426C6F636B5374796C650E0100000A0053616D706C6554657874EF
+      0000001900546F6B656E52756C65735B305D2E446973706C61794E616D65F000
+      00001700546F6B656E52756C65735B305D2E5374796C654E616D65050100001A
+      00546F6B656E52756C65735B31305D2E446973706C61794E616D650601000018
+      00546F6B656E52756C65735B31305D2E5374796C654E616D65F1000000190054
+      6F6B656E52756C65735B315D2E446973706C61794E616D65F30000001800546F
+      6B656E52756C65735B315D2E45787072657373696F6EF20000001700546F6B65
+      6E52756C65735B315D2E5374796C654E616D65F40000001900546F6B656E5275
+      6C65735B325D2E446973706C61794E616D65F50000001700546F6B656E52756C
+      65735B325D2E5374796C654E616D65F60000001900546F6B656E52756C65735B
+      335D2E446973706C61794E616D65F70000001700546F6B656E52756C65735B33
+      5D2E5374796C654E616D65F80000001900546F6B656E52756C65735B345D2E44
+      6973706C61794E616D65F90000001700546F6B656E52756C65735B345D2E5374
+      796C654E616D65FA0000001900546F6B656E52756C65735B355D2E446973706C
+      61794E616D65FC0000001800546F6B656E52756C65735B355D2E457870726573
+      73696F6EFB0000001700546F6B656E52756C65735B355D2E5374796C654E616D
+      65FD0000001900546F6B656E52756C65735B365D2E446973706C61794E616D65
+      FE0000001700546F6B656E52756C65735B365D2E5374796C654E616D65FF0000
+      001900546F6B656E52756C65735B375D2E446973706C61794E616D6500010000
+      1700546F6B656E52756C65735B375D2E5374796C654E616D6501010000190054
+      6F6B656E52756C65735B385D2E446973706C61794E616D65020100001700546F
+      6B656E52756C65735B385D2E5374796C654E616D65030100001900546F6B656E
+      52756C65735B395D2E446973706C61794E616D65040100001700546F6B656E52
+      756C65735B395D2E5374796C654E616D650F0100000E00546F6B656E54797065
+      4E616D65730012004175746F436F6D706C657465506F70757031000101000000
+      040048696E740000140048797065726C696E6B486967686C696768746572010A
+      00000013010000140052756C65735B305D2E446973706C61794E616D65140100
+      00130052756C65735B305D2E45787072657373696F6E15010000140052756C65
+      735B315D2E446973706C61794E616D6516010000130052756C65735B315D2E45
+      787072657373696F6E17010000150052756C65735B315D2E5368656C6C436F6D
+      6D616E6418010000140052756C65735B325D2E446973706C61794E616D651901
+      0000130052756C65735B325D2E45787072657373696F6E1A010000140052756C
+      65735B335D2E446973706C61794E616D651B010000130052756C65735B335D2E
+      45787072657373696F6E1C010000150052756C65735B335D2E5368656C6C436F
+      6D6D616E6400}
   end
   object HyperlinkHighlighter: THyperlinkHighlighter
     Rules = <
@@ -4340,7 +4291,7 @@ object SyntLexerDlg: TfmLexerProp
     Style.Font.Charset = DEFAULT_CHARSET
     Style.Font.Color = clBlue
     Style.Font.Height = -13
-    Style.Font.Name = 'Courier New'
+    Style.Font.Name = 'Consolas'
     Style.Font.Style = [fsUnderline]
     Editor = SyntaxMemo8
     Left = 44

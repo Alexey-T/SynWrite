@@ -2164,7 +2164,6 @@ type
     procedure TBXItemPreviewClick(Sender: TObject);
     procedure TBXItemFPreviewClick(Sender: TObject);
     procedure acSetupLexerNewExecute(Sender: TObject);
-    procedure TBXItemOLexerClick(Sender: TObject);
 
   private
     cStatLine,
@@ -3324,7 +3323,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.8.1520';
+  cSynVer = '6.8.1530';
   cSynPyVer = '1.0.138';
 
 const
@@ -29116,11 +29115,6 @@ begin
     SyntaxManager.Modified:= true;
     DoConfirmSaveLexLib;
   end;
-end;
-
-procedure TfmMain.TBXItemOLexerClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_OptSetupLexer);
 end;
 
 initialization
