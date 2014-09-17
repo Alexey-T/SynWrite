@@ -1,4 +1,4 @@
-object CustomSyntDlg: TfmLexerStyles
+object fmLexerStyles: TfmLexerStyles
   Left = 280
   Top = 80
   BorderStyle = bsDialog
@@ -18,7 +18,7 @@ object CustomSyntDlg: TfmLexerStyles
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TTntLabel
-    Left = 12
+    Left = 8
     Top = 4
     Width = 38
     Height = 13
@@ -74,6 +74,7 @@ object CustomSyntDlg: TfmLexerStyles
     LineNumbers.Font.Name = 'Consolas'
     LineNumbers.Font.Style = []
     LineNumbers.Band = -1
+    Gutter.Width = 15
     Gutter.ExpandButtons.Data = {
       FA000000424DFA000000000000007600000028000000120000000B0000000100
       0400000000008400000000000000000000001000000000000000000000000000
@@ -207,19 +208,23 @@ object CustomSyntDlg: TfmLexerStyles
     ParentFont = False
     TabOrder = 1
     TabStop = True
-    inherited FontDialog1: TFontDialog
-      Left = 180
-      Top = 80
+    inherited Button3: TButton
+      Width = 132
+      Caption = 'Se&t custom font...'
     end
-  end
-  object FD: TFontDialog
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Consolas'
-    Font.Style = []
-    Left = 348
-    Top = 132
+    inherited GroupBox2: TGroupBox
+      Caption = 'Borders'
+    end
+    inherited CheckBox7: TCheckBox
+      Caption = '&Read-only'
+    end
+    inherited ComboBox7: TComboBox
+      Width = 132
+    end
+    inherited FontDialog1: TFontDialog
+      Left = 244
+      Top = 168
+    end
   end
   object FSynt: TSyntAnalyzer
     Formats = <
@@ -239,18 +244,18 @@ object CustomSyntDlg: TfmLexerStyles
     TokenTypeNames.Strings = (
       'Unknown'
       'Preprocessor')
-    MarkedBlockStyle = 'Marked block'
     DefaultStyleName = 'Default'
     Charset = DEFAULT_CHARSET
-    Left = 348
-    Top = 164
+    Left = 340
+    Top = 404
   end
   object DKLanguageController1: TDKLanguageController
-    Left = 400
-    Top = 352
+    SectionName = 'CustomSyntDlg'
+    Left = 376
+    Top = 400
     LangData = {
-      0D00437573746F6D53796E74446C67010100000001000000070043617074696F
-      6E010800000006004C6162656C31010100000002000000070043617074696F6E
+      0D00666D4C657865725374796C6573010100000001000000070043617074696F
+      6E010700000006004C6162656C31010100000002000000070043617074696F6E
       0002004C4200000700427574746F6E3201010000000300000007004361707469
       6F6E000700427574746F6E33010100000004000000070043617074696F6E000B
       0053796E7461784D656D6F3100000F0053796E745374796C654672616D653100
@@ -287,10 +292,8 @@ object CustomSyntDlg: TfmLexerStyles
       7074696F6E2E000000040048696E74000900436865636B426F78370102000000
       31000000070043617074696F6E30000000040048696E74000900436F6D626F42
       6F7837010200000032000000040048696E743300000005004974656D73000B00
-      466F6E744469616C6F6731000002004644000005004653796E74010500000038
-      000000100044656661756C745374796C654E616D65340000001600466F726D61
-      74735B305D2E446973706C61794E616D65350000001600466F726D6174735B31
-      5D2E446973706C61794E616D653700000010004D61726B6564426C6F636B5374
-      796C65360000000E00546F6B656E547970654E616D657300}
+      466F6E744469616C6F6731000005004653796E74010300000038000000100044
+      656661756C745374796C654E616D65340000001600466F726D6174735B305D2E
+      446973706C61794E616D65360000000E00546F6B656E547970654E616D657300}
   end
 end

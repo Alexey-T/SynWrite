@@ -27,7 +27,6 @@ type
     Label1: TTntLabel;
     Button2: TTntButton;
     Button3: TTntButton;
-    FD: TFontDialog;
     SyntaxMemo1: TSyntaxMemo;
     SyntStyleFrame1: TSyntStyleFrame;
     FSynt: TSyntAnalyzer;
