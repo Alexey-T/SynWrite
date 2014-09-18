@@ -2514,6 +2514,7 @@ type
     procedure DoTool_Enable(T: TSpTbxItem; Id: integer; ACtxMenu: boolean = false);
     procedure DoTool_ReplaceMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
 
+    function IsProjectEmpty: boolean;
     function IsShowColor(s: string; var NColor, NColorText: TColor): boolean;
     procedure GetTabName(APagesNumber, ATabIndex: Integer; var AName, AFN, ALex: Widestring);
     function GetAcpFN(const LexerName: string): string;
@@ -2539,6 +2540,7 @@ type
     procedure MsgNoRun(const fn: Widestring);
     procedure MsgNoFile(const fn: Widestring);
     procedure MsgNoDir(const fn: Widestring);
+    procedure MsgNeedProject;
     procedure MsgEmptyMacro(const s: Widestring);
     procedure MsgDelLines(N: integer);
     procedure MsgDoneLines(N: integer);
@@ -12022,7 +12024,10 @@ end;
 
 procedure TfmMain.ecReplaceInProjectExecute(Sender: TObject);
 begin
-  DoFindInFiles_Dialog(true);
+  if IsProjectEmpty then
+    MsgNeedProject
+  else
+    DoFindInFiles_Dialog(true);
 end;
 
 function TfmMain.DoFindInFiles_InputData(
@@ -18537,12 +18542,10 @@ begin
   DoHint('[SmartTagTabbing] ' + s);
 end;
 
-{
-procedure TfmMain.MsgID(const s: Widestring);
+procedure TfmMain.MsgNeedProject;
 begin
-  SHint[-1]:= '[FindID] ' + s;
+  MsgWarn(DKLangConstW('zMProjEmpty'), Handle);
 end;
-}
 
 procedure TfmMain.TBXItemFNewClick(Sender: TObject);
 begin
@@ -21292,8 +21295,7 @@ begin
     Exit
   end;
 
-  if (fmProj.TreeProj.Items.Count<=1) or
-    (id<0) or (id>=fmProj.TreeProj.Items.Count) then
+  if IsProjectEmpty or (id<0) or (id>=fmProj.TreeProj.Items.Count) then
     Exit;
 
   fn:= fmProj.GetFN(fmProj.TreeProj.Items[id]);
@@ -23719,9 +23721,9 @@ var
   Files: TTntStringList;
   i: Integer;
 begin
-  if (fmProj=nil) or (fmProj.TreeProj.Items.Count<=1) then
+  if IsProjectEmpty then
   begin
-    MsgWarn(DKLangConstW('zMProjEmpty'), Handle);
+    MsgNeedProject;
     Exit
   end;
 
@@ -23736,7 +23738,7 @@ begin
     end;
     if Files.Count=0 then
     begin
-      MsgWarn(DKLangConstW('zMProjEmpty'), Handle);
+      MsgNeedProject;
       Exit
     end;
 
@@ -29157,6 +29159,11 @@ begin
     SyntaxManager.Modified:= true;
     DoConfirmSaveLexLib;
   end;
+end;
+
+function TfmMain.IsProjectEmpty: boolean;
+begin
+  Result:= (fmProj=nil) or (fmProj.TreeProj.Items.Count<=1);
 end;
 
 initialization

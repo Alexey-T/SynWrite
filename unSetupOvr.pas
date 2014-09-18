@@ -115,6 +115,7 @@ begin
     chkIndent.Checked:= false;
     chkMargin.Checked:= false;
     chkSpacing.Checked:= false;
+    chkAutoCase.Checked:= false;
   end;
 end;
 

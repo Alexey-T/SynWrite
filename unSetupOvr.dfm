@@ -27,9 +27,9 @@ object fmSetupOvr: TfmSetupOvr
     Caption = 'Lexers:'
   end
   object LabelWordChars: TTntLabel
-    Left = 184
+    Left = 160
     Top = 244
-    Width = 116
+    Width = 215
     Height = 13
     Caption = 'Word chars (additional):'
   end
@@ -60,7 +60,7 @@ object fmSetupOvr: TfmSetupOvr
   object ListLex: TTntListBox
     Left = 8
     Top = 20
-    Width = 161
+    Width = 145
     Height = 321
     ItemHeight = 13
     Sorted = True
@@ -86,7 +86,7 @@ object fmSetupOvr: TfmSetupOvr
     Visible = False
   end
   object cbOvr: TTntCheckBox
-    Left = 184
+    Left = 160
     Top = 4
     Width = 329
     Height = 17
@@ -129,9 +129,9 @@ object fmSetupOvr: TfmSetupOvr
     OnChange = edTabStopsChange
   end
   object chkAutoCase: TTntCheckBox
-    Left = 184
+    Left = 160
     Top = 216
-    Width = 190
+    Width = 215
     Height = 17
     Caption = 'Auto-correct identifier case'
     TabOrder = 18
@@ -149,72 +149,72 @@ object fmSetupOvr: TfmSetupOvr
     OnChange = edTabStopsChange
   end
   object chkTabStops: TTntCheckBox
-    Left = 184
+    Left = 160
     Top = 24
-    Width = 190
+    Width = 215
     Height = 17
     Caption = 'Tab stops'
     TabOrder = 2
     OnClick = chkTabStopsClick
   end
   object chkTabMode: TTntCheckBox
-    Left = 184
+    Left = 160
     Top = 48
-    Width = 190
+    Width = 215
     Height = 17
     Caption = 'Tab mode'
     TabOrder = 4
     OnClick = chkTabStopsClick
   end
   object chkWrap: TTntCheckBox
-    Left = 184
+    Left = 160
     Top = 72
-    Width = 190
+    Width = 215
     Height = 17
     Caption = 'Wrap mode'
     TabOrder = 6
     OnClick = chkTabStopsClick
   end
   object chkOptFill: TTntCheckBox
-    Left = 184
+    Left = 160
     Top = 96
-    Width = 190
+    Width = 215
     Height = 17
     Caption = 'Optimal fill with Tabs'
     TabOrder = 8
     OnClick = chkTabStopsClick
   end
   object chkKeepBlanks: TTntCheckBox
-    Left = 184
+    Left = 160
     Top = 120
-    Width = 190
+    Width = 215
     Height = 17
     Caption = 'Keep trailing blanks'
     TabOrder = 10
     OnClick = chkTabStopsClick
   end
   object chkIndent: TTntCheckBox
-    Left = 184
+    Left = 160
     Top = 144
-    Width = 190
+    Width = 215
     Height = 17
     Caption = 'Block indent'
     TabOrder = 12
     OnClick = chkTabStopsClick
   end
   object chkMargin: TTntCheckBox
-    Left = 184
+    Left = 160
     Top = 168
-    Width = 190
+    Width = 215
     Height = 17
     Caption = 'Right margin'
     TabOrder = 14
     OnClick = chkTabStopsClick
   end
   object chkSpacing: TTntCheckBox
-    Left = 184
+    Left = 160
     Top = 192
-    Width = 190
+    Width = 215
     Height = 17
     Caption = 'Line spacing'
     TabOrder = 16
@@ -279,8 +279,8 @@ object fmSetupOvr: TfmSetupOvr
       'On')
   end
   object DKLanguageController1: TDKLanguageController
-    Left = 144
-    Top = 192
+    Left = 120
+    Top = 184
     LangData = {
       0A00666D53657475704F7672010100000001000000070043617074696F6E0119
       00000006004C6162656C31010100000002000000070043617074696F6E000700
