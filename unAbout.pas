@@ -7,7 +7,7 @@ uses
   Dialogs, StdCtrls, TntForms, TntStdCtrls, DKLang;
 
 type
-  TfmAb = class(TTntForm)
+  TfmAbout = class(TTntForm)
     GroupBox4: TTntGroupBox;
     Label12: TTntLabel;
     Label11: TTntLabel;
@@ -40,7 +40,7 @@ type
   end;
 
 var
-  fmAb: TfmAb;
+  fmAbout: TfmAbout;
 
 implementation
 
@@ -48,42 +48,42 @@ uses ATxFProc;
 
 {$R *.dfm}
 
-procedure TfmAb.Button1Click(Sender: TObject);
+procedure TfmAbout.Button1Click(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TfmAb.FOp(const s: string);
+procedure TfmAbout.FOp(const s: string);
 begin
   FOpenUrl(s, Handle);
 end;
 
-procedure TfmAb.LabelWEmClick(Sender: TObject);
+procedure TfmAbout.LabelWEmClick(Sender: TObject);
 begin
   FOp('mailto:support@uvviewsoft.com?subject=SynWrite');
 end;
 
-procedure TfmAb.LabelW1Click(Sender: TObject);
+procedure TfmAbout.LabelW1Click(Sender: TObject);
 begin
   FOp('http://www.econtrol.ru/');
 end;
 
-procedure TfmAb.Labelw2Click(Sender: TObject);
+procedure TfmAbout.Labelw2Click(Sender: TObject);
 begin
   FOp('https://sourceforge.net/projects/synwrite/');
 end;
 
-procedure TfmAb.Labelw3Click(Sender: TObject);
+procedure TfmAbout.Labelw3Click(Sender: TObject);
 begin
   FOp('http://www.uvviewsoft.com/synwrite/');
 end;
 
-procedure TfmAb.LabelWAClick(Sender: TObject);
+procedure TfmAbout.LabelWAClick(Sender: TObject);
 begin
   FOp('http://www.addictivesoftware.com/');
 end;
 
-procedure TfmAb.LabelForumClick(Sender: TObject);
+procedure TfmAbout.LabelForumClick(Sender: TObject);
 begin
   FOp('http://synwrite.sourceforge.net/forums/');
 end;

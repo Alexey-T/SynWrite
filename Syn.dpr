@@ -10,7 +10,7 @@ uses
   Forms,
   unEx in 'unEx.pas' {fmSynEx},
   unMain in 'unMain.pas' {fmMain},
-  unAbout in 'unAbout.pas' {fmAb},
+  unAbout in 'unAbout.pas' {fmAbout},
   unFrame in 'unFrame.pas' {EditorFrame: TFrame},
   unSetup in 'unSetup.pas' {fmSetup},
   unSR in 'unSR.pas' {fmSR},
