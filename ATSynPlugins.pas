@@ -6,23 +6,31 @@ uses
   Windows;
 
 type
-  TSynInit = procedure (ADefaultIni: PWideChar; AActionProc: Pointer); stdcall;  
+  TSynInit = procedure (ADefaultIni: PWideChar; AActionProc: Pointer); stdcall;
   TSynOpenForm = function (AParentWindow: THandle; var AWindow: THandle): Pointer; stdcall;
   TSynCloseForm = procedure (AHandle: Pointer); stdcall;
   TSynAction = function (AHandle: Pointer;
     AName: PWideChar; A1, A2, A3, A4: Pointer): Integer; stdcall;
 
-//exported funcs results    
+//exported funcs results
 const
   cSynBadCmd = 0;
   cSynOK = 1;
   cSynError = 2;
   cSynSmallBuffer = 3;
 
-//for string buffers  
+//for string buffers
 const
   cSynMaxPath = 512;
   cSynMaxMsg = 512;
+
+//color id, for cActionSetColor  
+const
+  cColorId_Text         = 1;
+  cColorId_Back         = 2;
+  cColorId_LogNormal    = 3;
+  cColorId_LogServer    = 4;
+  cColorId_LogError     = 5;
 
 //tab id, for cActionGetOpenedFileName
 const
@@ -83,6 +91,8 @@ const
   cActionMenuCommand        : PWideChar = 'MenuCmd';
   cActionGetAutoComplete    : PWideChar = 'Acp';
   cActionGetFunctionHint    : PWideChar = 'FuncHint';
+  cActionSetColor           : PWideChar = 'SetColor';
+
 
 //for cActionParseRegex  
 type
