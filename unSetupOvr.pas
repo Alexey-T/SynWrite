@@ -160,11 +160,11 @@ begin
     edTabStops.Text:= ATabStops;
     edTabMode.ItemIndex:= StrToIntDef(ATabMode, FDefTabMode);
     edWrap.ItemIndex:= StrToIntDef(AWrap, 0);
+    edOptFill.ItemIndex:= StrToIntDef(AOptFill, 0);
+    edKeepBlanks.ItemIndex:= StrToIntDef(AKeepBlanks, 0);
     edIndent.Value:= StrToIntDef(AIndent, FDefIndent);
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
     edSpacing.Value:= StrToIntDef(ASpacing, FDefSpacing);
-    edOptFill.ItemIndex:= StrToIntDef(AOptFill, 0);
-    edKeepBlanks.ItemIndex:= StrToIntDef(AKeepBlanks, 0);
     edWordChars.Text:= AOptWordChars;
     cbAutoCase.Checked:= Bool(StrToIntDef(ACaseCorrect, 0));
   end
@@ -182,11 +182,11 @@ begin
     edTabStops.Text:= FDefTabStop;
     edTabMode.ItemIndex:= FDefTabMode;
     edWrap.ItemIndex:= 0;
+    edOptFill.ItemIndex:= 0;
+    edKeepBlanks.ItemIndex:= 0;
     edIndent.Value:= FDefIndent;
     edMargin.Value:= FDefMargin;
     edSpacing.Value:= FDefSpacing;
-    edOptFill.ItemIndex:= 0;
-    edKeepBlanks.ItemIndex:= 0;
     edWordChars.Text:= '';
     cbAutoCase.Checked:= false;
   end;

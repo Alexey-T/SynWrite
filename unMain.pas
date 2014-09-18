@@ -8116,82 +8116,101 @@ begin
     else
     begin
       //1) override TabStops
-      EditorMaster.TabList.AsString:= ATabStop;
-      EditorSlave.TabList.AsString:= EditorMaster.TabList.AsString;
+      if ATabStop<>'' then
+      begin
+        EditorMaster.TabList.AsString:= ATabStop;
+        EditorSlave.TabList.AsString:= EditorMaster.TabList.AsString;
+      end;  
 
       //2) override TabMode
-      case StrToIntDef(ATabMode, 1) of
-        0: EditorMaster.TabMode:= tmSpaces;
-        1: EditorMaster.TabMode:= tmTabChar;
-        2: EditorMaster.TabMode:= tmSmartTab;
+      if ATabMode<>'' then
+      begin
+        case StrToIntDef(ATabMode, 1) of
+          0: EditorMaster.TabMode:= tmSpaces;
+          1: EditorMaster.TabMode:= tmTabChar;
+          2: EditorMaster.TabMode:= tmSmartTab;
+        end;
+        EditorSlave.TabMode:= EditorMaster.TabMode;
       end;
-      EditorSlave.TabMode:= EditorMaster.TabMode;
 
       //3) override "word wrap"
-      case StrToIntDef(AWrap, 0) of
-        0: //as is
-          begin end;
-        1: //wrap off
-          EditorMaster.WordWrap:= false;
-        2: //wrap by window edge
-          begin
-          EditorMaster.WordWrap:= true;
-          EditorMaster.Options:= EditorMaster.Options - [soBreakOnRightMargin];
-          end;
-        3: //wrap by right margin
-          begin
-          EditorMaster.WordWrap:= true;
-          EditorMaster.Options:= EditorMaster.Options + [soBreakOnRightMargin];
-          end;
+      if AWrap<>'' then
+      begin
+        case StrToIntDef(AWrap, 0) of
+          0: //wrap off
+            EditorMaster.WordWrap:= false;
+          1: //wrap by window edge
+            begin
+              EditorMaster.WordWrap:= true;
+              EditorMaster.Options:= EditorMaster.Options - [soBreakOnRightMargin];
+            end;
+          2: //wrap by right margin
+            begin
+              EditorMaster.WordWrap:= true;
+              EditorMaster.Options:= EditorMaster.Options + [soBreakOnRightMargin];
+            end;
+        end;
+        EditorSlave.WordWrap:= EditorMaster.WordWrap;
+        EditorSlave.Options:= EditorMaster.Options;
       end;
-      EditorSlave.WordWrap:= EditorMaster.WordWrap;
-      EditorSlave.Options:= EditorMaster.Options;
 
       //4) override "Right margin"
-      EditorMaster.RightMargin:= StrToIntDef(AMargin, TemplateEditor.RightMargin);
-      EditorSlave.RightMargin:= EditorMaster.RightMargin;
+      if AMargin<>'' then
+      begin
+        EditorMaster.RightMargin:= StrToIntDef(AMargin, 80);
+        EditorSlave.RightMargin:= EditorMaster.RightMargin;
+      end;  
 
       //5) override "Line spacing"
-      EditorMaster.LineSpacing:= StrToIntDef(ASpacing, TemplateEditor.LineSpacing);
-      EditorSlave.LineSpacing:= EditorMaster.LineSpacing;
+      if ASpacing<>'' then
+      begin
+        EditorMaster.LineSpacing:= StrToIntDef(ASpacing, 1);
+        EditorSlave.LineSpacing:= EditorMaster.LineSpacing;
+      end;  
 
       //6) override "Optimal fill"
-      case StrToIntDef(AOptFill, 0) of
-        1:
-        begin
-          EditorMaster.Options:= EditorMaster.Options - [soOptimalFill];
-          EditorSlave.Options:= EditorSlave.Options - [soOptimalFill];
-        end;
-        2:
-        begin
-          EditorMaster.Options:= EditorMaster.Options + [soOptimalFill];
-          EditorSlave.Options:= EditorSlave.Options + [soOptimalFill];
-        end
+      if AOptFill<>'' then
+      begin
+        if Bool(StrToIntDef(AOptFill, 0)) then
+          begin
+            EditorMaster.Options:= EditorMaster.Options + [soOptimalFill];
+            EditorSlave.Options:= EditorSlave.Options + [soOptimalFill];
+          end
+        else
+          begin
+            EditorMaster.Options:= EditorMaster.Options - [soOptimalFill];
+            EditorSlave.Options:= EditorSlave.Options - [soOptimalFill];
+          end;
       end;
 
       //7) override "Word chars"
       opWordChars:= AOptWordChars;
 
       //8) override "Keep trailing blanks"
-      case StrToIntDef(AKeepBlanks, 0) of
-        1:
-        begin
-          EditorMaster.Options:= EditorMaster.Options - [soKeepTrailingBlanks];
-          EditorSlave.Options:= EditorSlave.Options - [soKeepTrailingBlanks];
-        end;
-        2:
+      if AKeepBlanks<>'' then
+      begin
+        if Bool(StrToIntDef(AKeepBlanks, 0)) then
         begin
           EditorMaster.Options:= EditorMaster.Options + [soKeepTrailingBlanks];
           EditorSlave.Options:= EditorSlave.Options + [soKeepTrailingBlanks];
         end
+        else
+        begin
+          EditorMaster.Options:= EditorMaster.Options - [soKeepTrailingBlanks];
+          EditorSlave.Options:= EditorSlave.Options - [soKeepTrailingBlanks];
+        end;
       end;
 
       //9) override "Auto-correct case"
-      opAutoCase:= AAutoCase='1';
+      if AAutoCase<>'' then
+        opAutoCase:= AAutoCase='1';
 
       //10) override "Block indent"
-      EditorMaster.BlockIndent:= StrToIntDef(AIndent, TemplateEditor.BlockIndent);
-      EditorSlave.BlockIndent:= EditorMaster.BlockIndent;
+      if AIndent<>'' then
+      begin
+        EditorMaster.BlockIndent:= StrToIntDef(AIndent, 4);
+        EditorSlave.BlockIndent:= EditorMaster.BlockIndent;
+      end;  
     end;
 
     //overrides for "NFO files"
