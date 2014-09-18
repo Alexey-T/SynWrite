@@ -2339,42 +2339,44 @@ type
     procedure SetListBkmkColumns(const S: string);
 
     //plugins related----------------------------
-    procedure DoRefreshPluginsFiles(const fn: Widestring);
-    procedure DoRefreshPluginsLang;
-    procedure DoPluginSaveFtpFile(F: TEditorFrame);
-    procedure DoPluginsRepaint;
-    function DoOpenPanelPluginByName(const AName: string): Integer;
-    function DoOpenPluginFavorite(const AFileName: Widestring): boolean;
-    procedure DoShowPlugin(N: Integer);
-    procedure DoClosePlugins;
-    procedure DoResizePlugins;
-    procedure DoLoadPlugin_Panel(Index: Integer);
-    procedure DoLoadPlugin_FindID(Index: Integer);
-    procedure DoLoadPlugin_Action(
+    procedure DoPlugin_RefreshFiles(const fn: Widestring);
+    procedure DoPlugin_RefreshLang;
+    procedure DoPlugin_SaveFtpFile(F: TEditorFrame);
+    procedure DoPlugin_SetColors(Index: Integer);
+    function DoPlugin_OpenPanelByName(const AName: string): Integer;
+    function DoPlugin_OpenFavorite(const AFileName: Widestring): boolean;
+    procedure DoPlugin_Show(N: Integer);
+    
+    procedure DoPlugin_LoadPanel(Index: Integer);
+    procedure DoPlugin_LoadGotoDef(Index: Integer);
+    procedure DoPlugin_LoadAction(
       const AFileName: string;
       const AActionName: Widestring;
       P1, P2, P3, P4: Pointer);
-    function DoLoadPlugin_GetString(
+    function DoPlugin_LoadGetString(
       const AFileName: string;
       const AActionName: Widestring): Widestring;
-    procedure DoLoadPluginsList;
-    procedure DoLoadPlugins_Panels(const fn_plug_ini: string);
-    procedure DoLoadPlugins_FindId(const fn_plug_ini: string);
-    procedure DoLoadPlugins_Complete(const fn_plug_ini: string);
-    procedure DoLoadPlugins_Commands(const fn_plug_ini: string);
-    procedure DoLoadPlugins_Events(const fn_plug_ini: string);
-    procedure DoTestPlugins;
-    procedure LoadPluginsInfo;
 
-    function PluginPanelHandleToIndex(AHandle: Pointer): Integer;
-    function PluginPanelCaption(Index: Integer): Widestring;
-    procedure PluginPanelItemClick(N: Integer);
-    procedure PluginCommandItemClick(Sender: TObject);
-
-    procedure DoAddPluginMenuItem(
+    function DoPlugin_PanelHandleToIndex(AHandle: Pointer): Integer;
+    function DoPlugin_PanelCaption(Index: Integer): Widestring;
+    procedure DoPlugin_PanelTabClick(N: Integer);
+    procedure DoPlugin_CommandClick(Sender: TObject);
+    procedure DoPlugin_AddMenuItem(
       ASubmenu: TSpTbxSubmenuitem;
-      const SKey: Widestring;
-      NIndex, NCommandId: Integer);
+      const SKey: Widestring; NIndex, NCommandId: Integer);
+
+    procedure DoPlugins_Repaint;
+    procedure DoPlugins_Close;
+    procedure DoPlugins_Resize;
+    procedure DoPlugins_Test;
+
+    procedure DoPlugins_LoadAll;
+    procedure DoPlugins_LoadPanels(const fn_plug_ini: string);
+    procedure DoPlugins_LoadGotoDef(const fn_plug_ini: string);
+    procedure DoPlugins_LoadAutoComplete(const fn_plug_ini: string);
+    procedure DoPlugins_LoadCommands(const fn_plug_ini: string);
+    procedure DoPlugins_LoadEvents(const fn_plug_ini: string);
+    procedure DoPlugins_InitTabs;
     //-------------------------------------------
     //
     procedure DoCheckIfBookmarkSetHere(Ed: TSyntaxMemo; NPos: Integer);
@@ -3948,7 +3950,7 @@ begin
 
     //save on ftp
     if Frame.IsFtp then
-      DoPluginSaveFtpFile(Frame);
+      DoPlugin_SaveFtpFile(Frame);
   end;
 
   //repaint editor (coz line states not redrawn)
@@ -3960,7 +3962,7 @@ begin
     Frame.DoStartNotif;
 
   //send "reread panel" to plugins
-  DoRefreshPluginsFiles(Frame.FileName);
+  DoPlugin_RefreshFiles(Frame.FileName);
 
   //need to reload, as line-ends changed?
   if Frame.LineEndsChg then
@@ -6813,7 +6815,7 @@ begin
   if FUpdatePluginsLang then
   begin
     FUpdatePluginsLang:= false;
-    DoRefreshPluginsLang;
+    DoPlugin_RefreshLang;
   end;
 
   //repaints
@@ -6967,7 +6969,7 @@ begin
   tbTabsLeft.Invalidate;
   {$endif}
 
-  DoResizePlugins;
+  DoPlugins_Resize;
 
   tbViewMove(Self);
 end;
@@ -7074,7 +7076,7 @@ begin
   //init objects
   InitPanelsTabs;
   InitGroups;
-  LoadPluginsInfo; //after InitPanelsTabs
+  DoPlugins_InitTabs; //after InitPanelsTabs
   
   TabsLeft.TabIndex:= FTabLeft;
   TabsRight.TabIndex:= FTabRight;
@@ -8247,7 +8249,7 @@ begin
   tbTabsRight.Invalidate;
   {$endif}
 
-  DoPluginsRepaint;
+  DoPlugins_Repaint;
 end;
 
 procedure TfmMain.DoRepaintTBs2;
@@ -9487,7 +9489,7 @@ begin
   //clear find results
   DoClearTreeFind;
   //close plugins
-  DoClosePlugins;
+  DoPlugins_Close;
 
   //close proj and proj-preview
   FProjectFreeing:= true;
@@ -11840,7 +11842,7 @@ begin
       fmProj.DoRemoveFile(fn);
 
     SynMruFiles.DeleteItem(fn);
-    DoRefreshPluginsFiles(fn);
+    DoPlugin_RefreshFiles(fn);
   end;
 end;
 
@@ -13421,7 +13423,7 @@ begin
   if n>=tbPlugin1 then
   begin
     i:= Ord(n)-Ord(tbPlugin1);
-    PluginPanelItemClick(i);
+    DoPlugin_PanelTabClick(i);
     Exit
   end;
 
@@ -13439,7 +13441,7 @@ begin
   if Assigned(fmProj) then
     fmProj.Visible:= IsProj;
 
-  DoShowPlugin(-1);
+  DoPlugin_Show(-1);
 end;
 
 procedure TfmMain.UpdatePanelRight(n: TSynTabRight);
@@ -14361,6 +14363,8 @@ begin
 end;
 
 procedure TfmMain.ApplyColors;
+var
+  i: Integer;
 begin
   ListOut.Invalidate;
   TreeFind.Invalidate;
@@ -14387,6 +14391,11 @@ begin
 
   if Assigned(fmProj) then
     fmProj.TreeProj.Color:= Tree.Color;
+
+  for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
+    with FPluginsPanel[i] do
+      if FForm<>nil then
+        DoPlugin_SetColors(i);
 end;
 
 procedure TfmMain.ApplyAcpColors;
@@ -20003,7 +20012,7 @@ begin
             DoOpenFile(FCurrentFileName);
         end
         else
-        if not DoOpenPluginFavorite(FCurrentFileName) then
+        if not DoPlugin_OpenFavorite(FCurrentFileName) then
           MsgNoFile(FCurrentFileName);
     end;
   finally
@@ -20824,7 +20833,7 @@ begin
     //rename successful
     SynMruFiles.DeleteItem(fn);
     DoOpenFile(fn_new);
-    DoRefreshPluginsFiles(fn_new);
+    DoPlugin_RefreshFiles(fn_new);
     DoProjectRenameFile(fn, fn_new);
   end;
 
@@ -20999,7 +21008,7 @@ begin
   CurrentEditor.ExecCommand(sm_ToggleStreamComment);
 end;
 
-procedure TfmMain.DoLoadPluginsList;
+procedure TfmMain.DoPlugins_LoadAll;
 var
   fn_plug_ini,
   fn_plug_def_ini: string;
@@ -21011,31 +21020,31 @@ begin
   if not IsFileExist(fn_plug_ini) then
     Exit;
 
-  DoLoadPlugins_Panels(fn_plug_ini);
-  DoLoadPlugins_Findid(fn_plug_ini);
-  DoLoadPlugins_Complete(fn_plug_ini);
-  DoLoadPlugins_Commands(fn_plug_ini);
-  DoLoadPlugins_Events(fn_plug_ini);
+  DoPlugins_LoadPanels(fn_plug_ini);
+  DoPlugins_LoadGotoDef(fn_plug_ini);
+  DoPlugins_LoadAutoComplete(fn_plug_ini);
+  DoPlugins_LoadCommands(fn_plug_ini);
+  DoPlugins_LoadEvents(fn_plug_ini);
 
   //debug
-  //DoTestPlugins;
+  //DoPlugins_Test;
 end;
 
-procedure TfmMain.LoadPluginsInfo;
+procedure TfmMain.DoPlugins_InitTabs;
 var
   i: Integer;
 begin
-  //disable plugins in WLX
+  //disable plugins in Lister
   if not SynExe then Exit;
 
-  DoLoadPluginsList;
+  DoPlugins_LoadAll;
   for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
     with FPluginsPanel[i] do
       if SCaption<>'' then
         TabsLeft.AddTab(-1, SCaption);
 end;
 
-function TfmMain.PluginPanelCaption(Index: Integer): Widestring;
+function TfmMain.DoPlugin_PanelCaption(Index: Integer): Widestring;
 begin
   Result:= '';
   if Index<0 then Exit;
@@ -21044,7 +21053,7 @@ begin
     Result:= Result + ' - ' + FPluginsPanel[Index].SState;
 end;
 
-procedure TfmMain.PluginPanelItemClick(N: Integer);
+procedure TfmMain.DoPlugin_PanelTabClick(N: Integer);
 begin
   if not ((N>=Low(FPluginsPanel)) and (N<=High(FPluginsPanel))) then Exit;
   if FPluginsPanel[N].SCaption='' then Exit;
@@ -21054,11 +21063,11 @@ begin
   if Assigned(fmProj) then
     fmProj.Visible:= false;
 
-  DoLoadPlugin_Panel(N);
-  DoShowPlugin(N);
+  DoPlugin_LoadPanel(N);
+  DoPlugin_Show(N);
 end;
 
-procedure TfmMain.DoLoadPlugin_Panel(Index: Integer);
+procedure TfmMain.DoPlugin_LoadPanel(Index: Integer);
 var
   AParent: THandle;
   AIni: Widestring;
@@ -21118,10 +21127,11 @@ begin
     Windows.SetParent(FWindow, AParent);
   end;
 
-  DoResizePlugins;
+  DoPlugin_SetColors(Index);
+  DoPlugins_Resize;
 end;
 
-procedure TfmMain.DoResizePlugins;
+procedure TfmMain.DoPlugins_Resize;
 var
   X, Y, XSize, YSize, i: Integer;
 begin
@@ -21138,7 +21148,7 @@ begin
         SetWindowPos(FWindow, 0, X, Y, XSize, YSize, 0);
 end;
 
-procedure TfmMain.DoClosePlugins;
+procedure TfmMain.DoPlugins_Close;
 var
   i: Integer;
 begin
@@ -21148,7 +21158,7 @@ begin
         FSynCloseForm(FForm);
 end;
 
-procedure TfmMain.DoShowPlugin(N: Integer);
+procedure TfmMain.DoPlugin_Show(N: Integer);
 var
   i: Integer;
 begin
@@ -21158,7 +21168,7 @@ begin
         ShowWindow(FWindow, IfThen(i=N, sw_show, sw_hide));
 end;
 
-function TfmMain.DoOpenPluginFavorite(const AFileName: Widestring): boolean;
+function TfmMain.DoPlugin_OpenFavorite(const AFileName: Widestring): boolean;
 var
   N: Integer;
   AName: string;
@@ -21171,7 +21181,7 @@ begin
   AName:= Copy(AFileName, 1, N-1);
   ADir:= Copy(AFileName, N+2, MaxInt);
 
-  N:= DoOpenPanelPluginByName(AName);
+  N:= DoPlugin_OpenPanelByName(AName);
   if N>=0 then
   begin
      with FPluginsPanel[N] do
@@ -21180,7 +21190,7 @@ begin
   end;
 end;
 
-function TfmMain.DoOpenPanelPluginByName(const AName: string): Integer;
+function TfmMain.DoPlugin_OpenPanelByName(const AName: string): Integer;
 var
   i: Integer;
 begin
@@ -21245,7 +21255,7 @@ begin
 
   FPluginsPanel[Index].SState:= Widestring(Ptr);
   if TabsLeft.TabIndex=Ord(tbPlugin1)+Index then
-    plTree.Caption:= PluginPanelCaption(Index);
+    plTree.Caption:= DoPlugin_PanelCaption(Index);
 end;
 
 function TfmMain.PluginAction_GetProjectFN(id: Integer; ptr: PWideChar): Integer;
@@ -21337,7 +21347,7 @@ begin
   Result:= cSynOK;
 end;
 
-function TfmMain.PluginPanelHandleToIndex(AHandle: Pointer): Integer;
+function TfmMain.DoPlugin_PanelHandleToIndex(AHandle: Pointer): Integer;
 var
   i: Integer;
 begin
@@ -21504,7 +21514,7 @@ begin
   //---------------------
   if (act=cActionSetState) then
   begin
-    Result:= PluginAction_SetState(PluginPanelHandleToIndex(AHandle), A1);
+    Result:= PluginAction_SetState(DoPlugin_PanelHandleToIndex(AHandle), A1);
     Exit
   end;
 
@@ -21513,7 +21523,7 @@ begin
 end;
 
 
-procedure TfmMain.DoRefreshPluginsFiles(const fn: Widestring);
+procedure TfmMain.DoPlugin_RefreshFiles(const fn: Widestring);
 var
   i: Integer;
 begin
@@ -21523,7 +21533,7 @@ begin
         FSynAction(FForm, cActionRefreshFileList, PWChar(fn), nil, nil, nil);
 end;
 
-procedure TfmMain.DoRefreshPluginsLang;
+procedure TfmMain.DoPlugin_RefreshLang;
 var
   i: Integer;
 begin
@@ -21533,7 +21543,7 @@ begin
         FSynAction(FForm, cActionUpdateLang, nil, nil, nil, nil);
 end;
 
-procedure TfmMain.DoPluginsRepaint;
+procedure TfmMain.DoPlugins_Repaint;
 var
   i: Integer;
 begin
@@ -21543,7 +21553,7 @@ begin
         FSynAction(FForm, cActionRepaint, nil, nil, nil, nil);
 end;
 
-procedure TfmMain.DoPluginSaveFtpFile(F: TEditorFrame);
+procedure TfmMain.DoPlugin_SaveFtpFile(F: TEditorFrame);
 var
   i: Integer;
 begin
@@ -21553,6 +21563,17 @@ begin
         FSynAction(FForm, cActionSaveFtpFile,
           PWideChar(Widestring(F.FileName)),
           F.FtpInfoPtr, Pointer(F.FtpInfoSize), nil);
+end;
+
+procedure TfmMain.DoPlugin_SetColors(Index: Integer);
+begin
+  if Index>=0 then
+    with FPluginsPanel[Index] do
+      if (FForm<>nil) and Assigned(FSynAction) then
+      begin
+        FSynAction(FForm, cActionSetColor, Pointer(cColorId_Text), Pointer(Tree.Font.Color), nil, nil);
+        FSynAction(FForm, cActionSetColor, Pointer(cColorId_Back), Pointer(Tree.Color), nil, nil);
+      end;
 end;
 
 
@@ -22199,7 +22220,7 @@ begin
     with FPluginsFindid[i] do
       if IsLexerListed(CurrentLexer, SLexers) then
       begin
-        DoLoadPlugin_FindID(i);
+        DoPlugin_LoadGotoDef(i);
         CurrentEditor.ResetSelection; //reset selection caused by Ctrl+Alt+click
         Exit
       end;
@@ -22232,22 +22253,22 @@ begin
         DoHint(DKLangConstW('zMTryAcp')+' '+ExtractFileName(SFileName));
 
         //auto-completion dll plugin?
-        Result:= DoLoadPlugin_GetString(SFilename, AAction);
+        Result:= DoPlugin_LoadGetString(SFilename, AAction);
         DoHint('');
         if Result<>'' then Exit;
       end;
 end;
 
 
-procedure TfmMain.DoLoadPlugin_FindID(Index: Integer);
+procedure TfmMain.DoPlugin_LoadGotoDef(Index: Integer);
 begin
-  DoLoadPlugin_Action(
+  DoPlugin_LoadAction(
     FPluginsFindid[Index].SFilename,
     cActionFindID,
     nil, nil, nil, nil);
 end;
 
-procedure TfmMain.DoLoadPlugin_Action(
+procedure TfmMain.DoPlugin_LoadAction(
   const AFileName: string;
   const AActionName: Widestring;
   P1, P2, P3, P4: Pointer);
@@ -22290,7 +22311,7 @@ begin
   FreeLibrary(FDll);
 end;
 
-function TfmMain.DoLoadPlugin_GetString(
+function TfmMain.DoPlugin_LoadGetString(
   const AFileName: string;
   const AActionName: Widestring): Widestring;
 var
@@ -22347,7 +22368,7 @@ begin
 end;
 
 
-procedure TfmMain.PluginCommandItemClick(Sender: TObject);
+procedure TfmMain.DoPlugin_CommandClick(Sender: TObject);
 var
   N: Integer;
 begin
@@ -22381,7 +22402,7 @@ begin
     else
     begin
       //DLL command plugin
-      DoLoadPlugin_Action(
+      DoPlugin_LoadAction(
         SFilename,
         cActionMenuCommand,
         PWChar(WideString(SCmd)),
@@ -22392,7 +22413,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoAddPluginMenuItem(
+procedure TfmMain.DoPlugin_AddMenuItem(
   ASubmenu: TSpTbxSubmenuitem;
   const SKey: Widestring;
   NIndex, NCommandId: Integer);
@@ -22446,7 +22467,7 @@ begin
       else
         Item.Caption:= CapItem;
       Item.Tag:= NIndex;
-      Item.OnClick:= PluginCommandItemClick;
+      Item.OnClick:= DoPlugin_CommandClick;
       if NCommandId>0 then
         UpdKey(Item, NCommandId);
       ItemSub.Add(Item);
@@ -27270,7 +27291,7 @@ begin
   if FileExists(fn_plugin) then
   begin
     DoPyRegisterCommandPlugin(SId); //write to SynPlugins.ini
-    DoLoadPluginsList; //reread SynPlugins.ini, update Plugins menu
+    DoPlugins_LoadAll; //reread SynPlugins.ini, update Plugins menu
     DoOpenFile(fn_plugin);
   end
   else
@@ -27561,7 +27582,7 @@ begin
   plClip.ShowCaptionWhenDocked:= en;
   if Assigned(FProjPreview) then
     FProjPreview.ShowCaptionWhenDocked:= en;
-  DoResizePlugins;
+  DoPlugins_Resize;
 end;
 
 procedure TfmMain.TbxItemPanelTitleBarClick(Sender: TObject);
@@ -27923,7 +27944,7 @@ begin
 end;
 
 
-procedure TfmMain.DoLoadPlugins_Events(const fn_plug_ini: string);
+procedure TfmMain.DoPlugins_LoadEvents(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
@@ -27971,7 +27992,7 @@ begin
 end;
 
 
-procedure TfmMain.DoLoadPlugins_Commands(const fn_plug_ini: string);
+procedure TfmMain.DoPlugins_LoadCommands(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, NCommandId, i: Integer;
@@ -28023,13 +28044,13 @@ begin
         DoAddKeymappingCommand(NCommandId, 'Plugin', sKey, sValueHotkey);
 
         //2) add to main-menu
-        DoAddPluginMenuItem(TBXSubmenuItemPlugins, sKey, NIndex, NCommandId);
+        DoPlugin_AddMenuItem(TBXSubmenuItemPlugins, sKey, NIndex, NCommandId);
 
         //3) add to context menu (if enabled)
         if Pos('-', sValueFlags)=0 then
         begin
           TBXSubmenuItemCtxPlugins.Visible:= true;
-          DoAddPluginMenuItem(TBXSubmenuItemCtxPlugins, sKey, NIndex, NCommandId);
+          DoPlugin_AddMenuItem(TBXSubmenuItemCtxPlugins, sKey, NIndex, NCommandId);
         end;
 
         Inc(NIndex);
@@ -28040,7 +28061,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoLoadPlugins_Complete(const fn_plug_ini: string);
+procedure TfmMain.DoPlugins_LoadAutoComplete(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
@@ -28086,7 +28107,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoLoadPlugins_FindId(const fn_plug_ini: string);
+procedure TfmMain.DoPlugins_LoadGotoDef(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
@@ -28132,7 +28153,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoLoadPlugins_Panels(const fn_plug_ini: string);
+procedure TfmMain.DoPlugins_LoadPanels(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
@@ -28176,7 +28197,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoTestPlugins;
+procedure TfmMain.DoPlugins_Test;
 var
   i: Integer;
   sValue: string;
@@ -28883,7 +28904,7 @@ begin
       plTree.Caption:= D.TabCaption;
   end
   else
-    plTree.Caption:= PluginPanelCaption(Index-Ord(tbPlugin1));
+    plTree.Caption:= DoPlugin_PanelCaption(Index-Ord(tbPlugin1));
 end;
 
 procedure TfmMain.TabsRightClick(Sender: TObject);
@@ -28923,13 +28944,13 @@ end;
 
 procedure TfmMain.TbxItemWinExplorerClick(Sender: TObject);
 begin
-  if DoOpenPanelPluginByName('Explorer')<0 then
+  if DoPlugin_OpenPanelByName('Explorer')<0 then
     MsgBeep;
 end;
 
 procedure TfmMain.TbxItemWinFtpClick(Sender: TObject);
 begin
-  if DoOpenPanelPluginByName('FTP')<0 then
+  if DoPlugin_OpenPanelByName('FTP')<0 then
     MsgBeep;
 end;
 
