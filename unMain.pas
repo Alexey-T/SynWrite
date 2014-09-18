@@ -8068,7 +8068,7 @@ begin
 
   if not en then
   begin
-    StatusItemLexer.Caption:= DKLangConstW('nlex');
+    StatusItemLexer.Caption:= DKLangConstW('None');
   end
   else
   begin
