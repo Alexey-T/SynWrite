@@ -12,24 +12,16 @@ type
     ListLex: TTntListBox;
     Label1: TTntLabel;
     edTabStops: TTntEdit;
-    LabelTabStop: TTntLabel;
-    LabelTabMode: TTntLabel;
     edText: TEdit;
     cbOvr: TTntCheckBox;
     DKLanguageController1: TDKLanguageController;
-    LabelWrap: TTntLabel;
-    LabelMargin: TTntLabel;
     edMargin: TSpinEdit;
-    LabelSp: TTntLabel;
     edSpacing: TSpinEdit;
-    LabelOptFill: TTntLabel;
     edWordChars: TTntEdit;
     LabelWordChars: TTntLabel;
-    LabelBlanks: TTntLabel;
     LabelTextShow: TLabel;
-    cbAutoCase: TTntCheckBox;
+    chkAutoCase: TTntCheckBox;
     LabelHelpAutoCase: TTntLabel;
-    LabelIndent: TTntLabel;
     edIndent: TSpinEdit;
     chkTabStops: TTntCheckBox;
     chkTabMode: TTntCheckBox;
@@ -89,16 +81,8 @@ begin
   edOptFill.Enabled:= en;
   edWordChars.Enabled:= en;
   edKeepBlanks.Enabled:= en;
-  cbAutoCase.Enabled:= en;
-  LabelTabStop.Enabled:= en;
-  LabelTabMode.Enabled:= en;
-  LabelWrap.Enabled:= en;
-  LabelMargin.Enabled:= en;
-  LabelIndent.Enabled:= en;
-  LabelOptFill.Enabled:= en;
-  LabelSp.Enabled:= en;
+  chkAutoCase.Enabled:= en;
   LabelWordChars.Enabled:= en;
-  LabelBlanks.Enabled:= en;
 
   chkTabStops.Enabled:= en;
   chkTabMode.Enabled:= en;
@@ -122,6 +106,15 @@ begin
     edOptFill.ItemIndex:= 0;
     edWordChars.Text:= '';
     edText.Text:= FString;
+
+    chkTabStops.Checked:= false;
+    chkTabMode.Checked:= false;
+    chkWrap.Checked:= false;
+    chkOptFill.Checked:= false;
+    chkKeepBlanks.Checked:= false;
+    chkIndent.Checked:= false;
+    chkMargin.Checked:= false;
+    chkSpacing.Checked:= false;
   end;
 end;
 
@@ -166,7 +159,7 @@ begin
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
     edSpacing.Value:= StrToIntDef(ASpacing, FDefSpacing);
     edWordChars.Text:= AOptWordChars;
-    cbAutoCase.Checked:= Bool(StrToIntDef(ACaseCorrect, 0));
+    chkAutoCase.Checked:= Bool(StrToIntDef(ACaseCorrect, 0));
   end
   else
   begin
@@ -188,7 +181,7 @@ begin
     edMargin.Value:= FDefMargin;
     edSpacing.Value:= FDefSpacing;
     edWordChars.Text:= '';
-    cbAutoCase.Checked:= false;
+    chkAutoCase.Checked:= false;
   end;
 
   FUpdLock:= false;
@@ -249,7 +242,7 @@ begin
         {Op6}IfThen(chkOptFill.Checked, IntToStr(edOptFill.ItemIndex)),
         {Op7}edWordChars.Text,
         {Op8}IfThen(chkKeepBlanks.Checked, IntToStr(edKeepBlanks.ItemIndex)),
-        {Op9}IfThen(cbAutoCase.Checked, IntToStr(Ord(cbAutoCase.Checked))),
+        {Op9}IfThen(chkAutoCase.Checked, IntToStr(Ord(chkAutoCase.Checked))),
         {Op10}IfThen(chkIndent.Checked, IntToStr(edIndent.Value))
         );
       edText.Text:= FString;
