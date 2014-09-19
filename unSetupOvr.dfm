@@ -29,7 +29,7 @@ object fmSetupOvr: TfmSetupOvr
   object LabelWordChars: TTntLabel
     Left = 160
     Top = 244
-    Width = 215
+    Width = 116
     Height = 13
     Caption = 'Word chars (additional):'
   end
@@ -60,7 +60,7 @@ object fmSetupOvr: TfmSetupOvr
   object ListLex: TTntListBox
     Left = 8
     Top = 20
-    Width = 145
+    Width = 140
     Height = 321
     ItemHeight = 13
     Sorted = True
