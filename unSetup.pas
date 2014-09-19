@@ -1489,30 +1489,26 @@ end;
 procedure TfmSetup.ListColorsDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 const
-  cw = 16; //color rect width
+  cRect = 25; //color rect width
+  cTxt = 5;
   cNone = '?';
 var
   NFont: TColor;
   R1, R2: TRect;
 begin
-  R1:= Types.Rect(Rect.Left+1, Rect.Top, Rect.Left+cw, Rect.Bottom);
-  R2:= Types.Rect(Rect.Left+cw+3, Rect.Top, Rect.Right, Rect.Bottom);
+  R1:= Types.Rect(Rect.Left+1, Rect.Top, Rect.Left+cRect, Rect.Bottom);
+  R2:= Types.Rect(Rect.Left+cRect+cTxt, Rect.Top, Rect.Right, Rect.Bottom);
   with ListColors.Canvas do
   begin
     Brush.Color:= clWindow;
     FillRect(Rect);
     Brush.Color:= ColorsSetup[cColorsOrder[Index]];
+
     if Brush.Color<>clNone then
+      //draw colored bar
       FillRect(R1)
     else
     begin
-      {
-      //fill using diagonal lines
-      Brush.Style:= bsBDiagonal;
-      Brush.Color:= clWhite;
-      FillRect(R1);
-      Brush.Style:= bsSolid;
-      }
       //draw "?" char
       NFont:= Font.Color;
       Font.Color:= clWindowText;
