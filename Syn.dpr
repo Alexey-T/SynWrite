@@ -1,5 +1,5 @@
 {
-SynWrite exe project..
+SynWrite exe project...
 }
 program Syn;
 
