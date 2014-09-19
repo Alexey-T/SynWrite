@@ -586,8 +586,8 @@ const
     'Tab-border-active', //57
     'Tab-border-passive', //58
     'Tab-caption-modified', //59
-    'Ftp-log-blue', //60
-    'Ftp-log-green', //61
+    'Ftp-log-notif', //60
+    'Ftp-log-server', //61
     'Ftp-log-error' //62
     );
 
