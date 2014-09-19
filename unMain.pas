@@ -344,7 +344,7 @@ type
   end;
 
 const
-  cColorsNum = 60;
+  cColorsNum = 63;
 type
   TSynColors = array[0..cColorsNum-1] of TColor;
 
@@ -2964,6 +2964,9 @@ type
     opUnicodeNeeded: integer;
     opTabColors: array[0..Pred(cTabColors)] of integer;
     opClipHook: boolean;
+    opColorFtpBlue,
+    opColorFtpGreen,
+    opColorFtpRed: integer;
     opColorAcpText: integer;
     opColorAcpBg: integer;
     opColorCaretsGutter: integer;
@@ -21594,6 +21597,10 @@ begin
       begin
         FSynAction(FForm, cActionSetColor, Pointer(cColorId_Text), Pointer(Tree.Font.Color), nil, nil);
         FSynAction(FForm, cActionSetColor, Pointer(cColorId_Back), Pointer(Tree.Color), nil, nil);
+        //
+        FSynAction(FForm, cActionSetColor, Pointer(cColorId_LogNormal), Pointer(opColorFtpBlue), nil, nil);
+        FSynAction(FForm, cActionSetColor, Pointer(cColorId_LogServer), Pointer(opColorFtpGreen), nil, nil);
+        FSynAction(FForm, cActionSetColor, Pointer(cColorId_LogError), Pointer(opColorFtpRed), nil, nil);
       end;
 end;
 
@@ -25436,6 +25443,9 @@ begin
   opColorTabBorderActive:= C[57];
   opColorTabBorderPassive:= C[58];
   opColorTabTextMod:= C[59];
+  opColorFtpBlue:= C[60];
+  opColorFtpGreen:= C[61];
+  opColorFtpRed:= C[62];
 
   //fonts
   Ed.Font.Assign(TemplateEditor.Font);
@@ -25474,6 +25484,10 @@ begin
 
   opColorLink:= clBlue;
   opColorMap:= clSkyBlue;
+
+  opColorFtpBlue:= RGB(0, 0, 200);
+  opColorFtpGreen:= RGB(0, 200, 0);
+  opColorFtpRed:= clRed;
 
   C[0]:= TemplateEditor.Font.Color;
   C[1]:= TemplateEditor.Color;
@@ -25535,6 +25549,9 @@ begin
   C[57]:= opColorTabBorderActive;
   C[58]:= opColorTabBorderPassive;
   C[59]:= opColorTabTextMod;
+  C[60]:= opColorFtpBlue;
+  C[61]:= opColorFtpGreen;
+  C[62]:= opColorFtpRed;
 end;
 
 procedure TfmMain.DoHandleQuickSearchEscape;

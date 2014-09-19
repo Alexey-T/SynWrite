@@ -585,11 +585,14 @@ const
     'Tab-BG-passive-over', //56
     'Tab-border-active', //57
     'Tab-border-passive', //58
-    'Tab-caption-modified' //59
+    'Tab-caption-modified', //59
+    'Ftp-log-blue', //60
+    'Ftp-log-green', //61
+    'Ftp-log-error' //62
     );
 
 const
-  cColorsOrder: array[0..52] of Integer = (
+  cColorsOrder: array[0..55] of Integer = (
     0,
     1,
     9,
@@ -646,7 +649,10 @@ const
     54,
     55,
     12,
-    13
+    13,
+    60,
+    61,
+    62
     );
 
 implementation
