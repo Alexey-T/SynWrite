@@ -1585,6 +1585,10 @@ procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
     PosRight:= Ed.CaretToMouse(NPosEnd-1, Line);
     NPosBottom:= PosLeft.Y + Ed.DefLineHeight;
 
+    //fix for word-wrap: for line end posright.x can be lefter
+    if PosRight.X<PosLeft.X then
+      PosRight.X:= PosLeft.X+ecTextExtent(C, StrItem).cx;
+
     C.Brush.Color:= NColor;
     C.FillRect(Types.Rect(
       PosLeft.X,
@@ -1595,7 +1599,7 @@ procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
   end;
   //
 const
-  cMaxCount = 10;  
+  cMaxCount = 10;
 var
   C: TCanvas;
   Ed: TSyntaxMemo;
@@ -1625,7 +1629,7 @@ begin
     while (NPos<=Length(Str)) and IsWordChar(Str[NPos]) do Inc(NPos);
     StrItem:= Copy(Str, NPosStart, NPos-NPosStart);
 
-    DoColorize(Ed, C, StrItem, NPosStart-1 {-1 for "#" char}, NPos, NUnderSize);
+    DoColorize(Ed, C, StrItem, NPosStart {-1 for "#" char}, NPos, NUnderSize);
     Dec(NPos);
 
     Inc(NCount);
