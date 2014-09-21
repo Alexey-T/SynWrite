@@ -1553,51 +1553,11 @@ begin
 end;
 
 
-const
-  cRegexColorRgb = '\bRGBA?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\,?\s*(\d*\.?\d+)?\s*\)';
-
 procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
   Rect: TRect; Line: Integer);
-  //
-  procedure DoColorize(Ed: TSyntaxMemo;
-    C: TCanvas;
-    const StrItem: Widestring;
-    NPosStart, NPosEnd, NUnderSize: Integer);
-  var
-    PosLeft, PosRight: TPoint;
-    NPosBottom, NColor: Integer;
-    ResStart, ResLen: TSynIntArray4;
-  begin
-    //#rrggbb
-    if IsHexColorString(StrItem) then
-      NColor:= SHtmlCodeToColor(StrItem)
-    else
-    //rgb(...)
-    if SFindRegexEx(StrItem, cRegexColorRgb, 1, ResStart, ResLen) then
-      NColor:= RGB(
-        StrToIntDef(Copy(StrItem, ResStart[1], ResLen[1]), 0),
-        StrToIntDef(Copy(StrItem, ResStart[2], ResLen[2]), 0),
-        StrToIntDef(Copy(StrItem, ResStart[3], ResLen[3]), 0))
-    else
-      Exit;
-
-    PosLeft:= Ed.CaretToMouse(NPosStart-1, Line);
-    PosRight:= Point(PosLeft.X+ecTextExtent(C, StrItem).cx, 0);
-    NPosBottom:= PosLeft.Y + Ed.DefLineHeight;
-
-    C.Brush.Color:= NColor;
-    C.FillRect(Types.Rect(
-      PosLeft.X,
-      NPosBottom - NUnderSize,
-      PosRight.X,
-      NPosBottom
-      ));
-  end;
-  //
 const
-  cMaxCount = 10;
+  cMaxCount = 10; //max count of colored items per line
 var
-  C: TCanvas;
   Ed: TSyntaxMemo;
   Str, StrItem: Widestring;
   NPos, NPosStart, NCount, NUnderSize: Integer;
@@ -1605,9 +1565,9 @@ var
 begin
   NUnderSize:= TfmMain(Owner).opUnderlineColored;
   if NUnderSize<=0 then Exit;
+  if Line<0 then Exit;
 
   Ed:= Sender as TSyntaxMemo;
-  C:= Ed.Canvas;
   Str:= EditorMaster.TextSource.Lines[Line];
 
   //#rrggbb
@@ -1625,7 +1585,7 @@ begin
     while (NPos<=Length(Str)) and IsWordChar(Str[NPos]) do Inc(NPos);
     StrItem:= Copy(Str, NPosStart, NPos-NPosStart);
 
-    DoColorize(Ed, C, StrItem, NPosStart {-1 for "#" char}, NPos, NUnderSize);
+    EditorUnderlineColorItem(Ed, StrItem, Line, NPosStart, NPos, NUnderSize);
     Dec(NPos);
 
     Inc(NCount);
@@ -1638,7 +1598,7 @@ begin
   repeat
     if not SFindRegexEx(Str, cRegexColorRgb, NPos, ResStart, ResLen) then Break;
     StrItem:= Copy(Str, ResStart[0], ResLen[0]);
-    DoColorize(Ed, C, StrItem, ResStart[0], ResStart[0]+ResLen[0], NUnderSize);
+    EditorUnderlineColorItem(Ed, StrItem, Line, ResStart[0], ResStart[0]+ResLen[0], NUnderSize);
     NPos:= ResStart[0]+ResLen[0];
 
     Inc(NCount);

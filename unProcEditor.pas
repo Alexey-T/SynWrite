@@ -7,6 +7,7 @@ uses
   TntClasses,
   Types,
   Forms,
+  Graphics,
 
   ecSyntAnal,
   ecSyntMemo,
@@ -21,6 +22,13 @@ function EditorGetBlockStaple(Ed: TSyntaxMemo; PosX, PosY: Integer): TBlockStapl
 procedure EditorSetCaretShape(Ed: TSyntaxMemo; Opt: Integer);
 function EditorGetColorPropertyById(Ed: TSyntaxMemo; const Id: string): Longint;
 procedure EditorSetColorPropertyById(Ed: TSyntaxMemo; const Id: string; Color: Longint);
+
+procedure EditorUnderlineColorItem(Ed: TSyntaxMemo;
+  const StrItem: Widestring;
+  NLine, NPosStart, NPosEnd, NUnderSize: Integer);
+
+const
+  cRegexColorRgb = '\bRGBA?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\,?\s*(\d*\.?\d+)?\s*\)';
 
 function EditorFormatHexCode(Ed: TSyntaxMemo; const SHexCode: string): string;
 procedure EditorInsertColorCode(Ed: TSyntaxMemo; Code: Integer);
@@ -202,6 +210,7 @@ uses
   TntWideStrUtils,
   ATxSProc,
   IniFiles,
+  unProc,
   ecCmdConst,
   ecExports;
 
@@ -3372,7 +3381,43 @@ begin
       SyntMemo:= PrevEd;
       Title:= PrevTitle;
     end;
-  end;  
+  end;
+end;
+
+procedure EditorUnderlineColorItem(Ed: TSyntaxMemo;
+  const StrItem: Widestring;
+  NLine, NPosStart, NPosEnd, NUnderSize: Integer);
+var
+  PosLeft: TPoint;
+  NPosBottom, NColor, NItemWidth: Integer;
+  ResStart, ResLen: TSynIntArray4;
+  C: TCanvas;
+begin
+  C:= Ed.Canvas;
+
+  //#rrggbb
+  if IsHexColorString(StrItem) then
+    NColor:= SHtmlCodeToColor(StrItem)
+  else
+  //rgb(...)
+  if SFindRegexEx(StrItem, cRegexColorRgb, 1, ResStart, ResLen) then
+    NColor:= RGB(
+      StrToIntDef(Copy(StrItem, ResStart[1], ResLen[1]), 0),
+      StrToIntDef(Copy(StrItem, ResStart[2], ResLen[2]), 0),
+      StrToIntDef(Copy(StrItem, ResStart[3], ResLen[3]), 0))
+  else
+    Exit;
+
+  PosLeft:= Ed.CaretToMouse(NPosStart-1, NLine);
+  NItemWidth:= ecTextExtent(C, StrItem).cx;
+  NPosBottom:= PosLeft.Y + Ed.DefLineHeight;
+
+  C.Brush.Color:= NColor;
+  C.FillRect(Types.Rect(
+    PosLeft.X,
+    NPosBottom - NUnderSize,
+    PosLeft.X + NItemWidth,
+    NPosBottom));
 end;
 
 
