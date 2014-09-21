@@ -1582,12 +1582,8 @@ procedure TEditorFrame.EditorMasterAfterLineDraw(Sender: TObject;
       Exit;
 
     PosLeft:= Ed.CaretToMouse(NPosStart-1, Line);
-    PosRight:= Ed.CaretToMouse(NPosEnd-1, Line);
+    PosRight:= Point(PosLeft.X+ecTextExtent(C, StrItem).cx, 0);
     NPosBottom:= PosLeft.Y + Ed.DefLineHeight;
-
-    //fix for word-wrap: for line end posright.x can be lefter
-    if PosRight.X<PosLeft.X then
-      PosRight.X:= PosLeft.X+ecTextExtent(C, StrItem).cx;
 
     C.Brush.Color:= NColor;
     C.FillRect(Types.Rect(
