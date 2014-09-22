@@ -1185,14 +1185,17 @@ object fmMain: TfmMain
           object TBXItemECpFN: TSpTBXItem
             Caption = 'Copy filename to clipboard'
             OnClick = TBXItemECpFNClick
+            OnSelect = ButtonOnSelect
           end
           object TBXItemECpFullPath: TSpTBXItem
             Caption = 'Copy full path to clipboard'
             OnClick = TBXItemECpFullPathClick
+            OnSelect = ButtonOnSelect
           end
           object TBXItemECpDirPath: TSpTBXItem
             Caption = 'Copy dir path to clipboard'
             OnClick = TBXItemECpDirPathClick
+            OnSelect = ButtonOnSelect
           end
         end
         object TBXSubmenuItem16: TSpTBXSubmenuItem
@@ -1279,10 +1282,12 @@ object fmMain: TfmMain
           object TBXItemEExtractDupCase: TSpTBXItem
             Caption = 'Extract duplicates (case-sensitive)'
             OnClick = TBXItemEExtractDupCaseClick
+            OnSelect = ButtonOnSelect
           end
           object TBXItemEExtractDupNoCase: TSpTBXItem
             Caption = 'Extract duplicates (case-insensitive)'
             OnClick = TBXItemEExtractDupNoCaseClick
+            OnSelect = ButtonOnSelect
           end
           object TBXSeparatorItem68: TSpTBXSeparatorItem
           end
@@ -1294,6 +1299,7 @@ object fmMain: TfmMain
           object TBXItemEShuffle: TSpTBXItem
             Caption = 'Shuffle lines'
             OnClick = TBXItemEShuffleClick
+            OnSelect = ButtonOnSelect
           end
         end
         object TBXSubmenuItem1: TSpTBXSubmenuItem
