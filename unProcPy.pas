@@ -352,7 +352,7 @@ function Py_ed_insert_snippet(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H: Integer;
   P1, P2: PAnsiChar;
-  Str1, Str2: Widestring;
+  Str1, Str2, StrFN: Widestring;
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
@@ -361,7 +361,8 @@ begin
       Str1:= UTF8Decode(AnsiString(P1));
       Str2:= UTF8Decode(AnsiString(P2));
       Ed:= PyEditor(H);
-      EditorInsertSnippet(Ed, Str1, Str2);
+      StrFN:= ''; //{fname} not supported in API
+      EditorInsertSnippet(Ed, Str1, Str2, StrFN);
       Result:= ReturnNone;
     end;
 end;

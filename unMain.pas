@@ -3330,7 +3330,7 @@ function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.8.1542';
+  cSynVer = '6.8.1545';
   cSynPyVer = '1.0.138';
 
 const
@@ -18949,7 +18949,11 @@ begin
       Ed.ClearSelection;
       Ed.CaretStrPos:= Ed.CaretStrPos - Length(StrId);
       Ed.DeleteText(Length(StrId));
-      EditorInsertSnippet(Ed, TSynSnippetClass(FListSnippets[NSnipIndex]).Info.Text, StrSelText);
+      EditorInsertSnippet(Ed,
+        TSynSnippetClass(FListSnippets[NSnipIndex]).Info.Text,
+        StrSelText,
+        FrameOfEditor(Ed).FileName
+        );
     finally
       Ed.EndUpdate;
     end;
@@ -27521,7 +27525,7 @@ begin
         Ed.CaretStrPos:= Ed.CaretStrPos - Length(SInitialText);
         Ed.DeleteText(Length(SInitialText));
       end;
-      EditorInsertSnippet(Ed, SSnippetText, SSelText);
+      EditorInsertSnippet(Ed, SSnippetText, SSelText, FrameOfEditor(Ed).FileName);
     finally
       Ed.EndUpdate;
     end;

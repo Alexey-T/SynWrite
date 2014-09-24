@@ -50,7 +50,7 @@ function EditorGetBookmarkDesc(Ed: TSyntaxMemo;
 procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
 function EditorGetBottomLineIndex(Ed: TSyntaxMemo): Integer;
 function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
-procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText: Widestring);
+procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText, AFilename: Widestring);
 
 function EditorMouseCursorOnNumbers(Ed: TSyntaxMemo): boolean;
 function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
@@ -2630,7 +2630,7 @@ begin
   Result:= SDecodeW(StrSnippet, Decode);
 end;
 
-procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText: Widestring);
+procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText, AFilename: Widestring);
 var
   NInsertStart: Integer;
   NInsertPos: array[0..100] of Integer;
@@ -2724,7 +2724,7 @@ begin
     if SId='date' then
     begin
       SVal:= FormatDateTime(SVal, Now);
-    end;  
+    end;
 
     if SId='sel' then
     begin
@@ -2734,6 +2734,11 @@ begin
     if SId='cp' then
     begin
       SVal:= SIndentedSnippetString(Str, TntClipboard.AsWideText, EditorEOL(Ed), #13#10, NStart);
+    end;
+
+    if SId='fname' then
+    begin
+      SVal:= WideChangeFileExt(WideExtractFileName(AFilename), '');
     end;
 
     Delete(Str, NStart, NEnd-NStart+1);
