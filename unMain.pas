@@ -117,6 +117,7 @@ type
     cSynEventOnFuncHint,
     cSynEventOnGotoDef,
     cSynEventOnConsole,
+    cSynEventOnPanelLog,
     cSynEventOnCompare
     );
   TSynPyEvents = set of TSynPyEvent;
@@ -138,6 +139,7 @@ const
     'on_func_hint',
     'on_goto_def',
     'on_console',
+    'on_panel_log',
     'on_compare'
     );
 
@@ -2358,6 +2360,7 @@ type
       const AActionName: Widestring): Widestring;
 
     function DoPlugin_PanelHandleToIndex(AHandle: Pointer): Integer;
+    function DoPlugin_PanelFN(Index: Integer): Widestring;
     function DoPlugin_PanelCaption(Index: Integer): Widestring;
     procedure DoPlugin_PanelTabClick(N: Integer);
     procedure DoPlugin_CommandClick(Sender: TObject);
@@ -3115,7 +3118,7 @@ type
     function PluginAction_ParseRegex(const SRegex, SStr: Widestring; var Res: TSynRegexArray): Integer;
     function PluginAction_SetCaretPos(AX, AY: Integer): Integer;
     function PluginAction_SuggestCompletion(const Str: PWideChar; NChars: Integer; ShowPopup: boolean): Integer;
-    function PluginAction_ControlLog(const AMsg: Widestring; const ACmd: Integer; AColor: TColor): Integer;
+    function PluginAction_ControlLog(const AMsg: Widestring; const ACmd: Integer; AColor: TColor; const APluginName: string): Integer;
     function PluginAction_ShowHint(const AMsg: Widestring): Integer;
     function PluginAction_GetMsg(const ADllFN, AMsg: Widestring; AResult: PWideChar): Integer;
     function PluginAction_GetOpenedFN(id: Integer; ptr: PWideChar): Integer;
@@ -3329,7 +3332,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.8.1545';
+  cSynVer = '6.8.1560';
   cSynPyVer = '1.0.139';
 
 const
@@ -21067,6 +21070,13 @@ begin
         TabsLeft.AddTab(-1, SCaption);
 end;
 
+function TfmMain.DoPlugin_PanelFN(Index: Integer): Widestring;
+begin
+  Result:= '';
+  if Index<0 then Exit;
+  Result:= ExtractFileName(FPluginsPanel[Index].SFileName);
+end;
+
 function TfmMain.DoPlugin_PanelCaption(Index: Integer): Widestring;
 begin
   Result:= '';
@@ -21493,7 +21503,8 @@ begin
   //---------------------
   if (act=cActionControlLog) then
   begin
-    Result:= PluginAction_ControlLog(PWChar(A1), Integer(A2), Integer(A3));
+    Result:= PluginAction_ControlLog(PWChar(A1), Integer(A2), Integer(A3),
+      DoPlugin_PanelFN(DoPlugin_PanelHandleToIndex(AHandle)));
     Exit
   end;
 
@@ -21614,7 +21625,8 @@ begin
   Result:= cSynOK;
 end;
 
-function TfmMain.PluginAction_ControlLog(const AMsg: Widestring; const ACmd: Integer; AColor: TColor): Integer;
+function TfmMain.PluginAction_ControlLog(const AMsg: Widestring;
+  const ACmd: Integer; AColor: TColor; const APluginName: string): Integer;
 var
   S: Widestring;
   D: TATTabData;
@@ -21625,22 +21637,38 @@ begin
       begin
         TabsOut.TabIndex:= Ord(tbOutput);
       end;
+
     cSynLogCmdShow:
       begin
         TabsOut.TabIndex:= Ord(tbPluginsLog);
         plOut.Show;
       end;
+
     cSynLogCmdAddLine:
       begin
         if opDateFmtPLog<>'' then
           S:= FormatDateTime(opDateFmtPLog, Now) + ' '
         else
           S:= '';
-        ListPLog.Items.AddObject(S + AMsg, Pointer(AColor));
-        ListPLog.ItemIndex:= ListPLog.Items.Count-1;
+
+        ListPLog.Items.BeginUpdate;
+        try
+          ListPLog.Items.AddObject(S + AMsg, Pointer(AColor));
+          ListPLog.ItemIndex:= ListPLog.Items.Count-1;
+        finally
+          ListPLog.Items.EndUpdate;
+        end;
+
+        DoPyEvent(CurrentEditor, cSynEventOnPanelLog, [
+          SWideStringToPythonString(APluginName),
+          SWideStringToPythonString(AMsg),
+          SWideStringToPythonString(S)
+          ]);
       end;
+
     cSynLogCmdClear:
       ListPLog.Items.Clear;
+
     cSynLogCmdSetCaption:
       begin
         D:= TabsOut.GetTabData(Ord(tbPluginsLog));
