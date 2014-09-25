@@ -191,6 +191,7 @@ function MsgConfirm(const S: Widestring; H: THandle; IsQuestion: boolean = false
 function MsgConfirmYesNoCancel(const S: Widestring; H: THandle; CanCancel: boolean): Integer;
 procedure MsgExcept(const S: Widestring; E: Exception; H: THandle);
 procedure MsgRenameError(const fnPrev, fnNew: Widestring; H: THandle);
+function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 
 type
   TSynTaskDialogResult = (taskResYes, taskResNo, taskResYesAll, taskResNoAll);
@@ -311,9 +312,14 @@ end;
 
 procedure MsgRenameError(const fnPrev, fnNew: Widestring; H: THandle);
 const
-  cArrow = #151'>';
+  cArrow = '-->';
 begin
   MsgError(DKLangConstW('zMRenameErr')+#13+fnPrev+#13+cArrow+#13+fnNew, H);
+end;
+
+function MsgInput(const dkmsg: string; var S: Widestring): boolean;
+begin
+  Result:= DoInputString(DKLangConstW(dkmsg), S);
 end;
 
 function MsgConfirm(const S: Widestring; H: THandle; IsQuestion: boolean = false): boolean;

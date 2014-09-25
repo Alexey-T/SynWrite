@@ -351,18 +351,18 @@ end;
 function Py_ed_insert_snippet(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H: Integer;
-  P1, P2: PAnsiChar;
-  Str1, Str2, StrFN: Widestring;
+  P1, P2, P3: PAnsiChar;
+  Str1, Str2, Str3: Widestring;
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iss:insert_snippet', @H, @P1, @P2)) then
+    if Bool(PyArg_ParseTuple(Args, 'isss:insert_snippet', @H, @P1, @P2, @P3)) then
     begin
+      Ed:= PyEditor(H);
       Str1:= UTF8Decode(AnsiString(P1));
       Str2:= UTF8Decode(AnsiString(P2));
-      Ed:= PyEditor(H);
-      StrFN:= ''; //{fname} not supported in API
-      EditorInsertSnippet(Ed, Str1, Str2, StrFN);
+      Str3:= UTF8Decode(AnsiString(P3));
+      EditorInsertSnippet(Ed, Str1, Str2, Str3);
       Result:= ReturnNone;
     end;
 end;

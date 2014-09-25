@@ -3326,12 +3326,11 @@ function MsgConfirmBinary(const fn: WideString; H: THandle): boolean;
 function MsgConfirmCreate(const fn: Widestring; H: THandle): boolean;
 procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
-function MsgInput(const dkmsg: string; var S: Widestring): boolean;
 function SynAppdataDir: string;
 
 const
   cSynVer = '6.8.1545';
-  cSynPyVer = '1.0.138';
+  cSynPyVer = '1.0.139';
 
 const
   cSynParamRO = '/ro';
@@ -20589,11 +20588,6 @@ begin
     MemoConsole.Font.Name:= cc;
     edConsole.Font.Name:= cc;
   end;
-end;
-
-function MsgInput(const dkmsg: string; var S: Widestring): boolean;
-begin
-  Result:= DoInputString(DKLangConstW(dkmsg), S);
 end;
 
 procedure TfmMain.TBXTabColorChange(Sender: TObject);
