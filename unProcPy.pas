@@ -362,7 +362,7 @@ begin
       Str1:= UTF8Decode(AnsiString(P1));
       Str2:= UTF8Decode(AnsiString(P2));
       Str3:= UTF8Decode(AnsiString(P3));
-      EditorInsertSnippet(Ed, Str1, Str2, Str3, false);
+      EditorInsertSnippet(Ed, Str1, Str2, Str3);
       Result:= ReturnNone;
     end;
 end;

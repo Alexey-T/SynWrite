@@ -63,7 +63,6 @@ uses
   PythonGUIInputOutput;
 
 const
-  opSnippetsAutoIndent = false; //used by EditorInsertSnippet
   opMruForPlugin = false; //use recent list for Lister-plugin
   cMaxFilesInFolder = 50; //if more folder in dir, show confirmation for "Syn.exe dir"
   cTabColors = 10; //number of user-defined tab colors
@@ -18955,9 +18954,7 @@ begin
       EditorInsertSnippet(Ed,
         TSynSnippetClass(FListSnippets[NSnipIndex]).Info.Text,
         StrSelText,
-        FrameOfEditor(Ed).FileName,
-        opSnippetsAutoIndent
-        );
+        FrameOfEditor(Ed).FileName);
     finally
       Ed.EndUpdate;
     end;
@@ -27549,8 +27546,7 @@ begin
         Ed.CaretStrPos:= Ed.CaretStrPos - Length(SInitialText);
         Ed.DeleteText(Length(SInitialText));
       end;
-      EditorInsertSnippet(Ed, SSnippetText, SSelText,
-        FrameOfEditor(Ed).FileName, opSnippetsAutoIndent);
+      EditorInsertSnippet(Ed, SSnippetText, SSelText, FrameOfEditor(Ed).FileName);
     finally
       Ed.EndUpdate;
     end;

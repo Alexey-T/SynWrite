@@ -50,10 +50,10 @@ function EditorGetBookmarkDesc(Ed: TSyntaxMemo;
 procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
 function EditorGetBottomLineIndex(Ed: TSyntaxMemo): Integer;
 function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
-procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText, AFilename: Widestring;
-  AutoIndent: boolean);
+procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText, AFilename: Widestring);
 
 function EditorMouseCursorOnNumbers(Ed: TSyntaxMemo): boolean;
+function EditorIndentStringForLine(Ed: TSyntaxMemo; Line: Integer): Widestring;
 function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
 procedure EditorUpdateCaretPosFromMousePos(Ed: TSyntaxMemo);
 procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
@@ -2607,6 +2607,20 @@ begin
     SReplaceAllW(Result, EditorTabExpansion(Ed), #9);
 end;
 
+function EditorIndentStringForLine(Ed: TSyntaxMemo; Line: Integer): Widestring;
+var
+  i: Integer;
+  S: Widestring;
+begin
+  Result:= '';
+  if (Line>=0) and (Line<Ed.Lines.Count) then
+  begin
+    S:= Ed.Lines[Line];
+    for i:= 1 to Length(S) do
+      if not IsSpaceChar(S[i]) then
+        begin Result:= Copy(S, 1, i-1); Exit end;
+  end;      
+end;
 
 function SIndentedSnippetString(const StrText, StrSnippet, StrTextEol, StrSnippetEol: Widestring; NStart: Integer): Widestring;
 var
@@ -2632,8 +2646,7 @@ begin
 end;
 
 procedure EditorInsertSnippet(Ed: TSyntaxMemo;
-  const AText, ASelText, AFilename: Widestring;
-  AutoIndent: boolean);
+  const AText, ASelText, AFilename: Widestring);
 var
   NInsertStart: Integer;
   NInsertPos: array[0..100] of Integer;
@@ -2662,9 +2675,7 @@ var
   NMirrorCnt: Integer;
 begin
   Decode.SFrom:= #13;
-  Decode.STo:= EditorEOL(Ed);
-  if AutoIndent then
-    Decode.STo:= Decode.STo + EditorIndentStringForPos(Ed, Ed.CaretPos);
+  Decode.STo:= EditorEOL(Ed) + EditorIndentStringForLine(Ed, Ed.CurrentLine);
   Str:= SDecodeW(AText, Decode);
 
   //snippet may have Tabs
