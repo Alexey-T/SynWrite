@@ -50,7 +50,8 @@ function EditorGetBookmarkDesc(Ed: TSyntaxMemo;
 procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
 function EditorGetBottomLineIndex(Ed: TSyntaxMemo): Integer;
 function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
-procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText, AFilename: Widestring);
+procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText, AFilename: Widestring;
+  AutoIndent: boolean);
 
 function EditorMouseCursorOnNumbers(Ed: TSyntaxMemo): boolean;
 function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
@@ -2630,7 +2631,9 @@ begin
   Result:= SDecodeW(StrSnippet, Decode);
 end;
 
-procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText, AFilename: Widestring);
+procedure EditorInsertSnippet(Ed: TSyntaxMemo;
+  const AText, ASelText, AFilename: Widestring;
+  AutoIndent: boolean);
 var
   NInsertStart: Integer;
   NInsertPos: array[0..100] of Integer;
@@ -2659,7 +2662,9 @@ var
   NMirrorCnt: Integer;
 begin
   Decode.SFrom:= #13;
-  Decode.STo:= EditorEOL(Ed) + EditorIndentStringForPos(Ed, Ed.CaretPos);
+  Decode.STo:= EditorEOL(Ed);
+  if AutoIndent then
+    Decode.STo:= Decode.STo + EditorIndentStringForPos(Ed, Ed.CaretPos);
   Str:= SDecodeW(AText, Decode);
 
   //snippet may have Tabs

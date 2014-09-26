@@ -63,8 +63,9 @@ uses
   PythonGUIInputOutput;
 
 const
-  cMaxFilesInFolder = 50;
+  opSnippetsAutoIndent = false; //used by EditorInsertSnippet
   opMruForPlugin = false; //use recent list for Lister-plugin
+  cMaxFilesInFolder = 50; //if more folder in dir, show confirmation for "Syn.exe dir"
   cTabColors = 10; //number of user-defined tab colors
   cFixedWindowItems = 5; //number of fixed items in Window menu
   cMaxTreeLen = 250; //"find in files" result tree: max node length
@@ -18954,7 +18955,8 @@ begin
       EditorInsertSnippet(Ed,
         TSynSnippetClass(FListSnippets[NSnipIndex]).Info.Text,
         StrSelText,
-        FrameOfEditor(Ed).FileName
+        FrameOfEditor(Ed).FileName,
+        opSnippetsAutoIndent
         );
     finally
       Ed.EndUpdate;
@@ -27547,7 +27549,8 @@ begin
         Ed.CaretStrPos:= Ed.CaretStrPos - Length(SInitialText);
         Ed.DeleteText(Length(SInitialText));
       end;
-      EditorInsertSnippet(Ed, SSnippetText, SSelText, FrameOfEditor(Ed).FileName);
+      EditorInsertSnippet(Ed, SSnippetText, SSelText,
+        FrameOfEditor(Ed).FileName, opSnippetsAutoIndent);
     finally
       Ed.EndUpdate;
     end;
