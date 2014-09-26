@@ -2608,18 +2608,10 @@ begin
 end;
 
 function EditorIndentStringForLine(Ed: TSyntaxMemo; Line: Integer): Widestring;
-var
-  i: Integer;
-  S: Widestring;
 begin
   Result:= '';
   if (Line>=0) and (Line<Ed.Lines.Count) then
-  begin
-    S:= Ed.Lines[Line];
-    for i:= 1 to Length(S) do
-      if not IsSpaceChar(S[i]) then
-        begin Result:= Copy(S, 1, i-1); Exit end;
-  end;      
+    Result:= SIndentOf(Ed.Lines[Line]);
 end;
 
 function SIndentedSnippetString(const StrText, StrSnippet, StrTextEol, StrSnippetEol: Widestring; NStart: Integer): Widestring;
@@ -2674,8 +2666,13 @@ var
   NIdStart, NIdEnd: Integer;
   NMirrorCnt: Integer;
 begin
+  //make string, which gives corrent indent
+  Str:= Ed.Lines[Ed.CurrentLine];
+  Insert('x', Str, Ed.CaretPos.X+1);
+
+  //replace #13 with real_eol + indent
   Decode.SFrom:= #13;
-  Decode.STo:= EditorEOL(Ed) + EditorIndentStringForLine(Ed, Ed.CurrentLine);
+  Decode.STo:= EditorEOL(Ed) + SIndentOf(Str);
   Str:= SDecodeW(AText, Decode);
 
   //snippet may have Tabs
