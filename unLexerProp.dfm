@@ -169,9 +169,9 @@ object fmLexerProp: TfmLexerProp
       end
       object ComboBox22: TComboBox
         Tag = 1
-        Left = 360
+        Left = 376
         Top = 84
-        Width = 226
+        Width = 210
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -328,18 +328,18 @@ object fmLexerProp: TfmLexerProp
         OnExit = SyntaxMemo7Exit
       end
       object Edit7: TTntEdit
-        Left = 480
+        Left = 496
         Top = 264
-        Width = 106
+        Width = 90
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 11
       end
       object ComboBox1: TComboBox
         Tag = 2
-        Left = 360
+        Left = 376
         Top = 108
-        Width = 226
+        Width = 210
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -349,9 +349,9 @@ object fmLexerProp: TfmLexerProp
       end
       object ComboBox2: TComboBox
         Tag = 3
-        Left = 360
+        Left = 376
         Top = 132
-        Width = 226
+        Width = 210
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -382,9 +382,9 @@ object fmLexerProp: TfmLexerProp
         OnClick = CheckBox3Click
       end
       object ComboBox7: TComboBox
-        Left = 360
+        Left = 376
         Top = 60
-        Width = 226
+        Width = 210
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -393,9 +393,9 @@ object fmLexerProp: TfmLexerProp
         OnChange = ComboBox7Change
       end
       object Edit14: TTntEdit
-        Left = 360
+        Left = 376
         Top = 288
-        Width = 227
+        Width = 211
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 12
@@ -413,9 +413,9 @@ object fmLexerProp: TfmLexerProp
       end
       object ComboBox8: TComboBox
         Tag = 4
-        Left = 360
+        Left = 376
         Top = 156
-        Width = 226
+        Width = 210
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -424,9 +424,9 @@ object fmLexerProp: TfmLexerProp
         OnChange = ComboBox7Change
       end
       object CharSet_Combo: TComboBox
-        Left = 360
+        Left = 376
         Top = 312
-        Width = 228
+        Width = 212
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -752,7 +752,7 @@ object fmLexerProp: TfmLexerProp
             Caption = 'Position in line:'
           end
           object Label12: TTntLabel
-            Left = 178
+            Left = 114
             Top = 80
             Width = 22
             Height = 13
@@ -760,7 +760,7 @@ object fmLexerProp: TfmLexerProp
             Caption = 'from'
           end
           object Label13: TTntLabel
-            Left = 319
+            Left = 239
             Top = 80
             Width = 10
             Height = 13
@@ -849,7 +849,7 @@ object fmLexerProp: TfmLexerProp
             OnClick = CheckBox27Click
           end
           object Edit10: TTntEdit
-            Left = 208
+            Left = 144
             Top = 76
             Width = 49
             Height = 21
@@ -857,7 +857,7 @@ object fmLexerProp: TfmLexerProp
             OnExit = Edit10Exit
           end
           object Edit11: TTntEdit
-            Left = 336
+            Left = 256
             Top = 76
             Width = 53
             Height = 21
@@ -966,7 +966,7 @@ object fmLexerProp: TfmLexerProp
             FocusControl = Edit1
           end
           object Label20: TTntLabel
-            Left = 189
+            Left = 181
             Top = 56
             Width = 56
             Height = 13
@@ -1070,7 +1070,7 @@ object fmLexerProp: TfmLexerProp
           end
           object Edit2: TTntEdit
             Tag = 1
-            Left = 249
+            Left = 241
             Top = 52
             Width = 33
             Height = 21
@@ -2318,7 +2318,7 @@ object fmLexerProp: TfmLexerProp
         TabOrder = 1
         object Label47: TTntLabel
           Left = 0
-          Top = 205
+          Top = 161
           Width = 416
           Height = 17
           Align = alTop
@@ -2336,7 +2336,7 @@ object fmLexerProp: TfmLexerProp
         end
         object Splitter5: TSplitter
           Left = 0
-          Top = 269
+          Top = 247
           Width = 416
           Height = 3
           Cursor = crVSplit
@@ -2344,7 +2344,7 @@ object fmLexerProp: TfmLexerProp
         end
         object Label49: TTntLabel
           Left = 0
-          Top = 272
+          Top = 250
           Width = 416
           Height = 17
           Align = alTop
@@ -2364,13 +2364,13 @@ object fmLexerProp: TfmLexerProp
           Left = 0
           Top = 0
           Width = 416
-          Height = 205
+          Height = 161
           Align = alTop
           BevelOuter = bvNone
           TabOrder = 0
           DesignSize = (
             416
-            205)
+            161)
           object Label45: TTntLabel
             Left = 8
             Top = 32
@@ -2490,14 +2490,17 @@ object fmLexerProp: TfmLexerProp
           end
           inline RuleStatesFrame1: TRuleStatesFrame
             Left = 0
-            Top = 126
+            Top = 136
             Width = 416
-            Height = 79
+            Height = 25
             Align = alBottom
             TabOrder = 9
             TabStop = True
+            Visible = False
             inherited GroupBox1: TGroupBox
               Width = 416
+              Height = 41
+              Visible = False
               inherited Label1: TLabel
                 Width = 41
               end
@@ -2515,7 +2518,9 @@ object fmLexerProp: TfmLexerProp
               end
             end
             inherited GroupBox2: TGroupBox
+              Top = 41
               Width = 416
+              Visible = False
               inherited Label3: TLabel
                 Width = 20
               end
@@ -2536,9 +2541,9 @@ object fmLexerProp: TfmLexerProp
         end
         object SyntaxMemo6: TSyntaxMemo
           Left = 0
-          Top = 289
+          Top = 267
           Width = 416
-          Height = 48
+          Height = 70
           Lines.Strings = (
             'SyntaxMemo6')
           TabList.AsString = '4'
@@ -2674,9 +2679,9 @@ object fmLexerProp: TfmLexerProp
         end
         object SyntaxMemo5: TSyntaxMemo
           Left = 0
-          Top = 222
+          Top = 178
           Width = 416
-          Height = 47
+          Height = 69
           Lines.Strings = (
             'SyntaxMemo5')
           TabList.AsString = '4'
@@ -2852,25 +2857,14 @@ object fmLexerProp: TfmLexerProp
           DesignSize = (
             145
             25)
-          object SpeedButton3: TTntSpeedButton
+          object SpeedButton3: TTntButton
             Left = 0
             Top = 0
             Width = 143
             Height = 22
             Anchors = [akLeft, akTop, akRight]
             Caption = 'Compile gramma'
-            Flat = True
-            Glyph.Data = {
-              F6000000424DF600000000000000760000002800000010000000100000000100
-              04000000000080000000CE0E0000C40E00001000000000000000000000000000
-              80000080000000808000800000008000800080800000C0C0C000808080000000
-              FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00777777777777
-              7777777777777777777777777744447777777777444444447777777444777744
-              4777777447777774477777447777777744777744777777774477774477777777
-              4477774477777777447777744777747447777774477774444777777777777444
-              7777777777777444477777777777777777777777777777777777}
-            ParentShowHint = False
-            ShowHint = True
+            TabOrder = 0
             OnClick = SpeedButton3Click
           end
         end
@@ -3226,14 +3220,14 @@ object fmLexerProp: TfmLexerProp
     BevelOuter = bvNone
     TabOrder = 2
     object Splitter7: TSplitter
-      Left = 121
+      Left = 145
       Top = 0
       Height = 195
     end
     object SyntaxMemo1: TSyntaxMemo
-      Left = 124
+      Left = 148
       Top = 0
-      Width = 477
+      Width = 453
       Height = 195
       SyntaxAnalyzer = FSynt
       TabList.AsString = '4'
@@ -3401,7 +3395,7 @@ object fmLexerProp: TfmLexerProp
     object SyntaxTreeView1: TSyntaxTreeView
       Left = 0
       Top = 0
-      Width = 121
+      Width = 145
       Height = 195
       SyntaxMemo = SyntaxMemo1
       AutoSynchronize = False

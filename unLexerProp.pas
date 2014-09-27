@@ -155,7 +155,7 @@ type
     Panel1: TTntPanel;
     TreeView1: TTreeView;
     Panel10: TTntPanel;
-    SpeedButton3: TTntSpeedButton;
+    SpeedButton3: TTntButton;
     Splitter6: TSplitter;
     SyntaxMemo9: TSyntaxMemo;
     SyntAnalyzer2: TSyntAnalyzer;
