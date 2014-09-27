@@ -75,9 +75,6 @@ type
     cbCase: TTntCheckBox;
     cbWords: TTntCheckBox;
     gScop: TTntGroupBox;
-    gDir: TTntGroupBox;
-    bFor: TTntRadioButton;
-    bBack: TTntRadioButton;
     bHelp: TTntButton;
     cbSpec: TTntCheckBox;
     DKLanguageController1: TDKLanguageController;
@@ -110,6 +107,7 @@ type
     cbReDot: TTntCheckBox;
     labTransp: TTntLabel;
     cbSelectAll: TTntCheckBox;
+    cbBack: TTntCheckBox;
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
@@ -290,8 +288,7 @@ begin
     CurChecked:= cbFromCur.Checked;
     cbSkipCol.Checked:= ReadBool('Search', 'SkipCol', false);
     cbWrap.Checked:= ReadBool('Search', 'Wrap', false);
-    bFor.Checked:= ReadBool('Search', 'Forw', true);
-    bBack.Checked:= not bFor.Checked;
+    cbBack.Checked:= not ReadBool('Search', 'Forw', true);
     cbRe.Checked:= ReadBool('Search', 'RegExp', false);
     cbReDot.Checked:= ReadBool('Search', 'RegExpS', false);
     cbCase.Checked:= ReadBool('Search', 'Case', false);
@@ -362,7 +359,7 @@ begin
     WriteBool('Search', 'SkipCol', cbSkipCol.Checked);
     WriteBool('Search', 'Wrap', cbWrap.Checked);
     //WriteBool('Search', 'SelOnly', bSel.Checked); //no need
-    WriteBool('Search', 'Forw', bFor.Checked);
+    WriteBool('Search', 'Forw', not cbBack.Checked);
     WriteBool('Search', 'RegExp', cbRe.Checked);
     WriteBool('Search', 'RegExpS', cbReDot.Checked);
     WriteBool('Search', 'Case', cbCase.Checked);
@@ -902,8 +899,7 @@ begin
   if H(cbLoose, ch1, ch2) then begin Handled:= true; Exit end;
 
   if H(cbSel, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(bFor, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(bBack, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbBack, ch1, ch2) then begin Handled:= true; Exit end;
   if H(cbFromCur, ch1, ch2) then begin Handled:= true; Exit end;
 
   if H(labEd1, ch1, ch2) then begin Handled:= true; Exit end;
@@ -1159,7 +1155,6 @@ begin
 
     labEd2.Top:= FTopLab2+IfThen(Value, dy);
     gOp.Top:= FTopGOpt+IfThen(Value, dy*2);
-    gDir.Top:= gOp.Top;
     gScop.Top:= FTopGScope+IfThen(Value, dy*2);
     Height:= FHeight0+IfThen(Value, dy*2);
 
@@ -1316,7 +1311,7 @@ begin
     IfThen(cbBkmkAll.Checked, cFindOptBookmk+',')+
     IfThen(cbSelectAll.Checked, cFindOptSelAll+',')+
     IfThen(cbExtSel.Checked, cFindOptExtSel+',')+
-    IfThen(bBack.Checked, cFindOptBack+',')+
+    IfThen(cbBack.Checked, cFindOptBack+',')+
     IfThen(cbSel.Checked, cFindOptSel+',')+
     IfThen(cbFromCur.Checked, cFindOptFromCur+',')+
     IfThen(cbWrap.Checked, cFindOptWrap+',')+

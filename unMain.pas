@@ -8480,7 +8480,7 @@ begin
   begin
     SText:= '';
     IsSel:= fmSR.cbSel.Checked;
-    IsForw:= fmSR.bFor.Checked;
+    IsForw:= not fmSR.cbBack.Checked;
     IsRe:= fmSR.cbRe.Checked;
     IsRe_s:= fmSR.cbReDot.Checked;
     //IsRe_m:= fmSR.cbReMulti.Checked;
@@ -8944,7 +8944,7 @@ begin
     if cbReDot.Checked then Finder.Flags:= Finder.Flags + [ftRegex_s];
     //if cbReMulti.Checked then Finder.Flags:= Finder.Flags + [ftRegex_m];
     if cbSel.Checked then Finder.Flags:= Finder.Flags + [ftSelectedText];
-    if bBack.Checked then Finder.Flags:= Finder.Flags + [ftBackward];
+    if cbBack.Checked then Finder.Flags:= Finder.Flags + [ftBackward];
     if cbCfm.Checked then Finder.Flags:= Finder.Flags + [ftPromtOnReplace];
     if cbWrap.Checked then Finder.Flags:= Finder.Flags + [ftWrapSearch];
     if cbSkipCol.Checked then Finder.Flags:= Finder.Flags + [ftSkipCollapsed];
