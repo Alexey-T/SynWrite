@@ -4,7 +4,7 @@ object fmSR: TfmSR
   ActiveControl = ed1
   BorderStyle = bsDialog
   ClientHeight = 233
-  ClientWidth = 649
+  ClientWidth = 651
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -40,8 +40,8 @@ object fmSR: TfmSR
     FocusControl = ed2
   end
   object labStyle: TTntLabel
-    Left = 354
-    Top = 28
+    Left = 352
+    Top = 20
     Width = 26
     Height = 13
     Cursor = crHandPoint
@@ -55,12 +55,12 @@ object fmSR: TfmSR
     OnClick = labStyleClick
   end
   object labRe: TTntLabel
-    Left = 354
+    Left = 352
     Top = 4
-    Width = 13
+    Width = 11
     Height = 13
     Cursor = crHandPoint
-    Caption = 'RE'
+    Caption = #187'?'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlue
     Font.Height = -11
@@ -70,8 +70,8 @@ object fmSR: TfmSR
     OnClick = labReClick
   end
   object labMultiline: TTntLabel
-    Left = 354
-    Top = 52
+    Left = 352
+    Top = 36
     Width = 44
     Height = 13
     Cursor = crHandPoint
@@ -175,8 +175,8 @@ object fmSR: TfmSR
     OnClick = bCombo2Click
   end
   object labTransp: TTntLabel
-    Left = 354
-    Top = 76
+    Left = 352
+    Top = 68
     Width = 66
     Height = 13
     Cursor = crHandPoint
@@ -188,6 +188,21 @@ object fmSR: TfmSR
     Font.Style = [fsUnderline]
     ParentFont = False
     OnClick = labTranspClick
+  end
+  object labDocked: TTntLabel
+    Left = 352
+    Top = 52
+    Width = 41
+    Height = 13
+    Cursor = crHandPoint
+    Caption = #187'Docked'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlue
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsUnderline]
+    ParentFont = False
+    OnClick = labDockedClick
   end
   object bFindNext: TTntButton
     Left = 528
@@ -442,7 +457,7 @@ object fmSR: TfmSR
   end
   object PanelTr: TTntPanel
     Left = 410
-    Top = 24
+    Top = 16
     Width = 113
     Height = 49
     BevelOuter = bvNone
@@ -452,7 +467,7 @@ object fmSR: TfmSR
       Left = 0
       Top = -3
       Width = 113
-      Height = 36
+      Height = 28
       Max = 5
       PageSize = 1
       TabOrder = 0
@@ -462,7 +477,7 @@ object fmSR: TfmSR
     end
     object cbLoose: TTntCheckBox
       Left = 0
-      Top = 32
+      Top = 26
       Width = 113
       Height = 17
       Caption = 'on los&ing focus'
@@ -518,7 +533,7 @@ object fmSR: TfmSR
   object StatusFind: TTntStatusBar
     Left = 0
     Top = 214
-    Width = 649
+    Width = 651
     Height = 19
     Panels = <>
     ParentFont = True
@@ -543,7 +558,7 @@ object fmSR: TfmSR
     Left = 104
     Top = 4
     LangData = {
-      0400666D535200012E00000006006C6162456431010100000002000000070043
+      0400666D535200012F00000006006C6162456431010100000002000000070043
       617074696F6E0006006C6162456432010100000003000000070043617074696F
       6E0009006246696E644E657874010100000005000000070043617074696F6E00
       0800625265704E657874010100000006000000070043617074696F6E00070062
@@ -576,7 +591,8 @@ object fmSR: TfmSR
       6F6E00070063625265446F7401010000002A000000070043617074696F6E0009
       006C61625472616E737001010000002C000000070043617074696F6E000B0063
       6253656C656374416C6C01010000002D000000070043617074696F6E00060063
-      624261636B01010000002E000000070043617074696F6E00}
+      624261636B01010000002E000000070043617074696F6E0009006C6162446F63
+      6B656401010000002F000000070043617074696F6E00}
   end
   object mnuRe: TTntPopupMenu
     AutoHotkeys = maManual

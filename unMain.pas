@@ -2690,6 +2690,8 @@ type
     procedure FindAction(act: TSRAction);
     procedure FindActionWrapper(act: TSRAction);
     procedure FindFocusEditor(Sender: TObject);
+    procedure FindDockedChanged(Sender: TObject);
+    procedure FindShowStatus(const Msg: Widestring);
     procedure FindDialog(AReplaceMode: boolean);
     procedure FindInFile(const fn: Widestring; InCodepage: TSynEncOverride = cp_sr_Def);
     procedure FindInFrame(F: TEditorFrame;
@@ -3332,7 +3334,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.8.1560';
+  cSynVer = '6.9.1570';
   cSynPyVer = '1.0.139';
 
 const
@@ -8608,6 +8610,8 @@ begin
       SRIniS:= SynHistoryIni;
       SRProc:= Self.FindActionWrapper;
       OnFocusEditor:= Self.FindFocusEditor;
+      OnDockedChanged:= Self.FindDockedChanged;
+      OnShowStatus:= Self.FindShowStatus;
       cbTokens.Enabled:= SyntaxManager.AnalyzerCount>0;
       LoadIni;
 
@@ -8648,10 +8652,14 @@ begin
       DoCopyToEdit(ed1, cbSpec.Checked, cbRE.Checked, SR_SuggestedSel);
     ed1Change(Self);
 
-    if IsMultiline then
-      ActiveControl:= ed1Memo
-    else
-      ActiveControl:= ed1;
+    if Visible and Enabled then
+    begin
+      if ed1Memo.Visible then
+        ActiveControl:= ed1Memo
+      else
+        ActiveControl:= ed1;
+    end;
+        
     IsReplace:= AReplaceMode;
     Show;
   end;
@@ -8702,7 +8710,7 @@ end;
     begin
       fmSR.PanelBusy.Align:= alClient;
       fmSR.PanelBusy.Visible:= not En;
-      fmSR.StatusFind.Visible:= En;
+      //fmSR.StatusFind.Visible:= En;
       fmSR.labMultiline.Visible:= En;
       fmSR.labStyle.Visible:= En;
       fmSR.labRe.Visible:= En;
@@ -8942,7 +8950,6 @@ begin
     if cbWords.Checked then Finder.Flags:= Finder.Flags + [ftWholeWords];
     if cbRe.Checked then Finder.Flags:= Finder.Flags + [ftRegex];
     if cbReDot.Checked then Finder.Flags:= Finder.Flags + [ftRegex_s];
-    //if cbReMulti.Checked then Finder.Flags:= Finder.Flags + [ftRegex_m];
     if cbSel.Checked then Finder.Flags:= Finder.Flags + [ftSelectedText];
     if cbBack.Checked then Finder.Flags:= Finder.Flags + [ftBackward];
     if cbCfm.Checked then Finder.Flags:= Finder.Flags + [ftPromtOnReplace];
@@ -22532,6 +22539,28 @@ procedure TfmMain.FindFocusEditor(Sender: TObject);
 begin
   FocusEditor;
 end;
+
+procedure TfmMain.FindDockedChanged(Sender: TObject);
+begin
+  if fmSR.IsDocked then
+  begin
+    fmSR.BorderStyle:= bsNone;
+    fmSR.Parent:= PanelBg;
+    fmSR.Align:= alBottom;
+  end
+  else
+  begin
+    fmSR.Parent:= nil;
+    fmSR.Align:= alNone;
+    fmSR.BorderStyle:= bsDialog;
+  end;
+end;
+
+procedure TfmMain.FindShowStatus(const Msg: Widestring);
+begin
+  DoHint(Msg);
+end;  
+
 
 procedure TfmMain.TBXItemOEditSynPluginsIniClick(Sender: TObject);
 begin

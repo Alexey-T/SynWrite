@@ -15,6 +15,9 @@ type
     procedure CreateParams(var Params: TCreateParams); override;
   end;
 
+type
+  TFindShowStatusEvent = procedure(const Msg: Widestring) of object;
+
 {$ifdef PS}
 type
    TTntCombobox = class(TntStdCtrls.TTntComboBox)
@@ -108,6 +111,7 @@ type
     labTransp: TTntLabel;
     cbSelectAll: TTntCheckBox;
     cbBack: TTntCheckBox;
+    labDocked: TTntLabel;
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
@@ -152,16 +156,23 @@ type
     procedure labTranspClick(Sender: TObject);
     procedure cbBkmkAllClick(Sender: TObject);
     procedure cbSelectAllClick(Sender: TObject);
+    procedure labDockedClick(Sender: TObject);
   private
     { Private declarations }
     CurChecked: boolean;
     FIsReplace: boolean;
     FIsMultiline: boolean;
+    FIsDocked: boolean;
     FOnFocusEditor: TNotifyEvent;
+    FOnDockedChanged: TNotifyEvent;
+    FOnShowStatus: TFindShowStatusEvent;
     FTopEd2,
     FTopLab2,
     FTopGOpt,
     FTopGScope,
+    FLeft0,
+    FTop0,
+    FWidth0,
     FHeight0: Integer;
     procedure mnuComboClick(Sender: TObject);
     procedure DoInsertCharCode;
@@ -177,6 +188,7 @@ type
     function GetText2: Widestring;
     procedure SetText1(const Value: Widestring);
     procedure SetText2(const Value: Widestring);
+    procedure SetDocked(Value: boolean);
   public
     { Public declarations }
     SRProc: TSRProc;
@@ -190,16 +202,19 @@ type
     Sh_FindNext,
     Sh_FindMode,
     Sh_ReplaceMode: TShortcut;
+    property OnFocusEditor: TNotifyEvent read FOnFocusEditor write FOnFocusEditor;
+    property OnDockedChanged: TNotifyEvent read FOnDockedChanged write FOnDockedChanged;
+    property OnShowStatus: TFindShowStatusEvent read FOnShowStatus write FOnShowStatus;
     function TextOptions: Widestring;
     property Text1: Widestring read GetText1 write SetText1;
     property Text2: Widestring read GetText2 write SetText2;
-    property OnFocusEditor: TNotifyEvent read FOnFocusEditor write FOnFocusEditor;
     procedure LoadIni;
     procedure SaveIni;
     property IsReplace: boolean read FIsReplace write SetIsReplace;
     property IsMultiline: boolean read FIsMultiline write SetIsMultiline;
+    property IsDocked: boolean read FIsDocked write SetDocked;
     procedure ShowError(b: boolean);
-    procedure ShowStatus(const s: Widestring);
+    procedure ShowStatus(const S: Widestring);
     procedure SetFromCaret;
   end;
 
@@ -244,16 +259,19 @@ begin
   bRepAll.Left:= bFindNext.Left;
   bRepInTabs.Left:= bFindNext.Left;
 
-  if Value then Caption:= DKLangConstW('fnR')
-  else Caption:= DKLangConstW('fn');
+  if Value then
+    Caption:= DKLangConstW('fnR')
+  else
+    Caption:= DKLangConstW('fn');
 
-  if not Value then labStyle.Caption:= DKLangConstW('fnR')
-  else labStyle.Caption:= DKLangConstW('fn');
-  labStyle.Caption:= #$00BB + labStyle.Caption;
-  labRe.Caption:= #$00BB + '?';
+  if not Value then
+    labStyle.Caption:= #$00BB + DKLangConstW('fnR')
+  else
+    labStyle.Caption:= #$00BB + DKLangConstW('fn');
 
   ed2.Visible:= Value and not IsMultiline;
   ed2Memo.Visible:= Value and IsMultiline;
+  bCombo1.Visible:= ed1Memo.Visible;
   bCombo2.Visible:= ed2Memo.Visible;
   labEd2.Visible:= Value;
   //cbCfm.Enabled:= Value;
@@ -300,6 +318,7 @@ begin
     cbExtSel.Checked:= ReadBool('Search', 'ExtSel', false);
     cbTokens.ItemIndex:= 0;
     IsMultiline:= ReadBool('Search', 'Multiline', false);
+    IsDocked:= ReadBool('Search', 'Docked', false);
   finally
     Free;
   end;
@@ -352,8 +371,11 @@ var
 begin
   with TIniFile.Create(SRIni) do
   try
-    WriteInteger('Search', 'WLeft', Left);
-    WriteInteger('Search', 'WTop', Top);
+    if not IsDocked then
+    begin
+      WriteInteger('Search', 'WLeft', Left);
+      WriteInteger('Search', 'WTop', Top);
+    end;  
 
     WriteBool('Search', 'Cur', CurChecked);
     WriteBool('Search', 'SkipCol', cbSkipCol.Checked);
@@ -372,6 +394,7 @@ begin
     WriteInteger('Search', 'Tr', Trackbar1.Position);
     WriteBool('Search', 'TrLoose', cbLoose.Checked);
     WriteBool('Search', 'Multiline', IsMultiline);
+    WriteBool('Search', 'Docked', IsDocked);
   finally
     Free;
   end;
@@ -462,14 +485,18 @@ end;
 procedure TfmSR.ShowError(b: boolean);
 begin
   if b then
-    StatusFind.SimpleText:= WideFormat(DKLangConstW('MNFound2'), [Text1])
+    ShowStatus(WideFormat(DKLangConstW('MNFound2'), [Text1]))
   else
-    StatusFind.SimpleText:= '';
+    ShowStatus('');
 end;
 
-procedure TfmSR.ShowStatus(const s: Widestring);
+procedure TfmSR.ShowStatus(const S: Widestring);
 begin
-  StatusFind.SimpleText:= S;
+  if not IsDocked then
+    StatusFind.SimpleText:= S
+  else
+    if Assigned(FOnShowStatus) then
+      FOnShowStatus(S);
 end;
 
 procedure TfmSR.TrackBar1Change(Sender: TObject);
@@ -1061,7 +1088,8 @@ begin
   FTopLab2:= labEd2.Top;
   FTopGOpt:= gOp.Top;
   FTopGScope:= gScop.Top;
-  FHeight0:= Height;
+  FWidth0:= ClientWidth;
+  FHeight0:= ClientHeight;
 end;
 
 procedure TfmSR.cbSelClick(Sender: TObject);
@@ -1121,7 +1149,7 @@ end;
 
 procedure TfmSR.UpdMemoHeight;
 begin
-  ed1Memo.Height:= Trunc(ed2Memo.Height*IfThen(IsReplace, 1, 1.5));
+  ed1Memo.Height:= Trunc(ed2Memo.Height*IfThen(IsReplace, 1, 2.0));
 
   bCombo1.SetBounds(ed1Memo.Left+ed1Memo.Width, ed1Memo.Top, 16, ed1Memo.Height);
   bCombo2.SetBounds(ed2Memo.Left+ed2Memo.Width, ed2Memo.Top, 16, ed2Memo.Height);
@@ -1156,7 +1184,8 @@ begin
     labEd2.Top:= FTopLab2+IfThen(Value, dy);
     gOp.Top:= FTopGOpt+IfThen(Value, dy*2);
     gScop.Top:= FTopGScope+IfThen(Value, dy*2);
-    Height:= FHeight0+IfThen(Value, dy*2);
+    ClientWidth:= FWidth0;
+    ClientHeight:= FHeight0+IfThen(Value, dy*2)-IfThen(FIsDocked, StatusFind.Height);
 
     UpdMemoHeight;
 
@@ -1537,6 +1566,34 @@ begin
   
   ShowStatus(WideFormat(DKLangConstW('zMInputUnicodeHex'),
     [StrChar, IntToHex(Num, 4)]));
+end;
+
+procedure TfmSR.labDockedClick(Sender: TObject);
+begin
+  IsDocked:= not IsDocked;
+end;
+
+procedure TfmSR.SetDocked(Value: boolean);
+begin
+  if Value<>FIsDocked then
+  begin
+    FIsDocked:= Value;
+    StatusFind.Visible:= not Value;
+
+    Visible:= false;
+    if Value then
+      begin FLeft0:= Left; FTop0:= Top; end;
+
+    if Assigned(FOnDockedChanged) then
+      FOnDockedChanged(Self);
+
+    FIsMultiline:= not FIsMultiline;
+    SetIsMultiline(not FIsMultiline);
+
+    if not Value then
+      begin Left:= FLeft0; Top:= FTop0; end;
+    Visible:= true;
+  end;
 end;
 
 end.
