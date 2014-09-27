@@ -18819,11 +18819,7 @@ begin
           Caption:= F.TabCaption;
           SubItems.Add(F.FileName);
           SubItems.Add(IntToStr(i));
-
-          if F.Modified then
-            ImageIndex:= 1
-          else
-            ImageIndex:= -1;
+          ImageIndex:= IfThen(F.Modified, 0, -1);
         end;
     finally
       Items.EndUpdate;
