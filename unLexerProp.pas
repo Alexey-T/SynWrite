@@ -429,8 +429,15 @@ begin
 end;
 
 procedure TfmLexerProp.FormShow(Sender: TObject);
-var i: integer;
+var
+  i: integer;
 begin
+  //AT
+  OD.DefaultExt:= 'lcf';
+  SD.DefaultExt:= OD.DefaultExt;
+  OD.Filter:= '*.lcf|*.lcf';
+  SD.Filter:= OD.Filter;
+
   // Character set support
   FillCharSetCombo;
   UpdateCharsets;
