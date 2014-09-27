@@ -328,9 +328,9 @@ object fmLexerProp: TfmLexerProp
         OnExit = SyntaxMemo7Exit
       end
       object Edit7: TTntEdit
-        Left = 456
+        Left = 480
         Top = 264
-        Width = 130
+        Width = 106
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 11
@@ -752,7 +752,7 @@ object fmLexerProp: TfmLexerProp
             Caption = 'Position in line:'
           end
           object Label12: TTntLabel
-            Left = 138
+            Left = 178
             Top = 80
             Width = 22
             Height = 13
@@ -760,7 +760,7 @@ object fmLexerProp: TfmLexerProp
             Caption = 'from'
           end
           object Label13: TTntLabel
-            Left = 279
+            Left = 319
             Top = 80
             Width = 10
             Height = 13
@@ -830,7 +830,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox18: TTntCheckBox
             Left = 224
             Top = 100
-            Width = 170
+            Width = 161
             Height = 17
             Alignment = taLeftJustify
             Anchors = [akTop, akRight]
@@ -849,7 +849,7 @@ object fmLexerProp: TfmLexerProp
             OnClick = CheckBox27Click
           end
           object Edit10: TTntEdit
-            Left = 168
+            Left = 208
             Top = 76
             Width = 49
             Height = 21
@@ -857,7 +857,7 @@ object fmLexerProp: TfmLexerProp
             OnExit = Edit10Exit
           end
           object Edit11: TTntEdit
-            Left = 296
+            Left = 336
             Top = 76
             Width = 53
             Height = 21
@@ -874,6 +874,7 @@ object fmLexerProp: TfmLexerProp
             TabStop = True
             inherited GroupBox1: TGroupBox
               Width = 401
+              Visible = False
               inherited Label1: TLabel
                 Width = 41
               end
@@ -886,12 +887,13 @@ object fmLexerProp: TfmLexerProp
                 Width = 49
               end
               inherited Edit2: TEdit
-                Left = 326
+                Left = 334
                 Width = 58
               end
             end
             inherited GroupBox2: TGroupBox
               Width = 401
+              Visible = False
               inherited Label3: TLabel
                 Width = 20
               end
@@ -904,7 +906,7 @@ object fmLexerProp: TfmLexerProp
                 Width = 49
               end
               inherited Edit4: TEdit
-                Left = 327
+                Left = 335
                 Width = 58
               end
             end
@@ -1211,6 +1213,7 @@ object fmLexerProp: TfmLexerProp
             TabStop = True
             inherited GroupBox1: TGroupBox
               Width = 414
+              Visible = False
               inherited Label1: TLabel
                 Width = 41
               end
@@ -1229,6 +1232,7 @@ object fmLexerProp: TfmLexerProp
             end
             inherited GroupBox2: TGroupBox
               Width = 414
+              Visible = False
               inherited Label3: TLabel
                 Width = 20
               end
