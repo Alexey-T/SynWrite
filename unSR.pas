@@ -1149,7 +1149,7 @@ end;
 
 procedure TfmSR.UpdMemoHeight;
 begin
-  ed1Memo.Height:= Trunc(ed2Memo.Height*IfThen(IsReplace, 1, 2.0));
+  ed1Memo.Height:= Trunc(ed2Memo.Height*IfThen(IsReplace, 1, 2.2));
 
   bCombo1.SetBounds(ed1Memo.Left+ed1Memo.Width, ed1Memo.Top, 16, ed1Memo.Height);
   bCombo2.SetBounds(ed2Memo.Left+ed2Memo.Width, ed2Memo.Top, 16, ed2Memo.Height);

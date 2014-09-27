@@ -40,7 +40,7 @@ object fmSR: TfmSR
     FocusControl = ed2
   end
   object labStyle: TTntLabel
-    Left = 352
+    Left = 358
     Top = 20
     Width = 26
     Height = 13
@@ -55,7 +55,7 @@ object fmSR: TfmSR
     OnClick = labStyleClick
   end
   object labRe: TTntLabel
-    Left = 352
+    Left = 358
     Top = 4
     Width = 11
     Height = 13
@@ -70,7 +70,7 @@ object fmSR: TfmSR
     OnClick = labReClick
   end
   object labMultiline: TTntLabel
-    Left = 352
+    Left = 358
     Top = 36
     Width = 44
     Height = 13
@@ -175,7 +175,7 @@ object fmSR: TfmSR
     OnClick = bCombo2Click
   end
   object labTransp: TTntLabel
-    Left = 352
+    Left = 358
     Top = 68
     Width = 66
     Height = 13
@@ -190,7 +190,7 @@ object fmSR: TfmSR
     OnClick = labTranspClick
   end
   object labDocked: TTntLabel
-    Left = 352
+    Left = 358
     Top = 52
     Width = 41
     Height = 13
