@@ -8652,16 +8652,17 @@ begin
       DoCopyToEdit(ed1, cbSpec.Checked, cbRE.Checked, SR_SuggestedSel);
     ed1Change(Self);
 
+    IsReplace:= AReplaceMode;
+
+    Show;
     if Visible and Enabled then
     begin
       if ed1Memo.Visible then
         ActiveControl:= ed1Memo
       else
         ActiveControl:= ed1;
+      SetFocus;
     end;
-        
-    IsReplace:= AReplaceMode;
-    Show;
   end;
 end;
 
