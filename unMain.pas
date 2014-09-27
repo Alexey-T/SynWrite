@@ -8596,6 +8596,7 @@ end;
 procedure TfmMain.FindDialog(AReplaceMode: boolean);
 var
   Ed: TSyntaxMemo;
+  Ctl: TWinControl;
 begin
   Ed:= CurrentEditor;
 
@@ -8657,11 +8658,9 @@ begin
     Show;
     if Visible and Enabled then
     begin
-      if ed1Memo.Visible then
-        ActiveControl:= ed1Memo
-      else
-        ActiveControl:= ed1;
-      SetFocus;
+      if IsMultiline then Ctl:= ed1Memo else Ctl:= ed1;
+      if Ctl.Enabled and Ctl.Visible and Ctl.CanFocus then
+        Ctl.SetFocus;
     end;
   end;
 end;
