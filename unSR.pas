@@ -5,9 +5,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, TntStdCtrls, TntClasses, TntForms, DKLang,
-  ComCtrls, Menus, TntMenus, Buttons,
-  unSearch, TntComCtrls, TntExtCtrls, TntClipbrd;
+  Dialogs, StdCtrls, ExtCtrls, DKLang, ComCtrls, Menus, Buttons,
+  TntStdCtrls, TntClasses, TntForms, 
+  TntMenus, TntComCtrls, TntExtCtrls, TntClipbrd,
+  unSearch;
 
 type
   TTrackBar = class(ComCtrls.TTrackBar)
@@ -31,7 +32,7 @@ type
 {$endif}
 
 type
-  TSRAction = (
+  TSynSearchAction = (
     arFindNext,
     arFindAll,
     arFindInTabs,
@@ -43,20 +44,20 @@ type
     );
 
 const
-  cSearchIngoreFromCaret: set of TSRAction =
+  cSearchIngoreFromCaret: set of TSynSearchAction =
     [arFindAll, arFindInTabs, arCount, arReplaceAll, arReplaceAllInAll];
 
 
 type
-  TSRProc = procedure(act: TSRAction) of object;
+  TSRProc = procedure(act: TSynSearchAction) of object;
 
 function WriteFindOptions(
-  Act: TSRAction;
+  Act: TSynSearchAction;
   const TextOpt, Text1, Text2: Widestring): Widestring;
 
 procedure ReadFindOptions(
   const Str: Widestring;
-  var Act: TSRAction;
+  var Act: TSynSearchAction;
   var SText1, SText2: Widestring;
   var Opt: TSearchOptions;
   var Tok: TSearchTokens;
@@ -176,14 +177,14 @@ type
     FHeight0,
     FMemoDy: Integer;
     procedure mnuComboClick(Sender: TObject);
-    procedure DoRestoreSizeOrig;
     procedure DoInsertCharCode;
     procedure DoCombo(ed: TTntCombobox; edMemo: TTntMemo; edNum: integer);
     procedure ReClick(Sender: TObject);
-    procedure DoAction(act: TSRAction);
+    procedure DoAction(act: TSynSearchAction);
     procedure SetIsReplace(Value: boolean);
     procedure SetIsMultiline(Value: boolean);
     procedure SetIsDocked(Value: boolean);
+    procedure UpdOrigSize;
     procedure UpdTransp;
     procedure UpdScope;
     procedure UpdMemoHeight;
@@ -287,7 +288,7 @@ begin
   bFindInTabs.Visible:= not Value;
   bRepInTabs.Visible:= Value;
 
-  DoRestoreSizeOrig;
+  UpdOrigSize;
   UpdMemoHeight;
 end;
 
@@ -536,7 +537,7 @@ begin
   Close;
 end;
 
-procedure TfmSR.DoAction(act: TSRAction);
+procedure TfmSR.DoAction(act: TSynSearchAction);
 begin
   if IsMultiline then
   begin
@@ -1159,7 +1160,7 @@ begin
   bCombo2.SetBounds(ed2Memo.Left+ed2Memo.Width, ed2Memo.Top, 16, ed2Memo.Height);
 end;
 
-procedure TfmSR.DoRestoreSizeOrig;
+procedure TfmSR.UpdOrigSize;
 begin
   ClientWidth:= FWidth0;
   ClientHeight:= FHeight0
@@ -1193,8 +1194,8 @@ begin
     labEd2.Top:= FTopLab2+IfThen(Value, FMemoDy);
     gOp.Top:= FTopGOpt+IfThen(Value, FMemoDy*2);
     gScop.Top:= FTopGScope+IfThen(Value, FMemoDy*2);
-    DoRestoreSizeOrig;
 
+    UpdOrigSize;
     UpdMemoHeight;
 
     if Value then
@@ -1357,14 +1358,14 @@ begin
 end;
 
 const
-  cFindAction: array[TSRAction] of WideString = (
+  cFindAction: array[TSynSearchAction] of WideString = (
     'find', 'findall', 'findtabs', 'cnt', 'skip', 'rep', 'repall', 'repallall' );
 
-function FindActionStrToCommand(const S: Widestring): TSRAction;
+function FindActionStrToCommand(const S: Widestring): TSynSearchAction;
 var
-  i: TSRAction;
+  i: TSynSearchAction;
 begin
-  Result:= Low(TSRAction);
+  Result:= Low(TSynSearchAction);
   for i:= Low(i) to High(i) do
     if cFindAction[i] = S then
     begin
@@ -1375,7 +1376,7 @@ end;
 
 procedure ReadFindOptions(
   const Str: Widestring;
-  var Act: TSRAction;
+  var Act: TSynSearchAction;
   var SText1, SText2: Widestring;
   var Opt: TSearchOptions;
   var Tok: TSearchTokens;
@@ -1432,7 +1433,7 @@ begin
 end;
 
 function WriteFindOptions(
-  Act: TSRAction;
+  Act: TSynSearchAction;
   const TextOpt, Text1, Text2: Widestring): Widestring;
 begin
   Result:=

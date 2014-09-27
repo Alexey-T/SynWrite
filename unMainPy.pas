@@ -472,7 +472,7 @@ var
   Ed: TSyntaxMemo;
   PText1, PText2: PAnsiChar;
   AText1, AText2: Widestring;
-  AAction: TSRAction;
+  AAction: TSynSearchAction;
   AOptions: TSearchOptions;
   ATokens: TSearchTokens;
   AOptBkmk, AOptExtSel: boolean;
@@ -489,7 +489,7 @@ begin
 
       AText1:= UTF8Decode(AnsiString(PText1));
       AText2:= UTF8Decode(AnsiString(PText2));
-      AAction:= TSRAction(NAction);
+      AAction:= TSynSearchAction(NAction);
       ATokens:= TSearchTokens(NTokens);
 
       AOptions:= [];

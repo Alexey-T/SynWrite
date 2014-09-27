@@ -3,7 +3,7 @@ object fmSR: TfmSR
   Top = 311
   ActiveControl = ed1
   BorderStyle = bsDialog
-  ClientHeight = 219
+  ClientHeight = 221
   ClientWidth = 651
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -455,36 +455,6 @@ object fmSR: TfmSR
     TabOrder = 6
     OnClick = bSkipClick
   end
-  object PanelTr: TTntPanel
-    Left = 410
-    Top = 16
-    Width = 113
-    Height = 49
-    BevelOuter = bvNone
-    TabOrder = 14
-    Visible = False
-    object TrackBar1: TTrackBar
-      Left = 0
-      Top = -3
-      Width = 113
-      Height = 28
-      Max = 5
-      PageSize = 1
-      TabOrder = 0
-      ThumbLength = 15
-      TickMarks = tmBoth
-      OnChange = TrackBar1Change
-    end
-    object cbLoose: TTntCheckBox
-      Left = 0
-      Top = 26
-      Width = 113
-      Height = 17
-      Caption = 'on los&ing focus'
-      TabOrder = 1
-      OnClick = cbLooseClick
-    end
-  end
   object bFindInTabs: TTntButton
     Left = 528
     Top = 99
@@ -532,7 +502,7 @@ object fmSR: TfmSR
   end
   object StatusFind: TTntStatusBar
     Left = 0
-    Top = 200
+    Top = 202
     Width = 651
     Height = 19
     Panels = <>
@@ -549,6 +519,36 @@ object fmSR: TfmSR
     Caption = 'Search in progres...'
     TabOrder = 18
     Visible = False
+  end
+  object PanelTr: TTntPanel
+    Left = 426
+    Top = 16
+    Width = 100
+    Height = 49
+    BevelOuter = bvNone
+    TabOrder = 14
+    Visible = False
+    object TrackBar1: TTrackBar
+      Left = 0
+      Top = -3
+      Width = 97
+      Height = 28
+      Max = 5
+      PageSize = 1
+      TabOrder = 0
+      ThumbLength = 15
+      TickMarks = tmBoth
+      OnChange = TrackBar1Change
+    end
+    object cbLoose: TTntCheckBox
+      Left = 0
+      Top = 26
+      Width = 105
+      Height = 17
+      Caption = 'on los&ing focus'
+      TabOrder = 1
+      OnClick = cbLooseClick
+    end
   end
   object DKLanguageController1: TDKLanguageController
     IgnoreList.Strings = (

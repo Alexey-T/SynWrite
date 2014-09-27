@@ -2687,8 +2687,8 @@ type
     procedure DoOnlineWordHelp(const url: Widestring);
     procedure DoOnlineFind(const site: Widestring);
 
-    procedure FindAction(act: TSRAction);
-    procedure FindActionWrapper(act: TSRAction);
+    procedure FindAction(act: TSynSearchAction);
+    procedure FindActionWrapper(act: TSynSearchAction);
     procedure FindFocusEditor(Sender: TObject);
     procedure FindDockedChanged(Sender: TObject);
     procedure FindShowStatus(const Msg: Widestring);
@@ -3299,7 +3299,7 @@ type
     function DoGetSearchPaths: Widestring;
     function DoFindCommand(
       Ed: TSyntaxMemo;
-      Act: TSRAction;
+      Act: TSynSearchAction;
       const SText1, SText2: Widestring;
       const Opt: TSearchOptions;
       const Tok: TSearchTokens;
@@ -8769,7 +8769,7 @@ end;
       FocusEditor;
   end;
 
-procedure TfmMain.FindActionWrapper(act: TSRAction);
+procedure TfmMain.FindActionWrapper(act: TSynSearchAction);
 var
   Ed: TSyntaxMemo;
   oldStart, oldLength: integer;
@@ -8933,7 +8933,7 @@ begin
   end;
 end;
 
-procedure TfmMain.FindAction(act: TSRAction);
+procedure TfmMain.FindAction(act: TSynSearchAction);
 var
   SMsg, SMsgFiles: Widestring;
 begin
@@ -23569,7 +23569,7 @@ end;
 
 procedure TfmMain.DoFindCommandFromString(const S: Widestring);
 var
-  Act: TSRAction;
+  Act: TSynSearchAction;
   SText1, SText2: Widestring;
   Opt: TSearchOptions;
   Tok: TSearchTokens;
@@ -23581,7 +23581,7 @@ end;
 
 function TfmMain.DoFindCommand(
   Ed: TSyntaxMemo;
-  Act: TSRAction;
+  Act: TSynSearchAction;
   const SText1, SText2: Widestring;
   const Opt: TSearchOptions;
   const Tok: TSearchTokens;
