@@ -12052,7 +12052,8 @@ begin
   begin
     D.ATextSearch:= fmSR.Text1;
     D.ATextReplace:= fmSR.Text2;
-    fmSR.Hide;
+    if fmSR.Visible and not fmSR.IsDocked then
+      fmSR.Hide;
   end
   else
   begin
@@ -17331,7 +17332,7 @@ end;
 
 procedure TfmMain.ecFindInTreeExecute(Sender: TObject);
 begin
-  if Assigned(fmSR) and fmSR.Visible then
+  if Assigned(fmSR) and fmSR.Visible and not fmSR.IsDocked then
     fmSR.Hide;
   if not Assigned(FinderInTree) then
     FinderInTree:= TFinderInTree.Create(Self);
@@ -17586,7 +17587,7 @@ end;
 
 procedure TfmMain.ecFindInListExecute(Sender: TObject);
 begin
-  if Assigned(fmSR) and fmSR.Visible then
+  if Assigned(fmSR) and fmSR.Visible and not fmSR.IsDocked then
     fmSR.Hide;
   if not Assigned(FinderInList) then
     FinderInList:= TFinderInList.Create(Self);
