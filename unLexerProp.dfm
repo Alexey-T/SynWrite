@@ -1,7 +1,7 @@
 object fmLexerProp: TfmLexerProp
   Left = 314
   Top = 75
-  Width = 570
+  Width = 617
   Height = 632
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Lexer properties'
@@ -24,7 +24,7 @@ object fmLexerProp: TfmLexerProp
   object Splitter1: TSplitter
     Left = 0
     Top = 365
-    Width = 554
+    Width = 601
     Height = 3
     Cursor = crVSplit
     Align = alTop
@@ -32,7 +32,7 @@ object fmLexerProp: TfmLexerProp
   object PageControl1: TTntPageControl
     Left = 0
     Top = 0
-    Width = 554
+    Width = 601
     Height = 365
     ActivePage = TabSheet5
     Align = alTop
@@ -41,7 +41,7 @@ object fmLexerProp: TfmLexerProp
       Caption = 'Common'
       ImageIndex = 4
       DesignSize = (
-        546
+        593
         337)
       object Label4: TTntLabel
         Left = 4
@@ -126,13 +126,13 @@ object fmLexerProp: TfmLexerProp
       object Panel_Common: TTntPanel
         Left = 0
         Top = 0
-        Width = 546
+        Width = 593
         Height = 61
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
         DesignSize = (
-          546
+          593
           61)
         object Label33: TTntLabel
           Left = 4
@@ -153,7 +153,7 @@ object fmLexerProp: TfmLexerProp
         object Edit3: TTntEdit
           Left = 152
           Top = 32
-          Width = 385
+          Width = 432
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
@@ -161,7 +161,7 @@ object fmLexerProp: TfmLexerProp
         object Edit4: TTntEdit
           Left = 152
           Top = 8
-          Width = 385
+          Width = 432
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 0
@@ -171,7 +171,7 @@ object fmLexerProp: TfmLexerProp
         Tag = 1
         Left = 360
         Top = 84
-        Width = 179
+        Width = 226
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -182,7 +182,7 @@ object fmLexerProp: TfmLexerProp
       object CheckBox17: TTntCheckBox
         Left = 204
         Top = 182
-        Width = 334
+        Width = 381
         Height = 17
         Alignment = taLeftJustify
         Anchors = [akLeft, akTop, akRight]
@@ -330,7 +330,7 @@ object fmLexerProp: TfmLexerProp
       object Edit7: TTntEdit
         Left = 456
         Top = 264
-        Width = 83
+        Width = 130
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 11
@@ -339,7 +339,7 @@ object fmLexerProp: TfmLexerProp
         Tag = 2
         Left = 360
         Top = 108
-        Width = 179
+        Width = 226
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -351,7 +351,7 @@ object fmLexerProp: TfmLexerProp
         Tag = 3
         Left = 360
         Top = 132
-        Width = 179
+        Width = 226
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -362,7 +362,7 @@ object fmLexerProp: TfmLexerProp
       object CheckBox2: TTntCheckBox
         Left = 204
         Top = 222
-        Width = 334
+        Width = 381
         Height = 17
         Alignment = taLeftJustify
         Anchors = [akLeft, akTop, akRight]
@@ -373,7 +373,7 @@ object fmLexerProp: TfmLexerProp
       object CheckBox3: TTntCheckBox
         Left = 204
         Top = 202
-        Width = 334
+        Width = 381
         Height = 17
         Alignment = taLeftJustify
         Anchors = [akLeft, akTop, akRight]
@@ -384,7 +384,7 @@ object fmLexerProp: TfmLexerProp
       object ComboBox7: TComboBox
         Left = 360
         Top = 60
-        Width = 179
+        Width = 226
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -395,7 +395,7 @@ object fmLexerProp: TfmLexerProp
       object Edit14: TTntEdit
         Left = 360
         Top = 288
-        Width = 180
+        Width = 227
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 12
@@ -403,7 +403,7 @@ object fmLexerProp: TfmLexerProp
       object CheckBox28: TTntCheckBox
         Left = 204
         Top = 242
-        Width = 334
+        Width = 381
         Height = 17
         Alignment = taLeftJustify
         Anchors = [akLeft, akTop, akRight]
@@ -415,7 +415,7 @@ object fmLexerProp: TfmLexerProp
         Tag = 4
         Left = 360
         Top = 156
-        Width = 179
+        Width = 226
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -426,7 +426,7 @@ object fmLexerProp: TfmLexerProp
       object CharSet_Combo: TComboBox
         Left = 360
         Top = 312
-        Width = 181
+        Width = 228
         Height = 21
         Style = csDropDownList
         Anchors = [akLeft, akTop, akRight]
@@ -440,7 +440,7 @@ object fmLexerProp: TfmLexerProp
       inline SyntColFrame1: TSyntColFrame
         Left = 0
         Top = 0
-        Width = 252
+        Width = 299
         Height = 337
         Align = alClient
         ParentShowHint = False
@@ -448,22 +448,22 @@ object fmLexerProp: TfmLexerProp
         TabOrder = 0
         TabStop = True
         inherited LB: TListBox
-          Width = 252
+          Width = 299
           Height = 290
         end
         inherited Panel1: TPanel
-          Width = 252
+          Width = 299
         end
         inherited Panel2: TPanel
           Top = 315
-          Width = 252
+          Width = 299
           inherited Edit: TEdit
-            Width = 259
+            Width = 306
           end
         end
       end
       inline SyntStyleFrame1: TSyntStyleFrame
-        Left = 252
+        Left = 299
         Top = 0
         Width = 294
         Height = 337
@@ -495,6 +495,7 @@ object fmLexerProp: TfmLexerProp
           Anchors = [akTop]
         end
         inherited GroupBox2: TGroupBox
+          Caption = 'Borders'
           inherited Label5: TLabel
             Left = 8
           end
@@ -550,7 +551,7 @@ object fmLexerProp: TfmLexerProp
       object Panel3: TTntPanel
         Left = 192
         Top = 0
-        Width = 354
+        Width = 401
         Height = 337
         Align = alClient
         BevelOuter = bvNone
@@ -558,12 +559,12 @@ object fmLexerProp: TfmLexerProp
         object Label22: TTntLabel
           Left = 0
           Top = 213
-          Width = 354
+          Width = 401
           Height = 17
           Align = alTop
           Alignment = taCenter
           AutoSize = False
-          Caption = 'Rule expression'
+          Caption = 'Regular expression'
           Color = clActiveCaption
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clYellow
@@ -576,7 +577,7 @@ object fmLexerProp: TfmLexerProp
         object SyntaxMemo3: TSyntaxMemo
           Left = 0
           Top = 230
-          Width = 354
+          Width = 401
           Height = 107
           TabList.AsString = '4'
           NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -702,7 +703,7 @@ object fmLexerProp: TfmLexerProp
           Ctl3D = True
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -15
+          Font.Height = -12
           Font.Name = 'Consolas'
           Font.Style = []
           ParentColor = False
@@ -714,13 +715,13 @@ object fmLexerProp: TfmLexerProp
         object Panel4: TTntPanel
           Left = 0
           Top = 0
-          Width = 354
+          Width = 401
           Height = 213
           Align = alTop
           BevelOuter = bvNone
           TabOrder = 1
           DesignSize = (
-            354
+            401
             213)
           object Label21: TTntLabel
             Left = 8
@@ -769,7 +770,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox24: TComboBox
             Left = 112
             Top = 52
-            Width = 239
+            Width = 286
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -780,7 +781,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox17: TComboBox
             Left = 112
             Top = 4
-            Width = 239
+            Width = 286
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -808,7 +809,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox21: TComboBox
             Left = 112
             Top = 28
-            Width = 239
+            Width = 286
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -819,7 +820,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox8: TTntCheckBox
             Left = 6
             Top = 100
-            Width = 171
+            Width = 187
             Height = 17
             Alignment = taLeftJustify
             Caption = 'Strict parent block'
@@ -827,9 +828,9 @@ object fmLexerProp: TfmLexerProp
             OnClick = CheckBox8Click
           end
           object CheckBox18: TTntCheckBox
-            Left = 184
+            Left = 224
             Top = 100
-            Width = 163
+            Width = 170
             Height = 17
             Alignment = taLeftJustify
             Anchors = [akTop, akRight]
@@ -840,7 +841,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox27: TTntCheckBox
             Left = 6
             Top = 116
-            Width = 171
+            Width = 187
             Height = 17
             Alignment = taLeftJustify
             Caption = 'Always enabled'
@@ -866,18 +867,18 @@ object fmLexerProp: TfmLexerProp
           inline RuleStatesFrame2: TRuleStatesFrame
             Left = 0
             Top = 134
-            Width = 354
+            Width = 401
             Height = 79
             Align = alBottom
             TabOrder = 8
             TabStop = True
             inherited GroupBox1: TGroupBox
-              Width = 354
+              Width = 401
               inherited Label1: TLabel
                 Width = 41
               end
               inherited Label2: TLabel
-                Left = 175
+                Left = 222
                 Width = 38
               end
               inherited Edit1: TEdit
@@ -885,17 +886,17 @@ object fmLexerProp: TfmLexerProp
                 Width = 49
               end
               inherited Edit2: TEdit
-                Left = 279
+                Left = 326
                 Width = 58
               end
             end
             inherited GroupBox2: TGroupBox
-              Width = 354
+              Width = 401
               inherited Label3: TLabel
                 Width = 20
               end
               inherited Label4: TLabel
-                Left = 176
+                Left = 223
                 Width = 32
               end
               inherited Edit3: TEdit
@@ -903,7 +904,7 @@ object fmLexerProp: TfmLexerProp
                 Width = 49
               end
               inherited Edit4: TEdit
-                Left = 280
+                Left = 327
                 Width = 58
               end
             end
@@ -944,7 +945,7 @@ object fmLexerProp: TfmLexerProp
       object PageControl2: TTntPageControl
         Left = 177
         Top = 0
-        Width = 369
+        Width = 416
         Height = 337
         ActivePage = TabSheet7
         Align = alClient
@@ -952,7 +953,7 @@ object fmLexerProp: TfmLexerProp
         object TabSheet7: TTntTabSheet
           Caption = 'Properties'
           DesignSize = (
-            361
+            408
             309)
           object Label1: TTntLabel
             Left = 4
@@ -963,7 +964,7 @@ object fmLexerProp: TfmLexerProp
             FocusControl = Edit1
           end
           object Label20: TTntLabel
-            Left = 158
+            Left = 189
             Top = 56
             Width = 56
             Height = 13
@@ -997,7 +998,7 @@ object fmLexerProp: TfmLexerProp
             FocusControl = ComboBox26
           end
           object Label8: TTntLabel
-            Left = 257
+            Left = 304
             Top = 56
             Width = 58
             Height = 13
@@ -1036,9 +1037,9 @@ object fmLexerProp: TfmLexerProp
             FocusControl = ComboBox18
           end
           object CheckBox13: TTntCheckBox
-            Left = 184
+            Left = 216
             Top = 168
-            Width = 169
+            Width = 184
             Height = 17
             Alignment = taLeftJustify
             Anchors = [akTop, akRight]
@@ -1047,9 +1048,9 @@ object fmLexerProp: TfmLexerProp
             OnClick = CheckBox13Click
           end
           object CheckBox9: TTntCheckBox
-            Left = 184
+            Left = 216
             Top = 148
-            Width = 169
+            Width = 184
             Height = 17
             Alignment = taLeftJustify
             Anchors = [akTop, akRight]
@@ -1067,7 +1068,7 @@ object fmLexerProp: TfmLexerProp
           end
           object Edit2: TTntEdit
             Tag = 1
-            Left = 218
+            Left = 249
             Top = 52
             Width = 33
             Height = 21
@@ -1078,7 +1079,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox23: TComboBox
             Left = 160
             Top = 120
-            Width = 193
+            Width = 240
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -1089,7 +1090,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox25: TComboBox
             Left = 112
             Top = 4
-            Width = 241
+            Width = 288
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -1105,7 +1106,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox26: TComboBox
             Left = 112
             Top = 76
-            Width = 241
+            Width = 288
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -1116,7 +1117,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox7: TTntCheckBox
             Left = 2
             Top = 100
-            Width = 175
+            Width = 199
             Height = 17
             Alignment = taLeftJustify
             Caption = 'Strict parent block'
@@ -1124,9 +1125,9 @@ object fmLexerProp: TfmLexerProp
             OnClick = CheckBox7Click
           end
           object CheckBox19: TTntCheckBox
-            Left = 184
+            Left = 216
             Top = 100
-            Width = 169
+            Width = 184
             Height = 17
             Alignment = taLeftJustify
             Anchors = [akTop, akRight]
@@ -1137,7 +1138,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox20: TTntCheckBox
             Left = 4
             Top = 168
-            Width = 173
+            Width = 197
             Height = 17
             Alignment = taLeftJustify
             Caption = 'Cancel next rules'
@@ -1147,7 +1148,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox26: TTntCheckBox
             Left = 4
             Top = 148
-            Width = 173
+            Width = 197
             Height = 17
             Alignment = taLeftJustify
             Caption = 'Always enabled'
@@ -1156,7 +1157,7 @@ object fmLexerProp: TfmLexerProp
           end
           object Edit8: TTntEdit
             Tag = 1
-            Left = 318
+            Left = 365
             Top = 52
             Width = 33
             Height = 21
@@ -1167,7 +1168,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox3: TComboBox
             Left = 112
             Top = 28
-            Width = 241
+            Width = 288
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -1178,7 +1179,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox4: TComboBox
             Left = 160
             Top = 120
-            Width = 193
+            Width = 240
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -1189,7 +1190,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox18: TComboBox
             Left = 160
             Top = 120
-            Width = 193
+            Width = 240
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -1203,18 +1204,18 @@ object fmLexerProp: TfmLexerProp
           inline RuleStatesFrame3: TRuleStatesFrame
             Left = 0
             Top = 192
-            Width = 367
+            Width = 414
             Height = 85
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 15
             TabStop = True
             inherited GroupBox1: TGroupBox
-              Width = 367
+              Width = 414
               inherited Label1: TLabel
                 Width = 41
               end
               inherited Label2: TLabel
-                Left = 182
+                Left = 229
                 Width = 38
               end
               inherited Edit1: TEdit
@@ -1222,17 +1223,17 @@ object fmLexerProp: TfmLexerProp
                 Width = 57
               end
               inherited Edit2: TEdit
-                Left = 288
+                Left = 335
                 Width = 63
               end
             end
             inherited GroupBox2: TGroupBox
-              Width = 367
+              Width = 414
               inherited Label3: TLabel
                 Width = 20
               end
               inherited Label4: TLabel
-                Left = 182
+                Left = 229
                 Width = 32
               end
               inherited Edit3: TEdit
@@ -1240,7 +1241,7 @@ object fmLexerProp: TfmLexerProp
                 Width = 57
               end
               inherited Edit4: TEdit
-                Left = 288
+                Left = 335
                 Width = 63
               end
             end
@@ -1250,7 +1251,7 @@ object fmLexerProp: TfmLexerProp
           Caption = 'Text range'
           ImageIndex = 3
           DesignSize = (
-            361
+            408
             309)
           object Label38: TTntLabel
             Left = 4
@@ -1287,7 +1288,7 @@ object fmLexerProp: TfmLexerProp
           object Edit5: TTntEdit
             Left = 168
             Top = 8
-            Width = 199
+            Width = 235
             Height = 21
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 0
@@ -1296,7 +1297,7 @@ object fmLexerProp: TfmLexerProp
           object Edit6: TTntEdit
             Left = 168
             Top = 32
-            Width = 199
+            Width = 235
             Height = 21
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 1
@@ -1305,7 +1306,7 @@ object fmLexerProp: TfmLexerProp
           object Edit9: TTntEdit
             Left = 168
             Top = 56
-            Width = 199
+            Width = 235
             Height = 21
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 2
@@ -1314,7 +1315,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox11: TTntCheckBox
             Left = 4
             Top = 84
-            Width = 181
+            Width = 197
             Height = 17
             Caption = 'Close block at end of text'
             TabOrder = 3
@@ -1323,7 +1324,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox4: TTntCheckBox
             Left = 4
             Top = 104
-            Width = 181
+            Width = 197
             Height = 17
             Caption = 'Self closing range'
             TabOrder = 4
@@ -1332,16 +1333,16 @@ object fmLexerProp: TfmLexerProp
           object CheckBox5: TTntCheckBox
             Left = 4
             Top = 124
-            Width = 181
+            Width = 197
             Height = 17
             Caption = 'Initially closed (no end rule)'
             TabOrder = 5
             OnClick = CheckBox5Click
           end
           object CheckBox6: TTntCheckBox
-            Left = 184
+            Left = 208
             Top = 84
-            Width = 183
+            Width = 198
             Height = 17
             Anchors = [akTop, akRight]
             Caption = 'Display in syntax tree'
@@ -1349,9 +1350,9 @@ object fmLexerProp: TfmLexerProp
             OnClick = CheckBox6Click
           end
           object CheckBox12: TTntCheckBox
-            Left = 184
+            Left = 208
             Top = 104
-            Width = 183
+            Width = 198
             Height = 17
             Anchors = [akTop, akRight]
             Caption = 'Can not be collapsed'
@@ -1359,9 +1360,9 @@ object fmLexerProp: TfmLexerProp
             OnClick = CheckBox12Click
           end
           object CheckBox1: TTntCheckBox
-            Left = 184
+            Left = 208
             Top = 124
-            Width = 183
+            Width = 198
             Height = 17
             Anchors = [akTop, akRight]
             Caption = 'Draw block staple'
@@ -1371,7 +1372,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox31: TTntCheckBox
             Left = 4
             Top = 144
-            Width = 181
+            Width = 197
             Height = 17
             Caption = 'Ignore as parent'
             TabOrder = 9
@@ -1380,7 +1381,7 @@ object fmLexerProp: TfmLexerProp
           object SyntaxMemo10: TSyntaxMemo
             Left = 4
             Top = 188
-            Width = 361
+            Width = 399
             Height = 117
             SyntaxAnalyzer = FSynt
             TabList.AsString = '4'
@@ -1509,7 +1510,7 @@ object fmLexerProp: TfmLexerProp
             Ctl3D = True
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
-            Font.Height = -13
+            Font.Height = -12
             Font.Name = 'Consolas'
             Font.Style = []
             ParentColor = False
@@ -1521,7 +1522,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox10: TComboBox
             Left = 168
             Top = 164
-            Width = 197
+            Width = 235
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -1538,7 +1539,7 @@ object fmLexerProp: TfmLexerProp
           Caption = 'Highlight'
           ImageIndex = 2
           DesignSize = (
-            361
+            408
             309)
           object Label27: TTntLabel
             Left = 2
@@ -1558,7 +1559,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox20: TComboBox
             Left = 136
             Top = 4
-            Width = 230
+            Width = 269
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -1569,7 +1570,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox14: TTntCheckBox
             Left = 2
             Top = 52
-            Width = 183
+            Width = 199
             Height = 17
             Alignment = taLeftJustify
             Caption = 'Highlight lines of block'
@@ -1577,9 +1578,9 @@ object fmLexerProp: TfmLexerProp
             OnClick = CheckBox14Click
           end
           object CheckBox15: TTntCheckBox
-            Left = 192
+            Left = 216
             Top = 52
-            Width = 172
+            Width = 187
             Height = 17
             Alignment = taLeftJustify
             Anchors = [akTop, akRight]
@@ -1590,13 +1591,13 @@ object fmLexerProp: TfmLexerProp
           object GroupBox4: TTntGroupBox
             Left = 0
             Top = 72
-            Width = 366
+            Width = 405
             Height = 61
             Anchors = [akLeft, akTop, akRight]
             Caption = 'Active highlighting'
             TabOrder = 4
             DesignSize = (
-              366
+              405
               61)
             object Label43: TTntLabel
               Left = 8
@@ -1608,7 +1609,7 @@ object fmLexerProp: TfmLexerProp
             object ComboBox28: TComboBox
               Left = 136
               Top = 16
-              Width = 226
+              Width = 265
               Height = 21
               Style = csDropDownList
               Anchors = [akLeft, akTop, akRight]
@@ -1636,7 +1637,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox29: TComboBox
             Left = 136
             Top = 28
-            Width = 230
+            Width = 269
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -1652,13 +1653,13 @@ object fmLexerProp: TfmLexerProp
           object GroupBox2: TTntGroupBox
             Left = 0
             Top = 140
-            Width = 365
+            Width = 405
             Height = 85
             Anchors = [akLeft, akTop, akRight]
             Caption = 'Syntax tree decoration'
             TabOrder = 5
             DesignSize = (
-              365
+              405
               85)
             object Label16: TTntLabel
               Left = 8
@@ -1675,7 +1676,7 @@ object fmLexerProp: TfmLexerProp
               Caption = 'Group:'
             end
             object Label18: TTntLabel
-              Left = 263
+              Left = 303
               Top = 16
               Width = 59
               Height = 13
@@ -1692,7 +1693,7 @@ object fmLexerProp: TfmLexerProp
             object ComboBox5: TComboBox
               Left = 72
               Top = 32
-              Width = 184
+              Width = 224
               Height = 21
               Style = csDropDownList
               Anchors = [akLeft, akTop, akRight]
@@ -1703,7 +1704,7 @@ object fmLexerProp: TfmLexerProp
             object ComboBox6: TComboBox
               Left = 72
               Top = 56
-              Width = 184
+              Width = 224
               Height = 21
               Style = csDropDownList
               Anchors = [akLeft, akTop, akRight]
@@ -1712,7 +1713,7 @@ object fmLexerProp: TfmLexerProp
               OnChange = ComboBox6Change
             end
             object Edit12: TTntEdit
-              Left = 263
+              Left = 303
               Top = 32
               Width = 97
               Height = 21
@@ -1721,7 +1722,7 @@ object fmLexerProp: TfmLexerProp
               OnExit = Edit12Exit
             end
             object Edit13: TTntEdit
-              Left = 263
+              Left = 303
               Top = 56
               Width = 97
               Height = 21
@@ -1733,13 +1734,13 @@ object fmLexerProp: TfmLexerProp
           object GroupBox1: TTntGroupBox
             Left = 0
             Top = 228
-            Width = 365
+            Width = 405
             Height = 65
             Anchors = [akLeft, akTop, akRight]
             Caption = 'Pen'
             TabOrder = 6
             DesignSize = (
-              365
+              405
               65)
             object Label32: TTntLabel
               Left = 8
@@ -1784,7 +1785,7 @@ object fmLexerProp: TfmLexerProp
             object ColorBox1: TColorBox
               Left = 200
               Top = 12
-              Width = 157
+              Width = 197
               Height = 22
               Anchors = [akLeft, akTop, akRight]
               ItemHeight = 16
@@ -1794,7 +1795,7 @@ object fmLexerProp: TfmLexerProp
             object ComboBox9: TComboBox
               Left = 200
               Top = 36
-              Width = 157
+              Width = 197
               Height = 21
               Style = csDropDownList
               Anchors = [akLeft, akTop, akRight]
@@ -1818,7 +1819,7 @@ object fmLexerProp: TfmLexerProp
           object GroupBox5: TTntGroupBox
             Left = 0
             Top = 0
-            Width = 361
+            Width = 408
             Height = 309
             Align = alClient
             Caption = ' Conditions '
@@ -1904,10 +1905,10 @@ object fmLexerProp: TfmLexerProp
                   DragMode = dmAutomatic
                   Font.Charset = RUSSIAN_CHARSET
                   Font.Color = clWindowText
-                  Font.Height = -15
+                  Font.Height = -12
                   Font.Name = 'Consolas'
                   Font.Style = []
-                  ItemHeight = 18
+                  ItemHeight = 14
                   ParentFont = False
                   TabOrder = 0
                   OnClick = ListBox1Click
@@ -2091,7 +2092,7 @@ object fmLexerProp: TfmLexerProp
                 Ctl3D = True
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
-                Font.Height = -15
+                Font.Height = -12
                 Font.Name = 'Consolas'
                 Font.Style = []
                 ParentColor = False
@@ -2105,7 +2106,7 @@ object fmLexerProp: TfmLexerProp
             object Panel6: TTntPanel
               Left = 187
               Top = 15
-              Width = 172
+              Width = 219
               Height = 292
               Align = alClient
               BevelOuter = bvNone
@@ -2114,7 +2115,7 @@ object fmLexerProp: TfmLexerProp
               object Label26: TTntLabel
                 Left = 0
                 Top = 0
-                Width = 172
+                Width = 219
                 Height = 15
                 Align = alTop
                 Alignment = taCenter
@@ -2132,7 +2133,7 @@ object fmLexerProp: TfmLexerProp
               object SyntaxMemo4: TSyntaxMemo
                 Left = 0
                 Top = 15
-                Width = 172
+                Width = 219
                 Height = 277
                 TabList.AsString = '4'
                 NonPrinted.Visible = True
@@ -2306,7 +2307,7 @@ object fmLexerProp: TfmLexerProp
       object Panel8: TTntPanel
         Left = 177
         Top = 0
-        Width = 369
+        Width = 416
         Height = 337
         Align = alClient
         BevelOuter = bvNone
@@ -2314,7 +2315,7 @@ object fmLexerProp: TfmLexerProp
         object Label47: TTntLabel
           Left = 0
           Top = 205
-          Width = 369
+          Width = 416
           Height = 17
           Align = alTop
           Alignment = taCenter
@@ -2332,7 +2333,7 @@ object fmLexerProp: TfmLexerProp
         object Splitter5: TSplitter
           Left = 0
           Top = 269
-          Width = 369
+          Width = 416
           Height = 3
           Cursor = crVSplit
           Align = alTop
@@ -2340,7 +2341,7 @@ object fmLexerProp: TfmLexerProp
         object Label49: TTntLabel
           Left = 0
           Top = 272
-          Width = 369
+          Width = 416
           Height = 17
           Align = alTop
           Alignment = taCenter
@@ -2358,13 +2359,13 @@ object fmLexerProp: TfmLexerProp
         object Panel9: TTntPanel
           Left = 0
           Top = 0
-          Width = 369
+          Width = 416
           Height = 205
           Align = alTop
           BevelOuter = bvNone
           TabOrder = 0
           DesignSize = (
-            369
+            416
             205)
           object Label45: TTntLabel
             Left = 8
@@ -2390,7 +2391,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox30: TComboBox
             Left = 120
             Top = 28
-            Width = 233
+            Width = 280
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -2401,7 +2402,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox31: TComboBox
             Left = 120
             Top = 52
-            Width = 233
+            Width = 280
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -2410,9 +2411,9 @@ object fmLexerProp: TfmLexerProp
             OnChange = ComboBox31Change
           end
           object CheckBox21: TTntCheckBox
-            Left = 184
+            Left = 216
             Top = 92
-            Width = 169
+            Width = 184
             Height = 17
             Alignment = taLeftJustify
             Anchors = [akTop, akRight]
@@ -2421,9 +2422,9 @@ object fmLexerProp: TfmLexerProp
             OnClick = CheckBox21Click
           end
           object CheckBox22: TTntCheckBox
-            Left = 184
+            Left = 216
             Top = 76
-            Width = 169
+            Width = 184
             Height = 17
             Alignment = taLeftJustify
             Anchors = [akTop, akRight]
@@ -2434,7 +2435,7 @@ object fmLexerProp: TfmLexerProp
           object ComboBox32: TComboBox
             Left = 120
             Top = 4
-            Width = 233
+            Width = 280
             Height = 21
             Style = csDropDownList
             Anchors = [akLeft, akTop, akRight]
@@ -2445,7 +2446,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox23: TTntCheckBox
             Left = 8
             Top = 92
-            Width = 177
+            Width = 193
             Height = 17
             Alignment = taLeftJustify
             Caption = 'Start at the begin of text'
@@ -2455,7 +2456,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox24: TTntCheckBox
             Left = 8
             Top = 76
-            Width = 177
+            Width = 193
             Height = 17
             Alignment = taLeftJustify
             Caption = 'End at the end of text'
@@ -2463,9 +2464,9 @@ object fmLexerProp: TfmLexerProp
             OnClick = CheckBox24Click
           end
           object CheckBox25: TTntCheckBox
-            Left = 184
+            Left = 216
             Top = 108
-            Width = 169
+            Width = 184
             Height = 17
             Alignment = taLeftJustify
             Anchors = [akTop, akRight]
@@ -2476,7 +2477,7 @@ object fmLexerProp: TfmLexerProp
           object CheckBox29: TTntCheckBox
             Left = 8
             Top = 108
-            Width = 177
+            Width = 193
             Height = 17
             Alignment = taLeftJustify
             Caption = 'Include bound text'
@@ -2486,18 +2487,18 @@ object fmLexerProp: TfmLexerProp
           inline RuleStatesFrame1: TRuleStatesFrame
             Left = 0
             Top = 126
-            Width = 369
+            Width = 416
             Height = 79
             Align = alBottom
             TabOrder = 9
             TabStop = True
             inherited GroupBox1: TGroupBox
-              Width = 377
+              Width = 416
               inherited Label1: TLabel
                 Width = 41
               end
               inherited Label2: TLabel
-                Left = 200
+                Left = 239
                 Width = 38
               end
               inherited Edit1: TEdit
@@ -2505,17 +2506,17 @@ object fmLexerProp: TfmLexerProp
                 Width = 57
               end
               inherited Edit2: TEdit
-                Left = 312
+                Left = 351
                 Width = 49
               end
             end
             inherited GroupBox2: TGroupBox
-              Width = 377
+              Width = 416
               inherited Label3: TLabel
                 Width = 20
               end
               inherited Label4: TLabel
-                Left = 200
+                Left = 239
                 Width = 32
               end
               inherited Edit3: TEdit
@@ -2523,7 +2524,7 @@ object fmLexerProp: TfmLexerProp
                 Width = 57
               end
               inherited Edit4: TEdit
-                Left = 312
+                Left = 351
                 Width = 49
               end
             end
@@ -2532,7 +2533,7 @@ object fmLexerProp: TfmLexerProp
         object SyntaxMemo6: TSyntaxMemo
           Left = 0
           Top = 289
-          Width = 369
+          Width = 416
           Height = 48
           Lines.Strings = (
             'SyntaxMemo6')
@@ -2658,7 +2659,7 @@ object fmLexerProp: TfmLexerProp
           Ctl3D = True
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -15
+          Font.Height = -12
           Font.Name = 'Consolas'
           Font.Style = []
           ParentColor = False
@@ -2670,7 +2671,7 @@ object fmLexerProp: TfmLexerProp
         object SyntaxMemo5: TSyntaxMemo
           Left = 0
           Top = 222
-          Width = 369
+          Width = 416
           Height = 47
           Lines.Strings = (
             'SyntaxMemo5')
@@ -2796,7 +2797,7 @@ object fmLexerProp: TfmLexerProp
           Ctl3D = True
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -15
+          Font.Height = -12
           Font.Name = 'Consolas'
           Font.Style = []
           ParentColor = False
@@ -2873,7 +2874,7 @@ object fmLexerProp: TfmLexerProp
       object SyntaxMemo9: TSyntaxMemo
         Left = 149
         Top = 0
-        Width = 397
+        Width = 444
         Height = 337
         Lines.Strings = (
           'SyntaxMemo9')
@@ -3154,13 +3155,13 @@ object fmLexerProp: TfmLexerProp
   object Panel_Buttons: TTntPanel
     Left = 0
     Top = 563
-    Width = 554
+    Width = 601
     Height = 31
     Align = alBottom
     BevelInner = bvLowered
     TabOrder = 1
     DesignSize = (
-      554
+      601
       31)
     object Button9: TTntButton
       Left = 8
@@ -3172,7 +3173,7 @@ object fmLexerProp: TfmLexerProp
       OnClick = Button9Click
     end
     object Button8: TTntButton
-      Left = 293
+      Left = 340
       Top = 4
       Width = 85
       Height = 23
@@ -3182,7 +3183,7 @@ object fmLexerProp: TfmLexerProp
       OnClick = Button8Click
     end
     object Button2: TTntButton
-      Left = 469
+      Left = 516
       Top = 4
       Width = 85
       Height = 23
@@ -3202,7 +3203,7 @@ object fmLexerProp: TfmLexerProp
       OnClick = Button10Click
     end
     object Button1: TTntButton
-      Left = 381
+      Left = 428
       Top = 4
       Width = 85
       Height = 23
@@ -3215,7 +3216,7 @@ object fmLexerProp: TfmLexerProp
   object Panel_Preview: TTntPanel
     Left = 0
     Top = 368
-    Width = 554
+    Width = 601
     Height = 195
     Align = alClient
     BevelOuter = bvNone
@@ -3228,7 +3229,7 @@ object fmLexerProp: TfmLexerProp
     object SyntaxMemo1: TSyntaxMemo
       Left = 124
       Top = 0
-      Width = 430
+      Width = 477
       Height = 195
       SyntaxAnalyzer = FSynt
       TabList.AsString = '4'
