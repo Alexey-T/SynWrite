@@ -8710,9 +8710,9 @@ end;
     begin
       fmSR.PanelBusy.Align:= alClient;
       fmSR.PanelBusy.Visible:= not En;
-      //fmSR.StatusFind.Visible:= En;
       fmSR.labMultiline.Visible:= En;
       fmSR.labStyle.Visible:= En;
+      fmSR.labDocked.Visible:= En;
       fmSR.labRe.Visible:= En;
       fmSR.labEd1.Visible:= En;
       fmSR.labEd2.Visible:= En;

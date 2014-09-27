@@ -3,7 +3,7 @@ object fmSR: TfmSR
   Top = 311
   ActiveControl = ed1
   BorderStyle = bsDialog
-  ClientHeight = 233
+  ClientHeight = 219
   ClientWidth = 651
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -25,7 +25,7 @@ object fmSR: TfmSR
   TextHeight = 13
   object labEd1: TTntLabel
     Left = 8
-    Top = 8
+    Top = 4
     Width = 54
     Height = 13
     Caption = '&Search for:'
@@ -33,7 +33,7 @@ object fmSR: TfmSR
   end
   object labEd2: TTntLabel
     Left = 8
-    Top = 52
+    Top = 44
     Width = 65
     Height = 13
     Caption = '&Replace with:'
@@ -227,7 +227,7 @@ object fmSR: TfmSR
   end
   object ed1: TTntComboBox
     Left = 8
-    Top = 24
+    Top = 20
     Width = 335
     Height = 21
     AutoComplete = False
@@ -241,7 +241,7 @@ object fmSR: TfmSR
   end
   object ed2: TTntComboBox
     Left = 8
-    Top = 68
+    Top = 60
     Width = 335
     Height = 21
     AutoComplete = False
@@ -253,7 +253,7 @@ object fmSR: TfmSR
   end
   object gOp: TTntGroupBox
     Left = 8
-    Top = 96
+    Top = 84
     Width = 335
     Height = 113
     Caption = 'Options'
@@ -354,7 +354,7 @@ object fmSR: TfmSR
   end
   object gScop: TTntGroupBox
     Left = 352
-    Top = 96
+    Top = 84
     Width = 170
     Height = 113
     Caption = 'Scope'
@@ -532,7 +532,7 @@ object fmSR: TfmSR
   end
   object StatusFind: TTntStatusBar
     Left = 0
-    Top = 214
+    Top = 200
     Width = 651
     Height = 19
     Panels = <>

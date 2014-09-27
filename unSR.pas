@@ -173,22 +173,24 @@ type
     FLeft0,
     FTop0,
     FWidth0,
-    FHeight0: Integer;
+    FHeight0,
+    FMemoDy: Integer;
     procedure mnuComboClick(Sender: TObject);
+    procedure DoRestoreSizeOrig;
     procedure DoInsertCharCode;
     procedure DoCombo(ed: TTntCombobox; edMemo: TTntMemo; edNum: integer);
     procedure ReClick(Sender: TObject);
-    procedure DoAct(act: TSRAction);
+    procedure DoAction(act: TSRAction);
     procedure SetIsReplace(Value: boolean);
     procedure SetIsMultiline(Value: boolean);
-    procedure UpdTr;
+    procedure SetIsDocked(Value: boolean);
+    procedure UpdTransp;
     procedure UpdScope;
     procedure UpdMemoHeight;
     function GetText1: Widestring;
     function GetText2: Widestring;
     procedure SetText1(const Value: Widestring);
     procedure SetText2(const Value: Widestring);
-    procedure SetDocked(Value: boolean);
   public
     { Public declarations }
     SRProc: TSRProc;
@@ -212,7 +214,7 @@ type
     procedure SaveIni;
     property IsReplace: boolean read FIsReplace write SetIsReplace;
     property IsMultiline: boolean read FIsMultiline write SetIsMultiline;
-    property IsDocked: boolean read FIsDocked write SetDocked;
+    property IsDocked: boolean read FIsDocked write SetIsDocked;
     procedure ShowError(b: boolean);
     procedure ShowStatus(const S: Widestring);
     procedure SetFromCaret;
@@ -285,6 +287,7 @@ begin
   bFindInTabs.Visible:= not Value;
   bRepInTabs.Visible:= Value;
 
+  DoRestoreSizeOrig;
   UpdMemoHeight;
 end;
 
@@ -501,10 +504,10 @@ end;
 
 procedure TfmSR.TrackBar1Change(Sender: TObject);
 begin
-  UpdTr;
+  UpdTransp;
 end;
 
-procedure TfmSR.UpdTr;
+procedure TfmSR.UpdTransp;
 begin
   if (TrackBar1.Position=0)
     or (cbLoose.Checked and Active)
@@ -533,7 +536,7 @@ begin
   Close;
 end;
 
-procedure TfmSR.DoAct(act: TSRAction);
+procedure TfmSR.DoAction(act: TSRAction);
 begin
   if IsMultiline then
   begin
@@ -550,7 +553,7 @@ end;
 
 procedure TfmSR.bFindNextClick(Sender: TObject);
 begin
-  DoAct(arFindNext);
+  DoAction(arFindNext);
 end;
 
 procedure TfmSR.SetFromCaret;
@@ -565,22 +568,22 @@ end;
 
 procedure TfmSR.bFindAllClick(Sender: TObject);
 begin
-  DoAct(arFindAll);
+  DoAction(arFindAll);
 end;
 
 procedure TfmSR.bSkipClick(Sender: TObject);
 begin
-  DoAct(arSkip);
+  DoAction(arSkip);
 end;
 
 procedure TfmSR.bRepNextClick(Sender: TObject);
 begin
-  DoAct(arReplaceNext);
+  DoAction(arReplaceNext);
 end;
 
 procedure TfmSR.bRepAllClick(Sender: TObject);
 begin
-  DoAct(arReplaceAll);
+  DoAction(arReplaceAll);
 end;
 
 procedure TfmSR.bRepInTabsClick(Sender: TObject);
@@ -591,28 +594,28 @@ begin
   //uncheck "Search from caret" for mass replace
   cbFromCur.Checked:= false;
 
-  DoAct(arReplaceAllInAll);
+  DoAction(arReplaceAllInAll);
   SetFocus;
 end;
 
 procedure TfmSR.bCountClick(Sender: TObject);
 begin
-  DoAct(arCount);
+  DoAction(arCount);
 end;
 
 procedure TfmSR.TntFormActivate(Sender: TObject);
 begin
-  UpdTr;
+  UpdTransp;
 end;
 
 procedure TfmSR.TntFormDeactivate(Sender: TObject);
 begin
-  UpdTr;
+  UpdTransp;
 end;
 
 procedure TfmSR.cbLooseClick(Sender: TObject);
 begin
-  UpdTr;
+  UpdTransp;
 end;
 
 procedure TfmSR.labStyleClick(Sender: TObject);
@@ -1090,6 +1093,7 @@ begin
   FTopGScope:= gScop.Top;
   FWidth0:= ClientWidth;
   FHeight0:= ClientHeight;
+  FMemoDy:= ed2Memo.Height - ed2.Height;
 end;
 
 procedure TfmSR.cbSelClick(Sender: TObject);
@@ -1124,7 +1128,7 @@ begin
   //uncheck "Search from caret" for mass search
   cbFromCur.Checked:= false;
 
-  DoAct(arFindInTabs);
+  DoAction(arFindInTabs);
 end;
 
 procedure TfmSR.TntFormClose(Sender: TObject; var Action: TCloseAction);
@@ -1155,13 +1159,18 @@ begin
   bCombo2.SetBounds(ed2Memo.Left+ed2Memo.Width, ed2Memo.Top, 16, ed2Memo.Height);
 end;
 
+procedure TfmSR.DoRestoreSizeOrig;
+begin
+  ClientWidth:= FWidth0;
+  ClientHeight:= FHeight0
+    +IfThen(FIsMultiline, FMemoDy*2)
+    -IfThen(FIsDocked, StatusFind.Height);
+end;
+
 procedure TfmSR.SetIsMultiline(Value: boolean);
 var
-  dy: Integer;
   NFocus: (f_ed1, f_ed2, f_other);
 begin
-  dy:= ed2Memo.Height - ed2.Height;
-
   if ed1.Focused or ed1Memo.Focused then NFocus:= f_ed1 else
    if ed2.Focused or ed2Memo.Focused then NFocus:= f_ed2 else
      NFocus:= f_other;
@@ -1179,13 +1188,12 @@ begin
     ed1Memo.Left:= ed1.Left;
     ed2Memo.Left:= ed2.Left;
     ed1Memo.Top:= ed1.Top;
-    ed2Memo.Top:= FTopEd2+IfThen(Value, dy);
+    ed2Memo.Top:= FTopEd2+IfThen(Value, FMemoDy);
 
-    labEd2.Top:= FTopLab2+IfThen(Value, dy);
-    gOp.Top:= FTopGOpt+IfThen(Value, dy*2);
-    gScop.Top:= FTopGScope+IfThen(Value, dy*2);
-    ClientWidth:= FWidth0;
-    ClientHeight:= FHeight0+IfThen(Value, dy*2)-IfThen(FIsDocked, StatusFind.Height);
+    labEd2.Top:= FTopLab2+IfThen(Value, FMemoDy);
+    gOp.Top:= FTopGOpt+IfThen(Value, FMemoDy*2);
+    gScop.Top:= FTopGScope+IfThen(Value, FMemoDy*2);
+    DoRestoreSizeOrig;
 
     UpdMemoHeight;
 
@@ -1573,7 +1581,7 @@ begin
   IsDocked:= not IsDocked;
 end;
 
-procedure TfmSR.SetDocked(Value: boolean);
+procedure TfmSR.SetIsDocked(Value: boolean);
 begin
   if Value<>FIsDocked then
   begin
@@ -1587,8 +1595,7 @@ begin
     if Assigned(FOnDockedChanged) then
       FOnDockedChanged(Self);
 
-    FIsMultiline:= not FIsMultiline;
-    SetIsMultiline(not FIsMultiline);
+    IsReplace:= IsReplace;
 
     if not Value then
       begin Left:= FLeft0; Top:= FTop0; end;
