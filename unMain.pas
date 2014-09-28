@@ -2551,7 +2551,6 @@ type
 
     function SFindResPrefix(LineNum: integer): Widestring;
     procedure SetLineEnds(Sender: TObject; AManual: boolean);
-    function IsProjPreviewFocused: boolean;
     function IsListboxFocused: boolean;
     function IsTreeviewFocused: boolean;
     function CurrentListbox: TCustomListbox;
@@ -2563,8 +2562,9 @@ type
       var AExtSel: boolean;
       var AMode: TSynGotoMode;
       var ABkNum: integer): Boolean;
-    function IsSearchEditFocused: boolean;
-    function IsNumConvEditFocused: boolean;
+    //function IsSearchEditFocused: boolean;
+    //function IsNumConvEditFocused: boolean;
+    //function IsProjPreviewFocused: boolean;
     procedure DoTreeJump(Mode: TSynGotoTree);
     procedure SyncTree;
     procedure SyncMapData;
@@ -2606,7 +2606,7 @@ type
     procedure DoZenWrap;
     function DoZenExec(const s, sPadding: string): string;
     function DoClipItem: Widestring;
-    procedure DoClipsItemCopy;
+    //procedure DoClipsItemCopy;
     procedure DoClipItemCopy;
     procedure DoClipItemIns;
     procedure DoBackupLexerStyles(ALexer: TSyntAnalyzer);
@@ -17415,6 +17415,7 @@ begin
   DoTreeJump(tgoPrev);
 end;
 
+{
 function TfmMain.IsSearchEditFocused: boolean;
 begin
   Result:= Assigned(fmSR) and
@@ -17422,7 +17423,9 @@ begin
     fmSR.Enabled and
     (fmSR.ed1.Focused or fmSR.ed2.Focused);
 end;
+}
 
+{
 function TfmMain.IsNumConvEditFocused: boolean;
 begin
   Result:= Assigned(fmNumConv) and
@@ -17431,6 +17434,7 @@ begin
     (fmNumConv.ActiveControl is TTntEdit) and
     fmNumConv.ActiveControl.Focused;
 end;
+}
 
 procedure TfmMain.ecSplitLeftExecute(Sender: TObject);
 begin
@@ -20564,6 +20568,7 @@ begin
   end;
 end;
 
+{
 procedure TfmMain.DoClipsItemCopy;
 var
   s: Widestring;
@@ -20572,6 +20577,7 @@ begin
   if s<>'' then
     TntClipboard.AsWideText:= s;
 end;
+}
 
 procedure TfmMain.ApplyInst;
 begin
@@ -26381,12 +26387,14 @@ begin
   }
 end;
 
+{
 function TfmMain.IsProjPreviewFocused: boolean;
 begin
   Result:=
     Assigned(FProjPreview) and FProjPreview.Visible and
     Assigned(FProjPreviewEditor) and FProjPreviewEditor.Focused;
 end;
+}
 
 procedure TfmMain.ProjPreviewButtonClick(Sender: TObject);
 var

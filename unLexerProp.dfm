@@ -874,7 +874,6 @@ object fmLexerProp: TfmLexerProp
             TabStop = True
             inherited GroupBox1: TGroupBox
               Width = 401
-              Visible = False
               inherited Label1: TLabel
                 Width = 41
               end
@@ -893,7 +892,6 @@ object fmLexerProp: TfmLexerProp
             end
             inherited GroupBox2: TGroupBox
               Width = 401
-              Visible = False
               inherited Label3: TLabel
                 Width = 20
               end
@@ -1213,7 +1211,6 @@ object fmLexerProp: TfmLexerProp
             TabStop = True
             inherited GroupBox1: TGroupBox
               Width = 414
-              Visible = False
               inherited Label1: TLabel
                 Width = 41
               end
@@ -1232,7 +1229,6 @@ object fmLexerProp: TfmLexerProp
             end
             inherited GroupBox2: TGroupBox
               Width = 414
-              Visible = False
               inherited Label3: TLabel
                 Width = 20
               end
@@ -2318,7 +2314,7 @@ object fmLexerProp: TfmLexerProp
         TabOrder = 1
         object Label47: TTntLabel
           Left = 0
-          Top = 161
+          Top = 205
           Width = 416
           Height = 17
           Align = alTop
@@ -2336,7 +2332,7 @@ object fmLexerProp: TfmLexerProp
         end
         object Splitter5: TSplitter
           Left = 0
-          Top = 247
+          Top = 269
           Width = 416
           Height = 3
           Cursor = crVSplit
@@ -2344,7 +2340,7 @@ object fmLexerProp: TfmLexerProp
         end
         object Label49: TTntLabel
           Left = 0
-          Top = 250
+          Top = 272
           Width = 416
           Height = 17
           Align = alTop
@@ -2364,13 +2360,13 @@ object fmLexerProp: TfmLexerProp
           Left = 0
           Top = 0
           Width = 416
-          Height = 161
+          Height = 205
           Align = alTop
           BevelOuter = bvNone
           TabOrder = 0
           DesignSize = (
             416
-            161)
+            205)
           object Label45: TTntLabel
             Left = 8
             Top = 32
@@ -2490,17 +2486,15 @@ object fmLexerProp: TfmLexerProp
           end
           inline RuleStatesFrame1: TRuleStatesFrame
             Left = 0
-            Top = 136
+            Top = 124
             Width = 416
-            Height = 25
+            Height = 81
             Align = alBottom
             TabOrder = 9
             TabStop = True
-            Visible = False
             inherited GroupBox1: TGroupBox
               Width = 416
               Height = 41
-              Visible = False
               inherited Label1: TLabel
                 Width = 41
               end
@@ -2520,7 +2514,6 @@ object fmLexerProp: TfmLexerProp
             inherited GroupBox2: TGroupBox
               Top = 41
               Width = 416
-              Visible = False
               inherited Label3: TLabel
                 Width = 20
               end
@@ -2541,9 +2534,9 @@ object fmLexerProp: TfmLexerProp
         end
         object SyntaxMemo6: TSyntaxMemo
           Left = 0
-          Top = 267
+          Top = 289
           Width = 416
-          Height = 70
+          Height = 48
           Lines.Strings = (
             'SyntaxMemo6')
           TabList.AsString = '4'
@@ -2559,6 +2552,7 @@ object fmLexerProp: TfmLexerProp
           LineNumbers.Font.Name = 'Consolas'
           LineNumbers.Font.Style = []
           LineNumbers.Band = -1
+          Gutter.Width = 15
           Gutter.ExpandButtons.Data = {
             FA000000424DFA000000000000007600000028000000180000000B0000000100
             0400000000008400000000000000000000001000000000000000000000000000
@@ -2581,6 +2575,7 @@ object fmLexerProp: TfmLexerProp
           HintProps.Color = 13041663
           HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
           UserRanges = <>
+          ScrollBars = ssVertical
           StaplePen.Color = clGray
           DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.SelectioMark.Font.Color = clHighlightText
@@ -2679,9 +2674,9 @@ object fmLexerProp: TfmLexerProp
         end
         object SyntaxMemo5: TSyntaxMemo
           Left = 0
-          Top = 178
+          Top = 222
           Width = 416
-          Height = 69
+          Height = 47
           Lines.Strings = (
             'SyntaxMemo5')
           TabList.AsString = '4'
@@ -2697,6 +2692,7 @@ object fmLexerProp: TfmLexerProp
           LineNumbers.Font.Name = 'Consolas'
           LineNumbers.Font.Style = []
           LineNumbers.Band = -1
+          Gutter.Width = 15
           Gutter.ExpandButtons.Data = {
             FA000000424DFA000000000000007600000028000000180000000B0000000100
             0400000000008400000000000000000000001000000000000000000000000000
@@ -2719,6 +2715,7 @@ object fmLexerProp: TfmLexerProp
           HintProps.Color = 13041663
           HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
           UserRanges = <>
+          ScrollBars = ssVertical
           StaplePen.Color = clGray
           DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
           DefaultStyles.SelectioMark.Font.Color = clHighlightText
@@ -3156,7 +3153,7 @@ object fmLexerProp: TfmLexerProp
     Width = 601
     Height = 31
     Align = alBottom
-    BevelInner = bvLowered
+    BevelOuter = bvNone
     TabOrder = 1
     DesignSize = (
       601
@@ -3171,7 +3168,7 @@ object fmLexerProp: TfmLexerProp
       OnClick = Button9Click
     end
     object Button8: TTntButton
-      Left = 340
+      Left = 332
       Top = 4
       Width = 85
       Height = 23
@@ -3181,7 +3178,7 @@ object fmLexerProp: TfmLexerProp
       OnClick = Button8Click
     end
     object Button2: TTntButton
-      Left = 516
+      Left = 512
       Top = 4
       Width = 85
       Height = 23
@@ -3192,7 +3189,7 @@ object fmLexerProp: TfmLexerProp
       TabOrder = 2
     end
     object Button10: TTntButton
-      Left = 96
+      Left = 98
       Top = 4
       Width = 85
       Height = 23
@@ -3201,7 +3198,7 @@ object fmLexerProp: TfmLexerProp
       OnClick = Button10Click
     end
     object Button1: TTntButton
-      Left = 428
+      Left = 422
       Top = 4
       Width = 85
       Height = 23
