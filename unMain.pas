@@ -2393,12 +2393,6 @@ type
     procedure DoFindDialog_ReplaceOrSkip(ADoReplace: boolean);
     procedure DoFindDialog_FindAllInAllTabs;
     procedure DoFindDialog_FindAllInCurrentTab(AWithBkmk, ASelectResults: boolean);
-    procedure DoFindInClipPanel;
-    procedure DoFindInFindResults;
-    procedure DoFindInOutPanel;
-    procedure DoFindInValidatePanel;
-    procedure DoFindInPluginsLog;
-    procedure DoFindCommandFromString(const S: Widestring);
 
     procedure DoFindInFiles_Dialog(AInProject: boolean);
     function DoFindInFiles_InputData(
@@ -2564,7 +2558,6 @@ type
     function CurrentTreeview: TCustomTreeView;
     procedure DoFrameReloadInt(F: TEditorFrame);
     procedure DoFrameReloadWrapper(F: TEditorFrame);
-    procedure DoFindAndExtendSel(ANext: boolean);
     function ShowGotoForm(
       var ALine, ACol: integer;
       var AExtSel: boolean;
@@ -2573,8 +2566,6 @@ type
     function IsSearchEditFocused: boolean;
     function IsNumConvEditFocused: boolean;
     procedure DoTreeJump(Mode: TSynGotoTree);
-    procedure FinderTreeFound(Sender: TObject; StartPos, EndPos: integer; Accept: Boolean);
-    procedure FinderTreeNotFound(Sender: TObject);
     procedure SyncTree;
     procedure SyncMapData;
     procedure SyncMapPos;
@@ -2642,18 +2633,6 @@ type
     procedure DoBracketsHilite(Ed: TSyntaxMemo);
     procedure DoListCopy(Sender: TTntListbox);
     procedure DoListCopyAll(Sender: TTntListbox);
-    procedure FinderContinue(Sender: TObject; var ACanContinue: boolean);
-    procedure FinderFind_WithResultPane(Sender: TObject;
-      StartPos, EndPos: integer;
-      var Accept: Boolean);
-    procedure FinderFind_WithBkmk(Sender: TObject;
-      StartPos, EndPos: integer;
-      var Accept: Boolean);
-    procedure FinderFind_WithResultPaneAndBkmk(Sender: TObject;
-      StartPos, EndPos: integer; var Accept: Boolean);
-    procedure FinderCanAccept(Sender: TObject;
-      StartPos, EndPos: integer;
-      var Accept: Boolean);
     procedure DoHandleKeysInPanels(var Key: Word; Shift: TShiftState);
     function DoNavigate_ListOut(const Str: Widestring): boolean;
     function DoNavigate_ListVal(const Str: Widestring): boolean;
@@ -2666,10 +2645,46 @@ type
 
     procedure InitSynIniDir;
     procedure LexListClick(Sender: TObject);
-    procedure FinderInit(Sender: TObject);
-    procedure FinderFail(Sender: TObject);
-    procedure FinderProgress(CurPos, MaxPos: integer);
-    procedure FindCurrentWord(ANext: boolean);
+
+    procedure Finder_OnBeforeExecute(Sender: TObject);
+    procedure Finder_OnNotFound(Sender: TObject);
+    procedure Finder_OnProgress(CurPos, MaxPos: integer);
+    procedure Finder_OnContinue(Sender: TObject; var ACanContinue: boolean);
+    procedure Finder_OnCanAccept(Sender: TObject;
+      StartPos, EndPos: integer; var Accept: Boolean);
+    procedure Finder_OnFind_WithResultPane(Sender: TObject;
+      StartPos, EndPos: integer; var Accept: Boolean);
+    procedure Finder_OnFind_WithBkmk(Sender: TObject;
+      StartPos, EndPos: integer; var Accept: Boolean);
+    procedure Finder_OnFind_WithResultPaneAndBkmk(Sender: TObject;
+      StartPos, EndPos: integer; var Accept: Boolean);
+
+    procedure FinderTree_OnFind(Sender: TObject;
+      StartPos, EndPos: integer; Accept: Boolean);
+    procedure FinderTree_OnNotFound(Sender: TObject);
+
+    procedure DoFind_CurrentWord(ANext: boolean);
+    procedure DoFind_AndExtendSel(ANext: boolean);
+    procedure DoFind_Action(act: TSynSearchAction);
+    procedure DoFind_ActionWrapper(act: TSynSearchAction);
+    procedure DoFindDialog_OnFocusEditor(Sender: TObject);
+    procedure DoFindDialog_OnDockedChanged(Sender: TObject);
+    procedure DoFindDialog_OnShowStatus(const Msg: Widestring);
+    procedure DoFindDialog(AReplaceMode: boolean);
+    procedure DoFind_MarkAll(const Str: Widestring);
+    procedure DoFind_InFile(const fn: Widestring; InCodepage: TSynEncOverride = cp_sr_Def);
+    procedure DoFind_InFrame(F: TEditorFrame;
+      AMarkAll: boolean = false;
+      AWithBkmk: boolean = false);
+    procedure DoReplace_InFile(const fn: Widestring);
+    procedure DoReplace_InAllTabs(var nRep, nFiles: integer);
+    procedure DoReplace_TabsToSpaces(F: TEditorFrame);
+    procedure DoFind_InClipPanel;
+    procedure DoFind_InResultsPanel;
+    procedure DoFind_InOutputPanel;
+    procedure DoFind_InValidatePanel;
+    procedure DoFind_InPluginsLog;
+    procedure DoFind_CommandFromString(const S: Widestring);
 
     function IsShortcutOfCmd(sh: TShortcut; cmd: integer): boolean;
     function GetShortcutOfCmd(id: integer): TShortcut;
@@ -2683,23 +2698,8 @@ type
     function DoMacro_GetName(n: integer): Widestring;
     function DoMacro_GetCommandName(n: integer; AWithKey: boolean = False): Widestring;
 
-    procedure DoReplaceTabsToSpaces(F: TEditorFrame);
     procedure DoOnlineWordHelp(const url: Widestring);
     procedure DoOnlineFind(const site: Widestring);
-
-    procedure FindAction(act: TSynSearchAction);
-    procedure FindActionWrapper(act: TSynSearchAction);
-    procedure FindFocusEditor(Sender: TObject);
-    procedure FindDockedChanged(Sender: TObject);
-    procedure FindShowStatus(const Msg: Widestring);
-    procedure FindDialog(AReplaceMode: boolean);
-    procedure FindInFile(const fn: Widestring; InCodepage: TSynEncOverride = cp_sr_Def);
-    procedure FindInFrame(F: TEditorFrame;
-      AMarkAll: boolean = false;
-      AWithBkmk: boolean = false);
-    procedure ReplaceInFile(const fn: Widestring);
-    procedure ReplaceInAllTabs(var nRep, nFiles: integer);
-    procedure DoMarkAll(const Str: Widestring);
 
     function GetIcons: TSynIcons;
     function GetTheme: string;
@@ -3179,6 +3179,7 @@ type
     function DoColorsArrayAsString(const C: TSynColors): string;
     procedure DoColorsArrayApply(const C: TSynColors; Ed: TSyntaxMemo);
 
+    procedure DoFinderInit(AKeepFlags: boolean = false);
     procedure DoSpellConfig(Sender: TObject);
     procedure DoAutoSave;
     procedure DoBackup(const AFilename: Widestring);
@@ -3187,7 +3188,6 @@ type
     procedure DoTabSwitch(ANext: boolean; AAllowModernSwitch: boolean = true);
     procedure FocusEditor;
     procedure FocusProj;
-    procedure FindInit(AKeepFlags: boolean = false);
     function IsMouseOverProject: boolean;
 
     constructor CreateParented(hWindow: HWND);
@@ -3843,7 +3843,7 @@ begin
 
   UpdateGutter(Result);
   if opTabsReplace and (TemplateEditor.TabMode=tmSpaces) then
-    DoReplaceTabsToSpaces(Result);
+    DoReplace_TabsToSpaces(Result);
 
   DoPyEvent(Result.EditorMaster, cSynEventOnOpen, []);
 end;
@@ -5814,7 +5814,7 @@ begin
         ecFindInListNext.Execute
       else
       begin
-        FindInit(true{KeepFlags});
+        DoFinderInit(true{KeepFlags});
 
         if Finder.FindText<>'' then
         begin
@@ -5838,7 +5838,7 @@ begin
         ecFindInListPrev.Execute
       else
       begin
-        FindInit(true{KeepFlags});
+        DoFinderInit(true{KeepFlags});
 
         if Finder.FindText<>'' then
         begin
@@ -5855,7 +5855,7 @@ begin
 
     smFindAll:
     begin
-      FindInit(true{KeepFlags});
+      DoFinderInit(true{KeepFlags});
       if opFindSuggestSel and (Ed.SelLength>0) then
         Finder.FindText:= Ed.SelText
       else
@@ -5875,7 +5875,7 @@ begin
 
     smReplaceAll:
     begin
-      FindInit(true{KeepFlags});
+      DoFinderInit(true{KeepFlags});
       if Finder.FindText='' then
         ecReplace.Execute
       else
@@ -5889,7 +5889,7 @@ begin
 
     smReplaceNext:
     begin
-      FindInit(true{KeepFlags});
+      DoFinderInit(true{KeepFlags});
       if Finder.FindText='' then
         ecReplace.Execute
       else
@@ -5906,13 +5906,13 @@ begin
     //find curr word
     smFindCurrentWordNext:
     begin
-      FindInit;
-      FindCurrentWord(true);
+      DoFinderInit;
+      DoFind_CurrentWord(true);
     end;
     smFindCurrentWordPrior:
     begin
-      FindInit;
-      FindCurrentWord(false);
+      DoFinderInit;
+      DoFind_CurrentWord(false);
     end;
 
     //Lister find
@@ -6047,7 +6047,7 @@ begin
     sm_FindClipboardNext: ecFindClipNext.Execute;
     sm_FindClipboardPrev: ecFindClipPrev.Execute;
     sm_RepeatLastCommand: ecRepeatCmd.Execute;
-    sm_FindCommand: DoFindCommandFromString(WideString(PWideChar(Data)));
+    sm_FindCommand: DoFind_CommandFromString(WideString(PWideChar(Data)));
     sm_CommandsList: ecCommandsList.Execute;
     sm_ScrollToSel: EditorScrollToSelection(Ed, opFindOffsetTop);
     sm_ProjectList: ecProjectList.Execute;
@@ -6983,13 +6983,13 @@ begin
   tbViewMove(Self);
 end;
 
-procedure TfmMain.FinderInit(Sender: TObject);
+procedure TfmMain.Finder_OnBeforeExecute(Sender: TObject);
 begin
   Finder.Control:= CurrentEditor;
   DoHint('');
 end;
 
-procedure TfmMain.FinderFail(Sender: TObject);
+procedure TfmMain.Finder_OnNotFound(Sender: TObject);
 begin
   DoProgressHide;
   DoHint(WideFormat(DKLangConstW('MNFound2'), [Finder.FindText]));
@@ -7129,7 +7129,7 @@ begin
     SyntaxManager.LoadFromFile(fn);
 end;
 
-procedure TfmMain.FindCurrentWord(ANext: boolean);
+procedure TfmMain.DoFind_CurrentWord(ANext: boolean);
 var
   NStart, NEnd, NMaxLen: integer;
   Ed: TSyntaxMemo;
@@ -7330,10 +7330,10 @@ begin
   FinderInTree:= nil;
   FinderInList:= nil;
   Finder:= TSynFinderReplacer.Create(Self);
-  Finder.OnBeforeExecute:= FinderInit;
-  Finder.OnNotFound:= FinderFail;
+  Finder.OnBeforeExecute:= Finder_OnBeforeExecute;
+  Finder.OnNotFound:= Finder_OnNotFound;
   Finder.SkipInit:= False;
-  Finder.OnProgress:= FinderProgress;
+  Finder.OnProgress:= Finder_OnProgress;
 
   //clear actions hints (Sepa's code)
   with ActionList do
@@ -8467,7 +8467,7 @@ begin
 end;
 
 
-procedure TfmMain.FindInit(AKeepFlags: boolean = false);
+procedure TfmMain.DoFinderInit(AKeepFlags: boolean = false);
 var
   IsSpec, IsSel,
   IsCase, IsWords,
@@ -8585,15 +8585,15 @@ begin
   if IsListboxFocused then
     ecFindInList.Execute
   else
-    FindDialog(false);
+    DoFindDialog(false);
 end;
 
 procedure TfmMain.ecReplaceExecute(Sender: TObject);
 begin
-  FindDialog(true);
+  DoFindDialog(true);
 end;
 
-procedure TfmMain.FindDialog(AReplaceMode: boolean);
+procedure TfmMain.DoFindDialog(AReplaceMode: boolean);
 var
   Ed: TSyntaxMemo;
   Ctl: TWinControl;
@@ -8609,10 +8609,10 @@ begin
       SRCount:= opSaveFindCount;
       SRIni:= SynHistoryIni;
       SRIniS:= SynHistoryIni;
-      SRProc:= Self.FindActionWrapper;
-      OnFocusEditor:= Self.FindFocusEditor;
-      OnDockedChanged:= Self.FindDockedChanged;
-      OnShowStatus:= Self.FindShowStatus;
+      SRProc:= Self.DoFind_ActionWrapper;
+      OnFocusEditor:= Self.DoFindDialog_OnFocusEditor;
+      OnDockedChanged:= Self.DoFindDialog_OnDockedChanged;
+      OnShowStatus:= Self.DoFindDialog_OnShowStatus;
       cbTokens.Enabled:= SyntaxManager.AnalyzerCount>0;
       LoadIni;
 
@@ -8769,7 +8769,7 @@ end;
       FocusEditor;
   end;
 
-procedure TfmMain.FindActionWrapper(act: TSynSearchAction);
+procedure TfmMain.DoFind_ActionWrapper(act: TSynSearchAction);
 var
   Ed: TSyntaxMemo;
   oldStart, oldLength: integer;
@@ -8784,7 +8784,7 @@ begin
     DoProgressShow;
 
   try
-    FindAction(act);
+    DoFind_Action(act);
   finally
     FinderPro:= nil;
     FinderProNum:= 0;
@@ -8926,14 +8926,14 @@ begin
     MsgWarn(DKLangConstW('fnMul'), Handle)
   else
   begin
-    ReplaceInAllTabs(nMatches, nFiles);
+    DoReplace_InAllTabs(nMatches, nFiles);
     Finder.Matches:= nMatches;
     fmSR.ShowError(Finder.Matches=0);
     AFilesReport:= WideFormat(DKLangConstW('fn_f'), [nFiles]);
   end;
 end;
 
-procedure TfmMain.FindAction(act: TSynSearchAction);
+procedure TfmMain.DoFind_Action(act: TSynSearchAction);
 var
   SMsg, SMsgFiles: Widestring;
 begin
@@ -8970,7 +8970,7 @@ begin
       Finder.ReplaceText:= SDecodeSpecChars(Finder.ReplaceText);
     end;
 
-    Finder.OnCanAccept:= FinderCanAccept;
+    Finder.OnCanAccept:= Finder_OnCanAccept;
   end;
 
   //check regex valid
@@ -11692,23 +11692,15 @@ end;
 
 procedure TfmMain.TBXItemEUndoClick(Sender: TObject);
 begin
-  {
-  Here's reaction to Ctrl+Z, for exe.
-  }
-  if edQs.Focused then
-    edQs.Undo
-  else
-    CurrentEditor.ExecCommand(smUndo);
+  CurrentEditor.ExecCommand(smUndo);
 end;
 
-procedure TfmMain.DoReplaceTabsToSpaces(F: TEditorFrame);
+procedure TfmMain.DoReplace_TabsToSpaces(F: TEditorFrame);
 var
   L: TTntStringList;
 begin
-  {
-  //slow!
-  F.EditorMaster.UnTabText;
-  }
+  //slow! don't use F.EditorMaster.UnTabText;
+  
   L:= TTntStringList.Create;
   try
     L.SetTextW(PWChar(F.EditorMaster.Text));
@@ -11833,7 +11825,7 @@ begin
     PostMessage(hLister, WM_CLOSE, 0, 0);
 end;
 
-procedure TfmMain.ReplaceInAllTabs(var nRep, nFiles: integer);
+procedure TfmMain.DoReplace_InAllTabs(var nRep, nFiles: integer);
 var
   F: TEditorFrame;
   i: Integer;
@@ -11854,7 +11846,7 @@ begin
     end;
   end;
   CurrentFrame:= F;
-  Finder.OnNotFound:= FinderFail;
+  Finder.OnNotFound:= Finder_OnNotFound;
 end;
 
 procedure TfmMain.acCloseAndDeleteExecute(Sender: TObject);
@@ -11905,7 +11897,7 @@ begin
 end;
 
 //Finder must be set-up
-procedure TfmMain.ReplaceInFile(const fn: Widestring);
+procedure TfmMain.DoReplace_InFile(const fn: Widestring);
 var
   Attr: Dword;
 const
@@ -11952,7 +11944,7 @@ begin
   end;
 end;
 
-procedure TfmMain.FindInFile(const fn: Widestring; InCodepage: TSynEncOverride = cp_sr_Def);
+procedure TfmMain.DoFind_InFile(const fn: Widestring; InCodepage: TSynEncOverride = cp_sr_Def);
 var
   Op: TSyntaxMemoOptions;
   OpWrap: boolean;
@@ -12009,9 +12001,9 @@ begin
     end;
   end;
 
-  Finder.OnFind:= FinderFind_WithResultPane;
+  Finder.OnFind:= Finder_OnFind_WithResultPane;
   Finder.OnCanAccept:= nil;
-  Finder.OnContinue:= FinderContinue;
+  Finder.OnContinue:= Finder_OnContinue;
   FLastOnContinueCheck:= 0;
 
   try
@@ -12410,7 +12402,7 @@ begin
     for i:= 0 to FListFiles.Count-1 do
     begin
       try
-        ReplaceInFile(FListFiles[i]);
+        DoReplace_InFile(FListFiles[i]);
       except
         on E: Exception do
           MsgExcept('Error on replacing in file'#13+FListFiles[i], E, Handle);
@@ -12501,19 +12493,19 @@ begin
         //first search in auto-detected encoding
         ThisInUTF8:= IsFileUTF8NoBOM(FListFiles[i]);
         if ThisInUTF8 then
-          FindInFile(FListFiles[i], cp_sr_UTF8)
+          DoFind_InFile(FListFiles[i], cp_sr_UTF8)
         else
-          FindInFile(FListFiles[i]);
+          DoFind_InFile(FListFiles[i]);
 
         //additional searches in OEM/UTF8/UTF16
         if not IsFileWithBOM(FListFiles[i]) then
         begin
           if InOEM then
-            FindInFile(FListFiles[i], cp_sr_OEM);
+            DoFind_InFile(FListFiles[i], cp_sr_OEM);
           if InUTF8 and not ThisInUTF8 then
-            FindInFile(FListFiles[i], cp_sr_UTF8);
+            DoFind_InFile(FListFiles[i], cp_sr_UTF8);
           if InUTF16 then
-            FindInFile(FListFiles[i], cp_sr_UTF16);
+            DoFind_InFile(FListFiles[i], cp_sr_UTF16);
         end;
       except
         on E: Exception do
@@ -12620,7 +12612,7 @@ begin
   end;
 end;
 
-procedure TfmMain.DoMarkAll(const Str: Widestring);
+procedure TfmMain.DoFind_MarkAll(const Str: Widestring);
 var
   PrevFlags: TSearchOptions;
   PrevText1, PrevText2: Widestring;
@@ -12685,7 +12677,7 @@ begin
       if not IsWordChar(s[i]) then Exit;
   end;
 
-  DoMarkAll(s);
+  DoFind_MarkAll(s);
   UpdateFrameMicroMap(CurrentFrame);
 end;
 
@@ -13340,7 +13332,7 @@ begin
   end;
 end;
 
-procedure TfmMain.FinderContinue(Sender: TObject; var ACanContinue: boolean);
+procedure TfmMain.Finder_OnContinue(Sender: TObject; var ACanContinue: boolean);
 var
   Tick: DWORD;
 begin
@@ -13354,14 +13346,14 @@ begin
   ACanContinue:= not StopFind;
 end;
 
-procedure TfmMain.FinderFind_WithResultPaneAndBkmk(Sender: TObject;
+procedure TfmMain.Finder_OnFind_WithResultPaneAndBkmk(Sender: TObject;
       StartPos, EndPos: integer; var Accept: Boolean);
 begin
-  FinderFind_WithResultPane(Sender, StartPos, EndPos, Accept);
-  FinderFind_WithBkmk(Sender, StartPos, EndPos, Accept);
+  Finder_OnFind_WithResultPane(Sender, StartPos, EndPos, Accept);
+  Finder_OnFind_WithBkmk(Sender, StartPos, EndPos, Accept);
 end;
 
-procedure TfmMain.FinderFind_WithResultPane(Sender: TObject;
+procedure TfmMain.Finder_OnFind_WithResultPane(Sender: TObject;
       StartPos, EndPos: integer; var Accept: Boolean);
 var
   Ed: TCustomSyntaxMemo;
@@ -13425,7 +13417,7 @@ begin
   //Sleep(250); //debug
 end;
 
-procedure TfmMain.FinderFind_WithBkmk(Sender: TObject;
+procedure TfmMain.Finder_OnFind_WithBkmk(Sender: TObject;
   StartPos, EndPos: integer; var Accept: Boolean);
 var
   Ed: TCustomSyntaxMemo;
@@ -15049,7 +15041,7 @@ begin
   DoTool_Run(opTools[16]);
 end;
 
-procedure TfmMain.FinderProgress(CurPos, MaxPos: integer);
+procedure TfmMain.Finder_OnProgress(CurPos, MaxPos: integer);
 var
   N: Int64;
 begin
@@ -15316,7 +15308,7 @@ begin
   //Ctrl+F in clip
   if IsShortcutOfCmd(Shortcut(Key, Shift), smFindDialog) then
   begin
-    DoFindInClipPanel;
+    DoFind_InClipPanel;
     Key:= 0;
     Exit
   end;
@@ -17306,7 +17298,7 @@ begin
   end;
 end;
 
-procedure TfmMain.FinderTreeFound;
+procedure TfmMain.FinderTree_OnFind;
 begin
   if Sender is TFinderInTree then
     with Sender as TFinderInTree do
@@ -17314,7 +17306,7 @@ begin
         Control.SetFocus;
 end;
 
-procedure TfmMain.FinderTreeNotFound(Sender: TObject);
+procedure TfmMain.FinderTree_OnNotFound(Sender: TObject);
 var
   s: Widestring;
 begin
@@ -17342,8 +17334,8 @@ begin
     if Assigned(fmSR) then
       SearchText:= fmSR.Text1;
     Control:= Self.CurrentTreeview;
-    OnFind:= Self.FinderTreeFound;
-    OnNotFound:= Self.FinderTreeNotFound;
+    OnFind:= Self.FinderTree_OnFind;
+    OnNotFound:= Self.FinderTree_OnNotFound;
     Execute;
   end;
 end;
@@ -17529,13 +17521,12 @@ begin
 end;
 
 
-
-procedure TfmMain.DoFindAndExtendSel(ANext: boolean);
+procedure TfmMain.DoFind_AndExtendSel(ANext: boolean);
 var
   Ed: TSyntaxMemo;
   oldStart, oldLength: Integer;
 begin
-  FindInit;
+  DoFinderInit;
   if Finder.FindText='' then
   begin
     ecFind.Execute;
@@ -17557,12 +17548,12 @@ end;
 
 procedure TfmMain.ecFindNextWithExtendExecute(Sender: TObject);
 begin
-  DoFindAndExtendSel(true);
+  DoFind_AndExtendSel(true);
 end;
 
 procedure TfmMain.ecFindPrevWithExtendExecute(Sender: TObject);
 begin
-  DoFindAndExtendSel(false);
+  DoFind_AndExtendSel(false);
 end;
 
 procedure TfmMain.UpdateFrameZoom(F: TEditorFrame);
@@ -17597,7 +17588,7 @@ begin
     if Assigned(fmSR) then
       SearchText:= fmSR.Text1;
     Control:= CurrentListbox;
-    OnNotFound:= Self.FinderTreeNotFound;
+    OnNotFound:= Self.FinderTree_OnNotFound;
     Execute;
   end;
 end;
@@ -17655,10 +17646,10 @@ end;
 
 procedure TfmMain.TBXItemClipFindClick(Sender: TObject);
 begin
-  DoFindInClipPanel;
+  DoFind_InClipPanel;
 end;
 
-procedure TfmMain.DoFindInClipPanel;
+procedure TfmMain.DoFind_InClipPanel;
 begin
   if Assigned(fmClip) then
     with fmClip.ListClip do
@@ -17671,10 +17662,10 @@ end;
 
 procedure TfmMain.TBXItemValFindClick(Sender: TObject);
 begin
-  DoFindInValidatePanel;
+  DoFind_InValidatePanel;
 end;
 
-procedure TfmMain.DoFindInValidatePanel;
+procedure TfmMain.DoFind_InValidatePanel;
 begin
   with ListVal do
     if CanFocus then
@@ -17686,10 +17677,10 @@ end;
 
 procedure TfmMain.TBXItemOutFindClick(Sender: TObject);
 begin
-  DoFindInOutPanel;
+  DoFind_InOutputPanel;
 end;
 
-procedure TfmMain.DoFindInOutPanel;
+procedure TfmMain.DoFind_InOutputPanel;
 begin
   with ListOut do
     if CanFocus then
@@ -18336,10 +18327,10 @@ end;
 
 procedure TfmMain.TBXItemTreeFindFindClick(Sender: TObject);
 begin
-  DoFindInFindResults;
+  DoFind_InResultsPanel;
 end;
 
-procedure TfmMain.DoFindInFindResults;
+procedure TfmMain.DoFind_InResultsPanel;
 begin
   with TreeFind do
     if CanFocus then
@@ -21689,10 +21680,10 @@ end;
 
 procedure TfmMain.TBXItemPLogFindClick(Sender: TObject);
 begin
-  DoFindInPluginsLog;
+  DoFind_InPluginsLog;
 end;
 
-procedure TfmMain.DoFindInPluginsLog;
+procedure TfmMain.DoFind_InPluginsLog;
 begin
   with ListPLog do
     if CanFocus then
@@ -21813,7 +21804,7 @@ begin
       F:= FramesAll[i];
       FListResFN:= SGetTabPrefix + IntToStr(i+1) + '[' + F.TabCaption + ']';
 
-      FindInFrame(F);
+      DoFind_InFrame(F);
 
       Inc(NDoneSize, DWORD(FListFiles.Objects[i]));
       FFinderDoneSize:= NDoneSize;
@@ -21853,19 +21844,19 @@ begin
   end;
 end;
 
-procedure TfmMain.FindInFrame(F: TEditorFrame;
+procedure TfmMain.DoFind_InFrame(F: TEditorFrame;
   AMarkAll: boolean = false;
   AWithBkmk: boolean = false);
 begin
   FLastOnContinueCheck:= 0;
   Finder.OnBeforeExecute:= nil;
   Finder.OnNotFound:= nil;
-  Finder.OnCanAccept:= FinderCanAccept;
-  Finder.OnContinue:= FinderContinue;
+  Finder.OnCanAccept:= Finder_OnCanAccept;
+  Finder.OnContinue:= Finder_OnContinue;
   if AWithBkmk then
-    Finder.OnFind:= FinderFind_WithResultPaneAndBkmk
+    Finder.OnFind:= Finder_OnFind_WithResultPaneAndBkmk
   else
-    Finder.OnFind:= FinderFind_WithResultPane;
+    Finder.OnFind:= Finder_OnFind_WithResultPane;
 
   try
     Finder.Control:= F.EditorMaster;
@@ -21874,8 +21865,8 @@ begin
     else
       Finder.CountAll;
   finally
-    Finder.OnBeforeExecute:= FinderInit;
-    Finder.OnNotFound:= FinderFail;
+    Finder.OnBeforeExecute:= Finder_OnBeforeExecute;
+    Finder.OnNotFound:= Finder_OnNotFound;
     Finder.OnFind:= nil;
     Finder.OnCanAccept:= nil;
     Finder.OnContinue:= nil;
@@ -22532,12 +22523,12 @@ begin
   end;
 end;
 
-procedure TfmMain.FindFocusEditor(Sender: TObject);
+procedure TfmMain.DoFindDialog_OnFocusEditor(Sender: TObject);
 begin
   FocusEditor;
 end;
 
-procedure TfmMain.FindDockedChanged(Sender: TObject);
+procedure TfmMain.DoFindDialog_OnDockedChanged(Sender: TObject);
 begin
   if fmSR.IsDocked then
   begin
@@ -22553,10 +22544,10 @@ begin
   end;
 end;
 
-procedure TfmMain.FindShowStatus(const Msg: Widestring);
+procedure TfmMain.DoFindDialog_OnShowStatus(const Msg: Widestring);
 begin
   DoHint(Msg);
-end;  
+end;
 
 
 procedure TfmMain.TBXItemOEditSynPluginsIniClick(Sender: TObject);
@@ -23209,7 +23200,7 @@ begin
 end;
 }
 
-procedure TfmMain.FinderCanAccept(Sender: TObject;
+procedure TfmMain.Finder_OnCanAccept(Sender: TObject;
   StartPos, EndPos: integer; var Accept: Boolean);
 var
   Ed: TSyntaxMemo;
@@ -23564,7 +23555,7 @@ begin
   CurrentEditor.ExecCommand(smToggleCollapseNearest);
 end;
 
-procedure TfmMain.DoFindCommandFromString(const S: Widestring);
+procedure TfmMain.DoFind_CommandFromString(const S: Widestring);
 var
   Act: TSynSearchAction;
   SText1, SText2: Widestring;
@@ -23599,11 +23590,11 @@ begin
   Finder.Flags:= Opt;
   Finder.Tokens:= Tok;
   Finder.OnBeforeExecute:= nil;
-  Finder.OnCanAccept:= FinderCanAccept;
+  Finder.OnCanAccept:= Finder_OnCanAccept;
   Finder.Control:= Ed;
 
   if OptBkmk then
-    Finder.OnFind:= FinderFind_WithBkmk
+    Finder.OnFind:= Finder_OnFind_WithBkmk
   else
     Finder.OnFind:= nil;
 
@@ -26076,7 +26067,7 @@ begin
 	  begin
 		S:= Ed.WordAtPos(Ed.CaretPos);
 		if S<>'' then
-		  DoMarkAll(S);
+		  DoFind_MarkAll(S);
 	  end;
   end;
 end;
@@ -27913,7 +27904,7 @@ begin
   FListResFN:= SGetTabPrefix + IntToStr(AFrameIndex+1) + '[' + AFrame.TabCaption + ']';
 
   try
-    FindInFrame(AFrame, true, AWithBkmk);
+    DoFind_InFrame(AFrame, true, AWithBkmk);
   except
     on E: Exception do
     begin

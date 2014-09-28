@@ -268,7 +268,7 @@ begin
     end;
     if (AFindNext = 1) then
     begin
-      if Finder.FindText = '' then FindInit;
+      if Finder.FindText = '' then DoFinderInit;
       if Finder.FindText <> '' then
       begin
         Finder.Flags:= Finder.Flags - [ftEntireScope];
