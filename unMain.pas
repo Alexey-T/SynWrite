@@ -11571,7 +11571,7 @@ procedure TfmMain.TBXItemEPasteClick(Sender: TObject);
 begin
   {
   Here's reaction to Ctrl+V, for exe.
-  }
+
   if edQs.Focused then
     edQs.PasteFromClipboard
   else
@@ -11581,6 +11581,7 @@ begin
   if IsNumConvEditFocused then
     (fmNumConv.ActiveControl as TWinControl).Perform(WM_PASTE, 0, 0)
   else
+  }
     CurrentEditor.ExecCommand(smPaste);
 end;
 
@@ -11588,7 +11589,7 @@ procedure TfmMain.TBXItemEDeleteClick(Sender: TObject);
 begin
   {
   Here's reaction to Ctrl+Del, for exe.
-  }
+
   if edQs.Focused then
     edQs.ClearSelection
   else
@@ -11598,6 +11599,7 @@ begin
   if TreeFind.Focused then
     TbxItemTreeFindClearClick(Self)
   else
+  }
     CurrentEditor.ExecCommand(smClearSelection);
 end;
 
@@ -11605,7 +11607,7 @@ procedure TfmMain.TBXItemESelectAllClick(Sender: TObject);
 begin
   {
   Here's reaction to Ctrl+A, for exe.
-  }
+
   if edQs.Focused then
     edQs.SelectAll
   else
@@ -11619,6 +11621,7 @@ begin
     FProjPreviewEditor.SelectAll
   else
   //reaction for current editor below
+  }
     CurrentEditor.ExecCommand(smSelectAll);
 end;
 
@@ -11626,7 +11629,7 @@ procedure TfmMain.TBXItemECutClick(Sender: TObject);
 begin
   {
   Here's reaction to Ctrl+X, for exe.
-  }
+
   if edQs.Focused then
     edQs.CutToClipboard
   else
@@ -11645,6 +11648,7 @@ begin
       CurrentEditor.ExecCommand(sm_CutLine);
   end
   else
+  }
     CurrentEditor.ExecCommand(smCut);
 end;
 
@@ -11652,7 +11656,7 @@ procedure TfmMain.TBXItemECopyClick(Sender: TObject);
 begin
   {
   Here's reaction to Ctrl+C, for exe.
-  }
+
   if edQs.Focused then
     edQs.CopyToClipboard
   else
@@ -11687,6 +11691,7 @@ begin
       CurrentEditor.ExecCommand(sm_CopyLine);
   end
   else
+  }
     CurrentEditor.ExecCommand(smCopy);
 end;
 
