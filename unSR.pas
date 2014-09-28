@@ -1601,6 +1601,10 @@ begin
     if not Value then
       begin Left:= FLeft0; Top:= FTop0; end;
     Visible:= true;
+
+    labTransp.Enabled:= not FIsDocked;
+    if FIsDocked then
+      PanelTr.Hide;
   end;
 end;
 
