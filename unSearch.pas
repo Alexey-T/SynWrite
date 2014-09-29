@@ -55,7 +55,7 @@ type
     var Accept: Boolean) of object;
   TOnFindContinue = procedure(Sender: TObject; var ACanContinue: boolean) of object;
 
-function IsRegexValid(const Str: string): boolean;
+function IsRegexValid(const Str: string; var StrError: string): boolean;
 
 type
   TSynFinder = class(TComponent)
@@ -904,17 +904,22 @@ begin
 end;
 
 {$ifdef PERLRE}
-function IsRegexValid(const Str: string): boolean;
+function IsRegexValid(const Str: string; var StrError: string): boolean;
 var
   Re: TPerlRegEx;
 begin
+  StrError:= '';
   Re:= TPerlRegEx.Create;
   try
     Re.RegEx:= Str;
     Re.Compile;
     Result:= true;
   except
-    Result:= false;
+    on E: Exception do
+    begin
+      Result:= false;
+      StrError:= E.Message;
+    end;
   end;
 end;
 {$else}

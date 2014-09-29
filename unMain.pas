@@ -8938,6 +8938,7 @@ end;
 procedure TfmMain.DoFind_Action(act: TSynSearchAction);
 var
   SMsg, SMsgFiles: Widestring;
+  SMsgRegex: string;
 begin
   SMsg:= '';
   SMsgFiles:= '';
@@ -8977,9 +8978,9 @@ begin
 
   //check regex valid
   if ftRegex in Finder.Flags then
-    if not IsRegexValid(Finder.FindText) then
+    if not IsRegexValid(Finder.FindText, SMsgRegex) then
     begin
-      fmSR.ShowStatus(DKLangConstW('zMRegexInvalid'));
+      fmSR.ShowStatus(DKLangConstW('zMRegexInvalid')+': '+SMsgRegex);
       MsgBeep;
       Exit
     end;
@@ -12045,6 +12046,8 @@ function TfmMain.DoFindInFiles_InputData(
   AInProject: boolean;
   AError: TSynFindInFilesError;
   var D: TSynFindInFilesData): TModalResult;
+var
+  SMsgRegex: string;
 begin
   //get text from "Find" dialog
   if Assigned(fmSR) and fmSR.Visible then
@@ -12143,7 +12146,7 @@ begin
         end;
       end;
 
-      if cbRE.Checked and not IsRegexValid(ed1.Text) then
+      if cbRE.Checked and not IsRegexValid(ed1.Text, SMsgRegex) then
       begin
         DoMessage(DKLangConstW('zMRegexInvalid'));
         Continue

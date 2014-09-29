@@ -46,7 +46,7 @@ type
   private
     { Private declarations }
     Finder: TSynFinderReplacer;
-    procedure DoClear;
+    procedure DoClearMarks;
     procedure ReadIni;
     procedure SaveIni;
   public
@@ -80,7 +80,7 @@ begin
   Close;
 end;
 
-procedure TfmExtract.DoClear;
+procedure TfmExtract.DoClearMarks;
 begin
   Memo.ExecCommand(smSearchMarkReset);
 end;
@@ -88,10 +88,17 @@ end;
 procedure TfmExtract.bFindClick(Sender: TObject);
 var
   L: TTntStringList;
+  Msg: string;
 begin
-  ComboUpdate(ed, SRCount);
+  if not IsRegexValid(ed.Text, Msg) then
+  begin
+    Status.SimpleText:= DKLangConstW('zMRegexInvalid')+': '+Msg;
+    Exit;
+  end;
 
-  DoClear;
+  ComboUpdate(ed, SRCount);
+  DoClearMarks;
+  
   with Finder do
   begin
     Control:= Self.Memo;
@@ -158,7 +165,7 @@ end;
 
 procedure TfmExtract.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  DoClear;
+  DoClearMarks;
   SaveIni;
 end;
 
