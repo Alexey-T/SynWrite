@@ -211,18 +211,18 @@ object fmSR: TfmSR
     Height = 25
     Caption = '&Find next'
     Default = True
-    TabOrder = 4
+    TabOrder = 6
     OnClick = bFindNextClick
   end
   object bCancel: TTntButton
     Left = 648
-    Top = 38
+    Top = 8
     Width = 114
     Height = 25
     Cancel = True
     Caption = 'Close'
     ModalResult = 2
-    TabOrder = 13
+    TabOrder = 14
     OnClick = bCancelClick
   end
   object ed1: TTntComboBox
@@ -247,7 +247,7 @@ object fmSR: TfmSR
     AutoComplete = False
     DropDownCount = 15
     ItemHeight = 13
-    TabOrder = 1
+    TabOrder = 2
     OnKeyDown = ed2KeyDown
     OnKeyPress = ed2KeyPress
   end
@@ -257,7 +257,7 @@ object fmSR: TfmSR
     Width = 337
     Height = 106
     Caption = 'Options'
-    TabOrder = 2
+    TabOrder = 4
     object cbRe: TTntCheckBox
       Left = 8
       Top = 64
@@ -349,7 +349,7 @@ object fmSR: TfmSR
     Width = 114
     Height = 25
     Caption = 'Find all / &mark'
-    TabOrder = 5
+    TabOrder = 7
     OnClick = bFindAllClick
   end
   object gScop: TTntGroupBox
@@ -358,7 +358,7 @@ object fmSR: TfmSR
     Width = 170
     Height = 106
     Caption = 'Scope'
-    TabOrder = 3
+    TabOrder = 5
     object cbSel: TTntCheckBox
       Left = 8
       Top = 14
@@ -411,11 +411,11 @@ object fmSR: TfmSR
   end
   object bHelp: TTntButton
     Left = 648
-    Top = 8
+    Top = 38
     Width = 114
     Height = 25
     Caption = 'Help'
-    TabOrder = 12
+    TabOrder = 15
     OnClick = bHelpClick
   end
   object bCount: TTntButton
@@ -424,7 +424,7 @@ object fmSR: TfmSR
     Width = 114
     Height = 25
     Caption = 'Cou&nt all'
-    TabOrder = 10
+    TabOrder = 12
     OnClick = bCountClick
   end
   object bRepNext: TTntButton
@@ -433,7 +433,7 @@ object fmSR: TfmSR
     Width = 114
     Height = 25
     Caption = 'R&eplace'
-    TabOrder = 7
+    TabOrder = 9
     OnClick = bRepNextClick
   end
   object bRepAll: TTntButton
@@ -442,7 +442,7 @@ object fmSR: TfmSR
     Width = 114
     Height = 25
     Caption = 'Repl&ace all'
-    TabOrder = 8
+    TabOrder = 10
     OnClick = bRepAllClick
   end
   object bSkip: TTntButton
@@ -452,7 +452,7 @@ object fmSR: TfmSR
     Height = 25
     Caption = '&Find next'
     Default = True
-    TabOrder = 6
+    TabOrder = 8
     OnClick = bSkipClick
   end
   object bFindInTabs: TTntButton
@@ -461,7 +461,7 @@ object fmSR: TfmSR
     Width = 114
     Height = 35
     Caption = 'Find in all tabs'
-    TabOrder = 11
+    TabOrder = 13
     WordWrap = True
     OnClick = bFindInTabsClick
   end
@@ -471,7 +471,7 @@ object fmSR: TfmSR
     Width = 114
     Height = 35
     Caption = 'Rep&lace all in all tabs'
-    TabOrder = 9
+    TabOrder = 11
     WordWrap = True
     OnClick = bRepInTabsClick
   end
@@ -482,7 +482,7 @@ object fmSR: TfmSR
     Height = 66
     MaxLength = 1500
     ScrollBars = ssVertical
-    TabOrder = 15
+    TabOrder = 1
     Visible = False
     WordWrap = False
     OnChange = ed1Change
@@ -495,7 +495,7 @@ object fmSR: TfmSR
     Height = 66
     MaxLength = 1500
     ScrollBars = ssVertical
-    TabOrder = 16
+    TabOrder = 3
     Visible = False
     WordWrap = False
     OnKeyDown = ed1MemoKeyDown
@@ -517,7 +517,7 @@ object fmSR: TfmSR
     Height = 25
     BevelOuter = bvNone
     Caption = 'Search in progres...'
-    TabOrder = 18
+    TabOrder = 17
     Visible = False
   end
   object PanelTr: TTntPanel
@@ -526,7 +526,7 @@ object fmSR: TfmSR
     Width = 121
     Height = 59
     BevelOuter = bvNone
-    TabOrder = 14
+    TabOrder = 16
     Visible = False
     object TrackBar1: TTrackBar
       Left = 0

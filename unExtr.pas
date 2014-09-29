@@ -4,12 +4,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls,
-  TntStdCtrls, TntForms,
+  Dialogs, StdCtrls, ExtCtrls, ComCtrls,
   ecSyntMemo,
   ATSyntMemo,
   unSearch,
-  DKLang, ComCtrls, TntComCtrls;
+  DKLang,
+  TntStdCtrls, TntForms,
+  TntClasses, TntComCtrls;
 
 type
   TfmExtract = class(TTntForm)
@@ -68,6 +69,7 @@ uses
   unProc,
   unProcHelp,
   unProcEditor,
+  unProcLines,
   ecStrUtils, ecCmdConst;
 
 {$R *.dfm}
@@ -84,6 +86,8 @@ begin
 end;
 
 procedure TfmExtract.bFindClick(Sender: TObject);
+var
+  L: TTntStringList;
 begin
   ComboUpdate(ed, SRCount);
 
@@ -97,20 +101,29 @@ begin
     if bSel.Checked then Flags:= Flags + [ftSelectedText];
     if not bCur.Checked then Flags:= Flags + [ftEntireScope];
     FindAll;
-    if Matches=0 then
-      Status.SimpleText:= WideFormat(DKLangConstW('MNFound2'), [FindText])
-    else
-      Status.SimpleText:= WideFormat(DKLangConstW('Found'), [Matches]);
   end;
 
   bCopy.Enabled:= false;
   bTab.Enabled:= false;
 
-  EditorSearchMarksToList(Memo, List.Items);
+  L:= TTntStringList.Create;
+  try
+    EditorSearchMarksToList(Memo, L);
+    DoListCommand_Deduplicate(L, dedupAll);
+    List.Items.Clear;
+    List.Items.AddStrings(L);
+  finally
+    FreeAndNil(L);
+  end;
   FixListboxHorzScrollbar(List);
 
   bCopy.Enabled:= List.Items.Count>0;
   bTab.Enabled:= bCopy.Enabled;
+
+  if List.Items.Count=0 then
+    Status.SimpleText:= WideFormat(DKLangConstW('MNFound2'), [ed.Text])
+  else
+    Status.SimpleText:= WideFormat(DKLangConstW('Found'), [List.Items.Count]);
 end;
 
 procedure TfmExtract.bHelpClick(Sender: TObject);
