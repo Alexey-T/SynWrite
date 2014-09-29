@@ -41,7 +41,7 @@ object fmSR: TfmSR
   end
   object labStyle: TTntLabel
     Left = 654
-    Top = 84
+    Top = 68
     Width = 26
     Height = 13
     Cursor = crHandPoint
@@ -55,8 +55,8 @@ object fmSR: TfmSR
     OnClick = labStyleClick
   end
   object labRe: TTntLabel
-    Left = 654
-    Top = 68
+    Left = 508
+    Top = 8
     Width = 11
     Height = 13
     Cursor = crHandPoint
@@ -71,7 +71,7 @@ object fmSR: TfmSR
   end
   object labMultiline: TTntLabel
     Left = 654
-    Top = 100
+    Top = 84
     Width = 44
     Height = 13
     Cursor = crHandPoint
@@ -85,8 +85,8 @@ object fmSR: TfmSR
     OnClick = labMultilineClick
   end
   object bCombo1: TSpeedButton
-    Left = 480
-    Top = 4
+    Left = 720
+    Top = 68
     Width = 16
     Height = 25
     Flat = True
@@ -130,8 +130,8 @@ object fmSR: TfmSR
     OnClick = bCombo1Click
   end
   object bCombo2: TSpeedButton
-    Left = 496
-    Top = 4
+    Left = 736
+    Top = 68
     Width = 16
     Height = 25
     Flat = True
@@ -176,7 +176,7 @@ object fmSR: TfmSR
   end
   object labTransp: TTntLabel
     Left = 654
-    Top = 132
+    Top = 116
     Width = 66
     Height = 13
     Cursor = crHandPoint
@@ -191,7 +191,7 @@ object fmSR: TfmSR
   end
   object labDocked: TTntLabel
     Left = 654
-    Top = 116
+    Top = 100
     Width = 41
     Height = 13
     Cursor = crHandPoint
@@ -228,7 +228,7 @@ object fmSR: TfmSR
   object ed1: TTntComboBox
     Left = 88
     Top = 6
-    Width = 345
+    Width = 414
     Height = 21
     AutoComplete = False
     DropDownCount = 15
@@ -242,7 +242,7 @@ object fmSR: TfmSR
   object ed2: TTntComboBox
     Left = 88
     Top = 30
-    Width = 345
+    Width = 414
     Height = 21
     AutoComplete = False
     DropDownCount = 15
@@ -478,7 +478,7 @@ object fmSR: TfmSR
   object ed1Memo: TTntMemo
     Left = 528
     Top = 140
-    Width = 320
+    Width = 400
     Height = 66
     MaxLength = 1500
     ScrollBars = ssVertical
@@ -491,7 +491,7 @@ object fmSR: TfmSR
   object ed2Memo: TTntMemo
     Left = 537
     Top = 152
-    Width = 320
+    Width = 400
     Height = 66
     MaxLength = 1500
     ScrollBars = ssVertical

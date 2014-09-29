@@ -14500,9 +14500,13 @@ begin
 end;
 
 procedure TfmMain.FocusEditor;
+var
+  Ed: TSyntaxMemo;
 begin
-  with Groups.PagesCurrent.Tabs do
-    TabIndex:= TabIndex;
+  Ed:= CurrentEditor;
+  if Self.Enabled then
+    if (Ed<>nil) and Ed.CanFocus then
+      Ed.SetFocus;
 end;
 
 procedure TfmMain.DoClearSearchHistory;
