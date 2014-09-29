@@ -4,7 +4,7 @@ object fmSR: TfmSR
   ActiveControl = ed1
   BorderStyle = bsDialog
   ClientHeight = 181
-  ClientWidth = 770
+  ClientWidth = 753
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -40,7 +40,7 @@ object fmSR: TfmSR
     FocusControl = ed2
   end
   object labStyle: TTntLabel
-    Left = 654
+    Left = 638
     Top = 68
     Width = 26
     Height = 13
@@ -55,7 +55,7 @@ object fmSR: TfmSR
     OnClick = labStyleClick
   end
   object labRe: TTntLabel
-    Left = 508
+    Left = 494
     Top = 8
     Width = 11
     Height = 13
@@ -70,7 +70,7 @@ object fmSR: TfmSR
     OnClick = labReClick
   end
   object labMultiline: TTntLabel
-    Left = 654
+    Left = 638
     Top = 84
     Width = 44
     Height = 13
@@ -85,7 +85,7 @@ object fmSR: TfmSR
     OnClick = labMultilineClick
   end
   object bCombo1: TSpeedButton
-    Left = 720
+    Left = 704
     Top = 68
     Width = 16
     Height = 25
@@ -130,7 +130,7 @@ object fmSR: TfmSR
     OnClick = bCombo1Click
   end
   object bCombo2: TSpeedButton
-    Left = 736
+    Left = 720
     Top = 68
     Width = 16
     Height = 25
@@ -175,7 +175,7 @@ object fmSR: TfmSR
     OnClick = bCombo2Click
   end
   object labTransp: TTntLabel
-    Left = 654
+    Left = 638
     Top = 116
     Width = 66
     Height = 13
@@ -190,7 +190,7 @@ object fmSR: TfmSR
     OnClick = labTranspClick
   end
   object labDocked: TTntLabel
-    Left = 654
+    Left = 638
     Top = 100
     Width = 41
     Height = 13
@@ -205,7 +205,7 @@ object fmSR: TfmSR
     OnClick = labDockedClick
   end
   object bFindNext: TTntButton
-    Left = 528
+    Left = 512
     Top = 8
     Width = 114
     Height = 25
@@ -215,7 +215,7 @@ object fmSR: TfmSR
     OnClick = bFindNextClick
   end
   object bCancel: TTntButton
-    Left = 648
+    Left = 632
     Top = 8
     Width = 114
     Height = 25
@@ -228,7 +228,7 @@ object fmSR: TfmSR
   object ed1: TTntComboBox
     Left = 88
     Top = 6
-    Width = 414
+    Width = 402
     Height = 21
     AutoComplete = False
     DropDownCount = 15
@@ -242,7 +242,7 @@ object fmSR: TfmSR
   object ed2: TTntComboBox
     Left = 88
     Top = 30
-    Width = 414
+    Width = 402
     Height = 21
     AutoComplete = False
     DropDownCount = 15
@@ -254,7 +254,7 @@ object fmSR: TfmSR
   object gOp: TTntGroupBox
     Left = 8
     Top = 52
-    Width = 337
+    Width = 324
     Height = 106
     Caption = 'Options'
     TabOrder = 4
@@ -295,7 +295,7 @@ object fmSR: TfmSR
     object cbCfm: TTntCheckBox
       Left = 176
       Top = 48
-      Width = 150
+      Width = 145
       Height = 17
       Caption = 'Pro&mpt on replace'
       TabOrder = 6
@@ -303,7 +303,7 @@ object fmSR: TfmSR
     object cbBkmkAll: TTntCheckBox
       Left = 176
       Top = 64
-      Width = 150
+      Width = 145
       Height = 17
       Caption = 'Boo&kmark results'
       TabOrder = 8
@@ -312,7 +312,7 @@ object fmSR: TfmSR
     object cbExtSel: TTntCheckBox
       Left = 176
       Top = 80
-      Width = 150
+      Width = 145
       Height = 17
       Caption = 'Extend selecti&on'
       TabOrder = 9
@@ -328,7 +328,7 @@ object fmSR: TfmSR
     object cbSelectAll: TTntCheckBox
       Left = 176
       Top = 48
-      Width = 150
+      Width = 145
       Height = 17
       Caption = 'Select res&ults'
       TabOrder = 7
@@ -337,14 +337,14 @@ object fmSR: TfmSR
     object cbBack: TTntCheckBox
       Left = 176
       Top = 16
-      Width = 150
+      Width = 145
       Height = 17
       Caption = 'Backward search'
       TabOrder = 5
     end
   end
   object bFindAll: TTntButton
-    Left = 528
+    Left = 512
     Top = 38
     Width = 114
     Height = 25
@@ -353,7 +353,7 @@ object fmSR: TfmSR
     OnClick = bFindAllClick
   end
   object gScop: TTntGroupBox
-    Left = 352
+    Left = 336
     Top = 52
     Width = 170
     Height = 106
@@ -410,7 +410,7 @@ object fmSR: TfmSR
     end
   end
   object bHelp: TTntButton
-    Left = 648
+    Left = 632
     Top = 38
     Width = 114
     Height = 25
@@ -419,7 +419,7 @@ object fmSR: TfmSR
     OnClick = bHelpClick
   end
   object bCount: TTntButton
-    Left = 528
+    Left = 512
     Top = 68
     Width = 114
     Height = 25
@@ -428,7 +428,7 @@ object fmSR: TfmSR
     OnClick = bCountClick
   end
   object bRepNext: TTntButton
-    Left = 544
+    Left = 528
     Top = 38
     Width = 114
     Height = 25
@@ -437,7 +437,7 @@ object fmSR: TfmSR
     OnClick = bRepNextClick
   end
   object bRepAll: TTntButton
-    Left = 544
+    Left = 528
     Top = 68
     Width = 114
     Height = 25
@@ -446,7 +446,7 @@ object fmSR: TfmSR
     OnClick = bRepAllClick
   end
   object bSkip: TTntButton
-    Left = 544
+    Left = 528
     Top = 8
     Width = 114
     Height = 25
@@ -456,7 +456,7 @@ object fmSR: TfmSR
     OnClick = bSkipClick
   end
   object bFindInTabs: TTntButton
-    Left = 528
+    Left = 512
     Top = 99
     Width = 114
     Height = 35
@@ -466,7 +466,7 @@ object fmSR: TfmSR
     OnClick = bFindInTabsClick
   end
   object bRepInTabs: TTntButton
-    Left = 544
+    Left = 528
     Top = 99
     Width = 114
     Height = 35
@@ -476,9 +476,9 @@ object fmSR: TfmSR
     OnClick = bRepInTabsClick
   end
   object ed1Memo: TTntMemo
-    Left = 528
+    Left = 512
     Top = 140
-    Width = 400
+    Width = 388
     Height = 66
     MaxLength = 1500
     ScrollBars = ssVertical
@@ -489,9 +489,9 @@ object fmSR: TfmSR
     OnKeyDown = ed1MemoKeyDown
   end
   object ed2Memo: TTntMemo
-    Left = 537
+    Left = 521
     Top = 152
-    Width = 400
+    Width = 388
     Height = 66
     MaxLength = 1500
     ScrollBars = ssVertical
@@ -503,7 +503,7 @@ object fmSR: TfmSR
   object StatusFind: TTntStatusBar
     Left = 0
     Top = 162
-    Width = 770
+    Width = 753
     Height = 19
     Panels = <>
     ParentFont = True
@@ -521,7 +521,7 @@ object fmSR: TfmSR
     Visible = False
   end
   object PanelTr: TTntPanel
-    Left = 648
+    Left = 632
     Top = 6
     Width = 121
     Height = 59
