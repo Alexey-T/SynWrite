@@ -167,6 +167,7 @@ type
     FOnFocusEditor: TNotifyEvent;
     FOnDockedChanged: TNotifyEvent;
     FOnShowStatus: TFindShowStatusEvent;
+    FOnRepaintNeeded: TNotifyEvent;
     FTopEd2,
     FTopLab2,
     FTopGOpt,
@@ -208,6 +209,7 @@ type
     property OnFocusEditor: TNotifyEvent read FOnFocusEditor write FOnFocusEditor;
     property OnDockedChanged: TNotifyEvent read FOnDockedChanged write FOnDockedChanged;
     property OnShowStatus: TFindShowStatusEvent read FOnShowStatus write FOnShowStatus;
+    property OnRepaintNeeded: TNotifyEvent read FOnRepaintNeeded write FOnRepaintNeeded;
     function TextOptions: Widestring;
     property Text1: Widestring read GetText1 write SetText1;
     property Text2: Widestring read GetText2 write SetText2;
@@ -1154,7 +1156,7 @@ end;
 
 procedure TfmSR.UpdMemoHeight;
 begin
-  ed1Memo.Height:= Trunc(ed2Memo.Height*IfThen(IsReplace, 1, 2.2));
+  ed1Memo.Height:= Trunc(ed2Memo.Height*IfThen(IsReplace, 1, 2));
 
   bCombo1.SetBounds(ed1Memo.Left+ed1Memo.Width, ed1Memo.Top, 16, ed1Memo.Height);
   bCombo2.SetBounds(ed2Memo.Left+ed2Memo.Width, ed2Memo.Top, 16, ed2Memo.Height);
@@ -1605,6 +1607,9 @@ begin
     labTransp.Enabled:= not FIsDocked;
     if FIsDocked then
       PanelTr.Hide;
+
+    if Assigned(FOnRepaintNeeded) then
+      FOnRepaintNeeded(Self);  
   end;
 end;
 

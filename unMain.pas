@@ -2669,6 +2669,7 @@ type
     procedure DoFind_ActionWrapper(act: TSynSearchAction);
     procedure DoFindDialog_OnFocusEditor(Sender: TObject);
     procedure DoFindDialog_OnDockedChanged(Sender: TObject);
+    procedure DoFindDialog_OnRepaintNeeded(Sender: TObject);
     procedure DoFindDialog_OnShowStatus(const Msg: Widestring);
     procedure DoFindDialog(AReplaceMode: boolean);
     procedure DoFind_MarkAll(const Str: Widestring);
@@ -3334,7 +3335,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.9.1570';
+  cSynVer = '6.9.1575';
   cSynPyVer = '1.0.139';
 
 const
@@ -8613,6 +8614,7 @@ begin
       OnFocusEditor:= Self.DoFindDialog_OnFocusEditor;
       OnDockedChanged:= Self.DoFindDialog_OnDockedChanged;
       OnShowStatus:= Self.DoFindDialog_OnShowStatus;
+      OnRepaintNeeded:= Self.DoFindDialog_OnRepaintNeeded;
       cbTokens.Enabled:= SyntaxManager.AnalyzerCount>0;
       LoadIni;
 
@@ -22553,6 +22555,11 @@ begin
     fmSR.Align:= alNone;
     fmSR.BorderStyle:= bsDialog;
   end;
+end;
+
+procedure TfmMain.DoFindDialog_OnRepaintNeeded(Sender: TObject);
+begin
+  //DoRepaint doesn't help
 end;
 
 procedure TfmMain.DoFindDialog_OnShowStatus(const Msg: Widestring);
