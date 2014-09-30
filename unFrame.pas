@@ -17,6 +17,8 @@ uses
 
 const
   cMaxBk = 1*1000*1000; //max bookmarks count
+  cBandFolding = 3; //gutter band index for folding
+  cBandBoommarks = 1; //gutter band index for bookmarks
 
 type
   TEditorEvent = procedure(Sender: TFrame) of object;
@@ -383,7 +385,7 @@ procedure TEditorFrame.EditorMasterSetBookmark(Snder: TObject;
 begin
   with Bookmark do
   begin
-    Band:= 1; //Band index for Bookmarks
+    Band:= cBandBoommarks;
     ImageList:= TfmMain(Owner).ImgListGutter;
     if (BmIndex >= 0) and (BmIndex < 10) then
     begin
@@ -575,7 +577,7 @@ begin
      (Line = Memo.StrPosToCaretPos(Memo.SelStart + Memo.SelLength).Y) then
   begin
     gi:= TGutterObject.Create(nil);
-    gi.Band:= 1; //Band index for Bookmarks
+    gi.Band:= cBandBoommarks;
     gi.OnClick:= SyncEditClick;
     gi.ImageIndex:= 10;
     gi.Hint:= DKLangConstW('Sync');
@@ -585,7 +587,7 @@ begin
   if Memo.SyncEditing.RangeEndAtLine(Line) <> -1 then
   begin
     gi:= TGutterObject.Create(nil);
-    gi.Band:= 1; //Band index for Bookmarks
+    gi.Band:= cBandBoommarks;
     gi.ImageIndex:= 11;
     gi.Hint:= DKLangConstW('SynR');
     gi.OnClick:= SyncEditClick;

@@ -69,7 +69,6 @@ const
   cFixedWindowItems = 5; //number of fixed items in Window menu
   cMaxTreeLen = 250; //"find in files" result tree: max node length
   cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
-  cBandFolding = 3; //index of gutter band for folding
   cDefaultCursor: array[boolean] of TCursor = (crHourGlass, crDefault);
   SynDefaultSyn = '(default).synw-session';
 
@@ -2939,6 +2938,7 @@ type
     FProjPreviewButton: TSpTbxItem;
 
     //opt
+    opShowBookmarkColumn: boolean;
     opGroupMode: TATGroupsMode;
     opGroupSplit: Integer;
     opHintScroll: boolean;
@@ -4097,6 +4097,12 @@ begin
       ShowHints:= ShowHints+[shScroll];
   end;
 
+  if not opShowBookmarkColumn then
+  begin
+    Result.EditorMaster.Gutter.Bands[cBandBoommarks].Width:= 0;
+    Result.EditorSlave.Gutter.Bands[cBandBoommarks].Width:= 0;
+  end;
+
   UpdateEditorNonPrinted(Result.EditorMaster);
   UpdateEditorNonPrinted(Result.EditorSlave);
 
@@ -4615,6 +4621,7 @@ begin
     opClipHook:= ReadBool('Setup', 'ClipHook', true);
     TemplateEditor.UndoLimit:= ReadInteger('Setup', 'Undo', 2000);
     opHintScroll:= ReadBool('Setup', 'HintScroll', false);
+    opShowBookmarkColumn:= ReadBool('Setup', 'ShowBm', true);
     opPyChangeDelay:= ReadInteger('Setup', 'PyChangeDelay', 3000);
 
     opShowPanelTitles:= ReadBool('View', 'PaneTitle', true);
