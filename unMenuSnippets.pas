@@ -129,6 +129,13 @@ begin
   FModified:= false;
 end;
 
+function SnippetItemString(const Info: TSynSnippetInfo): Widestring;
+begin
+  Result:= Info.Name + #9 + Info.Id;
+  if Info.Lexers<>'' then
+    Result:= Result + '  [' + Info.Lexers + ']';
+end;
+
 procedure TfmMenuSnippets.DoFilter;
   function SFiltered(const S: Widestring): boolean;
   begin
@@ -155,7 +162,7 @@ begin
 
         if (AInfo.Lexers='') or (IsStringListed(FCurrentLexer, AInfo.Lexers)) then
           if SFiltered(SName) or SFiltered(SKey) then
-            List.Items.AddObject(SName + #9 + SKey, Pointer(i));
+            List.Items.AddObject(SnippetItemString(AInfo), Pointer(i));
       end;
   finally
     List.Items.EndUpdate;
@@ -321,7 +328,7 @@ begin
       DoSaveSnippetToFile(Data.Info.Filename, Data.Info);
       FModified:= true;
 
-      List.Items[List.ItemIndex]:= Data.Info.Name + #9 + Data.Info.Id;
+      List.Items[List.ItemIndex]:= SnippetItemString(Data.Info);
       ListClick(Self);
     end;
   end;

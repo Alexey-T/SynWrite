@@ -27570,6 +27570,7 @@ begin
   try
     Caption:= DKLangConstW('zMSnippetList');
     cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
+    btnEdit.Caption:= DKLangConstW('zMEditSnip');
 
     Edit.Text:= SInitialText;
     MemoText.Font.Assign(CurrentEditor.Font);

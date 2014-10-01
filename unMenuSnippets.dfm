@@ -90,7 +90,7 @@ object fmMenuSnippets: TfmMenuSnippets
       TabOrder = 1
       object btnEdit: TTntSpeedButton
         Left = 160
-        Top = 0
+        Top = -1
         Width = 113
         Height = 17
         Caption = 'Edit [F5]'
