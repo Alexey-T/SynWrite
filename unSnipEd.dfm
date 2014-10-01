@@ -3,8 +3,8 @@ object fmSnippetEditor: TfmSnippetEditor
   Top = 401
   ActiveControl = edName
   BorderStyle = bsDialog
-  Caption = 'New snippet'
-  ClientHeight = 516
+  Caption = 'Snippet'
+  ClientHeight = 514
   ClientWidth = 640
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET

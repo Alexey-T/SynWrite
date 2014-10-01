@@ -20,8 +20,10 @@ uses
   ecUnicode,
 
   IniFiles,
-  PngImageList;
+  PngImageList,
+  ATxSProc;
 
+function DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
 procedure DoKeymappingSplit(MapIn, MapOut1, MapOut2: TSyntKeyMapping; NCountInFirst: Integer);
 procedure DoKeymappingJoin(MapIn1, MapIn2, MapOut: TSyntKeyMapping);
 procedure DoKeymappingTruncate(Map: TSyntKeyMapping; NCount: Integer);
@@ -280,7 +282,7 @@ uses
   Windows,
   ecZRegExpr,
   Math, Dialogs, CommCtrl, StrUtils,
-  ATxFProc, ATxSProc,
+  ATxFProc, 
   TntClipbrd, TntSysUtils,
   DKLang,
   PngImage,
@@ -290,7 +292,7 @@ uses
   unInputFilename,
   unTool,
   SynTaskDialog, //Synopse http://blog.synopse.info/post/2011/03/05/Open-Source-SynTaskDialog-unit-for-XP,Vista,Seven
-  ComCtrls;
+  ComCtrls, unSnipEd;
 
 procedure MsgInfo(const S: WideString; H: THandle);
 begin
@@ -2465,32 +2467,35 @@ begin
     (Win32MajorVersion >= 6);
 end;
 
-(*
-//http://www.delphi.int.ru/articles/41/
-function GetSpecialFolderPath(folder : integer) : string;
-const
-  SHGFP_TYPE_CURRENT = 0;
-var
-  path: array[0..MAX_PATH] of char;
-begin
-  if SUCCEEDED(SHGetFolderPath(0, folder, 0, SHGFP_TYPE_CURRENT, @path[0])) then
-    Result := path
-  else
-    Result := '';
-end;
-
-function FAppDataPath: string;
-begin
-  Result:= GetSpecialFolderPath(CSIDL_APPDATA) + '\';
-end;
-*)
-
 function STrimFolderName(const s: Widestring): Widestring;
 begin
   Result:= s;
   while (Result<>'') and
     (Char(Result[Length(Result)]) in ['*', '\', ' ']) do
     SetLength(Result, Length(Result)-1);
+end;
+
+
+function DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
+begin
+  with TfmSnippetEditor.Create(nil) do
+  try
+    edName.Text:= AInfo.Name;
+    edId.Text:= AInfo.Id;
+    edLex.Text:= AInfo.Lexers;
+    memoText.Text:= AInfo.Text;
+
+    Result:= ShowModal=mrOk;
+    if Result then
+    begin
+      AInfo.Name:= edName.Text;
+      AInfo.Id:= edId.Text;
+      AInfo.Lexers:= edLex.Text;
+      AInfo.Text:= memoText.Text;
+    end;
+  finally
+    Free
+  end;
 end;
 
 

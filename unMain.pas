@@ -2866,7 +2866,6 @@ type
     procedure ClearSnippets;
     function DoSnippetChoice(const SInitialText: string): integer;
     procedure DoSnippetListDialog(const SInitialText: string);
-    function DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
     procedure DoSnippetNew;
     procedure DoSnippetsReload;
     procedure ApplyPanelTitles;
@@ -3337,7 +3336,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.9.1590';
+  cSynVer = '6.9.1600';
   cSynPyVer = '1.0.139';
 
 const
@@ -27533,6 +27532,7 @@ begin
       if DoLoadSnippetFromFile(Files[i], InfoRec) then
       begin
         InfoClass:= TSynSnippetClass.Create;
+        InfoClass.Info.Filename:= InfoRec.Filename;
         InfoClass.Info.Name:= InfoRec.Name;
         InfoClass.Info.Id:= InfoRec.Id;
         InfoClass.Info.Lexers:= InfoRec.Lexers;
@@ -27560,6 +27560,8 @@ begin
 end;
 
 function TfmMain.DoSnippetChoice(const SInitialText: string): integer;
+var
+  IsModified: boolean;
 begin
   Result:= -1;
   InitSnippets;
@@ -27582,9 +27584,14 @@ begin
     if ShowModal=mrOk then
       if List.ItemIndex>=0 then
         Result:= Integer(List.Items.Objects[List.ItemIndex]);
+
+    IsModified:= FModified;
   finally
     Free
   end;
+
+  if IsModified then
+    LoadSnippets;
 end;
 
 procedure TfmMain.DoSnippetListDialog(const SInitialText: string);
@@ -27614,29 +27621,6 @@ begin
     finally
       Ed.EndUpdate;
     end;
-  end;
-end;
-
-function TfmMain.DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
-begin
-  with TfmSnippetEditor.Create(Self) do
-  try
-    edName.Text:= AInfo.Text;
-    edId.Text:= AInfo.Id;
-    edLex.Text:= AInfo.Lexers;
-    memoText.Text:= AInfo.Text;
-    memoText.Font.Assign(CurrentEditor.Font);
-
-    Result:= ShowModal=mrOk;
-    if Result then
-    begin
-      AInfo.Name:= edName.Text;
-      AInfo.Id:= edId.Text;
-      AInfo.Lexers:= edLex.Text;
-      AInfo.Text:= memoText.Text;
-    end;
-  finally
-    Free
   end;
 end;
 

@@ -23,8 +23,8 @@ object fmMenuSnippets: TfmMenuSnippets
   TextHeight = 16
   object Splitter1: TSplitter
     Left = 0
-    Top = 206
-    Width = 502
+    Top = 202
+    Width = 494
     Height = 5
     Cursor = crVSplit
     Align = alBottom
@@ -35,8 +35,8 @@ object fmMenuSnippets: TfmMenuSnippets
   object List: TTntListBox
     Left = 0
     Top = 24
-    Width = 502
-    Height = 182
+    Width = 494
+    Height = 178
     Style = lbOwnerDrawFixed
     Align = alClient
     ItemHeight = 16
@@ -49,7 +49,7 @@ object fmMenuSnippets: TfmMenuSnippets
   object Edit: TTntEdit
     Left = 0
     Top = 0
-    Width = 502
+    Width = 494
     Height = 24
     Align = alTop
     TabOrder = 0
@@ -58,8 +58,8 @@ object fmMenuSnippets: TfmMenuSnippets
   end
   object PanelLow: TPanel
     Left = 0
-    Top = 211
-    Width = 502
+    Top = 207
+    Width = 494
     Height = 77
     Align = alBottom
     BevelOuter = bvNone
@@ -67,7 +67,7 @@ object fmMenuSnippets: TfmMenuSnippets
     object MemoText: TTntMemo
       Left = 0
       Top = 0
-      Width = 502
+      Width = 494
       Height = 61
       Align = alClient
       ReadOnly = True
@@ -77,7 +77,7 @@ object fmMenuSnippets: TfmMenuSnippets
     object Panel1: TPanel
       Left = 0
       Top = 61
-      Width = 502
+      Width = 494
       Height = 16
       Align = alBottom
       BevelOuter = bvNone
@@ -88,10 +88,19 @@ object fmMenuSnippets: TfmMenuSnippets
       Font.Style = []
       ParentFont = False
       TabOrder = 1
+      object btnEdit: TTntSpeedButton
+        Left = 160
+        Top = 0
+        Width = 113
+        Height = 17
+        Caption = 'Edit [F5]'
+        Flat = True
+        OnClick = btnEditClick
+      end
       object cbFuzzy: TTntCheckBox
         Left = 0
         Top = 0
-        Width = 217
+        Width = 153
         Height = 16
         Align = alLeft
         Caption = 'Fuzzy search'

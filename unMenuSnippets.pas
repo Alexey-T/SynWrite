@@ -7,7 +7,7 @@ uses
   Dialogs, StdCtrls,
   TntStdCtrls, TntForms,
   ExtCtrls,
-  ATxSProc;
+  ATxSProc, Buttons, TntButtons;
 
 type
   TfmMenuSnippets = class(TTntForm)
@@ -19,6 +19,7 @@ type
     MemoText: TTntMemo;
     Panel1: TPanel;
     cbFuzzy: TTntCheckBox;
+    btnEdit: TTntSpeedButton;
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
@@ -36,6 +37,7 @@ type
     procedure ListClick(Sender: TObject);
     procedure ListKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure btnEditClick(Sender: TObject);
   private
     { Private declarations }
     procedure DoFilter;
@@ -46,6 +48,7 @@ type
     FIniFN: string;
     FColorSel: TColor;
     FColorSelBk: TColor;
+    FModified: boolean;
   end;
 
 implementation
@@ -86,6 +89,13 @@ begin
     Key:= 0;
     Exit
   end;
+  //F5
+  if (Key=vk_f5) and (Shift=[]) then
+  begin
+    btnEditClick(Self);
+    Key:= 0;
+    Exit;
+  end;
   //F1
   {
   if (Key=vk_f1) and (Shift=[]) then
@@ -115,6 +125,8 @@ begin
   finally
     Free
   end;
+
+  FModified:= false;
 end;
 
 procedure TfmMenuSnippets.DoFilter;
@@ -291,6 +303,27 @@ begin
     List.ItemIndex:= 0;
     Key:= 0;
     Exit
+  end;
+end;
+
+procedure TfmMenuSnippets.btnEditClick(Sender: TObject);
+var
+  Index: Integer;
+  Data: TSynSnippetClass;
+begin
+  Index:= List.ItemIndex;
+  if Index>=0 then
+  begin
+    Index:= Integer(List.Items.Objects[Index]);
+    Data:= TSynSnippetClass(FInfoList[Index]);
+    if DoSnippetEditorDialog(Data.Info) then
+    begin
+      DoSaveSnippetToFile(Data.Info.Filename, Data.Info);
+      FModified:= true;
+
+      List.Items[List.ItemIndex]:= Data.Info.Name + #9 + Data.Info.Id;
+      ListClick(Self);
+    end;
   end;
 end;
 

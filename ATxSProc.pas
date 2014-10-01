@@ -7,6 +7,7 @@ uses
 
 type
   TSynSnippetInfo = record
+    Filename: string;
     Name: Widestring;
     Id: string;
     Lexers: string;
@@ -1329,6 +1330,7 @@ begin
   Result:= false;
   DoClearSnippet(Info);
   if not FileExists(fn) then Exit;
+  Info.Filename:= fn;
 
   L:= TStringList.Create;
   try
@@ -1395,6 +1397,7 @@ end;
 
 procedure DoClearSnippet(var AInfo: TSynSnippetInfo);
 begin
+  AInfo.Filename:= '';
   AInfo.Name:= '';
   AInfo.Id:= '';
   AInfo.Lexers:= '';
