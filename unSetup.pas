@@ -125,7 +125,6 @@ type
     LabelHelpAClose: TTntLabel;
     cbACloseBr: TTntCheckBox;
     cbACloseBrEsc: TTntCheckBox;
-    cbACloseQ: TTntCheckBox;
     ListCat: TTntListBox;
     tabTabs: TTntTabSheet;
     boxTabs: TTntGroupBox;
@@ -358,6 +357,8 @@ type
     cbTabEntire: TTntCheckBox;
     TntLabel13: TTntLabel;
     cbClipHook: TTntCheckBox;
+    cbACloseQuote2: TTntCheckBox;
+    cbACloseQuote1: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1473,7 +1474,7 @@ end;
 
 procedure TfmSetup.cbACloseBrClick(Sender: TObject);
 begin
-  cbACloseBrEsc.Enabled:= cbACloseBr.Checked or cbACloseQ.Checked;
+  cbACloseBrEsc.Enabled:= cbACloseBr.Checked or cbACloseQuote1.Checked or cbACloseQuote2.Checked;
 end;
 
 procedure TfmSetup.cbAcpFileClick(Sender: TObject);
@@ -1745,7 +1746,8 @@ begin
     opAutoCloseTags:= cbACloseTags.Checked;
     opAutoCloseBrackets:= cbACloseBr.Checked;
     opAutoCloseBracketsNoEsc:= cbACloseBrEsc.Checked;
-    opAutoCloseQuotes:= cbACloseQ.Checked;
+    opAutoCloseQuotes1:= cbACloseQuote1.Checked;
+    opAutoCloseQuotes2:= cbACloseQuote2.Checked;
     opAcpNum:= edAcpNum.Value;
     opAcpUseSingle:= cbAcpUseSingle.Checked;
     ParamCompletion.Enabled:= cbAcpParamHints.Checked;
@@ -2046,7 +2048,8 @@ begin
 
     cbACloseBr.Checked:= opAutoCloseBrackets;
     cbACloseBrEsc.Checked:= opAutoCloseBracketsNoEsc;
-    cbACloseQ.Checked:= opAutoCloseQuotes;
+    cbACloseQuote1.Checked:= opAutoCloseQuotes1;
+    cbACloseQuote2.Checked:= opAutoCloseQuotes2;
     cbACloseBrClick(Self);
 
     cbAcpParamHints.Checked:= ParamCompletion.Enabled;

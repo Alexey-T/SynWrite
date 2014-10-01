@@ -86,7 +86,10 @@ procedure EditorCopyOrCutAndAppend(Ed: TSyntaxMemo; ACut: boolean);
 
 procedure EditorClearMarkers(Ed: TSyntaxMemo);
 function EditorAutoCloseBracket(Ed: TSyntaxMemo; ch: Widechar;
-  opAutoCloseBrackets, opAutoCloseQuotes, opAutoCloseBracketsNoEsc: boolean): boolean;
+  opAutoCloseBrackets,
+  opAutoCloseQuotes1,
+  opAutoCloseQuotes2,
+  opAutoCloseBracketsNoEsc: boolean): boolean;
 procedure EditorDeleteToFileBegin(Ed: TSyntaxMemo);
 procedure EditorDeleteToFileEnd(Ed: TSyntaxMemo);
 procedure EditorJoinLines(Ed: TSyntaxMemo);
@@ -2024,7 +2027,10 @@ end;
 
 
 function EditorAutoCloseBracket(Ed: TSyntaxMemo; ch: Widechar;
-  opAutoCloseBrackets, opAutoCloseQuotes, opAutoCloseBracketsNoEsc: boolean): boolean;
+  opAutoCloseBrackets,
+  opAutoCloseQuotes1,
+  opAutoCloseQuotes2,
+  opAutoCloseBracketsNoEsc: boolean): boolean;
 var
   ch2: Widechar;
   NStart, NLen: Integer;
@@ -2035,7 +2041,8 @@ begin
 
   //options enabled?
   if IsBracketChar(ch) and not opAutoCloseBrackets then Exit;
-  if IsQuoteChar(ch) and not opAutoCloseQuotes then Exit;
+  if (ch='''') and not opAutoCloseQuotes1 then Exit;
+  if (ch='"') and not opAutoCloseQuotes2 then Exit;
 
   //bracket is escaped?
   if opAutoCloseBracketsNoEsc then

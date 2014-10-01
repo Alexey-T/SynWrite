@@ -2964,7 +2964,8 @@ type
     opAutoCloseTags: boolean;
     opAutoCloseBrackets: boolean;
     opAutoCloseBracketsNoEsc: boolean;
-    opAutoCloseQuotes: boolean;
+    opAutoCloseQuotes1: boolean;
+    opAutoCloseQuotes2: boolean;
     opLexersOverride: string;
     opShowRecentColors: TSynRecentColors;
     opUnicodeNeeded: integer;
@@ -4652,7 +4653,8 @@ begin
     opAutoCloseTags:= ReadBool('Setup', 'ACloseTag', false);
     opAutoCloseBrackets:= ReadBool('Setup', 'ACloseBr', false);
     opAutoCloseBracketsNoEsc:= ReadBool('Setup', 'ACloseBrEsc', false);
-    opAutoCloseQuotes:= ReadBool('Setup', 'ACloseQ', false);
+    opAutoCloseQuotes1:= ReadBool('Setup', 'ACloseQ', false);
+    opAutoCloseQuotes2:= ReadBool('Setup', 'ACloseQ2', false);
 
     opLexerGroups:= ReadBool('Setup', 'LexCat', true);
     opLexersOverride:= ReadString('Setup', 'LexOvr', '');
@@ -5087,7 +5089,8 @@ begin
     WriteBool('Setup', 'ACloseTag', opAutoCloseTags);
     WriteBool('Setup', 'ACloseBr', opAutoCloseBrackets);
     WriteBool('Setup', 'ACloseBrEsc', opAutoCloseBracketsNoEsc);
-    WriteBool('Setup', 'ACloseQ', opAutoCloseQuotes);
+    WriteBool('Setup', 'ACloseQ', opAutoCloseQuotes1);
+    WriteBool('Setup', 'ACloseQ2', opAutoCloseQuotes2);
 
     WriteBool('Setup', 'TabShow', opTabVisible);
     WriteInteger('Setup', 'TabSizeMin', opTabWidthMin);
@@ -19613,7 +19616,8 @@ function TfmMain.DoAutoCloseBracket(ch: Widechar): boolean;
 begin
   Result:= EditorAutoCloseBracket(CurrentEditor, ch,
     opAutoCloseBrackets,
-    opAutoCloseQuotes,
+    opAutoCloseQuotes1,
+    opAutoCloseQuotes2,
     opAutoCloseBracketsNoEsc);
 end;
 
