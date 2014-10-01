@@ -2922,6 +2922,7 @@ type
     hLister: HWnd;
     ColorsArray: TSynColors;
     FFontTabs: TFont;
+    FFontMenus: TFont;
 
     SynPyLog: TSynLogPanelKind;
     SynPanelPropsOut,
@@ -3336,7 +3337,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.9.1580';
+  cSynVer = '6.9.1590';
   cSynPyVer = '1.0.139';
 
 const
@@ -4702,6 +4703,7 @@ begin
     StringToFont(Tree.Font,                       ReadString('Fonts', 'Tree', ''));
     StringToFont(MemoConsole.Font,                ReadString('Fonts', 'Con', ''));
     StringToFont(FFontTabs,                       ReadString('Fonts', 'Tabs', ''));
+    StringToFont(FFontMenus,                      ReadString('Fonts', 'Menus', ''));
     EdConsole.Font:= MemoConsole.Font;
 
     //keys
@@ -5206,6 +5208,7 @@ begin
     WriteString('Fonts', 'Tree', FontToString(Tree.Font));
     WriteString('Fonts', 'Con', FontToString(MemoConsole.Font));
     WriteString('Fonts', 'Tabs', FontToString(FFontTabs));
+    WriteString('Fonts', 'Menus', FontToString(FFontMenus));
   finally
     Free;
   end;
@@ -7301,6 +7304,8 @@ begin
   FListSnippets:= nil;
   FFontTabs:= TFont.Create;
   FFontTabs.Assign(ToolbarFont);
+  FFontMenus:= TFont.Create;
+  FFontMenus.Assign(ToolbarFont);
 
   fmNumConv:= nil;
   fmClip:= nil;
@@ -7588,6 +7593,7 @@ begin
   FreeAndNil(FListConv);
   FreeAndNil(FListLexersSorted);
   FreeAndNil(FFontTabs);
+  FreeAndNil(FFontMenus);
 
   if Assigned(FListSnippets) then
   begin
@@ -14394,6 +14400,9 @@ begin
     fmProj.TreeProj.Font:= Tree.Font;
     fmProj.TreeProj.Color:= Tree.Color;
   end;
+
+  ToolbarFont.Assign(FFontMenus);
+  DoRepaint;
 
   ApplyColorsFontsToFrames;
   ApplyTabOptions;

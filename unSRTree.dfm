@@ -4,7 +4,7 @@ object fmSRTree: TfmSRTree
   ActiveControl = edText
   BorderStyle = bsDialog
   Caption = 'Search in tree/list'
-  ClientHeight = 162
+  ClientHeight = 136
   ClientWidth = 433
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -35,14 +35,14 @@ object fmSRTree: TfmSRTree
   end
   object gOp: TTntGroupBox
     Left = 8
-    Top = 56
+    Top = 48
     Width = 153
-    Height = 97
+    Height = 81
     Caption = 'Options'
     TabOrder = 1
     object cbRE: TTntCheckBox
       Left = 8
-      Top = 60
+      Top = 52
       Width = 140
       Height = 17
       Caption = 'Regular e&xpressions'
@@ -50,7 +50,7 @@ object fmSRTree: TfmSRTree
     end
     object cbCase: TTntCheckBox
       Left = 8
-      Top = 24
+      Top = 16
       Width = 140
       Height = 17
       Caption = '&Case sensitive'
@@ -58,7 +58,7 @@ object fmSRTree: TfmSRTree
     end
     object cbWords: TTntCheckBox
       Left = 8
-      Top = 42
+      Top = 34
       Width = 140
       Height = 17
       Caption = '&Whole words'
@@ -67,38 +67,30 @@ object fmSRTree: TfmSRTree
   end
   object gDir: TTntGroupBox
     Left = 168
-    Top = 56
+    Top = 48
     Width = 153
-    Height = 57
+    Height = 40
     Caption = 'Direction'
     TabOrder = 2
-    object bFor: TTntRadioButton
+    object cbBack: TTntCheckBox
       Left = 8
       Top = 16
       Width = 140
-      Height = 21
-      Caption = 'Forwar&d'
-      TabOrder = 0
-    end
-    object bBack: TTntRadioButton
-      Left = 8
-      Top = 34
-      Width = 140
       Height = 17
-      Caption = '&Backward'
-      TabOrder = 1
+      Caption = 'Backward search'
+      TabOrder = 0
     end
   end
   object gScop: TTntGroupBox
     Left = 168
-    Top = 116
+    Top = 88
     Width = 153
-    Height = 37
+    Height = 41
     Caption = 'Scope'
     TabOrder = 3
     object cbFromCur: TTntCheckBox
       Left = 8
-      Top = 14
+      Top = 16
       Width = 140
       Height = 17
       Caption = 'Search from cursor'
@@ -129,17 +121,16 @@ object fmSRTree: TfmSRTree
     Left = 328
     Top = 76
     LangData = {
-      0800666D535254726565010100000001000000070043617074696F6E010D0000
+      0800666D535254726565010100000001000000070043617074696F6E010C0000
       00060065645465787400000900546E744C6162656C3101010000000200000007
       0043617074696F6E000300674F70010100000003000000070043617074696F6E
       00040063625245010100000004000000070043617074696F6E00060063624361
       7365010100000005000000070043617074696F6E0007006362576F7264730101
       00000006000000070043617074696F6E00040067446972010100000007000000
-      070043617074696F6E00040062466F7201010000000800000007004361707469
-      6F6E000500624261636B010100000009000000070043617074696F6E00050067
-      53636F7001010000000A000000070043617074696F6E000900636246726F6D43
-      757201010000000B000000070043617074696F6E00060062464E657874010100
-      00000C000000070043617074696F6E0004006243616E01010000000D00000007
-      0043617074696F6E00}
+      070043617074696F6E0005006753636F7001010000000A000000070043617074
+      696F6E000900636246726F6D43757201010000000B000000070043617074696F
+      6E00060062464E65787401010000000C000000070043617074696F6E00040062
+      43616E01010000000D000000070043617074696F6E00060063624261636B0101
+      0000000E000000070043617074696F6E00}
   end
 end

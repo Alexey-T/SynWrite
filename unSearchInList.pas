@@ -139,7 +139,7 @@ begin
     if cbCase.Checked then Flags:= Flags+[ftCaseSensitive];
     if cbWords.Checked then Flags:= Flags+[ftWholeWordOnly];
     if cbRE.Checked then Flags:= Flags+[ftRegularExpr];
-    if bBack.Checked then Flags:= Flags+[ftBackward];
+    if cbBack.Checked then Flags:= Flags+[ftBackward];
   end;
 end;
 
@@ -152,8 +152,7 @@ begin
     cbCase.Checked:= ftCaseSensitive in Flags;
     cbWords.Checked:= ftWholeWordOnly in Flags;
     cbRE.Checked:= ftRegularExpr in Flags;
-    bBack.Checked:= ftBackward in Flags;
-    bFor.Checked:= not bBack.Checked;
+    cbBack.Checked:= ftBackward in Flags;
   end;
 end;
 

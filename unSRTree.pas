@@ -17,13 +17,12 @@ type
     cbCase: TTntCheckBox;
     cbWords: TTntCheckBox;
     gDir: TTntGroupBox;
-    bFor: TTntRadioButton;
-    bBack: TTntRadioButton;
     gScop: TTntGroupBox;
     cbFromCur: TTntCheckBox;
     bFNext: TTntButton;
     bCan: TTntButton;
     DKLanguageController1: TDKLanguageController;
+    cbBack: TTntCheckBox;
     procedure edTextChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -62,8 +61,7 @@ begin
     cbCase.Checked:= ReadBool('SearchTree', 'Case', false);
     cbWords.Checked:= ReadBool('SearchTree', 'Words', false);
     cbRE.Checked:= ReadBool('SearchTree', 'RE', false);
-    bBack.Checked:= ReadBool('SearchTree', 'Back', false);
-    bFor.Checked:= not bBack.Checked;
+    cbBack.Checked:= ReadBool('SearchTree', 'Back', false);
     cbFromCur.Checked:= ReadBool('SearchTree', 'FromCur', false);
   finally
     Free;
@@ -88,7 +86,7 @@ begin
     WriteBool('SearchTree', 'Case', cbCase.Checked);
     WriteBool('SearchTree', 'Words', cbWords.Checked);
     WriteBool('SearchTree', 'RE', cbRE.Checked);
-    WriteBool('SearchTree', 'Back', bBack.Checked);
+    WriteBool('SearchTree', 'Back', cbBack.Checked);
     WriteBool('SearchTree', 'FromCur', cbFromCur.Checked);
   finally
     Free;

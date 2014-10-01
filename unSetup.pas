@@ -359,6 +359,7 @@ type
     cbClipHook: TTntCheckBox;
     cbACloseQuote2: TTntCheckBox;
     cbACloseQuote1: TTntCheckBox;
+    bFontMenus: TTntButton;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -457,6 +458,7 @@ type
     procedure bFontConsoleClick(Sender: TObject);
     procedure bFontTabsClick(Sender: TObject);
     procedure LabelLangMoreClick(Sender: TObject);
+    procedure bFontMenusClick(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
@@ -1852,6 +1854,7 @@ begin
     MemoConsole.Font:= bFontConsole.Font;
     EdConsole.Font:= MemoConsole.Font;
     FFontTabs.Assign(bFontTabs.Font);
+    FFontMenus.Assign(bFontMenus.Font);
 
     ApplyACP;
     ApplyOut;
@@ -2181,6 +2184,7 @@ begin
     bFontOutput.Font:= ListOut.Font;
     bFontConsole.Font:= MemoConsole.Font;
     bFontTabs.Font:= FFontTabs;
+    bFontMenus.Font:= FFontMenus;
   end;
 end;
 
@@ -2846,6 +2850,11 @@ end;
 procedure TfmSetup.bFontTabsClick(Sender: TObject);
 begin
   DoFontConfig(bFontTabs);
+end;
+
+procedure TfmSetup.bFontMenusClick(Sender: TObject);
+begin
+  DoFontConfig(bFontMenus);
 end;
 
 procedure TfmSetup.LabelLangMoreClick(Sender: TObject);
