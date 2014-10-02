@@ -2387,7 +2387,7 @@ type
     procedure DoFindDialog_ReplaceAllInAllTabs(var AFilesReport: Widestring);
     procedure DoFindDialog_FindNext;
     procedure DoFindDialog_CountAllInCurrentTab;
-    procedure DoFindDialog_ReplaceOrSkip(ADoReplace: boolean);
+    procedure DoFindDialog_ReplaceOrSkip(ADoReplace, AGotoNext: boolean);
     procedure DoFindDialog_FindAllInAllTabs;
     procedure DoFindDialog_FindAllInCurrentTab(AWithBkmk, ASelectResults: boolean);
 
@@ -8813,7 +8813,7 @@ begin
 end;
 
 
-procedure TfmMain.DoFindDialog_ReplaceOrSkip(ADoReplace: boolean);
+procedure TfmMain.DoFindDialog_ReplaceOrSkip(ADoReplace, AGotoNext: boolean);
 var
   Ok, OkReplaced: boolean;
   Ed: TSyntaxMemo;
@@ -8838,7 +8838,9 @@ begin
     end;
 
   //sel next match
-  Finder.FindAgain;
+  if AGotoNext then
+    Finder.FindAgain;
+    
   //workaround for Bug1
   DoWorkaround_FindNext1;
 
@@ -8988,9 +8990,12 @@ begin
     arFindNext:
       DoFindDialog_FindNext;
     //
-    arReplaceNext,
+    arReplaceNext:
+      //don't jump to next match, if Ctrl is pressed (feature)
+      DoFindDialog_ReplaceOrSkip(true, not IsCtrlPressed);
+    //
     arSkip:
-      DoFindDialog_ReplaceOrSkip(act<>arSkip);
+      DoFindDialog_ReplaceOrSkip(false, true);
     //
     arFindAll:
       DoFindDialog_FindAllInCurrentTab(
