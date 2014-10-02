@@ -8839,17 +8839,21 @@ begin
 
   //sel next match
   if AGotoNext then
+  begin
     Finder.FindAgain;
-    
-  //workaround for Bug1
-  DoWorkaround_FindNext1;
 
-  //final actions
-  Ok:= Finder.Matches>0;
-  if Ok and (Ed.SelLength>0) then
-    DoFixReplaceCaret(Ed);
-  if Ok then
-    EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
+    //workaround for Bug1
+    DoWorkaround_FindNext1;
+
+    //final actions
+    Ok:= Finder.Matches>0;
+    if Ok and (Ed.SelLength>0) then
+      DoFixReplaceCaret(Ed);
+    if Ok then
+      EditorCheckCaretOverlappedByForm(Finder.Control, fmSR);
+  end
+  else
+    Ok:= false;
 
   //show message in Find dialog status
   if not OkReplaced then
