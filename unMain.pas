@@ -8724,20 +8724,7 @@ end;
     TbxDockBottom1.Enabled:= En;
 
     if Assigned(fmSR) then
-    begin
-      fmSR.PanelBusy.Align:= alClient;
-      fmSR.PanelBusy.Visible:= not En;
-      fmSR.labMultiline.Visible:= En;
-      fmSR.labStyle.Visible:= En;
-      fmSR.labDocked.Visible:= En;
-      fmSR.labRe.Visible:= En;
-      fmSR.labEd1.Visible:= En;
-      fmSR.labEd2.Visible:= En;
-      fmSR.labTransp.Visible:= En;
-      if En then
-        fmSR.IsReplace:= fmSR.IsReplace;
-      fmSR.Cursor:= cDefaultCursor[En];
-    end;
+      fmSR.IsEnabled:= En;
 
     if Assigned(fmNumConv) then
       fmNumConv.Enabled:= En;

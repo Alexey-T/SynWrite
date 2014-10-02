@@ -107,7 +107,6 @@ type
     bCombo2: TSpeedButton;
     mnuCombo: TTntPopupMenu;
     StatusFind: TTntStatusBar;
-    PanelBusy: TTntPanel;
     cbReDot: TTntCheckBox;
     labTransp: TTntLabel;
     cbSelectAll: TTntCheckBox;
@@ -185,6 +184,7 @@ type
     procedure SetIsReplace(Value: boolean);
     procedure SetIsMultiline(Value: boolean);
     procedure SetIsDocked(Value: boolean);
+    procedure SetIsEnabled(En: boolean);
     procedure UpdOrigSize;
     procedure UpdTransp;
     procedure UpdScope;
@@ -218,6 +218,7 @@ type
     property IsReplace: boolean read FIsReplace write SetIsReplace;
     property IsMultiline: boolean read FIsMultiline write SetIsMultiline;
     property IsDocked: boolean read FIsDocked write SetIsDocked;
+    property IsEnabled: boolean write SetIsEnabled;
     procedure ShowError(b: boolean);
     procedure ShowStatus(const S: Widestring);
     procedure SetFromCaret;
@@ -1609,8 +1610,47 @@ begin
       PanelTr.Hide;
 
     if Assigned(FOnRepaintNeeded) then
-      FOnRepaintNeeded(Self);  
+      FOnRepaintNeeded(Self);
   end;
+end;
+
+procedure TfmSR.SetIsEnabled(En: boolean);
+const
+  cDefaultCursor: array[boolean] of TCursor = (crHourGlass, crDefault);
+begin
+  ed1.Enabled:= En;
+  ed2.Enabled:= En;
+  ed1Memo.Enabled:= En;
+  ed2Memo.Enabled:= En;
+  gOp.Enabled:= En;
+  gScop.Enabled:= En;
+  bFindNext.Enabled:= En;
+  bFindAll.Enabled:= En;
+  bFindInTabs.Enabled:= En;
+  bRepNext.Enabled:= En;
+  bRepAll.Enabled:= En;
+  bRepInTabs.Enabled:= En;
+  bCount.Enabled:= En;
+  bCancel.Enabled:= En;
+  bHelp.Enabled:= En;
+
+  labMultiline.Enabled:= En;
+  labStyle.Enabled:= En;
+  labDocked.Enabled:= En;
+  labRe.Enabled:= En;
+  labEd1.Enabled:= En;
+  labEd2.Enabled:= En;
+  labTransp.Enabled:= En;
+
+  if En then
+    ShowStatus('')
+  else
+    ShowStatus(DKLangConstW('zMFindWait'));
+
+  if En then
+    IsReplace:= IsReplace;
+
+  Cursor:= cDefaultCursor[En];
 end;
 
 end.
