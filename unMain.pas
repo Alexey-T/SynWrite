@@ -14819,9 +14819,12 @@ begin
 
   F.LockMapUpdate:= true;
   FLockUpdate:= true;
+  UpdateFormEnabled(false);
   try
-    EditorInsertTextData(Ed, Data);
+    EditorInsertTextData(Ed, Data, DoHint);
+    DoHint('');
   finally
+    UpdateFormEnabled(true);
     FLockUpdate:= false;
     F.LockMapUpdate:= false;
   end;

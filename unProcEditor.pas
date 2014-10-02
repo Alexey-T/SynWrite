@@ -139,10 +139,13 @@ type
     InsStrAfter: Widestring;
     SkipEmpty: boolean;
   end;
-procedure EditorInsertTextData(Ed: TSyntaxMemo; const Data: TSynEditorInsertData);
 
 type
+  TSynHintEvent = procedure(Msg: Widestring) of object;
   TSynScrollLineTo = (cScrollToTop, cScrollToBottom, cScrollToMiddle);
+
+procedure EditorInsertTextData(Ed: TSyntaxMemo; const Data: TSynEditorInsertData;
+  AHintEvent: TSynHintEvent);
 procedure EditorScrollCurrentLineTo(Ed: TSyntaxMemo; Mode: TSynScrollLineTo);
 
 procedure EditorDuplicateLine(Ed: TSyntaxMemo);
@@ -1569,7 +1572,9 @@ begin
   end;
 end;
 
-procedure EditorInsertTextData(Ed: TSyntaxMemo; const Data: TSynEditorInsertData);
+procedure EditorInsertTextData(Ed: TSyntaxMemo;
+  const Data: TSynEditorInsertData;
+  AHintEvent: TSynHintEvent);
 const
   cBulletStr = WideString(#$2022);
 var
@@ -1593,6 +1598,9 @@ begin
         //----counter times inserting
         for i:= 1 to NCounter do
         begin
+          if i mod 100 = 0 then
+            AHintEvent(WideFormat('%d / %d...', [i, NCounter]));
+
           case InsMode of
             mTxt: S:= SText1 + SText2;
             mBul: S:= cBulletStr + ' ';
