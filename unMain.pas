@@ -14403,6 +14403,8 @@ begin
   ToolbarFont.Assign(FFontMenus);
   DoRepaint;
 
+  FFontSnippetsEditor.Assign(TemplateEditor.Font);
+
   ApplyColorsFontsToFrames;
   ApplyTabOptions;
 end;

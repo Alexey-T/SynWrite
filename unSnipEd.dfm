@@ -14,6 +14,7 @@ object fmSnippetEditor: TfmSnippetEditor
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = TntFormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object box1: TTntGroupBox
@@ -82,7 +83,6 @@ object fmSnippetEditor: TfmSnippetEditor
       LineNumbers.Font.Name = 'Courier New'
       LineNumbers.Font.Style = []
       LineNumbers.Band = -1
-      Gutter.Width = 22
       Gutter.ExpandButtons.Data = {
         FA000000424DFA000000000000007600000028000000120000000B0000000100
         0400000000008400000000000000000000001000000000000000000000000000

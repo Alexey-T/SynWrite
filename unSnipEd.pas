@@ -23,15 +23,20 @@ type
     procedure bOkClick(Sender: TObject);
     procedure memoTextKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure TntFormCreate(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
   end;
 
+var
+  FFontSnippetsEditor: TFont;
+
 implementation
 
 uses
+  ecStrUtils,
   ATxSProc;
 
 {$R *.dfm}
@@ -64,5 +69,22 @@ begin
     Exit
   end;  
 end;
+
+procedure TfmSnippetEditor.TntFormCreate(Sender: TObject);
+begin
+  //internally snippets have #13 line ends
+  memoText.Lines.TextFormat:= tfNL;
+
+  memoText.Font:= FFontSnippetsEditor;
+  memoText.LineNumbers.Font:= FFontSnippetsEditor;
+end;
+
+initialization
+  FFontSnippetsEditor:= TFont.Create;
+  FFontSnippetsEditor.Name:= 'Courier New';
+  FFontSnippetsEditor.Size:= 10;
+
+finalization
+  FreeAndNil(FFontSnippetsEditor);
 
 end.
