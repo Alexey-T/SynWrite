@@ -80,6 +80,7 @@ type
     mnuPlugins: TTntMenuItem;
     btnRemoveIcon: TTntButton;
     mnuProjectTools: TTntMenuItem;
+    mnuCase: TTntMenuItem;
     procedure FormShow(Sender: TObject);
     procedure btnIconSizeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -116,6 +117,7 @@ type
     procedure btnRemoveIconClick(Sender: TObject);
     procedure mnuPluginsClick(Sender: TObject);
     procedure mnuProjectToolsClick(Sender: TObject);
+    procedure mnuCaseClick(Sender: TObject);
   private
     { Private declarations }
     procedure DoMenuSys(const Cmd, Hint: Widestring);
@@ -849,6 +851,11 @@ end;
 procedure TfmToolbarProp.mnuProjectToolsClick(Sender: TObject);
 begin
   DoMenuSys('m:{projtools}', mnuProjectTools.Caption);
+end;
+
+procedure TfmToolbarProp.mnuCaseClick(Sender: TObject);
+begin
+  DoMenuSys('m:{case}', mnuCase.Caption);
 end;
 
 end.

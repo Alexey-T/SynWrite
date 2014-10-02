@@ -24878,6 +24878,11 @@ begin
           Item.LinkSubitems:= TbxSubmenuItemProjTools;
         end
         else
+        if SCmd='m:{case}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuCase;
+        end
+        else
         begin
           FUserToolbarCommands.Add(SCmd);
           Item.Tag:= FUserToolbarCommands.Count-1;
