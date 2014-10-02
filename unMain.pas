@@ -8765,10 +8765,9 @@ end;
       DoRepaint; //needed anyway, even if controls not resized
     end;
 
-    if Assigned(fmSR) and fmSR.Enabled and fmSR.Visible and fmSR.CanFocus then
+    if Assigned(fmSR) and fmSR.CanFocus then
       fmSR.SetFocus
     else
-    //test it
     if not edQs.Focused then
       FocusEditor;
   end;

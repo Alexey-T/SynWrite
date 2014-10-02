@@ -1643,7 +1643,7 @@ begin
   labTransp.Enabled:= En;
 
   if En then
-    ShowStatus('')
+    begin end //ShowStatus('')
   else
     ShowStatus(DKLangConstW('zMFindWait'));
 

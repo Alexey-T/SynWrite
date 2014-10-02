@@ -908,18 +908,22 @@ function IsRegexValid(const Str: string; var StrError: string): boolean;
 var
   Re: TPerlRegEx;
 begin
-  StrError:= '';
   Re:= TPerlRegEx.Create;
   try
-    Re.RegEx:= Str;
-    Re.Compile;
-    Result:= true;
-  except
-    on E: Exception do
-    begin
-      Result:= false;
-      StrError:= E.Message;
+    try
+      Re.RegEx:= Str;
+      Re.Compile;
+      Result:= true;
+      StrError:= '';
+    except
+      on E: Exception do
+      begin
+        Result:= false;
+        StrError:= E.Message;
+      end;
     end;
+  finally
+    FreeAndNil(Re);
   end;
 end;
 {$else}
