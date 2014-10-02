@@ -219,7 +219,7 @@ type
     property IsMultiline: boolean read FIsMultiline write SetIsMultiline;
     property IsDocked: boolean read FIsDocked write SetIsDocked;
     property IsEnabled: boolean write SetIsEnabled;
-    procedure ShowError(b: boolean);
+    procedure ShowError(Error: boolean);
     procedure ShowStatus(const S: Widestring);
     procedure SetFromCaret;
   end;
@@ -489,9 +489,9 @@ begin
     cbRe.Checked:= false;
 end;
 
-procedure TfmSR.ShowError(b: boolean);
+procedure TfmSR.ShowError(Error: boolean);
 begin
-  if b then
+  if Error then
     ShowStatus(WideFormat(DKLangConstW('MNFound2'), [Text1]))
   else
     ShowStatus('');
@@ -1643,7 +1643,7 @@ begin
   labTransp.Enabled:= En;
 
   if En then
-    begin end //ShowStatus('')
+    begin end //don't ShowStatus('')
   else
     ShowStatus(DKLangConstW('zMFindWait'));
 

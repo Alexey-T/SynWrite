@@ -1440,8 +1440,6 @@ type
     procedure TBXItem2Click(Sender: TObject);
     procedure ecACPKeyPress(Sender: TObject; var Key: Char);
     procedure ecACPListClick(Sender: TObject);
-    procedure ecACPListKeyDown(Sender: TObject;
-      var key: Word; Shift: TShiftState);
     procedure acNewTabExecute(Sender: TObject);
     procedure TBXItemWPriorClick(Sender: TObject);
     procedure TBXItemWNextClick(Sender: TObject);
@@ -9406,51 +9404,6 @@ end;
 procedure TfmMain.ecACPListClick;
 begin
   ecACP.CloseUp(True); //2nd click appears, 2 ids inserted
-end;
-
-procedure TfmMain.ecACPListKeyDown;
-//var
-//  d: integer;
-begin
-  {
-  with ecACP.ListBox do
-    if ItemIndex <> -1 then begin
-      D:= Height div ItemHeight;
-      if (Key = vk_down) or (Key = vk_right) then begin
-        if ItemIndex < Count - 1 then
-          itemIndex:= itemIndex + 1;
-        Key:= 0;
-      end;
-      if (Key = vk_up) or (Key = vk_left) then begin
-        if ItemIndex > 0 then
-          itemIndex:= itemIndex - 1;
-        Key:= 0;
-      end;
-      if (Key = vk_prior) then begin
-        if ItemIndex >= D then
-          itemIndex:= itemIndex - D
-        else
-          itemIndex:= 0;
-        Key:= 0;
-      end;
-      if (Key = vk_next) then begin
-        if ItemIndex < Count - D then
-          itemIndex:= itemIndex + D
-        else
-          itemIndex:= Count - 1;
-        Key:= 0;
-      end;
-      if (Key = vk_home) then begin
-        itemIndex:= 0;
-        Key:= 0;
-      end;
-      if (Key = vk_end) then begin
-        itemIndex:= Count - 1;
-        Key:= 0;
-      end;
-    end;
-  ecACPChange(Self);
-  }
 end;
 
 procedure TfmMain.acNewTabExecute(Sender: TObject);
