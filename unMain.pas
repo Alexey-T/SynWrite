@@ -551,10 +551,10 @@ type
     TBXItemSMarkClear: TSpTbxItem;
     TBXItemEUnindent: TSpTbxItem;
     TBXItemEIndent: TSpTbxItem;
-    TBXSubmenuItem19: TSpTbxSubmenuItem;
+    TBXSubmenuItemSortOps: TSpTBXSubmenuItem;
     TBXItemESortAsc: TSpTbxItem;
     TBXItemESortDesc: TSpTbxItem;
-    TBXSubmenuItem20: TSpTbxSubmenuItem;
+    TBXSubmenuItemCaseOps: TSpTBXSubmenuItem;
     TBXItemECaseUpper: TSpTbxItem;
     TBXItemECaseLower: TSpTbxItem;
     TBXItemECaseTitle: TSpTbxItem;
@@ -757,7 +757,7 @@ type
     ecZenExpand: TAction;
     TBXSeparatorItem46: TSpTbxSeparatorItem;
     ecZenWrap: TAction;
-    TBXSubmenuItem13: TSpTbxSubmenuItem;
+    TBXSubmenuItemCommentOps: TSpTBXSubmenuItem;
     TBXItemEComm: TSpTbxItem;
     TBXItemEUncomm: TSpTbxItem;
     TBXItemEToggleLineComment: TSpTbxItem;
@@ -766,14 +766,14 @@ type
     acBackup: TAction;
     ecToggleStreamComment: TAction;
     TBXItemEToggleStreamComment: TSpTbxItem;
-    TBXSubmenuItem16: TSpTbxSubmenuItem;
-    TBXSubmenuItem17: TSpTbxSubmenuItem;
+    TBXSubmenuItemIndentOps: TSpTBXSubmenuItem;
+    TBXSubmenuItemLineOps: TSpTBXSubmenuItem;
     TBXItemEMoveDn: TSpTbxItem;
     TBXItemEMoveUp: TSpTbxItem;
     TBXItemHelpDonate: TSpTBXItem;
     TBXItemEDelLn: TSpTbxItem;
     TBXSeparatorItem47: TSpTbxSeparatorItem;
-    TBXSubmenuItem18: TSpTbxSubmenuItem;
+    TBXSubmenuItemCopyOps: TSpTBXSubmenuItem;
     TBXItemECpDirPath: TSpTbxItem;
     TBXItemECpFullPath: TSpTbxItem;
     TBXItemECpFN: TSpTbxItem;
@@ -875,7 +875,7 @@ type
     ecRemoveBlanks: TAction;
     TBXItemERemBlanks: TSpTbxItem;
     ecRemoveLines: TAction;
-    TBXSubmenuItem1: TSpTbxSubmenuItem;
+    TBXSubmenuItemBlankOps: TSpTBXSubmenuItem;
     TBXSeparatorItem60: TSpTbxSeparatorItem;
     TBXItemETrimAll: TSpTbxItem;
     TBXItemETrimTrail: TSpTbxItem;
@@ -1118,7 +1118,7 @@ type
     TBXItemHelpCommandList: TSpTBXItem;
     ecProjectList: TAction;
     TBXSeparatorItem90: TSpTbxSeparatorItem;
-    TbxSubmenuCarets: TSpTbxSubmenuItem;
+    TbxSubmenuItemCaretsOps: TSpTBXSubmenuItem;
     TBXItemCaretsRemove2: TSpTbxItem;
     TBXItemCaretsRemove1: TSpTbxItem;
     TBXSeparatorItem91: TSpTbxSeparatorItem;
@@ -24880,7 +24880,22 @@ begin
         else
         if SCmd='m:{case}' then
         begin
-          Item.LinkSubitems:= TBXSubmenuCase;
+          Item.LinkSubitems:= TBXSubmenuItemCaseOps;
+        end
+        else
+        if SCmd='m:{blank}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuItemBlankOps;
+        end
+        else
+        if SCmd='m:{cmt}' then
+        begin
+          Item.LinkSubitems:= TBXSubmenuItemCommentOps;
+        end
+        else
+        if SCmd='m:{carets}' then
+        begin
+          Item.LinkSubitems:= TbxSubmenuItemCaretsOps;
         end
         else
         begin
