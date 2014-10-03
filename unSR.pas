@@ -1214,6 +1214,11 @@ begin
   else
     Caption:= DKLangConstW('fn');
 
+  if not IsReplace then
+    labStyle.Caption:= #$00BB + DKLangConstW('fnR')
+  else
+    labStyle.Caption:= #$00BB + DKLangConstW('fn');
+
   ed1.Visible:= not IsMultiline;
   ed2.Visible:= not IsMultiline and IsReplace;
   ed1Memo.Visible:= IsMultiline;
@@ -1229,11 +1234,6 @@ begin
   labEd2.Top:= FTopLab2+IfThen(IsMultiline, FMemoDy);
   gOp.Top:= FTopGOpt+IfThen(IsMultiline, FMemoDy*2);
   gScop.Top:= FTopGScope+IfThen(IsMultiline, FMemoDy*2);
-
-  if not IsReplace then
-    labStyle.Caption:= #$00BB + DKLangConstW('fnR')
-  else
-    labStyle.Caption:= #$00BB + DKLangConstW('fn');
 
   bFindNext.Visible:= not IsReplace;
   bFindAll.Visible:= not IsReplace;
@@ -1290,7 +1290,7 @@ begin
   PanelAltRep.Visible:= IsSmall and IsReplace;
 
   PanelAlt.Top:= gOp.Top;
-  PanelAltFind.Left:= ClientWidth-PanelAltFind.Width;
+  PanelAltFind.Left:= FWidth0-PanelAltFind.Width;
   PanelAltFind.Top:= PanelBtnOrig.Top;
   PanelAltRep.Left:= PanelAltFind.Left;
   PanelAltRep.Top:= PanelAltFind.Top;
