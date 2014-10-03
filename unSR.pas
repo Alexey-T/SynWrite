@@ -1119,6 +1119,11 @@ end;
 
 procedure TfmSR.TntFormCreate(Sender: TObject);
 begin
+  FIsReplace:= false;
+  FIsMultiline:= false;
+  FIsDocked:= false;
+  FIsSmall:= false;
+
   {$ifdef PS}
   //make ed1/ed2 Paste interceptable
   ed1.refSpec:= cbOrigSpec;
@@ -1127,10 +1132,7 @@ begin
   ed2.refRE:= cbOrigRe;
   {$endif}
 
-  //other
-  FIsReplace:= false;
-  FIsMultiline:= false;
-  
+  //remember indents for future
   FTopEd2:= ed2.Top;
   FTopLab2:= labEd2.Top;
   FTopGOpt:= gOp.Top;
@@ -1139,6 +1141,17 @@ begin
   FHeight0:= ClientHeight;
   FHeight0Small:= PanelAlt.Top+PanelAlt.Height+3;
   FMemoDy:= ed2Memo.Height - ed2.Height;
+
+  //move buttons which bad placed in ide
+  bSkip.Left:= bFindNext.Left;
+  bRepNext.Left:= bFindNext.Left;
+  bRepAll.Left:= bFindNext.Left;
+  bRepInTabs.Left:= bFindNext.Left;
+
+  PanelAltFind.Left:= FWidth0-PanelAltFind.Width;
+  PanelAltFind.Top:= PanelBtnOrig.Top;
+  PanelAltRep.Left:= PanelAltFind.Left;
+  PanelAltRep.Top:= PanelAltFind.Top;
 end;
 
 procedure TfmSR.cbOrigInSelClick(Sender: TObject);
@@ -1240,10 +1253,6 @@ begin
   bSkip.Visible:= IsReplace;
   bRepNext.Visible:= IsReplace;
   bRepAll.Visible:= bRepNext.Visible;
-  bSkip.Left:= bFindNext.Left;
-  bRepNext.Left:= bFindNext.Left;
-  bRepAll.Left:= bFindNext.Left;
-  bRepInTabs.Left:= bFindNext.Left;
 
   ed2.Visible:= IsReplace and not IsMultiline;
   ed2Memo.Visible:= IsReplace and IsMultiline;
@@ -1290,10 +1299,6 @@ begin
   PanelAltRep.Visible:= IsSmall and IsReplace;
 
   PanelAlt.Top:= gOp.Top;
-  PanelAltFind.Left:= FWidth0-PanelAltFind.Width;
-  PanelAltFind.Top:= PanelBtnOrig.Top;
-  PanelAltRep.Left:= PanelAltFind.Left;
-  PanelAltRep.Top:= PanelAltFind.Top;
 end;
 
 procedure TfmSR.SetIsMultiline(Value: boolean);
