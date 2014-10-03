@@ -3,7 +3,7 @@ object fmSR: TfmSR
   Top = 311
   ActiveControl = ed1
   BorderStyle = bsDialog
-  ClientHeight = 182
+  ClientHeight = 183
   ClientWidth = 752
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -198,7 +198,7 @@ object fmSR: TfmSR
       Top = 64
       Width = 160
       Height = 17
-      Caption = 'Regular e&xpressions'
+      Caption = 'Re&gular expressions'
       TabOrder = 3
       OnClick = cbOrigReClick
     end
@@ -223,7 +223,7 @@ object fmSR: TfmSR
       Top = 48
       Width = 160
       Height = 17
-      Caption = 'Special chars (\n \r \t...)'
+      Caption = 'S&pecial chars (\n \r \t...)'
       TabOrder = 2
       OnClick = cbOrigSpecClick
     end
@@ -249,7 +249,7 @@ object fmSR: TfmSR
       Top = 80
       Width = 145
       Height = 17
-      Caption = 'Extend selecti&on'
+      Caption = 'E&xtend selection'
       TabOrder = 9
     end
     object cbOrigReDot: TTntCheckBox
@@ -274,7 +274,7 @@ object fmSR: TfmSR
       Top = 16
       Width = 145
       Height = 17
-      Caption = 'Backward search'
+      Caption = '&Backward search'
       TabOrder = 5
     end
   end
@@ -290,7 +290,7 @@ object fmSR: TfmSR
       Top = 14
       Width = 160
       Height = 17
-      Caption = 'Search in selection'
+      Caption = 'Search in selecti&on'
       TabOrder = 0
       OnClick = cbOrigInSelClick
     end
@@ -316,7 +316,7 @@ object fmSR: TfmSR
       Top = 62
       Width = 160
       Height = 17
-      Caption = 'Skip collapsed'
+      Caption = 'Skip collapse&d'
       TabOrder = 3
     end
     object cbTokens: TTntComboBox
@@ -337,7 +337,7 @@ object fmSR: TfmSR
   end
   object StatusFind: TTntStatusBar
     Left = 0
-    Top = 163
+    Top = 164
     Width = 752
     Height = 19
     Panels = <>
@@ -359,7 +359,7 @@ object fmSR: TfmSR
       Width = 49
       Height = 17
       Hint = 'Case sensitive'
-      Caption = 'Case'
+      Caption = '&Case'
       TabOrder = 0
     end
     object cbAltWords: TTntCheckBox
@@ -368,7 +368,7 @@ object fmSR: TfmSR
       Width = 49
       Height = 17
       Hint = 'Whole words'
-      Caption = 'Word'
+      Caption = '&Word'
       TabOrder = 1
     end
     object cbAltSpec: TTntCheckBox
@@ -377,7 +377,7 @@ object fmSR: TfmSR
       Width = 49
       Height = 17
       Hint = 'Special chars (\n \r \t...)'
-      Caption = 'Spec'
+      Caption = 'S&pec'
       TabOrder = 2
       OnClick = cbOrigSpecClick
     end
@@ -406,7 +406,7 @@ object fmSR: TfmSR
       Width = 49
       Height = 17
       Hint = 'Backward search'
-      Caption = 'Back'
+      Caption = '&Back'
       TabOrder = 5
     end
     object cbAltSelectAll: TTntCheckBox
@@ -415,7 +415,7 @@ object fmSR: TfmSR
       Width = 49
       Height = 17
       Hint = 'Select results'
-      Caption = 'Sel'
+      Caption = 'Se&l'
       TabOrder = 7
       OnClick = cbOrigSelectAllClick
     end
@@ -435,7 +435,7 @@ object fmSR: TfmSR
       Width = 49
       Height = 17
       Hint = 'Extend selection'
-      Caption = 'Ext'
+      Caption = 'E&xt'
       TabOrder = 9
     end
     object cbAltInSel: TTntCheckBox
@@ -444,7 +444,7 @@ object fmSR: TfmSR
       Width = 49
       Height = 17
       Hint = 'Search in selection'
-      Caption = 'InSel'
+      Caption = '&InSel'
       TabOrder = 10
       OnClick = cbOrigInSelClick
     end
@@ -454,7 +454,7 @@ object fmSR: TfmSR
       Width = 49
       Height = 17
       Hint = 'Search from caret'
-      Caption = 'Caret'
+      Caption = 'Care&t'
       TabOrder = 11
       OnClick = cbOrigFromCaretClick
     end
@@ -473,7 +473,7 @@ object fmSR: TfmSR
       Width = 49
       Height = 17
       Hint = 'Prompt on replace'
-      Caption = 'Prmpt'
+      Caption = 'Pr&mpt'
       TabOrder = 6
       OnClick = cbOrigSelectAllClick
     end
@@ -590,7 +590,7 @@ object fmSR: TfmSR
       Top = 30
       Width = 114
       Height = 25
-      Caption = 'Find all / &mark'
+      Caption = '&Mark all'
       TabOrder = 2
       OnClick = bFindAllClick
     end
@@ -636,7 +636,7 @@ object fmSR: TfmSR
       Top = 92
       Width = 114
       Height = 35
-      Caption = 'Rep&lace all in all tabs'
+      Caption = 'Replace in all tabs'
       TabOrder = 7
       WordWrap = True
       OnClick = bRepInTabsClick
@@ -710,7 +710,7 @@ object fmSR: TfmSR
       Top = 0
       Width = 96
       Height = 23
-      Caption = 'Find'
+      Caption = '&Find'
       Default = True
       TabOrder = 0
       OnClick = bFindNextClick
@@ -720,7 +720,7 @@ object fmSR: TfmSR
       Top = 0
       Width = 96
       Height = 23
-      Caption = 'Find all'
+      Caption = '&Mark all'
       TabOrder = 1
       OnClick = bFindAllClick
     end
@@ -729,7 +729,7 @@ object fmSR: TfmSR
       Top = 26
       Width = 96
       Height = 23
-      Caption = 'Count'
+      Caption = 'Cou&nt'
       TabOrder = 3
       OnClick = bCountClick
     end
@@ -757,7 +757,7 @@ object fmSR: TfmSR
       Top = 0
       Width = 96
       Height = 23
-      Caption = 'Find'
+      Caption = '&Find'
       Default = True
       TabOrder = 0
       OnClick = bSkipClick
@@ -767,7 +767,7 @@ object fmSR: TfmSR
       Top = 0
       Width = 96
       Height = 23
-      Caption = 'Replace'
+      Caption = 'R&eplace'
       TabOrder = 1
       OnClick = bRepNextClick
     end
@@ -776,7 +776,7 @@ object fmSR: TfmSR
       Top = 26
       Width = 96
       Height = 23
-      Caption = 'Replace all'
+      Caption = 'Repl&ace all'
       TabOrder = 3
       OnClick = bRepAllClick
     end

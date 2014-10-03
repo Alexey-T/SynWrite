@@ -961,38 +961,76 @@ begin
   end;
 
   //handle accelerators for all controls
-  if H(cbOrigCase, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbOrigWords, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbOrigRe, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbOrigSpec, ch1, ch2) then begin Handled:= true; Exit end;
-  if FIsReplace then
-    if H(cbOrigCfm, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbOrigBkmkAll, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbOrigSelectAll, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbOrigExtSel, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbLoose, ch1, ch2) then begin Handled:= true; Exit end;
-
-  if H(cbOrigInSel, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbOrigBack, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbOrigFromCaret, ch1, ch2) then begin Handled:= true; Exit end;
-
   if H(labEd1, ch1, ch2) then begin Handled:= true; Exit end;
   if H(labEd2, ch1, ch2) then begin Handled:= true; Exit end;
-  //if H(labTr, ch1, ch2) then begin Handled:= true; Exit end;
 
-  if not FIsReplace then
+  if not IsSmall then
   begin
-    if H(bFindNext, ch1, ch2) then begin Handled:= true; Exit end;
-    if H(bFindAll, ch1, ch2) then begin Handled:= true; Exit end;
-    if H(bFindInTabs, ch1, ch2) then begin Handled:= true; Exit end;
-    if H(bCount, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbOrigCase, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbOrigWords, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbOrigRe, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbOrigSpec, ch1, ch2) then begin Handled:= true; Exit end;
+    if IsReplace then
+      if H(cbOrigCfm, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbOrigBkmkAll, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbOrigSelectAll, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbOrigExtSel, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbLoose, ch1, ch2) then begin Handled:= true; Exit end;
+
+    if H(cbOrigInSel, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbOrigBack, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbOrigFromCaret, ch1, ch2) then begin Handled:= true; Exit end;
   end
   else
   begin
-    if H(bSkip, ch1, ch2) then begin Handled:= true; Exit end;
-    if H(bRepNext, ch1, ch2) then begin Handled:= true; Exit end;
-    if H(bRepAll, ch1, ch2) then begin Handled:= true; Exit end;
-    if H(bRepInTabs, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbAltCase, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbAltWords, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbAltRe, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbAltSpec, ch1, ch2) then begin Handled:= true; Exit end;
+    if IsReplace then
+      if H(cbAltCfm, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbAltBkmkAll, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbAltSelectAll, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbAltExtSel, ch1, ch2) then begin Handled:= true; Exit end;
+
+    if H(cbAltInSel, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbAltBack, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbAltFromCaret, ch1, ch2) then begin Handled:= true; Exit end;
+  end;
+
+  if not IsReplace then
+  begin
+    if not IsSmall then
+    begin
+      if H(bFindNext, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bFindAll, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bFindInTabs, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bCount, ch1, ch2) then begin Handled:= true; Exit end;
+    end
+    else
+    begin
+      if H(bAltFind, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bAltFindAll, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bAltFindInTabs, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bAltCount, ch1, ch2) then begin Handled:= true; Exit end;
+    end;
+  end
+  else
+  begin
+    if not IsSmall then
+    begin
+      if H(bSkip, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bRepNext, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bRepAll, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bRepInTabs, ch1, ch2) then begin Handled:= true; Exit end;
+    end
+    else
+    begin
+      if H(bAltSkip, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bAltRep, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bAltRepAll, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bAltRepInTabs, ch1, ch2) then begin Handled:= true; Exit end;
+    end;  
   end;
 end;
 
