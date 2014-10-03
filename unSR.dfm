@@ -3,8 +3,8 @@ object fmSR: TfmSR
   Top = 311
   ActiveControl = ed1
   BorderStyle = bsDialog
-  ClientHeight = 182
-  ClientWidth = 756
+  ClientHeight = 181
+  ClientWidth = 752
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,6 +13,7 @@ object fmSR: TfmSR
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  ShowHint = True
   OnActivate = TntFormActivate
   OnClose = TntFormClose
   OnCreate = TntFormCreate
@@ -39,21 +40,6 @@ object fmSR: TfmSR
     Caption = '&Replace with:'
     FocusControl = ed2
   end
-  object labStyle: TTntLabel
-    Left = 638
-    Top = 68
-    Width = 26
-    Height = 13
-    Cursor = crHandPoint
-    Caption = 'Mode'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlue
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsUnderline]
-    ParentFont = False
-    OnClick = labStyleClick
-  end
   object labRe: TTntLabel
     Left = 486
     Top = 8
@@ -68,21 +54,6 @@ object fmSR: TfmSR
     Font.Style = [fsUnderline]
     ParentFont = False
     OnClick = labReClick
-  end
-  object labMultiline: TTntLabel
-    Left = 638
-    Top = 84
-    Width = 44
-    Height = 13
-    Cursor = crHandPoint
-    Caption = #187'Multiline'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlue
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsUnderline]
-    ParentFont = False
-    OnClick = labMultilineClick
   end
   object bCombo1: TSpeedButton
     Left = 704
@@ -174,36 +145,6 @@ object fmSR: TfmSR
       00FF0000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
     OnClick = bCombo2Click
   end
-  object labTransp: TTntLabel
-    Left = 638
-    Top = 116
-    Width = 66
-    Height = 13
-    Cursor = crHandPoint
-    Caption = 'Transparency'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlue
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsUnderline]
-    ParentFont = False
-    OnClick = labTranspClick
-  end
-  object labDocked: TTntLabel
-    Left = 638
-    Top = 100
-    Width = 41
-    Height = 13
-    Cursor = crHandPoint
-    Caption = #187'Docked'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlue
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsUnderline]
-    ParentFont = False
-    OnClick = labDockedClick
-  end
   object labSmall: TTntLabel
     Left = 486
     Top = 32
@@ -217,28 +158,7 @@ object fmSR: TfmSR
     Font.Name = 'Tahoma'
     Font.Style = [fsUnderline]
     ParentFont = False
-    Visible = False
-  end
-  object bFindNext: TTntButton
-    Left = 512
-    Top = 8
-    Width = 114
-    Height = 25
-    Caption = '&Find next'
-    Default = True
-    TabOrder = 6
-    OnClick = bFindNextClick
-  end
-  object bCancel: TTntButton
-    Left = 632
-    Top = 8
-    Width = 114
-    Height = 25
-    Cancel = True
-    Caption = 'Close'
-    ModalResult = 2
-    TabOrder = 14
-    OnClick = bCancelClick
+    OnClick = labSmallClick
   end
   object ed1: TTntComboBox
     Left = 88
@@ -273,16 +193,16 @@ object fmSR: TfmSR
     Height = 106
     Caption = 'Options'
     TabOrder = 4
-    object cbRe: TTntCheckBox
+    object cbOrigRe: TTntCheckBox
       Left = 8
       Top = 64
       Width = 160
       Height = 17
       Caption = 'Regular e&xpressions'
       TabOrder = 3
-      OnClick = cbReClick
+      OnClick = cbOrigReClick
     end
-    object cbCase: TTntCheckBox
+    object cbOrigCase: TTntCheckBox
       Left = 8
       Top = 16
       Width = 160
@@ -290,7 +210,7 @@ object fmSR: TfmSR
       Caption = '&Case sensitive'
       TabOrder = 0
     end
-    object cbWords: TTntCheckBox
+    object cbOrigWords: TTntCheckBox
       Left = 8
       Top = 32
       Width = 160
@@ -298,16 +218,16 @@ object fmSR: TfmSR
       Caption = '&Whole words'
       TabOrder = 1
     end
-    object cbSpec: TTntCheckBox
+    object cbOrigSpec: TTntCheckBox
       Left = 8
       Top = 48
       Width = 160
       Height = 17
       Caption = 'Special chars (\n \r \t...)'
       TabOrder = 2
-      OnClick = cbSpecClick
+      OnClick = cbOrigSpecClick
     end
-    object cbCfm: TTntCheckBox
+    object cbOrigCfm: TTntCheckBox
       Left = 176
       Top = 48
       Width = 145
@@ -315,16 +235,16 @@ object fmSR: TfmSR
       Caption = 'Pro&mpt on replace'
       TabOrder = 6
     end
-    object cbBkmkAll: TTntCheckBox
+    object cbOrigBkmkAll: TTntCheckBox
       Left = 176
       Top = 64
       Width = 145
       Height = 17
       Caption = 'Boo&kmark results'
       TabOrder = 8
-      OnClick = cbBkmkAllClick
+      OnClick = cbOrigBkmkAllClick
     end
-    object cbExtSel: TTntCheckBox
+    object cbOrigExtSel: TTntCheckBox
       Left = 176
       Top = 80
       Width = 145
@@ -332,7 +252,7 @@ object fmSR: TfmSR
       Caption = 'Extend selecti&on'
       TabOrder = 9
     end
-    object cbReDot: TTntCheckBox
+    object cbOrigReDot: TTntCheckBox
       Left = 24
       Top = 80
       Width = 142
@@ -340,16 +260,16 @@ object fmSR: TfmSR
       Caption = 'Dot matches newlines'
       TabOrder = 4
     end
-    object cbSelectAll: TTntCheckBox
+    object cbOrigSelectAll: TTntCheckBox
       Left = 176
       Top = 48
       Width = 145
       Height = 17
       Caption = 'Select res&ults'
       TabOrder = 7
-      OnClick = cbSelectAllClick
+      OnClick = cbOrigSelectAllClick
     end
-    object cbBack: TTntCheckBox
+    object cbOrigBack: TTntCheckBox
       Left = 176
       Top = 16
       Width = 145
@@ -358,15 +278,6 @@ object fmSR: TfmSR
       TabOrder = 5
     end
   end
-  object bFindAll: TTntButton
-    Left = 512
-    Top = 38
-    Width = 114
-    Height = 25
-    Caption = 'Find all / &mark'
-    TabOrder = 7
-    OnClick = bFindAllClick
-  end
   object gScop: TTntGroupBox
     Left = 336
     Top = 52
@@ -374,25 +285,25 @@ object fmSR: TfmSR
     Height = 106
     Caption = 'Scope'
     TabOrder = 5
-    object cbInSel: TTntCheckBox
+    object cbOrigInSel: TTntCheckBox
       Left = 8
       Top = 14
       Width = 160
       Height = 17
       Caption = 'Search in selection'
       TabOrder = 0
-      OnClick = cbInSelClick
+      OnClick = cbOrigInSelClick
     end
-    object cbFromCur: TTntCheckBox
+    object cbOrigFromCaret: TTntCheckBox
       Left = 8
       Top = 30
       Width = 160
       Height = 17
       Caption = 'Search from care&t'
       TabOrder = 1
-      OnClick = cbFromCurClick
+      OnClick = cbOrigFromCaretClick
     end
-    object cbWrap: TTntCheckBox
+    object cbOrigWrap: TTntCheckBox
       Left = 24
       Top = 46
       Width = 142
@@ -424,76 +335,347 @@ object fmSR: TfmSR
         'Except comments/strings')
     end
   end
-  object bHelp: TTntButton
-    Left = 632
-    Top = 38
-    Width = 114
-    Height = 25
-    Caption = 'Help'
-    TabOrder = 15
-    OnClick = bHelpClick
+  object StatusFind: TTntStatusBar
+    Left = 0
+    Top = 162
+    Width = 752
+    Height = 19
+    Panels = <>
+    ParentFont = True
+    SimplePanel = True
+    UseSystemFont = False
   end
-  object bCount: TTntButton
+  object PanelAlt: TPanel
+    Left = 8
+    Top = 54
+    Width = 537
+    Height = 18
+    BevelOuter = bvNone
+    TabOrder = 7
+    Visible = False
+    object cbAltCase: TTntCheckBox
+      Left = 0
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Case sensitive'
+      Caption = 'Case'
+      TabOrder = 0
+    end
+    object cbAltWords: TTntCheckBox
+      Left = 48
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Whole words'
+      Caption = 'Word'
+      TabOrder = 1
+    end
+    object cbAltSpec: TTntCheckBox
+      Left = 96
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Special chars (\n \r \t...)'
+      Caption = 'Spec'
+      TabOrder = 2
+      OnClick = cbOrigSpecClick
+    end
+    object cbAltRe: TTntCheckBox
+      Left = 142
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Regular expressions'
+      Caption = 'RE'
+      TabOrder = 3
+      OnClick = cbOrigReClick
+    end
+    object cbAltReDot: TTntCheckBox
+      Left = 182
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Dot matches newlines'
+      Caption = 'Dot'
+      TabOrder = 4
+    end
+    object cbAltBack: TTntCheckBox
+      Left = 224
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Backward search'
+      Caption = 'Back'
+      TabOrder = 5
+    end
+    object cbAltSelectAll: TTntCheckBox
+      Left = 272
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Select results'
+      Caption = 'Sel'
+      TabOrder = 7
+      OnClick = cbOrigSelectAllClick
+    end
+    object cbAltBkmkAll: TTntCheckBox
+      Left = 312
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Bookmark results'
+      Caption = 'Bm'
+      TabOrder = 8
+      OnClick = cbOrigBkmkAllClick
+    end
+    object cbAltExtSel: TTntCheckBox
+      Left = 352
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Extend selection'
+      Caption = 'Ext'
+      TabOrder = 9
+    end
+    object cbAltInSel: TTntCheckBox
+      Left = 392
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Search in selection'
+      Caption = 'InSel'
+      TabOrder = 10
+      OnClick = cbOrigInSelClick
+    end
+    object cbAltFromCaret: TTntCheckBox
+      Left = 440
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Search from caret'
+      Caption = 'Caret'
+      TabOrder = 11
+      OnClick = cbOrigFromCaretClick
+    end
+    object cbAltWrap: TTntCheckBox
+      Left = 488
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Wrap search'
+      Caption = 'Wrap'
+      TabOrder = 12
+    end
+    object cbAltCfm: TTntCheckBox
+      Left = 272
+      Top = 0
+      Width = 49
+      Height = 17
+      Hint = 'Prompt on replace'
+      Caption = 'Prmpt'
+      TabOrder = 6
+      OnClick = cbOrigSelectAllClick
+    end
+  end
+  object PanelBtnOrig: TPanel
     Left = 512
-    Top = 68
-    Width = 114
-    Height = 25
-    Caption = 'Cou&nt all'
-    TabOrder = 12
-    OnClick = bCountClick
-  end
-  object bRepNext: TTntButton
-    Left = 528
-    Top = 38
-    Width = 114
-    Height = 25
-    Caption = 'R&eplace'
-    TabOrder = 9
-    OnClick = bRepNextClick
-  end
-  object bRepAll: TTntButton
-    Left = 528
-    Top = 68
-    Width = 114
-    Height = 25
-    Caption = 'Repl&ace all'
-    TabOrder = 10
-    OnClick = bRepAllClick
-  end
-  object bSkip: TTntButton
-    Left = 528
     Top = 8
-    Width = 114
-    Height = 25
-    Caption = '&Find next'
-    Default = True
+    Width = 257
+    Height = 137
+    BevelOuter = bvNone
     TabOrder = 8
-    OnClick = bSkipClick
-  end
-  object bFindInTabs: TTntButton
-    Left = 512
-    Top = 99
-    Width = 114
-    Height = 35
-    Caption = 'Find in all tabs'
-    TabOrder = 13
-    WordWrap = True
-    OnClick = bFindInTabsClick
-  end
-  object bRepInTabs: TTntButton
-    Left = 528
-    Top = 99
-    Width = 114
-    Height = 35
-    Caption = 'Rep&lace all in all tabs'
-    TabOrder = 11
-    WordWrap = True
-    OnClick = bRepInTabsClick
+    object labStyle: TTntLabel
+      Left = 126
+      Top = 60
+      Width = 26
+      Height = 13
+      Cursor = crHandPoint
+      Caption = 'Mode'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlue
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsUnderline]
+      ParentFont = False
+      OnClick = labStyleClick
+    end
+    object labMultiline: TTntLabel
+      Left = 126
+      Top = 76
+      Width = 44
+      Height = 13
+      Cursor = crHandPoint
+      Caption = #187'Multiline'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlue
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsUnderline]
+      ParentFont = False
+      OnClick = labMultilineClick
+    end
+    object labTran: TTntLabel
+      Left = 126
+      Top = 108
+      Width = 66
+      Height = 13
+      Cursor = crHandPoint
+      Caption = 'Transparency'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlue
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsUnderline]
+      ParentFont = False
+      OnClick = labTranClick
+    end
+    object labDocked: TTntLabel
+      Left = 126
+      Top = 92
+      Width = 41
+      Height = 13
+      Cursor = crHandPoint
+      Caption = #187'Docked'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlue
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsUnderline]
+      ParentFont = False
+      OnClick = labDockedClick
+    end
+    object bFindNext: TTntButton
+      Left = 0
+      Top = 0
+      Width = 114
+      Height = 25
+      Caption = '&Find next'
+      Default = True
+      TabOrder = 0
+      OnClick = bFindNextClick
+    end
+    object bSkip: TTntButton
+      Left = 16
+      Top = 0
+      Width = 114
+      Height = 25
+      Caption = '&Find next'
+      Default = True
+      TabOrder = 1
+      OnClick = bSkipClick
+    end
+    object bFindAll: TTntButton
+      Left = 0
+      Top = 30
+      Width = 114
+      Height = 25
+      Caption = 'Find all / &mark'
+      TabOrder = 2
+      OnClick = bFindAllClick
+    end
+    object bRepNext: TTntButton
+      Left = 16
+      Top = 30
+      Width = 114
+      Height = 25
+      Caption = 'R&eplace'
+      TabOrder = 3
+      OnClick = bRepNextClick
+    end
+    object bCount: TTntButton
+      Left = 0
+      Top = 60
+      Width = 114
+      Height = 25
+      Caption = 'Cou&nt all'
+      TabOrder = 4
+      OnClick = bCountClick
+    end
+    object bRepAll: TTntButton
+      Left = 16
+      Top = 60
+      Width = 114
+      Height = 25
+      Caption = 'Repl&ace all'
+      TabOrder = 5
+      OnClick = bRepAllClick
+    end
+    object bFindInTabs: TTntButton
+      Left = 0
+      Top = 92
+      Width = 114
+      Height = 35
+      Caption = 'Find in all tabs'
+      TabOrder = 6
+      WordWrap = True
+      OnClick = bFindInTabsClick
+    end
+    object bRepInTabs: TTntButton
+      Left = 16
+      Top = 92
+      Width = 114
+      Height = 35
+      Caption = 'Rep&lace all in all tabs'
+      TabOrder = 7
+      WordWrap = True
+      OnClick = bRepInTabsClick
+    end
+    object PanelTran: TTntPanel
+      Left = 120
+      Top = -2
+      Width = 121
+      Height = 59
+      BevelOuter = bvNone
+      TabOrder = 8
+      Visible = False
+      object TrackTran: TTrackBar
+        Left = 0
+        Top = 5
+        Width = 113
+        Height = 28
+        Max = 5
+        PageSize = 1
+        TabOrder = 0
+        ThumbLength = 15
+        TickMarks = tmBoth
+        OnChange = TrackTranChange
+      end
+      object cbLoose: TTntCheckBox
+        Left = 8
+        Top = 34
+        Width = 113
+        Height = 17
+        Caption = 'on los&ing focus'
+        TabOrder = 1
+        OnClick = cbLooseClick
+      end
+    end
+    object bCancel: TTntButton
+      Left = 119
+      Top = 0
+      Width = 114
+      Height = 25
+      Cancel = True
+      Caption = 'Close'
+      ModalResult = 2
+      TabOrder = 9
+      OnClick = bCancelClick
+    end
+    object bHelp: TTntButton
+      Left = 119
+      Top = 30
+      Width = 114
+      Height = 25
+      Caption = 'Help'
+      TabOrder = 10
+      OnClick = bHelpClick
+    end
   end
   object ed1Memo: TTntMemo
-    Left = 512
-    Top = 140
-    Width = 388
+    Left = 712
+    Top = 76
+    Width = 380
     Height = 66
     MaxLength = 1500
     ScrollBars = ssVertical
@@ -504,9 +686,9 @@ object fmSR: TfmSR
     OnKeyDown = ed1MemoKeyDown
   end
   object ed2Memo: TTntMemo
-    Left = 521
-    Top = 152
-    Width = 388
+    Left = 721
+    Top = 88
+    Width = 380
     Height = 66
     MaxLength = 1500
     ScrollBars = ssVertical
@@ -515,141 +697,98 @@ object fmSR: TfmSR
     WordWrap = False
     OnKeyDown = ed1MemoKeyDown
   end
-  object StatusFind: TTntStatusBar
-    Left = 0
-    Top = 163
-    Width = 756
-    Height = 19
-    Panels = <>
-    ParentFont = True
-    SimplePanel = True
-    UseSystemFont = False
-  end
-  object PanelTr: TTntPanel
-    Left = 632
-    Top = 6
-    Width = 121
-    Height = 59
+  object PanelAltFind: TPanel
+    Left = 512
+    Top = 160
+    Width = 201
+    Height = 57
     BevelOuter = bvNone
-    TabOrder = 16
+    TabOrder = 9
     Visible = False
-    object TrackBar1: TTrackBar
-      Left = 0
-      Top = 5
-      Width = 113
-      Height = 28
-      Max = 5
-      PageSize = 1
-      TabOrder = 0
-      ThumbLength = 15
-      TickMarks = tmBoth
-      OnChange = TrackBar1Change
-    end
-    object cbLoose: TTntCheckBox
-      Left = 8
-      Top = 34
-      Width = 113
-      Height = 17
-      Caption = 'on los&ing focus'
-      TabOrder = 1
-      OnClick = cbLooseClick
-    end
-  end
-  object PanelAlt: TPanel
-    Left = 8
-    Top = 52
-    Width = 497
-    Height = 18
-    BevelOuter = bvNone
-    TabOrder = 18
-    Visible = False
-    object cbAltCase: TTntCheckBox
+    object bAltFind: TTntButton
       Left = 0
       Top = 0
-      Width = 49
-      Height = 17
-      Caption = 'Case'
+      Width = 96
+      Height = 23
+      Caption = 'Find'
+      Default = True
       TabOrder = 0
+      OnClick = bFindNextClick
     end
-    object cbAltWords: TTntCheckBox
-      Left = 48
+    object bAltFindAll: TTntButton
+      Left = 100
       Top = 0
-      Width = 49
-      Height = 17
-      Caption = 'Word'
+      Width = 96
+      Height = 23
+      Caption = 'Find all'
       TabOrder = 1
+      OnClick = bFindAllClick
     end
-    object cbAltSpec: TTntCheckBox
-      Left = 96
-      Top = 0
-      Width = 49
-      Height = 17
-      Caption = 'Spec'
-      TabOrder = 2
-    end
-    object cbAltRe: TTntCheckBox
-      Left = 144
-      Top = 0
-      Width = 49
-      Height = 17
-      Caption = 'Re'
+    object bAltCount: TTntButton
+      Left = 100
+      Top = 26
+      Width = 96
+      Height = 23
+      Caption = 'Count'
       TabOrder = 3
+      OnClick = bCountClick
     end
-    object cbAltReDot: TTntCheckBox
-      Left = 182
-      Top = 0
-      Width = 49
-      Height = 17
-      Caption = 'Dot'
-      TabOrder = 4
+    object bAltFindInTabs: TTntButton
+      Left = 0
+      Top = 26
+      Width = 96
+      Height = 23
+      Caption = 'In tabs'
+      TabOrder = 2
+      WordWrap = True
+      OnClick = bFindInTabsClick
     end
-    object cbAltBack: TTntCheckBox
-      Left = 224
+  end
+  object PanelAltRep: TPanel
+    Left = 511
+    Top = 216
+    Width = 202
+    Height = 57
+    BevelOuter = bvNone
+    TabOrder = 10
+    Visible = False
+    object bAltSkip: TTntButton
+      Left = 0
       Top = 0
-      Width = 49
-      Height = 17
-      Caption = 'Back'
-      TabOrder = 5
+      Width = 96
+      Height = 23
+      Caption = 'Find'
+      Default = True
+      TabOrder = 0
+      OnClick = bSkipClick
     end
-    object cbAltSelectAll: TTntCheckBox
-      Left = 272
+    object bAltRep: TTntButton
+      Left = 100
       Top = 0
-      Width = 49
-      Height = 17
-      Caption = 'Sel'
-      TabOrder = 6
+      Width = 96
+      Height = 23
+      Caption = 'Replace'
+      TabOrder = 1
+      OnClick = bRepNextClick
     end
-    object cbAltBkmkAll: TTntCheckBox
-      Left = 312
-      Top = 0
-      Width = 49
-      Height = 17
-      Caption = 'Bm'
-      TabOrder = 7
+    object bAltRepAll: TTntButton
+      Left = 100
+      Top = 26
+      Width = 96
+      Height = 23
+      Caption = 'Replace all'
+      TabOrder = 3
+      OnClick = bRepAllClick
     end
-    object cbAltExtSel: TTntCheckBox
-      Left = 352
-      Top = 0
-      Width = 49
-      Height = 17
-      Caption = 'Ext'
-      TabOrder = 8
-    end
-    object cbAltInSel: TTntCheckBox
-      Left = 392
-      Top = 0
-      Width = 49
-      Height = 17
-      Caption = 'InSel'
-      TabOrder = 9
-    end
-    object cbAltFromCur: TTntCheckBox
-      Left = 440
-      Top = 0
-      Width = 49
-      Height = 17
-      Caption = 'Caret'
-      TabOrder = 10
+    object bAltRepInTabs: TTntButton
+      Left = 0
+      Top = 26
+      Width = 96
+      Height = 23
+      Caption = 'In tabs'
+      TabOrder = 2
+      WordWrap = True
+      OnClick = bRepInTabsClick
     end
   end
   object DKLanguageController1: TDKLanguageController
@@ -660,52 +799,69 @@ object fmSR: TfmSR
     Left = 104
     Top = 4
     LangData = {
-      0400666D535200013B00000006006C6162456431010100000002000000070043
+      0400666D535200014800000006006C6162456431010100000002000000070043
       617074696F6E0006006C6162456432010100000003000000070043617074696F
-      6E0009006246696E644E657874010100000005000000070043617074696F6E00
-      0800625265704E657874010100000006000000070043617074696F6E00070062
-      526570416C6C010100000007000000070043617074696F6E0007006243616E63
-      656C010100000008000000070043617074696F6E000300656431000003006564
-      3200000300674F70010100000009000000070043617074696F6E000400636252
-      6501010000000A000000070043617074696F6E00060063624361736501010000
-      000B000000070043617074696F6E0007006362576F72647301010000000C0000
-      00070043617074696F6E00060063625370656301010000000D00000007004361
-      7074696F6E0008006246696E64416C6C01010000000E00000007004361707469
-      6F6E0005006753636F70010100000012000000070043617074696F6E00050062
-      48656C70010100000018000000070043617074696F6E000500636243666D0101
-      00000019000000070043617074696F6E00060062436F756E7401010000001A00
-      0000070043617074696F6E000A0062526570496E5461627301010000001B0000
-      00070043617074696F6E00050062536B697001010000001D0000000700436170
-      74696F6E00070050616E656C547200000900547261636B426172310000070063
-      624C6F6F736501010000001F000000070043617074696F6E0008006C61625374
-      796C65000005006D6E755265000005006C61625265000009006362426B6D6B41
-      6C6C010100000020000000070043617074696F6E0007006362496E53656C0101
-      00000021000000070043617074696F6E000900636246726F6D43757201010000
-      0022000000070043617074696F6E000600636257726170010100000023000000
-      070043617074696F6E000800636245787453656C010100000024000000070043
-      617074696F6E000B006246696E64496E54616273010100000025000000070043
-      617074696F6E0009006362536B6970436F6C0101000000260000000700436170
-      74696F6E0008006362546F6B656E7301010000002700000005004974656D7300
-      0C006C61624D756C74696C696E65010100000028000000070043617074696F6E
-      0007006564314D656D6F000007006564324D656D6F0000070062436F6D626F31
-      0000070062436F6D626F32000008006D6E75436F6D626F00000A005374617475
-      7346696E640000070063625265446F7401010000002A00000007004361707469
-      6F6E0009006C61625472616E737001010000002C000000070043617074696F6E
-      000B00636253656C656374416C6C01010000002D000000070043617074696F6E
-      00060063624261636B01010000002E000000070043617074696F6E0009006C61
-      62446F636B656401010000002F000000070043617074696F6E00080050616E65
-      6C416C74000009006362416C7443617365010100000030000000070043617074
-      696F6E000A006362416C74576F72647301010000003100000007004361707469
-      6F6E0009006362416C7453706563010100000032000000070043617074696F6E
-      0007006362416C745265010100000033000000070043617074696F6E000A0063
-      62416C745265446F74010100000034000000070043617074696F6E0009006362
-      416C744261636B010100000035000000070043617074696F6E000E006362416C
-      7453656C656374416C6C010100000036000000070043617074696F6E000C0063
-      62416C74426B6D6B416C6C010100000037000000070043617074696F6E000B00
-      6362416C7445787453656C010100000038000000070043617074696F6E000A00
-      6362416C74496E53656C010100000039000000070043617074696F6E000C0063
-      62416C7446726F6D43757201010000003A000000070043617074696F6E000800
-      6C6162536D616C6C0000}
+      6E0003006564310000030065643200000300674F700101000000090000000700
+      43617074696F6E00080063624F726967526501010000000A0000000700436170
+      74696F6E000A0063624F7269674361736501010000000B000000070043617074
+      696F6E000B0063624F726967576F72647301010000000C000000070043617074
+      696F6E000A0063624F7269675370656301010000000D00000007004361707469
+      6F6E0005006753636F70010100000012000000070043617074696F6E00090063
+      624F72696743666D010100000019000000070043617074696F6E0005006D6E75
+      5265000005006C6162526500000D0063624F726967426B6D6B416C6C01010000
+      0020000000070043617074696F6E000B0063624F726967496E53656C01010000
+      0021000000070043617074696F6E000F0063624F72696746726F6D4361726574
+      010100000022000000070043617074696F6E000A0063624F7269675772617001
+      0100000023000000070043617074696F6E000C0063624F72696745787453656C
+      010100000024000000070043617074696F6E0009006362536B6970436F6C0101
+      00000026000000070043617074696F6E0008006362546F6B656E730101000000
+      2700000005004974656D730007006564314D656D6F000007006564324D656D6F
+      0000070062436F6D626F310000070062436F6D626F32000008006D6E75436F6D
+      626F00000A0053746174757346696E6400000B0063624F7269675265446F7401
+      010000002A000000070043617074696F6E000F0063624F72696753656C656374
+      416C6C01010000002D000000070043617074696F6E000A0063624F7269674261
+      636B01010000002E000000070043617074696F6E00080050616E656C416C7400
+      0009006362416C7443617365010200000030000000070043617074696F6E5300
+      0000040048696E74000A006362416C74576F7264730102000000310000000700
+      43617074696F6E54000000040048696E740009006362416C7453706563010200
+      000032000000070043617074696F6E55000000040048696E740007006362416C
+      745265010200000033000000070043617074696F6E56000000040048696E7400
+      0A006362416C745265446F74010200000034000000070043617074696F6E5700
+      0000040048696E740009006362416C744261636B010200000035000000070043
+      617074696F6E58000000040048696E74000E006362416C7453656C656374416C
+      6C010200000036000000070043617074696F6E59000000040048696E74000C00
+      6362416C74426B6D6B416C6C010200000037000000070043617074696F6E5A00
+      0000040048696E74000B006362416C7445787453656C01020000003800000007
+      0043617074696F6E5B000000040048696E74000A006362416C74496E53656C01
+      0200000039000000070043617074696F6E5C000000040048696E74000E006362
+      416C7446726F6D436172657401020000003A000000070043617074696F6E5E00
+      0000040048696E740008006C6162536D616C6C000009006362416C7457726170
+      01020000003B000000070043617074696F6E5F000000040048696E7400080063
+      62416C7443666D01020000003C000000070043617074696F6E5D000000040048
+      696E74000C0050616E656C42746E4F726967000009006246696E644E65787401
+      010000003D000000070043617074696F6E00050062536B697001010000003E00
+      0000070043617074696F6E0008006246696E64416C6C01010000003F00000007
+      0043617074696F6E000800625265704E65787401010000004000000007004361
+      7074696F6E00060062436F756E74010100000041000000070043617074696F6E
+      00070062526570416C6C010100000042000000070043617074696F6E000B0062
+      46696E64496E54616273010100000043000000070043617074696F6E000A0062
+      526570496E54616273010100000044000000070043617074696F6E0009005061
+      6E656C5472616E00000900547261636B5472616E0000070063624C6F6F736501
+      0100000045000000070043617074696F6E0007006243616E63656C0101000000
+      46000000070043617074696F6E0005006248656C700101000000470000000700
+      43617074696F6E0008006C61625374796C6500000C006C61624D756C74696C69
+      6E65010100000048000000070043617074696F6E0007006C61625472616E0101
+      00000049000000070043617074696F6E0009006C6162446F636B656401010000
+      004A000000070043617074696F6E000C0050616E656C416C7446696E6400000B
+      0050616E656C416C745265700000080062416C7446696E6401010000004B0000
+      00070043617074696F6E000B0062416C7446696E64416C6C01010000004C0000
+      00070043617074696F6E00090062416C74436F756E7401010000004D00000007
+      0043617074696F6E000E0062416C7446696E64496E5461627301010000004E00
+      0000070043617074696F6E00080062416C74536B697001010000004F00000007
+      0043617074696F6E00070062416C745265700101000000500000000700436170
+      74696F6E000A0062416C74526570416C6C010100000051000000070043617074
+      696F6E000D0062416C74526570496E5461627301010000005200000007004361
+      7074696F6E00}
   end
   object mnuRe: TTntPopupMenu
     AutoHotkeys = maManual

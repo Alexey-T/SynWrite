@@ -7173,7 +7173,7 @@ begin
 
     //make sure FindNext won't try to find regex
     if Assigned(fmSR) then
-      fmSR.cbRe.Checked:= false;
+      fmSR.OpRe:= false;
 
     //search
     if ANext then
@@ -8495,18 +8495,17 @@ begin
   if Assigned(fmSR) then
   begin
     SText:= '';
-    IsSel:= fmSR.cbInSel.Checked;
-    IsForw:= not fmSR.cbBack.Checked;
-    IsRe:= fmSR.cbRe.Checked;
-    IsRe_s:= fmSR.cbReDot.Checked;
-    //IsRe_m:= fmSR.cbReMulti.Checked;
+    IsSel:= fmSR.OpInSel;
+    IsForw:= not fmSR.OpBack;
+    IsRe:= fmSR.OpRe;
+    IsRe_s:= fmSR.OpReDot;
     if AKeepFlags then
     begin
-      IsCase:= fmSR.cbCase.Checked;
-      IsWords:= fmSR.cbWords.Checked;
+      IsCase:= fmSR.OpCase;
+      IsWords:= fmSR.OpWords;
     end;
-    IsWrap:= fmSR.cbWrap.Checked;
-    IsSpec:= fmSR.cbSpec.Checked;
+    IsWrap:= fmSR.OpWrap;
+    IsSpec:= fmSR.OpSpec;
     IsSkipCol:= fmSR.cbSkipCol.Checked;
   end
   else
@@ -8661,11 +8660,10 @@ begin
         SR_SuggestedSel:= Ed.WordAtPos(Ed.CaretPos);
     end;
 
-    cbInSel.Enabled:= true; //SR_SuggestedSelEn;
-    cbInSel.Checked:= SR_SuggestedSelScope;
+    OpInSel:= SR_SuggestedSelScope;
 
     if SR_SuggestedSel<>'' then
-      DoCopyToEdit(ed1, cbSpec.Checked, cbRE.Checked, SR_SuggestedSel);
+      DoCopyToEdit(ed1, OpSpec, OpRe, SR_SuggestedSel);
     ed1Change(Self);
 
     IsReplace:= AReplaceMode;
@@ -8800,7 +8798,7 @@ begin
 
   //extend selection
   if act in [arFindNext] then
-  if Assigned(fmSR) and fmSR.cbExtSel.Checked then
+  if Assigned(fmSR) and fmSR.OpExtSel then
     EditorExtendSelectionByPosition(Ed,
       oldStart, oldLength,
       Ed.SelStart, Ed.SelLength);
@@ -8954,25 +8952,25 @@ begin
       begin MsgBeep(true); Exit end;
 
     Finder.Flags:= [];
-    if cbCase.Checked then Finder.Flags:= Finder.Flags + [ftCaseSens];
-    if cbWords.Checked then Finder.Flags:= Finder.Flags + [ftWholeWords];
-    if cbRe.Checked then Finder.Flags:= Finder.Flags + [ftRegex];
-    if cbReDot.Checked then Finder.Flags:= Finder.Flags + [ftRegex_s];
-    if cbInSel.Checked then Finder.Flags:= Finder.Flags + [ftSelectedText];
-    if cbBack.Checked then Finder.Flags:= Finder.Flags + [ftBackward];
-    if cbCfm.Checked then Finder.Flags:= Finder.Flags + [ftPromtOnReplace];
-    if cbWrap.Checked then Finder.Flags:= Finder.Flags + [ftWrapSearch];
+    if OpCase then Finder.Flags:= Finder.Flags + [ftCaseSens];
+    if OpWords then Finder.Flags:= Finder.Flags + [ftWholeWords];
+    if OpRe then Finder.Flags:= Finder.Flags + [ftRegex];
+    if OpReDot then Finder.Flags:= Finder.Flags + [ftRegex_s];
+    if OpInSel then Finder.Flags:= Finder.Flags + [ftSelectedText];
+    if OpBack then Finder.Flags:= Finder.Flags + [ftBackward];
+    if OpCfm then Finder.Flags:= Finder.Flags + [ftPromtOnReplace];
+    if OpWrap then Finder.Flags:= Finder.Flags + [ftWrapSearch];
     if cbSkipCol.Checked then Finder.Flags:= Finder.Flags + [ftSkipCollapsed];
 
     //handle "From caret" specially: ignore it for "Replace all" actions
-    if (not cbFromCur.Checked) or
+    if (not OpFromCaret) or
       (act in cSearchIngoreFromCaret) then
       Finder.Flags:= Finder.Flags + [ftEntireScope];
 
     Finder.Tokens:= TSearchTokens(cbTokens.ItemIndex);
     Finder.FindText:= Text1;
     Finder.ReplaceText:= Text2;
-    if cbSpec.Checked then
+    if OpSpec then
     begin
       Finder.FindText:= SDecodeSpecChars(Finder.FindText);
       Finder.ReplaceText:= SDecodeSpecChars(Finder.ReplaceText);
@@ -9003,8 +9001,8 @@ begin
     //
     arFindAll:
       DoFindDialog_FindAllInCurrentTab(
-        fmSR.cbBkmkAll.Checked,
-        fmSR.cbSelectAll.Checked);
+        fmSR.OpBkmkAll,
+        fmSR.OpSelectAll);
     //
     arCount:
       DoFindDialog_CountAllInCurrentTab;

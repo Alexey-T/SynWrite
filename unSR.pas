@@ -65,53 +65,36 @@ procedure ReadFindOptions(
 
 type
   TfmSR = class(TTntForm)
-    bFindNext: TTntButton;
-    bFindAll: TTntButton;
-    bRepNext: TTntButton;
-    bRepAll: TTntButton;
-    bCancel: TTntButton;
     ed1: TTntComboBox;
     labEd1: TTntLabel;
     ed2: TTntComboBox;
     labEd2: TTntLabel;
     gOp: TTntGroupBox;
-    cbRe: TTntCheckBox;
-    cbCase: TTntCheckBox;
-    cbWords: TTntCheckBox;
+    cbOrigRe: TTntCheckBox;
+    cbOrigCase: TTntCheckBox;
+    cbOrigWords: TTntCheckBox;
     gScop: TTntGroupBox;
-    bHelp: TTntButton;
-    cbSpec: TTntCheckBox;
+    cbOrigSpec: TTntCheckBox;
     DKLanguageController1: TDKLanguageController;
-    cbCfm: TTntCheckBox;
-    bCount: TTntButton;
-    bRepInTabs: TTntButton;
-    bSkip: TTntButton;
-    PanelTr: TTntPanel;
-    TrackBar1: TTrackBar;
-    cbLoose: TTntCheckBox;
-    labStyle: TTntLabel;
+    cbOrigCfm: TTntCheckBox;
     mnuRe: TTntPopupMenu;
     labRe: TTntLabel;
-    cbBkmkAll: TTntCheckBox;
-    cbInSel: TTntCheckBox;
-    cbFromCur: TTntCheckBox;
-    cbWrap: TTntCheckBox;
-    cbExtSel: TTntCheckBox;
-    bFindInTabs: TTntButton;
+    cbOrigBkmkAll: TTntCheckBox;
+    cbOrigInSel: TTntCheckBox;
+    cbOrigFromCaret: TTntCheckBox;
+    cbOrigWrap: TTntCheckBox;
+    cbOrigExtSel: TTntCheckBox;
     cbSkipCol: TTntCheckBox;
     cbTokens: TTntComboBox;
-    labMultiline: TTntLabel;
     ed1Memo: TTntMemo;
     ed2Memo: TTntMemo;
     bCombo1: TSpeedButton;
     bCombo2: TSpeedButton;
     mnuCombo: TTntPopupMenu;
     StatusFind: TTntStatusBar;
-    cbReDot: TTntCheckBox;
-    labTransp: TTntLabel;
-    cbSelectAll: TTntCheckBox;
-    cbBack: TTntCheckBox;
-    labDocked: TTntLabel;
+    cbOrigReDot: TTntCheckBox;
+    cbOrigSelectAll: TTntCheckBox;
+    cbOrigBack: TTntCheckBox;
     PanelAlt: TPanel;
     cbAltCase: TTntCheckBox;
     cbAltWords: TTntCheckBox;
@@ -123,14 +106,44 @@ type
     cbAltBkmkAll: TTntCheckBox;
     cbAltExtSel: TTntCheckBox;
     cbAltInSel: TTntCheckBox;
-    cbAltFromCur: TTntCheckBox;
+    cbAltFromCaret: TTntCheckBox;
     labSmall: TTntLabel;
+    cbAltWrap: TTntCheckBox;
+    cbAltCfm: TTntCheckBox;
+    PanelBtnOrig: TPanel;
+    bFindNext: TTntButton;
+    bSkip: TTntButton;
+    bFindAll: TTntButton;
+    bRepNext: TTntButton;
+    bCount: TTntButton;
+    bRepAll: TTntButton;
+    bFindInTabs: TTntButton;
+    bRepInTabs: TTntButton;
+    PanelTran: TTntPanel;
+    TrackTran: TTrackBar;
+    cbLoose: TTntCheckBox;
+    bCancel: TTntButton;
+    bHelp: TTntButton;
+    labStyle: TTntLabel;
+    labMultiline: TTntLabel;
+    labTran: TTntLabel;
+    labDocked: TTntLabel;
+    PanelAltFind: TPanel;
+    PanelAltRep: TPanel;
+    bAltFind: TTntButton;
+    bAltFindAll: TTntButton;
+    bAltCount: TTntButton;
+    bAltFindInTabs: TTntButton;
+    bAltSkip: TTntButton;
+    bAltRep: TTntButton;
+    bAltRepAll: TTntButton;
+    bAltRepInTabs: TTntButton;
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
-    procedure cbReClick(Sender: TObject);
-    procedure cbSpecClick(Sender: TObject);
-    procedure TrackBar1Change(Sender: TObject);
+    procedure cbOrigReClick(Sender: TObject);
+    procedure cbOrigSpecClick(Sender: TObject);
+    procedure TrackTranChange(Sender: TObject);
     procedure TntFormDestroy(Sender: TObject);
     procedure bCancelClick(Sender: TObject);
     procedure bFindNextClick(Sender: TObject);
@@ -149,8 +162,8 @@ type
     procedure mnuRePopup(Sender: TObject);
     procedure labReClick(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
-    procedure cbInSelClick(Sender: TObject);
-    procedure cbFromCurClick(Sender: TObject);
+    procedure cbOrigInSelClick(Sender: TObject);
+    procedure cbOrigFromCaretClick(Sender: TObject);
     procedure bFindInTabsClick(Sender: TObject);
     procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
     procedure labMultilineClick(Sender: TObject);
@@ -166,16 +179,18 @@ type
     procedure ed2KeyPress(Sender: TObject; var Key: Char);
     procedure TntFormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure labTranspClick(Sender: TObject);
-    procedure cbBkmkAllClick(Sender: TObject);
-    procedure cbSelectAllClick(Sender: TObject);
+    procedure labTranClick(Sender: TObject);
+    procedure cbOrigBkmkAllClick(Sender: TObject);
+    procedure cbOrigSelectAllClick(Sender: TObject);
     procedure labDockedClick(Sender: TObject);
+    procedure labSmallClick(Sender: TObject);
   private
     { Private declarations }
     CurChecked: boolean;
     FIsReplace: boolean;
     FIsMultiline: boolean;
     FIsDocked: boolean;
+    FIsSmall: boolean;
     FOnFocusEditor: TNotifyEvent;
     FOnDockedChanged: TNotifyEvent;
     FOnShowStatus: TFindShowStatusEvent;
@@ -188,7 +203,9 @@ type
     FTop0,
     FWidth0,
     FHeight0,
+    FHeight0Small,
     FMemoDy: Integer;
+    procedure DoCopyCheck(C1, C2: TTntCheckbox; ADir: boolean); 
     procedure mnuComboClick(Sender: TObject);
     procedure DoInsertCharCode;
     procedure DoCombo(ed: TTntCombobox; edMemo: TTntMemo; edNum: integer);
@@ -198,7 +215,8 @@ type
     procedure SetIsMultiline(Value: boolean);
     procedure SetIsDocked(Value: boolean);
     procedure SetIsEnabled(En: boolean);
-    procedure UpdOrigSize;
+    procedure SetIsSmall(Value: boolean);
+    procedure UpdForm;
     procedure UpdTransp;
     procedure UpdScope;
     procedure UpdMemoHeight;
@@ -206,6 +224,32 @@ type
     function GetText2: Widestring;
     procedure SetText1(const Value: Widestring);
     procedure SetText2(const Value: Widestring);
+    function GetOpCase: boolean;
+    function GetOpWords: boolean;
+    function GetOpSpec: boolean;
+    function GetOpRe: boolean;
+    function GetOpReDot: boolean;
+    function GetOpBack: boolean;
+    function GetOpSelectAll: boolean;
+    function GetOpBkmkAll: boolean;
+    function GetOpExtSel: boolean;
+    function GetOpInSel: boolean;
+    function GetOpFromCaret: boolean;
+    function GetOpWrap: boolean;
+    function GetOpCfm: boolean;
+    procedure SetOpCase(b: boolean);
+    procedure SetOpWords(b: boolean);
+    procedure SetOpSpec(b: boolean);
+    procedure SetOpRe(b: boolean);
+    procedure SetOpReDot(b: boolean);
+    procedure SetOpBack(b: boolean);
+    procedure SetOpSelectAll(b: boolean);
+    procedure SetOpBkmkAll(b: boolean);
+    procedure SetOpExtSel(b: boolean);
+    procedure SetOpInSel(b: boolean);
+    procedure SetOpFromCaret(b: boolean);
+    procedure SetOpWrap(b: boolean);
+    procedure SetOpCfm(b: boolean);
   public
     { Public declarations }
     SRProc: TSRProc;
@@ -232,9 +276,23 @@ type
     property IsMultiline: boolean read FIsMultiline write SetIsMultiline;
     property IsDocked: boolean read FIsDocked write SetIsDocked;
     property IsEnabled: boolean write SetIsEnabled;
+    property IsSmall: boolean read FIsSmall write SetIsSmall;
     procedure ShowError(Error: boolean);
     procedure ShowStatus(const S: Widestring);
     procedure SetFromCaret;
+    property OpCase: boolean read GetOpCase write SetOpCase;
+    property OpWords: boolean read GetOpWords write SetOpWords;
+    property OpSpec: boolean read GetOpSpec write SetOpSpec;
+    property OpRe: boolean read GetOpRe write SetOpRe;
+    property OpReDot: boolean read GetOpReDot write SetOpReDot;
+    property OpBack: boolean read GetOpBack write SetOpBack;
+    property OpSelectAll: boolean read GetOpSelectAll write SetOpSelectAll;
+    property OpBkmkAll: boolean read GetOpBkmkAll write SetOpBkmkAll;
+    property OpExtSel: boolean read GetOpExtSel write SetOpExtSel;
+    property OpInSel: boolean read GetOpInSel write SetOpInSel;
+    property OpFromCaret: boolean read GetOpFromCaret write SetOpFromCaret;
+    property OpWrap: boolean read GetOpWrap write SetOpWrap;
+    property OpCfm: boolean read GetOpCfm write SetOpCfm;
   end;
 
   const
@@ -258,54 +316,17 @@ const
 
 procedure TfmSR.FormShow(Sender: TObject);
 begin
-  cbFromCur.Checked:= CurChecked;
-  cbReClick(Self);
-  cbInSelClick(Self);
-  cbFromCurClick(Self);
+  OpFromCaret:= CurChecked;
+  cbOrigReClick(Self);
+  cbOrigInSelClick(Self);
+  cbOrigFromCaretClick(Self);
   ShowStatus('');
 end;
 
 procedure TfmSR.SetIsReplace(Value: boolean);
 begin
   FIsReplace:= Value;
-  bFindNext.Visible:= not Value;
-  bFindAll.Visible:= not Value;
-  bSkip.Visible:= Value;
-  bRepNext.Visible:= Value;
-  bRepAll.Visible:= bRepNext.Visible;
-  bSkip.Left:= bFindNext.Left;
-  bRepNext.Left:= bFindNext.Left;
-  bRepAll.Left:= bFindNext.Left;
-  bRepInTabs.Left:= bFindNext.Left;
-
-  if Value then
-    Caption:= DKLangConstW('fnR')
-  else
-    Caption:= DKLangConstW('fn');
-
-  if not Value then
-    labStyle.Caption:= #$00BB + DKLangConstW('fnR')
-  else
-    labStyle.Caption:= #$00BB + DKLangConstW('fn');
-
-  ed2.Visible:= Value and not IsMultiline;
-  ed2Memo.Visible:= Value and IsMultiline;
-  bCombo1.Visible:= ed1Memo.Visible;
-  bCombo2.Visible:= ed2Memo.Visible;
-  labEd2.Visible:= Value;
-  //cbCfm.Enabled:= Value;
-  cbCfm.Visible:= Value;
-  //cbBk.Enabled:= not Value;
-  cbBkmkAll.Visible:= not Value;
-  cbSelectAll.Visible:= not Value;
-  //cbExtSel.Enabled:= not Value;
-  cbExtSel.Visible:= not Value;
-  bCount.Visible:= not Value;
-  bFindInTabs.Visible:= not Value;
-  bRepInTabs.Visible:= Value;
-
-  UpdOrigSize;
-  UpdMemoHeight;
+  UpdForm;
 end;
 
 procedure TfmSR.LoadIni;
@@ -320,25 +341,26 @@ begin
     Left:= ReadInteger('Search', 'WLeft', Self.Monitor.Left + (Self.Monitor.Width - Width) div 2);
     Top:= ReadInteger('Search', 'WTop', Self.Monitor.Top + (Self.Monitor.Height - Height) div 2);
 
-    Trackbar1.Position:= ReadInteger('Search', 'Tr', 0);
+    TrackTran.Position:= ReadInteger('Search', 'Tr', 0);
     cbLoose.Checked:= ReadBool('Search', 'TrLoose', false);
-    cbFromCur.Checked:= ReadBool('Search', 'Cur', false);
-    CurChecked:= cbFromCur.Checked;
+    OpFromCaret:= ReadBool('Search', 'Cur', false);
+    CurChecked:= OpFromCaret;
+    OpBack:= not ReadBool('Search', 'Forw', true);
+    OpRe:= ReadBool('Search', 'RegExp', false);
+    OpReDot:= ReadBool('Search', 'RegExpS', false);
+    OpCase:= ReadBool('Search', 'Case', false);
+    OpWords:= ReadBool('Search', 'Words', false);
+    OpSpec:= ReadBool('Search', 'Spec', false);
+    OpCfm:= ReadBool('Search', 'Cfm', false);
+    OpBkmkAll:= ReadBool('Search', 'Bk', false);
+    OpSelectAll:= ReadBool('Search', 'SelAll', false);
+    OpExtSel:= ReadBool('Search', 'ExtSel', false);
+    OpWrap:= ReadBool('Search', 'Wrap', false);
     cbSkipCol.Checked:= ReadBool('Search', 'SkipCol', false);
-    cbWrap.Checked:= ReadBool('Search', 'Wrap', false);
-    cbBack.Checked:= not ReadBool('Search', 'Forw', true);
-    cbRe.Checked:= ReadBool('Search', 'RegExp', false);
-    cbReDot.Checked:= ReadBool('Search', 'RegExpS', false);
-    cbCase.Checked:= ReadBool('Search', 'Case', false);
-    cbWords.Checked:= ReadBool('Search', 'Words', false);
-    cbSpec.Checked:= ReadBool('Search', 'Spec', false);
-    cbCfm.Checked:= ReadBool('Search', 'Cfm', false);
-    cbBkmkAll.Checked:= ReadBool('Search', 'Bk', false);
-    cbSelectAll.Checked:= ReadBool('Search', 'SelAll', false);
-    cbExtSel.Checked:= ReadBool('Search', 'ExtSel', false);
     cbTokens.ItemIndex:= 0;
     IsMultiline:= ReadBool('Search', 'Multiline', false);
     IsDocked:= ReadBool('Search', 'Docked', false);
+    IsSmall:= ReadBool('Search', 'Small', false);
   finally
     Free;
   end;
@@ -399,22 +421,22 @@ begin
 
     WriteBool('Search', 'Cur', CurChecked);
     WriteBool('Search', 'SkipCol', cbSkipCol.Checked);
-    WriteBool('Search', 'Wrap', cbWrap.Checked);
-    //WriteBool('Search', 'SelOnly', bSel.Checked); //no need
-    WriteBool('Search', 'Forw', not cbBack.Checked);
-    WriteBool('Search', 'RegExp', cbRe.Checked);
-    WriteBool('Search', 'RegExpS', cbReDot.Checked);
-    WriteBool('Search', 'Case', cbCase.Checked);
-    WriteBool('Search', 'Words', cbWords.Checked);
-    WriteBool('Search', 'Spec', cbSpec.Checked);
-    WriteBool('Search', 'Cfm', cbCfm.Checked);
-    WriteBool('Search', 'Bk', cbBkmkAll.Checked);
-    WriteBool('Search', 'SelAll', cbSelectAll.Checked);
-    WriteBool('Search', 'ExtSel', cbExtSel.Checked);
-    WriteInteger('Search', 'Tr', Trackbar1.Position);
+    WriteBool('Search', 'Wrap', OpWrap);
+    WriteBool('Search', 'Forw', not OpBack);
+    WriteBool('Search', 'RegExp', OpRe);
+    WriteBool('Search', 'RegExpS', OpReDot);
+    WriteBool('Search', 'Case', OpCase);
+    WriteBool('Search', 'Words', OpWords);
+    WriteBool('Search', 'Spec', OpSpec);
+    WriteBool('Search', 'Cfm', OpCfm);
+    WriteBool('Search', 'Bk', OpBkmkAll);
+    WriteBool('Search', 'SelAll', OpSelectAll);
+    WriteBool('Search', 'ExtSel', OpExtSel);
+    WriteInteger('Search', 'Tr', TrackTran.Position);
     WriteBool('Search', 'TrLoose', cbLoose.Checked);
     WriteBool('Search', 'Multiline', IsMultiline);
     WriteBool('Search', 'Docked', IsDocked);
+    WriteBool('Search', 'Small', IsSmall);
   finally
     Free;
   end;
@@ -462,7 +484,7 @@ begin
   bFindAll.Enabled:= en;
   bCount.Enabled:= en;
   bSkip.Enabled:= en;
-  bRepNext.Enabled:= en and not cbInSel.Checked;
+  bRepNext.Enabled:= en and not OpInSel;
   bRepAll.Enabled:= en;
   bRepInTabs.Enabled:= en;
   bFindInTabs.Enabled:= en;
@@ -473,21 +495,22 @@ begin
   SynHelpTopic(helpFindDlg, Handle);
 end;
 
-procedure TfmSR.cbReClick(Sender: TObject);
+procedure TfmSR.cbOrigReClick(Sender: TObject);
 const
   cColorHiliteBG = $B0FFFF; //pale yellow
 var
   re: boolean;
   C: TColor;
 begin
-  re:= cbRe.Checked;
+  re:= OpRe;
   if re then
   begin
-    cbSpec.Checked:= false;
-    cbWords.Checked:= false;
+    OpSpec:= false;
+    OpWords:= false;
   end;
-  cbWords.Enabled:= not re;
-  cbReDot.Enabled:= re;
+  OpWords:= not re;
+  cbOrigReDot.Enabled:= re;
+  cbAltReDot.Enabled:= re;
 
   C:= IfThen(re, cColorHiliteBG, clWindow);
   ed1.Color:= C;
@@ -496,10 +519,10 @@ begin
   ed2Memo.Color:= C;
 end;
 
-procedure TfmSR.cbSpecClick(Sender: TObject);
+procedure TfmSR.cbOrigSpecClick(Sender: TObject);
 begin
-  if cbSpec.Checked then
-    cbRe.Checked:= false;
+  if OpSpec then
+    OpRe:= false;
 end;
 
 procedure TfmSR.ShowError(Error: boolean);
@@ -519,21 +542,21 @@ begin
       FOnShowStatus(S);
 end;
 
-procedure TfmSR.TrackBar1Change(Sender: TObject);
+procedure TfmSR.TrackTranChange(Sender: TObject);
 begin
   UpdTransp;
 end;
 
 procedure TfmSR.UpdTransp;
 begin
-  if (TrackBar1.Position=0)
+  if (TrackTran.Position=0)
     or (cbLoose.Checked and Active)
   then
     AlphaBlend:= false
   else
   begin
     AlphaBlend:= true;
-    case TrackBar1.Position of
+    case TrackTran.Position of
       1: AlphaBlendValue:= 210;
       2: AlphaBlendValue:= 170;
       3: AlphaBlendValue:= 130;
@@ -578,8 +601,8 @@ var
   b: boolean;
 begin
   b:= CurChecked;
-  cbInSel.Checked:= false;
-  cbFromCur.Checked:= true;
+  OpInSel:= false;
+  OpFromCaret:= true;
   CurChecked:= b;
 end;
 
@@ -609,7 +632,7 @@ begin
   if not MsgConfirm(DKLangConstW('MCfmTb'), Handle) then Exit;
 
   //uncheck "Search from caret" for mass replace
-  cbFromCur.Checked:= false;
+  OpFromCaret:= false;
 
   DoAction(arReplaceAllInAll);
   SetFocus;
@@ -647,11 +670,13 @@ begin
 end;
 
 procedure TfmSR.UpdScope;
-var en:boolean;
+var
+  en: boolean;
 begin
-  en:= not cbInSel.Checked;
-  cbFromCur.Enabled:= en;
-  cbFromCurClick(Self);
+  en:= not OpInSel;
+  cbOrigFromCaret.Enabled:= en;
+  cbAltFromCaret.Enabled:= en;
+  cbOrigFromCaretClick(Self);
 end;
 
 function Sh_of(const s: string): char;
@@ -789,7 +814,6 @@ begin
     Exit
   end;
 
-  //F1
   if (Key=vk_f1) and (Shift=[]) then
   begin
     bHelp.Click;
@@ -797,7 +821,6 @@ begin
     Exit
   end;
 
-  //Ctrl+F1
   if (Key=vk_f1) and (Shift=[ssCtrl]) then
   begin
     labREClick(Self);
@@ -805,7 +828,6 @@ begin
     Exit
   end;
 
-  //F2: switch multiline
   if (Key=vk_f2) and (Shift=[]) then
   begin
     labMultilineClick(Self);
@@ -813,15 +835,20 @@ begin
     Exit
   end;
 
-  //F4: switch regex
-  if (Key=vk_f4) and (Shift=[]) then
+  if (Key=vk_f3) and (Shift=[]) then
   begin
-    cbRE.Checked:= not cbRE.Checked;
+    labSmallClick(Self);
     Handled:= true;
     Exit
   end;
 
-  //F5: insert char by code
+  if (Key=vk_f4) and (Shift=[]) then
+  begin
+    OpRe:= not OpRe;
+    Handled:= true;
+    Exit
+  end;
+
   if (Key=vk_f5) and (Shift=[]) then
   begin
     DoInsertCharCode;
@@ -934,20 +961,20 @@ begin
   end;
 
   //handle accelerators for all controls
-  if H(cbCase, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbWords, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbRE, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbSpec, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbOrigCase, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbOrigWords, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbOrigRe, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbOrigSpec, ch1, ch2) then begin Handled:= true; Exit end;
   if FIsReplace then
-    if H(cbCfm, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbBkmkAll, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbSelectAll, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbExtSel, ch1, ch2) then begin Handled:= true; Exit end;
+    if H(cbOrigCfm, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbOrigBkmkAll, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbOrigSelectAll, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbOrigExtSel, ch1, ch2) then begin Handled:= true; Exit end;
   if H(cbLoose, ch1, ch2) then begin Handled:= true; Exit end;
 
-  if H(cbInSel, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbBack, ch1, ch2) then begin Handled:= true; Exit end;
-  if H(cbFromCur, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbOrigInSel, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbOrigBack, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbOrigFromCaret, ch1, ch2) then begin Handled:= true; Exit end;
 
   if H(labEd1, ch1, ch2) then begin Handled:= true; Exit end;
   if H(labEd2, ch1, ch2) then begin Handled:= true; Exit end;
@@ -1040,7 +1067,7 @@ var
   S: Widestring;
   N: Integer;
 begin
-  cbRe.Checked:= true;
+  OpRe:= true;
   S:= cRe[(Sender as TComponent).Tag].re;
 
   {
@@ -1094,10 +1121,10 @@ procedure TfmSR.TntFormCreate(Sender: TObject);
 begin
   {$ifdef PS}
   //make ed1/ed2 Paste interceptable
-  ed1.refSpec:= cbSpec;
-  ed1.refRE:= cbRE;
-  ed2.refSpec:= cbSpec;
-  ed2.refRE:= cbRE;
+  ed1.refSpec:= cbOrigSpec;
+  ed1.refRE:= cbOrigRe;
+  ed2.refSpec:= cbOrigSpec;
+  ed2.refRE:= cbOrigRe;
   {$endif}
 
   //other
@@ -1110,19 +1137,21 @@ begin
   FTopGScope:= gScop.Top;
   FWidth0:= ClientWidth;
   FHeight0:= ClientHeight;
+  FHeight0Small:= PanelAlt.Top+PanelAlt.Height+3;
   FMemoDy:= ed2Memo.Height - ed2.Height;
 end;
 
-procedure TfmSR.cbInSelClick(Sender: TObject);
+procedure TfmSR.cbOrigInSelClick(Sender: TObject);
 begin
   ed1Change(Self);
   UpdScope;
 end;
 
-procedure TfmSR.cbFromCurClick(Sender: TObject);
+procedure TfmSR.cbOrigFromCaretClick(Sender: TObject);
 begin
-  CurChecked:= cbFromCur.Checked;
-  cbWrap.Enabled:= cbFromCur.Enabled and cbFromCur.Checked;
+  CurChecked:= OpFromCaret;
+  cbOrigWrap.Enabled:= cbOrigFromCaret.Enabled and OpFromCaret;
+  cbAltWrap.Enabled:= cbOrigWrap.Enabled;
 end;
 
 {$ifdef PS}
@@ -1143,7 +1172,7 @@ end;
 procedure TfmSR.bFindInTabsClick(Sender: TObject);
 begin
   //uncheck "Search from caret" for mass search
-  cbFromCur.Checked:= false;
+  OpFromCaret:= false;
 
   DoAction(arFindInTabs);
 end;
@@ -1176,66 +1205,135 @@ begin
   bCombo2.SetBounds(ed2Memo.Left+ed2Memo.Width, ed2Memo.Top, 16, ed2Memo.Height);
 end;
 
-procedure TfmSR.UpdOrigSize;
+procedure TfmSR.UpdForm;
 begin
+  UpdMemoHeight;
+
+  if IsReplace then
+    Caption:= DKLangConstW('fnR')
+  else
+    Caption:= DKLangConstW('fn');
+
+  ed1.Visible:= not IsMultiline;
+  ed2.Visible:= not IsMultiline and IsReplace;
+  ed1Memo.Visible:= IsMultiline;
+  ed2Memo.Visible:= IsMultiline and IsReplace;
+  bCombo1.Visible:= ed1Memo.Visible;
+  bCombo2.Visible:= ed2Memo.Visible;
+
+  ed1Memo.Left:= ed1.Left;
+  ed2Memo.Left:= ed2.Left;
+  ed1Memo.Top:= ed1.Top;
+  ed2Memo.Top:= FTopEd2+IfThen(IsMultiline, FMemoDy);
+
+  labEd2.Top:= FTopLab2+IfThen(IsMultiline, FMemoDy);
+  gOp.Top:= FTopGOpt+IfThen(IsMultiline, FMemoDy*2);
+  gScop.Top:= FTopGScope+IfThen(IsMultiline, FMemoDy*2);
+
+  if not IsReplace then
+    labStyle.Caption:= #$00BB + DKLangConstW('fnR')
+  else
+    labStyle.Caption:= #$00BB + DKLangConstW('fn');
+
+  bFindNext.Visible:= not IsReplace;
+  bFindAll.Visible:= not IsReplace;
+  bSkip.Visible:= IsReplace;
+  bRepNext.Visible:= IsReplace;
+  bRepAll.Visible:= bRepNext.Visible;
+  bSkip.Left:= bFindNext.Left;
+  bRepNext.Left:= bFindNext.Left;
+  bRepAll.Left:= bFindNext.Left;
+  bRepInTabs.Left:= bFindNext.Left;
+
+  ed2.Visible:= IsReplace and not IsMultiline;
+  ed2Memo.Visible:= IsReplace and IsMultiline;
+  bCombo1.Visible:= ed1Memo.Visible;
+  bCombo2.Visible:= ed2Memo.Visible;
+  labEd2.Visible:= IsReplace;
+  cbOrigCfm.Visible:= IsReplace;
+  cbAltCfm.Visible:= IsReplace;
+  cbOrigBkmkAll.Visible:= not IsReplace;
+  cbAltBkmkAll.Visible:= not IsReplace;
+  cbOrigSelectAll.Visible:= not IsReplace;
+  cbAltSelectAll.Visible:= not IsReplace;
+  cbOrigExtSel.Visible:= not IsReplace;
+  cbAltExtSel.Visible:= not IsReplace;
+  bCount.Visible:= not IsReplace;
+  bFindInTabs.Visible:= not IsReplace;
+  bRepAll.Visible:= IsReplace;
+  bRepInTabs.Visible:= IsReplace;
+
+  bCount.Visible:= not IsReplace;
+  bFindInTabs.Visible:= not IsReplace;
+  bRepAll.Visible:= IsReplace;
+  bRepInTabs.Visible:= IsReplace;
+
+  PanelAlt.Visible:= IsSmall;
+  gOp.Visible:= not IsSmall;
+  gScop.Visible:= not IsSmall;
+  labStyle.Visible:= not IsSmall;
+  labMultiline.Visible:= not IsSmall;
+  labTran.Visible:= not IsSmall;
+  labDocked.Visible:= not IsSmall;
+
+  StatusFind.Visible:= not IsSmall and not IsDocked;
+  labSmall.Caption:= IfThen(IsSmall, '>>', '<<');
+
   ClientWidth:= FWidth0;
-  ClientHeight:= FHeight0
-    +IfThen(FIsMultiline, FMemoDy*2)
-    -IfThen(FIsDocked, StatusFind.Height);
+  ClientHeight:= IfThen(IsSmall,
+    FHeight0Small,
+    FHeight0 - IfThen(FIsDocked, StatusFind.Height))
+    + IfThen(FIsMultiline, FMemoDy*2);
+
+  PanelBtnOrig.Visible:= not IsSmall;
+  PanelAltFind.Visible:= IsSmall and not IsReplace;
+  PanelAltRep.Visible:= IsSmall and IsReplace;
+
+  PanelAlt.Top:= gOp.Top;
+  PanelAltFind.Left:= ClientWidth-PanelAltFind.Width;
+  PanelAltFind.Top:= PanelBtnOrig.Top;
+  PanelAltRep.Left:= PanelAltFind.Left;
+  PanelAltRep.Top:= PanelAltFind.Top;
 end;
 
 procedure TfmSR.SetIsMultiline(Value: boolean);
 var
   NFocus: (f_ed1, f_ed2, f_other);
+  Ctl: TWinControl;
 begin
+  FIsMultiline:= Value;
+
   if ed1.Focused or ed1Memo.Focused then NFocus:= f_ed1 else
    if ed2.Focused or ed2Memo.Focused then NFocus:= f_ed2 else
      NFocus:= f_other;
 
-  if FIsMultiline<>Value then
+  if IsMultiline then
   begin
-    FIsMultiline:= Value;
-    ed1.Visible:= not Value;
-    ed2.Visible:= not Value and IsReplace;
-    ed1Memo.Visible:= Value;
-    ed2Memo.Visible:= Value and IsReplace;
-    bCombo1.Visible:= ed1Memo.Visible;
-    bCombo2.Visible:= ed2Memo.Visible;
-
-    ed1Memo.Left:= ed1.Left;
-    ed2Memo.Left:= ed2.Left;
-    ed1Memo.Top:= ed1.Top;
-    ed2Memo.Top:= FTopEd2+IfThen(Value, FMemoDy);
-
-    labEd2.Top:= FTopLab2+IfThen(Value, FMemoDy);
-    gOp.Top:= FTopGOpt+IfThen(Value, FMemoDy*2);
-    gScop.Top:= FTopGScope+IfThen(Value, FMemoDy*2);
-
-    UpdOrigSize;
-    UpdMemoHeight;
-
-    if Value then
-    begin
-      ed1Memo.Text:= ed1.Text;
-      ed2Memo.Text:= ed2.Text;
-      labEd1.FocusControl:= ed1Memo;
-      labEd2.FocusControl:= ed2Memo;
-    end
-    else
-    begin
-      ed1.Text:= ed1Memo.Text;
-      ed2.Text:= ed2Memo.Text;
-      labEd1.FocusControl:= ed1;
-      labEd2.FocusControl:= ed2;
-    end;
-
-    case NFocus of
-      f_ed1:
-        begin if Value then ed1Memo.SetFocus else ed1.SetFocus end;
-      f_ed2:
-        begin if Value then ed2Memo.SetFocus else ed2.SetFocus end;
-    end;
+    ed1Memo.Text:= ed1.Text;
+    ed2Memo.Text:= ed2.Text;
+    labEd1.FocusControl:= ed1Memo;
+    labEd2.FocusControl:= ed2Memo;
+  end
+  else
+  begin
+    ed1.Text:= ed1Memo.Text;
+    ed2.Text:= ed2Memo.Text;
+    labEd1.FocusControl:= ed1;
+    labEd2.FocusControl:= ed2;
   end;
+
+  UpdForm;
+
+  case NFocus of
+    f_ed1:
+      begin if IsMultiline then Ctl:= ed1Memo else Ctl:= ed1 end;
+    f_ed2:
+      begin if IsMultiline then Ctl:= ed2Memo else Ctl:= ed2 end;
+    else
+      Ctl:= nil;
+  end;
+  if (Ctl<>nil) and Ctl.CanFocus then
+    Ctl.SetFocus;
 end;
 
 
@@ -1356,19 +1454,19 @@ const
 function TfmSR.TextOptions: Widestring;
 begin
   Result:=
-    IfThen(cbCase.Checked, cFindOptCase+',')+
-    IfThen(cbWords.Checked, cFindOptWords+',')+
-    IfThen(cbRe.Checked, cFindOptRegex+',')+
-    IfThen(cbReDot.Checked, cFindOptRegex_s+',')+
-    IfThen(cbSpec.Checked, cFindOptSpec+',')+
-    IfThen(cbCfm.Checked, cFindOptConfirm+',')+
-    IfThen(cbBkmkAll.Checked, cFindOptBookmk+',')+
-    IfThen(cbSelectAll.Checked, cFindOptSelAll+',')+
-    IfThen(cbExtSel.Checked, cFindOptExtSel+',')+
-    IfThen(cbBack.Checked, cFindOptBack+',')+
-    IfThen(cbInSel.Checked, cFindOptSel+',')+
-    IfThen(cbFromCur.Checked, cFindOptFromCur+',')+
-    IfThen(cbWrap.Checked, cFindOptWrap+',')+
+    IfThen(OpCase, cFindOptCase+',')+
+    IfThen(OpWords, cFindOptWords+',')+
+    IfThen(OpRe, cFindOptRegex+',')+
+    IfThen(OpReDot, cFindOptRegex_s+',')+
+    IfThen(OpSpec, cFindOptSpec+',')+
+    IfThen(OpCfm, cFindOptConfirm+',')+
+    IfThen(OpBkmkAll, cFindOptBookmk+',')+
+    IfThen(OpSelectAll, cFindOptSelAll+',')+
+    IfThen(OpExtSel, cFindOptExtSel+',')+
+    IfThen(OpBack, cFindOptBack+',')+
+    IfThen(OpInSel, cFindOptSel+',')+
+    IfThen(OpFromCaret, cFindOptFromCur+',')+
+    IfThen(OpWrap, cFindOptWrap+',')+
     IfThen(cbSkipCol.Checked, cFindOptSkipCol+',')+
     IfThen(cbTokens.ItemIndex>0, cFindOptTokens+IntToStr(cbTokens.ItemIndex)+',');
 end;
@@ -1556,22 +1654,22 @@ begin
   end;
 end;
 
-procedure TfmSR.labTranspClick(Sender: TObject);
+procedure TfmSR.labTranClick(Sender: TObject);
 begin
-  with PanelTr do
+  with PanelTran do
     Visible:= not Visible;
 end;
 
-procedure TfmSR.cbBkmkAllClick(Sender: TObject);
+procedure TfmSR.cbOrigBkmkAllClick(Sender: TObject);
 begin
-  if cbBkmkAll.Checked then
-    cbSelectAll.Checked:= false;
+  if OpBkmkAll then
+    OpSelectAll:= false;
 end;
 
-procedure TfmSR.cbSelectAllClick(Sender: TObject);
+procedure TfmSR.cbOrigSelectAllClick(Sender: TObject);
 begin
-  if cbSelectAll.Checked then
-    cbBkmkAll.Checked:= false;
+  if OpSelectAll then
+    OpBkmkAll:= false;
 end;
 
 procedure TfmSR.DoInsertCharCode;
@@ -1618,9 +1716,9 @@ begin
       begin Left:= FLeft0; Top:= FTop0; end;
     Visible:= true;
 
-    labTransp.Enabled:= not FIsDocked;
+    labTran.Enabled:= not FIsDocked;
     if FIsDocked then
-      PanelTr.Hide;
+      PanelTran.Hide;
 
     if Assigned(FOnRepaintNeeded) then
       FOnRepaintNeeded(Self);
@@ -1635,8 +1733,11 @@ begin
   ed2.Enabled:= En;
   ed1Memo.Enabled:= En;
   ed2Memo.Enabled:= En;
+
   gOp.Enabled:= En;
   gScop.Enabled:= En;
+  PanelAlt.Enabled:= En;
+
   bFindNext.Enabled:= En;
   bFindAll.Enabled:= En;
   bFindInTabs.Enabled:= En;
@@ -1647,23 +1748,246 @@ begin
   bCancel.Enabled:= En;
   bHelp.Enabled:= En;
 
+  bAltFind.Enabled:= En;
+  bAltFindAll.Enabled:= En;
+  bAltFindInTabs.Enabled:= En;
+  bAltCount.Enabled:= En;
+  bAltSkip.Enabled:= En;
+  bAltRep.Enabled:= En;
+  bAltRepAll.Enabled:= En;
+  bAltRepInTabs.Enabled:= En;
+
   labMultiline.Enabled:= En;
   labStyle.Enabled:= En;
   labDocked.Enabled:= En;
   labRe.Enabled:= En;
   labEd1.Enabled:= En;
   labEd2.Enabled:= En;
-  labTransp.Enabled:= En;
+  labTran.Enabled:= En;
+  labSmall.Enabled:= En;
 
-  if En then
-    begin end //don't ShowStatus('')
-  else
+  if not En then
     ShowStatus(DKLangConstW('zMFindWait'));
 
   if En then
     IsReplace:= IsReplace;
 
   Cursor:= cDefaultCursor[En];
+end;
+
+function TfmSR.GetOpCase: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltCase.Checked
+  else
+    Result:= cbOrigCase.Checked;
+end;
+
+function TfmSR.GetOpWords: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltWords.Checked
+  else
+    Result:= cbOrigWords.Checked;
+end;
+
+procedure TfmSR.SetOpCase(b: boolean);
+begin
+  cbAltCase.Checked:= b;
+  cbOrigCase.Checked:= b;
+end;
+
+procedure TfmSR.SetOpWords(b: boolean);
+begin
+  cbAltWords.Checked:= b;
+  cbOrigWords.Checked:= b;
+end;
+
+procedure TfmSR.SetIsSmall(Value: boolean);
+begin
+  FIsSmall:= Value;
+  UpdForm;
+
+  DoCopyCheck(cbOrigCase, cbAltCase, IsSmall);
+  DoCopyCheck(cbOrigWords, cbAltWords, IsSmall);
+  DoCopyCheck(cbOrigSpec, cbAltSpec, IsSmall);
+  DoCopyCheck(cbOrigRe, cbAltRe, IsSmall);
+  DoCopyCheck(cbOrigReDot, cbAltReDot, IsSmall);
+  DoCopyCheck(cbOrigBack, cbAltBack, IsSmall);
+  DoCopyCheck(cbOrigSelectAll, cbAltSelectAll, IsSmall);
+  DoCopyCheck(cbOrigBkmkAll, cbAltBkmkAll, IsSmall);
+  DoCopyCheck(cbOrigExtSel, cbAltExtSel, IsSmall);
+  DoCopyCheck(cbOrigInSel, cbAltInSel, IsSmall);
+  DoCopyCheck(cbOrigFromCaret, cbAltFromCaret, IsSmall);
+  DoCopyCheck(cbOrigWrap, cbAltWrap, IsSmall);
+  DoCopyCheck(cbOrigCfm, cbAltCfm, IsSmall);
+end;
+
+procedure TfmSR.labSmallClick(Sender: TObject);
+begin
+  IsSmall:= not IsSmall;
+end;
+
+function TfmSR.GetOpRe: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltRe.Checked
+  else
+    Result:= cbOrigRe.Checked;
+end;
+
+function TfmSR.GetOpSpec: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltSpec.Checked
+  else
+    Result:= cbOrigSpec.Checked;
+end;
+
+procedure TfmSR.SetOpRe(b: boolean);
+begin
+  cbOrigRe.Checked:= b;
+  cbAltRe.Checked:= b;
+end;
+
+procedure TfmSR.SetOpSpec(b: boolean);
+begin
+  cbOrigSpec.Checked:= b;
+  cbAltSpec.Checked:= b;
+end;
+
+function TfmSR.GetOpReDot: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltReDot.Checked
+  else
+    Result:= cbOrigReDot.Checked;
+end;
+
+procedure TfmSR.SetOpReDot(b: boolean);
+begin
+  cbOrigReDot.Checked:= b;
+  cbAltReDot.Checked:= b;
+end;
+
+function TfmSR.GetOpBack: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltBack.Checked
+  else
+    Result:= cbOrigBack.Checked;
+end;
+
+function TfmSR.GetOpBkmkAll: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltBkmkAll.Checked
+  else
+    Result:= cbOrigBkmkAll.Checked;
+end;
+
+function TfmSR.GetOpExtSel: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltExtSel.Checked
+  else
+    Result:= cbOrigExtSel.Checked;
+end;
+
+function TfmSR.GetOpSelectAll: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltSelectAll.Checked
+  else
+    Result:= cbOrigSelectAll.Checked;
+end;
+
+procedure TfmSR.SetOpBack(b: boolean);
+begin
+  cbOrigBack.Checked:= b;
+  cbAltBack.Checked:= b;
+end;
+
+procedure TfmSR.SetOpBkmkAll(b: boolean);
+begin
+  cbOrigBkmkAll.Checked:= b;
+  cbAltBkmkAll.Checked:= b;
+end;
+
+procedure TfmSR.SetOpExtSel(b: boolean);
+begin
+  cbOrigExtSel.Checked:= b;
+  cbAltExtSel.Checked:= b;
+end;
+
+procedure TfmSR.SetOpSelectAll(b: boolean);
+begin
+  cbOrigSelectAll.Checked:= b;
+  cbAltSelectAll.Checked:= b;
+end;
+
+function TfmSR.GetOpFromCaret: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltFromCaret.Checked
+  else
+    Result:= cbOrigFromCaret.Checked;
+end;
+
+function TfmSR.GetOpInSel: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltInSel.Checked
+  else
+    Result:= cbOrigInSel.Checked;
+end;
+
+function TfmSR.GetOpWrap: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltWrap.Checked
+  else
+    Result:= cbOrigWrap.Checked;
+end;
+
+procedure TfmSR.SetOpFromCaret(b: boolean);
+begin
+  cbOrigFromCaret.Checked:= b;
+  cbAltFromCaret.Checked:= b;
+end;
+
+procedure TfmSR.SetOpInSel(b: boolean);
+begin
+  cbOrigInSel.Checked:= b;
+  cbAltInSel.Checked:= b;
+end;
+
+procedure TfmSR.SetOpWrap(b: boolean);
+begin
+  cbOrigWrap.Checked:= b;
+  cbAltWrap.Checked:= b;
+end;
+
+function TfmSR.GetOpCfm: boolean;
+begin
+  if IsSmall then
+    Result:= cbAltCfm.Checked
+  else
+    Result:= cbOrigCfm.Checked;
+end;
+
+procedure TfmSR.SetOpCfm(b: boolean);
+begin
+  cbOrigCfm.Checked:= b;
+  cbAltCfm.Checked:= b;
+end;
+
+procedure TfmSR.DoCopyCheck(C1, C2: TTntCheckbox; ADir: boolean);
+begin
+  if ADir then
+    C2.Checked:= C1.Checked
+  else
+    C1.Checked:= C2.Checked;  
 end;
 
 end.
