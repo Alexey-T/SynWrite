@@ -1070,14 +1070,6 @@ begin
   OpRe:= true;
   S:= cRe[(Sender as TComponent).Tag].re;
 
-  {
-  if S=SMod then
-  begin
-    SModClick(SMod);
-    Exit
-  end;
-  }
-
   if not IsMultiline then
   begin
     if ed2.Focused then
@@ -1111,7 +1103,8 @@ begin
 end;
 
 procedure TfmSR.labReClick(Sender: TObject);
-var p: TPoint;
+var
+  p: TPoint;
 begin
   p:= labRe.ClientToScreen(Point(0, labRe.Height));
   mnuRe.Popup(p.X, p.Y);

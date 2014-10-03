@@ -3,7 +3,7 @@ object fmSR: TfmSR
   Top = 311
   ActiveControl = ed1
   BorderStyle = bsDialog
-  ClientHeight = 181
+  ClientHeight = 182
   ClientWidth = 752
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -337,7 +337,7 @@ object fmSR: TfmSR
   end
   object StatusFind: TTntStatusBar
     Left = 0
-    Top = 162
+    Top = 163
     Width = 752
     Height = 19
     Panels = <>
@@ -738,7 +738,7 @@ object fmSR: TfmSR
       Top = 26
       Width = 96
       Height = 23
-      Caption = 'In tabs'
+      Caption = 'Find in tabs'
       TabOrder = 2
       WordWrap = True
       OnClick = bFindInTabsClick
@@ -785,7 +785,7 @@ object fmSR: TfmSR
       Top = 26
       Width = 96
       Height = 23
-      Caption = 'In tabs'
+      Caption = 'Replace in tabs'
       TabOrder = 2
       WordWrap = True
       OnClick = bRepInTabsClick
