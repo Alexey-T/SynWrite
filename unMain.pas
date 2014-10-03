@@ -8495,7 +8495,7 @@ begin
   if Assigned(fmSR) then
   begin
     SText:= '';
-    IsSel:= fmSR.cbSel.Checked;
+    IsSel:= fmSR.cbInSel.Checked;
     IsForw:= not fmSR.cbBack.Checked;
     IsRe:= fmSR.cbRe.Checked;
     IsRe_s:= fmSR.cbReDot.Checked;
@@ -8661,8 +8661,8 @@ begin
         SR_SuggestedSel:= Ed.WordAtPos(Ed.CaretPos);
     end;
 
-    cbSel.Enabled:= true; //SR_SuggestedSelEn;
-    cbSel.Checked:= SR_SuggestedSelScope;
+    cbInSel.Enabled:= true; //SR_SuggestedSelEn;
+    cbInSel.Checked:= SR_SuggestedSelScope;
 
     if SR_SuggestedSel<>'' then
       DoCopyToEdit(ed1, cbSpec.Checked, cbRE.Checked, SR_SuggestedSel);
@@ -8958,7 +8958,7 @@ begin
     if cbWords.Checked then Finder.Flags:= Finder.Flags + [ftWholeWords];
     if cbRe.Checked then Finder.Flags:= Finder.Flags + [ftRegex];
     if cbReDot.Checked then Finder.Flags:= Finder.Flags + [ftRegex_s];
-    if cbSel.Checked then Finder.Flags:= Finder.Flags + [ftSelectedText];
+    if cbInSel.Checked then Finder.Flags:= Finder.Flags + [ftSelectedText];
     if cbBack.Checked then Finder.Flags:= Finder.Flags + [ftBackward];
     if cbCfm.Checked then Finder.Flags:= Finder.Flags + [ftPromtOnReplace];
     if cbWrap.Checked then Finder.Flags:= Finder.Flags + [ftWrapSearch];

@@ -93,7 +93,7 @@ type
     mnuRe: TTntPopupMenu;
     labRe: TTntLabel;
     cbBkmkAll: TTntCheckBox;
-    cbSel: TTntCheckBox;
+    cbInSel: TTntCheckBox;
     cbFromCur: TTntCheckBox;
     cbWrap: TTntCheckBox;
     cbExtSel: TTntCheckBox;
@@ -112,6 +112,19 @@ type
     cbSelectAll: TTntCheckBox;
     cbBack: TTntCheckBox;
     labDocked: TTntLabel;
+    PanelAlt: TPanel;
+    cbAltCase: TTntCheckBox;
+    cbAltWords: TTntCheckBox;
+    cbAltSpec: TTntCheckBox;
+    cbAltRe: TTntCheckBox;
+    cbAltReDot: TTntCheckBox;
+    cbAltBack: TTntCheckBox;
+    cbAltSelectAll: TTntCheckBox;
+    cbAltBkmkAll: TTntCheckBox;
+    cbAltExtSel: TTntCheckBox;
+    cbAltInSel: TTntCheckBox;
+    cbAltFromCur: TTntCheckBox;
+    labSmall: TTntLabel;
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
@@ -136,7 +149,7 @@ type
     procedure mnuRePopup(Sender: TObject);
     procedure labReClick(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
-    procedure cbSelClick(Sender: TObject);
+    procedure cbInSelClick(Sender: TObject);
     procedure cbFromCurClick(Sender: TObject);
     procedure bFindInTabsClick(Sender: TObject);
     procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
@@ -246,8 +259,8 @@ const
 procedure TfmSR.FormShow(Sender: TObject);
 begin
   cbFromCur.Checked:= CurChecked;
-  cbREClick(Self);
-  cbSelClick(Self);
+  cbReClick(Self);
+  cbInSelClick(Self);
   cbFromCurClick(Self);
   ShowStatus('');
 end;
@@ -449,7 +462,7 @@ begin
   bFindAll.Enabled:= en;
   bCount.Enabled:= en;
   bSkip.Enabled:= en;
-  bRepNext.Enabled:= en and not cbSel.Checked;
+  bRepNext.Enabled:= en and not cbInSel.Checked;
   bRepAll.Enabled:= en;
   bRepInTabs.Enabled:= en;
   bFindInTabs.Enabled:= en;
@@ -565,7 +578,7 @@ var
   b: boolean;
 begin
   b:= CurChecked;
-  cbSel.Checked:= false;
+  cbInSel.Checked:= false;
   cbFromCur.Checked:= true;
   CurChecked:= b;
 end;
@@ -636,7 +649,7 @@ end;
 procedure TfmSR.UpdScope;
 var en:boolean;
 begin
-  en:= not cbSel.Checked;
+  en:= not cbInSel.Checked;
   cbFromCur.Enabled:= en;
   cbFromCurClick(Self);
 end;
@@ -932,7 +945,7 @@ begin
   if H(cbExtSel, ch1, ch2) then begin Handled:= true; Exit end;
   if H(cbLoose, ch1, ch2) then begin Handled:= true; Exit end;
 
-  if H(cbSel, ch1, ch2) then begin Handled:= true; Exit end;
+  if H(cbInSel, ch1, ch2) then begin Handled:= true; Exit end;
   if H(cbBack, ch1, ch2) then begin Handled:= true; Exit end;
   if H(cbFromCur, ch1, ch2) then begin Handled:= true; Exit end;
 
@@ -1100,7 +1113,7 @@ begin
   FMemoDy:= ed2Memo.Height - ed2.Height;
 end;
 
-procedure TfmSR.cbSelClick(Sender: TObject);
+procedure TfmSR.cbInSelClick(Sender: TObject);
 begin
   ed1Change(Self);
   UpdScope;
@@ -1353,7 +1366,7 @@ begin
     IfThen(cbSelectAll.Checked, cFindOptSelAll+',')+
     IfThen(cbExtSel.Checked, cFindOptExtSel+',')+
     IfThen(cbBack.Checked, cFindOptBack+',')+
-    IfThen(cbSel.Checked, cFindOptSel+',')+
+    IfThen(cbInSel.Checked, cFindOptSel+',')+
     IfThen(cbFromCur.Checked, cFindOptFromCur+',')+
     IfThen(cbWrap.Checked, cFindOptWrap+',')+
     IfThen(cbSkipCol.Checked, cFindOptSkipCol+',')+
