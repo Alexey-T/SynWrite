@@ -545,6 +545,26 @@ object fmSR: TfmSR
       ParentFont = False
       OnClick = labDockedClick
     end
+    object bHelp: TTntButton
+      Left = 119
+      Top = 30
+      Width = 114
+      Height = 25
+      Caption = 'Help'
+      TabOrder = 10
+      OnClick = bHelpClick
+    end
+    object bCancel: TTntButton
+      Left = 119
+      Top = 0
+      Width = 114
+      Height = 25
+      Cancel = True
+      Caption = 'Close'
+      ModalResult = 2
+      TabOrder = 9
+      OnClick = bCancelClick
+    end
     object bFindNext: TTntButton
       Left = 0
       Top = 0
@@ -650,26 +670,6 @@ object fmSR: TfmSR
         TabOrder = 1
         OnClick = cbLooseClick
       end
-    end
-    object bCancel: TTntButton
-      Left = 119
-      Top = 0
-      Width = 114
-      Height = 25
-      Cancel = True
-      Caption = 'Close'
-      ModalResult = 2
-      TabOrder = 9
-      OnClick = bCancelClick
-    end
-    object bHelp: TTntButton
-      Left = 119
-      Top = 30
-      Width = 114
-      Height = 25
-      Caption = 'Help'
-      TabOrder = 10
-      OnClick = bHelpClick
     end
   end
   object ed1Memo: TTntMemo
