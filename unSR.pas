@@ -138,6 +138,7 @@ type
     bAltRep: TTntButton;
     bAltRepAll: TTntButton;
     bAltRepInTabs: TTntButton;
+    labDocked2: TTntLabel;
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
@@ -1311,10 +1312,7 @@ begin
   PanelAlt.Visible:= IsSmall;
   gOp.Visible:= not IsSmall;
   gScop.Visible:= not IsSmall;
-  labStyle.Visible:= not IsSmall;
-  labMultiline.Visible:= not IsSmall;
-  labTran.Visible:= not IsSmall;
-  labDocked.Visible:= not IsSmall;
+  labDocked2.Visible:= IsSmall;
 
   StatusFind.Visible:= not IsSmall and not IsDocked;
   labSmall.Caption:= IfThen(IsSmall, '>>', '<<');
