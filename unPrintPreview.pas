@@ -59,6 +59,8 @@ procedure DoEditorPrintPreview(APrinter: TecCustomPrinter; const ATitle: Widestr
 
 implementation
 
+uses unPrintSetup;
+
 {$R *.dfm}
 
 procedure DoEditorPrintPreview(APrinter: TecCustomPrinter; const ATitle: Widestring);
@@ -127,7 +129,7 @@ end;
 
 procedure TfmPreview.OptCmdExecute(Sender: TObject);
 begin
-  if ecPreview.SyntPrinter.PageSetup then
+  if DoConfigPrinterPage(ecPreview.SyntPrinter as TecSyntPrinter) then
     ecPreview.UpdatePreview;
 end;
 
