@@ -3383,7 +3383,7 @@ uses
   unProcImg,
   unSetup, unAbout, unEnc, unTool, unSRFiles, unExtr, unShell, unInsTxt,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
-  unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav, unFillBlock,
+  unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav,
   unMenuCmds, unMenuProj, unMenuSnippets,
   unToolbarProp, unHideItems,
   unProcPy,

@@ -46,7 +46,6 @@ uses
   unClips in 'unClips.pas' {fmClips},
   unNumConv in 'unNumConv.pas' {fmNumConv: TTntForm},
   ATSynPlugins in 'ATSynPlugins.pas',
-  unFillBlock in 'unFillBlock.pas' {fmFillBlock},
   unSort in 'unSort.pas' {fmSort},
   unProcLines in 'unProcLines.pas',
   unMenuCmds in 'unMenuCmds.pas' {fmMenuCmds: TTntForm},

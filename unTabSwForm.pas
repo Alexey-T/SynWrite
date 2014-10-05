@@ -4,11 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, TntStdCtrls,
-  TntClasses;
+  Dialogs, StdCtrls, ExtCtrls,
+  TntForms, TntStdCtrls, TntClasses;
 
 type
-  TfmTabSw = class(TForm)
+  TfmTabSw = class(TTntForm)
     Panel1: TPanel;
     List: TTntListBox;
     Panel2: TPanel;

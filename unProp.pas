@@ -4,26 +4,27 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, TntStdCtrls, DKLang, ComCtrls, TntComCtrls;
+  Dialogs, StdCtrls, TntStdCtrls, DKLang, ComCtrls,
+  TntForms, TntComCtrls;
 
 type
-  TfmProps = class(TForm)
+  TfmProps = class(TTntForm)
     bOk: TTntButton;
     DKLanguageController1: TDKLanguageController;
     Pages: TTntPageControl;
     tabFile: TTntTabSheet;
-    TntLabel1: TTntLabel;
+    labPath: TTntLabel;
     edPath: TTntEdit;
-    TntLabel2: TTntLabel;
+    labTime: TTntLabel;
     edTime: TTntEdit;
-    TntLabel3: TTntLabel;
+    labSize: TTntLabel;
     edSize: TTntEdit;
     tabDoc: TTntTabSheet;
-    TntLabel4: TTntLabel;
+    labChars: TTntLabel;
     edChars: TTntEdit;
-    TntLabel5: TTntLabel;
+    labWords: TTntLabel;
     edWords: TTntEdit;
-    TntLabel6: TTntLabel;
+    labLines: TTntLabel;
     edLines: TTntEdit;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
