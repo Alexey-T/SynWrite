@@ -3,7 +3,7 @@ object fmPrintSetup: TfmPrintSetup
   Top = 123
   BorderStyle = bsDialog
   Caption = 'Page setup'
-  ClientHeight = 536
+  ClientHeight = 551
   ClientWidth = 553
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object fmPrintSetup: TfmPrintSetup
   TextHeight = 13
   object bOk: TTntButton
     Left = 344
-    Top = 504
+    Top = 520
     Width = 97
     Height = 23
     Caption = 'OK'
@@ -29,7 +29,7 @@ object fmPrintSetup: TfmPrintSetup
   end
   object bCancel: TTntButton
     Left = 448
-    Top = 504
+    Top = 520
     Width = 97
     Height = 23
     Cancel = True
@@ -41,7 +41,7 @@ object fmPrintSetup: TfmPrintSetup
     Left = 8
     Top = 288
     Width = 537
-    Height = 209
+    Height = 225
     Caption = 'Header / Footer'
     TabOrder = 3
     object labHint: TTntLabel
@@ -50,6 +50,14 @@ object fmPrintSetup: TfmPrintSetup
       Width = 243
       Height = 13
       Caption = 'One tabulation for centering, two for right-aligning'
+      FocusControl = cbColors
+    end
+    object labHint2: TTntLabel
+      Left = 8
+      Top = 204
+      Width = 272
+      Height = 13
+      Caption = 'Macros are available, call auto-complete with Ctrl+Space'
       FocusControl = cbColors
     end
     object edHead: TSyntaxMemo
@@ -701,7 +709,7 @@ object fmPrintSetup: TfmPrintSetup
     Top = 116
     LangData = {
       0C00666D5072696E745365747570010100000001000000070043617074696F6E
-      01260000000300624F6B010100000002000000070043617074696F6E00070062
+      01270000000300624F6B010100000002000000070043617074696F6E00070062
       43616E63656C010100000003000000070043617074696F6E0006006772486561
       64010100000004000000070043617074696F6E0007006C616248696E74010100
       000005000000070043617074696F6E000600656448656164000006006564466F
@@ -731,6 +739,7 @@ object fmPrintSetup: TfmPrintSetup
       0000001E00000005004974656D73000800456469744C65667400000700456469
       74546F700000090045646974526967687400000A0045646974426F74746F6D00
       000300446C6700000D0053796E74416E616C797A657231000012004175746F43
-      6F6D706C657465506F70757031000101000000040048696E740000}
+      6F6D706C657465506F70757031000101000000040048696E74000008006C6162
+      48696E743201010000001F000000070043617074696F6E00}
   end
 end

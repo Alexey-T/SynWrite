@@ -49,6 +49,7 @@ type
     edFoot: TSyntaxMemo;
     labHint: TTntLabel;
     DKLanguageController1: TDKLanguageController;
+    labHint2: TTntLabel;
     procedure FormShow(Sender: TObject);
     procedure cbUnitsChange(Sender: TObject);
     procedure bFontNumsClick(Sender: TObject);
