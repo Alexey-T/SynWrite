@@ -112,7 +112,7 @@ type
     cbAltCfm: TTntCheckBox;
     PanelBtnOrig: TPanel;
     bFindNext: TTntButton;
-    bSkip: TTntButton;
+    bRepSkip: TTntButton;
     bFindAll: TTntButton;
     bRepNext: TTntButton;
     bCount: TTntButton;
@@ -130,12 +130,12 @@ type
     labDocked: TTntLabel;
     PanelAltFind: TPanel;
     PanelAltRep: TPanel;
-    bAltFind: TTntButton;
+    bAltFindNext: TTntButton;
     bAltFindAll: TTntButton;
     bAltCount: TTntButton;
     bAltFindInTabs: TTntButton;
-    bAltSkip: TTntButton;
-    bAltRep: TTntButton;
+    bAltRepSkip: TTntButton;
+    bAltRepNext: TTntButton;
     bAltRepAll: TTntButton;
     bAltRepInTabs: TTntButton;
     labDocked2: TTntLabel;
@@ -149,7 +149,7 @@ type
     procedure bCancelClick(Sender: TObject);
     procedure bFindNextClick(Sender: TObject);
     procedure bFindAllClick(Sender: TObject);
-    procedure bSkipClick(Sender: TObject);
+    procedure bRepSkipClick(Sender: TObject);
     procedure bRepNextClick(Sender: TObject);
     procedure bRepAllClick(Sender: TObject);
     procedure bRepInTabsClick(Sender: TObject);
@@ -185,6 +185,8 @@ type
     procedure cbOrigSelectAllClick(Sender: TObject);
     procedure labDockedClick(Sender: TObject);
     procedure labSmallClick(Sender: TObject);
+    procedure ed2Enter(Sender: TObject);
+    procedure ed2Exit(Sender: TObject);
   private
     { Private declarations }
     CurChecked: boolean;
@@ -206,7 +208,7 @@ type
     FHeight0,
     FHeight0Small,
     FMemoDy: Integer;
-    procedure DoCopyCheck(C1, C2: TTntCheckbox; ADir: boolean); 
+    procedure DoCopyCheck(C1, C2: TTntCheckbox; ADir: boolean);
     procedure mnuComboClick(Sender: TObject);
     procedure DoInsertCharCode;
     procedure DoCombo(ed: TTntCombobox; edMemo: TTntMemo; edNum: integer);
@@ -221,6 +223,7 @@ type
     procedure UpdTransp;
     procedure UpdScope;
     procedure UpdMemoHeight;
+    procedure UpdButtons;
     function GetText1: Widestring;
     function GetText2: Widestring;
     procedure SetText1(const Value: Widestring);
@@ -481,14 +484,24 @@ var
   en: boolean;
 begin
   en:= Text1<>'';
+  
   bFindNext.Enabled:= en;
   bFindAll.Enabled:= en;
+  bFindInTabs.Enabled:= en;
   bCount.Enabled:= en;
-  bSkip.Enabled:= en;
+  bRepSkip.Enabled:= en;
   bRepNext.Enabled:= en and not OpInSel;
   bRepAll.Enabled:= en;
   bRepInTabs.Enabled:= en;
-  bFindInTabs.Enabled:= en;
+
+  bAltFindNext.Enabled:= en;
+  bAltFindAll.Enabled:= en;
+  bAltFindInTabs.Enabled:= en;
+  bAltCount.Enabled:= en;
+  bAltRepSkip.Enabled:= en;
+  bAltRepNext.Enabled:= en and not OpInSel;
+  bAltRepAll.Enabled:= en;
+  bAltRepInTabs.Enabled:= en;
 end;
 
 procedure TfmSR.bHelpClick(Sender: TObject);
@@ -615,7 +628,7 @@ begin
   DoAction(arFindAll);
 end;
 
-procedure TfmSR.bSkipClick(Sender: TObject);
+procedure TfmSR.bRepSkipClick(Sender: TObject);
 begin
   DoAction(arSkip);
 end;
@@ -894,7 +907,7 @@ begin
   if (Key=vk_return) and (Shift=[ssCtrl]) and (ed1Memo.Focused or ed2Memo.Focused) then
   begin
     if IsReplace then
-      bSkip.Click
+      bRepSkip.Click
     else
       bFindNext.Click;
     Handled:= true;
@@ -943,6 +956,7 @@ begin
       SelectNext(ActiveControl, false, true);
     if Shift=[] then
       SelectNext(ActiveControl, true, true);
+    UpdButtons;  
     Handled:= true;
     Exit;
   end;
@@ -1006,7 +1020,7 @@ begin
     end
     else
     begin
-      if H(bAltFind, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bAltFindNext, ch1, ch2) then begin Handled:= true; Exit end;
       if H(bAltFindAll, ch1, ch2) then begin Handled:= true; Exit end;
       if H(bAltFindInTabs, ch1, ch2) then begin Handled:= true; Exit end;
       if H(bAltCount, ch1, ch2) then begin Handled:= true; Exit end;
@@ -1016,15 +1030,15 @@ begin
   begin
     if not IsSmall then
     begin
-      if H(bSkip, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bRepSkip, ch1, ch2) then begin Handled:= true; Exit end;
       if H(bRepNext, ch1, ch2) then begin Handled:= true; Exit end;
       if H(bRepAll, ch1, ch2) then begin Handled:= true; Exit end;
       if H(bRepInTabs, ch1, ch2) then begin Handled:= true; Exit end;
     end
     else
     begin
-      if H(bAltSkip, ch1, ch2) then begin Handled:= true; Exit end;
-      if H(bAltRep, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bAltRepSkip, ch1, ch2) then begin Handled:= true; Exit end;
+      if H(bAltRepNext, ch1, ch2) then begin Handled:= true; Exit end;
       if H(bAltRepAll, ch1, ch2) then begin Handled:= true; Exit end;
       if H(bAltRepInTabs, ch1, ch2) then begin Handled:= true; Exit end;
     end;  
@@ -1171,7 +1185,7 @@ begin
   FMemoDy:= ed2Memo.Height - ed2.Height;
 
   //move buttons which bad placed in ide
-  bSkip.Left:= bFindNext.Left;
+  bRepSkip.Left:= bFindNext.Left;
   bRepNext.Left:= bFindNext.Left;
   bRepAll.Left:= bFindNext.Left;
   bRepInTabs.Left:= bFindNext.Left;
@@ -1278,7 +1292,7 @@ begin
 
   bFindNext.Visible:= not IsReplace;
   bFindAll.Visible:= not IsReplace;
-  bSkip.Visible:= IsReplace;
+  bRepSkip.Visible:= IsReplace;
   bRepNext.Visible:= IsReplace;
   bRepAll.Visible:= bRepNext.Visible;
 
@@ -1364,6 +1378,8 @@ begin
   end;
   if (Ctl<>nil) and Ctl.CanFocus then
     Ctl.SetFocus;
+
+  UpdButtons;  
 end;
 
 
@@ -1655,7 +1671,7 @@ begin
   if Shortcut(Key, Shift) = Sh_FindNext then
   begin
     if bFindNext.Visible then bFindNext.Click else
-     if bSkip.Visible then bSkip.Click;
+     if bRepSkip.Visible then bRepSkip.Click;
     Key:= 0;
     Exit
   end;
@@ -1778,12 +1794,12 @@ begin
   bCancel.Enabled:= En;
   bHelp.Enabled:= En;
 
-  bAltFind.Enabled:= En;
+  bAltFindNext.Enabled:= En;
   bAltFindAll.Enabled:= En;
   bAltFindInTabs.Enabled:= En;
   bAltCount.Enabled:= En;
-  bAltSkip.Enabled:= En;
-  bAltRep.Enabled:= En;
+  bAltRepSkip.Enabled:= En;
+  bAltRepNext.Enabled:= En;
   bAltRepAll.Enabled:= En;
   bAltRepInTabs.Enabled:= En;
 
@@ -2017,7 +2033,32 @@ begin
   if ADir then
     C2.Checked:= C1.Checked
   else
-    C1.Checked:= C2.Checked;  
+    C1.Checked:= C2.Checked;
+end;
+
+procedure TfmSR.UpdButtons;
+var
+  rep: boolean;
+begin
+  rep:= ed2.Focused or ed2Memo.Focused;
+
+  bFindNext.Default:= not rep;
+  bRepSkip.Default:= not rep;
+  bRepNext.Default:= rep;
+
+  bAltFindNext.Default:= not rep;
+  bAltRepSkip.Default:= not rep;
+  bAltRepNext.Default:= rep;
+end;
+
+procedure TfmSR.ed2Enter(Sender: TObject);
+begin
+  UpdButtons;
+end;
+
+procedure TfmSR.ed2Exit(Sender: TObject);
+begin
+  UpdButtons;
 end;
 
 end.
