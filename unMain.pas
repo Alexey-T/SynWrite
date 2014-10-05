@@ -8541,7 +8541,6 @@ begin
   if not IsForw then Finder.Flags:= Finder.Flags + [ftBackward];
   if IsRe then Finder.Flags:= Finder.Flags + [ftRegex];
   if IsRe_s then Finder.Flags:= Finder.Flags + [ftRegex_s];
-  //if IsRe_m then Finder.Flags:= Finder.Flags + [ftRegex_m];
   if AKeepFlags then
   begin
     if IsCase then Finder.Flags:= Finder.Flags + [ftCaseSens];
@@ -8761,7 +8760,7 @@ end;
       DoRepaint; //needed anyway, even if controls not resized
     end;
 
-    if Assigned(fmSR) and fmSR.CanFocus then
+    if Assigned(fmSR) and fmSR.Visible and fmSR.Enabled and fmSR.CanFocus then
       fmSR.SetFocus
     else
     if not edQs.Focused then

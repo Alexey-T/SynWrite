@@ -509,7 +509,10 @@ begin
     OpSpec:= false;
     OpWords:= false;
   end;
-  OpWords:= not re;
+
+  cbOrigWords.Enabled:= not re;
+  cbAltWords.Enabled:= not re;
+
   cbOrigReDot.Enabled:= re;
   cbAltReDot.Enabled:= re;
 
