@@ -3333,7 +3333,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.10.1630';
+  cSynVer = '6.10.1635';
   cSynPyVer = '1.0.139';
 
 const
@@ -9175,7 +9175,7 @@ procedure TfmMain.TBXItemAbClick(Sender: TObject);
 begin
   with TfmAbout.Create(Self) do
     try
-      LabelWV.Caption:= cSynVer;
+      LabelWVersion.Caption:= cSynVer;
       Left:= Self.Monitor.Left + (Self.Monitor.Width - Width) div 2;
       Top:= Self.Monitor.Top + (Self.Monitor.Height - Height) div 2;
       ShowModal;

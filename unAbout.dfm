@@ -16,7 +16,7 @@ object fmAbout: TfmAbout
   ShowHint = True
   PixelsPerInch = 96
   TextHeight = 13
-  object LabelW0: TTntLabel
+  object LabelWTitle: TTntLabel
     Left = 96
     Top = 4
     Width = 96
@@ -29,14 +29,14 @@ object fmAbout: TfmAbout
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object LabelWV: TLabel
+  object LabelWVersion: TLabel
     Left = 96
     Top = 32
-    Width = 16
+    Width = 8
     Height = 13
-    Caption = 'ver'
+    Caption = '--'
   end
-  object GroupBox4: TTntGroupBox
+  object gInfo: TTntGroupBox
     Left = 8
     Top = 44
     Width = 313
@@ -64,14 +64,14 @@ object fmAbout: TfmAbout
       Height = 13
       Caption = 'Author:'
     end
-    object LabelWn: TTntLabel
+    object LabelWName: TTntLabel
       Left = 88
       Top = 16
       Width = 46
       Height = 13
       Caption = 'Alexey T.'
     end
-    object Labelw2: TTntLabel
+    object LabelWSite2: TTntLabel
       Left = 160
       Top = 32
       Width = 61
@@ -85,7 +85,7 @@ object fmAbout: TfmAbout
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      OnClick = Labelw2Click
+      OnClick = LabelWSite2Click
     end
     object Label4: TTntLabel
       Left = 8
@@ -94,7 +94,7 @@ object fmAbout: TfmAbout
       Height = 13
       Caption = 'Email:'
     end
-    object LabelWEm: TTntLabel
+    object LabelWMail: TTntLabel
       Left = 88
       Top = 64
       Width = 123
@@ -108,9 +108,9 @@ object fmAbout: TfmAbout
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      OnClick = LabelWEmClick
+      OnClick = LabelWMailClick
     end
-    object Labelw3: TTntLabel
+    object LabelWSite: TTntLabel
       Left = 88
       Top = 32
       Width = 55
@@ -124,7 +124,7 @@ object fmAbout: TfmAbout
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      OnClick = Labelw3Click
+      OnClick = LabelWSiteClick
     end
     object LabelForum: TTntLabel
       Left = 88
@@ -143,14 +143,14 @@ object fmAbout: TfmAbout
       OnClick = LabelForumClick
     end
   end
-  object GroupBox5: TTntGroupBox
+  object gComp: TTntGroupBox
     Left = 8
     Top = 136
     Width = 313
     Height = 69
     Caption = 'Components'
     TabOrder = 1
-    object LabelW1: TTntLabel
+    object LabelWComp1: TTntLabel
       Left = 88
       Top = 16
       Width = 109
@@ -164,9 +164,9 @@ object fmAbout: TfmAbout
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      OnClick = LabelW1Click
+      OnClick = LabelWComp1Click
     end
-    object LabelWA: TTntLabel
+    object LabelWComp2: TTntLabel
       Left = 88
       Top = 32
       Width = 217
@@ -182,7 +182,7 @@ object fmAbout: TfmAbout
       Font.Style = []
       ParentFont = False
       WordWrap = True
-      OnClick = LabelWAClick
+      OnClick = LabelWComp2Click
     end
   end
   object Button1: TTntButton
@@ -205,15 +205,16 @@ object fmAbout: TfmAbout
     Top = 8
     LangData = {
       0700666D41626F7574010100000001000000070043617074696F6E0110000000
-      07004C6162656C57300000090047726F7570426F783401010000000400000007
+      0B004C6162656C575469746C650000050067496E666F01010000000400000007
       0043617074696F6E0007004C6162656C31320101000000050000000700436170
       74696F6E0007004C6162656C3131010100000006000000070043617074696F6E
-      0006004C6162656C39010100000007000000070043617074696F6E0007004C61
-      62656C576E000007004C6162656C7732000006004C6162656C3401010000000D
-      000000070043617074696F6E0008004C6162656C57456D0000090047726F7570
-      426F783501010000000F000000070043617074696F6E0007004C6162656C5731
-      00000700427574746F6E31010100000018000000070043617074696F6E000700
-      4C6162656C5756000007004C6162656C7733000007004C6162656C574100000A
-      004C6162656C466F72756D010100000019000000070043617074696F6E00}
+      0006004C6162656C39010100000007000000070043617074696F6E000A004C61
+      62656C574E616D6500000B004C6162656C575369746532000006004C6162656C
+      3401010000000D000000070043617074696F6E000A004C6162656C574D61696C
+      0000050067436F6D7001010000000F000000070043617074696F6E000B004C61
+      62656C57436F6D703100000700427574746F6E31010100000018000000070043
+      617074696F6E000D004C6162656C5756657273696F6E00000A004C6162656C57
+      5369746500000B004C6162656C57436F6D703200000A004C6162656C466F7275
+      6D010100000019000000070043617074696F6E00}
   end
 end
