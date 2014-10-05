@@ -4,49 +4,51 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, ecPrint, StdCtrls, Printers, ecSyntMemo, ecSyntAnal,
-  ecPopupCtrl, ecStrUtils, DKLang;
+  Dialogs, ExtCtrls, StdCtrls, Printers,
+  ecSyntMemo, ecSyntAnal, ecPopupCtrl, ecPrint,
+  TntForms, TntStdCtrls, DKLang;
 
 type
-  TfmPrintSetup = class(TForm)
-    grOpt: TGroupBox;
-    bOk: TButton;
-    bCancel: TButton;
-    grHead: TGroupBox;
+  TfmPrintSetup = class(TTntForm)
+    grOpt: TTntGroupBox;
+    bOk: TTntButton;
+    bCancel: TTntButton;
+    grHead: TTntGroupBox;
     edHead: TSyntaxMemo;
-    grFoot: TGroupBox;
-    edFoot: TSyntaxMemo;
-    grFonts: TGroupBox;
-    bFontHead: TButton;
-    bFontFoot: TButton;
-    bFontNums: TButton;
+    grFonts: TTntGroupBox;
+    bFontHead: TTntButton;
+    bFontFoot: TTntButton;
+    bFontNums: TTntButton;
     Dlg: TFontDialog;
     SyntAnalyzer1: TSyntAnalyzer;
     AutoCompletePopup1: TAutoCompletePopup;
-    Label6: TLabel;
-    Label7: TLabel;
-    cbOrient: TComboBox;
-    cbColors: TComboBox;
-    grMargins: TGroupBox;
-    Label5: TLabel;
-    cbUnits: TComboBox;
-    Label1: TLabel;
+    labOri: TTntLabel;
+    labColor: TTntLabel;
+    cbOrient: TTntComboBox;
+    cbColors: TTntComboBox;
+    grMargins: TTntGroupBox;
+    labUnits: TTntLabel;
+    cbUnits: TTntComboBox;
+    labMLeft: TTntLabel;
     EditLeft: TEdit;
     EditTop: TEdit;
-    Label2: TLabel;
+    labMRight: TTntLabel;
     EditRight: TEdit;
-    Label4: TLabel;
+    labMBottom: TTntLabel;
     EditBottom: TEdit;
-    Label3: TLabel;
-    cbNums: TComboBox;
-    Label8: TLabel;
-    CheckRangeHL: TCheckBox;
-    CheckTransparent: TCheckBox;
-    CheckLineHL: TCheckBox;
-    CheckStaples: TCheckBox;
-    CheckHideCollapsed: TCheckBox;
-    CheckWordWrap: TCheckBox;
-    CheckSel: TCheckBox;
+    labMTop: TTntLabel;
+    cbNums: TTntComboBox;
+    labNums: TTntLabel;
+    CheckRangeHL: TTntCheckBox;
+    CheckTransparent: TTntCheckBox;
+    CheckLineHL: TTntCheckBox;
+    CheckStaples: TTntCheckBox;
+    CheckHideCollapsed: TTntCheckBox;
+    CheckWordWrap: TTntCheckBox;
+    CheckSel: TTntCheckBox;
+    edFoot: TSyntaxMemo;
+    labHint: TTntLabel;
+    DKLanguageController1: TDKLanguageController;
     procedure FormShow(Sender: TObject);
     procedure cbUnitsChange(Sender: TObject);
     procedure bFontNumsClick(Sender: TObject);
@@ -65,6 +67,9 @@ type
 function DoConfigPrinterPage(APrinter: TecSyntPrinter): boolean;
 
 implementation
+
+uses
+  ecStrUtils;
 
 {$R *.dfm}
 

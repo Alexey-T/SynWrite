@@ -431,7 +431,6 @@ type
     ecShowTree: TAction;
     TBXItemVPanelTree: TSpTBXItem;
     ecPrintAction: TecPrintAction;
-    ecPageSetupAction: TecPageSetupAction;
     ecPrinterSetup: TAction;
     PrinterSetupDialog: TPrinterSetupDialog;
     TBXItemToolPrint: TSpTbxSubmenuItem;
@@ -1390,6 +1389,7 @@ type
     TbxItemSRepInProject: TSpTBXItem;
     ecPreviewActionNew: TAction;
     acSetupLexerNew: TAction;
+    ecPageSetupActionNew: TAction;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1474,7 +1474,6 @@ type
     procedure TBXItemEDupClick(Sender: TObject);
     procedure TBXItemOToolsClick(Sender: TObject);
     procedure TimerHintTimer(Sender: TObject);
-    procedure ecPageSetupActionExecuteOK(Sender: TObject);
     procedure ecACPCloseUp(Sender: TObject; var Accept: Boolean);
     procedure TbxItemTool1Click(Sender: TObject);
     procedure TbxItemTool2Click(Sender: TObject);
@@ -1893,7 +1892,6 @@ type
     procedure ecEncodeHtmlCharsExecute(Sender: TObject);
     procedure ecSortDialogExecute(Sender: TObject);
     procedure TBXItemSSelBracketsClick(Sender: TObject);
-    procedure ecPageSetupActionBeforeExecute(Sender: TObject);
     procedure TimerTreeTimer(Sender: TObject);
     procedure PopupStatusLineEndsPopup(Sender: TObject);
     procedure TBXItemFoldAllClick(Sender: TObject);
@@ -2163,6 +2161,7 @@ type
     procedure TBXItemPreviewClick(Sender: TObject);
     procedure TBXItemFPreviewClick(Sender: TObject);
     procedure acSetupLexerNewExecute(Sender: TObject);
+    procedure ecPageSetupActionNewExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -3334,7 +3333,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.10.1620';
+  cSynVer = '6.10.1625';
   cSynPyVer = '1.0.139';
 
 const
@@ -3390,7 +3389,7 @@ uses
   unProcPy,
   unMainPy,
   unLexerLib, unSnipEd, unSaveTabs, unPrintPreview, unLexerProp,
-  unLexerStyles;
+  unLexerStyles, unPrintSetup;
 
 {$R *.dfm}
 {$R Cur.res}
@@ -4468,7 +4467,6 @@ begin
   ecSyncScrollH.Enabled:= ecSyncScrollV.Enabled;
 
   ecPrintAction.Update;
-  ecPageSetupAction.Update;
   ecPrinterSetup.Update;
 
   begin
@@ -5723,6 +5721,8 @@ begin
       ecPrintAction.Execute;
     smPrintPreview:
       ecPreviewActionNew.Execute;
+    smPageSetup:
+      ecPageSetupActionNew.Execute;
     sm_PrinterSetup:
       ecPrinterSetup.Execute;
 
@@ -23169,16 +23169,6 @@ begin
   end;
 end;
 
-procedure TfmMain.ecPageSetupActionBeforeExecute(Sender: TObject);
-begin
-  LoadPrintOptions;
-end;
-
-procedure TfmMain.ecPageSetupActionExecuteOK(Sender: TObject);
-begin
-  SavePrintOptions;
-end;
-
 
 {
 procedure TfmMain.TestApi;
@@ -29226,6 +29216,13 @@ end;
 function TfmMain.IsProjectEmpty: boolean;
 begin
   Result:= (fmProj=nil) or (fmProj.TreeProj.Items.Count<=1);
+end;
+
+procedure TfmMain.ecPageSetupActionNewExecute(Sender: TObject);
+begin
+  LoadPrintOptions;
+  if DoConfigPrinterPage(ecSyntPrinter) then
+    SavePrintOptions;
 end;
 
 initialization

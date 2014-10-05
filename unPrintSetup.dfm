@@ -3,7 +3,7 @@ object fmPrintSetup: TfmPrintSetup
   Top = 123
   BorderStyle = bsDialog
   Caption = 'Page setup'
-  ClientHeight = 545
+  ClientHeight = 536
   ClientWidth = 553
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,38 +17,46 @@ object fmPrintSetup: TfmPrintSetup
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object bOk: TButton
+  object bOk: TTntButton
     Left = 344
-    Top = 512
+    Top = 504
     Width = 97
-    Height = 25
+    Height = 23
     Caption = 'OK'
     Default = True
     ModalResult = 1
-    TabOrder = 5
+    TabOrder = 4
   end
-  object bCancel: TButton
+  object bCancel: TTntButton
     Left = 448
-    Top = 512
+    Top = 504
     Width = 97
-    Height = 25
+    Height = 23
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
-    TabOrder = 6
+    TabOrder = 5
   end
-  object grHead: TGroupBox
+  object grHead: TTntGroupBox
     Left = 8
-    Top = 208
+    Top = 288
     Width = 537
-    Height = 101
-    Caption = 'Header'
-    TabOrder = 2
+    Height = 209
+    Caption = 'Header / Footer'
+    TabOrder = 3
+    object labHint: TTntLabel
+      Left = 8
+      Top = 188
+      Width = 243
+      Height = 13
+      Caption = 'One tabulation for centering, two for right-aligning'
+      FocusControl = cbColors
+    end
     object edHead: TSyntaxMemo
       Left = 8
       Top = 16
       Width = 521
-      Height = 77
+      Height = 81
       SyntaxAnalyzer = SyntAnalyzer1
       TabList.AsString = '10'
       NonPrinted.Visible = True
@@ -182,19 +190,11 @@ object fmPrintSetup: TfmPrintSetup
       TabOrder = 0
       OnEnter = edHeadEnter
     end
-  end
-  object grFoot: TGroupBox
-    Left = 8
-    Top = 312
-    Width = 537
-    Height = 101
-    Caption = 'Footer'
-    TabOrder = 3
     object edFoot: TSyntaxMemo
       Left = 8
-      Top = 16
+      Top = 104
       Width = 521
-      Height = 77
+      Height = 81
       SyntaxAnalyzer = SyntAnalyzer1
       TabList.AsString = '10'
       NonPrinted.Visible = True
@@ -325,80 +325,80 @@ object fmPrintSetup: TfmPrintSetup
       ParentColor = False
       ParentCtl3D = False
       ParentFont = False
-      TabOrder = 0
+      TabOrder = 1
       OnEnter = edHeadEnter
     end
   end
-  object grFonts: TGroupBox
+  object grFonts: TTntGroupBox
     Left = 8
-    Top = 152
+    Top = 236
     Width = 537
     Height = 49
     Caption = 'Fonts'
-    TabOrder = 1
-    object bFontHead: TButton
+    TabOrder = 2
+    object bFontHead: TTntButton
       Left = 16
       Top = 16
-      Width = 149
-      Height = 25
+      Width = 161
+      Height = 23
       Caption = '&Header'
       TabOrder = 0
       OnClick = bFontNumsClick
     end
-    object bFontFoot: TButton
+    object bFontFoot: TTntButton
       Left = 184
       Top = 16
-      Width = 149
-      Height = 25
+      Width = 161
+      Height = 23
       Caption = '&Footer'
       TabOrder = 1
       OnClick = bFontNumsClick
     end
-    object bFontNums: TButton
+    object bFontNums: TTntButton
       Left = 352
       Top = 16
-      Width = 149
-      Height = 25
+      Width = 161
+      Height = 23
       Caption = 'Line numbers'
       TabOrder = 2
       OnClick = bFontNumsClick
     end
   end
-  object grOpt: TGroupBox
+  object grOpt: TTntGroupBox
     Left = 8
-    Top = 8
+    Top = 4
     Width = 537
     Height = 137
     Caption = 'Options'
     TabOrder = 0
-    object Label6: TLabel
+    object labOri: TTntLabel
       Left = 264
-      Top = 16
+      Top = 18
       Width = 58
       Height = 13
       Caption = 'Or&ientation:'
       FocusControl = cbOrient
     end
-    object Label7: TLabel
+    object labColor: TTntLabel
       Left = 264
-      Top = 40
+      Top = 42
       Width = 34
       Height = 13
       Caption = 'C&olors:'
       FocusControl = cbColors
     end
-    object Label8: TLabel
+    object labNums: TTntLabel
       Left = 264
-      Top = 64
+      Top = 66
       Width = 67
       Height = 13
       Caption = 'Line numbers:'
       FocusControl = cbColors
     end
-    object cbOrient: TComboBox
-      Left = 360
+    object cbOrient: TTntComboBox
+      Left = 352
       Top = 16
-      Width = 169
+      Width = 177
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
@@ -407,29 +407,35 @@ object fmPrintSetup: TfmPrintSetup
         'Portrait'
         'Landscape')
     end
-    object cbColors: TComboBox
-      Left = 360
+    object cbColors: TTntComboBox
+      Left = 352
       Top = 40
-      Width = 169
+      Width = 177
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
       TabOrder = 8
       Items.Strings = (
-        'RGB'
-        'Gray Scale'
-        'Black-and-white')
+        'Full color'
+        'Gray scale'
+        'Black and white')
     end
-    object cbNums: TComboBox
-      Left = 360
+    object cbNums: TTntComboBox
+      Left = 352
       Top = 64
-      Width = 169
+      Width = 177
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
       TabOrder = 9
+      Items.Strings = (
+        'None'
+        'Left '
+        'Right'
+        'Left on odd pages'
+        'Right on odd pages')
     end
-    object CheckRangeHL: TCheckBox
+    object CheckRangeHL: TTntCheckBox
       Left = 8
       Top = 32
       Width = 240
@@ -437,7 +443,7 @@ object fmPrintSetup: TfmPrintSetup
       Caption = 'Highlight ranges'
       TabOrder = 1
     end
-    object CheckTransparent: TCheckBox
+    object CheckTransparent: TTntCheckBox
       Left = 8
       Top = 80
       Width = 240
@@ -445,7 +451,7 @@ object fmPrintSetup: TfmPrintSetup
       Caption = 'Transparent'
       TabOrder = 4
     end
-    object CheckLineHL: TCheckBox
+    object CheckLineHL: TTntCheckBox
       Left = 8
       Top = 48
       Width = 240
@@ -453,7 +459,7 @@ object fmPrintSetup: TfmPrintSetup
       Caption = 'Highlight lines'
       TabOrder = 2
     end
-    object CheckStaples: TCheckBox
+    object CheckStaples: TTntCheckBox
       Left = 8
       Top = 112
       Width = 240
@@ -461,7 +467,7 @@ object fmPrintSetup: TfmPrintSetup
       Caption = 'Print staples'
       TabOrder = 6
     end
-    object CheckHideCollapsed: TCheckBox
+    object CheckHideCollapsed: TTntCheckBox
       Left = 8
       Top = 64
       Width = 240
@@ -469,7 +475,7 @@ object fmPrintSetup: TfmPrintSetup
       Caption = 'Hide collapsed lines'
       TabOrder = 3
     end
-    object CheckWordWrap: TCheckBox
+    object CheckWordWrap: TTntCheckBox
       Left = 8
       Top = 16
       Width = 240
@@ -477,7 +483,7 @@ object fmPrintSetup: TfmPrintSetup
       Caption = 'Word wrap'
       TabOrder = 0
     end
-    object CheckSel: TCheckBox
+    object CheckSel: TTntCheckBox
       Left = 8
       Top = 96
       Width = 240
@@ -486,24 +492,24 @@ object fmPrintSetup: TfmPrintSetup
       TabOrder = 5
     end
   end
-  object grMargins: TGroupBox
+  object grMargins: TTntGroupBox
     Left = 8
-    Top = 416
+    Top = 144
     Width = 537
     Height = 89
     Caption = 'Margins'
-    TabOrder = 4
-    object Label5: TLabel
-      Left = 26
-      Top = 22
+    TabOrder = 1
+    object labUnits: TTntLabel
+      Left = 42
+      Top = 40
       Width = 28
       Height = 13
       Alignment = taRightJustify
       Caption = '&Units:'
       FocusControl = cbUnits
     end
-    object Label1: TLabel
-      Left = 208
+    object labMLeft: TTntLabel
+      Left = 224
       Top = 40
       Width = 23
       Height = 13
@@ -511,8 +517,8 @@ object fmPrintSetup: TfmPrintSetup
       Caption = '&Left:'
       FocusControl = EditLeft
     end
-    object Label2: TLabel
-      Left = 400
+    object labMRight: TTntLabel
+      Left = 416
       Top = 40
       Width = 29
       Height = 13
@@ -520,8 +526,8 @@ object fmPrintSetup: TfmPrintSetup
       Caption = '&Right:'
       FocusControl = EditRight
     end
-    object Label4: TLabel
-      Left = 280
+    object labMBottom: TTntLabel
+      Left = 296
       Top = 64
       Width = 38
       Height = 13
@@ -529,8 +535,8 @@ object fmPrintSetup: TfmPrintSetup
       Caption = '&Bottom:'
       FocusControl = EditBottom
     end
-    object Label3: TLabel
-      Left = 296
+    object labMTop: TTntLabel
+      Left = 312
       Top = 16
       Width = 22
       Height = 13
@@ -538,9 +544,9 @@ object fmPrintSetup: TfmPrintSetup
       Caption = '&Top:'
       FocusControl = EditTop
     end
-    object cbUnits: TComboBox
-      Left = 62
-      Top = 18
+    object cbUnits: TTntComboBox
+      Left = 78
+      Top = 36
       Width = 107
       Height = 21
       Style = csDropDownList
@@ -554,28 +560,28 @@ object fmPrintSetup: TfmPrintSetup
         '0.001 inch')
     end
     object EditLeft: TEdit
-      Left = 238
+      Left = 254
       Top = 36
       Width = 63
       Height = 21
       TabOrder = 2
     end
     object EditTop: TEdit
-      Left = 329
+      Left = 345
       Top = 12
       Width = 75
       Height = 21
       TabOrder = 1
     end
     object EditRight: TEdit
-      Left = 438
+      Left = 454
       Top = 37
       Width = 63
       Height = 21
       TabOrder = 3
     end
     object EditBottom: TEdit
-      Left = 329
+      Left = 345
       Top = 61
       Width = 75
       Height = 21
@@ -672,8 +678,8 @@ object fmPrintSetup: TfmPrintSetup
     OnCheckChar = AutoCompletePopup1CheckChar
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
+    Font.Height = -12
+    Font.Name = 'Courier New'
     Font.Style = []
     IntegralHeight = True
     ItemHeight = 15
@@ -687,5 +693,44 @@ object fmPrintSetup: TfmPrintSetup
     Controls = <>
     Left = 448
     Top = 112
+  end
+  object DKLanguageController1: TDKLanguageController
+    IgnoreList.Strings = (
+      'SyntAn*')
+    Left = 512
+    Top = 116
+    LangData = {
+      0C00666D5072696E745365747570010100000001000000070043617074696F6E
+      01260000000300624F6B010100000002000000070043617074696F6E00070062
+      43616E63656C010100000003000000070043617074696F6E0006006772486561
+      64010100000004000000070043617074696F6E0007006C616248696E74010100
+      000005000000070043617074696F6E000600656448656164000006006564466F
+      6F74000007006772466F6E7473010100000006000000070043617074696F6E00
+      090062466F6E7448656164010100000007000000070043617074696F6E000900
+      62466F6E74466F6F74010100000008000000070043617074696F6E0009006246
+      6F6E744E756D73010100000009000000070043617074696F6E00050067724F70
+      7401010000000A000000070043617074696F6E0006006C61624F726901010000
+      000B000000070043617074696F6E0008006C6162436F6C6F7201010000000C00
+      0000070043617074696F6E0007006C61624E756D7301010000000D0000000700
+      43617074696F6E00080063624F7269656E7401010000000E0000000500497465
+      6D730008006362436F6C6F727301010000000F00000005004974656D73000600
+      63624E756D7301010000001000000005004974656D73000C00436865636B5261
+      6E6765484C010100000011000000070043617074696F6E001000436865636B54
+      72616E73706172656E74010100000012000000070043617074696F6E000B0043
+      6865636B4C696E65484C010100000013000000070043617074696F6E000C0043
+      6865636B537461706C6573010100000014000000070043617074696F6E001200
+      436865636B48696465436F6C6C61707365640101000000150000000700436170
+      74696F6E000D00436865636B576F726457726170010100000016000000070043
+      617074696F6E000800436865636B53656C010100000017000000070043617074
+      696F6E00090067724D617267696E73010100000018000000070043617074696F
+      6E0008006C6162556E697473010100000019000000070043617074696F6E0008
+      006C61624D4C65667401010000001A000000070043617074696F6E0009006C61
+      624D526967687401010000001B000000070043617074696F6E000A006C61624D
+      426F74746F6D01010000001C000000070043617074696F6E0007006C61624D54
+      6F7001010000001D000000070043617074696F6E0007006362556E6974730101
+      0000001E00000005004974656D73000800456469744C65667400000700456469
+      74546F700000090045646974526967687400000A0045646974426F74746F6D00
+      000300446C6700000D0053796E74416E616C797A657231000012004175746F43
+      6F6D706C657465506F70757031000101000000040048696E740000}
   end
 end
