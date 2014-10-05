@@ -195,6 +195,10 @@ object fmLexerProp: TfmLexerProp
         Top = 80
         Width = 193
         Height = 253
+        NonPrintedSpaces = True
+        NonPrintedEol = True
+        NonPrintedEolDetails = False
+        SelectModeDefault = msNone
         TabList.AsString = '4'
         NonPrinted.Font.Charset = DEFAULT_CHARSET
         NonPrinted.Font.Color = clSilver
@@ -232,6 +236,7 @@ object fmLexerProp: TfmLexerProp
         HintProps.Color = 13041663
         HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
         UserRanges = <>
+        UndoLimit = 0
         StaplePen.Color = clGray
         DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.SelectioMark.Font.Color = clHighlightText
@@ -476,13 +481,13 @@ object fmLexerProp: TfmLexerProp
         ParentFont = False
         TabOrder = 1
         TabStop = True
-        inherited Label3: TLabel
+        inherited Label3: TTntLabel
           Anchors = [akTop]
         end
-        inherited Label4: TLabel
+        inherited Label4: TTntLabel
           Anchors = [akTop]
         end
-        inherited Button3: TButton
+        inherited Button3: TTntButton
           Width = 134
           Anchors = [akTop]
         end
@@ -490,26 +495,26 @@ object fmLexerProp: TfmLexerProp
           Left = 151
           Anchors = [akTop]
         end
-        inherited ComboBox2: TComboBox
+        inherited ComboBox2: TTntComboBox
           Left = 151
           Anchors = [akTop]
         end
-        inherited GroupBox2: TGroupBox
+        inherited GroupBox2: TTntGroupBox
           Caption = 'Borders'
-          inherited Label5: TLabel
+          inherited Label5: TTntLabel
             Left = 8
           end
-          inherited Label6: TLabel
+          inherited Label6: TTntLabel
             Left = 8
           end
-          inherited Label7: TLabel
+          inherited Label7: TTntLabel
             Left = 8
           end
-          inherited Label8: TLabel
+          inherited Label8: TTntLabel
             Left = 8
           end
         end
-        inherited CheckBox7: TCheckBox
+        inherited CheckBox7: TTntCheckBox
           Width = 141
           Caption = '&Read only'
         end
@@ -579,6 +584,10 @@ object fmLexerProp: TfmLexerProp
           Top = 230
           Width = 401
           Height = 107
+          NonPrintedSpaces = True
+          NonPrintedEol = True
+          NonPrintedEolDetails = False
+          SelectModeDefault = msNone
           TabList.AsString = '4'
           NonPrinted.Font.Charset = DEFAULT_CHARSET
           NonPrinted.Font.Color = clSilver
@@ -614,6 +623,7 @@ object fmLexerProp: TfmLexerProp
           HintProps.Color = 13041663
           HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
           UserRanges = <>
+          UndoLimit = 0
           ScrollBars = ssHorizontal
           StaplePen.Color = clGray
           DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
@@ -872,12 +882,12 @@ object fmLexerProp: TfmLexerProp
             Align = alBottom
             TabOrder = 8
             TabStop = True
-            inherited GroupBox1: TGroupBox
+            inherited GroupBox1: TTntGroupBox
               Width = 401
-              inherited Label1: TLabel
+              inherited Label1: TTntLabel
                 Width = 41
               end
-              inherited Label2: TLabel
+              inherited Label2: TTntLabel
                 Left = 222
                 Width = 38
               end
@@ -890,12 +900,12 @@ object fmLexerProp: TfmLexerProp
                 Width = 58
               end
             end
-            inherited GroupBox2: TGroupBox
+            inherited GroupBox2: TTntGroupBox
               Width = 401
-              inherited Label3: TLabel
+              inherited Label3: TTntLabel
                 Width = 20
               end
-              inherited Label4: TLabel
+              inherited Label4: TTntLabel
                 Left = 223
                 Width = 32
               end
@@ -1087,7 +1097,7 @@ object fmLexerProp: TfmLexerProp
             TabOrder = 8
             OnChange = ComboBox23Change
           end
-          object ComboBox25: TComboBox
+          object ComboBox25: TTntComboBox
             Left = 112
             Top = 4
             Width = 288
@@ -1187,7 +1197,7 @@ object fmLexerProp: TfmLexerProp
             TabOrder = 9
             OnChange = ComboBox4Change
           end
-          object ComboBox18: TComboBox
+          object ComboBox18: TTntComboBox
             Left = 160
             Top = 120
             Width = 240
@@ -1209,12 +1219,12 @@ object fmLexerProp: TfmLexerProp
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 15
             TabStop = True
-            inherited GroupBox1: TGroupBox
+            inherited GroupBox1: TTntGroupBox
               Width = 414
-              inherited Label1: TLabel
+              inherited Label1: TTntLabel
                 Width = 41
               end
-              inherited Label2: TLabel
+              inherited Label2: TTntLabel
                 Left = 229
                 Width = 38
               end
@@ -1227,12 +1237,12 @@ object fmLexerProp: TfmLexerProp
                 Width = 63
               end
             end
-            inherited GroupBox2: TGroupBox
+            inherited GroupBox2: TTntGroupBox
               Width = 414
-              inherited Label3: TLabel
+              inherited Label3: TTntLabel
                 Width = 20
               end
-              inherited Label4: TLabel
+              inherited Label4: TTntLabel
                 Left = 229
                 Width = 32
               end
@@ -1383,6 +1393,10 @@ object fmLexerProp: TfmLexerProp
             Top = 188
             Width = 399
             Height = 117
+            NonPrintedSpaces = True
+            NonPrintedEol = True
+            NonPrintedEolDetails = False
+            SelectModeDefault = msNone
             SyntaxAnalyzer = FSynt
             TabList.AsString = '4'
             NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -1423,6 +1437,7 @@ object fmLexerProp: TfmLexerProp
             HintProps.Color = 13041663
             HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
             UserRanges = <>
+            UndoLimit = 0
             StaplePen.Color = clGray
             DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
             DefaultStyles.SelectioMark.Font.Color = clHighlightText
@@ -1519,7 +1534,7 @@ object fmLexerProp: TfmLexerProp
             TabOrder = 11
             OnTextChanged = SyntaxMemo10TextChanged
           end
-          object ComboBox10: TComboBox
+          object ComboBox10: TTntComboBox
             Left = 168
             Top = 164
             Width = 235
@@ -1606,7 +1621,7 @@ object fmLexerProp: TfmLexerProp
               Height = 13
               Caption = 'Caret position'
             end
-            object ComboBox28: TComboBox
+            object ComboBox28: TTntComboBox
               Left = 136
               Top = 16
               Width = 265
@@ -1634,7 +1649,7 @@ object fmLexerProp: TfmLexerProp
               OnClick = CheckBox16Click
             end
           end
-          object ComboBox29: TComboBox
+          object ComboBox29: TTntComboBox
             Left = 136
             Top = 28
             Width = 269
@@ -1792,7 +1807,7 @@ object fmLexerProp: TfmLexerProp
               TabOrder = 2
               OnChange = ColorBox1Change
             end
-            object ComboBox9: TComboBox
+            object ComboBox9: TTntComboBox
               Left = 200
               Top = 36
               Width = 197
@@ -1925,7 +1940,7 @@ object fmLexerProp: TfmLexerProp
                   TabOrder = 1
                   OnClick = CheckBox10Click
                 end
-                object ComboBox19: TComboBox
+                object ComboBox19: TTntComboBox
                   Left = 80
                   Top = 128
                   Width = 103
@@ -1948,6 +1963,10 @@ object fmLexerProp: TfmLexerProp
                 Width = 185
                 Height = 139
                 Cursor = crArrow
+                NonPrintedSpaces = True
+                NonPrintedEol = True
+                NonPrintedEolDetails = False
+                SelectModeDefault = msNone
                 TabList.AsString = '4'
                 NonPrinted.Font.Charset = DEFAULT_CHARSET
                 NonPrinted.Font.Color = clSilver
@@ -2001,6 +2020,7 @@ object fmLexerProp: TfmLexerProp
                 HintProps.Color = 13041663
                 HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
                 UserRanges = <>
+                UndoLimit = 0
                 TabMode = tmDialog
                 StaplePen.Color = clGray
                 WordWrap = True
@@ -2135,6 +2155,10 @@ object fmLexerProp: TfmLexerProp
                 Top = 15
                 Width = 219
                 Height = 277
+                NonPrintedSpaces = True
+                NonPrintedEol = True
+                NonPrintedEolDetails = False
+                SelectModeDefault = msNone
                 TabList.AsString = '4'
                 NonPrinted.Visible = True
                 NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -2173,6 +2197,7 @@ object fmLexerProp: TfmLexerProp
                 HintProps.Color = 13041663
                 HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
                 UserRanges = <>
+                UndoLimit = 0
                 TabMode = tmTabChar
                 StaplePen.Color = clGray
                 DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
@@ -2492,13 +2517,13 @@ object fmLexerProp: TfmLexerProp
             Align = alBottom
             TabOrder = 9
             TabStop = True
-            inherited GroupBox1: TGroupBox
+            inherited GroupBox1: TTntGroupBox
               Width = 416
               Height = 41
-              inherited Label1: TLabel
+              inherited Label1: TTntLabel
                 Width = 41
               end
-              inherited Label2: TLabel
+              inherited Label2: TTntLabel
                 Left = 239
                 Width = 38
               end
@@ -2511,13 +2536,13 @@ object fmLexerProp: TfmLexerProp
                 Width = 49
               end
             end
-            inherited GroupBox2: TGroupBox
+            inherited GroupBox2: TTntGroupBox
               Top = 41
               Width = 416
-              inherited Label3: TLabel
+              inherited Label3: TTntLabel
                 Width = 20
               end
-              inherited Label4: TLabel
+              inherited Label4: TTntLabel
                 Left = 239
                 Width = 32
               end
@@ -2537,6 +2562,10 @@ object fmLexerProp: TfmLexerProp
           Top = 289
           Width = 416
           Height = 48
+          NonPrintedSpaces = True
+          NonPrintedEol = True
+          NonPrintedEolDetails = False
+          SelectModeDefault = msNone
           Lines.Strings = (
             'SyntaxMemo6')
           TabList.AsString = '4'
@@ -2575,6 +2604,7 @@ object fmLexerProp: TfmLexerProp
           HintProps.Color = 13041663
           HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
           UserRanges = <>
+          UndoLimit = 0
           ScrollBars = ssVertical
           StaplePen.Color = clGray
           DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
@@ -2677,6 +2707,10 @@ object fmLexerProp: TfmLexerProp
           Top = 222
           Width = 416
           Height = 47
+          NonPrintedSpaces = True
+          NonPrintedEol = True
+          NonPrintedEolDetails = False
+          SelectModeDefault = msNone
           Lines.Strings = (
             'SyntaxMemo5')
           TabList.AsString = '4'
@@ -2715,6 +2749,7 @@ object fmLexerProp: TfmLexerProp
           HintProps.Color = 13041663
           HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
           UserRanges = <>
+          UndoLimit = 0
           ScrollBars = ssVertical
           StaplePen.Color = clGray
           DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
@@ -2871,6 +2906,10 @@ object fmLexerProp: TfmLexerProp
         Top = 0
         Width = 444
         Height = 337
+        NonPrintedSpaces = True
+        NonPrintedEol = True
+        NonPrintedEolDetails = False
+        SelectModeDefault = msNone
         Lines.Strings = (
           'SyntaxMemo9')
         SyntaxAnalyzer = SyntAnalyzer2
@@ -2912,6 +2951,7 @@ object fmLexerProp: TfmLexerProp
         HintProps.Color = 13041663
         HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
         UserRanges = <>
+        UndoLimit = 0
         StaplePen.Color = clGray
         DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.SelectioMark.Font.Color = clHighlightText
@@ -3015,6 +3055,10 @@ object fmLexerProp: TfmLexerProp
         Top = 0
         Width = 546
         Height = 337
+        NonPrintedSpaces = True
+        NonPrintedEol = True
+        NonPrintedEolDetails = False
+        SelectModeDefault = msNone
         TabList.AsString = '4'
         NonPrinted.Font.Charset = DEFAULT_CHARSET
         NonPrinted.Font.Color = clSilver
@@ -3052,6 +3096,7 @@ object fmLexerProp: TfmLexerProp
         HintProps.Color = 13041663
         HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
         UserRanges = <>
+        UndoLimit = 0
         StaplePen.Color = clGray
         DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
         DefaultStyles.SelectioMark.Font.Color = clHighlightText
@@ -3226,6 +3271,10 @@ object fmLexerProp: TfmLexerProp
       Top = 0
       Width = 453
       Height = 195
+      NonPrintedSpaces = True
+      NonPrintedEol = True
+      NonPrintedEolDetails = False
+      SelectModeDefault = msNone
       SyntaxAnalyzer = FSynt
       TabList.AsString = '4'
       NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -3293,6 +3342,7 @@ object fmLexerProp: TfmLexerProp
       HintProps.Color = 13041663
       HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
       UserRanges = <>
+      UndoLimit = 0
       TabMode = tmTabChar
       StaplePen.Color = clGray
       DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
@@ -3397,6 +3447,7 @@ object fmLexerProp: TfmLexerProp
       SyntaxMemo = SyntaxMemo1
       AutoSynchronize = False
       Align = alLeft
+      UpdateDelay = 500
       Indent = 19
       TabOrder = 1
     end

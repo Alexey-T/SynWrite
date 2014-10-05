@@ -59,6 +59,10 @@ object fmLexerStyles: TfmLexerStyles
     Width = 449
     Height = 173
     Cursor = crDefault
+    NonPrintedSpaces = True
+    NonPrintedEol = True
+    NonPrintedEolDetails = False
+    SelectModeDefault = msNone
     SyntaxAnalyzer = FSynt
     TabList.AsString = '4'
     NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -97,6 +101,7 @@ object fmLexerStyles: TfmLexerStyles
     HintProps.Color = 13041663
     HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
     UserRanges = <>
+    UndoLimit = 0
     TabMode = tmDialog
     StaplePen.Color = clGray
     DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
@@ -208,17 +213,17 @@ object fmLexerStyles: TfmLexerStyles
     ParentFont = False
     TabOrder = 1
     TabStop = True
-    inherited Button3: TButton
+    inherited Button3: TTntButton
       Width = 132
       Caption = 'Se&t custom font...'
     end
-    inherited GroupBox2: TGroupBox
+    inherited GroupBox2: TTntGroupBox
       Caption = 'Borders'
     end
-    inherited CheckBox7: TCheckBox
+    inherited CheckBox7: TTntCheckBox
       Caption = '&Read-only'
     end
-    inherited ComboBox7: TComboBox
+    inherited ComboBox7: TTntComboBox
       Width = 132
     end
     inherited FontDialog1: TFontDialog

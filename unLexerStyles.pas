@@ -16,7 +16,6 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-{$IFNDEF EC_VCL6_UP} ecColCombo,{$ENDIF}
   Dialogs, StdCtrls, ExtCtrls, ecSyntAnal, ecSyntMemo, ecsnStyleEdit,
   TntControls, TntForms, TntStdCtrls,
   DKLang;

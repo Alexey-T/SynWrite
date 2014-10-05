@@ -2366,7 +2366,7 @@ object fmSetup: TfmSetup
           Caption = 'Show horizontal ruler'
           TabOrder = 2
         end
-        object cbStaples: TComboBox
+        object cbStaples: TTntComboBox
           Left = 48
           Top = 168
           Width = 81

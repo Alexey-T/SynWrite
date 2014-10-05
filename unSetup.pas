@@ -276,7 +276,7 @@ type
     edLineNums: TTntComboBox;
     cbDrawFocus: TTntCheckBox;
     cbRuler: TTntCheckBox;
-    cbStaples: TComboBox;
+    cbStaples: TTntComboBox;
     edStapleOffset: TSpinEdit;
     cbDrawWrapMark: TTntCheckBox;
     cbDrawCol: TTntCheckBox;

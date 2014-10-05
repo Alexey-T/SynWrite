@@ -19,8 +19,6 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ecSyntAnal, ExtCtrls, ecSyntMemo,
-{$IFNDEF EC_VCL6_UP} ecColCombo,{$ENDIF}
-{$IFDEF EC_DOTNET} Types, {$ENDIF}
   ecsnColEdit, Buttons, ecsnStyleEdit, ecsnCodeTempl, ImgList, ecPopupCtrl,
   ecSyntGramma, ecStrUtils, ecSyntTree, ecsnRuleStates, DKLang,
   ecExtHighlight,
@@ -55,7 +53,7 @@ type
     Label26: TTntLabel;
     ListBox1: TTntListBox;
     CheckBox10: TTntCheckBox;
-    ComboBox19: TComboBox;
+    ComboBox19: TTntComboBox;
     Label28: TTntLabel;
     ComboBox23: TComboBox;
     Button9: TTntButton;
@@ -71,7 +69,7 @@ type
     Label35: TTntLabel;
     ComboBox24: TComboBox;
     CheckBox13: TTntCheckBox;
-    ComboBox25: TComboBox;
+    ComboBox25: TTntComboBox;
     Label36: TTntLabel;
     Label37: TTntLabel;
     ComboBox26: TComboBox;
@@ -86,10 +84,10 @@ type
     CheckBox15: TTntCheckBox;
     GroupBox4: TTntGroupBox;
     Label43: TTntLabel;
-    ComboBox28: TComboBox;
+    ComboBox28: TTntComboBox;
     CheckBox16: TTntCheckBox;
     FSynt: TSyntAnalyzer;
-    ComboBox29: TComboBox;
+    ComboBox29: TTntComboBox;
     Label44: TTntLabel;
     CheckBox18: TTntCheckBox;
     CheckBox19: TTntCheckBox;
@@ -185,7 +183,7 @@ type
     CheckBox5: TTntCheckBox;
     ComboBox4: TComboBox;
     Label15: TTntLabel;
-    ComboBox18: TComboBox;
+    ComboBox18: TTntComboBox;
     Label23: TTntLabel;
     GroupBox2: TTntGroupBox;
     Label16: TTntLabel;
@@ -211,11 +209,11 @@ type
     Label40: TTntLabel;
     ColorBox1: TColorBox;
     Label41: TTntLabel;
-    ComboBox9: TComboBox;
+    ComboBox9: TTntComboBox;
     CheckBox31: TTntCheckBox;
     SyntaxMemo10: TSyntaxMemo;
     Label42: TTntLabel;
-    ComboBox10: TComboBox;
+    ComboBox10: TTntComboBox;
     SyntaxTreeView1: TSyntaxTreeView;
     Splitter7: TSplitter;
     RuleStatesFrame1: TRuleStatesFrame;
@@ -349,7 +347,6 @@ type
     procedure FillCharSetCombo;
     procedure UpdateCharsets;
   protected
-    procedure ReadState(Reader: TReader); override;
   public
     constructor Create(AOwner: TComponent); override;
     property EditedLexer: TSyntAnalyzer read FEditSynt;
@@ -1519,12 +1516,6 @@ begin
   if SyntColFrame3.LB.ItemIndex <> -1 then
     ComboBox3.ItemIndex :=
       ComboBox3.Items.IndexOf(CurrentBlockRule.GrammaRuleName);
-end;
-
-procedure TfmLexerProp.ReadState(Reader: TReader);
-begin
-  inherited;
-  //BorderStyle := bsSizeable;
 end;
 
 procedure TfmLexerProp.CheckBox30Click(Sender: TObject);
