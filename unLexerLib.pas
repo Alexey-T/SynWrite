@@ -7,11 +7,11 @@ uses
   TntForms,
   Dialogs, StdCtrls, Buttons, ActnList, ImgList, ToolWin,
   CheckLst, ComCtrls,
-  ecSyntAnal, DKLang, TntCheckLst;
+  ecSyntAnal, DKLang, TntCheckLst, TntComCtrls;
 
 type
   TfmLexerLibrary = class(TTntForm)
-    ToolBar1: TToolBar;
+    ToolBar1: TTntToolBar;
     ImageList1: TImageList;
     ActionList1: TActionList;
     actOpenLib: TAction;
@@ -21,29 +21,29 @@ type
     actExportLexer: TAction;
     actDeleteLexer: TAction;
     actNewLexer: TAction;
-    btnOpen: TToolButton;
-    btnSaveAs: TToolButton;
-    btnNew: TToolButton;
-    btnConf: TToolButton;
-    ToolButton5: TToolButton;
-    ToolButton6: TToolButton;
-    btnImport: TToolButton;
-    btnExport: TToolButton;
-    btnDelete: TToolButton;
-    ToolButton10: TToolButton;
-    ToolButton11: TToolButton;
+    btnOpen: TTntToolButton;
+    btnSaveAs: TTntToolButton;
+    btnNew: TTntToolButton;
+    btnConf: TTntToolButton;
+    ToolButton5: TTntToolButton;
+    ToolButton6: TTntToolButton;
+    btnImport: TTntToolButton;
+    btnExport: TTntToolButton;
+    btnDelete: TTntToolButton;
+    ToolButton10: TTntToolButton;
+    ToolButton11: TTntToolButton;
     actClose: TAction;
-    btnClose: TToolButton;
-    ToolButton13: TToolButton;
+    btnClose: TTntToolButton;
+    ToolButton13: TTntToolButton;
     DlgOpenLib: TOpenDialog;
     DlgSaveLib: TSaveDialog;
     DlgOpenLexer: TOpenDialog;
     DlgSaveLexer: TSaveDialog;
-    btnCopy: TToolButton;
-    ToolButton16: TToolButton;
+    btnCopy: TTntToolButton;
+    ToolButton16: TTntToolButton;
     actCopy: TAction;
     actClear: TAction;
-    btnClear: TToolButton;
+    btnClear: TTntToolButton;
     DKLanguageController1: TDKLanguageController;
     LV: TTntCheckListBox;
     procedure actLexerPropsUpdate(Sender: TObject);

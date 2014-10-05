@@ -18,7 +18,7 @@ object fmLexerLibrary: TfmLexerLibrary
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object ToolBar1: TToolBar
+  object ToolBar1: TTntToolBar
     Left = 0
     Top = 0
     Width = 431
@@ -27,103 +27,103 @@ object fmLexerLibrary: TfmLexerLibrary
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
-    object btnOpen: TToolButton
+    object btnOpen: TTntToolButton
       Left = 0
       Top = 2
       Hint = 'Choose another lexer library...'
       Action = actOpenLib
     end
-    object btnSaveAs: TToolButton
+    object btnSaveAs: TTntToolButton
       Left = 23
       Top = 2
       Hint = 'Save lexer library with another name...'
       Action = actSaveLib
     end
-    object ToolButton5: TToolButton
+    object ToolButton5: TTntToolButton
       Left = 46
       Top = 2
       Width = 12
       ImageIndex = 4
       Style = tbsSeparator
     end
-    object btnNew: TToolButton
+    object btnNew: TTntToolButton
       Left = 58
       Top = 2
       Hint = 'Create new lexer'
       Action = actNewLexer
     end
-    object btnConf: TToolButton
+    object btnConf: TTntToolButton
       Left = 81
       Top = 2
       Hint = 'Customize selected lexer'
       Action = actLexerProps
     end
-    object ToolButton16: TToolButton
+    object ToolButton16: TTntToolButton
       Left = 104
       Top = 2
       Width = 12
       ImageIndex = 8
       Style = tbsSeparator
     end
-    object btnCopy: TToolButton
+    object btnCopy: TTntToolButton
       Left = 116
       Top = 2
       Hint = 'Create a copy of selected lexer'
       Action = actCopy
     end
-    object ToolButton6: TToolButton
+    object ToolButton6: TTntToolButton
       Left = 139
       Top = 2
       Width = 12
       ImageIndex = 3
       Style = tbsSeparator
     end
-    object btnImport: TToolButton
+    object btnImport: TTntToolButton
       Left = 151
       Top = 2
       Hint = 'Import lexer from a file...'
       Action = actImportLexer
     end
-    object btnExport: TToolButton
+    object btnExport: TTntToolButton
       Left = 174
       Top = 2
       Hint = 'Export lexer to file...'
       Action = actExportLexer
     end
-    object ToolButton11: TToolButton
+    object ToolButton11: TTntToolButton
       Left = 197
       Top = 2
       Width = 12
       ImageIndex = 5
       Style = tbsSeparator
     end
-    object btnDelete: TToolButton
+    object btnDelete: TTntToolButton
       Left = 209
       Top = 2
       Hint = 'Delete selected lexer'
       Action = actDeleteLexer
     end
-    object ToolButton10: TToolButton
+    object ToolButton10: TTntToolButton
       Left = 232
       Top = 2
       Width = 12
       ImageIndex = 4
       Style = tbsSeparator
     end
-    object btnClear: TToolButton
+    object btnClear: TTntToolButton
       Left = 244
       Top = 2
       Hint = 'Remove all lexers (clear library)'
       Action = actClear
     end
-    object ToolButton13: TToolButton
+    object ToolButton13: TTntToolButton
       Left = 267
       Top = 2
       Width = 12
       ImageIndex = 8
       Style = tbsSeparator
     end
-    object btnClose: TToolButton
+    object btnClose: TTntToolButton
       Left = 279
       Top = 2
       Hint = 'Close this dialog'

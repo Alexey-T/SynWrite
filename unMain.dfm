@@ -434,6 +434,7 @@ object fmMain: TfmMain
         ClickAction = staMoveCaret
         AutoSynchronize = True
         Align = alTop
+        UpdateDelay = 500
         DragMode = dmAutomatic
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -2883,6 +2884,10 @@ object fmMain: TfmMain
       Top = 72
       Width = 129
       Height = 145
+      NonPrintedSpaces = True
+      NonPrintedEol = True
+      NonPrintedEolDetails = False
+      SelectModeDefault = msNone
       Lines.Strings = (
         'Template'
         'editor')
@@ -2954,6 +2959,7 @@ object fmMain: TfmMain
       HintProps.Images = ImgListGutter
       HintProps.ShowFirstLine = True
       UserRanges = <>
+      UndoLimit = 0
       StaplePen.Color = clGray
       StaplePen.Style = psDot
       StapleOffset = -1
