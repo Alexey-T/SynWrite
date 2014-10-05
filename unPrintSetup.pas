@@ -1,3 +1,7 @@
+{
+Based on EControl PageSetup form
+Copyright (c) EControl
+}
 unit unPrintSetup;
 
 interface
@@ -15,38 +19,34 @@ type
     bCancel: TTntButton;
     grHead: TTntGroupBox;
     edHead: TSyntaxMemo;
+    edFoot: TSyntaxMemo;
     grFonts: TTntGroupBox;
     bFontHead: TTntButton;
     bFontFoot: TTntButton;
     bFontNums: TTntButton;
     Dlg: TFontDialog;
     SyntAnalyzer1: TSyntAnalyzer;
-    AutoCompletePopup1: TAutoCompletePopup;
-    labOri: TTntLabel;
+    AcpPopup: TAutoCompletePopup;
+    labOrient: TTntLabel;
     labColor: TTntLabel;
     cbOrient: TTntComboBox;
     cbColors: TTntComboBox;
     grMargins: TTntGroupBox;
     labUnits: TTntLabel;
     cbUnits: TTntComboBox;
-    labMLeft: TTntLabel;
-    EditLeft: TEdit;
-    EditTop: TEdit;
-    labMRight: TTntLabel;
-    EditRight: TEdit;
-    labMBottom: TTntLabel;
-    EditBottom: TEdit;
-    labMTop: TTntLabel;
+    edLeft: TEdit;
+    edTop: TEdit;
+    edRight: TEdit;
+    edBottom: TEdit;
     cbNums: TTntComboBox;
     labNums: TTntLabel;
-    CheckRangeHL: TTntCheckBox;
-    CheckTransparent: TTntCheckBox;
-    CheckLineHL: TTntCheckBox;
-    CheckStaples: TTntCheckBox;
-    CheckHideCollapsed: TTntCheckBox;
-    CheckWordWrap: TTntCheckBox;
-    CheckSel: TTntCheckBox;
-    edFoot: TSyntaxMemo;
+    opHiRanges: TTntCheckBox;
+    opTransp: TTntCheckBox;
+    opHiLines: TTntCheckBox;
+    opStaples: TTntCheckBox;
+    opHideCollapsed: TTntCheckBox;
+    opWordWrap: TTntCheckBox;
+    opSelOnly: TTntCheckBox;
     labHint: TTntLabel;
     DKLanguageController1: TDKLanguageController;
     labHint2: TTntLabel;
@@ -55,7 +55,7 @@ type
     procedure bFontNumsClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure edHeadEnter(Sender: TObject);
-    procedure AutoCompletePopup1CheckChar(Sender: TObject; C: Word;
+    procedure AcpPopupCheckChar(Sender: TObject; C: Word;
       var IsWord: Boolean);
   private
     FUnits: TPrintUnits;
@@ -96,10 +96,10 @@ begin
   with APrinter do
   begin
     Units := FUnits;
-    MarginLeft := StrToFloat(EditLeft.Text);
-    MarginRight := StrToFloat(EditRight.Text);
-    MarginTop := StrToFloat(EditTop.Text);
-    MarginBottom := StrToFloat(EditBottom.Text);
+    MarginLeft := StrToFloat(edLeft.Text);
+    MarginRight := StrToFloat(edRight.Text);
+    MarginTop := StrToFloat(edTop.Text);
+    MarginBottom := StrToFloat(edBottom.Text);
 
     Orientation := TPrinterOrientation(cbOrient.ItemIndex);
     ColorMode := TPrintColorMode(cbColors.ItemIndex);
@@ -112,16 +112,16 @@ begin
     Footer := edFoot.Lines.Text;
 
     opt := [];
-    if CheckWordWrap.Checked then Include(opt, mpWordWrap);
-    if CheckHideCollapsed.Checked then Include(opt, mpHideCollapsed);
-    if CheckLineHL.Checked then Include(opt, mpLineHighlight);
-    if CheckRangeHL.Checked then Include(opt, mpBlockHighlight);
-    if CheckStaples.Checked then Include(opt, mpBlockStaples);
-    if not CheckTransparent.Checked then Include(opt, mpBackColor);
+    if opWordWrap.Checked then Include(opt, mpWordWrap);
+    if opHideCollapsed.Checked then Include(opt, mpHideCollapsed);
+    if opHiLines.Checked then Include(opt, mpLineHighlight);
+    if opHiRanges.Checked then Include(opt, mpBlockHighlight);
+    if opStaples.Checked then Include(opt, mpBlockStaples);
+    if not opTransp.Checked then Include(opt, mpBackColor);
     Options := opt;
 
     LineNumbersPos := TLineNumbersPos(cbNums.ItemIndex);
-    PrintSelection := CheckSel.Checked;
+    PrintSelection := opSelOnly.Checked;
   end;
 end;
 
@@ -133,10 +133,10 @@ begin
   begin
     FUnits := Units;
     cbUnits.ItemIndex := integer(Units);
-    EditLeft.Text := FormatFloat('0.###', MarginLeft);
-    EditRight.Text := FormatFloat('0.###', MarginRight);
-    EditTop.Text := FormatFloat('0.###', MarginTop);
-    EditBottom.Text := FormatFloat('0.###', MarginBottom);
+    edLeft.Text := FormatFloat('0.###', MarginLeft);
+    edRight.Text := FormatFloat('0.###', MarginRight);
+    edTop.Text := FormatFloat('0.###', MarginTop);
+    edBottom.Text := FormatFloat('0.###', MarginBottom);
 
     cbOrient.ItemIndex := integer(Orientation);
     cbColors.ItemIndex := integer(ColorMode);
@@ -153,17 +153,17 @@ begin
 
     for i := 0 to Fields.Count - 1 do
     begin
-      AutoCompletePopup1.Items.Add('#' + Fields[i] + '#');
-      AutoCompletePopup1.DisplayItems.Add(Fields[i]);
+      AcpPopup.Items.Add('#' + Fields[i] + '#');
+      AcpPopup.DisplayItems.Add(Fields[i]);
     end;
 
-    CheckWordWrap.Checked := mpWordWrap in Options;
-    CheckHideCollapsed.Checked := mpHideCollapsed in Options;
-    CheckLineHL.Checked := mpLineHighlight in Options;
-    CheckRangeHL.Checked := mpBlockHighlight in Options;
-    CheckTransparent.Checked := not (mpBackColor in Options);
-    CheckStaples.Checked := mpBlockStaples in Options;
-    CheckSel.Checked := PrintSelection;
+    opWordWrap.Checked := mpWordWrap in Options;
+    opHideCollapsed.Checked := mpHideCollapsed in Options;
+    opHiLines.Checked := mpLineHighlight in Options;
+    opHiRanges.Checked := mpBlockHighlight in Options;
+    opTransp.Checked := not (mpBackColor in Options);
+    opStaples.Checked := mpBlockStaples in Options;
+    opSelOnly.Checked := PrintSelection;
   end;
 end;
 
@@ -192,13 +192,16 @@ var
   //
 begin
   try
-    GetValue(EditLeft);
-    GetValue(EditRight);
-    GetValue(EditTop);
-    GetValue(EditBottom);
+    GetValue(edLeft);
+    GetValue(edRight);
+    GetValue(edTop);
+    GetValue(edBottom);
     Result := True;
   except
-    MessageBoxW(Handle, 'Invalid value', PWideChar(Widestring(Caption)), MB_OK or MB_ICONHAND);
+    MessageBoxW(Handle,
+      PWChar(DKLangConstW('zMInvalidNumber')),
+      PWideChar(Widestring(Caption)),
+      mb_ok or mb_iconerror);
     if cur.CanFocus then
       cur.SetFocus;
     Result := False;
@@ -231,10 +234,10 @@ begin
  if CheckMargins then
  begin
    NewUnits := TPrintUnits(cbUnits.ItemIndex);
-   Convert(EditLeft);
-   Convert(EditRight);
-   Convert(EditTop);
-   Convert(EditBottom);
+   Convert(edLeft);
+   Convert(edRight);
+   Convert(edTop);
+   Convert(edBottom);
    FUnits := NewUnits;
  end
  else
@@ -256,10 +259,10 @@ end;
 
 procedure TfmPrintSetup.edHeadEnter(Sender: TObject);
 begin
-  AutoCompletePopup1.SyntMemo := TSyntaxMemo(Sender);
+  AcpPopup.SyntMemo := TSyntaxMemo(Sender);
 end;
 
-procedure TfmPrintSetup.AutoCompletePopup1CheckChar(Sender: TObject;
+procedure TfmPrintSetup.AcpPopupCheckChar(Sender: TObject;
   C: Word; var IsWord: Boolean);
 begin
   IsWord := IsWordChar(ecChar(C)) or (ecChar(C) = '#');
