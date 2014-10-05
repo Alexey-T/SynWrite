@@ -836,13 +836,6 @@ begin
     Exit
   end;
 
-  if (Key=vk_f3) and (Shift=[]) then
-  begin
-    labSmallClick(Self);
-    Handled:= true;
-    Exit
-  end;
-
   if (Key=vk_f4) and (Shift=[]) then
   begin
     OpRe:= not OpRe;
