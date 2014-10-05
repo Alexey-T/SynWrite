@@ -364,13 +364,13 @@ object fmSR: TfmSR
     Left = 8
     Top = 54
     Width = 537
-    Height = 18
+    Height = 21
     BevelOuter = bvNone
     TabOrder = 7
     Visible = False
     object cbAltCase: TTntCheckBox
       Left = 0
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Case sensitive'
@@ -379,7 +379,7 @@ object fmSR: TfmSR
     end
     object cbAltWords: TTntCheckBox
       Left = 48
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Whole words'
@@ -388,7 +388,7 @@ object fmSR: TfmSR
     end
     object cbAltSpec: TTntCheckBox
       Left = 96
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Special chars (\n \r \t...)'
@@ -398,7 +398,7 @@ object fmSR: TfmSR
     end
     object cbAltRe: TTntCheckBox
       Left = 142
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Regular expressions'
@@ -408,7 +408,7 @@ object fmSR: TfmSR
     end
     object cbAltReDot: TTntCheckBox
       Left = 182
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Dot matches newlines'
@@ -417,7 +417,7 @@ object fmSR: TfmSR
     end
     object cbAltBack: TTntCheckBox
       Left = 224
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Backward search'
@@ -426,7 +426,7 @@ object fmSR: TfmSR
     end
     object cbAltSelectAll: TTntCheckBox
       Left = 272
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Select results'
@@ -436,7 +436,7 @@ object fmSR: TfmSR
     end
     object cbAltBkmkAll: TTntCheckBox
       Left = 312
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Bookmark results'
@@ -446,7 +446,7 @@ object fmSR: TfmSR
     end
     object cbAltExtSel: TTntCheckBox
       Left = 352
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Extend selection'
@@ -455,7 +455,7 @@ object fmSR: TfmSR
     end
     object cbAltInSel: TTntCheckBox
       Left = 392
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Search in selection'
@@ -465,7 +465,7 @@ object fmSR: TfmSR
     end
     object cbAltFromCaret: TTntCheckBox
       Left = 440
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Search from caret'
@@ -475,7 +475,7 @@ object fmSR: TfmSR
     end
     object cbAltWrap: TTntCheckBox
       Left = 488
-      Top = 0
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Wrap search'
@@ -483,8 +483,8 @@ object fmSR: TfmSR
       TabOrder = 12
     end
     object cbAltCfm: TTntCheckBox
-      Left = 272
-      Top = 0
+      Left = 304
+      Top = 2
       Width = 49
       Height = 17
       Hint = 'Prompt on replace'

@@ -1171,7 +1171,7 @@ begin
   FTopGScope:= gScop.Top;
   FWidth0:= ClientWidth;
   FHeight0:= ClientHeight;
-  FHeight0Small:= PanelAlt.Top+PanelAlt.Height+3;
+  FHeight0Small:= PanelAlt.Top+PanelAlt.Height;
   FMemoDy:= ed2Memo.Height - ed2.Height;
 
   //move buttons which bad placed in ide
