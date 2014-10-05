@@ -1584,7 +1584,7 @@ procedure TfmSetup.cbLangChange(Sender: TObject);
 begin
   FLangChanged:= true;
   labLangInfo.Caption:= DKLangConstW('MLnApply');
-  labLangInfo.Font.Color:= clBlue;
+  labLangInfo.Font.Color:= clNavy;
   labLangInfo.Show;
 end;
 

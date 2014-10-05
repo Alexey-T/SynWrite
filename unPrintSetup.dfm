@@ -18,9 +18,9 @@ object fmPrintSetup: TfmPrintSetup
   PixelsPerInch = 96
   TextHeight = 13
   object bOk: TTntButton
-    Left = 344
+    Left = 360
     Top = 488
-    Width = 97
+    Width = 89
     Height = 23
     Caption = 'OK'
     Default = True
@@ -28,9 +28,9 @@ object fmPrintSetup: TfmPrintSetup
     TabOrder = 4
   end
   object bCancel: TTntButton
-    Left = 448
+    Left = 456
     Top = 488
-    Width = 97
+    Width = 89
     Height = 23
     Cancel = True
     Caption = 'Cancel'
@@ -509,7 +509,7 @@ object fmPrintSetup: TfmPrintSetup
     TabOrder = 1
     object labUnits: TTntLabel
       Left = 52
-      Top = 24
+      Top = 28
       Width = 28
       Height = 13
       Alignment = taRightJustify
@@ -518,7 +518,7 @@ object fmPrintSetup: TfmPrintSetup
     end
     object cbUnits: TTntComboBox
       Left = 88
-      Top = 22
+      Top = 24
       Width = 97
       Height = 21
       Style = csDropDownList
@@ -533,7 +533,7 @@ object fmPrintSetup: TfmPrintSetup
     end
     object edLeft: TEdit
       Left = 246
-      Top = 22
+      Top = 24
       Width = 63
       Height = 21
       TabOrder = 2
@@ -547,7 +547,7 @@ object fmPrintSetup: TfmPrintSetup
     end
     object edRight: TEdit
       Left = 406
-      Top = 22
+      Top = 24
       Width = 63
       Height = 21
       TabOrder = 3
