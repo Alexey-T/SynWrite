@@ -2162,6 +2162,7 @@ type
     procedure TBXItemFPreviewClick(Sender: TObject);
     procedure acSetupLexerNewExecute(Sender: TObject);
     procedure ecPageSetupActionNewExecute(Sender: TObject);
+    procedure edQsKeyPress(Sender: TObject; var Key: Char);
 
   private
     cStatLine,
@@ -29216,6 +29217,12 @@ begin
   LoadPrintOptions;
   if DoConfigPrinterPage(ecSyntPrinter) then
     SavePrintOptions;
+end;
+
+procedure TfmMain.edQsKeyPress(Sender: TObject; var Key: Char);
+begin
+  //disable ding with Esc
+  if (Key=#27) then Key:= #0;
 end;
 
 initialization

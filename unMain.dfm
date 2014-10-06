@@ -404,6 +404,7 @@ object fmMain: TfmMain
         OnChange = edQsChange
         OnExit = edQsExit
         OnKeyDown = edQsKeyDown
+        OnKeyPress = edQsKeyPress
       end
     end
   end

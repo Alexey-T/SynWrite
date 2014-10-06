@@ -1655,12 +1655,20 @@ end;
 
 procedure TfmSR.ed1KeyPress(Sender: TObject; var Key: Char);
 begin
-  DoHandleCtrlBkSp(ed1, Key);
+  //disable ding with Esc
+  if (Key=#27) then
+    Key:= #0
+  else
+    DoHandleCtrlBkSp(ed1, Key);
 end;
 
 procedure TfmSR.ed2KeyPress(Sender: TObject; var Key: Char);
 begin
-  DoHandleCtrlBkSp(ed2, Key);
+  //disable ding with Esc
+  if (Key=#27) then
+    Key:= #0
+  else
+    DoHandleCtrlBkSp(ed2, Key);
 end;
 
 procedure TfmSR.TntFormKeyDown(Sender: TObject; var Key: Word;
