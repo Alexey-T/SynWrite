@@ -9082,12 +9082,6 @@ begin
       if edQs.Focused then
         DoHandleQuickSearchEscape
       else
-      {
-      //Esc in File/Replace
-      if Assigned(fmSR) and fmSR.Focused then
-        fmSR.Close
-      else
-      }
       //Esc in panels
       if (CurrentEditor<>nil) and (not CurrentEditor.Focused) then
         FocusEditor

@@ -1671,7 +1671,9 @@ begin
   if Shortcut(Key, Shift) = Sh_FindNext then
   begin
     if bFindNext.Visible then bFindNext.Click else
-     if bRepSkip.Visible then bRepSkip.Click;
+     if bRepSkip.Visible then bRepSkip.Click else
+      if bAltFindNext.Visible then bAltFindNext.Click else
+       if bAltRepSkip.Visible then bAltRepSkip.Click;
     Key:= 0;
     Exit
   end;
