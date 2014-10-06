@@ -552,11 +552,15 @@ end;
 
 procedure TfmSR.ShowStatus(const S: Widestring);
 begin
-  if not IsDocked then
-    StatusFind.SimpleText:= S
-  else
+  if IsDocked or IsSmall then
+  begin
     if Assigned(FOnShowStatus) then
       FOnShowStatus(S);
+  end
+  else
+  begin
+    StatusFind.SimpleText:= S
+  end;
 end;
 
 procedure TfmSR.TrackTranChange(Sender: TObject);
