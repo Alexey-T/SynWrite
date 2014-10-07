@@ -633,6 +633,7 @@ begin
       if UseTabChar then
         SReplaceSpToTabLeading(SIndent, STabString);
 
+      SNew:= '';
       SNew:= SIndent+SData;
       if SNew<>List[i] then
       begin
@@ -683,6 +684,8 @@ begin
       if UseTabChar then
         SReplaceSpToTabLeading(SIndent, STabString);
 
+      //compiler bug? if SIndent='', SData='', SNew is previous line SNew (not '')
+      SNew:= ''; //fix it
       SNew:= SIndent+SData;
       if SNew<>List[i] then
       begin
