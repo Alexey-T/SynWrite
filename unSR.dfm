@@ -201,6 +201,7 @@ object fmSR: TfmSR
     DropDownCount = 15
     ItemHeight = 13
     TabOrder = 2
+    OnChange = ed2Change
     OnEnter = ed2Enter
     OnExit = ed2Exit
     OnKeyDown = ed2KeyDown
@@ -718,6 +719,7 @@ object fmSR: TfmSR
     TabOrder = 3
     Visible = False
     WordWrap = False
+    OnChange = ed2MemoChange
     OnEnter = ed2Enter
     OnExit = ed2Exit
     OnKeyDown = ed1MemoKeyDown

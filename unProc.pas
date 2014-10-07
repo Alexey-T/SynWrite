@@ -18,6 +18,7 @@ uses
   ecMemoStrings,
   ecSyntDlg,
   ecUnicode,
+  ecEdits,
 
   IniFiles,
   PngImageList,
@@ -167,6 +168,7 @@ function WideMinimizeName(const Filename: WideString; Canvas: TCanvas;
   MaxLen: Integer): WideString;
 
 procedure ComboUpdate(ed: TTntCombobox; SRCount: integer);
+procedure ComboAltUpdate(ed: TTntCombobox; memo: TSyntaxCombobox);
 procedure ComboSaveToFile(ed: TTntCombobox; const fn, section: string);
 procedure ComboLoadFromFile(ed: TTntCombobox; const fn, section: string; UseLast: boolean = true);
 
@@ -668,6 +670,18 @@ begin
     Text:= S;
   end;
 end;
+
+procedure ComboAltUpdate(ed: TTntCombobox; memo: TSyntaxCombobox);
+var
+  i: Integer;
+begin
+  memo.DropDownList.Items.Clear;
+  for i:= 0 to ed.Items.Count-1 do
+    memo.DropDownList.Items.Add(ed.Items[i]);
+
+  memo.DropDownList.DisplayItems:= memo.DropDownList.Items;
+end;
+
 
 { TFinderInTree }
 

@@ -187,6 +187,8 @@ type
     procedure labSmallClick(Sender: TObject);
     procedure ed2Enter(Sender: TObject);
     procedure ed2Exit(Sender: TObject);
+    procedure ed2Change(Sender: TObject);
+    procedure ed2MemoChange(Sender: TObject);
   private
     { Private declarations }
     CurChecked: boolean;
@@ -815,7 +817,6 @@ begin
     ch2:= #0;
   ch2:= UpCase(ch2);
 
-  //Ctrl+Z
   if (key=Ord('Z')) and (Shift=[ssCtrl]) then
   begin
     if ed1.Focused or ed2.Focused then
@@ -827,7 +828,6 @@ begin
     Exit;
   end;
 
-  //Esc
   if (Key=vk_escape) and (Shift=[]) then
   begin
     bCancel.Click;
@@ -869,6 +869,14 @@ begin
     Handled:= true;
     Exit
   end;
+
+  //Ctrl+D
+  if (Key=Ord('D')) and (Shift=[ssCtrl]) then
+  begin
+    labDockedClick(Self);
+    Handled:= true;
+    Exit
+  end;  
 
   //Ctrl+V / Shift+Ins: intercept Paste for Memos
   if ( ((Key=Ord('V')) and (Shift=[ssCtrl])) or
@@ -1266,8 +1274,6 @@ end;
 
 procedure TfmSR.UpdForm;
 begin
-  UpdMemoHeight;
-
   if IsReplace then
     Caption:= DKLangConstW('fnR')
   else
@@ -1342,6 +1348,8 @@ begin
   PanelAltRep.Visible:= IsSmall and IsReplace;
 
   PanelAlt.Top:= gOp.Top;
+
+  UpdMemoHeight;
 end;
 
 procedure TfmSR.SetIsMultiline(Value: boolean);
@@ -2071,6 +2079,16 @@ begin
 end;
 
 procedure TfmSR.ed2Exit(Sender: TObject);
+begin
+  UpdButtons;
+end;
+
+procedure TfmSR.ed2Change(Sender: TObject);
+begin
+  UpdButtons;
+end;
+
+procedure TfmSR.ed2MemoChange(Sender: TObject);
 begin
   UpdButtons;
 end;
