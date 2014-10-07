@@ -613,10 +613,15 @@ end;
 
 function TSyntaxMemo.IsCaretOnLine(NLine: Integer): boolean;
 var
-  i: Integer;
+  i, NCarets: Integer;
 begin
   Result:= false;
-  for i:= 0 to CaretsCount-1 do
+  NCarets:= CaretsCount;
+
+  if NCarets<=1 then
+    Result:= NLine=CurrentLine
+  else
+  for i:= 0 to NCarets-1 do
     if GetCaret(i).Y=NLine then
     begin
       Result:= true;
