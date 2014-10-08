@@ -2090,29 +2090,10 @@ begin
 end;
 
 
-procedure DoEnumIcons(cb: TTntCombobox);
-var
-  List: TTntStringList;
-  i: Integer;
-begin
-  List:= TTntStringList.Create;
-  try
-    FFindToList(List, fmMain.SynIconsDir, 'f_new.png', '',
-      true{SubDirs}, false, false, false);
-
-    for i:= 0 to List.Count-1 do
-      List[i]:= ExtractFileName(ExtractFileDir(List[i]));
-
-    List.Sort;
-    cb.Items:= List;
-  finally
-    FreeAndNil(List);
-  end;
-end;
-
 procedure TfmSetup.InitColors;
 var
   i: Integer;
+  L: TTntStringList;
 begin
   for i:= Low(cColorsOrder) to High(cColorsOrder) do
     ListColors.Items.Add(DKLangConstW(_ColorIndexToDklangID(cColorsOrder[i])));
@@ -2124,8 +2105,14 @@ begin
     cbTheme.ItemIndex:= cbTheme.Items.IndexOf(opTheme);
 
     //icons
-    DoEnumIcons(cbIcons);
-    cbIcons.ItemIndex:= cbIcons.Items.IndexOf(opIcons);
+    L:= TTntStringList.Create;
+    try
+      DoEnumIcons(L);
+      cbIcons.Items:= L;
+      cbIcons.ItemIndex:= cbIcons.Items.IndexOf(opIcons);
+    finally
+      FreeAndNil(L);
+    end;
 
     //colors
     Move(ColorsArray, ColorsSetup, SizeOf(TSynColors));

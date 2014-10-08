@@ -3238,6 +3238,7 @@ type
     procedure DoEnumLexers(L: TTntStrings; AlsoDisabled: boolean = false);
     procedure DoEnumFavs(L: TTntStringList);
     procedure DoEnumProjFiles(L: TTntStringList);
+    procedure DoEnumIcons(L: TTntStringList);
 
     //Python public
     procedure DoPyConsole_LogString(const Str: Widestring);
@@ -3321,7 +3322,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.10.1650';
+  cSynVer = '6.11.1660';
   cSynPyVer = '1.0.139';
 
 const
@@ -9310,18 +9311,21 @@ end;
 
 procedure TfmMain.SetIcons(const S: string);
 var
-  dirBase, dir: string;
+  dirBase, fn: string;
 begin
   dirBase:= SynIconsDir;
-  dir:= dirBase+'\'+S;
+  fn:= dirBase+'\'+S+'.tar';
 
-  if (S='') or not DirectoryExists(dir) then
-    dir:= dirBase+'\'+cIconsDefault;
+  if not FileExists(fn) then
+    fn:= dirBase+'\'+cIconsDefault+'.tar';
+  if not FileExists(fn) then
+    Exit;
 
   FIcons:= S;
-
+  //From files: 330ms
+  //From tar: 330ms
 //_Time1;
-  DoIconSet_LoadFromDir(ImageListIcons, dir);
+  DoIconSet_LoadFromTar(ImageListIcons, fn);
 //_Time2;
 end;
 
@@ -24994,6 +24998,18 @@ begin
           Delete(S, 1, Length(cPyPrefix));
         L.Add(S);
       end;
+end;
+
+procedure TfmMain.DoEnumIcons(L: TTntStringList);
+var
+  i: Integer;
+begin
+  FFindToList(L, SynIconsDir, '*.tar', '',
+    false{SubDirs}, false, false, false);
+
+  for i:= 0 to L.Count-1 do
+    L[i]:= ChangeFileExt(ExtractFileName(L[i]), '');
+  L.Sort;
 end;
 
 procedure TfmMain.ecExtractDupsCaseExecute(Sender: TObject);

@@ -25,6 +25,7 @@ uses
   ATxSProc;
 
 procedure DoIconSet_DetectSizes(const dir: string; var SizeX, SizeY: Integer);
+function DoIconSet_LoadFromTar(L: TPngImageList; const fn_tar: string): boolean;
 function DoIconSet_LoadFromDir(L: TPngImageList; const dir: string): boolean;
 
 function DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
@@ -296,8 +297,10 @@ uses
   unInputSimple,
   unInputFilename,
   unTool,
+  unSnipEd,
   SynTaskDialog, //Synopse http://blog.synopse.info/post/2011/03/05/Open-Source-SynTaskDialog-unit-for-XP,Vista,Seven
-  ComCtrls, unSnipEd;
+  ComCtrls,
+  LibTar;
 
 procedure MsgInfo(const S: WideString; H: THandle);
 begin
@@ -2518,7 +2521,7 @@ end;
 
 procedure DoIconSet_DetectSizes(const dir: string; var SizeX, SizeY: Integer);
 const
-  cRegex = '.+? (\d+)x(\d+)$';
+  cRegex = '.+? (\d+)x(\d+).*?$';
 var
   List: TSynStrArray;
 begin
@@ -2564,6 +2567,68 @@ const
   'o_spell'
   );
 
+function DoIconSet_LoadFromTar(L: TPngImageList; const fn_tar: string): boolean;
+const
+  cMin = 4; //smallest icons size
+var
+  Str: array[Low(cIconsId)..High(cIconsId)] of TMemoryStream;
+  Arc: TTarArchive;
+  DirRec: TTarDirRec;
+  i, sizeX, sizeY: Integer;
+begin
+  DoIconSet_DetectSizes(fn_tar, sizeX, sizeY);
+  if (sizeX<cMin) or (sizeY<cMin) then
+  begin
+    Application.MessageBox(
+      PChar('Cannot detect icon size:'#13+fn_tar),
+      'SynWrite', mb_ok or mb_iconerror);
+    Result:= false;
+    Exit
+  end;
+
+  Result:= true;
+  L.PngImages.Clear;
+  L.Width:= sizeX;
+  L.Height:= sizeY;
+
+  for i:= Low(Str) to High(Str) do
+    Str[i]:= TMemoryStream.Create;
+
+  try
+    Arc:= TTarArchive.Create(fn_tar);
+    try
+      Arc.Reset;
+      while Arc.FindNext(DirRec) do
+        for i:= Low(Str) to High(Str) do
+          if DirRec.Name=cIconsId[i]+'.png' then
+          begin
+            Arc.ReadFile(Str[i]);
+            Str[i].Seek(0, soFromBeginning);
+            Break
+          end;
+    finally
+      FreeAndNil(Arc);
+    end;
+
+    for i:= Low(Str) to High(Str) do
+      try
+        L.PngImages.Add.PngImage.LoadFromStream(Str[i]);
+      except
+        Application.MessageBox(
+          PChar('Cannot load icon '+cIconsId[i]+':'#13+fn_tar),
+          'SynWrite', mb_ok or mb_iconerror);
+        Result:= false;
+        Exit
+      end;
+    //workaround for missing last icon: add empty icon
+    L.PngImages.Add;
+    
+  finally
+    for i:= Low(Str) to High(Str) do
+      FreeAndNil(Str[i]);
+  end;
+end;
+
 function DoIconSet_LoadFromDir(L: TPngImageList; const dir: string): boolean;
 const
   cMin = 4; //smallest icons size
@@ -2571,9 +2636,6 @@ var
   i, sizeX, sizeY: Integer;
   fn: string;
 begin
-  Result:= true;
-  L.PngImages.Clear;
-
   DoIconSet_DetectSizes(dir, sizeX, sizeY);
   if (sizeX<cMin) or (sizeY<cMin) then
   begin
@@ -2584,6 +2646,8 @@ begin
     Exit
   end;
 
+  Result:= true;
+  L.PngImages.Clear;
   L.Width:= sizeX;
   L.Height:= sizeY;
 

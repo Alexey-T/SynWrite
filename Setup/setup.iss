@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.10.1650
+AppVersion=6.11.1660
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -46,11 +46,8 @@ Source: "..\Template\newdoc\*"; DestDir: "{app}\Template\newdoc"; Flags: ignorev
 Source: "..\Template\tools\*"; DestDir: "{app}\Template\tools"; Flags: ignoreversion
 Source: "..\Template\clips\*"; DestDir: "{app}\Template\clips"; Flags: ignoreversion
 Source: "..\Template\skins\*"; DestDir: "{app}\Template\skins"; Flags: ignoreversion
+Source: "..\Template\icons\*"; DestDir: "{app}\Template\icons"; Flags: ignoreversion
 Source: "..\Template\conv\*"; DestDir: "{app}\Template\conv"; Flags: ignoreversion
-
-Source: "..\Template\icons\Tango 22x22\*"; DestDir: "{app}\Template\icons\Tango 22x22"; Flags: ignoreversion
-Source: "..\Template\icons\Fugue 16x16\*"; DestDir: "{app}\Template\icons\Fugue 16x16"; Flags: ignoreversion
-Source: "..\Template\icons\Fugue 24x24\*"; DestDir: "{app}\Template\icons\Fugue 24x24"; Flags: ignoreversion
 
 Source: "..\Template\snippets\Std.C\*";      DestDir: "{app}\Template\snippets\Std.C";      Flags:
 Source: "..\Template\snippets\Std.Java\*";   DestDir: "{app}\Template\snippets\Std.Java";   Flags:
