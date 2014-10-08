@@ -24,6 +24,9 @@ uses
   PngImageList,
   ATxSProc;
 
+procedure DoIconSet_DetectSizes(const dir: string; var SizeX, SizeY: Integer);
+function DoIconSet_LoadFromDir(L: TPngImageList; const dir: string): boolean;
+
 function DoSnippetEditorDialog(var AInfo: TSynSnippetInfo): boolean;
 procedure DoKeymappingSplit(MapIn, MapOut1, MapOut2: TSyntKeyMapping; NCountInFirst: Integer);
 procedure DoKeymappingJoin(MapIn1, MapIn2, MapOut: TSyntKeyMapping);
@@ -2510,6 +2513,61 @@ begin
   finally
     Free
   end;
+end;
+
+
+procedure DoIconSet_DetectSizes(const dir: string; var SizeX, SizeY: Integer);
+const
+  cRegex = '.+? (\d+)x(\d+)$';
+var
+  List: TSynStrArray;
+begin
+  SParseRegexArray(ExtractFileName(dir), cRegex, List);
+  SizeX:= StrToIntDef(List[0], 0);
+  SizeY:= StrToIntDef(List[1], 0);
+end;
+
+const
+  cIconsId: array[0..5] of string =
+    ('f_new', 'f_open', 'f_save', 'f_save2', 'o_dialog', 'e_copy');
+
+function DoIconSet_LoadFromDir(L: TPngImageList; const dir: string): boolean;
+var
+  i, sizeX, sizeY: Integer;
+  fn: string;
+begin
+  Result:= true;
+  L.PngImages.Clear;
+
+  DoIconSet_DetectSizes(dir, sizeX, sizeY);
+  if (sizeX<=0) or (sizeY<=0) then
+    begin
+      Application.MessageBox(
+        PChar('Cannot detect icons size:'#13+dir),
+        'Error', mb_ok or mb_iconerror);
+      Result:= false;
+      Exit
+    end;
+
+  L.Width:= sizeX;
+  L.Height:= sizeY;
+
+  for i:= Low(cIconsId) to High(cIconsId) do
+  begin
+    fn:= dir+'\'+cIconsId[i]+'.png';
+    if not FileExists(fn) then
+    begin
+      Application.MessageBox(
+        PChar('Cannot load icon:'#13+fn),
+        'Error', mb_ok or mb_iconerror);
+      Result:= false;
+      Exit
+    end;
+    L.PngImages.Add.PngImage.LoadFromFile(fn);
+  end;
+
+  //workaround for missing last icon: add empty icon
+  L.PngImages.Add;
 end;
 
 
