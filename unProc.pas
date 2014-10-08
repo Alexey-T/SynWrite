@@ -2576,35 +2576,32 @@ begin
 
   DoIconSet_DetectSizes(dir, sizeX, sizeY);
   if (sizeX<cMin) or (sizeY<cMin) then
-    begin
-      Application.MessageBox(
-        PChar('Cannot detect icons size:'#13+dir),
-        'Error', mb_ok or mb_iconerror);
-      Result:= false;
-      Exit
-    end;
+  begin
+    Application.MessageBox(
+      PChar('Cannot detect icons size:'#13+dir),
+      'SynWrite', mb_ok or mb_iconerror);
+    Result:= false;
+    Exit
+  end;
 
   L.Width:= sizeX;
   L.Height:= sizeY;
 
   for i:= Low(cIconsId) to High(cIconsId) do
-  begin
-    fn:= dir+'\'+cIconsId[i]+'.png';
-    if not FileExists(fn) then
-    begin
+    try
+      fn:= dir+'\'+cIconsId[i]+'.png';
+      L.PngImages.Add.PngImage.LoadFromFile(fn);
+    except
       Application.MessageBox(
         PChar('Cannot load icon:'#13+fn),
-        'Error', mb_ok or mb_iconerror);
+        'SynWrite', mb_ok or mb_iconerror);
       Result:= false;
       Exit
     end;
-    L.PngImages.Add.PngImage.LoadFromFile(fn);
-  end;
 
   //workaround for missing last icon: add empty icon
   L.PngImages.Add;
 end;
-
 
 
 end.
