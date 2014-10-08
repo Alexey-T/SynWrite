@@ -71,6 +71,7 @@ const
   cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
   cDefaultCursor: array[boolean] of TCursor = (crHourGlass, crDefault);
   SynDefaultSyn = '(default).synw-session';
+  cIconsDefault = 'Fugue 24x24';
 
 const
   cPyConsoleMaxCount = 1000;
@@ -84,9 +85,6 @@ const
   cPyFalse = 'False';
   cPyNone = 'None';
   cPyCommandBase = 5000;
-
-const
-  cIconsDefault = 'Fugue 24x24';//'Tango 22x22';
 
 type
   TSynPyEvent = (
@@ -9321,7 +9319,10 @@ begin
     dir:= dirBase+'\'+cIconsDefault;
 
   FIcons:= S;
+
+//_Time1;
   DoIconSet_LoadFromDir(ImageListIcons, dir);
+//_Time2;
 end;
 
 procedure TfmMain.ApplyShowIconsInMenus;
