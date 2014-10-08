@@ -1787,8 +1787,8 @@ procedure TfmSetup.ApplyColors;
 begin
   with fmMain do
   begin
-    Theme:= cbTheme.Text;
-    Icons:= TSynIcons(cbIcons.ItemIndex);
+    opTheme:= cbTheme.Text;
+    opIcons:= cbIcons.Text;
 
     Move(ColorsSetup, ColorsArray, SizeOf(TSynColors));
     ApplyColorsFontsToFrames;
@@ -1926,7 +1926,6 @@ begin
     ApplyShowRecentColors;
     opLexerGroups:= cbGroupLexers.Checked;
     opShowMenuIcons:= cbMenuIcon.Checked;
-    Icons:= Icons; //update menu
     opShowTitleFull:= cbFullTitle.Checked;
     opBeep:= cbBeep.Checked;
     opClipHook:= cbClipHook.Checked;
@@ -2089,10 +2088,24 @@ begin
   end;
 end;
 
+
+procedure DoEnumIcons(cb: TTntCombobox);
+var
+  List: TTntStringList;
+begin
+  List:= TTntStringList.Create;
+  try
+    FFindToList(List, fmMain.SynIconsDir, '*', '',
+      false{SubDirs}, false, false, false);
+    cb.Items:= List;
+  finally
+    FreeAndNil(List);
+  end;
+end;
+
 procedure TfmSetup.InitColors;
 var
   i: Integer;
-  id: TSynIcons;
 begin
   for i:= Low(cColorsOrder) to High(cColorsOrder) do
     ListColors.Items.Add(DKLangConstW(_ColorIndexToDklangID(cColorsOrder[i])));
@@ -2100,13 +2113,14 @@ begin
 
   with fmMain do
   begin
-    cbTheme.ItemIndex:= cbTheme.Items.IndexOf(Theme);
+    //theme
+    cbTheme.ItemIndex:= cbTheme.Items.IndexOf(opTheme);
 
-    cbIcons.Items.Clear;
-    for id:= Low(TSynIcons) to High(TSynIcons) do
-      cbIcons.Items.Add(cIconsNames[id]);
-    cbIcons.ItemIndex:= Ord(Icons);
+    //icons
+    DoEnumIcons(cbIcons);
+    cbIcons.ItemIndex:= cbIcons.Items.IndexOf(opIcons);
 
+    //colors
     Move(ColorsArray, ColorsSetup, SizeOf(TSynColors));
   end;
 

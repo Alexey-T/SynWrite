@@ -2565,6 +2565,8 @@ const
   );
 
 function DoIconSet_LoadFromDir(L: TPngImageList; const dir: string): boolean;
+const
+  cMin = 4; //smallest icons size
 var
   i, sizeX, sizeY: Integer;
   fn: string;
@@ -2573,7 +2575,7 @@ begin
   L.PngImages.Clear;
 
   DoIconSet_DetectSizes(dir, sizeX, sizeY);
-  if (sizeX<=0) or (sizeY<=0) then
+  if (sizeX<cMin) or (sizeY<cMin) then
     begin
       Application.MessageBox(
         PChar('Cannot detect icons size:'#13+dir),

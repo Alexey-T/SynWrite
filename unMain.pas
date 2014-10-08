@@ -85,19 +85,8 @@ const
   cPyNone = 'None';
   cPyCommandBase = 5000;
 
-type
-  TSynIcons = (
-    cIconsFog16x,
-    cIconsFog24x,
-    cIconsTango22x
-    );
 const
-  cIconsDefault = cIconsFog24x;
-  cIconsNames: array[TSynIcons] of string = (
-    'Fugue 16x16',
-    'Fugue 24x24',
-    'Tango 22x22'
-    );
+  cIconsDefault = 'Fugue 24x24';//'Tango 22x22';
 
 type
   TSynPyEvent = (
@@ -1206,8 +1195,6 @@ type
     TBXSeparatorItem100: TSpTbxSeparatorItem;
     TBXItemOEditSynIni: TSpTbxItem;
     acOpenBySelection: TAction;
-    ImageListIconsFogue24b: TPngImageList;
-    ImageListIconsFogue16b: TPngImageList;
     ImageListUser1: TPngImageList;
     ImageListUser2: TPngImageList;
     ImageListUser3: TPngImageList;
@@ -1380,7 +1367,7 @@ type
     ListBookmarks: TTntListView;
     TbxItemWinBkmk: TSpTBXItem;
     ecToggleFocusBookmarks: TAction;
-    ImageListIconsTango22b: TPngImageList;
+    ImageListIcons: TPngImageList;
     TbxItemWinFtp: TSpTBXItem;
     TbxItemWinExplorer: TSpTBXItem;
     TBXItemTabCloseRighter: TSpTBXItem;
@@ -2182,6 +2169,7 @@ type
     TabsRight,
     TabsOut: TATTabs;
     TabSwitchers: array[TATGroupsNums] of TTabSwitcher;
+    FIcons: string;
     FListSnippets: TList;
     FListLexersSorted: TTntStringList;
     FTempFilenames: TTntStringList;
@@ -2699,9 +2687,8 @@ type
     procedure DoOnlineWordHelp(const url: Widestring);
     procedure DoOnlineFind(const site: Widestring);
 
-    function GetIcons: TSynIcons;
     function GetTheme: string;
-    procedure SetIcons(Id: TSynIcons);
+    procedure SetIcons(const S: string);
     procedure SetTheme(const S: string);
     procedure LoadTools;
     procedure SaveTools;
@@ -3237,8 +3224,8 @@ type
     procedure CloseFrameWithCfm(F: TEditorFrame; var ACanClose, ACanContinue: boolean);
     //---------------------------------------------------------------------
 
-    property Icons: TSynIcons read GetIcons write SetIcons;
-    property Theme: string read GetTheme write SetTheme;
+    property opIcons: string read FIcons write SetIcons;
+    property opTheme: string read GetTheme write SetTheme;
     //procedure TestApi;
     function IsPluginWindowActive(var HWnd: THandle): boolean;
     function opMarkDeletedAsModified: boolean;
@@ -3289,6 +3276,7 @@ type
     function SynSkinsDir: string;
     function SynPyDir: string;
     function SynSnippetsDir: string;
+    function SynIconsDir: string;
     function SynSkinFilename(const Name: string): string;
     function SynConverterFilename(const Name: string): string;
     function SynLexersCfg: string;
@@ -3334,7 +3322,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.10.1644';
+  cSynVer = '6.10.1650';
   cSynPyVer = '1.0.139';
 
 const
@@ -4822,10 +4810,10 @@ begin
     opOpenAsUtf8:= ReadString('Setup', 'UTF8', '');
 
     if SynExe or not QuickView then
-      Theme:= ReadString('Setup', 'Theme', cThemeDefault)
+      opTheme:= ReadString('Setup', 'Theme', cThemeDefault)
 	  else
-      Theme:= cThemeWindows;
-    Icons:= TSynIcons(ReadInteger('Setup', 'Icons', Ord(cIconsDefault)));
+      opTheme:= cThemeWindows;
+    opIcons:= ReadString('Setup', 'Icons', cIconsDefault);
 
     LoadPanelProp(plTree, Ini, 'Tree');
     LoadPanelProp(plOut, Ini, 'Out');
@@ -5192,8 +5180,8 @@ begin
     WriteBool('Setup', 'Stat', Status.Visible);
     WriteString('Setup', 'Oem', opOpenAsOem);
     WriteString('Setup', 'UTF8', opOpenAsUtf8);
-    WriteString('Setup', 'Theme', Theme);
-    WriteInteger('Setup', 'Icons', Ord(Icons));
+    WriteString('Setup', 'Theme', opTheme);
+    WriteString('Setup', 'Icons', opIcons);
 
     //fonts
     WriteString('Fonts', 'Ed', FontToString(TemplateEditor.Font));
@@ -9320,37 +9308,21 @@ begin
   end;
 end;
 
-function tfmMain.GetIcons: TSynIcons;
-begin
-  if tbFile.Images = ImageListIconsFogue16b then Result:= cIconsFog16x
-  else
-  if tbFile.Images = ImageListIconsFogue24b then Result:= cIconsFog24x
-  else
-  if tbFile.Images = ImageListIconsTango22b then Result:= cIconsTango22x
-  else
-    Result:= cIconsDefault;
-end;
-
-procedure TfmMain.SetIcons(Id: TSynIcons);
+procedure TfmMain.SetIcons(const S: string);
 var
-  L: TCustomImageList;
+  dirBase, dir: string;
 begin
-  case Id of
-    cIconsFog16x:
-      L:= ImageListIconsFogue16b;
-    cIconsFog24x:
-      L:= ImageListIconsFogue24b;
-    else
-      L:= ImageListIconsTango22b;
-  end;
+  dirBase:= SynIconsDir;
+  dir:= dirBase+'\'+S;
 
-  tbFile.Images:= L;
-  tbEdit.Images:= L;
-  tbView.Images:= L;
-  tbQs.Images:= L;
+  if (S='') or not DirectoryExists(dir) then
+    dir:= dirBase+'\'+cIconsDefault;
+
+  FIcons:= S;
+  DoIconSet_LoadFromDir(ImageListIcons, dir);
 
   if opShowMenuIcons then
-    PopupEditor.Images:= L
+    PopupEditor.Images:= tbFile.Images
   else
     PopupEditor.Images:= nil;
 end;
@@ -25413,6 +25385,11 @@ end;
 function TfmMain.SynSnippetsDir: string;
 begin
   Result:= SynDir + 'template\snippets';
+end;
+
+function TfmMain.SynIconsDir: string;
+begin
+  Result:= SynDir + 'template\icons';
 end;
 
 function TfmMain.SynPyDir: string;
