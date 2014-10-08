@@ -2528,8 +2528,41 @@ begin
 end;
 
 const
-  cIconsId: array[0..5] of string =
-    ('f_new', 'f_open', 'f_save', 'f_save2', 'o_dialog', 'e_copy');
+  cIconsId: array[0..32] of string = (
+  'f_new',
+  'f_open',
+  'f_save',
+  'f_save2',
+  'o_dialog',
+  'e_copy',
+  'e_cut',
+  'e_paste',
+  'e_del',
+  'e_select',
+  'e_undo',
+  'e_redo',
+  'c_find',
+  'c_indent',
+  'c_indent_un',
+  'c_sort',
+  'c_case',
+  'c_cmt',
+  'c_cmt_un',
+  'o_panel_l',
+  'o_panel_r',
+  'o_panel_b',
+  'c_goto',
+  'o_nprint',
+  'c_print',
+  'e_copy_link',
+  'qs_next',
+  'qs_prev',
+  'qs_case',
+  'qs_words',
+  'o_sync_h',
+  'o_sync_v',
+  'o_spell'
+  );
 
 function DoIconSet_LoadFromDir(L: TPngImageList; const dir: string): boolean;
 var
