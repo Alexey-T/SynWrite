@@ -444,10 +444,12 @@ begin
   edHint.Enabled:= en;
   edCmd.Enabled:= en;
   btnBrowseIcon.Enabled:= en;
+  btnRemoveIcon.Enabled:= en;
   btnBrowseCmd.Enabled:= en;
   btnBrowseExtTool.Enabled:= en;
   btnBrowseMenu.Enabled:= en;
   btnBrowseMenuSys.Enabled:= en;
+  btnBrowsePy.Enabled:= en;
   LabelHint.Enabled:= en;
   LabelCmd.Enabled:= en;
   LabelIcon.Enabled:= en;

@@ -3334,7 +3334,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.10.1640';
+  cSynVer = '6.10.1642';
   cSynPyVer = '1.0.139';
 
 const
@@ -25148,12 +25148,15 @@ begin
       begin
         for j:= 0 to (Item as TSpTbxToolbar).Items.Count-1 do
         begin
-          S:= (Item as TSpTbxToolbar).Items[j].Caption;
-          S:= SStripFromTab(S);
           if (Item as TSpTbxToolbar).Items[j] is TSpTbxSeparatorItem then
-            S:= cSep;
-          if (Item as TSpTbxToolbar).Items[j] is TSpTbxSubmenuItem then
-            S:= S+cSub;
+            S:= cSep
+          else
+          begin
+            S:= ((Item as TSpTbxToolbar).Items[j] as TSpTbxItem).Caption;
+            S:= SStripFromTab(S);
+            if (Item as TSpTbxToolbar).Items[j] is TSpTbxSubmenuItem then
+              S:= S+cSub;
+          end;
           List.Items.Add('['+id+' '+IntToStr(j)+']  '+S);
         end;
       end
@@ -25163,12 +25166,15 @@ begin
       begin
         for j:= 0 to 14{max index is of "More..." item} do
         begin
-          S:= (Item as TSpTbxPopupMenu).Items[j].Caption;
-          SDeleteFromW(S, #9);
           if (Item as TSpTbxPopupMenu).Items[j] is TSpTbxSeparatorItem then
-            S:= cSep;
-          if (Item as TSpTbxPopupMenu).Items[j] is TSpTbxSubmenuItem then
-            S:= S+cSub;
+            S:= cSep
+          else
+          begin
+            S:= ((Item as TSpTbxPopupMenu).Items[j] as TSpTbxItem).Caption;
+            SDeleteFromW(S, #9);
+            if (Item as TSpTbxPopupMenu).Items[j] is TSpTbxSubmenuItem then
+              S:= S+cSub;
+          end;
           List.Items.Add('['+id+' '+IntToStr(j)+']  '+S);
         end;
       end
@@ -25183,13 +25189,16 @@ begin
         if id<>'window' then
         for j:= 0 to (Item as TSpTbxSubmenuItem).Count-1 do
         begin
-          S:= (Item as TSpTbxSubmenuItem).Items[j].Caption;
-          S:= SStripFromTab(S);
-          SReplaceAllW(S, '&', '');
           if (Item as TSpTbxSubmenuItem).Items[j] is TSpTbxSeparatorItem then
-            S:= cSep;
-          if (Item as TSpTbxSubmenuItem).Items[j] is TSpTbxSubmenuItem then
-            S:= S+cSub;
+            S:= cSep
+          else
+          begin
+            S:= ((Item as TSpTbxSubmenuItem).Items[j] as TSpTbxItem).Caption;
+            S:= SStripFromTab(S);
+            SReplaceAllW(S, '&', '');
+            if (Item as TSpTbxSubmenuItem).Items[j] is TSpTbxSubmenuItem then
+              S:= S+cSub;
+          end;
           List.Items.Add('    '+'['+id+' '+IntToStr(j)+']  '+S);
         end;
       end
