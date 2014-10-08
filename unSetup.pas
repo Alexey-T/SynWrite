@@ -1926,6 +1926,7 @@ begin
     ApplyShowRecentColors;
     opLexerGroups:= cbGroupLexers.Checked;
     opShowMenuIcons:= cbMenuIcon.Checked;
+    ApplyShowIconsInMenus;
     opShowTitleFull:= cbFullTitle.Checked;
     opBeep:= cbBeep.Checked;
     opClipHook:= cbClipHook.Checked;
@@ -2092,11 +2093,17 @@ end;
 procedure DoEnumIcons(cb: TTntCombobox);
 var
   List: TTntStringList;
+  i: Integer;
 begin
   List:= TTntStringList.Create;
   try
-    FFindToList(List, fmMain.SynIconsDir, '*', '',
-      false{SubDirs}, false, false, false);
+    FFindToList(List, fmMain.SynIconsDir, 'f_new.png', '',
+      true{SubDirs}, false, false, false);
+
+    for i:= 0 to List.Count-1 do
+      List[i]:= ExtractFileName(ExtractFileDir(List[i]));
+
+    List.Sort;
     cb.Items:= List;
   finally
     FreeAndNil(List);

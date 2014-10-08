@@ -3139,6 +3139,7 @@ type
 
     procedure ApplyTabOptions;
     procedure ApplyTabOptionsTo(ATabs: TATTabs);
+    procedure ApplyShowIconsInMenus;
     procedure ApplyCarets;
     procedure ApplyUrlClick;
     procedure ApplyShowRecentColors;
@@ -4710,9 +4711,10 @@ begin
       end;
     end;
 
+    opBeep:= ReadBool('Setup', 'Beep', true);
     opUtf8BufferSizeKb:= ReadInteger('Setup', 'Utf8Buffer', 64);
     opShowMenuIcons:= ReadBool('Setup', 'MenuIcon', true);
-    opBeep:= ReadBool('Setup', 'Beep', true);
+    ApplyShowIconsInMenus;
 
     opHiliteSmart:= ReadBool('Setup', 'SmHi', false);
     opHiliteSmartCase:= ReadBool('Setup', 'SmHiCase', false);
@@ -9320,9 +9322,12 @@ begin
 
   FIcons:= S;
   DoIconSet_LoadFromDir(ImageListIcons, dir);
+end;
 
+procedure TfmMain.ApplyShowIconsInMenus;
+begin
   if opShowMenuIcons then
-    PopupEditor.Images:= tbFile.Images
+    PopupEditor.Images:= ImageListIcons
   else
     PopupEditor.Images:= nil;
 end;
