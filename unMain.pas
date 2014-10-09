@@ -2602,8 +2602,8 @@ type
     function DoAcpFromPlugins(const AAction: PWideChar): Widestring;
     procedure DoInsertTextDialog;
     procedure DoFillBlock;
-    procedure DoRepaintTBs;
-    procedure DoRepaintTBs2;
+    //procedure DoRepaintTBs;
+    //procedure DoRepaintTBs2;
     procedure DoSyncScroll(EdSrc: TSyntaxMemo);
     function DoCloseTabs(Id: TATTabCloseId; AForPopupMenu: boolean): boolean;
     procedure DoMoveTabToWindow(Frame: TEditorFrame; AndClose: boolean);
@@ -2757,10 +2757,10 @@ type
       const Id: string; DefFloating: boolean = false);
 
     procedure LoadToolbarContent(
-      Toolbar: TObject; Id: string; AutoShow: boolean = false);
+      Toolbar: TSpTbxToolbar; Id: string; AutoShow: boolean = false);
     procedure LoadToolbarContent_FromIni(
       Ini: TIniFile; ImgList: TPngImageList;
-      Toolbar: TObject; Id: string; AutoShow: boolean = false);
+      Toolbar: TObject; Id: string);
     function DoCustomizeToolbar(const Id: string): boolean;
     procedure DoCustomizeAndReloadToolbar(Id: TSynUserToolbarId);
     procedure ToolbarUserClick(Sender: TObject);
@@ -8250,6 +8250,7 @@ begin
 end;
 
 
+(*
 procedure TfmMain.DoRepaintTBs;
 begin
   {$ifndef FixRepaint}
@@ -8290,7 +8291,9 @@ begin
 
   DoPlugins_Repaint;
 end;
+*)
 
+(*
 procedure TfmMain.DoRepaintTBs2;
 begin
   {$ifndef FixRepaint}
@@ -8306,6 +8309,7 @@ begin
     FixDraw(CurrentEditor, true);
   {$endif}
 end;
+*)
 
 procedure TfmMain.FormResize(Sender: TObject);
 begin
@@ -24693,51 +24697,46 @@ begin
     Result:= Cmd;
 end;
 
-procedure TfmMain.LoadToolbarContent(Toolbar: TObject; Id: string; AutoShow: boolean = false);
+procedure TfmMain.LoadToolbarContent(Toolbar: TSpTbxToolbar;
+  Id: string; AutoShow: boolean = false);
 var
   Ini: TIniFile;
   ImgList: TPngImageList;
 begin
-  if Toolbar is TSpTbxToolbar then
-  begin
-    (Toolbar as TSpTbxToolbar).Items.Clear;
-    ImgList:= (Toolbar as TSpTbxToolbar).Images as TPngImageList;
-  end
-  else
-  if Toolbar is TSpTbxSubmenuItem then
-  begin
-    (Toolbar as TSpTbxSubmenuItem).Clear;
-    ImgList:= (Toolbar as TSpTbxSubmenuItem).Images as TPngImageList;
-  end
-  else
-    raise Exception.Create('Unknown toolbar class: '+Toolbar.ClassName);
-
   Ini:= TIniFile.Create(SynToolbarsIni);
   try
-    if Toolbar is TSpTbxToolbar then
-    begin
-      ImgList.Width:= Ini.ReadInteger(Id, 'ix', 32);
-      ImgList.Height:= Ini.ReadInteger(Id, 'iy', 32);
-    end;
-    
+    ImgList:= Toolbar.Images as TPngImageList;
+    ImgList.Width:= Ini.ReadInteger(Id, 'ix', 32);
+    ImgList.Height:= Ini.ReadInteger(Id, 'iy', 32);
+
     ImgList.BeginUpdate;
     try
-      LoadToolbarContent_FromIni(Ini, ImgList, Toolbar, Id, AutoShow);
+      Toolbar.Items.Clear;
+      LoadToolbarContent_FromIni(Ini, ImgList, Toolbar, Id);
     finally
       ImgList.EndUpdate;
     end;
   finally
     FreeAndNil(Ini);
   end;
+
+  if Toolbar.Items.Count=0 then
+    Toolbar.Visible:= false
+  else
+  if AutoShow then
+  begin
+    Toolbar.Visible:= true;
+    SaveToolbarsProps;
+  end;
 end;
 
 procedure TfmMain.LoadToolbarContent_FromIni(
   Ini: TIniFile; ImgList: TPngImageList;
-  Toolbar: TObject; Id: string; AutoShow: boolean = false);
+  Toolbar: TObject; Id: string);
 var
   Item: TTbCustomItem;
   SCmd, SHint, SIcoFN: Widestring;
-  IcoLoaded, IsSubmenu, IsEmpty, IsSep: boolean;
+  IcoLoaded, IsSubmenu, IsSep: boolean;
   i: Integer;
 begin
   for i:= 0 to High(TToolbarProps) do
@@ -24905,28 +24904,6 @@ begin
     //load submenu contents
     if IsSubmenu then
       LoadToolbarContent_FromIni(Ini, ImgList, Item, SCmd);
-  end;
-
-  if Toolbar is TSpTbxToolbar then
-    IsEmpty:= (Toolbar as TSpTbxToolbar).Items.Count=0
-  else
-  {
-  if Toolbar is TSpTbxSubmenuItem then
-    IsEmpty:= (Toolbar as TSpTbxSubmenuItem).Count=0
-  else
-    }
-    IsEmpty:= false;
-
-  if Toolbar is TControl then
-  begin
-    if IsEmpty then
-      (Toolbar as TControl).Visible:= false
-    else
-    if AutoShow then
-    begin
-      (Toolbar as TControl).Visible:= true;
-      SaveToolbarsProps;
-    end;
   end;
 end;
 
