@@ -1,5 +1,5 @@
-{$I ecSyntEdit.INC}
-
+//Based on original EControl code
+//(c) EControl
 unit unMacroEdit;
 
 interface
@@ -100,11 +100,10 @@ function DoMacroEditDialog(AMacros: TecMacroRecorder;
 implementation
 
 uses
-  ecMacroCmdEditDlg,
-  ecStrUtils,
-  unProc,
   Menus,
-  TntDialogs;
+  TntDialogs,
+  ecStrUtils,
+  unProc, unMacroCmd;
 
 {$R *.dfm}
 
@@ -339,7 +338,7 @@ var cmd: TMacroEvent;
 begin
   cmd:= Recorder[MacrosList.ItemIndex][CmdList.Selected.Index];
   with cmd do
-    if EditMacroCommand(Command, Data) then
+    if DoEditMacroCommand(Command, Data) then
       FillCmdItem(CmdList.Selected, cmd);
 end;
 
@@ -361,7 +360,7 @@ var cmd: integer;
     Rec: TMacroRecord;
     Index: Integer;
 begin
-  if EditMacroCommand(cmd, data) then
+  if DoEditMacroCommand(cmd, data) then
   begin
     Rec:= Recorder[MacrosList.ItemIndex];
     Rec.Add(cmd, data);

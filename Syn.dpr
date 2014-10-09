@@ -71,7 +71,8 @@ uses
   unPrintPreview in 'unPrintPreview.pas' {fmPreview},
   unLexerProp in 'unLexerProp.pas',
   unLexerStyles in 'unLexerStyles.pas',
-  unPrintSetup in 'unPrintSetup.pas' {fmPrintSetup};
+  unPrintSetup in 'unPrintSetup.pas' {fmPrintSetup},
+  unMacroCmd in 'unMacroCmd.pas' {fmMacroCmd};
 
 {$R *.res}
 {$R *.dkl_const.res}

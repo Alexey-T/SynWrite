@@ -78,7 +78,7 @@ object fmMacroEdit: TfmMacroEdit
       Width = 87
       Height = 23
       Action = CommandChange
-      Caption = 'Change...'
+      Caption = 'Change'
       TabOrder = 1
     end
     object btnCmdDel: TTntButton
