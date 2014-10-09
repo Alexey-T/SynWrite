@@ -24710,16 +24710,22 @@ begin
     ImgList:= (Toolbar as TSpTbxSubmenuItem).Images as TPngImageList;
   end
   else
-    raise Exception.Create('Unknown toolbar class');
+    raise Exception.Create('Unknown toolbar class: '+Toolbar.ClassName);
 
   Ini:= TIniFile.Create(SynToolbarsIni);
   try
+    if Toolbar is TSpTbxToolbar then
+    begin
+      ImgList.Width:= Ini.ReadInteger(Id, 'ix', 32);
+      ImgList.Height:= Ini.ReadInteger(Id, 'iy', 32);
+    end;
+    
     ImgList.BeginUpdate;
     try
       LoadToolbarContent_FromIni(Ini, ImgList, Toolbar, Id, AutoShow);
     finally
       ImgList.EndUpdate;
-    end;  
+    end;
   finally
     FreeAndNil(Ini);
   end;
@@ -24734,12 +24740,6 @@ var
   IcoLoaded, IsSubmenu, IsEmpty, IsSep: boolean;
   i: Integer;
 begin
-  if Toolbar is TSpTbxToolbar then
-  begin
-    ImgList.Width:= Ini.ReadInteger(Id, 'ix', 32);
-    ImgList.Height:= Ini.ReadInteger(Id, 'iy', 32);
-  end;
-
   for i:= 0 to High(TToolbarProps) do
   begin
     SCmd:= UTF8Decode(Ini.ReadString(Id, IntToStr(i)+'c', ''));
