@@ -2446,6 +2446,7 @@ type
     procedure DoSaveStringToIni(const fn: string; const Str: string);
 
     //private UpdateNNN
+    procedure UpdateToolbarItemAction(Item: TTBCustomItem; const SCmd: string);
     procedure UpdateNewDocMenu();
     procedure UpdateTreeProps;
     procedure UpdateTitle(Sender: TFrame);
@@ -24688,10 +24689,10 @@ end;
 procedure TfmMain.LoadToolbarContent(Toolbar: TObject; Id: string; AutoShow: boolean = false);
 var
   Item: TTbCustomItem;
-  i: Integer;
-  SCmd, SHint, SIcoFN, SIni, S: Widestring;
+  SCmd, SHint, SIcoFN, SIni: Widestring;
   IcoLoaded, IsSubmenu, IsEmpty, IsSep: boolean;
   ImgList: TPngImageList;
+  i: Integer;
 begin
   if Toolbar is TSpTbxToolbar then
   begin
@@ -24849,33 +24850,8 @@ begin
         IcoLoaded:= LoadPngIconEx(ImgList, SIcoFN);
 
         //add Action to "options" buttons, so toggling will check/uncheck these buttons
-        S:= SCmd;
-        SDeleteToW(S, ':');
-        case StrToIntDef(S, 0) of
-          sm_OptReadOnly:        Item.Action:= ecReadOnly;
-          sm_OptWrap:            Item.Action:= ecWrap;
-          sm_OptShowLeftPanel:   Item.Action:= ecShowTree;
-          sm_OptShowOutputPanel: Item.Action:= ecShowOut;
-          sm_OptShowRightPanel:  Item.Action:= ecShowClip;
-          sm_ShowFullScreen:     Item.Action:= ecFullScr;
-          sm_OptRuler:           Item.Action:= ecRuler;
-          sm_OptLineNums:        Item.Action:= ecLineNums;
-          sm_OptFolding:         Item.Action:= ecFolding;
-
-          sm_OptNonPrint:       Item.Action:= ecNonPrint;
-          sm_OptNonPrintOff:    Item.Action:= ecNonPrintOff;
-          sm_OptNonPrintSpaces: Item.Action:= ecNonPrintSpaces;
-          sm_OptNonPrintEol:    Item.Action:= ecNonPrintEol;
-          sm_OptNonPrintBoth:   Item.Action:= ecNonPrintBoth;
-          sm_OptNonPrintEolDetails: Item.Action:= ecNonPrintEolDetails;
-
-          sm_ToggleSmartHl:   Item.Action:= ecSmartHl;
-          sm_ShowOnTop:       Item.Action:= ecOnTop;
-          sm_SpellLive:       Item.Action:= ecSpellLive;
-          sm_SyncScrollHorz:  Item.Action:= ecSyncScrollH;
-          sm_SyncScrollVert:  Item.Action:= ecSyncScrollV;
-        end;
-      end;
+        UpdateToolbarItemAction(Item, SCmd);
+      end;  
 
       //handle "*" at end of hint
       if (SHint<>'') and (SHint[Length(SHint)]='*') then
@@ -29239,6 +29215,39 @@ begin
   //disable ding with Esc
   if (Key=#27) then Key:= #0;
 end;
+
+procedure TfmMain.UpdateToolbarItemAction(Item: TTBCustomItem; const SCmd: string);
+var
+  S: Widestring;
+begin
+  S:= SCmd;
+  SDeleteToW(S, ':');
+  case StrToIntDef(S, 0) of
+    sm_OptReadOnly:        Item.Action:= ecReadOnly;
+    sm_OptWrap:            Item.Action:= ecWrap;
+    sm_OptShowLeftPanel:   Item.Action:= ecShowTree;
+    sm_OptShowOutputPanel: Item.Action:= ecShowOut;
+    sm_OptShowRightPanel:  Item.Action:= ecShowClip;
+    sm_ShowFullScreen:     Item.Action:= ecFullScr;
+    sm_OptRuler:           Item.Action:= ecRuler;
+    sm_OptLineNums:        Item.Action:= ecLineNums;
+    sm_OptFolding:         Item.Action:= ecFolding;
+
+    sm_OptNonPrint:       Item.Action:= ecNonPrint;
+    sm_OptNonPrintOff:    Item.Action:= ecNonPrintOff;
+    sm_OptNonPrintSpaces: Item.Action:= ecNonPrintSpaces;
+    sm_OptNonPrintEol:    Item.Action:= ecNonPrintEol;
+    sm_OptNonPrintBoth:   Item.Action:= ecNonPrintBoth;
+    sm_OptNonPrintEolDetails: Item.Action:= ecNonPrintEolDetails;
+
+    sm_ToggleSmartHl:   Item.Action:= ecSmartHl;
+    sm_ShowOnTop:       Item.Action:= ecOnTop;
+    sm_SpellLive:       Item.Action:= ecSpellLive;
+    sm_SyncScrollHorz:  Item.Action:= ecSyncScrollH;
+    sm_SyncScrollVert:  Item.Action:= ecSyncScrollV;
+  end;
+end;
+
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
