@@ -73,7 +73,7 @@ function FGetTempFilenameDeleted(NMaxCount: Integer = 20): Widestring;
 procedure DoCenterForm(h: THandle; fm: TCustomForm);
 function FontHeightToItemHeight(Font: TFont): Integer;
 function SDecodeUsingFileTable(const SData, fn: Widestring; ToBack: boolean): Widestring;
-function GetEditHandle(Target: TObject): THandle;
+function GetControlEditHandle(Target: TObject): THandle;
 procedure DoHandleCtrlBkSp(Ed: TTntCombobox; var Key: Char);
 
 procedure _Time1;
@@ -1248,31 +1248,32 @@ begin
   end;
 end;
 
-function GetEditHandle(Target: TObject): THandle;
+function GetControlEditHandle(Target: TObject): THandle;
 begin
-    Result := 0;
-    {
-    if (Target is TCustomEdit) then
-        Result := GetControl(Target).Handle
-    else}
-    if (Target is TComboBox) then
+  Result := 0;
+  {
+  if (Target is TCustomEdit) then
+    Result := GetControl(Target).Handle
+  else
+  }
+  if (Target is TComboBox) then
+  begin
+    Result := GetWindow((Target as TWinControl).Handle, GW_CHILD);
+    if (Result <> 0) then
     begin
-        Result := GetWindow((Target as TWinControl).Handle, GW_CHILD);
-        if (Result <> 0) then
-        begin
-          if ((Target as TComboBox).Style = csSimple) then
-            Result := GetWindow(Result, GW_HWNDNEXT);
-        end;
-    end
-    else if (Target is TTntComboBox) then
-    begin
-        Result := GetWindow((Target as TWinControl).Handle, GW_CHILD);
-        if (Result <> 0) then
-        begin
-          if ((Target as TTntComboBox).Style = csSimple) then
-            Result := GetWindow(Result, GW_HWNDNEXT);
-        end;
+      if ((Target as TComboBox).Style = csSimple) then
+        Result := GetWindow(Result, GW_HWNDNEXT);
     end;
+  end
+  else if (Target is TTntComboBox) then
+  begin
+    Result := GetWindow((Target as TWinControl).Handle, GW_CHILD);
+    if (Result <> 0) then
+    begin
+      if ((Target as TTntComboBox).Style = csSimple) then
+        Result := GetWindow(Result, GW_HWNDNEXT);
+    end;
+  end;
 end;
 
 

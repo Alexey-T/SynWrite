@@ -788,12 +788,12 @@ end;
 
 procedure DoUndo(ed: TTntCombobox);
 begin
-  SendMessage(GetEditHandle(ed), wm_undo, 0, 0);
+  SendMessage(GetControlEditHandle(ed), wm_undo, 0, 0);
 end;
 
 procedure DoCopy(ed: TTntCombobox);
 begin
-  SendMessage(GetEditHandle(ed), wm_copy, 0, 0);
+  SendMessage(GetControlEditHandle(ed), wm_copy, 0, 0);
 end;
 
 //OnShortcut needed, because:
