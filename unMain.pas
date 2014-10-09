@@ -9311,23 +9311,24 @@ end;
 
 procedure TfmMain.SetIcons(const S: string);
 var
-  dirBase, fn: string;
+  dir, fn: string;
 begin
-  dirBase:= SynIconsDir;
-  fn:= dirBase+'\'+S+'.tar';
+  dir:= SynIconsDir;
+  fn:= dir+'\'+S+'.tar';
 
   if not IsFileExist(fn) then
   begin
-    fn:= dirBase+'\'+cIconsDefault+'.tar';
+    fn:= dir+'\'+cIconsDefault+'.tar';
     if not IsFileExist(fn) then Exit;
   end;  
-  FIcons:= S;
-  
-//_Time1;
-  DoIconSet_LoadFromTar(ImageListIcons, fn);
-//_Time2;
 
-  DoRepaint;
+  FIcons:= S;
+  DoIconSet_LoadFromTar(ImageListIcons, fn);
+
+  tbFile.Refresh;
+  tbEdit.Refresh;
+  tbView.Refresh;
+  tbQs.Refresh;
 end;
 
 procedure TfmMain.ApplyShowIconsInMenus;
