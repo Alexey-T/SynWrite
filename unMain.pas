@@ -2755,13 +2755,19 @@ type
     procedure SavePanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
     procedure LoadPanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile;
       const Id: string; DefFloating: boolean = false);
-    procedure LoadToolbarContent(Toolbar: TObject; Id: string; AutoShow: boolean = false);
-    function DoShowCmdList(AOnlyStdCommands: boolean = false): Integer;
-    function DoShowCmdList_ForTools: string;
-    function DoShowCmdHint_ForTools(Cmd: Widestring): Widestring;
+
+    procedure LoadToolbarContent(
+      Toolbar: TObject; Id: string; AutoShow: boolean = false);
+    procedure LoadToolbarContent_FromIni(
+      Ini: TIniFile; ImgList: TPngImageList;
+      Toolbar: TObject; Id: string; AutoShow: boolean = false);
     function DoCustomizeToolbar(const Id: string): boolean;
     procedure DoCustomizeAndReloadToolbar(Id: TSynUserToolbarId);
     procedure ToolbarUserClick(Sender: TObject);
+
+    function DoShowCmdList(AOnlyStdCommands: boolean = false): Integer;
+    function DoShowCmdList_ForTools: string;
+    function DoShowCmdHint_ForTools(Cmd: Widestring): Widestring;
     procedure DoEnumExtTools(L: TTntStringList);
     procedure DoEnumPyTools(L: TTntStringList);
     procedure InitMenuItemsList;
@@ -24605,20 +24611,21 @@ end;
 
 procedure TfmMain.DoCustomizeAndReloadToolbar(Id: TSynUserToolbarId);
 var
-  ToolbarObj: TComponent;
+  Toolbar: TSpTbxToolbar;
   ToolbarId: string;
 begin
   case Id of
-    synToolbar1: begin ToolbarObj:= tbUser1; ToolbarId:= '1'; end;
-    synToolbar2: begin ToolbarObj:= tbUser2; ToolbarId:= '2'; end;
-    synToolbar3: begin ToolbarObj:= tbUser3; ToolbarId:= '3'; end;
+    synToolbar1: begin Toolbar:= tbUser1; ToolbarId:= '1'; end;
+    synToolbar2: begin Toolbar:= tbUser2; ToolbarId:= '2'; end;
+    synToolbar3: begin Toolbar:= tbUser3; ToolbarId:= '3'; end;
     else
       raise Exception.Create('Unknown toolbar id: '+IntToStr(Ord(Id)));
   end;
 
   if DoCustomizeToolbar(ToolbarId) then
   begin
-    LoadToolbarContent(ToolbarObj, ToolbarId, true);
+    LoadToolbarContent(Toolbar, ToolbarId, true);
+    Toolbar.Refresh;
     UpdateStatusbar;
     DoRepaint;
   end;
@@ -24688,11 +24695,8 @@ end;
 
 procedure TfmMain.LoadToolbarContent(Toolbar: TObject; Id: string; AutoShow: boolean = false);
 var
-  Item: TTbCustomItem;
-  SCmd, SHint, SIcoFN, SIni: Widestring;
-  IcoLoaded, IsSubmenu, IsEmpty, IsSep: boolean;
+  Ini: TIniFile;
   ImgList: TPngImageList;
-  i: Integer;
 begin
   if Toolbar is TSpTbxToolbar then
   begin
@@ -24708,183 +24712,199 @@ begin
   else
     raise Exception.Create('Unknown toolbar class');
 
-  SIni:= SynToolbarsIni;
-  with TIniFile.Create(SIni) do
+  Ini:= TIniFile.Create(SynToolbarsIni);
   try
+    ImgList.BeginUpdate;
+    try
+      LoadToolbarContent_FromIni(Ini, ImgList, Toolbar, Id, AutoShow);
+    finally
+      ImgList.EndUpdate;
+    end;  
+  finally
+    FreeAndNil(Ini);
+  end;
+end;
+
+procedure TfmMain.LoadToolbarContent_FromIni(
+  Ini: TIniFile; ImgList: TPngImageList;
+  Toolbar: TObject; Id: string; AutoShow: boolean = false);
+var
+  Item: TTbCustomItem;
+  SCmd, SHint, SIcoFN: Widestring;
+  IcoLoaded, IsSubmenu, IsEmpty, IsSep: boolean;
+  i: Integer;
+begin
+  if Toolbar is TSpTbxToolbar then
+  begin
+    ImgList.Width:= Ini.ReadInteger(Id, 'ix', 32);
+    ImgList.Height:= Ini.ReadInteger(Id, 'iy', 32);
+  end;
+
+  for i:= 0 to High(TToolbarProps) do
+  begin
+    SCmd:= UTF8Decode(Ini.ReadString(Id, IntToStr(i)+'c', ''));
+    SHint:= UTF8Decode(Ini.ReadString(Id, IntToStr(i)+'h', ''));
+    SIcoFN:= UTF8Decode(Ini.ReadString(Id, IntToStr(i)+'i', ''));
+    SReplaceAllW(SIcoFN, '{ini}', ExtractFileDir(SynIni));
+
+    if (SCmd='') and (SHint='') and (SIcoFN='') then Break;
+    IcoLoaded:= false;
+    IsSep:= SCmd='-';
+    IsSubmenu:= SBegin(SCmd, 'm:');
+
+    if IsSep then
+    //create separator
+    begin
+      Item:= TSpTbxSeparatorItem.Create(Self);
+    end
+    else
+    //create submenu
+    if IsSubmenu then
+    begin
+      Item:= TSpTbxSubmenuItem.Create(Self);
+      if SCmd='m:{recent}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuItemFRecents;
+      end
+      else
+      if SCmd='m:{new}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuItemFNew;
+      end
+      else
+      if SCmd='m:{sess}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuItemSess;
+      end
+      else
+      if SCmd='m:{colors}' then
+      begin
+        Item.LinkSubitems:= TbxSubmenuItemRecentColors;
+      end
+      else
+      if SCmd='m:{enc-chg}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuEnc;
+      end
+      else
+      if SCmd='m:{enc-conv}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuEnc2;
+      end
+      else
+      if SCmd='m:{folding}' then
+      begin
+        Item.LinkSubitems:= PopupFoldLevel.Items;
+      end
+      else
+      if SCmd='m:{foldlevel}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuFoldLevel;
+      end
+      else
+      if SCmd='m:{nonprint}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuItemNonPrint;
+      end
+      else
+      if SCmd='m:{tidy}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuItemTidy;
+      end
+      else
+      if SCmd='m:{conv}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuItemConv;
+      end
+      else
+      if SCmd='m:{projects}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuItemProjRecents;
+      end
+      else
+      if SCmd='m:{plugins}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuItemPlugins;
+      end
+      else
+      if SCmd='m:{projtools}' then
+      begin
+        Item.LinkSubitems:= TbxSubmenuItemProjTools;
+      end
+      else
+      if SCmd='m:{case}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuItemCaseOps;
+      end
+      else
+      if SCmd='m:{blank}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuItemBlankOps;
+      end
+      else
+      if SCmd='m:{cmt}' then
+      begin
+        Item.LinkSubitems:= TBXSubmenuItemCommentOps;
+      end
+      else
+      if SCmd='m:{carets}' then
+      begin
+        Item.LinkSubitems:= TbxSubmenuItemCaretsOps;
+      end
+      else
+      begin
+        FUserToolbarCommands.Add(SCmd);
+        Item.Tag:= FUserToolbarCommands.Count-1;
+      end;
+      Item.Images:= ImgList; //inherit ImageList
+      Item.Options:= [tboDropdownArrow];
+      Item.OnSelect:= ButtonOnSelect;
+      IcoLoaded:= LoadPngIconEx(ImgList, SIcoFN);
+    end
+    else
+    //create usual command item
+    begin
+      Item:= TSpTbxItem.Create(Self);
+      FUserToolbarCommands.Add(SCmd);
+      Item.Enabled:= SCmd<>'';
+      Item.Tag:= FUserToolbarCommands.Count-1;
+      Item.OnClick:= ToolbarUserClick;
+      Item.OnSelect:= ButtonOnSelect;
+      IcoLoaded:= LoadPngIconEx(ImgList, SIcoFN);
+
+      //add Action to "options" buttons, so toggling will check/uncheck these buttons
+      UpdateToolbarItemAction(Item, SCmd);
+    end;  
+
+    //handle "*" at end of hint
+    if (SHint<>'') and (SHint[Length(SHint)]='*') then
+    begin
+      SetLength(SHint, Length(SHint)-1);
+      Item.DisplayMode:= nbdmImageAndText;
+    end;
+    //set caption and hint last
+    Item.Hint:= SHint;
+    if Item is TSpTbxItem then
+      (Item as TSpTbxItem).Caption:= SHint;
+
+    //now add ready button to toolbar or submenu
     if Toolbar is TSpTbxToolbar then
     begin
-      ImgList.Width:= ReadInteger(Id, 'ix', 32);
-      ImgList.Height:= ReadInteger(Id, 'iy', 32);
-    end;
-
-    for i:= 0 to High(TToolbarProps) do
+      (Toolbar as TSpTbxToolbar).Items.Add(Item);
+      if IcoLoaded then
+        (Toolbar as TSpTbxToolbar).Items[(Toolbar as TSpTbxToolbar).Items.Count-1].ImageIndex:= ImgList.PngImages.Count-1;
+    end
+    else
+    if Toolbar is TSpTbxSubmenuItem then
     begin
-      SCmd:= UTF8Decode(ReadString(Id, IntToStr(i)+'c', ''));
-      SHint:= UTF8Decode(ReadString(Id, IntToStr(i)+'h', ''));
-      SIcoFN:= UTF8Decode(ReadString(Id, IntToStr(i)+'i', ''));
-      SReplaceAllW(SIcoFN, '{ini}', ExtractFileDir(SIni));
-
-      if (SCmd='') and (SHint='') and (SIcoFN='') then Break;
-      IcoLoaded:= false;
-      IsSep:= SCmd='-';
-      IsSubmenu:= SBegin(SCmd, 'm:');
-
-      if IsSep then
-      //create separator
-      begin
-        Item:= TSpTbxSeparatorItem.Create(Self);
-      end
-      else
-      //create submenu
-      if IsSubmenu then
-      begin
-        Item:= TSpTbxSubmenuItem.Create(Self);
-        if SCmd='m:{recent}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuItemFRecents;
-        end
-        else
-        if SCmd='m:{new}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuItemFNew;
-        end
-        else
-        if SCmd='m:{sess}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuItemSess;
-        end
-        else
-        if SCmd='m:{colors}' then
-        begin
-          Item.LinkSubitems:= TbxSubmenuItemRecentColors;
-        end
-        else
-        if SCmd='m:{enc-chg}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuEnc;
-        end
-        else
-        if SCmd='m:{enc-conv}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuEnc2;
-        end
-        else
-        if SCmd='m:{folding}' then
-        begin
-          Item.LinkSubitems:= PopupFoldLevel.Items;
-        end
-        else
-        if SCmd='m:{foldlevel}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuFoldLevel;
-        end
-        else
-        if SCmd='m:{nonprint}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuItemNonPrint;
-        end
-        else
-        if SCmd='m:{tidy}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuItemTidy;
-        end
-        else
-        if SCmd='m:{conv}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuItemConv;
-        end
-        else
-        if SCmd='m:{projects}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuItemProjRecents;
-        end
-        else
-        if SCmd='m:{plugins}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuItemPlugins;
-        end
-        else
-        if SCmd='m:{projtools}' then
-        begin
-          Item.LinkSubitems:= TbxSubmenuItemProjTools;
-        end
-        else
-        if SCmd='m:{case}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuItemCaseOps;
-        end
-        else
-        if SCmd='m:{blank}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuItemBlankOps;
-        end
-        else
-        if SCmd='m:{cmt}' then
-        begin
-          Item.LinkSubitems:= TBXSubmenuItemCommentOps;
-        end
-        else
-        if SCmd='m:{carets}' then
-        begin
-          Item.LinkSubitems:= TbxSubmenuItemCaretsOps;
-        end
-        else
-        begin
-          FUserToolbarCommands.Add(SCmd);
-          Item.Tag:= FUserToolbarCommands.Count-1;
-        end;
-        Item.Images:= ImgList; //inherit ImageList
-        Item.Options:= [tboDropdownArrow];
-        Item.OnSelect:= ButtonOnSelect;
-        IcoLoaded:= LoadPngIconEx(ImgList, SIcoFN);
-      end
-      else
-      //create usual command item
-      begin
-        Item:= TSpTbxItem.Create(Self);
-        FUserToolbarCommands.Add(SCmd);
-        Item.Enabled:= SCmd<>'';
-        Item.Tag:= FUserToolbarCommands.Count-1;
-        Item.OnClick:= ToolbarUserClick;
-        Item.OnSelect:= ButtonOnSelect;
-        IcoLoaded:= LoadPngIconEx(ImgList, SIcoFN);
-
-        //add Action to "options" buttons, so toggling will check/uncheck these buttons
-        UpdateToolbarItemAction(Item, SCmd);
-      end;  
-
-      //handle "*" at end of hint
-      if (SHint<>'') and (SHint[Length(SHint)]='*') then
-      begin
-        SetLength(SHint, Length(SHint)-1);
-        Item.DisplayMode:= nbdmImageAndText;
-      end;
-      //set caption and hint last
-      Item.Hint:= SHint;
-      if Item is TSpTbxItem then
-        (Item as TSpTbxItem).Caption:= SHint;
-
-      //now add ready button to toolbar or submenu
-      if Toolbar is TSpTbxToolbar then
-      begin
-        (Toolbar as TSpTbxToolbar).Items.Add(Item);
-        if IcoLoaded then
-          (Toolbar as TSpTbxToolbar).Items[(Toolbar as TSpTbxToolbar).Items.Count-1].ImageIndex:= ImgList.Count-1;
-      end
-      else
-      if Toolbar is TSpTbxSubmenuItem then
-      begin
-        (Toolbar as TSpTbxSubmenuItem).Add(Item);
-        if IcoLoaded then
-          (Toolbar as TSpTbxSubmenuItem).Items[(Toolbar as TSpTbxSubmenuItem).Count-1].ImageIndex:= ImgList.Count-1;
-      end;
-
-      //load submenu contents
-      if IsSubmenu then
-        LoadToolbarContent(Item, SCmd);
+      (Toolbar as TSpTbxSubmenuItem).Add(Item);
+      if IcoLoaded then
+        (Toolbar as TSpTbxSubmenuItem).Items[(Toolbar as TSpTbxSubmenuItem).Count-1].ImageIndex:= ImgList.PngImages.Count-1;
     end;
-  finally
-    Free
+
+    //load submenu contents
+    if IsSubmenu then
+      LoadToolbarContent_FromIni(Ini, ImgList, Item, SCmd);
   end;
 
   if Toolbar is TSpTbxToolbar then
@@ -24898,13 +24918,15 @@ begin
     IsEmpty:= false;
 
   if Toolbar is TControl then
-  if IsEmpty then
-    (Toolbar as TControl).Visible:= false
-  else
-  if AutoShow then
   begin
-    (Toolbar as TControl).Visible:= true;
-    SaveToolbarsProps;
+    if IsEmpty then
+      (Toolbar as TControl).Visible:= false
+    else
+    if AutoShow then
+    begin
+      (Toolbar as TControl).Visible:= true;
+      SaveToolbarsProps;
+    end;
   end;
 end;
 
