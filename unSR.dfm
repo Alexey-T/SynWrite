@@ -591,10 +591,10 @@ object fmSR: TfmSR
     object labTran: TTntLabel
       Left = 126
       Top = 108
-      Width = 66
+      Width = 72
       Height = 13
       Cursor = crHandPoint
-      Caption = 'Transparency'
+      Caption = #187'Transparency'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlue
       Font.Height = -11

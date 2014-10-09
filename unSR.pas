@@ -1670,8 +1670,8 @@ end;
 
 procedure TfmSR.ed1KeyPress(Sender: TObject; var Key: Char);
 begin
-  //disable ding with Esc
-  if (Key=#27) then
+  //disable ding with Ctrl+F, Ctrl+H, Esc
+  if (Key in [#6, #8, #27]) then
     Key:= #0
   else
     DoHandleCtrlBkSp(ed1, Key);
@@ -1679,8 +1679,7 @@ end;
 
 procedure TfmSR.ed2KeyPress(Sender: TObject; var Key: Char);
 begin
-  //disable ding with Esc
-  if (Key=#27) then
+  if (Key in [#6, #8, #27]) then
     Key:= #0
   else
     DoHandleCtrlBkSp(ed2, Key);
@@ -1700,18 +1699,21 @@ begin
     Key:= 0;
     Exit
   end;
+
   if Shortcut(Key, Shift) = Sh_FindMode then
   begin
     IsReplace:= false;
     Key:= 0;
     Exit;
   end;
+
   if Shortcut(Key, Shift) = Sh_ReplaceMode then
   begin
     IsReplace:= true;
     Key:= 0;
     Exit;
   end;
+
   //Ctrl+E - paste escaped string
   if (Key=Ord('E')) and (Shift=[ssCtrl]) then
   begin
