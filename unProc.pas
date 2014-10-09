@@ -94,7 +94,6 @@ procedure LoadMruList(List: TSynMruList; Ini: TCustomIniFile; const Section: str
   MaxCount: Integer; CheckExist: boolean);
 procedure SaveMruList(List: TSynMruList; Ini: TCustomIniFile; const Section: string);
 
-//function LoadPngIcon(ImageList: TTbxImageList; const fn: string): boolean;
 function LoadPngIconEx(ImageList: TPngImageList; const fn: string): boolean;
 
 function DoInputCharCode(
@@ -1239,37 +1238,15 @@ end;
 *)
 
 function LoadPngIconEx(ImageList: TPngImageList; const fn: string): boolean;
-var
-  AImage: TPngObject;
 begin
-  if not FileExists(fn) then
-    Result:= false
-  else
+  Result:= FileExists(fn);
+  if Result then
   begin
-    AImage:= TPngObject.Create;
-    try
-      AImage.LoadFromFile(fn);
-      ImageList.PngImages.Add.PngImage:= AImage;
-      Result:= true;
-    finally
-      FreeAndNil(AImage);
-    end;
+    ImageList.BeginUpdate;
+    ImageList.PngImages.Add.PngImage.LoadFromFile(fn);
+    ImageList.EndUpdate;
   end;
 end;
-
-
-{
-function SHAutoComplete(H: THandle; Flags: DWord): HResult; stdcall; external 'shlwapi.dll';
-const
-  SHACF_AUTOAPPEND_FORCE_OFF: DWord = $80000000;
-  SHACF_AUTOSUGGEST_FORCE_OFF: DWord = $20000000;
-
-procedure FixEditBkSp(H: THandle);
-begin
-  SHAutoComplete(H,
-    SHACF_AUTOAPPEND_FORCE_OFF or SHACF_AUTOSUGGEST_FORCE_OFF)
-end;
-}
 
 function GetEditHandle(Target: TObject): THandle;
 begin
@@ -1277,7 +1254,8 @@ begin
     {
     if (Target is TCustomEdit) then
         Result := GetControl(Target).Handle
-    else} if (Target is TComboBox) then
+    else}
+    if (Target is TComboBox) then
     begin
         Result := GetWindow((Target as TWinControl).Handle, GW_CHILD);
         if (Result <> 0) then
@@ -2610,19 +2588,22 @@ begin
       FreeAndNil(Arc);
     end;
 
-    for i:= Low(Str) to High(Str) do
-      try
-        L.PngImages.Add.PngImage.LoadFromStream(Str[i]);
-      except
-        Application.MessageBox(
-          PChar('Cannot load icon '+cIconsId[i]+':'#13+fn_tar),
-          'SynWrite', mb_ok or mb_iconerror);
-        Result:= false;
-        Exit
-      end;
-    //workaround for missing last icon: add empty icon
-    L.PngImages.Add;
-    
+    L.BeginUpdate;
+    try
+      for i:= Low(Str) to High(Str) do
+        try
+          L.PngImages.Add.PngImage.LoadFromStream(Str[i]);
+        except
+          Application.MessageBox(
+            PChar('Cannot load icon '+cIconsId[i]+':'#13+fn_tar),
+            'SynWrite', mb_ok or mb_iconerror);
+          Result:= false;
+          Exit
+        end;
+    finally
+      L.EndUpdate;
+    end;
+
   finally
     for i:= Low(Str) to High(Str) do
       FreeAndNil(Str[i]);
