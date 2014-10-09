@@ -2756,14 +2756,14 @@ type
     procedure LoadPanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile;
       const Id: string; DefFloating: boolean = false);
 
-    procedure LoadToolbarContent(
-      Toolbar: TSpTbxToolbar; Id: string; AutoShow: boolean = false);
-    procedure LoadToolbarContent_FromIni(
+    procedure DoToolbar_LoadContent(
+      Toolbar: TSpTbxToolbar; Id: string; AutoShow: boolean);
+    procedure DoToolbar_LoadProps(
       Ini: TIniFile; ImgList: TPngImageList;
       Toolbar: TObject; Id: string);
-    function DoCustomizeToolbar(const Id: string): boolean;
-    procedure DoCustomizeAndReloadToolbar(Id: TSynUserToolbarId);
-    procedure ToolbarUserClick(Sender: TObject);
+    function DoToolbar_Customize(const Id: string): boolean;
+    procedure DoToolbar_CustomizeAndReload(Id: TSynUserToolbarId);
+    procedure DoToolbar_OnClick(Sender: TObject);
 
     function DoShowCmdList(AOnlyStdCommands: boolean = false): Integer;
     function DoShowCmdList_ForTools: string;
@@ -4555,9 +4555,9 @@ begin
       LoadToolbarProp(tbUser2, ini, 'U2');
       LoadToolbarProp(tbUser3, ini, 'U3');
 
-      LoadToolbarContent(tbUser1, '1');
-      LoadToolbarContent(tbUser2, '2');
-      LoadToolbarContent(tbUser3, '3');
+      DoToolbar_LoadContent(tbUser1, '1', false);
+      DoToolbar_LoadContent(tbUser2, '2', false);
+      DoToolbar_LoadContent(tbUser3, '3', false);
     end
     else
     begin
@@ -24613,7 +24613,7 @@ begin
   SaveToolbarsProps;
 end;
 
-procedure TfmMain.DoCustomizeAndReloadToolbar(Id: TSynUserToolbarId);
+procedure TfmMain.DoToolbar_CustomizeAndReload(Id: TSynUserToolbarId);
 var
   Toolbar: TSpTbxToolbar;
   ToolbarId: string;
@@ -24626,9 +24626,9 @@ begin
       raise Exception.Create('Unknown toolbar id: '+IntToStr(Ord(Id)));
   end;
 
-  if DoCustomizeToolbar(ToolbarId) then
+  if DoToolbar_Customize(ToolbarId) then
   begin
-    LoadToolbarContent(Toolbar, ToolbarId, true);
+    DoToolbar_LoadContent(Toolbar, ToolbarId, true);
     Toolbar.Refresh;
     UpdateStatusbar;
     DoRepaint;
@@ -24637,20 +24637,20 @@ end;
 
 procedure TfmMain.TBXItemOToolbar1Click(Sender: TObject);
 begin
-  DoCustomizeAndReloadToolbar(synToolbar1);
+  DoToolbar_CustomizeAndReload(synToolbar1);
 end;
 
 procedure TfmMain.TBXItemOToolbar2Click(Sender: TObject);
 begin
-  DoCustomizeAndReloadToolbar(synToolbar2);
+  DoToolbar_CustomizeAndReload(synToolbar2);
 end;
 
 procedure TfmMain.TBXItemOToolbar3Click(Sender: TObject);
 begin
-  DoCustomizeAndReloadToolbar(synToolbar3);
+  DoToolbar_CustomizeAndReload(synToolbar3);
 end;
 
-function TfmMain.DoCustomizeToolbar(const Id: string): boolean;
+function TfmMain.DoToolbar_Customize(const Id: string): boolean;
 var
   Dir: string;
 begin
@@ -24697,8 +24697,8 @@ begin
     Result:= Cmd;
 end;
 
-procedure TfmMain.LoadToolbarContent(Toolbar: TSpTbxToolbar;
-  Id: string; AutoShow: boolean = false);
+procedure TfmMain.DoToolbar_LoadContent(Toolbar: TSpTbxToolbar;
+  Id: string; AutoShow: boolean);
 var
   Ini: TIniFile;
   ImgList: TPngImageList;
@@ -24712,7 +24712,7 @@ begin
     ImgList.BeginUpdate;
     try
       Toolbar.Items.Clear;
-      LoadToolbarContent_FromIni(Ini, ImgList, Toolbar, Id);
+      DoToolbar_LoadProps(Ini, ImgList, Toolbar, Id);
     finally
       ImgList.EndUpdate;
     end;
@@ -24730,7 +24730,7 @@ begin
   end;
 end;
 
-procedure TfmMain.LoadToolbarContent_FromIni(
+procedure TfmMain.DoToolbar_LoadProps(
   Ini: TIniFile; ImgList: TPngImageList;
   Toolbar: TObject; Id: string);
 var
@@ -24867,7 +24867,7 @@ begin
       FUserToolbarCommands.Add(SCmd);
       Item.Enabled:= SCmd<>'';
       Item.Tag:= FUserToolbarCommands.Count-1;
-      Item.OnClick:= ToolbarUserClick;
+      Item.OnClick:= DoToolbar_OnClick;
       Item.OnSelect:= ButtonOnSelect;
       IcoLoaded:= LoadPngIconEx(ImgList, SIcoFN);
 
@@ -24903,11 +24903,11 @@ begin
 
     //load submenu contents
     if IsSubmenu then
-      LoadToolbarContent_FromIni(Ini, ImgList, Item, SCmd);
+      DoToolbar_LoadProps(Ini, ImgList, Item, SCmd);
   end;
 end;
 
-procedure TfmMain.ToolbarUserClick(Sender: TObject);
+procedure TfmMain.DoToolbar_OnClick(Sender: TObject);
 var
   Cmd: Widestring;
   PyFile, PyCmd: Widestring;
