@@ -9316,17 +9316,18 @@ begin
   dirBase:= SynIconsDir;
   fn:= dirBase+'\'+S+'.tar';
 
-  if not FileExists(fn) then
+  if not IsFileExist(fn) then
+  begin
     fn:= dirBase+'\'+cIconsDefault+'.tar';
-  if not FileExists(fn) then
-    Exit;
-
+    if not IsFileExist(fn) then Exit;
+  end;  
   FIcons:= S;
-  //From files: 330ms
-  //From tar: 330ms
+  
 //_Time1;
   DoIconSet_LoadFromTar(ImageListIcons, fn);
 //_Time2;
+
+  DoRepaint;
 end;
 
 procedure TfmMain.ApplyShowIconsInMenus;
