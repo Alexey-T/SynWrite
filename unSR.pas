@@ -8,7 +8,7 @@ uses
   Dialogs, StdCtrls, ExtCtrls, DKLang, ComCtrls, Menus, Buttons,
   TntStdCtrls, TntClasses, TntForms, 
   TntMenus, TntComCtrls, TntExtCtrls, TntClipbrd,
-  unSearch;
+  unSearch, TntButtons;
 
 type
   TTrackBar = class(ComCtrls.TTrackBar)
@@ -88,8 +88,8 @@ type
     cbTokens: TTntComboBox;
     ed1Memo: TTntMemo;
     ed2Memo: TTntMemo;
-    bCombo1: TSpeedButton;
-    bCombo2: TSpeedButton;
+    bCombo1: TTntSpeedButton;
+    bCombo2: TTntSpeedButton;
     mnuCombo: TTntPopupMenu;
     StatusFind: TTntStatusBar;
     cbOrigReDot: TTntCheckBox;
@@ -139,6 +139,7 @@ type
     bAltRepAll: TTntButton;
     bAltRepInTabs: TTntButton;
     labDocked2: TTntLabel;
+    btnAltClose: TTntSpeedButton;
     procedure FormShow(Sender: TObject);
     procedure ed1Change(Sender: TObject);
     procedure bHelpClick(Sender: TObject);
@@ -189,6 +190,7 @@ type
     procedure ed2Exit(Sender: TObject);
     procedure ed2Change(Sender: TObject);
     procedure ed2MemoChange(Sender: TObject);
+    procedure btnAltCloseClick(Sender: TObject);
   private
     { Private declarations }
     CurChecked: boolean;
@@ -1336,6 +1338,7 @@ begin
 
   StatusFind.Visible:= not IsSmall and not IsDocked;
   labSmall.Caption:= IfThen(IsSmall, '>>', '<<');
+  btnAltClose.Visible:= IsDocked;
 
   ClientWidth:= FWidth0;
   ClientHeight:= IfThen(IsSmall,
@@ -2103,6 +2106,11 @@ end;
 procedure TfmSR.ed2MemoChange(Sender: TObject);
 begin
   UpdButtons;
+end;
+
+procedure TfmSR.btnAltCloseClick(Sender: TObject);
+begin
+  Close;
 end;
 
 end.
