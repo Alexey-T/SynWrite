@@ -1765,11 +1765,19 @@ begin
 end;
 
 procedure TfmSR.SetIsDocked(Value: boolean);
+var
+  Ctl: TWinControl;
 begin
   if Value<>FIsDocked then
   begin
     FIsDocked:= Value;
     StatusFind.Visible:= not Value;
+
+    if ed1.Focused then Ctl:= ed1 else
+     if ed2.Focused then Ctl:= ed2 else
+      if ed1Memo.Focused then Ctl:= ed1Memo else
+       if ed2Memo.Focused then Ctl:= ed2Memo else
+        Ctl:= nil;
 
     Visible:= false;
     if Value then
@@ -1787,6 +1795,10 @@ begin
     labTran.Enabled:= not FIsDocked;
     if FIsDocked then
       PanelTran.Hide;
+
+    if Ctl<>nil then
+      if Ctl.Visible and Ctl.Enabled and Ctl.CanFocus then
+        Ctl.SetFocus;
 
     if Assigned(FOnRepaintNeeded) then
       FOnRepaintNeeded(Self);

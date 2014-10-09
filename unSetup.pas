@@ -36,7 +36,7 @@ type
     Label4: TTntLabel;
     ListColors: TTntListBox;
     Label5: TTntLabel;
-    StaticText1: TTntStaticText;
+    LabelColorInf: TTntLabel;
     tabProgSett: TTntTabSheet;
     boxProgSett: TTntGroupBox;
     cbChar: TTntCheckBox;
@@ -45,7 +45,7 @@ type
     tabACP: TTntTabSheet;
     bKeyFind: TTntButton;
     DKLanguageController1: TDKLanguageController;
-    ColorBox1: TColorBox;
+    cbColors: TColorBox;
     cbInst: TTntCheckBox;
     gAcpAll: TTntGroupBox;
     Label42: TTntLabel;
@@ -367,7 +367,7 @@ type
     procedure bOkClick(Sender: TObject);
     procedure tabColorsShow(Sender: TObject);
     procedure ListColorsClick(Sender: TObject);
-    procedure ColorBox1Select(Sender: TObject);
+    procedure cbColorsSelect(Sender: TObject);
     procedure bKeySetClick(Sender: TObject);
     procedure tabKeyShow(Sender: TObject);
     procedure KeyListMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -753,14 +753,14 @@ end;
 
 procedure TfmSetup.ListColorsClick(Sender: TObject);
 begin
-  ColorBox1.Selected:= ColorsSetup[cColorsOrder[ListColors.ItemIndex]];
-  ColorBox1.Items.Objects[0]:= TObject(ColorBox1.Selected); //set Custom color
-  ColorBox1.Invalidate;
+  cbColors.Selected:= ColorsSetup[cColorsOrder[ListColors.ItemIndex]];
+  cbColors.Items.Objects[0]:= TObject(cbColors.Selected); //set Custom color
+  cbColors.Invalidate;
 end;
 
-procedure TfmSetup.ColorBox1Select(Sender: TObject);
+procedure TfmSetup.cbColorsSelect(Sender: TObject);
 begin
-  ColorsSetup[cColorsOrder[ListColors.ItemIndex]]:= ColorBox1.Selected;
+  ColorsSetup[cColorsOrder[ListColors.ItemIndex]]:= cbColors.Selected;
   ListColors.Invalidate;
 end;
 
