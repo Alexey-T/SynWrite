@@ -1670,8 +1670,8 @@ end;
 
 procedure TfmSR.ed1KeyPress(Sender: TObject; var Key: Char);
 begin
-  //disable ding with Ctrl+F, Ctrl+H, Esc
-  if (Key in [#6, #8, #27]) then
+  //disable ding with Ctrl+F, Esc
+  if (Key in [#6, #27]) then
     Key:= #0
   else
     DoHandleCtrlBkSp(ed1, Key);
@@ -1679,7 +1679,7 @@ end;
 
 procedure TfmSR.ed2KeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key in [#6, #8, #27]) then
+  if (Key in [#6, #27]) then
     Key:= #0
   else
     DoHandleCtrlBkSp(ed2, Key);
