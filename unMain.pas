@@ -26984,6 +26984,10 @@ begin
       Break
     end;
 
+  //don't show "template", show nicer "data/dir"  
+  if n_type=cAddonTypeTemplate then
+    s_type:= 'data/'+s_subdir;
+
   if (s_title='') then
   begin
     MsgError('Invalid field in inf-file: title', Handle);
@@ -28951,7 +28955,8 @@ begin
   ATabs.TabIndentTop:= 0;
   ATabs.TabIndentLeft:= 3;
   ATabs.TabIndentInit:= 0;
-  ATabs.TabHeight:= RefTabs.TabHeight;
+  ATabs.TabIndentText:= 3;
+  ATabs.TabHeight:= RefTabs.TabHeight-2;
   ATabs.Height:= RefTabs.Height;
 
   ATabs.Color:= RefTabs.Color;
