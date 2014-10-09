@@ -79,7 +79,7 @@ type
     FCanPlay: Boolean;
     FKeys: TList;
     procedure SetMacroRecorder(const Value: TecMacroRecorder);
-    function NameStr(n: integer): string;
+    function NameStr(n: integer): Widestring;
     procedure DoAddKey(AKey: TShortcut);
   protected
     procedure FillMacrosList;
@@ -183,9 +183,9 @@ begin
     end;
 end;
 
-function TfmMacroEdit.NameStr(n: integer): string;
+function TfmMacroEdit.NameStr(n: integer): Widestring;
 var
-  Str: string;
+  Str: Widestring;
 begin
   Result:= Recorder[n].Name;
   if Result = '' then
