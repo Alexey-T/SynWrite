@@ -585,21 +585,21 @@ begin
       CopyFile(PChar(SynHideSampleIni), PChar(SynHideIni), true);
 end;
 
-procedure InitAll;
+procedure InitFirst;
 begin
   CreateMutex(nil, false, 'UVViewSoft.SynWrite');
   _SynActionProc:= @PluginAction;
 end;
 
-procedure InitEnv;
+procedure InitOther;
 begin
-  //for later
+  //later
 end;
 
 initialization
-  InitAll;
+  InitFirst;
   InitPaths;
-  InitEnv;
+  InitOther;
 
 finalization
   SynIni:= '';
