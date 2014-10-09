@@ -23,9 +23,9 @@ object fmPreview: TfmPreview
   TextHeight = 13
   object ecPreview: TecSyntPreview
     Left = 0
-    Top = 35
+    Top = 33
     Width = 624
-    Height = 397
+    Height = 399
     ZoomMode = zmWholePage
     OnPageChanged = ecPreviewPageChanged
     PreviewMode = pm1Page
@@ -34,13 +34,13 @@ object fmPreview: TfmPreview
     Left = 0
     Top = 0
     Width = 624
-    Height = 35
+    Height = 33
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
     object btnStart: TTntSpeedButton
       Left = 4
-      Top = 2
+      Top = 0
       Width = 33
       Height = 33
       Hint = 'Go to first page'
@@ -126,7 +126,7 @@ object fmPreview: TfmPreview
     end
     object btnPrev: TTntSpeedButton
       Left = 38
-      Top = 2
+      Top = 0
       Width = 33
       Height = 33
       Hint = 'Go to previous page'
@@ -212,7 +212,7 @@ object fmPreview: TfmPreview
     end
     object btnNext: TTntSpeedButton
       Left = 160
-      Top = 2
+      Top = 0
       Width = 33
       Height = 33
       Hint = 'Go to next page'
@@ -298,7 +298,7 @@ object fmPreview: TfmPreview
     end
     object btnLast: TTntSpeedButton
       Left = 194
-      Top = 2
+      Top = 0
       Width = 33
       Height = 33
       Hint = 'Go to last page'
@@ -384,7 +384,7 @@ object fmPreview: TfmPreview
     end
     object btnOpt: TTntSpeedButton
       Left = 496
-      Top = 2
+      Top = 0
       Width = 33
       Height = 33
       Hint = 'Dialog "Page setup"'
@@ -468,7 +468,7 @@ object fmPreview: TfmPreview
     end
     object btnPrint: TTntSpeedButton
       Left = 530
-      Top = 2
+      Top = 0
       Width = 33
       Height = 33
       Hint = 'Print the document'
@@ -552,7 +552,7 @@ object fmPreview: TfmPreview
     end
     object btnClose: TTntSpeedButton
       Left = 584
-      Top = 2
+      Top = 0
       Width = 33
       Height = 33
       Hint = 'Close this dialog'
@@ -636,7 +636,7 @@ object fmPreview: TfmPreview
     end
     object Label1: TLabel
       Left = 113
-      Top = 10
+      Top = 8
       Width = 9
       Height = 17
       AutoSize = False
@@ -644,7 +644,7 @@ object fmPreview: TfmPreview
     end
     object edView: TTntComboBox
       Left = 374
-      Top = 8
+      Top = 6
       Width = 102
       Height = 21
       Hint = 'Number of previewed pages'
@@ -659,7 +659,7 @@ object fmPreview: TfmPreview
     end
     object edPage: TTntEdit
       Left = 75
-      Top = 8
+      Top = 6
       Width = 36
       Height = 21
       Hint = 'Current page'
@@ -671,7 +671,7 @@ object fmPreview: TfmPreview
     end
     object edTotal: TTntEdit
       Left = 120
-      Top = 8
+      Top = 6
       Width = 36
       Height = 21
       Hint = 'Total pages'
@@ -685,7 +685,7 @@ object fmPreview: TfmPreview
     end
     object edZoom: TTntComboBox
       Left = 248
-      Top = 8
+      Top = 6
       Width = 121
       Height = 21
       Hint = 'Zoom in/out'
