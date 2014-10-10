@@ -360,6 +360,8 @@ type
     cbACloseQuote2: TTntCheckBox;
     cbACloseQuote1: TTntCheckBox;
     bFontMenus: TTntButton;
+    LabMoreSkins: TTntLabel;
+    LabMoreIcons: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -459,6 +461,8 @@ type
     procedure bFontTabsClick(Sender: TObject);
     procedure LabelLangMoreClick(Sender: TObject);
     procedure bFontMenusClick(Sender: TObject);
+    procedure LabMoreSkinsClick(Sender: TObject);
+    procedure LabMoreIconsClick(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
@@ -2868,6 +2872,16 @@ end;
 procedure TfmSetup.LabelLangMoreClick(Sender: TObject);
 begin
   FOpenUrl('https://sourceforge.net/projects/synwrite-addons/files/Languages/', Handle);
+end;
+
+procedure TfmSetup.LabMoreSkinsClick(Sender: TObject);
+begin
+  FOpenUrl('http://www.silverpointdevelopment.com/skineditor/index.htm', Handle);
+end;
+
+procedure TfmSetup.LabMoreIconsClick(Sender: TObject);
+begin
+  FOpenUrl('http://sourceforge.net/projects/synwrite-addons/files/IconSets/', Handle);
 end;
 
 end.

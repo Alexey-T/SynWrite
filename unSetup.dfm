@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabColors
+    ActivePage = tabProgSett
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -204,12 +204,12 @@ object fmSetup: TfmSetup
           Visible = False
         end
         object LabelLangMore: TTntLabel
-          Left = 286
+          Left = 262
           Top = 20
-          Width = 36
+          Width = 24
           Height = 13
           Cursor = crHandPoint
-          Caption = 'More...'
+          Caption = 'More'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlue
           Font.Height = -11
@@ -258,6 +258,36 @@ object fmSetup: TfmSetup
           Height = 13
           Caption = '&Icons:'
           FocusControl = cbIcons
+        end
+        object LabMoreSkins: TTntLabel
+          Left = 296
+          Top = 34
+          Width = 24
+          Height = 13
+          Cursor = crHandPoint
+          Caption = 'More'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlue
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsUnderline]
+          ParentFont = False
+          OnClick = LabMoreSkinsClick
+        end
+        object LabMoreIcons: TTntLabel
+          Left = 296
+          Top = 74
+          Width = 24
+          Height = 13
+          Cursor = crHandPoint
+          Caption = 'More'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlue
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsUnderline]
+          ParentFont = False
+          OnClick = LabMoreIconsClick
         end
         object cbTheme: TTntComboBox
           Left = 8
@@ -3044,7 +3074,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0154010000
+      0700666D5365747570010100000001000000070043617074696F6E0156010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3352,7 +3382,9 @@ object fmSetup: TfmSetup
       E0020000070043617074696F6E000E00636241436C6F736551756F7465320101
       000000E1020000070043617074696F6E000E00636241436C6F736551756F7465
       310101000000E2020000070043617074696F6E000A0062466F6E744D656E7573
-      0101000000E3020000070043617074696F6E00}
+      0101000000E3020000070043617074696F6E000C004C61624D6F7265536B696E
+      730101000000E4020000070043617074696F6E000C004C61624D6F726549636F
+      6E730101000000E5020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
