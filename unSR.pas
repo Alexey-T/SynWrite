@@ -332,9 +332,20 @@ begin
 end;
 
 procedure TfmSR.SetIsReplace(Value: boolean);
+var
+  Ctl: TWinControl;
 begin
+  if ed2.Focused then Ctl:= ed1 else
+   if ed2Memo.Focused then Ctl:= ed1Memo else
+    Ctl:= nil;
+
   FIsReplace:= Value;
   UpdForm;
+
+  if not IsReplace then
+    if Ctl<>nil then
+      if Ctl.Visible and Ctl.Enabled and Ctl.CanFocus then
+        Ctl.SetFocus;
 end;
 
 procedure TfmSR.LoadIni;
