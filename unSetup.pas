@@ -827,7 +827,7 @@ end;
 procedure TfmSetup.ListKeys;
 var
   i, j, k: integer;
-  old: string;
+  old: Widestring;
   g: TGridRect;
 begin
   with KeyList do
@@ -2252,7 +2252,7 @@ end;
 
 procedure TfmSetup.InitKeys;
 var
-  L: TStringList;
+  L: TTntStringList;
   i: Integer;
 begin
   //copy keymapping from fmMain, only first InitialKeyCount items
@@ -2262,7 +2262,7 @@ begin
     //ShowMessage('py keys: '+Inttostr(KeyMappingPy.Items.Count));
 
   //list categories
-  L:= TStringList.Create;
+  L:= TTntStringList.Create;
   try
     for i:= 0 to KeyMapping.Items.Count-1 do
       if KeyMapping.Items[i].Customizable then

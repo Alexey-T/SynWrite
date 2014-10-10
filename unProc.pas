@@ -795,20 +795,20 @@ procedure DoReportKeysHtml(SyntKeymapping: TSyntKeyMapping;
   const fn: string);
 var
   i, j, k: integer;
-  old, sname, s: string;
   f: TextFile;
-  LCat: TStringList;
-  LKeys: TStringList;
-  LKeysText: TStringList;
+  old, sname, s: Widestring;
+  LCat: TTntStringList;
+  LKeys: TTntStringList;
+  LKeysText: TTntStringList;
 begin
   AssignFile(f, fn);
   Rewrite(f);
-  Writeln(f, '<html><head><title>SynWrite keyboard mapping</title><head><body>');
+  Writeln(f, '<html><head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> <title>SynWrite keyboard mapping</title><head><body>');
   Writeln(f, _KeymapStyle);
 
-  LCat:= TStringList.Create;
-  LKeys:= TStringList.Create;
-  LKeysText:= TStringList.Create;
+  LCat:= TTntStringList.Create;
+  LKeys:= TTntStringList.Create;
+  LKeysText:= TTntStringList.Create;
   old:='';
 
   try
@@ -821,12 +821,12 @@ begin
     Writeln(f, '<table><tr>');
     for i:= 1 to 3 do
     begin
-      Writeln(f, '<td>');
+      Writeln(f, '<td width="30%">');
       for j:= 1 to Ceil(LCat.Count/3) do //categories
       begin
         k:= (i-1)*Ceil(LCat.Count/3) + j-1;
         if k<= LCat.Count-1 then
-          Writeln(f, '<li><a href="#c'+IntToStr(k)+'">'+LCat[k]+'</a><br>');
+          Writeln(f, '<li><a href="#c'+IntToStr(k)+'">'+UTF8Encode(LCat[k])+'</a><br>');
       end;
       Writeln(f, '</td>');
     end;
@@ -845,22 +845,22 @@ begin
         begin
           old:= SyntKeyMapping.Items[i].Category;
           Writeln(f, '<tr><td colspan=2 align="center"><font color="DarkBlue"><b>');
-          Writeln(f, '<a name="c'+IntToStr(k)+'">'+old);
+          Writeln(f, '<a name="c'+IntToStr(k)+'">'+ UTF8Encode(old));
           Writeln(f, '</b></font></td></tr>');
         end;
 
         sname:= SyntKeyMapping.Items[i].DisplayName;
-        SReplaceAll(sname, '<', '&lt;');
-        SReplaceAll(sname, '>', '&gt;');
+        SReplaceAllW(sname, '<', '&lt;');
+        SReplaceAllW(sname, '>', '&gt;');
 
         Writeln(f, '<tr><td>');
-        Write(f, '&nbsp;'+sname);
+        Write(f, '&nbsp;'+ UTF8Encode(sname));
         Writeln(f, '</td><td><font color="DarkBlue">');
 
         if SyntKeyMapping.Items[i].KeyStrokes.Count>0 then
         begin
           S:= SyntKeyMapping.Items[i].KeyStrokes.Items[0].AsString;
-          Write(f, '&nbsp;'+S);
+          Write(f, '&nbsp;'+ UTF8Encode(S));
           if S<>'' then
             if LKeys.IndexOf(S)>=0 then
               LKeysText.Add(sname + ': ' + S)
@@ -870,7 +870,7 @@ begin
         if SyntKeyMapping.Items[i].KeyStrokes.Count>1 then
         begin
           S:= SyntKeyMapping.Items[i].KeyStrokes.Items[1].AsString;
-          Write(f, '<br>&nbsp;'+S);
+          Write(f, '<br>&nbsp;'+ UTF8Encode(S));
           if S<>'' then
             if LKeys.IndexOf(S)>=0 then
               LKeysText.Add(sname + ': ' + S)
@@ -887,7 +887,7 @@ begin
       Writeln(f, '<p>Duplicate shortcuts:');
       Writeln(f, '<ul>');
       for i:= 0 to LKeysText.Count-1 do
-        Writeln(f, '<li>'+LKeysText[i]);
+        Writeln(f, '<li>'+ UTF8Encode(LKeysText[i]));
       Writeln(f, '</ul></p>');
     end;
 
