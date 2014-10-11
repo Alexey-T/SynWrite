@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.11.1660
+AppVersion=6.11.1673
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com

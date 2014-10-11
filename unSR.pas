@@ -1679,10 +1679,15 @@ begin
 end;
 }
 
+function IsBadKeychar(ch: char): boolean;
+begin
+  Result:= ch in [#6, #18, #27];
+end;
+
 procedure TfmSR.ed1KeyPress(Sender: TObject; var Key: Char);
 begin
   //disable ding with Ctrl+F, Esc
-  if (Key in [#6, #27]) then
+  if IsBadkeychar(Key) then
     Key:= #0
   else
     DoHandleCtrlBkSp(ed1, Key);
@@ -1690,7 +1695,7 @@ end;
 
 procedure TfmSR.ed2KeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key in [#6, #27]) then
+  if IsBadkeychar(Key) then
     Key:= #0
   else
     DoHandleCtrlBkSp(ed2, Key);
