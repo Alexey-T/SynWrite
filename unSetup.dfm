@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabProgSett
+    ActivePage = tabColors
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -260,7 +260,7 @@ object fmSetup: TfmSetup
           FocusControl = cbIcons
         end
         object LabMoreSkins: TTntLabel
-          Left = 296
+          Left = 292
           Top = 34
           Width = 24
           Height = 13
@@ -275,7 +275,7 @@ object fmSetup: TfmSetup
           OnClick = LabMoreSkinsClick
         end
         object LabMoreIcons: TTntLabel
-          Left = 296
+          Left = 292
           Top = 74
           Width = 24
           Height = 13
@@ -295,7 +295,7 @@ object fmSetup: TfmSetup
           Width = 273
           Height = 21
           Style = csDropDownList
-          DropDownCount = 40
+          DropDownCount = 25
           ItemHeight = 13
           TabOrder = 0
         end
@@ -305,7 +305,7 @@ object fmSetup: TfmSetup
           Width = 273
           Height = 21
           Style = csDropDownList
-          DropDownCount = 20
+          DropDownCount = 25
           ItemHeight = 13
           TabOrder = 1
         end
@@ -326,7 +326,7 @@ object fmSetup: TfmSetup
           FocusControl = ListColors
         end
         object Label5: TTntLabel
-          Left = 286
+          Left = 288
           Top = 16
           Width = 29
           Height = 13
@@ -358,9 +358,9 @@ object fmSetup: TfmSetup
           OnDrawItem = ListColorsDrawItem
         end
         object cbColors: TColorBox
-          Left = 286
+          Left = 288
           Top = 32
-          Width = 227
+          Width = 233
           Height = 22
           Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames]
           DropDownCount = 20
