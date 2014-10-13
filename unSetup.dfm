@@ -808,11 +808,11 @@ object fmSetup: TfmSetup
           Top = 12
           Width = 142
           Height = 29
-          LineSize = 250
-          Max = 1500
-          Min = 250
-          PageSize = 250
-          Frequency = 250
+          LineSize = 200
+          Max = 2000
+          Min = 200
+          PageSize = 200
+          Frequency = 300
           Position = 500
           TabOrder = 5
         end
