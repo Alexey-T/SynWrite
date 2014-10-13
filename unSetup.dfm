@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabColors
+    ActivePage = tabCarets
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -737,6 +737,13 @@ object fmSetup: TfmSetup
           Height = 13
           Caption = 'Caret shape'
         end
+        object TntLabel41: TTntLabel
+          Left = 256
+          Top = 16
+          Width = 44
+          Height = 13
+          Caption = 'Blink time'
+        end
         object edCaretType: TTntComboBox
           Left = 8
           Top = 16
@@ -795,6 +802,19 @@ object fmSetup: TfmSetup
           Hint = 'Shows caret in read-only mode.'
           Caption = 'Show caret in read-only'
           TabOrder = 4
+        end
+        object edCaretTime: TTrackBar
+          Left = 376
+          Top = 12
+          Width = 142
+          Height = 29
+          LineSize = 250
+          Max = 1500
+          Min = 250
+          PageSize = 250
+          Frequency = 250
+          Position = 500
+          TabOrder = 5
         end
       end
     end
@@ -3074,7 +3094,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0156010000
+      0700666D5365747570010100000001000000070043617074696F6E0158010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3384,7 +3404,9 @@ object fmSetup: TfmSetup
       310101000000E2020000070043617074696F6E000A0062466F6E744D656E7573
       0101000000E3020000070043617074696F6E000C004C61624D6F7265536B696E
       730101000000E4020000070043617074696F6E000C004C61624D6F726549636F
-      6E730101000000E5020000070043617074696F6E00}
+      6E730101000000E5020000070043617074696F6E000A00546E744C6162656C34
+      310101000000E6020000070043617074696F6E000B006564436172657454696D
+      650000}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

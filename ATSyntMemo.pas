@@ -1883,8 +1883,15 @@ begin
 end;
 
 procedure TSyntaxMemo.SetBlinkingDraw;
+var
+  N: Integer;
 begin
   FStaticDraw:= false;
+
+  N:= Caret.Insert.BlinkTime;
+  if N<100 then
+    N:= Windows.GetCaretBlinkTime;
+  FCaretsTimer.Interval:= N;
   FCaretsTimer.Enabled:= true;
 end;
 

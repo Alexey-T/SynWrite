@@ -362,6 +362,8 @@ type
     bFontMenus: TTntButton;
     LabMoreSkins: TTntLabel;
     LabMoreIcons: TTntLabel;
+    TntLabel41: TTntLabel;
+    edCaretTime: TTrackBar;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1813,7 +1815,8 @@ begin
      if cbCaretIndLine.Checked then opCaretsIndicator:= 1 else
       if cbCaretIndGutter.Checked then opCaretsIndicator:= 2;
     opCaretsGutterBand:= edCaretGutterCol.Value;
-    opCaretShape:= edCaretType.ItemIndex; //cbCaretWidth.Position;
+    opCaretShape:= edCaretType.ItemIndex;
+    opCaretTime:= edCaretTime.Position;
 
     if cbCaretSmart.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soSmartCaret]
@@ -2135,6 +2138,7 @@ begin
     cbCaretIndGutter.Checked:= opCaretsIndicator=2;
     edCaretGutterCol.Value:= opCaretsGutterBand;
     edCaretType.ItemIndex:= opCaretShape;
+    edCaretTime.Position:= opCaretTime;
 
     cbCaretSmart.Checked:= soSmartCaret in TemplateEditor.Options;
     cbCaretInText.Checked:= soKeepCaretInText in TemplateEditor.Options;

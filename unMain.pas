@@ -2692,6 +2692,8 @@ type
     procedure LoadTools;
     procedure SaveTools;
     procedure LoadHtmlAndCssLists;
+    procedure SetCaretTime(N: Integer);
+    function GetCaretTime: Integer;
 
     function DoConfirmClose: boolean;
     function DoConfirmSaveLexLib: boolean;
@@ -3230,6 +3232,7 @@ type
     procedure CloseFrameWithCfm(F: TEditorFrame; var ACanClose, ACanContinue: boolean);
     //---------------------------------------------------------------------
 
+    property opCaretTime: integer read GetCaretTime write SetCaretTime;
     property opIcons: string read FIcons write SetIcons;
     property opTheme: string read GetTheme write SetTheme;
     //procedure TestApi;
@@ -4789,6 +4792,7 @@ begin
     opMicroMap:= ReadBool('View', 'MicroMap', false);
     opShowCurrentColumn:= ReadBool('View', 'CurrCol', false);
     opCaretShape:= ReadInteger('View', 'CaretType', 1);
+    opCaretTime:= ReadInteger('View', 'CaretTime', Windows.GetCaretBlinkTime);
 
     NCount:= ReadInteger('View', 'NPrint', 0+2+4);
     opNonPrint:=          (NCount and 1)<>0;
@@ -5034,6 +5038,8 @@ begin
     WriteBool('View', 'MicroMap', opMicroMap);
     WriteBool('View', 'CurrCol', opShowCurrentColumn);
     WriteInteger('View', 'CaretType', opCaretShape);
+    WriteInteger('View', 'CaretTime', opCaretTime);
+
     WriteInteger('View', 'NPrint',
       Ord(opNonPrint)*1 +
       Ord(opNonPrintSpaces)*2 +
@@ -14310,7 +14316,7 @@ end;
 
 procedure TfmMain.ApplyEdOptions;
 var
-  i: Integer;
+  i, N: Integer;
 begin
   for i:= 0 to FrameAllCount-1 do
     with FramesAll[i] do
@@ -14318,9 +14324,17 @@ begin
       //apply "Show wrap mark"
       EditorMaster.Gutter.LineBreakObj:= IfThen(opShowWrapMark, 0, -1);
       EditorSlave.Gutter.LineBreakObj:= EditorMaster.Gutter.LineBreakObj;
+
       //apply non-printed
       UpdateEditorNonPrinted(EditorMaster);
       UpdateEditorNonPrinted(EditorSlave);
+
+      //apply caret time
+      N:= TemplateEditor.Caret.Insert.BlinkTime;
+      EditorMaster.Caret.Insert.BlinkTime:= N;
+      EditorMaster.Caret.Overwrite.BlinkTime:= N;
+      EditorSlave.Caret.Insert.BlinkTime:= N;
+      EditorSlave.Caret.Overwrite.BlinkTime:= N;
     end;
 end;
 
@@ -25482,6 +25496,9 @@ begin
   Ed.Options:= TemplateEditor.Options;
   Ed.OptionsEx:= TemplateEditor.OptionsEx;
   Ed.UndoLimit:= TemplateEditor.UndoLimit;
+
+  Ed.Caret.Insert.BlinkTime:= TemplateEditor.Caret.Insert.BlinkTime;
+  Ed.Caret.Overwrite.BlinkTime:= TemplateEditor.Caret.Insert.BlinkTime;
 end;
 
 procedure TfmMain.DoColorsArrayInit(var C: TSynColors);
@@ -28933,7 +28950,7 @@ begin
   ATabs.TabIndentInit:= 0;
   ATabs.TabIndentText:= 3;
   ATabs.TabHeight:= RefTabs.TabHeight-2;
-  ATabs.Height:= RefTabs.Height;
+  ATabs.Height:= ATabs.TabHeight+1;
 
   ATabs.Color:= RefTabs.Color;
   ATabs.ColorBg:= RefTabs.ColorBg;
@@ -29247,6 +29264,17 @@ begin
   end;
 end;
 
+
+function TfmMain.GetCaretTime: Integer;
+begin
+  Result:= TemplateEditor.Caret.Insert.BlinkTime;
+end;
+
+procedure TfmMain.SetCaretTime(N: Integer);
+begin
+  TemplateEditor.Caret.Insert.BlinkTime:= N;
+  ApplyEdOptions;
+end;
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
