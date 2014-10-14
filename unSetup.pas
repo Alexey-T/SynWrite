@@ -2102,30 +2102,32 @@ var
   i: Integer;
   L: TTntStringList;
 begin
-  for i:= Low(cColorsOrder) to High(cColorsOrder) do
-    ListColors.Items.Add(DKLangConstW(_ColorIndexToDklangID(cColorsOrder[i])));
-  ListColors.Selected[0]:= true;
+  //1) skin
+  cbTheme.ItemIndex:= cbTheme.Items.IndexOf(fmMain.opTheme);
 
-  with fmMain do
-  begin
-    //theme
-    cbTheme.ItemIndex:= cbTheme.Items.IndexOf(opTheme);
-
-    //icons
-    L:= TTntStringList.Create;
-    try
-      DoEnumIcons(L);
-      cbIcons.Items:= L;
-      cbIcons.ItemIndex:= cbIcons.Items.IndexOf(opIcons);
-    finally
-      FreeAndNil(L);
-    end;
-
-    //colors
-    Move(ColorsArray, ColorsSetup, SizeOf(TSynColors));
+  //2) icons
+  L:= TTntStringList.Create;
+  try
+    fmMain.DoEnumIcons(L);
+    cbIcons.Items:= L;
+    cbIcons.ItemIndex:= cbIcons.Items.IndexOf(fmMain.opIcons);
+  finally
+    FreeAndNil(L);
   end;
 
-  ListColorsClick(Self);
+  //3) colors
+  Move(fmMain.ColorsArray, ColorsSetup, SizeOf(TSynColors));
+
+  ListColors.Items.BeginUpdate;
+  try
+    ListColors.Items.Clear;
+    for i:= Low(cColorsOrder) to High(cColorsOrder) do
+      ListColors.Items.Add(DKLangConstW(_ColorIndexToDklangID(cColorsOrder[i])));
+    ListColors.Selected[0]:= true;
+    ListColorsClick(Self);
+  finally
+    ListColors.Items.EndUpdate;
+  end;
 end;
 
 procedure TfmSetup.InitEditorCarets;
