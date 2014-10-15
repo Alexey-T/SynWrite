@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabCarets
+    ActivePage = tabHist
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -1441,16 +1441,16 @@ object fmSetup: TfmSetup
             'Custom folder')
         end
         object edDirLast: TTntEdit
-          Left = 56
+          Left = 64
           Top = 228
-          Width = 329
+          Width = 377
           Height = 21
           TabOrder = 10
         end
         object bDirLast: TTntButton
-          Left = 392
+          Left = 448
           Top = 228
-          Width = 41
+          Width = 65
           Height = 21
           Caption = '...'
           TabOrder = 11
