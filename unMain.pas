@@ -26938,7 +26938,8 @@ const
   //
 var
   fn_inf, dir_to: string;
-  s_title, s_type, s_desc, s_ver, s_subdir, s_msg: string;
+  s_title, s_type, s_desc, s_ver, s_subdir: string;
+  s_msg: Widestring;
   n_type, i_type: TSynAddonType;
   i: integer;
 begin
