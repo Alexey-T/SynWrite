@@ -115,13 +115,13 @@ object fmMacroEdit: TfmMacroEdit
       Height = 145
       Columns = <
         item
-          Caption = 'ID'
+          Caption = 'Id'
         end
         item
           Caption = 'Data'
         end
         item
-          Caption = 'Command Name'
+          Caption = 'Name'
           Width = 220
         end>
       ColumnClick = False

@@ -27044,7 +27044,7 @@ begin
   end;
 
   FDelete(fn_inf);
-  MsgInfo(Format(DKLangConstW('zMInstallOk'), [dir_to]), Handle);
+  MsgInfo(WideFormat(DKLangConstW('zMInstallOk'), [dir_to]), Handle);
   acExit.Execute;
 end;
 

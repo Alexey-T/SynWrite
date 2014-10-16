@@ -41,11 +41,11 @@ object fmMacroCmd: TfmMacroCmd
     Height = 257
     Columns = <
       item
-        Caption = 'ID'
+        Caption = 'Id'
       end
       item
-        Caption = 'Description'
-        Width = 355
+        Caption = 'Name'
+        Width = 360
       end>
     ColumnClick = False
     HideSelection = False
