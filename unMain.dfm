@@ -8750,7 +8750,7 @@ object fmMain: TfmMain
               end>
           end>
         Category = 'Search & Replace'
-        DisplayName = 'Show commands list'
+        DisplayName = 'Dialog "Commands"'
       end
       item
         Command = 795
