@@ -1,6 +1,6 @@
 object fmSetup: TfmSetup
-  Left = 405
-  Top = 387
+  Left = 445
+  Top = 135
   ActiveControl = ListCat
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabHist
+    ActivePage = tabTree
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -1215,7 +1215,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 101
+        Height = 105
         Caption = 'Syntax tree'
         TabOrder = 0
         object TntLabel39: TTntLabel
@@ -1231,6 +1231,13 @@ object fmSetup: TfmSetup
           Width = 139
           Height = 13
           Caption = 'Sort for these file extensions'
+        end
+        object TntLabel42: TTntLabel
+          Left = 280
+          Top = 56
+          Width = 101
+          Height = 13
+          Caption = 'Action of double-click'
         end
         object cbTreeSync: TTntCheckBox
           Left = 8
@@ -1275,10 +1282,24 @@ object fmSetup: TfmSetup
           Caption = 'Auto collapse'
           TabOrder = 1
         end
+        object cbTreeClick: TTntComboBox
+          Left = 280
+          Top = 72
+          Width = 241
+          Height = 21
+          Style = csDropDownList
+          ItemHeight = 13
+          TabOrder = 5
+          Items.Strings = (
+            'None'
+            'Expand/collapse node'
+            'Put caret at range start'
+            'Select entire range')
+        end
       end
       object boxMinimap: TTntGroupBox
         Left = 8
-        Top = 104
+        Top = 112
         Width = 529
         Height = 53
         Caption = 'Mini-map'
@@ -1305,7 +1326,7 @@ object fmSetup: TfmSetup
       end
       object boxMicromap: TTntGroupBox
         Left = 8
-        Top = 160
+        Top = 168
         Width = 529
         Height = 45
         Caption = 'Micro-map'
@@ -3094,7 +3115,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0158010000
+      0700666D5365747570010100000001000000070043617074696F6E015A010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3406,7 +3427,8 @@ object fmSetup: TfmSetup
       730101000000E4020000070043617074696F6E000C004C61624D6F726549636F
       6E730101000000E5020000070043617074696F6E000A00546E744C6162656C34
       310101000000E6020000070043617074696F6E000B006564436172657454696D
-      650000}
+      6500000A00546E744C6162656C34320101000000E7020000070043617074696F
+      6E000B00636254726565436C69636B0101000000E802000005004974656D7300}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

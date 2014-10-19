@@ -364,6 +364,8 @@ type
     LabMoreIcons: TTntLabel;
     TntLabel41: TTntLabel;
     edCaretTime: TTrackBar;
+    TntLabel42: TTntLabel;
+    cbTreeClick: TTntComboBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2033,6 +2035,7 @@ procedure TfmSetup.ApplyTree;
 begin
   with fmMain do
   begin
+    Tree.ClickAction:= TSyntaxTreeAction(cbTreeClick.ItemIndex);
     Tree.AutoSynchronize:= cbTreeSync.Checked;
     Tree.AutoCollapse:= cbTreeCollapse.Checked;
     Tree.AutoExpand:= cbTreeExpand.Checked;
@@ -2370,6 +2373,7 @@ begin
     cbTreeExpand.Checked:= Tree.AutoExpand;
     cbTreeDelay.Value:= Tree.UpdateDelay;
     edTreeSorted.Text:= opTreeSorted;
+    cbTreeClick.ItemIndex:= Ord(Tree.ClickAction);
 
     edMapZoom.Value:= opMapZoom;
     cbMicroMap.Checked:= opMicroMap;
