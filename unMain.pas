@@ -443,7 +443,7 @@ type
     ecNonPrint: TAction;
     acReread: TAction;
     TbxSubmenuItemTblFind: TSpTBXSubmenuItem;
-    TBXItem2: TSpTbxItem;
+    TBXItemBarMarks: TSpTBXItem;
     acNewTab: TAction;
     TBXItemToolNew: TSpTbxSubmenuItem;
     TBXItemCCInv: TSpTbxItem;
@@ -453,12 +453,12 @@ type
     TBXItemTbSortAsc: TSpTbxItem;
     TBXItemTbSortDesc: TSpTbxItem;
     ecCharPopup: TecSelCharPopup;
-    TBXItemWPrior: TSpTbxItem;
+    TBXItemBarWordPrev: TSpTBXItem;
     TBXSeparatorItem9: TSpTbxSeparatorItem;
-    TBXItemWNext: TSpTbxItem;
+    TBXItemBarWordNext: TSpTBXItem;
     TBXSeparatorItem11: TSpTbxSeparatorItem;
-    TBXItemFNext: TSpTbxItem;
-    TBXItemFPrev: TSpTbxItem;
+    TBXItemBarFNext: TSpTBXItem;
+    TBXItemBarFPrev: TSpTBXItem;
     TimerRedraw: TTimer;
     TBXItemCtxDel: TSpTbxItem;
     TBXSeparatorItem14: TSpTbxSeparatorItem;
@@ -1422,14 +1422,14 @@ type
     procedure TBXItemClrClick(Sender: TObject);
     procedure tbViewMove(Sender: TObject);
     procedure ecPrintActionBeforeExecute(Sender: TObject);
-    procedure TBXItem2Click(Sender: TObject);
+    procedure TBXItemBarMarksClick(Sender: TObject);
     procedure ecACPKeyPress(Sender: TObject; var Key: Char);
     procedure ecACPListClick(Sender: TObject);
     procedure acNewTabExecute(Sender: TObject);
-    procedure TBXItemWPriorClick(Sender: TObject);
-    procedure TBXItemWNextClick(Sender: TObject);
-    procedure TBXItemFNextClick(Sender: TObject);
-    procedure TBXItemFPrevClick(Sender: TObject);
+    procedure TBXItemBarWordPrevClick(Sender: TObject);
+    procedure TBXItemBarWordNextClick(Sender: TObject);
+    procedure TBXItemBarFNextClick(Sender: TObject);
+    procedure TBXItemBarFPrevClick(Sender: TObject);
     procedure TimerRedrawTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -2554,6 +2554,7 @@ type
     procedure SyncMapData;
     procedure SyncMapPos;
     procedure MapClick(Sender: TObject);
+    procedure DoClearSearchMarks(Ed: TSyntaxMemo);
     procedure DoFixReplaceCaret(Ed: TSyntaxMemo);
     function FCanUseLexer(const fn: Widestring): boolean;
     procedure SpellCopyClick(Sender: TObject);
@@ -9274,6 +9275,12 @@ begin
   UpdateFrameMicroMap(F);
 end;
 
+procedure TfmMain.DoClearSearchMarks(Ed: TSyntaxMemo);
+begin
+  Ed.ResetSearchMarks;
+  UpdateFrameMicroMap(FrameOfEditor(Ed));
+end;
+
 procedure TfmMain.DoFrameReloadInt(F: TEditorFrame);
 var
   p1, p2: integer;
@@ -9372,20 +9379,21 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXItem2Click(Sender: TObject);
+procedure TfmMain.TBXItemBarMarksClick(Sender: TObject);
 begin
   with CurrentFrame do
   begin
-    EditorMaster.ExecCommand(smSearchMarkReset);
-    EditorSlave.ExecCommand(smSearchMarkReset);
-    UpdateFrameMicroMap(CurrentFrame);
+    DoClearSearchMarks(EditorMaster);
+    DoClearSearchMarks(EditorSlave);
   end;
 end;
 
 procedure TfmMain.ecACPKeyPress(Sender: TObject; var Key: Char);
+const
+  cNonWord = '<>/\|.,;: +*=#()[]{}%''"?!@%&';
 begin
-  //These chars close window
-  if Pos(Key, '<>/\|.,;: +*=#()[]{}%''"?!@%&') > 0 then
+  //these chars close window
+  if Pos(Key, cNonWord) > 0 then
     if Pos(Key, opAcpChars) = 0 then
       ecACP.CloseUp(False);
   //closing tag
@@ -9423,22 +9431,22 @@ begin
   TimerHint.Enabled:= true;
 end;
 
-procedure TfmMain.TBXItemWPriorClick(Sender: TObject);
+procedure TfmMain.TBXItemBarWordPrevClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smFindCurrentWordPrior);
 end;
 
-procedure TfmMain.TBXItemWNextClick(Sender: TObject);
+procedure TfmMain.TBXItemBarWordNextClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smFindCurrentWordNext);
 end;
 
-procedure TfmMain.TBXItemFNextClick(Sender: TObject);
+procedure TfmMain.TBXItemBarFNextClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smFindNext);
 end;
 
-procedure TfmMain.TBXItemFPrevClick(Sender: TObject);
+procedure TfmMain.TBXItemBarFPrevClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smFindPrev);
 end;
@@ -12614,6 +12622,8 @@ begin
   if Finder.Matches=1 then
     CurrentEditor.ResetSearchMarks;
 
+  UpdateFrameMicroMap(CurrentFrame);
+
   //restore finder
   Finder.Flags:= PrevFlags;
   Finder.FindText:= PrevText1;
@@ -12644,7 +12654,6 @@ begin
   end;
 
   DoFind_MarkAll(s);
-  UpdateFrameMicroMap(CurrentFrame);
 end;
 
 procedure TfmMain.TimerSelTimer(Sender: TObject);
@@ -26055,14 +26064,13 @@ begin
   MCarets:= (F<>nil) and (F.CaretsCount>1);
   if MCarets and opHiliteSmartOnClick then
   begin
-    Ed.ResetSearchMarks;
-    UpdateFrameMicroMap(CurrentFrame);
+    DoClearSearchMarks(Ed);
     Exit
   end;
 
   if opHiliteSmartOnClick then
   begin
-    Ed.ResetSearchMarks;
+    DoClearSearchMarks(Ed);
     NPos:= Ed.CaretStrPos;
     if not Ed.HaveSelection then
 	  if IsWordChar(Ed.Lines.Chars[NPos+1]) then
@@ -26071,7 +26079,6 @@ begin
       if S<>'' then
         DoFind_MarkAll(S);
 	  end;
-    UpdateFrameMicroMap(CurrentFrame);
   end;
 end;
 
