@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.11.1680
+AppVersion=6.12.1700
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -22,8 +22,10 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+Name: "portable"; Description: "Make folder portable"; Flags: unchecked
 
 [Files]
+Source: "Portable.ini"; DestDir: "{app}"; Tasks: "portable"
 Source: "..\Syn.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Enc.cfg"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lexers.cfg"; DestDir: "{app}"; Flags: ignoreversion
@@ -72,10 +74,10 @@ Name: "{commondesktop}\SynWrite"; Filename: "{app}\Syn.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\Syn.exe"; Parameters: "/reg"; Description: "Configure SynWrite file types"; Flags: nowait postinstall skipifsilent runascurrentuser
-;;Filename: "{app}\Readme\History.txt"; Description: "View versions history"; Flags: nowait shellexec postinstall skipifsilent
 
 [UninstallDelete]
 Type: files; Name: "{app}\Syn*.ini"
+Type: files; Name: "{app}\Portable.ini"
 
 [Registry]
 Root: HKCR; Subkey: "*\shell\SynWrite"; Flags: uninsdeletekey
