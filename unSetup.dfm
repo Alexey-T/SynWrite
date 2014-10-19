@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabTree
+    ActivePage = tabCarets
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -727,25 +727,25 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 116
         Width = 529
-        Height = 117
+        Height = 149
         Caption = 'Options'
         TabOrder = 1
         object TntLabel40: TTntLabel
-          Left = 72
+          Left = 8
           Top = 20
           Width = 59
           Height = 13
           Caption = 'Caret shape'
         end
         object TntLabel41: TTntLabel
-          Left = 256
-          Top = 16
+          Left = 8
+          Top = 48
           Width = 44
           Height = 13
           Caption = 'Blink time'
         end
         object edCaretType: TTntComboBox
-          Left = 8
+          Left = 128
           Top = 16
           Width = 57
           Height = 22
@@ -769,43 +769,43 @@ object fmSetup: TfmSetup
         end
         object cbCaretSmart: TTntCheckBox
           Left = 8
-          Top = 44
+          Top = 76
           Width = 249
           Height = 17
           Hint = 'Changes caret up/down/home/end behaviour inside wrapped lines.'
           Caption = 'Allow caret navigation in wrapped lines'
-          TabOrder = 1
+          TabOrder = 2
         end
         object cbCaretInText: TTntCheckBox
           Left = 8
-          Top = 60
+          Top = 92
           Width = 258
           Height = 17
           Hint = 'Allows the caret to move only inside the text.'
           Caption = 'Keep caret in text'
-          TabOrder = 2
+          TabOrder = 3
         end
         object cbCaretKeepOnPaste: TTntCheckBox
           Left = 8
-          Top = 76
+          Top = 108
           Width = 256
           Height = 17
           Hint = 'Don'#39't change caret position when performing Paste action.'
           Caption = 'Keep caret on paste'
-          TabOrder = 3
+          TabOrder = 4
         end
         object cbCaretInRO: TTntCheckBox
           Left = 8
-          Top = 92
+          Top = 124
           Width = 256
           Height = 17
           Hint = 'Shows caret in read-only mode.'
           Caption = 'Show caret in read-only'
-          TabOrder = 4
+          TabOrder = 5
         end
         object edCaretTime: TTrackBar
-          Left = 376
-          Top = 12
+          Left = 120
+          Top = 44
           Width = 142
           Height = 29
           LineSize = 200
@@ -814,7 +814,8 @@ object fmSetup: TfmSetup
           PageSize = 200
           Frequency = 300
           Position = 500
-          TabOrder = 5
+          TabOrder = 1
+          ThumbLength = 18
         end
       end
     end
