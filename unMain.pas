@@ -26056,6 +26056,7 @@ begin
   if MCarets and opHiliteSmartOnClick then
   begin
     Ed.ResetSearchMarks;
+    UpdateFrameMicroMap(CurrentFrame);
     Exit
   end;
 
@@ -26066,10 +26067,11 @@ begin
     if not Ed.HaveSelection then
 	  if IsWordChar(Ed.Lines.Chars[NPos+1]) then
 	  begin
-		S:= Ed.WordAtPos(Ed.CaretPos);
-		if S<>'' then
-		  DoFind_MarkAll(S);
+      S:= Ed.WordAtPos(Ed.CaretPos);
+      if S<>'' then
+        DoFind_MarkAll(S);
 	  end;
+    UpdateFrameMicroMap(CurrentFrame);
   end;
 end;
 
