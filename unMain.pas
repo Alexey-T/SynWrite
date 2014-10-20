@@ -3333,7 +3333,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.12.1700';
+  cSynVer = '6.12.1705';
   cSynPyVer = '1.0.139';
 
 const
@@ -8122,14 +8122,14 @@ procedure TfmMain.ApplyLexerOverrides(F: TEditorFrame; const Lexer: string);
   //c) need to set TabMode=tabs for Make files
 var
   ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-  AOptWordChars, AKeepBlanks, AAutoCase, AIndent: string;
+  AOptWordChars, AKeepBlanks, AAutoCase, AIndent, ATabColor: string;
 begin
   if F=nil then Exit;
   with F do
   begin
     if not SGetLexerOverride(opLexersOverride, Lexer,
       ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-      AOptWordChars, AKeepBlanks, AAutoCase, AIndent) then
+      AOptWordChars, AKeepBlanks, AAutoCase, AIndent, ATabColor) then
     begin
       EditorMaster.TabList.AsString:= TemplateEditor.TabList.AsString;
       EditorSlave.TabList.AsString:= TemplateEditor.TabList.AsString;
@@ -8237,7 +8237,11 @@ begin
       begin
         EditorMaster.BlockIndent:= StrToIntDef(AIndent, 4);
         EditorSlave.BlockIndent:= EditorMaster.BlockIndent;
-      end;  
+      end;
+
+      //11) override "Tab color"
+      if ATabColor<>'' then
+        DoSetFrameTabColor(F, StrToIntDef(ATabColor, clWhite));
     end;
 
     //overrides for "NFO files"

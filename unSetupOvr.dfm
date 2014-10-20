@@ -28,7 +28,7 @@ object fmSetupOvr: TfmSetupOvr
   end
   object LabelWordChars: TTntLabel
     Left = 160
-    Top = 244
+    Top = 268
     Width = 116
     Height = 13
     Caption = 'Word chars (additional):'
@@ -82,7 +82,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 21
     ParentColor = True
     ReadOnly = True
-    TabOrder = 20
+    TabOrder = 22
     Visible = False
   end
   object cbOvr: TTntCheckBox
@@ -119,13 +119,13 @@ object fmSetupOvr: TfmSetupOvr
   end
   object edWordChars: TTntEdit
     Left = 376
-    Top = 240
+    Top = 264
     Width = 153
     Height = 21
     Hint = 
       'Additional chars, which will be treated as part of words, by wor' +
       'd double-clicking, smart highlighting, etc.'
-    TabOrder = 19
+    TabOrder = 21
     OnChange = edTabStopsChange
   end
   object chkAutoCase: TTntCheckBox
@@ -278,11 +278,30 @@ object fmSetupOvr: TfmSetupOvr
       'Off'
       'On')
   end
+  object chkTabColor: TTntCheckBox
+    Left = 160
+    Top = 240
+    Width = 215
+    Height = 17
+    Caption = 'Tab color'
+    TabOrder = 19
+    OnClick = edTabStopsChange
+  end
+  object edTabColor: TColorBox
+    Left = 376
+    Top = 240
+    Width = 153
+    Height = 22
+    Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbCustomColor, cbPrettyNames]
+    ItemHeight = 16
+    TabOrder = 20
+    OnChange = edTabStopsChange
+  end
   object DKLanguageController1: TDKLanguageController
     Left = 120
     Top = 184
     LangData = {
-      0A00666D53657475704F7672010100000001000000070043617074696F6E0119
+      0A00666D53657475704F7672010100000001000000070043617074696F6E011B
       00000006004C6162656C31010100000002000000070043617074696F6E000700
       4C6973744C657800000A00656454616253746F70730000060065645465787400
       00050063624F767201010000000A000000070043617074696F6E00080065644D
@@ -302,6 +321,7 @@ object fmSetupOvr: TfmSetupOvr
       645461624D6F646501010000001700000005004974656D730006006564577261
       7001010000001800000005004974656D7300090065644F707446696C6C010100
       00001900000005004974656D73000C0065644B656570426C616E6B7301010000
-      001A00000005004974656D7300}
+      001A00000005004974656D73000B0063686B546162436F6C6F72010100000023
+      000000070043617074696F6E000A006564546162436F6C6F720000}
   end
 end

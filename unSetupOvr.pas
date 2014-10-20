@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   TntForms,
-  Dialogs, StdCtrls, TntStdCtrls, DKLang, Spin;
+  Dialogs, StdCtrls, TntStdCtrls, DKLang, Spin, ExtCtrls;
 
 type
   TfmSetupOvr = class(TTntForm)
@@ -35,6 +35,8 @@ type
     edWrap: TTntComboBox;
     edOptFill: TTntComboBox;
     edKeepBlanks: TTntComboBox;
+    chkTabColor: TTntCheckBox;
+    edTabColor: TColorBox;
     procedure cbOvrClick(Sender: TObject);
     procedure ListLexClick(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
@@ -81,7 +83,7 @@ begin
   edOptFill.Enabled:= en;
   edWordChars.Enabled:= en;
   edKeepBlanks.Enabled:= en;
-  chkAutoCase.Enabled:= en;
+  edTabColor.Enabled:= en;
   LabelWordChars.Enabled:= en;
 
   chkTabStops.Enabled:= en;
@@ -92,11 +94,13 @@ begin
   chkIndent.Enabled:= en;
   chkMargin.Enabled:= en;
   chkSpacing.Enabled:= en;
+  chkAutoCase.Enabled:= en;
+  chkTabColor.Enabled:= en;
 
   if not en then
   begin
     if ListLex.ItemIndex>=0 then
-      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '', '', '', '');
+      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '', '', '', '', '');
     edTabStops.Text:= FDefTabStop;
     edTabMode.ItemIndex:= FDefTabMode;
     edWrap.ItemIndex:= 0;
@@ -105,6 +109,7 @@ begin
     edSpacing.Value:= FDefSpacing;
     edOptFill.ItemIndex:= 0;
     edWordChars.Text:= '';
+    edTabColor.Selected:= clWhite;
     edText.Text:= FString;
 
     chkTabStops.Checked:= false;
@@ -116,6 +121,7 @@ begin
     chkMargin.Checked:= false;
     chkSpacing.Checked:= false;
     chkAutoCase.Checked:= false;
+    chkTabColor.Checked:= false;
   end;
 end;
 
@@ -123,13 +129,13 @@ procedure TfmSetupOvr.ListLexClick(Sender: TObject);
 var
   Ovr: boolean;
   ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-  AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent: string;
+  AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent, ATabColor: string;
 begin
   if ListLex.ItemIndex>=0 then
   begin
     Ovr:= SGetLexerOverride(FString, ListLex.Items[ListLex.ItemIndex],
       ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-      AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent);
+      AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent, ATabColor);
     cbOvr.Enabled:= true;
   end
   else
@@ -150,6 +156,7 @@ begin
     chkIndent.Checked:= AIndent<>'';
     chkMargin.Checked:= AMargin<>'';
     chkSpacing.Checked:= ASpacing<>'';
+    chkTabColor.Checked:= ATabColor<>'';
 
     edTabStops.Text:= ATabStops;
     edTabMode.ItemIndex:= StrToIntDef(ATabMode, FDefTabMode);
@@ -159,6 +166,7 @@ begin
     edIndent.Value:= StrToIntDef(AIndent, FDefIndent);
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
     edSpacing.Value:= StrToIntDef(ASpacing, FDefSpacing);
+    edTabColor.Selected:= StrToIntDef(ATabColor, clWhite);
     edWordChars.Text:= AOptWordChars;
     chkAutoCase.Checked:= Bool(StrToIntDef(ACaseCorrect, 0));
   end
@@ -172,6 +180,7 @@ begin
     chkIndent.Checked:= false;
     chkMargin.Checked:= false;
     chkSpacing.Checked:= false;
+    chkTabColor.Checked:= false;
 
     edTabStops.Text:= FDefTabStop;
     edTabMode.ItemIndex:= FDefTabMode;
@@ -181,6 +190,7 @@ begin
     edIndent.Value:= FDefIndent;
     edMargin.Value:= FDefMargin;
     edSpacing.Value:= FDefSpacing;
+    edTabColor.Selected:= clWhite;
     edWordChars.Text:= '';
     chkAutoCase.Checked:= false;
   end;
@@ -198,6 +208,7 @@ begin
   edMargin.Value:= FDefMargin;
   edSpacing.Value:= FDefSpacing;
   edOptFill.ItemIndex:= 0;
+  edTabColor.Selected:= clWhite;
   edWordChars.Text:= '';
   edText.Text:= FString;
   ListLex.ItemIndex:= 0;
@@ -244,7 +255,8 @@ begin
         {Op7}edWordChars.Text,
         {Op8}IfThen(chkKeepBlanks.Checked, IntToStr(edKeepBlanks.ItemIndex)),
         {Op9}IfThen(chkAutoCase.Checked, IntToStr(Ord(chkAutoCase.Checked))),
-        {Op10}IfThen(chkIndent.Checked, IntToStr(edIndent.Value))
+        {Op10}IfThen(chkIndent.Checked, IntToStr(edIndent.Value)),
+        {Op11}IfThen(chkTabColor.Checked, IntToStr(edTabColor.Selected))
         );
       edText.Text:= FString;
     end;
