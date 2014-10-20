@@ -8241,7 +8241,7 @@ begin
 
       //11) override "Tab color"
       if ATabColor<>'' then
-        DoSetFrameTabColor(F, StrToIntDef(ATabColor, clWhite));
+        DoSetFrameTabColor(F, StringToColor(ATabColor));
     end;
 
     //overrides for "NFO files"
@@ -21604,12 +21604,12 @@ begin
     with FPluginsPanel[Index] do
       if (FForm<>nil) and Assigned(FSynAction) then
       begin
-        FSynAction(FForm, cActionSetColor, Pointer(cColorId_Text), Pointer(Tree.Font.Color), nil, nil);
-        FSynAction(FForm, cActionSetColor, Pointer(cColorId_Back), Pointer(Tree.Color), nil, nil);
+        FSynAction(FForm, cActionSetColor, Pointer(cColorId_Text), Pointer(ColorToRGB(Tree.Font.Color)), nil, nil);
+        FSynAction(FForm, cActionSetColor, Pointer(cColorId_Back), Pointer(ColorToRGB(Tree.Color)), nil, nil);
         //
-        FSynAction(FForm, cActionSetColor, Pointer(cColorId_LogNormal), Pointer(opColorFtpBlue), nil, nil);
-        FSynAction(FForm, cActionSetColor, Pointer(cColorId_LogServer), Pointer(opColorFtpGreen), nil, nil);
-        FSynAction(FForm, cActionSetColor, Pointer(cColorId_LogError), Pointer(opColorFtpRed), nil, nil);
+        FSynAction(FForm, cActionSetColor, Pointer(cColorId_LogNormal), Pointer(ColorToRGB(opColorFtpBlue)), nil, nil);
+        FSynAction(FForm, cActionSetColor, Pointer(cColorId_LogServer), Pointer(ColorToRGB(opColorFtpGreen)), nil, nil);
+        FSynAction(FForm, cActionSetColor, Pointer(cColorId_LogError), Pointer(ColorToRGB(opColorFtpRed)), nil, nil);
       end;
 end;
 

@@ -149,7 +149,7 @@ begin
     edIndent.Value:= StrToIntDef(AIndent, FDefIndent);
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
     edSpacing.Value:= StrToIntDef(ASpacing, FDefSpacing);
-    edTabColor.Selected:= StrToIntDef(ATabColor, clWhite);
+    edTabColor.Selected:= StringToColor(ATabColor);
     edWordChars.Text:= AOptWordChars;
     chkAutoCase.Checked:= Bool(StrToIntDef(ACaseCorrect, 0));
   end
@@ -245,7 +245,7 @@ begin
         {Op8}IfThen(chkKeepBlanks.Checked, IntToStr(edKeepBlanks.ItemIndex)),
         {Op9}IfThen(chkAutoCase.Checked, IntToStr(Ord(chkAutoCase.Checked))),
         {Op10}IfThen(chkIndent.Checked, IntToStr(edIndent.Value)),
-        {Op11}IfThen(chkTabColor.Checked, IntToStr(edTabColor.Selected))
+        {Op11}IfThen(chkTabColor.Checked, ColorToString(edTabColor.Selected))
         );
       edText.Text:= FString;
     end;
