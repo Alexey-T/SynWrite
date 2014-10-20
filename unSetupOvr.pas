@@ -48,6 +48,7 @@ type
   private
     { Private declarations }
     FUpdLock: boolean;
+    procedure DoClearAll;
   public
     { Public declarations }
     FString: string;
@@ -101,27 +102,9 @@ begin
   begin
     if ListLex.ItemIndex>=0 then
       SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '', '', '', '', '');
-    edTabStops.Text:= FDefTabStop;
-    edTabMode.ItemIndex:= FDefTabMode;
-    edWrap.ItemIndex:= 0;
-    edIndent.Value:= FDefIndent;
-    edMargin.Value:= FDefMargin;
-    edSpacing.Value:= FDefSpacing;
-    edOptFill.ItemIndex:= 0;
-    edWordChars.Text:= '';
-    edTabColor.Selected:= clWhite;
-    edText.Text:= FString;
 
-    chkTabStops.Checked:= false;
-    chkTabMode.Checked:= false;
-    chkWrap.Checked:= false;
-    chkOptFill.Checked:= false;
-    chkKeepBlanks.Checked:= false;
-    chkIndent.Checked:= false;
-    chkMargin.Checked:= false;
-    chkSpacing.Checked:= false;
-    chkAutoCase.Checked:= false;
-    chkTabColor.Checked:= false;
+    DoClearAll;
+    edText.Text:= FString;
   end;
 end;
 
@@ -172,32 +155,38 @@ begin
   end
   else
   begin
-    chkTabStops.Checked:= false;
-    chkTabMode.Checked:= false;
-    chkWrap.Checked:= false;
-    chkOptFill.Checked:= false;
-    chkKeepBlanks.Checked:= false;
-    chkIndent.Checked:= false;
-    chkMargin.Checked:= false;
-    chkSpacing.Checked:= false;
-    chkTabColor.Checked:= false;
-
-    edTabStops.Text:= FDefTabStop;
-    edTabMode.ItemIndex:= FDefTabMode;
-    edWrap.ItemIndex:= 0;
-    edOptFill.ItemIndex:= 0;
-    edKeepBlanks.ItemIndex:= 0;
-    edIndent.Value:= FDefIndent;
-    edMargin.Value:= FDefMargin;
-    edSpacing.Value:= FDefSpacing;
-    edTabColor.Selected:= clWhite;
-    edWordChars.Text:= '';
-    chkAutoCase.Checked:= false;
+    DoClearAll;
   end;
 
   FUpdLock:= false;
   cbOvrClick(Self);
 end;
+
+procedure TfmSetupOvr.DoClearAll;
+begin
+  chkTabStops.Checked:= false;
+  chkTabMode.Checked:= false;
+  chkWrap.Checked:= false;
+  chkOptFill.Checked:= false;
+  chkKeepBlanks.Checked:= false;
+  chkIndent.Checked:= false;
+  chkMargin.Checked:= false;
+  chkSpacing.Checked:= false;
+  chkTabColor.Checked:= false;
+  chkAutoCase.Checked:= false;
+
+  edTabStops.Text:= FDefTabStop;
+  edTabMode.ItemIndex:= FDefTabMode;
+  edWrap.ItemIndex:= 0;
+  edOptFill.ItemIndex:= 0;
+  edKeepBlanks.ItemIndex:= 0;
+  edIndent.Value:= FDefIndent;
+  edMargin.Value:= FDefMargin;
+  edSpacing.Value:= FDefSpacing;
+  edTabColor.Selected:= clWhite;
+  edWordChars.Text:= '';
+end;
+
 
 procedure TfmSetupOvr.TntFormShow(Sender: TObject);
 begin
