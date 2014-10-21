@@ -16,6 +16,7 @@ uses
   ecStrUtils,
   ecPrint;
 
+function EditorGotoModifiedLine(Ed: TSyntaxMemo; ANext: boolean; ASavedToo: boolean): boolean;
 procedure EditorPrint(Ed: TSyntaxMemo; ASelOnly: boolean;
   const ATitle: string; APrinter: TecSyntPrinter);
 function EditorGetBlockStaple(Ed: TSyntaxMemo; PosX, PosY: Integer): TBlockStaple;
@@ -3451,6 +3452,27 @@ begin
     NPosBottom - NUnderSize,
     PosLeft.X + NItemWidth,
     NPosBottom));
+end;
+
+function EditorGotoModifiedLine(Ed: TSyntaxMemo; ANext: boolean; ASavedToo: boolean): boolean;
+var
+  N, NCount: Integer;
+  st: TLineState;
+begin
+  Result:= false;
+  N:= Ed.CurrentLine;
+  NCount:= Ed.Lines.Count;
+  repeat
+    if ANext then Inc(N) else Dec(N);
+    if (N<0) or (N>=NCount) then Exit;
+    st:= Ed.Lines.LineState[N];
+    if (st=lsModified) or (ASavedToo and (st=lsSaved)) then
+    begin
+      Result:= true;
+      Ed.CaretPos:= Point(0, N);
+      Exit
+    end;
+  until false;
 end;
 
 

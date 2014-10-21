@@ -6572,11 +6572,21 @@ begin
         ExtractFileName(FrameOfEditor(Ed).FileName),
         ecSyntPrinter);
 
+    sm_GotoNextModifiedLine:
+      if not EditorGotoModifiedLine(Ed, true, false) then MsgBeep;
+    sm_GotoPrevModifiedLine:
+      if not EditorGotoModifiedLine(Ed, false, false) then MsgBeep;
+    sm_GotoNextModifiedOrSavedLine:
+      if not EditorGotoModifiedLine(Ed, true, true) then MsgBeep;
+    sm_GotoPrevModifiedOrSavedLine:
+      if not EditorGotoModifiedLine(Ed, false, true) then MsgBeep;
+
+    //end of commands list
+
     cPyCommandBase..
     cPyCommandBase+500:
       DoPyCommandPlugin(Command-cPyCommandBase);
 
-    //end of commands list
     else
       Handled:= false;
   end;

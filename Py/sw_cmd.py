@@ -598,6 +598,11 @@ cmd_ToggleFocusBookmarks = 1062
 cmd_PrintNowAll = 1063
 cmd_PrintNowSelection = 1064
 
+cmd_GotoNextModifiedLine = 1065
+cmd_GotoPrevModifiedLine = 1066
+cmd_GotoNextModifiedOrSavedLine = 1067
+cmd_GotoPrevModifiedOrSavedLine = 1068
+
 cmd_TreeCollapseAll = 1090
 cmd_TreeExpandAll = 1091
 cmd_TreeLevel2 = 1092

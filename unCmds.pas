@@ -396,6 +396,10 @@ const
   sm_ToggleFocusBookmarks = 1062;
   sm_PrintNowAll = 1063;
   sm_PrintNowSelection = 1064;
+  sm_GotoNextModifiedLine = 1065;
+  sm_GotoPrevModifiedLine = 1066;
+  sm_GotoNextModifiedOrSavedLine = 1067;
+  sm_GotoPrevModifiedOrSavedLine = 1068;
   //free
 
   //Tree commands
