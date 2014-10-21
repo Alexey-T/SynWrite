@@ -1156,6 +1156,7 @@ const
   PROP_NON_PRINTED_ENDS    = 28;
   PROP_NON_PRINTED_ENDS_EX = 29;
   PROP_TAG         = 30;
+  PROP_LINE_STATE  = 31;
 
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1263,6 +1264,15 @@ begin
 
         PROP_TAG:
           Result:= PyUnicode_FromWideString(Ed.UserTag);
+
+        PROP_LINE_STATE:
+          begin
+            if (NValue>=0) and (NValue<Ed.Lines.Count) then
+              NValue:= Ord(Ed.Lines.LineState[NValue])
+            else
+              NValue:= 0;
+            Result:= PyInt_FromLong(NValue);
+          end;
 
         else
           Result:= ReturnNone;
