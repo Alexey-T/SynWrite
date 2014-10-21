@@ -20268,7 +20268,10 @@ begin
       if IsFileExist(fn) then
       begin
         if IsFileText(fn) or MsgConfirmBinary(fn, Handle) then
+        begin
           DoOpenFile(fn);
+          FocusEditor;
+        end;
       end
       else
         Bads.Add(fn);
