@@ -3466,7 +3466,7 @@ begin
     if ANext then Inc(N) else Dec(N);
     if (N<0) or (N>=NCount) then Exit;
     st:= Ed.Lines.LineState[N];
-    if (st=lsModified) or (ASavedToo and (st=lsSaved)) then
+    if (st=lsModified) or (st=lsNew) or (ASavedToo and (st=lsSaved)) then
     begin
       Result:= true;
       Ed.CaretPos:= Point(0, N);
