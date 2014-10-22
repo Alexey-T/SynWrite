@@ -1174,6 +1174,13 @@ begin
       Ed:= PyEditor(H);
       Str:= UTF8Decode(AnsiString(Ptr));
       NValue:= StrToIntDef(Str, 0);
+
+      if Ed=nil then
+      begin
+        Result:= ReturnNone;
+        Exit
+      end;  
+
       case Id of
         PROP_NUMS:
           Result:= PyBool_FromLong(Ord(Ed.LineNumbers.Visible));

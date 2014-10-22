@@ -99,6 +99,7 @@ type
     cSynEventOnNumber,
     cSynEventOnState,
     cSynEventOnFocus,
+    cSynEventOnLexer,
     cSynEventOnComplete,
     cSynEventOnFuncHint,
     cSynEventOnGotoDef,
@@ -121,6 +122,7 @@ const
     'on_num',
     'on_state',
     'on_focus',
+    'on_lexer',
     'on_complete',
     'on_func_hint',
     'on_goto_def',
@@ -8114,6 +8116,8 @@ begin
 
   ApplyLexerOverrides(CurrentFrame, Lexer);
   UpdateStatusbarTabsize;
+
+  DoPyEvent(CurrentEditor, cSynEventOnLexer, []);
 end;
 
 
