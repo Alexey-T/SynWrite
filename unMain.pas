@@ -7193,21 +7193,13 @@ begin
     if ANext then
     begin
       CaretStrPos:= NEnd;
-
-      //repeat selection as caret moving may clear it
-      SelStart:= NStart;
-      SelLength:= NEnd-NStart;
-
+      SetSelection(NStart, NEnd-NStart, true);
       Finder.FindNext;
     end
     else
     begin
       CaretStrPos:= NStart;
-
-      //repeat selection
-      SelStart:= NStart;
-      SelLength:= NEnd-NStart;
-
+      SetSelection(NStart, NEnd-NStart, true);
       Finder.FindPrev;
     end;
   end;
