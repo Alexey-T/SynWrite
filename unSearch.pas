@@ -708,11 +708,10 @@ begin
       CaretPos:= P;
 
       SelectMode:= msNone;
-      SetSelection(Pos, Count);
+      SetSelection(Pos, Count, true); //"true" missed in 6.12, was bug for back-search
 
       DoCenterPos;
       Exclude(FFlags, ftSelectedText);
-      //if not Focused then SetFocus;
     end
     else
       SetSearchMark(Pos, Count, true);
