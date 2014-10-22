@@ -6442,7 +6442,7 @@ object fmMain: TfmMain
           item
             KeyDefs = <
               item
-                ShortCut = 24666
+                ShortCut = 16473
               end>
           end>
         Category = 'Standard actions'
@@ -6642,13 +6642,7 @@ object fmMain: TfmMain
       end
       item
         Command = 337
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16473
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Deleting text'
         DisplayName = 'Delete current line'
       end
