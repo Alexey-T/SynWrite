@@ -603,6 +603,8 @@ cmd_GotoPrevModifiedLine = 1066
 cmd_GotoNextModifiedOrSavedLine = 1067
 cmd_GotoPrevModifiedOrSavedLine = 1068
 
+cmd_OpenEntireFolder = 1069
+
 cmd_TreeCollapseAll = 1090
 cmd_TreeExpandAll = 1091
 cmd_TreeLevel2 = 1092

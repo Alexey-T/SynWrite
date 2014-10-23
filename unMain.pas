@@ -3193,6 +3193,7 @@ type
     procedure DoOpenProject(const fn: Widestring); overload;
     procedure DoOpenArchive(const fn: Widestring);
     procedure DoOpenFolder(const dir: Widestring);
+    procedure DoOpenFolderDialog;
     procedure DoNewProject;
     procedure DoSaveProject;
     procedure DoUpdateProject;
@@ -6582,6 +6583,9 @@ begin
       if not EditorGotoModifiedLine(Ed, true, true) then MsgBeep;
     sm_GotoPrevModifiedOrSavedLine:
       if not EditorGotoModifiedLine(Ed, false, true) then MsgBeep;
+
+    sm_OpenEntireFolder:
+      DoOpenFolderDialog;
 
     //end of commands list
 
@@ -29297,6 +29301,15 @@ procedure TfmMain.SetCaretTime(N: Integer);
 begin
   TemplateEditor.Caret.Insert.BlinkTime:= N;
   ApplyEdOptions;
+end;
+
+procedure TfmMain.DoOpenFolderDialog;
+var
+  dir: Widestring;
+begin
+  dir:= '';
+  if WideSelectDirectory('', '', dir) then
+    DoOpenFolder(dir);
 end;
 
 initialization

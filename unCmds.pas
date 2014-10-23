@@ -400,6 +400,7 @@ const
   sm_GotoPrevModifiedLine = 1066;
   sm_GotoNextModifiedOrSavedLine = 1067;
   sm_GotoPrevModifiedOrSavedLine = 1068;
+  sm_OpenEntireFolder = 1069;
   //free
 
   //Tree commands
