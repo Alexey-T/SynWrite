@@ -72,14 +72,14 @@ Name: "{group}\SynWrite Help"; Filename: "{app}\Readme\SynWrite.chm"
 Name: "{group}\{cm:UninstallProgram,SynWrite}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\SynWrite"; Filename: "{app}\Syn.exe"; Tasks: desktopicon
 
-[Run]
-Filename: "{app}\Syn.exe"; Parameters: "/reg"; Description: "Configure SynWrite file types"; Flags: nowait postinstall skipifsilent runascurrentuser
-
 [UninstallDelete]
 Type: files; Name: "{app}\Syn*.ini"
 Type: files; Name: "{app}\Portable.ini"
 
-[Registry]
-Root: HKCR; Subkey: "*\shell\SynWrite"; Flags: uninsdeletekey
-Root: HKCR; Subkey: "*\shell\SynWrite\command"; Flags: uninsdeletekey
-Root: HKCR; Subkey: "*\shell\SynWrite\command"; ValueType: string; ValueName: ""; ValueData: """{app}\Syn.exe"" ""%1"""
+[Run]
+;Filename: "{app}\Syn.exe"; Parameters: "/reg"; Description: "Configure SynWrite file types"; Flags: nowait postinstall skipifsilent runascurrentuser
+
+;[Registry]
+;Root: HKCR; Subkey: "*\shell\SynWrite"; Flags: uninsdeletekey
+;Root: HKCR; Subkey: "*\shell\SynWrite\command"; Flags: uninsdeletekey
+;Root: HKCR; Subkey: "*\shell\SynWrite\command"; ValueType: string; ValueName: ""; ValueData: """{app}\Syn.exe"" ""%1"""
