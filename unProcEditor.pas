@@ -16,6 +16,7 @@ uses
   ecStrUtils,
   ecPrint;
 
+function EditorGetWordLengthForSpellCheck(Ed: TSyntaxMemo; APos: Integer): Integer;
 function EditorGotoModifiedLine(Ed: TSyntaxMemo; ANext: boolean; ASavedToo: boolean): boolean;
 procedure EditorPrint(Ed: TSyntaxMemo; ASelOnly: boolean;
   const ATitle: string; APrinter: TecSyntPrinter);
@@ -3475,6 +3476,17 @@ begin
   until false;
 end;
 
+function EditorGetWordLengthForSpellCheck(Ed: TSyntaxMemo; APos: Integer): Integer;
+var
+  ch: WideChar;
+begin
+  Result:= 0;
+  repeat
+    ch:= Ed.Lines.Chars[APos+Result+1]; //no range-check needed, in Chars[]
+    if not (IsWordChar(ch) or (ch='''')) then Break;
+    Inc(Result);
+  until false;
+end;
 
 initialization
 

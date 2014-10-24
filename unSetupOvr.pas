@@ -149,7 +149,8 @@ begin
     edIndent.Value:= StrToIntDef(AIndent, FDefIndent);
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
     edSpacing.Value:= StrToIntDef(ASpacing, FDefSpacing);
-    edTabColor.Selected:= StringToColor(ATabColor);
+    if ATabColor<>'' then
+      edTabColor.Selected:= StringToColor(ATabColor);
     edWordChars.Text:= AOptWordChars;
     chkAutoCase.Checked:= Bool(StrToIntDef(ACaseCorrect, 0));
   end

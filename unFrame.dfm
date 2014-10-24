@@ -49,6 +49,10 @@ object EditorFrame: TEditorFrame
       Top = 0
       Width = 425
       Height = 204
+      NonPrintedSpaces = True
+      NonPrintedEol = True
+      NonPrintedEolDetails = False
+      SelectModeDefault = msNone
       TextSource = TextSourceObj
       TabList.AsString = '4'
       NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -121,6 +125,7 @@ object EditorFrame: TEditorFrame
       HintProps.ShowFirstLine = True
       UserRanges = <>
       Animation.BookmarkAnim = atNone
+      UndoLimit = 0
       TabMode = tmSmartTab
       StaplePen.Color = clSilver
       StaplePen.Style = psDot
@@ -258,6 +263,10 @@ object EditorFrame: TEditorFrame
       Top = 209
       Width = 425
       Height = 57
+      NonPrintedSpaces = True
+      NonPrintedEol = True
+      NonPrintedEolDetails = False
+      SelectModeDefault = msNone
       TextSource = TextSourceObj
       TabList.AsString = '4'
       NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -330,6 +339,7 @@ object EditorFrame: TEditorFrame
       HintProps.Formated = True
       UserRanges = <>
       Animation.BookmarkAnim = atNone
+      UndoLimit = 0
       TabMode = tmSmartTab
       StaplePen.Color = clSilver
       StaplePen.Style = psDot

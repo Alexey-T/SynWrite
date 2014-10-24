@@ -175,6 +175,7 @@ type
     procedure SetFtpInfo(AInfoPtr: Pointer; AInfoSize: Integer);
     procedure FreeFtpInfo;
     function IsFtp: boolean;
+    function IsUrlAtPosition(APos: Integer): boolean;
     //---------------------
 
     procedure DoChangeTick;
@@ -1676,6 +1677,13 @@ begin
     Result;
 end;
 
+function TEditorFrame.IsUrlAtPosition(APos: Integer): boolean;
+var
+  P: TPoint;
+begin
+  p:= HyperlinkHighlighter.HltRangeBndAt(APos);
+  Result:= p.y > p.x;
+end;
 
 
 initialization

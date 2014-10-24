@@ -2562,18 +2562,17 @@ type
     procedure SpellCopyClick(Sender: TObject);
     procedure SpellCutClick(Sender: TObject);
     procedure SpellPasteClick(Sender: TObject);
-    procedure SpellItemClick (Sender: TObject);
-    procedure SpellPopupDoMenu (Sender, Menu: TObject; XPos,
-       YPos: Integer; var PopupAction: Integer; var PopupWord: string);
-    procedure SpellPopupAddMenuItem (Sender, Menu,
-     SubMenu: TObject; Caption: string; Enable, HasChildren: Boolean;
-     Tag: Integer; var MenuItem: TObject);
+    procedure SpellItemClick(Sender: TObject);
+    procedure SpellPopupDoMenu(Sender, Menu: TObject; XPos,
+      YPos: Integer; var PopupAction: Integer; var PopupWord: string);
+    procedure SpellPopupAddMenuItem(Sender, Menu,
+      SubMenu: TObject; Caption: string; Enable, HasChildren: Boolean;
+      Tag: Integer; var MenuItem: TObject);
     procedure SpellPopupCreateMenu(Sender: TObject;
-     Owner: TComponent; var PopupMenu: TObject);
+      Owner: TComponent; var PopupMenu: TObject);
     procedure SpellDialogShow(Sender: TObject);
     procedure SpellPositionDialog(Sender: TObject);
 
-    procedure DoFindClip(Next: boolean);
     function SNewDocName(const fn: Widestring): string;
     procedure DoNewDocClick(Sender: TObject);
     procedure DoNewDocFolderClick(Sender: TObject);
@@ -2650,6 +2649,7 @@ type
       StartPos, EndPos: integer; Accept: Boolean);
     procedure FinderTree_OnNotFound(Sender: TObject);
 
+    procedure DoFind_ClipboardText(ANext: boolean);
     procedure DoFind_CurrentWord(ANext: boolean);
     procedure DoFind_AndExtendSel(ANext: boolean);
     procedure DoFind_Action(act: TSynSearchAction);
@@ -15800,7 +15800,7 @@ var
   NStart, NEnd: Integer;
   S, S1: string; //Addict is not Unicode aware
   AMap, ASpellLiveBefore: boolean;
-  //ch: Widechar;
+  ch: Widechar;
 begin
   {$ifdef SPELL}
   F:= CurrentFrame;
@@ -15841,20 +15841,8 @@ begin
         Exit
       end;
 
-      Ed.WordRangeAtPos(Ed.StrPosToCaretPos(FSpellPos), NStart, NEnd);
-      (*
-      //WordRangeAtPos works not ok for "we'll", "you've" words
-      //work for this:
-
       NStart:= FSpellPos;
-      NEnd:= NStart;
-      while (NEnd<Ed.Lines.TextLength-1) do
-      begin
-        ch:= Ed.Lines.Chars[NEnd+1];
-        if not (IsWordChar(ch) or (ch='''')) then Break;
-        Inc(NEnd);
-      end;
-      *)
+      NEnd:= NStart + EditorGetWordLengthForSpellCheck(Ed, NStart);
 
       if NEnd<=NStart then
         begin MsgBeep; Continue end;
@@ -16991,7 +16979,7 @@ begin
   DoLinesCommand(scmdSpacesToTabs);
 end;
 
-procedure TfmMain.DoFindClip(Next: boolean);
+procedure TfmMain.DoFind_ClipboardText(ANext: boolean);
 var
   s: Widestring;
 begin
@@ -17009,7 +16997,7 @@ begin
   Finder.Flags:= Finder.Flags-[ftRegex];
   Finder.Flags:= Finder.Flags+[ftWrapSearch];
 
-  if Next then
+  if ANext then
     Finder.FindNext
   else
     Finder.FindPrev;
@@ -17017,12 +17005,12 @@ end;
 
 procedure TfmMain.ecFindClipNextExecute(Sender: TObject);
 begin
-  DoFindClip(true);
+  DoFind_ClipboardText(true);
 end;
 
 procedure TfmMain.ecFindClipPrevExecute(Sender: TObject);
 begin
-  DoFindClip(false);
+  DoFind_ClipboardText(false);
 end;
 
 type
@@ -17077,7 +17065,7 @@ http://www.addictive-software.com/addict3/other-downloads.htm
 Menu demo
 }
 procedure TfmMain.SpellPopupCreateMenu(Sender: TObject;
-     Owner: TComponent; var PopupMenu: TObject);
+  Owner: TComponent; var PopupMenu: TObject);
 var
   AMenu: TSpTbxPopupMenu;
   AMenuItem: TSpTbxItem;
@@ -17113,8 +17101,8 @@ begin
 end;
 
 //same Menu demo
-procedure TfmMain.SpellPopupDoMenu (Sender, Menu: TObject; XPos,
-     YPos: Integer; var PopupAction: Integer; var PopupWord: string);
+procedure TfmMain.SpellPopupDoMenu(Sender, Menu: TObject;
+  XPos, YPos: Integer; var PopupAction: Integer; var PopupWord: string);
 begin
   TSpTbxPopupMenu(Menu).Popup(XPos, YPos);
   Application.ProcessMessages;
@@ -17124,10 +17112,10 @@ begin
 end;
 
 
-procedure TfmMain.SpellItemClick (Sender: TObject);
+procedure TfmMain.SpellItemClick(Sender: TObject);
 begin
-  FSpellMenuCaption:= TSpTbxItem (Sender).Caption;
-  FSpellMenuTag:= TComponent (Sender).Tag;
+  FSpellMenuCaption:= (Sender as TSpTbxItem).Caption;
+  FSpellMenuTag:= (Sender as TComponent).Tag;
 end;
 
 procedure TfmMain.SpellCopyClick(Sender: TObject);
@@ -17145,48 +17133,49 @@ begin
   ecPaste.Execute;
 end;
 
-procedure TfmMain.SpellPopupAddMenuItem (Sender, Menu,
-     SubMenu: TObject; Caption: string; Enable, HasChildren: Boolean;
-     Tag: Integer; var MenuItem: TObject);
+procedure TfmMain.SpellPopupAddMenuItem(
+  Sender, Menu, SubMenu: TObject;
+  Caption: string; Enable, HasChildren: Boolean;
+  Tag: Integer; var MenuItem: TObject);
 var
-     vMenuItem: TTBCustomItem;
+  vMenuItem: TTBCustomItem;
 begin
-     FSpellMenuTag:= 0; // New Item
-     if HasChildren then
-     begin
-    		vMenuItem:= TSpTbxItem.Create (TComponent (Menu));
-    		TSpTbxPopupMenu (Menu).Items.Add (vMenuItem);
-    		(vMenuItem as TSpTbxItem).Caption:= Caption;
-    		vMenuItem.Enabled:= Enabled;
-    		vMenuItem.Tag:= Tag;
-        MenuItem:= vMenuItem;
-     end
-     else
-     begin
-    		if Assigned (SubMenu) then
-          begin
-               vMenuItem:= TSpTbxItem.Create (TComponent (SubMenu));
-               TSpTbxItem (SubMenu).Add (vMenuItem);
-          end
-          else
-          begin
-               if Caption='-' then
-                 vMenuItem:= TSpTbxSeparatorItem.Create(TComponent (Menu))
-               else
-                 vMenuItem:= TSpTbxItem.Create (TComponent (Menu));
-               TSpTbxPopupMenu (Menu).Items.Add (vMenuItem);
-          end;
+  FSpellMenuTag:= 0;
+  if HasChildren then
+  begin
+    vMenuItem:= TSpTbxItem.Create(TComponent(Menu));
+    TSpTbxPopupMenu (Menu).Items.Add (vMenuItem);
+    (vMenuItem as TSpTbxItem).Caption:= Caption;
+    vMenuItem.Enabled:= Enabled;
+    vMenuItem.Tag:= Tag;
+    MenuItem:= vMenuItem;
+  end
+  else
+  begin
+    if Assigned (SubMenu) then
+    begin
+      vMenuItem:= TSpTbxItem.Create(TComponent(SubMenu));
+      TSpTbxItem (SubMenu).Add(vMenuItem);
+    end
+    else
+    begin
+      if Caption='-' then
+        vMenuItem:= TSpTbxSeparatorItem.Create(TComponent(Menu))
+      else
+        vMenuItem:= TSpTbxItem.Create(TComponent(Menu));
+      TSpTbxPopupMenu(Menu).Items.Add(vMenuItem);
+    end;
 
-          if (vMenuItem is TSpTbxItem) then
-            (vMenuItem as TSpTbxItem).Caption:= Caption;
-          vMenuItem.Enabled:= Enabled;
-          if (Tag > 0) then
-          begin
-               vMenuItem.Tag:= Tag;
-               vMenuItem.OnClick:= SpellItemClick;
-          end;
-          MenuItem:= vMenuItem;
-     end;
+    if (vMenuItem is TSpTbxItem) then
+      (vMenuItem as TSpTbxItem).Caption:= Caption;
+    vMenuItem.Enabled:= Enabled;
+    if (Tag > 0) then
+    begin
+      vMenuItem.Tag:= Tag;
+      vMenuItem.OnClick:= SpellItemClick;
+    end;
+    MenuItem:= vMenuItem;
+  end;
 end;
 
 
@@ -23364,13 +23353,6 @@ end;
 procedure TfmMain.SynSpellCheckerCheckWord(Sender: TObject;
   const AWord: WideString; APos: Integer; var Valid: Boolean);
   //
-  function IsUrlAt(F: TEditorFrame; APos: Integer): boolean;
-  var
-    P: TPoint;
-  begin
-    p:= F.HyperlinkHighlighter.HltRangeBndAt(APos);
-    Result:= p.y > p.x;
-  end;
   //
 var
   F: TEditorFrame;
@@ -23384,7 +23366,7 @@ begin
   Inc(APos);
 
   if En and IsPositionMatchesTokens(Ed, APos, APos+1, tokensCmtStr) then
-    Valid:= FSpell.CheckWord(AWord) or IsUrlAt(F, APos)
+    Valid:= FSpell.CheckWord(AWord) or F.IsUrlAtPosition(APos)
   else
     Valid:= true;
   {$else}
