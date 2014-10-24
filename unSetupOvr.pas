@@ -150,7 +150,9 @@ begin
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
     edSpacing.Value:= StrToIntDef(ASpacing, FDefSpacing);
     if ATabColor<>'' then
-      edTabColor.Selected:= StringToColor(ATabColor);
+      edTabColor.Selected:= StringToColor(ATabColor)
+    else
+      edTabColor.Selected:= clWhite;
     edWordChars.Text:= AOptWordChars;
     chkAutoCase.Checked:= Bool(StrToIntDef(ACaseCorrect, 0));
   end

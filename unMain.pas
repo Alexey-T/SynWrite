@@ -3336,7 +3336,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.12.1715';
+  cSynVer = '6.12.1716';
   cSynPyVer = '1.0.140';
 
 const
@@ -15798,9 +15798,8 @@ var
   F: TEditorFrame;
   Ed: TSyntaxMemo;
   NStart, NEnd: Integer;
-  S, S1: string; //Addict is not Unicode aware
+  S, SPrev: string; //Addict is not Unicode aware
   AMap, ASpellLiveBefore: boolean;
-  ch: Widechar;
 begin
   {$ifdef SPELL}
   F:= CurrentFrame;
@@ -15855,18 +15854,17 @@ begin
       if Application.Terminated then Exit;
 
       //show spell dialog
-      //if not FSpell.CheckWord(S) then
+      ////if not FSpell.CheckWord(S) then
+
+      SPrev:= S;
+      FSpell.CheckString(S);
+      if FSpell.CheckCanceled then
       begin
-        S1:= S;
-        FSpell.CheckString(S);
-        if FSpell.CheckCanceled then
-        begin
-          Ed.ResetSelection;
-          Exit;
-        end;
-        if S<>S1 then
-          Ed.ReplaceText(NStart, NEnd-NStart, S);
+        Ed.ResetSelection;
+        Exit;
       end;
+      if S<>SPrev then
+        Ed.ReplaceText(NStart, NEnd-NStart, S);
     until false;
   finally
     FSpellChecking:= false;
