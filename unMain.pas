@@ -27073,9 +27073,11 @@ begin
     end;
   end;
 
-  FDelete(fn_inf);
+  //FDelete(fn_inf); //leave it for user
   MsgInfo(WideFormat(DKLangConstW('zMInstallOk'), [dir_to]), Handle);
-  acExit.Execute;
+
+  //acExit.Execute;
+  acRestart.Execute;
 end;
 
 procedure TfmMain.TbxTabConsoleClick(Sender: TObject);
@@ -29318,10 +29320,14 @@ end;
 
 procedure TfmMain.acRestartExecute(Sender: TObject);
 var
-  Cmd: string;
+  fn: string;
 begin
-  Cmd:= ExtractFilePath(ParamStr(0))+'SynHelper.exe';
-  FExecute(Cmd, IntToStr(Handle), '', 0);
+  if not SynExe then Exit;
+  fn:= ExtractFilePath(ParamStr(0))+'SynHelper.exe';
+  if not FileExists(fn) then
+    begin MsgNoFile(fn); Exit end;
+    
+  FExecute(fn, Format('restart %d', [Handle]), '', 0);
   acExit.Execute;
 end;
 

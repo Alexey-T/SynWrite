@@ -10,14 +10,11 @@ end;
 const
   cSleepStep = 300;
   cSleepAfterClose = 200;
+
+procedure DoRestart(h: THandle);
 var
-  h: THandle;
   cmd: string;
 begin
-  if ParamCount<1 then
-    begin Msg('Parameter needed'); Exit end;
-
-  h:= StrToInt(ParamStr(1));
   if not IsWindow(h) then
     begin Msg('Cannot find SynWrite window'); Exit end;
 
@@ -30,4 +27,14 @@ begin
   Sleep(cSleepAfterClose);
 
   WinExec(PChar(cmd), sw_show);
+end;  
+
+begin
+  if ParamCount<1 then
+    begin Msg('Parameter needed'); Exit end;
+
+  if ParamStr(1)='restart' then
+    DoRestart(StrToInt(ParamStr(2)))
+  else
+    Msg('Unknown param: '+ParamStr(1));
 end.
