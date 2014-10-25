@@ -408,15 +408,15 @@ type
     TBXSeparatorItem3: TSpTbxSeparatorItem;
     TBXSeparatorItem4: TSpTbxSeparatorItem;
     TBXSubmenuCase: TSpTbxSubmenuItem;
-    TBXItemCCLower: TSpTbxItem;
-    TBXItemCCUpper: TSpTbxItem;
+    TBXItemBarCaseLower: TSpTBXItem;
+    TBXItemBarCaseUpper: TSpTBXItem;
     ImgListTree: TImageList;
     plTree: TSpTbxDockablePanel;
     TBXDockBottom: TSpTbxMultiDock;
     TBXDockRight: TSpTbxMultiDock;
     Tree: TSyntaxTreeView;
     ecTitleCase: TAction;
-    TBXItemCCTitle: TSpTbxItem;
+    TBXItemBarCaseTitle: TSpTBXItem;
     ecShowTree: TAction;
     TBXItemVPanelTree: TSpTBXItem;
     ecPrintAction: TecPrintAction;
@@ -448,7 +448,7 @@ type
     TBXItemBarMarks: TSpTBXItem;
     acNewTab: TAction;
     TBXItemToolNew: TSpTbxSubmenuItem;
-    TBXItemCCInv: TSpTbxItem;
+    TBXItemBarCaseInvert: TSpTBXItem;
     TBXSeparatorItem10: TSpTbxSeparatorItem;
     Status: TSpTbxStatusBar;
     TBXSubmenuItemSort: TSpTbxSubmenuItem;
@@ -677,7 +677,7 @@ type
     TBXItemEExtr: TSpTbxItem;
     TBXSeparatorItem39: TSpTbxSeparatorItem;
     TBXItemECaseSent: TSpTbxItem;
-    TBXItemCCSent: TSpTbxItem;
+    TBXItemBarCaseSent: TSpTBXItem;
     ecSentCase: TAction;
     PopupZoom: TSpTbxPopupMenu;
     TBXItemZSet300: TSpTbxItem;
@@ -1377,6 +1377,9 @@ type
     ecPreviewActionNew: TAction;
     acSetupLexerNew: TAction;
     ecPageSetupActionNew: TAction;
+    TBXItemECaseRandom: TSpTBXItem;
+    TBXItemBarCaseRandom: TSpTBXItem;
+    acRestart: TAction;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1929,11 +1932,11 @@ type
     procedure TBXItemTbSortDialogClick(Sender: TObject);
     procedure TBXItemTbSortAscClick(Sender: TObject);
     procedure TBXItemTbSortDescClick(Sender: TObject);
-    procedure TBXItemCCUpperClick(Sender: TObject);
-    procedure TBXItemCCLowerClick(Sender: TObject);
-    procedure TBXItemCCTitleClick(Sender: TObject);
-    procedure TBXItemCCSentClick(Sender: TObject);
-    procedure TBXItemCCInvClick(Sender: TObject);
+    procedure TBXItemBarCaseUpperClick(Sender: TObject);
+    procedure TBXItemBarCaseLowerClick(Sender: TObject);
+    procedure TBXItemBarCaseTitleClick(Sender: TObject);
+    procedure TBXItemBarCaseSentClick(Sender: TObject);
+    procedure TBXItemBarCaseInvertClick(Sender: TObject);
     procedure TBXItemECaseUpperClick(Sender: TObject);
     procedure TBXItemECaseLowerClick(Sender: TObject);
     procedure TBXItemECaseTitleClick(Sender: TObject);
@@ -2150,6 +2153,9 @@ type
     procedure acSetupLexerNewExecute(Sender: TObject);
     procedure ecPageSetupActionNewExecute(Sender: TObject);
     procedure edQsKeyPress(Sender: TObject; var Key: Char);
+    procedure TBXItemECaseRandomClick(Sender: TObject);
+    procedure TBXItemBarCaseRandomClick(Sender: TObject);
+    procedure acRestartExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -3336,7 +3342,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.12.1716';
+  cSynVer = '6.12.1720';
   cSynPyVer = '1.0.140';
 
 const
@@ -5626,12 +5632,18 @@ begin
       end;
 
     //case changing
-    smUpperCaseBlock,
-    smLowerCaseBlock,
-    smToggleCaseBlock,
-    smTitleCaseBlock,
-    smSentCaseBlock:
-      EditorChangeBlockCase(Ed, TChangeCase(Command - smUpperCaseBlock + 1));
+    smUpperCaseBlock:
+      EditorChangeBlockCase(Ed, cTextCaseUpper);
+    smLowerCaseBlock:
+      EditorChangeBlockCase(Ed, cTextCaseLower);
+    smToggleCaseBlock:
+      EditorChangeBlockCase(Ed, cTextCaseToggle);
+    smTitleCaseBlock:
+      EditorChangeBlockCase(Ed, cTextCaseTitle);
+    sm_SentenceCaseBlock:
+      EditorChangeBlockCase(Ed, cTextCaseSent);
+    sm_RandomCaseBlock:
+      EditorChangeBlockCase(Ed, cTextCaseRandom);
 
     //indent
     smTab:
@@ -6586,6 +6598,8 @@ begin
 
     sm_OpenEntireFolder:
       DoOpenFolderDialog;
+    sm_RestartProgram:
+      acRestart.Execute;  
 
     //end of commands list
 
@@ -10026,7 +10040,7 @@ begin
   UpdKey(tbxItemECaseLower, smLowerCaseBlock);
   UpdKey(tbxItemECaseTitle, smTitleCaseBlock);
   UpdKey(tbxItemECaseInvert, smToggleCaseBlock);
-  UpdKey(tbxItemECaseSent, smSentCaseBlock);
+  UpdKey(tbxItemECaseSent, sm_SentenceCaseBlock);
 
   //bookmk
   UpdKey(tbxItemG0, smSetBookmark0);
@@ -13794,7 +13808,7 @@ end;
 
 procedure TfmMain.ecSentCaseExecute(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(smSentCaseBlock);
+  CurrentEditor.ExecCommand(sm_SentenceCaseBlock);
 end;
 
 procedure TfmMain.DoZoomEditor(NZoom: Integer);
@@ -18854,6 +18868,7 @@ end;
 
 procedure TfmMain.acPropsExecute(Sender: TObject);
 var
+  Ed: TSyntaxMemo;
   fn: WideString;
   NSize: Int64;
   NTime: TFileTime;
@@ -18863,15 +18878,14 @@ begin
   //after form showing
   Application.ProcessMessages;
 
+  Ed:= CurrentEditor;
+  if Ed=nil then Exit;
   fn:= CurrentFrame.FileName;
-  NWords:= 0;
-  NChars:= 0;
-  NLines:= 0;
-  if (CurrentFrame<>nil) and (CurrentFrame.EditorMaster.TextSource<>nil) then
+
+  Screen.Cursor:= crHourGlass;
   try
-    Screen.Cursor:= crHourGlass;
-    EditorCountWords(CurrentFrame.EditorMaster.TextSource.Lines, NWords, NChars);
-    NLines:= CurrentFrame.EditorMaster.TextSource.Lines.Count;
+    EditorCountWords(Ed, NWords, NChars);
+    NLines:= Ed.Lines.Count;
   finally
     Screen.Cursor:= crDefault;
   end;
@@ -23994,29 +24008,34 @@ begin
   CurrentEditor.ExecCommand(smSortDescending);
 end;
 
-procedure TfmMain.TBXItemCCUpperClick(Sender: TObject);
+procedure TfmMain.TBXItemBarCaseUpperClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smUpperCaseBlock);
 end;
 
-procedure TfmMain.TBXItemCCLowerClick(Sender: TObject);
+procedure TfmMain.TBXItemBarCaseLowerClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smLowerCaseBlock);
 end;
 
-procedure TfmMain.TBXItemCCTitleClick(Sender: TObject);
+procedure TfmMain.TBXItemBarCaseTitleClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smTitleCaseBlock);
 end;
 
-procedure TfmMain.TBXItemCCSentClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(smSentCaseBlock);
-end;
-
-procedure TfmMain.TBXItemCCInvClick(Sender: TObject);
+procedure TfmMain.TBXItemBarCaseInvertClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smToggleCaseBlock);
+end;
+
+procedure TfmMain.TBXItemBarCaseSentClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_SentenceCaseBlock);
+end;
+
+procedure TfmMain.TBXItemBarCaseRandomClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_RandomCaseBlock);
 end;
 
 procedure TfmMain.TBXItemECaseUpperClick(Sender: TObject);
@@ -24034,14 +24053,19 @@ begin
   CurrentEditor.ExecCommand(smTitleCaseBlock);
 end;
 
-procedure TfmMain.TBXItemECaseSentClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(smSentCaseBlock);
-end;
-
 procedure TfmMain.TBXItemECaseInvertClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smToggleCaseBlock);
+end;
+
+procedure TfmMain.TBXItemECaseSentClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_SentenceCaseBlock);
+end;
+
+procedure TfmMain.TBXItemECaseRandomClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_RandomCaseBlock);
 end;
 
 procedure TfmMain.TBXItemEAlignWithSepClick(Sender: TObject);
@@ -29290,6 +29314,15 @@ begin
   dir:= '';
   if WideSelectDirectory('', '', dir) then
     DoOpenFolder(dir);
+end;
+
+procedure TfmMain.acRestartExecute(Sender: TObject);
+var
+  Cmd: string;
+begin
+  Cmd:= ExtractFilePath(ParamStr(0))+'SynHelper.exe';
+  FExecute(Cmd, IntToStr(Handle), '', 0);
+  acExit.Execute;
 end;
 
 initialization

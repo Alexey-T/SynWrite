@@ -401,6 +401,10 @@ const
   sm_GotoNextModifiedOrSavedLine = 1067;
   sm_GotoPrevModifiedOrSavedLine = 1068;
   sm_OpenEntireFolder = 1069;
+
+  sm_SentenceCaseBlock = 1070;
+  sm_RandomCaseBlock = 1071;
+  sm_RestartProgram = 1072;
   //free
 
   //Tree commands
@@ -498,7 +502,8 @@ begin
     smLowerCaseBlock,
     smToggleCaseBlock,
     smTitleCaseBlock,
-    smSentCaseBlock,
+    sm_SentenceCaseBlock,
+    sm_RandomCaseBlock,
 
     smInsertMode,
     smOverwriteMode,

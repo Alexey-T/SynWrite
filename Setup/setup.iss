@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.12.1715
+AppVersion=6.12.1725
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -27,6 +27,7 @@ Name: "portable"; Description: "Make folder portable"; Flags: unchecked
 [Files]
 Source: "Portable.ini"; DestDir: "{app}"; Tasks: "portable"
 Source: "..\Syn.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\SynHelper.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Enc.cfg"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lexers.cfg"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Tidy.cfg"; DestDir: "{app}"; Flags: ignoreversion

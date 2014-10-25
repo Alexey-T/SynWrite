@@ -116,7 +116,6 @@ cmd_UpperCaseBlock  = 365 # Upper case to current selection or current char
 cmd_LowerCaseBlock  = 366 # Lower case to current selection or current char
 cmd_ToggleCaseBlock = 367 # Toggle case to current selection or current char
 cmd_TitleCaseBlock  = 368 # Title case to current selection or current char
-cmd_SentCaseBlock = 369 #AT
 
 cmd_InsertMode      = 371  # Set insert mode
 cmd_OverwriteMode   = 372  # Set overwrite mode
@@ -604,6 +603,9 @@ cmd_GotoNextModifiedOrSavedLine = 1067
 cmd_GotoPrevModifiedOrSavedLine = 1068
 
 cmd_OpenEntireFolder = 1069
+cmd_SentenceCaseBlock = 1070
+cmd_RandomCaseBlock = 1071
+cmd_RestartProgram = 1072
 
 cmd_TreeCollapseAll = 1090
 cmd_TreeExpandAll = 1091

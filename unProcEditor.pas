@@ -99,7 +99,6 @@ procedure EditorMoveCaretByNChars(Ed: TSyntaxMemo; DX, DY: Integer);
 procedure EditorCommentUncommentLines(Ed: TSyntaxMemo; AComment: boolean);
 function EditorToggleSyncEditing(Ed: TSyntaxMemo): boolean;
 procedure EditorKeepCaretOnScreen(Ed: TSyntaxMemo);
-procedure EditorChangeBlockCase(Ed: TSyntaxMemo; Cmd: TChangeCase);
 procedure EditorDoHomeKey(Ed: TSyntaxMemo);
 procedure EditorInsertBlankLineAboveOrBelow(Ed: TSyntaxMemo; ABelow: boolean);
 procedure EditorPasteAndSelect(Ed: TSyntaxMemo);
@@ -197,12 +196,25 @@ procedure EditorCollapseParentRange(Ed: TSyntaxMemo; APos: Integer);
 procedure EditorUncollapseLine(Ed: TCustomSyntaxMemo; Line: Integer);
 function IsEditorLineCollapsed(Ed: TCustomSyntaxMemo; Line: Integer): boolean;
 
-procedure EditorCountWords(L: TSyntMemoStrings; var NWords, NChars: Int64);
+procedure EditorCountWords(Ed: TSyntaxMemo; var NWords, NChars: Int64);
 procedure EditorCenterPos(Ed: TCustomSyntaxMemo; AGotoMode: boolean; NOffsetY: Integer);
 
 var
   EditorSynLexersCfg: string = '';
   EditorSynLexersExCfg: string = '';
+
+type
+  TSynTextCase = (
+    cTextCaseUpper,
+    cTextCaseLower,
+    cTextCaseToggle,
+    cTextCaseTitle,
+    cTextCaseSent,
+    cTextCaseRandom
+    );
+
+procedure EditorChangeBlockCase(Ed: TSyntaxMemo; Op: TSynTextCase);
+    
 
 implementation
 
@@ -549,13 +561,15 @@ begin
   end;
 end;
 
-procedure EditorCountWords(L: TSyntMemoStrings; var NWords, NChars: Int64);
+procedure EditorCountWords(Ed: TSyntaxMemo; var NWords, NChars: Int64);
 var
+  L: TSyntMemoStrings;
   s: Widestring;
   i, j: integer;
   w: boolean;
 begin
-  NWords:= 0 ;
+  L:= Ed.Lines;
+  NWords:= 0;
   NChars:= 0;
   for i:= 0 to L.Count-1 do
   begin
@@ -1772,25 +1786,6 @@ begin
   end;
 end;
 
-
-procedure EditorChangeBlockCase(Ed: TSyntaxMemo; Cmd: TChangeCase);
-var
-  Sel: TSynSelSave;
-  en: boolean;
-begin
-  EditorSaveSel(Ed, Sel);
-  en:= true;
-  //select current word, if no selection
-  if not Ed.HaveSelection then
-    en:= EditorSelectWord(Ed);
-  //change case
-  if en then
-  begin
-    Ed.SelChangeCase(Cmd);
-    //EditorSetModified(Ed);
-  end;
-  EditorRestoreSel(Ed, Sel);
-end;
 
 procedure EditorKeepCaretOnScreen(Ed: TSyntaxMemo);
 var
@@ -3487,6 +3482,139 @@ begin
     Inc(Result);
   until false;
 end;
+
+
+procedure _ConvertCaseSent(var s: ecString);
+var
+  dot: boolean;
+  i: Integer;
+begin
+  dot:= True;
+  for i:= 1 to Length(s) do
+  begin
+    if IsAlphaChar(s[i]) then
+    begin
+      if dot then
+        s[i]:= ecUpCase(s[i])
+      else
+        s[i]:= ecLoCase(s[i]);
+      dot:= False;
+    end
+    else
+      if (s[i] = '.') or (s[i] = '!') or (s[i] = '?') then
+        dot:= True;
+  end;
+end;
+
+//from ecSyntMemo.pas, function TCustomSyntaxMemo.ChangeCase
+function _ChangeCase(Ed: TSyntaxMemo; Pos, Count: integer; Op: TSynTextCase): Boolean;
+var
+  s, s1: ecString;
+  i: integer;
+  c: ecChar;
+begin
+  s := Ed.Lines.SubString(Pos + 1, Count);
+  s1 := s;
+  case Op of
+    cTextCaseUpper:
+      for i := 1 to Length(s) do
+        s[i] := ecUpCase(s[i]);
+        
+    cTextCaseLower:
+      for i := 1 to Length(s) do
+        s[i] := ecLoCase(s[i]);
+
+    cTextCaseToggle:
+      for i := 1 to Length(s) do
+      begin
+        c := ecUpCase(s[i]);
+        if c = s[i] then s[i] := ecLoCase(c)
+          else s[i] := c;
+      end;
+
+    cTextCaseTitle:
+      begin
+        for i := 1 to Length(s) do
+          if IsAlphaChar(s[i]) then
+            if (Pos + i - 1 = 0) or
+               not IsAlphaChar(Ed.Lines.Chars[Pos + i - 1]) then
+              s[i] := ecUpCase(s[i])
+            else
+              s[i] := ecLoCase(s[i]);
+      end;
+
+    cTextCaseSent:
+      _ConvertCaseSent(s);
+
+    cTextCaseRandom:
+      begin
+        for i:= 1 to Length(s) do
+          if Odd(Random(100)) then
+            s[i]:= ecUpCase(s[i])
+          else
+            s[i]:= ecLoCase(s[i]);
+      end;
+  end;
+  Result := s <> s1;
+  if Result then
+    Ed.ReplaceText(Pos, Count, s);
+end;
+
+
+//from ecSyntMemo.pas, procedure BlockCase(Oper: TChangeCase);
+procedure _ChangeCaseRect(Ed: TSyntaxMemo; Op: TSynTextCase);
+var
+  i, sLeft, sRight, cnt: integer;
+  R: TRect;
+begin
+  Ed.BeginUpdate;
+  try
+    R := Ed.SelRect;
+    for i := R.Top to R.Bottom do
+    begin
+      sLeft := Ed.LogToLinesPos(Point(R.Left, i)).X;
+      sRight := Ed.LogToLinesPos(Point(R.Right, i)).X;
+      cnt := Min(Ed.Lines.LineLength(i), sRight) - sLeft;
+      if cnt > 0 then
+      begin
+        sLeft := Ed.CaretPosToStrPos(Point(sLeft, i));
+        _ChangeCase(Ed, sLeft, cnt, Op);
+      end;
+    end;
+  finally
+    Ed.EndUpdate;
+  end;
+end;
+
+//this wrapper is to apply case-convert to word under caret.
+//if nothing selected, word changed and caret restored.
+procedure EditorChangeBlockCase(Ed: TSyntaxMemo; Op: TSynTextCase);
+var
+  Sel: TSynSelSave;
+  en: boolean;
+begin
+  EditorSaveSel(Ed, Sel);
+
+  en:= true;
+  //select current word, if no selection
+  if not Ed.HaveSelection then
+    en:= EditorSelectWord(Ed);
+
+  //change case
+  if en then
+  begin
+    if not Ed.HaveSelection then
+      _ChangeCase(Ed, Ed.CaretStrPos, 1, Op)
+    else
+    if Ed.SelectMode <> msColumn then
+      _ChangeCase(Ed, Ed.SelStart, Ed.SelLength, Op)
+    else
+      _ChangeCaseRect(Ed, Op);
+  end;
+
+  EditorRestoreSel(Ed, Sel);
+end;
+
 
 initialization
 
