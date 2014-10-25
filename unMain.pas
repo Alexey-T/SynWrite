@@ -27074,10 +27074,9 @@ begin
   end;
 
   //FDelete(fn_inf); //leave it for user
-  MsgInfo(WideFormat(DKLangConstW('zMInstallOk'), [dir_to]), Handle);
-
-  //acExit.Execute;
-  acRestart.Execute;
+  s_msg:= WideFormat(DKLangConstW('zMInstallOk'), [dir_to]);
+  if MsgConfirm(s_msg, Handle, true{IsQuestion}) then
+    acRestart.Execute;
 end;
 
 procedure TfmMain.TbxTabConsoleClick(Sender: TObject);
