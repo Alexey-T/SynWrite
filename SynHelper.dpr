@@ -1,4 +1,4 @@
-program SynHelper;
+program SynHelper; 
 uses
   Windows, SysUtils;
 
