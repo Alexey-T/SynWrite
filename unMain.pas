@@ -1783,7 +1783,6 @@ type
     procedure TBXItemTreeFindCopyToClipClick(Sender: TObject);
     procedure TBXItemTreeFindExpandClick(Sender: TObject);
     procedure TBXItemTreeFindCollapseClick(Sender: TObject);
-    procedure TBXItemFNewClick(Sender: TObject);
     procedure TBXItemTreeFindExpandCurClick(Sender: TObject);
     procedure TBXItemCtxFindIDClick(Sender: TObject);
     procedure ecTreeParentExecute(Sender: TObject);
@@ -3342,7 +3341,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.12.1725';
+  cSynVer = '6.12.1730';
   cSynPyVer = '1.0.140';
 
 const
@@ -18565,11 +18564,6 @@ begin
   MsgWarn(DKLangConstW('zMProjEmpty'), Handle);
 end;
 
-procedure TfmMain.TBXItemFNewClick(Sender: TObject);
-begin
-  acNewTab.Execute;
-end;
-
 procedure TfmMain.TBXItemTreeFindExpandCurClick(Sender: TObject);
 begin
   with TreeFind do
@@ -22523,7 +22517,8 @@ begin
         begin MsgBeep; Exit end;
     end;
 
-    if CapItem='-' then
+    //separater menu id begins with "-"
+    if SBegin(CapItem, '-') then
     begin
       ItemSub.Add(TSpTbxSeparatorItem.Create(Self));
     end
@@ -25013,12 +25008,13 @@ begin
   for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
     with FPluginsCommand[i] do
       if SFileName<>'' then
-      begin
-        S:= SFileName + '/' + SCmd;
-        if SBegin(S, cPyPrefix) then
-          Delete(S, 1, Length(cPyPrefix));
-        L.Add(S);
-      end;
+        if not SBegin(ExtractFileName(SCaption), '-') then
+        begin
+          S:= SFileName + '/' + SCmd;
+          if SBegin(S, cPyPrefix) then
+            Delete(S, 1, Length(cPyPrefix));
+          L.Add(S);
+        end;
 end;
 
 procedure TfmMain.DoEnumIcons(L: TTntStringList);
@@ -28136,7 +28132,7 @@ begin
 
       if NIndex<=High(FPluginsCommand) then
       begin
-        if SBegin(sValue, cPyPrefix) then
+        if SBegin(sValue, cPyPrefix) or SBegin(sValue, '-') then
           FPluginsCommand[NIndex].SFileName:= sValue
         else
           FPluginsCommand[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
