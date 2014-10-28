@@ -18659,16 +18659,13 @@ begin
     SGetTagTabbing(sTag, SelSt, SelLen);
     if SelSt > 0 then
     begin
-      Ed.CaretPos:= Point(NTagSt + SelSt - 2,
-        Ed.CaretPos.Y);
-      Ed.SetSelection(
-        Ed.CaretStrPos, SelLen);
+      Ed.CaretPos:= Point(NTagSt + SelSt - 2, Ed.CaretPos.Y);
+      Ed.SetSelection(Ed.CaretStrPos, SelLen, true);
       MsgTabbing(DKLangConstW('ztagMovedSelection'));
     end
     else
     begin
-      Ed.CaretPos:= Point(NTagSt + NTagLen - 1,
-        Ed.CaretPos.Y);
+      Ed.CaretPos:= Point(NTagSt + NTagLen - 1, Ed.CaretPos.Y);
       Ed.ResetSelection;
       MsgTabbing(DKLangConstW('ztagMovedOut'));
     end;
