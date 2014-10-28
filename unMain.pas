@@ -72,6 +72,8 @@ const
   cDefaultCursor: array[boolean] of TCursor = (crHourGlass, crDefault);
   SynDefaultSyn = '(default).synw-session';
   cIconsDefault = 'Fugue 24x24';
+  cMaxSectionsInInf = 120;
+  cMaxLexerLinksInInf = 5;
 
 const
   cPyConsoleMaxCount = 1000;
@@ -163,12 +165,12 @@ type
     cAddonTypeBinPlugin,
     cAddonTypePyPlugin,
     cAddonTypeTemplate,
+    cAddonTypeLexer,
     cAddonTypeRoot
     );
 const
   cSynAddonType: array[TSynAddonType] of string =
-    ('', 'plugin', 'py-plugin', 'template', 'root-addon');
-  cSynMaxPluginsInInf = 120;
+    ('', 'plugin', 'py-plugin', 'template', 'lexer', 'root-addon');
 
 type
   TSynEscMode = (
@@ -3197,6 +3199,8 @@ type
     function DoOpenFile(const AFileName: WideString): TEditorFrame;
     procedure DoOpenProject(const fn: Widestring); overload;
     procedure DoOpenArchive(const fn: Widestring);
+    function DoOpenArchive_HandleIni(const fn_ini, subdir, section: string; typ: TSynAddonType): boolean;
+    function DoOpenArchive_HandleLexer(const fn_ini, section: string): boolean;
     procedure DoOpenFolder(const dir: Widestring);
     procedure DoOpenFolderDialog;
     procedure DoNewProject;
@@ -3341,7 +3345,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.12.1725';
+  cSynVer = '6.12.1730';
   cSynPyVer = '1.0.140';
 
 const
@@ -26915,53 +26919,107 @@ begin
     Result:= MsgConfirm(SMsg, Handle);
 end;
 
+function TfmMain.DoOpenArchive_HandleLexer(const fn_ini, section: string): boolean;
+var
+  s_file, dir: string;
+  s_links: array[1..cMaxLexerLinksInInf] of string;
+  fn_lexer, fn_acp, fn_acp_target: string;
+  An, AnLink: TSyntAnalyzer;
+  i: Integer;
+begin
+  dir:= ExtractFileDir(fn_ini);
+
+  with TIniFile.Create(fn_ini) do
+  try
+    s_file:= ReadString(section, 'file', '');
+    for i:= Low(s_links) to High(s_links) do
+      s_links[i]:= ReadString(section, 'link'+IntToStr(i), '');
+  finally
+    Free
+  end;
+
+  Result:= s_file<>'';
+  if not Result then Exit;
+
+  fn_lexer:= dir + '\' + s_file + '.lcf';
+  fn_acp:= dir + '\' + s_file + '.acp';
+  fn_acp_target:= GetAcpFN(s_file);
+
+  if FileExists(fn_lexer) then
+  begin
+    An:= SyntaxManager.FindAnalyzer(s_file);
+    if An=nil then
+      An:= SyntaxManager.AddAnalyzer;
+    An.LoadFromFile(fn_lexer);
+
+    for i:= Low(s_links) to High(s_links) do
+      if s_links[i]<>'' then
+      begin
+        AnLink:= SyntaxManager.FindAnalyzer(s_links[i]);
+        if AnLink=nil then
+          MsgError('Cannot find linked lexer: '+s_links[i], Handle)
+        else
+          if An.SubAnalyzers.Count>=i then
+            An.SubAnalyzers[i-1].SyntAnalyzer:= AnLink;
+      end;
+
+    SaveLexLib;
+    FDelete(fn_lexer);
+  end;
+
+  if FileExists(fn_acp) then
+  begin
+    FFileCopy(fn_acp, fn_acp_target);
+    FDelete(fn_acp);
+  end;
+end;
+
+function TfmMain.DoOpenArchive_HandleIni(const fn_ini, subdir, section: string; typ: TSynAddonType): boolean;
+var
+  s_section, s_id, s_file, s_params, s_value: string;
+begin
+  with TIniFile.Create(fn_ini) do
+  try
+    s_section:= ReadString(section, 'section', '');
+    s_id:= ReadString(section, 'id', '');
+    s_file:= ReadString(section, 'file', '');
+    s_params:= ReadString(section, 'params', '');
+  finally
+    Free
+  end;
+
+  Result:= s_section<>'';
+  if not Result then Exit;
+
+  if (s_id='') then
+  begin
+    MsgError('Section in inf-file is incorrect', Handle);
+    Exit
+  end;
+
+  case typ of
+    cAddonTypeBinPlugin:
+      s_value:= subdir + '\' + s_file + ';' + s_params;
+    cAddonTypePyPlugin:
+      s_value:= cPyPrefix + subdir + ';' + s_params;
+    else
+      Exit;
+  end;
+
+  with TIniFile.Create(SynPluginsIni) do
+  try
+    WriteString(s_section, s_id, s_value);
+  finally
+    Free
+  end;
+
+  ///debug
+  //MsgInfo(Format('Write key: [%s] %s=%s', [s_section, s_id, '.....']), Handle);
+end;
+
 procedure TfmMain.DoOpenArchive(const fn: Widestring);
 const
   cInf = 'install.inf';
-  //
-  function DoHandleIni(const fn_ini, subdir, section: string; typ: TSynAddonType): boolean;
-  var
-    s_section, s_id, s_file, s_params, s_value: string;
-  begin
-    with TIniFile.Create(fn_ini) do
-    try
-      s_section:= ReadString(section, 'section', '');
-      s_id:= ReadString(section, 'id', '');
-      s_file:= ReadString(section, 'file', '');
-      s_params:= ReadString(section, 'params', '');
-    finally
-      Free
-    end;
-
-    Result:= s_section<>'';
-    if not Result then Exit;
-
-    if (s_id='') then
-    begin
-      MsgError('Section in inf-file is incorrect', Handle);
-      Exit
-    end;
-
-    case typ of
-      cAddonTypeBinPlugin:
-        s_value:= subdir + '\' + s_file + ';' + s_params;
-      cAddonTypePyPlugin:
-        s_value:= cPyPrefix + subdir + ';' + s_params;
-      else
-        Exit;
-    end;
-
-    with TIniFile.Create(SynPluginsIni) do
-    try
-      WriteString(s_section, s_id, s_value);
-    finally
-      Free
-    end;
-
-    ///debug
-    //MsgInfo(Format('Write key: [%s] %s=%s', [s_section, s_id, '.....']), Handle);
-  end;
-  //
 var
   fn_inf, dir_to: string;
   s_title, s_type, s_desc, s_ver, s_subdir: string;
@@ -27044,7 +27102,9 @@ begin
     cAddonTypeTemplate:
       dir_to:= SynDir + 'Template\' + s_subdir;
     cAddonTypeRoot:
-      dir_to:= ExcludeTrailingPathDelimiter(SynDir)
+      dir_to:= ExcludeTrailingPathDelimiter(SynDir);
+    cAddonTypeLexer:
+      dir_to:= FTempDir+'\Synwrite_lexer';
     else
       dir_to:= '?';
   end;
@@ -27061,18 +27121,31 @@ begin
 
   if n_type in [cAddonTypeBinPlugin, cAddonTypePyPlugin] then
   begin
-    DoHandleIni(fn_inf, s_subdir, 'ini', n_type);
-    for i:= 1 to cSynMaxPluginsInInf do
-    begin
-      if not DoHandleIni(fn_inf, s_subdir, 'ini'+IntToStr(i), n_type) then
+    DoOpenArchive_HandleIni(fn_inf, s_subdir, 'ini', n_type);
+    for i:= 1 to cMaxSectionsInInf do
+      if not DoOpenArchive_HandleIni(fn_inf, s_subdir, 'ini'+IntToStr(i), n_type) then
         Break
-    end;
   end;
 
-  //FDelete(fn_inf); //leave it for user
-  s_msg:= WideFormat(DKLangConstW('zMInstallOk'), [dir_to]);
-  if MsgConfirm(s_msg, Handle, true{IsQuestion}) then
-    acRestart.Execute;
+  if n_type=cAddonTypeLexer then
+  begin
+    for i:= 1 to cMaxSectionsInInf do
+      if not DoOpenArchive_HandleLexer(fn_inf, 'lexer'+IntToStr(i)) then
+        Break
+  end;
+
+  //report results
+  if n_type=cAddonTypeLexer then
+  begin
+    s_msg:= DKLangConstW('zMInstallLexerOk');
+    MsgInfo(s_msg, Handle);
+  end
+  else
+  begin
+    s_msg:= WideFormat(DKLangConstW('zMInstallOk'), [dir_to]);
+    if MsgConfirm(s_msg, Handle, true{IsQuestion}) then
+      acRestart.Execute;
+  end;    
 end;
 
 procedure TfmMain.TbxTabConsoleClick(Sender: TObject);
