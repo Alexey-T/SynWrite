@@ -164,7 +164,7 @@ type
     cAddonTypeNone,
     cAddonTypeBinPlugin,
     cAddonTypePyPlugin,
-    cAddonTypeTemplate,
+    cAddonTypeData,
     cAddonTypeLexer,
     cAddonTypeRoot
     );
@@ -2209,8 +2209,8 @@ type
     FPluginsEvent: TPluginList_Event;
     FPluginsAcp: TPluginList_Acp;
 
-    FListNewDocs: TTntStringList; //filenames list of templates (template\newdoc)
-    FListConv: TTntStringList; //filenames of text converters (template\conv)
+    FListNewDocs: TTntStringList; //filenames of newdoc-templates
+    FListConv: TTntStringList; //filenames of text-converters
     FListFiles: TTntStringList; //filenames list of mass search/replace operation
     FPanelDrawBusy: boolean;
     FSyncBusy: boolean;
@@ -3345,7 +3345,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.12.1730';
+  cSynVer = '6.13.1735';
   cSynPyVer = '1.0.140';
 
 const
@@ -5321,7 +5321,7 @@ end;
 
 function TfmMain.SynConverterFilename(const Name: string): string;
 begin
-  Result:= SynDir + 'Template\conv\' + Name + '.txt';
+  Result:= SynDir + 'Data\conv\' + Name + '.txt';
 end;
 
 function TfmMain.SynLexersCfg: string;
@@ -13867,7 +13867,7 @@ end;
 
 function TfmMain.SynClipsDir: string;
 begin
-  Result:= SynDir + 'Template\clips';
+  Result:= SynDir + 'Data\clips';
 end;
 
 function TfmMain.SynDictDir: string;
@@ -16839,7 +16839,7 @@ const
 begin
   FListNewDocs.Clear;
   FFindToList(FListNewDocs,
-    SynDir + 'Template\newdoc',
+    SynDir + 'Data\newdoc',
     '*.*',
     '',
     false{SubDirs},
@@ -16934,7 +16934,7 @@ end;
 
 procedure TfmMain.DoNewDocFolderClick(Sender: TObject);
 begin
-  FOpenURL(SynDir + 'Template\newdoc', Handle);
+  FOpenURL(SynDir + 'Data\newdoc', Handle);
 end;
 
 procedure TfmMain.DoNewDocClick(Sender: TObject);
@@ -25422,17 +25422,17 @@ end;
 
 function TfmMain.SynSkinsDir: string;
 begin
-  Result:= SynDir + 'template\skins';
+  Result:= SynDir + 'Data\skins';
 end;
 
 function TfmMain.SynSnippetsDir: string;
 begin
-  Result:= SynDir + 'template\snippets';
+  Result:= SynDir + 'Data\snippets';
 end;
 
 function TfmMain.SynIconsDir: string;
 begin
-  Result:= SynDir + 'template\icons';
+  Result:= SynDir + 'Data\icons';
 end;
 
 function TfmMain.SynPyDir: string;
@@ -25804,7 +25804,7 @@ var
 begin
   FListConv.Clear;
   FFindToList(FListConv,
-    SynDir + 'Template\conv',
+    SynDir + 'Data\conv',
     '*.txt', '',
     false{SubDirs}, false, false, false);
 
@@ -27063,7 +27063,7 @@ begin
     end;
 
   //don't show "template", show nicer "data/dir"  
-  if n_type=cAddonTypeTemplate then
+  if n_type=cAddonTypeData then
     s_type:= 'data/'+s_subdir;
 
   if (s_title='') then
@@ -27099,8 +27099,8 @@ begin
       dir_to:= SynDir + 'Plugins\' + s_subdir;
     cAddonTypePyPlugin:
       dir_to:= SynPyDir + '\' + s_subdir;
-    cAddonTypeTemplate:
-      dir_to:= SynDir + 'Template\' + s_subdir;
+    cAddonTypeData:
+      dir_to:= SynDir + 'Data\' + s_subdir;
     cAddonTypeRoot:
       dir_to:= ExcludeTrailingPathDelimiter(SynDir);
     cAddonTypeLexer:
