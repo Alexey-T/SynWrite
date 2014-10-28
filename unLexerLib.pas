@@ -256,13 +256,16 @@ end;
 
 procedure TfmLexerLibrary.actNewLexerExecute(Sender: TObject);
 var
-  an: TSyntAnalyzer;
+  An: TSyntAnalyzer;
 begin
-  an:= FLexLib.AddAnalyzer;
-  if an.CustomizeLexer then
-    UpdateList
+  An:= FLexLib.AddAnalyzer;
+  if DoLexerPropDialog(An, FTreeImages) then
+  begin
+    FLexLib.Modified:= True;
+    UpdateList;
+  end
   else
-    FreeAndNil(an);
+    FreeAndNil(An);
 end;
 
 procedure TfmLexerLibrary.actDeleteLexerExecute(Sender: TObject);
