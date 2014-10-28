@@ -47,11 +47,11 @@ Source: "..\Py\syn_plugin_manager\*.lng"; DestDir: "{app}\Py\syn_plugin_manager"
 Source: "..\Data\autocomplete\*"; DestDir: "{app}\Data\autocomplete";
 Source: "..\Data\colors\*"; 	  DestDir: "{app}\Data\colors";
 Source: "..\Data\newdoc\*";       DestDir: "{app}\Data\newdoc";
-Source: "..\Data\tools\*";        DestDir: "{app}\Data\tools";
 Source: "..\Data\clips\*";        DestDir: "{app}\Data\clips";
 Source: "..\Data\skins\*";        DestDir: "{app}\Data\skins";
 Source: "..\Data\icons\*";        DestDir: "{app}\Data\icons";
 Source: "..\Data\conv\*";         DestDir: "{app}\Data\conv";
+Source: "..\Data\outpresets\*";   DestDir: "{app}\Data\outpresets";
 
 Source: "..\Data\snippets\Std.C\*";      DestDir: "{app}\Data\snippets\Std.C";      
 Source: "..\Data\snippets\Std.Java\*";   DestDir: "{app}\Data\snippets\Std.Java";   
