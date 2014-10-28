@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.12.1725
+AppVersion=6.13.1735
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -28,10 +28,10 @@ Name: "portable"; Description: "Make folder portable"; Flags: unchecked
 Source: "Portable.ini"; DestDir: "{app}"; Tasks: "portable"
 Source: "..\Syn.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\SynHelper.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\LexLib.lxl"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Enc.cfg"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lexers.cfg"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Tidy.cfg"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\HL\*"; DestDir: "{app}\HL"; Flags: ignoreversion
 Source: "..\Lang\*"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Readme\*"; DestDir: "{app}\Readme"; Flags: ignoreversion
 
@@ -41,31 +41,30 @@ Source: "..\python*.zip"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\*.manifest"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: "..\Py\syn_plugin_manager\*.py"; DestDir: "{app}\Py\syn_plugin_manager"; Flags: ignoreversion
-Source: "..\Py\syn_plugin_manager\*.lng"; DestDir: "{app}\Py\syn_plugin_manager"; Flags: ignoreversion
+Source: "..\Py\syn_plugin_manager\*.py"; DestDir: "{app}\Py\syn_plugin_manager";
+Source: "..\Py\syn_plugin_manager\*.lng"; DestDir: "{app}\Py\syn_plugin_manager";
 
-Source: "..\Template\colors\*"; DestDir: "{app}\Template\colors"; Flags: ignoreversion
-Source: "..\Template\newdoc\*"; DestDir: "{app}\Template\newdoc"; Flags: ignoreversion
-Source: "..\Template\tools\*"; DestDir: "{app}\Template\tools"; Flags: ignoreversion
-Source: "..\Template\clips\*"; DestDir: "{app}\Template\clips"; Flags: ignoreversion
-Source: "..\Template\skins\*"; DestDir: "{app}\Template\skins"; Flags: ignoreversion
-Source: "..\Template\icons\*"; DestDir: "{app}\Template\icons"; Flags: ignoreversion
-Source: "..\Template\conv\*"; DestDir: "{app}\Template\conv"; Flags: ignoreversion
+Source: "..\Data\autocomplete\*"; DestDir: "{app}\Data\autocomplete";
+Source: "..\Data\colors\*"; 	  DestDir: "{app}\Data\colors";
+Source: "..\Data\newdoc\*";       DestDir: "{app}\Data\newdoc";
+Source: "..\Data\tools\*";        DestDir: "{app}\Data\tools";
+Source: "..\Data\clips\*";        DestDir: "{app}\Data\clips";
+Source: "..\Data\skins\*";        DestDir: "{app}\Data\skins";
+Source: "..\Data\icons\*";        DestDir: "{app}\Data\icons";
+Source: "..\Data\conv\*";         DestDir: "{app}\Data\conv";
 
-Source: "..\Template\snippets\Std.C\*";      DestDir: "{app}\Template\snippets\Std.C";      Flags:
-Source: "..\Template\snippets\Std.Java\*";   DestDir: "{app}\Template\snippets\Std.Java";   Flags:
-Source: "..\Template\snippets\Std.Python\*"; DestDir: "{app}\Template\snippets\Std.Python"; Flags:
-Source: "..\Template\snippets\Std.Php\*";    DestDir: "{app}\Template\snippets\Std.Php";    Flags:
-Source: "..\Template\snippets\Std.Pascal\*"; DestDir: "{app}\Template\snippets\Std.Pascal"; Flags:
-Source: "..\Template\snippets\Std.AutoIt\*"; DestDir: "{app}\Template\snippets\Std.AutoIt"; Flags:
-Source: "..\Template\snippets\Std.Lua\*";    DestDir: "{app}\Template\snippets\Std.Lua";    Flags:
+Source: "..\Data\snippets\Std.C\*";      DestDir: "{app}\Data\snippets\Std.C";      
+Source: "..\Data\snippets\Std.Java\*";   DestDir: "{app}\Data\snippets\Std.Java";   
+Source: "..\Data\snippets\Std.Pascal\*"; DestDir: "{app}\Data\snippets\Std.Pascal"; 
+Source: "..\Data\snippets\Std.Python\*"; DestDir: "{app}\Data\snippets\Std.Python"; 
+Source: "..\Data\snippets\Std.Php\*";    DestDir: "{app}\Data\snippets\Std.Php";    
 
-Source: "..\Tools\*"; DestDir: "{app}\Tools"; Flags: ignoreversion
-Source: "..\Dictionaries\*"; DestDir: "{app}\Dictionaries"; Flags: ignoreversion
+Source: "..\Tools\*"; DestDir: "{app}\Tools"; 
+Source: "..\Dictionaries\*"; DestDir: "{app}\Dictionaries"; 
 
-Source: "..\SynPlugins.sample.ini"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Plugins\Explorer\*"; DestDir: "{app}\Plugins\Explorer"; Flags: ignoreversion
-Source: "..\Plugins\SynFTP\*"; DestDir: "{app}\Plugins\SynFTP"; Flags: ignoreversion
+Source: "..\SynPlugins.sample.ini"; DestDir: "{app}"; 
+Source: "..\Plugins\Explorer\*"; DestDir: "{app}\Plugins\Explorer"; 
+Source: "..\Plugins\SynFTP\*"; DestDir: "{app}\Plugins\SynFTP"; 
 
 [Icons]
 Name: "{group}\SynWrite"; Filename: "{app}\Syn.exe"
