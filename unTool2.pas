@@ -72,7 +72,7 @@ begin
   with edCol.Items do begin Add('--'); for i:= 1 to 8 do Add(Inttostr(i)); end;
 
   FList:= TTntStringlist.Create;
-  FDir:= ExtractFileDir(GetModuleName(HInstance))+'\Data\tools';
+  FDir:= ExtractFileDir(GetModuleName(HInstance))+'\Data\outpresets';
 end;
 
 procedure TfmToolOutput.bTestClick(Sender: TObject);
