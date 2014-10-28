@@ -5462,7 +5462,7 @@ end;
 
 function TfmMain.SynLexLib: string;
 begin
-  Result:= SynDir + 'HL\LexLib.LXL';
+  Result:= SynDir + 'LexLib.LXL';
 end;
 
 procedure TfmMain.SaveLexLib;
@@ -7461,12 +7461,12 @@ begin
   Result:= LexerName;
   SReplaceAll(Result, '/', '_'); //for 'PL/SQL'
   SDeleteFrom(Result, ' ('); //for 'Ada (.ads)', 'PHP (dev)'
-  Result:= SynDir + 'HL\' + Result + '.acp';
+  Result:= SynDir + 'Data\autocomplete\' + Result + '.acp';
 end;
 
 function TfmMain.GetSpecialHiliteFN(const Id: string): string;
 begin
-  Result:= SynDir + 'HL\' + Id + '.ini';
+  Result:= SynDir + 'Data\autocomplete\' + Id + '.ini';
 end;
 
 function TfmMain.GetHtmlListFN: string;
