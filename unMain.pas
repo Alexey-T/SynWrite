@@ -3372,7 +3372,7 @@ function SynAppdataDir: string;
 
 const
   cSynVer = '6.13.1735';
-  cSynPyVer = '1.0.140';
+  cSynPyVer = '1.0.141';
 
 const
   cSynParamRO = '/ro';
@@ -7314,7 +7314,7 @@ begin
   InitMenuItemsList;
   LangManager.ScanForLangFiles(SynDir + 'Lang', '*.lng', False);
   OnBackupLexerStyles:= DoBackupLexerStyles;
-  ATxImgHint.FileNameConverterImageToBmp:= SynDir + 'Tools\ImageToBmp.exe';
+  FileNameConverterImageToBmp:= SynDir + 'Tools\ImageToBmp.exe';
 
   OD_Swatch.DefaultExt:= cSynColorSwatchExt;
   OD_Swatch.Filter:= Format('*.%s|*.%s', [cSynColorSwatchExt, cSynColorSwatchExt]);
@@ -27341,6 +27341,7 @@ begin
     AddMethod('dlg_input_ex', Py_dlg_input_ex, '');
     AddMethod('dlg_input_memo', Py_dlg_input_memo, '');
     AddMethod('dlg_menu', Py_dlg_menu, '');
+    AddMethod('dlg_snippet', Py_dlg_snippet, '');
 
     AddMethod('app_version', Py_app_version, '');
     AddMethod('app_api_version', Py_app_api_version, '');

@@ -23,6 +23,7 @@ function Py_ed_focus(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_find(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_msg_status(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_dlg_snippet(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_save(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
@@ -1186,6 +1187,31 @@ begin
     Result:= Py_BuildValue('(ii)', nMin, nMax);
 end;
 
+function Py_dlg_snippet(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  Info: TSynSnippetInfo;
+  PtrName, PtrId, PtrLexers, PtrText: PAnsiChar;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'ssss', @PtrName, @PtrId, @PtrLexers, @PtrText)) then
+    begin
+      Info.Filename:= '';
+      Info.Name:= UTF8Decode(AnsiString(PtrName));
+      Info.Id:= UTF8Decode(AnsiString(PtrId));
+      Info.Lexers:= UTF8Decode(AnsiString(PtrLexers));
+      Info.Text:= UTF8Decode(AnsiString(PtrText));
 
+      if DoSnippetEditorDialog(Info) then
+        Result:= Py_BuildValue('(ssss)',
+          PChar(UTF8Encode(Info.Name)),
+          PChar(UTF8Encode(Info.Id)),
+          PChar(UTF8Encode(Info.Lexers)),
+          PChar(UTF8Encode(Info.Text))
+          )
+      else
+        Result:= ReturnNone;
+    end;
+end;
+    
 end.
 
