@@ -114,12 +114,11 @@ procedure EditorScrollToSelection(Ed: TSyntaxMemo; NSearchOffsetY: Integer);
 procedure EditorCenterSelectedLines(Ed: TSyntaxMemo);
 function EditorDeleteSelectedLines(Ed: TSyntaxMemo): Integer;
 function EditorEOL(Ed: TCustomSyntaxMemo): Widestring;
-procedure EditorToggleStreamComment(Ed: TSyntaxMemo; s1, s2: string; CmtMLine: boolean);
+procedure EditorToggleStreamComment(Ed: TSyntaxMemo; s1, s2: string; SepLines: boolean);
 procedure EditorFillBlockRect(Ed: TSyntaxMemo; SData: Widestring; bKeep: boolean);
 
 function EditorCurrentAnalyzerForPos(Ed: TSyntaxMemo; NPos: integer): TSyntAnalyzer;
 function EditorCurrentLexerForPos(Ed: TSyntaxMemo; NPos: integer): string;
-function EditorCurrentLexerHasTemplates(Ed: TSyntaxMemo): boolean;
 
 function EditorTokenString(Ed: TSyntaxMemo; TokenIndex: Integer): Widestring;
 function EditorTokenFullString(Ed: TSyntaxMemo; TokenIndex: Integer; IsDotNeeded: boolean): Widestring;
@@ -1131,15 +1130,6 @@ begin
   end;
 end;
 
-function EditorCurrentLexerHasTemplates(Ed: TSyntaxMemo): boolean;
-begin
-  Result:= false;
-  if Assigned(Ed) and
-     Assigned(Ed.SyntObj) and
-     Assigned(Ed.SyntObj.AnalyzerAtPos(Ed.CaretStrPos)) then
-    Result:= Ed.SyntObj.AnalyzerAtPos(Ed.CaretStrPos).CodeTemplates.Count > 0;
-end;
-
 function EditorCurrentAnalyzerForPos(Ed: TSyntaxMemo; NPos: integer): TSyntAnalyzer;
 begin
   Result:= nil;
@@ -1288,65 +1278,66 @@ end;
 
 //s1 - comment start mark
 //s2 - comment end mark
-//CmtMLine - need to place comment marks on separate lines
-procedure EditorToggleStreamComment(Ed: TSyntaxMemo; s1, s2: string; CmtMLine: boolean);
+//SepLines - need to place comment marks on separate lines
+procedure EditorToggleStreamComment(Ed: TSyntaxMemo; s1, s2: string; SepLines: boolean);
 var
   n, nLen: Integer;
   Uncomm: boolean;
-  sCR: string;
+  Eol: string;
 begin
   with Ed do
-    begin
-      //msginfo(s1+#13+s2);
-      n:= SelStart;
-      nLen:= SelLength;
-      SetSelection(n, 0);
+  begin
+    n:= SelStart;
+    nLen:= SelLength;
+    SetSelection(n, 0);
 
-      if CmtMLine then
-        Uncomm:= false
-      else
-        Uncomm:= (Copy(Lines.FText, n+1, Length(s1)) = s1) and
-               (Copy(Lines.FText, n+nLen-Length(s2)+1, Length(s2)) = s2);
-      if not Uncomm then
+    if SepLines then
+      Uncomm:= false
+    else
+      Uncomm:= (Copy(Lines.FText, n+1, Length(s1)) = s1) and
+             (Copy(Lines.FText, n+nLen-Length(s2)+1, Length(s2)) = s2);
+             
+    if not Uncomm then
+    begin
+      //do comment
+      if SepLines then
       begin
-        //do comment
-        if CmtMLine then
-        begin
-          sCR:= EditorEOL(Ed);
-          if (n-Length(sCR)>=0) and
-            (Copy(Lines.FText, n-Length(sCR)+1, Length(sCR)) = sCR) then
-            s1:= s1+sCR
-          else
-            s1:= sCR+s1+sCR;
-          if Copy(Lines.FText, n+nLen-Length(sCR)+1, Length(sCR)) = sCR then
-            s2:= s2+sCR
-          else
-            s2:= sCR+s2+sCR;
-        end;
-        BeginUpdate;
-        try
-          CaretStrPos:= n;
-          InsertText(s1);
-          CaretStrPos:= n+nLen+Length(s1);
-          InsertText(s2);
-        finally
-          EndUpdate;
-        end;
-      end
-      else
-      begin
-        //do uncomment
-        BeginUpdate;
-        try
-          CaretStrPos:= n+nLen-Length(s2);
-          DeleteText(Length(s2));
-          CaretStrPos:= n;
-          DeleteText(Length(s1));
-        finally
-          EndUpdate;
-        end;
+        Eol:= EditorEOL(Ed);
+        if (n-Length(Eol)>=0) and
+          (Copy(Lines.FText, n-Length(Eol)+1, Length(Eol)) = Eol) then
+          s1:= s1+Eol
+        else
+          s1:= Eol+s1+Eol;
+        if Copy(Lines.FText, n+nLen-Length(Eol)+1, Length(Eol)) = Eol then
+          s2:= s2+Eol
+        else
+          s2:= Eol+s2+Eol;
+      end;
+        
+      BeginUpdate;
+      try
+        CaretStrPos:= n;
+        InsertText(s1);
+        CaretStrPos:= n+nLen+Length(s1);
+        InsertText(s2);
+      finally
+        EndUpdate;
+      end;
+    end
+    else
+    begin
+      //do uncomment
+      BeginUpdate;
+      try
+        CaretStrPos:= n+nLen-Length(s2);
+        DeleteText(Length(s2));
+        CaretStrPos:= n;
+        DeleteText(Length(s1));
+      finally
+        EndUpdate;
       end;
     end;
+  end;
 end;
 
 
