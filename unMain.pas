@@ -5494,7 +5494,7 @@ end;
 
 function TfmMain.SynLexLib: string;
 begin
-  Result:= SynDir + 'LexLib.LXL';
+  Result:= SynDir + 'LexLib.lxl';
 end;
 
 procedure TfmMain.SaveLexLib;
@@ -15580,16 +15580,18 @@ end;
 
 procedure TfmMain.DoToggleLineComment(Alt: boolean);
 var
+  An: TSyntAnalyzer;
   Ed: TSyntaxMemo;
   sCom: Widestring;
   nLine1, nLine2, n: Integer;
   NeedUncomm: boolean;
 begin
   Ed:= CurrentEditor;
+  An:= EditorCurrentAnalyzerForPos(Ed, Ed.CaretStrPos);
 
   //get comment chars
-  if CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer<>nil then
-    sCom:= CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer.LineComment
+  if An<>nil then
+    sCom:= An.LineComment
   else
     sCom:= '';
   if sCom='' then

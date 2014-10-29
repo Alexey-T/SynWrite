@@ -116,6 +116,8 @@ function EditorDeleteSelectedLines(Ed: TSyntaxMemo): Integer;
 function EditorEOL(Ed: TCustomSyntaxMemo): Widestring;
 procedure EditorToggleStreamComment(Ed: TSyntaxMemo; s1, s2: string; CmtMLine: boolean);
 procedure EditorFillBlockRect(Ed: TSyntaxMemo; SData: Widestring; bKeep: boolean);
+
+function EditorCurrentAnalyzerForPos(Ed: TSyntaxMemo; NPos: integer): TSyntAnalyzer;
 function EditorCurrentLexerForPos(Ed: TSyntaxMemo; NPos: integer): string;
 function EditorCurrentLexerHasTemplates(Ed: TSyntaxMemo): boolean;
 
@@ -1138,17 +1140,21 @@ begin
     Result:= Ed.SyntObj.AnalyzerAtPos(Ed.CaretStrPos).CodeTemplates.Count > 0;
 end;
 
+function EditorCurrentAnalyzerForPos(Ed: TSyntaxMemo; NPos: integer): TSyntAnalyzer;
+begin
+  Result:= nil;
+  if Assigned(Ed) and Assigned(Ed.SyntObj) then
+    Result:= Ed.SyntObj.AnalyzerAtPos(NPos);
+end;
+
 function EditorCurrentLexerForPos(Ed: TSyntaxMemo; NPos: integer): string;
 var
   An: TSyntAnalyzer;
 begin
   Result:= '';
-  if Assigned(Ed) and Assigned(Ed.SyntObj) then
-  begin
-    An:= Ed.SyntObj.AnalyzerAtPos(NPos);
-    if An<>nil then
-      Result:= An.LexerName;
-  end;
+  An:= EditorCurrentAnalyzerForPos(Ed, NPos);
+  if An<>nil then
+    Result:= An.LexerName;
 end;
 
 
