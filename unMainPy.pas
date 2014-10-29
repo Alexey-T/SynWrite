@@ -110,6 +110,7 @@ const
   LEXER_GET_ENABLED = 1;
   LEXER_GET_EXT     = 2;
   LEXER_GET_MOD     = 3;
+  LEXER_GET_LINKS   = 4;
   LEXER_SET_NAME    = 10;
   LEXER_SET_ENABLED = 11;
   LEXER_SET_EXT     = 12;
@@ -165,7 +166,24 @@ begin
         LEXER_GET_MOD:
           begin
             Result:= PyBool_FromLong(Ord(fmMain.SyntaxManager.Modified));
-          end;  
+          end;
+
+        LEXER_GET_LINKS:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+            begin
+              List:= TTntStringList.Create;
+              try
+                EditorEnumSublexers(An, List);
+                Result:= Py_StringList(List);
+              finally
+                FreeAndNil(List);
+              end;
+            end
+            else
+              Result:= ReturnNone;  
+          end;
 
         LEXER_SET_ENABLED:
           begin

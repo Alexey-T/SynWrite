@@ -16,6 +16,7 @@ uses
   ecStrUtils,
   ecPrint;
 
+procedure EditorEnumSublexers(An: TSyntAnalyzer; List: TTntStringList);
 function EditorGetWordLengthForSpellCheck(Ed: TSyntaxMemo; APos: Integer): Integer;
 function EditorGotoModifiedLine(Ed: TSyntaxMemo; ANext: boolean; ASavedToo: boolean): boolean;
 procedure EditorPrint(Ed: TSyntaxMemo; ASelOnly: boolean;
@@ -3610,6 +3611,22 @@ begin
   end;
 
   EditorRestoreSel(Ed, Sel);
+end;
+
+procedure EditorEnumSublexers(An: TSyntAnalyzer; List: TTntStringList);
+var
+  i: Integer;
+  AnLink: TSyntAnalyzer;
+begin
+  List.Clear;
+  for i:= 0 to An.SubAnalyzers.Count-1 do
+  begin
+    AnLink:= An.SubAnalyzers[i].SyntAnalyzer;
+    if AnLink<>nil then
+      List.Add(AnLink.LexerName)
+    else
+      List.Add('');
+  end;      
 end;
 
 

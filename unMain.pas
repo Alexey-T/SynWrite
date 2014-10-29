@@ -73,7 +73,7 @@ const
   SynDefaultSyn = '(default).synw-session';
   cIconsDefault = 'Fugue 24x24';
   cMaxSectionsInInf = 120;
-  cMaxLexerLinksInInf = 5;
+  cMaxLexerLinksInInf = 20;
 
 const
   cPyConsoleMaxCount = 1000;
@@ -3371,8 +3371,8 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.13.1740';
-  cSynPyVer = '1.0.141';
+  cSynVer = '6.13.1742';
+  cSynPyVer = '1.0.142';
 
 const
   cSynParamRO = '/ro';
