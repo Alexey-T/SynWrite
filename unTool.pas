@@ -115,6 +115,7 @@ type
     { Public declarations }
     FToolList: TSynToolList;
     FCurrLexer: string;
+    FDirPresets: string;
   end;
 
 implementation
@@ -410,6 +411,7 @@ begin
     edLn.ItemIndex:= FToolList[N].ToolOutNum_line;
     edCol.ItemIndex:= FToolList[N].ToolOutNum_col;
     cbNoTag.Checked:= FToolList[N].ToolNoTags;
+    FDirPresets:= Self.FDirPresets;
     if ShowModal=mrOk then
     begin
       FToolList[N].ToolOutRegex:= edRE.Text;

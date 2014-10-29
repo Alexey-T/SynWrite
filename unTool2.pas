@@ -41,15 +41,12 @@ type
     procedure bPreSaveClick(Sender: TObject);
   private
     { Private declarations }
-    FDir: Widestring;
     FList: TTntStringList;
     procedure MnuClick(Sender: TObject);
   public
     { Public declarations }
+    FDirPresets: Widestring;
   end;
-
-var
-  fmToolOutput: TfmToolOutput;
 
 implementation
 
@@ -72,7 +69,6 @@ begin
   with edCol.Items do begin Add('--'); for i:= 1 to 8 do Add(Inttostr(i)); end;
 
   FList:= TTntStringlist.Create;
-  FDir:= ExtractFileDir(GetModuleName(HInstance))+'\Data\outpresets';
 end;
 
 procedure TfmToolOutput.bTestClick(Sender: TObject);
@@ -98,7 +94,7 @@ var
   p: TPoint;
 begin
   FList.Clear;
-  FFindToList(FList, FDir, '*.'+cExt{MasksInclude}, ''{MasksExclude}, false, false, false, false);
+  FFindToList(FList, FDirPresets, '*.'+cExt{MasksInclude}, ''{MasksExclude}, false, false, false, false);
   FList.Sort;
 
   p:= Point(0, bPreLoad.Height);
@@ -174,7 +170,7 @@ begin
   if not DoInputString(DKLangConstW('zMPresetExe'), exe) then Exit;
   if cap='' then Exit;
   if exe='' then Exit;
-  fn:= FDir+'\'+cap+'.'+cExt;
+  fn:= FDirPresets+'\'+cap+'.'+cExt;
 
   with TIniFile.Create(fn) do
   try

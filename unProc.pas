@@ -276,7 +276,8 @@ function DoTool_ConfigList(var AToolList: TSynToolList;
   AParentForm: TForm;
   ALexersList: TTntStringList;
   AKeyEnabled: boolean;
-  const ACurrentLexer: string): boolean;
+  const ACurrentLexer: string;
+  const ADirPresets: string): boolean;
 
 var
   opFindOffsetTop: integer = 6;
@@ -2039,7 +2040,8 @@ function DoTool_ConfigList(
   AParentForm: TForm;
   ALexersList: TTntStringList;
   AKeyEnabled: boolean;
-  const ACurrentLexer: string): boolean;
+  const ACurrentLexer: string;
+  const ADirPresets: string): boolean;
 begin
   with TfmTools.Create(AParentForm) do
   try
@@ -2053,6 +2055,7 @@ begin
     edLexer.Items.Add(DKLangConstW('MAllLexers'));
     edLexer.Items.AddStrings(ALexersList);
     FCurrLexer:= ACurrentLexer;
+    FDirPresets:= ADirPresets;
 
     Left:= AParentForm.Monitor.Left + (AParentForm.Monitor.Width - Width) div 2;
     Top:= AParentForm.Monitor.Top + (AParentForm.Monitor.Height - Height) div 2;

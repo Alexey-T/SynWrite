@@ -1280,7 +1280,7 @@ end;
 
 function TfmSetup.ColorPreFN(const Name: string): string;
 begin
-  Result:= ExtractFilePath(GetModuleName(HInstance)) + 'Data\colors\' + Name + '.'+cColorExt;
+  Result:= fmMain.SynDataSubdir(cSynDataColors) + '\' + Name + '.' + cColorExt;
 end;
 
 procedure TfmSetup.FixWnd;

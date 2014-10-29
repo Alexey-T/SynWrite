@@ -242,6 +242,7 @@ type
   public
     { Public declarations }
     FOpts: TProjectOpts;
+    FDirToolsPresets: string;
     procedure DoAddFiles;
     procedure DoAddFilesDir;
     procedure DoAddVirtualDir;
@@ -2131,7 +2132,9 @@ begin
   try
     if Assigned(FOnGetLexers) then
       FOnGetLexers(Self, L);
-    if DoTool_ConfigList(FProjectTools, Self, L, false, GetCurrentLexer) then
+    if DoTool_ConfigList(FProjectTools, Self, L, false,
+      GetCurrentLexer,
+      FDirToolsPresets) then
     begin
       SetModified;
     end;

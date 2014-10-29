@@ -89,6 +89,31 @@ const
   cPyCommandBase = 5000;
 
 type
+  TSynDataSubdirId = (
+    cSynDataAutocomp,
+    cSynDataClips,
+    cSynDataColors,
+    cSynDataConv,
+    cSynDataIcons,
+    cSynDataNewDoc,
+    cSynDataOutPresets,
+    cSynDataSkins,
+    cSynDataSnippets
+    );
+const
+  cSynDataSubdirNames: array[TSynDataSubdirId] of string = (
+    'autocomplete',
+    'clips',
+    'colors',
+    'conv',
+    'icons',
+    'newdoc',
+    'outpresets',
+    'skins',
+    'snippets'
+    );
+
+type
   TSynPyEvent = (
     cSynEventOnOpen,
     cSynEventOnSaveAfter,
@@ -3296,6 +3321,7 @@ type
     function SynPluginsIni: string;
     function SynPluginsSampleIni: string;
     function SynPluginIni(const SCaption: string): string;
+    function SynDataSubdir(Id: TSynDataSubdirId): string;
     function SynSkinsDir: string;
     function SynPyDir: string;
     function SynSnippetsDir: string;
@@ -5319,9 +5345,14 @@ begin
   Result:= SynDir + 'SynPlugins.sample.ini';
 end;
 
+function TfmMain.SynDataSubdir(Id: TSynDataSubdirId): string;
+begin
+  Result:= SynDir + 'Data\' + cSynDataSubdirNames[Id];
+end;
+
 function TfmMain.SynConverterFilename(const Name: string): string;
 begin
-  Result:= SynDir + 'Data\conv\' + Name + '.txt';
+  Result:= SynDataSubdir(cSynDataConv) + '\' + Name + '.txt';
 end;
 
 function TfmMain.SynLexersCfg: string;
@@ -7461,12 +7492,12 @@ begin
   Result:= LexerName;
   SReplaceAll(Result, '/', '_'); //for 'PL/SQL'
   SDeleteFrom(Result, ' ('); //for 'Ada (.ads)', 'PHP (dev)'
-  Result:= SynDir + 'Data\autocomplete\' + Result + '.acp';
+  Result:= SynDataSubdir(cSynDataAutocomp) + '\' + Result + '.acp';
 end;
 
 function TfmMain.GetSpecialHiliteFN(const Id: string): string;
 begin
-  Result:= SynDir + 'Data\autocomplete\' + Id + '.ini';
+  Result:= SynDataSubdir(cSynDataAutocomp) + '\' + Id + '.ini';
 end;
 
 function TfmMain.GetHtmlListFN: string;
@@ -10324,7 +10355,9 @@ begin
     L.Duplicates:= dupIgnore;
     DoEnumLexers(L);
 
-    if DoTool_ConfigList(opTools, Self, L, true, CurrentFrame.CurrentLexer) then
+    if DoTool_ConfigList(opTools, Self, L, true,
+      CurrentFrame.CurrentLexer,
+      SynDataSubdir(cSynDataOutPresets)) then
     begin
       Application.ProcessMessages;
       SaveTools;
@@ -13867,7 +13900,7 @@ end;
 
 function TfmMain.SynClipsDir: string;
 begin
-  Result:= SynDir + 'Data\clips';
+  Result:= SynDataSubdir(cSynDataClips);
 end;
 
 function TfmMain.SynDictDir: string;
@@ -13923,6 +13956,7 @@ begin
       Align:= alClient;
       BorderStyle:= bsNone;
       //
+      FDirToolsPresets:= SynDataSubdir(cSynDataOutPresets);
       TreeProj.BorderStyle:= SynBorderStyle;
       TreeProj.Font.Assign(Tree.Font);
       TreeProj.Color:= Tree.Color;
@@ -16839,7 +16873,7 @@ const
 begin
   FListNewDocs.Clear;
   FFindToList(FListNewDocs,
-    SynDir + 'Data\newdoc',
+    SynDataSubdir(cSynDataNewDoc),
     '*.*',
     '',
     false{SubDirs},
@@ -16934,7 +16968,7 @@ end;
 
 procedure TfmMain.DoNewDocFolderClick(Sender: TObject);
 begin
-  FOpenURL(SynDir + 'Data\newdoc', Handle);
+  FOpenURL(SynDataSubdir(cSynDataNewDoc), Handle);
 end;
 
 procedure TfmMain.DoNewDocClick(Sender: TObject);
@@ -25419,17 +25453,17 @@ end;
 
 function TfmMain.SynSkinsDir: string;
 begin
-  Result:= SynDir + 'Data\skins';
+  Result:= SynDataSubdir(cSynDataSkins);
 end;
 
 function TfmMain.SynSnippetsDir: string;
 begin
-  Result:= SynDir + 'Data\snippets';
+  Result:= SynDataSubdir(cSynDataSnippets);
 end;
 
 function TfmMain.SynIconsDir: string;
 begin
-  Result:= SynDir + 'Data\icons';
+  Result:= SynDataSubdir(cSynDataIcons);
 end;
 
 function TfmMain.SynPyDir: string;
@@ -25801,7 +25835,7 @@ var
 begin
   FListConv.Clear;
   FFindToList(FListConv,
-    SynDir + 'Data\conv',
+    SynDataSubdir(cSynDataConv),
     '*.txt', '',
     false{SubDirs}, false, false, false);
 
