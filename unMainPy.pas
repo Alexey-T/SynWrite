@@ -305,6 +305,7 @@ begin
     begin
       Str:= UTF8Decode(AnsiString(P));
       fmMain.DoHint(Str);
+      Application.ProcessMessages; //PluginManager calls loop with msg_status
     end;
     Result:= ReturnNone;
   end;
