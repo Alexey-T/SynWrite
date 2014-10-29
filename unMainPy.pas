@@ -111,6 +111,7 @@ const
   LEXER_GET_EXT     = 2;
   LEXER_GET_MOD     = 3;
   LEXER_GET_LINKS   = 4;
+  LEXER_GET_STYLES  = 5;
   LEXER_SET_NAME    = 10;
   LEXER_SET_ENABLED = 11;
   LEXER_SET_EXT     = 12;
@@ -175,14 +176,31 @@ begin
             begin
               List:= TTntStringList.Create;
               try
-                EditorEnumSublexers(An, List);
+                LexerEnumSublexers(An, List);
                 Result:= Py_StringList(List);
               finally
                 FreeAndNil(List);
               end;
             end
             else
-              Result:= ReturnNone;  
+              Result:= ReturnNone;
+          end;
+
+        LEXER_GET_STYLES:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+            begin
+              List:= TTntStringList.Create;
+              try
+                LexerEnumStyles(An, List);
+                Result:= Py_StringList(List);
+              finally
+                FreeAndNil(List);
+              end;
+            end
+            else
+              Result:= ReturnNone;
           end;
 
         LEXER_SET_ENABLED:

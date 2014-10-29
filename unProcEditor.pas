@@ -16,7 +16,9 @@ uses
   ecStrUtils,
   ecPrint;
 
-procedure EditorEnumSublexers(An: TSyntAnalyzer; List: TTntStringList);
+procedure LexerEnumSublexers(An: TSyntAnalyzer; List: TTntStringList);
+procedure LexerEnumStyles(An: TSyntAnalyzer; List: TTntStringList);
+
 function EditorGetWordLengthForSpellCheck(Ed: TSyntaxMemo; APos: Integer): Integer;
 function EditorGotoModifiedLine(Ed: TSyntaxMemo; ANext: boolean; ASavedToo: boolean): boolean;
 procedure EditorPrint(Ed: TSyntaxMemo; ASelOnly: boolean;
@@ -3613,7 +3615,7 @@ begin
   EditorRestoreSel(Ed, Sel);
 end;
 
-procedure EditorEnumSublexers(An: TSyntAnalyzer; List: TTntStringList);
+procedure LexerEnumSublexers(An: TSyntAnalyzer; List: TTntStringList);
 var
   i: Integer;
   AnLink: TSyntAnalyzer;
@@ -3627,6 +3629,15 @@ begin
     else
       List.Add('');
   end;      
+end;
+
+procedure LexerEnumStyles(An: TSyntAnalyzer; List: TTntStringList);
+var
+  i: Integer;
+begin
+  List.Clear;
+  for i:= 0 to An.Formats.Count-1 do
+    List.Add(An.Formats[i].DisplayName);
 end;
 
 
