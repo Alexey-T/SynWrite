@@ -3402,6 +3402,7 @@ uses
   ATxColorCodes,
   ATxLoremIpsum,
   ATxUnpack,
+  ATxImgHint,
 
   {$ifdef SPELL}
   ad3SpellBase,
@@ -7313,6 +7314,7 @@ begin
   InitMenuItemsList;
   LangManager.ScanForLangFiles(SynDir + 'Lang', '*.lng', False);
   OnBackupLexerStyles:= DoBackupLexerStyles;
+  ATxImgHint.FileNameConverterImageToBmp:= SynDir + 'Tools\ImageToBmp.exe';
 
   OD_Swatch.DefaultExt:= cSynColorSwatchExt;
   OD_Swatch.Filter:= Format('*.%s|*.%s', [cSynColorSwatchExt, cSynColorSwatchExt]);

@@ -1353,7 +1353,6 @@ begin
 
   if IsImageHint(HintStr) then
   begin
-    FileNameConverterImageToBmp:= ExtractFilePath(GetModuleName(HInstance)) + 'Tools\ImageToBmp.exe';
     HintObj:= TGraphicHintWindow.Create(Self);
     HintObj.Color:= opImageHintColorBG;
   end
