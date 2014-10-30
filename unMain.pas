@@ -13461,83 +13461,23 @@ begin
   TabsOut.TabIndex:= Ord(tbFindRes);
 end;
 
-(*
-procedure TfmMain.ListFindDrawItem(Control: TWinControl; Index: Integer;
-  Rect: TRect; State: TOwnerDrawState);
-var c, cBk: TColor;
-  lpos, n, n_ln, n_col, n_len:Integer;
-  fn, S, Str:Widestring;
-begin
-  with Control as TTntListbox do
-  begin
-    if odSelected in State then
-      Canvas.Brush.Color:= opColorOutSelBk
-    else
-      Canvas.Brush.Color:= Color;
-    Canvas.FillRect(Rect);
-
-    n:= Integer(Items.Objects[Index]);
-    if n>0 then
-    begin
-      if odSelected in State then
-        c:= opColorOutRedSelText
-      else
-        c:= opColorOutRedText;
-      Canvas.Font.Color:= c;
-
-      S:= FListRes[n];
-      fn:= SGetItem(S, '|');
-      n_ln:= StrToInt(SGetItem(S, '|'));
-      n_col:= StrToInt(SGetItem(S, '|'));
-      n_len:= StrToInt(SGetItem(S, '|'));
-      Str:= S;
-
-      lpos:= Rect.Left+1;
-      S:= ' '+WideExtractFileName(fn)+'('+IntToStr(n_ln)+'): ';
-      ecTextOut(Canvas, lpos, Rect.Top, S);
-
-      Inc(lpos, ecTextExtent(Canvas, S).cx);
-      S:= Copy(Str, 1, n_col-1);
-      ecTextOut(Canvas, lpos, Rect.Top, S);
-
-      Inc(lpos, ecTextExtent(Canvas, S).cx);
-      S:= Copy(Str, n_col, n_len);
-        cBk:= Canvas.Brush.Color;
-        Canvas.Brush.Color:= c xor opColorOutHi;
-      ecTextOut(Canvas, lpos, Rect.Top, S);
-        Canvas.Brush.Color:= cBk;
-
-      Inc(lpos, ecTextExtent(Canvas, S).cx);
-      S:= Copy(Str, n_col+n_len, MaxInt);
-      ecTextOut(Canvas, lpos, Rect.Top, S);
-    end
-    else
-    begin
-      if odSelected in State then
-        c:= opColorOutSelText
-      else
-        c:= Font.Color;
-      Canvas.Font.Color:= c;
-      ecTextOut(Canvas, Rect.Left+1, Rect.Top, Items[Index]);
-    end;
-  end;
-end;
-*)
-
 procedure TfmMain.PopupFindPopup(Sender: TObject);
+var
+  IsSel, IsItems: boolean;
 begin
-  with TreeFind do
-  begin
-    TBXItemTreeFindNav.Enabled:= Selected<>nil;
-    TBXItemTreeFindCopyToTab.Enabled:= Selected<>nil;
-    TBXItemTreeFindCopyToClip.Enabled:= Selected<>nil;
-    TBXItemTreeFindCopyToClipNode.Enabled:= Selected<>nil;
-    TBXItemTreeFindClear.Enabled:= Items.Count>0;
-    TBXItemTreeFindFind.Enabled:= Items.Count>0;
-    TBXItemTreeFindExpand.Enabled:= Items.Count>0;
-    TBXItemTreeFindExpandCur.Enabled:= Selected<>nil;
-    TBXItemTreeFindCollapse.Enabled:= Items.Count>0;
-  end;
+  IsSel:= TreeFind.Selected<>nil;
+  IsItems:= TreeFind.Items.Count>0;
+  
+  TBXItemTreeFindNav.Enabled:= IsSel;
+  TBXItemTreeFindPreview.Enabled:= IsSel;
+  TBXItemTreeFindCopyToTab.Enabled:= IsSel;
+  TBXItemTreeFindCopyToClip.Enabled:= IsSel;
+  TBXItemTreeFindCopyToClipNode.Enabled:= IsSel;
+  TBXItemTreeFindClear.Enabled:= IsItems;
+  TBXItemTreeFindFind.Enabled:= IsItems;
+  TBXItemTreeFindExpand.Enabled:= IsItems;
+  TBXItemTreeFindExpandCur.Enabled:= IsSel;
+  TBXItemTreeFindCollapse.Enabled:= IsItems;
 end;
 
 procedure TfmMain.ecCopyAsRTFExecute(Sender: TObject);
