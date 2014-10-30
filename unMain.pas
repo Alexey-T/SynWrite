@@ -1407,6 +1407,7 @@ type
     TBXItemECaseRandom: TSpTBXItem;
     TBXItemBarCaseRandom: TSpTBXItem;
     acRestart: TAction;
+    TBXItemTreeFindPreview: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2183,6 +2184,7 @@ type
     procedure TBXItemECaseRandomClick(Sender: TObject);
     procedure TBXItemBarCaseRandomClick(Sender: TObject);
     procedure acRestartExecute(Sender: TObject);
+    procedure TBXItemTreeFindPreviewClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2531,6 +2533,7 @@ type
     procedure DoTool_Enable(T: TSpTbxItem; Id: integer; ACtxMenu: boolean = false);
     procedure DoTool_ReplaceMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
 
+    procedure TreeFind_ShowPreview;
     procedure TreeFind_GetItemInfo(var AFilename: Widestring; var ALineNum, AColNum, ALen: Integer);
     function IsProjectEmpty: boolean;
     function IsShowColor(s: string; var NColor, NColorText: TColor): boolean;
@@ -10182,7 +10185,8 @@ begin
   UpdKey(TBXItemOutFind, smFindDialog);
 
   //find results popup menu
-  UpdKey_String(TBXItemTreeFindNav, 'Space');
+  UpdKey_String(TBXItemTreeFindNav, 'Enter');
+  UpdKey_String(TBXItemTreeFindPreview, 'Space');
   UpdKey_String(TBXItemTreeFindCopyToClipNode, 'Ctrl+C');
   UpdKey_String(TBXItemTreeFindClear, 'Delete');
   UpdKey(TBXItemTreeFindFind, smFindDialog);
@@ -18145,6 +18149,19 @@ begin
   FTreeRoot.Expand(false);
 end;
 
+procedure TfmMain.TreeFind_ShowPreview;
+var
+  fn: Widestring;
+  LineNum, ColNum, Len: Integer;
+begin
+  if not (Assigned(FProjPreview) and FProjPreview.Visible) then
+    DoPreviewFile('', true, 0, 0, 0);
+
+  TreeFind_GetItemInfo(fn, LineNum, ColNum, Len);
+  if IsFileExist(fn) then
+    DoPreviewFile(fn, false, LineNum, ColNum, Len);
+end;
+
 procedure TfmMain.TreeFindChange(Sender: TObject; Node: TTreeNode);
 var
   fn: Widestring;
@@ -18264,9 +18281,15 @@ procedure TfmMain.TreeFindKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   //Enter, Space
-  if ((Key=vk_space) or (Key=vk_return)) and (Shift=[]) then
+  if (Key=vk_return) and (Shift=[]) then
   begin
     TreeFindDblClick(Sender);
+    Key:= 0;
+    Exit
+  end;
+  if (Key=vk_space) and (Shift=[]) then
+  begin
+    TreeFind_ShowPreview;
     Key:= 0;
     Exit
   end;
@@ -29365,6 +29388,11 @@ begin
     
   FExecute(fn, Format('restart %d', [Handle]), '', 0);
   acExit.Execute;
+end;
+
+procedure TfmMain.TBXItemTreeFindPreviewClick(Sender: TObject);
+begin
+  TreeFind_ShowPreview;
 end;
 
 initialization
