@@ -1795,6 +1795,7 @@ type
     procedure TBXItemMacro28Click(Sender: TObject);
     procedure TBXItemMacro29Click(Sender: TObject);
     procedure TBXItemMacro30Click(Sender: TObject);
+    procedure TreeFindChange(Sender: TObject; Node: TTreeNode);
     procedure TreeFindDblClick(Sender: TObject);
     procedure TreeFindCustomDrawItem(Sender: TCustomTreeView;
       Node: TTreeNode; State: TCustomDrawState; var DefaultDraw: Boolean);
@@ -2530,6 +2531,7 @@ type
     procedure DoTool_Enable(T: TSpTbxItem; Id: integer; ACtxMenu: boolean = false);
     procedure DoTool_ReplaceMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
 
+    procedure TreeFind_GetItemInfo(var AFilename: Widestring; var ALineNum, AColNum, ALen: Integer);
     function IsProjectEmpty: boolean;
     function IsShowColor(s: string; var NColor, NColorText: TColor): boolean;
     procedure GetTabName(APagesNumber, ATabIndex: Integer; var AName, AFN, ALex: Widestring);
@@ -2847,7 +2849,8 @@ type
     procedure DoSaveFolding;
     procedure DoLoadFolding;
     procedure DoOpenLastClosedFile;
-    procedure ProjPreview(Sender: TObject; const AFilename: Widestring; AToggle: boolean);
+    procedure ProjPreview(Sender: TObject; const AFilename: Widestring;
+      AToggle: boolean; ALineNum, AColNum, ALen: Integer);
     procedure ProjRunTool(const ATool: TSynTool);
     procedure ProjPreviewClose(Sender: TObject);
     procedure ProjPreviewKeyDown(Sender: TObject; var Key: Word;
@@ -3371,7 +3374,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.13.1745';
+  cSynVer = '6.13.1744';
   cSynPyVer = '1.0.142';
 
 const
@@ -14021,6 +14024,8 @@ begin
         Gutter.Visible:= false;
         PopupMenu:= PopupPreviewEditor;
         Options:= Options + [soAlwaysShowCaret] - [soScrollLastLine];
+        ShowRightMargin:= false;
+        DefaultStyles.CurrentLine.Enabled:= true;
         Lines.Clear;
         OnKeyDown:= ProjPreviewKeyDown;
       end;
@@ -18238,40 +18243,31 @@ begin
   FTreeRoot.Expand(false);
 end;
 
+procedure TfmMain.TreeFindChange(Sender: TObject; Node: TTreeNode);
+var
+  fn: Widestring;
+  LineNum, ColNum, Len: Integer;
+begin
+  if Assigned(FProjPreview) and FProjPreview.Visible then
+  begin
+    TreeFind_GetItemInfo(fn, LineNum, ColNum, Len);
+    if IsFileExist(fn) then
+      ProjPreview(nil, fn, false, LineNum, ColNum, Len);
+  end;  
+end;
+
 procedure TfmMain.TreeFindDblClick(Sender: TObject);
 var
-  Obj: TObject;
-  Info: TSynFindInfo;
   fn: Widestring;
-  n: integer;
+  LineNum, ColNum, Len, n: Integer;
 begin
-  if TreeFind.Selected=nil then Exit;
-  Obj:= TObject(TreeFind.Selected.Data);
-  if Obj is TSynFindInfo then
-    Info:= Obj as TSynFindInfo
-  else
-    Info:= nil;
+  TreeFind_GetItemInfo(fn, LineNum, ColNum, Len);
 
-  if Info=nil then
-  begin
-    //maybe clicked on Replace result: "filename (NN)"
-    fn:= TreeFind.Selected.Text;
-    if (fn='') or (fn[Length(fn)]<>')') then Exit;
-    n:= Length(fn);
-    while (n>0) and (fn[n]<>' ') do Dec(n);
-    if n=0 then Exit;
-    Delete(fn, n, MaxInt);
-    if not IsFileExist(fn) then Exit;
-    DoOpenFile(fn);
-    Exit;
-  end;
-
-  //clicked on Find result line (with Info)
-  if IsFileExist(Info.FN) then
-    DoOpenFile(Info.FN)
+  if IsFileExist(fn) then
+    DoOpenFile(fn)
   else
   begin
-    n:= SGetFrameIndexFromPrefixedStr(Info.FN);
+    n:= SGetFrameIndexFromPrefixedStr(fn);
     if (n>=0) and (n<FrameAllCount) then
       CurrentFrame:= FramesAll[n]
     else
@@ -18279,12 +18275,43 @@ begin
   end;
 
   with CurrentEditor do
-  begin
-    CaretPos:= Point(Info.ColNum, Info.LineNum);
-    SetSelection(CaretPosToStrPos(CaretPos), Info.Len);
-  end;
+    SetSelection(CaretPosToStrPos(Point(ColNum, LineNum)), Len);
+    
   EditorCenterPos(CurrentEditor, false, opFindOffsetTop);
   FocusEditor;
+end;
+
+procedure TfmMain.TreeFind_GetItemInfo(var AFilename: Widestring; var ALineNum, AColNum, ALen: Integer);
+var
+  Obj: TObject;
+  Info: TSynFindInfo;
+  n: integer;
+begin
+  AFilename:= '';
+  ALineNum:= 0;
+  AColNum:= 0;
+  ALen:= 0; 
+
+  if TreeFind.Selected=nil then Exit;
+  Obj:= TObject(TreeFind.Selected.Data);
+  if Obj is TSynFindInfo then
+  begin
+    Info:= Obj as TSynFindInfo;
+    AFilename:= Info.FN;
+    ALineNum:= Info.LineNum;
+    AColNum:= Info.ColNum;
+    ALen:= Info.Len;
+  end
+  else
+  begin
+    //maybe clicked on Replace result: "filename (NN)"
+    AFilename:= TreeFind.Selected.Text;
+    if (AFilename='') or (AFilename[Length(AFilename)]<>')') then Exit;
+    n:= Length(AFilename);
+    while (n>0) and (AFilename[n]<>' ') do Dec(n);
+    if n=0 then Exit;
+    Delete(AFilename, n, MaxInt);
+  end;
 end;
 
 procedure TfmMain.TreeFindCustomDrawItem(Sender: TCustomTreeView;
@@ -26351,7 +26378,8 @@ begin
     MsgBeep();
 end;
 
-procedure TfmMain.ProjPreview(Sender: TObject; const AFilename: Widestring; AToggle: boolean);
+procedure TfmMain.ProjPreview(Sender: TObject; const AFilename: Widestring;
+  AToggle: boolean; ALineNum, AColNum, ALen: Integer);
 var
   Ed: TSyntaxMemo;
 begin
@@ -26393,7 +26421,8 @@ begin
       Screen.Cursor:= crHourGlass;
       try
         Ed.LoadFromFile(AFilename);
-        Ed.TopLine:= 0;
+        Ed.TopLine:= ALineNum - opFindOffsetTop;
+        Ed.SetSelection(Ed.CaretPosToStrPos(Point(AColNum, ALineNum)), ALen);
         Ed.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(AFilename);
       finally
         Screen.Cursor:= crDefault;
@@ -28455,7 +28484,7 @@ begin
     if Assigned(fmProj) then
       fmProj.DoPreview(true{Toggle})
     else
-      ProjPreview(Sender, '', true{Toggle});
+      ProjPreview(Sender, '', true{Toggle}, 0, 0, 0);
   end;
 end;
 

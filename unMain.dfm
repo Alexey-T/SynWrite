@@ -538,6 +538,7 @@ object fmMain: TfmMain
         RowSelect = True
         TabOrder = 2
         OnAdvancedCustomDrawItem = TreeFindAdvancedCustomDrawItem
+        OnChange = TreeFindChange
         OnCustomDrawItem = TreeFindCustomDrawItem
         OnDblClick = TreeFindDblClick
         OnKeyDown = TreeFindKeyDown
