@@ -2849,8 +2849,9 @@ type
     procedure DoSaveFolding;
     procedure DoLoadFolding;
     procedure DoOpenLastClosedFile;
-    procedure ProjPreview(Sender: TObject; const AFilename: Widestring;
-      AToggle: boolean; ALineNum, AColNum, ALen: Integer);
+    procedure DoPreviewFile(const AFilename: Widestring; AToggle: boolean; ALineNum, AColNum, ALen: Integer);
+
+    procedure ProjPreview(Sender: TObject; const AFilename: Widestring; AToggle: boolean);
     procedure ProjRunTool(const ATool: TSynTool);
     procedure ProjPreviewClose(Sender: TObject);
     procedure ProjPreviewKeyDown(Sender: TObject; var Key: Word;
@@ -2858,6 +2859,7 @@ type
     procedure ProjPreviewButtonClick(Sender: TObject);
     procedure DoCloseTabsOnProjectClosingIfNeeded;
     procedure DoProjectRenameFile(const fn, fn_new: Widestring);
+    
     procedure UpdKey_String(Item: TSpTbxItem; const Cmd: Widestring);
     procedure UpdKey(Item: TSpTbxItem; CmdId: integer);
     procedure DoToggleSyncEditing;
@@ -18152,7 +18154,7 @@ begin
   begin
     TreeFind_GetItemInfo(fn, LineNum, ColNum, Len);
     if IsFileExist(fn) then
-      ProjPreview(nil, fn, false, LineNum, ColNum, Len);
+      DoPreviewFile(fn, false, LineNum, ColNum, Len);
   end;  
 end;
 
@@ -26274,6 +26276,12 @@ begin
 end;
 
 procedure TfmMain.ProjPreview(Sender: TObject; const AFilename: Widestring;
+  AToggle: boolean);
+begin
+  DoPreviewFile(AFilename, AToggle, 0, 0, 0);
+end;
+
+procedure TfmMain.DoPreviewFile(const AFilename: Widestring;
   AToggle: boolean; ALineNum, AColNum, ALen: Integer);
 var
   Ed: TSyntaxMemo;
@@ -28379,7 +28387,7 @@ begin
     if Assigned(fmProj) then
       fmProj.DoPreview(true{Toggle})
     else
-      ProjPreview(Sender, '', true{Toggle}, 0, 0, 0);
+      DoPreviewFile('', true{Toggle}, 0, 0, 0);
   end;
 end;
 

@@ -27,8 +27,7 @@ var
 type
   TListProc = procedure(Sender: TObject; Files: TTntStrings) of object;
   TMruListProc = procedure(MruList: TSynMruList) of object;
-  TProjPreviewProc = procedure(Sender: TObject; const AFilename: Widestring;
-    AToggle: boolean; ALineNum, AColNum, ALen: Integer) of object;
+  TProjPreviewProc = procedure(Sender: TObject; const AFilename: Widestring; AToggle: boolean) of object;
   TProjToolProc = procedure(const ATool: TSynTool) of object;
   TProjSort = (srNone, srName, srExt, srDate, srSize, srDateDesc, srSizeDesc, srFullPath);
 
@@ -2024,7 +2023,7 @@ begin
         fn:= GetFN(Selected);
 
   if Assigned(FOnPreview) then
-    FOnPreview(Self, fn, Toggle, 0, 0, 0);
+    FOnPreview(Self, fn, Toggle);
 end;
 
 procedure TfmProj.TreeProjChange(Sender: TObject; Node: TTreeNode);
