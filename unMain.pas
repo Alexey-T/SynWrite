@@ -3374,7 +3374,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.13.1744';
+  cSynVer = '6.13.1745';
   cSynPyVer = '1.0.142';
 
 const
@@ -11605,130 +11605,27 @@ end;
 
 procedure TfmMain.TBXItemEPasteClick(Sender: TObject);
 begin
-  {
-  Here's reaction to Ctrl+V, for exe.
-
-  if edQs.Focused then
-    edQs.PasteFromClipboard
-  else
-  if IsSearchEditFocused then
-    (fmSR.ActiveControl as TWinControl).Perform(WM_PASTE, 0, 0)
-  else
-  if IsNumConvEditFocused then
-    (fmNumConv.ActiveControl as TWinControl).Perform(WM_PASTE, 0, 0)
-  else
-  }
-    CurrentEditor.ExecCommand(smPaste);
+  CurrentEditor.ExecCommand(smPaste);
 end;
 
 procedure TfmMain.TBXItemEDeleteClick(Sender: TObject);
 begin
-  {
-  Here's reaction to Ctrl+Del, for exe.
-
-  if edQs.Focused then
-    edQs.ClearSelection
-  else
-  if IsSearchEditFocused then
-    (fmSR.ActiveControl as TCustomComboBox).ClearSelection
-  else
-  if TreeFind.Focused then
-    TbxItemTreeFindClearClick(Self)
-  else
-  }
-    CurrentEditor.ExecCommand(smClearSelection);
+  CurrentEditor.ExecCommand(smClearSelection);
 end;
 
 procedure TfmMain.TBXItemESelectAllClick(Sender: TObject);
 begin
-  {
-  Here's reaction to Ctrl+A, for exe.
-
-  if edQs.Focused then
-    edQs.SelectAll
-  else
-  if IsSearchEditFocused then
-    (fmSR.ActiveControl as TCustomComboBox).SelectAll
-  else
-  if IsNumConvEditFocused then
-    (fmNumConv.ActiveControl as TTntEdit).SelectAll
-  else
-  if IsProjPreviewFocused then
-    FProjPreviewEditor.SelectAll
-  else
-  //reaction for current editor below
-  }
-    CurrentEditor.ExecCommand(smSelectAll);
+  CurrentEditor.ExecCommand(smSelectAll);
 end;
 
 procedure TfmMain.TBXItemECutClick(Sender: TObject);
 begin
-  {
-  Here's reaction to Ctrl+X, for exe.
-
-  if edQs.Focused then
-    edQs.CutToClipboard
-  else
-  if IsSearchEditFocused then
-    (fmSR.ActiveControl as TWinControl).Perform(WM_CUT, 0, 0)
-  else
-  if IsNumConvEditFocused then
-    (fmNumConv.ActiveControl as TWinControl).Perform(WM_CUT, 0, 0)
-  else
-  if CurrentFrame.CaretsCount>1 then
-    CurrentEditor.ExecCommand(smCut)
-  else
-  if not CurrentEditor.HaveSelection then
-  begin
-    if opCopyLineIfNoSel then
-      CurrentEditor.ExecCommand(sm_CutLine);
-  end
-  else
-  }
-    CurrentEditor.ExecCommand(smCut);
+  CurrentEditor.ExecCommand(smCut);
 end;
 
 procedure TfmMain.TBXItemECopyClick(Sender: TObject);
 begin
-  {
-  Here's reaction to Ctrl+C, for exe.
-
-  if edQs.Focused then
-    edQs.CopyToClipboard
-  else
-  if Assigned(fmClip) and fmClip.ListClip.Focused then
-    DoClipItemCopy
-  else
-  if Assigned(fmClips) and fmClips.List.Focused then
-    DoClipsItemCopy
-  else
-  if IsSearchEditFocused then
-    (fmSR.ActiveControl as TWinControl).Perform(WM_COPY, 0, 0)
-  else
-  if IsNumConvEditFocused then
-    (fmNumConv.ActiveControl as TWinControl).Perform(WM_COPY, 0, 0)
-  else
-  if TreeFind.Focused then
-    TBXItemTreeFindCopyToClipNodeClick(Self)
-  else
-  if ListPLog.Focused then
-    TbxItemPLogCopySelClick(Self)
-  else
-  if IsProjPreviewFocused then
-    FProjPreviewEditor.CopyToClipboard
-  else
-  //reaction for current editor below
-  if CurrentFrame.CaretsCount>1 then
-    CurrentEditor.ExecCommand(smCopy)
-  else
-  if not CurrentEditor.HaveSelection then
-  begin
-    if opCopyLineIfNoSel then
-      CurrentEditor.ExecCommand(sm_CopyLine);
-  end
-  else
-  }
-    CurrentEditor.ExecCommand(smCopy);
+  CurrentEditor.ExecCommand(smCopy);
 end;
 
 procedure TfmMain.TBXItemEUndoClick(Sender: TObject);
@@ -11736,15 +11633,19 @@ begin
   CurrentEditor.ExecCommand(smUndo);
 end;
 
+procedure TfmMain.TBXItemERedoClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(smRedo);
+end;
+
 procedure TfmMain.DoReplace_TabsToSpaces(F: TEditorFrame);
+//slow! don't use F.EditorMaster.UnTabText;
 var
   L: TTntStringList;
 begin
-  //slow! don't use F.EditorMaster.UnTabText;
-  
   L:= TTntStringList.Create;
   try
-    L.SetTextW(PWChar(F.EditorMaster.Text));
+    L.Text:= F.EditorMaster.Text;
     DoListCommand_Untab(L, EditorTabSize(F.EditorMaster));
     F.EditorMaster.Text:= L.Text;
   finally
@@ -14025,7 +13926,6 @@ begin
         PopupMenu:= PopupPreviewEditor;
         Options:= Options + [soAlwaysShowCaret] - [soScrollLastLine];
         ShowRightMargin:= false;
-        DefaultStyles.CurrentLine.Enabled:= true;
         Lines.Clear;
         OnKeyDown:= ProjPreviewKeyDown;
       end;
@@ -24269,20 +24169,6 @@ begin
       ExecCommand(smCopy);
 end;
 
-procedure TfmMain.TBXItemCtxCutClick(Sender: TObject);
-begin
-  with CurrentEditor do
-    if not HaveSelection then
-    begin
-      if opCopyLineIfNoSel then
-        ExecCommand(sm_CutLine)
-      else
-        MsgBeep;
-    end
-    else
-      ExecCommand(smCut);
-end;
-
 procedure TfmMain.TBXItemCtxPasteClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smPaste);
@@ -24298,9 +24184,18 @@ begin
   CurrentEditor.ExecCommand(smSelectAll);
 end;
 
-procedure TfmMain.TBXItemERedoClick(Sender: TObject);
+procedure TfmMain.TBXItemCtxCutClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(smRedo);
+  with CurrentEditor do
+    if not HaveSelection then
+    begin
+      if opCopyLineIfNoSel then
+        ExecCommand(sm_CutLine)
+      else
+        MsgBeep;
+    end
+    else
+      ExecCommand(smCut);
 end;
 
 procedure TfmMain.ecToggleShowGroup2Execute(Sender: TObject);
