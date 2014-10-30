@@ -2480,6 +2480,7 @@ type
     procedure DoSaveStringToIni(const fn: string; const Str: string);
 
     //private UpdateNNN
+    procedure UpdateFrameLineEnds(F: TEditorFrame; AFormat: TTextFormat; AManual: boolean);
     procedure UpdateToolbarItemAction(Item: TTBCustomItem; const SCmd: string);
     procedure UpdateNewDocMenu();
     procedure UpdateTreeProps;
@@ -2568,7 +2569,6 @@ type
     procedure DoCopyFindResultNode;
 
     function SFindResPrefix(LineNum: integer): Widestring;
-    procedure SetLineEnds(Sender: TObject; AManual: boolean);
     function IsListboxFocused: boolean;
     function IsTreeviewFocused: boolean;
     function CurrentListbox: TCustomListbox;
@@ -3371,7 +3371,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.13.1742';
+  cSynVer = '6.13.1745';
   cSynPyVer = '1.0.142';
 
 const
@@ -4196,9 +4196,9 @@ begin
     Val:= opNewLineEnds;
 
   case Val of
-    0: SetLineEnds(TbxItemEndWin, false);
-    1: SetLineEnds(TbxItemEndUn, false);
-    2: SetLineEnds(TbxItemEndMac, false);
+    0: UpdateFrameLineEnds(F, tfCR_NL, false); //win
+    1: UpdateFrameLineEnds(F, tfNL, false); //unix
+    2: UpdateFrameLineEnds(F, tfCR, false); //mac
   end;
 
   //upd lexer
@@ -7431,27 +7431,27 @@ begin
 end;
 
 procedure TfmMain.SetFormat(Sender: TObject);
+var
+  fmt: TTextFormat;
 begin
-  SetLineEnds(Sender, true);
+  fmt:= TTextFormat((Sender as TComponent).Tag);
+  UpdateFrameLineEnds(CurrentFrame, fmt, true);
 end;
 
-procedure TfmMain.SetLineEnds(Sender: TObject; AManual: boolean);
-var
-  tf: TTextFormat;
+
+procedure TfmMain.UpdateFrameLineEnds(F: TEditorFrame; AFormat: TTextFormat; AManual: boolean);
 begin
-  tf:= TTextFormat((Sender as TComponent).Tag);
-  if CurrentFrame <> nil then
-    with CurrentFrame do
-      if tf <> EditorMaster.TextSource.Lines.TextFormat then
+  if F<>nil then
+    if AFormat<>F.EditorMaster.TextSource.Lines.TextFormat then
+    begin
+      F.EditorMaster.TextSource.Lines.TextFormat:= AFormat;
+      if AManual then
       begin
-        EditorMaster.TextSource.Lines.TextFormat:= tf;
-        if AManual then
-        begin
-          Modified:= true;
-          LineEndsChg:= true;
-        end;
-        UpdateStatusbarLineEnds;
+        F.Modified:= true;
+        F.LineEndsChg:= true;
       end;
+      UpdateStatusbarLineEnds;
+    end;
 end;
 
 procedure TfmMain.UpdateStatusbarLineEnds;
