@@ -18092,10 +18092,12 @@ end;
 procedure TfmMain.TreeFind_ShowPreview;
 begin
   if Assigned(FProjPreview) then
-  begin
-    FProjPreview.Show;
-    TreeFindChange(nil, nil);
-  end;
+    with FProjPreview do
+    begin
+      Visible:= not Visible;
+      if Visible then
+        TreeFindChange(nil, nil);
+    end;
 end;
 
 procedure TfmMain.TreeFindChange(Sender: TObject; Node: TTreeNode);
