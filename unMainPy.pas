@@ -103,7 +103,6 @@ begin
   end;
 end;
 
-
 function Py_lexer_proc(Self, Args : PPyObject): PPyObject; cdecl;
 const
   LEXER_GET_LIST    = 0;
@@ -115,6 +114,7 @@ const
   LEXER_SET_NAME    = 10;
   LEXER_SET_ENABLED = 11;
   LEXER_SET_EXT     = 12;
+  LEXER_SET_LINKS   = 13;
   LEXER_SAVE_LIB    = 20;
   LEXER_DELETE      = 21;
   LEXER_IMPORT      = 22;
@@ -222,6 +222,14 @@ begin
             An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
               An.Extentions:= Str2;
+            Result:= ReturnNone;
+          end;
+
+        LEXER_SET_LINKS:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+              LexerSetSublexers(fmMain.SyntaxManager, An, Str2);
             Result:= ReturnNone;
           end;
 

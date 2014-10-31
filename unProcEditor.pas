@@ -18,6 +18,7 @@ uses
 
 procedure LexerEnumSublexers(An: TSyntAnalyzer; List: TTntStringList);
 procedure LexerEnumStyles(An: TSyntAnalyzer; List: TTntStringList);
+procedure LexerSetSublexers(SyntaxManager: TSyntaxManager; An: TSyntAnalyzer; const Links: string);
 
 function EditorGetWordLengthForSpellCheck(Ed: TSyntaxMemo; APos: Integer): Integer;
 function EditorGotoModifiedLine(Ed: TSyntaxMemo; ANext: boolean; ASavedToo: boolean): boolean;
@@ -3639,6 +3640,22 @@ begin
   for i:= 0 to An.Formats.Count-1 do
     List.Add(An.Formats[i].DisplayName);
 end;
+
+procedure LexerSetSublexers(SyntaxManager: TSyntaxManager; An: TSyntAnalyzer; const Links: string);
+var
+  S, SItem: Widestring;
+  Cnt: Integer;
+begin
+  S:= Links;
+  Cnt:= 0;
+  repeat
+    SItem:= SGetItem(S, '|');
+    if Cnt>=An.SubAnalyzers.Count then Break;
+    An.SubAnalyzers[Cnt].SyntAnalyzer:= SyntaxManager.FindAnalyzer(SItem);
+    Inc(Cnt);
+  until false;
+end;
+
 
 
 initialization
