@@ -18090,16 +18090,12 @@ begin
 end;
 
 procedure TfmMain.TreeFind_ShowPreview;
-var
-  fn: Widestring;
-  LineNum, ColNum, Len: Integer;
 begin
-  if not (Assigned(FProjPreview) and FProjPreview.Visible) then
-    DoPreviewFile('', true, 0, 0, 0);
-
-  TreeFind_GetItemInfo(fn, LineNum, ColNum, Len);
-  if IsFileExist(fn) then
-    DoPreviewFile(fn, false, LineNum, ColNum, Len);
+  if Assigned(FProjPreview) then
+  begin
+    FProjPreview.Show;
+    TreeFindChange(nil, nil);
+  end;
 end;
 
 procedure TfmMain.TreeFindChange(Sender: TObject; Node: TTreeNode);
