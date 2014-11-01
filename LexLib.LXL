@@ -1806,7 +1806,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Default'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clBlack
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
@@ -1821,9 +1821,17 @@ object SyntaxManager: TSyntaxManager
         Font.Style = [fsItalic]
       end
       item
-        DisplayName = 'Ident'
+        DisplayName = 'Id'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clMaroon
+        Font.Color = clBlack
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+      end
+      item
+        DisplayName = 'Id std'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clPurple
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
@@ -1837,7 +1845,7 @@ object SyntaxManager: TSyntaxManager
         Font.Style = [fsBold]
       end
       item
-        DisplayName = 'HEX'
+        DisplayName = 'Hex'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clNavy
         Font.Height = -13
@@ -1847,18 +1855,10 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Label'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clOlive
         Font.Height = -13
         Font.Name = 'Courier New'
-        Font.Style = [fsItalic]
-      end
-      item
-        DisplayName = 'reserved words'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
+        Font.Style = []
       end
       item
         DisplayName = 'Registers'
@@ -1866,7 +1866,7 @@ object SyntaxManager: TSyntaxManager
         Font.Color = clBlue
         Font.Height = -13
         Font.Name = 'Courier New'
-        Font.Style = [fsBold]
+        Font.Style = []
       end
       item
         DisplayName = 'String'
@@ -1875,6 +1875,14 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
+      end
+      item
+        DisplayName = 'Symbol'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clMaroon
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsBold]
       end>
     TokenRules = <
       item
@@ -1894,8 +1902,8 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Hex'
-        StyleName = 'HEX'
-        TokenType = 7
+        StyleName = 'Hex'
+        TokenType = 5
         Expression = '[\da-f]+h \b'
         ColumnFrom = 0
         ColumnTo = 0
@@ -1910,7 +1918,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Ident'
-        StyleName = 'Ident'
+        StyleName = 'Id'
         TokenType = 2
         Expression = '[a-z_%]\w*'
         ColumnFrom = 0
@@ -1921,6 +1929,14 @@ object SyntaxManager: TSyntaxManager
         StyleName = 'String'
         TokenType = 4
         Expression = '("|'#39') .*? \1'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Symbol'
+        StyleName = 'Symbol'
+        TokenType = 3
+        Expression = '[\.,:\-\+\*\\/%@<>\(\)\[\]\{\}\?]'
         ColumnFrom = 0
         ColumnTo = 0
       end>
@@ -1968,8 +1984,8 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'Reserved words'
-        StyleName = 'reserved words'
+        DisplayName = 'Keywords'
+        StyleName = 'Id std'
         BlockType = btTagDetect
         ConditionList = <
           item
@@ -2478,7 +2494,7 @@ object SyntaxManager: TSyntaxManager
     SubAnalyzers = <>
     SampleText.Strings = (
       '; x86 assembly sample source'
-      '  CODE'#9'SEGMENT'#9'BYTE PUBLIC '
+      'CODE SEGMENT'#9'BYTE PUBLIC '
       '    ASSUME'#9'CS:CODE'
       '    '
       '    PUSH SS'
@@ -2504,7 +2520,7 @@ object SyntaxManager: TSyntaxManager
       '      RET'
       'test2 ENDP'
       ''
-      '  CODE'#9'ENDS'
+      'CODE ENDS'
       '  '
       'PUSHALL MACRO'
       '       PUSH AX BX CX DX'
@@ -2520,21 +2536,19 @@ object SyntaxManager: TSyntaxManager
       '  '
       'END')
     TokenTypeNames.Strings = (
-      'Unknown'
+      'Label'
       'Comment'
       'Identifier'
       'Symbol'
       'String'
-      'Integer const'
-      'Float const'
-      'Hex const'
-      'Char const'
-      'Preprocessor')
+      'Number')
     Extentions = 'asm'
     LexerName = 'Assembler'
     Notes.Strings = (
-      'Fixed by Alex, uvviewsoft.com'
-      '+ macros/procs/segments in tree (for MASM/NASM)')
+      'Changes by Alexey (SynWrite)'
+      '+ macros/procs/segments in tree (for MASM/NASM)'
+      '+ parser "symbol"'
+      '* renamed styles')
     LineComment = ';'
     Charset = DEFAULT_CHARSET
   end
