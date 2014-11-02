@@ -1837,15 +1837,7 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Integer'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clNavy
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'Hex'
+        DisplayName = 'Number'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clNavy
         Font.Height = -13
@@ -1902,7 +1894,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Hex'
-        StyleName = 'Hex'
+        StyleName = 'Number'
         TokenType = 5
         Expression = '[\da-f]+h \b'
         ColumnFrom = 0
@@ -1910,7 +1902,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Integer'
-        StyleName = 'Integer'
+        StyleName = 'Number'
         TokenType = 5
         Expression = '\d+'
         ColumnFrom = 0
