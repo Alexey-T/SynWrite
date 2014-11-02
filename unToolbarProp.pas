@@ -646,8 +646,11 @@ var
 begin
   S:= (Sender as TTntMenuItem).Caption;
   n:= Listbox1.ItemIndex;
-  FToolbar[n].FCmd:= 'py:'+S;
+  FToolbar[n].FCmd:= S;
+
+  SDeleteToW(S, ':');
   FToolbar[n].FHint:= 'Plugin: '+S;
+
   edCmd.Text:= FToolbar[n].FCmd;
   edHint.Text:= FToolbar[n].FHint;
 end;

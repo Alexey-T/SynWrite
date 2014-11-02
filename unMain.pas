@@ -82,6 +82,7 @@ const
   cPyConsoleClear = '-';
   cPyConsolePrint = '=';
   cPyPrefix = 'py:';
+  cBinaryPrefix = 'binary:';
   cPyNotInited = 'Python engine not inited';
   cPyTrue = 'True';
   cPyFalse = 'False';
@@ -2361,6 +2362,8 @@ type
     procedure SetListBkmkColumns(const S: string);
 
     //plugins related----------------------------
+    procedure DoPlugin_CommandFromToolbarString_Py(const Cmd: Widestring);
+    procedure DoPlugin_CommandFromToolbarString_Binary(const Cmd: Widestring);
     procedure DoPlugin_RefreshFiles(const fn: Widestring);
     procedure DoPlugin_RefreshLang;
     procedure DoPlugin_SaveFtpFile(F: TEditorFrame);
@@ -3379,7 +3382,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.13.1745';
+  cSynVer = '6.13.1750';
   cSynPyVer = '1.0.142';
 
 const
@@ -24873,7 +24876,6 @@ end;
 procedure TfmMain.DoToolbar_OnClick(Sender: TObject);
 var
   Cmd: Widestring;
-  PyFile, PyCmd: Widestring;
   NCmd, i: Integer;
 begin
   NCmd:= (Sender as TSpTbxItem).Tag;
@@ -24903,16 +24905,32 @@ begin
     MsgError(WideFormat(DKLangConstW('MRun'), [Cmd]), Handle);
   end
   else
-  //run py-plugin
   if SBegin(Cmd, cPyPrefix) then
-  begin
-    PyCmd:= Cmd;
-    PyFile:= SGetItem(PyCmd, '/');
-    DoPyLoadPlugin(
-      PyFile,
-      PyCmd);
-  end;
+    DoPlugin_CommandFromToolbarString_Py(Cmd)
+  else
+  if SBegin(Cmd, cBinaryPrefix) then
+    DoPlugin_CommandFromToolbarString_Binary(Cmd);
 end;
+
+procedure TfmMain.DoPlugin_CommandFromToolbarString_Py(const Cmd: Widestring);
+var
+  PyCmd, PyFile: Widestring;
+begin
+  PyCmd:= Cmd;
+  PyFile:= SGetItem(PyCmd, '/');
+  DoPyLoadPlugin(PyFile, PyCmd);
+end;
+
+procedure TfmMain.DoPlugin_CommandFromToolbarString_Binary(const Cmd: Widestring);
+var
+  BinCmd, BinFile: Widestring;
+begin
+  BinCmd:= Cmd;
+  BinFile:= SGetItem(BinCmd, '/');
+  SDeleteToW(BinFile, ':');
+  DoPlugin_LoadAction(BinFile, cActionMenuCommand, PWChar(Widestring(BinCmd)), nil, nil, nil);
+end;
+
 
 procedure TfmMain.DoEnumExtTools(L: TTntStringList);
 var
@@ -24935,8 +24953,8 @@ begin
         if not SBegin(ExtractFileName(SCaption), '-') then
         begin
           S:= SFileName + '/' + SCmd;
-          if SBegin(S, cPyPrefix) then
-            Delete(S, 1, Length(cPyPrefix));
+          if not SBegin(S, cPyPrefix) then
+            S:= cBinaryPrefix+S;
           L.Add(S);
         end;
 end;
