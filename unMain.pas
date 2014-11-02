@@ -238,33 +238,34 @@ type
     );
 
   TSynLineCmd = (
-    scmdSortAsc,
-    scmdSortDesc,
-    scmdSortDialog,
-    scmdDedupAll,
-    scmdDedupAdjacent,
-    scmdUntab,
-    scmdSpacesToTabs,
-    scmdSpacesToTabsLead,
-    scmdAlignWithSep,
-    scmdRemoveBlanks,
-    scmdRemoveDupBlanks,
-    scmdTrimLead,
-    scmdTrimTrail,
-    scmdTrimAll,
-    scmdRemoveDupSpaces,
-    scmdReverse,
-    scmdShuffle,
-    scmdExtractDupsCase,
-    scmdExtractDupsNoCase,
-    scmdIndent,
-    scmdUnIndent
+    cLineCmdSortAsc,
+    cLineCmdSortDesc,
+    cLineCmdSortDialog,
+    cLineCmdDedupAll,
+    cLineCmdDedupAllAndOrig,
+    cLineCmdDedupAdjacent,
+    cLineCmdUntab,
+    cLineCmdSpacesToTabs,
+    cLineCmdSpacesToTabsLead,
+    cLineCmdAlignWithSep,
+    cLineCmdRemoveBlanks,
+    cLineCmdRemoveDupBlanks,
+    cLineCmdTrimLead,
+    cLineCmdTrimTrail,
+    cLineCmdTrimAll,
+    cLineCmdRemoveDupSpaces,
+    cLineCmdReverse,
+    cLineCmdShuffle,
+    cLineCmdExtractDupsCase,
+    cLineCmdExtractDupsNoCase,
+    cLineCmdIndent,
+    cLineCmdUnIndent
     );
 
   TSynCopyNameCmd = (
-    scmdCopyFileName,
-    scmdCopyFullName,
-    scmdCopyFilePath
+    cCmdCopyFileName,
+    cCmdCopyFullName,
+    cCmdCopyFilePath
     );
 
   TPluginList_Command = array[0..150] of record
@@ -1409,6 +1410,8 @@ type
     TBXItemBarCaseRandom: TSpTBXItem;
     acRestart: TAction;
     TBXItemTreeFindPreview: TSpTBXItem;
+    TBXItemEDedupAllOrig: TSpTBXItem;
+    ecDedupAllAndOrig: TAction;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2186,6 +2189,8 @@ type
     procedure TBXItemBarCaseRandomClick(Sender: TObject);
     procedure acRestartExecute(Sender: TObject);
     procedure TBXItemTreeFindPreviewClick(Sender: TObject);
+    procedure TBXItemEDedupAllOrigClick(Sender: TObject);
+    procedure ecDedupAllAndOrigExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -5737,9 +5742,9 @@ begin
         if Ed.SelLength>0 then //only for stream blocks it works ok
         begin
           if Command=smBlockIndent then
-            DoLinesCommand(scmdIndent)
+            DoLinesCommand(cLineCmdIndent)
           else
-            DoLinesCommand(scmdUnIndent);
+            DoLinesCommand(cLineCmdUnIndent);
         end
         else
           Handled:= false;
@@ -6131,6 +6136,7 @@ begin
     sm_ProjectList: ecProjectList.Execute;
 
     sm_RemoveDupsAll: ecDedupAll.Execute;
+    sm_RemoveDupsAllAndOrig: ecDedupAllAndOrig.Execute;
     sm_RemoveDupsAdjacent: ecDedupAdjacent.Execute;
     sm_ExtractDupsCase: ecExtractDupsCase.Execute;
     sm_ExtractDupsNoCase: ecExtractDupsNoCase.Execute;
@@ -6365,9 +6371,9 @@ begin
       acColumnMarkers.Execute;
 
     //copy path
-    sm_CopyFilename: DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFileName);
-    sm_CopyFullPath: DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFullName);
-    sm_CopyDirPath:  DoCopyFilenameToClipboard(CurrentFrame, scmdCopyFilePath);
+    sm_CopyFilename: DoCopyFilenameToClipboard(CurrentFrame, cCmdCopyFileName);
+    sm_CopyFullPath: DoCopyFilenameToClipboard(CurrentFrame, cCmdCopyFullName);
+    sm_CopyDirPath:  DoCopyFilenameToClipboard(CurrentFrame, cCmdCopyFilePath);
 
     //move caret
     sm_CaretIncX:  EditorMoveCaretByNChars(Ed, +SynHiddenOption('MovX', 20), 0);
@@ -14442,25 +14448,25 @@ procedure TfmMain.DoCopyFilenameToClipboard(F: TEditorFrame; Cmd: TSynCopyNameCm
 begin
   if (F<>nil) and (F.FileName<>'') then
     case Cmd of
-      scmdCopyFileName: TntClipboard.AsWideText:= WideExtractFileName(F.FileName);
-      scmdCopyFullName: TntClipboard.AsWideText:= F.FileName;
-      scmdCopyFilePath: TntClipboard.AsWideText:= WideExtractFileDir(F.FileName);
+      cCmdCopyFileName: TntClipboard.AsWideText:= WideExtractFileName(F.FileName);
+      cCmdCopyFullName: TntClipboard.AsWideText:= F.FileName;
+      cCmdCopyFilePath: TntClipboard.AsWideText:= WideExtractFileDir(F.FileName);
     end;
 end;
 
 procedure TfmMain.TBXItemTabCopyFNClick(Sender: TObject);
 begin
-  DoCopyFilenameToClipboard(FClickedFrame, scmdCopyFileName);
+  DoCopyFilenameToClipboard(FClickedFrame, cCmdCopyFileName);
 end;
 
 procedure TfmMain.TBXItemTabCopyFullClick(Sender: TObject);
 begin
-  DoCopyFilenameToClipboard(FClickedFrame, scmdCopyFullName);
+  DoCopyFilenameToClipboard(FClickedFrame, cCmdCopyFullName);
 end;
 
 procedure TfmMain.TBXItemTabCopyDirClick(Sender: TObject);
 begin
-  DoCopyFilenameToClipboard(FClickedFrame, scmdCopyFilePath);
+  DoCopyFilenameToClipboard(FClickedFrame, cCmdCopyFilePath);
 end;
 
 procedure TfmMain.TBXItemSp50Click(Sender: TObject);
@@ -16617,7 +16623,7 @@ end;
 
 procedure TfmMain.ecReduceBlanksExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdRemoveDupBlanks);
+  DoLinesCommand(cLineCmdRemoveDupBlanks);
 end;
 
 
@@ -16707,7 +16713,7 @@ end;
 
 procedure TfmMain.ecRemoveBlanksExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdRemoveBlanks);
+  DoLinesCommand(cLineCmdRemoveBlanks);
 end;
 
 {
@@ -16852,27 +16858,27 @@ end;
 
 procedure TfmMain.ecTrimLeadExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdTrimLead);
+  DoLinesCommand(cLineCmdTrimLead);
 end;
 
 procedure TfmMain.ecTrimTrailExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdTrimTrail);
+  DoLinesCommand(cLineCmdTrimTrail);
 end;
 
 procedure TfmMain.ecTrimAllExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdTrimAll);
+  DoLinesCommand(cLineCmdTrimAll);
 end;
 
 procedure TfmMain.ecRemoveDupSpacesExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdRemoveDupSpaces);
+  DoLinesCommand(cLineCmdRemoveDupSpaces);
 end;
 
 procedure TfmMain.ecTabToSpExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdUntab);
+  DoLinesCommand(cLineCmdUntab);
   {
   //code from EC demo:
   with CurrentEditor do
@@ -16885,7 +16891,7 @@ end;
 
 procedure TfmMain.ecSpToTabExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdSpacesToTabs);
+  DoLinesCommand(cLineCmdSpacesToTabs);
 end;
 
 procedure TfmMain.DoFind_ClipboardText(ANext: boolean);
@@ -22882,7 +22888,7 @@ end;
 
 procedure TfmMain.ecSortDialogExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdSortDialog);
+  DoLinesCommand(cLineCmdSortDialog);
 end;
 
 procedure TfmMain.DoLinesCommand(Cmd: TSynLineCmd);
@@ -22927,73 +22933,79 @@ begin
       L.Add(Ed.Lines[i]);
 
     case Cmd of
-      scmdSortAsc,
-      scmdSortDesc:
-        ok:= DoListCommand_Sort(L, opSortMode, Cmd=scmdSortAsc, false{AShowDlg}, Col1, Col2);
-      scmdSortDialog:
+      cLineCmdSortAsc,
+      cLineCmdSortDesc:
+        ok:= DoListCommand_Sort(L, opSortMode, Cmd=cLineCmdSortAsc, false{AShowDlg}, Col1, Col2);
+      cLineCmdSortDialog:
         ok:= DoListCommand_Sort(L, opSortMode, true, true{AShowDlg}, Col1, Col2);
 
-      scmdDedupAll:
+      cLineCmdDedupAll:
         begin
-          i:= DoListCommand_Deduplicate(L, dedupAll);
+          i:= DoListCommand_Deduplicate(L, cLineDedupAll);
           ok:= i>0;
           MsgDelLines(i);
         end;
-      scmdDedupAdjacent:
+      cLineCmdDedupAllAndOrig:
         begin
-          i:= DoListCommand_Deduplicate(L, dedupAdjacent);
+          i:= DoListCommand_Deduplicate(L, cLineDedupAllAndOrig);
+          ok:= i>0;
+          MsgDelLines(i);
+        end;
+      cLineCmdDedupAdjacent:
+        begin
+          i:= DoListCommand_Deduplicate(L, cLineDedupAdjacent);
           ok:= i>0;
           MsgDelLines(i);
         end;
 
-      scmdTrimLead:
+      cLineCmdTrimLead:
         begin
           i:= DoListCommand_Trim(L, cTrimLead);
           ok:= i>0;
           MsgDoneLines(i);
         end;
-      scmdTrimTrail:
+      cLineCmdTrimTrail:
         begin
           i:= DoListCommand_Trim(L, cTrimTrail);
           ok:= i>0;
           MsgDoneLines(i);
         end;
-      scmdTrimAll:
+      cLineCmdTrimAll:
         begin
           i:= DoListCommand_Trim(L, cTrimAll);
           ok:= i>0;
           MsgDoneLines(i);
         end;
-      scmdRemoveDupSpaces:
+      cLineCmdRemoveDupSpaces:
         begin
           i:= DoListCommand_Trim(L, cTrimDups);
           ok:= i>0;
           MsgDoneLines(i);
         end;
 
-      scmdReverse:
+      cLineCmdReverse:
         begin
           ok:= DoListCommand_Reverse(L);
         end;
-      scmdShuffle:
+      cLineCmdShuffle:
         begin
           ok:= DoListCommand_Shuffle(L);
         end;
 
-      scmdUntab:
+      cLineCmdUntab:
         begin
           i:= DoListCommand_Untab(L, EditorTabSize(Ed));
           ok:= i>0;
           MsgDoneLines(i);
         end;
 
-      scmdIndent:
+      cLineCmdIndent:
         ok:= DoListCommand_Indent(L,
                EditorTabSize(Ed),
                Ed.BlockIndent,
                soOptimalFill in Ed.Options
                );
-      scmdUnIndent:
+      cLineCmdUnIndent:
         ok:= DoListCommand_UnIndent(L,
                EditorTabSize(Ed),
                Ed.BlockIndent,
@@ -23001,32 +23013,32 @@ begin
                soUnindentKeepAlign in Ed.Options
                );
 
-      scmdSpacesToTabs:
+      cLineCmdSpacesToTabs:
         begin
           ok:= DoListCommand_Unspace(L, EditorTabSize(Ed), false);
         end;
-      scmdSpacesToTabsLead:
+      cLineCmdSpacesToTabsLead:
         begin
           ok:= DoListCommand_Unspace(L, EditorTabSize(Ed), true);
         end;
 
-      scmdRemoveBlanks:
+      cLineCmdRemoveBlanks:
         begin
           i:= DoListCommand_RemoveBlanks(L);
           ok:= i>0;
           MsgDelLines(i);
         end;
-      scmdRemoveDupBlanks:
+      cLineCmdRemoveDupBlanks:
         begin
           i:= DoListCommand_RemoveDupBlanks(L);
           ok:= i>0;
           MsgDelLines(i);
         end;
 
-      scmdExtractDupsCase,
-      scmdExtractDupsNoCase:
+      cLineCmdExtractDupsCase,
+      cLineCmdExtractDupsNoCase:
         begin
-          i:= DoListCommand_ExtractDups(L, Cmd=scmdExtractDupsCase);
+          i:= DoListCommand_ExtractDups(L, Cmd=cLineCmdExtractDupsCase);
           ok:= false;
           if i>0 then
           begin
@@ -23036,7 +23048,7 @@ begin
           MsgDoneLines(i);
         end;
 
-      scmdAlignWithSep:
+      cLineCmdAlignWithSep:
         begin
           //read separator from ini
           with TIniFile.Create(SynHistoryIni) do
@@ -23579,17 +23591,17 @@ end;
 
 procedure TfmMain.ecSortAscendingExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdSortAsc);
+  DoLinesCommand(cLineCmdSortAsc);
 end;
 
 procedure TfmMain.ecSortDescendingExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdSortDesc);
+  DoLinesCommand(cLineCmdSortDesc);
 end;
 
 procedure TfmMain.ecSpToTabLeadingExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdSpacesToTabsLead);
+  DoLinesCommand(cLineCmdSpacesToTabsLead);
 end;
 
 procedure TfmMain.TBXItemEToggleLineCommentAltClick(Sender: TObject);
@@ -23879,17 +23891,27 @@ end;
 
 procedure TfmMain.ecDedupAllExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdDedupAll);
+  DoLinesCommand(cLineCmdDedupAll);
+end;
+
+procedure TfmMain.ecDedupAllAndOrigExecute(Sender: TObject);
+begin
+  DoLinesCommand(cLineCmdDedupAllAndOrig);
 end;
 
 procedure TfmMain.ecDedupAdjacentExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdDedupAdjacent);
+  DoLinesCommand(cLineCmdDedupAdjacent);
 end;
 
 procedure TfmMain.TBXItemEDedupAllClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_RemoveDupsAll);
+end;
+
+procedure TfmMain.TBXItemEDedupAllOrigClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_RemoveDupsAllAndOrig);
 end;
 
 procedure TfmMain.TBXItemEDedupAdjacentClick(Sender: TObject);
@@ -24054,7 +24076,7 @@ end;
 
 procedure TfmMain.ecAlignWithSepExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdAlignWithSep);
+  DoLinesCommand(cLineCmdAlignWithSep);
 end;
 
 procedure TfmMain.TBXItemEJoinClick(Sender: TObject);
@@ -24330,7 +24352,7 @@ end;
 
 procedure TfmMain.ecReverseLinesExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdReverse);
+  DoLinesCommand(cLineCmdReverse);
 end;
 
 procedure TfmMain.TBXItemEReverseClick(Sender: TObject);
@@ -24340,7 +24362,7 @@ end;
 
 procedure TfmMain.ecShuffleLinesExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdShuffle);
+  DoLinesCommand(cLineCmdShuffle);
 end;
 
 procedure TfmMain.TBXItemEShuffleClick(Sender: TObject);
@@ -24983,12 +25005,12 @@ end;
 
 procedure TfmMain.ecExtractDupsCaseExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdExtractDupsCase);
+  DoLinesCommand(cLineCmdExtractDupsCase);
 end;
 
 procedure TfmMain.ecExtractDupsNoCaseExecute(Sender: TObject);
 begin
-  DoLinesCommand(scmdExtractDupsNoCase);
+  DoLinesCommand(cLineCmdExtractDupsNoCase);
 end;
 
 procedure TfmMain.TBXItemEExtractDupCaseClick(Sender: TObject);
@@ -29360,6 +29382,7 @@ procedure TfmMain.TBXItemTreeFindPreviewClick(Sender: TObject);
 begin
   TreeFind_ShowPreview;
 end;
+
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;

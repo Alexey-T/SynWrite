@@ -116,7 +116,7 @@ begin
   L:= TTntStringList.Create;
   try
     EditorSearchMarksToList(Memo, L);
-    DoListCommand_Deduplicate(L, dedupAll);
+    DoListCommand_Deduplicate(L, cLineDedupAll);
     List.Items.Clear;
     List.Items.AddStrings(L);
   finally

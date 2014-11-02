@@ -7,7 +7,7 @@ uses
 
 type
   TSynSortMode = (sortUnicodeRaw, sortUnicode, sortAscii, sortNumeric);
-  TSynDedupMode = (dedupAll, dedupAdjacent);
+  TSynDedupMode = (cLineDedupAll, cLineDedupAdjacent, cLineDedupAllAndOrig);
   TSynTrimMode = (cTrimLead, cTrimTrail, cTrimAll, cTrimDups);
 
 function DoListCommand_ExtractDups(
@@ -338,7 +338,7 @@ begin
     DoDeleteLastEmpty(List);
 
     case AMode of
-      dedupAdjacent:
+      cLineDedupAdjacent:
         begin
           for i:= List.Count-1 downto 1{not 0} do
             if (List[i]=List[i-1]) then
@@ -347,7 +347,8 @@ begin
               Inc(Result);
             end;
         end;
-      dedupAll:
+      cLineDedupAll,
+      cLineDedupAllAndOrig:
         begin
           L:= TTntStringList.Create;
           try
@@ -355,10 +356,16 @@ begin
               L.AddObject(List[i], Pointer(i));
             L.Sort;
 
+            //mark Objects with non-nil, for all duplicate lines
             for i:= L.Count-1 downto 1{not 0} do
-              if (L[i]=L[i-1]) then
+              if L[i]=L[i-1] then
+              begin
                 List.Objects[Integer(L.Objects[i])]:= Pointer(1);
+                if AMode=cLineDedupAllAndOrig then
+                  List.Objects[Integer(L.Objects[i-1])]:= Pointer(1);
+              end;
 
+            //delete marked  
             for i:= List.Count-1 downto 0 do
               if List.Objects[i]<>nil then
               begin

@@ -405,6 +405,7 @@ const
   sm_SentenceCaseBlock = 1070;
   sm_RandomCaseBlock = 1071;
   sm_RestartProgram = 1072;
+  sm_RemoveDupsAllAndOrig = 1073;
   //free
 
   //Tree commands
