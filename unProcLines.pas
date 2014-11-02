@@ -13,6 +13,8 @@ type
 function DoListCommand_ExtractDups(
   List: TTntStringList;
   CaseSens: boolean): Integer;
+function DoListCommand_ExtractUniq(
+  List: TTntStringList): Integer;
 function DoListCommand_Reverse(
   L: TTntStringList): boolean;
 function DoListCommand_Shuffle(
@@ -600,6 +602,39 @@ begin
       else
         same:= (WideCompareText(L[i], L[i-1])=0);
       if same then
+        List.Insert(0, L[i]);
+    end;
+
+    //remove empty lines
+    for i:= List.Count-1 downto 0 do
+      if List[i]='' then
+        List.Delete(i);
+
+    Result:= List.Count;
+  finally
+    FreeAndNil(L);
+  end;
+end;
+
+function DoListCommand_ExtractUniq(List: TTntStringList): Integer;
+var
+  L: TTntStringList;
+  i: Integer;
+  dup: boolean;
+begin
+  L:= TTntStringList.Create;
+  try
+    for i:= 0 to List.Count-1 do
+      L.AddObject(List[i], Pointer(i));
+    L.Sort;
+
+    List.Clear;
+    for i:= L.Count-1 downto 0 do
+    begin
+      dup:=
+        ((i>0) and (L[i]=L[i-1])) or
+        ((i<L.Count-1) and (L[i]=L[i+1]));
+      if not dup then
         List.Insert(0, L[i]);
     end;
 

@@ -258,6 +258,7 @@ type
     cLineCmdShuffle,
     cLineCmdExtractDupsCase,
     cLineCmdExtractDupsNoCase,
+    cLineCmdExtractUniq,
     cLineCmdIndent,
     cLineCmdUnIndent
     );
@@ -1412,6 +1413,8 @@ type
     TBXItemTreeFindPreview: TSpTBXItem;
     TBXItemEDedupAllOrig: TSpTBXItem;
     ecDedupAllAndOrig: TAction;
+    ecExtractUniq: TAction;
+    TBXItemEExtractUniq: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2191,6 +2194,8 @@ type
     procedure TBXItemTreeFindPreviewClick(Sender: TObject);
     procedure TBXItemEDedupAllOrigClick(Sender: TObject);
     procedure ecDedupAllAndOrigExecute(Sender: TObject);
+    procedure ecExtractUniqExecute(Sender: TObject);
+    procedure TBXItemEExtractUniqClick(Sender: TObject);
 
   private
     cStatLine,
@@ -6140,6 +6145,7 @@ begin
     sm_RemoveDupsAdjacent: ecDedupAdjacent.Execute;
     sm_ExtractDupsCase: ecExtractDupsCase.Execute;
     sm_ExtractDupsNoCase: ecExtractDupsNoCase.Execute;
+    sm_ExtractUniqueLines: ecExtractUniq.Execute;
 
     //macros 1-9
     sm_MacroRepeat: acMacroRepeat.Execute;
@@ -23036,9 +23042,19 @@ begin
         end;
 
       cLineCmdExtractDupsCase,
-      cLineCmdExtractDupsNoCase:
+      cLineCmdExtractDupsNoCase,
+      cLineCmdExtractUniq:
         begin
-          i:= DoListCommand_ExtractDups(L, Cmd=cLineCmdExtractDupsCase);
+          case Cmd of
+            cLineCmdExtractDupsCase:
+              i:= DoListCommand_ExtractDups(L, true);
+            cLineCmdExtractDupsNoCase:
+              i:= DoListCommand_ExtractDups(L, false);
+            cLineCmdExtractUniq:
+              i:= DoListCommand_ExtractUniq(L);
+            else
+              i:= 0;
+          end;
           ok:= false;
           if i>0 then
           begin
@@ -25013,6 +25029,11 @@ begin
   DoLinesCommand(cLineCmdExtractDupsNoCase);
 end;
 
+procedure TfmMain.ecExtractUniqExecute(Sender: TObject);
+begin
+  DoLinesCommand(cLineCmdExtractUniq);
+end;
+
 procedure TfmMain.TBXItemEExtractDupCaseClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_ExtractDupsCase);
@@ -25022,6 +25043,12 @@ procedure TfmMain.TBXItemEExtractDupNoCaseClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_ExtractDupsNoCase);
 end;
+
+procedure TfmMain.TBXItemEExtractUniqClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_ExtractUniqueLines);
+end;
+
 
 procedure TfmMain.ecNonPrintSpacesExecute(Sender: TObject);
 begin
@@ -29382,6 +29409,7 @@ procedure TfmMain.TBXItemTreeFindPreviewClick(Sender: TObject);
 begin
   TreeFind_ShowPreview;
 end;
+
 
 
 initialization

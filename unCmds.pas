@@ -406,6 +406,7 @@ const
   sm_RandomCaseBlock = 1071;
   sm_RestartProgram = 1072;
   sm_RemoveDupsAllAndOrig = 1073;
+  sm_ExtractUniqueLines = 1074;
   //free
 
   //Tree commands

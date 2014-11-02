@@ -606,6 +606,8 @@ cmd_OpenEntireFolder = 1069
 cmd_SentenceCaseBlock = 1070
 cmd_RandomCaseBlock = 1071
 cmd_RestartProgram = 1072
+cmd_RemoveDupsAndOriginals = 1073
+cmd_ExtractUniqueLines = 1074
 
 cmd_TreeCollapseAll = 1090
 cmd_TreeExpandAll = 1091
