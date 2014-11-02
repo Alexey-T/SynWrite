@@ -2362,8 +2362,6 @@ type
     procedure SetListBkmkColumns(const S: string);
 
     //plugins related----------------------------
-    procedure DoPlugin_CommandFromToolbarString_Py(const Cmd: Widestring);
-    procedure DoPlugin_CommandFromToolbarString_Binary(const Cmd: Widestring);
     procedure DoPlugin_RefreshFiles(const fn: Widestring);
     procedure DoPlugin_RefreshLang;
     procedure DoPlugin_SaveFtpFile(F: TEditorFrame);
@@ -2809,6 +2807,10 @@ type
     function DoToolbar_Customize(const Id: string): boolean;
     procedure DoToolbar_CustomizeAndReload(Id: TSynUserToolbarId);
     procedure DoToolbar_OnClick(Sender: TObject);
+    procedure DoToolbar_RunCommand_PyPlugin(const Str: Widestring);
+    procedure DoToolbar_RunCommand_BinaryPlugin(const Str: Widestring);
+    procedure DoToolbar_RunCommand_ExtTool(Cmd: Widestring);
+    procedure DoToolbar_RunCommand_InternalCmd(Cmd: Widestring);
 
     function DoShowCmdList(AOnlyStdCommands: boolean = false): Integer;
     function DoShowCmdList_ForTools: string;
@@ -24876,56 +24878,64 @@ end;
 procedure TfmMain.DoToolbar_OnClick(Sender: TObject);
 var
   Cmd: Widestring;
-  NCmd, i: Integer;
+  NCmd: Integer;
 begin
   NCmd:= (Sender as TSpTbxItem).Tag;
   if not ((NCmd>=0) and (NCmd<FUserToolbarCommands.Count)) then
     begin MsgBeep; Exit end;
   Cmd:= FUserToolbarCommands[NCmd];
 
-  //run internal command
   if SBegin(Cmd, 'cm:') then
-  begin
-    SDeleteToW(Cmd, ':');
-    NCmd:= StrToIntDef(Cmd, 0);
-    if NCmd<=0 then begin MsgBeep; Exit end;
-    CurrentEditor.ExecCommand(NCmd);
-  end
+    DoToolbar_RunCommand_InternalCmd(Cmd)
   else
-  //run external tool
   if SBegin(Cmd, 'ext:') then
-  begin
-    SDeleteToW(Cmd, ':');
-    for i:= Low(opTools) to High(opTools) do
-      if opTools[i].ToolCaption=Cmd then
-      begin
-        DoTool_Run(opTools[i]);
-        Exit
-      end;
-    MsgError(WideFormat(DKLangConstW('MRun'), [Cmd]), Handle);
-  end
+    DoToolbar_RunCommand_ExtTool(Cmd)
   else
   if SBegin(Cmd, cPyPrefix) then
-    DoPlugin_CommandFromToolbarString_Py(Cmd)
+    DoToolbar_RunCommand_PyPlugin(Cmd)
   else
   if SBegin(Cmd, cBinaryPrefix) then
-    DoPlugin_CommandFromToolbarString_Binary(Cmd);
+    DoToolbar_RunCommand_BinaryPlugin(Cmd);
 end;
 
-procedure TfmMain.DoPlugin_CommandFromToolbarString_Py(const Cmd: Widestring);
+procedure TfmMain.DoToolbar_RunCommand_InternalCmd(Cmd: Widestring);
+var
+  NCmd: Integer;
+begin
+  SDeleteToW(Cmd, ':');
+  NCmd:= StrToIntDef(Cmd, 0);
+  if NCmd>0 then
+    CurrentEditor.ExecCommand(NCmd);
+end;
+
+procedure TfmMain.DoToolbar_RunCommand_ExtTool(Cmd: Widestring);
+var
+  i: Integer;
+begin
+  SDeleteToW(Cmd, ':');
+  for i:= Low(opTools) to High(opTools) do
+    if opTools[i].ToolCaption=Cmd then
+    begin
+      DoTool_Run(opTools[i]);
+      Exit
+    end;
+  MsgError(WideFormat(DKLangConstW('MRun'), [Cmd]), Handle);
+end;
+
+procedure TfmMain.DoToolbar_RunCommand_PyPlugin(const Str: Widestring);
 var
   PyCmd, PyFile: Widestring;
 begin
-  PyCmd:= Cmd;
+  PyCmd:= Str;
   PyFile:= SGetItem(PyCmd, '/');
   DoPyLoadPlugin(PyFile, PyCmd);
 end;
 
-procedure TfmMain.DoPlugin_CommandFromToolbarString_Binary(const Cmd: Widestring);
+procedure TfmMain.DoToolbar_RunCommand_BinaryPlugin(const Str: Widestring);
 var
   BinCmd, BinFile: Widestring;
 begin
-  BinCmd:= Cmd;
+  BinCmd:= Str;
   BinFile:= SGetItem(BinCmd, '/');
   SDeleteToW(BinFile, ':');
   DoPlugin_LoadAction(BinFile, cActionMenuCommand, PWChar(Widestring(BinCmd)), nil, nil, nil);
