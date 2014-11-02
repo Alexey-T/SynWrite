@@ -604,16 +604,16 @@ begin
       if same then
         List.Insert(0, L[i]);
     end;
-
-    //remove empty lines
-    for i:= List.Count-1 downto 0 do
-      if List[i]='' then
-        List.Delete(i);
-
-    Result:= List.Count;
   finally
     FreeAndNil(L);
   end;
+
+  //remove empty lines
+  for i:= List.Count-1 downto 0 do
+    if List[i]='' then
+      List.Delete(i);
+
+  Result:= List.Count;
 end;
 
 function DoListCommand_ExtractUniq(List: TTntStringList): Integer;
@@ -624,8 +624,7 @@ var
 begin
   L:= TTntStringList.Create;
   try
-    for i:= 0 to List.Count-1 do
-      L.AddObject(List[i], Pointer(i));
+    L.AddStrings(List);
     L.Sort;
 
     List.Clear;
@@ -637,16 +636,16 @@ begin
       if not dup then
         List.Insert(0, L[i]);
     end;
-
-    //remove empty lines
-    for i:= List.Count-1 downto 0 do
-      if List[i]='' then
-        List.Delete(i);
-
-    Result:= List.Count;
   finally
     FreeAndNil(L);
   end;
+
+  //remove empty lines
+  for i:= List.Count-1 downto 0 do
+    if List[i]='' then
+      List.Delete(i);
+
+  Result:= List.Count;
 end;
 
 function DoListCommand_Indent(
