@@ -10456,14 +10456,20 @@ procedure TfmMain.UpdateSpellLang;
 begin
   {$ifdef SPELL}
   if Assigned(FSpell) then
-      case LangManager.LanguageID of
-        1031: FSpell.UILanguage:= ltGerman;
-        1049: FSpell.UILanguage:= ltRussian;
-        1040: FSpell.UILanguage:= ltItalian;
-        3082: FSpell.UILanguage:= ltSpanish;
-        1029: FSpell.UILanguage:= ltCzech;
-        else FSpell.UILanguage:= ltEnglish;
-      end;
+    case LangManager.LanguageID of
+      1029: FSpell.UILanguage:= ltCzech;
+      1030: FSpell.UILanguage:= ltDanish;
+      1031: FSpell.UILanguage:= ltGerman;
+      1036: FSpell.UILanguage:= ltFrench;
+      1040: FSpell.UILanguage:= ltItalian;
+      1043: FSpell.UILanguage:= ltDutch;
+      1045: FSpell.UILanguage:= ltPolish;
+      1046: FSpell.UILanguage:= ltBrPort;
+      1049: FSpell.UILanguage:= ltRussian;
+      1053: FSpell.UILanguage:= ltSwedish;
+      3082: FSpell.UILanguage:= ltSpanish;
+      else FSpell.UILanguage:= ltEnglish;
+    end;
   {$endif}
 end;
 
