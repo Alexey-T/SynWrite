@@ -324,11 +324,11 @@ object fmMain: TfmMain
       Caption = '3'
     end
     object tbQs: TSpTBXToolbar
-      Left = 359
+      Left = 0
       Top = 26
       CloseButtonWhenDocked = True
       DockableTo = [dpTop, dpBottom]
-      DockPos = 359
+      DockPos = -9
       DockRow = 1
       Images = ImageListIcons
       TabOrder = 5
@@ -9668,7 +9668,7 @@ object fmMain: TfmMain
         Command = 1074
         KeyStrokes = <>
         Category = 'Sorting'
-        DisplayName = 'Extract unique lines (case sensitive)'
+        DisplayName = 'Extract unique lines'
       end>
     UseFirstControlKeys = True
     Left = 360
