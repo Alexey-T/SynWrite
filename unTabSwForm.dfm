@@ -3,7 +3,7 @@ object fmTabSw: TfmTabSw
   Top = 375
   BorderStyle = bsNone
   ClientHeight = 164
-  ClientWidth = 520
+  ClientWidth = 575
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,18 +23,18 @@ object fmTabSw: TfmTabSw
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 520
+    Width = 575
     Height = 164
     Align = alClient
     Caption = 'Panel1'
     TabOrder = 0
     DesignSize = (
-      520
+      575
       164)
     object List: TTntListBox
-      Left = 136
+      Left = 24
       Top = 4
-      Width = 249
+      Width = 528
       Height = 113
       Anchors = [akLeft, akTop, akRight, akBottom]
       BevelKind = bkFlat
@@ -46,7 +46,7 @@ object fmTabSw: TfmTabSw
     object Panel2: TPanel
       Left = 1
       Top = 121
-      Width = 518
+      Width = 573
       Height = 42
       Align = alBottom
       BevelOuter = bvLowered

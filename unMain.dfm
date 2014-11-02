@@ -837,6 +837,8 @@ object fmMain: TfmMain
           end
         end
         object TBXItemFReopen: TSpTBXItem
+          Caption = '&Reopen'
+          Hint = 'Reread file from disk'
           Action = acReread
           OnSelect = ButtonOnSelect
         end
@@ -847,6 +849,8 @@ object fmMain: TfmMain
           OnSelect = ButtonOnSelect
         end
         object TBXItemFSaveAs: TSpTBXItem
+          Caption = 'Save &as...'
+          Hint = 'Save file under different name'
           Action = acSaveAs
           OnSelect = ButtonOnSelect
         end
@@ -857,7 +861,7 @@ object fmMain: TfmMain
           OnSelect = ButtonOnSelect
         end
         object TBXItemFRename: TSpTBXItem
-          Caption = 'Rename...'
+          Caption = 'Rena&me...'
           Hint = 'Rename current file'
           Action = acRename
           OnSelect = ButtonOnSelect
