@@ -380,7 +380,7 @@ type
     acOpen: TAction;
     acSave: TAction;
     acSaveAs: TAction;
-    TBXItemToolSaveAs: TSpTBXItem;
+    TBXItemBarSaveAs: TSpTBXItem;
     SD: TTntSaveDialog;
     OD: TTntOpenDialog;
     SyntaxManager: TSyntaxManager;
@@ -389,7 +389,7 @@ type
     PopupEditor: TSpTbxPopupMenu;
     ImgListGutter: TTBImageList;
     TBXItemCtxCopy: TSpTbxItem;
-    TBXSubmenuItemToolOpen: TSpTbxSubmenuItem;
+    TBXSubmenuBarOpen: TSpTBXSubmenuItem;
     SyntKeyMapping: TSyntKeyMapping;
     ecCopy: TecCopy;
     ecCut: TecCut;
@@ -407,7 +407,7 @@ type
     TBXItemCtxSelectAll: TSpTbxItem;
     acSetup: TAction;
     TBXDockLeft: TSpTbxMultiDock;
-    TBXSubmenuItemToolSave: TSpTbxSubmenuItem;
+    TBXSubmenuBarSave: TSpTBXSubmenuItem;
     acExportRTF: TecExportRTFAction;
     acExportHTML: TecExportHTMLAction;
     ecCommentLines: TecCommentLines;
@@ -420,21 +420,21 @@ type
     PopupStatusLineEnds: TSpTBXPopupMenu;
     ecReadOnly: TAction;
     tbEdit: TSpTbxToolbar;
-    TBXItemTbCopy: TSpTbxItem;
-    TBXItemTbCut: TSpTbxItem;
-    TBXItemTbPaste: TSpTbxItem;
-    TBXItemTbSelAll: TSpTbxItem;
-    TBXItemTbUndo: TSpTbxItem;
-    TBXItemTbRedo: TSpTbxItem;
+    TBXItemBarCopy: TSpTBXItem;
+    TBXItemBarCut: TSpTBXItem;
+    TBXItemBarPaste: TSpTBXItem;
+    TBXItemBarSelAll: TSpTBXItem;
+    TBXItemBarUndo: TSpTBXItem;
+    TBXItemBarRedo: TSpTBXItem;
     ecClear: TecClear;
-    TBXItemTbDel: TSpTbxItem;
+    TBXItemBarDelete: TSpTBXItem;
     tbView: TSpTbxToolbar;
-    TBXItemVNonpr: TSpTbxSubmenuItem;
-    TBXItemVComm: TSpTbxItem;
-    TBXItemVUncom: TSpTbxItem;
+    TBXSubmenuBarNPrint: TSpTBXSubmenuItem;
+    TBXItemBarComm: TSpTBXItem;
+    TBXItemBarUncom: TSpTBXItem;
     TBXSeparatorItem2: TSpTbxSeparatorItem;
-    TBXItemVInd: TSpTbxItem;
-    TBXItemVUnind: TSpTbxItem;
+    TBXItemBarIndent: TSpTBXItem;
+    TBXItemBarUnindent: TSpTBXItem;
     TBXSeparatorItem3: TSpTbxSeparatorItem;
     TBXSeparatorItem4: TSpTbxSeparatorItem;
     TBXSubmenuCase: TSpTbxSubmenuItem;
@@ -448,14 +448,14 @@ type
     ecTitleCase: TAction;
     TBXItemBarCaseTitle: TSpTBXItem;
     ecShowTree: TAction;
-    TBXItemVPanelTree: TSpTBXItem;
+    TBXItemBarPTree: TSpTBXItem;
     ecPrintAction: TecPrintAction;
     ecPrinterSetup: TAction;
     PrinterSetupDialog: TPrinterSetupDialog;
-    TBXItemToolPrint: TSpTbxSubmenuItem;
-    TBXItemPrintS: TSpTbxItem;
-    TBXItemPreview: TSpTbxItem;
-    TBXItemPageS: TSpTbxItem;
+    TBXSubmenuBarPrint: TSpTBXSubmenuItem;
+    TBXItemBarPrintSet: TSpTBXItem;
+    TBXItemBarPreview: TSpTBXItem;
+    TBXItemBarPageSet: TSpTBXItem;
     TBXItemEndWin: TSpTbxItem;
     TBXItemEndUn: TSpTbxItem;
     TBXItemEndMac: TSpTbxItem;
@@ -464,26 +464,26 @@ type
     ParamCompletion: TParamCompletion;
     TemplatePopup: TTemplatePopup;
     ecFind: TAction;
-    TBXSubmenuItemTbSetup: TSpTbxSubmenuItem;
+    TBXSubmenuBarSetup: TSpTBXSubmenuItem;
     TBXSeparatorItem1: TSpTbxSeparatorItem;
-    TBXItemOOLex: TSpTbxItem;
-    TBXItemOOLexLib: TSpTbxItem;
+    TBXItemBarLexer: TSpTBXItem;
+    TBXItemBarLexerLib: TSpTBXItem;
     PopupLexers: TSpTBXPopupMenu;
     ecWrap: TAction;
     ecLineNums: TAction;
     ecFolding: TAction;
     ecNonPrint: TAction;
     acReread: TAction;
-    TbxSubmenuItemTblFind: TSpTBXSubmenuItem;
+    TBXSubmenuBarFind: TSpTBXSubmenuItem;
     TBXItemBarMarks: TSpTBXItem;
     acNewTab: TAction;
-    TBXItemToolNew: TSpTbxSubmenuItem;
+    TBXSubmenuBarNew: TSpTBXSubmenuItem;
     TBXItemBarCaseInvert: TSpTBXItem;
     TBXSeparatorItem10: TSpTbxSeparatorItem;
     Status: TSpTbxStatusBar;
-    TBXSubmenuItemSort: TSpTbxSubmenuItem;
-    TBXItemTbSortAsc: TSpTbxItem;
-    TBXItemTbSortDesc: TSpTbxItem;
+    TBXSubmenuSort: TSpTBXSubmenuItem;
+    TBXItemBarSortAsc: TSpTBXItem;
+    TBXItemBarSortDesc: TSpTBXItem;
     ecCharPopup: TecSelCharPopup;
     TBXItemBarWordPrev: TSpTBXItem;
     TBXSeparatorItem9: TSpTbxSeparatorItem;
@@ -683,7 +683,7 @@ type
     TBXItemSGoBracket: TSpTbxItem;
     plOut: TSpTbxDockablePanel;
     ListOut: TTntListBox;
-    TBXItemVPanelOut: TSpTBXItem;
+    TBXItemBarPOut: TSpTBXItem;
     ecShowOut: TAction;
     TBXItemOOut: TSpTbxItem;
     PopupOut: TSpTbxPopupMenu;
@@ -703,7 +703,7 @@ type
     acSetupLexerStyles: TAction;
     TBXItemOLexerHi: TSpTbxItem;
     TBXSeparatorItem38: TSpTbxSeparatorItem;
-    TBXItemOOLexSt: TSpTbxItem;
+    TBXItemBarLexerStyle: TSpTBXItem;
     TBXItemEExtr: TSpTbxItem;
     TBXSeparatorItem39: TSpTbxSeparatorItem;
     TBXItemECaseSent: TSpTbxItem;
@@ -740,8 +740,8 @@ type
     TBXItemTabCopyFN: TSpTBXItem;
     TBXSeparatorItem42: TSpTbxSeparatorItem;
     TBXSeparatorItem44: TSpTbxSeparatorItem;
-    TBXItemVSyncH: TSpTbxItem;
-    TBXItemVSyncV: TSpTbxItem;
+    TBXItemBarSyncH: TSpTBXItem;
+    TBXItemBarSyncV: TSpTBXItem;
     ecSyncScrollH: TAction;
     ecSyncScrollV: TAction;
     TBXItemOShell: TSpTbxItem;
@@ -796,11 +796,11 @@ type
     TBXItemECpFullPath: TSpTbxItem;
     TBXItemECpFN: TSpTbxItem;
     ecToggleFocusFindRes: TAction;
-    TBXItemTbSpellCheck: TSpTbxItem;
+    TBXItemBarSpellChk: TSpTBXItem;
     TBXSeparatorItem48: TSpTbxSeparatorItem;
     ecSpellCheck: TAction;
     ecSpellLive: TAction;
-    TBXItemTbSpellLive: TSpTbxSubmenuItem;
+    TBXSubmenuBarSpell: TSpTBXSubmenuItem;
     TBXItemVSpellCheck: TSpTbxItem;
     TBXItemVSpellLive: TSpTbxItem;
     TBXSeparatorItem49: TSpTbxSeparatorItem;
@@ -861,7 +861,7 @@ type
     TBXItemBkPaste: TSpTbxItem;
     TBXItemBkCut: TSpTbxItem;
     TBXItemBkCopy: TSpTbxItem;
-    TBXItemTbGoto: TSpTbxItem;
+    TBXItemBarGoto: TSpTBXItem;
     ecGoto: TAction;
     TBXSeparatorItem12: TSpTbxSeparatorItem;
     TBXItemVSyncVert: TSpTbxItem;
@@ -884,7 +884,7 @@ type
     TBXItemValClear: TSpTBXItem;
     ecToggleFocusValidate: TAction;
     TBXItemEDedupAdjacent: TSpTbxItem;
-    TBXItemTbDedupAdjacent: TSpTbxItem;
+    TBXItemBarDedupAdj: TSpTBXItem;
     TBXSubmenuItemSess: TSpTbxSubmenuItem;
     TBXSeparatorItem59: TSpTbxSeparatorItem;
     TBXItemSessClr: TSpTbxItem;
@@ -1121,7 +1121,7 @@ type
     ecSortDialog: TAction;
     TBXItemESortDialog: TSpTbxItem;
     TBXSeparatorItem86: TSpTbxSeparatorItem;
-    TBXItemTbSortDialog: TSpTbxItem;
+    TBXItemBarSortDialog: TSpTBXItem;
     TBXItemSSelBrackets: TSpTbxItem;
     PropsManagerPrint: TPropsManager;
     TimerTree: TTimer;
@@ -1161,7 +1161,7 @@ type
     TBXSeparatorItem94: TSpTbxSeparatorItem;
     TBXItemEDedupAll: TSpTbxItem;
     TBXSeparatorItem85: TSpTbxSeparatorItem;
-    TBXItemTbDedupAll: TSpTbxItem;
+    TBXItemBarDedupAll: TSpTBXItem;
     TBXSeparatorItem95: TSpTbxSeparatorItem;
     TBXItemEAlignWithSep: TSpTbxItem;
     ecAlignWithSep: TAction;
@@ -1263,7 +1263,7 @@ type
     SpTBXSeparatorItem13: TSpTBXSeparatorItem;
     SpTBXSeparatorItem14: TSpTBXSeparatorItem;
     TBXMRUListItemFNew: TSpTBXMRUListItem;
-    TbxItemVPanelClip: TSpTBXItem;
+    TBXItemBarPClip: TSpTBXItem;
     TBXSubmenuMarkers: TSpTBXSubmenuItem;
     TBXSubmenuBkOps: TSpTBXSubmenuItem;
     TBXSubmenuBkPortable: TSpTBXSubmenuItem;
@@ -1415,6 +1415,7 @@ type
     ecDedupAllAndOrig: TAction;
     ecExtractUniq: TAction;
     TBXItemEExtractUniq: TSpTBXItem;
+    TBXItemBarDedupAndOrig: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1658,7 +1659,7 @@ type
     procedure TBXItemECpFullPathClick(Sender: TObject);
     procedure TBXItemECpDirPathClick(Sender: TObject);
     procedure ecToggleFocusFindResExecute(Sender: TObject);
-    procedure TBXItemTbSpellCheckClick(Sender: TObject);
+    procedure TBXItemBarSpellChkClick(Sender: TObject);
     procedure ecSpellCheckExecute(Sender: TObject);
     procedure ecSpellLiveExecute(Sender: TObject);
     procedure TBXItemSpellLiveClick(Sender: TObject);
@@ -1959,14 +1960,14 @@ type
     procedure ecDedupAdjacentExecute(Sender: TObject);
     procedure TBXItemEDedupAllClick(Sender: TObject);
     procedure TBXItemEDedupAdjacentClick(Sender: TObject);
-    procedure TBXItemTbDedupAdjacentClick(Sender: TObject);
-    procedure TBXItemTbDedupAllClick(Sender: TObject);
+    procedure TBXItemBarDedupAdjClick(Sender: TObject);
+    procedure TBXItemBarDedupAllClick(Sender: TObject);
     procedure TBXItemESortDialogClick(Sender: TObject);
     procedure TBXItemESortAscClick(Sender: TObject);
     procedure TBXItemESortDescClick(Sender: TObject);
-    procedure TBXItemTbSortDialogClick(Sender: TObject);
-    procedure TBXItemTbSortAscClick(Sender: TObject);
-    procedure TBXItemTbSortDescClick(Sender: TObject);
+    procedure TBXItemBarSortDialogClick(Sender: TObject);
+    procedure TBXItemBarSortAscClick(Sender: TObject);
+    procedure TBXItemBarSortDescClick(Sender: TObject);
     procedure TBXItemBarCaseUpperClick(Sender: TObject);
     procedure TBXItemBarCaseLowerClick(Sender: TObject);
     procedure TBXItemBarCaseTitleClick(Sender: TObject);
@@ -2034,8 +2035,8 @@ type
     procedure TBXItemFoldLevel7Click(Sender: TObject);
     procedure TBXItemFoldLevel8Click(Sender: TObject);
     procedure TBXItemFoldLevel9Click(Sender: TObject);
-    procedure TBXItemVCommClick(Sender: TObject);
-    procedure TBXItemVUncomClick(Sender: TObject);
+    procedure TBXItemBarCommClick(Sender: TObject);
+    procedure TBXItemBarUncomClick(Sender: TObject);
     procedure TBXItemTUser1Click(Sender: TObject);
     procedure TBXItemTUser2Click(Sender: TObject);
     procedure TBXItemTUser3Click(Sender: TObject);
@@ -2183,7 +2184,7 @@ type
     procedure TBXItemTabCloseLefterClick(Sender: TObject);
     procedure ecReplaceInProjectExecute(Sender: TObject);
     procedure ecPreviewActionNewExecute(Sender: TObject);
-    procedure TBXItemPreviewClick(Sender: TObject);
+    procedure TBXItemBarPreviewClick(Sender: TObject);
     procedure TBXItemFPreviewClick(Sender: TObject);
     procedure acSetupLexerNewExecute(Sender: TObject);
     procedure ecPageSetupActionNewExecute(Sender: TObject);
@@ -2196,6 +2197,7 @@ type
     procedure ecDedupAllAndOrigExecute(Sender: TObject);
     procedure ecExtractUniqExecute(Sender: TObject);
     procedure TBXItemEExtractUniqClick(Sender: TObject);
+    procedure TBXItemBarDedupAndOrigClick(Sender: TObject);
 
   private
     cStatLine,
@@ -4428,7 +4430,7 @@ begin
   sel2:= ed.HaveSelection;
   en_lex:= SyntaxManager.CurrentLexer<>nil;
 
-  TBXSubmenuItemToolSave.ImageIndex:= IfThen(frame.Modified, 2, 3);
+  TBXSubmenuBarSave.ImageIndex:= IfThen(frame.Modified, 2, 3);
 
   //Hilite brackets
   TimerBrackets.Enabled:= true;
@@ -4521,8 +4523,8 @@ begin
   ecDedupAdjacent.Enabled:= ecSortDialog.Enabled;
   TbxSubmenuCase.Enabled:= ecSortDialog.Enabled;
 
-  TBXItemVComm.Enabled:= (ed.Lines.Count>0) and not ro and en_lex;
-  TBXItemVUncom.Enabled:= TBXItemVComm.Enabled;
+  TBXItemBarComm.Enabled:= (ed.Lines.Count>0) and not ro and en_lex;
+  TBXItemBarUncom.Enabled:= TBXItemBarComm.Enabled;
 
   ecSpellLive.Checked:= Frame.SpellLive;
   ecSyncScrollV.Enabled:= (Groups.PagesVisibleCount=2) and (Groups.Pages2.Tabs.TabCount>0);
@@ -15717,7 +15719,7 @@ begin
   {$endif}
 end;
 
-procedure TfmMain.TBXItemTbSpellCheckClick(Sender: TObject);
+procedure TfmMain.TBXItemBarSpellChkClick(Sender: TObject);
 begin
   ecSpellCheck.Execute;
 end;
@@ -23941,14 +23943,19 @@ begin
   CurrentEditor.ExecCommand(sm_RemoveDupsAdjacent);
 end;
 
-procedure TfmMain.TBXItemTbDedupAdjacentClick(Sender: TObject);
+procedure TfmMain.TBXItemBarDedupAdjClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_RemoveDupsAdjacent);
 end;
 
-procedure TfmMain.TBXItemTbDedupAllClick(Sender: TObject);
+procedure TfmMain.TBXItemBarDedupAllClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_RemoveDupsAll);
+end;
+
+procedure TfmMain.TBXItemBarDedupAndOrigClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_RemoveDupsAllAndOrig);
 end;
 
 procedure TfmMain.TBXItemESortDialogClick(Sender: TObject);
@@ -23966,17 +23973,17 @@ begin
   CurrentEditor.ExecCommand(smSortDescending);
 end;
 
-procedure TfmMain.TBXItemTbSortDialogClick(Sender: TObject);
+procedure TfmMain.TBXItemBarSortDialogClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_SortDialog);
 end;
 
-procedure TfmMain.TBXItemTbSortAscClick(Sender: TObject);
+procedure TfmMain.TBXItemBarSortAscClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smSortAscending);
 end;
 
-procedure TfmMain.TBXItemTbSortDescClick(Sender: TObject);
+procedure TfmMain.TBXItemBarSortDescClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smSortDescending);
 end;
@@ -24443,12 +24450,12 @@ begin
   CurrentEditor.ExecCommand(sm_FoldLevel9);
 end;
 
-procedure TfmMain.TBXItemVCommClick(Sender: TObject);
+procedure TfmMain.TBXItemBarCommClick(Sender: TObject);
 begin
   DoToolbarCommentUncomment(true);
 end;
 
-procedure TfmMain.TBXItemVUncomClick(Sender: TObject);
+procedure TfmMain.TBXItemBarUncomClick(Sender: TObject);
 begin
   DoToolbarCommentUncomment(false);
 end;
@@ -29308,7 +29315,7 @@ begin
   SavePrintOptions;
 end;
 
-procedure TfmMain.TBXItemPreviewClick(Sender: TObject);
+procedure TfmMain.TBXItemBarPreviewClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smPrintPreview);
 end;
@@ -29415,8 +29422,6 @@ procedure TfmMain.TBXItemTreeFindPreviewClick(Sender: TObject);
 begin
   TreeFind_ShowPreview;
 end;
-
-
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
