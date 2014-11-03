@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.13.1745
+AppVersion=6.14.1765
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -47,11 +47,24 @@ Source: "..\Py\syn_plugin_manager\*.lng"; DestDir: "{app}\Py\syn_plugin_manager"
 Source: "..\Data\autocomplete\*"; DestDir: "{app}\Data\autocomplete";
 Source: "..\Data\colors\*"; 	  DestDir: "{app}\Data\colors";
 Source: "..\Data\newdoc\*";       DestDir: "{app}\Data\newdoc";
-Source: "..\Data\clips\*";        DestDir: "{app}\Data\clips";
 Source: "..\Data\skins\*";        DestDir: "{app}\Data\skins";
 Source: "..\Data\icons\*";        DestDir: "{app}\Data\icons";
 Source: "..\Data\conv\*";         DestDir: "{app}\Data\conv";
 Source: "..\Data\outpresets\*";   DestDir: "{app}\Data\outpresets";
+
+Source: "..\Data\clips\Arrows\*";                     DestDir: "{app}\Data\clips\Arrows";                    
+Source: "..\Data\clips\Currency symbols\*";           DestDir: "{app}\Data\clips\Currency symbols";          
+Source: "..\Data\clips\Greek alphabet (lower)\*";     DestDir: "{app}\Data\clips\Greek alphabet (lower)";    
+Source: "..\Data\clips\Greek alphabet (upper)\*";     DestDir: "{app}\Data\clips\Greek alphabet (upper)";    
+Source: "..\Data\clips\HTML - Arrows\*";              DestDir: "{app}\Data\clips\HTML - Arrows";             
+Source: "..\Data\clips\HTML - Color names\*";         DestDir: "{app}\Data\clips\HTML - Color names";        
+Source: "..\Data\clips\HTML - Color names+values\*";  DestDir: "{app}\Data\clips\HTML - Color names+values"; 
+Source: "..\Data\clips\HTML - Letters\*";             DestDir: "{app}\Data\clips\HTML - Letters";            
+Source: "..\Data\clips\HTML - Math symbols\*";        DestDir: "{app}\Data\clips\HTML - Math symbols";       
+Source: "..\Data\clips\HTML - Special characters\*";  DestDir: "{app}\Data\clips\HTML - Special characters"; 
+Source: "..\Data\clips\Math symbols\*";               DestDir: "{app}\Data\clips\Math symbols";              
+Source: "..\Data\clips\Quote selection\*";            DestDir: "{app}\Data\clips\Quote selection";           
+Source: "..\Data\clips\Special characters\*";         DestDir: "{app}\Data\clips\Special characters";        
 
 Source: "..\Data\snippets\Std.C\*";      DestDir: "{app}\Data\snippets\Std.C";      
 Source: "..\Data\snippets\Std.Java\*";   DestDir: "{app}\Data\snippets\Std.Java";   

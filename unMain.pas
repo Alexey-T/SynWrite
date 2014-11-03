@@ -3389,7 +3389,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1760';
+  cSynVer = '6.14.1765';
   cSynPyVer = '1.0.142';
 
 const
@@ -10189,7 +10189,6 @@ begin
 
   //clips popup menu
   UpdKey_String(TBXItemClipsAddText, 'Insert');
-  //UpdKey_String(TBXItemClipsDelText, 'Shift+Delete');
 
   //output popup menu
   UpdKey_String(TBXItemOutNav, 'Space');
