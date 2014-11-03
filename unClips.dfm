@@ -29,7 +29,7 @@ object fmClips: TfmClips
     TabOrder = 0
     OnChange = ComboChange
   end
-  object List: TTntListBox
+  object ListNames: TTntListBox
     Left = 0
     Top = 21
     Width = 174
@@ -37,7 +37,7 @@ object fmClips: TfmClips
     Align = alClient
     ItemHeight = 13
     TabOrder = 1
-    OnDblClick = ListDblClick
-    OnKeyDown = ListKeyDown
+    OnDblClick = ListNamesDblClick
+    OnKeyDown = ListNamesKeyDown
   end
 end

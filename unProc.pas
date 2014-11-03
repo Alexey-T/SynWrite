@@ -41,6 +41,7 @@ function StringToFontStyles(const s: string): TFontStyles;
 function FontToString(F: TFont): string;
 procedure StringToFont(F: TFont; const Str: string);
 
+function IsCorrectClipsFilename(const S: Widestring): boolean;
 function IsMouseOverControl(Control: TControl): boolean;
 function IsElevationNeededForFolder(const Dir: Widestring): boolean;
 
@@ -2652,5 +2653,9 @@ begin
   L.PngImages.Add;
 end;
 
+function IsCorrectClipsFilename(const S: Widestring): boolean;
+begin
+  Result:= IsStringRegex(S, '[\w\s\.\-\+]+');
+end;  
 
 end.

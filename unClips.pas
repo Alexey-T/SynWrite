@@ -13,30 +13,29 @@ type
 type
   TfmClips = class(TForm)
     Combo: TTntComboBox;
-    List: TTntListBox;
+    ListNames: TTntListBox;
     procedure ComboChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ListDblClick(Sender: TObject);
-    procedure ListKeyDown(Sender: TObject; var Key: Word;
+    procedure ListNamesDblClick(Sender: TObject);
+    procedure ListNamesKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
   private
     { Private declarations }
-    FClipsDir: string;
-    FClips: TTntStringList;
+    FClipRootDir: string;
+    FClipItems: TList;
     FOnClick: TClipsEvent;
     FOnInsPress: TNotifyEvent;
     procedure LoadClips;
-    procedure LoadClip(const Name: string);
+    procedure LoadClipGroup(const Name: string);
+    procedure DoClearItems;
   public
     { Public declarations }
-    property OnClick: TClipsEvent read FOnClick write FOnClick;
-    property OnInsPress: TNotifyEvent read FOnInsPress write FOnInsPress;
     procedure InitClips(const dir: string);
-    function GetClipsFN(const Name: string): string;
-    function GetCurrentFN: string;
-    function GetCurrentClip: Widestring;
-    procedure DoDeleteClip;
+    function GetCurrentClipContent: Widestring;
+    function GetCurrentClipFN: Widestring;
+    property OnClipInsert: TClipsEvent read FOnClick write FOnClick;
+    property OnInsPress: TNotifyEvent read FOnInsPress write FOnInsPress;
   end;
 
 implementation
@@ -50,7 +49,15 @@ uses
 
 {$R *.dfm}
 
-procedure SGetNameValue(const s: Widestring; var sName, sValue: Widestring);
+type
+  TSynClipInfo = class
+    ClipFN,
+    ClipName,
+    ClipContent: Widestring;
+    ClipAccel: char;
+  end;
+
+procedure ClipNameValue(const s: Widestring; var sName, sValue: Widestring);
 const
   Decode: array[0..0] of TStringDecodeRecW =
     ((SFrom: '\='; STo: '='));
@@ -79,68 +86,99 @@ begin
   sValue:= SDecodeW(sValue, Decode);
 end;
 
-function SGetHotkey(const s: Widestring): Widechar;
+function ClipHotkey(const SName: Widestring): char;
 var
-  SName, SVal: Widestring;
   n1, n2: Integer;
 begin
   Result:= #0;
-  SGetNameValue(s, SName, SVal);
   n1:= Pos('[', SName);
   n2:= PosEx(']', SName, n1);
   if (n1>0) and (n2=n1+2) then
-  begin
-    SVal:= UpperCase(SName[n1+1]);
-    if SVal<>'' then
-      Result:= SVal[1];
-  end;
+    Result:= UpCase(Char(SName[n1+1]));
 end;
 
-function TfmClips.GetClipsFN(const Name: string): string;
-begin
-  Result:= FClipsDir + '\' + Name + '.txt';
-end;
-
-procedure TfmClips.LoadClip(const Name: string);
+procedure TfmClips.DoClearItems;
 var
-  fn: string;
   i: Integer;
-  S, SName, SVal: Widestring;
 begin
-  List.Items.Clear;
-  FClips.Clear;
+  with FClipItems do
+    for i:= Count-1 downto 0 do
+    begin
+      TObject(Items[i]).Free;
+      Delete(i);
+    end;
+end;
 
-  fn:= GetClipsFN(Name);
-  if not FileExists(fn) then Exit;
+procedure TfmClips.LoadClipGroup(const Name: string);
+var
+  LFiles, LItems: TTntStringList;
+  InfoClip: TSynClipInfo;
+  SGroupName, SClipName, SClipVal, S, fn: Widestring;
+  i, j: Integer;
+begin
+  ListNames.Items.Clear;
+  DoClearItems;
 
-  FClips.LoadFromFile(fn);
-  for i:= 0 to FClips.Count-1 do
-  begin
-    S:= FClips[i];
-    SReplaceAllW(S, '\n', sLineBreak);
-    FClips[i]:= S;
+  SGroupName:= Combo.Text;
+  if SGroupName='' then Exit;
 
-    SGetNameValue(S, SName, SVal);
-    List.Items.Add(' '+SName);
+  LFiles:= TTntStringList.Create;
+  LItems:= TTntStringList.Create;
+  try
+    FFindToList(LFiles, FClipRootDir + '\' + SGroupName, '*.txt', '',
+      false{SubDirs}, false, false, false);
+
+    for i:= 0 to LFiles.Count-1 do
+    begin
+      fn:= LFiles[i];
+      LItems.LoadFromFile(fn);
+      for j:= 0 to LItems.Count-1 do
+      begin
+        S:= LItems[j];
+        SReplaceAllW(S, '\n', sLineBreak);
+        ClipNameValue(S, SClipName, SClipVal);
+
+        InfoClip:= TSynClipInfo.Create;
+        InfoClip.ClipFN:= fn;
+        InfoClip.ClipName:= SClipName;
+        InfoClip.ClipContent:= SClipVal;
+        InfoClip.ClipAccel:= ClipHotkey(SClipName);
+        FClipItems.Add(InfoClip);
+      end;
+    end;
+  finally
+    FreeAndNil(LItems);
+    FreeAndNil(LFiles);
   end;
+
+  for i:= 0 to FClipItems.Count-1 do
+    ListNames.Items.Add(' '+TSynClipInfo(FClipItems[i]).ClipName);
+    //add space so char-typing works only for accelerators, not list-items
 end;
 
 procedure TfmClips.LoadClips;
 var
   L: TTntStringList;
   i: Integer;
+  Str: Widestring;
 begin
-  if FClipsDir='' then
+  if FClipRootDir='' then
     raise Exception.Create('Clips dir nil');
   Combo.Items.Clear;
 
   L:= TTntStringList.Create;
   try
-    FFindToList(L, FClipsDir, '*.txt', '',
-      false{SubDir}, false, false, false);
+    FFindToList(L, FClipRootDir, '*.txt', '',
+      true{SubDir}, false, false, false);
+    L.Sort;  
 
     for i:= 0 to L.Count-1 do
-      Combo.Items.Add(WideChangeFileExt(WideExtractFileName(L[i]), ''));
+    begin
+      Str:= WideExtractFileName(WideExtractFileDir(L[i]));
+      if Combo.Items.IndexOf(Str)<0 then
+        Combo.Items.Add(Str);
+    end;
+
     if L.Count>0 then
       Combo.ItemIndex:= 0;
   finally
@@ -150,60 +188,67 @@ end;
 
 procedure TfmClips.InitClips(const dir: string);
 begin
-  FClipsDir:= dir;
+  FClipRootDir:= dir;
   LoadClips;
   ComboChange(Self);
 end;
 
 procedure TfmClips.ComboChange(Sender: TObject);
 begin
-  LoadClip(Combo.Text);
+  LoadClipGroup(Combo.Text);
 end;
 
 procedure TfmClips.FormCreate(Sender: TObject);
 begin
-  FClips:= TTntStringList.Create;
+  FClipItems:= TList.Create;
 end;
 
 procedure TfmClips.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(FClips);
+  DoClearItems;
+  FreeAndNil(FClipItems);
 end;
 
-procedure TfmClips.ListDblClick(Sender: TObject);
+procedure TfmClips.ListNamesDblClick(Sender: TObject);
 begin
   if Assigned(FOnClick) then
-    FOnClick(Self, GetCurrentClip);
+    FOnClick(Self, GetCurrentClipContent);
 end;
 
-function TfmClips.GetCurrentClip: Widestring;
+function TfmClips.GetCurrentClipContent: Widestring;
 var
-  n: integer;
-  SName: Widestring;
+  N: integer;
 begin
   Result:= '';
-  n:= List.ItemIndex;
-  if (n>=0) and (n<FClips.Count) then
-    SGetNameValue(FClips[n], SName, Result);
+  N:= ListNames.ItemIndex;
+  if N<0 then Exit;
+  if N<FClipItems.Count then
+    Result:= TSynClipInfo(FClipItems[N]).ClipContent;
 end;
 
-
-function TfmClips.GetCurrentFN: string;
+function TfmClips.GetCurrentClipFN: Widestring;
+var
+  N: integer;
 begin
-  Result:= GetClipsFN(Combo.Text);
+  Result:= '';
+  N:= ListNames.ItemIndex;
+  if N<0 then Exit;
+  if N<FClipItems.Count then
+    Result:= TSynClipInfo(FClipItems[N]).ClipFN;
 end;
 
-procedure TfmClips.ListKeyDown(Sender: TObject; var Key: Word;
+procedure TfmClips.ListNamesKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 var
   i, iFrom: Integer;
 begin
   if (Key=vk_return) and (Shift=[]) then
   begin
-    ListDblClick(Self);
+    ListNamesDblClick(Self);
     Key:= 0;
     Exit
   end;
+
   if (Key=vk_insert) and (Shift=[]) then
   begin
     if Assigned(FOnInsPress) then
@@ -211,65 +256,36 @@ begin
     Key:= 0;
     Exit
   end;
-  if (Key=vk_delete) and (Shift=[ssShift]) then
-  begin
-    DoDeleteClip;
-    Key:= 0;
-    Exit
-  end;
+
   if (Key=Ord('C')) and (Shift=[ssCtrl]) then
   begin
-    TntClipboard.AsWideText:= GetCurrentClip;
+    TntClipboard.AsWideText:= GetCurrentClipContent;
     Key:= 0;
     Exit
   end;
+
   if (Shift=[]) and
     ( ((Key>=Ord('A')) and (Key<=Ord('Z'))) or
       ((Key>=Ord('0')) and (Key<=Ord('9'))) ) then
   begin
-    iFrom:= List.ItemIndex;
+    iFrom:= ListNames.ItemIndex;
     i:= iFrom;
     repeat
       Inc(i);
-      if i>=List.Items.Count then
+      if i>=ListNames.Items.Count then
         i:= 0;
       if i=iFrom then
         Break;
-      if (Key = Ord(SGetHotkey(FClips[i]))) then
+      if (Key = Ord(TSynClipInfo(FClipItems[i]).ClipAccel)) then
       begin
-        List.ItemIndex:= i;
+        ListNames.ItemIndex:= i;
         Break;
       end;
-    until false;  
+    until false;
     Key:= 0;
     Exit
   end;
 end;
-
-procedure TfmClips.DoDeleteClip;
-var
-  L: TTntStringList;
-  Idx: integer;
-begin
-  Idx:= List.ItemIndex;
-  if Idx<0 then Exit;
-
-  L:= TTntStringList.Create;
-  try
-    L.LoadFromFile(GetCurrentFN);
-    L.Delete(Idx);
-    L.SaveToFile(GetCurrentFN);
-  finally
-    FreeAndNil(L);
-  end;
-
-  ComboChange(Self);
-  if Idx<List.Items.Count then
-    List.ItemIndex:= Idx
-  else
-    List.ItemIndex:= List.Items.Count-1;
-end;
-
 
 
 end.

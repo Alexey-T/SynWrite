@@ -1063,7 +1063,6 @@ type
     TBXItemClipsAddText: TSpTbxItem;
     TBXItemClipsEdit: TSpTbxItem;
     TBXSeparatorItem76: TSpTbxSeparatorItem;
-    TBXItemClipsAddFile: TSpTbxItem;
     TBXItemClipsDir: TSpTbxItem;
     OD_Swatch: TOpenDialog;
     SD_Swatch: TSaveDialog;
@@ -1869,7 +1868,6 @@ type
     procedure ecToggleFocusClipsExecute(Sender: TObject);
     procedure TBXItemClipsAddTextClick(Sender: TObject);
     procedure TBXItemClipsEditClick(Sender: TObject);
-    procedure TBXItemClipsAddFileClick(Sender: TObject);
     procedure TBXItemClipsDirClick(Sender: TObject);
     procedure TBXTabColorChange(Sender: TObject);
     procedure TBXSubmenuTabColorPopup(Sender: TTBCustomItem;
@@ -2153,7 +2151,6 @@ type
     procedure TbxItemPreEditClick(Sender: TObject);
     procedure TbxItemPreZoomOtherClick(Sender: TObject);
     procedure PopupPreviewEditorPopup(Sender: TObject);
-    procedure PopupStatusEncClosePopup(Sender: TObject);
     procedure PopupClipsPopup(Sender: TObject);
     procedure TbxItemGroupOneClick(Sender: TObject);
     procedure TbxItemGroup2HClick(Sender: TObject);
@@ -2456,7 +2453,7 @@ type
     procedure DoSetTabColorValue(NColor: TColor);
     procedure DoSetTabColorIndex(NIndex: Integer);
     procedure DoSetTabColorIndex_Current(NIndex: Integer);
-    procedure ClipsClick(Sender: TObject; const S: Widestring);
+    procedure ClipsInsert(Sender: TObject; const S: Widestring);
     procedure ClipsInsPress(Sender: TObject);
     function IsProgressNeeded(Ed: TSyntaxMemo): boolean;
     function IsProgressStopped(const NDoneSize, NTotalSize: Int64): boolean;
@@ -9153,7 +9150,7 @@ begin
   end;
 
   //Clips keys
-  if Assigned(fmClips) and fmClips.List.Focused then
+  if Assigned(fmClips) and fmClips.ListNames.Focused then
   begin
     if (Key = vk_insert) and (Shift = []) then Exit;
     if (Key = vk_delete) and (Shift = [ssShift]) then Exit;
@@ -13183,12 +13180,12 @@ begin
 
   if Assigned(fmClips) then
   begin
-    fmClips.List.Color:= ListOut.Color;
-    fmClips.List.Font:= ListOut.Font;
-    fmClips.List.ItemHeight:= ListOut.ItemHeight;
+    fmClips.ListNames.Color:= ListOut.Color;
+    fmClips.ListNames.Font:= ListOut.Font;
+    fmClips.ListNames.ItemHeight:= ListOut.ItemHeight;
     fmClips.Combo.Color:= ListOut.Color;
     fmClips.Combo.Font:= ListOut.Font;
-    fmClips.List.Invalidate;
+    fmClips.ListNames.Invalidate;
   end;
 end;
 
@@ -13796,11 +13793,11 @@ begin
     Parent:= plClip;
     Align:= alClient;
     BorderStyle:= bsNone;
-    OnClick:= ClipsClick;
+    OnClipInsert:= ClipsInsert;
     OnInsPress:= ClipsInsPress;
-    List.OnMouseMove:= ListOutMouseMove;
-    List.PopupMenu:= PopupClips;
-    List.BorderStyle:= SynBorderStyle;
+    ListNames.OnMouseMove:= ListOutMouseMove;
+    ListNames.PopupMenu:= PopupClips;
+    ListNames.BorderStyle:= SynBorderStyle;
     ApplyOut;
 
     //load clips
@@ -20355,7 +20352,7 @@ begin
   TabsRight.TabIndex:= Ord(tbTextClips);
 end;
 
-procedure TfmMain.ClipsClick(Sender: TObject; const S: Widestring);
+procedure TfmMain.ClipsInsert(Sender: TObject; const S: Widestring);
 begin
   with CurrentEditor do
     if not ReadOnly then
@@ -20372,26 +20369,27 @@ begin
     ecShowClip.Execute;
     TabsRight.TabIndex:= Ord(tbTextClips);
     if Assigned(fmClips) then
-      if fmClips.List.CanFocus then
-        fmClips.List.SetFocus;
+      if fmClips.ListNames.CanFocus then
+        fmClips.ListNames.SetFocus;
   end
   else
-  if Assigned(fmClips) and fmClips.List.Focused then
+  if Assigned(fmClips) and fmClips.ListNames.Focused then
     FocusEditor
   else
   begin
     TabsRight.TabIndex:= Ord(tbTextClips);
     if Assigned(fmClips) then
-      if fmClips.List.CanFocus then
-        fmClips.List.SetFocus
+      if fmClips.ListNames.CanFocus then
+        fmClips.ListNames.SetFocus
   end;
 end;
 
 procedure TfmMain.TBXItemClipsAddTextClick(Sender: TObject);
 const
   cName = 'snippet';
+  cUserFN = 'User.txt';
 var
-  fn: string;
+  fn: Widestring;
   L: TTntStringList;
   S: Widestring;
 begin
@@ -20405,63 +20403,44 @@ begin
 
   if Assigned(fmClips) then
   begin
-    fn:= fmClips.GetCurrentFN;
+    fn:= fmClips.GetCurrentClipFN;
+    fn:= WideExtractFilePath(fn)+cUserFN;
+
     L:= TTntStringList.Create;
     try
-      L.LoadFromFile(fn);
+      if IsFileExist(fn) then
+        L.LoadFromFile(fn);
       L.Add(S);
       L.SaveToFile(fn);
     finally
       FreeAndNil(L);
     end;
 
-    fmClips.ComboChange(nil);
-    fmClips.List.ItemIndex:= fmClips.List.Count-1;
-    fmClips.List.SetFocus;
+    with fmClips do
+    begin
+      ComboChange(nil);
+      if ListNames.CanFocus then
+        ListNames.SetFocus;
+    end;
   end;
 end;
 
 procedure TfmMain.TBXItemClipsEditClick(Sender: TObject);
 begin
   if Assigned(fmClips) then
-    DoOpenFile(fmClips.GetCurrentFN);
-end;
-
-procedure TfmMain.TBXItemClipsAddFileClick(Sender: TObject);
-var
-  s: Widestring;
-  fn: string;
-begin
-  S:= '';
-  if not MsgInput('zClipFile', S) then
-    Exit;
-  if WideTrim(S)='' then
-    begin MsgBeep; Exit end;
-  if not IsStringRegex(S, '[\w\s\.\-\+]+') then
-    begin MsgBeep; Exit end;
-
-  fn:= fmClips.GetClipsFN(S);
-  if IsFileExist(fn) then
-    begin MsgBeep; Exit end;
-
-  with TTntStringList.Create do
-  try
-    SaveToFile(fn);
-  finally
-    Free
-  end;
-
-  with fmClips do
-  begin
-    InitClips(SynClipsDir);
-    Combo.ItemIndex:= Combo.Items.IndexOf(S);
-    ComboChange(nil);
-  end;
+    DoOpenFile(fmClips.GetCurrentClipFN);
 end;
 
 procedure TfmMain.TBXItemClipsDirClick(Sender: TObject);
+var
+  dir: Widestring;
 begin
-  FOpenURL(SynClipsDir, Handle);
+  if Assigned(fmClips) then
+  begin
+    //dir:= WideExtractFileDir(fmClips.GetCurrentClipFN);
+    dir:= SynClipsDir;
+    FOpenURL(dir, Handle);
+  end;
 end;
 
 procedure TfmMain.RecentColorOpen(Sender: TObject);
@@ -20668,8 +20647,11 @@ end;
 
 procedure TfmMain.TBXItemClipsDelTextClick(Sender: TObject);
 begin
+  ////todo
+  {
   if Assigned(fmClips) then
     fmClips.DoDeleteClip;
+    }
 end;
 
 
@@ -28585,14 +28567,9 @@ begin
   end;
 end;
 
-procedure TfmMain.PopupStatusEncClosePopup(Sender: TObject);
-begin
-  //
-end;
-
 procedure TfmMain.PopupClipsPopup(Sender: TObject);
 begin
-  TBXItemClipsDelText.Enabled:= fmClips.GetCurrentClip<>'';
+  TBXItemClipsDelText.Enabled:= fmClips.GetCurrentClipContent<>'';
 end;
 
 procedure TfmMain.DoInsertUnicodeHexDialog;
