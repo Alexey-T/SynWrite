@@ -32,6 +32,7 @@ type
   public
     { Public declarations }
     procedure InitClips(const dir: string);
+    procedure DoAddClip(const AText: Widestring);
     function GetCurrentClipIsSnippet: boolean;
     function GetCurrentClipContent: Widestring;
     function GetCurrentClipFN: Widestring;
@@ -52,6 +53,7 @@ uses
 
 const
   cSnippetExt = '.synw-snippet';
+  cUserFN = 'User.txt';
 
 type
   TSynClipInfo = class
@@ -322,6 +324,29 @@ begin
     Key:= 0;
     Exit
   end;
+end;
+
+procedure TfmClips.DoAddClip(const AText: Widestring);
+var
+  L: TTntStringList;
+  fn: Widestring;
+begin
+  fn:= GetCurrentClipFN;
+  fn:= WideExtractFilePath(fn)+cUserFN;
+
+  L:= TTntStringList.Create;
+  try
+    if IsFileExist(fn) then
+      L.LoadFromFile(fn);
+    L.Add(AText);
+    L.SaveToFile(fn);
+  finally
+    FreeAndNil(L);
+  end;
+
+  Combo.OnChange(Self);
+  if ListNames.CanFocus then
+    ListNames.SetFocus;
 end;
 
 

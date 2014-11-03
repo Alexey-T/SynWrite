@@ -20390,42 +20390,19 @@ end;
 procedure TfmMain.TBXItemClipsAddTextClick(Sender: TObject);
 const
   cName = 'snippet';
-  cUserFN = 'User.txt';
 var
-  fn: Widestring;
-  L: TTntStringList;
   S: Widestring;
 begin
   S:= SReplaceAllEols(CurrentEditor.SelText, '\n');
 
   if Pos('=', S)>0 then
-    Insert(cName+'=', S, 1);
+    S:= cName+'='+S;
 
   if not MsgInput('zClipEnter', S) then Exit;
   if WideTrim(S)='' then Exit;
 
   if Assigned(fmClips) then
-  begin
-    fn:= fmClips.GetCurrentClipFN;
-    fn:= WideExtractFilePath(fn)+cUserFN;
-
-    L:= TTntStringList.Create;
-    try
-      if IsFileExist(fn) then
-        L.LoadFromFile(fn);
-      L.Add(S);
-      L.SaveToFile(fn);
-    finally
-      FreeAndNil(L);
-    end;
-
-    with fmClips do
-    begin
-      ComboChange(nil);
-      if ListNames.CanFocus then
-        ListNames.SetFocus;
-    end;
-  end;
+    fmClips.DoAddClip(S);
 end;
 
 procedure TfmMain.TBXItemClipsEditClick(Sender: TObject);
@@ -20650,13 +20627,8 @@ end;
 
 procedure TfmMain.TBXItemClipsDelTextClick(Sender: TObject);
 begin
-  ////todo
-  {
-  if Assigned(fmClips) then
-    fmClips.DoDeleteClip;
-    }
+  //not used yet
 end;
-
 
 function TfmMain.CurrentSessionFN: string;
 begin
