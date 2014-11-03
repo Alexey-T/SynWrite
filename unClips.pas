@@ -8,7 +8,7 @@ uses
   TntStdCtrls, TntClasses;
 
 type
-  TClipsEvent = procedure(Sender: TObject; const S: Widestring) of object;
+  TClipsEvent = procedure(Sender: TObject; const AText: Widestring; AIsSnippet: boolean) of object;
 
 type
   TfmClips = class(TForm)
@@ -32,6 +32,7 @@ type
   public
     { Public declarations }
     procedure InitClips(const dir: string);
+    function GetCurrentClipIsSnippet: boolean;
     function GetCurrentClipContent: Widestring;
     function GetCurrentClipFN: Widestring;
     property OnClipInsert: TClipsEvent read FOnClick write FOnClick;
@@ -49,12 +50,16 @@ uses
 
 {$R *.dfm}
 
+const
+  cSnippetExt = '.synw-snippet';
+
 type
   TSynClipInfo = class
     ClipFN,
     ClipName,
     ClipContent: Widestring;
     ClipAccel: char;
+    ClipIsSnippet: boolean;
   end;
 
 procedure ClipNameValue(const s: Widestring; var sName, sValue: Widestring);
@@ -113,8 +118,10 @@ procedure TfmClips.LoadClipGroup(const Name: string);
 var
   LFiles, LItems: TTntStringList;
   InfoClip: TSynClipInfo;
+  InfoSnip: TSynSnippetInfo;
   SGroupName, SClipName, SClipVal, S, fn: Widestring;
   i, j: Integer;
+  IsSnippet: boolean;
 begin
   ListNames.Items.Clear;
   DoClearItems;
@@ -125,25 +132,44 @@ begin
   LFiles:= TTntStringList.Create;
   LItems:= TTntStringList.Create;
   try
-    FFindToList(LFiles, FClipRootDir + '\' + SGroupName, '*.txt', '',
+    FFindToList(LFiles,
+      FClipRootDir + '\' + SGroupName,
+      '*.txt *'+cSnippetExt, //include
+      '', //exclude
       false{SubDirs}, false, false, false);
 
     for i:= 0 to LFiles.Count-1 do
     begin
       fn:= LFiles[i];
-      LItems.LoadFromFile(fn);
-      for j:= 0 to LItems.Count-1 do
+      IsSnippet:= ExtractFileExt(fn)=cSnippetExt;
+      if IsSnippet then
       begin
-        S:= LItems[j];
-        SReplaceAllW(S, '\n', sLineBreak);
-        ClipNameValue(S, SClipName, SClipVal);
-
+        DoLoadSnippetFromFile(fn, InfoSnip);
         InfoClip:= TSynClipInfo.Create;
         InfoClip.ClipFN:= fn;
-        InfoClip.ClipName:= SClipName;
-        InfoClip.ClipContent:= SClipVal;
-        InfoClip.ClipAccel:= ClipHotkey(SClipName);
+        InfoClip.ClipName:= InfoSnip.Name;
+        InfoClip.ClipContent:= InfoSnip.Text;
+        InfoClip.ClipAccel:= ClipHotkey(InfoSnip.Name);
+        InfoClip.ClipIsSnippet:= true;
         FClipItems.Add(InfoClip);
+      end
+      else
+      begin
+        LItems.LoadFromFile(fn);
+        for j:= 0 to LItems.Count-1 do
+        begin
+          S:= LItems[j];
+          SReplaceAllW(S, '\n', sLineBreak);
+          ClipNameValue(S, SClipName, SClipVal);
+
+          InfoClip:= TSynClipInfo.Create;
+          InfoClip.ClipFN:= fn;
+          InfoClip.ClipName:= SClipName;
+          InfoClip.ClipContent:= SClipVal;
+          InfoClip.ClipAccel:= ClipHotkey(SClipName);
+          InfoClip.ClipIsSnippet:= false;
+          FClipItems.Add(InfoClip);
+        end;
       end;
     end;
   finally
@@ -212,7 +238,7 @@ end;
 procedure TfmClips.ListNamesDblClick(Sender: TObject);
 begin
   if Assigned(FOnClick) then
-    FOnClick(Self, GetCurrentClipContent);
+    FOnClick(Self, GetCurrentClipContent, GetCurrentClipIsSnippet);
 end;
 
 function TfmClips.GetCurrentClipContent: Widestring;
@@ -224,6 +250,17 @@ begin
   if N<0 then Exit;
   if N<FClipItems.Count then
     Result:= TSynClipInfo(FClipItems[N]).ClipContent;
+end;
+
+function TfmClips.GetCurrentClipIsSnippet: boolean;
+var
+  N: integer;
+begin
+  Result:= false;
+  N:= ListNames.ItemIndex;
+  if N<0 then Exit;
+  if N<FClipItems.Count then
+    Result:= TSynClipInfo(FClipItems[N]).ClipIsSnippet;
 end;
 
 function TfmClips.GetCurrentClipFN: Widestring;

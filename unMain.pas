@@ -2453,7 +2453,7 @@ type
     procedure DoSetTabColorValue(NColor: TColor);
     procedure DoSetTabColorIndex(NIndex: Integer);
     procedure DoSetTabColorIndex_Current(NIndex: Integer);
-    procedure ClipsInsert(Sender: TObject; const S: Widestring);
+    procedure ClipsInsert(Sender: TObject; const AText: Widestring; AIsSnippet: boolean);
     procedure ClipsInsPress(Sender: TObject);
     function IsProgressNeeded(Ed: TSyntaxMemo): boolean;
     function IsProgressStopped(const NDoneSize, NTotalSize: Int64): boolean;
@@ -3393,7 +3393,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.13.1750';
+  cSynVer = '6.14.1760';
   cSynPyVer = '1.0.142';
 
 const
@@ -20352,14 +20352,17 @@ begin
   TabsRight.TabIndex:= Ord(tbTextClips);
 end;
 
-procedure TfmMain.ClipsInsert(Sender: TObject; const S: Widestring);
+procedure TfmMain.ClipsInsert(Sender: TObject; const AText: Widestring; AIsSnippet: boolean);
+var
+  Ed: TSyntaxMemo;
 begin
-  with CurrentEditor do
-    if not ReadOnly then
-    begin
-      InsertText(S);
-      FocusEditor;
-    end;
+  Ed:= CurrentEditor;
+  if Ed.ReadOnly then Exit;
+  if AIsSnippet then
+    EditorInsertSnippet(Ed, AText, Ed.SelText, FrameOfEditor(Ed).FileName)
+  else
+    Ed.InsertText(AText);
+  FocusEditor;
 end;
 
 procedure TfmMain.ecToggleFocusClipsExecute(Sender: TObject);
