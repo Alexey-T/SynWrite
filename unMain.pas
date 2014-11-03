@@ -1071,7 +1071,6 @@ type
     TBXItemTabColorMisc: TSpTbxItem;
     TBXSeparatorItem77: TSpTbxSeparatorItem;
     TBXItemTabColorDef: TSpTbxItem;
-    TBXItemClipsDelText: TSpTbxItem;
     ecSmartHl: TAction;
     TBXItemBkDropPortable: TSpTbxItem;
     ecDropPortableBk: TAction;
@@ -1134,7 +1133,6 @@ type
     ecCommandsList: TAction;
     TBXItemHelpCommandList: TSpTBXItem;
     ecProjectList: TAction;
-    TBXSeparatorItem90: TSpTbxSeparatorItem;
     TbxSubmenuItemCaretsOps: TSpTBXSubmenuItem;
     TBXItemCaretsRemove2: TSpTbxItem;
     TBXItemCaretsRemove1: TSpTbxItem;
@@ -1874,7 +1872,6 @@ type
       FromLink: Boolean);
     procedure TBXItemTabColorMiscClick(Sender: TObject);
     procedure TBXItemTabColorDefClick(Sender: TObject);
-    procedure TBXItemClipsDelTextClick(Sender: TObject);
     procedure ecSmartHlExecute(Sender: TObject);
     procedure TBXItemBkDropPortableClick(Sender: TObject);
     procedure ecDropPortableBkExecute(Sender: TObject);
@@ -2151,7 +2148,6 @@ type
     procedure TbxItemPreEditClick(Sender: TObject);
     procedure TbxItemPreZoomOtherClick(Sender: TObject);
     procedure PopupPreviewEditorPopup(Sender: TObject);
-    procedure PopupClipsPopup(Sender: TObject);
     procedure TbxItemGroupOneClick(Sender: TObject);
     procedure TbxItemGroup2HClick(Sender: TObject);
     procedure TbxItemGroup2VClick(Sender: TObject);
@@ -10193,7 +10189,7 @@ begin
 
   //clips popup menu
   UpdKey_String(TBXItemClipsAddText, 'Insert');
-  UpdKey_String(TBXItemClipsDelText, 'Shift+Delete');
+  //UpdKey_String(TBXItemClipsDelText, 'Shift+Delete');
 
   //output popup menu
   UpdKey_String(TBXItemOutNav, 'Space');
@@ -20408,7 +20404,7 @@ end;
 procedure TfmMain.TBXItemClipsEditClick(Sender: TObject);
 begin
   if Assigned(fmClips) then
-    DoOpenFile(fmClips.GetCurrentClipFN);
+    DoOpenFile(fmClips.CurrentClipFN);
 end;
 
 procedure TfmMain.TBXItemClipsDirClick(Sender: TObject);
@@ -20623,11 +20619,6 @@ end;
 procedure TfmMain.ClipsInsPress;
 begin
   TBXItemClipsAddText.Click;
-end;
-
-procedure TfmMain.TBXItemClipsDelTextClick(Sender: TObject);
-begin
-  //not used yet
 end;
 
 function TfmMain.CurrentSessionFN: string;
@@ -28540,11 +28531,6 @@ begin
       TbxItemPreZoom75.Checked or
       TbxItemPreZoom100.Checked );
   end;
-end;
-
-procedure TfmMain.PopupClipsPopup(Sender: TObject);
-begin
-  TBXItemClipsDelText.Enabled:= fmClips.GetCurrentClipContent<>'';
 end;
 
 procedure TfmMain.DoInsertUnicodeHexDialog;

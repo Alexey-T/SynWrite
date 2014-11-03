@@ -26,16 +26,16 @@ type
     FClipItems: TList;
     FOnClick: TClipsEvent;
     FOnInsPress: TNotifyEvent;
-    procedure LoadClips;
+    procedure LoadClipFolders;
     procedure LoadClipGroup(const Name: string);
     procedure DoClearItems;
   public
     { Public declarations }
-    procedure InitClips(const dir: string);
+    procedure InitClips(const ADir: string);
     procedure DoAddClip(const AText: Widestring);
-    function GetCurrentClipIsSnippet: boolean;
-    function GetCurrentClipContent: Widestring;
-    function GetCurrentClipFN: Widestring;
+    function CurrentClipIsSnippet: boolean;
+    function CurrentClipContent: Widestring;
+    function CurrentClipFN: Widestring;
     property OnClipInsert: TClipsEvent read FOnClick write FOnClick;
     property OnInsPress: TNotifyEvent read FOnInsPress write FOnInsPress;
   end;
@@ -182,9 +182,13 @@ begin
   for i:= 0 to FClipItems.Count-1 do
     ListNames.Items.Add(' '+TSynClipInfo(FClipItems[i]).ClipName);
     //add space so char-typing works only for accelerators, not list-items
+
+  with ListNames do
+    if Items.Count>0 then
+      ItemIndex:= 0;  
 end;
 
-procedure TfmClips.LoadClips;
+procedure TfmClips.LoadClipFolders;
 var
   L: TTntStringList;
   i: Integer;
@@ -206,19 +210,19 @@ begin
       if Combo.Items.IndexOf(Str)<0 then
         Combo.Items.Add(Str);
     end;
-
-    if L.Count>0 then
-      Combo.ItemIndex:= 0;
   finally
     FreeAndNil(L);
   end;
+
+  if Combo.Items.Count>0 then
+    Combo.ItemIndex:= 0;
 end;
 
-procedure TfmClips.InitClips(const dir: string);
+procedure TfmClips.InitClips(const ADir: string);
 begin
-  FClipRootDir:= dir;
-  LoadClips;
-  ComboChange(Self);
+  FClipRootDir:= ADir;
+  LoadClipFolders;
+  Combo.OnChange(Self);
 end;
 
 procedure TfmClips.ComboChange(Sender: TObject);
@@ -240,10 +244,10 @@ end;
 procedure TfmClips.ListNamesDblClick(Sender: TObject);
 begin
   if Assigned(FOnClick) then
-    FOnClick(Self, GetCurrentClipContent, GetCurrentClipIsSnippet);
+    FOnClick(Self, CurrentClipContent, CurrentClipIsSnippet);
 end;
 
-function TfmClips.GetCurrentClipContent: Widestring;
+function TfmClips.CurrentClipContent: Widestring;
 var
   N: integer;
 begin
@@ -254,7 +258,7 @@ begin
     Result:= TSynClipInfo(FClipItems[N]).ClipContent;
 end;
 
-function TfmClips.GetCurrentClipIsSnippet: boolean;
+function TfmClips.CurrentClipIsSnippet: boolean;
 var
   N: integer;
 begin
@@ -265,7 +269,7 @@ begin
     Result:= TSynClipInfo(FClipItems[N]).ClipIsSnippet;
 end;
 
-function TfmClips.GetCurrentClipFN: Widestring;
+function TfmClips.CurrentClipFN: Widestring;
 var
   N: integer;
 begin
@@ -298,7 +302,7 @@ begin
 
   if (Key=Ord('C')) and (Shift=[ssCtrl]) then
   begin
-    TntClipboard.AsWideText:= GetCurrentClipContent;
+    TntClipboard.AsWideText:= CurrentClipContent;
     Key:= 0;
     Exit
   end;
@@ -331,8 +335,7 @@ var
   L: TTntStringList;
   fn: Widestring;
 begin
-  fn:= GetCurrentClipFN;
-  fn:= WideExtractFilePath(fn)+cUserFN;
+  fn:= WideExtractFilePath(CurrentClipFN)+cUserFN;
 
   L:= TTntStringList.Create;
   try
