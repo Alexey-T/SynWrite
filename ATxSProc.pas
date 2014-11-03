@@ -7,14 +7,13 @@ uses
 
 type
   TSynSnippetInfo = record
-    Filename: string;
-    Name: Widestring;
-    Id: string;
-    Lexers: string;
+    Filename,
+    Name,
+    Id,
+    Lexers,
     Text: Widestring;
   end;
   TSynSnippetClass = class
-  public
     Info: TSynSnippetInfo;
   end;
 
@@ -1358,10 +1357,10 @@ begin
         Info.Name:= UTF8Decode(S)
       else
       if SId='id' then
-        Info.Id:= S
+        Info.Id:= UTF8Decode(S)
       else
       if SId='lex' then
-        Info.Lexers:= S
+        Info.Lexers:= UTF8Decode(S)
       else
       if SId='text' then
       begin
@@ -1387,8 +1386,8 @@ begin
   L:= TStringList.Create;
   try
     L.Add('name=' + UTF8Encode(Info.Name));
-    L.Add('id=' + Info.Id);
-    L.Add('lex=' + Info.Lexers);
+    L.Add('id=' + UTF8Encode(Info.Id));
+    L.Add('lex=' + UTF8Encode(Info.Lexers));
     L.Add('text=');
     L.Add(UTF8Encode(Info.Text));
     L.SaveToFile(fn);

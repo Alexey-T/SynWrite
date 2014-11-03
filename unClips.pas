@@ -64,6 +64,11 @@ type
     ClipIsSnippet: boolean;
   end;
 
+function ClipsFileMask: string;
+begin
+  Result:= '*.txt *'+cSnippetExt;
+end;
+
 procedure ClipNameValue(const s: Widestring; var sName, sValue: Widestring);
 const
   Decode: array[0..0] of TStringDecodeRecW =
@@ -136,8 +141,7 @@ begin
   try
     FFindToList(LFiles,
       FClipRootDir + '\' + SGroupName,
-      '*.txt *'+cSnippetExt, //include
-      '', //exclude
+      ClipsFileMask, '',
       false{SubDirs}, false, false, false);
 
     for i:= 0 to LFiles.Count-1 do
@@ -146,7 +150,7 @@ begin
       IsSnippet:= ExtractFileExt(fn)=cSnippetExt;
       if IsSnippet then
       begin
-        DoLoadSnippetFromFile(fn, InfoSnip);
+        if not DoLoadSnippetFromFile(fn, InfoSnip) then Continue;
         InfoClip:= TSynClipInfo.Create;
         InfoClip.ClipFN:= fn;
         InfoClip.ClipName:= InfoSnip.Name;
@@ -200,7 +204,7 @@ begin
 
   L:= TTntStringList.Create;
   try
-    FFindToList(L, FClipRootDir, '*.txt', '',
+    FFindToList(L, FClipRootDir, ClipsFileMask, '',
       true{SubDir}, false, false, false);
     L.Sort;  
 
