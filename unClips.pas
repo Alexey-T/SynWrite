@@ -53,6 +53,7 @@ uses
 
 const
   cSnippetExt = '.synw-snippet';
+  cClipsFileMask = '*.txt *'+cSnippetExt;
   cUserFN = 'User.txt';
 
 type
@@ -63,11 +64,6 @@ type
     ClipAccel: char;
     ClipIsSnippet: boolean;
   end;
-
-function ClipsFileMask: string;
-begin
-  Result:= '*.txt *'+cSnippetExt;
-end;
 
 procedure ClipNameValue(const s: Widestring; var sName, sValue: Widestring);
 const
@@ -141,7 +137,7 @@ begin
   try
     FFindToList(LFiles,
       FClipRootDir + '\' + SGroupName,
-      ClipsFileMask, '',
+      cClipsFileMask, '',
       false{SubDirs}, false, false, false);
 
     for i:= 0 to LFiles.Count-1 do
@@ -204,7 +200,7 @@ begin
 
   L:= TTntStringList.Create;
   try
-    FFindToList(L, FClipRootDir, ClipsFileMask, '',
+    FFindToList(L, FClipRootDir, cClipsFileMask, '',
       true{SubDir}, false, false, false);
     L.Sort;  
 

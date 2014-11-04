@@ -106,7 +106,15 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Any name'
+        DisplayName = 'id keyword'
+        StyleName = 'Reserved word'
+        TokenType = 12
+        Expression = '\b(if|while|for)\b'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Id'
         StyleName = 'Identifier'
         TokenType = 2
         Expression = '\~?[a-z_]\w*'
@@ -329,6 +337,7 @@ object SyntaxManager: TSyntaxManager
         NameFmt = '%s0'
         RefToCondEnd = True
         HighlightPos = cpBound
+        TreeItemImage = 5
         IgnoreAsParent = True
         AutoCloseText = '}'#13#10
       end
@@ -398,6 +407,32 @@ object SyntaxManager: TSyntaxManager
         BlockOffset = 1
         HighlightPos = cpBound
         IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'define'
+        ConditionList = <
+          item
+            TagList.Strings = (
+              '#define')
+          end>
+        NameFmt = '%s0 %s-1'
+        HighlightPos = cpAny
+        NoEndRule = True
+        TreeItemImage = 7
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'typedef'
+        ConditionList = <
+          item
+            TagList.Strings = (
+              'typedef')
+            TokenTypes = 4
+          end>
+        NameFmt = '%s-1 %s-2'
+        HighlightPos = cpAny
+        TreeItemImage = 4
+        IgnoreAsParent = False
       end>
     CodeTemplates = <>
     SubAnalyzers = <
@@ -441,11 +476,13 @@ object SyntaxManager: TSyntaxManager
       '  #asm (" mov EAX, 0 ")'
       '}'
       ''
-      '#if TT'
       'static char* Proc2(int a; char b) {'
       '  return;'
       '}'
-      '#endif')
+      ''
+      'typedef struct HashTab {'
+      '   int Name;'
+      '}')
     TokenTypeNames.Strings = (
       'Unknown'
       'Comment'
@@ -458,13 +495,16 @@ object SyntaxManager: TSyntaxManager
       'Char const'
       'Preprocessor'
       'Inline Asm Start'
-      'Inline Asm End')
+      'Inline Asm End'
+      'Id keyword')
     Extentions = 'c h ch'
     LexerName = 'C'
     Notes.Strings = (
-      'Modified by Alex:'
+      'Modified by Alexey (SynWrite):'
       '-rule "function" change: name of formatting str was: %s0~s[)]'
-      '-also changes of C++ lex, see it'#39's Notes')
+      '-also changes of C++ lex, see it'#39's Notes'
+      '-added tree items: typedef, #define'
+      '-no tree items for "if", "for"')
     LineComment = '//'
     Charset = DEFAULT_CHARSET
   end
