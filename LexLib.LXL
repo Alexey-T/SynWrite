@@ -109,7 +109,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Id keyword'
         StyleName = 'Reserved word'
         TokenType = 12
-        Expression = '\b(if|while|for)\b'
+        Expression = '\b(catch|else|for|if|switch|while)\b'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -413,7 +413,9 @@ object SyntaxManager: TSyntaxManager
         ConditionList = <
           item
             TagList.Strings = (
-              '#define')
+              '\#\s*define')
+            CondType = tcMask
+            TokenTypes = 512
           end>
         NameFmt = '%s0 %s-1'
         HighlightPos = cpAny
@@ -524,15 +526,6 @@ object SyntaxManager: TSyntaxManager
         FormatType = ftCustomFont
       end
       item
-        DisplayName = 'Marked block'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clHighlightText
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-        BgColor = clHighlight
-      end
-      item
         DisplayName = 'Symbol'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clMaroon
@@ -607,14 +600,6 @@ object SyntaxManager: TSyntaxManager
         BorderColorBottom = clGray
       end
       item
-        DisplayName = 'class (tree)'
-        Font.Charset = RUSSIAN_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
         DisplayName = 'Asm'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -634,7 +619,15 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Any name'
+        DisplayName = 'Id keyword'
+        StyleName = 'Reserved word'
+        TokenType = 10
+        Expression = '\b(catch|else|for|if|switch|while)\b'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Id'
         StyleName = 'Identifier'
         TokenType = 2
         Expression = '\~?[a-z_]\w*'
@@ -818,7 +811,7 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'class begin 2'
+        DisplayName = 'class'
         ConditionList = <
           item
             TagList.Strings = (
@@ -842,7 +835,9 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'class begin 1'
+        DisplayName = 'class :'
+        BlockName = 'class :'
+        NotParent = True
         ConditionList = <
           item
             TagList.Strings = (
@@ -851,10 +846,6 @@ object SyntaxManager: TSyntaxManager
           end
           item
             CondType = tcSkip
-          end
-          item
-            CondType = tcSkip
-            TokenTypes = 4
           end
           item
             TagList.Strings = (
@@ -920,8 +911,7 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'function begin'
-        StrictParent = True
+        DisplayName = 'func begin'
         ConditionList = <
           item
             TagList.Strings = (
@@ -948,24 +938,14 @@ object SyntaxManager: TSyntaxManager
             TokenTypes = 8
           end
           item
-            TagList.Strings = (
-              'catch'
-              'else'
-              'if'
-              'switch'
-              'while')
-            CondType = tcNotEqual
             TokenTypes = 4
           end
           item
-            TagList.Strings = (
-              '::')
-            CondType = tcNotEqual
-            TokenTypes = 8
+            TokenTypes = 4
           end>
         IdentIndex = -1
         BlockOffset = -1
-        BlockEnd = 'function end'
+        BlockEnd = 'func end'
         RefToCondEnd = True
         HighlightPos = cpBound
         CollapseFmt = '%sz-1...'
@@ -973,8 +953,8 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'function end'
-        BlockName = 'function begin'
+        DisplayName = 'func end'
+        BlockName = 'func begin'
         StrictParent = True
         BlockType = btRangeEnd
         ConditionList = <
@@ -987,7 +967,7 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'cls func'
+        DisplayName = 'func-class'
         StrictParent = True
         ConditionList = <
           item
@@ -1014,24 +994,24 @@ object SyntaxManager: TSyntaxManager
           end
           item
             TagList.Strings = (
-              '::')
+              '::'
+              '->')
             TokenTypes = 8
           end>
-        BlockOffset = 2
-        BlockEnd = 'cls func end'
+        BlockOffset = 1
+        BlockEnd = 'func-class end'
         NameFmt = '%s-1'
         GroupFmt = '%s1'
         RefToCondEnd = True
         HighlightPos = cpBound
         CollapseFmt = '%sz2...'
-        TreeGroupStyle = 'class (tree)'
         TreeItemImage = 5
         TreeGroupImage = 1
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'cls func end'
-        BlockName = 'cls func'
+        DisplayName = 'func-class end'
+        BlockName = 'func-class'
         StrictParent = True
         BlockType = btRangeEnd
         ConditionList = <
@@ -1113,22 +1093,17 @@ object SyntaxManager: TSyntaxManager
         EndExpression = '"\)'
         SyntAnalyzer = SyntAnalyzer13
         IncludeBounds = True
-      end
-      item
-        DisplayName = 'asm_endasm'
-        Enabled = False
-        StyleName = 'Preprocessor'
-        StartExpression = '\#asm'
-        EndExpression = '\#endasm'
-        SyntAnalyzer = SyntAnalyzer13
       end>
     SampleText.Strings = (
-      '/*Syntax highlighting*/'
+      '/* Text */'
       ''
       '#define MAX(a, b)  \'
       '     ((a > b) ? a : b)'
-      '     '
-      'class Class1 : public Class2 {'
+      '    '
+      'class Name1 {'
+      '}'
+      ' '
+      'class Name2 : public NameB {'
       '    static int priv;'
       '    const int tot;'
       '    unsigned long fib(unsigned long n) {'
@@ -1138,9 +1113,7 @@ object SyntaxManager: TSyntaxManager
       '      '
       'void __fastcall TForm1->Button1Click(Sender: TObject)'
       '{'
-      ' double FloatNumber = 1e2 + 0.123e+2;'
-      ' Caption = "Count: " + IntToStr(Number);'
-      ' Number += 0x1FA7;'
+      ' double FloatNumber = 1e2 + 0.12e+2 + 0xAF;'
       ' char c = '#39'D'#39';'
       ' #asm(" pop ax ");'
       '}'
@@ -1153,7 +1126,7 @@ object SyntaxManager: TSyntaxManager
       '{'
       #9'void* FieldValue;'
       #9'int flags;'
-      '} WndVar;')
+      '} Struct1;')
     TokenTypeNames.Strings = (
       'Unknown'
       'Comment'
@@ -1164,24 +1137,12 @@ object SyntaxManager: TSyntaxManager
       'Float const'
       'Hex const'
       'Char const'
-      'Preprocessor')
+      'Preprocessor'
+      'Id keyword')
     Extentions = 'c cpp cxx h hpp hxx inl cc'
     LexerName = 'C++'
     Notes.Strings = (
-      'Modified by Alex:'
-      '- removed 3 parsers: asm-start asm-end define'
-      '- removed 6 rules: ( ) [ ] asm-start asm-end '
-      '- removed 4 rules: #if #endif function-begin-2 function-end-2'
-      '(#if-#endif give bad folding sometimes so cannot use them)'
-      '- disabled 2 sublexers: asm1 asm2 '
-      '(bad hilite of sample asm, may fix later if need)'
-      '- renamed rules { }'
-      ''
-      'tree:'
-      
-        '- disabled nested funcs (set "Strict parent block" for func-begi' +
-        'n)'
-      '- added items for struct')
+      'Heavily changed: Alex (SynWrite)')
     LineComment = '//'
     Charset = DEFAULT_CHARSET
   end
