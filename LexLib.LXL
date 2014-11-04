@@ -106,7 +106,7 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'id keyword'
+        DisplayName = 'Id keyword'
         StyleName = 'Reserved word'
         TokenType = 12
         Expression = '\b(if|while|for)\b'
@@ -117,7 +117,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Id'
         StyleName = 'Identifier'
         TokenType = 2
-        Expression = '\~?[a-z_]\w*'
+        Expression = '[a-z_]\w*'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -431,6 +431,7 @@ object SyntaxManager: TSyntaxManager
           end>
         NameFmt = '%s-1 %s-2'
         HighlightPos = cpAny
+        NoEndRule = True
         TreeItemImage = 4
         IgnoreAsParent = False
       end>
@@ -454,12 +455,19 @@ object SyntaxManager: TSyntaxManager
         SyntAnalyzer = SyntAnalyzer13
       end>
     SampleText.Strings = (
-      '/*Syntax highlighting*/'
+      '/* Test */'
       ''
       '#define MAX(a, b)  \'
       '     ((a > b) ? a : b) '
+      ''
+      'void stdcall Init(void) {'
+      '  TestModDeinit(B64UTIL);'
+      '} /* B64UTIL_vDeinit */'
+      ''
+      '    char* Small(int a) {'
+      '    }'
       '     '
-      'void Proc1(char *Sender)'
+      'void Test(char *Sender)'
       '{'
       '  int Number = 10;  // View integer number style'
       '  double F = 1e2 + 0.123e+2;  // View float number style'
@@ -474,10 +482,6 @@ object SyntaxManager: TSyntaxManager
       '    return;'
       '  }'
       '  #asm (" mov EAX, 0 ")'
-      '}'
-      ''
-      'static char* Proc2(int a; char b) {'
-      '  return;'
       '}'
       ''
       'typedef struct HashTab {'
