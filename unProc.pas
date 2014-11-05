@@ -2664,9 +2664,12 @@ end;
 
 function DoInputCheckList(const ACaption, AColumns, AItems: Widestring;
   ASizeX, ASizeY: Integer): string;
+const
+  sepLine=#10;
+  sepTab=#9;
 var
-  i: Integer;
   S, SItem, SSubItem: Widestring;
+  i: Integer;
 begin
   Result:= '';
   with TfmInputCheckList.Create(nil) do
@@ -2680,12 +2683,12 @@ begin
 
     S:= AColumns;
     repeat
-      SItem:= SGetItem(S, #9);
+      SItem:= SGetItem(S, sepLine);
       if SItem='' then Break;
       with List.Columns.Add do
       begin
-        Caption:= SGetItem(SItem, '|');
-        i:= StrToIntDef(SGetItem(SItem, '|'), 0);
+        Caption:= SGetItem(SItem, sepTab);
+        i:= StrToIntDef(SGetItem(SItem, sepTab), 0);
         if i>0 then
           Width:= i
         else
@@ -2695,13 +2698,16 @@ begin
 
     S:= AItems;
     repeat
-      SItem:= SGetItem(S, #9);
+      SItem:= SGetItem(S, sepLine);
       if SItem='' then Break;
       with List.Items.Add do
       begin
-        Caption:= SGetItem(SItem, '|');
+        SSubItem:= SGetItem(SItem, sepTab);
+        Checked:= SBegin(SSubItem, '*');
+        if Checked then System.Delete(SSubItem, 1, 1);
+        Caption:= SSubItem;
         repeat
-          SSubItem:= SGetItem(SItem, '|');
+          SSubItem:= SGetItem(SItem, sepTab);
           if SSubItem='' then Break;
           SubItems.Add(SSubItem);
         until false;
