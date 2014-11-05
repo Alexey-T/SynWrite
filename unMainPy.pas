@@ -24,6 +24,7 @@ function Py_ed_find(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_msg_status(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_snippet(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_dlg_checklist(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_save(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
@@ -1257,6 +1258,24 @@ begin
         Result:= ReturnNone;
     end;
 end;
-    
+
+function Py_dlg_checklist(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  PtrCaption, PtrColumns, PtrItems: PAnsiChar;
+  StrCaption, StrColumns, StrItems: Widestring;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'sss', @PtrCaption, @PtrColumns, @PtrItems)) then
+    begin
+      StrCaption:= UTF8Decode(AnsiString(PtrCaption));
+      StrColumns:= UTF8Decode(AnsiString(PtrColumns));
+      StrItems:= UTF8Decode(AnsiString(PtrItems));
+
+      StrItems:= DoInputCheckList(StrCaption, StrColumns, StrItems);
+      Result:= PyUnicode_FromWideString(StrItems);
+    end;
+end;
+
+
 end.
 

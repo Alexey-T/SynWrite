@@ -60,6 +60,9 @@ object fmInputCheckList: TfmInputCheckList
       item
       end>
     ColumnClick = False
+    HideSelection = False
+    ReadOnly = True
+    RowSelect = True
     TabOrder = 0
     ViewStyle = vsReport
   end

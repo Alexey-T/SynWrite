@@ -41,7 +41,6 @@ function StringToFontStyles(const s: string): TFontStyles;
 function FontToString(F: TFont): string;
 procedure StringToFont(F: TFont; const Str: string);
 
-function IsCorrectClipsFilename(const S: Widestring): boolean;
 function IsMouseOverControl(Control: TControl): boolean;
 function IsElevationNeededForFolder(const Dir: Widestring): boolean;
 
@@ -106,6 +105,8 @@ function DoInputString(
   const SCaption: Widestring;
   var SValue: Widestring;
   const IniFN: string = ''; const IniSection: string = ''): boolean;
+function DoInputCheckList(
+  const SCaption, SColumnList, SItemList: Widestring): string;
 
 procedure DoDeleteComboLastWord(ed: TTntCombobox);
 procedure DoDeleteComboItem(ed: TTntCombobox);
@@ -297,6 +298,7 @@ uses
   unSRTree,
   unInputSimple,
   unInputFilename,
+  unInputCheckList,
   unTool,
   unSnipEd,
   SynTaskDialog, //Synopse http://blog.synopse.info/post/2011/03/05/Open-Source-SynTaskDialog-unit-for-XP,Vista,Seven
@@ -2653,9 +2655,59 @@ begin
   L.PngImages.Add;
 end;
 
+{
 function IsCorrectClipsFilename(const S: Widestring): boolean;
 begin
   Result:= IsStringRegex(S, '[\w\s\.\-\+]+');
-end;  
+end;
+}
+
+function DoInputCheckList(const SCaption, SColumnList, SItemList: Widestring): string;
+var
+  i: Integer;
+  S, SItem, SSubItem: Widestring;
+begin
+  Result:= '';
+  with TfmInputCheckList.Create(nil) do
+  try
+    Caption:= SCaption;
+    List.Columns.Clear;
+    List.Items.Clear;
+
+    S:= SColumnList;
+    repeat
+      SItem:= SGetItem(S, #9);
+      if SItem='' then Break;
+      with List.Columns.Add do
+      begin
+        Caption:= SGetItem(SItem, '|');
+        Width:= StrToIntDef(SGetItem(SItem, '|'), 100);
+      end;
+    until false;
+
+    S:= SItemList;
+    repeat
+      SItem:= SGetItem(S, #9);
+      if SItem='' then Break;
+      with List.Items.Add do
+      begin
+        Caption:= SGetItem(SItem, '|');
+        repeat
+          SSubItem:= SGetItem(SItem, '|');
+          if SSubItem='' then Break;
+          SubItems.Add(SSubItem);
+        until false;
+      end;
+    until false;
+
+    if ShowModal=mrOk then
+    begin
+      for i:= 0 to List.Items.Count-1 do
+        Result:= Result+ IfThen(List.Items[i].Checked, '1', '0');
+    end;
+  finally
+    Free
+  end;
+end;
 
 end.

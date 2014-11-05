@@ -273,6 +273,8 @@ def dlg_menu(id, caption, text):
     return sw_api.dlg_menu(id, caption, text)
 def dlg_snippet(name, alias, lexers, text):
     return sw_api.dlg_snippet(name, alias, lexers, text)
+def dlg_checklist(caption, columns, items):
+    return sw_api.dlg_checklist(caption, columns, items)
 
 def app_version():
     return sw_api.app_version()

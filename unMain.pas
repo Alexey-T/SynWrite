@@ -3390,7 +3390,7 @@ function SynAppdataDir: string;
 
 const
   cSynVer = '6.14.1765';
-  cSynPyVer = '1.0.142';
+  cSynPyVer = '1.0.143';
 
 const
   cSynParamRO = '/ro';
@@ -27274,6 +27274,7 @@ begin
     AddMethod('dlg_input_memo', Py_dlg_input_memo, '');
     AddMethod('dlg_menu', Py_dlg_menu, '');
     AddMethod('dlg_snippet', Py_dlg_snippet, '');
+    AddMethod('dlg_checklist', Py_dlg_checklist, '');
 
     AddMethod('app_version', Py_app_version, '');
     AddMethod('app_api_version', Py_app_api_version, '');
