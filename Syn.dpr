@@ -72,7 +72,8 @@ uses
   unLexerProp in 'unLexerProp.pas',
   unLexerStyles in 'unLexerStyles.pas',
   unPrintSetup in 'unPrintSetup.pas' {fmPrintSetup},
-  unMacroCmd in 'unMacroCmd.pas' {fmMacroCmd};
+  unMacroCmd in 'unMacroCmd.pas' {fmMacroCmd},
+  unInputCheckList in 'unInputCheckList.pas' {fmInputCheckList};
 
 {$R *.res}
 {$R *.dkl_const.res}
