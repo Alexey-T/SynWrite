@@ -105,8 +105,8 @@ function DoInputString(
   const SCaption: Widestring;
   var SValue: Widestring;
   const IniFN: string = ''; const IniSection: string = ''): boolean;
-function DoInputCheckList(
-  const SCaption, SColumnList, SItemList: Widestring): string;
+function DoInputCheckList(const ACaption, AColumns, AItems: Widestring;
+  ASizeX, ASizeY: Integer): string;
 
 procedure DoDeleteComboLastWord(ed: TTntCombobox);
 procedure DoDeleteComboItem(ed: TTntCombobox);
@@ -2662,7 +2662,8 @@ begin
 end;
 }
 
-function DoInputCheckList(const SCaption, SColumnList, SItemList: Widestring): string;
+function DoInputCheckList(const ACaption, AColumns, AItems: Widestring;
+  ASizeX, ASizeY: Integer): string;
 var
   i: Integer;
   S, SItem, SSubItem: Widestring;
@@ -2670,22 +2671,29 @@ begin
   Result:= '';
   with TfmInputCheckList.Create(nil) do
   try
-    Caption:= SCaption;
+    Caption:= ACaption;
+    Width:= ASizeX;
+    Height:= ASizeY;
+
     List.Columns.Clear;
     List.Items.Clear;
 
-    S:= SColumnList;
+    S:= AColumns;
     repeat
       SItem:= SGetItem(S, #9);
       if SItem='' then Break;
       with List.Columns.Add do
       begin
         Caption:= SGetItem(SItem, '|');
-        Width:= StrToIntDef(SGetItem(SItem, '|'), 100);
+        i:= StrToIntDef(SGetItem(SItem, '|'), 0);
+        if i>0 then
+          Width:= i
+        else
+          AutoSize:= true;  
       end;
     until false;
 
-    S:= SItemList;
+    S:= AItems;
     repeat
       SItem:= SGetItem(S, #9);
       if SItem='' then Break;

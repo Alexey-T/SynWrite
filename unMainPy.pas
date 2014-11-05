@@ -1263,15 +1263,17 @@ function Py_dlg_checklist(Self, Args: PPyObject): PPyObject; cdecl;
 var
   PtrCaption, PtrColumns, PtrItems: PAnsiChar;
   StrCaption, StrColumns, StrItems: Widestring;
+  NSizeX, NSizeY: Integer;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'sss', @PtrCaption, @PtrColumns, @PtrItems)) then
+    if Bool(PyArg_ParseTuple(Args, 'sssii:dlg_checklist',
+      @PtrCaption, @PtrColumns, @PtrItems, @NSizeX, @NSizeY)) then
     begin
       StrCaption:= UTF8Decode(AnsiString(PtrCaption));
       StrColumns:= UTF8Decode(AnsiString(PtrColumns));
       StrItems:= UTF8Decode(AnsiString(PtrItems));
 
-      StrItems:= DoInputCheckList(StrCaption, StrColumns, StrItems);
+      StrItems:= DoInputCheckList(StrCaption, StrColumns, StrItems, NSizeX, NSizeY);
       Result:= PyUnicode_FromWideString(StrItems);
     end;
 end;

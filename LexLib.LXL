@@ -424,14 +424,22 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'typedef'
+        DisplayName = 'struct'
         ConditionList = <
           item
             TagList.Strings = (
-              'typedef')
+              '{')
+            TokenTypes = 8
+          end
+          item
+            TokenTypes = 4
+          end
+          item
+            TagList.Strings = (
+              'struct')
             TokenTypes = 4
           end>
-        NameFmt = '%s-1 %s-2'
+        NameFmt = '%s0 %s-1'
         HighlightPos = cpAny
         NoEndRule = True
         TreeItemImage = 4
