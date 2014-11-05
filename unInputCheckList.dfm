@@ -11,6 +11,7 @@ object fmInputCheckList: TfmInputCheckList
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnShow = TntFormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel

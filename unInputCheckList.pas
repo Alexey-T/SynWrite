@@ -13,6 +13,7 @@ type
     List: TTntListView;
     bOk: TTntButton;
     bCancel: TTntButton;
+    procedure TntFormShow(Sender: TObject);
   private
     { Private declarations }
   public
@@ -21,6 +22,14 @@ type
 
 implementation
 
+uses DKLang;
+
 {$R *.dfm}
+
+procedure TfmInputCheckList.TntFormShow(Sender: TObject);
+begin
+  bOk.Caption:= DKLangConstW('MButtonOk');
+  bCancel.Caption:= DKLangConstW('MButtonCancel');
+end;
 
 end.
