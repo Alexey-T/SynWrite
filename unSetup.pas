@@ -261,7 +261,7 @@ type
     cbHiliteSmart: TTntCheckBox;
     cbHiliteSmartCase: TTntCheckBox;
     cbHiliteBrackets: TTntCheckBox;
-    cbCopyLineNSel: TTntCheckBox;
+    cbCopyLineNoSel: TTntCheckBox;
     cbColorOnEmpty: TTntCheckBox;
     boxView: TTntGroupBox;
     LabelSpace: TTntLabel;
@@ -304,13 +304,13 @@ type
     cbVarHorzBar: TTntCheckBox;
     cbSelMode: TTntComboBox;
     TntLabel35: TTntLabel;
-    cbCollap: TTntCheckBox;
-    cbSelDrag: TTntCheckBox;
+    cbCollapseEmpty: TTntCheckBox;
+    cbSelDragDrop: TTntCheckBox;
     cbCopyRtf: TTntCheckBox;
     cbSelGreedy: TTntCheckBox;
-    cbDClick: TTntCheckBox;
-    cbSelPers: TTntCheckBox;
-    cbSelOver: TTntCheckBox;
+    cbSelLineByDClick: TTntCheckBox;
+    cbSelPreserve: TTntCheckBox;
+    cbSelOverwrite: TTntCheckBox;
     boxTabs2: TTntGroupBox;
     edTabStops: TTntEdit;
     Label16: TTntLabel;
@@ -366,6 +366,7 @@ type
     edCaretTime: TTrackBar;
     TntLabel42: TTntLabel;
     cbTreeClick: TTntComboBox;
+    cbSelByWords: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2520,49 +2521,47 @@ begin
     opHiliteSmartCase:= cbHiliteSmartCase.Checked;
     opHiliteSmartWords:= cbHiliteSmartWords.Checked;
     opHiliteBrackets:= cbHiliteBrackets.Checked;
-    opCopyLineIfNoSel:= cbCopyLineNSel.Checked;
+    opCopyLineIfNoSel:= cbCopyLineNoSel.Checked;
 
     if cbColorOnEmpty.Checked then
       TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx - [soNormalSelToLineEnd]
     else
       TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx + [soNormalSelToLineEnd];
 
-    if cbSelOver.Checked then
+    if cbSelOverwrite.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soOverwriteBlocks]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soOverwriteBlocks];
 
-    if cbSelPers.Checked then
+    if cbSelPreserve.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soPersistentBlocks]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soPersistentBlocks];
 
-    if cbDClick.Checked then
+    if cbSelLineByDClick.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soDoubleClickLine]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soDoubleClickLine];
+
+    if cbSelByWords.Checked then
+      TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx + [soAllowSelectByWords]
+    else
+      TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx - [soAllowSelectByWords];
 
     if cbCopyRtf.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soCopyAsRTF]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soCopyAsRTF];
 
-    if cbSelDrag.Checked then
+    if cbSelDragDrop.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soDragText]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soDragText];
 
-    if cbCollap.Checked then
+    if cbCollapseEmpty.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soCallapseEmptyLines]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soCallapseEmptyLines];
-
-    {
-    if cbFloatM.Checked then
-      TemplateEditor.Options:= TemplateEditor.Options + [soFloatMarkers]
-    else
-      TemplateEditor.Options:= TemplateEditor.Options - [soFloatMarkers];
-      }
 
     if cbSelGreedy.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soGreedySelect]
@@ -2697,16 +2696,17 @@ begin
     cbHiliteSmartWords.Checked:= opHiliteSmartWords;
     cbHiliteBrackets.Checked:= opHiliteBrackets;
 
-    cbCopyLineNSel.Checked:= opCopyLineIfNoSel;
+    cbCopyLineNoSel.Checked:= opCopyLineIfNoSel;
+    cbCopyRtf.Checked:= soCopyAsRTF in TemplateEditor.Options;
     cbColorOnEmpty.Checked:= not (soNormalSelToLineEnd in TemplateEditor.OptionsEx);
 
-    cbSelOver.Checked:= sooverwriteBlocks in TemplateEditor.Options;
-    cbSelPers.Checked:= soPersistentBlocks in TemplateEditor.Options;
-    cbDClick.Checked:= soDoubleClickLine in TemplateEditor.Options;
-    cbCopyRtf.Checked:= soCopyAsRTF in TemplateEditor.Options;
-    cbSelDrag.Checked:= soDragText in TemplateEditor.Options;
-    cbCollap.Checked:= soCallapseEmptyLines in TemplateEditor.Options;
+    cbSelOverwrite.Checked:= sooverwriteBlocks in TemplateEditor.Options;
+    cbSelPreserve.Checked:= soPersistentBlocks in TemplateEditor.Options;
+    cbSelLineByDClick.Checked:= soDoubleClickLine in TemplateEditor.Options;
+    cbSelByWords.Checked:= soAllowSelectByWords in TemplateEditor.OptionsEx;
+    cbSelDragDrop.Checked:= soDragText in TemplateEditor.Options;
     cbSelGreedy.Checked:= soGreedySelect in TemplateEditor.Options;
+    cbCollapseEmpty.Checked:= soCallapseEmptyLines in TemplateEditor.Options;
 
     case TemplateEditor.SelectModeDefault of
       msNone,
