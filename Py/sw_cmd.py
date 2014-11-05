@@ -169,8 +169,6 @@ cmd_ToggleWordWrap   = 531
 cmd_ToggleFolding    = 532
 cmd_ToggleLineNumbersVisible = 533
 
-cmd_IncrementalSearch = 550 # Incremental Search
-
 cmd_CommentLines    = 560  # Comments selected lines
 cmd_UncommentLines  = 561  # Uncomments selected lines
 cmd_SortAscending   = 562  # Ascending sort of selected lines
@@ -221,7 +219,7 @@ cmd_SearchMarkNext  = 641 # Go to next search mark
 cmd_SearchMarkPrev  = 642 # Go to previous search mark
 
 #-----------------------------------
-# Below are constants from "unCmds.pas".
+# Constants from "unCmds.pas"
 
 cmd_CaretsRemoveLeaveFirst    = 2000
 cmd_CaretsRemoveLeaveLast     = 2001
