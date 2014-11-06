@@ -3831,6 +3831,7 @@ end;
 function TfmMain.DoOpenFile(const AFileName: WideString; const AParams: Widestring = ''): TEditorFrame;
 var
   F: TEditorFrame;
+  AllowConfirm: boolean;
 begin
   UpdateColorHint;
 
@@ -3843,7 +3844,8 @@ begin
 
   if IsFileArchive(AFileName) then
   begin
-    DoOpenArchive(AFileName);
+    AllowConfirm:= Pos('/s', AParams)=0;
+    DoOpenArchive(AFileName, AllowConfirm);
     Result:= nil;
     Exit
   end;
