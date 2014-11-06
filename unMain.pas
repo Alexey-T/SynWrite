@@ -3239,9 +3239,9 @@ type
     function IsMouseOverProject: boolean;
 
     constructor CreateParented(hWindow: HWND);
-    function DoOpenFile(const AFileName: WideString): TEditorFrame;
+    function DoOpenFile(const AFileName: WideString; const AParams: Widestring = ''): TEditorFrame;
     procedure DoOpenProject(const fn: Widestring); overload;
-    procedure DoOpenArchive(const fn: Widestring);
+    procedure DoOpenArchive(const fn: Widestring; AllowConfirm: boolean = true);
     function DoOpenArchive_HandleIni(const fn_ini, subdir, section: string; typ: TSynAddonType): boolean;
     function DoOpenArchive_HandleLexer(const fn_ini, section: string): boolean;
     procedure DoOpenFolder(const dir: Widestring);
@@ -3828,7 +3828,7 @@ begin
     CurrentEditor.Invalidate;
 end;
 
-function TfmMain.DoOpenFile(const AFileName: WideString): TEditorFrame;
+function TfmMain.DoOpenFile(const AFileName: WideString; const AParams: Widestring = ''): TEditorFrame;
 var
   F: TEditorFrame;
 begin
@@ -26982,7 +26982,7 @@ begin
   //MsgInfo(Format('Write key: [%s] %s=%s', [s_section, s_id, '.....']), Handle);
 end;
 
-procedure TfmMain.DoOpenArchive(const fn: Widestring);
+procedure TfmMain.DoOpenArchive(const fn: Widestring; AllowConfirm: boolean = true);
 const
   cInf = 'install.inf';
 var
@@ -27057,7 +27057,8 @@ begin
     s_msg:= s_msg + DKLangConstW('zMInstallVer') + ': ' + s_ver + #13;
   s_msg:= s_msg + #13 + DKLangConstW('zMInstallYesNo');
 
-  if not MsgConfirm(s_msg, Handle, true) then Exit;
+  if AllowConfirm then
+    if not MsgConfirm(s_msg, Handle, true) then Exit;
 
   case n_type of
     cAddonTypeBinPlugin:
@@ -27108,8 +27109,9 @@ begin
   else
   begin
     s_msg:= WideFormat(DKLangConstW('zMInstallOk'), [dir_to]);
-    if MsgConfirm(s_msg, Handle, true{IsQuestion}) then
-      acRestart.Execute;
+    if AllowConfirm then
+      if MsgConfirm(s_msg, Handle, true{IsQuestion}) then
+        acRestart.Execute;
   end;    
 end;
 

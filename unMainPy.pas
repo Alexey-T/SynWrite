@@ -480,21 +480,20 @@ end;
 
 function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
 var
-  P: PAnsiChar;
-  fn: Widestring;
+  PtrName, PtrParam: PAnsiChar;
+  fn, param: Widestring;
+  ok: boolean;
 begin
   with GetPythonEngine do
   begin
-    if Bool(PyArg_ParseTuple(Args, 's:file_open', @P)) then
+    if Bool(PyArg_ParseTuple(Args, 'ss:file_open', @PtrName, @PtrParam)) then
     begin
-      fn:= UTF8Decode(AnsiString(P));
-      if (fn='') or IsFileExist(fn) then
-      begin
-        fmMain.DoOpenFile(fn);
-        Result:= PyBool_FromLong(1);
-      end
-      else
-        Result:= PyBool_FromLong(0);
+      fn:= UTF8Decode(AnsiString(PtrName));
+      param:= UTF8Decode(AnsiString(PtrParam));
+      ok:= (fn='') or IsFileExist(fn);
+      if ok then
+        fmMain.DoOpenFile(fn, param);
+      Result:= PyBool_FromLong(Ord(ok));
     end;
   end;
 end;
@@ -1239,7 +1238,7 @@ var
   PtrName, PtrId, PtrLexers, PtrText: PAnsiChar;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ssss', @PtrName, @PtrId, @PtrLexers, @PtrText)) then
+    if Bool(PyArg_ParseTuple(Args, 'ssss:dlg_snippet', @PtrName, @PtrId, @PtrLexers, @PtrText)) then
     begin
       Info.Filename:= '';
       Info.Name:= UTF8Decode(AnsiString(PtrName));

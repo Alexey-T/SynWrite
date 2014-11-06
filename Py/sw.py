@@ -305,8 +305,8 @@ def ini_read(filename, section, key, value):
 def ini_write(filename, section, key, value):
     return sw_api.ini_write(filename, section, key, value)
 
-def file_open(filename):
-    return sw_api.file_open(filename)
+def file_open(filename, param=''):
+    return sw_api.file_open(filename, param)
 def file_save():
     return sw_api.file_save()
 def file_get_name(id):
