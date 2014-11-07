@@ -3241,7 +3241,7 @@ type
     constructor CreateParented(hWindow: HWND);
     function DoOpenFile(const AFileName: WideString; const AParams: Widestring = ''): TEditorFrame;
     procedure DoOpenProject(const fn: Widestring); overload;
-    procedure DoOpenArchive(const fn: Widestring; AllowConfirm: boolean = true);
+    procedure DoOpenArchive(const fn, AParams: Widestring);
     function DoOpenArchive_HandleIni(const fn_ini, subdir, section: string; typ: TSynAddonType): boolean;
     function DoOpenArchive_HandleLexer(const fn_ini, section: string): boolean;
     procedure DoOpenFolder(const dir: Widestring);
@@ -3389,7 +3389,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1766';
+  cSynVer = '6.14.1770';
   cSynPyVer = '1.0.143';
 
 const
@@ -3831,7 +3831,6 @@ end;
 function TfmMain.DoOpenFile(const AFileName: WideString; const AParams: Widestring = ''): TEditorFrame;
 var
   F: TEditorFrame;
-  AllowConfirm: boolean;
 begin
   UpdateColorHint;
 
@@ -3844,8 +3843,7 @@ begin
 
   if IsFileArchive(AFileName) then
   begin
-    AllowConfirm:= Pos('/s', AParams)=0;
-    DoOpenArchive(AFileName, AllowConfirm);
+    DoOpenArchive(AFileName, AParams);
     Result:= nil;
     Exit
   end;
@@ -26984,16 +26982,25 @@ begin
   //MsgInfo(Format('Write key: [%s] %s=%s', [s_section, s_id, '.....']), Handle);
 end;
 
-procedure TfmMain.DoOpenArchive(const fn: Widestring; AllowConfirm: boolean = true);
+procedure TfmMain.DoOpenArchive(const fn, AParams: Widestring);
 const
   cInf = 'install.inf';
+  cVInf = 'v.inf';
 var
   fn_inf, dir_to: string;
   s_title, s_type, s_desc, s_ver, s_subdir: string;
   s_msg: Widestring;
   n_type, i_type: TSynAddonType;
   i: integer;
+  AllowConfirm: boolean;
+  VersionStr: string;
 begin
+  AllowConfirm:= Pos('/s', AParams)=0;
+  VersionStr:= '';
+  i:= Pos('/v', AParams);
+  if i>0 then
+    VersionStr:= Copy(AParams, i+2, MaxInt);
+
   dir_to:= FTempDir;
   fn_inf:= dir_to + '\' + cInf;
   FDelete(fn_inf);
@@ -27029,7 +27036,7 @@ begin
       Break
     end;
 
-  //don't show "template", show nicer "data/dir"  
+  //don't show "template", show nicer "data/dir"
   if n_type=cAddonTypeData then
     s_type:= 'data/'+s_subdir;
 
@@ -27103,18 +27110,28 @@ begin
   end;
 
   //report results
-  if n_type=cAddonTypeLexer then
-  begin
-    s_msg:= DKLangConstW('zMInstallLexerOk');
-    MsgInfo(s_msg, Handle);
-  end
-  else
-  begin
-    s_msg:= WideFormat(DKLangConstW('zMInstallOk'), [dir_to]);
-    if AllowConfirm then
+  if AllowConfirm then
+    if n_type=cAddonTypeLexer then
+    begin
+      s_msg:= DKLangConstW('zMInstallLexerOk');
+      MsgInfo(s_msg, Handle);
+    end
+    else
+    begin
+      s_msg:= WideFormat(DKLangConstW('zMInstallOk'), [dir_to]);
       if MsgConfirm(s_msg, Handle, true{IsQuestion}) then
         acRestart.Execute;
-  end;    
+    end;
+
+  //store version to v.inf
+  if VersionStr<>'' then
+    with TStringList.Create do
+    try
+      Add(VersionStr);
+      SaveToFile(dir_to + '\' + cVInf);
+    finally
+      Free
+    end;
 end;
 
 procedure TfmMain.TbxTabConsoleClick(Sender: TObject);
