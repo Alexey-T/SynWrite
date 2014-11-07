@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.14.1765
+AppVersion=6.14.1775
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -43,6 +43,7 @@ Source: "..\*.manifest"; DestDir: "{app}"; Flags: ignoreversion
 
 Source: "..\Py\syn_plugin_manager\*.py"; DestDir: "{app}\Py\syn_plugin_manager";
 Source: "..\Py\syn_plugin_manager\*.lng"; DestDir: "{app}\Py\syn_plugin_manager";
+Source: "..\Py\syn_plugin_manager\*.inf"; DestDir: "{app}\Py\syn_plugin_manager";
 
 Source: "..\Data\autocomplete\*"; DestDir: "{app}\Data\autocomplete";
 Source: "..\Data\colors\*"; 	  DestDir: "{app}\Data\colors";

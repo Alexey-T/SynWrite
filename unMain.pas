@@ -27109,6 +27109,17 @@ begin
         Break
   end;
 
+  //store version to v.inf
+  if n_type in [cAddonTypeBinPlugin, cAddonTypePyPlugin] then
+    if VersionStr<>'' then
+      with TStringList.Create do
+      try
+        Add(VersionStr);
+        SaveToFile(dir_to + '\' + cVInf);
+      finally
+        Free
+      end;
+
   //report results
   if AllowConfirm then
     if n_type=cAddonTypeLexer then
@@ -27121,16 +27132,6 @@ begin
       s_msg:= WideFormat(DKLangConstW('zMInstallOk'), [dir_to]);
       if MsgConfirm(s_msg, Handle, true{IsQuestion}) then
         acRestart.Execute;
-    end;
-
-  //store version to v.inf
-  if VersionStr<>'' then
-    with TStringList.Create do
-    try
-      Add(VersionStr);
-      SaveToFile(dir_to + '\' + cVInf);
-    finally
-      Free
     end;
 end;
 
