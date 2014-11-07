@@ -14,15 +14,6 @@ object SyntaxManager: TSyntaxManager
         FormatType = ftCustomFont
       end
       item
-        DisplayName = 'Marked block'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clHighlightText
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-        BgColor = clHighlight
-      end
-      item
         DisplayName = 'Symbol'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clMaroon
@@ -95,6 +86,16 @@ object SyntaxManager: TSyntaxManager
         BorderColorRight = clGray
         BorderTypeBottom = blSolid
         BorderColorBottom = clGray
+      end
+      item
+        DisplayName = 'Asm BG'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+        BgColor = clMoneyGreen
+        FormatType = ftBackGround
       end>
     TokenRules = <
       item
@@ -108,7 +109,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Id keyword'
         StyleName = 'Reserved word'
-        TokenType = 12
+        TokenType = 7
         Expression = '\b(catch|else|for|if|switch|while)\b'
         ColumnFrom = 0
         ColumnTo = 0
@@ -124,7 +125,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Hex'
         StyleName = 'Number'
-        TokenType = 7
+        TokenType = 5
         Expression = '0x[\da-f]*'
         ColumnFrom = 0
         ColumnTo = 0
@@ -132,7 +133,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Float'
         StyleName = 'Number'
-        TokenType = 6
+        TokenType = 5
         Expression = 
           '#with exp. dot is optional '#13#10'(\d+ \.)? \d+ e [\+\-]? \d+ |'#13#10'#wit' +
           'hout exp. dot is required'#13#10'\d+ \. \d+'
@@ -150,7 +151,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Preprocessor'
         StyleName = 'Preprocessor'
-        TokenType = 9
+        TokenType = 6
         Expression = '\#\s*\w+'
         ColumnFrom = 0
         ColumnTo = 0
@@ -190,7 +191,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Char'
         StyleName = 'String'
-        TokenType = 8
+        TokenType = 4
         Expression = #39'.*?('#39'|$)'
         ColumnFrom = 0
         ColumnTo = 0
@@ -297,25 +298,16 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = '}'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '}')
-            TokenTypes = 8
-          end>
-        HighlightPos = cpBound
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'function begin'
-        StrictParent = True
+        DisplayName = 'func'
         ConditionList = <
           item
             TagList.Strings = (
               '{')
             TokenTypes = 8
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 2
           end
           item
             TagList.Strings = (
@@ -332,29 +324,62 @@ object SyntaxManager: TSyntaxManager
           end
           item
             TokenTypes = 4
+          end
+          item
+            TokenTypes = 4
           end>
-        BlockEnd = 'function end'
-        NameFmt = '%s0'
+        BlockEnd = '}'
+        NotCollapsed = True
+        NameFmt = '%s-1'
         RefToCondEnd = True
         HighlightPos = cpBound
+        NoEndRule = True
         TreeItemImage = 5
-        IgnoreAsParent = True
+        IgnoreAsParent = False
         AutoCloseText = '}'#13#10
       end
       item
-        DisplayName = 'function end'
-        BlockName = 'function begin'
-        StrictParent = True
-        NotParent = True
-        BlockType = btRangeEnd
+        DisplayName = 'func *'
         ConditionList = <
           item
             TagList.Strings = (
-              '}')
+              '{')
             TokenTypes = 8
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 2
+          end
+          item
+            TagList.Strings = (
+              ')')
+            TokenTypes = 8
+          end
+          item
+            CondType = tcSkip
+          end
+          item
+            TagList.Strings = (
+              '(')
+            TokenTypes = 8
+          end
+          item
+            TokenTypes = 4
+          end
+          item
+            TagList.Strings = (
+              '*')
+            TokenTypes = 8
+          end
+          item
+            TokenTypes = 4
           end>
+        NotCollapsed = True
+        NameFmt = '%s-2'
         RefToCondEnd = True
-        HighlightPos = cpBound
+        HighlightPos = cpAny
+        NoEndRule = True
+        TreeItemImage = 5
         IgnoreAsParent = False
       end
       item
@@ -366,7 +391,6 @@ object SyntaxManager: TSyntaxManager
               '{')
             TokenTypes = 8
           end>
-        IdentIndex = 1
         BlockEnd = '}'
         DisplayInTree = False
         DynHighlight = dhBound
@@ -377,6 +401,18 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
         AutoCloseMode = acmCloseNearest
         AutoCloseText = '}'
+      end
+      item
+        DisplayName = '}'
+        BlockType = btRangeEnd
+        ConditionList = <
+          item
+            TagList.Strings = (
+              '}')
+            TokenTypes = 8
+          end>
+        HighlightPos = cpBound
+        IgnoreAsParent = False
       end
       item
         DisplayName = 'Block comment'
@@ -415,7 +451,7 @@ object SyntaxManager: TSyntaxManager
             TagList.Strings = (
               '\#\s*define')
             CondType = tcMask
-            TokenTypes = 512
+            TokenTypes = 576
           end>
         NameFmt = '%s0 %s-1'
         HighlightPos = cpAny
@@ -448,16 +484,14 @@ object SyntaxManager: TSyntaxManager
     CodeTemplates = <>
     SubAnalyzers = <
       item
-        DisplayName = 'asm2'
-        Enabled = False
-        StyleName = 'Preprocessor'
+        DisplayName = 'asm-string'
+        StyleName = 'Asm BG'
         StartExpression = '\#asm\s*\(\s*"'
         EndExpression = '"\)'
         SyntAnalyzer = SyntAnalyzer13
-        IncludeBounds = True
       end
       item
-        DisplayName = 'asm1'
+        DisplayName = 'asm-endasm'
         Enabled = False
         StyleName = 'Preprocessor'
         StartExpression = '\#asm'
@@ -466,13 +500,12 @@ object SyntaxManager: TSyntaxManager
       end>
     SampleText.Strings = (
       '/* Test */'
-      ''
-      '#define MAX(a, b)  \'
-      '     ((a > b) ? a : b) '
+      '#define sum(a, b) a+b '
+      '#asm (" mov ax, F0h ")'
       ''
       'void stdcall Init(void) {'
       '  TestModDeinit(B64UTIL);'
-      '} /* B64UTIL_vDeinit */'
+      '}'
       ''
       '    char* Small(int a) {'
       '    }'
@@ -491,7 +524,6 @@ object SyntaxManager: TSyntaxManager
       '  if (c=='#39'A'#39') {'
       '    return;'
       '  }'
-      '  #asm (" mov EAX, 0 ")'
       '}'
       ''
       'typedef struct HashTab {'
@@ -500,25 +532,16 @@ object SyntaxManager: TSyntaxManager
     TokenTypeNames.Strings = (
       'Unknown'
       'Comment'
-      'Identifier'
+      'Id'
       'Symbol'
       'String'
-      'Integer const'
-      'Float const'
-      'Hex const'
-      'Char const'
+      'Number'
       'Preprocessor'
-      'Inline Asm Start'
-      'Inline Asm End'
       'Id keyword')
     Extentions = 'c h ch'
     LexerName = 'C'
     Notes.Strings = (
-      'Modified by Alexey (SynWrite):'
-      '-rule "function" change: name of formatting str was: %s0~s[)]'
-      '-also changes of C++ lex, see it'#39's Notes'
-      '-added tree items: typedef, #define'
-      '-no tree items for "if", "for"')
+      'Heavily redone by Alexey (SynWrite)')
     LineComment = '//'
     Charset = DEFAULT_CHARSET
   end
@@ -8251,25 +8274,6 @@ object SyntaxManager: TSyntaxManager
         FormatType = ftCustomFont
       end
       item
-        DisplayName = 'Current Line'
-        Font.Charset = RUSSIAN_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-        BgColor = 16772341
-        FormatType = ftBackGround
-      end
-      item
-        DisplayName = 'Search Match'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindow
-        Font.Height = -16
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-        BgColor = clBlack
-      end
-      item
         DisplayName = 'Comment'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clGray
@@ -8355,17 +8359,9 @@ object SyntaxManager: TSyntaxManager
         BorderColorBottom = clGray
       end
       item
-        DisplayName = 'Preprocessor'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clGreen
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsItalic]
-      end
-      item
         DisplayName = 'OP Keywords'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clNavy
+        Font.Color = clPurple
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
@@ -8376,33 +8372,22 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'String'
         StyleName = 'String'
         TokenType = 4
-        Expression = 
-          '#if only one " string to end '#13#10'#of line will be highlighted, '#13#10'#' +
-          'otherwise after closing it '#13#10'#string will not be highlighted '#13#10'"' +
-          '.*?("|$)'#13#10
+        Expression = '".*?("|$)'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
-        DisplayName = 'end'
+        DisplayName = 'Id'
         StyleName = 'Identifier'
         TokenType = 2
-        Expression = 'end\b'#13#10
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Any name'
-        StyleName = 'Identifier'
-        TokenType = 2
-        Expression = '#first charecter can'#39't be digit'#13#10'[a-z_]\w*'
+        Expression = '[a-z_]\w*'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
         DisplayName = 'Float'
         StyleName = 'Number'
-        TokenType = 6
+        TokenType = 5
         Expression = 
           '#with exp. dot is optional '#13#10'\d+ \.? \d+ e [\+\-]? \d+ |'#13#10'#witho' +
           'ut exp. dot is required'#13#10'\d+ \. \d+'#13#10' '
@@ -8413,7 +8398,15 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Integer'
         StyleName = 'Number'
         TokenType = 5
-        Expression = '#any sequence of digits'#13#10'\d+'
+        Expression = '\d+'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Hex'
+        StyleName = 'Number'
+        TokenType = 5
+        Expression = '&H[\da-f]+&? |'#13#10'&o[0-7]+'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -8421,15 +8414,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Comment'
         StyleName = 'Comment'
         TokenType = 1
-        Expression = '#all chars after '#39' to end of line'#13#10#39'.*'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'HEX'
-        StyleName = 'Number'
-        TokenType = 7
-        Expression = '&H[\da-f]+&?'
+        Expression = #39'.*'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -8827,6 +8812,37 @@ object SyntaxManager: TSyntaxManager
           end>
         HighlightPos = cpAny
         IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'Begin For'
+        StyleName = 'Current block bound'
+        ConditionList = <
+          item
+            TagList.Strings = (
+              'For')
+            TokenTypes = 4
+            IgnoreCase = True
+          end>
+        BlockEnd = 'End For'
+        DisplayInTree = False
+        DynHighlight = dhBound
+        HighlightPos = cpRange
+        DrawStaple = True
+        CollapseFmt = '%s0 ...'
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'End For'
+        BlockType = btRangeEnd
+        ConditionList = <
+          item
+            TagList.Strings = (
+              'Next')
+            TokenTypes = 4
+            IgnoreCase = True
+          end>
+        HighlightPos = cpAny
+        IgnoreAsParent = False
       end>
     CodeTemplates = <>
     SubAnalyzers = <>
@@ -8834,15 +8850,14 @@ object SyntaxManager: TSyntaxManager
       #39' Syntax highlighting'
       'Function PrintNumber'
       '  Dim Number'
-      '  Dim X      34.4e+5'
-      ''
-      '  Number = 123456'
+      '  Number = 12 + 12.2 + 1.2e3 + 1.2e-3'
       '  Response.Write "The number is " & number'
-      '             '
+      '  '
+      '  If aaa'
+      '  End If          '
       '  For I = 0 To Number'
-      '    X = X + &h4c'
-      '    X = X - &o8'
-      '    X = X + 1.0'
+      '    X = X + &hFF'
+      '    X = X - &o7'
       '  Next'
       ''
       '  I = I + @;  '
@@ -8853,10 +8868,7 @@ object SyntaxManager: TSyntaxManager
       'Identifier'
       'Symbol'
       'String'
-      'Integer const'
-      'Float const'
-      'Hex const'
-      'Char const')
+      'Number')
     Gramma.Gramma = 
       'Skip = <Comment>;'#13#10#13#10'// Used'#13#10'NameDetector = <Identifier> Braket' +
       '? '#39'.'#39';'#13#10#13#10'FuncCall = <Identifier> Braket;'#13#10#13#10'Braket = Braket1 | ' +
@@ -8864,9 +8876,13 @@ object SyntaxManager: TSyntaxManager
       'et1 <Unknown> |'#13#10'             '#39'('#39';'#13#10'             '#13#10'Braket2 = Lef' +
       'tBraket2 '#39']'#39';'#13#10#13#10'LeftBraket2 = LeftBraket2 <Unknown> |'#13#10'        ' +
       '     '#39'['#39';'
-    CurrentLineStyle = 'Current Line'
     Extentions = 'bas vb vbs'
     LexerName = 'VBScript'
+    Notes.Strings = (
+      'Changed by Alex (SynWrite): '
+      '- folded For-Next'
+      '- less token names'
+      '- parser Octal nums')
     LineComment = #39
     Charset = DEFAULT_CHARSET
     Left = 144
