@@ -2204,8 +2204,8 @@ object fmMain: TfmMain
             OnSelect = ButtonOnSelect
           end
           object TBXItemTidyCfg: TSpTBXItem
-            Caption = 'Configure'
-            Hint = 'Edit HTML Tidy configurations file'
+            Caption = 'Browse configs'
+            Hint = 'Browse folder with HTML Tidy config files'
             OnClick = TBXItemTidyCfgClick
             OnSelect = ButtonOnSelect
           end

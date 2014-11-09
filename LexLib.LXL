@@ -12035,7 +12035,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Parameter'
         Font.Charset = RUSSIAN_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clBlack
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
@@ -12062,7 +12062,7 @@ object SyntaxManager: TSyntaxManager
         Font.Color = clGray
         Font.Height = -13
         Font.Name = 'Courier New'
-        Font.Style = []
+        Font.Style = [fsItalic]
       end
       item
         DisplayName = 'Number'
@@ -12084,13 +12084,13 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Section'
         StyleName = 'Section'
-        TokenType = 8
-        Expression = '(?s)^\[.*?\]'
+        TokenType = 5
+        Expression = '^\[.*?\]'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
-        DisplayName = 'Parameter'
+        DisplayName = 'Key'
         StyleName = 'Parameter'
         TokenType = 2
         Expression = '^[^=\n\r]+'
@@ -12098,28 +12098,10 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Equal sign'
+        DisplayName = 'Symbol'
         StyleName = 'Symbol'
         TokenType = 3
         Expression = '='
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Float'
-        Enabled = False
-        StyleName = 'Number'
-        TokenType = 6
-        Expression = '[\d]+\.?[\d]+e[\+\-]?[\d]+|[\d]+\.[\d]+$'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Integer'
-        Enabled = False
-        StyleName = 'Number'
-        TokenType = 5
-        Expression = '-?[\d]+$'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -12133,10 +12115,10 @@ object SyntaxManager: TSyntaxManager
       end>
     BlockRules = <
       item
-        DisplayName = 'Section begin'
+        DisplayName = 'Section'
         ConditionList = <
           item
-            TokenTypes = 256
+            TokenTypes = 32
           end>
         EndOfTextClose = True
         NameFmt = '%s0'
@@ -12147,28 +12129,7 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'Item begin'
-        Enabled = False
-        ConditionList = <
-          item
-            TokenTypes = 112
-          end
-          item
-            TokenTypes = 8
-          end
-          item
-            TokenTypes = 4
-          end>
-        NotCollapsed = True
-        NameFmt = '%s0 = %s-2'
-        RefToCondEnd = True
-        HighlightPos = cpBound
-        NoEndRule = True
-        TreeItemStyle = 'Value'
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'Item any'
+        DisplayName = 'Item'
         ConditionList = <
           item
             TokenTypes = 8
@@ -12187,21 +12148,18 @@ object SyntaxManager: TSyntaxManager
     SubAnalyzers = <>
     SampleText.Strings = (
       '[TT]'
-      'tt=2'
-      'tt=3'
+      'aa=test'
+      'bb=test'
       ''
       '[TT2]'
-      'ttt=2'
-      'ttt=3')
+      ';tt=2'
+      'ww=22')
     TokenTypeNames.Strings = (
       'Unknown'
       'Comment'
-      'Parameter'
+      'Key'
       'Symbol'
       'Value'
-      'Integer const'
-      'Float const'
-      'Hex const'
       'Section')
     Extentions = 'ini dsk dti dof inf lng srv reg sas cfg'
     LexerName = 'Ini files'

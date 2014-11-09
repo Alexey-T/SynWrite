@@ -99,7 +99,8 @@ type
     cSynDataNewDoc,
     cSynDataOutPresets,
     cSynDataSkins,
-    cSynDataSnippets
+    cSynDataSnippets,
+    cSynDataHtmlTidy
     );
 const
   cSynDataSubdirNames: array[TSynDataSubdirId] of string = (
@@ -111,7 +112,8 @@ const
     'newdoc',
     'outpresets',
     'skins',
-    'snippets'
+    'snippets',
+    'htmltidy'
     );
 
 type
@@ -2621,7 +2623,8 @@ type
     procedure DoNewDocFolderClick(Sender: TObject);
     procedure DoTabIndexClick(n: integer);
     procedure DoRtTabIndexClick(n: integer);
-    procedure DoTidy(const Cfg: string);
+    procedure DoTidy_Run(const AConfig: string);
+    procedure DoTidy_Config;
     procedure DoTidyClick(Sender: TObject);
 
     procedure DoBkDelete(Ed: TSyntaxMemo; DelUnmarked: boolean);
@@ -3335,7 +3338,6 @@ type
     function SynMacrosIni: string;
     function SynHideIni: string;
     function SynHistoryIni: string;
-    function SynTidyIni: string;
     function SynPluginsIni: string;
     function SynPluginsSampleIni: string;
     function SynPluginIni(const SCaption: string): string;
@@ -3389,7 +3391,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1770';
+  cSynVer = '6.14.1788';
   cSynPyVer = '1.0.143';
 
 const
@@ -4780,7 +4782,7 @@ begin
 
     opBeep:= ReadBool('Setup', 'Beep', true);
     opUtf8BufferSizeKb:= ReadInteger('Setup', 'Utf8Buffer', 64);
-    opShowMenuIcons:= ReadBool('Setup', 'MenuIcon', true);
+    opShowMenuIcons:= ReadBool('Setup', 'MenuIcon', false);
     ApplyShowIconsInMenus;
 
     opHiliteSmart:= ReadBool('Setup', 'SmHi', false);
@@ -5342,11 +5344,6 @@ end;
 function TfmMain.SynMacrosIni: string;
 begin
   Result:= SynIniDir + 'SynMacros.ini';
-end;
-
-function TfmMain.SynTidyIni: string;
-begin
-  Result:= SynDir + 'Tidy.cfg';
 end;
 
 function TfmMain.SynHideIni: string;
@@ -6066,8 +6063,9 @@ begin
     sm_OpenGoogle: DoOnlineFind('http://www.google.com/search?q=');
     sm_OpenWiki: DoOnlineFind('http://en.wikipedia.org/w/index.php?title=Special:Search&search=');
     sm_OpenMsdn: DoOnlineFind('http://social.msdn.microsoft.com/Search/en-US?query=');
-    sm_TidyValidate: DoTidy('');
-    sm_TidyConfig: DoOpenFile(SynTidyIni);
+
+    sm_TidyValidate: DoTidy_Run('');
+    sm_TidyConfig: DoTidy_Config;
 
     sm_LoremIpsumDialog: ecLoremIpsum.Execute;
     sm_NumericConverterDialog: ecNumericConverter.Execute;
@@ -16367,39 +16365,37 @@ procedure TfmMain.TBXSubmenuItemTidyPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
   i: Integer;
-  L: TStringList;
+  LFiles: TTntStringList;
   MI: TSpTbxItem;
   en: boolean;
 begin
   en:= CurrentFrame.FileName<>'';
   TbxItemTidyVal.Enabled:= en;
 
-  L:= TStringList.Create;
-  with TIniFile.Create(SynTidyIni) do
+  LFiles:= TTntStringList.Create;
   try
-    ReadSections(L);
-  finally
-    Free;
-  end;
+    FFindToList(LFiles, SynDataSubdir(cSynDataHtmlTidy),
+      '*.cfg', '', false{SubDir}, false, false, false);
 
-  with TbxSubmenuItemTidy do
-  begin
-    for i:= Count-1 downto 0 do
-      if Items[i].Tag=1 then
-        Items[i].Free;
-
-    for i:= 0 to L.Count-1 do
+    with TbxSubmenuItemTidy do
     begin
-      MI:= TSpTbxItem.Create(Self);
-      MI.Caption:= L[i];
-      MI.Tag:= 1;
-      MI.OnClick:= DoTidyClick;
-      MI.Enabled:= en;
-      Add(MI);
-    end;
-  end;
+      for i:= Count-1 downto 0 do
+        if Items[i].Tag=1 then
+          Items[i].Free;
 
-  FreeAndNil(L);
+      for i:= 0 to LFiles.Count-1 do
+      begin
+        MI:= TSpTbxItem.Create(Self);
+        MI.Caption:= WideChangeFileExt(WideExtractFileName(LFiles[i]), '');
+        MI.Tag:= 1;
+        MI.OnClick:= DoTidyClick;
+        MI.Enabled:= en;
+        Add(MI);
+      end;
+    end;
+  finally
+    FreeAndNil(LFiles);
+  end;
 end;
 
 procedure TfmMain.TBXItemTidyCfgClick(Sender: TObject);
@@ -16409,36 +16405,38 @@ end;
 
 procedure TfmMain.DoTidyClick(Sender: TObject);
 begin
-  DoTidy((Sender as TTbCustomItem).Caption);
+  DoTidy_Run((Sender as TTbCustomItem).Caption);
 end;
 
-procedure TfmMain.DoTidy(const Cfg: string);
+procedure TfmMain.DoTidy_Config;
+begin
+  FOpenURL(SynDataSubdir(cSynDataHtmlTidy), Handle);
+end;
+
+procedure TfmMain.DoTidy_Run(const AConfig: string);
 var
-  Frame: TEditorFrame;
+  F: TEditorFrame;
   fn_cfg, fn_out, fn_err, fn_current,
   fcmd, fdir: string;
 begin
-  Frame:= CurrentFrame;
-  if Frame.FileName='' then Exit;
-  if Frame.Modified then acSave.Execute;
+  F:= CurrentFrame;
+  if F.FileName='' then Exit;
+  if F.Modified then acSave.Execute;
 
-  fn_current:= Frame.FileName;
-  fn_cfg:= FTempDir + '\SynwTidyCfg.txt';
+  fn_current:= F.FileName;
+  fn_cfg:= SynDataSubdir(cSynDataHtmlTidy) + '\' + AConfig + '.cfg';
   fn_out:= FTempDir + '\SynwTidyOut.txt';
   fn_err:= FTempDir + '\SynwTidyErr.txt';
-  FDelete(fn_cfg);
   FDelete(fn_out);
   FDelete(fn_err);
 
-  if Cfg<>'' then
+  if AConfig<>'' then
   begin
-    FWriteIniSectionToFile(SynTidyIni, Cfg, fn_cfg);
     if (not IsFileExist(fn_cfg)) or (FGetFileSize(fn_cfg)=0) then
     begin
-      MsgError('Tidy configuration empty:'#13+Cfg, Handle);
+      MsgError('Tidy configuration empty:'#13+fn_cfg, Handle);
       Exit
     end;
-    //DoOpenFile(fn_cfg); exit;
 
     fcmd:= WideFormat('"%s" -output "%s" -config "%s" -file "%s" -quiet "%s"',
       [SynDir + 'Tools\tidy.exe',
@@ -16477,7 +16475,7 @@ begin
   else
   begin
     ListVal.Items.Clear;
-    if Cfg='' then Exit;
+    if AConfig='' then Exit;
   end;
 
   //show output in editor
@@ -16486,14 +16484,13 @@ begin
     with TStringList.Create do
     try
       LoadFromFile(fn_out);
-      Frame.EditorMaster.CaretStrPos:= 0;
-      Frame.EditorMaster.ReplaceText(0, Length(Frame.EditorMaster.Text), Text);
+      F.EditorMaster.CaretStrPos:= 0;
+      F.EditorMaster.ReplaceText(0, Length(F.EditorMaster.Text), Text);
     finally
       Free
     end;
   end;
 
-  FDelete(fn_cfg);
   FDelete(fn_out);
   FDelete(fn_err);
 end;

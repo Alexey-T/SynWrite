@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.14.1775
+AppVersion=6.14.1785
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -13,7 +13,8 @@ SetupIconFile=setup.ico
 Compression=lzma
 SolidCompression=yes
 AppMutex=UVViewSoft.SynWrite
-PrivilegesRequired=none
+;PrivilegesRequired=none
+PrivilegesRequired=lowest
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -89,9 +90,6 @@ Name: "{commondesktop}\SynWrite"; Filename: "{app}\Syn.exe"; Tasks: desktopicon
 [UninstallDelete]
 Type: files; Name: "{app}\Syn*.ini"
 Type: files; Name: "{app}\Portable.ini"
-
-[Run]
-;Filename: "{app}\Syn.exe"; Parameters: "/reg"; Description: "Configure SynWrite file types"; Flags: nowait postinstall skipifsilent runascurrentuser
 
 ;[Registry]
 ;Root: HKCR; Subkey: "*\shell\SynWrite"; Flags: uninsdeletekey
