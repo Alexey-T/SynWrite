@@ -8520,6 +8520,7 @@ object SyntaxManager: TSyntaxManager
               'private'
               'property'
               'public'
+              'resume'
               'return'
               'select'
               'set'
@@ -8822,9 +8823,18 @@ object SyntaxManager: TSyntaxManager
               'For')
             TokenTypes = 4
             IgnoreCase = True
+          end
+          item
+            TagList.Strings = (
+              'Exit')
+            CondType = tcNotEqual
+            TokenTypes = 4
+            IgnoreCase = True
           end>
+        BlockOffset = -1
         BlockEnd = 'End For'
         DisplayInTree = False
+        RefToCondEnd = True
         DynHighlight = dhBound
         HighlightPos = cpRange
         DrawStaple = True
@@ -8840,7 +8850,16 @@ object SyntaxManager: TSyntaxManager
               'Next')
             TokenTypes = 4
             IgnoreCase = True
+          end
+          item
+            TagList.Strings = (
+              'Resume')
+            CondType = tcNotEqual
+            TokenTypes = 4
+            IgnoreCase = True
           end>
+        BlockOffset = -1
+        RefToCondEnd = True
         HighlightPos = cpAny
         IgnoreAsParent = False
       end>
