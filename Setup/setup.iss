@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.14.1785
+AppVersion=6.14.1788
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -32,7 +32,6 @@ Source: "..\SynHelper.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LexLib.lxl"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Enc.cfg"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lexers.cfg"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Tidy.cfg"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\*"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Readme\*"; DestDir: "{app}\Readme"; Flags: ignoreversion
 
@@ -53,6 +52,7 @@ Source: "..\Data\skins\*";        DestDir: "{app}\Data\skins";
 Source: "..\Data\icons\*";        DestDir: "{app}\Data\icons";
 Source: "..\Data\conv\*";         DestDir: "{app}\Data\conv";
 Source: "..\Data\outpresets\*";   DestDir: "{app}\Data\outpresets";
+Source: "..\Data\htmltidy\*";     DestDir: "{app}\Data\htmltidy";
 
 Source: "..\Data\clips\Arrows\*";                     DestDir: "{app}\Data\clips\Arrows";                    
 Source: "..\Data\clips\Currency symbols\*";           DestDir: "{app}\Data\clips\Currency symbols";          
