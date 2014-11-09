@@ -16420,7 +16420,7 @@ procedure TfmMain.DoTidy_Run(const AConfig: string);
 var
   F: TEditorFrame;
   fn_exe, fn_cfg, fn_out, fn_err, fn_current,
-  fcmd, fdir: string;
+  SToolCmd, SToolDir: string;
 begin
   F:= CurrentFrame;
   if F.FileName='' then Exit;
@@ -16445,26 +16445,20 @@ begin
       Exit
     end;
 
-    fcmd:= WideFormat('"%s" -output "%s" -config "%s" -file "%s" -quiet "%s"',
-      [fn_exe,
-       fn_out,
-       fn_cfg,
-       fn_err,
-       fn_current]);
+    SToolCmd:= WideFormat('"%s" -output "%s" -config "%s" -file "%s" -quiet "%s"',
+      [fn_exe, fn_out, fn_cfg, fn_err, fn_current]);
   end
   else
   begin
-    fcmd:= WideFormat('"%s" -file "%s" -errors -quiet "%s"',
-      [fn_exe,
-       fn_err,
-       fn_current]);
+    SToolCmd:= WideFormat('"%s" -file "%s" -errors -quiet "%s"',
+      [fn_exe, fn_err, fn_current]);
   end;
 
   //exec
-  DoPyConsole_LogString('Running: '+fcmd);
+  DoPyConsole_LogString('Running: '+SToolCmd);
 
-  fdir:= ExtractFileDir(fn_exe);
-  if FExecProcess(fcmd, fdir, sw_hide, true{Wait}) = exCannotRun then
+  SToolDir:= ExtractFileDir(fn_exe);
+  if FExecProcess(SToolCmd, SToolDir, sw_hide, true{Wait})<>exOk then
     begin MsgNoRun(fn_exe); Exit end;
 
   //show errors
@@ -16488,17 +16482,16 @@ begin
   end;
 
   //show output in editor
+  //don't just load file, we need undo record, do replace
   if IsFileExist(fn_out) and (FGetFileSize(fn_out)>0) then
-  begin
     with TStringList.Create do
     try
       LoadFromFile(fn_out);
       F.EditorMaster.CaretStrPos:= 0;
-      F.EditorMaster.ReplaceText(0, Length(F.EditorMaster.Text), Text);
+      F.EditorMaster.ReplaceText(0, F.EditorMaster.TextLength, Text);
     finally
       Free
     end;
-  end;
 
   FDelete(fn_out);
   FDelete(fn_err);
