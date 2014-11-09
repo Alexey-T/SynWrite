@@ -16404,8 +16404,11 @@ begin
 end;
 
 procedure TfmMain.DoTidyClick(Sender: TObject);
+var
+  Cfg: string;
 begin
-  DoTidy_Run((Sender as TTbCustomItem).Caption);
+  Cfg:= (Sender as TTbCustomItem).Caption;
+  DoTidy_Run(Cfg);
 end;
 
 procedure TfmMain.DoTidy_Config;
@@ -16416,15 +16419,19 @@ end;
 procedure TfmMain.DoTidy_Run(const AConfig: string);
 var
   F: TEditorFrame;
-  fn_cfg, fn_out, fn_err, fn_current,
+  fn_exe, fn_cfg, fn_out, fn_err, fn_current,
   fcmd, fdir: string;
 begin
   F:= CurrentFrame;
   if F.FileName='' then Exit;
   if F.Modified then acSave.Execute;
 
-  fn_current:= F.FileName;
   fn_cfg:= SynDataSubdir(cSynDataHtmlTidy) + '\' + AConfig + '.cfg';
+  if not FileExists(fn_cfg) then
+    begin MsgBeep; Exit end;
+
+  fn_current:= F.FileName;
+  fn_exe:= SynDir + 'Tools\tidy.exe';
   fn_out:= FTempDir + '\SynwTidyOut.txt';
   fn_err:= FTempDir + '\SynwTidyErr.txt';
   FDelete(fn_out);
@@ -16439,7 +16446,7 @@ begin
     end;
 
     fcmd:= WideFormat('"%s" -output "%s" -config "%s" -file "%s" -quiet "%s"',
-      [SynDir + 'Tools\tidy.exe',
+      [fn_exe,
        fn_out,
        fn_cfg,
        fn_err,
@@ -16448,15 +16455,17 @@ begin
   else
   begin
     fcmd:= WideFormat('"%s" -file "%s" -errors -quiet "%s"',
-      [SynDir + 'Tools\tidy.exe',
+      [fn_exe,
        fn_err,
        fn_current]);
   end;
 
   //exec
-  fdir:= SynDir + 'Tools';
+  DoPyConsole_LogString('Running: '+fcmd);
+
+  fdir:= ExtractFileDir(fn_exe);
   if FExecProcess(fcmd, fdir, sw_hide, true{Wait}) = exCannotRun then
-    begin MsgNoRun('Tools\Tidy.exe'); Exit end;
+    begin MsgNoRun(fn_exe); Exit end;
 
   //show errors
   if IsFileExist(fn_err) and (FGetFileSize(fn_err)>0) then
