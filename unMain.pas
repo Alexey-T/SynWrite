@@ -3391,7 +3391,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1788';
+  cSynVer = '6.14.1790';
   cSynPyVer = '1.0.143';
 
 const
@@ -6728,7 +6728,7 @@ begin
         PopupLexers.Items.Add(menu);
 
         for i:= 0 to s.Count-1 do
-          if (UpCase(s[i][1]) = UpCase(ch)) then
+          if SBegin(UpperCase(s[i]), UpCase(ch)) then
           begin
             nTag:= integer(s.Objects[i]);
             if SyntaxManager.Analyzers[nTag].Internal then Continue;

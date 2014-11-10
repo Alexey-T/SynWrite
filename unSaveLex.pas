@@ -54,6 +54,7 @@ var
   s, si{, sd}: string;
 begin
   s:= f.LexerName;
+  if s='' then Exit;
   with TIniFile.Create(fn) do
   try
     EraseSection(s);
