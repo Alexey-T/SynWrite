@@ -17163,6 +17163,8 @@ begin
   if Ed<>nil then
   begin
     P:= (Sender as TSyntaxMemo).CaretPos;
+
+    EditorUncollapseLine(Ed, P.Y);
     //Ed.CaretPos:= P; //don't move caret
     Ed.TopLine:= P.Y - Ed.VisibleLines div 2;
   end;
