@@ -17,9 +17,13 @@ object fmMap: TfmMap
   object edMap: TSyntaxMemo
     Left = 0
     Top = 0
-    Width = 218
-    Height = 427
+    Width = 210
+    Height = 423
     Cursor = crDefault
+    NonPrintedSpaces = True
+    NonPrintedEol = True
+    NonPrintedEolDetails = False
+    SelectModeDefault = msNone
     Lines.Strings = (
       'edMap')
     TabList.AsString = '4'
@@ -57,6 +61,7 @@ object fmMap: TfmMap
     HintProps.Color = 13041663
     HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
     UserRanges = <>
+    UndoLimit = 0
     ScrollBars = ssNone
     StaplePen.Color = clGray
     DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET

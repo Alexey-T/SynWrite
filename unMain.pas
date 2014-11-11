@@ -3221,7 +3221,7 @@ type
     procedure ApplyACP;
     procedure ApplyAcpColors;
     procedure ApplyOut;
-    procedure ApplyMap;
+    procedure ApplyMinimapProps;
     procedure ApplyBorders;
     procedure ApplyColorsFontsToFrames;
 
@@ -13946,9 +13946,9 @@ begin
     Parent:= plClip;
     Align:= alClient;
     BorderStyle:= bsNone;
-    FOnMapClick:= MapClick;
+    OnMapClick:= MapClick;
     edMap.BorderStyle:= SynBorderStyle;
-    ApplyMap;
+    ApplyMinimapProps;
     Show;
   end;
 end;
@@ -17170,7 +17170,7 @@ begin
   end;
 end;
 
-procedure TfmMain.ApplyMap;
+procedure TfmMain.ApplyMinimapProps;
 begin
   if Assigned(fmMap) then
     with fmMap do

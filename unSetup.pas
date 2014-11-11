@@ -1804,7 +1804,7 @@ begin
 
     ApplyColors;
     ApplyOut;
-    ApplyMap;
+    ApplyMinimapProps;
     ApplyCarets;
   end;
 end;
@@ -2044,7 +2044,7 @@ begin
     opTreeSorted:= edTreeSorted.Text;
 
     opMapZoom:= edMapZoom.Value;
-    ApplyMap;
+    ApplyMinimapProps;
 
     opMicroMap:= cbMicroMap.Checked;
     ApplyFramesOptions;

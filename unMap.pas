@@ -29,11 +29,12 @@ type
     FMouseDown: boolean;
     FTopLine,
     FBtmLine: integer;
+    FOnMapClick: TNotifyEvent;
     procedure DoMapClick;
     procedure DoMapShow;
   public
     { Public declarations }
-    FOnMapClick: TNotifyEvent;
+    property OnMapClick: TNotifyEvent read FOnMapClick write FOnMapClick;
     procedure SyncMapData(Src: TSyntaxMemo);
     procedure SyncMapPos(Src: TSyntaxMemo);
     procedure SetMapColor(C: TColor);
