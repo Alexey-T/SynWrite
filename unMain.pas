@@ -9127,6 +9127,8 @@ var
 begin
   //code below needed only for Lister plugin
   if SynExe then Exit;
+  if Assigned(fmSR) then
+    if fmSR.ed1.Focused or fmSR.ed2.Focused or fmSR.ed1Memo.Focused or fmSR.ed2Memo.Focused then Exit;
 
   //Ctrl+Space
   if (Key = vk_space) and (Shift = [ssCtrl]) then Exit;
