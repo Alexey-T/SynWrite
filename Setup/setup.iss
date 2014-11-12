@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.14.1788
+AppVersion=6.14.1800
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -53,6 +53,7 @@ Source: "..\Data\icons\*";        DestDir: "{app}\Data\icons";
 Source: "..\Data\conv\*";         DestDir: "{app}\Data\conv";
 Source: "..\Data\outpresets\*";   DestDir: "{app}\Data\outpresets";
 Source: "..\Data\htmltidy\*";     DestDir: "{app}\Data\htmltidy";
+Source: "..\Data\websearch\*";    DestDir: "{app}\Data\websearch";
 
 Source: "..\Data\clips\Arrows\*";                     DestDir: "{app}\Data\clips\Arrows";                    
 Source: "..\Data\clips\Currency symbols\*";           DestDir: "{app}\Data\clips\Currency symbols";          

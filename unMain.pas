@@ -100,7 +100,8 @@ type
     cSynDataOutPresets,
     cSynDataSkins,
     cSynDataSnippets,
-    cSynDataHtmlTidy
+    cSynDataHtmlTidy,
+    cSynDataWebSearch
     );
 const
   cSynDataSubdirNames: array[TSynDataSubdirId] of string = (
@@ -113,7 +114,8 @@ const
     'outpresets',
     'skins',
     'snippets',
-    'htmltidy'
+    'htmltidy',
+    'websearch'
     );
 
 type
@@ -1415,6 +1417,7 @@ type
     ecExtractUniq: TAction;
     TBXItemEExtractUniq: TSpTBXItem;
     TBXItemBarDedupAndOrig: TSpTBXItem;
+    TbxSubmenuWeb: TSpTBXSubmenuItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2193,6 +2196,8 @@ type
     procedure ecExtractUniqExecute(Sender: TObject);
     procedure TBXItemEExtractUniqClick(Sender: TObject);
     procedure TBXItemBarDedupAndOrigClick(Sender: TObject);
+    procedure TbxSubmenuWebPopup(Sender: TTBCustomItem; FromLink: Boolean);
+    procedure WebSearchClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2732,8 +2737,8 @@ type
     function DoMacro_GetName(n: integer): Widestring;
     function DoMacro_GetCommandName(n: integer; AWithKey: boolean = False): Widestring;
 
-    procedure DoOnlineWordHelp(const url: Widestring);
-    procedure DoOnlineFind(const site: Widestring);
+    procedure DoOnlineSearch_Filename(const fn: string);
+    procedure DoOnlineSearch_Name(const Name: string);
 
     function GetTheme: string;
     procedure SetIcons(const S: string);
@@ -3391,7 +3396,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1790';
+  cSynVer = '6.14.1800';
   cSynPyVer = '1.0.143';
 
 const
@@ -6057,12 +6062,12 @@ begin
     sm_OpenCurrentFolder: DoOpenCurrentDir;
     sm_OpenCmdPrompt: DoOpenCmdPrompt;
 
-    sm_OpenPhp: DoOnlineWordHelp('http://www.php.net/%s');
-    sm_OpenHTML4Help: DoOnlineWordHelp('http://www.w3schools.com/tags/tag_%s.asp');
-    sm_OpenHTML5Help: DoOnlineWordHelp('http://dev.w3.org/html5/markup/%s.html');
-    sm_OpenGoogle: DoOnlineFind('http://www.google.com/search?q=');
-    sm_OpenWiki: DoOnlineFind('http://en.wikipedia.org/w/index.php?title=Special:Search&search=');
-    sm_OpenMsdn: DoOnlineFind('http://social.msdn.microsoft.com/Search/en-US?query=');
+    sm_OpenHTML4Help: DoOnlineSearch_Name('HTML4');
+    sm_OpenHTML5Help: DoOnlineSearch_Name('HTML5');
+    sm_OpenGoogle: DoOnlineSearch_Name('Google');
+    sm_OpenPhp: DoOnlineSearch_Name('PHP.net');
+    sm_OpenWiki: DoOnlineSearch_Name('Wikipedia (en)');
+    sm_OpenMsdn: DoOnlineSearch_Name('MSDN');
 
     sm_TidyValidate: DoTidy_Run('');
     sm_TidyConfig: DoTidy_Config;
@@ -11681,29 +11686,52 @@ begin
   CurrentEditor.ExecCommand(sm_OpenPhp);
 end;
 
-procedure TfmMain.DoOnlineWordHelp(const url: Widestring);
+procedure TfmMain.DoOnlineSearch_Name(const Name: string);
 var
-  s: Widestring;
+  fn: string;
 begin
-  with CurrentEditor do
-    s:= WideTrim(WordAtPos(CaretPos));
-  if s='' then
-    begin MsgNoSelection; Exit; end;
-
-  s:= WideFormat(url, [s]);
-  FOpenURL(s, Handle);
-end;
-
-procedure TfmMain.DoOnlineFind(const Site: Widestring);
-var
-  S: WideString;
-begin
-  S:= EditorSelectedTextForWeb(CurrentEditor);
-  if S='' then
-    MsgNoSelection
+  fn:= SynDataSubdir(cSynDataWebSearch)+'\'+Name+'.ini';
+  if FileExists(fn) then
+    DoOnlineSearch_Filename(fn)
   else
-    FOpenURL(Site + S, Handle);
+    MsgNoFile(fn);  
 end;
+
+procedure TfmMain.DoOnlineSearch_Filename(const fn: string);
+const
+  cMacroWord = '{word}';
+  cMacroSel = '{sel}';
+var
+  SWeb, S: Widestring;
+begin
+  with TIniFile.Create(fn) do
+  try
+    SWeb:= UTF8Decode(ReadString('info', 'web', ''));
+    if SWeb='' then Exit;
+  finally
+    Free
+  end;
+
+  if Pos(cMacroWord, SWeb)>0 then
+  begin
+    with CurrentEditor do
+      S:= WideTrim(WordAtPos(CaretPos));
+    if S='' then
+      begin MsgNoSelection; Exit; end;
+    SReplaceW(SWeb, cMacroWord, S);
+  end;
+
+  if Pos(cMacroSel, SWeb)>0 then
+  begin
+    S:= EditorSelectedTextForWeb(CurrentEditor);
+    if S='' then
+      begin MsgNoSelection; Exit end;
+    SReplaceW(SWeb, cMacroSel, S);
+  end;
+
+  FOpenURL(SWeb, Handle);
+end;
+
 
 procedure TfmMain.TBXItemRunFindGoogleClick(Sender: TObject);
 begin
@@ -24820,6 +24848,11 @@ begin
         Item.LinkSubitems:= TbxSubmenuItemCaretsOps;
       end
       else
+      if SCmd='m:{websearch}' then
+      begin
+        Item.LinkSubitems:= TbxSubmenuWeb;
+      end
+      else
       begin
         FUserToolbarCommands.Add(SCmd);
         Item.Tag:= FUserToolbarCommands.Count-1;
@@ -29384,6 +29417,35 @@ end;
 procedure TfmMain.TBXItemTreeFindPreviewClick(Sender: TObject);
 begin
   TreeFind_ShowPreview;
+end;
+
+procedure TfmMain.TbxSubmenuWebPopup(Sender: TTBCustomItem;
+  FromLink: Boolean);
+var
+  LFiles: TTntStringList;
+  i: Integer;
+  MI: TSpTbxItem;
+begin
+  TbxSubmenuWeb.Clear;
+
+  LFiles:= TTNtStringList.Create;
+  try
+    FFindToList(LFiles, SynDataSubdir(cSynDataWebSearch), '*.ini', '', false, false, false, false);
+    for i:= 0 to LFiles.Count-1 do
+    begin
+      MI:= TSpTbxItem.Create(Self);
+      MI.Caption:= WideChangeFileExt(WideExtractFileName(LFiles[i]), '');
+      MI.OnClick:= WebSearchClick;
+      TbxSubmenuWeb.Add(MI);
+    end;
+  finally
+    FreeAndNil(LFiles);
+  end;
+end;
+
+procedure TfmMain.WebSearchClick(Sender: TObject);
+begin
+  DoOnlineSearch_Name((Sender as TSpTbxItem).Caption);
 end;
 
 initialization
