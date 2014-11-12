@@ -175,10 +175,10 @@ const
   sm_OpenChrome = 832;
   sm_OpenSafari = 833;
   sm_OpenCurrentFolder = 834;
-  sm_OpenPhp = 835;
-  sm_OpenGoogle = 836;
-  sm_OpenWiki = 837;
-  sm_OpenMsdn = 838;
+  sm_OnlineSearchPhp = 835;
+  sm_OnlineSearchGoogle = 836;
+  sm_OnlineSearchWikipedia = 837;
+  sm_OnlineSearchMsdn = 838;
   sm_MacrosDialog = 839;
   sm_OpenBrowserPreview = 840;
 
@@ -229,8 +229,8 @@ const
   sm_ReplaceFromClipAll = 883;
   sm_RereadOutputPanel = 884;
   sm_InsertImage = 885;
-  sm_OpenHTML4Help = 886;
-  sm_OpenHTML5Help = 887;
+  sm_OnlineSearchHTML4 = 886;
+  sm_OnlineSearchHTML5 = 887;
   sm_LoremIpsumDialog = 888;
   sm_NumericConverterDialog = 889;
   sm_EncodeHtmlChars = 890;

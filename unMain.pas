@@ -2671,7 +2671,6 @@ type
     function DoNavigate_ListVal(const Str: Widestring): boolean;
     function IsNavigatableLine(const Str: Widestring): boolean;
     procedure DoNewDoc(const fn: Widestring);
-    procedure RunBrowser(const fn: Widestring);
     procedure AppException(Sender: TObject; E: Exception);
     function MsgEncReload: boolean;
     function MsgConfirmFtp: boolean;
@@ -2827,7 +2826,6 @@ type
     procedure DoEnumExtTools(L: TTntStringList);
     procedure DoEnumPyTools(L: TTntStringList);
     procedure InitMenuItemsList;
-    procedure DoOpenBySelection;
     procedure FixMenuBigImageList(Menu: TSpTbxSubmenuItem);
     procedure FixMruBigImageList(Menu: TSpTbxMruListItem);
     procedure FixSplitters;
@@ -2841,10 +2839,14 @@ type
       var DiffInTopLines: Integer;
       var EdSrcOnGroup1: boolean);
     procedure LoadAcpFromFile(const fn, Lexer: string);
+
+    procedure DoOpenInBrowser(const fn: Widestring);
+    procedure DoOpenBySelection;
     procedure DoOpenBrowserPreview;
     procedure DoOpenCurrentFile;
     procedure DoOpenCurrentDir;
     procedure DoOpenCmdPrompt;
+
     function SynHiddenOption(const Id: string; Default: integer): Integer;
     procedure DoRememberTempFile(const fn: Widestring);
     procedure DoDeleteTempFiles;
@@ -6049,21 +6051,21 @@ begin
       ecSortDescending.Execute;
 
     //tools
-    sm_OpenFirefox: RunBrowser('firefox.exe');
-    sm_OpenMSIE: RunBrowser('iexplore.exe');
-    sm_OpenChrome: RunBrowser('chrome.exe');
-    sm_OpenSafari: RunBrowser('safari.exe');
+    sm_OpenFirefox: DoOpenInBrowser('firefox.exe');
+    sm_OpenMSIE: DoOpenInBrowser('iexplore.exe');
+    sm_OpenChrome: DoOpenInBrowser('chrome.exe');
+    sm_OpenSafari: DoOpenInBrowser('safari.exe');
     sm_OpenBrowserPreview: DoOpenBrowserPreview;
     sm_OpenCurrentFile: DoOpenCurrentFile;
     sm_OpenCurrentFolder: DoOpenCurrentDir;
     sm_OpenCmdPrompt: DoOpenCmdPrompt;
 
-    sm_OpenHTML4Help: DoOnlineSearch_Name('HTML4');
-    sm_OpenHTML5Help: DoOnlineSearch_Name('HTML5');
-    sm_OpenGoogle: DoOnlineSearch_Name('Google');
-    sm_OpenPhp: DoOnlineSearch_Name('PHP.net');
-    sm_OpenWiki: DoOnlineSearch_Name('Wikipedia (en)');
-    sm_OpenMsdn: DoOnlineSearch_Name('MSDN');
+    sm_OnlineSearchHTML4: DoOnlineSearch_Name('HTML4');
+    sm_OnlineSearchHTML5: DoOnlineSearch_Name('HTML5');
+    sm_OnlineSearchGoogle: DoOnlineSearch_Name('Google');
+    sm_OnlineSearchPhp: DoOnlineSearch_Name('PHP.net');
+    sm_OnlineSearchWikipedia: DoOnlineSearch_Name('Wikipedia (en)');
+    sm_OnlineSearchMsdn: DoOnlineSearch_Name('MSDN');
 
     sm_TidyValidate: DoTidy_Run('');
     sm_TidyConfig: DoTidy_Config;
@@ -11676,7 +11678,7 @@ end;
 
 procedure TfmMain.TBXItemRunFindPhpClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_OpenPhp);
+  CurrentEditor.ExecCommand(sm_OnlineSearchPhp);
 end;
 
 procedure TfmMain.DoOnlineSearch_Name(const Name: string);
@@ -11728,20 +11730,20 @@ end;
 
 procedure TfmMain.TBXItemRunFindGoogleClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_OpenGoogle);
+  CurrentEditor.ExecCommand(sm_OnlineSearchGoogle);
 end;
 
 procedure TfmMain.TBXItemRunFindWikiClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_OpenWiki);
+  CurrentEditor.ExecCommand(sm_OnlineSearchWikipedia);
 end;
 
 procedure TfmMain.TBXItemRunFindMSDNClick(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_OpenMsdn);
+  CurrentEditor.ExecCommand(sm_OnlineSearchMsdn);
 end;
 
-procedure TfmMain.RunBrowser(const fn: Widestring);
+procedure TfmMain.DoOpenInBrowser(const fn: Widestring);
 begin
   if CurrentFrame.FileName <> '' then
   begin
@@ -19652,12 +19654,12 @@ end;
 
 procedure TfmMain.TbxItemRunFindHtml4Click(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_OpenHTML4Help);
+  CurrentEditor.ExecCommand(sm_OnlineSearchHTML4);
 end;
 
 procedure TfmMain.TbxItemRunFindHtml5Click(Sender: TObject);
 begin
-  CurrentEditor.ExecCommand(sm_OpenHTML5Help);
+  CurrentEditor.ExecCommand(sm_OnlineSearchHTML5);
 end;
 
 procedure TfmMain.ecRulerExecute(Sender: TObject);
