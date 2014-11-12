@@ -647,7 +647,6 @@ type
     TBXItemTool3: TSpTBXItem;
     TBXItemTool4: TSpTBXItem;
     TBXSeparatorItem31: TSpTbxSeparatorItem;
-    TBXItemRunFindPhp: TSpTbxItem;
     TBXItemRunOpenDir: TSpTbxItem;
     TBXItemTool5: TSpTBXItem;
     TBXItemTool6: TSpTBXItem;
@@ -1039,8 +1038,6 @@ type
     TBXItemHtmlInsImage: TSpTBXItem;
     ecToggleFocusMasterSlave: TAction;
     ecToggleSlave: TAction;
-    TbxItemRunFindHtml4: TSpTbxItem;
-    TbxItemRunFindHtml5: TSpTbxItem;
     ecRuler: TAction;
     TBXItemORuler: TSpTbxItem;
     ecSplitViewsVertHorz: TAction;
@@ -1295,7 +1292,6 @@ type
     TBXItemFoldLevel8: TSpTBXItem;
     TBXItemFoldLevel9: TSpTBXItem;
     TbxItemTabReload: TSpTBXItem;
-    TBXSubmenuHtmlHelp: TSpTBXSubmenuItem;
     TBXItemHtmlEmmetHelp: TSpTBXItem;
     SpTBXSeparatorItem17: TSpTBXSeparatorItem;
     TimerMinimap: TTimer;
@@ -10045,9 +10041,6 @@ begin
 
   UpdKey(TbxItemRunOpenFile, sm_OpenCurrentFile);
   UpdKey(TbxItemRunOpenDir, sm_OpenCurrentFolder);
-  UpdKey(TbxItemRunFindPhp, sm_OpenPhp);
-  UpdKey(TbxItemRunFindHtml4, sm_OpenHtml4Help);
-  UpdKey(TbxItemRunFindHtml5, sm_OpenHtml5Help);
   UpdKey(TbxItemRunNumConv, sm_NumericConverterDialog);
 
   //file
