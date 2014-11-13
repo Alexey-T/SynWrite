@@ -622,7 +622,6 @@ type
     PopupTabContext: TSpTBXPopupMenu;
     TBXItemTabCloseOthers: TSpTBXItem;
     TBXItemTabClose: TSpTBXItem;
-    TBXItemTabNew: TSpTBXItem;
     TBXSeparatorItem28: TSpTbxSeparatorItem;
     ImageListCloseBtn: TImageList;
     acSaveAll: TAction;
@@ -1414,6 +1413,9 @@ type
     TBXItemEExtractUniq: TSpTBXItem;
     TBXItemBarDedupAndOrig: TSpTBXItem;
     TbxSubmenuWeb: TSpTBXSubmenuItem;
+    TbxItemTabSaveAs: TSpTBXItem;
+    TbxItemTabSave: TSpTBXItem;
+    SpTBXSeparatorItem15: TSpTBXSeparatorItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1525,7 +1527,6 @@ type
     procedure TBXItemSMarkAllClick(Sender: TObject);
     procedure TBXItemHelpTopicsClick(Sender: TObject);
     procedure TBXItemTabCloseClick(Sender: TObject);
-    procedure TBXItemTabNewClick(Sender: TObject);
     procedure DKLanguageController1LanguageChanged(Sender: TObject);
     procedure acCloseExecute(Sender: TObject);
     procedure acSaveAllExecute(Sender: TObject);
@@ -2188,6 +2189,8 @@ type
     procedure TBXItemBarDedupAndOrigClick(Sender: TObject);
     procedure TbxSubmenuWebPopup(Sender: TTBCustomItem; FromLink: Boolean);
     procedure WebSearchClick(Sender: TObject);
+    procedure TbxItemTabSaveClick(Sender: TObject);
+    procedure TbxItemTabSaveAsClick(Sender: TObject);
 
   private
     cStatLine,
@@ -3388,7 +3391,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1802';
+  cSynVer = '6.14.1805';
   cSynPyVer = '1.0.143';
 
 const
@@ -10208,7 +10211,6 @@ begin
   //tab popup menu
   UpdKey(TBXItemTabClose, sm_FileClose);
   UpdKey(TBXItemTabCloseOthers, sm_FileCloseOthers);
-  UpdKey(TBXItemTabNew, sm_FileNew);
   UpdKey(TBXItemTabCopyFN, sm_CopyFilename);
   UpdKey(TBXItemTabCopyFull, sm_CopyFullPath);
   UpdKey(TBXItemTabCopyDir, sm_CopyDirPath);
@@ -11044,12 +11046,6 @@ begin
   Groups.CloseTabs(tabCloseCurrent, true);
 end;
 
-procedure TfmMain.TBXItemTabNewClick(Sender: TObject);
-begin
-  if Groups.PopupPages<>nil then
-    DoAddTab(Groups.PopupPages, true);
-end;
-
 function TfmMain.SNewDocName(const fn: Widestring): string;
 var
   an: TSyntAnalyzer;
@@ -11227,7 +11223,8 @@ begin
   TBXSubmenuItemToGroup.Enabled:= en_all and (Groups.PopupTabIndex>=0);
   TBXSubmenuTabColor.Enabled:= en_all;
 
-  TBXItemTabNew.Enabled:= en_all;
+  TBXItemTabSave.Enabled:= en_all;
+  TBXItemTabSaveAs.Enabled:= en_all;
   TBXItemTabClose.Enabled:= en_all;
   TBXItemTabCloseOthers.Enabled:= en_all and (FrameAllCount>1);
   TBXItemTabCloseOthersAllGroups.Enabled:= TBXItemTabCloseOthers.Enabled and (Groups.PagesVisibleCount>1);
@@ -29414,6 +29411,18 @@ end;
 procedure TfmMain.WebSearchClick(Sender: TObject);
 begin
   DoOnlineSearch_Name((Sender as TSpTbxItem).Caption);
+end;
+
+procedure TfmMain.TbxItemTabSaveClick(Sender: TObject);
+begin
+  if Assigned(FClickedFrame) then
+    SaveFrame(FClickedFrame, false);
+end;
+
+procedure TfmMain.TbxItemTabSaveAsClick(Sender: TObject);
+begin
+  if Assigned(FClickedFrame) then
+    SaveFrame(FClickedFrame, true);
 end;
 
 initialization
