@@ -3388,7 +3388,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1800';
+  cSynVer = '6.14.1802';
   cSynPyVer = '1.0.143';
 
 const
@@ -27104,8 +27104,10 @@ begin
         Break
   end;
 
-  //store version to v.inf
   if n_type in [cAddonTypeBinPlugin, cAddonTypePyPlugin] then
+  begin
+    //plugin finalizing:
+    //store version to v.inf
     if VersionStr<>'' then
       with TStringList.Create do
       try
@@ -27114,6 +27116,13 @@ begin
       finally
         Free
       end;
+  end
+  else
+  begin
+    //non-plugin finalizing:
+    //delete install.inf
+    FDelete(fn_inf);
+  end;
 
   //report results
   if AllowConfirm then
