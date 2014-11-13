@@ -10207,13 +10207,6 @@ begin
 
   //tree popup menu
   UpdKey(TBXItemTreeFind, smFindDialog);
-
-  //tab popup menu
-  UpdKey(TBXItemTabClose, sm_FileClose);
-  UpdKey(TBXItemTabCloseOthers, sm_FileCloseOthers);
-  UpdKey(TBXItemTabCopyFN, sm_CopyFilename);
-  UpdKey(TBXItemTabCopyFull, sm_CopyFullPath);
-  UpdKey(TBXItemTabCopyDir, sm_CopyDirPath);
 end;
 
 procedure TfmMain.TBXItemHelpReadmeDirClick(Sender: TObject);
