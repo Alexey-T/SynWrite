@@ -170,10 +170,10 @@ const
   sm_JoinLines = 828;
   sm_SplitLines = 829;
 
-  sm_OpenFirefox = 830;
-  sm_OpenMSIE = 831;
-  sm_OpenChrome = 832;
-  sm_OpenSafari = 833;
+  sm_OpenBrowserFirefox = 830;
+  sm_OpenBrowserIE = 831;
+  sm_OpenBrowserChrome = 832;
+  sm_OpenBrowserSafari = 833;
   sm_OpenCurrentFolder = 834;
   sm_OnlineSearchPhp = 835;
   sm_OnlineSearchGoogle = 836;

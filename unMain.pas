@@ -1545,9 +1545,6 @@ type
     procedure TBXItemECutClick(Sender: TObject);
     procedure TBXItemECopyClick(Sender: TObject);
     procedure TBXItemEUndoClick(Sender: TObject);
-    procedure TBXItemRunFindPhpClick(Sender: TObject);
-    procedure TBXItemRunFindGoogleClick(Sender: TObject);
-    procedure TBXItemRunFindWikiClick(Sender: TObject);
     procedure TBXItemRunOpenDirClick(Sender: TObject);
     procedure TBXItemTool5Click(Sender: TObject);
     procedure TBXItemTool6Click(Sender: TObject);
@@ -1556,7 +1553,6 @@ type
     procedure TimerLoadTimer(Sender: TObject);
     procedure TBXItemTbCloseClick(Sender: TObject);
     procedure ecReplaceExecute(Sender: TObject);
-    procedure TBXItemRunFindMSDNClick(Sender: TObject);
     procedure acExitExecute(Sender: TObject);
     procedure acCloseAndDeleteExecute(Sender: TObject);
     procedure ecReplaceInFilesExecute(Sender: TObject);
@@ -1841,8 +1837,6 @@ type
     procedure ecToggleFocusMasterSlaveExecute(Sender: TObject);
     procedure ecToggleSlaveExecute(Sender: TObject);
     procedure TBXItemSplitEdHorzClick(Sender: TObject);
-    procedure TbxItemRunFindHtml4Click(Sender: TObject);
-    procedure TbxItemRunFindHtml5Click(Sender: TObject);
     procedure ecRulerExecute(Sender: TObject);
     procedure ecSplitViewsVertHorzExecute(Sender: TObject);
     procedure ecSplitSlaveVertHorzExecute(Sender: TObject);
@@ -6051,10 +6045,10 @@ begin
       ecSortDescending.Execute;
 
     //tools
-    sm_OpenFirefox: DoOpenInBrowser('firefox.exe');
-    sm_OpenMSIE: DoOpenInBrowser('iexplore.exe');
-    sm_OpenChrome: DoOpenInBrowser('chrome.exe');
-    sm_OpenSafari: DoOpenInBrowser('safari.exe');
+    sm_OpenBrowserFirefox: DoOpenInBrowser('firefox.exe');
+    sm_OpenBrowserIE: DoOpenInBrowser('iexplore.exe');
+    sm_OpenBrowserChrome: DoOpenInBrowser('chrome.exe');
+    sm_OpenBrowserSafari: DoOpenInBrowser('safari.exe');
     sm_OpenBrowserPreview: DoOpenBrowserPreview;
     sm_OpenCurrentFile: DoOpenCurrentFile;
     sm_OpenCurrentFolder: DoOpenCurrentDir;
@@ -11676,11 +11670,6 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXItemRunFindPhpClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_OnlineSearchPhp);
-end;
-
 procedure TfmMain.DoOnlineSearch_Name(const Name: string);
 var
   fn: string;
@@ -11727,21 +11716,6 @@ begin
   FOpenURL(SWeb, Handle);
 end;
 
-
-procedure TfmMain.TBXItemRunFindGoogleClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_OnlineSearchGoogle);
-end;
-
-procedure TfmMain.TBXItemRunFindWikiClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_OnlineSearchWikipedia);
-end;
-
-procedure TfmMain.TBXItemRunFindMSDNClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_OnlineSearchMsdn);
-end;
 
 procedure TfmMain.DoOpenInBrowser(const fn: Widestring);
 begin
@@ -19650,16 +19624,6 @@ procedure TfmMain.TBXItemSplitEdHorzClick(Sender: TObject);
 begin
   with CurrentFrame do
     SplitHorz:= not SplitHorz;
-end;
-
-procedure TfmMain.TbxItemRunFindHtml4Click(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_OnlineSearchHTML4);
-end;
-
-procedure TfmMain.TbxItemRunFindHtml5Click(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_OnlineSearchHTML5);
 end;
 
 procedure TfmMain.ecRulerExecute(Sender: TObject);

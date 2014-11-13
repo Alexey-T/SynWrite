@@ -383,10 +383,10 @@ cmd_SpellCheck = 827
 cmd_JoinLines = 828
 cmd_SplitLines = 829
 
-cmd_OpenFirefox = 830
-cmd_OpenMSIE = 831
-cmd_OpenChrome = 832
-cmd_OpenSafari = 833
+cmd_OpenBrowserFirefox = 830
+cmd_OpenBrowserIE = 831
+cmd_OpenBrowserChrome = 832
+cmd_OpenBrowserSafari = 833
 cmd_OpenCurrentFolder = 834
 cmd_OnlineSearchPhp = 835
 cmd_OnlineSearchGoogle = 836
