@@ -25390,6 +25390,12 @@ end;
 
 procedure TfmMain.DoColorsArrayApply(const C: TSynColors; Ed: TSyntaxMemo);
 begin
+  //fonts
+  Ed.Font.Assign(TemplateEditor.Font);
+  Ed.HorzRuler.Font.Assign(TemplateEditor.HorzRuler.Font);
+  Ed.LineNumbers.Font.Assign(TemplateEditor.LineNumbers.Font);
+
+  //colors array
   Ed.Font.Color:= C[0];
   Ed.Color:= C[1];
   Ed.DefaultStyles.CurrentLine.BgColor:= C[2];
@@ -25458,11 +25464,6 @@ begin
   opColorFtpBlue:= C[60];
   opColorFtpGreen:= C[61];
   opColorFtpRed:= C[62];
-
-  //fonts
-  Ed.Font.Assign(TemplateEditor.Font);
-  Ed.HorzRuler.Font.Assign(TemplateEditor.HorzRuler.Font);
-  Ed.LineNumbers.Font.Assign(TemplateEditor.LineNumbers.Font);
 
   //options
   Ed.Options:= TemplateEditor.Options;

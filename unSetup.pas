@@ -1801,7 +1801,7 @@ begin
 
     Move(ColorsSetup, ColorsArray, SizeOf(TSynColors));
     ApplyColorsFontsToFrames;
-
+    
     ApplyColors;
     ApplyOut;
     ApplyMinimapProps;
