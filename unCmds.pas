@@ -407,6 +407,7 @@ const
   sm_RestartProgram = 1072;
   sm_RemoveDupsAllAndOrig = 1073;
   sm_ExtractUniqueLines = 1074;
+  sm_ShowKeyboardMappingHtml = 1075;
   //free
 
   //Tree commands

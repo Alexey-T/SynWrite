@@ -2949,6 +2949,7 @@ type
     function GetUntitledString: Widestring;
     procedure DoAddKeymappingCommand(const ACommand: Integer;
       const ACategory, ACaption, AHotkey: Widestring);
+    procedure DoShowKeyboardMappingHTML;  
     //end of private
 
   protected
@@ -6652,7 +6653,9 @@ begin
     sm_OpenEntireFolder:
       DoOpenFolderDialog;
     sm_RestartProgram:
-      acRestart.Execute;  
+      acRestart.Execute;
+    sm_ShowKeyboardMappingHtml:
+      DoShowKeyboardMappingHTML;
 
     //end of commands list
 
@@ -17480,6 +17483,11 @@ begin
 end;
 
 procedure TfmMain.TBXItemHelpKeymapClick(Sender: TObject);
+begin
+  DoShowKeyboardMappingHTML;
+end;
+
+procedure TfmMain.DoShowKeyboardMappingHTML;
 var
   fn: string;
 begin
