@@ -50,6 +50,7 @@ type
     labHint: TTntLabel;
     DKLanguageController1: TDKLanguageController;
     labHint2: TTntLabel;
+    bFontText: TTntButton;
     procedure FormShow(Sender: TObject);
     procedure cbUnitsChange(Sender: TObject);
     procedure bFontNumsClick(Sender: TObject);
@@ -104,6 +105,7 @@ begin
     Orientation := TPrinterOrientation(cbOrient.ItemIndex);
     ColorMode := TPrintColorMode(cbColors.ItemIndex);
 
+    FontText := bFontText.Font;
     FontHeader := bFontHead.Font;
     FontFooter := bFontFoot.Font;
     FontLineNumders := bFontNums.Font;
@@ -142,6 +144,7 @@ begin
     cbColors.ItemIndex := integer(ColorMode);
     cbNums.ItemIndex := integer(LineNumbersPos);
 
+    bFontText.Font := FontText;
     bFontHead.Font := FontHeader;
     bFontFoot.Font := FontFooter;
     bFontNums.Font := FontLineNumders;

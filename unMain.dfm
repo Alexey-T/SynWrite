@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 207
-  Top = 167
+  Left = 308
+  Top = 175
   AutoScroll = False
   ClientHeight = 657
   ClientWidth = 892

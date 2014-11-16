@@ -23068,6 +23068,7 @@ begin
 
   with TIniFile.Create(SynIni) do
   try
+    StringToFont(ecSyntPrinter.FontText, ReadString('Fonts', 'P_Text', ''));
     StringToFont(ecSyntPrinter.FontFooter, ReadString('Fonts', 'P_Footer', ''));
     StringToFont(ecSyntPrinter.FontHeader, ReadString('Fonts', 'P_Header', ''));
     StringToFont(ecSyntPrinter.FontLineNumders, ReadString('Fonts', 'P_Nums', ''));
@@ -23083,6 +23084,7 @@ begin
 
   with TIniFile.Create(SynIni) do
   try
+    WriteString('Fonts', 'P_Text', FontToString(ecSyntPrinter.FontText));
     WriteString('Fonts', 'P_Footer', FontToString(ecSyntPrinter.FontFooter));
     WriteString('Fonts', 'P_Header', FontToString(ecSyntPrinter.FontHeader));
     WriteString('Fonts', 'P_Nums', FontToString(ecSyntPrinter.FontLineNumders));
@@ -25390,10 +25392,10 @@ end;
 
 procedure TfmMain.DoColorsArrayApply(const C: TSynColors; Ed: TSyntaxMemo);
 begin
-  //fonts
-  Ed.Font.Assign(TemplateEditor.Font);
-  Ed.HorzRuler.Font.Assign(TemplateEditor.HorzRuler.Font);
-  Ed.LineNumbers.Font.Assign(TemplateEditor.LineNumbers.Font);
+  //fonts first (colors will override)
+  Ed.Font:= TemplateEditor.Font;
+  Ed.HorzRuler.Font:= TemplateEditor.HorzRuler.Font;
+  Ed.LineNumbers.Font:= TemplateEditor.LineNumbers.Font;
 
   //colors array
   Ed.Font.Color:= C[0];

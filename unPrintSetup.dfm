@@ -3,7 +3,7 @@ object fmPrintSetup: TfmPrintSetup
   Top = 123
   BorderStyle = bsDialog
   Caption = 'Page setup'
-  ClientHeight = 518
+  ClientHeight = 543
   ClientWidth = 553
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object fmPrintSetup: TfmPrintSetup
   TextHeight = 13
   object bOk: TTntButton
     Left = 360
-    Top = 488
+    Top = 512
     Width = 89
     Height = 23
     Caption = 'OK'
@@ -29,7 +29,7 @@ object fmPrintSetup: TfmPrintSetup
   end
   object bCancel: TTntButton
     Left = 456
-    Top = 488
+    Top = 512
     Width = 89
     Height = 23
     Cancel = True
@@ -39,7 +39,7 @@ object fmPrintSetup: TfmPrintSetup
   end
   object grHead: TTntGroupBox
     Left = 8
-    Top = 260
+    Top = 284
     Width = 537
     Height = 221
     Caption = 'Header / Footer'
@@ -65,6 +65,10 @@ object fmPrintSetup: TfmPrintSetup
       Top = 16
       Width = 521
       Height = 81
+      NonPrintedSpaces = True
+      NonPrintedEol = True
+      NonPrintedEolDetails = False
+      SelectModeDefault = msNone
       SyntaxAnalyzer = SyntAnalyzer1
       TabList.AsString = '10'
       NonPrinted.Visible = True
@@ -103,6 +107,7 @@ object fmPrintSetup: TfmPrintSetup
       HintProps.Color = 13041663
       HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
       UserRanges = <>
+      UndoLimit = 0
       TabMode = tmTabChar
       StaplePen.Color = clGray
       DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
@@ -203,6 +208,10 @@ object fmPrintSetup: TfmPrintSetup
       Top = 104
       Width = 521
       Height = 81
+      NonPrintedSpaces = True
+      NonPrintedEol = True
+      NonPrintedEolDetails = False
+      SelectModeDefault = msNone
       SyntaxAnalyzer = SyntAnalyzer1
       TabList.AsString = '10'
       NonPrinted.Visible = True
@@ -241,6 +250,7 @@ object fmPrintSetup: TfmPrintSetup
       HintProps.Color = 13041663
       HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
       UserRanges = <>
+      UndoLimit = 0
       TabMode = tmTabChar
       StaplePen.Color = clGray
       DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
@@ -341,34 +351,43 @@ object fmPrintSetup: TfmPrintSetup
     Left = 8
     Top = 212
     Width = 537
-    Height = 45
+    Height = 69
     Caption = 'Fonts'
     TabOrder = 2
     object bFontHead: TTntButton
-      Left = 8
+      Left = 272
       Top = 14
       Width = 169
       Height = 23
       Caption = '&Header'
-      TabOrder = 0
+      TabOrder = 2
       OnClick = bFontNumsClick
     end
     object bFontFoot: TTntButton
-      Left = 184
-      Top = 14
+      Left = 272
+      Top = 38
       Width = 169
       Height = 23
       Caption = '&Footer'
-      TabOrder = 1
+      TabOrder = 3
       OnClick = bFontNumsClick
     end
     object bFontNums: TTntButton
-      Left = 360
-      Top = 14
+      Left = 88
+      Top = 38
       Width = 169
       Height = 23
       Caption = 'Line &numbers'
-      TabOrder = 2
+      TabOrder = 1
+      OnClick = bFontNumsClick
+    end
+    object bFontText: TTntButton
+      Left = 88
+      Top = 14
+      Width = 169
+      Height = 23
+      Caption = 'Text'
+      TabOrder = 0
       OnClick = bFontNumsClick
     end
   end
@@ -673,7 +692,7 @@ object fmPrintSetup: TfmPrintSetup
     Top = 116
     LangData = {
       0C00666D5072696E745365747570010100000001000000070043617074696F6E
-      01230000000300624F6B010100000002000000070043617074696F6E00070062
+      01240000000300624F6B010100000002000000070043617074696F6E00070062
       43616E63656C010100000003000000070043617074696F6E0006006772486561
       64010100000004000000070043617074696F6E0007006C616248696E74010100
       000005000000070043617074696F6E000600656448656164000006006564466F
@@ -699,6 +718,7 @@ object fmPrintSetup: TfmPrintSetup
       05004974656D7300060065644C656674000005006564546F7000000700656452
       69676874000008006564426F74746F6D00000300446C6700000D0053796E7441
       6E616C797A65723100000800416370506F707570000101000000040048696E74
-      000008006C616248696E743201010000001F000000070043617074696F6E00}
+      000008006C616248696E743201010000001F000000070043617074696F6E0009
+      0062466F6E7454657874010100000020000000070043617074696F6E00}
   end
 end
