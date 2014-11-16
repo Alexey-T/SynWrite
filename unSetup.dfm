@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabSelHL
+    ActivePage = tabCarets
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -805,9 +805,9 @@ object fmSetup: TfmSetup
         end
         object edCaretTime: TTrackBar
           Left = 120
-          Top = 44
+          Top = 40
           Width = 142
-          Height = 29
+          Height = 33
           LineSize = 200
           Max = 2000
           Min = 200
@@ -816,6 +816,7 @@ object fmSetup: TfmSetup
           Position = 500
           TabOrder = 1
           ThumbLength = 18
+          TickMarks = tmBoth
         end
       end
     end

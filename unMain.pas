@@ -3391,7 +3391,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1805';
+  cSynVer = '6.14.1810';
   cSynPyVer = '1.0.143';
 
 const

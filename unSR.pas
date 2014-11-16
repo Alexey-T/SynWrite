@@ -11,12 +11,6 @@ uses
   unSearch, TntButtons;
 
 type
-  TTrackBar = class(ComCtrls.TTrackBar)
-  protected
-    procedure CreateParams(var Params: TCreateParams); override;
-  end;
-
-type
   TFindShowStatusEvent = procedure(const Msg: Widestring) of object;
 
 {$ifdef PS}
@@ -1261,15 +1255,6 @@ procedure TfmSR.TntFormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if Assigned(FOnFocusEditor) then
     FOnFocusEditor(Self);
-end;
-
-procedure TTrackBar.CreateParams(var Params: TCreateParams);
-//needed to make Trackbar thumb look bigger (hide sunken rectangle)
-const
-  TBS_ENABLESELRANGE = $0020;
-begin
-  inherited;
-  Params.Style := Params.Style and not TBS_ENABLESELRANGE;
 end;
 
 procedure TfmSR.labMultilineClick(Sender: TObject);
