@@ -5346,7 +5346,7 @@ object fmMain: TfmMain
         Command = 565
         KeyStrokes = <>
         Category = 'Miscellaneous'
-        DisplayName = 'Align tokens'
+        DisplayName = 'Align tokens by spaces'
       end
       item
         Command = 562
@@ -7188,7 +7188,7 @@ object fmMain: TfmMain
               end>
           end>
         Category = 'Miscellaneous'
-        DisplayName = 'Character table popup'
+        DisplayName = 'Popup "Insert character"'
       end
       item
         Command = 718
@@ -7236,19 +7236,19 @@ object fmMain: TfmMain
         Command = 810
         KeyStrokes = <>
         Category = 'Miscellaneous'
-        DisplayName = 'Menu - encodings'
+        DisplayName = 'Menu "Encodings"'
       end
       item
         Command = 811
         KeyStrokes = <>
         Category = 'Miscellaneous'
-        DisplayName = 'Menu - lexers'
+        DisplayName = 'Menu "Lexers"'
       end
       item
         Command = 812
         KeyStrokes = <>
         Category = 'Miscellaneous'
-        DisplayName = 'Menu - line endings'
+        DisplayName = 'Menu "Line endings"'
       end
       item
         Command = 814
@@ -7542,7 +7542,7 @@ object fmMain: TfmMain
         Command = 819
         KeyStrokes = <>
         Category = 'Miscellaneous'
-        DisplayName = 'Toggle SyncEdit mode'
+        DisplayName = 'Toggle SyncEditing mode'
       end
       item
         Command = 820
