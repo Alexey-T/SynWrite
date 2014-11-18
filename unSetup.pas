@@ -369,6 +369,7 @@ type
     cbSelByWords: TTntCheckBox;
     cbHistoryBkmk: TTntCheckBox;
     cbHistoryFold: TTntCheckBox;
+    cbHistoryWrap: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1888,6 +1889,7 @@ begin
     opSaveEditor:= [];
     if cbHistoryCaret.Checked then Include(opSaveEditor, cSynHistoryCaret);
     if cbHistoryEnc.Checked then Include(opSaveEditor, cSynHistoryEnc);
+    if cbHistoryWrap.Checked then Include(opSaveEditor, cSynHistoryWrap);
     if cbHistoryBkmk.Checked then Include(opSaveEditor, cSynHistoryBkmk);
     if cbHistoryFold.Checked then Include(opSaveEditor, cSynHistoryFolding);
     if cbHistoryForTemp.Checked then Include(opSaveEditor, cSynHistoryForTemp);
@@ -2229,6 +2231,7 @@ begin
 
     cbHistoryCaret.Checked:= cSynHistoryCaret in opSaveEditor;
     cbHistoryEnc.Checked:= cSynHistoryEnc in opSaveEditor;
+    cbHistoryWrap.Checked:= cSynHistoryWrap in opSaveEditor;
     cbHistoryBkmk.Checked:= cSynHistoryBkmk in opSaveEditor;
     cbHistoryFold.Checked:= cSynHistoryFolding in opSaveEditor;
     cbHistoryForTemp.Checked:= cSynHistoryForTemp in opSaveEditor;

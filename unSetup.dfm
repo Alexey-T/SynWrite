@@ -1351,7 +1351,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 289
+        Height = 305
         Caption = 'History'
         TabOrder = 0
         object Label8: TTntLabel
@@ -1363,21 +1363,21 @@ object fmSetup: TfmSetup
         end
         object Label7: TTntLabel
           Left = 64
-          Top = 144
+          Top = 160
           Width = 230
           Height = 13
           Caption = 'Length of search/replace history (0: don'#39't save)'
         end
         object TntLabel11: TTntLabel
           Left = 8
-          Top = 240
+          Top = 256
           Width = 107
           Height = 13
           Caption = 'Folder of Open dialog:'
         end
         object TntLabel10: TTntLabel
           Left = 8
-          Top = 214
+          Top = 230
           Width = 96
           Height = 13
           Caption = 'Create backup files:'
@@ -1395,12 +1395,12 @@ object fmSetup: TfmSetup
         end
         object edFindCount: TSpinEdit
           Left = 8
-          Top = 140
+          Top = 156
           Width = 49
           Height = 22
           MaxValue = 50
           MinValue = 0
-          TabOrder = 7
+          TabOrder = 8
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
@@ -1426,38 +1426,38 @@ object fmSetup: TfmSetup
         end
         object btnClearFindHistory: TTntButton
           Left = 64
-          Top = 164
+          Top = 180
           Width = 113
           Height = 21
           Caption = 'Clear'
-          TabOrder = 8
+          TabOrder = 9
           OnClick = btnClearFindHistoryClick
         end
         object btnClearEdHistory: TTntButton
           Left = 64
-          Top = 120
+          Top = 136
           Width = 113
           Height = 21
           Caption = 'Clear'
-          TabOrder = 6
+          TabOrder = 7
           OnClick = btnClearEdHistoryClick
         end
         object cbHistoryCleanRecents: TTntCheckBox
           Left = 8
-          Top = 188
+          Top = 204
           Width = 393
           Height = 17
           Caption = 'Remove non-existing items from recents list at startup'
-          TabOrder = 9
+          TabOrder = 10
         end
         object cbDirLast: TTntComboBox
           Left = 280
-          Top = 236
+          Top = 252
           Width = 233
           Height = 21
           Style = csDropDownList
           ItemHeight = 13
-          TabOrder = 11
+          TabOrder = 12
           Items.Strings = (
             'Follow current file'
             'Remember last folder'
@@ -1465,28 +1465,28 @@ object fmSetup: TfmSetup
         end
         object edDirLast: TTntEdit
           Left = 64
-          Top = 260
+          Top = 276
           Width = 377
           Height = 21
-          TabOrder = 12
+          TabOrder = 13
         end
         object bDirLast: TTntButton
           Left = 448
-          Top = 260
+          Top = 276
           Width = 65
           Height = 21
           Caption = '...'
-          TabOrder = 13
+          TabOrder = 14
           OnClick = bDirLastClick
         end
         object cbBak: TTntComboBox
           Left = 280
-          Top = 212
+          Top = 228
           Width = 233
           Height = 21
           Style = csDropDownList
           ItemHeight = 13
-          TabOrder = 10
+          TabOrder = 11
           Items.Strings = (
             'Disabled'
             'In %AppData%\SynWrite'
@@ -1494,33 +1494,43 @@ object fmSetup: TfmSetup
         end
         object cbHistoryForTemp: TTntCheckBox
           Left = 64
-          Top = 100
+          Top = 116
           Width = 450
           Height = 17
           Caption = 'Save history for %Temp% files'
           Checked = True
           State = cbChecked
-          TabOrder = 5
+          TabOrder = 6
         end
         object cbHistoryBkmk: TTntCheckBox
           Left = 64
-          Top = 68
+          Top = 84
           Width = 450
           Height = 17
           Caption = 'Save bookmarks'
           Checked = True
           State = cbChecked
-          TabOrder = 3
+          TabOrder = 4
         end
         object cbHistoryFold: TTntCheckBox
           Left = 64
-          Top = 84
+          Top = 100
           Width = 450
           Height = 17
           Caption = 'Save folded blocks'
           Checked = True
           State = cbChecked
-          TabOrder = 4
+          TabOrder = 5
+        end
+        object cbHistoryWrap: TTntCheckBox
+          Left = 64
+          Top = 68
+          Width = 450
+          Height = 17
+          Caption = 'Save word-wrap'
+          Checked = True
+          State = cbChecked
+          TabOrder = 3
         end
       end
     end
@@ -3148,7 +3158,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E015D010000
+      0700666D5365747570010100000001000000070043617074696F6E015E010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3468,7 +3478,8 @@ object fmSetup: TfmSetup
       656C4279576F7264730102000000EA020000070043617074696F6EE902000004
       0048696E74000D006362486973746F7279426B6D6B0101000000EB0200000700
       43617074696F6E000D006362486973746F7279466F6C640101000000EC020000
-      070043617074696F6E00}
+      070043617074696F6E000D006362486973746F7279577261700101000000ED02
+      0000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

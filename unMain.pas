@@ -122,11 +122,25 @@ type
   TSynEditorHistoryItem = (
     cSynHistoryCaret,
     cSynHistoryEnc,
+    cSynHistoryWrap,
     cSynHistoryBkmk,
     cSynHistoryFolding,
     cSynHistoryForTemp
     );
   TSynEditorHistoryItems = set of TSynEditorHistoryItem;
+
+const
+  cFramePropLexer    = 'lex';
+  cFramePropWrap     = 'wrap';
+  cFramePropEnc      = 'enc';
+  cFramePropSplit    = 'split';
+  cFramePropBk       = 'bk';
+  cFramePropColor    = 'tabc';
+  cFramePropZoom     = 'zoom';
+  //these are for both master/slave:
+  cFramePropPos      = 'pos';
+  cFramePropSel      = 'sel';
+  cFramePropFold     = 'fold';
 
 type
   TSynPyEvent = (
@@ -11468,9 +11482,12 @@ begin
           F.EditorSlave.CaretStrPos:= StrToIntDef(SGetItem(Str), 0);
         end;
 
-        Str:= ReadString(SSec, 'wrap', '');
-        F.EditorMaster.WordWrap:= Bool(StrToIntDef(SGetItem(Str), 0));
-        F.EditorSlave.WordWrap:= Bool(StrToIntDef(SGetItem(Str), 0));
+        if cSynHistoryWrap in opSaveEditor then
+        begin
+          Str:= ReadString(SSec, 'wrap', '');
+          F.EditorMaster.WordWrap:= Bool(StrToIntDef(SGetItem(Str), 0));
+          F.EditorSlave.WordWrap:= Bool(StrToIntDef(SGetItem(Str), 0));
+        end;  
 
         Str:= ReadString(SSec, 'prop', '');
         F.EditorMaster.TextSource.ReadOnly:= Bool(StrToIntDef(SGetItem(Str), 0));
@@ -26676,20 +26693,6 @@ begin
 end;
 
 
-
-const
-  cFramePropLexer    = 'lex';
-  cFramePropWrap     = 'wrap';
-  cFramePropEnc      = 'enc';
-  cFramePropSplit    = 'split';
-  cFramePropBk       = 'bk';
-  cFramePropColor    = 'tabc';
-  cFramePropZoom     = 'zoom';
-  //these are for both master/slave:
-  cFramePropPos      = 'pos';
-  cFramePropSel      = 'sel';
-  cFramePropFold     = 'fold';
-
 function TfmMain.FrameGetPropertiesString(F: TEditorFrame): string;
   //
   procedure Add(var res: string; const id, val: string);
@@ -26801,7 +26804,7 @@ begin
           F.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.FindAnalyzer(SVal);
         end
       else
-      if SId=cFramePropWrap then
+      if (SId=cFramePropWrap) and (cSynHistoryWrap in opSaveEditor) then
         begin
           F.EditorMaster.WordWrap:= Bool(StrToIntDef(SVal, 0));
           F.EditorSlave.WordWrap:= F.EditorMaster.WordWrap;
