@@ -63,11 +63,11 @@ type
     TntLabel11: TTntLabel;
     edFileCount: TSpinEdit;
     edFindCount: TSpinEdit;
-    cbHCaret: TTntCheckBox;
-    cbHEnc: TTntCheckBox;
-    bClrSR: TTntButton;
-    bClrFS: TTntButton;
-    cbMru: TTntCheckBox;
+    cbHistoryCaret: TTntCheckBox;
+    cbHistoryEnc: TTntCheckBox;
+    btnClearFindHistory: TTntButton;
+    btnClearEdHistory: TTntButton;
+    cbHistoryCleanRecents: TTntCheckBox;
     cbDirLast: TTntComboBox;
     edDirLast: TTntEdit;
     bDirLast: TTntButton;
@@ -117,7 +117,7 @@ type
     cbAcpTabbing: TTntCheckBox;
     cbAcpCss: TTntCheckBox;
     LabelHelpTabbin: TTntLabel;
-    cbHTemp: TTntCheckBox;
+    cbHistoryForTemp: TTntCheckBox;
     cbAcpUseSingle: TTntCheckBox;
     cbACloseTags: TTntCheckBox;
     TntLabel7: TTntLabel;
@@ -367,6 +367,8 @@ type
     TntLabel42: TTntLabel;
     cbTreeClick: TTntComboBox;
     cbSelByWords: TTntCheckBox;
+    cbHistoryBkmk: TTntCheckBox;
+    cbHistoryFold: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -398,8 +400,8 @@ type
     procedure FontDialogShow(Sender: TObject);
     procedure tabProgSettShow(Sender: TObject);
     procedure tabACPShow(Sender: TObject);
-    procedure bClrFSClick(Sender: TObject);
-    procedure bClrSRClick(Sender: TObject);
+    procedure btnClearEdHistoryClick(Sender: TObject);
+    procedure btnClearFindHistoryClick(Sender: TObject);
     procedure bKeyFindClick(Sender: TObject);
     procedure bFontRulerClick(Sender: TObject);
     procedure bFontAcpClick(Sender: TObject);
@@ -1208,16 +1210,16 @@ begin
   InitAutoComplete;
 end;
 
-procedure TfmSetup.bClrFSClick(Sender: TObject);
+procedure TfmSetup.btnClearEdHistoryClick(Sender: TObject);
 begin
   fmMain.TBXItemClrClick(Self);
-  bClrFS.Enabled:= false;
+  btnClearEdHistory.Enabled:= false;
 end;
 
-procedure TfmSetup.bClrSRClick(Sender: TObject);
+procedure TfmSetup.btnClearFindHistoryClick(Sender: TObject);
 begin
   fmMain.DoClearSearchHistory;
-  bClrSR.Enabled:= false;
+  btnClearFindHistory.Enabled:= false;
 end;
 
 procedure TfmSetup.bKeyFindClick(Sender: TObject);
@@ -1876,15 +1878,19 @@ procedure TfmSetup.ApplyHistory;
 begin
   with fmMain do
   begin
-    opMruCheck:= cbMru.Checked;
+    opMruCheck:= cbHistoryCleanRecents.Checked;
     opSaveFileCount:= edFileCount.Value;
     opSaveFindCount:= edFindCount.Value;
-    opSaveEdCaret:= cbHCaret.Checked;
-    opSaveEdEnc:= cbHEnc.Checked;
-    opStateForTemp:= cbHTemp.Checked;
     opLastDir:= TSynLastDirMode(cbDirLast.ItemIndex);
     opLastDirPath:= edDirLast.Text;
     opFileBackup:= TSynBackup(cbBak.ItemIndex);
+
+    opSaveEditor:= [];
+    if cbHistoryCaret.Checked then Include(opSaveEditor, cSynHistoryCaret);
+    if cbHistoryEnc.Checked then Include(opSaveEditor, cSynHistoryEnc);
+    if cbHistoryBkmk.Checked then Include(opSaveEditor, cSynHistoryBkmk);
+    if cbHistoryFold.Checked then Include(opSaveEditor, cSynHistoryFolding);
+    if cbHistoryForTemp.Checked then Include(opSaveEditor, cSynHistoryForTemp);
   end;
 end;
 
@@ -2216,13 +2222,16 @@ begin
   begin
     edFileCount.Value:= opSaveFileCount;
     edFindCount.Value:= opSaveFindCount;
-    cbHCaret.Checked:= opSaveEdCaret;
-    cbHEnc.Checked:= opSaveEdEnc;
-    cbHTemp.Checked:= opStateForTemp;
-    cbMru.Checked:= opMruCheck;
+    cbHistoryCleanRecents.Checked:= opMruCheck;
     cbDirLast.ItemIndex:= Ord(opLastDir);
     edDirLast.Text:= opLastDirPath;
     cbBak.ItemIndex:= Ord(opFileBackup);
+
+    cbHistoryCaret.Checked:= cSynHistoryCaret in opSaveEditor;
+    cbHistoryEnc.Checked:= cSynHistoryEnc in opSaveEditor;
+    cbHistoryBkmk.Checked:= cSynHistoryBkmk in opSaveEditor;
+    cbHistoryFold.Checked:= cSynHistoryFolding in opSaveEditor;
+    cbHistoryForTemp.Checked:= cSynHistoryForTemp in opSaveEditor;
   end;
 end;
 

@@ -119,6 +119,16 @@ const
     );
 
 type
+  TSynEditorHistoryItem = (
+    cSynHistoryCaret,
+    cSynHistoryEnc,
+    cSynHistoryBkmk,
+    cSynHistoryFolding,
+    cSynHistoryForTemp
+    );
+  TSynEditorHistoryItems = set of TSynEditorHistoryItem;
+
+type
   TSynPyEvent = (
     cSynEventOnOpen,
     cSynEventOnSaveAfter,
@@ -3044,7 +3054,6 @@ type
     opTabDragDrop: boolean; //allow D&D of tabs
     opTabsSortMode: integer; //sort mode for Tabs panel
     opTabSwitcher: boolean; //use modern tab switcher (Ctrl+Tab)
-    opStateForTemp: boolean;
     opTipsPanels: boolean;
     opTipsToken: boolean;
     opFollowTail: boolean;
@@ -3130,9 +3139,8 @@ type
     opLastDirProject: Widestring;
     opSaveFindCount,
     opSaveFileCount: integer;
-    opSaveWndPos,
-    opSaveEdCaret,
-    opSaveEdEnc: boolean;
+    opSaveWndPos: boolean;
+    opSaveEditor: TSynEditorHistoryItems;
     opAskOverwrite: boolean;
     opTextOnly: TSynBinaryAct;
     opShowTitleFull: boolean;
@@ -3392,7 +3400,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1810';
+  cSynVer = '6.14.1820';
   cSynPyVer = '1.0.143';
 
 const
@@ -4668,7 +4676,6 @@ begin
       opHistSessionDef:= false;
     end;
 
-    opStateForTemp:= ReadBool('Hist', 'TempFN', false);
     opHistProjectSave:= ReadBool('Hist', 'ProjSv', false);
     opHistProjectLoad:= ReadBool('Hist', 'ProjLd', false);
     opHistProjectCloseTabs:= ReadBool('Hist', 'ProjCloseTabs', false);
@@ -4744,8 +4751,7 @@ begin
     opTextOnly:= TSynBinaryAct(ReadInteger('Setup', 'TxOnly', 0));
     opSaveFindCount:= ReadInteger('Setup', 'SaveSRHist', 10);
     opSaveFileCount:= ReadInteger('Setup', 'SaveFrameState', 10);
-    opSaveEdCaret:= ReadBool('Setup', 'SaveCaret', true);
-    opSaveEdEnc:= ReadBool('Setup', 'SaveEnc', true);
+    byte(opSaveEditor):= ReadInteger('Setup', 'SaveProps', -1);
     opAskOverwrite:= true; //ReadBool('Setup', 'AskRO', true);
     opShowTitleFull:= ReadBool('Setup', 'TitleFull', false);
 
@@ -5137,7 +5143,6 @@ begin
       WriteBool('Hist', 'SessDef', opHistSessionDef);
     end;
 
-    WriteBool('Hist', 'TempFN', opStateForTemp);
     WriteBool('Hist', 'ProjSv', opHistProjectSave);
     WriteBool('Hist', 'ProjLd', opHistProjectLoad);
     WriteBool('Hist', 'ProjCloseTabs', opHistProjectCloseTabs);
@@ -5169,8 +5174,7 @@ begin
 
     WriteInteger('Setup', 'SaveSRHist', opSaveFindCount);
     WriteInteger('Setup', 'SaveFrameState', opSaveFileCount);
-    WriteBool('Setup', 'SaveCaret', opSaveEdCaret);
-    WriteBool('Setup', 'SaveEnc', opSaveEdEnc);
+    WriteInteger('Setup', 'SaveProps', byte(opSaveEditor));
     WriteBool('Setup', 'AskRO', opAskOverwrite);
     WriteBool('Setup', 'TitleFull', opShowTitleFull);
 
@@ -5391,7 +5395,8 @@ begin
   Result:= false;
   if (opSaveFileCount=0) then Exit;
   if (fn='') or (Frame=nil) then Exit;
-  if (not opStateForTemp) and IsTempFN(fn) then Exit;
+  if not (cSynHistoryForTemp in opSaveEditor) then
+    if IsTempFN(fn) then Exit;
 
   fnIni:= SynHistoryStatesIni;
   if not IsFileExist(fnIni) then Exit;
@@ -5430,7 +5435,8 @@ var
 begin
   if (opSaveFileCount=0) then Exit;
   if (F=nil) or (F.FileName='') then Exit;
-  if (not opStateForTemp) and IsTempFN(F.FileName) then Exit;
+  if not (cSynHistoryForTemp in opSaveEditor) then
+    if IsTempFN(F.FileName) then Exit;
 
   sData:= FrameGetPropertiesString(F);
   fnIni:= SynHistoryStatesIni;
@@ -11451,7 +11457,7 @@ begin
         if F=nil then Continue;
         F.NotInRecents:= true;
 
-        if opSaveEdCaret then
+        if cSynHistoryCaret in opSaveEditor then
         begin
           Str:= ReadString(SSec, 'top', '');
           F.EditorMaster.TopLine:= StrToIntDef(SGetItem(Str), 0);
@@ -26697,8 +26703,10 @@ function TfmMain.FrameGetPropertiesString(F: TEditorFrame): string;
   begin
     p:= Ed.CaretPos;
     Add(res, cFramePropPos+id, Format('%d,%d,%d,', [p.X, p.Y, Ed.TopLine]));
-    Add(res, cFramePropSel+id, EditorGetSelCoordAsString(Ed));
-    Add(res, cFramePropFold+id, EditorGetCollapsedRanges(Ed));
+    if cSynHistoryCaret in opSaveEditor then
+      Add(res, cFramePropSel+id, EditorGetSelCoordAsString(Ed));
+    if cSynHistoryFolding in opSaveEditor then
+      Add(res, cFramePropFold+id, EditorGetCollapsedRanges(Ed));
   end;
   //
 begin
@@ -26706,13 +26714,18 @@ begin
   if F.FileName<>'' then
   begin
     Result:= Utf8Encode(F.FileName) + ';';
-    Add(Result, cFramePropEnc, IntToStr(GetFrameEncoding(F)));
+
+    if cSynHistoryEnc in opSaveEditor then
+      Add(Result, cFramePropEnc, IntToStr(GetFrameEncoding(F)));
     Add(Result, cFramePropLexer, F.CurrentLexer);
     Add(Result, cFramePropWrap, IntToStr(Ord(F.EditorMaster.WordWrap)));
     Add(Result, cFramePropSplit, IntToStr(Ord(F.SplitHorz)) + ',' + IntToStr(Round(F.SplitPos)));
+
     AddEd(Result, F.EditorMaster, '1');
     AddEd(Result, F.EditorSlave, '2');
-    Add(Result, cFramePropBk, EditorGetBookmarksAsString(F.EditorMaster));
+
+    if cSynHistoryBkmk in opSaveEditor then
+      Add(Result, cFramePropBk, EditorGetBookmarksAsString(F.EditorMaster));
     if F.TabColor<>clNone then
       Add(Result, cFramePropColor, IntToStr(F.TabColor));
     if F.EditorMaster.Zoom<>100 then
@@ -26773,7 +26786,7 @@ begin
       if EncodingOnly then
       begin
         //apply encoding field, don't touch others
-        if (SId=cFramePropEnc) and opSaveEdEnc then
+        if (SId=cFramePropEnc) and (cSynHistoryEnc in opSaveEditor) then
           begin
             NVal:= StrToIntDef(SVal, 0);
             ApplyFrameEncoding(F, NVal);
@@ -26800,7 +26813,7 @@ begin
           F.SplitPos:= StrToIntDef(SGetItem(SVal), 50);
         end
       else
-      if SId=cFramePropBk then
+      if (SId=cFramePropBk) and (cSynHistoryBkmk in opSaveEditor) then
         begin
           EditorSetBookmarksAsString(F.EditorMaster, SVal);
           EditorSetBookmarksAsString(F.EditorSlave, SVal);
@@ -26819,7 +26832,7 @@ begin
           F.EditorSlave.Zoom:= F.EditorMaster.Zoom;
         end
       else
-      if (SId=cFramePropPos) and opSaveEdCaret then
+      if (SId=cFramePropPos) and (cSynHistoryCaret in opSaveEditor) then
         begin
           pnt.X:= StrToIntDef(SGetItem(SVal), 0);
           pnt.Y:= StrToIntDef(SGetItem(SVal), 0);
@@ -26827,12 +26840,12 @@ begin
           Ed.TopLine:= StrToIntDef(SGetItem(SVal), 0);
         end
       else
-      if SId=cFramePropSel then
+      if (SId=cFramePropSel) and (cSynHistoryCaret in opSaveEditor) then
         begin
           EditorSetSelCoordAsString(Ed, SVal);
         end
       else
-      if SId=cFramePropFold then
+      if (SId=cFramePropFold) and (cSynHistoryFolding in opSaveEditor) then
         begin
           //this works, if lexer analisys already finished
           EditorSetCollapsedRanges(Ed, SVal);
