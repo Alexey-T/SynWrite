@@ -11499,9 +11499,12 @@ begin
         DoSetFrameTabColor(F, StringToColor(ReadString(SSec, 'color', ColorToString(clNone))));
         F.EditorMaster.ColMarkersString:= ReadString(SSec, 'colmark', '');
 
-        Str:= ReadString(SSec, 'folded', '');
-        F.CollapsedString1:= SGetItem(Str, ';');
-        F.CollapsedString2:= SGetItem(Str, ';');
+        if cSynHistoryFolding in opSaveEditor then
+        begin
+          Str:= ReadString(SSec, 'folded', '');
+          F.CollapsedString1:= SGetItem(Str, ';');
+          F.CollapsedString2:= SGetItem(Str, ';');
+        end;  
       end;
 
       //restore TabIndex'es and PageIndex
