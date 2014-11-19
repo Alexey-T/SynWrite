@@ -270,7 +270,7 @@ type
     LabelStaple: TTntLabel;
     cbDrawLineBG: TTntCheckBox;
     cbHideCursor: TTntCheckBox;
-    edLSpace: TSpinEdit;
+    edLineSpace: TSpinEdit;
     edMargin: TSpinEdit;
     cbMargin: TTntCheckBox;
     edLineNums: TTntComboBox;
@@ -2606,7 +2606,7 @@ begin
     TemplateEditor.DisableFolding:= not cbFold.Checked;
     TemplateEditor.HorzRuler.Visible:= cbRuler.Checked;
     TemplateEditor.DefaultStyles.CurrentLine.Enabled:= cbDrawLineBG.Checked;
-    TemplateEditor.LineSpacing:= edLSpace.Value;
+    TemplateEditor.LineSpacing:= edLineSpace.Value;
     TemplateEditor.ShowRightMargin:= cbMargin.Checked;
     TemplateEditor.RightMargin:= edMargin.Value;
     TemplateEditor.LineNumbers.NumberingStyle:= TLineNumberingStyle(edLineNums.ItemIndex);
@@ -2755,7 +2755,7 @@ begin
     cbSyncIcon.Checked:= opSyncEditIcon;
     cbMargin.Checked:= TemplateEditor.ShowRightMargin;
     edMargin.Value:= TemplateEditor.RightMargin;
-    edLSpace.Value:= TemplateEditor.LineSpacing;
+    edLineSpace.Value:= TemplateEditor.LineSpacing;
     edLineNums.ItemIndex:= Ord(TemplateEditor.LineNumbers.NumberingStyle);
     edStapleOffset.Value:= TemplateEditor.StapleOffset;
     edColorUnder.Value:= opUnderlineColored;
