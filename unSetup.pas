@@ -371,6 +371,8 @@ type
     cbHistoryFold: TTntCheckBox;
     cbHistoryWrap: TTntCheckBox;
     cbGutterBm: TTntCheckBox;
+    edAcpHintDelay: TSpinEdit;
+    TntLabel43: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1770,6 +1772,7 @@ begin
     ecACP.DropDownCount:= edAcpDrop.Value;
     ecACP.ShowWhenNone:= cbAcpNone.Checked;
     ecACP.FilterType:= TAutoCompleteFilter(cbAcpFilter.ItemIndex);
+    opAcpHintDelay:= edAcpHintDelay.Value;
     ApplyACP;
     opAcpFile:= cbAcpFile.Checked;
     opAcpFileChars:= edAcpFileChars.Value;
@@ -2085,6 +2088,7 @@ begin
     edAcpFileChars.Value:= opAcpFileChars;
     edAcpFileSize.Text:= FloatToStrF(opAcpFileSize, ffGeneral, 2{precision}, 8{digits});
     edAcpDrop.Value:= ecACP.DropDownCount;
+    edAcpHintDelay.Value:= opAcpHintDelay;
 
     edNoSnippetsExt.Text:= opTemplateTabbingExcept;
   end;

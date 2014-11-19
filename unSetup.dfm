@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabView
+    ActivePage = tabACP
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -1629,9 +1629,9 @@ object fmSetup: TfmSetup
       OnShow = tabACPShow
       object gAcpAll: TTntGroupBox
         Left = 8
-        Top = 108
+        Top = 112
         Width = 529
-        Height = 121
+        Height = 149
         Caption = 'Common auto-completion options'
         TabOrder = 1
         object Label42: TTntLabel
@@ -1666,6 +1666,13 @@ object fmSetup: TfmSetup
           Caption = 'Disable Tab for snippets for these file extensions:'
           WordWrap = True
         end
+        object TntLabel43: TTntLabel
+          Left = 64
+          Top = 120
+          Width = 48
+          Height = 13
+          Caption = 'Hint delay'
+        end
         object cbAcpFilter: TTntComboBox
           Left = 304
           Top = 92
@@ -1673,7 +1680,7 @@ object fmSetup: TfmSetup
           Height = 21
           Style = csDropDownList
           ItemHeight = 13
-          TabOrder = 6
+          TabOrder = 7
           Items.Strings = (
             'No filtration'
             'Start of string'
@@ -1691,7 +1698,7 @@ object fmSetup: TfmSetup
         object edAcpDrop: TSpinEdit
           Left = 8
           Top = 92
-          Width = 49
+          Width = 52
           Height = 22
           MaxValue = 30
           MinValue = 3
@@ -1702,7 +1709,7 @@ object fmSetup: TfmSetup
         object edAcpNum: TSpinEdit
           Left = 8
           Top = 68
-          Width = 49
+          Width = 52
           Height = 22
           MaxValue = 30
           MinValue = 0
@@ -1731,12 +1738,24 @@ object fmSetup: TfmSetup
           Top = 52
           Width = 217
           Height = 21
+          TabOrder = 6
+        end
+        object edAcpHintDelay: TSpinEdit
+          Left = 8
+          Top = 116
+          Width = 52
+          Height = 22
+          Increment = 100
+          MaxValue = 20000
+          MinValue = 100
           TabOrder = 5
+          Value = 500
+          OnKeyDown = edIndentKeyDown
         end
       end
       object gAcp2: TTntGroupBox
         Left = 8
-        Top = 232
+        Top = 264
         Width = 529
         Height = 89
         Caption = 'Auto-completion from current file'
@@ -1767,7 +1786,7 @@ object fmSetup: TfmSetup
         object edAcpFileChars: TSpinEdit
           Left = 8
           Top = 36
-          Width = 49
+          Width = 52
           Height = 22
           MaxValue = 200
           MinValue = 2
@@ -1778,7 +1797,7 @@ object fmSetup: TfmSetup
         object edAcpFileSize: TEdit
           Left = 8
           Top = 60
-          Width = 49
+          Width = 52
           Height = 21
           TabOrder = 2
           OnKeyDown = edIndentKeyDown
@@ -1786,9 +1805,9 @@ object fmSetup: TfmSetup
       end
       object gAcpSp: TTntGroupBox
         Left = 8
-        Top = 4
+        Top = 0
         Width = 529
-        Height = 101
+        Height = 105
         Caption = 'Special auto-completion features'
         TabOrder = 0
         object LabelHelpTabbin: TTntLabel
@@ -1883,7 +1902,7 @@ object fmSetup: TfmSetup
           Width = 73
           Height = 17
           Caption = 'quotes '#39
-          TabOrder = 7
+          TabOrder = 5
           OnClick = cbACloseBrClick
         end
         object cbACloseQuote2: TTntCheckBox
@@ -1892,7 +1911,7 @@ object fmSetup: TfmSetup
           Width = 73
           Height = 17
           Caption = 'quotes "'
-          TabOrder = 5
+          TabOrder = 6
           OnClick = cbACloseBrClick
         end
         object cbACloseBrEsc: TTntCheckBox
@@ -1901,7 +1920,7 @@ object fmSetup: TfmSetup
           Width = 165
           Height = 17
           Caption = 'skip escaped \{'
-          TabOrder = 6
+          TabOrder = 7
         end
       end
     end
@@ -3169,7 +3188,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E015F010000
+      0700666D5365747570010100000001000000070043617074696F6E0161010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3491,7 +3510,9 @@ object fmSetup: TfmSetup
       43617074696F6E000D006362486973746F7279466F6C640101000000EC020000
       070043617074696F6E000D006362486973746F7279577261700101000000ED02
       0000070043617074696F6E000A006362477574746572426D0102000000EF0200
-      00070043617074696F6EEE020000040048696E7400}
+      00070043617074696F6EEE020000040048696E74000E00656441637048696E74
+      44656C617900000A00546E744C6162656C34330101000000F002000007004361
+      7074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

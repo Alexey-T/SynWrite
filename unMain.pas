@@ -5247,6 +5247,7 @@ begin
     WriteInteger('ACP', 'FChars', opAcpFileChars);
     WriteFloat('ACP', 'FSize', opAcpFileSize);
     WriteInteger('ACP', 'Num', opAcpNum);
+    WriteInteger('ACP', 'HintDelay', opAcpHintDelay);
     WriteBool('ACP', 'IfNone', ecACP.ShowWhenNone);
     WriteBool('ACP', 'ParamHints', ParamCompletion.Enabled);
 
