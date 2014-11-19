@@ -373,6 +373,7 @@ type
     cbGutterBm: TTntCheckBox;
     edAcpHintDelay: TSpinEdit;
     TntLabel43: TTntLabel;
+    cbSyncIcon: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2612,6 +2613,7 @@ begin
     TemplateEditor.StapleOffset:= edStapleOffset.Value;
     TemplateEditor.StaplePen.Style:= TPenStyle(cbStaples.ItemIndex);
     opShowBookmarkColumn:= cbGutterBm.Checked;
+    opSyncEditIcon:= cbSyncIcon.Checked;
 
     if cbDrawFocus.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soDrawCurLineFocus]
@@ -2750,6 +2752,7 @@ begin
     cbDrawFocus.Checked:= soDrawCurLineFocus in TemplateEditor.Options;
     cbDrawLineBG.Checked:= TemplateEditor.DefaultStyles.CurrentLine.Enabled;
     cbGutterBm.Checked:= opShowBookmarkColumn;
+    cbSyncIcon.Checked:= opSyncEditIcon;
     cbMargin.Checked:= TemplateEditor.ShowRightMargin;
     edMargin.Value:= TemplateEditor.RightMargin;
     edLSpace.Value:= TemplateEditor.LineSpacing;

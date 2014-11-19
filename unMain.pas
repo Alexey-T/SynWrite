@@ -5221,6 +5221,7 @@ begin
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
     WriteInteger('Setup', 'ColorUnd', opUnderlineColored);
     WriteString('Setup', 'TreeSorted', opTreeSorted);
+    WriteBool('Setup', 'SyncEditIcon', opSyncEditIcon);
 
     WriteString('Setup', 'Flags', IntToHex(LongWord(TemplateEditor.Options), 8));
     WriteString('Setup', 'FlagsEx', IntToHex(Word(TemplateEditor.OptionsEx), 8));
