@@ -5143,6 +5143,7 @@ begin
     WriteBool('Setup', 'BkUndo', opBkUndo);
     WriteString('Setup', 'ZenPr', opZenProfile);
     WriteBool('Setup', 'BrHi', opHiliteBrackets);
+    WriteBool('Setup', 'ShowBm', opShowBookmarkColumn);
 
     WriteString('Setup', 'Paths', UTF8Encode(opProjPaths));
     WriteBool('Setup', 'SpellEn', opSpellEn);

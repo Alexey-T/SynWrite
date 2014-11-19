@@ -370,6 +370,7 @@ type
     cbHistoryBkmk: TTntCheckBox;
     cbHistoryFold: TTntCheckBox;
     cbHistoryWrap: TTntCheckBox;
+    cbGutterBm: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2606,6 +2607,7 @@ begin
     TemplateEditor.LineNumbers.NumberingStyle:= TLineNumberingStyle(edLineNums.ItemIndex);
     TemplateEditor.StapleOffset:= edStapleOffset.Value;
     TemplateEditor.StaplePen.Style:= TPenStyle(cbStaples.ItemIndex);
+    opShowBookmarkColumn:= cbGutterBm.Checked;
 
     if cbDrawFocus.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soDrawCurLineFocus]
@@ -2743,6 +2745,7 @@ begin
     cbHideCursor.Checked:= soHideCursorOnType in TemplateEditor.Options;
     cbDrawFocus.Checked:= soDrawCurLineFocus in TemplateEditor.Options;
     cbDrawLineBG.Checked:= TemplateEditor.DefaultStyles.CurrentLine.Enabled;
+    cbGutterBm.Checked:= opShowBookmarkColumn;
     cbMargin.Checked:= TemplateEditor.ShowRightMargin;
     edMargin.Value:= TemplateEditor.RightMargin;
     edLSpace.Value:= TemplateEditor.LineSpacing;

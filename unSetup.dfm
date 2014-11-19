@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabHist
+    ActivePage = tabView
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -2308,7 +2308,7 @@ object fmSetup: TfmSetup
       OnShow = tabViewShow
       object boxNonPrint: TTntGroupBox
         Left = 8
-        Top = 228
+        Top = 244
         Width = 249
         Height = 89
         Caption = 'Non-printable chars'
@@ -2350,39 +2350,39 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 1
         Width = 529
-        Height = 224
+        Height = 240
         TabOrder = 0
         object LabelSpace: TTntLabel
           Left = 56
-          Top = 124
+          Top = 140
           Width = 58
           Height = 13
           Caption = 'Line spacing'
         end
         object LabelMargin: TTntLabel
           Left = 56
-          Top = 100
+          Top = 116
           Width = 60
           Height = 13
           Caption = 'Right margin'
         end
         object LabelNums: TTntLabel
           Left = 136
-          Top = 148
+          Top = 164
           Width = 63
           Height = 13
           Caption = 'Line numbers'
         end
         object LabelStaple: TTntLabel
           Left = 136
-          Top = 172
+          Top = 188
           Width = 61
           Height = 13
           Caption = 'Block staples'
         end
         object LabelUnderline: TTntLabel
           Left = 56
-          Top = 196
+          Top = 212
           Width = 110
           Height = 13
           Caption = 'Colored underlines size'
@@ -2394,7 +2394,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Draws custom background for the current line.'
           Caption = 'Draw current line background'
-          TabOrder = 12
+          TabOrder = 13
         end
         object cbHideCursor: TTntCheckBox
           Left = 272
@@ -2405,50 +2405,50 @@ object fmSetup: TfmSetup
             'Hides mouse cursor when you type text and mouse cursor is within' +
             ' client area.'
           Caption = 'Hide cursor on typing'
-          TabOrder = 10
+          TabOrder = 11
         end
         object edLSpace: TSpinEdit
           Left = 8
-          Top = 120
+          Top = 136
           Width = 41
           Height = 22
           Hint = 'Vertical spacing between lines.'
           MaxValue = 10
           MinValue = 0
-          TabOrder = 5
+          TabOrder = 6
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
         object edMargin: TSpinEdit
           Left = 8
-          Top = 95
+          Top = 111
           Width = 41
           Height = 22
           Hint = 'Right margin column position.'
           MaxValue = 300
           MinValue = 1
-          TabOrder = 4
+          TabOrder = 5
           Value = 1
           OnKeyDown = edIndentKeyDown
         end
         object cbMargin: TTntCheckBox
           Left = 8
-          Top = 72
+          Top = 88
           Width = 256
           Height = 17
           Hint = 'Shows vertical line after specified column.'
           Caption = 'Show right margin'
-          TabOrder = 3
+          TabOrder = 4
         end
         object edLineNums: TTntComboBox
           Left = 8
-          Top = 144
+          Top = 160
           Width = 121
           Height = 21
           Hint = 'Style of line numbering.'
           Style = csDropDownList
           ItemHeight = 13
-          TabOrder = 6
+          TabOrder = 7
           Items.Strings = (
             'Default'
             'Delphi style'
@@ -2462,7 +2462,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Draws focus rectangle around current line when editor has focus.'
           Caption = 'Draw current line focus'
-          TabOrder = 11
+          TabOrder = 12
         end
         object cbRuler: TTntCheckBox
           Left = 8
@@ -2475,24 +2475,24 @@ object fmSetup: TfmSetup
         end
         object cbStaples: TTntComboBox
           Left = 48
-          Top = 168
+          Top = 184
           Width = 81
           Height = 22
           Hint = 'Line style of block staples.'
           Style = csOwnerDrawFixed
           ItemHeight = 16
-          TabOrder = 8
+          TabOrder = 9
           OnDrawItem = cbStaplesDrawItem
         end
         object edStapleOffset: TSpinEdit
           Left = 8
-          Top = 168
+          Top = 184
           Width = 41
           Height = 22
           Hint = 'Horizontal offset of block staples (in pixels).'
           MaxValue = 5
           MinValue = -5
-          TabOrder = 7
+          TabOrder = 8
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
@@ -2503,7 +2503,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Draw "line is wrapped" icons on gutter.'
           Caption = 'Draw gutter "line wrapped" mark'
-          TabOrder = 14
+          TabOrder = 15
         end
         object cbDrawCol: TTntCheckBox
           Left = 272
@@ -2512,7 +2512,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Draw vertical line at caret'#39's column position.'
           Caption = 'Draw current column margin'
-          TabOrder = 13
+          TabOrder = 14
         end
         object cbFold: TTntCheckBox
           Left = 8
@@ -2520,7 +2520,7 @@ object fmSetup: TfmSetup
           Width = 256
           Height = 17
           Hint = 'Shows code-folding bar on gutter.'
-          Caption = 'Code folding'
+          Caption = 'Enable code folding'
           TabOrder = 1
         end
         object cbFixLineSize: TTntCheckBox
@@ -2532,7 +2532,7 @@ object fmSetup: TfmSetup
             'Prevents the line height calculation. Line height will be calcul' +
             'ated by means of Default Style.'
           Caption = 'Fixed line height'
-          TabOrder = 15
+          TabOrder = 16
         end
         object cbFixColMove: TTntCheckBox
           Left = 272
@@ -2543,7 +2543,7 @@ object fmSetup: TfmSetup
             'Keeps X position of caret before editing text, this position is ' +
             'used when moving up/down caret.'
           Caption = 'Fixed column move'
-          TabOrder = 16
+          TabOrder = 17
         end
         object cbVarHorzBar: TTntCheckBox
           Left = 272
@@ -2554,11 +2554,11 @@ object fmSetup: TfmSetup
             'Recalculates horizontal scrollbar for currently displayed text o' +
             'nly.'
           Caption = 'Variable horizontal scrollbar'
-          TabOrder = 17
+          TabOrder = 18
         end
         object edColorUnder: TSpinEdit
           Left = 8
-          Top = 192
+          Top = 208
           Width = 41
           Height = 22
           Hint = 
@@ -2566,7 +2566,7 @@ object fmSetup: TfmSetup
             'ke #rrggbb. 0 - disabled.'
           MaxValue = 10
           MinValue = 0
-          TabOrder = 9
+          TabOrder = 10
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
@@ -2577,7 +2577,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'After scroll to EOF, last line appears on top instead of bottom.'
           Caption = 'Last line shows on top'
-          TabOrder = 18
+          TabOrder = 19
         end
         object edWrap: TTntComboBox
           Left = 8
@@ -2591,6 +2591,17 @@ object fmSetup: TfmSetup
             'Wrap text at editor edge'
             'Wrap text at right margin'
             'Don'#39't wrap text')
+        end
+        object cbGutterBm: TTntCheckBox
+          Left = 8
+          Top = 72
+          Width = 256
+          Height = 17
+          Hint = 
+            'Shows column for bookmarks on gutter (vertical band at the left ' +
+            'side).'
+          Caption = 'Show bookmarks gutter column'
+          TabOrder = 3
         end
       end
     end
@@ -3158,7 +3169,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E015E010000
+      0700666D5365747570010100000001000000070043617074696F6E015F010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3479,7 +3490,8 @@ object fmSetup: TfmSetup
       0048696E74000D006362486973746F7279426B6D6B0101000000EB0200000700
       43617074696F6E000D006362486973746F7279466F6C640101000000EC020000
       070043617074696F6E000D006362486973746F7279577261700101000000ED02
-      0000070043617074696F6E00}
+      0000070043617074696F6E000A006362477574746572426D0102000000EF0200
+      00070043617074696F6EEE020000040048696E7400}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
