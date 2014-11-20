@@ -3414,7 +3414,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1820';
+  cSynVer = '6.14.1825';
   cSynPyVer = '1.0.143';
 
 const
@@ -20019,17 +20019,23 @@ end;
 
 procedure TfmMain.ApplyFramesOptions;
 var
-  i: Integer;
+  i, N: Integer;
 begin
   for i:= 0 to FrameAllCount-1 do
     with FramesAll[i] do
     begin
-      //apply link color
+      EditorMaster.HintProps.DelayBefore:= opAcpHintDelay;
+      EditorSlave.HintProps.DelayBefore:= opAcpHintDelay;
+
+      N:= IfThen(opShowBookmarkColumn, 15, 0);
+      EditorMaster.Gutter.Bands[cBandBoommarks].Width:= N;
+      EditorSlave.Gutter.Bands[cBandBoommarks].Width:= N;
+
       HyperlinkHighlighter.Style.Font.Color:= opColorLink;
-      //apply micro-map props
+
       ShowMap:= opMicroMap;
       MapColor:= opColorMap;
-      //apply tab caption options
+
       DoTitleChanged;
     end;
 end;

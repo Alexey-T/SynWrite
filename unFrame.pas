@@ -338,8 +338,12 @@ begin
   EditorMaster.TextSource.Lines.SetObjectsStore;
   EditorMaster.PopupMenu:= TfmMain(Owner).PopupEditor;
   EditorSlave.PopupMenu:= TfmMain(Owner).PopupEditor;
-  EditorMaster.Gutter.Images:= TfmMain(Owner).ImgListGutter;
-  EditorSlave.Gutter.Images:= TfmMain(Owner).ImgListGutter;
+
+  if TfmMain(Owner).opShowBookmarkColumn then
+  begin
+    EditorMaster.Gutter.Images:= TfmMain(Owner).ImgListGutter;
+    EditorSlave.Gutter.Images:= TfmMain(Owner).ImgListGutter;
+  end;  
 
   EditorMaster.HintProps.DelayBefore:= TfmMain(Owner).opAcpHintDelay;
   EditorSlave.HintProps.DelayBefore:= TfmMain(Owner).opAcpHintDelay;
@@ -387,7 +391,9 @@ begin
   with Bookmark do
   begin
     Band:= cBandBoommarks;
-    ImageList:= TfmMain(Owner).ImgListGutter;
+    if TfmMain(Owner).opShowBookmarkColumn then
+      ImageList:= TfmMain(Owner).ImgListGutter;
+
     if (BmIndex >= 0) and (BmIndex < 10) then
     begin
       ImageIndex:= BmIndex;
