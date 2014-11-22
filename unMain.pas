@@ -4651,9 +4651,13 @@ begin
       tbEdit.Visible:= Pos('Edit', opListerQVToolbars)>0;
       tbView.Visible:= Pos('View', opListerQVToolbars)>0;
       tbMenu.Visible:= Pos('Menu', opListerQVToolbars)>0;
-      tbQS.Visible:=   Pos('QS', opListerQVToolbars)>0;
+      tbQS.Visible:=   Pos('QS',   opListerQVToolbars)>0;
       plTree.Visible:= Pos('Tree', opListerQVToolbars)>0;
       plClip.Visible:= Pos('Clip', opListerQVToolbars)>0;
+      plOut.Visible:=  Pos('Output', opListerQVToolbars)>0;
+      tbUser1.Visible:= Pos('User1', opListerQVToolbars)>0;
+      tbUser2.Visible:= Pos('User2', opListerQVToolbars)>0;
+      tbUser3.Visible:= Pos('User3', opListerQVToolbars)>0;
     end;
 
     //auto-save
