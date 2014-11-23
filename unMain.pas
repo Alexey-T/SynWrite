@@ -3414,7 +3414,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1825';
+  cSynVer = '6.14.1830';
   cSynPyVer = '1.0.143';
 
 const
@@ -4716,7 +4716,7 @@ begin
 
     NFlags:= HexStrToLongWord(ReadString('Setup', 'FlagsEx', ''), Ok);
     if Ok then
-      TemplateEditor.OptionsEx:= TSyntaxMemoOptionsEx(Word(NFlags));
+      TemplateEditor.OptionsEx:= TSyntaxMemoOptionsEx(LongWord(NFlags));
 
     //color array
     DoColorsArrayInit(ColorsArray);
@@ -5228,7 +5228,7 @@ begin
     WriteBool('Setup', 'SyncEditIcon', opSyncEditIcon);
 
     WriteString('Setup', 'Flags', IntToHex(LongWord(TemplateEditor.Options), 8));
-    WriteString('Setup', 'FlagsEx', IntToHex(Word(TemplateEditor.OptionsEx), 8));
+    WriteString('Setup', 'FlagsEx', IntToHex(LongWord(TemplateEditor.OptionsEx), 8));
 
     WriteString('View', 'Colors', DoColorsArrayAsString(ColorsArray));
     WriteBool('View', 'CaretsEn', opCaretsEnabled);

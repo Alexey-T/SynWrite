@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabView
+    ActivePage = tabUndo
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -3064,7 +3064,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 1
         Width = 529
-        Height = 117
+        Height = 136
         Caption = 'Undo'
         TabOrder = 0
         object TntLabel2: TTntLabel
@@ -3089,29 +3089,29 @@ object fmSetup: TfmSetup
         end
         object cbUndoMass: TTntCheckBox
           Left = 8
-          Top = 92
-          Width = 377
+          Top = 108
+          Width = 350
           Height = 17
           Hint = 
             'Allow Undo for such operations as "Delete bookmarked lines", "Pa' +
             'ste into bookmarked lines". Much slower.'
           Caption = 'Allow Undo for massive strings deletion'
-          TabOrder = 4
+          TabOrder = 5
           WordWrap = True
         end
         object cbGroupRedo: TTntCheckBox
           Left = 8
           Top = 60
-          Width = 258
+          Width = 350
           Height = 17
-          Hint = 'If it is set Redo will involve group of changes.'
+          Hint = 'Redo will involve group of changes.'
           Caption = 'Group redo'
           TabOrder = 2
         end
         object cbGroupUndo: TTntCheckBox
           Left = 8
           Top = 44
-          Width = 258
+          Width = 350
           Height = 17
           Hint = 
             'Undoes your last editing command as well as any subsequent editi' +
@@ -3122,11 +3122,22 @@ object fmSetup: TfmSetup
         object cbUndoAfterSave: TTntCheckBox
           Left = 8
           Top = 76
-          Width = 258
+          Width = 350
           Height = 17
-          Hint = 'Stays Undo buffer unchanged after save.'
+          Hint = 'Don'#39't clear Undo buffer after saving file.'
           Caption = 'Undo after save'
           TabOrder = 3
+        end
+        object cbUndoSimple: TTntCheckBox
+          Left = 8
+          Top = 92
+          Width = 350
+          Height = 17
+          Hint = 
+            'Use old-style Undo procedure. Simply undo last block; otherwise:' +
+            ' first move caret to block, then change text.'
+          Caption = 'Simplified undo (old-style)'
+          TabOrder = 4
         end
       end
     end
@@ -3197,7 +3208,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0162010000
+      0700666D5365747570010100000001000000070043617074696F6E0163010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3522,7 +3533,8 @@ object fmSetup: TfmSetup
       EF020000070043617074696F6EEE020000040048696E74000E00656441637048
       696E7444656C617900000A00546E744C6162656C34330101000000F002000007
       0043617074696F6E000A00636253796E6349636F6E0102000000F20200000700
-      43617074696F6EF1020000040048696E7400}
+      43617074696F6EF1020000040048696E74000C006362556E646F53696D706C65
+      0102000000F4020000070043617074696F6EF3020000040048696E7400}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

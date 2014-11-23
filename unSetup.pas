@@ -374,6 +374,7 @@ type
     edAcpHintDelay: TSpinEdit;
     TntLabel43: TTntLabel;
     cbSyncIcon: TTntCheckBox;
+    cbUndoSimple: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1923,6 +1924,11 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soUndoAfterSave];
 
+    if cbUndoSimple.Checked then
+      TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx + [soSimplifiedUndo]
+    else
+      TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx - [soSimplifiedUndo];
+
     ApplyColorsFontsToFrames;
   end;
 end;
@@ -2253,6 +2259,7 @@ begin
     cbGroupUndo.Checked:= soGroupUndo in TemplateEditor.Options;
     cbGroupRedo.Checked:= soGroupRedo in TemplateEditor.Options;
     cbUndoAfterSave.Checked:= soUndoAfterSave in TemplateEditor.Options;
+    cbUndoSimple.Checked:= soSimplifiedUndo in TemplateEditor.OptionsEx;
     cbUndoMass.Checked:= opBkUndo;
   end;
 end;

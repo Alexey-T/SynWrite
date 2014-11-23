@@ -2250,7 +2250,7 @@ begin
     //2) OptionsEx
     S:= DoReadIniString_LargeData(SynIni, secTpl, 'OptionsEx');
     OpEx:= StringToEditorOptionsEx(S);
-    WriteString('Setup', 'FlagsEx', IntToHex(Word(OpEx), 8));
+    WriteString('Setup', 'FlagsEx', IntToHex(LongWord(OpEx), 8));
 
     //Erase old
     DeleteKey(secTpl, 'Options');
