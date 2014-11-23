@@ -25,6 +25,7 @@ function Py_msg_status(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_snippet(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_checklist(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_dlg_file(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_save(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
@@ -52,6 +53,7 @@ uses
   TntClasses,
   TntStdCtrls,
   TntClipbrd,
+  TntDialogs,
   unMain,
   unFrame,
   unSR,
@@ -1274,6 +1276,46 @@ begin
 
       StrItems:= DoInputCheckList(StrCaption, StrColumns, StrItems, NSizeX, NSizeY);
       Result:= PyUnicode_FromWideString(StrItems);
+    end;
+end;
+
+function Py_dlg_file(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  PtrFilename, PtrFolder, PtrFilter: PAnsiChar;
+  StrFilename, StrFolder, StrFilter: Widestring;
+  NMode: Longint;
+  Dlg: TTntOpenDialog;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'isss:dlg_file',
+      @NMode, @PtrFilename, @PtrFolder, @PtrFilter)) then
+    begin
+      StrFilename:= UTF8Decode(AnsiString(PtrFilename));
+      StrFolder:= UTF8Decode(AnsiString(PtrFolder));
+      StrFilter:= UTF8Decode(AnsiString(PtrFilter));
+
+      if Bool(NMode) then
+      begin
+        Dlg:= TTntOpenDialog.Create(nil);
+        Dlg.Options:= Dlg.Options+[ofFileMustExist];
+      end
+      else
+      begin
+        Dlg:= TTntSaveDialog.Create(nil);
+        Dlg.Options:= Dlg.Options+[ofOverwritePrompt];
+      end;
+
+      try
+        Dlg.FileName:= StrFilename;
+        Dlg.InitialDir:= StrFolder;
+        Dlg.Filter:= StrFilter;
+        if Dlg.Execute then
+          Result:= PyUnicode_FromWideString(Dlg.FileName)
+        else
+          Result:= ReturnNone;  
+      finally
+        FreeAndNil(Dlg);
+      end;      
     end;
 end;
 

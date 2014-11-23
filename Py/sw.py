@@ -271,6 +271,8 @@ def dlg_input_ex(number, caption,
 
 def dlg_menu(id, caption, text):
     return sw_api.dlg_menu(id, caption, text)
+def dlg_file(is_open, filename, folder, filters):
+    return sw_api.dlg_file(is_open, filename, folder, filters)
 def dlg_snippet(name, alias, lexers, text):
     return sw_api.dlg_snippet(name, alias, lexers, text)
 def dlg_checklist(caption, columns, items, size_x, size_y):
