@@ -27335,6 +27335,7 @@ begin
     AddMethod('dlg_snippet', Py_dlg_snippet, '');
     AddMethod('dlg_checklist', Py_dlg_checklist, '');
     AddMethod('dlg_file', Py_dlg_file, '');
+    AddMethod('dlg_folder', Py_dlg_folder, '');
 
     AddMethod('app_version', Py_app_version, '');
     AddMethod('app_api_version', Py_app_api_version, '');

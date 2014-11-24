@@ -26,6 +26,7 @@ function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_snippet(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_checklist(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_file(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_dlg_folder(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_save(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
@@ -54,6 +55,7 @@ uses
   TntStdCtrls,
   TntClipbrd,
   TntDialogs,
+  TntFileCtrl,
   unMain,
   unFrame,
   unSR,
@@ -1276,6 +1278,24 @@ begin
 
       StrItems:= DoInputCheckList(StrCaption, StrColumns, StrItems, NSizeX, NSizeY);
       Result:= PyUnicode_FromWideString(StrItems);
+    end;
+end;
+
+function Py_dlg_folder(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  PtrFolder, PtrText: PAnsiChar;
+  StrFolder, StrText: Widestring;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'ss:dlg_folder',
+      @PtrText, @PtrFolder)) then
+    begin
+      StrText:= UTF8Decode(AnsiString(PtrText));
+      StrFolder:= UTF8Decode(AnsiString(PtrFolder));
+      if WideSelectDirectory(StrText, '', StrFolder) then
+        Result:= PyUnicode_FromWideString(StrFolder)
+      else
+        Result:= ReturnNone;  
     end;
 end;
 
