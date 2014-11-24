@@ -1283,18 +1283,18 @@ function Py_dlg_file(Self, Args: PPyObject): PPyObject; cdecl;
 var
   PtrFilename, PtrFolder, PtrFilter: PAnsiChar;
   StrFilename, StrFolder, StrFilter: Widestring;
-  NMode: Longint;
+  IsOpen: LongBool;
   Dlg: TTntOpenDialog;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'isss:dlg_file',
-      @NMode, @PtrFilename, @PtrFolder, @PtrFilter)) then
+      @IsOpen, @PtrFilename, @PtrFolder, @PtrFilter)) then
     begin
       StrFilename:= UTF8Decode(AnsiString(PtrFilename));
       StrFolder:= UTF8Decode(AnsiString(PtrFolder));
       StrFilter:= UTF8Decode(AnsiString(PtrFilter));
 
-      if Bool(NMode) then
+      if IsOpen then
       begin
         Dlg:= TTntOpenDialog.Create(nil);
         Dlg.Options:= Dlg.Options+[ofFileMustExist];
