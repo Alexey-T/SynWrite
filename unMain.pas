@@ -88,6 +88,7 @@ const
   cPyFalse = 'False';
   cPyNone = 'None';
   cPyCommandBase = 5000;
+  cPyPluginManager = 'syn_plugin_manager';
 
 type
   TSynDataSubdirId = (
@@ -793,7 +794,7 @@ type
     TBXItemCtxTool1: TSpTBXItem;
     TBXSeparatorItem13: TSpTbxSeparatorItem;
     TBXSeparatorItem24: TSpTbxSeparatorItem;
-    TBXSubmenuItem10: TSpTbxSubmenuItem;
+    TBXSubmenuAdvanced: TSpTBXSubmenuItem;
     TBXItemORestoreStyles: TSpTbxItem;
     TBXItemCtxCustomize: TSpTbxItem;
     ecToggleFocusTree: TAction;
@@ -1440,6 +1441,12 @@ type
     TbxItemTabSaveAs: TSpTBXItem;
     TbxItemTabSave: TSpTBXItem;
     SpTBXSeparatorItem15: TSpTBXSeparatorItem;
+    TBXSubmenuAddons: TSpTBXSubmenuItem;
+    TbxItemAddonsUpdate: TSpTBXItem;
+    TbxItemAddonsSave: TSpTBXItem;
+    TbxItemAddonsEdit: TSpTBXItem;
+    TbxItemAddonsRemove: TSpTBXItem;
+    TbxItemAddonsInstall: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2215,6 +2222,11 @@ type
     procedure WebSearchClick(Sender: TObject);
     procedure TbxItemTabSaveClick(Sender: TObject);
     procedure TbxItemTabSaveAsClick(Sender: TObject);
+    procedure TbxItemAddonsInstallClick(Sender: TObject);
+    procedure TbxItemAddonsRemoveClick(Sender: TObject);
+    procedure TbxItemAddonsEditClick(Sender: TObject);
+    procedure TbxItemAddonsSaveClick(Sender: TObject);
+    procedure TbxItemAddonsUpdateClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2973,7 +2985,13 @@ type
     function GetUntitledString: Widestring;
     procedure DoAddKeymappingCommand(const ACommand: Integer;
       const ACategory, ACaption, AHotkey: Widestring);
-    procedure DoShowKeyboardMappingHTML;  
+    procedure DoShowKeyboardMappingHTML;
+
+    procedure DoPluginsManager_Install;
+    procedure DoPluginsManager_Remove;
+    procedure DoPluginsManager_Edit;
+    procedure DoPluginsManager_Update;
+    procedure DoPluginsManager_SaveAll;
     //end of private
 
   protected
@@ -3414,7 +3432,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1830';
+  cSynVer = '6.14.1835';
   cSynPyVer = '1.0.144';
 
 const
@@ -4512,6 +4530,7 @@ begin
   ecFullScr.Enabled:= SynExe;
   ecOnTop.Enabled:= SynExe;
   TbxItemRunNewPlugin.Enabled:= SynExe;
+  TBXSubmenuAddons.Enabled:= SynExe;
 
   ecCopy.Update;
   ecCut.Update;
@@ -6677,12 +6696,15 @@ begin
     sm_GotoPrevModifiedOrSavedLine:
       if not EditorGotoModifiedLine(Ed, false, true) then MsgBeep;
 
-    sm_OpenEntireFolder:
-      DoOpenFolderDialog;
-    sm_RestartProgram:
-      acRestart.Execute;
-    sm_ShowKeyboardMappingHtml:
-      DoShowKeyboardMappingHTML;
+    sm_OpenEntireFolder:  DoOpenFolderDialog;
+    sm_RestartProgram:    acRestart.Execute;
+    sm_ShowKeyboardMappingHtml: DoShowKeyboardMappingHTML;
+
+    sm_AddonsManager_Install: DoPluginsManager_Install;
+    sm_AddonsManager_Remove: DoPluginsManager_Remove;
+    sm_AddonsManager_Edit: DoPluginsManager_Edit;
+    sm_AddonsManager_Update: DoPluginsManager_Update;
+    sm_AddonsManager_SaveAll: DoPluginsManager_SaveAll;
 
     //end of commands list
 
@@ -28228,6 +28250,8 @@ begin
     for i:= 0 to ListSec.Count-1 do
     begin
       SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValueLexers, sValueHotkey, sValueFlags);
+
+      if (sValue=cPyPrefix+cPyPluginManager) then Continue; //don't add Plugin Manager here
       if (sKey='') or (sValue='') then Continue;
       //field sValueFlags is for future
 
@@ -29461,6 +29485,56 @@ procedure TfmMain.TbxItemTabSaveAsClick(Sender: TObject);
 begin
   if Assigned(FClickedFrame) then
     SaveFrame(FClickedFrame, true);
+end;
+
+procedure TfmMain.DoPluginsManager_Install;
+begin
+  DoPyLoadPlugin(cPyPluginManager, 'menu_install');
+end;
+
+procedure TfmMain.DoPluginsManager_Remove;
+begin
+  DoPyLoadPlugin(cPyPluginManager, 'menu_remove');
+end;
+
+procedure TfmMain.DoPluginsManager_Edit;
+begin
+  DoPyLoadPlugin(cPyPluginManager, 'menu_edit');
+end;
+
+procedure TfmMain.DoPluginsManager_SaveAll;
+begin
+  DoPyLoadPlugin(cPyPluginManager, 'save');
+end;
+
+procedure TfmMain.DoPluginsManager_Update;
+begin
+  DoPyLoadPlugin(cPyPluginManager, 'update');
+end;
+
+procedure TfmMain.TbxItemAddonsInstallClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_AddonsManager_Install);
+end;
+
+procedure TfmMain.TbxItemAddonsRemoveClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_AddonsManager_Remove);
+end;
+
+procedure TfmMain.TbxItemAddonsEditClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_AddonsManager_Edit);
+end;
+
+procedure TfmMain.TbxItemAddonsSaveClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_AddonsManager_SaveAll);
+end;
+
+procedure TfmMain.TbxItemAddonsUpdateClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_AddonsManager_Update);
 end;
 
 initialization

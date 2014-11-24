@@ -653,3 +653,9 @@ cmd_OptionsTab_Paths = 1132
 cmd_OptionsTab_EditorUndo = 1135
 cmd_OptionsTab_EditorInsertFmt = 1136
 cmd_OptionsTab_NewOpen = 1137
+
+cmd_AddonsManager_Install = 1150
+cmd_AddonsManager_Remove = 1151
+cmd_AddonsManager_Edit = 1152
+cmd_AddonsManager_Update = 1153
+cmd_AddonsManager_SaveAll = 1154

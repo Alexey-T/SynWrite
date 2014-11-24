@@ -462,6 +462,13 @@ const
   sm_OptionsTab_EditorInsertFmt = 1136;
   sm_OptionsTab_NewOpen = 1137;
 
+  //Addons manager
+  sm_AddonsManager_Install = 1150;
+  sm_AddonsManager_Remove = 1151;
+  sm_AddonsManager_Edit = 1152;
+  sm_AddonsManager_Update = 1153;
+  sm_AddonsManager_SaveAll = 1154;
+
   sm_UpdateIniFile = 1900;
   //end of list
 
