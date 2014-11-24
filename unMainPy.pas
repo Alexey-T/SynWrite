@@ -1306,11 +1306,22 @@ begin
       end;
 
       try
+        if StrFilename='*' then
+        begin
+          StrFilename:= '';
+          Dlg.Options:= Dlg.Options+[ofAllowMultiSelect];
+        end;
         Dlg.FileName:= StrFilename;
         Dlg.InitialDir:= StrFolder;
         Dlg.Filter:= StrFilter;
+
         if Dlg.Execute then
-          Result:= PyUnicode_FromWideString(Dlg.FileName)
+        begin
+          if ofAllowMultiSelect in Dlg.Options then
+            Result:= Py_StringList(Dlg.Files)
+          else
+            Result:= PyUnicode_FromWideString(Dlg.FileName);
+        end
         else
           Result:= ReturnNone;  
       finally
