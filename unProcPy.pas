@@ -35,6 +35,7 @@ function Py_ModuleNameExists(const SId: string): boolean;
 function Py_ed_get_staple(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_bk(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_attr(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_attr(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_sync_ranges(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_add_sync_range(Self, Args: PPyObject): PPyObject; cdecl;
@@ -109,6 +110,7 @@ uses
   ecSyntAnal,
   ecStrUtils,
   ecLists,
+  ecEmbObj,
   ATxFProc,
   ATxSProc,
   unProc,
@@ -1533,6 +1535,52 @@ begin
         ATTRIB_SET_STRIKEOUT: Ed.SelAttributes.StrikeOut:= true;
       end;
       Result:= ReturnNone;
+    end;
+end;
+
+function EditorGetStyleRanges(Ed: TSyntaxMemo): PPyObject; cdecl;
+var
+  Ranges: TRangeList;
+  Range: TFormatRange;
+  Styles: TStyleCache;
+  Style: TSyntaxFormat;
+  AList: PPyObject;
+  i: Integer;
+begin
+  Ranges:= TecEmbeddedObjects(Ed.TextSource).FFormatRanges;
+  Styles:= TecEmbeddedObjects(Ed.TextSource).FStyles;
+
+  with GetPythonEngine do
+  begin
+    Result:= PyList_New(0);
+    for i:= 0 to Ranges.Count-1 do
+    begin
+      Range:= TFormatRange(Ranges[i]);
+      Style:= TSyntaxFormat(Styles[Range.StyleIdx]);
+
+      AList:= ArrayToPyList([
+        Range.StartPos,
+        Range.EndPos,
+        Style.Font.Color,
+        Style.BgColor,
+        Word(Style.FormatFlags)
+        ]);
+      PyList_Append(Result, AList);
+      Py_XDecRef(AList);
+    end;
+  end;
+end;
+
+function Py_ed_get_attr(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H: Integer;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'i:get_attr', @H)) then
+    begin
+      Ed:= PyEditor(H);
+      Result:= EditorGetStyleRanges(Ed);
     end;
 end;
 

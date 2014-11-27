@@ -452,6 +452,8 @@ class Editor:
         return sw_api.ed_get_staple(self.h, posx, posy)
     def set_attr(self, value):
         return sw_api.ed_set_attr(self.h, value)
+    def get_attr(self):
+        return sw_api.ed_get_attr(self.h)
     def find(self, action, opt, tokens, sfind, sreplace):
         return sw_api.ed_find(self.h, action, opt, tokens, sfind, sreplace)
 
