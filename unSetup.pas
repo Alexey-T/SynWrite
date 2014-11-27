@@ -488,10 +488,10 @@ type
     procedure DoFontConfig(btn: TTntButton);
     function DoCheckKeyDups(const KeyStr: string): boolean;
     procedure UpdateKeyButtons;
-    procedure ListKeys;
+    procedure DoFillKeys;
     procedure FixWnd;
-    function ColorPreFN(const Name: string): string;
-    function KeymappingIndex(Row: integer): integer;
+    function GetColorPresetFN(const Name: string): string;
+    function GetKeymappingIndex(Row: integer): integer;
 
     procedure ApplyView;
     procedure ApplySelHL;
@@ -841,7 +841,7 @@ begin
     Result:= Result + c.KeyStrokes.Items[1].AsString+' ';
 end;
 
-procedure TfmSetup.ListKeys;
+procedure TfmSetup.DoFillKeys;
 var
   i, j, k: integer;
   old: Widestring;
@@ -942,7 +942,7 @@ begin
   KeyList.Repaint;
   if ARow=0 then Exit;
 
-  if KeymappingIndex(ARow)<0 then
+  if GetKeymappingIndex(ARow)<0 then
   begin
     Inc(ARow);
     ACol:= 0;
@@ -966,7 +966,7 @@ var
 begin
   if (ARow=0) or (ACol=0) then Exit;
   //category
-  if KeymappingIndex(ARow)<0 then
+  if GetKeymappingIndex(ARow)<0 then
   begin
     r:= Rect;
     Inc(r.Right);
@@ -1055,7 +1055,7 @@ begin
     KeyMapping.Items[mapindex].KeyStrokes.Delete(keyindex);
     //clear KeyList cell
     for i:= 0 to KeyList.RowCount-1 do
-      if KeymappingIndex(i)=mapindex then
+      if GetKeymappingIndex(i)=mapindex then
       begin
         KeyList.Cells[keyindex+2, i]:= '';
         if keyindex=0 then
@@ -1079,7 +1079,7 @@ begin
   if not DoCheckKeyDups(ecHotkey.Text) then Exit;
 
   //assign new hotkey
-  mapindex:= KeymappingIndex(r);
+  mapindex:= GetKeymappingIndex(r);
   keyindex:= c-2;
   if mapindex<0 then Exit;
 
@@ -1107,7 +1107,7 @@ var
 begin
   c:= KeyList.Selection.Left;
   r:= KeyList.Selection.Top;
-  mapindex:= KeymappingIndex(r);
+  mapindex:= GetKeymappingIndex(r);
   keyindex:= c-2;
 
   if mapindex<0 then Exit;
@@ -1267,7 +1267,7 @@ var
 begin
   with SaveDialogPre do
   begin
-    InitialDir:= ExtractFileDir(ColorPreFN('-'));
+    InitialDir:= ExtractFileDir(GetColorPresetFN('-'));
     FileName:= '';
     ok:= Execute;
     FixWnd;
@@ -1287,7 +1287,7 @@ begin
   end;
 end;
 
-function TfmSetup.ColorPreFN(const Name: string): string;
+function TfmSetup.GetColorPresetFN(const Name: string): string;
 begin
   Result:= fmMain.SynDataSubdir(cSynDataColors) + '\' + Name + '.' + cColorExt;
 end;
@@ -1309,7 +1309,7 @@ var
 begin
   with OpenDialogPre do
   begin
-    InitialDir:= ExtractFileDir(ColorPreFN('-'));
+    InitialDir:= ExtractFileDir(GetColorPresetFN('-'));
     FileName:= '';
     ok:= Execute;
     FixWnd;
@@ -1397,7 +1397,7 @@ end;
 procedure TfmSetup.TimerFiltTimer(Sender: TObject);
 begin
   TimerFilt.Enabled:= false;
-  ListKeys;
+  DoFillKeys;
 end;
 
 procedure TfmSetup.cbStaplesDrawItem(Control: TWinControl; Index: Integer;
@@ -1446,7 +1446,7 @@ procedure TfmSetup.bFiltClearClick(Sender: TObject);
 begin
   edFilter.Text:= '';
   TimerFilt.Enabled:= false;
-  ListKeys;
+  DoFillKeys;
 end;
 
 procedure TfmSetup.tabASaveShow(Sender: TObject);
@@ -2315,7 +2315,13 @@ begin
   end;
 
   //list keys
-  ListKeys;
+  Screen.Cursor:= crHourGlass;
+  try
+    DoFillKeys;
+  finally
+    Screen.Cursor:= crDefault;
+  end;
+
   KeyList.SetFocus;
 end;
 
@@ -2798,7 +2804,7 @@ begin
   InitUndo;
 end;
 
-function TfmSetup.KeymappingIndex(Row: integer): integer;
+function TfmSetup.GetKeymappingIndex(Row: integer): integer;
 begin
   Result:= StrToIntDef(KeyList.Cells[0, Row], -1);
 end;
@@ -2814,7 +2820,7 @@ begin
 
   c:= KeyList.Selection.Left;
   r:= KeyList.Selection.Top;
-  mapindex:= KeymappingIndex(r);
+  mapindex:= GetKeymappingIndex(r);
   keyindex:= c-2;
   if mapindex<0 then Exit;
 
