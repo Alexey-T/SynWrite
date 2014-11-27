@@ -416,7 +416,7 @@ type
     PropsManager: TPropsManager;
     ecSyntPrinter: TecSyntPrinter;
     PopupEditor: TSpTbxPopupMenu;
-    ImgListGutter: TTBImageList;
+    ImgListGutter: TImageList;
     TBXItemCtxCopy: TSpTbxItem;
     TBXSubmenuBarOpen: TSpTBXSubmenuItem;
     SyntKeyMapping: TSyntKeyMapping;
