@@ -98,7 +98,8 @@ PROC_UNLOCK_STATUS    = 4
 PROC_SOUND            = 5
 PROC_COLOR_PICKER     = 6
 PROC_COLOR_PICKER_EX  = 7
-PROC_REPORT_KEYS      = 8 
+PROC_REPORT_KEYS      = 8
+PROC_ADD_GUTTER_ICON  = 9 
 
 PROP_NUMS           = 1
 PROP_EOL            = 2
@@ -240,7 +241,7 @@ PROP_COLOR_SYNCEDIT_BG           = 'syncedit_bg'
 def ed_handles():
     r0, r1 = sw_api.ed_handles()
     return range(r0, r1+1)
-
+    
 def msg_box(id, text=''):
     return sw_api.msg_box(id, text)
 def msg_status(text):

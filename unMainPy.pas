@@ -1141,6 +1141,7 @@ const
   PROC_COLOR_PICKER    = 6;
   PROC_COLOR_PICKER_EX = 7;
   PROC_REPORT_KEYS     = 8;
+  PROC_ADD_GUTTER_ICON = 9;   
 
 function Py_app_proc(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1215,6 +1216,15 @@ begin
           begin
             DoReportKeysHtml(fmMain.SyntKeyMapping, Str);
             Result:= ReturnNone;
+          end;
+
+        PROC_ADD_GUTTER_ICON:
+          begin
+            NValue:= fmMain.DoAddGutterIcon(Str);
+            if NValue<0 then
+              Result:= ReturnNone
+            else
+              Result:= PyInt_FromLong(NValue);
           end;
 
         else
@@ -1343,10 +1353,10 @@ begin
             Result:= PyUnicode_FromWideString(Dlg.FileName);
         end
         else
-          Result:= ReturnNone;  
+          Result:= ReturnNone;
       finally
         FreeAndNil(Dlg);
-      end;      
+      end;
     end;
 end;
 

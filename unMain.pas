@@ -3408,6 +3408,7 @@ type
     procedure GetEditorIndexes(Ed: TSyntaxMemo; var AGroupIndex, ATabIndex: Integer);
     procedure DoClearSearchHistory;
     procedure DoSetFrameTabColor(F: TEditorFrame; NColor: TColor);
+    function DoAddGutterIcon(const fn: string): Integer;
     //end of public
   end;
 
@@ -3432,8 +3433,8 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1835';
-  cSynPyVer = '1.0.144';
+  cSynVer = '6.14.1840';
+  cSynPyVer = '1.0.145';
 
 const
   cSynParamRO = '/ro';
@@ -29536,6 +29537,29 @@ procedure TfmMain.TbxItemAddonsUpdateClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_AddonsManager_Update);
 end;
+
+function TfmMain.DoAddGutterIcon(const fn: string): Integer;
+var
+  Bmp: TBitmap;
+begin
+  Result:= -1;
+  if not FileExists(fn) then Exit;
+
+  Bmp:= TBitmap.Create;
+  try
+    try
+      Bmp.LoadFromFile(fn);
+      Bmp.Transparent:= true;
+      Result:= ImgListGutter.AddMasked(Bmp, Bmp.TransparentColor);
+    except
+      Exit
+    end;
+  finally
+    FreeAndNil(Bmp);
+  end;
+end;
+
+
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
