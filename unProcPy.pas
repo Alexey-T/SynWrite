@@ -34,6 +34,7 @@ function Py_ModuleNameExists(const SId: string): boolean;
 
 function Py_ed_get_staple(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_bk(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_attr(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_sync_ranges(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_add_sync_range(Self, Args: PPyObject): PPyObject; cdecl;
@@ -1500,6 +1501,39 @@ begin
       else
         Result:= Py_BuildValue('(ii)', Staple.StartPos, Staple.EndPos);
     end;
-end;    
+end;
+
+const
+  ATTRIB_CLEAR_ALL       = -1;
+  ATTRIB_CLEAR_SELECTION = -2;
+  ATTRIB_SET_BOLD        = -3;
+  ATTRIB_SET_ITALIC      = -4;
+  ATTRIB_SET_UNDERLINE   = -5;
+  ATTRIB_SET_STRIKEOUT   = -6;
+
+function Py_ed_set_attr(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, NColor: Integer;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'ii:set_attr', @H, @NColor)) then
+    begin
+      Ed:= PyEditor(H);
+
+      if NColor>=0 then
+        Ed.SelAttributes.BgColor:= NColor
+      else
+      case NColor of
+        ATTRIB_CLEAR_ALL: Ed.SelAttributes.ClearFormat;
+        ATTRIB_CLEAR_SELECTION: Ed.SelAttributes.ClearSelFormat;
+        ATTRIB_SET_BOLD: Ed.SelAttributes.Bold:= true;
+        ATTRIB_SET_ITALIC: Ed.SelAttributes.Italic:= true;
+        ATTRIB_SET_UNDERLINE: Ed.SelAttributes.Underline:= true;
+        ATTRIB_SET_STRIKEOUT: Ed.SelAttributes.StrikeOut:= true;
+      end;
+      Result:= ReturnNone;
+    end;
+end;
 
 end.

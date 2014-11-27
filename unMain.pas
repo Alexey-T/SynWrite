@@ -27391,6 +27391,7 @@ begin
     AddMethod('ed_complete', Py_ed_complete, '');
     AddMethod('ed_get_split', Py_ed_get_split, '');
     AddMethod('ed_set_split', Py_ed_set_split, '');
+    AddMethod('ed_set_attr', Py_ed_set_attr, '');
 
     AddMethod('ed_get_text_all', Py_ed_get_text_all, '');
     AddMethod('ed_get_text_sel', Py_ed_get_text_sel, '');
