@@ -33,10 +33,12 @@ MENU_STD    = 2
 
 ATTRIB_CLEAR_ALL       = -1
 ATTRIB_CLEAR_SELECTION = -2
-ATTRIB_SET_BOLD        = -3
-ATTRIB_SET_ITALIC      = -4
-ATTRIB_SET_UNDERLINE   = -5
-ATTRIB_SET_STRIKEOUT   = -6
+ATTRIB_COLOR_FONT      = 0
+ATTRIB_COLOR_BG        = 1
+ATTRIB_SET_BOLD        = 2
+ATTRIB_SET_ITALIC      = 3
+ATTRIB_SET_UNDERLINE   = 4
+ATTRIB_SET_STRIKEOUT   = 5
 
 LOG_CLEAR         = 0
 LOG_ADD           = 1
@@ -450,8 +452,8 @@ class Editor:
         return sw_api.ed_set_bk(self.h, id, pos, icon, color, hint)
     def get_staple(self, posx, posy):
         return sw_api.ed_get_staple(self.h, posx, posy)
-    def set_attr(self, value):
-        return sw_api.ed_set_attr(self.h, value)
+    def set_attr(self, id, color):
+        return sw_api.ed_set_attr(self.h, id, color)
     def get_attr(self):
         return sw_api.ed_get_attr(self.h)
     def find(self, action, opt, tokens, sfind, sreplace):

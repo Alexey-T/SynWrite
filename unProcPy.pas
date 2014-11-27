@@ -1508,25 +1508,25 @@ end;
 const
   ATTRIB_CLEAR_ALL       = -1;
   ATTRIB_CLEAR_SELECTION = -2;
-  ATTRIB_SET_BOLD        = -3;
-  ATTRIB_SET_ITALIC      = -4;
-  ATTRIB_SET_UNDERLINE   = -5;
-  ATTRIB_SET_STRIKEOUT   = -6;
+  ATTRIB_COLOR_FONT      = 0;
+  ATTRIB_COLOR_BG        = 1;
+  ATTRIB_SET_BOLD        = 2;
+  ATTRIB_SET_ITALIC      = 3;
+  ATTRIB_SET_UNDERLINE   = 4;
+  ATTRIB_SET_STRIKEOUT   = 5;
 
 function Py_ed_set_attr(Self, Args: PPyObject): PPyObject; cdecl;
 var
-  H, NColor: Integer;
+  H, NId, NColor: Integer;
   Ed: TSyntaxMemo;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:set_attr', @H, @NColor)) then
+    if Bool(PyArg_ParseTuple(Args, 'iii:set_attr', @H, @NId, @NColor)) then
     begin
       Ed:= PyEditor(H);
-
-      if NColor>=0 then
-        Ed.SelAttributes.BgColor:= NColor
-      else
-      case NColor of
+      case NId of
+        ATTRIB_COLOR_FONT: Ed.SelAttributes.Color:= NColor;
+        ATTRIB_COLOR_BG: Ed.SelAttributes.BgColor:= NColor;
         ATTRIB_CLEAR_ALL: Ed.SelAttributes.ClearFormat;
         ATTRIB_CLEAR_SELECTION: Ed.SelAttributes.ClearSelFormat;
         ATTRIB_SET_BOLD: Ed.SelAttributes.Bold:= true;

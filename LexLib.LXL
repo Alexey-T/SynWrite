@@ -27288,7 +27288,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Bold-Italic'
         StyleName = 'Bold-Italic'
         TokenType = 11
-        Expression = '(\*\*\*|___).*?(\*\*\*|___|$)'
+        Expression = '(\*\*\*|___)\S*?(\*\*\*|___|$)'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -27296,7 +27296,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Bold'
         StyleName = 'Bold'
         TokenType = 9
-        Expression = '(\*\*|__).*?(\*\*|__|$)'
+        Expression = '(\*\*|__)\S*?(\*\*|__|$)'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -27304,7 +27304,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Italic'
         StyleName = 'Italic'
         TokenType = 10
-        Expression = '#char after * is non-space'#13#10'(\*|_) \S.*? (\*|_|")'
+        Expression = '#char after * is non-space'#13#10'(\*|_) \S*? (\*|_|")'
         ColumnFrom = 0
         ColumnTo = 0
       end
