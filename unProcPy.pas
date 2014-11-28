@@ -1563,7 +1563,10 @@ begin
         Range.EndPos,
         Style.Font.Color,
         Style.BgColor,
-        Word(Style.FormatFlags)
+        IfThen(ffBold in Style.FormatFlags, 'b')+
+        IfThen(ffItalic in Style.FormatFlags, 'i')+
+        IfThen(ffUnderline in Style.FormatFlags, 'u')+
+        IfThen(ffStrikeOut in Style.FormatFlags, 's')
         ]);
       PyList_Append(Result, AList);
       Py_XDecRef(AList);
