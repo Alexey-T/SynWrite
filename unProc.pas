@@ -22,6 +22,7 @@ uses
 
   IniFiles,
   PngImageList,
+  SpTbxItem,
   ATxSProc;
 
 procedure DoIconSet_DetectSizes(const dir: string; var SizeX, SizeY: Integer);
@@ -33,6 +34,7 @@ procedure DoKeymappingSplit(MapIn, MapOut1, MapOut2: TSyntKeyMapping; NCountInFi
 procedure DoKeymappingJoin(MapIn1, MapIn2, MapOut: TSyntKeyMapping);
 procedure DoKeymappingTruncate(Map: TSyntKeyMapping; NCount: Integer);
 
+procedure DoSortMenu(Menu: TSpTbxSubmenuItem);
 procedure DoRemovePyReferencesFromIniFile(const fn_ini, py_module: string);
 function STrimFolderName(const s: Widestring): Widestring;
 function DoGetLocalizedEncodingName(const Id: Widestring): Widestring;
@@ -291,11 +293,11 @@ uses
   Windows,
   ecZRegExpr,
   Math, Dialogs, CommCtrl, StrUtils,
-  ATxFProc, 
   TntClipbrd, TntSysUtils,
   DKLang,
   PngImage,
   cUtils, //Fundamentals
+  ATxFProc,
   unSRTree,
   unInputSimple,
   unInputFilename,
@@ -2734,6 +2736,27 @@ begin
       if Pos(Substr, L[i])>0 then
         L.Delete(i);
     L.SaveToFile(fn_ini);    
+  finally
+    FreeAndNil(L);
+  end;
+end;
+
+procedure DoSortMenu(Menu: TSpTbxSubmenuItem);
+var
+  L: TTntStringList;
+  i: Integer;
+begin
+  L:= TTntStringList.Create;
+  try
+    L.Sorted:= true;
+    for i:= 0 to Menu.Count-1 do
+      L.AddObject((Menu.Items[i] as TSpTBXCustomItem).Caption, Menu.Items[i]);
+
+    for i:= 0 to L.Count-1 do
+      Menu.Move(
+        Menu.IndexOf(L.Objects[i] as TSpTBXCustomItem),
+        Menu.Count-1
+        );
   finally
     FreeAndNil(L);
   end;

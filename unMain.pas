@@ -28295,6 +28295,9 @@ begin
   finally
     FreeAndNil(ListSec);
   end;
+
+  DoSortMenu(TbxSubmenuItemPlugins);
+  DoSortMenu(TBXSubmenuItemCtxPlugins);
 end;
 
 procedure TfmMain.DoPlugins_LoadAutoComplete(const fn_plug_ini: string);
