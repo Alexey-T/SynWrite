@@ -85,6 +85,7 @@ type
     mnuCarets: TTntMenuItem;
     mnuComments: TTntMenuItem;
     mnuWeb: TTntMenuItem;
+    mnuAddons: TTntMenuItem;
     procedure FormShow(Sender: TObject);
     procedure btnIconSizeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -126,6 +127,7 @@ type
     procedure mnuCaretsClick(Sender: TObject);
     procedure mnuCommentsClick(Sender: TObject);
     procedure mnuWebClick(Sender: TObject);
+    procedure mnuAddonsClick(Sender: TObject);
   private
     { Private declarations }
     procedure DoMenuSys(const Cmd, Hint: Widestring);
@@ -889,6 +891,11 @@ end;
 procedure TfmToolbarProp.mnuWebClick(Sender: TObject);
 begin
   DoMenuSys('m:{websearch}', mnuWeb.Caption);
+end;
+
+procedure TfmToolbarProp.mnuAddonsClick(Sender: TObject);
+begin
+  DoMenuSys('m:{addman}', mnuAddons.Caption);
 end;
 
 end.

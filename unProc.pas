@@ -33,6 +33,7 @@ procedure DoKeymappingSplit(MapIn, MapOut1, MapOut2: TSyntKeyMapping; NCountInFi
 procedure DoKeymappingJoin(MapIn1, MapIn2, MapOut: TSyntKeyMapping);
 procedure DoKeymappingTruncate(Map: TSyntKeyMapping; NCount: Integer);
 
+procedure DoRemovePyReferencesFromIniFile(const fn_ini, py_module: string);
 function STrimFolderName(const s: Widestring): Widestring;
 function DoGetLocalizedEncodingName(const Id: Widestring): Widestring;
 procedure DoUpdateIniFileForNewRelease(const SynIni: string);
@@ -2655,13 +2656,6 @@ begin
   L.PngImages.Add;
 end;
 
-{
-function IsCorrectClipsFilename(const S: Widestring): boolean;
-begin
-  Result:= IsStringRegex(S, '[\w\s\.\-\+]+');
-end;
-}
-
 function DoInputCheckList(const ACaption, AColumns, AItems: Widestring;
   ASizeX, ASizeY: Integer): string;
 const
@@ -2692,7 +2686,7 @@ begin
         if i>0 then
           Width:= i
         else
-          AutoSize:= true;  
+          AutoSize:= true;
       end;
     until false;
 
@@ -2721,6 +2715,27 @@ begin
     end;
   finally
     Free
+  end;
+end;
+
+procedure DoRemovePyReferencesFromIniFile(const fn_ini, py_module: string);
+var
+  L: TStringList;
+  i: Integer;
+  Substr: string;
+begin
+  if not FileExists(fn_ini) then Exit;
+  Substr:= '=py:'+py_module+';';
+
+  L:= TStringList.Create;
+  try
+    L.LoadFromFile(fn_ini);
+    for i:= L.Count-1 downto 0 do
+      if Pos(Substr, L[i])>0 then
+        L.Delete(i);
+    L.SaveToFile(fn_ini);    
+  finally
+    FreeAndNil(L);
   end;
 end;
 

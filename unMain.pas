@@ -24874,6 +24874,11 @@ begin
         Item.LinkSubitems:= TbxSubmenuWeb;
       end
       else
+      if SCmd='m:{addman}' then
+      begin
+        Item.LinkSubitems:= TbxSubmenuAddons;
+      end
+      else
       begin
         FUserToolbarCommands.Add(SCmd);
         Item.Tag:= FUserToolbarCommands.Count-1;
@@ -27147,6 +27152,8 @@ begin
 
   if n_type in [cAddonTypeBinPlugin, cAddonTypePyPlugin] then
   begin
+    DoRemovePyReferencesFromIniFile(SynPluginsIni, s_subdir);
+
     DoOpenArchive_HandleIni(fn_inf, s_subdir, 'ini', n_type);
     for i:= 1 to cMaxSectionsInInf do
       if not DoOpenArchive_HandleIni(fn_inf, s_subdir, 'ini'+IntToStr(i), n_type) then
