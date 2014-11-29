@@ -26,9 +26,9 @@ object fmInputCheckList: TfmInputCheckList
       539
       38)
     object bOk: TTntButton
-      Left = 327
+      Left = 330
       Top = 7
-      Width = 99
+      Width = 96
       Height = 23
       Anchors = [akRight, akBottom]
       Caption = 'OK'
@@ -37,9 +37,9 @@ object fmInputCheckList: TfmInputCheckList
       TabOrder = 0
     end
     object bCancel: TTntButton
-      Left = 431
+      Left = 434
       Top = 7
-      Width = 99
+      Width = 96
       Height = 23
       Anchors = [akRight, akBottom]
       Cancel = True
