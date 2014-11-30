@@ -25,6 +25,9 @@ uses
   SpTbxItem,
   ATxSProc;
 
+procedure DoSortMenu(Menu: TSpTbxSubmenuItem);
+procedure DoRemovePluginRefsFromIniFile(const fn_ini, dir: string; IsBinaryPlugin: boolean);
+  
 procedure DoIconSet_DetectSizes(const dir: string; var SizeX, SizeY: Integer);
 function DoIconSet_LoadFromTar(L: TPngImageList; const fn_tar: string): boolean;
 function DoIconSet_LoadFromDir(L: TPngImageList; const dir: string): boolean;
@@ -34,8 +37,6 @@ procedure DoKeymappingSplit(MapIn, MapOut1, MapOut2: TSyntKeyMapping; NCountInFi
 procedure DoKeymappingJoin(MapIn1, MapIn2, MapOut: TSyntKeyMapping);
 procedure DoKeymappingTruncate(Map: TSyntKeyMapping; NCount: Integer);
 
-procedure DoSortMenu(Menu: TSpTbxSubmenuItem);
-procedure DoRemovePyReferencesFromIniFile(const fn_ini, py_module: string);
 function STrimFolderName(const s: Widestring): Widestring;
 function DoGetLocalizedEncodingName(const Id: Widestring): Widestring;
 procedure DoUpdateIniFileForNewRelease(const SynIni: string);
@@ -2720,14 +2721,18 @@ begin
   end;
 end;
 
-procedure DoRemovePyReferencesFromIniFile(const fn_ini, py_module: string);
+procedure DoRemovePluginRefsFromIniFile(const fn_ini, dir: string; IsBinaryPlugin: boolean);
 var
   L: TStringList;
   i: Integer;
   Substr: string;
 begin
   if not FileExists(fn_ini) then Exit;
-  Substr:= '=py:'+py_module+';';
+
+  if IsBinaryPlugin then
+    Substr:= '='+dir+'\'
+  else
+    Substr:= '='+dir+';';
 
   L:= TStringList.Create;
   try

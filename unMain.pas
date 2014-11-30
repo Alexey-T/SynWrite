@@ -27152,7 +27152,10 @@ begin
 
   if n_type in [cAddonTypeBinPlugin, cAddonTypePyPlugin] then
   begin
-    DoRemovePyReferencesFromIniFile(SynPluginsIni, s_subdir);
+    if n_type=cAddonTypePyPlugin then
+      DoRemovePluginRefsFromIniFile(SynPluginsIni, cPyPrefix+s_subdir, false)
+    else
+      DoRemovePluginRefsFromIniFile(SynPluginsIni, s_subdir, true);
 
     DoOpenArchive_HandleIni(fn_inf, s_subdir, 'ini', n_type);
     for i:= 1 to cMaxSectionsInInf do
