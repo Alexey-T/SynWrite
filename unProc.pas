@@ -26,7 +26,7 @@ uses
   ATxSProc;
 
 procedure DoSortMenu(Menu: TSpTbxSubmenuItem);
-procedure DoRemovePluginRefsFromIniFile(const fn_ini, dir: string; IsBinaryPlugin: boolean);
+procedure DoRemovePluginsIniLines(const fn_ini, dir: string; IsBinaryPlugin: boolean);
   
 procedure DoIconSet_DetectSizes(const dir: string; var SizeX, SizeY: Integer);
 function DoIconSet_LoadFromTar(L: TPngImageList; const fn_tar: string): boolean;
@@ -2721,7 +2721,7 @@ begin
   end;
 end;
 
-procedure DoRemovePluginRefsFromIniFile(const fn_ini, dir: string; IsBinaryPlugin: boolean);
+procedure DoRemovePluginsIniLines(const fn_ini, dir: string; IsBinaryPlugin: boolean);
 var
   L: TStringList;
   i: Integer;
@@ -2732,7 +2732,7 @@ begin
   if IsBinaryPlugin then
     Substr:= '='+dir+'\'
   else
-    Substr:= '='+dir+';';
+    Substr:= '=py:'+dir+';';
 
   L:= TStringList.Create;
   try
