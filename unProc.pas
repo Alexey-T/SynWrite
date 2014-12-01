@@ -2563,6 +2563,7 @@ var
   Str: array[Low(cIconsId)..High(cIconsId)] of TMemoryStream;
   Arc: TTarArchive;
   DirRec: TTarDirRec;
+  PngObj: TPngObject;
   i, sizeX, sizeY: Integer;
 begin
   DoIconSet_DetectSizes(fn_tar, sizeX, sizeY);
@@ -2603,11 +2604,18 @@ begin
     try
       for i:= Low(Str) to High(Str) do
         try
-          L.PngImages.Add.PngImage.LoadFromStream(Str[i]);
+          PngObj:= L.PngImages.Add.PngImage;
+          PngObj.LoadFromStream(Str[i]);
+          if not ((PngObj.Width=sizeX) and (PngObj.Height=sizeY)) then
+          begin
+            MsgError(Format('Incorrect icon size: %s %dx%d'#13'%s',
+              [cIconsId[i], PngObj.Width, PngObj.Height, fn_tar]), 0);
+            Result:= false;
+            Exit
+          end;
         except
-          Application.MessageBox(
-            PChar('Cannot load icon '+cIconsId[i]+':'#13+fn_tar),
-            'SynWrite', mb_ok or mb_iconerror);
+          MsgError(Format('Cannot load icon: %s'#13'%s',
+            [cIconsId[i], fn_tar]), 0);
           Result:= false;
           Exit
         end;
