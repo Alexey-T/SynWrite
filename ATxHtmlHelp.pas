@@ -1,10 +1,10 @@
-unit HHelp;
+unit ATxHtmlHelp;
 
 interface
 
 uses Windows;
 
-function ViewHelp(H: HWND; const HelpFile, HelpStr: Widestring): HWND;
+function DoViewHtmlHelp(H: HWND; const HelpFile, HelpStr: Widestring): HWND;
 
 implementation
 
@@ -67,7 +67,7 @@ const
   HH_SYNC                =    9;
   HH_KEYWORD_LOOKUP      =   $d;
 
-function ViewHelp(H: HWND; const HelpFile, HelpStr: Widestring): HWND;
+function DoViewHtmlHelp(H: HWND; const HelpFile, HelpStr: Widestring): HWND;
 var
   lnk: THH_AKLINK;
 begin

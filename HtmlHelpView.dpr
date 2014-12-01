@@ -2,9 +2,10 @@ program HtmlHelpView;
 
 {$R WindowsXP.res}
 
-uses Windows, SysUtils, HHelp;
+uses
+  Windows, SysUtils, ATxHtmlHelp;
 const
-  cc =
+  cInf =
     'HtmlHelpView (c) UVViewSoft'#13#13+
     'Usage:'#13+
     'HtmlHelpView.exe "<CHM file name>" "<Help topic string>"'#13;
@@ -14,7 +15,7 @@ var
 begin
   if ParamCount<2 then
   begin
-    MessageBox(0, cc, 'HtmlHelpView', mb_ok or mb_iconinformation);
+    MessageBox(0, cInf, 'HtmlHelpView', mb_ok or mb_iconinformation);
     Exit;
   end;
 
@@ -25,7 +26,7 @@ begin
     Exit;
   end;
 
-  h:= ViewHelp(0, fn, ParamStr(2));
+  h:= DoViewHtmlHelp(0, fn, ParamStr(2));
   while IsWindow(h) do
     Sleep(1000);
 end.
