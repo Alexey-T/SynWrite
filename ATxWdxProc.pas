@@ -1,4 +1,4 @@
-unit ATxWdx;
+unit ATxWdxProc;
 
 interface
 
@@ -14,7 +14,8 @@ function SGetWdxField(
 implementation
 
 uses
-  Windows, SysUtils, ContPlug;
+  Windows, SysUtils, 
+  ATxWdxIntf;
 
 type
   TContentPluginUnloading = procedure; stdcall;

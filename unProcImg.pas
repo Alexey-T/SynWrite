@@ -12,7 +12,7 @@ implementation
 
 uses
   SysUtils,
-  ATxWdx,
+  ATxWdxProc,
   ATxSProc;
 
 const

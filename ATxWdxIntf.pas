@@ -1,5 +1,5 @@
 //Interface version 1.2
-unit ContPlug;
+unit ATxWdxIntf;
 
 interface
 
