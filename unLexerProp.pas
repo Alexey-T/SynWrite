@@ -19,7 +19,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ecSyntAnal, ExtCtrls, ecSyntMemo,
-  ecsnColEdit, Buttons, ecsnStyleEdit, ecsnCodeTempl, ImgList, ecPopupCtrl,
+  unLexerItems, Buttons, ecsnStyleEdit, ecsnCodeTempl, ImgList, ecPopupCtrl,
   ecSyntGramma, ecStrUtils, ecSyntTree, ecsnRuleStates, DKLang,
   ecExtHighlight,
   TntForms, TntControls, TntStdCtrls, TntExtCtrls, TntComCtrls, TntButtons;
@@ -37,9 +37,9 @@ type
     Label21: TTntLabel;
     ComboBox17: TComboBox;
     Label22: TTntLabel;
-    SyntColFrame1: TSyntColFrame;
-    SyntColFrame2: TSyntColFrame;
-    SyntColFrame3: TSyntColFrame;
+    SyntColFrame1: TfmLexerItems;
+    SyntColFrame2: TfmLexerItems;
+    SyntColFrame3: TfmLexerItems;
     Label29: TTntLabel;
     ComboBox21: TComboBox;
     PageControl2: TTntPageControl;
@@ -105,7 +105,7 @@ type
     Panel7: TTntPanel;
     TabSheet4: TTntTabSheet;
     TabSheet8: TTntTabSheet;
-    SyntColFrame4: TSyntColFrame;
+    SyntColFrame4: TfmLexerItems;
     Splitter2: TSplitter;
     Splitter3: TSplitter;
     Splitter4: TSplitter;

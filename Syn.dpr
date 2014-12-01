@@ -73,7 +73,9 @@ uses
   unLexerStyles in 'unLexerStyles.pas',
   unPrintSetup in 'unPrintSetup.pas' {fmPrintSetup},
   unMacroCmd in 'unMacroCmd.pas' {fmMacroCmd},
-  unInputCheckList in 'unInputCheckList.pas' {fmInputCheckList};
+  unInputCheckList in 'unInputCheckList.pas' {fmInputCheckList},
+  unLexerImportRules in 'unLexerImportRules.pas' {fmLexerImportRules},
+  unLexerItems in 'unLexerItems.pas' {fmLexerItems: TFrame};
 
 {$R *.res}
 {$R *.dkl_const.res}

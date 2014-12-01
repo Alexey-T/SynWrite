@@ -442,7 +442,7 @@ object fmLexerProp: TfmLexerProp
     end
     object TabSheet1: TTntTabSheet
       Caption = 'Styles'
-      inline SyntColFrame1: TSyntColFrame
+      inline SyntColFrame1: TfmLexerItems
         Left = 0
         Top = 0
         Width = 299
@@ -528,7 +528,7 @@ object fmLexerProp: TfmLexerProp
         Top = 0
         Height = 337
       end
-      inline SyntColFrame2: TSyntColFrame
+      inline SyntColFrame2: TfmLexerItems
         Left = 0
         Top = 0
         Width = 189
@@ -930,7 +930,7 @@ object fmLexerProp: TfmLexerProp
         Top = 0
         Height = 337
       end
-      inline SyntColFrame3: TSyntColFrame
+      inline SyntColFrame3: TfmLexerItems
         Left = 0
         Top = 0
         Width = 174
@@ -2307,7 +2307,7 @@ object fmLexerProp: TfmLexerProp
         Top = 0
         Height = 337
       end
-      inline SyntColFrame4: TSyntColFrame
+      inline SyntColFrame4: TfmLexerItems
         Left = 0
         Top = 0
         Width = 174
