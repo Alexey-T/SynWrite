@@ -2,7 +2,7 @@
 SynWrite main form, for exe version.
 The UI form is TfmMain, it's created as a child of this form.
 }
-unit unEx;
+unit unMainExe;
 
 interface
 
@@ -15,7 +15,7 @@ uses
   AppEvnts;
 
 type
-  TfmSynEx = class(TTntForm)
+  TfmSynwrite = class(TTntForm)
     ApplicationEvents1: TApplicationEvents;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -39,7 +39,7 @@ type
   end;
 
 var
-  fmSynEx: TfmSynEx;
+  fmSynwrite: TfmSynwrite;
 
 function SynParamsOK: boolean;
 function SynInstanceNeeded: boolean;
@@ -53,6 +53,9 @@ uses
   TntSystem, TntSysUtils;
 
 {$R *.dfm}
+
+const
+  cMainFormClass = 'TfmSynwrite.UnicodeClass';
 
 var
   SynExePath,
@@ -119,7 +122,7 @@ begin
     end;
 
   //check other Syn instances  
-  f:= FindWindowW('TfmSynEx.UnicodeClass', nil);
+  f:= FindWindowW(cMainFormClass, nil);
   if f = 0 then Exit;
   Result:= false;
   NParams:= WideParamCount;
@@ -265,7 +268,7 @@ begin
   end;
 end;
 
-procedure TfmSynEx.FormCreate(Sender: TObject);
+procedure TfmSynwrite.FormCreate(Sender: TObject);
 begin
   fmMain:= TfmMain.Create(Self);
   fmMain.Parent:= Self;
@@ -274,7 +277,7 @@ begin
   TVistaAltFix.Create(Self);
 end;
 
-function TfmSynEx.GetSessionFN: string;
+function TfmSynwrite.GetSessionFN: string;
 begin
   //first, check if project-session is set
   Result:= fmMain.SynProjectSessionFN;
@@ -297,7 +300,7 @@ begin
     Result:= SynIniPath + SynDefaultSyn;
 end;
 
-procedure TfmSynEx.FormShow(Sender: TObject);
+procedure TfmSynwrite.FormShow(Sender: TObject);
 var
   i: integer;
   S: Widestring;
@@ -361,7 +364,7 @@ begin
 end;
 
 
-procedure TfmSynEx.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TfmSynwrite.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   //Dont call fmMain.Close: flicker
   fmMain.FormClose(Self, Action);
@@ -370,7 +373,7 @@ begin
   SavePos;
 end;
 
-procedure TfmSynEx.LoadPos;
+procedure TfmSynwrite.LoadPos;
 begin
   with TIniFile.Create(SynHistoryIni) do
   try
@@ -397,7 +400,7 @@ begin
   end;
 end;
 
-procedure TfmSynEx.SavePos;
+procedure TfmSynwrite.SavePos;
 begin
   try
     with TIniFile.Create(SynHistoryIni) do
@@ -420,7 +423,7 @@ begin
   end;
 end;
 
-procedure TfmSynEx.WMDropFiles(var m: TMessage);
+procedure TfmSynwrite.WMDropFiles(var m: TMessage);
 var
   fn: array[0..MAX_PATH-1] of WideChar;
   nCount, i: Integer;
@@ -438,7 +441,7 @@ begin
   DragFinish(THandle(M.WParam));
 end;
 
-procedure TfmSynEx.FormKeyDown(Sender: TObject; var Key: Word;
+procedure TfmSynwrite.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if (Key = vk_escape) and (Shift = []) then
@@ -484,12 +487,12 @@ begin
   end;
 end;
 
-procedure TfmSynEx.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfmSynwrite.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   fmMain.OnCloseQuery(nil, CanClose);
 end;
 
-procedure TfmSynEx.WMCopyData(var Msg: TWMCopyData);
+procedure TfmSynwrite.WMCopyData(var Msg: TWMCopyData);
 var
   S: WideString;
   N: Integer;
@@ -528,7 +531,7 @@ begin
   end;
 end;
 
-procedure TfmSynEx.ApplicationEvents1Deactivate(Sender: TObject);
+procedure TfmSynwrite.ApplicationEvents1Deactivate(Sender: TObject);
 begin
   if fmMain.opASaveOnFocus then
     fmMain.DoAutoSave;
@@ -540,7 +543,7 @@ begin
 end;
 
 
-procedure TfmSynEx.ApplicationEvents1Message(var Msg: tagMSG;
+procedure TfmSynwrite.ApplicationEvents1Message(var Msg: tagMSG;
   var Handled: Boolean);
 var
   h: THandle;

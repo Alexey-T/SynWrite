@@ -1,4 +1,4 @@
-object fmSynEx: TfmSynEx
+object fmSynwrite: TfmSynwrite
   Left = 268
   Top = 114
   AutoScroll = False

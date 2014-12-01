@@ -8,7 +8,7 @@ uses
   FastMove,
   FastCode,
   Forms,
-  unEx in 'unEx.pas' {fmSynEx},
+  unMainExe in 'unMainExe.pas' {fmSynwrite},
   unMain in 'unMain.pas' {fmMain},
   unAbout in 'unAbout.pas' {fmAbout},
   unFrame in 'unFrame.pas' {EditorFrame: TFrame},
@@ -20,11 +20,11 @@ uses
   VCLFixes,
   unTool2 in 'unTool2.pas' {fmToolOutput},
   unProgress in 'unProgress.pas' {fmProgress},
-  unExtr in 'unExtr.pas' {fmExtract},
+  unExtractStr in 'unExtractStr.pas' {fmExtract},
   unClip in 'unClip.pas' {fmClip},
   unProc in 'unProc.pas',
   unShell in 'unShell.pas' {fmShell},
-  unInsTxt in 'unInsTxt.pas' {fmInsTxt},
+  unInsertText in 'unInsertText.pas' {fmInsTxt},
   unLoadLexStyles in 'unLoadLexStyles.pas' {fmLoadLex},
   unMacroEdit in 'unMacroEdit.pas' {fmMacroEdit},
   unGoto in 'unGoto.pas' {fmGoto},
@@ -86,7 +86,7 @@ begin
   Application.Initialize;
   Application.Title := 'SynWrite';
   Application.HintHidePause := 5000;
-  Application.CreateForm(TfmSynEx, fmSynEx);
+  Application.CreateForm(TfmSynwrite, fmSynwrite);
   //550ms
   Application.Run;
 end.

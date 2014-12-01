@@ -3482,7 +3482,7 @@ uses
 
   unSaveLex,
   unProcImg,
-  unSetup, unAbout, unEnc, unTool, unSRFiles, unExtr, unShell, unInsTxt,
+  unSetup, unAbout, unEnc, unTool, unSRFiles, unExtractStr, unShell, unInsertText,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav,
   unMenuCmds, unMenuProj, unMenuSnippets,
