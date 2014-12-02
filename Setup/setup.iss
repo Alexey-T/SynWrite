@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.14.1845
+AppVersion=6.14.1855
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -70,9 +70,7 @@ Source: "..\Data\clips\Quote selection\*";            DestDir: "{app}\Data\clips
 Source: "..\Data\clips\Special characters\*";         DestDir: "{app}\Data\clips\Special characters";        
 
 Source: "..\Data\snippets\Std.C\*";      DestDir: "{app}\Data\snippets\Std.C";      
-Source: "..\Data\snippets\Std.Java\*";   DestDir: "{app}\Data\snippets\Std.Java";   
 Source: "..\Data\snippets\Std.Pascal\*"; DestDir: "{app}\Data\snippets\Std.Pascal"; 
-Source: "..\Data\snippets\Std.Python\*"; DestDir: "{app}\Data\snippets\Std.Python"; 
 Source: "..\Data\snippets\Std.Php\*";    DestDir: "{app}\Data\snippets\Std.Php";    
 
 Source: "..\Tools\*"; DestDir: "{app}\Tools"; 

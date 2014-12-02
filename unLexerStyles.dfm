@@ -37,8 +37,8 @@ object fmLexerStyles: TfmLexerStyles
     Left = 144
     Top = 520
     Width = 89
-    Height = 25
-    Caption = '&OK'
+    Height = 23
+    Caption = 'OK'
     Default = True
     ModalResult = 1
     TabOrder = 3
@@ -47,9 +47,9 @@ object fmLexerStyles: TfmLexerStyles
     Left = 240
     Top = 520
     Width = 89
-    Height = 25
+    Height = 23
     Cancel = True
-    Caption = '&Cancel'
+    Caption = 'Cancel'
     ModalResult = 2
     TabOrder = 4
   end
