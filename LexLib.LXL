@@ -17704,8 +17704,10 @@ object SyntaxManager: TSyntaxManager
       ' = '#39'['#39' | <Identifier>; '#13#10#13#10'InheritedList = '#39'('#39' IdentList '#39')'#39';'#13#10'I' +
       'dentList = <Identifier> ('#39','#39' <Identifier>)*;'#13#10
     CurrentLineStyle = 'Current Line'
-    Extentions = 'pas inc dpr dpk lpr p pp'
+    Extentions = 'pas inc dpr dpk lpr p'
     LexerName = 'Pascal'
+    Notes.Strings = (
+      'Changed by Alexey')
     LineComment = '//'
     AlwaysSyncBlockAnal = True
     Charset = DEFAULT_CHARSET
@@ -18553,433 +18555,6 @@ object SyntaxManager: TSyntaxManager
       'Ref: http://www.lua.org/manual/5.1/manual.html')
     RestartFromLineStart = True
     LineComment = '--'
-    Charset = DEFAULT_CHARSET
-  end
-  object SyntAnal91: TLibSyntAnalyzer
-    Formats = <
-      item
-        DisplayName = 'Comment'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clGray
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsItalic]
-      end
-      item
-        DisplayName = 'Shebang'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clTeal
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'Var'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clGreen
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'String'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clTeal
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-      end
-      item
-        DisplayName = 'Number'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clNavy
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'Keywords'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'Symbol'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clMaroon
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end>
-    TokenRules = <
-      item
-        DisplayName = 'Shebang'
-        StyleName = 'Shebang'
-        Expression = '\#!.*$'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Comm'
-        StyleName = 'Comment'
-        TokenType = 1
-        Expression = '\#[\s\#\-].*$'#13#10'| \#\z'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Var'
-        StyleName = 'Var'
-        TokenType = 4
-        Expression = '[$@%][$]?[a-zA-Z_][a-zA-Z0-9_]*'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'String'
-        StyleName = 'String'
-        Expression = '("|'#39') (\\\1|.)*? \1'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Id'
-        TokenType = 2
-        Expression = '[a-zA-Z_][\w\d]*'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Symb'
-        StyleName = 'Symbol'
-        TokenType = 3
-        Expression = '[\+\-/\*\(\)\[\]\{\}\<>\.,~!&\|;:=%\^\#\\]'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Num'
-        StyleName = 'Number'
-        TokenType = 5
-        Expression = '\d+(\.\d+)?'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end>
-    BlockRules = <
-      item
-        DisplayName = 'Keywords'
-        StyleName = 'Keywords'
-        BlockType = btTagDetect
-        ConditionList = <
-          item
-            TagList.Strings = (
-              'after'
-              'append'
-              'apply'
-              'array'
-              'auto_execok'
-              'auto_import'
-              'auto_load'
-              'auto_load_index'
-              'auto_mkindex'
-              'auto_mkindex_old'
-              'auto_qualify'
-              'auto_reset'
-              'beep'
-              'bell'
-              'bgerror'
-              'binary'
-              'bind'
-              'bindtags'
-              'bitmap'
-              'break'
-              'button'
-              'canvas'
-              'case'
-              'catch'
-              'cd'
-              'chan'
-              'checkbutton'
-              'clipboard'
-              'clock'
-              'close'
-              'colors'
-              'concat'
-              'console'
-              'continue'
-              'cursors'
-              'dde'
-              'default'
-              'destroy'
-              'dict'
-              'echo'
-              'else'
-              'elseif'
-              'encoding'
-              'entry'
-              'eof'
-              'error'
-              'eval'
-              'event'
-              'exec'
-              'exit'
-              'export'
-              'expr'
-              'fblocked'
-              'fconfigure'
-              'fcopy'
-              'file'
-              'fileevent'
-              'filename'
-              'flush'
-              'focus'
-              'font'
-              'for'
-              'foreach'
-              'format'
-              'frame'
-              'gets'
-              'glob'
-              'global'
-              'grab'
-              'grid'
-              'history'
-              'http'
-              'if'
-              'image'
-              'import'
-              'incr'
-              'info'
-              'interp'
-              'join'
-              'keysyms'
-              'label'
-              'labelframe'
-              'lappend'
-              'lassign'
-              'lindex'
-              'linsert'
-              'list'
-              'listbox'
-              'llength'
-              'load'
-              'loadTk'
-              'lower'
-              'lrange'
-              'lrepeat'
-              'lreplace'
-              'lreverse'
-              'lsearch'
-              'lset'
-              'lsort'
-              'mathfunc'
-              'mathop'
-              'memory'
-              'menu'
-              'menubutton'
-              'message'
-              'msgcat'
-              'namespace'
-              'open'
-              'option'
-              'options'
-              'pack'
-              'package'
-              'panedwindow'
-              'parray'
-              'photo'
-              'pid'
-              'pkg::create'
-              'pkg_mkIndex'
-              'place'
-              'platform'
-              'platform::shell'
-              'proc'
-              'puts'
-              'pwd'
-              'radiobutton'
-              'raise'
-              're_syntax'
-              'read'
-              'refchan'
-              'regexp'
-              'registry'
-              'regsub'
-              'rename'
-              'resource'
-              'return'
-              'Safe Base'
-              'scale'
-              'scan'
-              'scrollbar'
-              'seek'
-              'selection'
-              'send'
-              'set'
-              'socket'
-              'source'
-              'spinbox'
-              'split'
-              'string'
-              'subst'
-              'switch'
-              'Tcl'
-              'tcl_endOfWord'
-              'tcl_findLibrary'
-              'tcl_startOfNextWord'
-              'tcl_startOfPreviousWord'
-              'tcl_wordBreakAfter'
-              'tcl_wordBreakBefore'
-              'tclLog'
-              'tclMacPkgSearch'
-              'tclPkgSetup'
-              'tclPkgUnknown'
-              'tcltest'
-              'tclvars'
-              'tell'
-              'text'
-              'then'
-              'time'
-              'tk'
-              'tk_bisque'
-              'tk_chooseColor'
-              'tk_chooseDirectory'
-              'tk_dialog'
-              'tk_focusFollowsMouse'
-              'tk_focusNext'
-              'tk_focusPrev'
-              'tk_getOpenFile'
-              'tk_getSaveFile'
-              'tk_menuSetFocus'
-              'tk_messageBox'
-              'tk_optionMenu'
-              'tk_popup'
-              'tk_setPalette'
-              'tk_textCopy'
-              'tk_textCut'
-              'tk_textPaste'
-              'tkerror'
-              'tkvars'
-              'tkwait'
-              'tm'
-              'toplevel'
-              'trace'
-              'ttk::button'
-              'ttk::checkbutton'
-              'ttk::combobox'
-              'ttk::entry'
-              'ttk::frame'
-              'ttk::image'
-              'ttk::intro'
-              'ttk::label'
-              'ttk::labelframe'
-              'ttk::menubutton'
-              'ttk::notebook'
-              'ttk::panedwindow'
-              'ttk::progressbar'
-              'ttk::radiobutton'
-              'ttk::scale'
-              'ttk::scrollbar'
-              'ttk::separator'
-              'ttk::sizegrip'
-              'ttk::style'
-              'ttk::treeview'
-              'ttk::widget'
-              'unknown'
-              'unload'
-              'unset'
-              'update'
-              'uplevel'
-              'upvar'
-              'variable'
-              'vwait'
-              'while'
-              'winfo'
-              'wm')
-            TokenTypes = 4
-          end>
-        HighlightPos = cpAny
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = '{'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '{')
-            TokenTypes = 8
-          end>
-        BlockEnd = '}'
-        DisplayInTree = False
-        HighlightPos = cpAny
-        DrawStaple = True
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = '}'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '}')
-            TokenTypes = 8
-          end>
-        BlockEnd = '{'
-        HighlightPos = cpAny
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'proc'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              'proc')
-            TokenTypes = 4
-          end>
-        NameFmt = '%sz0'
-        RefToCondEnd = True
-        HighlightPos = cpAny
-        NoEndRule = True
-        IgnoreAsParent = False
-      end>
-    CodeTemplates = <>
-    SubAnalyzers = <>
-    SampleText.Strings = (
-      '#!/usr/bin/env tclsh'
-      '# Example code'
-      'set example {1 2 3}'
-      'e.g. {set'#39'add example 4} -> {1 2 3 4}'
-      'e.g. {set'#39'add example 4} -> {1 2 3 4}'
-      'book open "name \"substr\""'
-      'proc set'#39'remove {_set args} {'
-      '   upvar 1 $_set set'
-      '   foreach el $args {'
-      '       set pos [lsearch -exact $set $el]'
-      '   }'
-      '}')
-    TokenTypeNames.Strings = (
-      'Unknown'
-      'Comment'
-      'Id'
-      'Symbol'
-      'String'
-      'Integer')
-    Extentions = 'tcl tk tm'
-    LexerName = 'Tcl'
-    SkipSpaces = False
-    Notes.Strings = (
-      'Author: Matthias030 (SynWrite site admin)'
-      'Improvements: Alex (SynWrite)'
-      ''
-      'Ref:'
-      'http://www.tcl.tk/man/'
-      'Not tested but maybe a good idea to test on:'
-      
-        'http://www.subdude-site.com/WebPages_Local/RefInfo/Computer/TclT' +
-        'k/others_tcltkCode/others_tcltkCode.htm')
-    LineComment = '# '
     Charset = DEFAULT_CHARSET
   end
   object SyntAnal96: TLibSyntAnalyzer
@@ -27573,6 +27148,216 @@ object SyntaxManager: TSyntaxManager
     Extentions = 'synw-snippet'
     LexerName = 'SynWrite snippets'
     SkipSpaces = False
+    Charset = DEFAULT_CHARSET
+  end
+  object SyntAnal5: TLibSyntAnalyzer
+    Formats = <
+      item
+        DisplayName = 'Comment'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clGray
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsItalic]
+      end
+      item
+        DisplayName = 'String'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clTeal
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+      end
+      item
+        DisplayName = 'Symbol'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clMaroon
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsBold]
+      end
+      item
+        DisplayName = 'Id'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+      end
+      item
+        DisplayName = 'Id Param'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clNavy
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+      end
+      item
+        DisplayName = 'Var'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clGreen
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+      end>
+    TokenRules = <
+      item
+        DisplayName = 'Comment'
+        StyleName = 'Comment'
+        Expression = '\#.*'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Id Param'
+        StyleName = 'Id Param'
+        TokenType = 3
+        Expression = '^\s*\w+'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Id'
+        StyleName = 'Id'
+        TokenType = 3
+        Expression = '\w+'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Var'
+        StyleName = 'Var'
+        TokenType = 4
+        Expression = '%\{ .+? \}'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'String'
+        StyleName = 'String'
+        TokenType = 2
+        Expression = '("|'#39') (\\\1|.)*? \1'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Symbol'
+        StyleName = 'Symbol'
+        TokenType = 1
+        Expression = '[/\*,\.\;:\(\)=<>\+\-\[\]\{\}%\|\&\\~\^\$!]'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end>
+    BlockRules = <
+      item
+        DisplayName = 'Block comment'
+        BlockName = 'Block comment'
+        NotParent = True
+        ConditionList = <
+          item
+            TokenTypes = 1
+          end>
+        BlockEnd = 'Block comment end'
+        EndOfTextClose = True
+        DisplayInTree = False
+        RefToCondEnd = True
+        HighlightPos = cpBound
+        CollapseFmt = '...'
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'Block comment end'
+        BlockType = btRangeEnd
+        ConditionList = <
+          item
+            CondType = tcNotEqual
+            TokenTypes = 1
+          end
+          item
+            TokenTypes = 1
+          end>
+        BlockEnd = 'Block comment'
+        RefToCondEnd = True
+        HighlightPos = cpBound
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'Tag'
+        ConditionList = <
+          item
+            TokenTypes = 8
+          end
+          item
+            TagList.Strings = (
+              '<')
+            TokenTypes = 2
+          end>
+        BlockEnd = 'Tag end'
+        NameFmt = '%sz0'
+        RefToCondEnd = True
+        HighlightPos = cpAny
+        DrawStaple = True
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'Tag end'
+        BlockType = btRangeEnd
+        ConditionList = <
+          item
+            TagList.Strings = (
+              '>')
+            TokenTypes = 2
+          end
+          item
+            TokenTypes = 8
+          end
+          item
+            TagList.Strings = (
+              '/')
+            TokenTypes = 2
+          end
+          item
+            TagList.Strings = (
+              '<')
+            TokenTypes = 2
+          end>
+        BlockOffset = -3
+        SameIdent = True
+        RefToCondEnd = True
+        HighlightPos = cpAny
+        IgnoreAsParent = False
+      end>
+    CodeTemplates = <>
+    SubAnalyzers = <>
+    SampleText.Strings = (
+      '#DirectoryIndex index.php index.html'
+      ''
+      '<IfModule mod_rewrite.c>'
+      #9'RewriteEngine On'
+      #9'#RewriteBase /relative/web/path/'
+      ''
+      #9'RewriteCond %{REQUEST_URI} '#39'/favicon.ico'#39
+      #9'RewriteRule ^(.*) index.php'
+      ''
+      #9'RewriteCond %{HTTP:Authorization}  !^$'
+      #9'RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization}]'
+      '  <Ifhaha>'
+      '  test'
+      '  </Ifhaha>'
+      ''
+      '</IfModule>')
+    TokenTypeNames.Strings = (
+      'Comment'
+      'Symbol'
+      'String'
+      'Id'
+      'Var')
+    Extentions = '/.htaccess'
+    LexerName = 'htaccess'
+    SkipSpaces = False
+    Notes.Strings = (
+      'Alexey (SynWrite)')
+    LineComment = '#'
     Charset = DEFAULT_CHARSET
   end
 end
