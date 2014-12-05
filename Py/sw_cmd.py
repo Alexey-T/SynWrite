@@ -353,14 +353,6 @@ cmd_AlignWithSeparator = 797
 cmd_ToggleShowGroup2 = 798
 cmd_PasteAsColumnBlock = 799
 
-cmd_Encoding_Ansi = 800
-cmd_Encoding_Oem = 801
-cmd_Encoding_Utf8 = 802
-cmd_Encoding_Unicode = 803
-cmd_Encoding_UnicodeBE = 804
-cmd_Encoding_Utf8NoBom = 805
-cmd_Encoding_Koi8 = 806
-cmd_Encoding_Mac = 807
 cmd_Menu_Encodings = 810
 cmd_Menu_Lexers = 811
 cmd_Menu_LineEnds = 812
@@ -659,3 +651,17 @@ cmd_AddonsManager_Remove = 1151
 cmd_AddonsManager_Edit = 1152
 cmd_AddonsManager_Update = 1153
 cmd_AddonsManager_SaveAll = 1154
+
+cmd_EncodingChange_Ansi = 1200
+cmd_EncodingChange_Oem = 1201
+cmd_EncodingChange_Utf8Bom = 1202
+cmd_EncodingChange_Utf8NoBom = 1203
+cmd_EncodingChange_Utf16LE = 1204
+cmd_EncodingChange_Utf16BE = 1205
+
+cmd_EncodingConvert_Ansi = 1210
+cmd_EncodingConvert_Oem = 1211
+cmd_EncodingConvert_Utf8Bom = 1212
+cmd_EncodingConvert_Utf8NoBom = 1213
+cmd_EncodingConvert_Utf16LE = 1214
+cmd_EncodingConvert_Utf16BE = 1215

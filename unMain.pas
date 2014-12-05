@@ -3433,7 +3433,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1855';
+  cSynVer = '6.14.1865';
   cSynPyVer = '1.0.145';
 
 const
@@ -6256,14 +6256,19 @@ begin
     sm_SplitRight: ecSplitRight.Execute;
 
     //encoding
-    sm_Encoding_Ansi: ApplyFrameEncodingAndReload(CurrentFrame, cp_ACP);
-    sm_Encoding_Oem: ApplyFrameEncodingAndReload(CurrentFrame, cp_OEMCP);
-    sm_Encoding_Utf8: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8);
-    sm_Encoding_Utf8NoBom: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8_noBOM);
-    sm_Encoding_Unicode: ApplyFrameEncodingAndReload(CurrentFrame, cp__Unicode);
-    sm_Encoding_UnicodeBE: ApplyFrameEncodingAndReload(CurrentFrame, cp__UnicodeBE);
-    sm_Encoding_Koi8: ApplyFrameEncodingAndReload(CurrentFrame, 20866);
-    sm_Encoding_Mac: ApplyFrameEncodingAndReload(CurrentFrame, cp_MACCP);
+    sm_EncodingChange_Ansi: ApplyFrameEncodingAndReload(CurrentFrame, cp_ACP);
+    sm_EncodingChange_Oem: ApplyFrameEncodingAndReload(CurrentFrame, cp_OEMCP);
+    sm_EncodingChange_Utf8Bom: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8);
+    sm_EncodingChange_Utf8NoBom: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8_noBOM);
+    sm_EncodingChange_Utf16LE: ApplyFrameEncodingAndReload(CurrentFrame, cp__Unicode);
+    sm_EncodingChange_Utf16BE: ApplyFrameEncodingAndReload(CurrentFrame, cp__UnicodeBE);
+
+    sm_EncodingConvert_Ansi: ApplyFrameEncodingAndReload(CurrentFrame, cp_ACP, false);
+    sm_EncodingConvert_Oem: ApplyFrameEncodingAndReload(CurrentFrame, cp_OEMCP, false);
+    sm_EncodingConvert_Utf8Bom: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8, false);
+    sm_EncodingConvert_Utf8NoBom: ApplyFrameEncodingAndReload(CurrentFrame, cp__UTF8_noBOM, false);
+    sm_EncodingConvert_Utf16LE: ApplyFrameEncodingAndReload(CurrentFrame, cp__Unicode, false);
+    sm_EncodingConvert_Utf16BE: ApplyFrameEncodingAndReload(CurrentFrame, cp__UnicodeBE, false);
 
     sm_Menu_Encodings:
       begin
@@ -29569,7 +29574,6 @@ begin
     FreeAndNil(Bmp);
   end;
 end;
-
 
 
 initialization

@@ -140,14 +140,7 @@ const
   sm_ToggleShowGroup2 = 798;
   sm_PasteAsColumnBlock = 799;
 
-  sm_Encoding_Ansi = 800;
-  sm_Encoding_Oem = 801;
-  sm_Encoding_Utf8 = 802;
-  sm_Encoding_Unicode = 803;
-  sm_Encoding_UnicodeBE = 804;
-  sm_Encoding_Utf8NoBom = 805;
-  sm_Encoding_Koi8 = 806;
-  sm_Encoding_Mac = 807;
+  //free
   sm_Menu_Encodings = 810;
   sm_Menu_Lexers = 811;
   sm_Menu_LineEnds = 812;
@@ -468,6 +461,20 @@ const
   sm_AddonsManager_Edit = 1152;
   sm_AddonsManager_Update = 1153;
   sm_AddonsManager_SaveAll = 1154;
+
+  sm_EncodingChange_Ansi = 1200;
+  sm_EncodingChange_Oem = 1201;
+  sm_EncodingChange_Utf8Bom = 1202;
+  sm_EncodingChange_Utf8NoBom = 1203;
+  sm_EncodingChange_Utf16LE = 1204;
+  sm_EncodingChange_Utf16BE = 1205;
+
+  sm_EncodingConvert_Ansi = 1210;
+  sm_EncodingConvert_Oem = 1211;
+  sm_EncodingConvert_Utf8Bom = 1212;
+  sm_EncodingConvert_Utf8NoBom = 1213;
+  sm_EncodingConvert_Utf16LE = 1214;
+  sm_EncodingConvert_Utf16BE = 1215;
 
   sm_UpdateIniFile = 1900;
   //end of list
