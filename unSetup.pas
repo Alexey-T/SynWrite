@@ -2444,9 +2444,9 @@ begin
     opNewEnc:= edEnc.ItemIndex;
     opNewLineEnds:= edLE.ItemIndex;
     if edLex.ItemIndex=0 then
-      opNewLex:= ''
+      opNewLexer:= ''
     else
-      opNewLex:= edLex.Text;
+      opNewLexer:= edLex.Text;
     opBigSize:= edBigSize.Value;
   end;
 end;
@@ -2460,10 +2460,10 @@ begin
     DoEnumLexers(edLex.Items);
 
     with edLex do
-      if opNewLex='' then
+      if opNewLexer='' then
         ItemIndex:= 0
       else
-        ItemIndex:= Items.IndexOf(opNewLex);
+        ItemIndex:= Items.IndexOf(opNewLexer);
     edEnc.ItemIndex:= opNewEnc;
     edLE.ItemIndex:= opNewLineEnds;
 

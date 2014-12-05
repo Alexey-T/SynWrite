@@ -3142,7 +3142,7 @@ type
     opHistSessionDef: boolean;
     opNewEnc,
     opNewLineEnds: integer;
-    opNewLex: string;
+    opNewLexer: string;
     opMruCheck: boolean; //check MRU on start
     opTabsReplace: boolean; //replace tabs->spaces on reading
     opTemplateTabbing: boolean; //use Tab key for code templates
@@ -3569,52 +3569,47 @@ end;
 
 
 const
-  cLexerHtmlList = 'HTML documents,HTML with scripts,PHP_dev_HTML,Razor';
-  cLexerPhpList = 'PHP,PHP (dev)';
   cLexerCss = 'Style sheets';
   cLexerCssList = 'LESS,SASS,SCSS,Sass,Stylus';
   cLexerXML = 'XML';
   cLexerJS = 'JavaScript';
   cLexerNfo = 'NFO files';
   cLexerMake = 'Make files';
-  cLexerProp = 'Properties';
+  cLexerProperties = 'Properties';
   cLexerIni = 'Ini files';
-  opPascal = 'Pascal,Pascal Ext,Pascal Script,PAX Pascal,BSScript';
+  cLexerText = 'Text files';
+  cLexerPascal = 'Pascal,Pascal Ext,Pascal Script,PAX Pascal,BSScript';
 
 function IsLexerListed(const Lexer, List: string): boolean;
 begin
-  Result:= IsStringListed(
-    LowerCase(Lexer),
-    LowerCase(List));
+  Result:= IsStringListed(LowerCase(Lexer), LowerCase(List));
 end;
 
 function IsLexerHTML(const s: string): boolean;
 begin
-  //this will count all lexers with "HTML" substring, also
-  //custom user lexers with word "HTML".
   Result:= Pos('HTML', s)>0;
+end;
+
+function IsLexerPHP(const s: string): boolean;
+begin
+  Result:= Pos('PHP', s)>0;
 end;
 
 function IsLexerCSS(const s: string; CanBeLess: boolean = true): boolean;
 begin
   Result:=
-    (s=cLexerCss) or
+    (s = cLexerCss) or
     (CanBeLess and IsLexerListed(s, cLexerCssList));
-end;
-
-function IsLexerPHP(const s: string): boolean;
-begin
-  Result:= IsLexerListed(s, cLexerPhpList);
 end;
 
 function IsLexerJS(const s: string): boolean;
 begin
-  Result:= (s=cLexerJS);
+  Result:= (s = cLexerJS);
 end;
 
 function IsLexerXML(const s: string): boolean;
 begin
-  Result:= (s=cLexerXML);
+  Result:= (s = cLexerXML);
 end;
 
 function IsLexerWithTags(const s: string): boolean;
@@ -3629,22 +3624,22 @@ end;
 
 function IsLexerNFO(const s: string): boolean;
 begin
-  Result:= (s=cLexerNfo);
+  Result:= (s = cLexerNfo);
 end;
 
 function IsLexerMake(const s: string): boolean;
 begin
-  Result:= (s=cLexerMake);
+  Result:= (s = cLexerMake);
 end;
 
 function IsLexerPas(const s: string): boolean;
 begin
-  Result:= IsLexerListed(s, opPascal);
+  Result:= IsLexerListed(s, cLexerPascal);
 end;
 
 function IsLexerProp(const s: string): boolean;
 begin
-  Result:= (s = cLexerProp);
+  Result:= (s = cLexerProperties);
 end;
 
 function IsLexerIni(const s: string): boolean;
@@ -4267,7 +4262,7 @@ begin
   if Assigned(fmProj) and (fmProj.FOpts.DefLexer<>'') then
     Str:= fmProj.FOpts.DefLexer
   else
-    Str:= opNewLex;
+    Str:= opNewLexer;
 
   if Str='' then
     F.EditorMaster.TextSource.SyntaxAnalyzer:= nil
@@ -4749,7 +4744,7 @@ begin
 
     opNewEnc:= ReadInteger('Setup', 'NEnc', 0);
     opNewLineEnds:= ReadInteger('Setup', 'NLe', 0);
-    opNewLex:= ReadString('Setup', 'NLex', '');
+    opNewLexer:= ReadString('Setup', 'NLex', cLexerText);
 
     opAutoCloseTags:= ReadBool('Setup', 'ACloseTag', false);
     opAutoCloseBrackets:= ReadBool('Setup', 'ACloseBr', false);
@@ -5189,7 +5184,7 @@ begin
 
     WriteInteger('Setup', 'NEnc', opNewEnc);
     WriteInteger('Setup', 'NLe', opNewLineEnds);
-    WriteString('Setup', 'NLex', opNewLex);
+    WriteString('Setup', 'NLex', opNewLexer);
 
     WriteBool('Setup', 'ACloseTag', opAutoCloseTags);
     WriteBool('Setup', 'ACloseBr', opAutoCloseBrackets);
