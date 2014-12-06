@@ -28,28 +28,32 @@ object fmSnippetEditor: TfmSnippetEditor
       Top = 12
       Width = 41
       Height = 13
-      Caption = 'Caption:'
+      Caption = '&Caption:'
+      FocusControl = edName
     end
     object labId: TTntLabel
       Left = 8
       Top = 52
       Width = 188
       Height = 13
-      Caption = 'Alias for Tab key (optional, no spaces):'
+      Caption = '&Alias for Tab key (optional, no spaces):'
+      FocusControl = edId
     end
     object labText: TTntLabel
       Left = 8
       Top = 132
       Width = 26
       Height = 13
-      Caption = 'Text:'
+      Caption = '&Text:'
+      FocusControl = memoText
     end
     object labLex: TTntLabel
       Left = 8
       Top = 92
       Width = 178
       Height = 13
-      Caption = 'Lexers (optional, comma-separated):'
+      Caption = '&Lexers (optional, comma-separated):'
+      FocusControl = edLex
     end
     object edName: TTntEdit
       Left = 8
@@ -70,6 +74,10 @@ object fmSnippetEditor: TfmSnippetEditor
       Top = 148
       Width = 609
       Height = 293
+      NonPrintedSpaces = True
+      NonPrintedEol = True
+      NonPrintedEolDetails = False
+      SelectModeDefault = msNone
       TabList.AsString = '4'
       NonPrinted.Visible = True
       NonPrinted.Font.Charset = DEFAULT_CHARSET
@@ -105,6 +113,7 @@ object fmSnippetEditor: TfmSnippetEditor
       HintProps.Color = 13041663
       HintProps.ShowHints = [shScroll, shCollapsed, shGutter, shTokens]
       UserRanges = <>
+      UndoLimit = 0
       TabMode = tmTabChar
       StaplePen.Color = clGray
       DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
