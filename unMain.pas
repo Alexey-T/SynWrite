@@ -527,8 +527,8 @@ type
     TBXItemCtxUndo: TSpTbxItem;
     Menu: TSpTbxDock;
     tbMenu: TSpTbxToolbar;
-    TBXSubmenuItemEd: TSpTbxSubmenuItem;
-    TBXSubmenuItemFile: TSpTbxSubmenuItem;
+    TBXSubmenuEdit: TSpTBXSubmenuItem;
+    TBXSubmenuFile: TSpTBXSubmenuItem;
     TBXItemFOpen: TSpTbxItem;
     acNewWindow: TAction;
     TBXItemFExit: TSpTbxItem;
@@ -548,7 +548,7 @@ type
     TBXItemFExpHtml: TSpTbxItem;
     PanelBg: TPanel;
     TemplateEditor: TSyntaxMemo;
-    TBXSubmenuItemBk: TSpTbxSubmenuItem;
+    TBXSubmenuBookmarks: TSpTBXSubmenuItem;
     TBXSubmenuItemBkGoto: TSpTbxSubmenuItem;
     TBXItemB0: TSpTbxItem;
     TBXItemB1: TSpTbxItem;
@@ -580,13 +580,13 @@ type
     TBXItemG7: TSpTbxItem;
     TBXItemG8: TSpTbxItem;
     TBXItemG9: TSpTbxItem;
-    TBXSubmenuItemHelp: TSpTbxSubmenuItem;
+    TBXSubmenuHelp: TSpTBXSubmenuItem;
     TBXItemHelpAbout: TSpTBXItem;
-    TBXSubmenuItemOpt: TSpTbxSubmenuItem;
+    TBXSubmenuOptions: TSpTBXSubmenuItem;
     TBXItemOSetup: TSpTbxItem;
     TBXItemOLexer: TSpTbxItem;
     TBXItemOLexerLib: TSpTbxItem;
-    TBXSubmenuItemSr: TSpTbxSubmenuItem;
+    TBXSubmenuSearch: TSpTBXSubmenuItem;
     TBXItemSGoto: TSpTbxItem;
     TBXSeparatorItem21: TSpTbxSeparatorItem;
     TBXItemSNext: TSpTbxItem;
@@ -616,7 +616,7 @@ type
     TBXItemSMarkPrev: TSpTbxItem;
     TBXItemSMarkNext: TSpTbxItem;
     TBXItemETable: TSpTbxItem;
-    TBXSubmenuItemLexer: TSpTbxSubmenuItem;
+    TBXSubmenuLexers: TSpTBXSubmenuItem;
     TBXItemEDup: TSpTbxItem;
     DKLanguageController1: TDKLanguageController;
     TBXItemOTools: TSpTbxItem;
@@ -630,7 +630,7 @@ type
     tbQs: TSpTbxToolbar;
     TBXItemFFNext: TSpTbxItem;
     TBXItemFFPrev: TSpTbxItem;
-    TBXSubmenuItemToolbars: TSpTbxSubmenuItem;
+    TBXSubmenuViewToolbars: TSpTBXSubmenuItem;
     TBXItemTQs: TSpTbxItem;
     TBXItemTView: TSpTbxItem;
     TBXItemTEdit: TSpTbxItem;
@@ -663,20 +663,11 @@ type
     TBXSubmenuItemFRecents: TSpTbxSubmenuItem;
     TBXSeparatorItem30: TSpTbxSeparatorItem;
     TBXItemFClearRecents: TSpTBXItem;
-    TbxSubmenuItemWindow: TSpTBXSubmenuItem;
+    TbxSubmenuWindow: TSpTBXSubmenuItem;
     TBXItemETime: TSpTbxItem;
-    TBXSubmenuItemRun: TSpTbxSubmenuItem;
-    TBXItemTool1: TSpTBXItem;
-    TBXItemTool2: TSpTBXItem;
-    TBXItemTool3: TSpTBXItem;
-    TBXItemTool4: TSpTBXItem;
-    TBXSeparatorItem31: TSpTbxSeparatorItem;
+    TBXSubmenuTools: TSpTBXSubmenuItem;
     TBXItemRunOpenDir: TSpTbxItem;
-    TBXItemTool5: TSpTBXItem;
-    TBXItemTool6: TSpTBXItem;
-    TBXItemTool7: TSpTBXItem;
-    TBXItemTool8: TSpTBXItem;
-    TBXSubmenuItemEnc: TSpTbxSubmenuItem;
+    TBXSubmenuEncodings: TSpTBXSubmenuItem;
     TBXSubmenuLineEnds: TSpTbxSubmenuItem;
     TBXItemEndMWin: TSpTbxItem;
     TBXItemEndMUn: TSpTbxItem;
@@ -693,7 +684,7 @@ type
     ecReplaceInFiles: TAction;
     TBXItemSRepInFiles: TSpTBXItem;
     TimerSel: TTimer;
-    TBXSubmenuItemCtxMore: TSpTbxSubmenuItem;
+    TBXSubmenuCtxMore: TSpTBXSubmenuItem;
     TBXItemCtxCopyUrl: TSpTbxItem;
     TBXItemCtxCopyAppend: TSpTbxItem;
     TBXItemCtxCutAppend: TSpTbxItem;
@@ -703,10 +694,6 @@ type
     TBXSeparatorItem35: TSpTbxSeparatorItem;
     TBXItemECutApp: TSpTbxItem;
     TBXItemECopyApp: TSpTbxItem;
-    TBXItemTool9: TSpTBXItem;
-    TBXItemTool10: TSpTBXItem;
-    TBXItemTool11: TSpTBXItem;
-    TBXItemTool12: TSpTBXItem;
     TBXItemSGoBracket: TSpTbxItem;
     plOut: TSpTbxDockablePanel;
     ListOut: TTntListBox;
@@ -772,7 +759,7 @@ type
     ecSyncScrollH: TAction;
     ecSyncScrollV: TAction;
     TBXItemOShell: TSpTbxItem;
-    TBXSubmenuItemView: TSpTbxSubmenuItem;
+    TBXSubmenuView: TSpTBXSubmenuItem;
     TBXItemOOnTop: TSpTbxItem;
     ecOnTop: TAction;
     TBXItemEFillBlock: TSpTbxItem;
@@ -834,7 +821,7 @@ type
     TBXItemEJoin: TSpTbxItem;
     TBXItemESplit: TSpTbxItem;
     TBXSeparatorItem50: TSpTbxSeparatorItem;
-    TBXSubmenuItemMacros: TSpTbxSubmenuItem;
+    TBXSubmenuMacros: TSpTBXSubmenuItem;
     TBXItemMacroPlay: TSpTbxItem;
     TBXItemMacroStop: TSpTbxItem;
     TBXItemMacroRecord: TSpTbxItem;
@@ -897,7 +884,7 @@ type
     TBXSeparatorItem54: TSpTbxSeparatorItem;
     TBXItemECutLine: TSpTbxItem;
     TBXItemECopyLine: TSpTbxItem;
-    TBXSubmenuItemTidy: TSpTbxSubmenuItem;
+    TBXSubmenuTidy: TSpTBXSubmenuItem;
     TBXItemTidyCfg: TSpTbxItem;
     TBXItemTidyVal: TSpTbxItem;
     TBXSeparatorItem55: TSpTbxSeparatorItem;
@@ -1075,7 +1062,7 @@ type
     TBXItemFavManage: TSpTbxItem;
     acFavAddFile: TAction;
     acFavManage: TAction;
-    TbxSubmenuItemRecentColors: TSpTbxSubmenuItem;
+    TbxSubmenuColors: TSpTBXSubmenuItem;
     ImageListColorRecent: TImageList;
     TBXItemCtxAddColor: TSpTbxItem;
     TBXItemFavAddProj: TSpTbxItem;
@@ -1124,7 +1111,7 @@ type
     TBXItemPLogFind: TSpTbxItem;
     TBXItemCtxPasteNoCurChange: TSpTbxItem;
     TBXSeparatorItem80: TSpTbxSeparatorItem;
-    TBXSubmenuItemEmmet: TSpTBXSubmenuItem;
+    TBXSubmenuEmmet: TSpTBXSubmenuItem;
     TBXItemHtmlEmmetWrap: TSpTBXItem;
     TBXItemHtmlEmmetExpand: TSpTBXItem;
     PluginACP: TAutoCompletePopup;
@@ -1134,7 +1121,7 @@ type
     ListTabs: TTntListView;
     ecToggleFocusTabs: TAction;
     TbxItemWinTabs: TSpTbxItem;
-    TBXSubmenuItemPlugins: TSpTbxSubmenuItem;
+    TBXSubmenuPlugins: TSpTBXSubmenuItem;
     TBXSeparatorItem84: TSpTbxSeparatorItem;
     TBXItemOEditSynPluginsIni: TSpTbxItem;
     TBXItemPLogSaveAs: TSpTbxItem;
@@ -1227,7 +1214,7 @@ type
     ecNonPrintSpaces: TAction;
     ecNonPrintEol: TAction;
     ecNonPrintBoth: TAction;
-    TBXSubmenuItemNonPrint: TSpTbxSubmenuItem;
+    TBXSubmenuNonPrint: TSpTBXSubmenuItem;
     TBXSeparatorItem98: TSpTbxSeparatorItem;
     TBXItemONPrintAll: TSpTbxItem;
     TBXItemONPrintEol: TSpTbxItem;
@@ -1290,7 +1277,7 @@ type
     TBXSubmenuBkOps: TSpTBXSubmenuItem;
     TBXSubmenuBkPortable: TSpTBXSubmenuItem;
     SpTBXSeparatorItem16: TSpTBXSeparatorItem;
-    TBXSubmenuItemHTML: TSpTBXSubmenuItem;
+    TBXSubmenuHTML: TSpTBXSubmenuItem;
     SpTBXSeparatorItem19: TSpTBXSeparatorItem;
     PopupFoldLevel: TSpTBXPopupMenu;
     SpTBXSeparatorItem23: TSpTBXSeparatorItem;
@@ -1319,8 +1306,8 @@ type
     TBXItemHtmlEmmetHelp: TSpTBXItem;
     SpTBXSeparatorItem17: TSpTBXSeparatorItem;
     TimerMinimap: TTimer;
-    TBXSubmenuItemConv: TSpTBXSubmenuItem;
-    TBXSubmenuItemHtmlEncode: TSpTBXSubmenuItem;
+    TBXSubmenuConv: TSpTBXSubmenuItem;
+    TBXSubmenuHtmlEncode: TSpTBXSubmenuItem;
     TBXItemEncodeHtmlNoBrackets: TSpTBXItem;
     TBXItemEncodeHtmlAll: TSpTBXItem;
     ecEncodeHtmlChars2: TAction;
@@ -1338,10 +1325,6 @@ type
     SpTBXSeparatorItem21: TSpTBXSeparatorItem;
     TBXItemProjGoto: TSpTBXItem;
     TBXItemProjNew: TSpTBXItem;
-    TBXItemTool16: TSpTBXItem;
-    TBXItemTool15: TSpTBXItem;
-    TBXItemTool14: TSpTBXItem;
-    TBXItemTool13: TSpTBXItem;
     TbxItemCtxTool16: TSpTBXItem;
     TbxItemCtxTool15: TSpTBXItem;
     TbxItemCtxTool14: TSpTBXItem;
@@ -1379,8 +1362,8 @@ type
     TbxItemWinSplitH: TSpTBXItem;
     TbxItemWinProjPre: TSpTBXItem;
     ecToggleProjPreview: TAction;
-    TbxSubmenuItemCtxPlugins: TSpTBXSubmenuItem;
-    TbxSubmenuItemProjTools: TSpTBXSubmenuItem;
+    TbxSubmenuCtxPlugins: TSpTBXSubmenuItem;
+    TbxSubmenuProjTools: TSpTBXSubmenuItem;
     PopupPreviewEditor: TSpTBXPopupMenu;
     TbxItemPreSelect: TSpTBXItem;
     TbxItemPreCopy: TSpTBXItem;
@@ -1392,7 +1375,7 @@ type
     TbxItemPreZoom25: TSpTBXItem;
     TbxItemPreEdit: TSpTBXItem;
     SpTBXSeparatorItem31: TSpTBXSeparatorItem;
-    TBXSubmenuItemGroups: TSpTBXSubmenuItem;
+    TBXSubmenuGroups: TSpTBXSubmenuItem;
     TbxItemGroup2H: TSpTBXItem;
     TbxItemGroup2V: TSpTBXItem;
     TbxItemGroupOne: TSpTBXItem;
@@ -1447,6 +1430,23 @@ type
     TbxItemAddonsEdit: TSpTBXItem;
     TbxItemAddonsRemove: TSpTBXItem;
     TbxItemAddonsInstall: TSpTBXItem;
+    TBXSubmenuExtTools: TSpTBXSubmenuItem;
+    TbxItemTool16: TSpTBXItem;
+    TbxItemTool15: TSpTBXItem;
+    TbxItemTool14: TSpTBXItem;
+    TbxItemTool13: TSpTBXItem;
+    TbxItemTool12: TSpTBXItem;
+    TbxItemTool11: TSpTBXItem;
+    TbxItemTool10: TSpTBXItem;
+    TbxItemTool9: TSpTBXItem;
+    TbxItemTool8: TSpTBXItem;
+    TbxItemTool7: TSpTBXItem;
+    TbxItemTool6: TSpTBXItem;
+    TbxItemTool5: TSpTBXItem;
+    TbxItemTool4: TSpTBXItem;
+    TbxItemTool3: TSpTBXItem;
+    TbxItemTool2: TSpTBXItem;
+    TbxItemTool1: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1526,17 +1526,13 @@ type
     procedure TBXItemSMarkNextClick(Sender: TObject);
     procedure TBXItemSMarkPrevClick(Sender: TObject);
     procedure TBXItemETableClick(Sender: TObject);
-    procedure TBXSubmenuItemLexerPopup(Sender: TTBCustomItem;
+    procedure TBXSubmenuLexersPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemEDupClick(Sender: TObject);
     procedure TBXItemOToolsClick(Sender: TObject);
     procedure TimerHintTimer(Sender: TObject);
     procedure ecACPCloseUp(Sender: TObject; var Accept: Boolean);
-    procedure TbxItemTool1Click(Sender: TObject);
-    procedure TbxItemTool2Click(Sender: TObject);
-    procedure TbxItemTool3Click(Sender: TObject);
-    procedure TbxItemTool4Click(Sender: TObject);
-    procedure TBXSubmenuItemRunPopup(Sender: TTBCustomItem;
+    procedure TBXSubmenuToolsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemZ0Click(Sender: TObject);
     procedure TBXItemMarkDropClick(Sender: TObject);
@@ -1568,7 +1564,7 @@ type
     procedure TBXItemFSesSaveAsClick(Sender: TObject);
     procedure TBXItemFSesOpenClick(Sender: TObject);
     procedure TBXItemFClearRecentsClick(Sender: TObject);
-    procedure TbxSubmenuItemWindowPopup(Sender: TTBCustomItem; FromLink: Boolean);
+    procedure TbxSubmenuWindowPopup(Sender: TTBCustomItem; FromLink: Boolean);
     procedure TBXSubmenuEnc2Popup(Sender: TTBCustomItem; FromLink: Boolean);
     procedure TBXItemETimeClick(Sender: TObject);
     procedure TBXItemEPasteClick(Sender: TObject);
@@ -1578,10 +1574,6 @@ type
     procedure TBXItemECopyClick(Sender: TObject);
     procedure TBXItemEUndoClick(Sender: TObject);
     procedure TBXItemRunOpenDirClick(Sender: TObject);
-    procedure TBXItemTool5Click(Sender: TObject);
-    procedure TBXItemTool6Click(Sender: TObject);
-    procedure TBXItemTool7Click(Sender: TObject);
-    procedure TBXItemTool8Click(Sender: TObject);
     procedure TimerLoadTimer(Sender: TObject);
     procedure TBXItemTbCloseClick(Sender: TObject);
     procedure ecReplaceExecute(Sender: TObject);
@@ -1591,12 +1583,8 @@ type
     procedure TimerSelTimer(Sender: TObject);
     procedure TBXItemCtxCopyAppendClick(Sender: TObject);
     procedure TBXItemCtxCutAppendClick(Sender: TObject);
-    procedure TBXSubmenuItemEdPopup(Sender: TTBCustomItem;
+    procedure TBXSubmenuEditPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
-    procedure TBXItemTool9Click(Sender: TObject);
-    procedure TBXItemTool10Click(Sender: TObject);
-    procedure TBXItemTool11Click(Sender: TObject);
-    procedure TBXItemTool12Click(Sender: TObject);
     procedure TBXItemSGoBracketClick(Sender: TObject);
     procedure plOutResize(Sender: TObject);
     procedure ecShowOutExecute(Sender: TObject);
@@ -1652,18 +1640,6 @@ type
     procedure TBXItemEFillBlockClick(Sender: TObject);
     procedure TBXItemEInsTextClick(Sender: TObject);
     procedure TBXItemCtxOpenSelClick(Sender: TObject);
-    procedure TBXItemCtxTool1Click(Sender: TObject);
-    procedure TBXItemCtxTool2Click(Sender: TObject);
-    procedure TBXItemCtxTool3Click(Sender: TObject);
-    procedure TBXItemCtxTool4Click(Sender: TObject);
-    procedure TBXItemCtxTool5Click(Sender: TObject);
-    procedure TBXItemCtxTool6Click(Sender: TObject);
-    procedure TBXItemCtxTool7Click(Sender: TObject);
-    procedure TBXItemCtxTool8Click(Sender: TObject);
-    procedure TBXItemCtxTool9Click(Sender: TObject);
-    procedure TBXItemCtxTool10Click(Sender: TObject);
-    procedure TBXItemCtxTool11Click(Sender: TObject);
-    procedure TBXItemCtxTool12Click(Sender: TObject);
     procedure TBXItemORestoreStylesClick(Sender: TObject);
     procedure TBXItemCtxCustomizeClick(Sender: TObject);
     procedure TreeKeyDown(Sender: TObject; var Key: Word;
@@ -1708,7 +1684,7 @@ type
     procedure TBXItemMacro7Click(Sender: TObject);
     procedure TBXItemMacro8Click(Sender: TObject);
     procedure TBXItemMacro9Click(Sender: TObject);
-    procedure TBXSubmenuItemMacrosPopup(Sender: TTBCustomItem;
+    procedure TBXSubmenuMacrosPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure ecBkClearAllExecute(Sender: TObject);
     procedure ecBkToggleExecute(Sender: TObject);
@@ -1722,7 +1698,7 @@ type
     procedure ecBkPasteExecute(Sender: TObject);
     procedure ecGotoExecute(Sender: TObject);
     procedure ecToggleFocusGroupsExecute(Sender: TObject);
-    procedure TBXSubmenuItemTidyPopup(Sender: TTBCustomItem;
+    procedure TBXSubmenuTidyPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemTidyCfgClick(Sender: TObject);
     procedure TBXItemTidyValClick(Sender: TObject);
@@ -1880,7 +1856,7 @@ type
     procedure TBXItemFavManageClick(Sender: TObject);
     procedure acFavManageExecute(Sender: TObject);
     procedure TBXItemCtxAddColorClick(Sender: TObject);
-    procedure TbxSubmenuItemRecentColorsPopup(Sender: TTBCustomItem;
+    procedure TbxSubmenuColorsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemFavAddProjClick(Sender: TObject);
     procedure acFavAddFileExecute(Sender: TObject);
@@ -1956,7 +1932,7 @@ type
     procedure ecSpToTabLeadingExecute(Sender: TObject);
     procedure ecToggleLineCommentAltExecute(Sender: TObject);
     procedure TBXItemEToggleLineCommentAltClick(Sender: TObject);
-    procedure TBXSubmenuItemCtxMorePopup(Sender: TTBCustomItem;
+    procedure TBXSubmenuCtxMorePopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemFoldRangesInSelClick(Sender: TObject);
     procedure TBXItemUnfoldRangesInSelClick(Sender: TObject);
@@ -2105,10 +2081,10 @@ type
     procedure acSetupLexerLibExecute(Sender: TObject);
     procedure TbxItemTabReloadClick(Sender: TObject);
     procedure TBXItemHtmlPreviewClick(Sender: TObject);
-    procedure TBXSubmenuItemToolbarsPopup(Sender: TTBCustomItem;
+    procedure TBXSubmenuViewToolbarsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TimerMinimapTimer(Sender: TObject);
-    procedure TBXSubmenuItemConvPopup(Sender: TTBCustomItem;
+    procedure TBXSubmenuConvPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemEncodeHtmlAllClick(Sender: TObject);
     procedure TBXItemEncodeHtmlNoBracketsClick(Sender: TObject);
@@ -2125,14 +2101,6 @@ type
     procedure TBXItemProjGotoClick(Sender: TObject);
     procedure TBXItemProjNewClick(Sender: TObject);
     procedure PluginACPShow(Sender: TObject);
-    procedure TBXItemTool13Click(Sender: TObject);
-    procedure TBXItemTool14Click(Sender: TObject);
-    procedure TBXItemTool15Click(Sender: TObject);
-    procedure TBXItemTool16Click(Sender: TObject);
-    procedure TbxItemCtxTool13Click(Sender: TObject);
-    procedure TbxItemCtxTool14Click(Sender: TObject);
-    procedure TbxItemCtxTool15Click(Sender: TObject);
-    procedure TbxItemCtxTool16Click(Sender: TObject);
     procedure plTreeDockChanged(Sender: TObject);
     procedure TBXItemProjAddAllFilesClick(Sender: TObject);
     procedure TbxItemProjSaveClick(Sender: TObject);
@@ -2164,7 +2132,7 @@ type
     procedure TbxItemWinSplitVClick(Sender: TObject);
     procedure ecToggleProjPreviewExecute(Sender: TObject);
     procedure acExportHTMLBeforeExecute(Sender: TObject);
-    procedure TBXSubmenuItemBkPopup(Sender: TTBCustomItem;
+    procedure TBXSubmenuBookmarksPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TbxItemPreCopyClick(Sender: TObject);
     procedure TbxItemPreSelectClick(Sender: TObject);
@@ -2185,7 +2153,7 @@ type
     procedure TbxItemGroup4VClick(Sender: TObject);
     procedure TbxItemGroup4GridClick(Sender: TObject);
     procedure TbxItemGroup6GridClick(Sender: TObject);
-    procedure TBXSubmenuItemGroupsPopup(Sender: TTBCustomItem;
+    procedure TBXSubmenuGroupsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TbxItemToGroup1Click(Sender: TObject);
     procedure TBXSubmenuItemToGroupPopup(Sender: TTBCustomItem;
@@ -2571,8 +2539,9 @@ type
     function SStatusHint(state: TSynSelState): Widestring;
 
     procedure DoTool_Run(const ATool: TSynTool);
+    procedure DoTool_OnClick(Sender: TObject);
     procedure DoTool_HandleOutput(const ft: Widestring; const ATool: TSynTool);
-    procedure DoTool_Enable(T: TSpTbxItem; Id: integer; ACtxMenu: boolean = false);
+    procedure DoTool_Update(T: TSpTbxItem; Id: integer; ACtxMenu: boolean);
     procedure DoTool_ReplaceMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
 
     procedure TreeFind_ShowPreview;
@@ -3433,7 +3402,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1865';
+  cSynVer = '6.14.1870';
   cSynPyVer = '1.0.145';
 
 const
@@ -8215,7 +8184,7 @@ begin
 
   //update status hint
   en:= SyntaxManager.AnalyzerCount>0;
-  TbxSubmenuItemLexer.Enabled:= en;
+  TbxSubmenuLexers.Enabled:= en;
   StatusItemLexer.Enabled:= en;
 
   if not en then
@@ -10291,11 +10260,11 @@ begin
   CurrentEditor.ExecCommand(smSelCharacter);
 end;
 
-procedure TfmMain.TBXSubmenuItemLexerPopup(Sender: TTBCustomItem;
+procedure TfmMain.TBXSubmenuLexersPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
   UpdateLexList;
-  TbxSubmenuItemLexer.LinkSubitems:= PopupLexers.Items;
+  TbxSubmenuLexers.LinkSubitems:= PopupLexers.Items;
 end;
 
 procedure TfmMain.TBXItemEDupClick(Sender: TObject);
@@ -10329,7 +10298,7 @@ begin
   UpdateTools;
 end;
 
-procedure TfmMain.DoTool_Enable(T: TSpTbxItem; Id: integer; ACtxMenu: boolean = false);
+procedure TfmMain.DoTool_Update(T: TSpTbxItem; Id: integer; ACtxMenu: boolean);
 var
   Frame: TEditorFrame;
   An: TSyntAnalyzer;
@@ -10341,6 +10310,7 @@ begin
   with opTools[Id] do
    if not ACtxMenu or ToolContextItem then
    begin
+     T.Tag:= Id;
      T.Caption:= ToolCaption;
      T.Enabled:= (ToolCaption<>'') and (ToolCommand<>'') and
        ((ToolLexer='') or ((An<>nil) and (An.LexerName=ToolLexer)));
@@ -10350,6 +10320,7 @@ begin
        T.ShortCut:= 0;
      T.Visible:= T.Enabled;
      T.Hint:= ToolCommand;
+     T.OnClick:= DoTool_OnClick;
      T.OnSelect:= ButtonOnSelect;
    end
    else
@@ -10361,39 +10332,39 @@ end;
 
 procedure TfmMain.UpdateTools;
 begin
-  DoTool_Enable(TbxItemTool1, 1);
-  DoTool_Enable(TbxItemTool2, 2);
-  DoTool_Enable(TbxItemTool3, 3);
-  DoTool_Enable(TbxItemTool4, 4);
-  DoTool_Enable(TbxItemTool5, 5);
-  DoTool_Enable(TbxItemTool6, 6);
-  DoTool_Enable(TbxItemTool7, 7);
-  DoTool_Enable(TbxItemTool8, 8);
-  DoTool_Enable(TbxItemTool9, 9);
-  DoTool_Enable(TbxItemTool10, 10);
-  DoTool_Enable(TbxItemTool11, 11);
-  DoTool_Enable(TbxItemTool12, 12);
-  DoTool_Enable(TbxItemTool13, 13);
-  DoTool_Enable(TbxItemTool14, 14);
-  DoTool_Enable(TbxItemTool15, 15);
-  DoTool_Enable(TbxItemTool16, 16);
+  DoTool_Update(TbxItemTool1, 1, false);
+  DoTool_Update(TbxItemTool2, 2, false);
+  DoTool_Update(TbxItemTool3, 3, false);
+  DoTool_Update(TbxItemTool4, 4, false);
+  DoTool_Update(TbxItemTool5, 5, false);
+  DoTool_Update(TbxItemTool6, 6, false);
+  DoTool_Update(TbxItemTool7, 7, false);
+  DoTool_Update(TbxItemTool8, 8, false);
+  DoTool_Update(TbxItemTool9, 9, false);
+  DoTool_Update(TbxItemTool10, 10, false);
+  DoTool_Update(TbxItemTool11, 11, false);
+  DoTool_Update(TbxItemTool12, 12, false);
+  DoTool_Update(TbxItemTool13, 13, false);
+  DoTool_Update(TbxItemTool14, 14, false);
+  DoTool_Update(TbxItemTool15, 15, false);
+  DoTool_Update(TbxItemTool16, 16, false);
 
-  DoTool_Enable(TbxItemCtxTool1, 1, true);
-  DoTool_Enable(TbxItemCtxTool2, 2, true);
-  DoTool_Enable(TbxItemCtxTool3, 3, true);
-  DoTool_Enable(TbxItemCtxTool4, 4, true);
-  DoTool_Enable(TbxItemCtxTool5, 5, true);
-  DoTool_Enable(TbxItemCtxTool6, 6, true);
-  DoTool_Enable(TbxItemCtxTool7, 7, true);
-  DoTool_Enable(TbxItemCtxTool8, 8, true);
-  DoTool_Enable(TbxItemCtxTool9, 9, true);
-  DoTool_Enable(TbxItemCtxTool10, 10, true);
-  DoTool_Enable(TbxItemCtxTool11, 11, true);
-  DoTool_Enable(TbxItemCtxTool12, 12, true);
-  DoTool_Enable(TbxItemCtxTool13, 13, true);
-  DoTool_Enable(TbxItemCtxTool14, 14, true);
-  DoTool_Enable(TbxItemCtxTool15, 15, true);
-  DoTool_Enable(TbxItemCtxTool16, 16, true);
+  DoTool_Update(TbxItemCtxTool1, 1, true);
+  DoTool_Update(TbxItemCtxTool2, 2, true);
+  DoTool_Update(TbxItemCtxTool3, 3, true);
+  DoTool_Update(TbxItemCtxTool4, 4, true);
+  DoTool_Update(TbxItemCtxTool5, 5, true);
+  DoTool_Update(TbxItemCtxTool6, 6, true);
+  DoTool_Update(TbxItemCtxTool7, 7, true);
+  DoTool_Update(TbxItemCtxTool8, 8, true);
+  DoTool_Update(TbxItemCtxTool9, 9, true);
+  DoTool_Update(TbxItemCtxTool10, 10, true);
+  DoTool_Update(TbxItemCtxTool11, 11, true);
+  DoTool_Update(TbxItemCtxTool12, 12, true);
+  DoTool_Update(TbxItemCtxTool13, 13, true);
+  DoTool_Update(TbxItemCtxTool14, 14, true);
+  DoTool_Update(TbxItemCtxTool15, 15, true);
+  DoTool_Update(TbxItemCtxTool16, 16, true);
 end;
 
 procedure TfmMain.SaveTools;
@@ -10775,87 +10746,16 @@ begin
   end;
 end;
 
-procedure TfmMain.TbxItemTool1Click(Sender: TObject);
+procedure TfmMain.DoTool_OnClick(Sender: TObject);
+var
+  N: Integer;
 begin
-  DoTool_Run(opTools[1]);
+  N:= (Sender as TComponent).Tag;
+  if (N>=Low(opTools)) and (N<=High(opTools)) then
+    DoTool_Run(opTools[N]);
 end;
 
-procedure TfmMain.TbxItemTool2Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[2]);
-end;
-
-procedure TfmMain.TbxItemTool3Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[3]);
-end;
-
-procedure TfmMain.TbxItemTool4Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[4]);
-end;
-
-procedure TfmMain.TBXItemTool5Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[5]);
-end;
-
-procedure TfmMain.TBXItemTool6Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[6]);
-end;
-
-procedure TfmMain.TBXItemTool7Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[7]);
-end;
-
-procedure TfmMain.TBXItemTool8Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[8]);
-end;
-
-procedure TfmMain.TBXItemTool9Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[9]);
-end;
-
-procedure TfmMain.TBXItemTool10Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[10]);
-end;
-
-procedure TfmMain.TBXItemTool11Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[11]);
-end;
-
-procedure TfmMain.TBXItemTool12Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[12]);
-end;
-
-procedure TfmMain.TBXItemTool13Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[13]);
-end;
-
-procedure TfmMain.TBXItemTool14Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[14]);
-end;
-
-procedure TfmMain.TBXItemTool15Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[15]);
-end;
-
-procedure TfmMain.TBXItemTool16Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[16]);
-end;
-
-procedure TfmMain.TBXSubmenuItemRunPopup(Sender: TTBCustomItem; FromLink: Boolean);
+procedure TfmMain.TBXSubmenuToolsPopup(Sender: TTBCustomItem; FromLink: Boolean);
 begin
   TBXItemRunOpenDir.Enabled:= CurrentFrame.Filename <> '';
   TBXItemRunOpenFile.Enabled:= TBXItemRunOpenDir.Enabled;
@@ -11566,7 +11466,7 @@ begin
 end;
 
 
-procedure TfmMain.TbxSubmenuItemWindowPopup(Sender: TTBCustomItem; FromLink: Boolean);
+procedure TfmMain.TbxSubmenuWindowPopup(Sender: TTBCustomItem; FromLink: Boolean);
   //
   function _Sh(i: Integer): string;
   begin
@@ -11602,7 +11502,7 @@ begin
   end;
 
   //clear previous items (with Tag>0)
-  with TbxSubmenuItemWindow do
+  with TbxSubmenuWindow do
     for i:= Count-1 downto 0 do
       if Items[i].Tag>0 then
         Items[i].Free;
@@ -11619,12 +11519,12 @@ begin
     mi.Tag:= i+1;
     mi.OnClick:= WindowItemClick;
     mi.OnSelect:= ButtonOnSelect;
-    TbxSubmenuItemWindow.Add(mi);
+    TbxSubmenuWindow.Add(mi);
   end;
 
   //move lower Window items to end
   for i:= 1 to cFixedWindowItems do
-    with TbxSubmenuItemWindow do
+    with TbxSubmenuWindow do
       Move(0, Count-1);
 end;
 
@@ -12716,7 +12616,7 @@ begin
   CurrentEditor.ExecCommand(sm_CutAppend);
 end;
 
-procedure TfmMain.TBXSubmenuItemEdPopup(Sender: TTBCustomItem;
+procedure TfmMain.TBXSubmenuEditPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
   en, ro: boolean;
@@ -13894,7 +13794,7 @@ begin
       //
       Show;
       //
-      Self.TbxSubmenuItemProjTools.LinkSubitems:= TBXItemProjProp;
+      Self.TbxSubmenuProjTools.LinkSubitems:= TBXItemProjProp;
     end;
   end;
 end;
@@ -14935,86 +14835,6 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXItemCtxTool1Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[1]);
-end;
-
-procedure TfmMain.TBXItemCtxTool2Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[2]);
-end;
-
-procedure TfmMain.TBXItemCtxTool3Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[3]);
-end;
-
-procedure TfmMain.TBXItemCtxTool4Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[4]);
-end;
-
-procedure TfmMain.TBXItemCtxTool5Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[5]);
-end;
-
-procedure TfmMain.TBXItemCtxTool6Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[6]);
-end;
-
-procedure TfmMain.TBXItemCtxTool7Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[7]);
-end;
-
-procedure TfmMain.TBXItemCtxTool8Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[8]);
-end;
-
-procedure TfmMain.TBXItemCtxTool9Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[9]);
-end;
-
-procedure TfmMain.TBXItemCtxTool10Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[10]);
-end;
-
-procedure TfmMain.TBXItemCtxTool11Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[11]);
-end;
-
-procedure TfmMain.TBXItemCtxTool12Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[12]);
-end;
-
-procedure TfmMain.TbxItemCtxTool13Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[13]);
-end;
-
-procedure TfmMain.TbxItemCtxTool14Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[14]);
-end;
-
-procedure TfmMain.TbxItemCtxTool15Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[15]);
-end;
-
-procedure TfmMain.TbxItemCtxTool16Click(Sender: TObject);
-begin
-  DoTool_Run(opTools[16]);
-end;
-
 procedure TfmMain.Finder_OnProgress(CurPos, MaxPos: integer);
 var
   N: Int64;
@@ -16043,7 +15863,7 @@ end;
       Result:= Result + #9 + GetShortcutTextOfCmd(DoMacro_GetCommandId(n));
   end;
 
-procedure TfmMain.TBXSubmenuItemMacrosPopup(Sender: TTBCustomItem;
+procedure TfmMain.TBXSubmenuMacrosPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
   n: Integer;
@@ -16407,7 +16227,7 @@ begin
   Groups.PagesSetNext(true);
 end;
 
-procedure TfmMain.TBXSubmenuItemTidyPopup(Sender: TTBCustomItem;
+procedure TfmMain.TBXSubmenuTidyPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
   i: Integer;
@@ -16423,7 +16243,7 @@ begin
     FFindToList(LFiles, SynDataSubdir(cSynDataHtmlTidy),
       '*.cfg', '', false{SubDir}, false, false, false);
 
-    with TbxSubmenuItemTidy do
+    with TbxSubmenuTidy do
     begin
       for i:= Count-1 downto 0 do
         if Items[i].Tag=1 then
@@ -19121,17 +18941,17 @@ procedure TfmMain.ApplyShowRecentColors;
 begin
   case opShowRecentColors of
     cRecColorsAutoHide:
-      TbxSubmenuItemRecentColors.Visible:= ImageListColorRecent.Count>1;
+      TbxSubmenuColors.Visible:= ImageListColorRecent.Count>1;
     cRecColorsShow:
-      TbxSubmenuItemRecentColors.Visible:= true;
+      TbxSubmenuColors.Visible:= true;
     cRecColorsHide:
-      TbxSubmenuItemRecentColors.Visible:= false;
+      TbxSubmenuColors.Visible:= false;
   end;
 end;
 
 procedure TfmMain.DoClearRecentColors;
 begin
-  TbxSubmenuItemRecentColors.Clear;
+  TbxSubmenuColors.Clear;
 
   //leave only 1st color ico
   with ImageListColorRecent do
@@ -19163,14 +18983,14 @@ begin
   Item.OnClick:= RecentColorClick;
   Item.Images:= ImageListColorRecent;
   Item.ImageIndex:= Item.Images.Count-1;
-  TbxSubmenuItemRecentColors.Insert(cColorIdxMin, Item);
+  TbxSubmenuColors.Insert(cColorIdxMin, Item);
 end;
 
 procedure TfmMain.DoDeleteRecentColor(N: Integer);
 var
   i: Integer;
 begin
-  with TbxSubmenuItemRecentColors do
+  with TbxSubmenuColors do
     for i:= cColorIdxMin to Count-1 do
       if Items[i].Tag=N then
       begin
@@ -20083,7 +19903,7 @@ var
   i: Integer;
 begin
   Result:= '';
-  with TbxSubmenuItemRecentColors do
+  with TbxSubmenuColors do
     for i:= Count-1 downto cColorIdxMin do
       Result:= Result+ SColorToHtmlCode(Items[i].Tag)+',';
 end;
@@ -20115,7 +19935,7 @@ var
   ItemSep: TSpTbxSeparatorItem;
 begin
   //add menu items and separator
-  with TbxSubmenuItemRecentColors do
+  with TbxSubmenuColors do
     if Count=0 then
     begin
       Item:= TSpTbxItem.Create(Self);
@@ -20151,13 +19971,13 @@ begin
     end;
 end;
 
-procedure TfmMain.TbxSubmenuItemRecentColorsPopup(Sender: TTBCustomItem;
+procedure TfmMain.TbxSubmenuColorsPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
   en: boolean;
 begin
   DoInitRecentColorsMenu;
-  if TbxSubmenuItemRecentColors.Count>0 then
+  if TbxSubmenuColors.Count>0 then
     if FMenuItem_Colors_Clear<>nil then
     begin
       FMenuItem_Colors_Clear.Caption:= SStripFromTab(TBXItemFClearRecents.Caption);
@@ -23635,7 +23455,7 @@ begin
   DoToggleLineComment(true);
 end;
 
-procedure TfmMain.TBXSubmenuItemCtxMorePopup(Sender: TTBCustomItem;
+procedure TfmMain.TBXSubmenuCtxMorePopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
   clip: boolean;
@@ -24794,7 +24614,7 @@ begin
       else
       if SCmd='m:{colors}' then
       begin
-        Item.LinkSubitems:= TbxSubmenuItemRecentColors;
+        Item.LinkSubitems:= TbxSubmenuColors;
       end
       else
       if SCmd='m:{enc-chg}' then
@@ -24819,17 +24639,17 @@ begin
       else
       if SCmd='m:{nonprint}' then
       begin
-        Item.LinkSubitems:= TBXSubmenuItemNonPrint;
+        Item.LinkSubitems:= TBXSubmenuNonPrint;
       end
       else
       if SCmd='m:{tidy}' then
       begin
-        Item.LinkSubitems:= TBXSubmenuItemTidy;
+        Item.LinkSubitems:= TBXSubmenuTidy;
       end
       else
       if SCmd='m:{conv}' then
       begin
-        Item.LinkSubitems:= TBXSubmenuItemConv;
+        Item.LinkSubitems:= TBXSubmenuConv;
       end
       else
       if SCmd='m:{projects}' then
@@ -24839,12 +24659,12 @@ begin
       else
       if SCmd='m:{plugins}' then
       begin
-        Item.LinkSubitems:= TBXSubmenuItemPlugins;
+        Item.LinkSubitems:= TBXSubmenuPlugins;
       end
       else
       if SCmd='m:{projtools}' then
       begin
-        Item.LinkSubitems:= TbxSubmenuItemProjTools;
+        Item.LinkSubitems:= TbxSubmenuProjTools;
       end
       else
       if SCmd='m:{case}' then
@@ -25130,20 +24950,20 @@ procedure TfmMain.InitMenuItemsList;
 begin
   SetLength(FMenuItems, 19);
   //
-  with FMenuItems[0] do begin Id:= 'file'; Item:= TbxSubmenuItemFile; end;
-  with FMenuItems[1] do begin Id:= 'edit'; Item:= TbxSubmenuItemEd; end;
-  with FMenuItems[2] do begin Id:= 'search'; Item:= TbxSubmenuItemSr; end;
-  with FMenuItems[3] do begin Id:= 'encoding'; Item:= TbxSubmenuItemEnc; end;
-  with FMenuItems[4] do begin Id:= 'bookmarks'; Item:= TbxSubmenuItemBk; end;
-  with FMenuItems[5] do begin Id:= 'run'; Item:= TbxSubmenuItemRun; end;
-  with FMenuItems[6] do begin Id:= 'html'; Item:= TbxSubmenuItemHTML; end;
-  with FMenuItems[7] do begin Id:= 'macros'; Item:= TbxSubmenuItemMacros; end;
-  with FMenuItems[8] do begin Id:= 'options'; Item:= TbxSubmenuItemOpt; end;
-  with FMenuItems[9] do begin Id:= 'view'; Item:= TbxSubmenuItemView; end;
-  with FMenuItems[10] do begin Id:= 'window'; Item:= TbxSubmenuItemWindow; end;
-  with FMenuItems[11] do begin Id:= 'help'; Item:= TbxSubmenuItemHelp; end;
+  with FMenuItems[0] do begin Id:= 'file'; Item:= TbxSubmenuFile; end;
+  with FMenuItems[1] do begin Id:= 'edit'; Item:= TbxSubmenuEdit; end;
+  with FMenuItems[2] do begin Id:= 'search'; Item:= TbxSubmenuSearch; end;
+  with FMenuItems[3] do begin Id:= 'encoding'; Item:= TbxSubmenuEncodings; end;
+  with FMenuItems[4] do begin Id:= 'bookmarks'; Item:= TbxSubmenuBookmarks; end;
+  with FMenuItems[5] do begin Id:= 'tools'; Item:= TbxSubmenuTools; end;
+  with FMenuItems[6] do begin Id:= 'html'; Item:= TbxSubmenuHTML; end;
+  with FMenuItems[7] do begin Id:= 'macros'; Item:= TbxSubmenuMacros; end;
+  with FMenuItems[8] do begin Id:= 'options'; Item:= TbxSubmenuOptions; end;
+  with FMenuItems[9] do begin Id:= 'view'; Item:= TbxSubmenuView; end;
+  with FMenuItems[10] do begin Id:= 'window'; Item:= TbxSubmenuWindow; end;
+  with FMenuItems[11] do begin Id:= 'help'; Item:= TbxSubmenuHelp; end;
   //
-  with FMenuItems[12] do begin Id:= 'g'; Item:= TBXSubmenuItemGroups; end;
+  with FMenuItems[12] do begin Id:= 'g'; Item:= TBXSubmenuGroups; end;
   with FMenuItems[13] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
   with FMenuItems[14] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
   //
@@ -25749,7 +25569,7 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXSubmenuItemToolbarsPopup(Sender: TTBCustomItem;
+procedure TfmMain.TBXSubmenuViewToolbarsPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
   TbxItemTFile.Checked:= tbFile.Visible;
@@ -25788,7 +25608,7 @@ begin
 end;
 
 
-procedure TfmMain.TBXSubmenuItemConvPopup(Sender: TTBCustomItem;
+procedure TfmMain.TBXSubmenuConvPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
   //-----
   procedure AddMI(const AConvIndex: Integer; AConvBack: boolean);
@@ -25814,7 +25634,7 @@ procedure TfmMain.TBXSubmenuItemConvPopup(Sender: TTBCustomItem;
       IfThen(AConvBack, DKLangConstW('zMConvDecode'), DKLangConstW('zMConvEncode'));
     MI.Tag:= AConvIndex + IfThen(AConvBack, cConvGap);
     MI.OnClick:= ConvClick;
-    TBXSubmenuItemConv.Add(MI);
+    TBXSubmenuConv.Add(MI);
   end;
   //-----
 var
@@ -25826,7 +25646,7 @@ begin
     '*.txt', '',
     false{SubDirs}, false, false, false);
 
-  with TbxSubmenuItemConv do
+  with TbxSubmenuConv do
   begin
     Clear;
     for i:= 0 to FListConv.Count-1 do
@@ -28239,8 +28059,8 @@ begin
       SCmd:= '';
     end;
 
-  TBXSubmenuItemPlugins.Clear;
-  TBXSubmenuItemCtxPlugins.Clear;
+  TBXSubmenuPlugins.Clear;
+  TBXSubmenuCtxPlugins.Clear;
 
   //load section "Commands"
   ListSec:= TStringList.Create;
@@ -28277,13 +28097,13 @@ begin
         DoAddKeymappingCommand(NCommandId, 'Plugin', sKey, sValueHotkey);
 
         //2) add to main-menu
-        DoPlugin_AddMenuItem(TBXSubmenuItemPlugins, sKey, NIndex, NCommandId);
+        DoPlugin_AddMenuItem(TBXSubmenuPlugins, sKey, NIndex, NCommandId);
 
         //3) add to context menu (if enabled)
         if Pos('-', sValueFlags)=0 then
         begin
-          TBXSubmenuItemCtxPlugins.Visible:= true;
-          DoPlugin_AddMenuItem(TBXSubmenuItemCtxPlugins, sKey, NIndex, NCommandId);
+          TBXSubmenuCtxPlugins.Visible:= true;
+          DoPlugin_AddMenuItem(TBXSubmenuCtxPlugins, sKey, NIndex, NCommandId);
         end;
 
         Inc(NIndex);
@@ -28293,8 +28113,8 @@ begin
     FreeAndNil(ListSec);
   end;
 
-  DoSortMenu(TbxSubmenuItemPlugins);
-  DoSortMenu(TBXSubmenuItemCtxPlugins);
+  DoSortMenu(TbxSubmenuPlugins);
+  DoSortMenu(TBXSubmenuCtxPlugins);
 end;
 
 procedure TfmMain.DoPlugins_LoadAutoComplete(const fn_plug_ini: string);
@@ -28515,7 +28335,7 @@ begin
   DoTool_Run(ATool);
 end;
 
-procedure TfmMain.TBXSubmenuItemBkPopup(Sender: TTBCustomItem;
+procedure TfmMain.TBXSubmenuBookmarksPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
   bk, ro: boolean;
@@ -28793,7 +28613,7 @@ begin
   Groups.Mode:= gm6Grid;
 end;
 
-procedure TfmMain.TBXSubmenuItemGroupsPopup(Sender: TTBCustomItem;
+procedure TfmMain.TBXSubmenuGroupsPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
   TbxItemGroupOne.Checked:= Groups.Mode=gmOne;
