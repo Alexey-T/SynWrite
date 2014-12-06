@@ -353,7 +353,8 @@ cmd_AlignWithSeparator = 797
 cmd_ToggleShowGroup2 = 798
 cmd_PasteAsColumnBlock = 799
 
-cmd_Menu_Encodings = 810
+cmd_Menu_EncodingsConvert = 809
+cmd_Menu_EncodingsChange = 810
 cmd_Menu_Lexers = 811
 cmd_Menu_LineEnds = 812
 

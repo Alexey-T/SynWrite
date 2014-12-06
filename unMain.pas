@@ -1447,6 +1447,7 @@ type
     TbxItemTool3: TSpTBXItem;
     TbxItemTool2: TSpTBXItem;
     TbxItemTool1: TSpTBXItem;
+    PopupStatusEncConvert: TSpTBXPopupMenu;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2195,6 +2196,7 @@ type
     procedure TbxItemAddonsEditClick(Sender: TObject);
     procedure TbxItemAddonsSaveClick(Sender: TObject);
     procedure TbxItemAddonsUpdateClick(Sender: TObject);
+    procedure PopupStatusEncConvertPopup(Sender: TObject);
 
   private
     cStatLine,
@@ -6232,10 +6234,15 @@ begin
     sm_EncodingConvert_Utf16LE: ApplyFrameEncodingAndReload(CurrentFrame, cp__Unicode, false);
     sm_EncodingConvert_Utf16BE: ApplyFrameEncodingAndReload(CurrentFrame, cp__UnicodeBE, false);
 
-    sm_Menu_Encodings:
+    sm_Menu_EncodingsChange:
       begin
         p:= Mouse.CursorPos;
         PopupStatusEnc.Popup(p.x, p.y);
+      end;
+    sm_Menu_EncodingsConvert:
+      begin
+        p:= Mouse.CursorPos;
+        PopupStatusEncConvert.Popup(p.x, p.y);
       end;
     sm_Menu_Lexers:
       begin
@@ -13493,6 +13500,11 @@ end;
 procedure TfmMain.PopupStatusEncPopup(Sender: TObject);
 begin
   UpdateEncMenu(PopupStatusEnc);
+end;
+
+procedure TfmMain.PopupStatusEncConvertPopup(Sender: TObject);
+begin
+  UpdateEncMenu(PopupStatusEncConvert, true);
 end;
 
 procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);

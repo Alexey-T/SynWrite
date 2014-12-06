@@ -141,7 +141,8 @@ const
   sm_PasteAsColumnBlock = 799;
 
   //free
-  sm_Menu_Encodings = 810;
+  sm_Menu_EncodingsConvert = 809;
+  sm_Menu_EncodingsChange = 810;
   sm_Menu_Lexers = 811;
   sm_Menu_LineEnds = 812;
 
