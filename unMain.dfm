@@ -2419,7 +2419,7 @@ object fmMain: TfmMain
             OnClick = TbxItemAddonsEditClick
           end
           object TbxItemAddonsSave: TSpTBXItem
-            Caption = 'Save all...'
+            Caption = 'Download all...'
             OnClick = TbxItemAddonsSaveClick
           end
           object TbxItemAddonsUpdate: TSpTBXItem
@@ -9656,7 +9656,7 @@ object fmMain: TfmMain
         Command = 1154
         KeyStrokes = <>
         Category = 'Add-ons manager'
-        DisplayName = 'Save all'
+        DisplayName = 'Download all'
       end
       item
         Command = 1210
