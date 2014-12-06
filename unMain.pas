@@ -3571,14 +3571,13 @@ end;
 const
   cLexerCss = 'Style sheets';
   cLexerCssList = 'LESS,SASS,SCSS,Sass,Stylus';
+  cLexerText = 'Text files';
+  cLexerIni = 'Ini files';
   cLexerXML = 'XML';
   cLexerJS = 'JavaScript';
   cLexerNfo = 'NFO files';
   cLexerMake = 'Make files';
   cLexerProperties = 'Properties';
-  cLexerIni = 'Ini files';
-  cLexerText = 'Text files';
-  cLexerPascal = 'Pascal,Pascal Ext,Pascal Script,PAX Pascal,BSScript';
 
 function IsLexerListed(const Lexer, List: string): boolean;
 begin
@@ -3595,21 +3594,25 @@ begin
   Result:= Pos('PHP', s)>0;
 end;
 
+function IsLexerPas(const s: string): boolean;
+begin
+  Result:= Pos('Pascal', s)>0;
+end;
+
 function IsLexerCSS(const s: string; CanBeLess: boolean = true): boolean;
 begin
-  Result:=
-    (s = cLexerCss) or
+  Result:= (s=cLexerCss) or
     (CanBeLess and IsLexerListed(s, cLexerCssList));
 end;
 
 function IsLexerJS(const s: string): boolean;
 begin
-  Result:= (s = cLexerJS);
+  Result:= s=cLexerJS;
 end;
 
 function IsLexerXML(const s: string): boolean;
 begin
-  Result:= (s = cLexerXML);
+  Result:= s=cLexerXML;
 end;
 
 function IsLexerWithTags(const s: string): boolean;
@@ -3622,29 +3625,24 @@ begin
   Result:= IsLexerHTML(s) or IsLexerCSS(s);
 end;
 
+function IsLexerIni(const s: string): boolean;
+begin
+  Result:= s=cLexerIni;
+end;
+
 function IsLexerNFO(const s: string): boolean;
 begin
-  Result:= (s = cLexerNfo);
+  Result:= s=cLexerNfo;
 end;
 
 function IsLexerMake(const s: string): boolean;
 begin
-  Result:= (s = cLexerMake);
-end;
-
-function IsLexerPas(const s: string): boolean;
-begin
-  Result:= IsLexerListed(s, cLexerPascal);
+  Result:= s=cLexerMake;
 end;
 
 function IsLexerProp(const s: string): boolean;
 begin
-  Result:= (s = cLexerProperties);
-end;
-
-function IsLexerIni(const s: string): boolean;
-begin
-  Result:= (s = cLexerIni);
+  Result:= s=cLexerProperties;
 end;
 
 function IsLexerWithColors(const s: string): boolean;
@@ -3660,11 +3658,11 @@ end;
 
 //-------------------
 const
-  itm_wrap    = $FFFC;
-  itm_percent = $FFFE;
+  cLister_itm_wrap    = $FFFC;
+  cLister_itm_percent = $FFFE;
 
 type
-  TPlugInfo = record
+  TListerPluginInfo = record
     PlugWinProc: Pointer; //callback function of our form
     PlugForm: TfmMain;    //our form
   end;
@@ -3687,7 +3685,7 @@ end;
 //hook form messages
 function HookDestroy(hWin: HWND; Msg, wParam, lParam: LongInt): LongInt; stdcall;
 var
-  p: ^TPlugInfo;
+  p: ^TListerPluginInfo;
 begin
   Result:= 0;
   p:= Pointer(GetWindowLong(hWin, GWL_USERDATA));
@@ -3703,7 +3701,7 @@ end;
 //hook close button of lister window to make 'Cancel' possible
 function HookList(hWin: HWND; Msg, wParam, lParam: LongInt): LongInt; stdcall;
 var
-  p: ^TPlugInfo;
+  p: ^TListerPluginInfo;
 begin
   p:= Pointer(GetWindowLong(hWin, GWL_USERDATA));
   if (Msg=WM_ACTIVATE) and (wParam<>0) then
@@ -3724,7 +3722,7 @@ end;
 
 procedure SynStop(hWin: HWND);
 var
-  p: ^TPlugInfo;
+  p: ^TListerPluginInfo;
   N: integer;
 begin
   N:= GetWindowLong(GetParent(hWin), GWL_USERDATA);
@@ -3759,7 +3757,7 @@ end;
 function SynStart(ListerWin: HWND; const FileToLoad: WideString): HWND;
 var
   fmMain: TfmMain;
-  p: ^TPlugInfo;
+  p: ^TListerPluginInfo;
 begin
   Result:= 0;
   try
@@ -7100,7 +7098,7 @@ begin
         N:= 0
       else
         N:= (TopLine * 100) div Lines.Count;
-      PostMessage(hLister, WM_COMMAND, MAKELONG(N, itm_percent), Handle);
+      PostMessage(hLister, WM_COMMAND, MAKELONG(N, cLister_itm_percent), Handle);
     end;
 
   //sync scroll views
@@ -9340,7 +9338,7 @@ begin
       ExecCommand(smScrollAbsLeft);
   end;
 
-  PostMessage(hLister, WM_COMMAND, MAKELONG(Ord(Ed.WordWrap), itm_wrap), Handle);
+  PostMessage(hLister, WM_COMMAND, MAKELONG(Ord(Ed.WordWrap), cLister_itm_wrap), Handle);
   UpdateStatusbar;
 end;
 
