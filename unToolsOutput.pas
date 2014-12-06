@@ -1,4 +1,4 @@
-unit unTool2;
+unit unToolsOutput;
 
 interface
 

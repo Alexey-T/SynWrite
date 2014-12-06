@@ -303,7 +303,7 @@ uses
   unInputSimple,
   unInputFilename,
   unInputCheckList,
-  unTool,
+  unToolsList,
   unSnipEd,
   SynTaskDialog, //Synopse http://blog.synopse.info/post/2011/03/05/Open-Source-SynTaskDialog-unit-for-XP,Vista,Seven
   ComCtrls,

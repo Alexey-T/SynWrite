@@ -3,8 +3,8 @@ object fmToolOutput: TfmToolOutput
   Top = 322
   BorderStyle = bsDialog
   Caption = 'Output pattern'
-  ClientHeight = 272
-  ClientWidth = 321
+  ClientHeight = 281
+  ClientWidth = 393
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,8 +19,8 @@ object fmToolOutput: TfmToolOutput
   PixelsPerInch = 96
   TextHeight = 13
   object bOk: TTntButton
-    Left = 128
-    Top = 242
+    Left = 200
+    Top = 250
     Width = 90
     Height = 23
     Caption = 'OK'
@@ -29,8 +29,8 @@ object fmToolOutput: TfmToolOutput
     TabOrder = 1
   end
   object bCancel: TTntButton
-    Left = 224
-    Top = 242
+    Left = 296
+    Top = 250
     Width = 90
     Height = 23
     Cancel = True
@@ -40,8 +40,8 @@ object fmToolOutput: TfmToolOutput
   end
   object TntGroupBox1: TTntGroupBox
     Left = 8
-    Top = 0
-    Width = 305
+    Top = 8
+    Width = 377
     Height = 237
     TabOrder = 0
     object TntLabel1: TTntLabel
@@ -94,21 +94,21 @@ object fmToolOutput: TfmToolOutput
     object Bevel1: TBevel
       Left = 8
       Top = 180
-      Width = 289
+      Width = 361
       Height = 9
       Shape = bsBottomLine
     end
     object Bevel2: TBevel
       Left = 8
       Top = 52
-      Width = 289
+      Width = 361
       Height = 9
       Shape = bsBottomLine
     end
     object edRE: TTntEdit
       Left = 8
       Top = 80
-      Width = 289
+      Width = 361
       Height = 21
       TabOrder = 2
     end
@@ -145,13 +145,13 @@ object fmToolOutput: TfmToolOutput
     object edTest: TTntEdit
       Left = 8
       Top = 208
-      Width = 193
+      Width = 265
       Height = 21
       TabOrder = 7
       OnChange = edTestChange
     end
     object bTest: TTntButton
-      Left = 208
+      Left = 280
       Top = 208
       Width = 89
       Height = 21
@@ -187,8 +187,8 @@ object fmToolOutput: TfmToolOutput
     end
   end
   object DKLanguageController1: TDKLanguageController
-    Left = 280
-    Top = 92
+    Left = 296
+    Top = 20
     LangData = {
       0C00666D546F6F6C4F7574707574010100000001000000070043617074696F6E
       01150000000300624F6B010100000002000000070043617074696F6E00070062
@@ -209,6 +209,6 @@ object fmToolOutput: TfmToolOutput
   object mnuPreset: TTntPopupMenu
     OnPopup = mnuPresetPopup
     Left = 264
-    Top = 32
+    Top = 16
   end
 end

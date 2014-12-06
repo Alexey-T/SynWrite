@@ -1,4 +1,4 @@
-unit unTool;
+unit unToolsList;
 
 interface
 
@@ -125,7 +125,7 @@ uses
   TntFileCtrl,
   ATxSProc,
   ATxFProc,
-  unTool2,
+  unToolsOutput,
   unProcHelp;
 
 {$R *.dfm}
