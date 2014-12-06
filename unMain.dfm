@@ -9698,13 +9698,13 @@ object fmMain: TfmMain
         Command = 810
         KeyStrokes = <>
         Category = 'Encodings'
-        DisplayName = 'Menu "Encodings - Change"'
+        DisplayName = 'Menu "Change encoding"'
       end
       item
         Command = 809
         KeyStrokes = <>
         Category = 'Encodings'
-        DisplayName = 'Menu "Encodings - Convert to"'
+        DisplayName = 'Menu "Convert encoding to"'
       end>
     UseFirstControlKeys = True
     Left = 360
