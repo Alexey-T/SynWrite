@@ -10600,7 +10600,7 @@ object SyntaxManager: TSyntaxManager
       'String'
       'Id Param')
     MarkedBlockStyle = 'Marked block'
-    Extentions = 'properties conf /hosts po'
+    Extentions = 'properties po /hosts'
     LexerName = 'Properties'
     Notes.Strings = (
       'Author: Alex, uvviewsoft.com'
@@ -23858,7 +23858,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Bold-Italic'
         StyleName = 'Bold-Italic'
         TokenType = 11
-        Expression = '(\*\*\*|___)\S*?(\*\*\*|___|$)'
+        Expression = '(\*\*\*|___).*?(\*\*\*|___|$)'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -23866,7 +23866,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Bold'
         StyleName = 'Bold'
         TokenType = 9
-        Expression = '(\*\*|__)\S*?(\*\*|__|$)'
+        Expression = '(\*\*|__).*?(\*\*|__|$)'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -23874,7 +23874,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Italic'
         StyleName = 'Italic'
         TokenType = 10
-        Expression = '#char after * is non-space'#13#10'(\*|_) \S*? (\*|_|")'
+        Expression = '#char after * is non-space'#13#10'(\*|_) .*? (\*|_|")'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -25157,7 +25157,7 @@ object SyntaxManager: TSyntaxManager
     SkipSpaces = False
     Charset = DEFAULT_CHARSET
   end
-  object SyntAnal5: TLibSyntAnalyzer
+  object SyntAnal3: TLibSyntAnalyzer
     Formats = <
       item
         DisplayName = 'Comment'
@@ -25299,9 +25299,9 @@ object SyntaxManager: TSyntaxManager
               '<')
             TokenTypes = 2
           end>
+        BlockOffset = 1
         BlockEnd = 'Tag end'
-        NameFmt = '%sz0'
-        RefToCondEnd = True
+        NameFmt = '%sz1'
         HighlightPos = cpAny
         DrawStaple = True
         IgnoreAsParent = False
@@ -25310,11 +25310,6 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Tag end'
         BlockType = btRangeEnd
         ConditionList = <
-          item
-            TagList.Strings = (
-              '>')
-            TokenTypes = 2
-          end
           item
             TokenTypes = 8
           end
@@ -25328,17 +25323,14 @@ object SyntaxManager: TSyntaxManager
               '<')
             TokenTypes = 2
           end>
-        BlockOffset = -3
+        BlockOffset = -1
         SameIdent = True
-        RefToCondEnd = True
         HighlightPos = cpAny
         IgnoreAsParent = False
       end>
     CodeTemplates = <>
     SubAnalyzers = <>
     SampleText.Strings = (
-      '#DirectoryIndex index.php index.html'
-      ''
       '<IfModule mod_rewrite.c>'
       #9'RewriteEngine On'
       #9'#RewriteBase /relative/web/path/'
@@ -25347,10 +25339,15 @@ object SyntaxManager: TSyntaxManager
       #9'RewriteRule ^(.*) index.php'
       ''
       #9'RewriteCond %{HTTP:Authorization}  !^$'
-      #9'RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization}]'
-      '  <Ifhaha>'
-      '  test'
-      '  </Ifhaha>'
+      #9'RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization}] '
+      '    '
+      '  <Tag1>'
+      '  #Folding none'
+      '  </TagOther> '
+      '  '
+      '  <Tag2>'
+      '  #Folding ok'
+      '  </Tag2>'
       ''
       '</IfModule>')
     TokenTypeNames.Strings = (
@@ -25359,8 +25356,8 @@ object SyntaxManager: TSyntaxManager
       'String'
       'Id'
       'Var')
-    Extentions = '/.htaccess'
-    LexerName = 'htaccess'
+    Extentions = '/.htaccess /.htpasswd /httpd.conf'
+    LexerName = 'Apache config'
     SkipSpaces = False
     Notes.Strings = (
       'Alexey (SynWrite)')
