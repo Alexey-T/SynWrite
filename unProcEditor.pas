@@ -54,6 +54,7 @@ function EditorGetBookmarkDesc(Ed: TSyntaxMemo;
   AShowNumberedChar: boolean = false): WideString;
 
 procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
+procedure FixLineEnds_AtEnd(var S: Widestring; Ed: TSyntaxMemo);
 function EditorGetBottomLineIndex(Ed: TSyntaxMemo): Integer;
 function EditorGetWordBeforeCaret(Ed: TSyntaxMemo; AllowDot: boolean): Widestring;
 procedure EditorInsertSnippet(Ed: TSyntaxMemo; const AText, ASelText, AFilename: Widestring);
@@ -1701,6 +1702,16 @@ begin
     tfNL: ReplaceStr(S, #13#10, #10);
   end;
 end;
+
+procedure FixLineEnds_AtEnd(var S: Widestring; Ed: TSyntaxMemo);
+var
+  Eol: Widestring;
+begin
+  Eol:= EditorEOL(Ed);
+  if SEnd(S, Eol+Eol) then
+    Delete(S, Length(S)-Length(Eol), Length(Eol));
+end;
+
 
 
 procedure EditorPasteAndSelect(Ed: TSyntaxMemo);

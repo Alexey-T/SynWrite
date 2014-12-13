@@ -3404,7 +3404,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1870';
+  cSynVer = '6.14.1875';
   cSynPyVer = '1.0.145';
 
 const
@@ -22930,6 +22930,7 @@ begin
     //get resulting string
     S:= L.Text;
     FixLineEnds(S, Ed.Lines.TextFormat);
+    FixLineEnds_AtEnd(S, Ed);
   finally
     FreeAndNil(L);
   end;
@@ -22939,7 +22940,6 @@ begin
   try
     Ed.CaretStrPos:= Pos1; //needed! otherwise ReplaceText will leave trailing blanks after small block.
     Ed.ReplaceText(Pos1, Pos2-Pos1, S);
-    //EditorSetModified(Ed);
 
     //restore selection Ln1...Ln2
     Ed.SetSelection(Pos1, Length(S));

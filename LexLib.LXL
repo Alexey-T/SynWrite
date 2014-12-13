@@ -21795,38 +21795,13 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
-      end
-      item
-        DisplayName = 'Comment'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clGray
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsItalic]
       end>
     TokenRules = <
-      item
-        DisplayName = 'Comment 1'
-        Enabled = False
-        StyleName = 'Comment'
-        TokenType = 1
-        Expression = '(?s)/\*.*?(\*/|\Z)'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
       item
         DisplayName = 'String'
         StyleName = 'String'
         TokenType = 4
         Expression = '"(\\"|.)*?("|$)'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Comment 2'
-        StyleName = 'Comment'
-        TokenType = 1
-        Expression = '//.*'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -23883,7 +23858,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Italic'
         StyleName = 'Italic'
         TokenType = 10
-        Expression = '#char after * is non-space'#13#10'(\*|_) .*? (\*|_|")'
+        Expression = '#char after * is non-space'#13#10'(\*|_) \S.*? (\*|_|")'
         ColumnFrom = 0
         ColumnTo = 0
       end

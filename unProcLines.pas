@@ -65,6 +65,9 @@ function DoListCommand_Sort(
   AShowDlg: boolean;
   AColStart, AColEnd: integer): boolean;
 
+procedure DoList_DeleteLastEmpty(List: TTntStringList);
+
+
 implementation
 
 uses
@@ -82,7 +85,7 @@ var
     Col1, Col2: Integer;
   end;
 
-procedure DoDeleteLastEmpty(List: TTntStringList);
+procedure DoList_DeleteLastEmpty(List: TTntStringList);
 var
   N: Integer;
 begin
@@ -313,7 +316,7 @@ begin
   Result:= 0;
   Screen.Cursor:= crHourGlass;
   try
-    DoDeleteLastEmpty(List);
+    DoList_DeleteLastEmpty(List);
 
     for i:= 0 to List.Count-1 do
       if Pos(#9, List[i])>0 then
@@ -337,7 +340,7 @@ begin
   Result:= 0;
   Screen.Cursor:= crHourGlass;
   try
-    DoDeleteLastEmpty(List);
+    DoList_DeleteLastEmpty(List);
 
     case AMode of
       cLineDedupAdjacent:
@@ -396,7 +399,7 @@ begin
   Result:= true;
   Screen.Cursor:= crHourGlass;
   try
-    DoDeleteLastEmpty(List);
+    DoList_DeleteLastEmpty(List);
 
     Spaces:= StringOfChar(' ', TabSize);
     for i:= 0 to List.Count-1 do
