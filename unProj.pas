@@ -41,6 +41,8 @@ type
     SortType: TProjSort;
     SearchDirs: Widestring;
     UserVars: Widestring;
+    MasksInclude,
+    MasksExclude: Widestring;
   end;
 
 type
@@ -393,6 +395,8 @@ begin
   FOpts.SortType:= srExt;
   FOpts.SearchDirs:= '';
   FOpts.UserVars:= '';
+  FOpts.MasksInclude:= '';
+  FOpts.MasksExclude:= 'exe,dll,lnk,zip,rar';
 
   FPathList.Clear;
   UpdateTitle;
@@ -997,18 +1001,17 @@ end;
 
 procedure TfmProj.DoAddDirDlg(const SDir: Widestring);
 var
-  ExtInc, ExtExc: string;
   SubDirs, NoBin: boolean;
   Node: TTntTreeNode;
 begin
   with TfmProjAddDir.Create(nil) do
   try
     edDir.Text:= SDir;
-    edInc.Text:= '';
-    edExc.Text:= 'exe,dll,lnk,zip,rar';
+    edInc.Text:= FOpts.MasksInclude;
+    edExc.Text:= FOpts.MasksExclude;
     if ShowModal<>mrOk then Exit;
-    ExtInc:= edInc.Text;
-    ExtExc:= edExc.Text;
+    FOpts.MasksInclude:= edInc.Text;
+    FOpts.MasksExclude:= edExc.Text;
     SubDirs:= cbSubdir.Checked;
     NoBin:= cbNoBin.Checked;
   finally
@@ -1023,7 +1026,8 @@ begin
     ShowProgress(proAddFolders);
     Node:= DoAddDirWithSubdirs(
       DirForNode(TreeProj.Selected),
-      SDir, SubDirs, NoBin, ExtInc, ExtExc);
+      SDir, SubDirs, NoBin,
+      FOpts.MasksInclude, FOpts.MasksExclude);
     HideProgress;
 
     if (Node<>nil) and DoConfirmSort then
@@ -1149,6 +1153,9 @@ begin
     FOpts.SortType:= TProjSort(ReadInteger('Ini', 'SortType', Ord(srExt)));
     FOpts.SearchDirs:= UTF8Decode(ReadString('Ini', 'SearchDirs', ''));
     FOpts.UserVars:= UTF8Decode(ReadString('Ini', 'UserVars', ''));
+    FOpts.MasksInclude:= UTF8Decode(ReadString('Ini', 'MasksInc', UTF8Encode(FOpts.MasksInclude)));
+    FOpts.MasksExclude:= UTF8Decode(ReadString('Ini', 'MasksExc', UTF8Encode(FOpts.MasksExclude)));
+
     SFolded:= ReadString('Ini', 'Folded', '');
     SelItem:= ReadInteger('Ini', 'SelItem', 0);
   finally
@@ -1282,6 +1289,10 @@ begin
     Write('SortType', IntToStr(Ord(FOpts.SortType)));
     Write('SearchDirs', UTF8Encode(FOpts.SearchDirs));
     Write('UserVars', UTF8Encode(FOpts.UserVars));
+
+    Write('MasksInc', UTF8Encode(FOpts.MasksInclude));
+    Write('MasksExc', UTF8Encode(FOpts.MasksExclude));
+
     Write('Folded', GetCollapsedList);
     if TreeProj.Selected<>nil then
       Write('SelItem', IntToStr(TreeProj.Selected.AbsoluteIndex))
