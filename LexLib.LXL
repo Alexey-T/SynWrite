@@ -1911,9 +1911,10 @@ object SyntaxManager: TSyntaxManager
       'String'
       'Number')
     Extentions = 'asm'
-    LexerName = 'Assembler'
+    LexerName = 'Assembly'
     Notes.Strings = (
-      'Changes by Alexey (SynWrite)'
+      'Original from EControl,'
+      'changes by Alexey (SynWrite)'
       '+ macros/procs/segments in tree (for MASM/NASM)'
       '+ parser "symbol"'
       '* renamed styles')
@@ -5120,15 +5121,6 @@ object SyntaxManager: TSyntaxManager
   object SyntAnal57: TLibSyntAnalyzer
     Formats = <
       item
-        DisplayName = 'Default'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-        FormatType = ftCustomFont
-      end
-      item
         DisplayName = 'Identifier'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clMaroon
@@ -5159,7 +5151,7 @@ object SyntaxManager: TSyntaxManager
         Font.Color = clRed
         Font.Height = -13
         Font.Name = 'Courier New'
-        Font.Style = [fsBold]
+        Font.Style = [fsItalic]
       end
       item
         DisplayName = 'Symbol'
@@ -5191,7 +5183,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Keyword'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clInactiveCaption
+        Font.Color = clGray
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
@@ -5200,7 +5192,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Function'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clBlack
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
@@ -5224,16 +5216,6 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
-      end
-      item
-        DisplayName = 'Marked block'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clNone
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-        BgColor = clInactiveCaptionText
-        FormatType = ftColor
       end
       item
         DisplayName = 'Current Block'
@@ -5326,15 +5308,6 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
-      end
-      item
-        DisplayName = 'Collapsed'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 13610927
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-        FormatFlags = [ffBold, ffItalic, ffUnderline, ffStrikeOut, ffReadOnly, ffHidden]
       end
       item
         DisplayName = 'Current Line'
@@ -6012,9 +5985,7 @@ object SyntaxManager: TSyntaxManager
       'Table'
       'Field')
     Gramma.Gramma = 'Skip = <Comment>;'#13#10
-    MarkedBlockStyle = 'Marked block'
     CurrentLineStyle = 'Current Line'
-    CollapseStyleName = 'Collapsed'
     Extentions = 'sql'
     LexerName = 'SQL'
     SkipSpaces = False
@@ -24684,15 +24655,7 @@ object SyntaxManager: TSyntaxManager
         Font.Style = [fsBold]
       end
       item
-        DisplayName = 'String'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clTeal
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-      end
-      item
-        DisplayName = 'Identifier'
+        DisplayName = 'Id'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -24700,12 +24663,20 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Reserved word'
+        DisplayName = 'Id keyword'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
+      end
+      item
+        DisplayName = 'Id type'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clPurple
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
       end
       item
         DisplayName = 'Comment'
@@ -24716,6 +24687,22 @@ object SyntaxManager: TSyntaxManager
         Font.Style = [fsItalic]
       end
       item
+        DisplayName = 'String'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clTeal
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+      end
+      item
+        DisplayName = 'String regex'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clOlive
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+      end
+      item
         DisplayName = 'Current block'
         Font.Charset = RUSSIAN_CHARSET
         Font.Color = clMaroon
@@ -24723,7 +24710,7 @@ object SyntaxManager: TSyntaxManager
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
         BgColor = 13369046
-        FormatType = ftColor
+        FormatType = ftBackGround
         BorderTypeLeft = blSolid
         BorderColorLeft = clGray
         BorderTypeTop = blSolid
@@ -24732,29 +24719,21 @@ object SyntaxManager: TSyntaxManager
         BorderColorRight = clGray
         BorderTypeBottom = blSolid
         BorderColorBottom = clGray
-      end
-      item
-        DisplayName = 'Type'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clPurple
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
       end>
     TokenRules = <
       item
-        DisplayName = 'String'
-        StyleName = 'String'
-        TokenType = 4
-        Expression = '"(\\"|\\\\|.)*?("|$)'
+        DisplayName = 'Id'
+        StyleName = 'Id'
+        TokenType = 2
+        Expression = '[a-z_]\w*'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
-        DisplayName = 'Id'
-        StyleName = 'Identifier'
-        TokenType = 2
-        Expression = '[a-z_]\w*'
+        DisplayName = 'String'
+        StyleName = 'String'
+        TokenType = 4
+        Expression = '("|'#39') (\\\1|\\\\|.)*? (\1|$)'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -24762,7 +24741,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Hex'
         StyleName = 'Number'
         TokenType = 7
-        Expression = '0x[\da-f]*'
+        Expression = '0x[\da-f]+'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -24799,6 +24778,14 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
+        DisplayName = 'String regex'
+        StyleName = 'String regex'
+        TokenType = 4
+        Expression = '`.*?`'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
         DisplayName = 'Single symbol'
         StyleName = 'Symbol'
         TokenType = 3
@@ -24817,7 +24804,7 @@ object SyntaxManager: TSyntaxManager
     BlockRules = <
       item
         DisplayName = 'keywords'
-        StyleName = 'Reserved word'
+        StyleName = 'Id keyword'
         BlockType = btTagDetect
         ConditionList = <
           item
@@ -24854,7 +24841,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'keyw types'
-        StyleName = 'Type'
+        StyleName = 'Id type'
         BlockType = btTagDetect
         ConditionList = <
           item
@@ -24870,6 +24857,8 @@ object SyntaxManager: TSyntaxManager
               'int32'
               'int64'
               'int8'
+              'len'
+              'nil'
               'rune'
               'string'
               'uint'
@@ -25028,16 +25017,16 @@ object SyntaxManager: TSyntaxManager
       #9#9#9'break'
       #9#9'}'
       #9'}'
-      #9'return strings.Join(words, "Text")'
+      #9'return "Text" + '#39'Test'#39
+      '}'
+      ''
+      'func NewChain(prefixLen int) *Chain {'
+      #9'return `Ttt \d+`'
       '}'
       ''
       'func (p Prefix) Shift(word string) {'
       #9'p[len(p)-1] = word'
-      '}'
-      ''
-      'func NewChain(prefixLen int) *Chain {'
-      #9'return &Chain{make(map[string][]string), prefixLen}'
-      '}')
+      '}    ')
     TokenTypeNames.Strings = (
       'Unknown'
       'Comment'
