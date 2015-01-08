@@ -10508,7 +10508,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Symbol'
         StyleName = 'Symbol'
         TokenType = 3
-        Expression = '[/\*,\.;:\(\)=<>\+\-\[\]\{\}%\|\&\\~]+'
+        Expression = '[/\*,\.;:\(\)=<>\+\-\[\]\{\}%\|\&\\~]'
         ColumnFrom = 0
         ColumnTo = 0
       end>
@@ -10571,7 +10571,7 @@ object SyntaxManager: TSyntaxManager
       'String'
       'Id Param')
     MarkedBlockStyle = 'Marked block'
-    Extentions = 'properties po /hosts'
+    Extentions = 'properties /hosts po'
     LexerName = 'Properties'
     Notes.Strings = (
       'Author: Alex, uvviewsoft.com'
@@ -11563,7 +11563,7 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Identifier'
+        DisplayName = 'Id'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -11571,7 +11571,7 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Reserved word'
+        DisplayName = 'Id keyword'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -11585,24 +11585,6 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsItalic]
-      end
-      item
-        DisplayName = 'Current block'
-        Font.Charset = RUSSIAN_CHARSET
-        Font.Color = clMaroon
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-        BgColor = 13369046
-        FormatType = ftColor
-        BorderTypeLeft = blSolid
-        BorderColorLeft = clGray
-        BorderTypeTop = blSolid
-        BorderColorTop = clGray
-        BorderTypeRight = blSolid
-        BorderColorRight = clGray
-        BorderTypeBottom = blSolid
-        BorderColorBottom = clGray
       end
       item
         DisplayName = 'Variable'
@@ -11621,12 +11603,30 @@ object SyntaxManager: TSyntaxManager
         Font.Style = [fsBold]
       end
       item
+        DisplayName = 'String regex'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clGreen
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+      end
+      item
         DisplayName = 'String here-doc'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clOlive
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
+      end
+      item
+        DisplayName = 'Quote block'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+        BgColor = clMoneyGreen
+        FormatType = ftBackGround
       end>
     TokenRules = <
       item
@@ -11649,7 +11649,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'String'
         StyleName = 'String'
         TokenType = 4
-        Expression = '(?s)"(.|\\")*?("|(?<!\\)$)'
+        Expression = '(?s)"(\\"|.)*?("|(?<!\\)$)'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -11662,16 +11662,16 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'StringRE'
-        StyleName = 'String'
+        DisplayName = 'String regex'
+        StyleName = 'String regex'
         TokenType = 4
         Expression = '/(\\/|.)*?(/)'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
-        DisplayName = 'StringRE2'
-        StyleName = 'String'
+        DisplayName = 'String regex2'
+        StyleName = 'String regex'
         TokenType = 4
         Expression = '%r\{.*?(\})'
         ColumnFrom = 0
@@ -11687,7 +11687,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'IfBegin'
-        StyleName = 'Reserved word'
+        StyleName = 'Id keyword'
         TokenType = 6
         Expression = '^\s*?(if|unless|while)'
         ColumnFrom = 0
@@ -11695,7 +11695,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Id'
-        StyleName = 'Identifier'
+        StyleName = 'Id'
         TokenType = 2
         Expression = '[a-z_]\w*'
         ColumnFrom = 0
@@ -11759,7 +11759,7 @@ object SyntaxManager: TSyntaxManager
     BlockRules = <
       item
         DisplayName = 'keywords'
-        StyleName = 'Reserved word'
+        StyleName = 'Id keyword'
         BlockType = btTagDetect
         ConditionList = <
           item
@@ -11811,7 +11811,7 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = '_#comments-start'
+        DisplayName = 'comments-start'
         StyleName = 'Comment'
         ConditionList = <
           item
@@ -11819,7 +11819,7 @@ object SyntaxManager: TSyntaxManager
               '=begin')
             IgnoreCase = True
           end>
-        BlockEnd = '_#comments-end'
+        BlockEnd = 'comments-end'
         DisplayInTree = False
         NameFmt = '%s0 %s-1 %s-2 %s-3 %s-4'
         DynHighlight = dhRange
@@ -11829,7 +11829,7 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = '_#comments-end'
+        DisplayName = 'comments-end'
         BlockType = btRangeEnd
         ConditionList = <
           item
@@ -11842,7 +11842,6 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = '('
-        StyleName = 'Current block'
         ConditionList = <
           item
             TagList.Strings = (
@@ -11871,7 +11870,6 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = '['
-        StyleName = 'Current block'
         ConditionList = <
           item
             TagList.Strings = (
@@ -11914,7 +11912,9 @@ object SyntaxManager: TSyntaxManager
           end>
         BlockEnd = 'end'
         DisplayInTree = False
+        NameFmt = '%s0 ...'
         HighlightPos = cpAny
+        CollapseFmt = '%s0 ...'
         IgnoreAsParent = False
       end
       item
@@ -11970,8 +11970,33 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
+        DisplayName = 'q{'
+        StyleName = 'Quote block'
+        ConditionList = <
+          item
+            TagList.Strings = (
+              '{')
+            TokenTypes = 8
+          end
+          item
+            TagList.Strings = (
+              'q')
+            TokenTypes = 4
+          end
+          item
+            TagList.Strings = (
+              '%')
+            TokenTypes = 8
+          end>
+        BlockEnd = '}'
+        DisplayInTree = False
+        DynHighlight = dhRange
+        HighlightPos = cpAny
+        CancelNextRules = True
+        IgnoreAsParent = False
+      end
+      item
         DisplayName = '{'
-        StyleName = 'Current block'
         ConditionList = <
           item
             TagList.Strings = (
@@ -12001,12 +12026,16 @@ object SyntaxManager: TSyntaxManager
     CodeTemplates = <>
     SubAnalyzers = <>
     SampleText.Strings = (
-      '# single commment line'
+      '# commment line'
       'require '#39'sketchup.rb'#39
       '=begin'
       ' multiline comment'
       '=end'
       'ROOT_DIR = #{root.inspect}'
+      ''
+      '%q{ '
+      '  test here '
+      '}'
       ''
       '$f = /^a/ =~ "All Gaul is divided into three parts #{name}"'
       '@f = %r{\w+} =~ "All Gaul is divided into three parts"'
@@ -12032,8 +12061,6 @@ object SyntaxManager: TSyntaxManager
         '    prompts = ["Length (along X)", "Width (along Y)", "Interval"' +
         ', "Number of levels", "Height (between levels)"]'
       '    values = [10, 10, 1, 2, 10]'
-      '    results = inputbox prompts, values, "Grid parameters"'
-      '    width, length, interval, nbr, height = results'
       'end    '
       ''
       
@@ -12045,11 +12072,6 @@ object SyntaxManager: TSyntaxManager
       '  w = width if (nbr>2) #same'
       '  model.start_operation "Duplicate 3D grid"'
       '  2.upto(nbr) do (group)'
-      
-        '    transfo = Geom::Transformation.translation(Geom::Vector3d.ne' +
-        'w(0, 0, h))'
-      '    new_group = group.copy'
-      '    new_group.move!(transfo)'
       '    h = h + height'
       '  end'
       '  model.commit_operation'
@@ -12072,8 +12094,8 @@ object SyntaxManager: TSyntaxManager
     LexerName = 'Ruby'
     SkipSpaces = False
     Notes.Strings = (
-      'Author: Matthias030 (SynWrite admin)'
-      'Many fixes by Alexey (SynWrite)'
+      '- Matthias030 (SynWrite admin)'
+      '- Alexey (SynWrite)'
       ''
       'Tutorial: http://www.tutorialspoint.com/ruby/ruby_syntax.htm')
     LineComment = '#'
