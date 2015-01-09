@@ -29355,7 +29355,7 @@ end;
 
 procedure TfmMain.DoPluginsManager_SaveAll;
 begin
-  DoPyLoadPlugin(cPyPluginManager, 'save');
+  DoPyLoadPlugin(cPyPluginManager, 'download_all');
 end;
 
 procedure TfmMain.DoPluginsManager_Update;

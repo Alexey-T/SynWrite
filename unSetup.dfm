@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabUndo
+    ActivePage = tabInsertFormat
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -2982,8 +2982,8 @@ object fmSetup: TfmSetup
           Width = 258
           Height = 17
           Hint = 
-            'Begins every auto-indented line with the minimum number of chara' +
-            'cters possible, using tabs and spaces as necessary.'
+            'Begins indented lines with the minimun number of chars possible,' +
+            ' using Tab characters.'
           Caption = 'Optimal fill space with Tabs'
           TabOrder = 4
         end
