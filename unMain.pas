@@ -7537,8 +7537,13 @@ end;
 function TfmMain.GetAcpFN(const LexerName: string): string;
 begin
   Result:= LexerName;
-  SReplaceAll(Result, '/', '_'); //for 'PL/SQL'
-  SDeleteFrom(Result, ' ('); //for 'Ada (.ads)', 'PHP (dev)'
+
+  //for 'PL/SQL'
+  SReplaceAll(Result, '/', '_');
+  //for 'PHP_'
+  if (Result<>'') and (Result[Length(Result)]='_') then
+    Delete(Result, Length(Result), 1);
+
   Result:= SynDataSubdir(cSynDataAutocomp) + '\' + Result + '.acp';
 end;
 

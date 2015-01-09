@@ -17135,7 +17135,7 @@ object SyntaxManager: TSyntaxManager
       'Text'
       'Open Tag'
       'Close Tag')
-    LexerName = 'PHP_dev_HTML'
+    LexerName = 'HTML_'
     Notes.Strings = (
       'Created by 480499497 from http://forum.wincmd.ru')
     Internal = True
@@ -21665,7 +21665,7 @@ object SyntaxManager: TSyntaxManager
       'Symbol single'
       'Var')
     Extentions = 'php php2 php3 php4 php5'
-    LexerName = 'PHP (dev)'
+    LexerName = 'PHP_'
     Notes.Strings = (
       'Created by 480499497 from http://forum.wincmd.ru'
       'Big rework by Alexey (SynWrite)')
