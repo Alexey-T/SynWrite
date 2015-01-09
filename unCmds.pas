@@ -462,6 +462,7 @@ const
   sm_AddonsManager_Edit = 1152;
   sm_AddonsManager_Update = 1153;
   sm_AddonsManager_SaveAll = 1154;
+  sm_AddonsManager_Config = 1155;
 
   sm_EncodingChange_Ansi = 1200;
   sm_EncodingChange_Oem = 1201;

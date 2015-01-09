@@ -1448,6 +1448,7 @@ type
     TbxItemTool2: TSpTBXItem;
     TbxItemTool1: TSpTBXItem;
     PopupStatusEncConvert: TSpTBXPopupMenu;
+    TbxItemAddonsConfig: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2197,6 +2198,7 @@ type
     procedure TbxItemAddonsSaveClick(Sender: TObject);
     procedure TbxItemAddonsUpdateClick(Sender: TObject);
     procedure PopupStatusEncConvertPopup(Sender: TObject);
+    procedure TbxItemAddonsConfigClick(Sender: TObject);
 
   private
     cStatLine,
@@ -2961,8 +2963,9 @@ type
     procedure DoPluginsManager_Install;
     procedure DoPluginsManager_Remove;
     procedure DoPluginsManager_Edit;
-    procedure DoPluginsManager_Update;
     procedure DoPluginsManager_SaveAll;
+    procedure DoPluginsManager_Update;
+    procedure DoPluginsManager_Config;
     //end of private
 
   protected
@@ -3404,7 +3407,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1885';
+  cSynVer = '6.14.1890';
   cSynPyVer = '1.0.145';
 
 const
@@ -6680,6 +6683,7 @@ begin
     sm_AddonsManager_Edit: DoPluginsManager_Edit;
     sm_AddonsManager_Update: DoPluginsManager_Update;
     sm_AddonsManager_SaveAll: DoPluginsManager_SaveAll;
+    sm_AddonsManager_Config: DoPluginsManager_Config;
 
     //end of commands list
 
@@ -29359,6 +29363,11 @@ begin
   DoPyLoadPlugin(cPyPluginManager, 'update');
 end;
 
+procedure TfmMain.DoPluginsManager_Config;
+begin
+  DoPyLoadPlugin(cPyPluginManager, 'config');
+end;
+
 procedure TfmMain.TbxItemAddonsInstallClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_AddonsManager_Install);
@@ -29383,6 +29392,12 @@ procedure TfmMain.TbxItemAddonsUpdateClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_AddonsManager_Update);
 end;
+
+procedure TfmMain.TbxItemAddonsConfigClick(Sender: TObject);
+begin
+  CurrentEditor.ExecCommand(sm_AddonsManager_Config);
+end;
+
 
 function TfmMain.DoAddGutterIcon(const fn: string): Integer;
 var
