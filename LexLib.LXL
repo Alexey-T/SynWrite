@@ -8268,7 +8268,7 @@ object SyntaxManager: TSyntaxManager
     Extentions = 
       'htm html htt hta htx htc htd shtml phtml xhtml asp aspx ascx asm' +
       'x jsp tpl hhc cfm dtd'
-    LexerName = 'HTML documents'
+    LexerName = 'HTML'
     Notes.Strings = (
       'Reworked by Alex, uvviewsoft.com'
       'Added red underlines for misspelled tags and tag attribs.'
@@ -11689,7 +11689,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'IfBegin'
         StyleName = 'Id keyword'
         TokenType = 6
-        Expression = '^\s*?(if|unless|while)'
+        Expression = '^[\x20\x09]* (if|unless|while)\b'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -11841,62 +11841,6 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = '('
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '(')
-            TokenTypes = 8
-          end>
-        BlockEnd = ')'
-        NotCollapsed = True
-        DisplayInTree = False
-        DynHighlight = dhBound
-        HighlightPos = cpBoundTagBegin
-        DynSelectMin = True
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = ')'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              ')')
-            TokenTypes = 8
-          end>
-        HighlightPos = cpBound
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = '['
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '[')
-            TokenTypes = 8
-          end>
-        BlockEnd = ']'
-        NotCollapsed = True
-        DisplayInTree = False
-        DynHighlight = dhBound
-        HighlightPos = cpBoundTagBegin
-        DynSelectMin = True
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = ']'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              ']')
-            TokenTypes = 8
-          end>
-        HighlightPos = cpBound
-        IgnoreAsParent = False
-      end
-      item
         DisplayName = 'begin'
         ConditionList = <
           item
@@ -11940,8 +11884,9 @@ object SyntaxManager: TSyntaxManager
             IgnoreCase = True
           end>
         BlockEnd = 'end'
-        NameFmt = 'def %sz-1'
+        NameFmt = '%sz0'
         HighlightPos = cpAny
+        CollapseFmt = '%sz0'
         IgnoreAsParent = False
       end
       item
@@ -11954,8 +11899,9 @@ object SyntaxManager: TSyntaxManager
             IgnoreCase = True
           end>
         BlockEnd = 'end'
-        NameFmt = 'class %s-1'
+        NameFmt = '%sz0'
         HighlightPos = cpAny
+        CollapseFmt = '%sz0'
         IgnoreAsParent = False
       end
       item
@@ -11966,7 +11912,9 @@ object SyntaxManager: TSyntaxManager
           end>
         BlockEnd = 'end'
         DisplayInTree = False
+        NameFmt = '%sz0'
         HighlightPos = cpAny
+        CollapseFmt = '%sz0'
         IgnoreAsParent = False
       end
       item
@@ -11993,6 +11941,7 @@ object SyntaxManager: TSyntaxManager
         DynHighlight = dhRange
         HighlightPos = cpAny
         CancelNextRules = True
+        CollapseFmt = '{ ... }'
         IgnoreAsParent = False
       end
       item
@@ -12006,9 +11955,7 @@ object SyntaxManager: TSyntaxManager
         BlockEnd = '}'
         NotCollapsed = True
         DisplayInTree = False
-        DynHighlight = dhBound
-        HighlightPos = cpBoundTagBegin
-        DynSelectMin = True
+        HighlightPos = cpAny
         IgnoreAsParent = False
       end
       item
@@ -12026,61 +11973,40 @@ object SyntaxManager: TSyntaxManager
     CodeTemplates = <>
     SubAnalyzers = <>
     SampleText.Strings = (
-      '# commment line'
-      'require '#39'sketchup.rb'#39
+      '#commment'
+      'require '#39'name.rb'#39
       '=begin'
       ' multiline comment'
       '=end'
-      'ROOT_DIR = #{root.inspect}'
       ''
       '%q{ '
-      '  test here '
+      '  test name{name}'
       '}'
       ''
-      '$f = /^a/ =~ "All Gaul is divided into three parts #{name}"'
-      '@f = %r{\w+} =~ "All Gaul is divided into three parts"'
-      
-        'reversed_groups = int_as_string.reverse.split(/(\d{#{breakpoint}' +
-        '})/)'
-      'reversed_digits = reversed_groups.grep(/\d+/)'
+      'name = /^name/ =~ %r{\w+}'
+      'name = "Name \'
+      '  End" #trailing \'
       ''
-      'name = "Abraham \'
-      'Lincoln"   # a line continued by trailing \'
-      'puts "#{name}"'
-      ''
-      
-        '#---------------------------------------------------------------' +
-        '--------------'
-      'def create_3d_grid'
-      
-        ' @unit=Sketchup.active_model.options["UnitsOptions"]["LengthUnit' +
-        '"]'
-      #9'@scale = 1 if @unit == 0 #if tail'
-      #9'@scale = 12 if @unit == 1 #same'
-      
-        '    prompts = ["Length (along X)", "Width (along Y)", "Interval"' +
-        ', "Number of levels", "Height (between levels)"]'
-      '    values = [10, 10, 1, 2, 10]'
+      'def create'
+      '  @unit = opt["Opt"]'
+      '  @scale = 1 if @unit == 0 #must not fold'
+      '  @scale = 2 if @unit == 1 #same'
       'end    '
       ''
-      
-        '#---------------------------------------------------------------' +
-        '--------------'
-      'def func2'
-      ' if (nbr > 1)'
-      '  h = height if (nbr>2) #if tail'
-      '  w = width if (nbr>2) #same'
-      '  model.start_operation "Duplicate 3D grid"'
-      '  2.upto(nbr) do (group)'
-      '    h = h + height'
+      'def func1'
+      '  if (nbr > 1) #must fold'
+      '    h = height if (nbr>2) #must not fold'
+      '    w = width if (nbr>2) #same'
+      '    n.upto(nbr) do (group) #must fold'
+      '      h = h + height'
+      '    end'
+      '    model.commit_operation'
       '  end'
-      '  model.commit_operation'
-      ' end'
       'end'
       ''
-      'def func'
-      ' animals = %w(lions tigers bears)'
-      ' animals.each{|kind| print kind}'
+      'def func2'
+      '  animals = %w(lions tigers bears)'
+      '  animals.each{|kind| print kind}'
       'end')
     TokenTypeNames.Strings = (
       'Var'
@@ -12094,10 +12020,10 @@ object SyntaxManager: TSyntaxManager
     LexerName = 'Ruby'
     SkipSpaces = False
     Notes.Strings = (
-      '- Matthias030 (SynWrite admin)'
       '- Alexey (SynWrite)'
+      '- Matthias (SynWrite admin)'
       ''
-      'Tutorial: http://www.tutorialspoint.com/ruby/ruby_syntax.htm')
+      'Doc: http://www.tutorialspoint.com/ruby/ruby_syntax.htm')
     LineComment = '#'
     Charset = DEFAULT_CHARSET
     Left = 144
