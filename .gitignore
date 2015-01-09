@@ -21,6 +21,8 @@ __history
 *.wlx64
 *.mes
 *.txt
+*.pyc
 !Res/*
 !Setup/*
 !Py/*.py
+!Py/syn_plugin_manager

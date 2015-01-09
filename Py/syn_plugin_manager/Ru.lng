@@ -1,0 +1,33 @@
+﻿
+[L]
+MenuEdit=Редактировать плагин
+MenuRemove=Удалить плагин
+MenuInstall=Установить
+MenuUpdate=Обновить
+CantCreTrash=Не удалось создать папку trash
+CantMoveToTr=Не удалось переместить папку плагина в trash
+CantFindFile=Не найден файл:
+CfmRemove=Вы хотите удалить плагин:
+Removed=Плагин был удалён.
+Restart=Нужен перезапуск SynWrite для применения изменений.
+CantRemove=Не удалось удалить плагин
+CantGetList=Не удалось скачать список плагинов
+CantGetFile=Не удалось скачать файл
+CantGetVer=Не удалось скачать список версий
+CantCompileRegex=Не удалось исп-ть рег. выр.
+CantParseList=Не удалось распарсить список
+CantWriteToDir=Не удалось записать в папку
+BadExt=Неизвестное расширение файла (не zip/rar)
+NoUrl=Для плагина не указана ссылка
+NoPlugins=Список плагинов пуст
+WaitList=Скачивается список...
+WaitFile=Скачивается файл...
+WaitVer=Скачивается список версий...
+SavedAll=Плагины сохранены:
+SaveToFolder=Сохранить в папку:
+SaveFails=Ошибок скачки:
+Updated=Обновлены плагины:
+ColName=Имя
+ColFolder=Папка
+ColVLocal=Установлен
+ColVRemote=Доступен

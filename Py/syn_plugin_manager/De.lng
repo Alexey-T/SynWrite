@@ -1,0 +1,33 @@
+﻿
+[L]
+MenuEdit=Plugin zum Bearbeiten auswählen
+MenuRemove=Plugin zum Entfernen auswählen
+MenuInstall=Plugin zur Installation auswählen
+MenuUpdate=Aktualisieren
+CantCreTrash=Kann Verzeichnis für Papierkorb nicht erstellen
+CantMoveToTr=Kann Verzeichnis nicht in den Papierkorb bewegen
+CantFindFile=Datei nicht gefunden:
+CfmRemove=Soll das Plugin entfernt werden?
+Removed=Plugin wurde gelöscht.
+Restart=SynWrite muss neu gestartet werden, um die Änderungen zu übernehmen.
+CantRemove=Kann Plugin-Dateien nicht entfernen
+CantGetList=Download der Plugin-Liste fehlgeschlagen
+CantGetFile=Download des Plugins fehlgeschlagen
+CantGetVer=Download der Versionsliste fehlgeschlagen
+CantCompileRegex=Kompilieren von RegEx fehlgeschlagen
+CantParseList=Kann Plugin-Liste nicht lesen
+CantWriteToDir=Kann in Verzeichnis nicht schreiben
+BadExt=Nicht unterstützte Dateierweiterung des Plugins (nur Zip und Rar zulässig)
+NoUrl=URL für Plugin fehlt
+NoPlugins=Plugin-Liste ist leer
+WaitList=Liste wird heruntergeladen...
+WaitFile=Datei wird heruntergeladen...
+WaitVer=Versionsliste wird heruntergeladen...
+SavedAll=Alle Plugins gespeichert
+SaveToFolder=Speichern nach Verzeichnis:
+SaveFails=Fehler aufgetreten:
+Updated=Plugins aktualisiert:
+ColName=Name
+ColFolder=Verzeichnis
+ColVLocal=Installiert
+ColVRemote=Verfügbar

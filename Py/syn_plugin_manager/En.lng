@@ -1,0 +1,33 @@
+
+[L]
+MenuEdit=Edit plugin
+MenuRemove=Remove plugin
+MenuInstall=Install
+MenuUpdate=Update
+CantCreTrash=Could not create trash folder
+CantMoveToTr=Could not move folder to trash
+CantFindFile=Cannot find file:
+CfmRemove=Do you want to remove plugin:
+Removed=Plugin was removed. 
+Restart=Restart SynWrite to apply changes.
+CantRemove=Could not remove plugin files
+CantGetList=Cannot download plugins list
+CantGetFile=Cannot download file
+CantGetVer=Cannot download versions list
+CantCompileRegex=Cannot compile regex
+CantParseList=Cannot parse list
+CantWriteToDir=Cannot write to folder
+BadExt=Unknown extension of plugin package (not zip/rar)
+NoUrl=Plugins has no URL
+NoPlugins=Plugins list is empty
+WaitList=Downloading list...
+WaitFile=Downloading file...
+WaitVer=Downloading versions list...
+SavedAll=Saved plugins:
+SaveToFolder=Save to folder:
+SaveFails=Errors occured:
+Updated=Updated plugins:
+ColName=Name
+ColFolder=Folder
+ColVLocal=Installed
+ColVRemote=Available

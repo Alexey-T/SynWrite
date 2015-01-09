@@ -1,0 +1,33 @@
+﻿
+[L]
+MenuEdit=プラグインの編集
+MenuRemove=プラグインを除去
+MenuInstall=インストール
+MenuUpdate=アップデート
+CantCreTrash=一時フォルダを作成できません
+CantMoveToTr=一時フォルダに移動できません
+CantFindFile=ファイルが見つかりません:
+CfmRemove=このプラグインを除去しますか:
+Removed=プラグインを除去しました! 
+Restart=変更は SynWrite 再起動後に適用されます。
+CantRemove=プラグインファイルを除去できません
+CantGetList=リストをダウンロードできません
+CantGetFile=ファイルをダウンロードできません
+CantGetVer=バージョン リストをダウンロードできません
+CantCompileRegex=正規表現をコンパイルできません
+CantParseList=リストを解析できません
+CantWriteToDir=フォルダに書き込めません
+BadExt=不明な形式のプラグインパッケージ (zip/rar 以外)
+NoUrl=ラグインにURLがありません
+NoPlugins=プラグインリストが空です
+WaitList=リストをダウンロード中...
+WaitFile=ファイルをダウンロード中...
+WaitVer=バージョン リストをダウンロード中...
+SavedAll=すべてのプラグインを保存
+SaveToFolder=保存先:
+SaveFails=エラーが発生:
+Updated=更新されたプラグイン:
+ColName=名前
+ColFolder=フォルダ
+ColVLocal=インストール済み
+ColVRemote=利用可能
