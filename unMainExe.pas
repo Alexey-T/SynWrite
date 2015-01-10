@@ -36,6 +36,8 @@ type
   protected
     procedure WMDropFiles(var m: TMessage); message WM_DROPFILES;
     procedure WMCopyData(var Msg: TWMCopyData); message WM_COPYDATA;
+    procedure WMQueryEndSession(var Msg : TWMQueryEndSession); message WM_QUERYENDSESSION;
+    procedure WMEndSession(var Msg: TWMEndSession); message WM_ENDSESSION;
   end;
 
 var
@@ -597,6 +599,18 @@ end;
 procedure InitOther;
 begin
   //later
+end;
+
+procedure TfmSynwrite.WMQueryEndSession(var Msg: TWMQueryEndSession);
+begin
+  Msg.Result:= 1;
+  Close;
+end;
+
+procedure TfmSynwrite.WMEndSession(var Msg: TWMEndSession);
+begin
+  Msg.Result:= 1;
+  Close;
 end;
 
 initialization

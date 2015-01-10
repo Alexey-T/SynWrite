@@ -3407,7 +3407,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.14.1890';
+  cSynVer = '6.14.1900';
   cSynPyVer = '1.0.145';
 
 const
@@ -8755,6 +8755,8 @@ begin
       cbTokens.Enabled:= SyntaxManager.AnalyzerCount>0;
       LoadIni;
 
+      if ShowOnTop then
+        SetFormOnTop(fmSR.Handle, ShowOnTop);
       if not ShowOnTop then
       begin
         //Seems it OK sets ShowOnTop style, only for app
@@ -14337,11 +14339,13 @@ end;
 
 procedure TfmMain.SetOnTop(V: boolean);
 begin
-  if SynExe then
+  if not SynExe then Exit;
   if FOnTop <> V then
   begin
     FOnTop:= V;
     SetFormOnTop(Application.MainForm.Handle, V);
+    if Assigned(fmSR) then
+      SetFormOnTop(fmSR.Handle, V);
   end;
 end;
 
