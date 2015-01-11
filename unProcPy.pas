@@ -1161,6 +1161,12 @@ const
   PROP_TAG                 = 30;
   PROP_LINE_STATE          = 31;
   PROP_KEEP_TRAIL_BLANKS   = 32;
+  PROP_KEEP_CARET_IN_TEXT  = 33;
+  PROP_AUTO_INDENT         = 34;
+  PROP_LAST_LINE_SHOW      = 35;
+  PROP_TAB_FILL            = 36;
+  PROP_WRAP_AT_MARGIN      = 37;
+
 
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1287,6 +1293,16 @@ begin
 
         PROP_KEEP_TRAIL_BLANKS:
           Result:= PyBool_FromLong(Ord(soKeepTrailingBlanks in Ed.Options));
+        PROP_KEEP_CARET_IN_TEXT:
+          Result:= PyBool_FromLong(Ord(soKeepCaretInText in Ed.Options));
+        PROP_AUTO_INDENT:
+          Result:= PyBool_FromLong(Ord(soAutoIndentMode in Ed.Options));
+        PROP_LAST_LINE_SHOW:
+          Result:= PyBool_FromLong(Ord(soScrollLastLine in Ed.Options));
+        PROP_TAB_FILL:
+          Result:= PyBool_FromLong(Ord(soOptimalFill in Ed.Options));
+        PROP_WRAP_AT_MARGIN:
+          Result:= PyBool_FromLong(Ord(soBreakOnRightMargin in Ed.Options));
 
         else
           Result:= ReturnNone;
@@ -1371,6 +1387,41 @@ begin
               Ed.Options:= Ed.Options + [soKeepTrailingBlanks]
             else
               Ed.Options:= Ed.Options - [soKeepTrailingBlanks];
+          end;
+        PROP_KEEP_CARET_IN_TEXT:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soKeepCaretInText]
+            else
+              Ed.Options:= Ed.Options - [soKeepCaretInText];
+          end;
+        PROP_AUTO_INDENT:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soAutoIndentMode]
+            else
+              Ed.Options:= Ed.Options - [soAutoIndentMode];
+          end;
+        PROP_LAST_LINE_SHOW:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soScrollLastLine]
+            else
+              Ed.Options:= Ed.Options - [soScrollLastLine];
+          end;
+        PROP_TAB_FILL:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soOptimalFill]
+            else
+              Ed.Options:= Ed.Options - [soOptimalFill];
+          end;
+        PROP_WRAP_AT_MARGIN:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soBreakOnRightMargin]
+            else
+              Ed.Options:= Ed.Options - [soBreakOnRightMargin];
           end;
       end;
 
