@@ -3381,8 +3381,8 @@ type
     procedure DoClearSearchHistory;
     procedure DoSetFrameTabColor(F: TEditorFrame; NColor: TColor);
     function DoAddGutterIcon(const fn: string): Integer;
-    function GetFrameEncoding(F: TEditorFrame): integer;
-    procedure ApplyFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
+    function DoGetFrameEncoding(F: TEditorFrame): integer;
+    procedure DoSetFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
     //end of public
   end;
 
@@ -3883,7 +3883,7 @@ begin
     Result:= DoAddTab(Groups.PagesCurrent, false);
 
   //reset encoding for new frame
-  ApplyFrameEncoding(Result, 0);
+  DoSetFrameEncoding(Result, 0);
 
   if FCanUseLexer(AFileName) then
     Result.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(AFileName)
@@ -8493,7 +8493,7 @@ begin
     end;
 end;
 
-procedure TfmMain.ApplyFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
+procedure TfmMain.DoSetFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
 begin
   if Frame<>nil then
   with Frame do
@@ -8537,7 +8537,7 @@ begin
   if Frame<>nil then
     with Frame do
     begin
-      ApplyFrameEncoding(Frame, AEnc);
+      DoSetFrameEncoding(Frame, AEnc);
 
       if ACanReload and (FileName <> '') then
         if (not Modified) or MsgEncReload then
@@ -13537,7 +13537,7 @@ procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
       else
         MI.OnClick:= MenuitemSetEncoding;
       MI.RadioItem:= true;
-      MI.Checked:= GetFrameEncoding(CurrentFrame) = Tag;
+      MI.Checked:= DoGetFrameEncoding(CurrentFrame) = Tag;
     end;
 
     if M is TSpTbxPopupMenu then
@@ -13577,7 +13577,7 @@ procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
       else
         MI.OnClick:= MenuitemSetEncoding;
       MI.RadioItem:= true;
-      MI.Checked:= GetFrameEncoding(CurrentFrame) = Tag;
+      MI.Checked:= DoGetFrameEncoding(CurrentFrame) = Tag;
       if not IsUnicode then
         MI.Enabled:= EncOK(Tag);
       M.Add(MI);
@@ -13661,7 +13661,7 @@ begin
   end;
 end;
 
-function TfmMain.GetFrameEncoding(F: TEditorFrame): integer;
+function TfmMain.DoGetFrameEncoding(F: TEditorFrame): integer;
 begin
   case F.EditorMaster.TextSource.Lines.TextCoding of
     tcUTF8:
@@ -26606,7 +26606,7 @@ begin
     Result:= Utf8Encode(F.FileName) + ';';
 
     if cSynHistoryEnc in opSaveEditor then
-      Add(Result, cFramePropEnc, IntToStr(GetFrameEncoding(F)));
+      Add(Result, cFramePropEnc, IntToStr(DoGetFrameEncoding(F)));
     Add(Result, cFramePropLexer, F.CurrentLexer);
     Add(Result, cFramePropWrap, IntToStr(Ord(F.EditorMaster.WordWrap)));
     Add(Result, cFramePropSplit, IntToStr(Ord(F.SplitHorz)) + ',' + IntToStr(Round(F.SplitPos)));
@@ -26679,7 +26679,7 @@ begin
         if (SId=cFramePropEnc) and (cSynHistoryEnc in opSaveEditor) then
           begin
             NVal:= StrToIntDef(SVal, 0);
-            ApplyFrameEncoding(F, NVal);
+            DoSetFrameEncoding(F, NVal);
           end
         else
           Continue;

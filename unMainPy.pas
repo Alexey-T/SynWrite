@@ -1372,7 +1372,7 @@ begin
     if Bool(PyArg_ParseTuple(Args, 'i:get_enc', @H)) then
     begin
       Ed:= PyEditor(H);
-      Value:= fmMain.GetFrameEncoding(fmMain.FrameOfEditor(Ed));
+      Value:= fmMain.DoGetFrameEncoding(fmMain.FrameOfEditor(Ed));
       Result:= PyInt_FromLong(Value);
     end;
 end;
@@ -1386,7 +1386,7 @@ begin
     if Bool(PyArg_ParseTuple(Args, 'ii:set_enc', @H, @Value)) then
     begin
       Ed:= PyEditor(H);
-      fmMain.ApplyFrameEncoding(fmMain.FrameOfEditor(Ed), Value);
+      fmMain.DoSetFrameEncoding(fmMain.FrameOfEditor(Ed), Value);
       fmMain.UpdateStatusBar;
       Result:= ReturnNone;
     end;
