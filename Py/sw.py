@@ -16,6 +16,14 @@ SEL_NORMAL = 0
 SEL_COLUMN = 1
 SEL_LINES  = 2
 
+EDENC_ANSI       = 0
+EDENC_OEM        = 1 
+EDENC_MAC        = 2 
+EDENC_UTF8_BOM   = -1 
+EDENC_UTF8_NOBOM = -2 
+EDENC_UTF16_LE   = -3 
+EDENC_UTF16_BE   = -4 
+
 GROUPING_ONE    = 1
 GROUPING_2HORZ  = 2
 GROUPING_2VERT  = 3
@@ -410,6 +418,11 @@ class Editor:
         return sw_api.ed_set_tabcolor(self.h, value)
     def get_indexes(self):
         return sw_api.ed_get_indexes(self.h)
+
+    def get_enc(self):
+        return sw_api.ed_get_enc(self.h)
+    def set_enc(self, value):
+        return sw_api.ed_set_enc(self.h, value)
 
     def get_top(self):
         return sw_api.ed_get_prop(self.h, PROP_TOP, '')

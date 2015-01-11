@@ -14,6 +14,8 @@ function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_filename(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_alerts(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_alerts(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_enc(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_enc(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_tabcolor(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_tabcolor(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_indexes(Self, Args: PPyObject): PPyObject; cdecl;
@@ -1357,6 +1359,36 @@ begin
       finally
         FreeAndNil(Dlg);
       end;
+    end;
+end;
+
+function Py_ed_get_enc(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H: Integer;
+  Value: Integer;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'i:get_enc', @H)) then
+    begin
+      Ed:= PyEditor(H);
+      Value:= fmMain.GetFrameEncoding(fmMain.FrameOfEditor(Ed));
+      Result:= PyInt_FromLong(Value);
+    end;
+end;
+
+function Py_ed_set_enc(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, Value: Integer;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'ii:set_enc', @H, @Value)) then
+    begin
+      Ed:= PyEditor(H);
+      fmMain.ApplyFrameEncoding(fmMain.FrameOfEditor(Ed), Value);
+      fmMain.UpdateStatusBar;
+      Result:= ReturnNone;
     end;
 end;
 

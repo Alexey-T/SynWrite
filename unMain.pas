@@ -2790,8 +2790,6 @@ type
     procedure DoInsertImageTag(const fn: string);
     function DoCheckUnicodeNeeded(Frame: TEditorFrame): boolean;
 
-    function GetFrameEncoding(F: TEditorFrame): integer;
-    procedure ApplyFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
     procedure ApplyFrameEncodingAndReload(Frame: TEditorFrame; AEnc: Integer;
       ACanReload: boolean = true);
     procedure MenuitemSetEncoding(Sender: TObject);
@@ -3383,6 +3381,8 @@ type
     procedure DoClearSearchHistory;
     procedure DoSetFrameTabColor(F: TEditorFrame; NColor: TColor);
     function DoAddGutterIcon(const fn: string): Integer;
+    function GetFrameEncoding(F: TEditorFrame): integer;
+    procedure ApplyFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
     //end of public
   end;
 
@@ -27274,6 +27274,8 @@ begin
     AddMethod('ed_get_tabcolor', Py_ed_get_tabcolor, '');
     AddMethod('ed_set_tabcolor', Py_ed_set_tabcolor, '');
     AddMethod('ed_get_indexes', Py_ed_get_indexes, '');
+    AddMethod('ed_get_enc', Py_ed_get_enc, '');
+    AddMethod('ed_set_enc', Py_ed_set_enc, '');
 
     AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
     AddMethod('ed_get_sel_lines', Py_ed_get_sel_lines, '');
