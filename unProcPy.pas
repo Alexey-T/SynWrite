@@ -1158,8 +1158,9 @@ const
   PROP_NON_PRINTED_SPACES  = 27;
   PROP_NON_PRINTED_ENDS    = 28;
   PROP_NON_PRINTED_ENDS_EX = 29;
-  PROP_TAG         = 30;
-  PROP_LINE_STATE  = 31;
+  PROP_TAG                 = 30;
+  PROP_LINE_STATE          = 31;
+  PROP_KEEP_TRAIL_BLANKS   = 32;
 
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1284,6 +1285,9 @@ begin
             Result:= PyInt_FromLong(NValue);
           end;
 
+        PROP_KEEP_TRAIL_BLANKS:
+          Result:= PyBool_FromLong(Ord(soKeepTrailingBlanks in Ed.Options));
+
         else
           Result:= ReturnNone;
       end;
@@ -1360,6 +1364,14 @@ begin
           end;
         PROP_TAG:
           Ed.UserTag:= StrVal;
+
+        PROP_KEEP_TRAIL_BLANKS:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soKeepTrailingBlanks]
+            else
+              Ed.Options:= Ed.Options - [soKeepTrailingBlanks];
+          end;
       end;
 
       Result:= ReturnNone;

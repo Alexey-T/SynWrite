@@ -3408,7 +3408,7 @@ function SynAppdataDir: string;
 
 const
   cSynVer = '6.14.1900';
-  cSynPyVer = '1.0.145';
+  cSynPyVer = '1.0.146';
 
 const
   cSynParamRO = '/ro';
