@@ -1045,8 +1045,6 @@ type
     acRereadOut: TAction;
     ecToggleFocusProject: TAction;
     TBXItemWinProj: TSpTbxItem;
-    ecInsertImage: TAction;
-    TBXItemHtmlInsImage: TSpTBXItem;
     ecToggleFocusMasterSlave: TAction;
     ecToggleSlave: TAction;
     ecRuler: TAction;
@@ -1843,7 +1841,6 @@ type
     procedure TBXItemLeftTreeClick(Sender: TObject);
     procedure TBXItemLeftProjClick(Sender: TObject);
     procedure ecToggleFocusProjectExecute(Sender: TObject);
-    procedure ecInsertImageExecute(Sender: TObject);
     procedure ecToggleFocusMasterSlaveExecute(Sender: TObject);
     procedure ecToggleSlaveExecute(Sender: TObject);
     procedure TBXItemSplitEdHorzClick(Sender: TObject);
@@ -2490,7 +2487,6 @@ type
     procedure DoDeleteRecentColor(N: Integer);
     function SynBorderStyle: TBorderStyle;
     function SynBorderStyleEditor: TBorderStyle;
-    function SynImagesDll: string;
     function DoAutoCloseBracket(ch: Widechar): boolean;
     function DoAutoCloseTag: boolean;
     function DoLoadStringFromIni(const fn: string): string;
@@ -2787,7 +2783,6 @@ type
     procedure DoExtractText;
     procedure DoAcpPopup;
     procedure DoFuncHintPopup;
-    procedure DoInsertImageTag(const fn: string);
     function DoCheckUnicodeNeeded(Frame: TEditorFrame): boolean;
 
     procedure ApplyFrameEncodingAndReload(Frame: TEditorFrame; AEnc: Integer;
@@ -3455,7 +3450,6 @@ uses
   cUtils,
 
   unSaveLex,
-  unProcImg,
   unSetup, unAbout, unEnc, unToolsList, unSRFiles, unExtractStr, unShell, unInsertText,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav,
@@ -6090,7 +6084,6 @@ begin
     sm_ToggleLineCommentAlt: ecToggleLineCommentAlt.Execute;
 
     sm_InsertColor: ecInsertColor.Execute;
-    sm_InsertImage: ecInsertImage.Execute;
     sm_GotoSelectionStartEnd: EditorJumpSelectionStartEnd(Ed);
     sm_GotoBookmarkDialog: ecGotoBk.Execute;
     sm_ReplaceFromClipAll: ecReplaceSelFromClipAll.Execute;
@@ -10049,7 +10042,6 @@ begin
   UpdKey(TbxItemEExtr, sm_ExtractTextDialog);
   UpdKey(TbxItemETime, sm_InsertDateTime);
   UpdKey(TbxItemHtmlInsColor, sm_InsertColor);
-  UpdKey(TbxItemHtmlInsImage, sm_InsertImage);
 
   UpdKey(TBXItemFExit, sm_FileExit);
   UpdKey(TBXItemFClearRecents, sm_ClearFilesHistory);
@@ -19444,55 +19436,6 @@ begin
     opAutoCloseBracketsNoEsc);
 end;
 
-function TfmMain.SynImagesDll: string;
-begin
-  Result:= SynDir + 'Tools\Images.dll';
-end;
-
-procedure TfmMain.ecInsertImageExecute(Sender: TObject);
-const
-  filter = 'Images|*.jpg;*.jpeg;*.png;*.gif;*.bmp|';
-var
-  fn: string;
-begin
-  if CurrentEditor.ReadOnly then Exit;
-  //if not IsLexerWithImages(CurrentLexer) then
-  //  begin MsgBeep; Exit end;
-
-  fn:= '';
-  if PromptForFileName(fn, filter, '', '', ExtractFileDir(CurrentFrame.FileName)) then
-    DoInsertImageTag(fn);
-end;
-
-procedure TfmMain.DoInsertImageTag(const fn: string);
-var
-  fn_wdx, dir, s: string;
-  IsCss: boolean;
-  Ed: TSyntaxMemo;
-  Frame: TEditorFrame;
-begin
-  Ed:= CurrentEditor;
-  Frame:= CurrentFrame;
-  if Ed.ReadOnly then Exit;
-
-  fn_wdx:= SynImagesDll;
-  if not IsFileExist(fn_wdx) then
-    begin MsgNoFile(fn_wdx); Exit end;
-
-  IsCss:= IsLexerCss(CurrentLexer);
-  dir:= ExtractFileDir(Frame.FileName);
-  s:= SGetImageTag(fn, fn_wdx, dir, IsCss, EditorEOL(Ed));
-  if s='' then
-    begin DoHint('Cannot insert tag: '+fn); MsgBeep; Exit end;
-
-  with Ed do
-  begin
-    InsertText(s);
-    CaretStrPos:= CaretStrPos - Length(s) +
-      IfThen(IsCss, Pos('url(', s)+4, Pos('"', s));
-  end;
-end;
-
 procedure TfmMain.ecToggleFocusMasterSlaveExecute(Sender: TObject);
 begin
   with CurrentFrame do
@@ -20032,10 +19975,6 @@ begin
   //drop item to Project tree
   if IntoProj then
     fmProj.DoDropItem(fn)
-  else
-  //insert image tag
-  if SFileExtensionMatch(fn, 'jpg,jpeg,gif,png,bmp') then
-    DoInsertImageTag(fn)
   else
   //open file in editor
   if IsDirExist(fn) then

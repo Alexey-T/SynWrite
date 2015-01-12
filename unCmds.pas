@@ -222,7 +222,6 @@ const
   sm_ReplaceFromClip = 882; //not used
   sm_ReplaceFromClipAll = 883;
   sm_RereadOutputPanel = 884;
-  sm_InsertImage = 885;
   sm_OnlineSearchHTML4 = 886;
   sm_OnlineSearchHTML5 = 887;
   sm_LoremIpsumDialog = 888;
