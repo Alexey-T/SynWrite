@@ -9173,9 +9173,9 @@ object SyntaxManager: TSyntaxManager
       'Color'
       'Number')
     Extentions = 'css'
-    LexerName = 'Style sheets'
+    LexerName = 'CSS'
     Notes.Strings = (
-      'Author: Alex, uvviewsoft.com'
+      'Author: Alex (Synwrite)'
       'Added misspelled properties underlining.'
       ''
       'Known properties: http://htmlbook.ru'

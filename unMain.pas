@@ -3407,7 +3407,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.15.1900';
+  cSynVer = '6.15.1902';
   cSynPyVer = '1.0.146';
 
 const
@@ -3543,7 +3543,7 @@ end;
 
 
 const
-  cLexerCss = 'Style sheets';
+  cLexerCss = 'CSS';
   cLexerCssList = 'LESS,SASS,SCSS,Sass,Stylus';
   cLexerText = 'Text files';
   cLexerIni = 'Ini files';
