@@ -434,7 +434,6 @@ cmd_GotoSelectionStartEnd = 881
 cmd_ReplaceFromClip = 882 #not used
 cmd_ReplaceFromClipAll = 883
 cmd_RereadOutputPanel = 884
-cmd_InsertImage = 885
 cmd_OnlineSearchHTML4 = 886
 cmd_OnlineSearchHTML5 = 887
 cmd_LoremIpsumDialog = 888

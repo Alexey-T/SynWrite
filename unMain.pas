@@ -16559,6 +16559,14 @@ var
 begin
   Result:= true;
 
+  //don't show messages if all tabs closed
+  if (FrameAllCount=1) and
+    (Frames[0].FileName='') and
+    (not Frames[0].Modified) then
+  begin
+    Exit
+  end;  
+
   if ExitCmd and opHistSessionSave then
   begin
     //save last session (named of default)
