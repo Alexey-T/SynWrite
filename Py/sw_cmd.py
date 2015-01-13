@@ -429,7 +429,6 @@ cmd_FindPrevAndExtendSel = 876
 cmd_JumpToLastMarker = 877
 cmd_OpenCurrentFile = 878
 cmd_SelectToken = 879
-cmd_InsertColor = 880
 cmd_GotoSelectionStartEnd = 881
 cmd_ReplaceFromClip = 882 #not used
 cmd_ReplaceFromClipAll = 883

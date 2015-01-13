@@ -105,6 +105,11 @@ class Command:
                 continue
                 
             url = get_item_url(url1)
+            while not url:
+                if not msg_box(MSG_CONFIRM, 'Cannot resolve URL for "%s".\nRetry?' % name):
+                    break
+                url = get_item_url(url1)
+            
             if not url:
                 bads += [url1]
                 print('Invalid url: '+name+': '+url1)

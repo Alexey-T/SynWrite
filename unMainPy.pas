@@ -504,21 +504,21 @@ begin
   end;
 end;
 
-function Py_ed_find(Self, Args: PPyObject): PPyObject; cdecl;
 const
-  cFlag_Case     = 1;
-  cFlag_Words    = 1 shl 1;
-  cFlag_Back     = 1 shl 2;
-  cFlag_Sel      = 1 shl 3;
-  cFlag_Entire   = 1 shl 4;
-  cFlag_Regex    = 1 shl 5;
-  cFlag_Regex_S  = 1 shl 6;
-  //cFlag_Regex_M  = 1 shl 7;
-  cFlag_Prompt   = 1 shl 8;
-  cFlag_Wrap     = 1 shl 9;
-  cFlag_SkipCol  = 1 shl 10;
-  cFlag_Bkmk     = 1 shl 14;
-  cFlag_ExtSel   = 1 shl 15;
+  Find_op_Case     = 1;
+  Find_op_Words    = 1 shl 1;
+  Find_op_Back     = 1 shl 2;
+  Find_op_Sel      = 1 shl 3;
+  Find_op_Entire   = 1 shl 4;
+  Find_op_Regex    = 1 shl 5;
+  Find_op_Regex_S  = 1 shl 6;
+  Find_op_Prompt   = 1 shl 8;
+  Find_op_Wrap     = 1 shl 9;
+  Find_op_SkipCol  = 1 shl 10;
+  Find_op_Bkmk     = 1 shl 14;
+  Find_op_ExtSel   = 1 shl 15;
+
+function Py_ed_find(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H: Integer;
   Ed: TSyntaxMemo;
@@ -545,19 +545,19 @@ begin
       ATokens:= TSearchTokens(NTokens);
 
       AOptions:= [];
-      if (NOptions and cFlag_Case)<>0 then Include(AOptions, ftCaseSens);
-      if (NOptions and cFlag_Words)<>0 then Include(AOptions, ftWholeWords);
-      if (NOptions and cFlag_Back)<>0 then Include(AOptions, ftBackward);
-      if (NOptions and cFlag_Sel)<>0 then Include(AOptions, ftSelectedText);
-      if (NOptions and cFlag_Entire)<>0 then Include(AOptions, ftEntireScope);
-      if (NOptions and cFlag_Regex)<>0 then Include(AOptions, ftRegex);
-      if (NOptions and cFlag_Regex_S)<>0 then Include(AOptions, ftRegex_s);
-      //if (NOptions and cFlag_Regex_M)<>0 then Include(AOptions, ftRegex_m);
-      if (NOptions and cFlag_Prompt)<>0 then Include(AOptions, ftPromtOnReplace);
-      if (NOptions and cFlag_Wrap)<>0 then Include(AOptions, ftWrapSearch);
-      if (NOptions and cFlag_SkipCol)<>0 then Include(AOptions, ftSkipCollapsed);
-      AOptBkmk:= (NOptions and cFlag_Bkmk)<>0;
-      AOptExtSel:= (NOptions and cFlag_ExtSel)<>0;
+      if (NOptions and Find_op_Case)<>0 then Include(AOptions, ftCaseSens);
+      if (NOptions and Find_op_Words)<>0 then Include(AOptions, ftWholeWords);
+      if (NOptions and Find_op_Back)<>0 then Include(AOptions, ftBackward);
+      if (NOptions and Find_op_Sel)<>0 then Include(AOptions, ftSelectedText);
+      if (NOptions and Find_op_Entire)<>0 then Include(AOptions, ftEntireScope);
+      if (NOptions and Find_op_Regex)<>0 then Include(AOptions, ftRegex);
+      if (NOptions and Find_op_Regex_S)<>0 then Include(AOptions, ftRegex_s);
+      //if (NOptions and Find_op_Regex_M)<>0 then Include(AOptions, ftRegex_m);
+      if (NOptions and Find_op_Prompt)<>0 then Include(AOptions, ftPromtOnReplace);
+      if (NOptions and Find_op_Wrap)<>0 then Include(AOptions, ftWrapSearch);
+      if (NOptions and Find_op_SkipCol)<>0 then Include(AOptions, ftSkipCollapsed);
+      AOptBkmk:= (NOptions and Find_op_Bkmk)<>0;
+      AOptExtSel:= (NOptions and Find_op_ExtSel)<>0;
 
       try
         NFindRes:= fmMain.DoFindCommand(Ed, AAction, AText1, AText2, AOptions, ATokens, AOptBkmk, AOptExtSel);
