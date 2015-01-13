@@ -19662,44 +19662,35 @@ end;
 procedure TfmMain.ecLoremIpsumExecute(Sender: TObject);
 var
   res: TModalResult;
-  AMode: TLoremMode;
   ACnt: integer;
-  ATags: boolean;
-  fn: string;
+  AIsPara: boolean;
+  AIsTags: boolean;
   s: string;
-  List: TStringList;
 begin
   if CurrentEditor.ReadOnly then Exit;
-
-  fn:= SynDir+'Tools\Lorem.txt';
-  if not IsFileExist(fn) then
-    begin MsgNoFile(fn); Exit end;
 
   with TfmLoremIpsum.Create(nil) do
   try
     cbTags.Checked:= IsLexerHTML(CurrentLexer);
     with TIniFile.Create(SynHistoryIni) do
     try
-      case ReadInteger('Win', 'LoremTyp', 0) of
-        0: cbSent.Checked:= true;
-        1: cbPara.Checked:= true;
-      end;
       edCount.Value:= ReadInteger('Win', 'LoremCnt', 5);
+      cbPara.Checked:= ReadBool('Win', 'LoremTyp', false);
+      cbSent.Checked:= not cbPara.Checked;
     finally
       Free
     end;
+
     res:= ShowModal; //mrOk: Insert, mrYes: Copy
     if res=mrCancel then Exit;
 
-    if cbSent.Checked then AMode:= swSent else
-     if cbPara.Checked then AMode:= swPara else
-      AMode:= swSent;
     ACnt:= edCount.Value;
-    ATags:= cbTags.Checked;
+    AIsPara:= cbPara.Checked;
+    AIsTags:= cbTags.Checked;
 
     with TIniFile.Create(SynHistoryIni) do
     try
-      WriteInteger('Win', 'LoremTyp', Ord(AMode));
+      WriteBool('Win', 'LoremTyp', AIsPara);
       WriteInteger('Win', 'LoremCnt', ACnt);
     finally
       Free
@@ -19708,14 +19699,7 @@ begin
     Free;
   end;
 
-  List:= TStringList.Create;
-  try
-    List.LoadFromFile(fn);
-    s:= SLoremIpsum(List, AMode, ACnt, ATags, EditorEOL(CurrentEditor));
-  finally
-    FreeAndNil(List);
-  end;
-
+  s:= SLoremIpsum(ACnt, AIsPara, AIsTags);
   if res=mrOk then
     CurrentEditor.InsertText(s)
   else
