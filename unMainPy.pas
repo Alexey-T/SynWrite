@@ -1135,15 +1135,15 @@ begin
 end;
 
 const
-  PROC_GET_CLIP        = 1;
-  PROC_SET_CLIP        = 2;
-  PROC_LOCK_STATUS     = 3;
-  PROC_UNLOCK_STATUS   = 4;
-  PROC_SOUND           = 5;
-  PROC_COLOR_PICKER    = 6;
-  PROC_COLOR_PICKER_EX = 7;
-  PROC_REPORT_KEYS     = 8;
-  PROC_ADD_GUTTER_ICON = 9;   
+  PROC_GET_CLIP         = 1;
+  PROC_SET_CLIP         = 2;
+  PROC_LOCK_STATUS      = 3;
+  PROC_UNLOCK_STATUS    = 4;
+  PROC_SOUND            = 5;
+  PROC_COLOR_PICKER     = 6;
+  PROC_ADD_RECENT_COLOR = 7;
+  PROC_REPORT_KEYS      = 8;
+  PROC_ADD_GUTTER_ICON  = 9;   
 
 function Py_app_proc(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1207,11 +1207,12 @@ begin
             end;
           end;
 
-        PROC_COLOR_PICKER_EX:
+        PROC_ADD_RECENT_COLOR:
           begin
-            NValue:= StrToIntDef(Str, 0);
-            NValue:= fmMain.DoShowColorPickerEx(NValue);
-            Result:= PyInt_FromLong(NValue);
+            NValue:= StrToIntDef(Str, -1);
+            if NValue>=0 then
+              fmMain.DoAddRecentColor(NValue);
+            Result:= ReturnNone;
           end;
 
         PROC_REPORT_KEYS:

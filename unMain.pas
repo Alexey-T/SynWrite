@@ -2482,7 +2482,6 @@ type
     procedure RecentColorClick(Sender: TObject);
     procedure RecentColorOpen(Sender: TObject);
     procedure RecentColorSave(Sender: TObject);
-    procedure DoAddRecentColor(N: Integer);
     procedure DoInitRecentColorsMenu;
     procedure DoDeleteRecentColor(N: Integer);
     function SynBorderStyle: TBorderStyle;
@@ -3378,6 +3377,7 @@ type
     function DoAddGutterIcon(const fn: string): Integer;
     function DoGetFrameEncoding(F: TEditorFrame): integer;
     procedure DoSetFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
+    procedure DoAddRecentColor(N: Integer);
     //end of public
   end;
 
