@@ -21,7 +21,7 @@ xxxxxx xxxxxx.
 <empty line at end not needed>
 }
 type
-  TLoremMode = (swSent, swPara{, swWords});
+  TLoremMode = (swSent, swPara);
 
 function SLoremIpsum(List: TStringList; AMode: TLoremMode;
   ACount: integer; AHtmlTag: boolean; const AEol: string): string;
@@ -31,22 +31,15 @@ implementation
 uses
   SysUtils;
 
-    {
-function SGetWord(var s: string): string;
-var
-  i: Integer;
+function _AddPara(const AText, AEol: string; AHtmlTag: boolean): string;
 begin
+  if AHtmlTag then
+    Result:= '<p>'+Trim(AText)+'</p>'+AEol
+  else
+    Result:= Trim(AText)+AEol+AEol;
 end;
-}
 
 function SLoremIpsum(List: TStringList; AMode: TLoremMode; ACount: integer; AHtmlTag: boolean; const AEol: string): string;
-  function ParaAdd(const s: string): string;
-  begin
-    if AHtmlTag then
-      Result:= '<p>'+Trim(s)+'</p>'+AEol
-    else
-      Result:= Trim(s)+AEol+AEol;
-  end;
 var
   i, k, NTotal: Integer;
   s, sList: string;
@@ -92,7 +85,7 @@ begin
         sList:= List[i mod NTotal];
         if sList='' then
         begin
-          Result:= Result+ParaAdd(s);
+          Result:= Result+_AddPara(s, AEol, AHtmlTag);
           s:= '';
           Inc(k);
           if k>=ACount then Break;
