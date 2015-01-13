@@ -74,6 +74,7 @@ const
   cIconsDefault = 'Fugue 24x24';
   cMaxSectionsInInf = 120;
   cMaxLexerLinksInInf = 20;
+  cColorIdxMin = 4; //index in "Recent colors" after "Clear list" and separator
 
 const
   cPyConsoleMaxCount = 1000;
@@ -1035,8 +1036,6 @@ type
     TBXItemTreeFindCopyToClipNode: TSpTbxItem;
     TBXItemFProps: TSpTbxItem;
     acProps: TAction;
-    ecInsertColor: TAction;
-    TBXItemHtmlInsColor: TSpTBXItem;
     TBXSeparatorItem71: TSpTbxSeparatorItem;
     TBXItemClipCopyToEd: TSpTbxItem;
     TBXItemClipCopyToClip: TSpTbxItem;
@@ -1833,7 +1832,6 @@ type
     procedure TBXItemFPropsClick(Sender: TObject);
     procedure acPropsExecute(Sender: TObject);
     procedure TemplatePopupShow(Sender: TObject);
-    procedure ecInsertColorExecute(Sender: TObject);
     procedure TBXItemClipCopyToEdClick(Sender: TObject);
     procedure TBXItemClipCopyToClipClick(Sender: TObject);
     procedure ecReplaceSelFromClipAllExecute(Sender: TObject);
@@ -2332,10 +2330,9 @@ type
 
     FMenuItems: array of  //array of menu-items ids for SynHide.ini
       record Id: string; Item: TComponent; end;
-    FMenuItem_Colors_Clear, //menu-items (4) in "Recent colors" menu
+    FMenuItem_Colors_Clear, //menu-items (3) in "Recent colors" menu
     FMenuItem_Colors_Save,
-    FMenuItem_Colors_Open,
-    FMenuItem_Colors_Select: TSpTbxItem;
+    FMenuItem_Colors_Open: TSpTbxItem;
 
     FinderPro: TGauge;  //current TGauge for progress showing
     FinderProNum: integer; //previous "NN%" progress value
@@ -3368,7 +3365,6 @@ type
       const Opt: TSearchOptions;
       const Tok: TSearchTokens;
       OptBkmk, OptExtSel: boolean): Integer;
-    function DoShowColorPickerEx(NColor: TColor): Integer;
     procedure DoPyUpdateEvents(const APluginName, AEventStr, ALexersStr: string);
     function GetEditorByIndex(APagesIndex, ATabIndex, AMasterIndex: Integer): TSyntaxMemo;
     procedure GetEditorIndexes(Ed: TSyntaxMemo; var AGroupIndex, ATabIndex: Integer);
@@ -3402,7 +3398,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.15.1902';
+  cSynVer = '6.15.1905';
   cSynPyVer = '1.0.146';
 
 const
@@ -6083,7 +6079,6 @@ begin
     sm_SortDialog: ecSortDialog.Execute;
     sm_ToggleLineCommentAlt: ecToggleLineCommentAlt.Execute;
 
-    sm_InsertColor: ecInsertColor.Execute;
     sm_GotoSelectionStartEnd: EditorJumpSelectionStartEnd(Ed);
     sm_GotoBookmarkDialog: ecGotoBk.Execute;
     sm_ReplaceFromClipAll: ecReplaceSelFromClipAll.Execute;
@@ -10041,7 +10036,6 @@ begin
   UpdKey(TBXItemESyncEd, sm_ToggleSyncEditing);
   UpdKey(TbxItemEExtr, sm_ExtractTextDialog);
   UpdKey(TbxItemETime, sm_InsertDateTime);
-  UpdKey(TbxItemHtmlInsColor, sm_InsertColor);
 
   UpdKey(TBXItemFExit, sm_FileExit);
   UpdKey(TBXItemFClearRecents, sm_ClearFilesHistory);
@@ -18923,45 +18917,6 @@ begin
     DoHint('');
 end;
 
-function TfmMain.DoShowColorPickerEx(NColor: TColor): Integer;
-var
-  fn: string;
-  Code: Cardinal;
-begin
-  Result:= -1;
-
-  fn:= SynDir + 'Tools\ColorPicker.exe';
-  if not IsFileExist(fn) then
-    begin MsgBeep; Exit end;
-
-  if FExecuteGetCode(fn, IntToStr(NColor), sw_show, true, Code) then
-    Result:= Code;
-end;
-
-procedure TfmMain.ecInsertColorExecute(Sender: TObject);
-var
-  code, NColor: Integer;
-  wStart, wEnd: Integer;
-begin
-  //auto-compelete may mess up with color picker
-  ecACP.CloseUp(false);
-
-  if CurrentEditor.ReadOnly then
-    begin MsgBeep; Exit end;
-
-  EditorGetColorCodeRange(CurrentEditor, wStart, wEnd, NColor);
-  code:= DoShowColorPickerEx(NColor);
-
-  if code>=0 then
-  begin
-    EditorInsertColorCode(CurrentEditor, code);
-    DoAddRecentColor(code);
-    {$ifndef FixRepaint}
-    DoRepaintTBs;
-    {$endif}
-  end;
-end;
-
 procedure TfmMain.ApplyShowRecentColors;
 begin
   case opShowRecentColors of
@@ -18985,10 +18940,6 @@ begin
 
   ApplyShowRecentColors;
 end;
-
-//index in "Recent colors" after "Clear list" and separator
-const
-  cColorIdxMin = 5;
 
 procedure TfmMain.DoAddRecentColor(N: Integer);
 var
@@ -19915,13 +19866,6 @@ begin
     if Count=0 then
     begin
       Item:= TSpTbxItem.Create(Self);
-      Item.Caption:= 'Select color...';
-      Item.Tag:= -1;
-      Item.Action:= ecInsertColor;
-      Add(Item);
-      FMenuItem_Colors_Select:= Item;
-
-      Item:= TSpTbxItem.Create(Self);
       Item.Caption:= 'Clear list';
       Item.Tag:= -1;
       Item.OnClick:= RecentColorClick;
@@ -19959,10 +19903,8 @@ begin
       FMenuItem_Colors_Clear.Caption:= SStripFromTab(TBXItemFClearRecents.Caption);
       FMenuItem_Colors_Save.Caption:= SStripFromTab(TBXItemFSaveAs.Caption);
       FMenuItem_Colors_Open.Caption:= SStripFromTab(TBXItemFOpen.Caption);
-      FMenuItem_Colors_Select.Caption:= SStripFromTab(TBXItemHtmlInsColor.Caption);
 
       en:= ImageListColorRecent.Count>1;
-      FMenuItem_Colors_Select.Enabled:= not CurrentEditor.ReadOnly;
       FMenuItem_Colors_Save.Enabled:= en;
       FMenuItem_Colors_Clear.Enabled:= en;
     end;

@@ -217,7 +217,6 @@ const
   sm_JumpToLastMarker = 877;
   sm_OpenCurrentFile = 878;
   sm_SelectToken = 879;
-  sm_InsertColor = 880;
   sm_GotoSelectionStartEnd = 881;
   sm_ReplaceFromClip = 882; //not used
   sm_ReplaceFromClipAll = 883;
