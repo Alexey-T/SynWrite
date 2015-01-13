@@ -2706,7 +2706,7 @@ begin
 
     with cbZenProfile do
     begin
-      fn:= SynDir + 'Tools\emmet.txt';
+      fn:= SynDir + 'Tools\EmmetProfiles.txt';
       if FileExists(fn) then
       begin
         Items.LoadFromFile(fn);
