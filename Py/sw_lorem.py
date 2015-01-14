@@ -37,13 +37,13 @@ def gettext(count, is_para, is_html_tags):
         _TEXT   = _TEXT.replace(chr(13)         , chr(10))                  # for all types of EOLs
         _TEXT   = _TEXT.replace(chr(10)+chr(10) , chr(10))                  # for all types of EOLs
         sents   = _TEXT.split(chr(10))                                      # for all types of EOLs
-        sents   = [sent for sent in sents if 0!=len(sent.replace(' ', ''))] # delete sent if blanks only
+        sents   = [s for s in sents if s.strip()]                           # delete blank sents
         sents   = sents * (count//len(sents)) + sents[: count%len(sents)]
         s = ' '.join(sents)
     return s + eol
 
 
-TEXT___ = """
+TEXT_tst = """
 a1) aaaaa aaaa aaaaaaa.
 a2) bbbbbb bbbbbbb bb bbb.
 
