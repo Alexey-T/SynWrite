@@ -386,7 +386,6 @@ cmd_OnlineSearchGoogle = 836
 cmd_OnlineSearchWikipedia = 837
 cmd_OnlineSearchMsdn = 838
 cmd_MacrosDialog = 839
-cmd_OpenBrowserPreview = 840
 
 cmd_BookmarksClear = 841
 cmd_BookmarksToggle = 842

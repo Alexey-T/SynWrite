@@ -835,7 +835,6 @@ type
     acMacroPlay: TecMacroPlay;
     acMacroDialog: TAction;
     ecMacroRec: TecMacroRecorder;
-    TBXItemHtmlPreview: TSpTBXItem;
     TBXSeparatorItem52: TSpTbxSeparatorItem;
     acMacro1: TAction;
     acMacro2: TAction;
@@ -2077,7 +2076,6 @@ type
     procedure StatusResize(Sender: TObject);
     procedure acSetupLexerLibExecute(Sender: TObject);
     procedure TbxItemTabReloadClick(Sender: TObject);
-    procedure TBXItemHtmlPreviewClick(Sender: TObject);
     procedure TBXSubmenuViewToolbarsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TimerMinimapTimer(Sender: TObject);
@@ -2837,7 +2835,6 @@ type
 
     procedure DoOpenInBrowser(const fn: Widestring);
     procedure DoOpenBySelection;
-    procedure DoOpenBrowserPreview;
     procedure DoOpenCurrentFile;
     procedure DoOpenCurrentDir;
     procedure DoOpenCmdPrompt;
@@ -6057,7 +6054,6 @@ begin
     sm_OpenBrowserIE: DoOpenInBrowser('iexplore.exe');
     sm_OpenBrowserChrome: DoOpenInBrowser('chrome.exe');
     sm_OpenBrowserSafari: DoOpenInBrowser('safari.exe');
-    sm_OpenBrowserPreview: DoOpenBrowserPreview;
     sm_OpenCurrentFile: DoOpenCurrentFile;
     sm_OpenCurrentFolder: DoOpenCurrentDir;
     sm_OpenCmdPrompt: DoOpenCmdPrompt;
@@ -10059,9 +10055,7 @@ begin
   UpdKey(tbxItemMarkColl, smCollectMarker);
   UpdKey(tbxItemMarkSwap, smSwapMarker);
 
-  UpdKey(TbxItemHtmlPreview, sm_OpenBrowserPreview);
   UpdKey(TbxItemHtmlLoremIpsum, sm_LoremIpsumDialog);
-
   UpdKey(TbxItemRunOpenFile, sm_OpenCurrentFile);
   UpdKey(TbxItemRunOpenDir, sm_OpenCurrentFolder);
   UpdKey(TbxItemRunNumConv, sm_NumericConverterDialog);
@@ -15722,40 +15716,6 @@ begin
   ecMacroRec.SaveToFile(SynMacrosIni);
   PropsManagerKeys.IniFileName:= SynIni;
   PropsManagerKeys.SaveProps;
-end;
-
-procedure TfmMain.DoOpenBrowserPreview;
-var
-  Ed: TSyntaxMemo;
-  s: Widestring;
-  fn, dir: Widestring;
-begin
-  Ed:= CurrentEditor;
-  if Ed=nil then Exit;
-
-  if Ed.SelLength>0 then
-    s:= Ed.SelText
-  else
-    s:= Ed.Lines.FText;
-  if Trim(s)='' then
-    begin MsgNoSelection; Exit end;
-
-  if CurrentFrame.FileName='' then
-    dir:= FTempDir
-  else
-    dir:= ExtractFileDir(CurrentFrame.FileName);
-  fn:= dir+'\_synwrite_preview.html';
-
-  FDelete(fn);
-  FWriteStringToFile(fn, s, Ed.Lines.TextCoding<>tcAnsi);
-
-  if IsFileExist(fn) then
-  begin
-    DoRememberTempFile(fn);
-    FExecute(fn, '', '', Handle);
-  end
-  else
-    MsgBeep;
 end;
 
 procedure TfmMain.DoMacro_Run(n: Integer);
@@ -25433,11 +25393,6 @@ end;
 procedure TfmMain.TbxItemTabReloadClick(Sender: TObject);
 begin
   DoFrameReloadWrapper(FClickedFrame);
-end;
-
-procedure TfmMain.TBXItemHtmlPreviewClick(Sender: TObject);
-begin
-  DoOpenBrowserPreview;
 end;
 
 function TfmMain.SynHiddenOption(const Id: string; Default: integer): Integer;

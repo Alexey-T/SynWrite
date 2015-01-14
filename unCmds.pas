@@ -174,7 +174,6 @@ const
   sm_OnlineSearchWikipedia = 837;
   sm_OnlineSearchMsdn = 838;
   sm_MacrosDialog = 839;
-  sm_OpenBrowserPreview = 840;
 
   sm_BookmarksClear = 841;
   sm_BookmarksToggle = 842;
