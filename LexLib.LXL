@@ -323,14 +323,22 @@ object SyntaxManager: TSyntaxManager
             TokenTypes = 8
           end
           item
+            CondType = tcSkip
+            TokenTypes = 2
+          end
+          item
             TokenTypes = 4
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 2
           end
           item
             TokenTypes = 4
           end>
         BlockEnd = '}'
         NotCollapsed = True
-        NameFmt = '%s-1'
+        NameFmt = '%sz-1'
         RefToCondEnd = True
         HighlightPos = cpBound
         NoEndRule = True
@@ -969,7 +977,15 @@ object SyntaxManager: TSyntaxManager
             TokenTypes = 8
           end
           item
+            CondType = tcSkip
+            TokenTypes = 2
+          end
+          item
             TokenTypes = 4
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 2
           end
           item
             TokenTypes = 4
@@ -977,6 +993,7 @@ object SyntaxManager: TSyntaxManager
         IdentIndex = -1
         BlockOffset = -1
         BlockEnd = 'func end'
+        NameFmt = '%sz-1'
         RefToCondEnd = True
         HighlightPos = cpBound
         CollapseFmt = '%sz-1...'
