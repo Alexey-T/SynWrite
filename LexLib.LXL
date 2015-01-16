@@ -7202,7 +7202,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Tag param'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlue
+        Font.Color = clTeal
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
@@ -15956,15 +15956,15 @@ object SyntaxManager: TSyntaxManager
   object SyntAnal90: TLibSyntAnalyzer
     Formats = <
       item
-        DisplayName = 'Comm'
+        DisplayName = 'Comment'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clGreen
+        Font.Color = clGray
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsItalic]
       end
       item
-        DisplayName = 'Str'
+        DisplayName = 'String'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -13
@@ -15972,9 +15972,17 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Num'
+        DisplayName = 'Number'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clHighlight
+        Font.Color = clNavy
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsBold]
+      end
+      item
+        DisplayName = 'Symbol'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clMaroon
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
@@ -15982,66 +15990,39 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Id'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = cl3DDkShadow
+        Font.Color = clBlack
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
       end
       item
-        DisplayName = 'IdReserv'
+        DisplayName = 'Id reserved'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clHotLight
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'IdFunc'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 11993271
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsItalic]
-      end
-      item
-        DisplayName = 'IdStandard'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 8388863
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsUnderline]
-        BorderColorBottom = 4605510
-      end
-      item
-        DisplayName = 'Symbol'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 8421631
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'Current block'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 28416
+        Font.Color = clNavy
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
-        BgColor = clLime
-        FormatType = ftColor
-        BorderTypeLeft = blSolid
-        BorderColorLeft = clGreen
-        BorderTypeTop = blSolid
-        BorderColorTop = clGreen
-        BorderTypeRight = blSolid
-        BorderColorRight = clGreen
-        BorderTypeBottom = blSolid
-        BorderColorBottom = clGreen
+      end
+      item
+        DisplayName = 'Id func'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clGreen
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+      end
+      item
+        DisplayName = 'Id standard'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clPurple
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
       end>
     TokenRules = <
       item
         DisplayName = 'CommLongBracket'
-        StyleName = 'Comm'
+        StyleName = 'Comment'
         TokenType = 1
         Expression = '(?s)-- \[\[ .*? (\]\] | \Z)'
         ColumnFrom = 0
@@ -16049,7 +16030,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'CommLongBracket2'
-        StyleName = 'Comm'
+        StyleName = 'Comment'
         TokenType = 1
         Expression = '(?s)-- \[(=+)\[ .*? (\]\1\] | \Z)'
         ColumnFrom = 0
@@ -16057,7 +16038,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Comm'
-        StyleName = 'Comm'
+        StyleName = 'Comment'
         TokenType = 1
         Expression = '--.*$'
         ColumnFrom = 0
@@ -16065,7 +16046,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'StrLongBracket'
-        StyleName = 'Str'
+        StyleName = 'String'
         TokenType = 4
         Expression = '(?s)\[\[ .*? (\]\] | \Z)'
         ColumnFrom = 0
@@ -16073,7 +16054,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'StrLongBracket2'
-        StyleName = 'Str'
+        StyleName = 'String'
         TokenType = 4
         Expression = '(?s)\[(=+)\[ .*? (\]\1\] | \Z)'
         ColumnFrom = 0
@@ -16081,7 +16062,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Str'
-        StyleName = 'Str'
+        StyleName = 'String'
         TokenType = 4
         Expression = '("|'#39')(\\"|\\'#39'|.)*?(\1|$)'
         ColumnFrom = 0
@@ -16089,7 +16070,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = '_IdFunc1'
-        StyleName = 'IdFunc'
+        StyleName = 'Id func'
         TokenType = 10
         Expression = '[\w\.:]+(?=\s*=\s*function\s*\()'
         ColumnFrom = 0
@@ -16097,7 +16078,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = '_IdFunc2'
-        StyleName = 'IdFunc'
+        StyleName = 'Id func'
         TokenType = 10
         Expression = '(?<=function\x20+)[\w\.:]+'
         ColumnFrom = 0
@@ -16121,7 +16102,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'NumHex'
-        StyleName = 'Num'
+        StyleName = 'Number'
         TokenType = 7
         Expression = '0x[A-Fa-f0-9]+'
         ColumnFrom = 0
@@ -16129,7 +16110,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'NumFlo'
-        StyleName = 'Num'
+        StyleName = 'Number'
         TokenType = 6
         Expression = '\d+(\.\d+)? e[\+\-]?\d+ |'#13#10'\d+\.\d+ '
         ColumnFrom = 0
@@ -16137,7 +16118,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Num'
-        StyleName = 'Num'
+        StyleName = 'Number'
         TokenType = 5
         Expression = '\d+'
         ColumnFrom = 0
@@ -16146,7 +16127,7 @@ object SyntaxManager: TSyntaxManager
     BlockRules = <
       item
         DisplayName = 'Res'
-        StyleName = 'IdReserv'
+        StyleName = 'Id reserved'
         BlockType = btTagDetect
         ConditionList = <
           item
@@ -16179,7 +16160,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Std'
-        StyleName = 'IdStandard'
+        StyleName = 'Id standard'
         BlockType = btTagDetect
         ConditionList = <
           item
@@ -16394,35 +16375,6 @@ object SyntaxManager: TSyntaxManager
           end>
         HighlightPos = cpAny
         IgnoreAsParent = False
-      end
-      item
-        DisplayName = '{'
-        StyleName = 'Current block'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '{')
-            TokenTypes = 8
-          end>
-        BlockEnd = '}'
-        DisplayInTree = False
-        DynHighlight = dhBound
-        HighlightPos = cpRange
-        DynSelectMin = True
-        DrawStaple = True
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = '}'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '}')
-            TokenTypes = 8
-          end>
-        HighlightPos = cpAny
-        IgnoreAsParent = False
       end>
     CodeTemplates = <>
     SubAnalyzers = <>
@@ -16494,7 +16446,7 @@ object SyntaxManager: TSyntaxManager
     Extentions = 'lua'
     LexerName = 'Lua'
     Notes.Strings = (
-      'Author: Alex, uvviewsoft.com'
+      'Alex (Synwrite)'
       'Ref: http://www.lua.org/manual/5.1/manual.html')
     RestartFromLineStart = True
     LineComment = '--'
@@ -22813,29 +22765,6 @@ object SyntaxManager: TSyntaxManager
     LineComment = '//'
     Charset = DEFAULT_CHARSET
   end
-  object SyntAnal42: TLibSyntAnalyzer
-    Formats = <
-      item
-        DisplayName = 'Text'
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'Lucida Console'
-        Font.Style = []
-        FormatType = ftCustomFont
-      end>
-    TokenRules = <>
-    BlockRules = <>
-    CodeTemplates = <>
-    SubAnalyzers = <>
-    TokenTypeNames.Strings = (
-      'Unknown')
-    DefaultStyleName = 'Text'
-    Extentions = 'nfo diz'
-    LexerName = 'NFO files'
-    SkipSpaces = False
-    Charset = DEFAULT_CHARSET
-  end
   object SyntAnal7: TLibSyntAnalyzer
     Formats = <
       item
@@ -23455,54 +23384,6 @@ object SyntaxManager: TSyntaxManager
       'http://sass-lang.com/docs/yardoc/Sass/Script/Functions.html')
     LineComment = '//'
     Charset = DEFAULT_CHARSET
-  end
-  object SyntAnal49: TLibSyntAnalyzer
-    Formats = <
-      item
-        DisplayName = 'Rus'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clMaroon
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-        BgColor = clYellow
-        FormatType = ftColor
-      end
-      item
-        DisplayName = 'Digits'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clNavy
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-        FormatType = ftColor
-      end>
-    TokenRules = <
-      item
-        DisplayName = 'Rus'
-        StyleName = 'Rus'
-        Expression = '(?r)['#1072'-'#1103#1040'-'#1071#1105#1025']+'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Digits'
-        StyleName = 'Digits'
-        Expression = '\d+'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end>
-    BlockRules = <>
-    CodeTemplates = <>
-    SubAnalyzers = <>
-    TokenTypeNames.Strings = (
-      'Unknown')
-    LexerName = 'Text Russian detector'
-    Notes.Strings = (
-      'Author: Alex, uvviewsoft.com')
-    Charset = DEFAULT_CHARSET
-    Left = 144
-    Top = 184
   end
   object SyntAnal33: TLibSyntAnalyzer
     Formats = <
