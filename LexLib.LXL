@@ -16126,7 +16126,7 @@ object SyntaxManager: TSyntaxManager
       end>
     BlockRules = <
       item
-        DisplayName = 'Res'
+        DisplayName = 'Id keyword'
         StyleName = 'Id reserved'
         BlockType = btTagDetect
         ConditionList = <
@@ -16159,7 +16159,7 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'Std'
+        DisplayName = 'Id std'
         StyleName = 'Id standard'
         BlockType = btTagDetect
         ConditionList = <
@@ -16348,6 +16348,7 @@ object SyntaxManager: TSyntaxManager
         DisplayInTree = False
         HighlightPos = cpAny
         DrawStaple = True
+        CollapseFmt = '%sz0'
         IgnoreAsParent = False
       end
       item
@@ -16362,6 +16363,7 @@ object SyntaxManager: TSyntaxManager
         DisplayInTree = False
         HighlightPos = cpAny
         DrawStaple = True
+        CollapseFmt = '%sz0'
         IgnoreAsParent = False
       end
       item
@@ -16390,11 +16392,9 @@ object SyntaxManager: TSyntaxManager
       '  alo'
       '  123]==] test'
       ''
-      '--Int  '
-      ' n = 3 + 3.0 + 3e0 + 3.1416 +  314.16e-2 +  0.31416E1 '
-      ' n = 0xff + 0x56'
+      ' n = 2 + 2.22 + 22.22e-2 + 0.22E1 '
+      ' n = 0xF0'
       ''
-      '--Code'
       'function Set.mt.__lt (a,b)'
       '  return a <= b and not (b <= a)'
       'end'
@@ -16429,8 +16429,7 @@ object SyntaxManager: TSyntaxManager
       'end'
       'repeat'
       '  print "aa"'
-      'until true '
-      'global ')
+      'until true ')
     TokenTypeNames.Strings = (
       'Unknown'
       'Comment'
@@ -16448,7 +16447,6 @@ object SyntaxManager: TSyntaxManager
     Notes.Strings = (
       'Alex (Synwrite)'
       'Ref: http://www.lua.org/manual/5.1/manual.html')
-    RestartFromLineStart = True
     LineComment = '--'
     Charset = DEFAULT_CHARSET
   end
