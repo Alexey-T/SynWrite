@@ -6661,15 +6661,6 @@ object SyntaxManager: TSyntaxManager
   object SyntAnal38: TLibSyntAnalyzer
     Formats = <
       item
-        DisplayName = 'Default'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-        FormatType = ftCustomFont
-      end
-      item
         DisplayName = 'Symbol'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clMaroon
@@ -6694,9 +6685,9 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'String Regex'
+        DisplayName = 'String regex'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlue
+        Font.Color = clOlive
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
@@ -6733,7 +6724,7 @@ object SyntaxManager: TSyntaxManager
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
         BgColor = 13369046
-        FormatType = ftColor
+        FormatType = ftBackGround
         BorderTypeLeft = blSolid
         BorderColorLeft = clGray
         BorderTypeTop = blSolid
@@ -6770,7 +6761,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'String Regex'
-        StyleName = 'String Regex'
+        StyleName = 'String regex'
         TokenType = 4
         Expression = 
           '#before / must be some char'#13#10'(?<=[=\(&!]\s*) / (\\/|\\\\|.)*? (/' +
@@ -6797,7 +6788,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Hex'
         StyleName = 'Number'
-        TokenType = 7
+        TokenType = 5
         Expression = '0x[\da-f]*'
         ColumnFrom = 0
         ColumnTo = 0
@@ -6805,7 +6796,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Float'
         StyleName = 'Number'
-        TokenType = 6
+        TokenType = 5
         Expression = '\d+ (\.\d+)? e [\+\-]? \d+ |'#13#10'\d+ \. \d+'
         ColumnFrom = 0
         ColumnTo = 0
@@ -6836,7 +6827,7 @@ object SyntaxManager: TSyntaxManager
       end>
     BlockRules = <
       item
-        DisplayName = 'Key words'
+        DisplayName = 'keywords'
         StyleName = 'Reserved word'
         BlockType = btTagDetect
         ConditionList = <
@@ -7094,15 +7085,11 @@ object SyntaxManager: TSyntaxManager
       #9#9'$('#39'#basket'#39').html('#39#39');'
       #9#9'for(id in basket){'
       #9#9#9'if(basket[id].q>0){'
-      #9#9#9#9'var cl;'
-      #9#9#9#9'var goods=basket[id];'
-      #9#9#9#9'basketForPHP4 += id+'#39'|'#39'+goods.q+'#39';'#39';'
       #9#9#9#9'b=b+" \'
       #9#9#9#9#9'<div class='#39'"+cl+"'#39'> \'
       #9#9#9#9#9#9'<td width='#39'166'#39' valign='#39'top'#39'> \'
       #9#9#9#9#9#9#9'"+goods.n+'#39'"...'#39';'
       ''
-      #9#9#9#9's=s+parseInt(goods.q)*parseInt(goods.c);'
       
         #9#9#9#9'$.cookie('#39'basketForPHP4'#39', $.toJSON(basketForPHP4),{path: '#39'/'#39 +
         '});'
@@ -7114,14 +7101,10 @@ object SyntaxManager: TSyntaxManager
     TokenTypeNames.Strings = (
       'Unknown'
       'Comment'
-      'Identifier'
+      'Id'
       'Symbol'
       'String'
-      'Integer const'
-      'Float const'
-      'Hex const'
-      'Char const'
-      'Preprocessor')
+      'Number')
     Extentions = 'js'
     LexerName = 'JavaScript'
     Notes.Strings = (
@@ -17204,9 +17187,7 @@ object SyntaxManager: TSyntaxManager
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
         BgColor = 15528434
-        BorderTypeLeft = blSolid3
         BorderColorLeft = clLime
-        BorderTypeTop = blSolid3
         BorderColorTop = clLime
       end
       item
@@ -17217,9 +17198,7 @@ object SyntaxManager: TSyntaxManager
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
         BgColor = 15527922
-        BorderTypeRight = blSolid3
         BorderColorRight = clLime
-        BorderTypeBottom = blSolid3
         BorderColorBottom = clLime
       end
       item
