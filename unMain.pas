@@ -738,7 +738,7 @@ type
     TBXSeparatorItem25: TSpTbxSeparatorItem;
     TBXItemOClip: TSpTbxItem;
     PopupClip: TSpTbxPopupMenu;
-    TBXItemClipClr: TSpTbxItem;
+    TBXItemClipDeleteAll: TSpTBXItem;
     ecGotoNextFindResult: TAction;
     ecGotoPrevFindResult: TAction;
     TBXSeparatorItem40: TSpTbxSeparatorItem;
@@ -1445,6 +1445,7 @@ type
     TbxItemTool1: TSpTBXItem;
     PopupStatusEncConvert: TSpTBXPopupMenu;
     TbxItemAddonsConfig: TSpTBXItem;
+    TBXItemClipDeleteSel: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1617,7 +1618,7 @@ type
     procedure plClipResize(Sender: TObject);
     procedure plClipVisibleChanged(Sender: TObject);
     procedure ecShowClipExecute(Sender: TObject);
-    procedure TBXItemClipClrClick(Sender: TObject);
+    procedure TBXItemClipDeleteAllClick(Sender: TObject);
     procedure ecGotoNextFindResultExecute(Sender: TObject);
     procedure ecGotoPrevFindResultExecute(Sender: TObject);
     procedure TBXItemESyncEdClick(Sender: TObject);
@@ -2192,6 +2193,7 @@ type
     procedure TbxItemAddonsUpdateClick(Sender: TObject);
     procedure PopupStatusEncConvertPopup(Sender: TObject);
     procedure TbxItemAddonsConfigClick(Sender: TObject);
+    procedure TBXItemClipDeleteSelClick(Sender: TObject);
 
   private
     cStatLine,
@@ -10200,7 +10202,8 @@ begin
   UpdKey(TBXItemClipFind, smFindDialog);
   UpdKey_String(TBXItemClipCopyToEd, 'Enter');
   UpdKey_String(TBXItemClipCopyToClip, 'Ctrl+C');
-  UpdKey_String(TBXItemClipClr, 'Shift+Delete');
+  UpdKey_String(TBXItemClipDeleteSel, 'Delete');
+  UpdKey_String(TBXItemClipDeleteAll, 'Shift+Delete');
 
   //clips popup menu
   UpdKey_String(TBXItemClipsAddText, 'Insert');
@@ -13932,9 +13935,14 @@ begin
   {$endif}
 end;
 
-procedure TfmMain.TBXItemClipClrClick(Sender: TObject);
+procedure TfmMain.TBXItemClipDeleteSelClick(Sender: TObject);
 begin
-  fmClip.Clear;
+  fmClip.DoDeleteSelected;
+end;
+
+procedure TfmMain.TBXItemClipDeleteAllClick(Sender: TObject);
+begin
+  fmClip.DoDeleteAll;
 end;
 
 procedure TfmMain.ecGotoNextFindResultExecute(Sender: TObject);
@@ -15111,10 +15119,17 @@ begin
     Key:= 0;
     Exit
   end;
+  //Del in clip
+  if (Key=VK_DELETE) and (Shift=[]) then
+  begin
+    fmClip.DoDeleteSelected;
+    Key:= 0;
+    Exit
+  end;
   //Shift+Del in clip
   if (Key=VK_DELETE) and (Shift=[ssShift]) then
   begin
-    fmClip.Clear;
+    fmClip.DoDeleteAll;
     Key:= 0;
     Exit
   end;
@@ -17470,7 +17485,8 @@ begin
   begin
     TbxItemClipCopyToEd.Enabled:= ItemIndex>=0;
     TbxItemClipCopyToClip.Enabled:= ItemIndex>=0;
-    TbxItemClipClr.Enabled:= Items.Count>0;
+    TbxItemClipDeleteSel.Enabled:= ItemIndex>=0;
+    TbxItemClipDeleteAll.Enabled:= Items.Count>0;
     TbxItemClipFind.Enabled:= Items.Count>0;
   end;
 end;

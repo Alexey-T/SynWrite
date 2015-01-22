@@ -18,7 +18,7 @@ type
   private
     FNextClipboardViewer: HWND;
     FItems: TTntStringList;
-    procedure Unset;
+    procedure DoneHook;
   protected
     procedure WMChangeCBChain(var Msg : TWMChangeCBChain); message WM_CHANGECBCHAIN;
     procedure WMDrawClipboard(var Msg : TWMDrawClipboard); message WM_DRAWCLIPBOARD;
@@ -26,7 +26,8 @@ type
     FColorSel,
     FColorSelBk: integer;
     procedure InitHook;
-    procedure Clear;
+    procedure DoDeleteSelected;
+    procedure DoDeleteAll;
     function ItemAt(n: Integer): Widestring;
   end;
 
@@ -60,7 +61,7 @@ begin
     FNextClipboardViewer := SetClipboardViewer(Handle);
 end;
 
-procedure TfmClip.Unset;
+procedure TfmClip.DoneHook;
 begin
   if FNextClipboardViewer <> 0 then
   begin
@@ -189,11 +190,26 @@ begin
   end;
 end;
 
-procedure TfmClip.Clear;
+procedure TfmClip.DoDeleteAll;
 begin
   FItems.Clear;
   ListClip.Items.Clear;
   ListClip.Hint:= '';
+end;
+
+procedure TfmClip.DoDeleteSelected;
+var
+  n: Integer;
+begin
+  n:= ListClip.ItemIndex;
+  if n<0 then Exit;
+
+  FItems.Delete(n);
+  ListClip.Items.Delete(n);
+  ListClip.Hint:= '';
+
+  if n<FItems.Count then
+    ListClip.ItemIndex:= n;
 end;
 
 function TfmClip.ItemAt(n: Integer): Widestring;
@@ -206,7 +222,7 @@ end;
 
 procedure TfmClip.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  Unset;
+  DoneHook;
   Action:= caFree;
   //Messagebeep(0);
 end;
