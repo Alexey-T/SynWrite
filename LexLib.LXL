@@ -8592,6 +8592,7 @@ object SyntaxManager: TSyntaxManager
               'text-transform'
               'top'
               'transform'
+              'transition'
               'unicode-bidi'
               'user-select'
               'vertical-align'

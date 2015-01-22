@@ -115,6 +115,7 @@ object fmSnippetEditor: TfmSnippetEditor
       UserRanges = <>
       UndoLimit = 0
       TabMode = tmTabChar
+      BlockIndent = 4
       StaplePen.Color = clGray
       DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
       DefaultStyles.SelectioMark.Font.Color = clHighlightText
@@ -180,6 +181,7 @@ object fmSnippetEditor: TfmSnippetEditor
       SyncEditing.InactiveWordsStyle.FormatType = ftBackGround
       SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
       SyncEditing.InactiveWordsStyle.BorderColorBottom = clBtnFace
+      Options = [soOverwriteBlocks, soEnableBlockSel, soHideSelection, soHideDynamic, soAutoIndentMode, soBackUnindent, soGroupUndo, soDragText, soScrollLastLine, soOptimalFill]
       HorzRuler.Font.Charset = DEFAULT_CHARSET
       HorzRuler.Font.Color = clWindowText
       HorzRuler.Font.Height = -11
