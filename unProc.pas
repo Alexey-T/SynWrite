@@ -17,6 +17,7 @@ uses
   ecStrUtils,
   ecMemoStrings,
   ecSyntDlg,
+  ecSyntAnal,
   ecUnicode,
   ecEdits,
 
@@ -27,7 +28,8 @@ uses
 
 procedure DoSortMenu(Menu: TSpTbxSubmenuItem);
 procedure DoRemovePluginsIniLines(const fn_ini, dir: string; IsBinaryPlugin: boolean);
-  
+function DoFindLexerForFilename(LexLib: TSyntaxManager; const FileName: string): TSyntAnalyzer;
+
 procedure DoIconSet_DetectSizes(const dir: string; var SizeX, SizeY: Integer);
 function DoIconSet_LoadFromTar(L: TPngImageList; const fn_tar: string): boolean;
 function DoIconSet_LoadFromDir(L: TPngImageList; const dir: string): boolean;
@@ -2772,6 +2774,38 @@ begin
         );
   finally
     FreeAndNil(L);
+  end;
+end;
+
+function DoFindLexerForFilename(LexLib: TSyntaxManager; const FileName: string): TSyntAnalyzer;
+var
+  fname, ext: string;
+  i: integer;
+  st: TzStringList;
+begin
+  Result:= nil;
+  ext:= ExtractFileExt(FileName);
+  if (ext<>'') and (ext[1]='.') then
+    Delete(ext, 1, 1);
+  fname:= '/' + LowerCase(ExtractFileName(FileName));
+
+  st:= TzStringList.Create;
+  try
+    st.Delimiter:= ' ';
+    for i:= 0 to LexLib.AnalyzerCount-1 do
+      with LexLib.Analyzers[i] do
+        if not Internal then
+        begin
+          st.DelimitedText:= Extentions;
+          if ((ext<>'') and (st.IndexOf(ext)>=0)) or
+                            (st.IndexOf(fname)>=0) then
+          begin
+            Result:= LexLib.Analyzers[i];
+            Break;
+          end;
+        end;
+  finally
+    st.Free;
   end;
 end;
 

@@ -3875,7 +3875,7 @@ begin
   DoSetFrameEncoding(Result, 0);
 
   if FCanUseLexer(AFileName) then
-    Result.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(AFileName)
+    Result.EditorMaster.TextSource.SyntaxAnalyzer:= DoFindLexerForFilename(SyntaxManager, AFileName)
   else
     Result.EditorMaster.TextSource.SyntaxAnalyzer:= nil;
   UpdateLexerTo(Result.EditorMaster.TextSource.SyntaxAnalyzer);
@@ -3984,7 +3984,7 @@ begin
 
       //update lexer
       if FCanUseLexer(SD.FileName) then
-        Frame.EditorMaster.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(SD.FileName)
+        Frame.EditorMaster.TextSource.SyntaxAnalyzer:= DoFindLexerForFilename(SyntaxManager, SD.FileName)
       else
         Frame.EditorMaster.TextSource.SyntaxAnalyzer:= nil;
       UpdateLexerTo(Frame.EditorMaster.TextSource.SyntaxAnalyzer);
@@ -11000,7 +11000,7 @@ begin
   SDeleteFrom(Result, '_'); //"_UTF8" suffix may exist
 
   s:= '?';
-  an:= SyntaxManager.AnalyzerForFile(fn);
+  an:= DoFindLexerForFilename(SyntaxManager, fn);
   if an<>nil then s:= an.LexerName;
 
   Result:= s + #9 + Result;
@@ -11038,7 +11038,7 @@ begin
   Ed.LoadFromFile(fn);
   Ed.Modified:= true;
 
-  Ed.TextSource.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(fn);
+  Ed.TextSource.SyntaxAnalyzer:= DoFindLexerForFilename(SyntaxManager, fn);
   UpdateLexerTo(Ed.TextSource.SyntaxAnalyzer);
 
   //apply encoding
@@ -26074,7 +26074,7 @@ begin
         Ed.LoadFromFile(AFilename);
         Ed.TopLine:= ALineNum - opFindOffsetTop;
         Ed.SetSelection(Ed.CaretPosToStrPos(Point(AColNum, ALineNum)), ALen);
-        Ed.SyntaxAnalyzer:= SyntaxManager.AnalyzerForFile(AFilename);
+        Ed.SyntaxAnalyzer:= DoFindLexerForFilename(SyntaxManager, AFilename);
       finally
         Screen.Cursor:= crDefault;
       end;
