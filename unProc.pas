@@ -2779,29 +2779,55 @@ end;
 
 function DoFindLexerForFilename(LexLib: TSyntaxManager; const FileName: string): TSyntAnalyzer;
 var
-  fname, ext: string;
+  fname, ext1, ext2: string;
   i: integer;
   st: TzStringList;
 begin
   Result:= nil;
-  ext:= ExtractFileExt(FileName);
-  if (ext<>'') and (ext[1]='.') then
-    Delete(ext, 1, 1);
+
   fname:= '/' + LowerCase(ExtractFileName(FileName));
+
+  ext1:= LowerCase(ExtractFileExt(FileName));
+  if SBegin(ext1, '.') then Delete(ext1, 1, 1);
+
+  ext2:= '';
+  if ext1<>'' then
+  begin
+    ext2:= LowerCase(ExtractFileExt(ChangeFileExt(FileName, '')));
+    if SBegin(ext2, '.') then Delete(ext2, 1, 1);
+    if ext2<>'' then
+      ext2:= ext2+'.'+ext1;
+  end;
 
   st:= TzStringList.Create;
   try
     st.Delimiter:= ' ';
+
+    //find by double extension
+    if ext2<>'' then
+      for i:= 0 to LexLib.AnalyzerCount-1 do
+        with LexLib.Analyzers[i] do
+          if not Internal then
+          begin
+            st.DelimitedText:= Extentions;
+            if (ext2<>'') and (st.IndexOf(ext2)>=0) then
+            begin
+              Result:= LexLib.Analyzers[i];
+              Exit;
+            end;
+          end;
+
+    //find by usual extension + filename
     for i:= 0 to LexLib.AnalyzerCount-1 do
       with LexLib.Analyzers[i] do
         if not Internal then
         begin
           st.DelimitedText:= Extentions;
-          if ((ext<>'') and (st.IndexOf(ext)>=0)) or
+          if ((ext1<>'') and (st.IndexOf(ext1)>=0)) or
                             (st.IndexOf(fname)>=0) then
           begin
             Result:= LexLib.Analyzers[i];
-            Break;
+            Exit;
           end;
         end;
   finally
