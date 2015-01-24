@@ -25598,4 +25598,30 @@ object SyntaxManager: TSyntaxManager
     LineComment = '# '
     Charset = DEFAULT_CHARSET
   end
+  object SyntAnal9: TLibSyntAnalyzer
+    Formats = <
+      item
+        DisplayName = 'Marked block'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clHighlightText
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+        BgColor = clHighlight
+        FormatType = ftColor
+      end>
+    TokenRules = <>
+    BlockRules = <>
+    CodeTemplates = <>
+    SubAnalyzers = <>
+    TokenTypeNames.Strings = (
+      'Unknown'
+      'Comment')
+    Extentions = 'haha.html haha'
+    LexerName = 'x_haha'
+    Notes.Strings = (
+      'Test')
+    Internal = True
+    Charset = DEFAULT_CHARSET
+  end
 end
