@@ -16278,10 +16278,6 @@ begin
   if F.FileName='' then Exit;
   if F.Modified then acSave.Execute;
 
-  fn_cfg:= SynDataSubdir(cSynDataHtmlTidy) + '\' + AConfig + '.cfg';
-  if not FileExists(fn_cfg) then
-    begin MsgBeep; Exit end;
-
   fn_current:= F.FileName;
   fn_exe:= SynDir + 'Tools\tidy.exe';
   fn_out:= FTempDir + '\SynwTidyOut.txt';
@@ -16291,6 +16287,10 @@ begin
 
   if AConfig<>'' then
   begin
+    fn_cfg:= SynDataSubdir(cSynDataHtmlTidy) + '\' + AConfig + '.cfg';
+    if not FileExists(fn_cfg) then
+      begin DoHint('Cannot find Tidy config: '+AConfig); MsgBeep; Exit end;
+
     if (not IsFileExist(fn_cfg)) or (FGetFileSize(fn_cfg)=0) then
     begin
       MsgError('Tidy configuration empty:'#13+fn_cfg, Handle);
