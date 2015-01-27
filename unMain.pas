@@ -2244,7 +2244,6 @@ type
     FPluginsAcp: TPluginList_Acp;
 
     FListNewDocs: TTntStringList; //filenames of newdoc-templates
-    FListConv: TTntStringList; //filenames of text-converters
     FListFiles: TTntStringList; //filenames list of mass search/replace operation
     FPanelDrawBusy: boolean;
     FSyncBusy: boolean;
@@ -7388,7 +7387,6 @@ begin
   FPanelDrawBusy:= false;
   FSyncBusy:= false;
   FListNewDocs:= TTntStringList.Create;
-  FListConv:= TTntStringList.Create;
   FListFiles:= TTntStringList.Create;
   FListLexersSorted:= TTntStringList.Create;
   FListSnippets:= nil;
@@ -7685,7 +7683,6 @@ begin
   FreeAndNil(Finder);
   FreeAndNil(FListFiles);
   FreeAndNil(FListNewDocs);
-  FreeAndNil(FListConv);
   FreeAndNil(FListLexersSorted);
   FreeAndNil(FFontTabs);
   FreeAndNil(FFontMenus);
@@ -25467,81 +25464,6 @@ begin
   SyncMapPos;
 end;
 
-
-(*
-procedure TfmMain.TBXSubmenuConvPopup(Sender: TTBCustomItem;
-  FromLink: Boolean);
-  //-----
-  procedure AddMI(const AConvIndex: Integer; AConvBack: boolean);
-  const
-    cConvGap = 1000;
-    cNoBack: Widechar = '_';
-  var
-    Cap: Widestring;
-    NoBack: boolean;
-    MI: TSpTbxItem;
-  begin
-    Cap:= WideChangeFileExt(WideExtractFileName(FListConv[AConvIndex]), '');
-    NoBack:= Cap[Length(Cap)]=cNoBack;
-    if NoBack then
-    begin
-      Delete(Cap, Length(Cap), 1);
-      if AConvBack then Exit;
-    end;
-
-    MI:= TSpTbxItem.Create(Self);
-    MI.Caption:=
-      Cap + ' '#151' ' +
-      IfThen(AConvBack, DKLangConstW('zMConvDecode'), DKLangConstW('zMConvEncode'));
-    MI.Tag:= AConvIndex + IfThen(AConvBack, cConvGap);
-    MI.OnClick:= ConvClick;
-    TBXSubmenuConv.Add(MI);
-  end;
-  //-----
-var
-  i: Integer;
-begin
-  FListConv.Clear;
-  FFindToList(FListConv,
-    SynDataSubdir(cSynDataConv),
-    '*.txt', '',
-    false{SubDirs}, false, false, false);
-
-  with TbxSubmenuConv do
-  begin
-    Clear;
-    for i:= 0 to FListConv.Count-1 do
-    begin
-      AddMI(i, false);
-      AddMI(i, true);
-      Add(TSpTBXSeparatorItem.Create(Self));
-    end;
-  end;
-end;
-*)
-
-(*
-procedure TfmMain.ConvClick(Sender: TObject);
-const
-  cConvGap = 1000;
-var
-  N: Integer;
-  ToBack: boolean;
-begin
-  N:= (Sender as TComponent).Tag;
-  ToBack:= N>=cConvGap;
-  if ToBack then
-    Dec(N, cConvGap);
-
-  if (N>=0) and (N<FListConv.Count) then
-  begin
-    DoTextConverter(CurrentEditor, FListConv[N], ToBack);
-    //MsgInfo(FListConv[N]+#13+IntToStr(Ord(ToBack)), Handle);
-  end
-  else
-    MsgError(WideFormat('Invalid text converter index: %d', [N]), Handle);
-end;
-*)
 
 procedure TfmMain.DoTextConverter(Ed: TSyntaxMemo; const fn: Widestring; ToBack: boolean);
 var
