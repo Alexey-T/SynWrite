@@ -6187,7 +6187,7 @@ object SyntaxManager: TSyntaxManager
       end>
     BlockRules = <
       item
-        DisplayName = 'Key words'
+        DisplayName = 'Keywords'
         StyleName = 'Reserved word'
         BlockType = btTagDetect
         ConditionList = <
@@ -6306,7 +6306,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Sub begin line break'
         StyleName = 'Function separator'
-        BlockName = 'function'
+        BlockName = 'Func'
         NotParent = True
         BlockType = btLineBreak
         ConditionList = <
@@ -6343,7 +6343,7 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'Sub end'
+        DisplayName = 'Func end'
         BlockType = btRangeEnd
         ConditionList = <
           item
@@ -6364,7 +6364,7 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'function'
+        DisplayName = 'Func'
         StyleName = 'Function background'
         ConditionList = <
           item
@@ -6374,7 +6374,7 @@ object SyntaxManager: TSyntaxManager
             TokenTypes = 4
             IgnoreCase = True
           end>
-        BlockEnd = 'Sub end'
+        BlockEnd = 'Func end'
         Highlight = True
         NameFmt = '%s0 %s-1'
         DynHighlight = dhRange
@@ -6468,7 +6468,7 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'Dim decl'
+        DisplayName = 'Dim'
         ConditionList = <
           item
             TokenTypes = 4
@@ -6485,63 +6485,6 @@ object SyntaxManager: TSyntaxManager
         NoEndRule = True
         TreeItemImage = 4
         TreeGroupImage = 0
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = '('
-        StyleName = 'Current block bound'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '(')
-            TokenTypes = 8
-          end>
-        BlockEnd = ')'
-        NotCollapsed = True
-        DisplayInTree = False
-        DynHighlight = dhBound
-        HighlightPos = cpBoundTagBegin
-        DynSelectMin = True
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = ')'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              ')')
-            TokenTypes = 8
-          end>
-        HighlightPos = cpBound
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = '['
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '[')
-            TokenTypes = 8
-          end>
-        BlockEnd = ']'
-        NotCollapsed = True
-        DisplayInTree = False
-        DynHighlight = dhBound
-        HighlightPos = cpBoundTagBegin
-        DynSelectMin = True
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = ']'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              ']')
-            TokenTypes = 8
-          end>
-        HighlightPos = cpBound
         IgnoreAsParent = False
       end
       item
@@ -6617,7 +6560,9 @@ object SyntaxManager: TSyntaxManager
     CodeTemplates = <>
     SubAnalyzers = <>
     SampleText.Strings = (
-      #39' Syntax highlighting'
+      #39'Test'
+      #39'Test'
+      ''
       'Function PrintNumber'
       '  Dim Number'
       '  Number = 12 + 12.2 + 1.2e3 + 1.2e-3'
@@ -6639,14 +6584,7 @@ object SyntaxManager: TSyntaxManager
       'Symbol'
       'String'
       'Number')
-    Gramma.Gramma = 
-      'Skip = <Comment>;'#13#10#13#10'// Used'#13#10'NameDetector = <Identifier> Braket' +
-      '? '#39'.'#39';'#13#10#13#10'FuncCall = <Identifier> Braket;'#13#10#13#10'Braket = Braket1 | ' +
-      'Braket2;'#13#10#13#10'Braket1 = LeftBraket1 '#39')'#39';'#13#10#13#10'LeftBraket1 = LeftBrak' +
-      'et1 <Unknown> |'#13#10'             '#39'('#39';'#13#10'             '#13#10'Braket2 = Lef' +
-      'tBraket2 '#39']'#39';'#13#10#13#10'LeftBraket2 = LeftBraket2 <Unknown> |'#13#10'        ' +
-      '     '#39'['#39';'
-    Extentions = 'bas vb vbs'
+    Extentions = 'vb vbs'
     LexerName = 'VBScript'
     Notes.Strings = (
       'Changed by Alex (SynWrite): '
@@ -25596,32 +25534,6 @@ object SyntaxManager: TSyntaxManager
         'http://www.subdude-site.com/WebPages_Local/RefInfo/Computer/TclT' +
         'k/others_tcltkCode/others_tcltkCode.htm')
     LineComment = '# '
-    Charset = DEFAULT_CHARSET
-  end
-  object SyntAnal9: TLibSyntAnalyzer
-    Formats = <
-      item
-        DisplayName = 'Marked block'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clHighlightText
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-        BgColor = clHighlight
-        FormatType = ftColor
-      end>
-    TokenRules = <>
-    BlockRules = <>
-    CodeTemplates = <>
-    SubAnalyzers = <>
-    TokenTypeNames.Strings = (
-      'Unknown'
-      'Comment')
-    Extentions = 'haha.html haha'
-    LexerName = 'x_haha'
-    Notes.Strings = (
-      'Test')
-    Internal = True
     Charset = DEFAULT_CHARSET
   end
 end
