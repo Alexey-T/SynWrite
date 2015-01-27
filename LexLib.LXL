@@ -8109,7 +8109,7 @@ object SyntaxManager: TSyntaxManager
     CodeTemplates = <>
     SubAnalyzers = <
       item
-        DisplayName = 'Style sheet'
+        DisplayName = 'CSS'
         StyleName = 'Sublexer BG'
         AlwaysEnabled = True
         StartExpression = '(?si)<style[^>]*>\s* '#13#10
@@ -8117,7 +8117,7 @@ object SyntaxManager: TSyntaxManager
         SyntAnalyzer = SyntAnalyzer10
       end
       item
-        DisplayName = 'VB script'
+        DisplayName = 'VBScript'
         StyleName = 'Sublexer BG'
         AlwaysEnabled = True
         StartExpression = '(?si)<script[^>]*vbscript[^>]*>\s*(<!--)?'#13#10
@@ -8125,7 +8125,7 @@ object SyntaxManager: TSyntaxManager
         SyntAnalyzer = SyntAnal56
       end
       item
-        DisplayName = 'Java script'
+        DisplayName = 'JS'
         StyleName = 'Sublexer BG'
         AlwaysEnabled = True
         StartExpression = '(?si)<script[^>]*javascript[^>]*>\s*(<!--)?'#13#10
@@ -8133,7 +8133,7 @@ object SyntaxManager: TSyntaxManager
         SyntAnalyzer = SyntAnal38
       end
       item
-        DisplayName = 'Default script'
+        DisplayName = 'JS 2'
         StyleName = 'Sublexer BG'
         StartExpression = '<\s*script\s*>'
         EndExpression = '</\s*script\s*>'
@@ -8205,10 +8205,10 @@ object SyntaxManager: TSyntaxManager
       'Close Tag')
     Extentions = 
       'htm html htt hta htx htc htd shtml phtml xhtml asp aspx ascx asm' +
-      'x jsp tpl hhc cfm dtd'
+      'x jsp hhc dtd'
     LexerName = 'HTML'
     Notes.Strings = (
-      'Reworked by Alex, uvviewsoft.com'
+      'Reworked by Alex (Synwrite)'
       'Added red underlines for misspelled tags and tag attribs.'
       'Added more tree nodes: Links, Images, Style sheets etc.')
     Charset = DEFAULT_CHARSET
