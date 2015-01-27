@@ -74,7 +74,6 @@ type
     mnuFoldLevel: TTntMenuItem;
     mnuNonPrint: TTntMenuItem;
     labInfo: TTntLabel;
-    mnuConv: TTntMenuItem;
     mnuRecProjects: TTntMenuItem;
     btnBrowsePy: TTntButton;
     mnuPlugins: TTntMenuItem;
@@ -116,7 +115,6 @@ type
     procedure mnuFoldingClick(Sender: TObject);
     procedure mnuFoldLevelClick(Sender: TObject);
     procedure mnuNonPrintClick(Sender: TObject);
-    procedure mnuConvClick(Sender: TObject);
     procedure mnuRecProjectsClick(Sender: TObject);
     procedure btnBrowsePyClick(Sender: TObject);
     procedure btnRemoveIconClick(Sender: TObject);
@@ -801,11 +799,6 @@ end;
 procedure TfmToolbarProp.mnuNonPrintClick(Sender: TObject);
 begin
   DoMenuSys('m:{nonprint}', mnuNonPrint.Caption);
-end;
-
-procedure TfmToolbarProp.mnuConvClick(Sender: TObject);
-begin
-  DoMenuSys('m:{conv}', mnuConv.Caption);
 end;
 
 procedure TfmToolbarProp.mnuRecProjectsClick(Sender: TObject);

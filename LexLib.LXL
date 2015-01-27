@@ -25091,7 +25091,7 @@ object SyntaxManager: TSyntaxManager
       'String'
       'Id'
       'Var')
-    Extentions = '/.htaccess /.htpasswd /httpd.conf'
+    Extentions = '/.htaccess /.htpasswd /httpd.conf /fluentd.conf'
     LexerName = 'Apache config'
     SkipSpaces = False
     Notes.Strings = (

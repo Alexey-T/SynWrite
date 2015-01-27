@@ -1302,7 +1302,6 @@ type
     TBXItemHtmlEmmetHelp: TSpTBXItem;
     SpTBXSeparatorItem17: TSpTBXSeparatorItem;
     TimerMinimap: TTimer;
-    TBXSubmenuConv: TSpTBXSubmenuItem;
     TBXSubmenuHtmlEncode: TSpTBXSubmenuItem;
     TBXItemEncodeHtmlNoBrackets: TSpTBXItem;
     TBXItemEncodeHtmlAll: TSpTBXItem;
@@ -2080,8 +2079,6 @@ type
     procedure TBXSubmenuViewToolbarsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TimerMinimapTimer(Sender: TObject);
-    procedure TBXSubmenuConvPopup(Sender: TTBCustomItem;
-      FromLink: Boolean);
     procedure TBXItemEncodeHtmlAllClick(Sender: TObject);
     procedure TBXItemEncodeHtmlNoBracketsClick(Sender: TObject);
     procedure ecEncodeHtmlChars2Execute(Sender: TObject);
@@ -2845,7 +2842,6 @@ type
     procedure DoRememberTempFile(const fn: Widestring);
     procedure DoDeleteTempFiles;
     procedure DoCopySearchMarks(Ed: TSyntaxMemo);
-    procedure ConvClick(Sender: TObject);
     procedure DoTextConverter(Ed: TSyntaxMemo; const fn: Widestring; ToBack: boolean);
 
     procedure ShowProj;
@@ -3397,7 +3393,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.15.1935';
+  cSynVer = '6.15.1940';
   cSynPyVer = '1.0.146';
 
 const
@@ -24521,11 +24517,6 @@ begin
         Item.LinkSubitems:= TBXSubmenuTidy;
       end
       else
-      if SCmd='m:{conv}' then
-      begin
-        Item.LinkSubitems:= TBXSubmenuConv;
-      end
-      else
       if SCmd='m:{projects}' then
       begin
         Item.LinkSubitems:= TBXSubmenuItemProjRecents;
@@ -25477,6 +25468,7 @@ begin
 end;
 
 
+(*
 procedure TfmMain.TBXSubmenuConvPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
   //-----
@@ -25526,7 +25518,9 @@ begin
     end;
   end;
 end;
+*)
 
+(*
 procedure TfmMain.ConvClick(Sender: TObject);
 const
   cConvGap = 1000;
@@ -25547,6 +25541,7 @@ begin
   else
     MsgError(WideFormat('Invalid text converter index: %d', [N]), Handle);
 end;
+*)
 
 procedure TfmMain.DoTextConverter(Ed: TSyntaxMemo; const fn: Widestring; ToBack: boolean);
 var
