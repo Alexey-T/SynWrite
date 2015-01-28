@@ -1269,7 +1269,6 @@ type
     TBXSubmenuBkOps: TSpTBXSubmenuItem;
     TBXSubmenuBkPortable: TSpTBXSubmenuItem;
     SpTBXSeparatorItem16: TSpTBXSeparatorItem;
-    TBXSubmenuHTML: TSpTBXSubmenuItem;
     SpTBXSeparatorItem19: TSpTBXSeparatorItem;
     PopupFoldLevel: TSpTBXPopupMenu;
     SpTBXSeparatorItem23: TSpTBXSeparatorItem;
@@ -24741,7 +24740,7 @@ end;
 
 procedure TfmMain.InitMenuItemsList;
 begin
-  SetLength(FMenuItems, 19);
+  SetLength(FMenuItems, 18);
   //
   with FMenuItems[0] do begin Id:= 'file'; Item:= TbxSubmenuFile; end;
   with FMenuItems[1] do begin Id:= 'edit'; Item:= TbxSubmenuEdit; end;
@@ -24749,21 +24748,20 @@ begin
   with FMenuItems[3] do begin Id:= 'encoding'; Item:= TbxSubmenuEncodings; end;
   with FMenuItems[4] do begin Id:= 'bookmarks'; Item:= TbxSubmenuBookmarks; end;
   with FMenuItems[5] do begin Id:= 'tools'; Item:= TbxSubmenuTools; end;
-  with FMenuItems[6] do begin Id:= 'html'; Item:= TbxSubmenuHTML; end;
-  with FMenuItems[7] do begin Id:= 'macros'; Item:= TbxSubmenuMacros; end;
-  with FMenuItems[8] do begin Id:= 'options'; Item:= TbxSubmenuOptions; end;
-  with FMenuItems[9] do begin Id:= 'view'; Item:= TbxSubmenuView; end;
-  with FMenuItems[10] do begin Id:= 'window'; Item:= TbxSubmenuWindow; end;
-  with FMenuItems[11] do begin Id:= 'help'; Item:= TbxSubmenuHelp; end;
+  with FMenuItems[6] do begin Id:= 'macros'; Item:= TbxSubmenuMacros; end;
+  with FMenuItems[7] do begin Id:= 'options'; Item:= TbxSubmenuOptions; end;
+  with FMenuItems[8] do begin Id:= 'view'; Item:= TbxSubmenuView; end;
+  with FMenuItems[9] do begin Id:= 'window'; Item:= TbxSubmenuWindow; end;
+  with FMenuItems[10] do begin Id:= 'help'; Item:= TbxSubmenuHelp; end;
   //
-  with FMenuItems[12] do begin Id:= 'g'; Item:= TBXSubmenuGroups; end;
-  with FMenuItems[13] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
-  with FMenuItems[14] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
+  with FMenuItems[11] do begin Id:= 'g'; Item:= TBXSubmenuGroups; end;
+  with FMenuItems[12] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
+  with FMenuItems[13] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
   //
-  with FMenuItems[15] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
-  with FMenuItems[16] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
-  with FMenuItems[17] do begin Id:= 'toolbar-view'; Item:= tbView; end;
-  with FMenuItems[18] do begin Id:= 'context'; Item:= PopupEditor; end;
+  with FMenuItems[14] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
+  with FMenuItems[15] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
+  with FMenuItems[16] do begin Id:= 'toolbar-view'; Item:= tbView; end;
+  with FMenuItems[17] do begin Id:= 'context'; Item:= PopupEditor; end;
 end;
 
 procedure TfmMain.TBXItemOHideItemsClick(Sender: TObject);
