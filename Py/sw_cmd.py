@@ -434,9 +434,7 @@ cmd_ReplaceFromClipAll = 883
 cmd_RereadOutputPanel = 884
 cmd_OnlineSearchHTML4 = 886
 cmd_OnlineSearchHTML5 = 887
-cmd_LoremIpsumDialog = 888
 cmd_NumericConverterDialog = 889
-cmd_EncodeHtmlChars = 890
 cmd_SortDialog = 891
 cmd_ToggleLineCommentAlt = 892
 cmd_SelectionExtend = 893
@@ -445,7 +443,6 @@ cmd_ReverseLines = 895
 cmd_DeleteToFileBegin = 896
 cmd_DeleteToFileEnd = 897
 cmd_ShuffleLines = 898
-cmd_EncodeHtmlChars2 = 899
 
 cmd_MacroRepeat = 900
 cmd_Macro1 = 901

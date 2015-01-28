@@ -835,7 +835,6 @@ type
     acMacroPlay: TecMacroPlay;
     acMacroDialog: TAction;
     ecMacroRec: TecMacroRecorder;
-    TBXSeparatorItem52: TSpTbxSeparatorItem;
     acMacro1: TAction;
     acMacro2: TAction;
     acMacro3: TAction;
@@ -1051,8 +1050,6 @@ type
     ecSplitSlaveVertHorz: TAction;
     ecGotoBk: TAction;
     TBXItemBkGoto: TSpTbxItem;
-    TBXItemHtmlLoremIpsum: TSpTBXItem;
-    ecLoremIpsum: TAction;
     TBXSubmenuItemFav: TSpTBXSubmenuItem;
     TBXItemFavAddFile: TSpTbxItem;
     TBXItemFavManage: TSpTbxItem;
@@ -1123,7 +1120,6 @@ type
     TBXItemPLogSaveAs: TSpTbxItem;
     TBXItemTabMoveToWindow: TSpTBXItem;
     TBXItemTabOpenInWindow: TSpTBXItem;
-    ecEncodeHtmlChars: TAction;
     ecSortDialog: TAction;
     TBXItemESortDialog: TSpTbxItem;
     TBXSeparatorItem86: TSpTbxSeparatorItem;
@@ -1302,10 +1298,6 @@ type
     TBXItemHtmlEmmetHelp: TSpTBXItem;
     SpTBXSeparatorItem17: TSpTBXSeparatorItem;
     TimerMinimap: TTimer;
-    TBXSubmenuHtmlEncode: TSpTBXSubmenuItem;
-    TBXItemEncodeHtmlNoBrackets: TSpTBXItem;
-    TBXItemEncodeHtmlAll: TSpTBXItem;
-    ecEncodeHtmlChars2: TAction;
     SpTBXSeparatorItem18: TSpTBXSeparatorItem;
     TBXSubmenuItemPrint: TSpTBXSubmenuItem;
     TbxItemMenuXX: TSpTBXItem;
@@ -1846,8 +1838,6 @@ type
     procedure ecSplitSlaveVertHorzExecute(Sender: TObject);
     procedure ecGotoBkExecute(Sender: TObject);
     procedure TBXItemBkGotoClick(Sender: TObject);
-    procedure TBXItemHtmlLoremIpsumClick(Sender: TObject);
-    procedure ecLoremIpsumExecute(Sender: TObject);
     procedure TBXItemFavAddFileClick(Sender: TObject);
     procedure TBXItemFavManageClick(Sender: TObject);
     procedure acFavManageExecute(Sender: TObject);
@@ -2079,8 +2069,6 @@ type
     procedure TBXSubmenuViewToolbarsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TimerMinimapTimer(Sender: TObject);
-    procedure TBXItemEncodeHtmlAllClick(Sender: TObject);
-    procedure TBXItemEncodeHtmlNoBracketsClick(Sender: TObject);
     procedure ecEncodeHtmlChars2Execute(Sender: TObject);
     procedure TbxItemMenuXClick(Sender: TObject);
     procedure TbxItemMenuXXClick(Sender: TObject);
@@ -3392,7 +3380,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.15.1940';
+  cSynVer = '6.15.1944';
   cSynPyVer = '1.0.146';
 
 const
@@ -3421,7 +3409,6 @@ uses
 
   ATxFProc,
   ATxColorCodes,
-  ATxLoremIpsum,
   ATxUnpack,
   ATxImgHint,
 
@@ -3442,7 +3429,7 @@ uses
   unSaveLex,
   unSetup, unAbout, unEnc, unToolsList, unSRFiles, unExtractStr, unShell, unInsertText,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
-  unProcTabbin, unProp, unGotoBkmk, unLoremIpsum, unFav,
+  unProcTabbin, unProp, unGotoBkmk, unFav,
   unMenuCmds, unMenuProj, unMenuSnippets,
   unToolbarProp, unHideItems,
   unProcPy,
@@ -6065,10 +6052,7 @@ begin
     sm_TidyValidate: DoTidy_Run('');
     sm_TidyConfig: DoTidy_Config;
 
-    sm_LoremIpsumDialog: ecLoremIpsum.Execute;
     sm_NumericConverterDialog: ecNumericConverter.Execute;
-    sm_EncodeHtmlChars: ecEncodeHtmlChars.Execute;
-    sm_EncodeHtmlChars2: ecEncodeHtmlChars2.Execute;
     sm_SortDialog: ecSortDialog.Execute;
     sm_ToggleLineCommentAlt: ecToggleLineCommentAlt.Execute;
 
@@ -10050,7 +10034,6 @@ begin
   UpdKey(tbxItemMarkColl, smCollectMarker);
   UpdKey(tbxItemMarkSwap, smSwapMarker);
 
-  UpdKey(TbxItemHtmlLoremIpsum, sm_LoremIpsumDialog);
   UpdKey(TbxItemRunOpenFile, sm_OpenCurrentFile);
   UpdKey(TbxItemRunOpenDir, sm_OpenCurrentFolder);
   UpdKey(TbxItemRunNumConv, sm_NumericConverterDialog);
@@ -19623,58 +19606,6 @@ begin
   CurrentEditor.ExecCommand(sm_GotoBookmarkDialog);
 end;
 
-procedure TfmMain.TBXItemHtmlLoremIpsumClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_LoremIpsumDialog);
-end;
-
-procedure TfmMain.ecLoremIpsumExecute(Sender: TObject);
-var
-  res: TModalResult;
-  ACnt: integer;
-  AIsPara: boolean;
-  AIsTags: boolean;
-  s: string;
-begin
-  if CurrentEditor.ReadOnly then Exit;
-
-  with TfmLoremIpsum.Create(nil) do
-  try
-    cbTags.Checked:= IsLexerHTML(CurrentLexer);
-    with TIniFile.Create(SynHistoryIni) do
-    try
-      edCount.Value:= ReadInteger('Win', 'LoremCnt', 5);
-      cbPara.Checked:= ReadBool('Win', 'LoremTyp', false);
-      cbSent.Checked:= not cbPara.Checked;
-    finally
-      Free
-    end;
-
-    res:= ShowModal; //mrOk: Insert, mrYes: Copy
-    if res=mrCancel then Exit;
-
-    ACnt:= edCount.Value;
-    AIsPara:= cbPara.Checked;
-    AIsTags:= cbTags.Checked;
-
-    with TIniFile.Create(SynHistoryIni) do
-    try
-      WriteBool('Win', 'LoremTyp', AIsPara);
-      WriteInteger('Win', 'LoremCnt', ACnt);
-    finally
-      Free
-    end;
-  finally
-    Free;
-  end;
-
-  s:= SLoremIpsum(ACnt, AIsPara, AIsTags);
-  if res=mrOk then
-    CurrentEditor.InsertText(s)
-  else
-    Clipboard.AsText:= s;
-end;
-
 procedure TfmMain.TBXItemFavAddFileClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_Fav_AddFile);
@@ -25496,16 +25427,6 @@ begin
   Ed.ReplaceText(NStart, NLen, STo);
   if not ToAll then
     Ed.SetSelection(NStart, Length(STo));
-end;
-
-procedure TfmMain.TBXItemEncodeHtmlAllClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_EncodeHtmlChars);
-end;
-
-procedure TfmMain.TBXItemEncodeHtmlNoBracketsClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_EncodeHtmlChars2);
 end;
 
 procedure TfmMain.ecEncodeHtmlCharsExecute(Sender: TObject);

@@ -38,7 +38,6 @@ uses
   unProp in 'unProp.pas' {fmProps},
   unSetupOvr in 'unSetupOvr.pas' {fmSetupOvr},
   unGotoBkmk in 'unGotoBkmk.pas' {fmGotoBkmk},
-  unLoremIpsum in 'unLoremIpsum.pas' {fmLoremIpsum},
   unFav in 'unFav.pas' {fmFav},
   unProj in 'unProj.pas' {fmProj},
   unProjAddDir in 'unProjAddDir.pas' {fmProjAddDir: TTntForm},

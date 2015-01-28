@@ -222,9 +222,7 @@ const
   sm_RereadOutputPanel = 884;
   sm_OnlineSearchHTML4 = 886;
   sm_OnlineSearchHTML5 = 887;
-  sm_LoremIpsumDialog = 888;
   sm_NumericConverterDialog = 889;
-  sm_EncodeHtmlChars = 890;
   sm_SortDialog = 891;
   sm_ToggleLineCommentAlt = 892;
   sm_SelectionExtend = 893;
@@ -233,7 +231,6 @@ const
   sm_DeleteToFileBegin = 896;
   sm_DeleteToFileEnd = 897;
   sm_ShuffleLines = 898;
-  sm_EncodeHtmlChars2 = 899;
 
   sm_MacroRepeat = 900;
   sm_Macro1 = 901;
