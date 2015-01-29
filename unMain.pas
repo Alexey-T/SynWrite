@@ -2381,6 +2381,9 @@ type
     procedure DoPlugins_LoadCommands(const fn_plug_ini: string);
     procedure DoPlugins_LoadEvents(const fn_plug_ini: string);
     procedure DoPlugins_InitTabs;
+    procedure DoPlugins_PreinstallPlugin(const ACaption, fn_inf: string;
+      AIsPanelPlugin: boolean);
+    procedure DoPlugins_PreinstallDefaults;
     //-------------------------------------------
     //
     procedure DoCheckIfBookmarkSetHere(Ed: TSyntaxMemo; NPos: Integer);
@@ -3311,7 +3314,6 @@ type
     function SynHideIni: string;
     function SynHistoryIni: string;
     function SynPluginsIni: string;
-    function SynPluginsSampleIni: string;
     function SynPluginIni(const SCaption: string): string;
     function SynDataSubdir(Id: TSynDataSubdirId): string;
     function SynSkinsDir: string;
@@ -5324,11 +5326,6 @@ end;
 function TfmMain.SynPluginsIni: string;
 begin
   Result:= SynDir + 'SynPlugins.ini';
-end;
-
-function TfmMain.SynPluginsSampleIni: string;
-begin
-  Result:= SynDir + 'SynPlugins.sample.ini';
 end;
 
 function TfmMain.SynDataSubdir(Id: TSynDataSubdirId): string;
@@ -20448,15 +20445,74 @@ begin
   CurrentEditor.ExecCommand(sm_ToggleStreamComment);
 end;
 
+procedure TfmMain.DoPlugins_PreinstallDefaults;
+var
+  DirExe: string;
+begin
+  DirExe:= ExtractFileDir(Application.ExeName);
+  DoPlugins_PreinstallPlugin('Color Picker', DirExe+'\Py\syn_color_picker\install.inf', false);
+  DoPlugins_PreinstallPlugin('Explorer', DirExe+'\Plugins\Explorer\install.inf', true);
+  DoPlugins_PreinstallPlugin('SynFTP', DirExe+'\Plugins\SynFTP\install.inf', true);
+end;
+
+procedure TfmMain.DoPlugins_PreinstallPlugin(const ACaption, fn_inf: string;
+  AIsPanelPlugin: boolean);
+var
+  i: Integer;
+  s_section, s_title, s_type, s_subdir: string;
+  i_type, n_type: TSynAddonType;
+begin
+  if AIsPanelPlugin then
+    s_section:= 'Panels'
+  else
+    s_section:= 'Commands';
+
+  with TIniFile.Create(SynPluginsIni) do
+  try
+    if ReadString(s_section, ACaption, '')<>'' then Exit
+  finally
+    Free
+  end;
+
+  with TIniFile.Create(fn_inf) do
+  try
+    s_title:= ReadString('info', 'title', '');
+    s_type:= ReadString('info', 'type', '');
+  finally
+    Free
+  end;
+
+  n_type:= cAddonTypeNone;
+  for i_type:= Low(TSynAddonType) to High(TSynAddonType) do
+    if s_type = cSynAddonType[i_type] then
+    begin
+      n_type:= i_type;
+      Break
+    end;
+
+  if n_type=cAddonTypeNone then
+  begin
+    MsgWarn('Cannot handle inf-file: '+fn_inf, Handle);
+    Exit;
+  end;
+
+  MsgInfo('Preinstalling plugin: '+s_title, Handle);
+  s_subdir:= ExtractFileName(ExtractFileDir(fn_inf));
+
+  DoOpenArchive_HandleIni(fn_inf, s_subdir, 'ini', n_type);
+  for i:= 1 to cMaxSectionsInInf do
+    if not DoOpenArchive_HandleIni(fn_inf, s_subdir, 'ini'+IntToStr(i), n_type) then
+      Break
+end;
+
+
 procedure TfmMain.DoPlugins_LoadAll;
 var
-  fn_plug_ini,
-  fn_plug_def_ini: string;
+  fn_plug_ini: string;
 begin
+  DoPlugins_PreinstallDefaults;
+
   fn_plug_ini:= SynPluginsIni;
-  fn_plug_def_ini:= SynPluginsSampleIni;
-  if not IsFileExist(fn_plug_ini) then
-    CopyFileA(PAnsiChar(fn_plug_def_ini), PAnsiChar(fn_plug_ini), true);
   if not IsFileExist(fn_plug_ini) then
     Exit;
 
@@ -20478,6 +20534,7 @@ begin
   if not SynExe then Exit;
 
   DoPlugins_LoadAll;
+
   for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
     with FPluginsPanel[i] do
       if SCaption<>'' then

@@ -2119,10 +2119,6 @@ object fmMain: TfmMain
           OnClick = TbxItemRunNewPluginClick
           OnSelect = ButtonOnSelect
         end
-        object TBXSubmenuPlugins: TSpTBXSubmenuItem
-          Caption = 'Plugins'
-          Enabled = False
-        end
       end
       object TBXSubmenuMacros: TSpTBXSubmenuItem
         Caption = '&Macros'
@@ -2259,6 +2255,10 @@ object fmMain: TfmMain
           Action = acMacroDialog
           OnSelect = ButtonOnSelect
         end
+      end
+      object TBXSubmenuPlugins: TSpTBXSubmenuItem
+        Caption = 'Plugins'
+        Enabled = False
       end
       object TBXSubmenuOptions: TSpTBXSubmenuItem
         Caption = '&Options'
