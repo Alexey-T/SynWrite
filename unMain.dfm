@@ -14247,9 +14247,9 @@ object fmMain: TfmMain
     Top = 200
   end
   object PythonEngine1: TPythonEngine
-    DllName = 'python32.dll'
+    DllName = 'python33.dll'
     APIVersion = 1013
-    RegVersion = '3.2'
+    RegVersion = '3.3'
     FatalAbort = False
     FatalMsgDlg = False
     UseLastKnownVersion = False

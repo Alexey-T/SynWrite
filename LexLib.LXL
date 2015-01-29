@@ -9360,7 +9360,7 @@ object SyntaxManager: TSyntaxManager
         StyleName = 'Tag param'
         BlockName = 'Tag begin'
         TokenType = 4
-        Expression = '(?s)".*?"'
+        Expression = '(?s) ("|'#39').*?(\1|$)'
         ColumnFrom = 0
         ColumnTo = 0
       end

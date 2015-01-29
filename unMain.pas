@@ -26751,7 +26751,7 @@ var
 begin
   SDir:= ExtractFilePath(ParamStr(0));
   S1:= SDir + 'DLLs';
-  S2:= SDir + 'python32.zip';
+  S2:= SDir + 'python33.zip';
   S3:= SDir + 'Py';
   Py_SetSysPath([S1, S2, S3]);
 end;
