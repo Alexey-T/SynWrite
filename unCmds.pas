@@ -188,8 +188,6 @@ const
 
   sm_RemoveDupsAll = 851;
   sm_ConvertSpacesToTabsLeading = 852;
-  sm_TidyValidate = 853;
-  sm_TidyConfig = 854;
   sm_RemoveDupsAdjacent = 855;
   sm_RemoveBlanks = 856;
   sm_TrimLeading = 857;

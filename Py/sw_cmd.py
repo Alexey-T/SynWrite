@@ -400,8 +400,6 @@ cmd_BookmarksInverse = 850
 
 cmd_RemoveDupsAll = 851
 cmd_ConvertSpacesToTabsLeading = 852
-cmd_TidyValidate = 853
-cmd_TidyConfig = 854
 cmd_RemoveDupsAdjacent = 855
 cmd_RemoveBlanks = 856
 cmd_TrimLeading = 857

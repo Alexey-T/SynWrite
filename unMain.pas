@@ -102,7 +102,6 @@ type
     cSynDataOutPresets,
     cSynDataSkins,
     cSynDataSnippets,
-    cSynDataHtmlTidy,
     cSynDataWebSearch
     );
 const
@@ -116,7 +115,6 @@ const
     'outpresets',
     'skins',
     'snippets',
-    'htmltidy',
     'websearch'
     );
 
@@ -883,10 +881,6 @@ type
     TBXSeparatorItem54: TSpTbxSeparatorItem;
     TBXItemECutLine: TSpTbxItem;
     TBXItemECopyLine: TSpTbxItem;
-    TBXSubmenuTidy: TSpTBXSubmenuItem;
-    TBXItemTidyCfg: TSpTbxItem;
-    TBXItemTidyVal: TSpTbxItem;
-    TBXSeparatorItem55: TSpTbxSeparatorItem;
     ListVal: TTntListBox;
     PopupValidate: TSpTbxPopupMenu;
     TBXItemValNav: TSpTbxItem;
@@ -1687,10 +1681,6 @@ type
     procedure ecBkPasteExecute(Sender: TObject);
     procedure ecGotoExecute(Sender: TObject);
     procedure ecToggleFocusGroupsExecute(Sender: TObject);
-    procedure TBXSubmenuTidyPopup(Sender: TTBCustomItem;
-      FromLink: Boolean);
-    procedure TBXItemTidyCfgClick(Sender: TObject);
-    procedure TBXItemTidyValClick(Sender: TObject);
     procedure TBXItemOOValClick(Sender: TObject);
     procedure ListValDblClick(Sender: TObject);
     procedure TBXItemValNavClick(Sender: TObject);
@@ -2605,9 +2595,6 @@ type
     procedure DoNewDocFolderClick(Sender: TObject);
     procedure DoTabIndexClick(n: integer);
     procedure DoRtTabIndexClick(n: integer);
-    procedure DoTidy_Run(const AConfig: string);
-    procedure DoTidy_Config;
-    procedure DoTidyClick(Sender: TObject);
 
     procedure DoBkDelete(Ed: TSyntaxMemo; DelUnmarked: boolean);
     procedure DoBkNext(Ed: TSyntaxMemo; Next: boolean);
@@ -3379,7 +3366,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.15.1944';
+  cSynVer = '6.15.1945';
   cSynPyVer = '1.0.146';
 
 const
@@ -6047,9 +6034,6 @@ begin
     sm_OnlineSearchPhp: DoOnlineSearch_Name('PHP.net');
     sm_OnlineSearchWikipedia: DoOnlineSearch_Name('Wikipedia (en)');
     sm_OnlineSearchMsdn: DoOnlineSearch_Name('MSDN');
-
-    sm_TidyValidate: DoTidy_Run('');
-    sm_TidyConfig: DoTidy_Config;
 
     sm_NumericConverterDialog: ecNumericConverter.Execute;
     sm_SortDialog: ecSortDialog.Execute;
@@ -9968,9 +9952,6 @@ begin
   UpdKey(TbxItemHelpCommandList, sm_CommandsList);
   UpdKey(TbxItemERepeatCmd, sm_RepeatLastCommand);
   UpdKey(TbxItemSSelToken, sm_SelectToken);
-
-  UpdKey(TbxItemTidyVal, sm_TidyValidate);
-  UpdKey(TbxItemTidyCfg, sm_TidyConfig);
 
   //macro
   UpdKey(TbxItemMacroRepeat, sm_MacroRepeat);
@@ -16186,147 +16167,6 @@ end;
 procedure TfmMain.ecToggleFocusGroupsExecute(Sender: TObject);
 begin
   Groups.PagesSetNext(true);
-end;
-
-procedure TfmMain.TBXSubmenuTidyPopup(Sender: TTBCustomItem;
-  FromLink: Boolean);
-var
-  i: Integer;
-  LFiles: TTntStringList;
-  MI: TSpTbxItem;
-  en: boolean;
-begin
-  en:= CurrentFrame.FileName<>'';
-  TbxItemTidyVal.Enabled:= en;
-
-  LFiles:= TTntStringList.Create;
-  try
-    FFindToList(LFiles, SynDataSubdir(cSynDataHtmlTidy),
-      '*.cfg', '', false{SubDir}, false, false, false);
-
-    with TbxSubmenuTidy do
-    begin
-      for i:= Count-1 downto 0 do
-        if Items[i].Tag=1 then
-          Items[i].Free;
-
-      for i:= 0 to LFiles.Count-1 do
-      begin
-        MI:= TSpTbxItem.Create(Self);
-        MI.Caption:= WideChangeFileExt(WideExtractFileName(LFiles[i]), '');
-        MI.Tag:= 1;
-        MI.OnClick:= DoTidyClick;
-        MI.Enabled:= en;
-        Add(MI);
-      end;
-    end;
-  finally
-    FreeAndNil(LFiles);
-  end;
-end;
-
-procedure TfmMain.TBXItemTidyCfgClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_TidyConfig);
-end;
-
-procedure TfmMain.DoTidyClick(Sender: TObject);
-var
-  Cfg: string;
-begin
-  Cfg:= (Sender as TTbCustomItem).Caption;
-  DoTidy_Run(Cfg);
-end;
-
-procedure TfmMain.DoTidy_Config;
-begin
-  FOpenURL(SynDataSubdir(cSynDataHtmlTidy), Handle);
-end;
-
-procedure TfmMain.DoTidy_Run(const AConfig: string);
-var
-  F: TEditorFrame;
-  fn_exe, fn_cfg, fn_out, fn_err, fn_current,
-  SToolCmd, SToolDir: string;
-begin
-  F:= CurrentFrame;
-  if F.FileName='' then Exit;
-  if F.Modified then acSave.Execute;
-
-  fn_current:= F.FileName;
-  fn_exe:= SynDir + 'Tools\tidy.exe';
-  fn_out:= FTempDir + '\SynwTidyOut.txt';
-  fn_err:= FTempDir + '\SynwTidyErr.txt';
-  FDelete(fn_out);
-  FDelete(fn_err);
-
-  if AConfig<>'' then
-  begin
-    fn_cfg:= SynDataSubdir(cSynDataHtmlTidy) + '\' + AConfig + '.cfg';
-    if not FileExists(fn_cfg) then
-      begin DoHint('Cannot find Tidy config: '+AConfig); MsgBeep; Exit end;
-
-    if (not IsFileExist(fn_cfg)) or (FGetFileSize(fn_cfg)=0) then
-    begin
-      MsgError('Tidy configuration empty:'#13+fn_cfg, Handle);
-      Exit
-    end;
-
-    SToolCmd:= WideFormat('"%s" -output "%s" -config "%s" -file "%s" -quiet "%s"',
-      [fn_exe, fn_out, fn_cfg, fn_err, fn_current]);
-  end
-  else
-  begin
-    SToolCmd:= WideFormat('"%s" -file "%s" -errors -quiet "%s"',
-      [fn_exe, fn_err, fn_current]);
-  end;
-
-  //exec
-  DoPyConsole_LogString('Running: '+SToolCmd);
-
-  SToolDir:= ExtractFileDir(fn_exe);
-  if FExecProcess(SToolCmd, SToolDir, sw_hide, true{Wait})<>exOk then
-    begin MsgNoRun(fn_exe); Exit end;
-
-  //show errors
-  if IsFileExist(fn_err) and (FGetFileSize(fn_err)>0) then
-  begin
-    SynPanelPropsVal.DefFilename:= fn_current;
-    SynPanelPropsVal.RegexStr:= 'line (\d+) column (\d+) .*';
-    SynPanelPropsVal.RegexIdLine:= 1;
-    SynPanelPropsVal.RegexIdCol:= 2;
-    SynPanelPropsVal.RegexIdName:= 0;
-    SynPanelPropsVal.ZeroBase:= false;
-
-    ListVal.Items.LoadFromFile(fn_err);
-    TabsOut.TabIndex:= Ord(tbValidate);
-    plOut.Show;
-  end
-  else
-  begin
-    ListVal.Items.Clear;
-    if AConfig='' then Exit;
-  end;
-
-  //show output in editor
-  //don't just load file, we need undo record, do replace
-  if IsFileExist(fn_out) and (FGetFileSize(fn_out)>0) then
-    with TStringList.Create do
-    try
-      LoadFromFile(fn_out);
-      F.EditorMaster.CaretStrPos:= 0;
-      F.EditorMaster.ReplaceText(0, F.EditorMaster.TextLength, Text);
-    finally
-      Free
-    end;
-
-  FDelete(fn_out);
-  FDelete(fn_err);
-end;
-
-procedure TfmMain.TBXItemTidyValClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_TidyValidate);
 end;
 
 procedure TfmMain.TBXItemOOValClick(Sender: TObject);
@@ -24437,11 +24277,6 @@ begin
       if SCmd='m:{nonprint}' then
       begin
         Item.LinkSubitems:= TBXSubmenuNonPrint;
-      end
-      else
-      if SCmd='m:{tidy}' then
-      begin
-        Item.LinkSubitems:= TBXSubmenuTidy;
       end
       else
       if SCmd='m:{projects}' then

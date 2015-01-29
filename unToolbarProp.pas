@@ -69,7 +69,6 @@ type
     mnuRecSessions: TTntMenuItem;
     mnuEncChange: TTntMenuItem;
     mnuEncConv: TTntMenuItem;
-    mnuTidy: TTntMenuItem;
     mnuFolding: TTntMenuItem;
     mnuFoldLevel: TTntMenuItem;
     mnuNonPrint: TTntMenuItem;
@@ -111,7 +110,6 @@ type
     procedure mnuRecSessionsClick(Sender: TObject);
     procedure mnuEncChangeClick(Sender: TObject);
     procedure mnuEncConvClick(Sender: TObject);
-    procedure mnuTidyClick(Sender: TObject);
     procedure mnuFoldingClick(Sender: TObject);
     procedure mnuFoldLevelClick(Sender: TObject);
     procedure mnuNonPrintClick(Sender: TObject);
@@ -779,11 +777,6 @@ end;
 procedure TfmToolbarProp.mnuEncConvClick(Sender: TObject);
 begin
   DoMenuSys('m:{enc-conv}', mnuEncConv.Caption);
-end;
-
-procedure TfmToolbarProp.mnuTidyClick(Sender: TObject);
-begin
-  DoMenuSys('m:{tidy}', mnuTidy.Caption);
 end;
 
 procedure TfmToolbarProp.mnuFoldingClick(Sender: TObject);
