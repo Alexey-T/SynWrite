@@ -2381,8 +2381,7 @@ type
     procedure DoPlugins_LoadCommands(const fn_plug_ini: string);
     procedure DoPlugins_LoadEvents(const fn_plug_ini: string);
     procedure DoPlugins_InitTabs;
-    procedure DoPlugins_PreinstallPlugin(const ACaption, fn_inf: string;
-      AIsPanelPlugin: boolean);
+    procedure DoPlugins_PreinstallPlugin(const AId, fn_inf: string; AIsPanelPlugin: boolean);
     procedure DoPlugins_PreinstallDefaults;
     //-------------------------------------------
     //
@@ -20450,12 +20449,13 @@ var
   DirExe: string;
 begin
   DirExe:= ExtractFileDir(Application.ExeName);
-  DoPlugins_PreinstallPlugin('Color Picker', DirExe+'\Py\syn_color_picker\install.inf', false);
   DoPlugins_PreinstallPlugin('Explorer', DirExe+'\Plugins\Explorer\install.inf', true);
   DoPlugins_PreinstallPlugin('SynFTP', DirExe+'\Plugins\SynFTP\install.inf', true);
+  DoPlugins_PreinstallPlugin('Color Picker', DirExe+'\Py\syn_color_picker\install.inf', false);
+  DoPlugins_PreinstallPlugin('HTML Tidy\Menu', DirExe+'\Py\syn_html_tidy\install.inf', false);
 end;
 
-procedure TfmMain.DoPlugins_PreinstallPlugin(const ACaption, fn_inf: string;
+procedure TfmMain.DoPlugins_PreinstallPlugin(const AId, fn_inf: string;
   AIsPanelPlugin: boolean);
 var
   i: Integer;
@@ -20469,7 +20469,7 @@ begin
 
   with TIniFile.Create(SynPluginsIni) do
   try
-    if ReadString(s_section, ACaption, '')<>'' then Exit
+    if ReadString(s_section, AId, '')<>'' then Exit
   finally
     Free
   end;
