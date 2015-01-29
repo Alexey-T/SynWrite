@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.15.1940
+AppVersion=6.16.1946
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -41,10 +41,6 @@ Source: "..\python*.zip"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\*.manifest"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: "..\Py\syn_plugin_manager\*.py"; DestDir: "{app}\Py\syn_plugin_manager";
-Source: "..\Py\syn_plugin_manager\*.lng"; DestDir: "{app}\Py\syn_plugin_manager";
-Source: "..\Py\syn_plugin_manager\*.inf"; DestDir: "{app}\Py\syn_plugin_manager";
-
 Source: "..\Data\autocomplete\*"; DestDir: "{app}\Data\autocomplete";
 Source: "..\Data\colors\*"; 	  DestDir: "{app}\Data\colors";
 Source: "..\Data\newdoc\*";       DestDir: "{app}\Data\newdoc";
@@ -52,7 +48,6 @@ Source: "..\Data\skins\*";        DestDir: "{app}\Data\skins";
 Source: "..\Data\icons\*";        DestDir: "{app}\Data\icons";
 Source: "..\Data\conv\*";         DestDir: "{app}\Data\conv";
 Source: "..\Data\outpresets\*";   DestDir: "{app}\Data\outpresets";
-Source: "..\Data\htmltidy\*";     DestDir: "{app}\Data\htmltidy";
 Source: "..\Data\websearch\*";    DestDir: "{app}\Data\websearch";
 
 Source: "..\Data\clips\Arrows\*";                     DestDir: "{app}\Data\clips\Arrows";                    
@@ -76,9 +71,12 @@ Source: "..\Data\snippets\Std.Php\*";    DestDir: "{app}\Data\snippets\Std.Php";
 Source: "..\Tools\*"; DestDir: "{app}\Tools"; 
 Source: "..\Dictionaries\*"; DestDir: "{app}\Dictionaries"; 
 
-Source: "..\SynPlugins.sample.ini"; DestDir: "{app}"; 
-Source: "..\Plugins\Explorer\*"; DestDir: "{app}\Plugins\Explorer"; 
-Source: "..\Plugins\SynFTP\*"; DestDir: "{app}\Plugins\SynFTP"; 
+Source: "..\Plugins\Explorer\*"; DestDir: "{app}\Plugins\Explorer"; Flags: recursesubdirs; 
+Source: "..\Plugins\SynFTP\*"; DestDir: "{app}\Plugins\SynFTP"; Flags: recursesubdirs; 
+
+Source: "..\Py\syn_plugin_manager\*"; DestDir: "{app}\Py\syn_plugin_manager"; Excludes: "*.pyc"; Flags: recursesubdirs;
+Source: "..\Py\syn_color_picker\*"; DestDir: "{app}\Py\syn_color_picker"; Excludes: "*.pyc"; Flags: recursesubdirs;
+Source: "..\Py\syn_html_tidy\*"; DestDir: "{app}\Py\syn_html_tidy"; Excludes: "*.pyc"; Flags: recursesubdirs;
 
 [Icons]
 Name: "{group}\SynWrite"; Filename: "{app}\Syn.exe"

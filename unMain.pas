@@ -20462,10 +20462,8 @@ var
   s_section, s_title, s_type, s_subdir: string;
   i_type, n_type: TSynAddonType;
 begin
-  if AIsPanelPlugin then
-    s_section:= 'Panels'
-  else
-    s_section:= 'Commands';
+  if not FileExists(fn_inf) then Exit;
+  if AIsPanelPlugin then s_section:= 'Panels' else s_section:= 'Commands';
 
   with TIniFile.Create(SynPluginsIni) do
   try
@@ -20489,12 +20487,7 @@ begin
       n_type:= i_type;
       Break
     end;
-
-  if n_type=cAddonTypeNone then
-  begin
-    MsgWarn('Cannot handle inf-file: '+fn_inf, Handle);
-    Exit;
-  end;
+  if n_type=cAddonTypeNone then Exit;
 
   MsgInfo('Preinstalling plugin: '+s_title, Handle);
   s_subdir:= ExtractFileName(ExtractFileDir(fn_inf));
