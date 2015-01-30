@@ -559,7 +559,6 @@ cmd_ScrollCurrentLineToBottom = 1041
 cmd_ScrollCurrentLineToMiddle = 1042
 cmd_SaveProject = 1043
 cmd_ToggleFocusConsole = 1044
-cmd_NewPythonPluginDialog = 1045
 cmd_NewSnippetDialog = 1046
 cmd_SnippetsDialog = 1047
 cmd_HelpFileContents = 1048

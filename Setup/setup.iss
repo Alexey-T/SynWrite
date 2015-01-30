@@ -77,6 +77,7 @@ Source: "..\Plugins\SynFTP\*"; DestDir: "{app}\Plugins\SynFTP"; Flags: recursesu
 Source: "..\Py\syn_plugin_manager\*"; DestDir: "{app}\Py\syn_plugin_manager"; Excludes: "*.pyc"; Flags: recursesubdirs;
 Source: "..\Py\syn_color_picker\*"; DestDir: "{app}\Py\syn_color_picker"; Excludes: "*.pyc"; Flags: recursesubdirs;
 Source: "..\Py\syn_html_tidy\*"; DestDir: "{app}\Py\syn_html_tidy"; Excludes: "*.pyc"; Flags: recursesubdirs;
+Source: "..\Py\syn_make_plugin\*"; DestDir: "{app}\Py\syn_make_plugin"; Excludes: "*.pyc"; Flags: recursesubdirs;
 
 [Icons]
 Name: "{group}\SynWrite"; Filename: "{app}\Syn.exe"

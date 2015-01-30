@@ -1320,8 +1320,6 @@ type
     PythonEngine1: TPythonEngine;
     MemoConsole: TTntMemo;
     PythonModule: TPythonModule;
-    SpTBXSeparatorItem25: TSpTBXSeparatorItem;
-    TbxItemRunNewPlugin: TSpTBXItem;
     TbxItemHelpPyDir: TSpTBXItem;
     TbxItemRunSnippets: TSpTBXItem;
     SpTBXSeparatorItem26: TSpTBXSeparatorItem;
@@ -2086,7 +2084,6 @@ type
     procedure PythonModuleInitialization(Sender: TObject);
     procedure PythonGUIInputOutput1SendUniData(Sender: TObject;
       const Data: WideString);
-    procedure TbxItemRunNewPluginClick(Sender: TObject);
     procedure TbxItemHelpPyDirClick(Sender: TObject);
     procedure PythonGUIInputOutput1ReceiveUniData(Sender: TObject;
       var Data: WideString);
@@ -2862,7 +2859,6 @@ type
     procedure DoPyCommandPlugin(N: Integer);
     procedure DoPyConsole_EnterCommand(const Str: Widestring);
     procedure DoPyConsole_RepeatCommand;
-    procedure DoPyNewPluginDialog;
     procedure DoPyRegisterCommandPlugin(const SId: string);
     function DoPyLoadPlugin(
       const SFilename, SCmd: string): string;
@@ -4455,7 +4451,6 @@ begin
   acSetupLexerStyles.Enabled:= en_lex;
   ecFullScr.Enabled:= SynExe;
   ecOnTop.Enabled:= SynExe;
-  TbxItemRunNewPlugin.Enabled:= SynExe;
   TBXSubmenuAddons.Enabled:= SynExe;
 
   ecCopy.Update;
@@ -6481,7 +6476,6 @@ begin
     sm_ScrollCurrentLineToBottom: EditorScrollCurrentLineTo(Ed, cScrollToBottom);
     sm_ScrollCurrentLineToMiddle: EditorScrollCurrentLineTo(Ed, cScrollToMiddle);
 
-    sm_NewPythonPluginDialog: DoPyNewPluginDialog;
     sm_NewSnippetDialog: DoSnippetNew;
     sm_SnippetsDialog: DoSnippetListDialog('');
 
@@ -9872,7 +9866,6 @@ begin
   UpdKey(TBXItemHelpTopics, sm_HelpFileContents);
   UpdKey(TbxItemRunSnippets, sm_SnippetsDialog);
   UpdKey(TbxItemRunNewSnippet, sm_NewSnippetDialog);
-  UpdKey(TbxItemRunNewPlugin, sm_NewPythonPluginDialog);
 
   UpdKey(TBXItemONPrintSpaces, sm_OptNonPrintSpaces);
   UpdKey(TBXItemONPrintEol, sm_OptNonPrintEol);
@@ -20453,6 +20446,7 @@ begin
   DoPlugins_PreinstallPlugin('SynFTP', DirExe+'\Plugins\SynFTP\install.inf', true);
   DoPlugins_PreinstallPlugin('Color Picker', DirExe+'\Py\syn_color_picker\install.inf', false);
   DoPlugins_PreinstallPlugin('HTML Tidy\Menu', DirExe+'\Py\syn_html_tidy\install.inf', false);
+  DoPlugins_PreinstallPlugin('Make Plugin', DirExe+'\Py\syn_make_plugin\install.inf', false);
 end;
 
 procedure TfmMain.DoPlugins_PreinstallPlugin(const AId, fn_inf: string;
@@ -26749,7 +26743,7 @@ procedure TfmMain.PythonEngine1AfterInit(Sender: TObject);
 var
   SDir, S1, S2, S3: string;
 begin
-  SDir:= ExtractFilePath(ParamStr(0));
+  SDir:= ExtractFilePath(Application.ExeName);
   S1:= SDir + 'DLLs';
   S2:= SDir + 'python33.zip';
   S3:= SDir + 'Py';
@@ -26869,11 +26863,6 @@ begin
   DoPyConsole_LogString(Data);
 end;
 
-procedure TfmMain.TbxItemRunNewPluginClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_NewPythonPluginDialog);
-end;
-
 procedure TfmMain.DoPyRegisterCommandPlugin(const SId: string);
 var
   SSection, SKey, SParams: string;
@@ -26888,71 +26877,6 @@ begin
   finally
     Free
   end;
-end;
-
-procedure TfmMain.DoPyNewPluginDialog;
-var
-  SId, SDir: Widestring;
-  List: TStringList;
-  fn_plugin, fn_sample: string;
-begin
-  if not GetPythonEngine.Initialized then
-  begin
-    MsgError(cPyNotInited, Handle);
-    Exit
-  end;
-
-  SId:= 'my_sample';
-  if not MsgInput('zMPyNew', SId) then Exit;
-
-  SId:= Trim(SId);
-  if SId='' then Exit;
-  SId:= 'syn_' + SId; //add prefix, so plugin module name won't mess with default names
-
-  if Py_ModuleNameIncorrect(SId) then
-  begin
-    MsgError(WideFormat(DKLangConstW('zMPyBadName'), [SId]), Handle);
-    Exit
-  end;
-  if Py_ModuleNameExists(SId) then
-  begin
-    MsgError(WideFormat(DKLangConstW('zMPyDupName'), [SId]), Handle);
-    Exit
-  end;
-
-  SDir:= SynPyDir + '\' + SId;
-  fn_plugin:= SDir + '\__init__.py';
-  fn_sample:= SynPyDir + '\sw_sample_plugin.py';
-
-  if DirectoryExists(SDir) then
-  begin
-    MsgError(WideFormat(DKLangConstW('zMPyDirExists'), [SDir]), Handle);
-    Exit
-  end;
-  CreateDir(SDir);
-  if not DirectoryExists(SDir) then
-  begin
-    MsgError(WideFormat(DKLangConstW('zMPyDirNotFound'), [SDir]), Handle);
-    Exit
-  end;
-
-  List:= TStringList.Create;
-  try
-    if FileExists(fn_sample) then
-      List.LoadFromFile(fn_sample);
-    List.SaveToFile(fn_plugin);
-  finally
-    FreeAndNil(List);
-  end;
-
-  if FileExists(fn_plugin) then
-  begin
-    DoPyRegisterCommandPlugin(SId); //write to SynPlugins.ini
-    DoPlugins_LoadAll; //reread SynPlugins.ini, update Plugins menu
-    DoOpenFile(fn_plugin);
-  end
-  else
-    MsgBeep;
 end;
 
 function TfmMain.DoPyLoadPlugin(const SFilename, SCmd: string): string;

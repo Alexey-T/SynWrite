@@ -362,7 +362,6 @@ const
   sm_ScrollCurrentLineToMiddle = 1042;
   sm_SaveProject = 1043;
   sm_ToggleFocusConsole = 1044;
-  sm_NewPythonPluginDialog = 1045;
   sm_NewSnippetDialog = 1046;
   sm_SnippetsDialog = 1047;
   sm_HelpFileContents = 1048;
