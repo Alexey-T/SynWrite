@@ -4970,6 +4970,7 @@ object SyntaxManager: TSyntaxManager
               'disablestartupprompt'
               'dontmergeduplicatefiles'
               'enabledirdoesntexistwarning'
+              'excludes'
               'extradiskspacerequired'
               'filename'
               'flags'

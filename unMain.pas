@@ -2187,7 +2187,6 @@ type
     FIcons: string;
     FListSnippets: TList;
     FListLexersSorted: TTntStringList;
-    FTempFilenames: TTntStringList;
     FUserToolbarCommands: TTntStringList;
     FInitialDir: Widestring;
     FInitialKeyCount: Integer;
@@ -2811,8 +2810,6 @@ type
     procedure DoOpenCmdPrompt;
 
     function SynHiddenOption(const Id: string; Default: integer): Integer;
-    procedure DoRememberTempFile(const fn: Widestring);
-    procedure DoDeleteTempFiles;
     procedure DoCopySearchMarks(Ed: TSyntaxMemo);
     procedure DoTextConverter(Ed: TSyntaxMemo; const fn: Widestring; ToBack: boolean);
 
@@ -2859,7 +2856,6 @@ type
     procedure DoPyCommandPlugin(N: Integer);
     procedure DoPyConsole_EnterCommand(const Str: Widestring);
     procedure DoPyConsole_RepeatCommand;
-    procedure DoPyRegisterCommandPlugin(const SId: string);
     function DoPyLoadPlugin(
       const SFilename, SCmd: string): string;
     function DoPyLoadPluginWithParams(
@@ -3363,7 +3359,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.15.1945';
+  cSynVer = '6.16.1955';
   cSynPyVer = '1.0.146';
 
 const
@@ -7408,7 +7404,7 @@ begin
 
   //others
   FUserToolbarCommands:= TTntStringList.Create;
-  FTempFilenames:= TTntStringList.Create;
+  //FTempFilenames:= TTntStringList.Create;
 end;
 
 procedure TfmMain.ecPrinterSetupExecute(Sender: TObject);
@@ -7623,8 +7619,7 @@ begin
   FreeAndNil(SynMruProjects);
   FreeAndNil(SynMruNewdoc);
 
-  DoDeleteTempFiles;
-  FreeAndNil(FTempFilenames);
+  //FreeAndNil(FTempFilenames);
   FreeAndNil(FUserToolbarCommands);
 
   for i:= Low(TabSwitchers) to High(TabSwitchers) do
@@ -20442,8 +20437,10 @@ var
   DirExe: string;
 begin
   DirExe:= ExtractFileDir(Application.ExeName);
+  //Panel plugins
   DoPlugins_PreinstallPlugin('Explorer', DirExe+'\Plugins\Explorer\install.inf', true);
   DoPlugins_PreinstallPlugin('SynFTP', DirExe+'\Plugins\SynFTP\install.inf', true);
+  //Command plugins
   DoPlugins_PreinstallPlugin('Color Picker', DirExe+'\Py\syn_color_picker\install.inf', false);
   DoPlugins_PreinstallPlugin('HTML Tidy\Menu', DirExe+'\Py\syn_html_tidy\install.inf', false);
   DoPlugins_PreinstallPlugin('Make Plugin', DirExe+'\Py\syn_make_plugin\install.inf', false);
@@ -25217,6 +25214,7 @@ begin
   end;
 end;
 
+(*
 procedure TfmMain.DoRememberTempFile(const fn: Widestring);
 begin
   if FTempFilenames.IndexOf(fn)<0 then
@@ -25233,6 +25231,7 @@ begin
     FTempFilenames.Delete(i);
   end;
 end;
+*)
 
 procedure TfmMain.TBXSubmenuViewToolbarsPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
@@ -26861,22 +26860,6 @@ procedure TfmMain.PythonGUIInputOutput1SendUniData(Sender: TObject;
   const Data: WideString);
 begin
   DoPyConsole_LogString(Data);
-end;
-
-procedure TfmMain.DoPyRegisterCommandPlugin(const SId: string);
-var
-  SSection, SKey, SParams: string;
-begin
-  SSection:= 'Commands';
-  SKey:= Py_NameToMixedCase(SId);
-  SParams:= cPyPrefix + SId + ';run;;;';
-
-  with TIniFile.Create(SynPluginsIni) do
-  try
-    WriteString(SSection, SKey, SParams);
-  finally
-    Free
-  end;
 end;
 
 function TfmMain.DoPyLoadPlugin(const SFilename, SCmd: string): string;

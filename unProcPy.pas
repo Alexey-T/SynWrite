@@ -28,7 +28,6 @@ procedure Py_ConvertSessionToNewFormat(const fnIn, fnOut: Widestring);
 function Py_RunPlugin_Command(const SId, SCmd: string): string;
 function Py_RunPlugin_Event(const SId, SCmd: string;
   AEd: TSyntaxMemo; const AParams: array of string): Widestring;
-function Py_NameToMixedCase(const S: string): string;
 function Py_ModuleNameIncorrect(const S: string): boolean;
 function Py_ModuleNameExists(const SId: string): boolean;
 
@@ -852,6 +851,7 @@ begin
   Result:= false;
 end;
 
+(*
 function Py_NameToMixedCase(const S: string): string;
 var
   n: Integer;
@@ -867,6 +867,7 @@ begin
       Result[n]:= UpCase(Result[n]);
   until false;
 end;
+*)
 
 function Py_ModuleNameExists(const SId: string): boolean;
 var
