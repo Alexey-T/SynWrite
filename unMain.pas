@@ -3212,6 +3212,7 @@ type
     procedure DoOpenProject(const fn: Widestring); overload;
     procedure DoOpenArchive(const fn, AParams: Widestring);
     function DoOpenArchive_HandleIni(const fn_ini, subdir, section: string; typ: TSynAddonType): boolean;
+    procedure DoOpenArchive_HandleIniSections(const fn_inf, subdir: string; typ: TSynAddonType);
     function DoOpenArchive_HandleLexer(const fn_ini, section: string): boolean;
     procedure DoOpenFolder(const dir: Widestring);
     procedure DoOpenFolderDialog;
@@ -3359,7 +3360,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.16.1955';
+  cSynVer = '6.16.1956';
   cSynPyVer = '1.0.146';
 
 const
@@ -3739,6 +3740,19 @@ end;
 function IsFileTooBig(const fn: WideString): boolean;
 begin
   Result:= FGetFileSize(fn) >= 200 * 1024 * 1024;
+end;
+
+function StringToAddonType(const Str: string): TSynAddonType;
+var
+  i: TSynAddonType;
+begin
+  Result:= cAddonTypeNone;
+  for i:= Low(TSynAddonType) to High(TSynAddonType) do
+    if Str=cSynAddonType[i] then
+    begin
+      Result:= i;
+      Exit
+    end;
 end;
 
 function TfmMain.SynFilesFilter: Widestring;
@@ -20446,12 +20460,10 @@ begin
   DoPlugins_PreinstallPlugin('Make Plugin', DirExe+'\Py\syn_make_plugin\install.inf', false);
 end;
 
-procedure TfmMain.DoPlugins_PreinstallPlugin(const AId, fn_inf: string;
-  AIsPanelPlugin: boolean);
+procedure TfmMain.DoPlugins_PreinstallPlugin(const AId, fn_inf: string; AIsPanelPlugin: boolean);
 var
-  i: Integer;
-  s_section, s_title, s_type, s_subdir: string;
-  i_type, n_type: TSynAddonType;
+  s_section, s_title: string;
+  n_type: TSynAddonType;
 begin
   if not FileExists(fn_inf) then Exit;
   if AIsPanelPlugin then s_section:= 'Panels' else s_section:= 'Commands';
@@ -20466,28 +20478,18 @@ begin
   with TIniFile.Create(fn_inf) do
   try
     s_title:= ReadString('info', 'title', '');
-    s_type:= ReadString('info', 'type', '');
+    n_type:= StringToAddonType(ReadString('info', 'type', ''));
   finally
     Free
   end;
 
-  n_type:= cAddonTypeNone;
-  for i_type:= Low(TSynAddonType) to High(TSynAddonType) do
-    if s_type = cSynAddonType[i_type] then
-    begin
-      n_type:= i_type;
-      Break
-    end;
   if n_type=cAddonTypeNone then Exit;
-
   MsgInfo('Preinstalling plugin: '+s_title, Handle);
-  s_subdir:= ExtractFileName(ExtractFileDir(fn_inf));
-
-  DoOpenArchive_HandleIni(fn_inf, s_subdir, 'ini', n_type);
-  for i:= 1 to cMaxSectionsInInf do
-    if not DoOpenArchive_HandleIni(fn_inf, s_subdir, 'ini'+IntToStr(i), n_type) then
-      Break
+  DoOpenArchive_HandleIniSections(fn_inf,
+    ExtractFileName(ExtractFileDir(fn_inf)),
+    n_type);
 end;
+
 
 
 procedure TfmMain.DoPlugins_LoadAll;
@@ -26396,6 +26398,17 @@ begin
   end;
 end;
 
+procedure TfmMain.DoOpenArchive_HandleIniSections(const fn_inf, subdir: string;
+  typ: TSynAddonType);
+var
+  i: Integer;
+begin
+  DoOpenArchive_HandleIni(fn_inf, subdir, 'ini', typ);
+  for i:= 1 to cMaxSectionsInInf do
+    if not DoOpenArchive_HandleIni(fn_inf, subdir, 'ini'+IntToStr(i), typ) then
+      Break
+end;
+
 function TfmMain.DoOpenArchive_HandleIni(const fn_ini, subdir, section: string; typ: TSynAddonType): boolean;
 var
   s_section, s_id, s_file, s_params, s_value: string;
@@ -26447,7 +26460,7 @@ var
   fn_inf, dir_to: string;
   s_title, s_type, s_desc, s_ver, s_subdir: string;
   s_msg: Widestring;
-  n_type, i_type: TSynAddonType;
+  n_type: TSynAddonType;
   i: integer;
   AllowConfirm: boolean;
   VersionStr: string;
@@ -26485,13 +26498,7 @@ begin
     Free
   end;
 
-  n_type:= cAddonTypeNone;
-  for i_type:= Low(TSynAddonType) to High(TSynAddonType) do
-    if s_type = cSynAddonType[i_type] then
-    begin
-      n_type:= i_type;
-      Break
-    end;
+  n_type:= StringToAddonType(s_type);
 
   //don't show "template", show nicer "data/dir"
   if n_type=cAddonTypeData then
@@ -26554,10 +26561,7 @@ begin
   if n_type in [cAddonTypeBinPlugin, cAddonTypePyPlugin] then
   begin
     DoRemovePluginsIniLines(SynPluginsIni, s_subdir, n_type=cAddonTypeBinPlugin);
-    DoOpenArchive_HandleIni(fn_inf, s_subdir, 'ini', n_type);
-    for i:= 1 to cMaxSectionsInInf do
-      if not DoOpenArchive_HandleIni(fn_inf, s_subdir, 'ini'+IntToStr(i), n_type) then
-        Break
+    DoOpenArchive_HandleIniSections(fn_inf, s_subdir, n_type);
   end;
 
   if n_type=cAddonTypeLexer then
