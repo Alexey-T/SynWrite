@@ -5,6 +5,7 @@ import urllib.parse
 from .worklocal import syn_py, syn_plugins_ini, get_py_desc, get_py_title, get_installed_list
 from .workremote import msg, get_url, get_item_url, get_avail_list, get_plugin_zip
 from .workupd import Info, get_update_info
+from .ver_str import *
 
 SAVE_DIR = r'c:\SynWrite_saved_plugins'
 UPDATER_X = 520
@@ -42,9 +43,11 @@ class Command:
             msg_box(MSG_ERROR, 'Needed app update')
             return
     
-        infos = get_update_info()        
+        infos = get_update_info()
+        
+        marked = lambda info: '*' if is_version_newer(info.v_local, info.v_remote) else ''        
         text = '\n'.join([
-          info.name + '\t' + 
+          marked(info) + info.name + '\t' + 
           os.path.basename(info.path) + '\t' + 
           info.v_local + '\t' + 
           info.v_remote + '\t' 
