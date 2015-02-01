@@ -244,9 +244,6 @@ type
     TntLabel37: TTntLabel;
     cbRecColors: TTntComboBox;
     boxDateFormat: TTntGroupBox;
-    cbZenProfile: TTntComboBox;
-    LabelHelpEmmet: TTntLabel;
-    TntLabel18: TTntLabel;
     edDateFmt: TTntEdit;
     LabelHelpDateFmt: TTntLabel;
     TntLabel20: TTntLabel;
@@ -459,7 +456,6 @@ type
     procedure bSpellOptClick(Sender: TObject);
     procedure tabOvrShow(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
-    procedure LabelHelpEmmetClick(Sender: TObject);
     procedure tabCaretsShow(Sender: TObject);
     procedure LabelHelpCaretsClick(Sender: TObject);
     procedure LabelHelpAcpHtmlClick(Sender: TObject);
@@ -1719,11 +1715,6 @@ begin
   SaveDialogPre.Filter:= cColorFilter;
 end;
 
-procedure TfmSetup.LabelHelpEmmetClick(Sender: TObject);
-begin
-  SynHelpTopic(helpEmmet, Handle);
-end;
-
 procedure TfmSetup.tabCaretsShow(Sender: TObject);
 begin
   if tabCarets.Tag<>0 then Exit;
@@ -2535,7 +2526,6 @@ begin
 
     opDateFmt:= edDateFmt.Text;
     opDateFmtPLog:= edDateFmtP.Text;
-    opZenProfile:= cbZenProfile.Text;
   end;
 end;
 
@@ -2680,8 +2670,6 @@ begin
 end;
 
 procedure TfmSetup.InitInsertFormat;
-var
-  fn: string;
 begin
   with fmMain do
   begin
@@ -2703,16 +2691,6 @@ begin
 
     edDateFmt.Text:= opDateFmt;
     edDateFmtP.Text:= opDateFmtPLog;
-
-    with cbZenProfile do
-    begin
-      fn:= SynDir + 'Tools\EmmetProfiles.txt';
-      if FileExists(fn) then
-      begin
-        Items.LoadFromFile(fn);
-        ItemIndex:= Items.IndexOf(opZenProfile);
-      end;
-    end;
   end;
 end;
 

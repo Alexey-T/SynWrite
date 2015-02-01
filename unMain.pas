@@ -785,9 +785,7 @@ type
     TBXItemCtxCustomize: TSpTbxItem;
     ecToggleFocusTree: TAction;
     ecToggleFocusClip: TAction;
-    ecZenExpand: TAction;
     TBXSeparatorItem46: TSpTbxSeparatorItem;
-    ecZenWrap: TAction;
     TBXSubmenuItemCommentOps: TSpTBXSubmenuItem;
     TBXItemEComm: TSpTbxItem;
     TBXItemEUncomm: TSpTbxItem;
@@ -1098,9 +1096,6 @@ type
     TBXItemPLogFind: TSpTbxItem;
     TBXItemCtxPasteNoCurChange: TSpTbxItem;
     TBXSeparatorItem80: TSpTbxSeparatorItem;
-    TBXSubmenuEmmet: TSpTBXSubmenuItem;
-    TBXItemHtmlEmmetWrap: TSpTBXItem;
-    TBXItemHtmlEmmetExpand: TSpTBXItem;
     PluginACP: TAutoCompletePopup;
     ecCenterLines: TAction;
     TBXSeparatorItem83: TSpTbxSeparatorItem;
@@ -1288,8 +1283,6 @@ type
     TBXItemFoldLevel8: TSpTBXItem;
     TBXItemFoldLevel9: TSpTBXItem;
     TbxItemTabReload: TSpTBXItem;
-    TBXItemHtmlEmmetHelp: TSpTBXItem;
-    SpTBXSeparatorItem17: TSpTBXSeparatorItem;
     TimerMinimap: TTimer;
     SpTBXSeparatorItem18: TSpTBXSeparatorItem;
     TBXSubmenuItemPrint: TSpTBXSubmenuItem;
@@ -1870,9 +1863,6 @@ type
       Shift: TShiftState);
     procedure ListPLogDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
-    procedure TBXItemHtmlEmmetHelpClick(Sender: TObject);
-    procedure ecZenExpandExecute(Sender: TObject);
-    procedure ecZenWrapExecute(Sender: TObject);
     procedure ecCenterLinesExecute(Sender: TObject);
     procedure TBXItemLeftTabsClick(Sender: TObject);
     procedure ListTabsClick(Sender: TObject);
@@ -1971,8 +1961,6 @@ type
     procedure TBXItemEIndentLike1stClick(Sender: TObject);
     procedure TBXItemECommClick(Sender: TObject);
     procedure TBXItemEUncommClick(Sender: TObject);
-    procedure TBXItemHtmlEmmetExpandClick(Sender: TObject);
-    procedure TBXItemHtmlEmmetWrapClick(Sender: TObject);
     procedure TBXItemTabToggleSplitClick(Sender: TObject);
     procedure TBXItemCtxCopyClick(Sender: TObject);
     procedure TBXItemCtxCutClick(Sender: TObject);
@@ -2601,9 +2589,6 @@ type
 
     procedure InitGroups;
     procedure InitSpell;
-    procedure DoZenExpand;
-    procedure DoZenWrap;
-    function DoZenExec(const s, sPadding: string): string;
     function DoClipItem: Widestring;
     //procedure DoClipsItemCopy;
     procedure DoClipItemCopy;
@@ -3030,7 +3015,6 @@ type
     opColorMap: integer;
     opBigSize: integer; //size in Mb for lexer-off
     opBkUndo: boolean;
-    opZenProfile: string;
     opProjPaths: Widestring;
     opHiliteBrackets: boolean;
     opColorOutSelBk,
@@ -3360,7 +3344,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.16.1956';
+  cSynVer = '6.16.1965';
   cSynPyVer = '1.0.146';
 
 const
@@ -4837,7 +4821,6 @@ begin
 
     opBigSize:= ReadInteger('Setup', 'BigSize', 4);
     opBkUndo:= ReadBool('Setup', 'BkUndo', false);
-    opZenProfile:= ReadString('Setup', 'ZenPr', 'html');
     opProjPaths:= UTF8Decode(ReadString('Setup', 'Paths', ''));
     opHiliteBrackets:= ReadBool('Setup', 'BrHi', true);
 
@@ -5095,7 +5078,6 @@ begin
     WriteInteger('Setup', 'Undo', TemplateEditor.UndoLimit);
     WriteInteger('Setup', 'BigSize', opBigSize);
     WriteBool('Setup', 'BkUndo', opBkUndo);
-    WriteString('Setup', 'ZenPr', opZenProfile);
     WriteBool('Setup', 'BrHi', opHiliteBrackets);
     WriteBool('Setup', 'ShowBm', opShowBookmarkColumn);
 
@@ -6334,9 +6316,6 @@ begin
 
     sm_SplitViewsVertHorz: ecSplitViewsVertHorz.Execute;
     sm_SplitSlaveVertHorz: ecSplitSlaveVertHorz.Execute;
-
-    sm_Emmet_Expand: ecZenExpand.Execute;
-    sm_Emmet_Wrap: ecZenWrap.Execute;
 
     sm_FileBackup:
       acBackup.Execute;
@@ -9977,9 +9956,6 @@ begin
   UpdKey(TbxItemEToggleLineComment, sm_ToggleLineComment);
   UpdKey(TbxItemEToggleLineCommentAlt, sm_ToggleLineCommentAlt);
 
-  UpdKey(TbxItemHtmlEmmetExpand, sm_Emmet_Expand);
-  UpdKey(TbxItemHtmlEmmetWrap, sm_Emmet_Wrap);
-
   UpdKey(TBXItemEInsText, sm_InsertTextDialog);
   UpdKey(TBXItemEFillBlock, sm_FillBlockDialog);
   UpdKey(TBXItemOOnTop, sm_ShowOnTop);
@@ -12603,8 +12579,6 @@ begin
   TBXItemEFillBlock.Enabled:= en and not ro;
   TBXItemEColumn.Enabled:= en and not ro;
   TBXItemEInsText.Enabled:= not ro;
-  TbxItemHtmlEmmetExpand.Enabled:= not ro;
-  TbxItemHtmlEmmetWrap.Enabled:= not ro;
   TbxItemEToggleLineComment.Enabled:= not ro;
   TbxItemEToggleStreamComment.Enabled:= not ro;
 end;
@@ -15142,127 +15116,6 @@ procedure TfmMain.UpdateQVTree;
 begin
   if opListerQVTree<>'' then
     plTree.Visible:= SFileExtensionMatch(fn, opListerQVTree);
-end;
-
-procedure TfmMain.DoZenExpand;
-var
-  s: WideString;
-  i, iSt, iLen, i1: Integer;
-  sPad: string;
-begin
-  with CurrentEditor do
-  begin
-    if ReadOnly then Exit;
-    if CaretPos.X=0 then
-      begin MsgBeep; Exit end;
-
-    i1:= CaretStrPos;
-    iSt:= SZenFindLeft(Lines.FText, i1+1)-1;
-    iLen:= i1-iSt;
-    s:= WideTrim(Copy(Lines.FText, iSt+1, iLen));
-    if s='' then
-      begin MsgBeep; Exit end;
-    //Msginfo('"'+s+'"'); exit;
-
-    //make padding string, maybe with tabs
-    sPad:= EditorIndentStringForPos(CurrentEditor, StrPosToCaretPos(iSt));
-
-    //expand abbrev
-    s:= DoZenExec(s, sPad);
-    if s='' then Exit;
-    i:= Pos('|', s);
-    SReplaceAllW(s, '|', '');
-
-    BeginUpdate;
-    try
-      CaretStrPos:= iSt;
-      DeleteText(iLen);
-      InsertText(s);
-      if i>0 then
-        CaretStrPos:= iSt+i-1;
-    finally
-      EndUpdate;
-    end;
-  end;
-end;
-
-function TfmMain.DoZenExec(const s, sPadding: string): string;
-const
-  fr = 'Tools\emmet.wsf';
-var
-  fn, ft, fcmd: Widestring;
-  L: TStringList;
-  Lexer, sAbr, sType: string;
-begin
-  Result:= '';
-
-  //"Type" param
-  Lexer:= CurrentLexer;
-  if IsLexerCSS(Lexer) then
-    sType:= 'css'
-  else
-  if IsLexerXML(Lexer) then
-    sType:= 'xsl'
-  else
-    sType:= 'html';
-
-    sAbr:= s;
-    SReplaceAll(sAbr, '"', '%Q%'); //for cmdline. Script knows it.
-
-    fn:= SynDir + fr;
-    ft:= FTempDir + '\SynwEmmet.txt';
-    fcmd:= WideFormat('cmd.exe /c""wscript.exe" "%s" "%s" "%s" "%s" "%s" >"%s""',
-      [fn, sAbr, sType, opZenProfile, sPadding, ft]);
-
-    FDelete(ft);
-    if not IsFileExist(fn) then
-      begin MsgNoFile(fn); Exit end;
-    if FExecProcess(fcmd, SExtractFileDir(fn), sw_hide, true{DoWait})<>exOk then
-      begin MsgNoRun(fr); Exit end;
-    if (not IsFileExist(ft)) or (FGetFileSize(ft)=0) then
-      begin MsgError(WideFormat(DKLangConstW('MZen'), [s]), Handle); Exit end;
-
-    L:= TStringList.Create;
-    try
-      L.LoadFromFile(ft);
-      Result:= SDelLastCR(L.Text);
-    finally
-      FreeAndNil(L);
-      FDelete(ft);
-    end;
-end;
-
-procedure TfmMain.DoZenWrap;
-var
-  s, abbr: WideString;
-  i, iSt: integer;
-  sPad: string;
-begin
-  with CurrentEditor do
-  begin
-    if ReadOnly then Exit;
-    if SelLength=0 then
-      begin MsgNoSelection; Exit end;
-
-    abbr:= '';
-    if not MsgInput('zenIn', abbr) then Exit;
-
-    sPad:= StringOfChar(' ', StrPosToCaretPos(SelStart).X);
-    abbr:= DoZenExec(abbr, sPad);
-    if abbr='' then Exit;
-    i:= Pos('|', abbr);
-    if i=0 then
-      begin MsgWarn(DKLangConstW('zenCur'), Handle); Exit; end;
-    SReplaceAllW(abbr, '|', '');
-
-    s:= SelText;
-    ClearSelection;
-
-    iSt:= CaretStrPos;
-    InsertText(abbr);
-    CaretStrPos:= iSt+i-1;
-    InsertText(s);
-  end;
 end;
 
 procedure TfmMain.UpdateLexer;
@@ -21350,30 +21203,6 @@ begin
   end;
 end;
 
-{
-procedure TfmMain.DoRepaintFrame(F: TEditorFrame);
-begin
-  F.Width:= F.Width+1;
-  F.Width:= F.Width-1;
-end;
-}
-
-procedure TfmMain.TBXItemHtmlEmmetHelpClick(Sender: TObject);
-begin
-  FOpenURL('http://docs.emmet.io/cheat-sheet/', Handle);
-end;
-
-procedure TfmMain.ecZenExpandExecute(Sender: TObject);
-begin
-  DoZenExpand;
-end;
-
-procedure TfmMain.ecZenWrapExecute(Sender: TObject);
-begin
-  DoZenWrap;
-end;
-
-
 function TfmMain.PluginAction_SuggestCompletion(
   const Str: PWideChar;
   NChars: Integer;
@@ -23653,16 +23482,6 @@ end;
 procedure TfmMain.TBXItemEUncommClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smUncommentLines);
-end;
-
-procedure TfmMain.TBXItemHtmlEmmetExpandClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_Emmet_Expand);
-end;
-
-procedure TfmMain.TBXItemHtmlEmmetWrapClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_Emmet_Wrap);
 end;
 
 procedure TfmMain.TBXItemTabToggleSplitClick(Sender: TObject);

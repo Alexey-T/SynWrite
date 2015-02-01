@@ -285,8 +285,6 @@ cmd_OptFolding = 732
 cmd_OptNonPrint = 733
 cmd_ToggleFocusTree = 734
 cmd_ToggleFocusClip = 735
-cmd_Emmet_Expand = 736
-cmd_Emmet_Wrap = 737
 cmd_ToggleLineComment = 738
 cmd_ToggleFocusOutput = 739
 

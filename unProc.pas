@@ -52,7 +52,6 @@ function IsElevationNeededForFolder(const Dir: Widestring): boolean;
 
 function DoShowPopupMenu(List: TTntStringList; Pnt: TPoint; hWnd: THandle): Integer;
 procedure MemoScrollToBottom(Memo: TTntMemo);
-function SZenFindLeft(const s: ecString; iFrom: integer): integer;
 function DoReadLangMsg(const fn_lng, fn_en_lng, msg_id: string): Widestring;
 function DoPlayWaveSound(const fn: string): boolean;
 function ShiftStateToString(const Shift: TShiftState): string;
@@ -1823,28 +1822,6 @@ begin
       Result:= true;
   end;
 end;
-
-function SZenFindLeft(const s: ecString; iFrom: integer): integer;
-const
-  brEnd = ']}';
-  brBegin = '[{';
-var
-  i, Br: Integer;
-begin
-  i:= iFrom;
-  Br:= 0;
-  if i>1 then
-  repeat
-    Dec(i);
-    if i=1 then Break;
-    if Pos(s[i], brEnd)>0 then Inc(Br);
-    if Pos(s[i], brBegin)>0 then Dec(Br);
-    if IsSpaceChar(s[i-1]) and (Br<=0) then Break;
-    if IsTagEnd(i-1, s) then Break;
-  until false;
-  Result:= i;
-end;
-
 
 procedure DoCenterForm(h: THandle; fm: TCustomForm);
 var r: TRect;

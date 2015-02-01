@@ -72,8 +72,6 @@ const
   sm_OptNonPrint = 733;
   sm_ToggleFocusTree = 734;
   sm_ToggleFocusClip = 735;
-  sm_Emmet_Expand = 736;
-  sm_Emmet_Wrap = 737;
   sm_ToggleLineComment = 738;
   sm_ToggleFocusOutput = 739;
 
