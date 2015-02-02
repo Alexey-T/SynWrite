@@ -74,6 +74,7 @@ const
   cIconsDefault = 'Fugue 24x24';
   cMaxSectionsInInf = 120;
   cMaxLexerLinksInInf = 20;
+  cMinProgressFilesize = 120*1024;
   cColorIdxMin = 4; //index in "Recent colors" after "Clear list" and separator
 
 const
@@ -3344,7 +3345,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.16.1965';
+  cSynVer = '6.16.1968';
   cSynPyVer = '1.0.146';
 
 const
@@ -8730,10 +8731,10 @@ begin
 end;
 
   function TfmMain.IsProgressNeeded(Ed: TSyntaxMemo): boolean;
-  const
-    cMinProgress = 120*1024;
   begin
-    Result:= Ed.TextLength >= cMinProgress;
+    Result:= false; ////Ed.TextLength >= cMinProgressFilesize;
+      //showing causes bug: replace in 2 tabs, tabs with size>MinProgressFilesize,
+      //and replaced only in active tab
   end;
 
   function TfmMain.IsProgressStopped(const NDoneSize, NTotalSize: Int64): boolean;
@@ -8848,14 +8849,14 @@ begin
       PWChar(WriteFindOptions(act, fmSR.TextOptions, fmSR.Text1, fmSR.Text2)));
 
   //extend selection
-  if act in [arFindNext] then
+  if act in [cfActionFindNext] then
   if Assigned(fmSR) and fmSR.OpExtSel then
     EditorExtendSelectionByPosition(Ed,
       oldStart, oldLength,
       Ed.SelStart, Ed.SelLength);
 
   //set "From caret" dialog option
-  if act in [arFindNext, arSkip, arReplaceNext] then
+  if act in [cfActionFindNext, cfActionSkip, cfActionReplaceNext] then
     if Finder.Matches>0 then
       if Assigned(fmSR) then
         fmSR.SetFromCaret;
@@ -9040,31 +9041,31 @@ begin
     end;
 
   case act of
-    arFindNext:
+    cfActionFindNext:
       DoFindDialog_FindNext;
     //
-    arReplaceNext:
+    cfActionReplaceNext:
       //don't jump to next match, if Ctrl is pressed (feature)
       DoFindDialog_ReplaceOrSkip(true, not IsCtrlPressed);
     //
-    arSkip:
+    cfActionSkip:
       DoFindDialog_ReplaceOrSkip(false, true);
     //
-    arFindAll:
+    cfActionFindAll:
       DoFindDialog_FindAllInCurrentTab(
         fmSR.OpBkmkAll,
         fmSR.OpSelectAll);
     //
-    arCount:
+    cfActionCount:
       DoFindDialog_CountAllInCurrentTab;
     //
-    arFindInTabs:
+    cfActionFindInTabs:
       DoFindDialog_FindAllInAllTabs;
     //
-    arReplaceAll:
+    cfActionReplaceAll:
       DoFindDialog_ReplaceAllInCurrentTab;
     //
-    arReplaceAllInAll:
+    cfActionReplaceAllInAll:
       DoFindDialog_ReplaceAllInAllTabs(SMsgFiles);
   end;
 
@@ -9073,7 +9074,7 @@ begin
   begin
     SMsg:= WideFormat(DKLangConstW('Found'), [Finder.Matches]) + ' ' + SMsgFiles;
     DoHint(SMsg);
-    if act in [arCount, arFindAll, arReplaceAll, arReplaceAllInAll] then
+    if act in [cfActionCount, cfActionFindAll, cfActionReplaceAll, cfActionReplaceAllInAll] then
       fmSR.ShowStatus(SMsg);
   end;
 end;
@@ -22901,14 +22902,14 @@ begin
   _PrevSelLength:= Finder.Control.SelLength;
 
   case Act of
-    arFindNext: Finder.FindAgain;
-    arFindAll: Finder.FindAll;
-    arFindInTabs: MsgError('Command "Find in all tabs" not supported in macros yet', Handle);
-    arCount: Finder.CountAll;
-    arSkip: Finder.FindAgain;
-    arReplaceNext: Finder.ReplaceAgain;
-    arReplaceAll: Finder.ReplaceAll;
-    arReplaceAllInAll: MsgError('Command "Replace in all tabs" not supported in macros yet', Handle);
+    cfActionFindNext: Finder.FindAgain;
+    cfActionFindAll: Finder.FindAll;
+    cfActionFindInTabs: MsgError('Command "Find in all tabs" not supported in macros yet', Handle);
+    cfActionCount: Finder.CountAll;
+    cfActionSkip: Finder.FindAgain;
+    cfActionReplaceNext: Finder.ReplaceAgain;
+    cfActionReplaceAll: Finder.ReplaceAll;
+    cfActionReplaceAllInAll: MsgError('Command "Replace in all tabs" not supported in macros yet', Handle);
   end;
   Result:= Finder.Matches;
 
@@ -22923,7 +22924,7 @@ begin
   Ok:= Finder.Matches>0;
   if Ok then
   begin
-    if OptExtSel and (Act in [arFindNext]) then
+    if OptExtSel and (Act in [cfActionFindNext]) then
       EditorExtendSelectionByPosition(CurrentEditor,
         _PrevSelStart, _PrevSelLength,
         CurrentEditor.CaretStrPos, 0);

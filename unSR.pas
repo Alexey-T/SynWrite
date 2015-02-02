@@ -27,19 +27,24 @@ type
 
 type
   TSynSearchAction = (
-    arFindNext,
-    arFindAll,
-    arFindInTabs,
-    arCount,
-    arSkip,
-    arReplaceNext,
-    arReplaceAll,
-    arReplaceAllInAll
+    cfActionFindNext,
+    cfActionFindAll,
+    cfActionFindInTabs,
+    cfActionCount,
+    cfActionSkip,
+    cfActionReplaceNext,
+    cfActionReplaceAll,
+    cfActionReplaceAllInAll
     );
 
 const
-  cSearchIngoreFromCaret: set of TSynSearchAction =
-    [arFindAll, arFindInTabs, arCount, arReplaceAll, arReplaceAllInAll];
+  cSearchIngoreFromCaret: set of TSynSearchAction = [
+    cfActionFindAll,
+    cfActionFindInTabs,
+    cfActionCount,
+    cfActionReplaceAll,
+    cfActionReplaceAllInAll
+    ];
 
 
 type
@@ -623,7 +628,7 @@ end;
 
 procedure TfmSR.bFindNextClick(Sender: TObject);
 begin
-  DoAction(arFindNext);
+  DoAction(cfActionFindNext);
 end;
 
 procedure TfmSR.SetFromCaret;
@@ -638,22 +643,22 @@ end;
 
 procedure TfmSR.bFindAllClick(Sender: TObject);
 begin
-  DoAction(arFindAll);
+  DoAction(cfActionFindAll);
 end;
 
 procedure TfmSR.bRepSkipClick(Sender: TObject);
 begin
-  DoAction(arSkip);
+  DoAction(cfActionSkip);
 end;
 
 procedure TfmSR.bRepNextClick(Sender: TObject);
 begin
-  DoAction(arReplaceNext);
+  DoAction(cfActionReplaceNext);
 end;
 
 procedure TfmSR.bRepAllClick(Sender: TObject);
 begin
-  DoAction(arReplaceAll);
+  DoAction(cfActionReplaceAll);
 end;
 
 procedure TfmSR.bRepInTabsClick(Sender: TObject);
@@ -664,13 +669,13 @@ begin
   //uncheck "Search from caret" for mass replace
   OpFromCaret:= false;
 
-  DoAction(arReplaceAllInAll);
+  DoAction(cfActionReplaceAllInAll);
   SetFocus;
 end;
 
 procedure TfmSR.bCountClick(Sender: TObject);
 begin
-  DoAction(arCount);
+  DoAction(cfActionCount);
 end;
 
 procedure TfmSR.TntFormActivate(Sender: TObject);
@@ -1248,7 +1253,7 @@ begin
   //uncheck "Search from caret" for mass search
   OpFromCaret:= false;
 
-  DoAction(arFindInTabs);
+  DoAction(cfActionFindInTabs);
 end;
 
 procedure TfmSR.TntFormClose(Sender: TObject; var Action: TCloseAction);
