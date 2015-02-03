@@ -2229,7 +2229,7 @@ object fmMain: TfmMain
         end
       end
       object TBXSubmenuPlugins: TSpTBXSubmenuItem
-        Caption = 'Plugins'
+        Caption = 'Pl&ugins'
         Enabled = False
       end
       object TBXSubmenuOptions: TSpTBXSubmenuItem

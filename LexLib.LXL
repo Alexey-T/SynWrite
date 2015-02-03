@@ -589,7 +589,7 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Identifier'
+        DisplayName = 'Id'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -597,7 +597,7 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Reserved word'
+        DisplayName = 'Id keyword'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -621,14 +621,14 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Current block'
+        DisplayName = 'Current block BG'
         Font.Charset = RUSSIAN_CHARSET
         Font.Color = clMaroon
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
         BgColor = 13369046
-        FormatType = ftColor
+        FormatType = ftBackGround
         BorderTypeLeft = blSolid
         BorderColorLeft = clGray
         BorderTypeTop = blSolid
@@ -639,7 +639,7 @@ object SyntaxManager: TSyntaxManager
         BorderColorBottom = clGray
       end
       item
-        DisplayName = 'Asm'
+        DisplayName = 'Asm BG'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -13
@@ -659,15 +659,15 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Id keyword'
-        StyleName = 'Reserved word'
-        TokenType = 10
+        StyleName = 'Id keyword'
+        TokenType = 7
         Expression = '\b(catch|else|for|if|switch|while)\b'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
         DisplayName = 'Id'
-        StyleName = 'Identifier'
+        StyleName = 'Id'
         TokenType = 2
         Expression = '\~?[a-z_]\w*'
         ColumnFrom = 0
@@ -676,15 +676,15 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Hex'
         StyleName = 'Number'
-        TokenType = 7
-        Expression = '0x[\da-f]*'
+        TokenType = 5
+        Expression = '0x[\da-f]+'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
         DisplayName = 'Float'
         StyleName = 'Number'
-        TokenType = 6
+        TokenType = 5
         Expression = 
           '#with exp. dot is optional '#13#10'(\d+ \.)? \d+ e [\+\-]? \d+ |'#13#10'#wit' +
           'hout exp. dot is required'#13#10'\d+ \. \d+'
@@ -702,7 +702,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Preprocessor'
         StyleName = 'Preprocessor'
-        TokenType = 9
+        TokenType = 6
         Expression = '\#\s*\w+'
         ColumnFrom = 0
         ColumnTo = 0
@@ -724,25 +724,41 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Symbol'
+        DisplayName = 'Symbol {}'
         StyleName = 'Symbol'
-        TokenType = 3
-        Expression = '[/\+\-\*=<>&/\|\^\.!\?%\\:]+'
+        TokenType = 8
+        Expression = '[\{\}]'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
-        DisplayName = 'Single symbol'
+        DisplayName = 'Symbol ::'
+        StyleName = 'Symbol'
+        TokenType = 9
+        Expression = ':: | \->'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Symbol'
         StyleName = 'Symbol'
         TokenType = 3
-        Expression = '[\{\}\(\)\[\],;]'
+        Expression = '[/\+\-\*=<>&/\|\^\.!\?%\\:]'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Symbol single'
+        StyleName = 'Symbol'
+        TokenType = 3
+        Expression = '[\(\)\[\],;]'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
         DisplayName = 'Char'
         StyleName = 'String'
-        TokenType = 8
+        TokenType = 4
         Expression = #39'.*?('#39'|$)'
         ColumnFrom = 0
         ColumnTo = 0
@@ -750,7 +766,7 @@ object SyntaxManager: TSyntaxManager
     BlockRules = <
       item
         DisplayName = 'keywords'
-        StyleName = 'Reserved word'
+        StyleName = 'Id keyword'
         BlockType = btTagDetect
         ConditionList = <
           item
@@ -855,10 +871,11 @@ object SyntaxManager: TSyntaxManager
           item
             TagList.Strings = (
               '{')
-            TokenTypes = 8
+            TokenTypes = 256
           end
           item
-            TokenTypes = 4
+            CondType = tcSkip
+            TokenTypes = 62
           end
           item
             TagList.Strings = (
@@ -874,37 +891,216 @@ object SyntaxManager: TSyntaxManager
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'class :'
-        BlockName = 'class :'
-        NotParent = True
+        DisplayName = 'func :: ::'
         ConditionList = <
           item
             TagList.Strings = (
+              ':'
               '{')
+            TokenTypes = 264
+          end
+          item
+            TagList.Strings = (
+              ')')
             TokenTypes = 8
           end
           item
             CondType = tcSkip
+            TokenTypes = 62
           end
           item
             TagList.Strings = (
-              ':')
+              '(')
             TokenTypes = 8
           end
           item
             TokenTypes = 4
           end
           item
-            TagList.Strings = (
-              'class')
+            TokenTypes = 512
+          end
+          item
+            TokenTypes = 4
+          end
+          item
+            TokenTypes = 512
+          end
+          item
             TokenTypes = 4
           end>
         BlockEnd = '}'
-        NameFmt = 'class %s-1'
+        NameFmt = '%s-4'
+        GroupFmt = '%s0\%s-2'
         RefToCondEnd = True
         HighlightPos = cpAny
         CancelNextRules = True
-        TreeItemImage = 1
+        CollapseFmt = '%sz2...'
+        TreeItemImage = 5
+        TreeGroupImage = 1
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'func ::'
+        ConditionList = <
+          item
+            TagList.Strings = (
+              ':'
+              '{')
+            TokenTypes = 264
+          end
+          item
+            TagList.Strings = (
+              ')')
+            TokenTypes = 8
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 62
+          end
+          item
+            TagList.Strings = (
+              '(')
+            TokenTypes = 8
+          end
+          item
+            TokenTypes = 4
+          end
+          item
+            TokenTypes = 512
+          end
+          item
+            TokenTypes = 4
+          end>
+        BlockEnd = '}'
+        NameFmt = '%s-2'
+        GroupFmt = '%s0'
+        RefToCondEnd = True
+        HighlightPos = cpBound
+        CancelNextRules = True
+        CollapseFmt = '%sz2...'
+        TreeItemImage = 5
+        TreeGroupImage = 1
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'func'
+        ConditionList = <
+          item
+            TagList.Strings = (
+              '{')
+            TokenTypes = 256
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 4
+          end
+          item
+            TagList.Strings = (
+              ')')
+            TokenTypes = 8
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 62
+          end
+          item
+            TagList.Strings = (
+              '(')
+            TokenTypes = 8
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 2
+          end
+          item
+            TokenTypes = 4
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 2
+          end
+          item
+            TokenTypes = 4
+          end>
+        BlockEnd = '}'
+        NameFmt = '%sz-1'
+        RefToCondEnd = True
+        HighlightPos = cpBound
+        CancelNextRules = True
+        CollapseFmt = '%sz-1...'
+        TreeItemImage = 5
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = '{'
+        StyleName = 'Current block BG'
+        ConditionList = <
+          item
+            TagList.Strings = (
+              '{')
+            TokenTypes = 256
+          end>
+        BlockEnd = '}'
+        DisplayInTree = False
+        DynHighlight = dhBound
+        HighlightPos = cpRange
+        DynSelectMin = True
+        DrawStaple = True
+        CollapseFmt = '{ ... %ez0'
+        IgnoreAsParent = False
+        AutoCloseMode = acmCloseNearest
+        AutoCloseText = '}'
+      end
+      item
+        DisplayName = '}'
+        BlockType = btRangeEnd
+        ConditionList = <
+          item
+            TagList.Strings = (
+              '}')
+            TokenTypes = 256
+          end>
+        HighlightPos = cpBound
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'struct'
+        ConditionList = <
+          item
+            TokenTypes = 4
+          end
+          item
+            TagList.Strings = (
+              '}')
+            TokenTypes = 256
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 62
+          end
+          item
+            TagList.Strings = (
+              '{')
+            TokenTypes = 256
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 4
+          end
+          item
+            TagList.Strings = (
+              'struct')
+            TokenTypes = 4
+          end
+          item
+            TagList.Strings = (
+              'typedef')
+            TokenTypes = 4
+          end>
+        NameFmt = '%s[}]'
+        HighlightPos = cpAny
+        NoEndRule = True
+        TreeItemImage = 4
         IgnoreAsParent = False
       end
       item
@@ -936,226 +1132,36 @@ object SyntaxManager: TSyntaxManager
         BlockOffset = 1
         HighlightPos = cpBound
         IgnoreAsParent = False
-      end
-      item
-        DisplayName = '}'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '}')
-            TokenTypes = 8
-          end>
-        HighlightPos = cpBound
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'func begin'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '{')
-            TokenTypes = 8
-          end
-          item
-            TagList.Strings = (
-              'const')
-            CondType = tcSkip
-            TokenTypes = 4
-          end
-          item
-            TagList.Strings = (
-              ')')
-            TokenTypes = 8
-          end
-          item
-            CondType = tcSkip
-          end
-          item
-            TagList.Strings = (
-              '(')
-            TokenTypes = 8
-          end
-          item
-            CondType = tcSkip
-            TokenTypes = 2
-          end
-          item
-            TokenTypes = 4
-          end
-          item
-            CondType = tcSkip
-            TokenTypes = 2
-          end
-          item
-            TokenTypes = 4
-          end>
-        IdentIndex = -1
-        BlockOffset = -1
-        BlockEnd = 'func end'
-        NameFmt = '%sz-1'
-        RefToCondEnd = True
-        HighlightPos = cpBound
-        CollapseFmt = '%sz-1...'
-        TreeItemImage = 5
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'func end'
-        BlockName = 'func begin'
-        StrictParent = True
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '}')
-            TokenTypes = 8
-          end>
-        HighlightPos = cpBound
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'func-class'
-        StrictParent = True
-        ConditionList = <
-          item
-            TagList.Strings = (
-              ':'
-              '{')
-            TokenTypes = 8
-          end
-          item
-            TagList.Strings = (
-              ')')
-            TokenTypes = 8
-          end
-          item
-            CondType = tcSkip
-          end
-          item
-            TagList.Strings = (
-              '(')
-            TokenTypes = 8
-          end
-          item
-            TokenTypes = 4
-          end
-          item
-            TagList.Strings = (
-              '::'
-              '->')
-            TokenTypes = 8
-          end>
-        BlockOffset = 1
-        BlockEnd = 'func-class end'
-        NameFmt = '%s-1'
-        GroupFmt = '%s1'
-        RefToCondEnd = True
-        HighlightPos = cpBound
-        CollapseFmt = '%sz2...'
-        TreeItemImage = 5
-        TreeGroupImage = 1
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'func-class end'
-        BlockName = 'func-class'
-        StrictParent = True
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '}')
-            TokenTypes = 8
-          end>
-        HighlightPos = cpBound
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = '{'
-        StyleName = 'Current block'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '{')
-            TokenTypes = 8
-          end>
-        IdentIndex = 1
-        BlockEnd = '}'
-        DisplayInTree = False
-        DynHighlight = dhBound
-        HighlightPos = cpRange
-        DynSelectMin = True
-        DrawStaple = True
-        CollapseFmt = '{ ... %ez0'
-        IgnoreAsParent = False
-        AutoCloseMode = acmCloseNearest
-        AutoCloseText = '}'
-      end
-      item
-        DisplayName = 'struct'
-        ConditionList = <
-          item
-            TokenTypes = 4
-          end
-          item
-            TagList.Strings = (
-              '}')
-            TokenTypes = 8
-          end
-          item
-            CondType = tcSkip
-          end
-          item
-            TagList.Strings = (
-              '{')
-            TokenTypes = 8
-          end
-          item
-            CondType = tcSkip
-            TokenTypes = 4
-          end
-          item
-            TagList.Strings = (
-              'struct')
-            TokenTypes = 4
-          end
-          item
-            TagList.Strings = (
-              'typedef')
-            TokenTypes = 4
-          end>
-        NameFmt = '%s[}]'
-        HighlightPos = cpAny
-        NoEndRule = True
-        TreeItemImage = 4
-        IgnoreAsParent = False
       end>
     CodeTemplates = <>
     SubAnalyzers = <
       item
         DisplayName = 'asm_string'
         Enabled = False
-        StyleName = 'Asm'
+        StyleName = 'Asm BG'
         StartExpression = '\#asm\s*\(\s*"'
         EndExpression = '"\)'
         SyntAnalyzer = SyntAnalyzer13
         IncludeBounds = True
       end>
     SampleText.Strings = (
-      '/* Text */'
-      '#define MAX(a, b) ((a > b) ? a : b)'
+      '/* Test */'
+      '#define max(a, b) ((a > b) ? a : b)'
+      '#asm(" pop ax ");'
+      'strcpy(b, "text\"text");'
       'double F = 1e2 + 0.12e+2 + 0xAF;'
       ''
-      'void MonitorIT::CMonitor::connectMonitorIT(MonitorIT* part) {'
-      '    setItsFloatFlowInterface(part);'
-      '    '
+      'void CNested1::CMonitor(MonitorIT* part) {'
+      '}'
+      ''
+      'void CNested2::CMonitor::connectMonitorIT(MonitorIT* part) {'
+      '  return this;'
       '}'
       ''
       
-        'floatFlowInterface* MonitorIT::CMonitor::getItsFloatFlowInterfac' +
-        'e() {'
-      '    return this;'
+        'floatFlowInterface* CNested2::CMonitor::getItsFloatFlowInterface' +
+        '() {'
+      '  return this;'
       '}'
       ''
       ''
@@ -1163,20 +1169,18 @@ object SyntaxManager: TSyntaxManager
       '}'
       ' '
       'class CName2 : public NameB {'
-      '    static int priv;'
       '    const int tot;'
       '    unsigned long fib(unsigned long n) {'
       '        return n < 2 ? n : fib(n - 1) + fib(n - 2);'
       '    }'
       '}'
       '      '
-      'void __fastcall CForm->Button1Click(Sender: TObject)'
-      '{'
-      ' #asm(" pop ax ");'
+      'void __fastcall CForm->Button1Click(Sender: TObject) {'
+      '  //Test'
       '}'
       ''
       'void main(int argc; char* argv) {'
-      '  strcpy(b, "text\"text");'
+      '  //Test'
       '}'
       ''
       'typedef struct'
@@ -1187,19 +1191,18 @@ object SyntaxManager: TSyntaxManager
     TokenTypeNames.Strings = (
       'Unknown'
       'Comment'
-      'Identifier'
+      'Id'
       'Symbol'
       'String'
-      'Integer const'
-      'Float const'
-      'Hex const'
-      'Char const'
+      'Number'
       'Preprocessor'
-      'Id keyword')
+      'Id keyword'
+      'Symbol {}'
+      'Symbol ::')
     Extentions = 'c cpp cxx h hpp hxx inl cc'
     LexerName = 'C++'
     Notes.Strings = (
-      'Heavily changed: Alex (SynWrite)')
+      'Redone: Alex (SynWrite)')
     LineComment = '//'
     Charset = DEFAULT_CHARSET
   end
