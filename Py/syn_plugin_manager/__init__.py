@@ -2,7 +2,7 @@ from sw import *
 import os
 import urllib.parse
 
-from .worklocal import syn_py, syn_plugins_ini, get_py_desc, get_py_title, get_installed_list
+from .worklocal import syn_py, syn_plugins_ini, get_py_title, get_installed_list
 from .workremote import msg, get_url, get_item_url, get_avail_list, get_plugin_zip
 from .workupd import Info, get_update_info
 from .ver_str import *
@@ -166,9 +166,8 @@ class Command:
             file_open(fn, '/v'+version)
 
     def do_menu(self, items, caption):
-        names = [get_py_desc(dir) for dir in items]
-        num = dlg_menu(MENU_DOUBLE, caption, '\n'.join(names))
-        return num
+        names = [get_py_title(dir) + '\t' + os.path.basename(dir) for dir in items]
+        return dlg_menu(MENU_SIMPLE, caption, '\n'.join(names))
 
     def do_unregister(self, pyname):
         fn_ini = syn_plugins_ini()

@@ -1017,7 +1017,7 @@ object SyntaxManager: TSyntaxManager
           end
           item
             CondType = tcSkip
-            TokenTypes = 2
+            TokenTypes = 10
           end
           item
             TokenTypes = 4
@@ -24033,6 +24033,14 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
+        DisplayName = 'String raw'
+        StyleName = 'String'
+        TokenType = 4
+        Expression = 'r('#39'|") .*? (\1|$)'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
         DisplayName = 'String """'
         StyleName = 'String'
         TokenType = 4
@@ -24290,7 +24298,6 @@ object SyntaxManager: TSyntaxManager
         RefToCondEnd = True
         HighlightPos = cpAny
         CancelNextRules = True
-        DrawStaple = True
         GroupIndex = 20
         CollapseFmt = '%s0 %s-1...'
         IgnoreAsParent = False

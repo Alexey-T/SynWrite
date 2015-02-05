@@ -41,18 +41,7 @@ def get_py_desc_list(dir):
             break
     return desc
 
-def get_py_desc(dir):
-    names = get_py_desc_list(dir)
-    return os.path.basename(dir) + '\t' + ', '.join(names)
-
 def get_py_title(dir):
-    names = get_py_desc_list(dir)
-    if names:
-        return ', '.join(names)
-    else:
-        return '?'
-
-def get_py_title_official(dir):
     fn = os.path.join(dir, 'install.inf')
     if not os.path.isfile(fn):
         return '(no install.inf)'

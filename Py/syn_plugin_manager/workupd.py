@@ -1,6 +1,6 @@
 import os
 from sw import *
-from .worklocal import get_installed_list, get_py_title_official
+from .worklocal import get_installed_list, get_py_title
 from .workremote import msg, get_url, get_item_url, get_avail_list
 
 class Info:
@@ -20,7 +20,7 @@ def get_oneline(fn):
     
 def get_update_info():
     dirs = get_installed_list(True)
-    names = {dir: get_py_title_official(dir) for dir in dirs}
+    names = {dir: get_py_title(dir) for dir in dirs}
     #dirs = [dir for dir in dirs if names.get(dir)!='?']
     avails = get_avail_list()
     
