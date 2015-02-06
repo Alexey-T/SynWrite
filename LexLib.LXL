@@ -24033,6 +24033,14 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
+        DisplayName = 'Word1stComment'
+        StyleName = 'Comment'
+        TokenType = 13
+        Expression = '^[\x20\x09]* \#.*'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
         DisplayName = 'String raw'
         StyleName = 'String'
         TokenType = 4
@@ -24254,7 +24262,7 @@ object SyntaxManager: TSyntaxManager
         AlwaysEnabled = True
         ConditionList = <
           item
-            TokenTypes = 2
+            TokenTypes = 8192
           end>
         BlockEnd = 'Block comment end'
         EndOfTextClose = True
@@ -24272,7 +24280,7 @@ object SyntaxManager: TSyntaxManager
         ConditionList = <
           item
             CondType = tcNotEqual
-            TokenTypes = 2
+            TokenTypes = 8192
           end>
         BlockOffset = 1
         HighlightPos = cpBound
@@ -24404,7 +24412,8 @@ object SyntaxManager: TSyntaxManager
       '1st word'
       '1st keyword'
       '1st word tree'
-      'Symbol :')
+      'Symbol :'
+      '1st comment')
     Extentions = 'py pyw rpy cpy sconstruct'
     LexerName = 'Python'
     SkipSpaces = False
