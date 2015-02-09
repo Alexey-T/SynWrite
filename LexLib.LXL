@@ -6080,10 +6080,10 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Reserved word'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clNavy
         Font.Height = -13
         Font.Name = 'Courier New'
-        Font.Style = [fsBold]
+        Font.Style = []
       end
       item
         DisplayName = 'Function separator'
@@ -6101,7 +6101,7 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
-        BgColor = 16774389
+        BgColor = clCream
         FormatType = ftBackGround
       end
       item
@@ -6123,7 +6123,7 @@ object SyntaxManager: TSyntaxManager
         BorderColorBottom = clGray
       end
       item
-        DisplayName = 'OP Keywords'
+        DisplayName = 'Operator Keywords'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clPurple
         Font.Height = -13
@@ -6141,6 +6141,22 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
+        DisplayName = 'Id_spec_then'
+        StyleName = 'Reserved word'
+        TokenType = 6
+        Expression = 'then\s*$'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Id_spec_endif'
+        StyleName = 'Reserved word'
+        TokenType = 7
+        Expression = '(?<=^\x20*) end \x20+ if'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
         DisplayName = 'Id'
         StyleName = 'Identifier'
         TokenType = 2
@@ -6152,9 +6168,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Float'
         StyleName = 'Number'
         TokenType = 5
-        Expression = 
-          '#with exp. dot is optional '#13#10'\d+ \.? \d+ e [\+\-]? \d+ |'#13#10'#witho' +
-          'ut exp. dot is required'#13#10'\d+ \. \d+'#13#10' '
+        Expression = '\d+ \.? \d+ e [\+\-]? \d+ |'#13#10'\d+ \. \d+ '
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -6194,7 +6208,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Symbol'
         StyleName = 'Symbol'
         TokenType = 3
-        Expression = '[/,\.;:\(\)=<>\+\-&%\$\{\}!]+'
+        Expression = '[/,\.;:\(\)=<>\+\-&%\$\{\}!@]+'
         ColumnFrom = 0
         ColumnTo = 0
       end>
@@ -6278,12 +6292,14 @@ object SyntaxManager: TSyntaxManager
               'null'
               'object'
               'on'
+              'option'
               'optional'
               'or'
               'paramarray'
               'private'
               'property'
               'public'
+              'redim'
               'resume'
               'return'
               'select'
@@ -6391,7 +6407,8 @@ object SyntaxManager: TSyntaxManager
         Highlight = True
         NameFmt = '%s0 %s-1'
         DynHighlight = dhRange
-        HighlightPos = cpBound
+        HighlightPos = cpAny
+        DynSelectMin = True
         CollapseFmt = '%s0 %s-1'
         TreeItemStyle = 'Reserved word'
         TreeItemImage = 5
@@ -6410,7 +6427,6 @@ object SyntaxManager: TSyntaxManager
           end
           item
             TagList.Strings = (
-              'if'
               'property'
               'select'
               'type'
@@ -6502,7 +6518,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'OP Keywords'
-        StyleName = 'OP Keywords'
+        StyleName = 'Operator Keywords'
         BlockType = btTagDetect
         ConditionList = <
           item
@@ -6545,7 +6561,7 @@ object SyntaxManager: TSyntaxManager
         DynHighlight = dhBound
         HighlightPos = cpRange
         DrawStaple = True
-        CollapseFmt = '%s0 ...'
+        CollapseFmt = 'For...'
         IgnoreAsParent = False
       end
       item
@@ -6569,6 +6585,58 @@ object SyntaxManager: TSyntaxManager
         RefToCondEnd = True
         HighlightPos = cpAny
         IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'Begin do'
+        ConditionList = <
+          item
+            TagList.Strings = (
+              'do')
+            TokenTypes = 4
+            IgnoreCase = True
+          end>
+        BlockEnd = 'End do'
+        DisplayInTree = False
+        HighlightPos = cpAny
+        DrawStaple = True
+        CollapseFmt = 'Do...'
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'End do'
+        BlockType = btRangeEnd
+        ConditionList = <
+          item
+            TagList.Strings = (
+              'loop')
+            TokenTypes = 4
+            IgnoreCase = True
+          end>
+        HighlightPos = cpAny
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'Begin if'
+        ConditionList = <
+          item
+            TokenTypes = 64
+          end>
+        BlockEnd = 'End if'
+        DisplayInTree = False
+        HighlightPos = cpAny
+        DrawStaple = True
+        CollapseFmt = '...'
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'End if'
+        BlockType = btRangeEnd
+        ConditionList = <
+          item
+            TokenTypes = 128
+          end>
+        HighlightPos = cpAny
+        IgnoreAsParent = False
       end>
     CodeTemplates = <>
     SubAnalyzers = <>
@@ -6581,8 +6649,12 @@ object SyntaxManager: TSyntaxManager
       '  Number = 12 + 12.2 + 1.2e3 + 1.2e-3'
       '  Response.Write "The number is " & number'
       '  '
-      '  If aaa'
-      '  End If          '
+      '  '#39'folded'
+      '  If nnn Then'
+      '    '#39'not folded'
+      '    If True Then name '
+      '  End If'
+      '           '
       '  For I = 0 To Number'
       '    X = X + &hFF'
       '    X = X - &o7'
@@ -6596,12 +6668,15 @@ object SyntaxManager: TSyntaxManager
       'Identifier'
       'Symbol'
       'String'
-      'Number')
+      'Number'
+      'Id_spec_Then'
+      'Id_spec_EndIf')
     Extentions = 'vb vbs'
     LexerName = 'VBScript'
     Notes.Strings = (
       'Changed by Alex (SynWrite): '
       '- folded For-Next'
+      '- folded If-EndIf, but only multi-line If'
       '- less token names'
       '- parser Octal nums')
     LineComment = #39
