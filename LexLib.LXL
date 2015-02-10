@@ -6144,7 +6144,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Id_spec_then'
         StyleName = 'Reserved word'
         TokenType = 6
-        Expression = 'then\s*$'
+        Expression = 'then \x20* $'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -6152,7 +6152,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Id_spec_endif'
         StyleName = 'Reserved word'
         TokenType = 7
-        Expression = '(?<=^\x20*) end \x20+ if'
+        Expression = '(?<=^\x20*) end \x20+ if \b'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -6407,7 +6407,7 @@ object SyntaxManager: TSyntaxManager
         Highlight = True
         NameFmt = '%s0 %s-1'
         DynHighlight = dhRange
-        HighlightPos = cpAny
+        HighlightPos = cpRange
         DynSelectMin = True
         CollapseFmt = '%s0 %s-1'
         TreeItemStyle = 'Reserved word'
