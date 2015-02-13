@@ -255,7 +255,6 @@ cmd_FileExportRtf = 704
 cmd_FileExportHtml = 705
 cmd_FileSaveAs = 706
 cmd_FileReopen = 707
-cmd_FileProps = 708
 
 cmd_OptSetup = 709
 cmd_OptSetupLexer = 710

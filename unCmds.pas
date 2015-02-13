@@ -42,7 +42,6 @@ const
   sm_FileExportHtml = 705;
   sm_FileSaveAs = 706;
   sm_FileReopen = 707;
-  sm_FileProps = 708;
 
   sm_OptSetup = 709;
   sm_OptSetupLexer = 710;

@@ -1025,8 +1025,6 @@ type
     TBXItemRunOpenFile: TSpTbxItem;
     TBXItemSSelToken: TSpTbxItem;
     TBXItemTreeFindCopyToClipNode: TSpTbxItem;
-    TBXItemFProps: TSpTbxItem;
-    acProps: TAction;
     TBXSeparatorItem71: TSpTbxSeparatorItem;
     TBXItemClipCopyToEd: TSpTbxItem;
     TBXItemClipCopyToClip: TSpTbxItem;
@@ -1801,8 +1799,6 @@ type
     procedure TBXItemRunOpenFileClick(Sender: TObject);
     procedure TBXItemSSelTokenClick(Sender: TObject);
     procedure TBXItemTreeFindCopyToClipNodeClick(Sender: TObject);
-    procedure TBXItemFPropsClick(Sender: TObject);
-    procedure acPropsExecute(Sender: TObject);
     procedure TemplatePopupShow(Sender: TObject);
     procedure TBXItemClipCopyToEdClick(Sender: TObject);
     procedure TBXItemClipCopyToClipClick(Sender: TObject);
@@ -3345,7 +3341,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.16.1970';
+  cSynVer = '6.16.1975';
   cSynPyVer = '1.0.146';
 
 const
@@ -3394,7 +3390,7 @@ uses
   unSaveLex,
   unSetup, unAbout, unEnc, unToolsList, unSRFiles, unExtractStr, unShell, unInsertText,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
-  unProcTabbin, unProp, unGotoBkmk, unFav,
+  unProcTabbin, unGotoBkmk, unFav,
   unMenuCmds, unMenuProj, unMenuSnippets,
   unToolbarProp, unHideItems,
   unProcPy,
@@ -6258,7 +6254,6 @@ begin
     sm_FileSave: if acSave.Enabled then acSave.Execute;
     sm_FileSaveAs: if acSaveAs.Enabled then acSaveAs.Execute;
     sm_FileSaveAll: acSaveAll.Execute;
-    sm_FileProps: acProps.Execute;
     sm_Fav_AddFile: acFavAddFile.Execute;
     sm_Fav_AddProject: acFavAddProj.Execute;
     sm_Fav_Organize: acFavManage.Execute;
@@ -10002,7 +9997,6 @@ begin
   UpdKey(tbxItemFReopen, sm_FileReopen);
   UpdKey(tbxItemFSave, sm_FileSave);
   UpdKey(tbxItemFSaveAs, sm_FileSaveAs);
-  UpdKey(tbxItemFProps, sm_FileProps);
 
   UpdKey(tbxItemFavAddFile, sm_Fav_AddFile);
   UpdKey(tbxItemFavAddProj, sm_Fav_AddProject);
@@ -18332,56 +18326,6 @@ begin
     AName:= WideFormat('[%d]', [ATabIndex+1]);
     AFN:= WideFormat('(index=%d, FrameCount=%d)', [ATabIndex, FrameAllCount]);
     ALex:= '';
-  end;
-end;
-
-procedure TfmMain.TBXItemFPropsClick(Sender: TObject);
-begin
-  acProps.Execute;
-end;
-
-procedure TfmMain.acPropsExecute(Sender: TObject);
-var
-  Ed: TSyntaxMemo;
-  fn: WideString;
-  NSize: Int64;
-  NTime: TFileTime;
-  NWords, NChars, NLines: Int64;
-begin
-  //this's needed, otherwise *big* (10M) RTF may hang
-  //after form showing
-  Application.ProcessMessages;
-
-  Ed:= CurrentEditor;
-  if Ed=nil then Exit;
-  fn:= CurrentFrame.FileName;
-
-  Screen.Cursor:= crHourGlass;
-  try
-    EditorCountWords(Ed, NWords, NChars);
-    NLines:= Ed.Lines.Count;
-  finally
-    Screen.Cursor:= crDefault;
-  end;
-
-  with TfmProps.Create(Self) do
-  try
-    FIniFN:= Self.SynHistoryIni;
-    //fill File tab
-    edPath.Text:= fn;
-    if (fn<>'') and FGetFileInfo(fn, NSize, NTime) then
-    begin
-      edSize.Text:= FormatSize(NSize, true);
-      edTime.Text:= FormatFileTime(NTime);
-    end;
-    //fill Text tab
-    edChars.Text:= FormatSize(NChars, false);
-    edWords.Text:= FormatSize(NWords, false);
-    edLines.Text:= FormatSize(NLines, false);
-    //
-    ShowModal;
-  finally
-    Free;
   end;
 end;
 

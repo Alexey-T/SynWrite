@@ -202,7 +202,6 @@ procedure EditorCollapseParentRange(Ed: TSyntaxMemo; APos: Integer);
 procedure EditorUncollapseLine(Ed: TCustomSyntaxMemo; Line: Integer);
 function IsEditorLineCollapsed(Ed: TCustomSyntaxMemo; Line: Integer): boolean;
 
-procedure EditorCountWords(Ed: TSyntaxMemo; var NWords, NChars: Int64);
 procedure EditorCenterPos(Ed: TCustomSyntaxMemo; AGotoMode: boolean; NOffsetY: Integer);
 
 var
@@ -564,33 +563,6 @@ begin
            Result:= true;
            Exit
          end;
-  end;
-end;
-
-procedure EditorCountWords(Ed: TSyntaxMemo; var NWords, NChars: Int64);
-var
-  L: TSyntMemoStrings;
-  s: Widestring;
-  i, j: integer;
-  w: boolean;
-begin
-  L:= Ed.Lines;
-  NWords:= 0;
-  NChars:= 0;
-  for i:= 0 to L.Count-1 do
-  begin
-    S:= L[i];
-    w:= false;
-    for j:= 1 to Length(S) do
-    begin
-      if not IsSpaceChar(s[j]) then
-        Inc(NChars);
-      if IsWordChar(s[j]) then
-        w:= true
-      else
-        begin if w then Inc(NWords); w:= false; end;
-    end;
-    if w then Inc(NWords);     
   end;
 end;
 

@@ -35,7 +35,6 @@ uses
   unProcTabbin in 'unProcTabbin.pas',
   unTabSw in 'unTabSw.pas',
   unTabSwForm in 'unTabSwForm.pas' {fmTabSw},
-  unProp in 'unProp.pas' {fmProps},
   unSetupOvr in 'unSetupOvr.pas' {fmSetupOvr},
   unGotoBkmk in 'unGotoBkmk.pas' {fmGotoBkmk},
   unFav in 'unFav.pas' {fmFav},
