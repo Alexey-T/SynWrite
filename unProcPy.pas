@@ -1361,7 +1361,10 @@ begin
             Ed.TabList.Add(NumVal);
           end;
         PROP_COL_MARKERS:
+        begin
           Ed.ColMarkersString:= StrVal;
+          Ed.DoUpdateMargins;
+        end;
         PROP_ZOOM:
           Ed.Zoom:= NumVal;
         PROP_INSERT:
