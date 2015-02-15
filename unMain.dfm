@@ -164,9 +164,10 @@ object fmMain: TfmMain
       end
     end
     object tbEdit: TSpTBXToolbar
-      Left = 233
-      Top = 0
-      DockPos = 204
+      Left = 264
+      Top = 26
+      DockPos = 264
+      DockRow = 1
       Images = ImageListIcons
       TabOrder = 1
       OnClose = tbQsClose
@@ -383,6 +384,95 @@ object fmMain: TfmMain
         OnExit = edQsExit
         OnKeyDown = edQsKeyDown
         OnKeyPress = edQsKeyPress
+      end
+    end
+    object tbView: TSpTBXToolbar
+      Left = 233
+      Top = 0
+      DockPos = 16
+      Images = ImageListIcons
+      TabOrder = 6
+      OnClose = tbQsClose
+      OnMove = tbViewMove
+      Caption = 'View'
+      object TBXItemBarPTree: TSpTBXItem
+        Tag = 715
+        Caption = 'Toggle tree/project panel'
+        Hint = 'Toggle tree/project panel'
+        Action = ecShowTree
+        ImageIndex = 19
+        OnSelect = ButtonOnSelect
+      end
+      object TBXItemBarPOut: TSpTBXItem
+        Caption = 'Toggle output panel'
+        Hint = 'Toggle output panel'
+        Action = ecShowOut
+        ImageIndex = 21
+        OnSelect = ButtonOnSelect
+      end
+      object TBXItemBarPClip: TSpTBXItem
+        Caption = 'Toggle clipboard/minimap panel'
+        Hint = 'Toggle clipboard/minimap panel'
+        Action = ecShowClip
+        ImageIndex = 20
+        OnSelect = ButtonOnSelect
+      end
+      object TBXSubmenuBarNPrint: TSpTBXSubmenuItem
+        Tag = 733
+        Action = ecNonPrint
+        ImageIndex = 23
+        Options = [tboDropdownArrow]
+        OnSelect = ButtonOnSelect
+        DropdownCombo = True
+        LinkSubitems = TBXSubmenuNonPrint
+      end
+      object TBXSeparatorItem2: TSpTBXSeparatorItem
+      end
+      object TBXItemBarComm: TSpTBXItem
+        Tag = 560
+        Caption = 'Comment lines'
+        Hint = 'Comment selected lines'
+        ImageIndex = 17
+        OnClick = TBXItemBarCommClick
+        OnSelect = ButtonOnSelect
+      end
+      object TBXItemBarUncom: TSpTBXItem
+        Tag = 561
+        Caption = 'Uncomment lines'
+        Hint = 'Uncomment selected lines'
+        ImageIndex = 18
+        OnClick = TBXItemBarUncomClick
+        OnSelect = ButtonOnSelect
+      end
+      object TBXSeparatorItem10: TSpTBXSeparatorItem
+      end
+      object TBXItemBarIndent: TSpTBXItem
+        Tag = 350
+        Action = ecIndent
+        ImageIndex = 13
+        OnSelect = ButtonOnSelect
+      end
+      object TBXItemBarUnindent: TSpTBXItem
+        Tag = 351
+        Action = ecUnindent
+        ImageIndex = 14
+        OnSelect = ButtonOnSelect
+      end
+      object TBXSeparatorItem44: TSpTBXSeparatorItem
+      end
+      object TBXItemBarSyncH: TSpTBXItem
+        Caption = 'Sync horizontal scrolling'
+        Hint = 'Synchronize horizontal scrolling of groups 1/2'
+        Action = ecSyncScrollH
+        ImageIndex = 30
+        OnSelect = ButtonOnSelect
+      end
+      object TBXItemBarSyncV: TSpTBXItem
+        Caption = 'Sync vertical scrolling'
+        Hint = 'Synchronize vertical scrolling of groups 1/2'
+        Action = ecSyncScrollV
+        ImageIndex = 31
+        OnSelect = ButtonOnSelect
       end
     end
   end
@@ -2736,9 +2826,9 @@ object fmMain: TfmMain
     end
   end
   object PanelBg: TPanel
-    Left = 287
+    Left = 264
     Top = 76
-    Width = 412
+    Width = 435
     Height = 356
     Align = alClient
     BevelOuter = bvNone
@@ -2932,98 +3022,9 @@ object fmMain: TfmMain
   object TBXDockLeft1: TSpTBXDock
     Left = 255
     Top = 76
-    Width = 32
+    Width = 9
     Height = 356
     Position = dpLeft
-    object tbView: TSpTBXToolbar
-      Left = 0
-      Top = 0
-      DockPos = -4
-      Images = ImageListIcons
-      TabOrder = 0
-      OnClose = tbQsClose
-      OnMove = tbViewMove
-      Caption = 'View'
-      object TBXItemBarPTree: TSpTBXItem
-        Tag = 715
-        Caption = 'Toggle tree/project panel'
-        Hint = 'Toggle tree/project panel'
-        Action = ecShowTree
-        ImageIndex = 19
-        OnSelect = ButtonOnSelect
-      end
-      object TBXItemBarPOut: TSpTBXItem
-        Caption = 'Toggle output panel'
-        Hint = 'Toggle output panel'
-        Action = ecShowOut
-        ImageIndex = 21
-        OnSelect = ButtonOnSelect
-      end
-      object TBXItemBarPClip: TSpTBXItem
-        Caption = 'Toggle clipboard/minimap panel'
-        Hint = 'Toggle clipboard/minimap panel'
-        Action = ecShowClip
-        ImageIndex = 20
-        OnSelect = ButtonOnSelect
-      end
-      object TBXSubmenuBarNPrint: TSpTBXSubmenuItem
-        Tag = 733
-        Action = ecNonPrint
-        ImageIndex = 23
-        Options = [tboDropdownArrow]
-        OnSelect = ButtonOnSelect
-        DropdownCombo = True
-        LinkSubitems = TBXSubmenuNonPrint
-      end
-      object TBXSeparatorItem2: TSpTBXSeparatorItem
-      end
-      object TBXItemBarComm: TSpTBXItem
-        Tag = 560
-        Caption = 'Comment lines'
-        Hint = 'Comment selected lines'
-        ImageIndex = 17
-        OnClick = TBXItemBarCommClick
-        OnSelect = ButtonOnSelect
-      end
-      object TBXItemBarUncom: TSpTBXItem
-        Tag = 561
-        Caption = 'Uncomment lines'
-        Hint = 'Uncomment selected lines'
-        ImageIndex = 18
-        OnClick = TBXItemBarUncomClick
-        OnSelect = ButtonOnSelect
-      end
-      object TBXSeparatorItem10: TSpTBXSeparatorItem
-      end
-      object TBXItemBarIndent: TSpTBXItem
-        Tag = 350
-        Action = ecIndent
-        ImageIndex = 13
-        OnSelect = ButtonOnSelect
-      end
-      object TBXItemBarUnindent: TSpTBXItem
-        Tag = 351
-        Action = ecUnindent
-        ImageIndex = 14
-        OnSelect = ButtonOnSelect
-      end
-      object TBXSeparatorItem44: TSpTBXSeparatorItem
-      end
-      object TBXItemBarSyncH: TSpTBXItem
-        Caption = 'Sync horizontal scrolling'
-        Hint = 'Synchronize horizontal scrolling of groups 1/2'
-        Action = ecSyncScrollH
-        ImageIndex = 30
-        OnSelect = ButtonOnSelect
-      end
-      object TBXItemBarSyncV: TSpTBXItem
-        Caption = 'Sync vertical scrolling'
-        Hint = 'Synchronize vertical scrolling of groups 1/2'
-        Action = ecSyncScrollV
-        ImageIndex = 31
-        OnSelect = ButtonOnSelect
-      end
-    end
   end
   object TBXDockRight1: TSpTBXDock
     Left = 699

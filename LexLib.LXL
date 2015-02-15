@@ -22324,18 +22324,18 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
-        BgColor = clRed
+        BgColor = clLime
         FormatType = ftBackGround
       end
       item
         DisplayName = 'Current block'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clPurple
+        Font.Color = clWhite
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
-        BgColor = clInactiveCaptionText
-        FormatType = ftColor
+        BgColor = clSkyBlue
+        FormatType = ftBackGround
       end
       item
         DisplayName = 'Current function'

@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.16.1975
+AppVersion=6.16.1980
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -93,3 +93,9 @@ Type: files; Name: "{app}\Portable.ini"
 ;Root: HKCR; Subkey: "*\shell\SynWrite"; Flags: uninsdeletekey
 ;Root: HKCR; Subkey: "*\shell\SynWrite\command"; Flags: uninsdeletekey
 ;Root: HKCR; Subkey: "*\shell\SynWrite\command"; ValueType: string; ValueName: ""; ValueData: """{app}\Syn.exe"" ""%1"""
+
+[Code]
+procedure InitializeWizard;
+begin
+  WizardForm.FilenameLabel.Visible := False;
+end;
