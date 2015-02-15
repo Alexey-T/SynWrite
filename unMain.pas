@@ -3341,7 +3341,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.16.1975';
+  cSynVer = '6.16.1980';
   cSynPyVer = '1.0.146';
 
 const
@@ -6031,8 +6031,6 @@ begin
     sm_PasteNoCursorChange: EditorPasteNoCaretChange(Ed);
     sm_PasteToColumn1: EditorPasteToFirstColumn(Ed);
     sm_PasteAsColumnBlock: begin if not EditorPasteAsColumnBlock(Ed) then MsgBeep; end;
-    sm_JumpMixedCaseLeft: begin if not EditorJumpMixedCase(Ed, false) then MsgBeep; end;
-    sm_JumpMixedCaseRight: begin if not EditorJumpMixedCase(Ed, true) then MsgBeep; end;
     sm_CancelSelection: Ed.ResetSelection;
     sm_CenterLines: ecCenterLines.Execute;
     sm_ExtendSelByLine: EditorExtendSelectionByOneLine(Ed);

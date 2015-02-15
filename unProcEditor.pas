@@ -64,7 +64,6 @@ function EditorIndentStringForLine(Ed: TSyntaxMemo; Line: Integer): Widestring;
 function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
 procedure EditorUpdateCaretPosFromMousePos(Ed: TSyntaxMemo);
 procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
-function EditorJumpMixedCase(Ed: TSyntaxMemo; ARight: boolean): boolean;
 procedure EditorJumpColumnMarker(Ed: TSyntaxMemo; ALeft: boolean);
 procedure EditorJumpSelectionStartEnd(Ed: TSyntaxMemo);
 function EditorJumpBlankLine(Ed: TSyntaxMemo; AOffsetTop: Integer; ANext: boolean): boolean;
@@ -2529,41 +2528,6 @@ begin
   Result:= TntClipboard.HasFormat(CF_TEXT);
   if Result then
     Ed.PasteFromClipboard(true);
-end;
-
-function EditorJumpMixedCase(Ed: TSyntaxMemo; ARight: boolean): boolean;
-var
-  s: Widestring;
-  P: Integer;
-begin
-  Result:= true;
-  with Ed do
-  begin
-    s:= Lines.FText;
-    P:= CaretStrPos;
-    if s='' then Exit;
-    if ARight then
-    begin
-      if not ((P>=0) and (P<Length(s)) and IsWordChar(s[P+1])) then
-        begin Result:= false; Exit end;
-      repeat
-        if (P+1>Length(s)) or not IsWordChar(s[P+1]) then Break;
-        Inc(P);
-        if IsUpperChar(s[P+1]) then Break;
-      until false;
-    end
-    else
-    begin
-      if not ((P>0) and (P<=Length(s)) and IsWordChar(s[P])) then
-        begin Result:= false; Exit end;
-      repeat
-        if (P=0) or not IsWordChar(s[P]) then Break;
-        Dec(P);
-        if IsUpperChar(s[P+1]) then Break;
-      until false;
-    end;
-    CaretStrPos:= P;
-  end;
 end;
 
 procedure EditorClearMarkers(Ed: TSyntaxMemo);

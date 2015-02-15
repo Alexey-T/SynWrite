@@ -601,7 +601,7 @@ object fmMain: TfmMain
           Font.Style = []
           ParentFont = False
           ReadOnly = True
-          ScrollBars = ssBoth
+          ScrollBars = ssVertical
           TabOrder = 1
           OnDblClick = MemoConsoleDblClick
           OnKeyDown = MemoConsoleKeyDown
@@ -8442,16 +8442,16 @@ object fmMain: TfmMain
         DisplayName = 'Paste from clipboard, keep caret position'
       end
       item
-        Command = 784
+        Command = 0
         KeyStrokes = <>
         Category = 'Go to'
-        DisplayName = 'Jump over MixedCaseName left'
+        DisplayName = 'Jump over MixedCaseName left (deleted)'
       end
       item
-        Command = 785
+        Command = 0
         KeyStrokes = <>
         Category = 'Go to'
-        DisplayName = 'Jump over MixedCaseName right'
+        DisplayName = 'Jump over MixedCaseName right (deleted)'
       end
       item
         Command = 786

@@ -120,8 +120,6 @@ const
   sm_JumpColumnMarkerLeft = 781;
   sm_JumpColumnMarkerRight = 782;
   sm_PasteNoCursorChange = 783;
-  sm_JumpMixedCaseLeft = 784;
-  sm_JumpMixedCaseRight = 785;
   sm_CancelSelection = 786;
   sm_CenterLines = 787;
   sm_ExtendSelByLine = 788;
