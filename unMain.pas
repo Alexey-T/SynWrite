@@ -1080,8 +1080,6 @@ type
     ecIndentLike1st: TAction;
     TBXSeparatorItem33: TSpTbxSeparatorItem;
     TBXItemEIndentLike1st: TSpTbxItem;
-    TBXItemViewColMarkers: TSpTbxItem;
-    acColumnMarkers: TAction;
     TBXSeparatorItem79: TSpTbxSeparatorItem;
     ImageListFtp: TImageList;
     ListPLog: TTntListBox;
@@ -1847,7 +1845,6 @@ type
     procedure ecNumericConverterExecute(Sender: TObject);
     procedure TBXItemEUnindentClick(Sender: TObject);
     procedure ecIndentLike1stExecute(Sender: TObject);
-    procedure acColumnMarkersExecute(Sender: TObject);
     procedure TBXItemEToggleLineCommentClick(Sender: TObject);
     procedure TBXItemEToggleStreamCommentClick(Sender: TObject);
     procedure TBXItemOOPLogClick(Sender: TObject);
@@ -6026,8 +6023,6 @@ begin
     sm_DropPortableBk: ecDropPortableBk.Execute;
     sm_GotoPortableBk: ecGotoPortableBk.Execute;
     sm_IndentLike1st: ecIndentLike1st.Execute;
-    sm_JumpColumnMarkerLeft: EditorJumpColumnMarker(Ed, true);
-    sm_JumpColumnMarkerRight: EditorJumpColumnMarker(Ed, false);
     sm_PasteNoCursorChange: EditorPasteNoCaretChange(Ed);
     sm_PasteToColumn1: EditorPasteToFirstColumn(Ed);
     sm_PasteAsColumnBlock: begin if not EditorPasteAsColumnBlock(Ed) then MsgBeep; end;
@@ -6310,11 +6305,7 @@ begin
 
     sm_SplitViewsVertHorz: ecSplitViewsVertHorz.Execute;
     sm_SplitSlaveVertHorz: ecSplitSlaveVertHorz.Execute;
-
-    sm_FileBackup:
-      acBackup.Execute;
-    sm_ColumnMarkers:
-      acColumnMarkers.Execute;
+    sm_FileBackup: acBackup.Execute;
 
     //copy path
     sm_CopyFilename: DoCopyFilenameToClipboard(CurrentFrame, cCmdCopyFileName);
@@ -9954,7 +9945,6 @@ begin
   UpdKey(TBXItemEFillBlock, sm_FillBlockDialog);
   UpdKey(TBXItemOOnTop, sm_ShowOnTop);
   UpdKey(TBXItemOFullScr, sm_ShowFullScreen);
-  UpdKey(TBXItemViewColMarkers, sm_ColumnMarkers);
 
   UpdKey(TBXItemESyncEd, sm_ToggleSyncEditing);
   UpdKey(TbxItemEExtr, sm_ExtractTextDialog);
@@ -20200,36 +20190,6 @@ begin
   end;
 
   FocusEditor;
-end;
-
-procedure TfmMain.acColumnMarkersExecute(Sender: TObject);
-  //
-  procedure UpdEditor(Ed: TSyntaxMemo);
-  begin
-    with ATSyntMemo.TSyntaxMemo(Ed) do
-      DoUpdateMargins;
-  end;
-  //
-var
-  S: Widestring;
-begin
-  S:= CurrentFrame.EditorMaster.ColMarkersString;
-
-  with TIniFile.Create(SynHistoryIni) do
-  try
-    if S='' then
-      S:= ReadString('Win', 'ColMark', '');
-    if not MsgInput('zMColMark', S) then Exit;
-    if S<>'' then
-      WriteString('Win', 'ColMark', S);
-  finally
-    Free
-  end;
-
-  CurrentFrame.EditorMaster.ColMarkersString:= S;
-  CurrentFrame.EditorSlave.ColMarkersString:= S;
-  UpdEditor(CurrentFrame.EditorMaster);
-  UpdEditor(CurrentFrame.EditorSlave);
 end;
 
 procedure TfmMain.TBXItemEToggleLineCommentClick(Sender: TObject);

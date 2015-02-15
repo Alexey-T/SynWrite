@@ -64,7 +64,6 @@ function EditorIndentStringForLine(Ed: TSyntaxMemo; Line: Integer): Widestring;
 function EditorIndentStringForPos(Ed: TSyntaxMemo; PntPos: TPoint): Widestring;
 procedure EditorUpdateCaretPosFromMousePos(Ed: TSyntaxMemo);
 procedure EditorJumpToLastMarker(Ed: TSyntaxMemo);
-procedure EditorJumpColumnMarker(Ed: TSyntaxMemo; ALeft: boolean);
 procedure EditorJumpSelectionStartEnd(Ed: TSyntaxMemo);
 function EditorJumpBlankLine(Ed: TSyntaxMemo; AOffsetTop: Integer; ANext: boolean): boolean;
 function EditorJumpRange(Ed: TSyntaxMemo): boolean;
@@ -2461,66 +2460,6 @@ end;
 function _CompareNums(P1, P2: Pointer): Integer;
 begin
   Result:= Integer(P1)-Integer(P2);
-end;
-
-procedure EditorJumpColumnMarker(Ed: TSyntaxMemo; ALeft: boolean);
-var
-  i, NLen, NPos: Integer;
-  L: TList;
-  Pos: TPoint;
-  Ed2: ATSyntMemo.TSyntaxMemo;
-begin
-  Ed2:= Ed as ATSyntMemo.TSyntaxMemo;
-
-  Pos:= Ed.CaretPos;
-  if Pos.Y >= Ed.Lines.Count then Exit;
-  NLen:= Length(Ed.Lines[Pos.Y]);
-
-  L:= TList.Create;
-  try
-    //allow to jump to home
-    L.Add(Pointer(0));
-
-    //allow to jump to right margin
-    if Ed.ShowRightMargin then
-      L.Add(Pointer(Ed.RightMargin));
-
-    //make sorted markers list
-    for i:= Low(Ed2.ColMarkers) to High(Ed2.Colmarkers) do
-    begin
-      NPos:= Ed2.ColMarkers[i];
-      if NPos>0 then
-        L.Add(Pointer(NPos));
-    end;
-
-    if L.Count<=1 then Exit;
-    L.Sort(_CompareNums);
-
-    //allow to jump to EOL too (if line is long)
-    if Integer(L[L.Count-1]) < NLen then
-      L.Add(Pointer(NLen));
-
-    if ALeft then
-    begin
-      for i:= L.Count-1 downto 0 do
-        if Integer(L[i])<Pos.X then
-        begin
-          Ed.CaretPos:= Point(Integer(L[i]), Pos.Y);
-          Exit
-        end;
-    end
-    else
-    begin
-      for i:= 0 to L.Count-1 do
-        if Integer(L[i])>Pos.X then
-        begin
-          Ed.CaretPos:= Point(Integer(L[i]), Pos.Y);
-          Exit
-        end;
-    end;
-  finally
-    FreeAndNil(L)
-  end;    
 end;
 
 function EditorPasteAsColumnBlock(Ed: TSyntaxMemo): boolean;

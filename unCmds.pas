@@ -83,7 +83,6 @@ const
   sm_FileCloseAndDelete = 746;
   sm_FileMoveToOtherView = 747;
   sm_FileRenameDialog = 748;
-  sm_ColumnMarkers = 749;
 
   sm_FileBackup = 750;
   sm_ToggleStreamComment = 751;
@@ -117,8 +116,6 @@ const
   sm_DropPortableBk = 778;
   sm_GotoPortableBk = 779;
   sm_IndentLike1st = 780;
-  sm_JumpColumnMarkerLeft = 781;
-  sm_JumpColumnMarkerRight = 782;
   sm_PasteNoCursorChange = 783;
   sm_CancelSelection = 786;
   sm_CenterLines = 787;
