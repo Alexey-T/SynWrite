@@ -512,7 +512,6 @@ begin
     smToggleMode,
     smMarkSelStart,
     smMarkSelEnd,
-    //smResetSelection, //need??
 
     smChangeRangeSide,
 
@@ -524,6 +523,11 @@ begin
     smMoveLinesUp,
     smMoveLinesDown,
     smDuplicateLine,
+    
+    sm_PasteToColumn1,
+    sm_PasteNoCursorChange,
+    sm_PasteAsColumnBlock,
+    sm_PasteAndSelect,
 
     smCopyPasteFileEnd,
     smCopyPasteFileStart,

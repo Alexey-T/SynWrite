@@ -2457,11 +2457,6 @@ begin
 end;
 
 
-function _CompareNums(P1, P2: Pointer): Integer;
-begin
-  Result:= Integer(P1)-Integer(P2);
-end;
-
 function EditorPasteAsColumnBlock(Ed: TSyntaxMemo): boolean;
 begin
   Result:= TntClipboard.HasFormat(CF_TEXT);
