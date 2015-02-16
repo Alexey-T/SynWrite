@@ -296,7 +296,6 @@ cmd_FileExit = 745
 cmd_FileCloseAndDelete = 746
 cmd_FileMoveToOtherView = 747
 cmd_FileRenameDialog = 748
-cmd_ColumnMarkers = 749
 
 cmd_FileBackup = 750
 cmd_ToggleStreamComment = 751
@@ -330,8 +329,6 @@ cmd_ToggleSmartHl = 777
 cmd_DropPortableBk = 778
 cmd_GotoPortableBk = 779
 cmd_IndentLike1st = 780
-cmd_JumpColumnMarkerLeft = 781
-cmd_JumpColumnMarkerRight = 782
 cmd_PasteNoCursorChange = 783
 cmd_CancelSelection = 786
 cmd_CenterLines = 787
