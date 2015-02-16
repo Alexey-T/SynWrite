@@ -74,10 +74,12 @@ type
     procedure TntFormDestroy(Sender: TObject);
     procedure edTimesKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure btnOkClick(Sender: TObject);
   private
     FPlayIdx: integer;
     FCanPlay: Boolean;
     FKeys: TList;
+    FBusyKeys: TStringList;
     procedure SetMacroRecorder(const Value: TecMacroRecorder);
     function NameStr(n: integer): Widestring;
     procedure DoAddKey(AKey: TShortcut);
@@ -95,7 +97,8 @@ type
 
 function DoMacroEditDialog(AMacros: TecMacroRecorder;
   var AKeys: TMacroKeysArray;
-  var APlayIdx: integer): Boolean;
+  var APlayIdx: integer;
+  ABusyKeys: TStringList): Boolean;
 
 implementation
 
@@ -110,7 +113,8 @@ uses
 function DoMacroEditDialog(
   AMacros: TecMacroRecorder;
   var AKeys: TMacroKeysArray;
-  var APlayIdx: integer): Boolean;
+  var APlayIdx: integer;
+  ABusyKeys: TStringList): Boolean;
 var
   i: Integer;
 begin
@@ -125,6 +129,8 @@ begin
 
       MacroRecorder:= AMacros;
       FCanPlay:= true;
+      FBusyKeys:= ABusyKeys;
+
       if ShowModal = mrOK then
       begin
         for i:= Low(AKeys) to High(AKeys) do
@@ -493,6 +499,26 @@ begin
     Key:= 0;
     Exit
   end;
+end;
+
+procedure TfmMacroEdit.btnOkClick(Sender: TObject);
+var
+  i, j: Integer;
+  Str: string;
+begin
+  for i:= 0 to FKeys.Count-1 do
+    for j:= 0 to FBusyKeys.Count-1 do
+      if FKeys[i]<>nil then
+      begin
+        Str:= TKeyStroke(FKeys[i]).AsString;
+        if (Str<>'') and (Str=FBusyKeys[j]) then
+        begin
+          MsgWarn(DKLangConstW('zMKeyIsBusy')+' '+Str, Handle);
+          Exit
+        end;
+      end;
+
+  ModalResult:= mrOk;
 end;
 
 end.

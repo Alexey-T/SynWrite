@@ -3338,7 +3338,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.16.1985';
+  cSynVer = '6.16.1986';
   cSynPyVer = '1.0.146';
 
 const
@@ -15488,12 +15488,19 @@ end;
 procedure TfmMain.acMacroDialogExecute(Sender: TObject);
 var
   keys: TMacroKeysArray;
-  idx, i: Integer;
+  idx, i, j: Integer;
+  BusyKeys: TStringList;
 begin
   for i:= Low(keys) to High(keys) do
     keys[i]:= DoMacro_GetHotkey(i);
 
-  if DoMacroEditDialog(ecMacroRec, keys, idx) then
+  BusyKeys:= TStringList.Create;
+  for i:= 0 to SyntKeyMapping.Items.Count-1 do
+    with SyntKeyMapping.Items[i] do
+      for j:= 0 to KeyStrokes.Count-1 do
+        BusyKeys.Add(KeyStrokes.Items[j].AsString);
+
+  if DoMacroEditDialog(ecMacroRec, keys, idx, BusyKeys) then
   begin
     if idx >= 0 then
       FLastMacro:= idx;
@@ -15506,6 +15513,8 @@ begin
 
   for i:= Low(keys) to High(keys) do
     FreeAndNil(keys[i]);
+
+  FreeAndNil(BusyKeys);
 end;
 
 procedure TfmMain.LoadMacros;

@@ -144,8 +144,8 @@ object fmMacroEdit: TfmMacroEdit
     Height = 23
     Caption = 'OK'
     Default = True
-    ModalResult = 1
     TabOrder = 4
+    OnClick = btnOkClick
   end
   object btnCancel: TTntButton
     Left = 380
