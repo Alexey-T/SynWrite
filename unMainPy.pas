@@ -1162,8 +1162,8 @@ begin
     Cmd.Command,
     PChar(UTF8Encode(Cmd.Category)),
     PChar(UTF8Encode(Cmd.DisplayName)),
-    PChar(Key1),
-    PChar(Key2)
+    PChar(UTF8Encode(Key1)),
+    PChar(UTF8Encode(Key2))
     );
 end;
 
