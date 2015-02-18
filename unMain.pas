@@ -3394,7 +3394,6 @@ uses
 
 {$R *.dfm}
 {$R Cur.res}
-{$R Text.res}
 
 const
   cConverterHtml1 = 'HTML - all entities';
