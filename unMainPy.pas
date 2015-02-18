@@ -68,6 +68,7 @@ uses
   unMenuPy,
   ecSyntAnal,
   ecSyntMemo,
+  ecKeyMap,
   ATGroups,
   ATSyntMemo,
   ATxFProc,
@@ -1142,8 +1143,29 @@ const
   PROC_SOUND            = 5;
   PROC_COLOR_PICKER     = 6;
   PROC_ADD_RECENT_COLOR = 7;
-  PROC_REPORT_KEYS      = 8;
-  PROC_ADD_GUTTER_ICON  = 9;   
+  PROC_GET_COMMAND      = 8;
+  PROC_ADD_GUTTER_ICON  = 9;
+
+
+function Py_KeyCommandToTuple(Cmd: TecCommandItem): PPyObject;
+var
+  Key1, Key2: string;
+begin
+  Key1:= '';
+  Key2:= '';
+  if Cmd.KeyStrokes.Count>0 then
+    Key1:= Cmd.KeyStrokes[0].AsString;
+  if Cmd.KeyStrokes.Count>1 then
+    Key2:= Cmd.KeyStrokes[1].AsString;
+
+  Result:= GetPythonEngine.Py_BuildValue('(issss)',
+    Cmd.Command,
+    PChar(UTF8Encode(Cmd.Category)),
+    PChar(UTF8Encode(Cmd.DisplayName)),
+    PChar(Key1),
+    PChar(Key2)
+    );
+end;
 
 function Py_app_proc(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1215,12 +1237,6 @@ begin
             Result:= ReturnNone;
           end;
 
-        PROC_REPORT_KEYS:
-          begin
-            DoReportKeysHtml(fmMain.SyntKeyMapping, Str);
-            Result:= ReturnNone;
-          end;
-
         PROC_ADD_GUTTER_ICON:
           begin
             NValue:= fmMain.DoAddGutterIcon(Str);
@@ -1228,6 +1244,15 @@ begin
               Result:= ReturnNone
             else
               Result:= PyInt_FromLong(NValue);
+          end;
+
+        PROC_GET_COMMAND:
+          begin
+            NValue:= StrToIntDef(Str, -1);
+            if (NValue>=0) and (NValue<fmMain.SyntKeyMapping.Items.Count) then
+              Result:= Py_KeyCommandToTuple(fmMain.SyntKeyMapping.Items[NValue])
+            else
+              Result:= ReturnNone;
           end;
 
         else

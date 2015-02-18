@@ -950,7 +950,6 @@ type
     ecSplitRight: TAction;
     ecFindNextWithExtend: TAction;
     ecFindPrevWithExtend: TAction;
-    TBXItemHelpKeymap: TSpTBXItem;
     ecFindInList: TAction;
     ecFindInListNext: TAction;
     ecFindInListPrev: TAction;
@@ -1718,7 +1717,6 @@ type
     procedure TreeKeyPress(Sender: TObject; var Key: Char);
     procedure ecFindNextWithExtendExecute(Sender: TObject);
     procedure ecFindPrevWithExtendExecute(Sender: TObject);
-    procedure TBXItemHelpKeymapClick(Sender: TObject);
     procedure ecFindInListExecute(Sender: TObject);
     procedure ecFindInListNextExecute(Sender: TObject);
     procedure ecFindInListPrevExecute(Sender: TObject);
@@ -2888,7 +2886,6 @@ type
     function GetUntitledString: Widestring;
     procedure DoAddKeymappingCommand(const ACommand: Integer;
       const ACategory, ACaption, AHotkey: Widestring);
-    procedure DoShowKeyboardMappingHTML;
 
     procedure DoPluginsManager_Install;
     procedure DoPluginsManager_Remove;
@@ -3338,8 +3335,8 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.16.1986';
-  cSynPyVer = '1.0.146';
+  cSynVer = '6.16.1990';
+  cSynPyVer = '1.0.147';
 
 const
   cSynParamRO = '/ro';
@@ -6588,7 +6585,6 @@ begin
 
     sm_OpenEntireFolder:  DoOpenFolderDialog;
     sm_RestartProgram:    acRestart.Execute;
-    sm_ShowKeyboardMappingHtml: DoShowKeyboardMappingHTML;
 
     sm_AddonsManager_Install: DoPluginsManager_Install;
     sm_AddonsManager_Remove: DoPluginsManager_Remove;
@@ -17006,21 +17002,6 @@ begin
     EditorMasterZoom(EditorMaster);
     EditorMasterZoom(EditorSlave);
   end;
-end;
-
-procedure TfmMain.TBXItemHelpKeymapClick(Sender: TObject);
-begin
-  DoShowKeyboardMappingHTML;
-end;
-
-procedure TfmMain.DoShowKeyboardMappingHTML;
-var
-  fn: string;
-begin
-  fn:= FTempDir + '\SynWriteKeys.html';
-  UpdateMacroKeynames;
-  DoReportKeysHtml(SyntKeyMapping, fn);
-  FExecute(fn, '', '', Handle);
 end;
 
 procedure TfmMain.ecFindInListExecute(Sender: TObject);
