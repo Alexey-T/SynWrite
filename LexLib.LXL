@@ -15657,7 +15657,7 @@ object SyntaxManager: TSyntaxManager
       ' = '#39'['#39' | <Identifier>; '#13#10#13#10'InheritedList = '#39'('#39' IdentList '#39')'#39';'#13#10'I' +
       'dentList = <Identifier> ('#39','#39' <Identifier>)*;'#13#10
     CurrentLineStyle = 'Current Line'
-    Extentions = 'pas inc dpr dpk lpr p'
+    Extentions = 'pas inc dpr dpk lpr p pp'
     LexerName = 'Pascal'
     Notes.Strings = (
       'Changed by Alexey')
@@ -25219,7 +25219,7 @@ object SyntaxManager: TSyntaxManager
         Font.Color = clTeal
         Font.Height = -13
         Font.Name = 'Courier New'
-        Font.Style = [fsBold]
+        Font.Style = [fsItalic]
       end
       item
         DisplayName = 'Var'
@@ -25246,12 +25246,20 @@ object SyntaxManager: TSyntaxManager
         Font.Style = [fsBold]
       end
       item
-        DisplayName = 'Keywords'
+        DisplayName = 'Id'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
         Font.Name = 'Courier New'
-        Font.Style = [fsBold]
+        Font.Style = []
+      end
+      item
+        DisplayName = 'Keywords'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clPurple
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
       end
       item
         DisplayName = 'Symbol'
@@ -25260,14 +25268,6 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'Id'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
       end>
     TokenRules = <
       item
@@ -25305,7 +25305,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Id'
         StyleName = 'Id'
         TokenType = 2
-        Expression = '[a-zA-Z_]\w*'
+        Expression = '[a-zA-Z_]\w* (::\w+)?'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -25336,16 +25336,17 @@ object SyntaxManager: TSyntaxManager
               'after'
               'append'
               'apply'
+              'argc'
+              'argv'
+              'argv0'
               'array'
               'auto_execok'
               'auto_import'
               'auto_load'
-              'auto_load_index'
               'auto_mkindex'
-              'auto_mkindex_old'
+              'auto_path'
               'auto_qualify'
               'auto_reset'
-              'beep'
               'bell'
               'bgerror'
               'binary'
@@ -25353,9 +25354,9 @@ object SyntaxManager: TSyntaxManager
               'bindtags'
               'bitmap'
               'break'
+              'busy'
               'button'
               'canvas'
-              'case'
               'catch'
               'cd'
               'chan'
@@ -25366,24 +25367,25 @@ object SyntaxManager: TSyntaxManager
               'colors'
               'concat'
               'console'
+              'constructor'
               'continue'
+              'coroutine'
               'cursors'
               'dde'
-              'default'
               'destroy'
+              'destructor'
               'dict'
-              'echo'
-              'else'
-              'elseif'
               'encoding'
               'entry'
+              'env'
               'eof'
               'error'
+              'errorCode'
+              'errorInfo'
               'eval'
               'event'
               'exec'
               'exit'
-              'export'
               'expr'
               'fblocked'
               'fconfigure'
@@ -25394,10 +25396,12 @@ object SyntaxManager: TSyntaxManager
               'flush'
               'focus'
               'font'
+              'fontchooser'
               'for'
               'foreach'
               'format'
               'frame'
+              'geometry'
               'gets'
               'glob'
               'global'
@@ -25407,7 +25411,6 @@ object SyntaxManager: TSyntaxManager
               'http'
               'if'
               'image'
-              'import'
               'incr'
               'info'
               'interp'
@@ -25422,8 +25425,8 @@ object SyntaxManager: TSyntaxManager
               'list'
               'listbox'
               'llength'
+              'lmap'
               'load'
-              'loadTk'
               'lower'
               'lrange'
               'lrepeat'
@@ -25438,8 +25441,17 @@ object SyntaxManager: TSyntaxManager
               'menu'
               'menubutton'
               'message'
+              'method'
               'msgcat'
+              'my'
               'namespace'
+              'next'
+              'nextto'
+              'oo::class'
+              'oo::copy'
+              'oo::define'
+              'oo::objdefine'
+              'oo::object'
               'open'
               'option'
               'options'
@@ -25466,14 +25478,15 @@ object SyntaxManager: TSyntaxManager
               'registry'
               'regsub'
               'rename'
-              'resource'
               'return'
-              'Safe Base'
+              'safe'
+              'safe::loadTk'
               'scale'
               'scan'
               'scrollbar'
               'seek'
               'selection'
+              'self'
               'send'
               'set'
               'socket'
@@ -25483,24 +25496,34 @@ object SyntaxManager: TSyntaxManager
               'string'
               'subst'
               'switch'
+              'tailcall'
               'Tcl'
+              'tcl::prefix'
               'tcl_endOfWord'
               'tcl_findLibrary'
+              'tcl_interactive'
+              'tcl_library'
+              'tcl_nonwordchars'
+              'tcl_patchLevel'
+              'tcl_pkgPath'
+              'tcl_platform'
+              'tcl_precision'
+              'tcl_rcFileName'
               'tcl_startOfNextWord'
               'tcl_startOfPreviousWord'
+              'tcl_traceCompile'
+              'tcl_traceExec'
+              'tcl_version'
               'tcl_wordBreakAfter'
               'tcl_wordBreakBefore'
-              'tclLog'
-              'tclMacPkgSearch'
-              'tclPkgSetup'
-              'tclPkgUnknown'
+              'tcl_wordchars'
               'tcltest'
-              'tclvars'
               'tell'
               'text'
-              'then'
+              'throw'
               'time'
               'tk'
+              'tk::mac'
               'tk_bisque'
               'tk_chooseColor'
               'tk_chooseDirectory'
@@ -25510,26 +25533,30 @@ object SyntaxManager: TSyntaxManager
               'tk_focusPrev'
               'tk_getOpenFile'
               'tk_getSaveFile'
+              'tk_library'
               'tk_menuSetFocus'
               'tk_messageBox'
               'tk_optionMenu'
+              'tk_patchLevel'
               'tk_popup'
               'tk_setPalette'
+              'tk_strictMotif'
               'tk_textCopy'
               'tk_textCut'
               'tk_textPaste'
+              'tk_version'
               'tkerror'
-              'tkvars'
               'tkwait'
               'tm'
               'toplevel'
               'trace'
+              'transchan'
+              'try'
               'ttk::button'
               'ttk::checkbutton'
               'ttk::combobox'
               'ttk::entry'
               'ttk::frame'
-              'ttk::image'
               'ttk::intro'
               'ttk::label'
               'ttk::labelframe'
@@ -25542,9 +25569,12 @@ object SyntaxManager: TSyntaxManager
               'ttk::scrollbar'
               'ttk::separator'
               'ttk::sizegrip'
+              'ttk::spinbox'
               'ttk::style'
               'ttk::treeview'
               'ttk::widget'
+              'ttk_image'
+              'ttk_vsapi'
               'unknown'
               'unload'
               'unset'
@@ -25555,7 +25585,10 @@ object SyntaxManager: TSyntaxManager
               'vwait'
               'while'
               'winfo'
-              'wm')
+              'wm'
+              'yield'
+              'yieldto'
+              'zlib')
             TokenTypes = 4
           end>
         HighlightPos = cpAny
@@ -25593,6 +25626,10 @@ object SyntaxManager: TSyntaxManager
         ConditionList = <
           item
             TagList.Strings = (
+              'constructor'
+              'destructor'
+              'method'
+              'oo::class'
               'proc')
             TokenTypes = 4
           end>

@@ -72,15 +72,40 @@ type
   TOnCtrlClick = procedure(Sender: TObject; const Pnt: TPoint; var Handled: boolean) of object;
 
 type
+  TATSynCaretItem = class
+    PosX, PosY,
+    CoordX, CoordY,
+    SelLen: integer;
+  end;
+
+type  
+  TATSynCarets = class
+  private
+    FList: TList;
+    function GetItem(N: integer): TATSynCaretItem;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure Clear;
+    procedure Delete(N: integer);
+    function Count: integer;
+    function IsIndexValid(N: integer): boolean;
+    property Items[N: integer]: TATSynCaretItem read GetItem; default;
+    procedure Add(APosX, APosY, ASelLen: integer);
+    procedure Sort;
+    function IndexOf(APosX, APosY: integer): integer;
+    function IsLineListed(APosY: integer): boolean;
+    procedure Assign(C: TATSynCarets);
+  end;
+
+type
   TSyntaxMemo = class(ecSyntMemo.TSyntaxMemo)
   private
     FCaretsEnabled: boolean;
     FCaretsSelEnabled: boolean;
     FCaretsColorIndicator: TCaretsColorIndicator;
     FCaretsTimer: TTimer;
-    FCarets: TList;
-    FCaretsCoord: TList;
-    FCaretsSel: TList;
+    FCaretsClass: TATSynCarets;
     FCaretsGutterBand: Integer;
     FCaretsGutterColor: TColor;
     FTextExt: TSize;
@@ -124,9 +149,9 @@ type
     procedure DoKeepCaretInText(var P: TPoint);
     procedure DoSortCarets;
     procedure DoCalculateDupCarets(L: TList);
-    procedure SetCaret(N: Integer; const P: TPoint);
+    procedure SetCaret(N: Integer; P: TPoint);
     function GetCaretCoord(N: Integer): TPoint;
-    procedure SetCaretCoord(N: Integer; const P: TPoint);
+    procedure SetCaretCoord(N: Integer; P: TPoint);
     procedure SetCaretSel(N, Value: Integer);
     procedure GetDrawCoord(var ACaretSize: TSize; var AClientRect: TRect);
     procedure DoDrawCarets;
@@ -270,6 +295,133 @@ begin
       Inc(Result);
 end;
 
+{ TATSynCarets }
+
+function TATSynCarets.GetItem(N: integer): TATSynCaretItem;
+begin
+  if IsIndexValid(N) then
+    Result:= TATSynCaretItem(FList[N])
+  else
+    Result:= nil;
+end;
+
+constructor TATSynCarets.Create;
+begin
+  inherited;
+  FList:= TList.Create;
+end;
+
+destructor TATSynCarets.Destroy;
+begin
+  Clear;
+  FreeAndNil(FList);
+  inherited;
+end;
+
+procedure TATSynCarets.Clear;
+var
+  i: integer;
+begin
+  for i:= FList.Count-1 downto 0 do
+    Delete(i);
+end;
+
+procedure TATSynCarets.Delete(N: integer);
+begin
+  if IsIndexValid(N) then
+  begin
+    TObject(FList[N]).Free;
+    FList.Delete(N);
+  end;
+end;
+
+function TATSynCarets.Count: integer;
+begin
+  Result:= FList.Count;
+end;
+
+function TATSynCarets.IsIndexValid(N: integer): boolean;
+begin
+  Result:= (N>=0) and (N<FList.Count);
+end;
+
+procedure TATSynCarets.Add(APosX, APosY, ASelLen: integer);
+var
+  Item: TATSynCaretItem;
+begin
+  Item:= TATSynCaretItem.Create;
+  Item.PosX:= APosX;
+  Item.PosY:= APosY;
+  Item.CoordX:= -1;
+  Item.CoordY:= -1;
+  Item.SelLen:= ASelLen;
+  FList.Add(Item);
+end;
+
+function _ListCaretsCompare(Item1, Item2: Pointer): Integer;
+var
+  Obj1, Obj2: TATSynCaretItem;
+begin
+  Obj1:= TATSynCaretItem(Item1);
+  Obj2:= TATSynCaretItem(Item2);
+  Result:= Obj1.PosY-Obj2.PosY;
+  if Result=0 then
+    Result:= Obj1.PosX-Obj2.PosX;
+end;
+
+procedure TATSynCarets.Sort;
+var
+  i: integer;
+  Item1, Item2: TATSynCaretItem;
+begin
+  FList.Sort(_ListCaretsCompare);
+  //
+  for i:= Count-1 downto 1 do
+  begin
+    Item1:= GetItem(i);
+    Item2:= GetItem(i-1);
+    if (Item1.PosY=Item2.PosY) and (Item1.PosX=Item2.PosX) then
+      Delete(i);
+  end;
+end;
+
+function TATSynCarets.IndexOf(APosX, APosY: integer): integer;
+var
+  i: integer;
+  Item: TATSynCaretItem;
+begin
+  Result:= -1;
+  for i:= 0 to FList.Count-1 do
+  begin
+    Item:= TATSynCaretItem(FList[i]);
+    if (Item.PosX=APosX) and (Item.PosY=APosY) then
+      begin Result:= i; Exit end;
+  end;
+end;
+
+function TATSynCarets.IsLineListed(APosY: integer): boolean;
+var
+  i: integer;
+  Item: TATSynCaretItem;
+begin
+  Result:= false;
+  for i:= 0 to FList.Count-1 do
+  begin
+    Item:= TATSynCaretItem(FList[i]);
+    if (Item.PosY=APosY) then
+      begin Result:= true; Exit end;
+  end;
+end;
+
+procedure TATSynCarets.Assign(C: TATSynCarets);
+var
+  i: integer;
+begin
+  Clear;
+  for i:= 0 to C.Count-1 do
+    Add(C[i].PosX, C[i].PosY, C[i].SelLen);
+end;
+
 { TSyntaxMemo }
 
 constructor TSyntaxMemo.Create(AOwner: TComponent);
@@ -279,9 +431,7 @@ begin
   FillChar(ColMarkers, SizeOf(ColMarkers), 0);
   MarkersLen:= TList.Create;
   
-  FCarets:= TList.Create;
-  FCaretsCoord:= TList.Create;
-  FCaretsSel:= TList.Create;
+  FCaretsClass:= TATSynCarets.Create;
   FListDups:= TList.Create;
   FListUndo:= TList.Create;
   FListOffsets:= TList.Create;
@@ -319,9 +469,7 @@ begin
   FreeAndNil(FListClip);
 
   FreeAndNil(FCaretsTimer);
-  FreeAndNil(FCarets);
-  FreeAndNil(FCaretsCoord);
-  FreeAndNil(FCaretsSel);
+  FreeAndNil(FCaretsClass);
   inherited;
 end;
 
@@ -452,15 +600,10 @@ procedure TSyntaxMemo.DoAddCaretInt(P: TPoint; NSelCount: Integer);
 begin
   DoKeepCaretInText(P);
 
-  FCarets.Add(Pointer(P.X));
-  FCarets.Add(Pointer(P.Y));
-  FCaretsCoord.Add(nil);
-  FCaretsCoord.Add(nil);
-
-  if FCaretsSelEnabled then
-    FCaretsSel.Add(Pointer(NSelCount))
-  else
-    FCaretsSel.Add(nil);
+  if not FCaretsSelEnabled then
+    NSelCount:= 0;
+    
+  FCaretsClass.Add(P.X, P.Y, NSelCount);
 end;
 
 function TSyntaxMemo.CanSetCarets: boolean;
@@ -546,8 +689,7 @@ end;
 
 function TSyntaxMemo.CaretsCount: Integer;
 begin
-  Result:= FCarets.Count div 2;
-  //Assert(FCarets.Count=FCaretsCoord.Count);
+  Result:= FCaretsClass.Count;
 end;
 
 procedure TSyntaxMemo.RemoveCarets(LeaveFirst: boolean = true);
@@ -562,9 +704,7 @@ begin
     else
       CaretPos:= GetCaret(CaretsCount-1);
 
-    FCarets.Clear;
-    FCaretsCoord.Clear;
-    FCaretsSel.Clear;
+    FCaretsClass.Clear;
 
     DoUpdateCaretsSelections;
     DoRestoreBaseEditor;
@@ -1286,8 +1426,8 @@ procedure TSyntaxMemo.DoResetSelections;
 var
   i: Integer;
 begin
-  for i:= 0 to FCaretsSel.Count-1 do
-    FCaretsSel[i]:= nil;
+  for i:= 0 to FCaretsClass.Count-1 do
+    FCaretsClass[i].SelLen:= 0;
 end;
 
 function TSyntaxMemo.IsSelectionExist: boolean;
@@ -1295,8 +1435,8 @@ var
   i: Integer;
 begin
   Result:= false;
-  for i:= 0 to FCaretsSel.Count-1 do
-    if FCaretsSel[i]<>nil then
+  for i:= 0 to FCaretsClass.Count-1 do
+    if FCaretsClass[i].SelLen<>0 then
     begin
       Result:= true;
       Exit
@@ -1437,43 +1577,53 @@ end;
 
 function TSyntaxMemo.GetCaret(N: Integer): TPoint;
 begin
-  Result:= Point(
-    Integer(FCarets[N*2]),
-    Integer(FCarets[N*2+1]));
+  Result:= Point(0, 0);
+  if FCaretsClass.IsIndexValid(N) then
+    with FCaretsClass[N] do
+      Result:= Point(PosX, PosY);
 end;
 
 function TSyntaxMemo.GetCaretSel(N: Integer): Integer;
 begin
-  if (N>=0) and (N<FCaretsSel.Count) then
-    Result:= Integer(FCaretsSel[N])
+  if FCaretsClass.IsIndexValid(N) then
+    Result:= FCaretsClass[N].SelLen
   else
-    Result:= 0;  
+    Result:= 0;
 end;
 
-procedure TSyntaxMemo.SetCaret(N: Integer; const P: TPoint);
+procedure TSyntaxMemo.SetCaret(N: Integer; P: TPoint);
 begin
-  FCarets[N*2]:= Pointer(P.X);
-  FCarets[N*2+1]:= Pointer(P.Y);
+  if FCaretsClass.IsIndexValid(N) then
+    with FCaretsClass[N] do
+    begin
+      PosX:= P.X;
+      PosY:= P.Y;
+    end;
 end;
 
 function TSyntaxMemo.GetCaretCoord(N: Integer): TPoint;
 begin
-  Result:= Point(
-    Integer(FCaretsCoord[N*2]),
-    Integer(FCaretsCoord[N*2+1]));
+  Result:= Point(0, 0);
+  if FCaretsClass.IsIndexValid(N) then
+    with FCaretsClass[N] do
+      Result:= Point(CoordX, CoordY);
 end;
 
-procedure TSyntaxMemo.SetCaretCoord(N: Integer; const P: TPoint);
+procedure TSyntaxMemo.SetCaretCoord(N: Integer; P: TPoint);
 begin
-  FCaretsCoord[N*2]:= Pointer(P.X);
-  FCaretsCoord[N*2+1]:= Pointer(P.Y);
+  if FCaretsClass.IsIndexValid(N) then
+    with FCaretsClass[N] do
+    begin
+      CoordX:= P.X;
+      CoordY:= P.Y;
+    end;
 end;
 
 procedure TSyntaxMemo.SetCaretSel(N, Value: Integer);
 begin
-  if FCaretsSelEnabled then
-    if (N>=0) and (N<FCaretsSel.Count) then
-      FCaretsSel[N]:= Pointer(Value);
+  if FCaretsClass.IsIndexValid(N) then
+    with FCaretsClass[N] do
+      SelLen:= Value;
 end;
 
 
@@ -1740,44 +1890,8 @@ begin
 end;
 
 procedure TSyntaxMemo.DoSortCarets;
-var
-  ListStr: TStringList;
-  ListPos: TList;
-  ListSel: TList;
-  i, N, NSel: Integer;
-  P: TPoint;
 begin
-  ListStr:= TStringList.Create;
-  ListPos:= TList.Create;
-  ListSel:= TList.Create;
-
-  try
-    for i:= 0 to CaretsCount-1 do
-    begin
-      P:= GetCaret(i);
-      ListStr.AddObject(Format('%10.10d %10.10d', [P.Y, P.X]), Pointer(i));
-    end;
-    ListStr.Sort;
-
-    ListPos.Clear;
-    ListSel.Clear;
-    for i:= 0 to ListStr.Count-1 do
-    begin
-      N:= Integer(ListStr.Objects[i]);
-      P:= GetCaret(N);
-      NSel:= GetCaretSel(N);
-      ListPos.Add(Pointer(P.X));
-      ListPos.Add(Pointer(P.Y));
-      ListSel.Add(Pointer(NSel));
-    end;
-
-    FCarets.Assign(ListPos);
-    FCaretsSel.Assign(ListSel);
-  finally
-    FreeAndNil(ListSel);
-    FreeAndNil(ListPos);
-    FreeAndNil(ListStr);
-  end;
+  FCaretsClass.Sort;
 end;
 
 procedure TSyntaxMemo.DoCalculateDupCarets(L: TList);
@@ -1798,11 +1912,7 @@ end;
 
 procedure TSyntaxMemo.DoRemoveCaretIndex(N: Integer);
 begin
-  FCarets.Delete(N*2+1);
-  FCarets.Delete(N*2);
-  FCaretsCoord.Delete(N*2+1);
-  FCaretsCoord.Delete(N*2);
-  FCaretsSel.Delete(N);
+  FCaretsClass.Delete(N);
 end;
 
 function TSyntaxMemo.DoRemoveCaret(const P: TPoint): boolean;
@@ -1944,10 +2054,10 @@ end;
 
 procedure TSyntaxMemo.DoAddCaretsUndo;
 var
-  L: TList;
+  L: TATSynCarets;
 begin
-  L:= TList.Create;
-  L.Assign(FCarets);
+  L:= TATSynCarets.Create;
+  L.Assign(FCaretsClass);
   FListUndo.Add(L);
 
   //need more precise calculation of undo count,
@@ -1959,17 +2069,13 @@ end;
 
 procedure TSyntaxMemo.DoCaretsUndo;
 var
-  n, i: Integer;
+  n: Integer;
 begin
   n:= FListUndo.Count;
   if n>0 then
   begin
-    FCarets.Assign(FListUndo[n-1]);
+    FCaretsClass.Assign(TATSynCarets(FListUndo[n-1]));
     DoRemoveCaretsUndo(n-1);
-
-    FCaretsCoord.Clear;
-    for i:= 1 to FCarets.Count do
-      FCaretsCoord.Add(nil);
   end;
 end;
 
