@@ -647,6 +647,14 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
         BgColor = 14938312
         FormatType = ftBackGround
+      end
+      item
+        DisplayName = 'Id in angles'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlue
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
       end>
     TokenRules = <
       item
@@ -724,7 +732,15 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Symbol {}'
+        DisplayName = 'Id <name>'
+        StyleName = 'Id in angles'
+        TokenType = 2
+        Expression = '<\w+>'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Symbol { }'
         StyleName = 'Symbol'
         TokenType = 8
         Expression = '[\{\}]'
@@ -740,6 +756,14 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
+        DisplayName = 'Symbol ( )'
+        StyleName = 'Symbol'
+        TokenType = 10
+        Expression = '[\(\)]'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
         DisplayName = 'Symbol'
         StyleName = 'Symbol'
         TokenType = 3
@@ -751,7 +775,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Symbol single'
         StyleName = 'Symbol'
         TokenType = 3
-        Expression = '[\(\)\[\],;]'
+        Expression = '[\[\],;]'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -830,6 +854,7 @@ object SyntaxManager: TSyntaxManager
               'int'
               'long'
               'mutable'
+              'namespace'
               'new'
               'operator'
               'pascal'
@@ -902,7 +927,7 @@ object SyntaxManager: TSyntaxManager
           item
             TagList.Strings = (
               ')')
-            TokenTypes = 8
+            TokenTypes = 1024
           end
           item
             CondType = tcSkip
@@ -911,7 +936,7 @@ object SyntaxManager: TSyntaxManager
           item
             TagList.Strings = (
               '(')
-            TokenTypes = 8
+            TokenTypes = 1024
           end
           item
             TokenTypes = 4
@@ -934,7 +959,7 @@ object SyntaxManager: TSyntaxManager
         RefToCondEnd = True
         HighlightPos = cpAny
         CancelNextRules = True
-        CollapseFmt = '%sz2...'
+        CollapseFmt = '%sz0...'
         TreeItemImage = 5
         TreeGroupImage = 1
         IgnoreAsParent = False
@@ -951,7 +976,7 @@ object SyntaxManager: TSyntaxManager
           item
             TagList.Strings = (
               ')')
-            TokenTypes = 8
+            TokenTypes = 1024
           end
           item
             CondType = tcSkip
@@ -960,7 +985,7 @@ object SyntaxManager: TSyntaxManager
           item
             TagList.Strings = (
               '(')
-            TokenTypes = 8
+            TokenTypes = 1024
           end
           item
             TokenTypes = 4
@@ -977,7 +1002,7 @@ object SyntaxManager: TSyntaxManager
         RefToCondEnd = True
         HighlightPos = cpBound
         CancelNextRules = True
-        CollapseFmt = '%sz2...'
+        CollapseFmt = '%sz0...'
         TreeItemImage = 5
         TreeGroupImage = 1
         IgnoreAsParent = False
@@ -997,7 +1022,7 @@ object SyntaxManager: TSyntaxManager
           item
             TagList.Strings = (
               ')')
-            TokenTypes = 8
+            TokenTypes = 1024
           end
           item
             CondType = tcSkip
@@ -1006,7 +1031,7 @@ object SyntaxManager: TSyntaxManager
           item
             TagList.Strings = (
               '(')
-            TokenTypes = 8
+            TokenTypes = 1024
           end
           item
             CondType = tcSkip
@@ -1150,6 +1175,7 @@ object SyntaxManager: TSyntaxManager
       '#asm(" pop ax ");'
       'strcpy(b, "text\"text");'
       'double F = 1e2 + 0.12e+2 + 0xAF;'
+      'name = name<CName>'
       ''
       'void CNested1::CMonitor(MonitorIT* part) {'
       '}'
@@ -1198,7 +1224,8 @@ object SyntaxManager: TSyntaxManager
       'Preprocessor'
       'Id keyword'
       'Symbol {}'
-      'Symbol ::')
+      'Symbol ::'
+      'Symbol ()')
     Extentions = 'c cpp cxx h hpp hxx inl cc'
     LexerName = 'C++'
     Notes.Strings = (
@@ -23435,6 +23462,15 @@ object SyntaxManager: TSyntaxManager
         Font.Name = 'Courier New'
         Font.Style = []
         BgColor = 8421631
+      end
+      item
+        DisplayName = 'Index line'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+        BgColor = clCream
       end>
     TokenRules = <
       item
@@ -23475,11 +23511,31 @@ object SyntaxManager: TSyntaxManager
         Expression = '^\s.*$'
         ColumnFrom = 0
         ColumnTo = 0
+      end
+      item
+        DisplayName = 'Index line'
+        StyleName = 'Index line'
+        TokenType = 5
+        Expression = '^Index: .*'
+        ColumnFrom = 0
+        ColumnTo = 0
       end>
-    BlockRules = <>
+    BlockRules = <
+      item
+        DisplayName = 'Index-line'
+        ConditionList = <
+          item
+            TokenTypes = 32
+          end>
+        EndOfTextClose = True
+        HighlightPos = cpAny
+        SelfClose = True
+        IgnoreAsParent = False
+      end>
     CodeTemplates = <>
     SubAnalyzers = <>
     SampleText.Strings = (
+      'Index: ide/filename'
       'some text'
       'simple text'
       '--- a/python/Makefile.am'#9'2010-05-26 22:09:50 +0000'
@@ -23504,12 +23560,14 @@ object SyntaxManager: TSyntaxManager
       'chunk'
       'line'
       'context'
-      'default')
+      'default'
+      'index')
     Extentions = 'diff dif patch'
     LexerName = 'Diff'
     SkipSpaces = False
     Notes.Strings = (
-      'Author: WhiteWind')
+      'Author: WhiteWind'
+      'Improved: Alexey (Synwrite)')
     Charset = DEFAULT_CHARSET
   end
   object SyntAnal67: TLibSyntAnalyzer
