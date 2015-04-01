@@ -23877,6 +23877,14 @@ object SyntaxManager: TSyntaxManager
         Expression = '\[.+?\] '
         ColumnFrom = 0
         ColumnTo = 0
+      end
+      item
+        DisplayName = 'Usual text'
+        StyleName = 'Text'
+        TokenType = 1
+        Expression = '.*'
+        ColumnFrom = 0
+        ColumnTo = 0
       end>
     BlockRules = <
       item
@@ -23971,7 +23979,8 @@ object SyntaxManager: TSyntaxManager
     LexerName = 'Markdown'
     SkipSpaces = False
     Notes.Strings = (
-      'by NoSi Version 1.0 (2014-01-20) ')
+      'by NoSi (v1.0 2014-01-20)'
+      'Fixes: Alex (Synwrite) ')
     Charset = DEFAULT_CHARSET
   end
   object SyntAnal70: TLibSyntAnalyzer
