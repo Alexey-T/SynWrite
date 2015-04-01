@@ -925,6 +925,10 @@ object SyntaxManager: TSyntaxManager
             TokenTypes = 264
           end
           item
+            CondType = tcSkip
+            TokenTypes = 4
+          end
+          item
             TagList.Strings = (
               ')')
             TokenTypes = 1024
@@ -972,6 +976,10 @@ object SyntaxManager: TSyntaxManager
               ':'
               '{')
             TokenTypes = 264
+          end
+          item
+            CondType = tcSkip
+            TokenTypes = 4
           end
           item
             TagList.Strings = (
@@ -1176,6 +1184,10 @@ object SyntaxManager: TSyntaxManager
       'strcpy(b, "text\"text");'
       'double F = 1e2 + 0.12e+2 + 0xAF;'
       'name = name<CName>'
+      ''
+      'Id Template::getTemplate(const string &id) const { '
+      '  return id;'
+      '}'
       ''
       'void CNested1::CMonitor(MonitorIT* part) {'
       '}'
