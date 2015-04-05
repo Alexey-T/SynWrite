@@ -393,7 +393,7 @@ type
   end;
 
 const
-  cColorsNum = 63;
+  cColorsNum = 65;
 type
   TSynColors = array[0..cColorsNum-1] of TColor;
 
@@ -2969,7 +2969,9 @@ type
     opColorAcpText: integer;
     opColorAcpBg: integer;
     opColorCaretsGutter: integer;
-    opColorMapMarks: integer;
+    opColorMicromapMarks: integer;
+    opColorMicromapMisspelled: integer;
+    opColorMicromapBG: integer;
     opColorBkmk: integer;
     opShowWrapMark: boolean;
     opTabEntireColor: boolean;
@@ -3003,7 +3005,7 @@ type
     opASaveUnnamedDir: string;
     opMapZoom: integer;
     opMicroMap: boolean;
-    opColorMap: integer;
+    opColorMinimapSel: integer;
     opBigSize: integer; //size in Mb for lexer-off
     opBkUndo: boolean;
     opProjPaths: Widestring;
@@ -3335,7 +3337,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.16.2010';
+  cSynVer = '6.16.2020';
   cSynPyVer = '1.0.147';
 
 const
@@ -4111,7 +4113,6 @@ begin
   UpdateEditorNonPrinted(Result.EditorSlave);
 
   Result.ShowMap:= opMicroMap;
-  Result.MapColor:= opColorMap;
   Result.CaretsEnabled:= opCaretsEnabled;
   Result.CaretsGutterBand:= opCaretsGutterBand;
   Result.CaretsGutterColor:= opColorCaretsGutter;
@@ -16688,7 +16689,7 @@ begin
     begin
       //SetMapScrollBars(false, opMapVScroll);
       SetMapZoom(opMapZoom);
-      SetMapColor(opColorMap);
+      SetMapColor(opColorMinimapSel);
     end;
 end;
 
@@ -19300,9 +19301,7 @@ begin
       EditorSlave.Gutter.Bands[cBandBoommarks].Width:= N;
 
       HyperlinkHighlighter.Style.Font.Color:= opColorLink;
-
       ShowMap:= opMicroMap;
-      MapColor:= opColorMap;
 
       DoTitleChanged;
     end;
@@ -24721,14 +24720,14 @@ begin
   opColorTabText:= C[42];
   //opColorTabFontUnsav:= C[43];
   opColorBkmk:= C[44];
-  opColorMap:= C[45];
+  opColorMinimapSel:= C[45];
   Ed.DefaultStyles.CollapseMark.Font.Color:= C[46];
   //opColorSplitSlave:= C[47];
   Ed.Gutter.Bands[2].Color:= C[48];
   opColorNonPrintedBG:= C[49];
   Ed.DefaultStyles.CollapseMark.BgColor:= C[50];
   Ed.SyncEditing.SyncRangeStyle.BgColor:= C[51];
-  opColorMapMarks:= C[52];
+  opColorMicromapMarks:= C[52];
   opColorCaretsGutter:= C[53];
   opColorAcpText:= C[54];
   opColorAcpBg:= C[55];
@@ -24739,6 +24738,8 @@ begin
   opColorFtpBlue:= C[60];
   opColorFtpGreen:= C[61];
   opColorFtpRed:= C[62];
+  opColorMicromapBG:= C[63];
+  opColorMicromapMisspelled:= C[64];
 
   //options
   Ed.Options:= TemplateEditor.Options;
@@ -24754,7 +24755,6 @@ begin
   opColorAcpText:= clWindowText;
   opColorAcpBg:= clWindow;
   opColorCaretsGutter:= clLtGray;
-  opColorMapMarks:= clGreen;
   opColorBkmk:= RGB(200, 240, 200);
   opColorNonPrintedBG:= clSilver;
 
@@ -24774,7 +24774,10 @@ begin
   opColorOutHi:= clSkyBlue;
 
   opColorLink:= clBlue;
-  opColorMap:= clSkyBlue;
+  opColorMinimapSel:= clSkyBlue;
+  opColorMicromapBG:= $e0e0e0;
+  opColorMicromapMarks:= clGreen;
+  opColorMicromapMisspelled:= clRed;
 
   opColorFtpBlue:= RGB(0, 0, 200);
   opColorFtpGreen:= RGB(0, 200, 0);
@@ -24825,14 +24828,14 @@ begin
   C[42]:= opColorTabText;
   //C[43]:= opColorTabFontUnsav;
   C[44]:= opColorBkmk;
-  C[45]:= opColorMap;
+  C[45]:= opColorMinimapSel;
   C[46]:= TemplateEditor.DefaultStyles.CollapseMark.Font.Color;
   //C[47]:= opColorSplitSlave;
   C[48]:= TemplateEditor.Gutter.Bands[2].Color;
   C[49]:= opColorNonPrintedBG;
   C[50]:= TemplateEditor.DefaultStyles.CollapseMark.BgColor;
   C[51]:= TemplateEditor.SyncEditing.SyncRangeStyle.BgColor;
-  C[52]:= opColorMapMarks;
+  C[52]:= opColorMicromapMarks;
   C[53]:= opColorCaretsGutter;
   C[54]:= opColorAcpText;
   C[55]:= opColorAcpBg;
@@ -24843,6 +24846,8 @@ begin
   C[60]:= opColorFtpBlue;
   C[61]:= opColorFtpGreen;
   C[62]:= opColorFtpRed;
+  C[63]:= opColorMicromapBG;
+  C[64]:= opColorMicromapMisspelled;
 end;
 
 procedure TfmMain.DoHandleQuickSearchEscape;

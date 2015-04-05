@@ -587,14 +587,14 @@ const
     'Tab-caption', //42
     'Tab-caption-unsaved', //43
     'Bookmark-BG', //44
-    'Map-BG', //45
+    'Minimap-sel-BG', //45
     'Collapse-mark', //46
     'Slave-splitter', //47
     'Line-state-def', //48
     'Non-printable-BG', //49
     'Collapse-mark-BG', //50
     'SyncEdit-BG', //51
-    'Map-marks-BG', //52
+    'Micromap-marks-BG', //52
     'Carets-gutter-BG', //53
     'Auto-complete-text', //54
     'Auto-complete-BG', //55
@@ -604,11 +604,13 @@ const
     'Tab-caption-modified', //59
     'Ftp-log-notif', //60
     'Ftp-log-server', //61
-    'Ftp-log-error' //62
+    'Ftp-log-error', //62
+    'Micromap-BG', //63
+    'Micromap-misspel' //64
     );
 
 const
-  cColorsOrder: array[0..55] of Integer = (
+  cColorsOrder: array[0..57] of Integer = (
     0,
     1,
     9,
@@ -658,8 +660,10 @@ const
     40,
     41,
     48,
-    45,
-    52,
+    45, //minimap sel bg
+    63, //micromap bg
+    64, //micromap misspel
+    52, //micromap marks
     51,
     53,
     54,

@@ -23788,7 +23788,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Link'
         StyleName = 'Link'
         TokenType = 13
-        Expression = '\[[^\]]+\]\([^\)]+\)'
+        Expression = '\[! \[[^\]]+\]\([^\)]+\) \] \([^\)]+\) |'#13#10'\[[^\]]+\]\([^\)]+\)'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -23903,6 +23903,8 @@ object SyntaxManager: TSyntaxManager
     CodeTemplates = <>
     SubAnalyzers = <>
     SampleText.Strings = (
+      '[![Test](link here)](link here)'
+      ''
       '# Header'
       '<!-- This is a comment -->'
       '/* This, too */'
@@ -23979,7 +23981,7 @@ object SyntaxManager: TSyntaxManager
     LexerName = 'Markdown'
     SkipSpaces = False
     Notes.Strings = (
-      'by NoSi (v1.0 2014-01-20)'
+      'Author: NoSi (v1.0 2014-01-20)'
       'Fixes: Alex (Synwrite) ')
     Charset = DEFAULT_CHARSET
   end

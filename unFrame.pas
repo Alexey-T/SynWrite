@@ -129,7 +129,6 @@ type
     FCollapsedRestored2: boolean;
     FFtpInfoPtr: Pointer;
     FFtpInfoSize: Integer;
-    FMapColor: TColor;
     FTabColor: TColor;
     FSelPresent: boolean;
     FLineEndsChg,
@@ -154,7 +153,6 @@ type
     function GetShowMap: boolean;
     procedure SetShowMap(V: boolean);
     function GetMapLine(X, Y: Integer): Integer;
-    procedure SetMapColor(C: TColor);
     function FocusedEditor: TSyntaxMemo;
     procedure UpdateMap(Ed: TSyntaxMemo);
     procedure SetSpell(Value: boolean);
@@ -197,7 +195,6 @@ type
     function DoSpellContinue(AFromPos: Integer): Integer;
     procedure DoSyncMicromap;
     property ShowMap: boolean read GetShowMap write SetShowMap;
-    property MapColor: TColor read FMapColor write SetMapColor;
     property TabColor: TColor read FTabColor write FTabColor;
     procedure DoBkToggle(Ed: TCustomSyntaxMemo; LineNum: integer);
     procedure DoTitleChanged;
@@ -319,7 +316,6 @@ begin
   FPyChangeTick:= 0;
   FFtpInfoPtr:= nil;
   FFtpInfoSize:= 0;
-  FMapColor:= clLtGray;
   FTabColor:= clNone;
   FSpell:= False;
   FLineEndsChg:= False;
@@ -1223,7 +1219,7 @@ begin
     FBitmapMap.Height:= NCliHeight;
 
   //draw backgnd
-  C.Brush.Color:= clBtnFace;
+  C.Brush.Color:= TfmMain(Self.Owner).opColorMicromapBG;
   C.FillRect(Rect(0, 0, NCliWidth, NCliHeight));
 
   NCnt:= EditorMaster.TextSource.Lines.Count;
@@ -1240,7 +1236,7 @@ begin
   if N2_Frame<N1_Frame+cMinHeight then
     N2_Frame:= N1_Frame+cMinHeight;
 
-  C.Brush.Color:= FMapColor;
+  C.Brush.Color:= TfmMain(Self.Owner).opColorMinimapSel;
   C.FillRect(Rect(0, N1_Frame, NCliHeight, N2_Frame));
 
   LinesMarked:= TList.Create;
@@ -1286,14 +1282,14 @@ begin
       //hilite spell marks
       if IsSpellMarked(i) then
       begin
-        C.Brush.Color:= clRed;
+        C.Brush.Color:= TfmMain(Owner).opColorMicromapMisspelled;
         C.FillRect(Rect(NCliWidth-cStateColumnSize, N1, NCliWidth, N2));
       end;
 
       //hilite search marks
       if IsSearchMarked(i) then
       begin
-        C.Brush.Color:= TfmMain(Owner).opColorMapMarks;
+        C.Brush.Color:= TfmMain(Owner).opColorMicromapMarks;
           //Ed.DefaultStyles.SearchMark.BgColor;
         C.FillRect(Rect(NCliWidth-cStateColumnSize, N1, NCliWidth, N2));
       end;
@@ -1315,12 +1311,6 @@ procedure TEditorFrame.TimerMapTimer(Sender: TObject);
 begin
   TimerMap.Enabled:= False;
   UpdateMap(FocusedEditor);
-end;
-
-procedure TEditorFrame.SetMapColor(C: TColor);
-begin
-  FMapColor:= C;
-  DoSyncMicromap;
 end;
 
 procedure TEditorFrame.PanelMapPaint(Sender: TObject);
