@@ -23732,7 +23732,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Bold-Italic'
         StyleName = 'Bold-Italic'
-        TokenType = 11
+        TokenType = 1
         Expression = '(\*\*\*|___).*?(\*\*\*|___|$)'
         ColumnFrom = 0
         ColumnTo = 0
@@ -23740,7 +23740,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Bold'
         StyleName = 'Bold'
-        TokenType = 9
+        TokenType = 1
         Expression = '(\*\*|__).*?(\*\*|__|$)'
         ColumnFrom = 0
         ColumnTo = 0
@@ -23748,7 +23748,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Italic'
         StyleName = 'Italic'
-        TokenType = 10
+        TokenType = 1
         Expression = '#char after * is non-space'#13#10'(\*|_) \S.*? (\*|_|")'
         ColumnFrom = 0
         ColumnTo = 0
@@ -23779,23 +23779,31 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'HTML Code'
         StyleName = 'HTML Code'
-        TokenType = 8
+        TokenType = 9
         Expression = '\&[^;]+\; |'#13#10'\<[^\>]+>'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
-        DisplayName = 'Link'
+        DisplayName = 'Link github'
         StyleName = 'Link'
-        TokenType = 13
-        Expression = '\[! \[[^\]]+\]\([^\)]+\) \] \([^\)]+\) |'#13#10'\[[^\]]+\]\([^\)]+\)'
+        TokenType = 11
+        Expression = '\[! \[ [^\]]+ \]\( [^\)]+ \) \] \( [^\)]+ \)'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Link usual'
+        StyleName = 'Link'
+        TokenType = 11
+        Expression = '\[[^\]]+\]\([^\)]+\)'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
         DisplayName = 'Image'
         StyleName = 'Image'
-        TokenType = 14
+        TokenType = 12
         Expression = '!\[[^\]]+\]\([^\)]+\)'
         ColumnFrom = 0
         ColumnTo = 0
@@ -23811,7 +23819,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'List'
         StyleName = 'List'
-        TokenType = 15
+        TokenType = 13
         Expression = 
           '^[\x20\x09]*(\d\.|\-\ |+\ |\*\ |\+\ |[\(]?[a-z\d]?[\.\)]{1})|'#13#10'^' +
           '\(@[^\)]*\)#pandoc list'
@@ -23831,7 +23839,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Definition'
         StyleName = 'Definition'
-        TokenType = 13
+        TokenType = 10
         Expression = 
           '^[\x20\t]*?.+(\z)+?*?^[\x20\t]*?:\ \ \ '#13#10'# Pandoc Style (:\ \ \ ' +
           ')'
@@ -23857,7 +23865,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Crossed Out'
         StyleName = 'Crossed out'
-        TokenType = 12
+        TokenType = 1
         Expression = '(~~).*?(~~)'
         ColumnFrom = 0
         ColumnTo = 0
@@ -23865,15 +23873,15 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Footnote Inline'
         StyleName = 'Footnote'
-        TokenType = 8
+        TokenType = 7
         Expression = '\^\[.+?\] #Pandoc Inline-Style'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
-        DisplayName = 'Wiki link'
+        DisplayName = 'Link wiki'
         StyleName = 'Link'
-        TokenType = 18
+        TokenType = 11
         Expression = '\[.+?\] '
         ColumnFrom = 0
         ColumnTo = 0
@@ -23882,7 +23890,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Usual text'
         StyleName = 'Text'
         TokenType = 1
-        Expression = '.*'
+        Expression = '\w+'
         ColumnFrom = 0
         ColumnTo = 0
       end>
@@ -23968,15 +23976,10 @@ object SyntaxManager: TSyntaxManager
       'Footnote'
       'Footnote-Inline'
       'HTML Code'
-      'Bold'
-      'Italic'
-      'Bold Italic'
-      'Crossed out'
       'Definition'
       'Link'
       'Image'
-      'List'
-      'Wiki link')
+      'List')
     Extentions = 'md markdown mkd'
     LexerName = 'Markdown'
     SkipSpaces = False
