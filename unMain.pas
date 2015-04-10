@@ -2953,6 +2953,7 @@ type
     opSingleClickURL: boolean;
     opSortMode: TSynSortMode;
     opCopyLineIfNoSel: boolean;
+    opLeftRightSelJump: boolean;
     opAutoCloseTags: boolean;
     opAutoCloseBrackets: boolean;
     opAutoCloseBracketsNoEsc: boolean;
@@ -3337,7 +3338,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.16.2020';
+  cSynVer = '6.16.2025';
   cSynPyVer = '1.0.147';
 
 const
@@ -4774,6 +4775,7 @@ begin
     opSingleClickURL:= ReadBool('Setup', 'UrlClick', false);
     ApplyUrlClick;
 
+    opLeftRightSelJump:= ReadBool('Setup', 'LeftRtJump', true);
     opSortMode:= TSynSortMode(ReadInteger('Setup', 'SortM', 0));
     opCopyLineIfNoSel:= ReadBool('Setup', 'CopyLnNoSel', false);
     opShowRecentColors:= TSynRecentColors(ReadInteger('Setup', 'RecColors', 0));
@@ -5140,6 +5142,7 @@ begin
     WriteBool('Setup', 'TabSp', opTabsReplace);
     WriteInteger('Setup', 'Notif', Ord(opReloadMode));
 
+    WriteBool('Setup', 'LeftRtJump', opLeftRightSelJump);
     WriteBool('Setup', 'Tail', opFollowTail);
     WriteInteger('Setup', 'UnNeed', opUnicodeNeeded);
     WriteInteger('Setup', 'RecColors', Ord(opShowRecentColors));
@@ -5576,6 +5579,7 @@ var
   Ed: TSyntaxMemo;
   ch: WideChar;
   p: TPoint;
+  n1, n2: integer;
 begin
   //remember last edit cmd
   DoHandleLastCmd(Command, Data);
@@ -5747,11 +5751,17 @@ begin
       if EditorHasNoCaret(Ed) then
         Ed.ExecCommand(smScrollLeft)
       else
-      if (Ed.SelLength>0) and not (soPersistentBlocks in Ed.Options) then
+      if opLeftRightSelJump and (Ed.SelLength>0) and not (soPersistentBlocks in Ed.Options) then
       begin
-        //Move caret to sel start on Left pressing
-        Ed.CaretStrPos:= Ed.SelStart;
-        Ed.ResetSelection;
+        n1:= Ed.SelStart;
+        n2:= Ed.SelLength;
+        if Ed.CaretStrPos<>n1 then
+        begin
+          Ed.CaretStrPos:= n1;
+          Ed.SetSelection(n1, n2, true);
+        end
+        else
+          Handled:= False;
       end
       else
         Handled:= False;
@@ -5762,11 +5772,17 @@ begin
       if EditorHasNoCaret(Ed) then
         Ed.ExecCommand(smScrollRight)
       else
-      if (Ed.SelLength>0) and not (soPersistentBlocks in Ed.Options) then
+      if opLeftRightSelJump and (Ed.SelLength>0) and not (soPersistentBlocks in Ed.Options) then
       begin
-        //Move caret to sel end on Right pressing
-        Ed.CaretStrPos:= Ed.SelStart+Ed.SelLength;
-        Ed.ResetSelection;
+        n1:= Ed.SelStart;
+        n2:= Ed.SelLength;
+        if Ed.CaretStrPos<>n1+n2 then
+        begin
+          Ed.CaretStrPos:= n1+n2;
+          Ed.SetSelection(n1, n2, true);
+        end
+        else
+          Handled:= False;
       end
       else
         Handled:= False;
@@ -20196,7 +20212,7 @@ var
 begin
   DirExe:= ExtractFileDir(Application.ExeName);
   //Panel plugins
-  DoPlugins_PreinstallPlugin('Explorer', DirExe+'\Plugins\Explorer\install.inf', true);
+  //DoPlugins_PreinstallPlugin('Explorer', DirExe+'\Plugins\Explorer\install.inf', true);
   DoPlugins_PreinstallPlugin('SynFTP', DirExe+'\Plugins\SynFTP\install.inf', true);
   //Command plugins
   DoPlugins_PreinstallPlugin('Color Picker', DirExe+'\Py\syn_color_picker\install.inf', false);

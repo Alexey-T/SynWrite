@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabInsertFormat
+    ActivePage = tabSelHL
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -2741,7 +2741,7 @@ object fmSetup: TfmSetup
             'Collapse empty lines after text range when this range has been c' +
             'ollapsed.'
           Caption = 'Collapse empty lines'
-          TabOrder = 17
+          TabOrder = 18
         end
         object cbSelDragDrop: TTntCheckBox
           Left = 272
@@ -2750,7 +2750,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Enables drag&drop operation for selected text blocks.'
           Caption = 'Enable text drag-drop'
-          TabOrder = 15
+          TabOrder = 16
         end
         object cbCopyRtf: TTntCheckBox
           Left = 8
@@ -2770,7 +2770,7 @@ object fmSetup: TfmSetup
             'Selection will contain extra column/line during column/line sele' +
             'ction modes.'
           Caption = 'Greedy selection'
-          TabOrder = 16
+          TabOrder = 17
         end
         object cbSelLineByDClick: TTntCheckBox
           Left = 272
@@ -2781,7 +2781,7 @@ object fmSetup: TfmSetup
             'Selects the entire line when you double-click any character in t' +
             'he line.'
           Caption = 'Double-click selects line'
-          TabOrder = 13
+          TabOrder = 14
         end
         object cbSelPreserve: TTntCheckBox
           Left = 272
@@ -2792,7 +2792,7 @@ object fmSetup: TfmSetup
             'Keeps marked block selected even when the cursor is moved using ' +
             'the arrow keys, until a new block is selected.'
           Caption = 'Preserve selection'
-          TabOrder = 12
+          TabOrder = 13
         end
         object cbSelOverwrite: TTntCheckBox
           Left = 272
@@ -2801,7 +2801,7 @@ object fmSetup: TfmSetup
           Height = 17
           Hint = 'Replaces marked block of text with whatever is typed next.'
           Caption = 'Overwrite selection'
-          TabOrder = 11
+          TabOrder = 12
         end
         object cbHiliteSmartClick: TTntCheckBox
           Left = 8
@@ -2829,7 +2829,15 @@ object fmSetup: TfmSetup
             'Double-click then drag - performs selection by words (not by cha' +
             'rs as usual).'
           Caption = 'Double-click + drag: selects by words'
-          TabOrder = 14
+          TabOrder = 15
+        end
+        object cbSelJump: TTntCheckBox
+          Left = 272
+          Top = 120
+          Width = 254
+          Height = 17
+          Caption = 'Left/Right keys jump to selection edge'
+          TabOrder = 11
         end
       end
     end
@@ -3176,7 +3184,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0160010000
+      0700666D5365747570010100000001000000070043617074696F6E0161010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3500,7 +3508,8 @@ object fmSetup: TfmSetup
       6E7444656C617900000A00546E744C6162656C34330101000000F00200000700
       43617074696F6E000A00636253796E6349636F6E0102000000F2020000070043
       617074696F6EF1020000040048696E74000C006362556E646F53696D706C6501
-      02000000F4020000070043617074696F6EF3020000040048696E7400}
+      02000000F4020000070043617074696F6EF3020000040048696E740009006362
+      53656C4A756D700101000000F5020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

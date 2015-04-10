@@ -372,6 +372,7 @@ type
     TntLabel43: TTntLabel;
     cbSyncIcon: TTntCheckBox;
     cbUndoSimple: TTntCheckBox;
+    cbSelJump: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2547,6 +2548,7 @@ begin
     opHiliteSmartWords:= cbHiliteSmartWords.Checked;
     opHiliteBrackets:= cbHiliteBrackets.Checked;
     opCopyLineIfNoSel:= cbCopyLineNoSel.Checked;
+    opLeftRightSelJump:= cbSelJump.Checked;
 
     if cbColorOnEmpty.Checked then
       TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx - [soNormalSelToLineEnd]
@@ -2711,6 +2713,7 @@ begin
     cbHiliteSmartWords.Checked:= opHiliteSmartWords;
     cbHiliteBrackets.Checked:= opHiliteBrackets;
 
+    cbSelJump.Checked:= opLeftRightSelJump;
     cbCopyLineNoSel.Checked:= opCopyLineIfNoSel;
     cbCopyRtf.Checked:= soCopyAsRTF in TemplateEditor.Options;
     cbColorOnEmpty.Checked:= not (soNormalSelToLineEnd in TemplateEditor.OptionsEx);

@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.16.2010
+AppVersion=6.16.2020
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -71,7 +71,7 @@ Source: "..\Data\snippets\Std.Php\*";    DestDir: "{app}\Data\snippets\Std.Php";
 Source: "..\Tools\*"; DestDir: "{app}\Tools"; 
 Source: "..\Dictionaries\*"; DestDir: "{app}\Dictionaries"; 
 
-Source: "..\Plugins\Explorer\*"; DestDir: "{app}\Plugins\Explorer"; Flags: recursesubdirs; 
+;;Source: "..\Plugins\Explorer\*"; DestDir: "{app}\Plugins\Explorer"; Flags: recursesubdirs; 
 Source: "..\Plugins\SynFTP\*"; DestDir: "{app}\Plugins\SynFTP"; Flags: recursesubdirs; 
 
 Source: "..\Py\syn_plugin_manager\*"; DestDir: "{app}\Py\syn_plugin_manager"; Excludes: "*.pyc"; Flags: recursesubdirs;
