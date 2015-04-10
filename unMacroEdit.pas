@@ -513,8 +513,10 @@ begin
         Str:= TKeyStroke(FKeys[i]).AsString;
         if (Str<>'') and (Str=FBusyKeys[j]) then
         begin
-          MsgWarn(DKLangConstW('zMKeyIsBusy')+' '+Str, Handle);
-          Exit
+          if not MsgConfirm(
+            DKLangConstW('zMKeyIsBusy')+
+            ' '+Str+#13#13+
+            DKLangConstW('zMCloseDlgAnyway'), Handle) then Exit;
         end;
       end;
 
