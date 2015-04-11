@@ -642,7 +642,7 @@ object fmSetup: TfmSetup
           Top = 128
           Width = 326
           Height = 17
-          Caption = 'Close by double click'
+          Caption = 'Close tabs by double click'
           TabOrder = 7
         end
       end

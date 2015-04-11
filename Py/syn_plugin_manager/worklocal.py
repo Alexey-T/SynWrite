@@ -8,7 +8,7 @@ def syn_plugins_dir():
     return os.path.join(app_exe_dir(), 'Plugins')
 
 def syn_plugins_ini():
-    return os.path.join(app_exe_dir(), 'SynPlugins.ini')
+    return os.path.join(app_ini_dir(), 'SynPlugins.ini')
 
 def get_installed_list(binary_too=False):
     dir = syn_py()

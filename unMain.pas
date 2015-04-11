@@ -2905,7 +2905,6 @@ type
     SynDir: string;
     SynIniDir: string;
     SynExe: boolean;
-    SynIsPortable: boolean;
     SynProjectSessionFN: string;
 
     Groups: TATGroups;
@@ -3339,7 +3338,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.17.2025';
+  cSynVer = '6.17.2030';
   cSynPyVer = '1.0.147';
 
 const
@@ -5240,25 +5239,14 @@ begin
   Result:= FAppDataPath + 'SynWrite';
 end;
 
+procedure TfmMain.InitSynIniDir;
+begin
+  SynIniDir:= SynDir + 'Settings\';
+end;
+
 function TfmMain.SynPluginIni(const SCaption: string): string;
 begin
   Result:= SynIniDir + 'SynPlugin' + SCaption + '.ini';
-end;
-
-procedure TfmMain.InitSynIniDir;
-begin
-  if SynIsPortable then
-    SynIniDir:= SynDir
-  else
-    if SynExe then
-    begin
-      SynIniDir:= SynAppdataDir;
-      if not IsDirExist(SynIniDir) then
-        CreateDir(SynIniDir);
-      SynIniDir:= SynIniDir + '\';
-    end
-    else
-      SynIniDir:= ExtractFilePath(SynListerIni);
 end;
 
 function TfmMain.SynIni: string;
@@ -5303,12 +5291,12 @@ end;
 
 function TfmMain.SynHideIni: string;
 begin
-  Result:= SynDir + 'SynHide.ini';
+  Result:= SynIniDir + 'SynHide.ini';
 end;
 
 function TfmMain.SynPluginsIni: string;
 begin
-  Result:= SynDir + 'SynPlugins.ini';
+  Result:= SynIniDir + 'SynPlugins.ini';
 end;
 
 function TfmMain.SynDataSubdir(Id: TSynDataSubdirId): string;
@@ -5323,12 +5311,12 @@ end;
 
 function TfmMain.SynLexersCfg: string;
 begin
-  Result:= SynDir + 'Lexers.cfg';
+  Result:= SynIniDir + 'Lexers.cfg';
 end;
 
 function TfmMain.SynLexersExCfg: string;
 begin
-  Result:= SynDir + 'LexersEx.cfg';
+  Result:= SynIniDir + 'LexersEx.cfg';
 end;
 
 function TfmMain.LoadFrameState(Frame: TEditorFrame; const fn: WideString): boolean;
@@ -7164,20 +7152,10 @@ begin
   if fn='' then
     fn:= fn_std
   else
-  if SynIsPortable then
-  begin
-    //for portable variant we allow only filename w/out path
-    if (ExtractFileDir(fn)='') then
-      fn:= ExtractFilePath(fn_std) + fn
-    else
-      fn:= fn_std
-  end
-  else
   begin
     if (ExtractFileDir(fn)='') then
       fn:= ExtractFilePath(fn_std) + fn
     else
-    if not IsFileExist(fn) then
       fn:= fn_std;
   end;
 
@@ -7271,7 +7249,6 @@ begin
   SynExe:= true;
   SynDir:= ExtractFilePath(GetModuleName(HInstance));
   SynDirForHelpFiles:= SynDir + 'Readme';
-  SynIsPortable:= IsFileExist(SynDir + 'Portable.ini');
   InitSynIniDir;
 
   EditorSynLexersCfg:= SynLexersCfg;
@@ -13542,7 +13519,7 @@ begin
   //Read Enc.cfg
   SS:= TStringList.create;
   SK:= TStringlist.create;
-  Ini:= TMemIniFile.Create(SynDir + 'Enc.cfg');
+  Ini:= TMemIniFile.Create(SynIniDir + 'Enc.cfg');
   try
     Ini.ReadSections(SS);
     for i:= 0 to SS.Count-1 do

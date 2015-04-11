@@ -565,25 +565,22 @@ end;
 
 procedure InitPaths;
 var
-  SynSampleIni,
   SynHideIni,
   SynHideSampleIni: string;
 begin
   SynExePath:= ExtractFilePath(ParamStr(0));
-  if IsFileExist(SynExePath + 'Portable.ini') then
-    SynIniPath:= SynExePath
-  else
-    SynIniPath:= SynAppdataDir + '\';
+  SynIniPath:= SynExePath+'Settings\';
 
   SynIni:= SynIniPath + 'Syn.ini';
-  SynSampleIni:= SynExePath + 'Syn.sample.ini';
   SynHistoryIni:= SynIniPath + 'SynHistory.ini';
-  SynHideIni:= SynExePath + 'SynHide.ini';
-  SynHideSampleIni:= SynExePath + 'SynHide.sample.ini';
+  SynHideIni:= SynIniPath + 'SynHide.ini';
+  SynHideSampleIni:= SynIniPath + 'SynHide.sample.ini';
 
+  {
   if not IsFileExist(SynIni) then
     if IsFileExist(SynSampleIni) then
       CopyFile(PChar(SynSampleIni), PChar(SynIni), true);
+      }
 
   if not IsFileExist(SynHideIni) then
     if IsFileExist(SynHideSampleIni) then

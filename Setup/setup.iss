@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.16.2020
+AppVersion=6.17.2030
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -23,15 +23,15 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
-Name: "portable"; Description: "Make folder portable"; Flags: unchecked
+;;Name: "portable"; Description: "Make folder portable"; Flags: unchecked
 
 [Files]
-Source: "Portable.ini"; DestDir: "{app}"; Tasks: "portable"
+;;Source: "Portable.ini"; DestDir: "{app}"; Tasks: "portable"
 Source: "..\Syn.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\SynHelper.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LexLib.lxl"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Enc.cfg"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Lexers.cfg"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Settings\Enc.cfg"; DestDir: "{app}\Settings"; Flags: ignoreversion
+Source: "..\Settings\Lexers.cfg"; DestDir: "{app}\Settings"; Flags: ignoreversion
 Source: "..\Lang\*"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Readme\*"; DestDir: "{app}\Readme"; Flags: ignoreversion
 
