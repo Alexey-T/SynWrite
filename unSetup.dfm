@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabSelHL
+    ActivePage = tabTabs
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -490,26 +490,26 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 0
         Width = 529
-        Height = 265
+        Height = 281
         Caption = 'Tabs'
         TabOrder = 0
         object TntLabel14: TTntLabel
           Left = 72
-          Top = 176
+          Top = 192
           Width = 88
           Height = 13
           Caption = 'Tab maximal width'
         end
         object TntLabel3: TTntLabel
           Left = 72
-          Top = 152
+          Top = 168
           Width = 112
           Height = 13
           Caption = 'Tab edge angle (pixels)'
         end
         object TntLabel29: TTntLabel
           Left = 72
-          Top = 200
+          Top = 216
           Width = 84
           Height = 13
           Caption = 'Tab minimal width'
@@ -552,21 +552,21 @@ object fmSetup: TfmSetup
         end
         object cbTabSw: TTntCheckBox
           Left = 8
-          Top = 232
+          Top = 248
           Width = 433
           Height = 17
           Caption = 'Use modern tab switcher (Ctrl+Tab)'
-          TabOrder = 10
+          TabOrder = 11
         end
         object edTabMaxLen: TSpinEdit
           Left = 8
-          Top = 172
+          Top = 188
           Width = 57
           Height = 22
           Increment = 10
           MaxValue = 350
           MinValue = 50
-          TabOrder = 8
+          TabOrder = 9
           Value = 50
           OnKeyDown = edIndentKeyDown
         end
@@ -577,7 +577,7 @@ object fmSetup: TfmSetup
           Height = 189
           Style = lbOwnerDrawFixed
           ItemHeight = 16
-          TabOrder = 11
+          TabOrder = 12
           OnDblClick = ListTabColorsDblClick
           OnDrawItem = ListTabColorsDrawItem
           OnKeyDown = ListTabColorsKeyDown
@@ -608,24 +608,24 @@ object fmSetup: TfmSetup
         end
         object edTabAngle: TSpinEdit
           Left = 8
-          Top = 148
+          Top = 164
           Width = 57
           Height = 22
           MaxValue = 20
           MinValue = 0
-          TabOrder = 7
+          TabOrder = 8
           Value = 0
           OnKeyDown = edIndentKeyDown
         end
         object edTabMinLen: TSpinEdit
           Left = 8
-          Top = 196
+          Top = 212
           Width = 57
           Height = 22
           Increment = 2
           MaxValue = 100
           MinValue = 4
-          TabOrder = 9
+          TabOrder = 10
           Value = 50
           OnKeyDown = edIndentKeyDown
         end
@@ -636,6 +636,14 @@ object fmSetup: TfmSetup
           Height = 17
           Caption = 'Show entire tab colored'
           TabOrder = 6
+        end
+        object cbTabDblClose: TTntCheckBox
+          Left = 8
+          Top = 128
+          Width = 326
+          Height = 17
+          Caption = 'Close by double click'
+          TabOrder = 7
         end
       end
     end
@@ -2433,7 +2441,7 @@ object fmSetup: TfmSetup
           Height = 22
           Hint = 'Vertical spacing between lines.'
           MaxValue = 10
-          MinValue = 0
+          MinValue = -2
           TabOrder = 7
           Value = 0
           OnKeyDown = edIndentKeyDown
@@ -3184,7 +3192,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0161010000
+      0700666D5365747570010100000001000000070043617074696F6E0162010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3509,7 +3517,8 @@ object fmSetup: TfmSetup
       43617074696F6E000A00636253796E6349636F6E0102000000F2020000070043
       617074696F6EF1020000040048696E74000C006362556E646F53696D706C6501
       02000000F4020000070043617074696F6EF3020000040048696E740009006362
-      53656C4A756D700101000000F5020000070043617074696F6E00}
+      53656C4A756D700101000000F5020000070043617074696F6E000D0063625461
+      6244626C436C6F73650101000000F6020000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

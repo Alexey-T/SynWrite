@@ -373,6 +373,7 @@ type
     cbSyncIcon: TTntCheckBox;
     cbUndoSimple: TTntCheckBox;
     cbSelJump: TTntCheckBox;
+    cbTabDblClose: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2029,6 +2030,7 @@ begin
     opTabPlus:= cbTabPlus.Checked;
     opTabNums:= cbTabNums.Checked;
     opTabEntireColor:= cbTabEntire.Checked;
+    opTabDblClickClose:= cbTabDblClose.Checked;
     opTabSwitcher:= cbTabSw.Checked;
     opTabAtBottom:= cbTabDown.Checked;
     opTabFolders:= cbTabDirs.Checked;
@@ -2376,6 +2378,7 @@ begin
     cbTabVis.Checked:= opTabVisible;
     cbTabNums.Checked:= opTabNums;
     cbTabEntire.Checked:= opTabEntireColor;
+    cbTabDblClose.Checked:= opTabDblClickClose;
     cbTabDown.Checked:= opTabAtBottom;
     cbTabSw.Checked:= opTabSwitcher;
     cbTabDirs.Checked:= opTabFolders;

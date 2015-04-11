@@ -2976,6 +2976,7 @@ type
     opColorBkmk: integer;
     opShowWrapMark: boolean;
     opTabEntireColor: boolean;
+    opTabDblClickClose: boolean;
     opTabAngle: integer;
     opTabVisible: boolean;
     opTabAtBottom: boolean;
@@ -3338,7 +3339,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 function SynAppdataDir: string;
 
 const
-  cSynVer = '6.16.2025';
+  cSynVer = '6.17.2025';
   cSynPyVer = '1.0.147';
 
 const
@@ -4674,6 +4675,7 @@ begin
     opTabWidthMin:= ReadInteger('Setup', 'TabSizeMin', 20);
     opTabWidthMax:= ReadInteger('Setup', 'TabSize', 160);
     opTabEntireColor:= ReadBool('View', 'TabEntire', false);
+    opTabDblClickClose:= ReadBool('View', 'TabDblClose', true);
     opTabAngle:= ReadInteger('View', 'TabAngle', 0);
     opTabDragDrop:= true;
     opTabFolders:= ReadBool('View', 'TabDirs', false);
@@ -5190,6 +5192,7 @@ begin
     WriteInteger('SR', 'MaxTreeMatches', opMaxTreeMatches);
 
     WriteBool('View', 'TabEntire', opTabEntireColor);
+    WriteBool('View', 'TabDblClose', opTabDblClickClose);
     WriteInteger('View', 'TabAngle', opTabAngle);
     WriteInteger('View', 'TabLast', opTabOptionsLast);
     WriteBool('View', 'TabDirs', opTabFolders);
@@ -24508,6 +24511,7 @@ begin
   Groups.SetTabOption(tabOptionShowPlus, Ord(opTabPlus));
   Groups.SetTabOption(tabOptionShowNums, Ord(opTabNums));
   Groups.SetTabOption(tabOptionShowEntireColor, Ord(opTabEntireColor));
+  Groups.SetTabOption(tabOptionDoubleClickClose, Ord(opTabDblClickClose));
   Groups.SetTabOption(tabOptionBottomTabs, Ord(opTabAtBottom));
   Groups.SetTabOption(tabOptionDragDrop, Ord(opTabDragDrop));
   Groups.SetTabOption(tabOptionWidthMin, Ord(opTabWidthMin));
