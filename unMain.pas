@@ -3068,7 +3068,7 @@ type
     opHiliteUrls: boolean;
     opColorLink: integer;
     opKeepCaretOnScreen: boolean;
-    opLastDir: TSynLastDirMode;
+    opLastDirMode: TSynLastDirMode;
     opLastDirPath,
     opLastDirSession,
     opLastDirProject: Widestring;
@@ -3335,7 +3335,6 @@ function MsgConfirmBinary(const fn: WideString; H: THandle): boolean;
 function MsgConfirmCreate(const fn: Widestring; H: THandle): boolean;
 procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
-function SynAppdataDir: string;
 
 const
   cSynVer = '6.17.2030';
@@ -3743,7 +3742,7 @@ var
   s: Widestring;
 begin
   OD.Filter:= SynFilesFilter;
-  if (opLastDir=cLastDirRemember) and (opHistFilter>0) then
+  if (opLastDirMode=cLastDirRemember) and (opHistFilter>0) then
     OD.FilterIndex:= opHistFilter
   else
     OD.FilterIndex:= SFilterNum(OD.Filter);
@@ -4597,11 +4596,16 @@ begin
     ApplyAutoSave;
 
     //hist
-    opLastDir:= TSynLastDirMode(ReadInteger('Hist', 'DirVar', Ord(cLastDirRemember)));
+    opLastDirMode:= TSynLastDirMode(ReadInteger('Hist', 'DirVar', Ord(cLastDirRemember)));
     opLastDirPath:= UTF8Decode(ReadString('Hist', 'Dir', ''));
-    opLastDirSession:= UTF8Decode(ReadString('Hist', 'DirSess', SynAppdataDir));
-    opLastDirProject:= UTF8Decode(ReadString('Hist', 'DirProj', SynAppdataDir));
+    opLastDirSession:= UTF8Decode(ReadString('Hist', 'DirSess', SynDir));
+    opLastDirProject:= UTF8Decode(ReadString('Hist', 'DirProj', SynDir));
     opHistFilter:= ReadInteger('Hist', 'Filter', 0);
+
+    if SBegin(opLastDirSession, '.') then
+      SReplaceW(opLastDirSession, '.', ExtractFileDir(Application.ExeName));
+    if SBegin(opLastDirProject, '.') then
+      SReplaceW(opLastDirProject, '.', ExtractFileDir(Application.ExeName));
 
     if SynExe then
     begin
@@ -5123,8 +5127,8 @@ begin
     WriteBool('Setup', 'AskRO', opAskOverwrite);
     WriteBool('Setup', 'TitleFull', opShowTitleFull);
 
-    WriteInteger('Hist', 'DirVar', Ord(opLastDir));
-    if opLastDir=cLastDirCustom then
+    WriteInteger('Hist', 'DirVar', Ord(opLastDirMode));
+    if opLastDirMode=cLastDirCustom then
       WriteString('Hist', 'Dir', UTF8Encode(opLastDirPath));
 
     WriteBool('Setup', 'MenuIcon', opShowMenuIcons);
@@ -5232,11 +5236,6 @@ end;
 function FAppDataPath: string;
 begin
   Result:= SExpandVars('%AppData%\');
-end;
-
-function SynAppdataDir: string;
-begin
-  Result:= FAppDataPath + 'SynWrite';
 end;
 
 procedure TfmMain.InitSynIniDir;
@@ -11165,7 +11164,7 @@ begin
         SSec:= 'f'+IntToStr(Num);
 
         WriteInteger(SSec, 'gr', Groups.PagesIndexOf(F.Parent as TATPages));
-        WriteString(SSec, 'fn', SCollapseFN(UTF8Encode(F.FileName), fn));
+        WriteString(SSec, 'fn', UTF8Encode(SCollapseFilenameWithDot(F.FileName, SExtractFileDir(fn))));
         WriteString(SSec, 'top', Format('%d,%d', [F.EditorMaster.TopLine, F.EditorSlave.TopLine]));
         WriteString(SSec, 'caret', Format('%d,%d', [F.EditorMaster.CaretStrPos, F.EditorSlave.CaretStrPos]));
         WriteString(SSec, 'wrap', Format('%d,%d', [Ord(F.EditorMaster.WordWrap), Ord(F.EditorSlave.WordWrap)]));
@@ -14038,7 +14037,7 @@ end;
 
 function TfmMain.LastDir: Widestring;
 begin
-  case opLastDir of
+  case opLastDirMode of
     cLastDirCurrentFile:
     begin
       if (CurrentFrame<>nil) and (CurrentFrame.FileName<>'') then
@@ -14088,7 +14087,7 @@ end;
 
 procedure TfmMain.SaveLastDir(const FN, Filter: Widestring; FilterIndex: integer);
 begin
-  if opLastDir<>cLastDirRemember then Exit;
+  if opLastDirMode<>cLastDirRemember then Exit;
 
   opLastDirPath:= WideExtractFileDir(FN);
   opHistFilter:= FilterIndex;
@@ -14105,12 +14104,15 @@ begin
 end;
 
 procedure TfmMain.SaveLastDir_Session(const FN: Widestring);
+var
+  S: Widestring;
 begin
   opLastDirSession:= WideExtractFileDir(FN);
+  S:= SCollapseFilenameWithDot(opLastDirSession, ExtractFileDir(Application.ExeName));
   //
   with TIniFile.Create(SynIni) do
   try
-    WriteString('Hist', 'DirSess', UTF8Encode(opLastDirSession));
+    WriteString('Hist', 'DirSess', UTF8Encode(S));
   finally
     Free;
   end;
@@ -19740,13 +19742,16 @@ begin
 end;
 
 procedure TfmMain.ProjSetProjDir(Sender: TObject; Files: TTntStrings);
+var
+  S: Widestring;
 begin
   if Files.Count>0 then
     opLastDirProject:= Files[0];
+  S:= SCollapseFilenameWithDot(opLastDirProject, ExtractFileDir(Application.ExeName));
 
   with TIniFile.Create(SynIni) do
   try
-    WriteString('Hist', 'DirProj', UTF8Encode(opLastDirProject));
+    WriteString('Hist', 'DirProj', UTF8Encode(S));
   finally
     Free
   end;

@@ -1885,7 +1885,7 @@ begin
     opMruCheck:= cbHistoryCleanRecents.Checked;
     opSaveFileCount:= edFileCount.Value;
     opSaveFindCount:= edFindCount.Value;
-    opLastDir:= TSynLastDirMode(cbDirLast.ItemIndex);
+    opLastDirMode:= TSynLastDirMode(cbDirLast.ItemIndex);
     opLastDirPath:= edDirLast.Text;
     opFileBackup:= TSynBackup(cbBak.ItemIndex);
 
@@ -2235,7 +2235,7 @@ begin
     edFileCount.Value:= opSaveFileCount;
     edFindCount.Value:= opSaveFindCount;
     cbHistoryCleanRecents.Checked:= opMruCheck;
-    cbDirLast.ItemIndex:= Ord(opLastDir);
+    cbDirLast.ItemIndex:= Ord(opLastDirMode);
     edDirLast.Text:= opLastDirPath;
     cbBak.ItemIndex:= Ord(opFileBackup);
 

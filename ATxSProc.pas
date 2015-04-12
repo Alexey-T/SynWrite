@@ -72,7 +72,7 @@ function SEscapeEols(const s: Widestring): Widestring;
 function SEscapeRegex(const s: Widestring): Widestring;
 function SEscapeRegexAlt(const s: Widestring): Widestring;
 
-function SCollapseFN(const FN, FN_session: Widestring): Widestring;
+function SCollapseFilenameWithDot(const fn, ref_dir: Widestring): Widestring;
 function SGetKeyValue(const s: string; var sKey, sVal: string): boolean;
 function IsTempFN(const fn: Widestring): boolean;
 function SNumLeadSpaces(const s: Widestring): integer;
@@ -951,14 +951,11 @@ begin
 end;
 
 
-function SCollapseFN(const FN, FN_session: Widestring): Widestring;
-var
-  Dir: Widestring;
+function SCollapseFilenameWithDot(const fn, ref_dir: Widestring): Widestring;
 begin
-  Result:= FN;
-  Dir:= SExtractFileDir(FN_session);
-  if SBegin(Result, Dir+'\') then
-    SReplaceW(Result, Dir, '.');
+  Result:= fn;
+  if SBegin(Result, ref_dir+'\') then
+    SReplaceW(Result, ref_dir, '.');
 end;
 
 procedure SReplaceZeroesW(var S: Widestring);
