@@ -73,6 +73,9 @@ function SEscapeRegex(const s: Widestring): Widestring;
 function SEscapeRegexAlt(const s: Widestring): Widestring;
 
 function SCollapseFilenameWithDot(const fn, ref_dir: Widestring): Widestring;
+function SCollapseFilenameDrive(const fn, ref_SynDir: Widestring): Widestring;
+function SExpandFilenameDrive(const fn, ref_SynDir: Widestring): Widestring;
+
 function SGetKeyValue(const s: string; var sKey, sVal: string): boolean;
 function IsTempFN(const fn: Widestring): boolean;
 function SNumLeadSpaces(const s: Widestring): integer;
@@ -957,6 +960,28 @@ begin
   if SBegin(Result, ref_dir+'\') then
     SReplaceW(Result, ref_dir, '.');
 end;
+
+
+const
+  cMacroSynDrive = '{SynDrive}';
+
+function SCollapseFilenameDrive(const fn, ref_SynDir: Widestring): Widestring;
+var
+  ref_drive: string;
+begin
+  Result:= fn;
+  ref_drive:= ExtractFileDrive(ref_SynDir);
+  if SBegin(Result, ref_drive+'\') then
+    SReplaceW(Result, ref_drive, cMacroSynDrive);
+end;
+
+function SExpandFilenameDrive(const fn, ref_SynDir: Widestring): Widestring;
+begin
+  Result:= fn;
+  if SBegin(Result, cMacroSynDrive) then
+    SReplaceW(Result, cMacroSynDrive, ExtractFileDrive(ref_SynDir));
+end;
+
 
 procedure SReplaceZeroesW(var S: Widestring);
 var i:Integer;

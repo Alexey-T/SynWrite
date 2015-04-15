@@ -3337,7 +3337,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.17.2030';
+  cSynVer = '6.17.2032';
   cSynPyVer = '1.0.147';
 
 const
@@ -4598,14 +4598,9 @@ begin
     //hist
     opLastDirMode:= TSynLastDirMode(ReadInteger('Hist', 'DirVar', Ord(cLastDirRemember)));
     opLastDirPath:= UTF8Decode(ReadString('Hist', 'Dir', ''));
-    opLastDirSession:= UTF8Decode(ReadString('Hist', 'DirSess', SynDir));
-    opLastDirProject:= UTF8Decode(ReadString('Hist', 'DirProj', SynDir));
+    opLastDirSession:= SExpandFilenameDrive(UTF8Decode(ReadString('Hist', 'DirSess', SynDir)), SynDir);
+    opLastDirProject:= SExpandFilenameDrive(UTF8Decode(ReadString('Hist', 'DirProj', SynDir)), SynDir);
     opHistFilter:= ReadInteger('Hist', 'Filter', 0);
-
-    if SBegin(opLastDirSession, '.') then
-      SReplaceW(opLastDirSession, '.', ExtractFileDir(Application.ExeName));
-    if SBegin(opLastDirProject, '.') then
-      SReplaceW(opLastDirProject, '.', ExtractFileDir(Application.ExeName));
 
     if SynExe then
     begin
@@ -14108,7 +14103,7 @@ var
   S: Widestring;
 begin
   opLastDirSession:= WideExtractFileDir(FN);
-  S:= SCollapseFilenameWithDot(opLastDirSession, ExtractFileDir(Application.ExeName));
+  S:= SCollapseFilenameDrive(opLastDirSession, SynDir);
   //
   with TIniFile.Create(SynIni) do
   try
@@ -19747,7 +19742,7 @@ var
 begin
   if Files.Count>0 then
     opLastDirProject:= Files[0];
-  S:= SCollapseFilenameWithDot(opLastDirProject, ExtractFileDir(Application.ExeName));
+  S:= SCollapseFilenameDrive(opLastDirProject, SynDir);
 
   with TIniFile.Create(SynIni) do
   try
