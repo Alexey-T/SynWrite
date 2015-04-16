@@ -23617,7 +23617,6 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Consolas'
         Font.Style = []
-        FormatType = ftCustomFont
       end
       item
         DisplayName = 'Codeblock'
@@ -23756,7 +23755,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Heading'
         StyleName = 'Heading'
-        Expression = '^\#.*|.*\z--[-\s\|]*|.*\z=+'
+        Expression = '^\#.* |'#13#10'.*\z--[-\x09\x20\|]* |'#13#10'.*\z=+'
         ColumnFrom = 0
         ColumnTo = 0
       end
