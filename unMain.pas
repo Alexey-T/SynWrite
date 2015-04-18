@@ -10416,6 +10416,7 @@ begin
   SReplaceW(S, '{FileDir}', WideExtractFileDir(CurrentFrame.FileName));
   SReplaceW(S, '{SynDir}', ExtractFileDir(SynDir));
   SReplaceW(S, '{SynIniDir}', ExtractFileDir(SynIni));
+  SReplaceW(S, '{SynDrive}', ExtractFileDrive(SynDir));
   SReplaceW(S, '{ProjectDir}', CurrentProjectDir);
   SReplaceW(S, '{ProjectWorkDir}', CurrentProjectWorkDir);
   SReplaceW(S, '{ProjectMainFileDir}', WideExtractFileDir(CurrentProjectMainFN));
