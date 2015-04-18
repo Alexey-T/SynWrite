@@ -2490,6 +2490,7 @@ type
     procedure DoTool_HandleOutput(const ft: Widestring; const ATool: TSynTool);
     procedure DoTool_Update(T: TSpTbxItem; Id: integer; ACtxMenu: boolean);
     procedure DoTool_ReplaceMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
+    procedure DoTool_ReplaceFolderMacros(var S: Widestring);
 
     procedure TreeFind_ShowPreview;
     procedure TreeFind_GetItemInfo(var AFilename: Widestring; var ALineNum, AColNum, ALen: Integer);
@@ -3337,7 +3338,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.17.2034';
+  cSynVer = '6.17.2035';
   cSynPyVer = '1.0.147';
 
 const
@@ -10410,6 +10411,16 @@ begin
   SReplaceW(Str, SMacro('FileExt'), Copy(WideExtractFileExt(fn), 2, MaxInt));
 end;
 
+procedure TfmMain.DoTool_ReplaceFolderMacros(var S: Widestring);
+begin
+  SReplaceW(S, '{FileDir}', WideExtractFileDir(CurrentFrame.FileName));
+  SReplaceW(S, '{SynDir}', ExtractFileDir(SynDir));
+  SReplaceW(S, '{SynIniDir}', ExtractFileDir(SynIni));
+  SReplaceW(S, '{ProjectDir}', CurrentProjectDir);
+  SReplaceW(S, '{ProjectWorkDir}', CurrentProjectWorkDir);
+  SReplaceW(S, '{ProjectMainFileDir}', WideExtractFileDir(CurrentProjectMainFN));
+end;
+
 procedure TfmMain.DoTool_Run(const ATool: TSynTool);
   //
   function HandleParams(const s, dir: WideString): WideString;
@@ -10513,20 +10524,19 @@ begin
     if ToolCommand = '' then
       begin MsgBeep; Exit end;
 
-    //expand macros in "File name", "Initial dir" fields
+    //expand some macros in "File name", "Initial dir" fields
     fexe:= ToolCommand;
-    SReplaceW(fexe, '{SynDir}', ExtractFileDir(SynDir));
-    SReplaceW(fexe, '{SynIniDir}', ExtractFileDir(SynIni));
-
     fdir:= ToolDir;
-    SReplaceW(fdir, '{SynDir}', ExtractFileDir(SynDir));
-    SReplaceW(fdir, '{SynIniDir}', ExtractFileDir(SynIni));
+    DoTool_ReplaceFolderMacros(fexe);
+    DoTool_ReplaceFolderMacros(fdir);
 
     //save files if needed
     case ToolSaveMode of
       svCurrent:
-        if CurrentFrame.Modified then
-          acSave.Execute;
+        begin
+          if CurrentFrame.Modified then
+            acSave.Execute;
+        end;
       svAll:
         acSaveAll.Execute;
     end;
