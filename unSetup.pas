@@ -173,7 +173,6 @@ type
     cbNotif: TTntComboBox;
     cbTail: TTntCheckBox;
     cbOverRO: TTntCheckBox;
-    ListTabColors: TTntListBox;
     tabPath: TTntTabSheet;
     boxFolders: TTntGroupBox;
     LabelPathHint: TTntLabel;
@@ -374,6 +373,16 @@ type
     cbUndoSimple: TTntCheckBox;
     cbSelJump: TTntCheckBox;
     cbTabDblClose: TTntCheckBox;
+    ShapeColor0: TShape;
+    ShapeColor1: TShape;
+    ShapeColor2: TShape;
+    ShapeColor3: TShape;
+    ShapeColor4: TShape;
+    ShapeColor5: TShape;
+    ShapeColor6: TShape;
+    ShapeColor7: TShape;
+    ShapeColor8: TShape;
+    ShapeColor9: TShape;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -443,11 +452,6 @@ type
     procedure tabTreeShow(Sender: TObject);
     procedure tabSessShow(Sender: TObject);
     procedure cbLangChange(Sender: TObject);
-    procedure ListTabColorsDrawItem(Control: TWinControl; Index: Integer;
-      Rect: TRect; State: TOwnerDrawState);
-    procedure ListTabColorsDblClick(Sender: TObject);
-    procedure ListTabColorsKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
     procedure bAddFolderClick(Sender: TObject);
     procedure edFoldersKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -474,11 +478,12 @@ type
     procedure bFontMenusClick(Sender: TObject);
     procedure LabMoreSkinsClick(Sender: TObject);
     procedure LabMoreIconsClick(Sender: TObject);
+    procedure ShapeColor0MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
     ColorsSetup: TSynColors;
-    ColorsOfTabs: array[0..Pred(cTabColors)] of TColor;
     FLangChanged: boolean;
 
     //procedure MenuLexersClick(Sender: TObject);
@@ -1607,54 +1612,9 @@ begin
   labLangInfo.Show;
 end;
 
-procedure TfmSetup.ListTabColorsDrawItem(Control: TWinControl;
-  Index: Integer; Rect: TRect; State: TOwnerDrawState);
-var
-  c: TColor;
-begin
-  C:= ColorsOfTabs[Index];
-  ListTabColors.Canvas.Brush.Color:= c;
-  ListTabColors.Canvas.FillRect(Rect);
-  if odSelected in State then
-  begin
-    ListTabColors.Canvas.Brush.Color:= clBlack;
-    ListTabColors.Canvas.FrameRect(Rect);
-  end;
-end;
-
-procedure TfmSetup.ListTabColorsDblClick(Sender: TObject);
-var
-  N: Integer;
-begin
-  N:= ListTabColors.ItemIndex;
-  if N<0 then Exit;
-  with TColorDialog.Create(nil) do
-  try
-    Options:= Options+[cdFullOpen];
-    Color:= ColorsOfTabs[N];
-    if Execute then
-    begin
-      ColorsOfTabs[N]:= Color;
-      ListTabColors.Invalidate;
-    end;
-  finally
-    Free
-  end;
-end;
-
-procedure TfmSetup.ListTabColorsKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  if (Key=vk_space) then
-  begin
-    ListTabColorsDblClick(Self);
-    Key:= 0;
-    Exit
-  end;
-end;
-
 procedure TfmSetup.bAddFolderClick(Sender: TObject);
-var s: Widestring;
+var
+  s: Widestring;
 begin
   s:= '';
   if WideSelectDirectory('', '', s) then
@@ -1712,8 +1672,7 @@ end;
 procedure TfmSetup.TntFormCreate(Sender: TObject);
 begin
   fmOvr:= nil;
-  with ListTabColors do
-    ItemHeight:= ScaleFontSize(ItemHeight, Self);
+
   with ListColors do
     ItemHeight:= ScaleFontSize(ItemHeight, Self);
 
@@ -2020,8 +1979,6 @@ begin
 end;
 
 procedure TfmSetup.ApplyTabs;
-var
-  i: Integer;
 begin
   with fmMain do
   begin
@@ -2041,8 +1998,16 @@ begin
     if opTabWidthMin>opTabWidthMax then
       opTabWidthMax:= opTabWidthMin;
 
-    for i:= 0 to High(ColorsOfTabs) do
-      opTabColors[i]:= ColorsOfTabs[i];
+    opTabColors[0]:= ShapeColor0.Brush.Color;
+    opTabColors[1]:= ShapeColor1.Brush.Color;
+    opTabColors[2]:= ShapeColor2.Brush.Color;
+    opTabColors[3]:= ShapeColor3.Brush.Color;
+    opTabColors[4]:= ShapeColor4.Brush.Color;
+    opTabColors[5]:= ShapeColor5.Brush.Color;
+    opTabColors[6]:= ShapeColor6.Brush.Color;
+    opTabColors[7]:= ShapeColor7.Brush.Color;
+    opTabColors[8]:= ShapeColor8.Brush.Color;
+    opTabColors[9]:= ShapeColor9.Brush.Color;
 
     ApplyTabOptions;
     ApplyFramesOptions;
@@ -2368,8 +2333,6 @@ begin
 end;
 
 procedure TfmSetup.InitTabs;
-var
-  i: Integer;
 begin
   with fmMain do
   begin
@@ -2386,12 +2349,16 @@ begin
     edTabMaxLen.Value:= opTabWidthMax;
     edTabAngle.Value:= opTabAngle;
 
-    ListTabColors.Items.Clear;
-    for i:= 0 to High(ColorsOfTabs) do
-    begin
-      ColorsOfTabs[i]:= opTabColors[i];
-      ListTabColors.Items.Add(IntToStr(i));
-    end;
+    ShapeColor0.Brush.Color:= opTabColors[0];
+    ShapeColor1.Brush.Color:= opTabColors[1];
+    ShapeColor2.Brush.Color:= opTabColors[2];
+    ShapeColor3.Brush.Color:= opTabColors[3];
+    ShapeColor4.Brush.Color:= opTabColors[4];
+    ShapeColor5.Brush.Color:= opTabColors[5];
+    ShapeColor6.Brush.Color:= opTabColors[6];
+    ShapeColor7.Brush.Color:= opTabColors[7];
+    ShapeColor8.Brush.Color:= opTabColors[8];
+    ShapeColor9.Brush.Color:= opTabColors[9];
   end;
 end;
 
@@ -2915,6 +2882,23 @@ end;
 procedure TfmSetup.LabMoreIconsClick(Sender: TObject);
 begin
   FOpenUrl('http://sourceforge.net/projects/synwrite-addons/files/IconSets/', Handle);
+end;
+
+procedure TfmSetup.ShapeColor0MouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  Sh: TShape;
+begin
+  Sh:= Sender as TShape;
+  with TColorDialog.Create(nil) do
+  try
+    Options:= Options+[cdFullOpen];
+    Color:= Sh.Brush.Color;
+    if Execute then
+      Sh.Brush.Color:= Color;
+  finally
+    Free
+  end;
 end;
 
 end.

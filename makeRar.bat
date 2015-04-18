@@ -5,7 +5,8 @@ copy /b Syn.dklang Readme\
 del %a%
 del Readme\Src*.rar
 rem Src.rar
-start /min /wait winrar a Readme\Src.rar *.pas *.dpr *.dfm *.res Setup\setup*.* make*.bat zip*.bat Res\*
+start /min /wait winrar a Readme\Src.rar *.pas *.dpr *.dfm *.res Setup\setup*.* make*.bat zip*.bat
+start /min /wait winrar a -r Readme\Src.rar Res
 start /min /wait winrar a -ep Readme\Src.rar D:\SynLite\ATTabs\ATTabs.pas D:\SynLite\ATGroups\ATGroups.pas
 rem SrcTests.rar
 start /min /wait winrar a -r -x*.dll -x*.exe -x*.~* -x*.dcu -x*.dof -x*.drc -x*.map -x*.mes -x*.rar Readme\SrcTests.rar Tests\*
