@@ -2145,7 +2145,9 @@ begin
       FOnGetLexers(Self, L);
     if DoTool_ConfigList(FProjectTools, Self, L, false,
       GetCurrentLexer,
-      FDirToolsPresets) then
+      FDirToolsPresets,
+      WideExtractFileName(FProjectFN)
+      ) then
     begin
       SetModified;
     end;

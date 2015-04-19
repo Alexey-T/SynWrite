@@ -282,7 +282,8 @@ function DoTool_ConfigList(var AToolList: TSynToolList;
   ALexersList: TTntStringList;
   AKeyEnabled: boolean;
   const ACurrentLexer: string;
-  const ADirPresets: string): boolean;
+  const ADirPresets: string;
+  const AProjectTitle: string): boolean;
 
 var
   opFindOffsetTop: integer = 6;
@@ -1899,7 +1900,8 @@ function DoTool_ConfigList(
   ALexersList: TTntStringList;
   AKeyEnabled: boolean;
   const ACurrentLexer: string;
-  const ADirPresets: string): boolean;
+  const ADirPresets: string;
+  const AProjectTitle: string): boolean;
 begin
   with TfmTools.Create(AParentForm) do
   try
@@ -1917,6 +1919,9 @@ begin
 
     Left:= AParentForm.Monitor.Left + (AParentForm.Monitor.Width - Width) div 2;
     Top:= AParentForm.Monitor.Top + (AParentForm.Monitor.Height - Height) div 2;
+
+    if AProjectTitle<>'' then
+      Caption:= Caption+' - '+AProjectTitle;
 
     Result:= ShowModal=mrOk;
     if Result then

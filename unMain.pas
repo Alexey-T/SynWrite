@@ -10291,7 +10291,8 @@ begin
 
     if DoTool_ConfigList(opTools, Self, L, true,
       CurrentFrame.CurrentLexer,
-      SynDataSubdir(cSynDataOutPresets)) then
+      SynDataSubdir(cSynDataOutPresets),
+      '') then
     begin
       Application.ProcessMessages;
       SaveTools;
