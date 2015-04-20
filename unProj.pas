@@ -269,7 +269,7 @@ type
     function GetUserVarValue(const AVarName: Widestring): Widestring;
     function GetFN(Node: TTntTreeNode): Widestring;
     function GetImageIndex(const fn: Widestring): integer;
-    function ProjectTitle: string;
+    function ProjectTitle: Widestring;
     property ProjectFN: Widestring read FProjectFN write DoLoadProjectFromFile;
     property Modified: boolean read FModified;
     property OnPreview: TProjPreviewProc read FOnPreview write FOnPreview;
@@ -2157,7 +2157,7 @@ begin
   end;
 end;
 
-function TfmProj.ProjectTitle: string;
+function TfmProj.ProjectTitle: Widestring;
 begin
   Result:= RootNode.Text;
 end;

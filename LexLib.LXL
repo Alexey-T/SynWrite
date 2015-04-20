@@ -1081,7 +1081,6 @@ object SyntaxManager: TSyntaxManager
         DrawStaple = True
         CollapseFmt = '{ ... %ez0'
         IgnoreAsParent = False
-        AutoCloseMode = acmCloseNearest
         AutoCloseText = '}'
       end
       item

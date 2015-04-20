@@ -283,7 +283,7 @@ function DoTool_ConfigList(var AToolList: TSynToolList;
   AKeyEnabled: boolean;
   const ACurrentLexer: string;
   const ADirPresets: string;
-  const AProjectTitle: string): boolean;
+  const AProjectTitle: Widestring): boolean;
 
 var
   opFindOffsetTop: integer = 6;
@@ -1901,7 +1901,7 @@ function DoTool_ConfigList(
   AKeyEnabled: boolean;
   const ACurrentLexer: string;
   const ADirPresets: string;
-  const AProjectTitle: string): boolean;
+  const AProjectTitle: Widestring): boolean;
 begin
   with TfmTools.Create(AParentForm) do
   try
