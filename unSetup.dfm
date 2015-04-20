@@ -518,80 +518,80 @@ object fmSetup: TfmSetup
           Left = 336
           Top = 8
           Width = 188
-          Height = 58
+          Height = 65
           AutoSize = False
           Caption = 
-            'User tab colors (click items to change, then use colors in the t' +
-            'ab context menu)'
+            'Tab colors (click items to change, then call colors from the tab' +
+            ' context menu)'
           Layout = tlCenter
           WordWrap = True
         end
         object ShapeColor0: TShape
-          Left = 336
-          Top = 64
+          Left = 344
+          Top = 72
           Width = 25
           Height = 25
           OnMouseDown = ShapeColor0MouseDown
         end
         object ShapeColor1: TShape
-          Left = 360
-          Top = 64
+          Left = 368
+          Top = 72
           Width = 25
           Height = 25
           OnMouseDown = ShapeColor0MouseDown
         end
         object ShapeColor2: TShape
-          Left = 384
-          Top = 64
+          Left = 392
+          Top = 72
           Width = 25
           Height = 25
           OnMouseDown = ShapeColor0MouseDown
         end
         object ShapeColor3: TShape
-          Left = 408
-          Top = 64
+          Left = 416
+          Top = 72
           Width = 25
           Height = 25
           OnMouseDown = ShapeColor0MouseDown
         end
         object ShapeColor4: TShape
-          Left = 432
-          Top = 64
+          Left = 440
+          Top = 72
           Width = 25
           Height = 25
           OnMouseDown = ShapeColor0MouseDown
         end
         object ShapeColor5: TShape
-          Left = 336
-          Top = 88
+          Left = 344
+          Top = 96
           Width = 25
           Height = 25
           OnMouseDown = ShapeColor0MouseDown
         end
         object ShapeColor6: TShape
-          Left = 360
-          Top = 88
+          Left = 368
+          Top = 96
           Width = 25
           Height = 25
           OnMouseDown = ShapeColor0MouseDown
         end
         object ShapeColor7: TShape
-          Left = 384
-          Top = 88
+          Left = 392
+          Top = 96
           Width = 25
           Height = 25
           OnMouseDown = ShapeColor0MouseDown
         end
         object ShapeColor8: TShape
-          Left = 408
-          Top = 88
+          Left = 416
+          Top = 96
           Width = 25
           Height = 25
           OnMouseDown = ShapeColor0MouseDown
         end
         object ShapeColor9: TShape
-          Left = 432
-          Top = 88
+          Left = 440
+          Top = 96
           Width = 25
           Height = 25
           OnMouseDown = ShapeColor0MouseDown

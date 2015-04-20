@@ -269,6 +269,7 @@ type
     function GetUserVarValue(const AVarName: Widestring): Widestring;
     function GetFN(Node: TTntTreeNode): Widestring;
     function GetImageIndex(const fn: Widestring): integer;
+    function ProjectTitle: string;
     property ProjectFN: Widestring read FProjectFN write DoLoadProjectFromFile;
     property Modified: boolean read FModified;
     property OnPreview: TProjPreviewProc read FOnPreview write FOnPreview;
@@ -1440,7 +1441,7 @@ begin
       FreeAndNil(L);
     end;
 
-    Caption:= Caption+' - '+RootNode.Text;
+    Caption:= Caption+' - '+ProjectTitle;
     if FOpts.DefLexer='' then
       cbLexer.ItemIndex:= 0
     else
@@ -2146,7 +2147,7 @@ begin
     if DoTool_ConfigList(FProjectTools, Self, L, false,
       GetCurrentLexer,
       FDirToolsPresets,
-      WideExtractFileName(FProjectFN)
+      ProjectTitle
       ) then
     begin
       SetModified;
@@ -2154,6 +2155,11 @@ begin
   finally
     FreeAndNil(L);
   end;
+end;
+
+function TfmProj.ProjectTitle: string;
+begin
+  Result:= RootNode.Text;
 end;
 
 procedure TfmProj.UpdateProjectToolsMenu;
