@@ -2491,6 +2491,7 @@ type
     procedure DoTool_Update(T: TSpTbxItem; Id: integer; ACtxMenu: boolean);
     procedure DoTool_ReplaceMacro(var Str: Widestring; const StrId: string; ViewId: TSynGroupId);
     procedure DoTool_ReplaceFolderMacros(var S: Widestring);
+    procedure DoTool_ReplaceAllMacros(var S: Widestring; const Dir: WideString);
 
     procedure TreeFind_ShowPreview;
     procedure TreeFind_GetItemInfo(var AFilename: Widestring; var ALineNum, AColNum, ALen: Integer);
@@ -10423,85 +10424,86 @@ begin
   SReplaceW(S, '{ProjectMainFileDir}', WideExtractFileDir(CurrentProjectMainFN));
 end;
 
+
+procedure TfmMain.DoTool_ReplaceAllMacros(var S: Widestring; const Dir: WideString);
+var
+  fn, SValue: Widestring;
+  p: TPoint;
+begin
+  p:= CurrentEditor.CaretPos;
+  //
+  DoTool_ReplaceMacro(S, '', cSynGroupCurrent);
+  DoTool_ReplaceMacro(S, '2', cSynGroupOpposite);
+  DoTool_ReplaceMacro(S, 'N1', cSynGroup1);
+  DoTool_ReplaceMacro(S, 'N2', cSynGroup2);
+  DoTool_ReplaceMacro(S, 'N3', cSynGroup3);
+  DoTool_ReplaceMacro(S, 'N4', cSynGroup4);
+  DoTool_ReplaceMacro(S, 'N5', cSynGroup5);
+  DoTool_ReplaceMacro(S, 'N6', cSynGroup6);
+  //
+  SReplaceW(S, '{ProjectDir}', CurrentProjectDir);
+  SReplaceW(S, '{ProjectWorkDir}', CurrentProjectWorkDir);
+  SReplaceW(S, '{ProjectMainFileName}', CurrentProjectMainFN);
+  SReplaceW(S, '{ProjectMainFileDir}', WideExtractFileDir(CurrentProjectMainFN));
+  //
+  SReplaceW(S, '{CurrentWord}', CurrentEditor.WordAtPos(p));
+  SReplaceW(S, '{CurrentLineNum}', IntToStr(p.Y+1));
+  SReplaceW(S, '{CurrentColumnNum}', IntToStr(p.X+1));
+  if (p.Y >= 0) and (p.Y < CurrentEditor.Lines.Count) then
+    SReplaceW(S, '{CurrentLine}', CurrentEditor.Lines[p.Y]);
+  //
+  SValue:= SReplaceAllEols(CurrentEditor.SelText, ' ');
+  SReplaceW(S, '{SelectedText}', SValue);
+
+  if Pos('{SelectionFileName}', S)>0 then
+    SReplaceW(S, '{SelectionFileName}', CurrentSelectionFN(true));
+  if Pos('{SelectionFileNameAnsi}', S)>0 then
+    SReplaceW(S, '{SelectionFileNameAnsi}', CurrentSelectionFN(false));
+  if Pos('{SelectedTextForWeb}', S)>0 then
+    SReplaceW(S, '{SelectedTextForWeb}', EditorSelectedTextForWeb(CurrentEditor));
+  //
+  if Pos('{ContentFileName}', S)>0 then
+    SReplaceW(S, '{ContentFileName}', CurrentContentFN(true));
+  if Pos('{ContentFileNameAnsi}', S)>0 then
+    SReplaceW(S, '{ContentFileNameAnsi}', CurrentContentFN(false));
+  //
+  SReplaceW(S, '{SynDir}', ExtractFileDir(SynDir));
+  SReplaceW(S, '{SynIniDir}', ExtractFileDir(SynIni));
+  SReplaceW(S, '{SynDrive}', ExtractFileDrive(SynDir));
+  //
+  while Pos('{Interactive}', S)>0 do
+  begin
+    fn:= '';
+    if not DoInputString(DKLangConstW('cmdInt'), fn, SynHistoryIni, 'ExtToolParam') then
+      raise Exception.Create('Param input cancelled');
+    SReplaceW(S, '{Interactive}', fn);
+  end;
+  //
+  while Pos('{InteractiveFile}', S)>0 do
+  begin
+    fn:= '';
+    if not WidePromptForFileName(fn, '', '',
+      DKLangConstW('cmdIFile'), dir) then
+      raise Exception.Create('Filename input cancelled');
+    SReplaceW(S, '{InteractiveFile}', fn);
+  end;
+  //
+  while Pos('{InteractiveDir}', S)>0 do
+  begin
+    fn:= dir;
+    if not WideSelectDirectory(
+      DKLangConstW('cmdIDir'), '', fn) then
+      raise Exception.Create('Dir name input cancelled');
+    SReplaceW(S, '{InteractiveDir}', fn);
+  end;
+  //
+  //user variables (from project)
+  if Assigned(fmProj) then
+    fmProj.ReplaceUserVars(S, '', SValue);
+end;
+
 procedure TfmMain.DoTool_Run(const ATool: TSynTool);
   //
-  function HandleParams(const s, dir: WideString): WideString;
-  var
-    fn, SValue: Widestring;
-	  p: TPoint;
-  begin
-    Result:= S;
-    p:= CurrentEditor.CaretPos;
-    //
-    DoTool_ReplaceMacro(Result, '', cSynGroupCurrent);
-    DoTool_ReplaceMacro(Result, '2', cSynGroupOpposite);
-    DoTool_ReplaceMacro(Result, 'N1', cSynGroup1);
-    DoTool_ReplaceMacro(Result, 'N2', cSynGroup2);
-    DoTool_ReplaceMacro(Result, 'N3', cSynGroup3);
-    DoTool_ReplaceMacro(Result, 'N4', cSynGroup4);
-    DoTool_ReplaceMacro(Result, 'N5', cSynGroup5);
-    DoTool_ReplaceMacro(Result, 'N6', cSynGroup6);
-    //
-    SReplaceW(Result, '{ProjectDir}', CurrentProjectDir);
-    SReplaceW(Result, '{ProjectWorkDir}', CurrentProjectWorkDir);
-    SReplaceW(Result, '{ProjectMainFileName}', CurrentProjectMainFN);
-    SReplaceW(Result, '{ProjectMainFileDir}', WideExtractFileDir(CurrentProjectMainFN));
-    //
-    SReplaceW(Result, '{CurrentWord}', CurrentEditor.WordAtPos(p));
-    SReplaceW(Result, '{CurrentLineNum}', IntToStr(p.Y+1));
-    SReplaceW(Result, '{CurrentColumnNum}', IntToStr(p.X+1));
-    if (p.Y >= 0) and (p.Y < CurrentEditor.Lines.Count) then
-      SReplaceW(Result, '{CurrentLine}', CurrentEditor.Lines[p.Y]);
-    //
-    SValue:= SReplaceAllEols(CurrentEditor.SelText, ' ');
-    SReplaceW(Result, '{SelectedText}', SValue);
-
-    if Pos('{SelectionFileName}', Result)>0 then
-      SReplaceW(Result, '{SelectionFileName}', CurrentSelectionFN(true));
-    if Pos('{SelectionFileNameAnsi}', Result)>0 then
-      SReplaceW(Result, '{SelectionFileNameAnsi}', CurrentSelectionFN(false));
-    if Pos('{SelectedTextForWeb}', Result)>0 then
-      SReplaceW(Result, '{SelectedTextForWeb}', EditorSelectedTextForWeb(CurrentEditor));
-    //
-    if Pos('{ContentFileName}', Result)>0 then
-      SReplaceW(Result, '{ContentFileName}', CurrentContentFN(true));
-    if Pos('{ContentFileNameAnsi}', Result)>0 then
-      SReplaceW(Result, '{ContentFileNameAnsi}', CurrentContentFN(false));
-    //
-    SReplaceW(Result, '{SynDir}', ExtractFileDir(SynDir));
-    SReplaceW(Result, '{SynIniDir}', ExtractFileDir(SynIni));
-    SReplaceW(Result, '{SynDrive}', ExtractFileDrive(SynDir));
-    //
-	  while Pos('{Interactive}', Result)>0 do
-    begin
-      fn:= '';
-      if not DoInputString(DKLangConstW('cmdInt'), fn, SynHistoryIni, 'ExtToolParam') then
-        raise Exception.Create('Param input cancelled');
-      SReplaceW(Result, '{Interactive}', fn);
-    end;
-    //
-	  while Pos('{InteractiveFile}', Result)>0 do
-    begin
-      fn:= '';
-      if not WidePromptForFileName(fn, '', '',
-        DKLangConstW('cmdIFile'), dir) then
-        raise Exception.Create('Filename input cancelled');
-      SReplaceW(Result, '{InteractiveFile}', fn);
-    end;
-    //
-	  while Pos('{InteractiveDir}', Result)>0 do
-    begin
-      fn:= dir;
-      if not WideSelectDirectory(
-        DKLangConstW('cmdIDir'), '', fn) then
-        raise Exception.Create('Dir name input cancelled');
-      SReplaceW(Result, '{InteractiveDir}', fn);
-    end;
-    //
-    //user variables (from project)
-    if Assigned(fmProj) then
-      fmProj.ReplaceUserVars(Result, '', SValue);
-  end;
 var
   ft, fcmd, fpar, frun, fexe, fdir,
   SCurWord: Widestring;
@@ -10600,14 +10602,14 @@ begin
 
       try
         frun:= SExpandVars(fexe);
-        frun:= HandleParams(frun, fdir);
+        DoTool_ReplaceAllMacros(frun, fdir);
       except
         Exit
       end;
 
       try
         fpar:= SExpandVars(ToolParams);
-        fpar:= HandleParams(fpar, fdir);
+        DoTool_ReplaceAllMacros(fpar, fdir);
       except
         Exit
       end;
@@ -10630,14 +10632,14 @@ begin
 
       try
         frun:= SExpandVars(fexe);
-        frun:= HandleParams(frun, fdir);
+        DoTool_ReplaceAllMacros(frun, fdir);
       except
         Exit
       end;
 
       try
         fpar:= SExpandVars(ToolParams);
-        fpar:= HandleParams(fpar, fdir);
+        DoTool_ReplaceAllMacros(fpar, fdir);
       except
         Exit
       end;
