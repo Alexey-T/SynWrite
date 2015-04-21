@@ -3269,7 +3269,7 @@ type
     function CurrentFileName(Id: TSynGroupId): Widestring;
     function CurrentSessionFN: string;
     function CurrentContentFN(Unicode: boolean): Widestring;
-    function CurrentSelectionFN(Unicode: boolean): Widestring;
+    function CurrentSelectionFN(Unicode, Numbered: boolean): Widestring;
     function CurrentProjectFN: Widestring;
     function CurrentProjectSessionFN: string;
     function CurrentProjectMainFN: Widestring;
@@ -3339,7 +3339,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.17.2035';
+  cSynVer = '6.17.2040';
   cSynPyVer = '1.0.147';
 
 const
@@ -10456,9 +10456,15 @@ begin
   SReplaceW(S, '{SelectedText}', SValue);
 
   if Pos('{SelectionFileName}', S)>0 then
-    SReplaceW(S, '{SelectionFileName}', CurrentSelectionFN(true));
+    SReplaceW(S, '{SelectionFileName}', CurrentSelectionFN(true, false));
   if Pos('{SelectionFileNameAnsi}', S)>0 then
-    SReplaceW(S, '{SelectionFileNameAnsi}', CurrentSelectionFN(false));
+    SReplaceW(S, '{SelectionFileNameAnsi}', CurrentSelectionFN(false, false));
+
+  if Pos('{SelectionFileNameNum}', S)>0 then
+    SReplaceW(S, '{SelectionFileNameNum}', CurrentSelectionFN(true, true));
+  if Pos('{SelectionFileNameAnsiNum}', S)>0 then
+    SReplaceW(S, '{SelectionFileNameAnsiNum}', CurrentSelectionFN(false, true));
+
   if Pos('{SelectedTextForWeb}', S)>0 then
     SReplaceW(S, '{SelectedTextForWeb}', EditorSelectedTextForWeb(CurrentEditor));
   //
@@ -19945,12 +19951,24 @@ begin
 end;
 
 
-function TfmMain.CurrentSelectionFN(Unicode: boolean): Widestring;
+function TfmMain.CurrentSelectionFN(Unicode, Numbered: boolean): Widestring;
 var
   S: Widestring;
+  i: integer;
 begin
-  Result:= FTempDir + '\SynwSel.txt';
-  FDelete(Result);
+  if not Numbered then
+  begin
+    Result:= FTempDir + '\SynwSel.txt';
+    FDelete(Result);
+  end
+  else
+  begin
+    for i:= 1 to 5000 do
+    begin
+      Result:= FTempDir + Format('\SynwSel_%d.txt', [i]);
+      if not IsFileExist(Result) then Break;
+    end;
+  end;
 
   with CurrentEditor do
     if HaveSelection then
