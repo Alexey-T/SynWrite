@@ -3339,7 +3339,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.17.2040';
+  cSynVer = '6.17.2045';
   cSynPyVer = '1.0.147';
 
 const
@@ -19963,7 +19963,7 @@ begin
   end
   else
   begin
-    for i:= 1 to 5000 do
+    for i:= 1 to 1000 do
     begin
       Result:= FTempDir + Format('\SynwSel_%d.txt', [i]);
       if not IsFileExist(Result) then Break;
