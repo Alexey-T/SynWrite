@@ -3339,7 +3339,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.17.2045';
+  cSynVer = '6.17.2050';
   cSynPyVer = '1.0.147';
 
 const
@@ -4897,7 +4897,7 @@ begin
       opGroupMode:= TATGroupsMode(StrToIntDef(SGetItem(S), Ord(gmOne)));
       opGroupSplit:= StrToIntDef(SGetItem(S), 50);
 
-      ListTabsColumns:= ReadString('Win', 'ColsTabs', '');
+      ListTabsColumns:= ReadString('Win', 'ColsTabWidth', '');
       ListBkmkColumns:= ReadString('Win', 'ColsBkmk', '');
 
       //load recent files
@@ -4990,7 +4990,7 @@ begin
     WriteString('Win', 'Groups', Format('%d,%d', [Ord(Groups.Mode), Groups.SplitPos]));
 
     if ListTabsColumns <> orig_ListTabsCols then
-      WriteString('Win', 'ColsTabs', ListTabsColumns);
+      WriteString('Win', 'ColsTabWidth', ListTabsColumns);
     if ListBkmkColumns <> orig_ListBkmkCols then
       WriteString('Win', 'ColsBkmk', ListBkmkColumns);
 
@@ -18280,7 +18280,8 @@ begin
           if F=FCurrent then
             ListTabs.Selected:= Items[i];
 
-          Caption:= F.TabCaption;
+          Caption:= '';
+          SubItems.Add(F.TabCaption);
           SubItems.Add(F.FileName);
           SubItems.Add(IntToStr(i));
           ImageIndex:= IfThen(F.Modified, 0, -1);
@@ -21257,7 +21258,7 @@ begin
   Result:= -1;
   if ListTabs.Selected=nil then Exit;
   if ListTabs.Selected.SubItems.Count<2 then Exit;
-  Result:= StrToIntDef(ListTabs.Selected.SubItems[1], -1);
+  Result:= StrToIntDef(ListTabs.Selected.SubItems[2], -1);
 end;
 
 procedure TfmMain.ListTabsClick(Sender: TObject);
@@ -21283,10 +21284,7 @@ end;
 procedure TfmMain.ListTabsColumnClick(Sender: TObject;
   Column: TListColumn);
 begin
-  if Column.Index=0 then
-    opTabsSortMode:= 0
-  else
-    opTabsSortMode:= 1;
+  opTabsSortMode:= Column.Index;
   UpdateListTabs;
 end;
 
@@ -21333,20 +21331,18 @@ var
   fn1, fn2,
   cap1, cap2: Widestring;
 begin
-  cap1:= Item1.Caption;
-  cap2:= Item2.Caption;
-  fn1:= '';
-  fn2:= '';
-  if Item1.SubItems.Count>0 then
-    fn1:= Item1.SubItems[0];
-  if Item2.SubItems.Count>0 then
-    fn2:= Item2.SubItems[0];
+  cap1:= Item1.SubItems[0];
+  cap2:= Item2.SubItems[0];
+  
+  fn1:= Item1.SubItems[1];
+  fn2:= Item2.SubItems[1];
 
   case opTabsSortMode of
-    0: Compare:= lstrcmpw(PWChar(cap1), PWChar(cap2));
-    1: Compare:= lstrcmpw(PWChar(fn1), PWChar(fn2));
+    0: Compare:= 0;
+    1: Compare:= lstrcmpw(PWChar(cap1), PWChar(cap2));
+    2: Compare:= lstrcmpw(PWChar(fn1), PWChar(fn2));
     else
-      raise Exception.Create('Unknown sort mode')
+      raise Exception.Create('Unknown ListTabs sort mode')
   end;
 end;
 
@@ -22599,19 +22595,11 @@ end;
 procedure TfmMain.SynContextGutterPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 var
   Ed: TSyntaxMemo;
-  //i, XFrom, XTo: Integer;
 begin
   Handled:= false;
   Ed:= Sender as TSyntaxMemo;
   if (not Ed.Gutter.Visible) or (Ed.Gutter.Bands[cBandFolding].Width=0) then Exit;
 
-  {
-  XFrom:= 0;
-  for i:= 0 to cBandFolding-1 do
-    Inc(XFrom, Ed.Gutter.Bands[i].Width);
-  XTo:= XFrom + Ed.Gutter.Bands[cBandFolding].Width;
-  Handled:= (MousePos.X >= XFrom) and (MousePos.X < XTo);
-  }
   Handled:= (MousePos.X >= 0) and (MousePos.X < Ed.Gutter.Width);
 
   if Handled then
