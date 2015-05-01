@@ -292,7 +292,7 @@ object fmSetupOvr: TfmSetupOvr
     Top = 240
     Width = 153
     Height = 22
-    Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbCustomColor, cbPrettyNames]
+    Style = [cbStandardColors, cbExtendedColors, cbCustomColor, cbPrettyNames]
     ItemHeight = 16
     TabOrder = 20
     OnChange = edTabStopsChange

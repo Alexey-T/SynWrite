@@ -8687,7 +8687,10 @@ begin
     OpInSel:= SR_SuggestedSelScope;
 
     if SR_SuggestedSel<>'' then
+    begin
       DoCopyToEdit(ed1, OpSpec, OpRe, SR_SuggestedSel);
+      ed1Memo.Text:= ed1.Text;
+    end;
     ed1Change(Self);
 
     IsReplace:= AReplaceMode;
