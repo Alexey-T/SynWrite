@@ -112,7 +112,7 @@ object fmSetupOvr: TfmSetupOvr
     Width = 57
     Height = 22
     MaxValue = 10
-    MinValue = 0
+    MinValue = -2
     TabOrder = 17
     Value = 0
     OnChange = edTabStopsChange

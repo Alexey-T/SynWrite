@@ -1616,10 +1616,11 @@ end;
 
 procedure TEditorFrame.EditorMasterModifiedChanged(Sender: TObject);
 begin
-  if FModifiedPrev <> Modified then
+  if FModifiedPrev<>Modified then
   begin
-    DoTitleChanged;
     FModifiedPrev:= Modified;
+    DoTitleChanged;
+    TfmMain(Owner).UpdateStatusBar;
   end;
 end;
 
