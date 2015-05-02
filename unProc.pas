@@ -26,6 +26,9 @@ uses
   SpTbxItem,
   ATxSProc;
 
+function GetListviewColumnsAsString(L: TTntListview): string;
+procedure SetListviewColumnsFromString(L: TTntListview; const S: string);
+
 procedure DoSortMenu(Menu: TSpTbxSubmenuItem);
 procedure DoRemovePluginsIniLines(const fn_ini, dir: string; IsBinaryPlugin: boolean);
 function DoFindLexerForFilename(LexLib: TSyntaxManager; const FileName: string): TSyntAnalyzer;
@@ -2687,6 +2690,26 @@ begin
   finally
     st.Free;
   end;
+end;
+
+function GetListviewColumnsAsString(L: TTntListview): string;
+var
+  i: integer;
+begin
+  with L do
+    for i:= 0 to Columns.Count-1 do
+      Result:= Result+Inttostr(Columns[i].Width)+',';
+end;
+
+procedure SetListviewColumnsFromString(L: TTntListview; const S: string);
+var
+  Str: Widestring;
+  i: integer;
+begin
+  Str:= S;
+  for i:= 0 to L.Columns.Count-1 do
+    with L.Columns[i] do
+      Width:= StrToIntDef(SGetItem(Str), Width);
 end;
 
 end.

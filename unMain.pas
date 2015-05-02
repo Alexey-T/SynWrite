@@ -2312,8 +2312,8 @@ type
     procedure DoDelayedCommandAny(Command: Integer);
     procedure DoDelayedCommandWithClose(Command: Integer);
     function ListTab_FrameIndex: integer;
-    function GetListTabsColumns: string;
     procedure SetListTabsColumns(const S: string);
+    function GetListTabsColumns: string;
     function GetListBkmkColumns: string;
     procedure SetListBkmkColumns(const S: string);
 
@@ -21291,43 +21291,6 @@ begin
   UpdateListTabs;
 end;
 
-function TfmMain.GetListTabsColumns: string;
-begin
-  with ListTabs do
-    Result:= Format('%d,%d,', [Columns[0].Width, Columns[1].Width]);
-end;
-
-function TfmMain.GetListBkmkColumns: string;
-begin
-  with ListBookmarks do
-    Result:= Format('%d,%d,%d,', [Columns[0].Width, Columns[1].Width, Columns[2].Width]);
-end;
-
-procedure TfmMain.SetListTabsColumns(const S: string);
-var
-  S1: Widestring;
-begin
-  S1:= S;
-  with ListTabs do
-  begin
-    with Columns[0] do Width:= StrToIntDef(SGetItem(S1), Width);
-    with Columns[1] do Width:= StrToIntDef(SGetItem(S1), Width);
-  end;
-end;
-
-procedure TfmMain.SetListBkmkColumns(const S: string);
-var
-  S1: Widestring;
-begin
-  S1:= S;
-  with ListBookmarks do
-  begin
-    with Columns[0] do Width:= StrToIntDef(SGetItem(S1), Width);
-    with Columns[1] do Width:= StrToIntDef(SGetItem(S1), Width);
-    with Columns[2] do Width:= StrToIntDef(SGetItem(S1), Width);
-  end;
-end;
-
 procedure TfmMain.ListTabsCompare(Sender: TObject; Item1, Item2: TListItem;
   Data: Integer; var Compare: Integer);
 var
@@ -28636,6 +28599,27 @@ begin
   finally
     FreeAndNil(Bmp);
   end;
+end;
+
+
+function TfmMain.GetListBkmkColumns: string;
+begin
+  Result:= GetListviewColumnsAsString(ListBookmarks);
+end;
+
+function TfmMain.GetListTabsColumns: string;
+begin
+  Result:= GetListviewColumnsAsString(ListTabs);
+end;
+
+procedure TfmMain.SetListTabsColumns(const S: string);
+begin
+  SetListviewColumnsFromString(ListTabs, S);
+end;
+
+procedure TfmMain.SetListBkmkColumns(const S: string);
+begin
+  SetListviewColumnsFromString(ListBookmarks, S);
 end;
 
 
