@@ -2745,40 +2745,40 @@ object fmMain: TfmMain
           RadioItem = True
           OnClick = TbxItemGroupOneClick
         end
-        object TbxItemGroup2H: TSpTBXItem
-          Caption = '2 horz'
-          RadioItem = True
-          OnClick = TbxItemGroup2HClick
-        end
         object TbxItemGroup2V: TSpTBXItem
           Caption = '2 vert'
           RadioItem = True
           OnClick = TbxItemGroup2VClick
         end
-        object TbxItemGroup3H: TSpTBXItem
-          Caption = '3 horz'
+        object TbxItemGroup2H: TSpTBXItem
+          Caption = '2 horz'
           RadioItem = True
-          OnClick = TbxItemGroup3HClick
+          OnClick = TbxItemGroup2HClick
         end
         object TbxItemGroup3V: TSpTBXItem
           Caption = '3 vert'
           RadioItem = True
           OnClick = TbxItemGroup3VClick
         end
+        object TbxItemGroup3H: TSpTBXItem
+          Caption = '3 horz'
+          RadioItem = True
+          OnClick = TbxItemGroup3HClick
+        end
         object TbxItemGroup3as1p2: TSpTBXItem
           Caption = '3 as 1+2'
           RadioItem = True
           OnClick = TbxItemGroup3as1p2Click
         end
-        object TbxItemGroup4H: TSpTBXItem
-          Caption = '4 horz'
-          RadioItem = True
-          OnClick = TbxItemGroup4HClick
-        end
         object TbxItemGroup4V: TSpTBXItem
           Caption = '4 vert'
           RadioItem = True
           OnClick = TbxItemGroup4VClick
+        end
+        object TbxItemGroup4H: TSpTBXItem
+          Caption = '4 horz'
+          RadioItem = True
+          OnClick = TbxItemGroup4HClick
         end
         object TbxItemGroup4Grid: TSpTBXItem
           Caption = '4 grid'

@@ -3339,7 +3339,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.17.2050';
+  cSynVer = '6.17.2052';
   cSynPyVer = '1.0.147';
 
 const
@@ -27772,22 +27772,22 @@ end;
 
 procedure TfmMain.TbxItemGroup2HClick(Sender: TObject);
 begin
-  Groups.Mode:= gm2Horz;
+  Groups.Mode:= gm2Vert;
 end;
 
 procedure TfmMain.TbxItemGroup2VClick(Sender: TObject);
 begin
-  Groups.Mode:= gm2Vert;
+  Groups.Mode:= gm2Horz;
 end;
 
 procedure TfmMain.TbxItemGroup3HClick(Sender: TObject);
 begin
-  Groups.Mode:= gm3Horz;
+  Groups.Mode:= gm3Vert;
 end;
 
 procedure TfmMain.TbxItemGroup3VClick(Sender: TObject);
 begin
-  Groups.Mode:= gm3Vert;
+  Groups.Mode:= gm3Horz;
 end;
 
 procedure TfmMain.TbxItemGroup3as1p2Click(Sender: TObject);
@@ -27797,12 +27797,12 @@ end;
 
 procedure TfmMain.TbxItemGroup4HClick(Sender: TObject);
 begin
-  Groups.Mode:= gm4Horz;
+  Groups.Mode:= gm4Vert;
 end;
 
 procedure TfmMain.TbxItemGroup4VClick(Sender: TObject);
 begin
-  Groups.Mode:= gm4Vert;
+  Groups.Mode:= gm4Horz;
 end;
 
 procedure TfmMain.TbxItemGroup4GridClick(Sender: TObject);
@@ -27819,13 +27819,13 @@ procedure TfmMain.TBXSubmenuGroupsPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
   TbxItemGroupOne.Checked:= Groups.Mode=gmOne;
-  TbxItemGroup2H.Checked:= Groups.Mode=gm2Horz;
-  TbxItemGroup2V.Checked:= Groups.Mode=gm2Vert;
-  TbxItemGroup3H.Checked:= Groups.Mode=gm3Horz;
-  TbxItemGroup3V.Checked:= Groups.Mode=gm3Vert;
+  TbxItemGroup2H.Checked:= Groups.Mode=gm2Vert;
+  TbxItemGroup2V.Checked:= Groups.Mode=gm2Horz;
+  TbxItemGroup3H.Checked:= Groups.Mode=gm3Vert;
+  TbxItemGroup3V.Checked:= Groups.Mode=gm3Horz;
   TbxItemGroup3as1p2.Checked:= Groups.Mode=gm3Plus;
-  TbxItemGroup4H.Checked:= Groups.Mode=gm4Horz;
-  TbxItemGroup4V.Checked:= Groups.Mode=gm4Vert;
+  TbxItemGroup4H.Checked:= Groups.Mode=gm4Vert;
+  TbxItemGroup4V.Checked:= Groups.Mode=gm4Horz;
   TbxItemGroup4Grid.Checked:= Groups.Mode=gm4Grid;
   TbxItemGroup6Grid.Checked:= Groups.Mode=gm6Grid;
 end;
