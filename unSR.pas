@@ -429,34 +429,37 @@ var
   S: Widestring;
   SA: Ansistring;
 begin
-  with TIniFile.Create(SRIni) do
   try
-    if not IsDocked then
-    begin
-      WriteInteger('Search', 'WLeft', Left);
-      WriteInteger('Search', 'WTop', Top);
-    end;  
+    with TIniFile.Create(SRIni) do
+    try
+      if not IsDocked then
+      begin
+        WriteInteger('Search', 'WLeft', Left);
+        WriteInteger('Search', 'WTop', Top);
+      end;
 
-    WriteBool('Search', 'Cur', CurChecked);
-    WriteBool('Search', 'SkipCol', cbSkipCol.Checked);
-    WriteBool('Search', 'Wrap', OpWrap);
-    WriteBool('Search', 'Forw', not OpBack);
-    WriteBool('Search', 'RegExp', OpRe);
-    WriteBool('Search', 'RegExpS', OpReDot);
-    WriteBool('Search', 'Case', OpCase);
-    WriteBool('Search', 'Words', OpWords);
-    WriteBool('Search', 'Spec', OpSpec);
-    WriteBool('Search', 'Cfm', OpCfm);
-    WriteBool('Search', 'Bk', OpBkmkAll);
-    WriteBool('Search', 'SelAll', OpSelectAll);
-    WriteBool('Search', 'ExtSel', OpExtSel);
-    WriteInteger('Search', 'Tr', TrackTran.Position);
-    WriteBool('Search', 'TrLoose', cbLoose.Checked);
-    WriteBool('Search', 'Multiline', IsMultiline);
-    WriteBool('Search', 'Docked', IsDocked);
-    WriteBool('Search', 'Small', IsSmall);
-  finally
-    Free;
+      WriteBool('Search', 'Cur', CurChecked);
+      WriteBool('Search', 'SkipCol', cbSkipCol.Checked);
+      WriteBool('Search', 'Wrap', OpWrap);
+      WriteBool('Search', 'Forw', not OpBack);
+      WriteBool('Search', 'RegExp', OpRe);
+      WriteBool('Search', 'RegExpS', OpReDot);
+      WriteBool('Search', 'Case', OpCase);
+      WriteBool('Search', 'Words', OpWords);
+      WriteBool('Search', 'Spec', OpSpec);
+      WriteBool('Search', 'Cfm', OpCfm);
+      WriteBool('Search', 'Bk', OpBkmkAll);
+      WriteBool('Search', 'SelAll', OpSelectAll);
+      WriteBool('Search', 'ExtSel', OpExtSel);
+      WriteInteger('Search', 'Tr', TrackTran.Position);
+      WriteBool('Search', 'TrLoose', cbLoose.Checked);
+      WriteBool('Search', 'Multiline', IsMultiline);
+      WriteBool('Search', 'Docked', IsDocked);
+      WriteBool('Search', 'Small', IsSmall);
+    finally
+      Free;
+    end;
+  except
   end;
 
   fnTC:= SExpandVars('%Commander_ini%');
@@ -464,7 +467,7 @@ begin
   begin
     //Use RedirectSection
     FixTcIni(fnTC, 'SearchText');
-    
+
     //Write TC ini
     with TIniFile.Create(fnTC) do
     try

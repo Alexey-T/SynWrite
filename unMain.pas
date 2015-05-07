@@ -7580,6 +7580,8 @@ procedure TfmMain.FormDestroy(Sender: TObject);
 var
   i: Integer;
 begin
+  TimerTick.Enabled:= false;
+
   FreeAndNil(SynMruFiles);
   FreeAndNil(SynMruSessions);
   FreeAndNil(SynMruProjects);
