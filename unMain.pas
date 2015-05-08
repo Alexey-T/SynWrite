@@ -2895,6 +2895,7 @@ type
     procedure DoPluginsManager_SaveAll;
     procedure DoPluginsManager_Update;
     procedure DoPluginsManager_Config;
+    function IsCommandForMacros(Cmd: integer): boolean;
     //end of private
 
   protected
@@ -3339,7 +3340,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.17.2052';
+  cSynVer = '6.17.2055';
   cSynPyVer = '1.0.147';
 
 const
@@ -15499,6 +15500,13 @@ begin
   ecSpellLive.Execute;
 end;
 
+function TfmMain.IsCommandForMacros(Cmd: integer): boolean;
+begin
+  Result:=
+    ((Cmd>=sm_Macro1) and (Cmd<=sm_Macro9)) or
+    ((Cmd>=sm_Macro10) and (Cmd<=sm_Macro30)); 
+end;
+
 procedure TfmMain.acMacroDialogExecute(Sender: TObject);
 var
   keys: TMacroKeysArray;
@@ -15508,11 +15516,13 @@ begin
   for i:= Low(keys) to High(keys) do
     keys[i]:= DoMacro_GetHotkey(i);
 
+  //list of keys which give warning on pressing ok if used in dlg
   BusyKeys:= TStringList.Create;
   for i:= 0 to SyntKeyMapping.Items.Count-1 do
     with SyntKeyMapping.Items[i] do
-      for j:= 0 to KeyStrokes.Count-1 do
-        BusyKeys.Add(KeyStrokes.Items[j].AsString);
+      if not IsCommandForMacros(Command) then
+        for j:= 0 to KeyStrokes.Count-1 do
+          BusyKeys.Add(KeyStrokes.Items[j].AsString);
 
   if DoMacroEditDialog(ecMacroRec, keys, idx, BusyKeys) then
   begin
