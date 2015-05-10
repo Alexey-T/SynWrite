@@ -1517,14 +1517,14 @@ procedure TfmSetup.ListColorsDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 const
   cRect = 25; //color rect width
-  cTxt = 5;
+  cDx = 2;
   cNone = '?';
 var
   NFont: TColor;
-  R1, R2: TRect;
+  RColor, RText: TRect;
 begin
-  R1:= Types.Rect(Rect.Left+1, Rect.Top, Rect.Left+cRect, Rect.Bottom);
-  R2:= Types.Rect(Rect.Left+cRect+cTxt, Rect.Top, Rect.Right, Rect.Bottom);
+  RColor:= Types.Rect(Rect.Left+cDx, Rect.Top+cDx, Rect.Left+cDx+cRect, Rect.Bottom-cDx);
+  RText:= Types.Rect(Rect.Left+cDx+cRect+cDx, Rect.Top, Rect.Right, Rect.Bottom);
   with ListColors.Canvas do
   begin
     Brush.Color:= clWindow;
@@ -1533,14 +1533,14 @@ begin
 
     if Brush.Color<>clNone then
       //draw colored bar
-      FillRect(R1)
+      FillRect(RColor)
     else
     begin
       //draw "?" char
       NFont:= Font.Color;
       Font.Color:= clWindowText;
       Brush.Color:= clWindow;
-      TextOut((R1.Left + R1.Right) div 2 - TextWidth(cNone) div 2, R1.Top, cNone);
+      TextOut((RColor.Left + RColor.Right) div 2 - TextWidth(cNone) div 2, RColor.Top, cNone);
       Font.Color:= NFont;
     end;
 
@@ -1554,8 +1554,9 @@ begin
       Brush.Color:= clWindow;
       Pen.Color:= clWindowText;
     end;
-    FillRect(R2);
-    ecTextOut(ListColors.Canvas, R2.Left, R2.Top, ListColors.Items[Index]);
+
+    FillRect(RText);
+    ecTextOut(ListColors.Canvas, RText.Left+2*cDx, RText.Top+cDx, ListColors.Items[Index]);
   end;
 end;
 

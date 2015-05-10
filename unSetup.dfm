@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabTabs
+    ActivePage = tabColors
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -335,7 +335,7 @@ object fmSetup: TfmSetup
         end
         object LabelColorInf: TTntLabel
           Left = 288
-          Top = 56
+          Top = 64
           Width = 233
           Height = 65
           AutoSize = False
@@ -352,7 +352,7 @@ object fmSetup: TfmSetup
           Style = lbOwnerDrawFixed
           AutoComplete = False
           ExtendedSelect = False
-          ItemHeight = 13
+          ItemHeight = 18
           TabOrder = 0
           OnClick = ListColorsClick
           OnDrawItem = ListColorsDrawItem
@@ -361,10 +361,10 @@ object fmSetup: TfmSetup
           Left = 288
           Top = 32
           Width = 233
-          Height = 22
+          Height = 24
           Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames]
           DropDownCount = 20
-          ItemHeight = 16
+          ItemHeight = 18
           TabOrder = 1
           OnSelect = cbColorsSelect
         end
