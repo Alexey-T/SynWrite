@@ -6811,7 +6811,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Comment 2'
         StyleName = 'Comment'
         TokenType = 1
-        Expression = '//.*'
+        Expression = '// .*? (>|$) #handle > char for JS inside html'
         ColumnFrom = 0
         ColumnTo = 0
       end
