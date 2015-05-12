@@ -27,8 +27,8 @@ type
   private
     { Private declarations }
     FMouseDown: boolean;
-    FTopLine,
-    FBtmLine: integer;
+    FLineTop,
+    FLineBottom: integer;
     FOnMapClick: TNotifyEvent;
     procedure DoMapClick;
     procedure DoMapShow;
@@ -38,13 +38,14 @@ type
     procedure SyncMapData(Src: TSyntaxMemo);
     procedure SyncMapPos(Src: TSyntaxMemo);
     procedure SetMapColor(C: TColor);
-    procedure SetMapZoom(N: integer);
+    procedure SetMapFontSize(N: integer);
     procedure SetMapScrollBars(SHorz, SVert: boolean);
   end;
 
 implementation
 
 uses
+  Math,
   StdCtrls,
   ecLists,
   unProcEditor;
@@ -62,39 +63,25 @@ begin
   edMap.Gutter.Visible:= false;
   edMap.DefaultStyles.SearchMark.Font.Color:= clNone;
   edMap.DefaultStyles.SearchMark.BgColor:= $F4F0F6;
-  //edMap.Scrollbars:= ssNone;
-  edMap.Zoom:= 30;
 end;
+
 
 procedure TfmMap.DoMapShow;
 var
-  n, nSt, nEnd,
-  nBottomLine: integer;
+  nPosStart, nPosEnd: integer;
 begin
   with edMap do
   begin
-    n:= FTopLine;
-    nSt:= CaretPosToStrPos(Point(0, n));
-
-    n:= FBtmLine;
-    nEnd:= CaretPosToStrPos(Point(0, n));
+    nPosStart:= CaretPosToStrPos(Point(0, FLineTop));
+    nPosEnd:= CaretPosToStrPos(Point(0, FLineBottom));
 
     BeginUpdate;
-    //
-    //fix TopLine
-    nBottomLine:= EditorGetBottomLineIndex(edMap);
-    if FTopLine<TopLine then
-      TopLine:= FTopLine
-    else
-    if FBtmLine>nBottomLine then
-    {  showmessage(format('btmLine %d, nBottomLine %d',
-        [FBtmLine, nBottomLine]));}
-      TopLine:= FBtmLine - (nBottomLine-TopLine);
-
-    SearchMarks.Clear;
-    SearchMarks.Add(TRange.Create(nSt, nEnd));
-    //
-    EndUpdate;
+    try
+      SearchMarks.Clear;
+      SearchMarks.Add(TRange.Create(nPosStart, nPosEnd));
+    finally
+      EndUpdate;
+    end;  
   end;
 end;
 
@@ -150,16 +137,24 @@ begin
 end;
 
 procedure TfmMap.SyncMapPos(Src: TSyntaxMemo);
+(*
+function TATSynEdit.GetMinimapScrollPos: integer;
+begin
+  Result:=
+    Int64(FScrollVert.NPos) *
+    Max(0, FScrollVert.NMax-GetVisibleLinesMinimap) div
+    Max(1, FScrollVert.NMax-FScrollVert.NPage);
+end;
+*)
 begin
   if Src=nil then Exit;
 
-  //make map column 0 visible
-  edMap.CaretPos:= Point(0, Src.CaretPos.Y);
-
-  FTopLine:= Src.TopLine;
-  FBtmLine:= FTopLine + Src.VisibleLines;
-  if FBtmLine>= edMap.Lines.Count then
-    FBtmLine:= edMap.Lines.Count-1;
+  edMap.TopLine:=
+    Int64(Src.TopLine) *
+    Max(0, Src.Lines.Count-edMap.VisibleLines) div
+    Max(1, Src.Lines.Count-Src.VisibleLines);
+  FLineTop:= Src.TopLine;
+  FLineBottom:= Min(FLineTop + Src.VisibleLines, edMap.Lines.Count-1);
 
   DoMapShow;
 end;
@@ -192,9 +187,9 @@ begin
   edMap.DefaultStyles.SearchMark.BgColor:= C;
 end;
 
-procedure TfmMap.SetMapZoom(N: integer);
+procedure TfmMap.SetMapFontSize(N: integer);
 begin
-  edMap.Zoom:= N;
+  edMap.Font.Size:= N;
 end;
 
 procedure TfmMap.SetMapScrollBars(SHorz, SVert: boolean);

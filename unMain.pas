@@ -3007,7 +3007,7 @@ type
     opASaveMaxSizeKb: integer;
     opASaveUnnamed: TSynAutoSaveUnnamed;
     opASaveUnnamedDir: string;
-    opMapZoom: integer;
+    opMinimapFontSize: integer;
     opMicroMap: boolean;
     opColorMinimapSel: integer;
     opBigSize: integer; //size in Mb for lexer-off
@@ -3340,7 +3340,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.17.2055';
+  cSynVer = '6.18.2070';
   cSynPyVer = '1.0.147';
 
 const
@@ -4802,8 +4802,7 @@ begin
     opTabOptionsLast:= ReadInteger('View', 'TabLast', 0);
     opTabsSortMode:= ReadInteger('View', 'TabSort', 0);
 
-    //opMapVScroll:= ReadBool('View', 'MapVSc', true);
-    opMapZoom:= ReadInteger('View', 'MapZoom', 25);
+    opMinimapFontSize:= ReadInteger('Setup', 'MinimapFont', 1);
     opMicroMap:= ReadBool('View', 'MicroMap', false);
     opShowCurrentColumn:= ReadBool('View', 'CurrCol', false);
     opCaretShape:= ReadInteger('View', 'CaretType', 1);
@@ -5047,8 +5046,6 @@ begin
     PropsManager.SaveProps(f);
 
     //view
-    //WriteBool('View', 'MapVSc', opMapVScroll);
-    WriteInteger('View', 'MapZoom', opMapZoom);
     WriteBool('View', 'MicroMap', opMicroMap);
     WriteBool('View', 'CurrCol', opShowCurrentColumn);
     WriteInteger('View', 'CaretType', opCaretShape);
@@ -16715,8 +16712,7 @@ begin
   if Assigned(fmMap) then
     with fmMap do
     begin
-      //SetMapScrollBars(false, opMapVScroll);
-      SetMapZoom(opMapZoom);
+      SetMapFontSize(opMinimapFontSize);
       SetMapColor(opColorMinimapSel);
     end;
 end;

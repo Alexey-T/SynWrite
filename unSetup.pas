@@ -157,9 +157,6 @@ type
     boxProj: TTntGroupBox;
     cbProjLoad: TTntCheckBox;
     cbProjSave: TTntCheckBox;
-    boxMinimap: TTntGroupBox;
-    TntLabel26: TTntLabel;
-    edMapZoom: TSpinEdit;
     boxFGroup: TTntGroupBox;
     TntLabel1: TTntLabel;
     cbText_: TTntComboBox;
@@ -2026,9 +2023,6 @@ begin
     Tree.UpdateDelay:= cbTreeDelay.Value;
     opTreeSorted:= edTreeSorted.Text;
 
-    opMapZoom:= edMapZoom.Value;
-    ApplyMinimapProps;
-
     opMicroMap:= cbMicroMap.Checked;
     ApplyFramesOptions;
   end;
@@ -2373,8 +2367,6 @@ begin
     cbTreeDelay.Value:= Tree.UpdateDelay;
     edTreeSorted.Text:= opTreeSorted;
     cbTreeClick.ItemIndex:= Ord(Tree.ClickAction);
-
-    edMapZoom.Value:= opMapZoom;
     cbMicroMap.Checked:= opMicroMap;
   end;
 end;

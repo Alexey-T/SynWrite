@@ -1,6 +1,6 @@
 object fmMap: TfmMap
   Left = 525
-  Top = 226
+  Top = 239
   Width = 226
   Height = 461
   Caption = 'Map'

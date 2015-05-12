@@ -70,7 +70,7 @@ begin
   end;
   if (Key=vk_return) and (Shift=[ssCtrl]) then
   begin
-    ModalResult:= mrOk;
+    bOk.Click;
     Key:= 0;
     Exit
   end;    
