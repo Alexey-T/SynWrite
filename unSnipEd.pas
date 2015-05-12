@@ -67,7 +67,13 @@ begin
     ModalResult:= mrCancel;
     Key:= 0;
     Exit
-  end;  
+  end;
+  if (Key=vk_return) and (Shift=[ssCtrl]) then
+  begin
+    ModalResult:= mrOk;
+    Key:= 0;
+    Exit
+  end;    
 end;
 
 procedure TfmSnippetEditor.TntFormCreate(Sender: TObject);

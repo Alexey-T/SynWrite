@@ -220,9 +220,9 @@ object fmSnippetEditor: TfmSnippetEditor
     end
   end
   object bOk: TTntButton
-    Left = 426
+    Left = 434
     Top = 468
-    Width = 99
+    Width = 95
     Height = 23
     Caption = 'OK'
     Default = True
@@ -230,9 +230,9 @@ object fmSnippetEditor: TfmSnippetEditor
     OnClick = bOkClick
   end
   object bCan: TTntButton
-    Left = 532
+    Left = 536
     Top = 468
-    Width = 99
+    Width = 95
     Height = 23
     Cancel = True
     Caption = 'Cancel'
