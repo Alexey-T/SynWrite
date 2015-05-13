@@ -90,7 +90,7 @@ procedure TfmMap.edMapMouseMove(Sender: TObject; Shift: TShiftState; X,
 begin
   if FMouseDown then
   begin
-    edMap.CaretPos:= edMap.MouseToCaret(X, Y);
+    ////edMap.CaretPos:= edMap.MouseToCaret(X, Y);
     DoMapShow;
     DoMapClick;
   end;
@@ -137,26 +137,22 @@ begin
 end;
 
 procedure TfmMap.SyncMapPos(Src: TSyntaxMemo);
-(*
-function TATSynEdit.GetMinimapScrollPos: integer;
-begin
-  Result:=
-    Int64(FScrollVert.NPos) *
-    Max(0, FScrollVert.NMax-GetVisibleLinesMinimap) div
-    Max(1, FScrollVert.NMax-FScrollVert.NPage);
-end;
-*)
 begin
   if Src=nil then Exit;
 
-  edMap.TopLine:=
-    Int64(Src.TopLine) *
-    Max(0, Src.Lines.Count-edMap.VisibleLines) div
-    Max(1, Src.Lines.Count-Src.VisibleLines);
-  FLineTop:= Src.TopLine;
-  FLineBottom:= Min(FLineTop + Src.VisibleLines, edMap.Lines.Count-1);
+  edMap.BeginUpdate;
+  try
+    edMap.TopLine:=
+      Int64(Src.TopLine) *
+      Max(0, Src.Lines.Count-edMap.VisibleLines) div
+      Max(1, Src.Lines.Count-Src.VisibleLines);
+    FLineTop:= Src.TopLine;
+    FLineBottom:= Min(FLineTop + Src.VisibleLines, edMap.Lines.Count-1);
 
-  DoMapShow;
+    DoMapShow;
+  finally
+    edMap.EndUpdate;
+  end;  
 end;
 
 procedure TfmMap.DoMapClick;

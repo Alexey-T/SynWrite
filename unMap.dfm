@@ -129,7 +129,9 @@ object fmMap: TfmMap
     SyncEditing.InactiveWordsStyle.BorderTypeBottom = blSolid
     SyncEditing.InactiveWordsStyle.BorderColorBottom = clBtnFace
     DisableFolding = True
+    LineSpacing = -1
     Options = [soOverwriteBlocks, soEnableBlockSel, soHideSelection, soHideDynamic, soAutoIndentMode, soBackUnindent, soGroupUndo, soDragText, soVariableHorzScrollBar]
+    BorderStyle = bsNone
     HorzRuler.Font.Charset = DEFAULT_CHARSET
     HorzRuler.Font.Color = clWindowText
     HorzRuler.Font.Height = -11
@@ -148,6 +150,8 @@ object fmMap: TfmMap
     Transparent = False
     Alignment = taLeftJustify
     Align = alClient
+    BevelInner = bvNone
+    BevelOuter = bvNone
     Ctl3D = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
