@@ -102,8 +102,10 @@ begin
   if Button=mbLeft then
   begin
     FMouseDown:= true;
+    {no need
     edMap.Cursor:= crSizeNS;
     SetCursor(Screen.Cursors[edMap.Cursor]);
+    }
   end;
 end;
 

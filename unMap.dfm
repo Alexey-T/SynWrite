@@ -39,6 +39,7 @@ object fmMap: TfmMap
     LineNumbers.Font.Name = 'Courier New'
     LineNumbers.Font.Style = []
     LineNumbers.Band = -1
+    Gutter.Visible = False
     Gutter.ExpandButtons.Data = {
       FA000000424DFA000000000000007600000028000000120000000B0000000100
       0400000000008400000000000000000000001000000000000000000000000000
@@ -155,7 +156,7 @@ object fmMap: TfmMap
     Ctl3D = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -13
+    Font.Height = -11
     Font.Name = 'Courier New'
     Font.Style = []
     ParentColor = False
