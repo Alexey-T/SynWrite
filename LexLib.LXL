@@ -6811,7 +6811,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Comment 2'
         StyleName = 'Comment'
         TokenType = 1
-        Expression = '// .*? (>|$) #handle > char for JS inside html'
+        Expression = '#handle comment before </script>'#13#10'//.*? (?=<) |'#13#10'//.* '
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -23530,6 +23530,13 @@ object SyntaxManager: TSyntaxManager
         Expression = '^Index: .*'
         ColumnFrom = 0
         ColumnTo = 0
+      end
+      item
+        DisplayName = 'Other lines'
+        TokenType = 6
+        Expression = '.*'
+        ColumnFrom = 0
+        ColumnTo = 0
       end>
     BlockRules = <
       item
@@ -23546,6 +23553,12 @@ object SyntaxManager: TSyntaxManager
     CodeTemplates = <>
     SubAnalyzers = <>
     SampleText.Strings = (
+      'Index: components/chmhelp/lhelp/lhelp.ico'
+      
+        '================================================================' +
+        '==='
+      'Cannot display: file marked as a binary type.'
+      'svn:mime-type = image/icon'
       'Index: ide/filename'
       'some text'
       'simple text'
@@ -23572,7 +23585,8 @@ object SyntaxManager: TSyntaxManager
       'line'
       'context'
       'default'
-      'index')
+      'index'
+      'unknown')
     Extentions = 'diff dif patch'
     LexerName = 'Diff'
     SkipSpaces = False

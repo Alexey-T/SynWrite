@@ -672,8 +672,8 @@ type
     TBXItemEndMWin: TSpTbxItem;
     TBXItemEndMUn: TSpTbxItem;
     TBXItemEndMMac: TSpTbxItem;
-    TBXSubmenuEnc: TSpTbxSubmenuItem;
-    TBXSubmenuEnc2: TSpTbxSubmenuItem;
+    TBXSubmenuEncReread: TSpTBXSubmenuItem;
+    TBXSubmenuEncConvert: TSpTBXSubmenuItem;
     TimerLoad: TTimer;
     ecReplace: TAction;
     TBXItemSRep: TSpTbxItem;
@@ -1300,7 +1300,6 @@ type
     TbxItemCtxTool13: TSpTBXItem;
     TBXItemProjAddAllFiles: TSpTBXItem;
     TbxItemProjSave: TSpTBXItem;
-    SpTBXSeparatorItem22: TSpTBXSeparatorItem;
     plConsole: TPanel;
     edConsole: TTntComboBox;
     ecToggleFocusConsole: TAction;
@@ -1417,6 +1416,7 @@ type
     PopupStatusEncConvert: TSpTBXPopupMenu;
     TbxItemAddonsConfig: TSpTBXItem;
     TBXItemClipDeleteSel: TSpTBXItem;
+    SpTBXSeparatorItem17: TSpTBXSeparatorItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1491,7 +1491,7 @@ type
     procedure TBXItemHelpReadmeDirClick(Sender: TObject);
     procedure TBXSubmenuLineEndsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
-    procedure TBXSubmenuEncPopup(Sender: TTBCustomItem;
+    procedure TBXSubmenuEncRereadPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemSMarkNextClick(Sender: TObject);
     procedure TBXItemSMarkPrevClick(Sender: TObject);
@@ -1535,7 +1535,7 @@ type
     procedure TBXItemFSesOpenClick(Sender: TObject);
     procedure TBXItemFClearRecentsClick(Sender: TObject);
     procedure TbxSubmenuWindowPopup(Sender: TTBCustomItem; FromLink: Boolean);
-    procedure TBXSubmenuEnc2Popup(Sender: TTBCustomItem; FromLink: Boolean);
+    procedure TBXSubmenuEncConvertPopup(Sender: TTBCustomItem; FromLink: Boolean);
     procedure TBXItemETimeClick(Sender: TObject);
     procedure TBXItemEPasteClick(Sender: TObject);
     procedure TBXItemEDeleteClick(Sender: TObject);
@@ -3340,7 +3340,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.18.2070';
+  cSynVer = '6.18.2075';
   cSynPyVer = '1.0.147';
 
 const
@@ -10144,10 +10144,10 @@ begin
   FOpenURL(FHelpFilename, Handle);
 end;
 
-procedure TfmMain.TBXSubmenuEncPopup(Sender: TTBCustomItem;
+procedure TfmMain.TBXSubmenuEncRereadPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
-  UpdateEncMenu(TbxSubmenuEnc);
+  UpdateEncMenu(TBXSubmenuEncReread);
 end;
 
 procedure TfmMain.TBXItemSMarkNextClick(Sender: TObject);
@@ -11471,10 +11471,10 @@ begin
     MsgBeep;
 end;
 
-procedure TfmMain.TBXSubmenuEnc2Popup(Sender: TTBCustomItem;
+procedure TfmMain.TBXSubmenuEncConvertPopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 begin
-  UpdateEncMenu(TbxSubmenuEnc2, True{AConvEnc});
+  UpdateEncMenu(TBXSubmenuEncConvert, True{AConvEnc});
 end;
 
 procedure TfmMain.TBXItemETimeClick(Sender: TObject);
@@ -23999,12 +23999,12 @@ begin
       else
       if SCmd='m:{enc-chg}' then
       begin
-        Item.LinkSubitems:= TBXSubmenuEnc;
+        Item.LinkSubitems:= TBXSubmenuEncReread;
       end
       else
       if SCmd='m:{enc-conv}' then
       begin
-        Item.LinkSubitems:= TBXSubmenuEnc2;
+        Item.LinkSubitems:= TBXSubmenuEncConvert;
       end
       else
       if SCmd='m:{folding}' then
@@ -24318,28 +24318,27 @@ end;
 
 procedure TfmMain.InitMenuItemsList;
 begin
-  SetLength(FMenuItems, 18);
+  SetLength(FMenuItems, 16+1);
   //
   with FMenuItems[0] do begin Id:= 'file'; Item:= TbxSubmenuFile; end;
   with FMenuItems[1] do begin Id:= 'edit'; Item:= TbxSubmenuEdit; end;
   with FMenuItems[2] do begin Id:= 'search'; Item:= TbxSubmenuSearch; end;
-  with FMenuItems[3] do begin Id:= 'encoding'; Item:= TbxSubmenuEncodings; end;
-  with FMenuItems[4] do begin Id:= 'bookmarks'; Item:= TbxSubmenuBookmarks; end;
-  with FMenuItems[5] do begin Id:= 'tools'; Item:= TbxSubmenuTools; end;
-  with FMenuItems[6] do begin Id:= 'macros'; Item:= TbxSubmenuMacros; end;
-  with FMenuItems[7] do begin Id:= 'options'; Item:= TbxSubmenuOptions; end;
-  with FMenuItems[8] do begin Id:= 'view'; Item:= TbxSubmenuView; end;
-  with FMenuItems[9] do begin Id:= 'window'; Item:= TbxSubmenuWindow; end;
-  with FMenuItems[10] do begin Id:= 'help'; Item:= TbxSubmenuHelp; end;
+  with FMenuItems[3] do begin Id:= 'bookmarks'; Item:= TbxSubmenuBookmarks; end;
+  with FMenuItems[4] do begin Id:= 'tools'; Item:= TbxSubmenuTools; end;
+  with FMenuItems[5] do begin Id:= 'macros'; Item:= TbxSubmenuMacros; end;
+  with FMenuItems[6] do begin Id:= 'options'; Item:= TbxSubmenuOptions; end;
+  with FMenuItems[7] do begin Id:= 'view'; Item:= TbxSubmenuView; end;
+  with FMenuItems[8] do begin Id:= 'window'; Item:= TbxSubmenuWindow; end;
+  with FMenuItems[9] do begin Id:= 'help'; Item:= TbxSubmenuHelp; end;
   //
-  with FMenuItems[11] do begin Id:= 'g'; Item:= TBXSubmenuGroups; end;
-  with FMenuItems[12] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
-  with FMenuItems[13] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
+  with FMenuItems[10] do begin Id:= 'g'; Item:= TBXSubmenuGroups; end;
+  with FMenuItems[11] do begin Id:= 'x'; Item:= TbxItemMenuX; end;
+  with FMenuItems[12] do begin Id:= 'xx'; Item:= TbxItemMenuXX; end;
   //
-  with FMenuItems[14] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
-  with FMenuItems[15] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
-  with FMenuItems[16] do begin Id:= 'toolbar-view'; Item:= tbView; end;
-  with FMenuItems[17] do begin Id:= 'context'; Item:= PopupEditor; end;
+  with FMenuItems[13] do begin Id:= 'toolbar-file'; Item:= tbFile; end;
+  with FMenuItems[14] do begin Id:= 'toolbar-edit'; Item:= tbEdit; end;
+  with FMenuItems[15] do begin Id:= 'toolbar-view'; Item:= tbView; end;
+  with FMenuItems[16] do begin Id:= 'context'; Item:= PopupEditor; end;
 end;
 
 procedure TfmMain.TBXItemOHideItemsClick(Sender: TObject);

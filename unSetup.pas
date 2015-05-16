@@ -1514,31 +1514,29 @@ procedure TfmSetup.ListColorsDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 const
   cRect = 25; //color rect width
-  cDx = 2;
-  cNone = '?';
+  cDx = 2; //offset near cell
 var
-  NFont: TColor;
   RColor, RText: TRect;
 begin
-  RColor:= Types.Rect(Rect.Left+cDx, Rect.Top+cDx, Rect.Left+cDx+cRect, Rect.Bottom-cDx);
+  RColor:= Types.Rect(Rect.Left+cDx, Rect.Top+cDx-1, Rect.Left+cDx+cRect, Rect.Bottom-cDx);
   RText:= Types.Rect(Rect.Left+cDx+cRect+cDx, Rect.Top, Rect.Right, Rect.Bottom);
   with ListColors.Canvas do
   begin
     Brush.Color:= clWindow;
     FillRect(Rect);
+    Pen.Color:= clGray;
     Brush.Color:= ColorsSetup[cColorsOrder[Index]];
 
     if Brush.Color<>clNone then
-      //draw colored bar
-      FillRect(RColor)
+      Rectangle(RColor)
     else
     begin
-      //draw "?" char
-      NFont:= Font.Color;
-      Font.Color:= clWindowText;
       Brush.Color:= clWindow;
-      TextOut((RColor.Left + RColor.Right) div 2 - TextWidth(cNone) div 2, RColor.Top, cNone);
-      Font.Color:= NFont;
+      Rectangle(RColor);
+      MoveTo(RColor.Left, RColor.Top);
+      LineTo(RColor.Right-1, RColor.Bottom-1);
+      MoveTo(RColor.Right-1, RColor.Top);
+      LineTo(RColor.Left, RColor.Bottom-1);
     end;
 
     if odSelected in State then
