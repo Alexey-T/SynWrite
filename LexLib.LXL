@@ -14633,6 +14633,7 @@ object SyntaxManager: TSyntaxManager
               'finally'
               'for'
               'function'
+              'generic'
               'goto'
               'if'
               'implementation'
@@ -14675,6 +14676,7 @@ object SyntaxManager: TSyntaxManager
               'set'
               'shl'
               'shr'
+              'specialize'
               'stdcall'
               'strict'
               'string'
@@ -14920,6 +14922,38 @@ object SyntaxManager: TSyntaxManager
         HighlightPos = cpBound
         CollapseFmt = '%s-2 %s0'
         GrammaRuleName = 'ClassDecl'
+        TreeItemStyle = 'class (tree)'
+        TreeGroupStyle = 'Group (tree)'
+        TreeItemImage = 1
+        TreeGroupImage = 0
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'class-object declaration'
+        ConditionList = <>
+        BlockEnd = 'end of type'
+        NameFmt = 'class %s0'
+        GroupFmt = 'classes'
+        RefToCondEnd = True
+        HighlightPos = cpAny
+        CollapseFmt = 'class %s0'
+        GrammaRuleName = 'ObjectDecl'
+        TreeItemStyle = 'class (tree)'
+        TreeGroupStyle = 'Group (tree)'
+        TreeItemImage = 1
+        TreeGroupImage = 0
+        IgnoreAsParent = False
+      end
+      item
+        DisplayName = 'generic declaration'
+        ConditionList = <>
+        BlockEnd = 'end of type'
+        NameFmt = 'class %s-1'
+        GroupFmt = 'classes'
+        RefToCondEnd = True
+        HighlightPos = cpAny
+        CollapseFmt = 'class %s-1'
+        GrammaRuleName = 'GenericDecl'
         TreeItemStyle = 'class (tree)'
         TreeGroupStyle = 'Group (tree)'
         TreeItemImage = 1
@@ -15688,12 +15722,14 @@ object SyntaxManager: TSyntaxManager
       'Forward')
     Gramma.Gramma = 
       'Skip = <Comment> | <Preprocessor>;'#13#10#13#10'// Class declaration'#13#10'Clas' +
-      'sDecl = <Identifier> '#39'='#39' '#39'class'#39' InheritedList? <Identifier>;'#13#10#13 +
-      #10'EmptyClass = <Identifier> '#39'='#39' "class" InheritedList '#39';'#39'; '#13#10#13#10'//' +
-      ' Interface declaration'#13#10'IntfDecl = <Identifier> '#39'='#39' ("interface"' +
-      ' | "dispinterface") InheritedList? IntfNextToken;'#13#10'IntfNextToken' +
-      ' = '#39'['#39' | <Identifier>; '#13#10#13#10'InheritedList = '#39'('#39' IdentList '#39')'#39';'#13#10'I' +
-      'dentList = <Identifier> ('#39','#39' <Identifier>)*;'#13#10
+      'sDecl = <Identifier> '#39'='#39' '#39'class'#39' InheritedList? <Identifier>;'#13#10'E' +
+      'mptyClass = <Identifier> '#39'='#39' "class" InheritedList '#39';'#39';'#13#10#13#10'// Ge' +
+      'neric'#13#10'ObjectDecl = <Identifier> '#39'='#39' "object"'#13#10'GenericDecl = "ge' +
+      'neric" <Identifier>'#13#10#13#10'// Interface declaration'#13#10'IntfDecl = <Ide' +
+      'ntifier> '#39'='#39' ("interface" | "dispinterface") InheritedList? Intf' +
+      'NextToken;'#13#10'IntfNextToken = '#39'['#39' | <Identifier>; '#13#10#13#10'InheritedLis' +
+      't = '#39'('#39' IdentList '#39')'#39';'#13#10'IdentList = <Identifier> ('#39','#39' <Identifie' +
+      'r>)*;'#13#10
     CurrentLineStyle = 'Current Line'
     Extentions = 'pas inc dpr dpk lpr p pp'
     LexerName = 'Pascal'
