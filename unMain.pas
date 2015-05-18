@@ -5739,14 +5739,10 @@ begin
       if opLeftRightSelJump and (Ed.SelLength>0) and not (soPersistentBlocks in Ed.Options) then
       begin
         n1:= Ed.SelStart;
-        n2:= Ed.SelLength;
         if Ed.CaretStrPos<>n1 then
-        begin
-          Ed.CaretStrPos:= n1;
-          Ed.SetSelection(n1, n2, true);
-        end
+          Ed.CaretStrPos:= n1
         else
-          Handled:= False;
+          Ed.ResetSelection;
       end
       else
         Handled:= False;
@@ -5762,12 +5758,9 @@ begin
         n1:= Ed.SelStart;
         n2:= Ed.SelLength;
         if Ed.CaretStrPos<>n1+n2 then
-        begin
-          Ed.CaretStrPos:= n1+n2;
-          Ed.SetSelection(n1, n2, true);
-        end
+          Ed.CaretStrPos:= n1+n2
         else
-          Handled:= False;
+          Ed.ResetSelection;
       end
       else
         Handled:= False;
