@@ -979,8 +979,6 @@ begin
 end;
 
 procedure TEditorFrame.UpdateGutterWidth(Sender: TObject);
-const
-  cSpace = 10; //addition to line-numbers band width
 begin
   if Assigned(Parent) then //needed for Gutter.Bands[].Width:=...
     with Sender as TSyntaxMemo do
@@ -988,7 +986,7 @@ begin
       begin
         Canvas.Font.Assign(LineNumbers.Font);
         Gutter.Bands[LineNumbers.Band].Width:=
-          Canvas.TextWidth(IntToStr(Max(Lines.Count, 10))) + cSpace;
+          Canvas.TextWidth(IntToStr(Max(Lines.Count, 10))) + cGutterBandSizeNumSpace;
       end;
 end;
 

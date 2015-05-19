@@ -63,6 +63,9 @@ uses
   PythonGUIInputOutput;
 
 const
+  cGutterBandSizeFold = 13;
+  cGutterBandSizeBm = 16;
+  cGutterBandSizeNumSpace = 10; //addition to line-numbers band width
   opMruForPlugin = false; //use recent list for Lister-plugin
   cMaxFilesInFolder = 50; //if more folder in dir, show confirmation for "Syn.exe dir"
   cTabColors = 10; //number of user-defined tab colors
@@ -6939,8 +6942,8 @@ begin
   end
   else
   begin
-    F.EditorMaster.Gutter.Bands[cBandFolding].Width:= 15;
-    F.EditorSlave.Gutter.Bands[cBandFolding].Width:= 15;
+    F.EditorMaster.Gutter.Bands[cBandFolding].Width:= cGutterBandSizeFold;
+    F.EditorSlave.Gutter.Bands[cBandFolding].Width:= cGutterBandSizeFold;
   end;
 
   if F.EditorMaster.LineNumbers.Visible then
@@ -19314,7 +19317,7 @@ begin
       EditorMaster.HintProps.DelayBefore:= opAcpHintDelay;
       EditorSlave.HintProps.DelayBefore:= opAcpHintDelay;
 
-      N:= IfThen(opShowBookmarkColumn, 15, 0);
+      N:= IfThen(opShowBookmarkColumn, cGutterBandSizeBm, 0);
       EditorMaster.Gutter.Bands[cBandBoommarks].Width:= N;
       EditorSlave.Gutter.Bands[cBandBoommarks].Width:= N;
 
