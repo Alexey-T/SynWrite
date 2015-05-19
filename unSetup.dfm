@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabTree
+    ActivePage = tabColors
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -362,6 +362,7 @@ object fmSetup: TfmSetup
           Top = 32
           Width = 233
           Height = 24
+          NoneColorColor = clWhite
           Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames]
           DropDownCount = 20
           ItemHeight = 18
