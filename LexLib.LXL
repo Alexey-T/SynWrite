@@ -6816,7 +6816,7 @@ object SyntaxManager: TSyntaxManager
       end>
     TokenRules = <
       item
-        DisplayName = 'Comment 1'
+        DisplayName = 'Comment'
         StyleName = 'Comment'
         TokenType = 1
         Expression = '(?s)/\*.*?(\*/|\Z)'
@@ -6824,10 +6824,10 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Comment 2'
+        DisplayName = 'Comment line'
         StyleName = 'Comment'
         TokenType = 1
-        Expression = '#handle comment before </script>'#13#10'//.*? (?=<\w) |'#13#10'//.* '
+        Expression = '#handle comment before </script>'#13#10'//.*? (?=<[/\w]) |'#13#10'//.* '
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -6986,6 +6986,7 @@ object SyntaxManager: TSyntaxManager
               'ajaxStart'
               'ajaxStop'
               'ajaxSuccess'
+              'altKey'
               'always'
               'andSelf'
               'animate'
@@ -6996,8 +6997,10 @@ object SyntaxManager: TSyntaxManager
               'before'
               'bind'
               'blur'
+              'bottom'
               'browser'
               'button'
+              'cancelBubble'
               'change'
               'checkbox'
               'checked'
@@ -7009,7 +7012,9 @@ object SyntaxManager: TSyntaxManager
               'contains'
               'contents'
               'context'
+              'core'
               'css'
+              'ctrlKey'
               'data'
               'dblclick'
               'delay'
@@ -7065,6 +7070,7 @@ object SyntaxManager: TSyntaxManager
               'image'
               'inArray'
               'index'
+              'init'
               'innerHeight'
               'innerWidth'
               'input'
@@ -7081,6 +7087,7 @@ object SyntaxManager: TSyntaxManager
               'isWindow'
               'isXMLDoc'
               'jQuery'
+              'keyCode'
               'keydown'
               'keypress'
               'keyup'
@@ -7114,6 +7121,7 @@ object SyntaxManager: TSyntaxManager
               'nth-child-last'
               'nth-first-of-type'
               'nth-last-of-type'
+              'obj'
               'odd'
               'off'
               'offset'
@@ -7128,6 +7136,7 @@ object SyntaxManager: TSyntaxManager
               'parent'
               'parents'
               'parentsUntil'
+              'parseInt'
               'parseJSON'
               'parseXML'
               'password'
@@ -7138,10 +7147,12 @@ object SyntaxManager: TSyntaxManager
               'prependTo'
               'prev'
               'prevAll'
+              'preventDefault'
               'prevUntil'
               'progress'
               'promise'
               'prop'
+              'prototype'
               'proxy'
               'queue'
               'radio'
@@ -7166,8 +7177,11 @@ object SyntaxManager: TSyntaxManager
               'select'
               'selected'
               'selector'
+              'self'
               'serialize'
               'serializeArray'
+              'setTimeout'
+              'shiftKey'
               'show'
               'siblings'
               'size'
@@ -7177,6 +7191,7 @@ object SyntaxManager: TSyntaxManager
               'slideUp'
               'state'
               'stop'
+              'stopPropagation'
               'sub'
               'submit'
               'support'
@@ -7185,6 +7200,7 @@ object SyntaxManager: TSyntaxManager
               'toArray'
               'toggle'
               'toggleClass'
+              'top'
               'trigger'
               'triggerHandler'
               'trim'
@@ -7198,6 +7214,7 @@ object SyntaxManager: TSyntaxManager
               'visible'
               'when'
               'width'
+              'window'
               'wrap'
               'wrapAll'
               'wrapInner')
