@@ -2906,7 +2906,7 @@ object fmMain: TfmMain
       UndoLimit = 0
       StaplePen.Color = clGray
       StaplePen.Style = psDot
-      StapleOffset = -1
+      StapleOffset = 1
       CollapseBreakColor = clBlack
       CollapseStyle = csNameWhenDefined
       DefaultStyles.SelectioMark.Font.Charset = DEFAULT_CHARSET
@@ -4029,13 +4029,13 @@ object fmMain: TfmMain
       'RightMargin'
       'SelectModeDefault'
       'ShowRightMargin'
-      'StapleOffset'
       'TabList.AsString'
       'TabMode'
       'WordWrap'
       'ecACP.FilterType'
       'ecACP.DropDownCount'
       'SyntKeyMapping.AsString'
+      ''
       ''
       ''
       ''

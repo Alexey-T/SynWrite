@@ -2936,6 +2936,7 @@ type
 
     //opt
     opStapleKind: integer;
+    opStapleOffset: integer;
     opShowBookmarkColumn: boolean;
     opGroupMode: TATGroupsMode;
     opGroupSplit: Integer;
@@ -3344,7 +3345,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.18.2090';
+  cSynVer = '6.18.2100';
   cSynPyVer = '1.0.147';
 
 const
@@ -4123,7 +4124,10 @@ begin
   end;
   Result.EditorSlave.StaplePen.Style:= Result.EditorMaster.StaplePen.Style;
   Result.EditorSlave.StaplesEnabled:= Result.EditorMaster.StaplesEnabled;
-  
+
+  Result.EditorMaster.StapleOffset:= opStapleOffset;
+  Result.EditorSlave.StapleOffset:= opStapleOffset;
+
   UpdateEditorNonPrinted(Result.EditorMaster);
   UpdateEditorNonPrinted(Result.EditorSlave);
 
@@ -4644,6 +4648,7 @@ begin
     TemplateEditor.UndoLimit:= ReadInteger('Setup', 'Undo', 2000);
     opHintScroll:= ReadBool('Setup', 'HintScroll', false);
     opShowBookmarkColumn:= ReadBool('Setup', 'ShowBm', true);
+    opStapleOffset:= ReadInteger('Setup', 'StapleOffset', 1);
     opStapleKind:= ReadInteger('Setup', 'StapleKind', 0);
     opPyChangeDelay:= ReadInteger('Setup', 'PyChangeDelay', 3000);
 

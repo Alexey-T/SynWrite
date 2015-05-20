@@ -270,8 +270,7 @@ type
     cbDrawFocus: TTntCheckBox;
     cbRuler: TTntCheckBox;
     cbStapleKind: TTntComboBox;
-    edStapleOffset: TSpinEdit;
-    cbDrawWrapMark: TTntCheckBox;
+    cbGutterWrapMark: TTntCheckBox;
     cbDrawCol: TTntCheckBox;
     boxNonPrint: TTntGroupBox;
     cbNPrintShow: TTntCheckBox;
@@ -363,10 +362,10 @@ type
     cbHistoryBkmk: TTntCheckBox;
     cbHistoryFold: TTntCheckBox;
     cbHistoryWrap: TTntCheckBox;
-    cbGutterBm: TTntCheckBox;
+    cbGutterBmCol: TTntCheckBox;
     edAcpHintDelay: TSpinEdit;
     TntLabel43: TTntLabel;
-    cbSyncIcon: TTntCheckBox;
+    cbGutterSyncIcon: TTntCheckBox;
     cbUndoSimple: TTntCheckBox;
     cbSelJump: TTntCheckBox;
     cbTabDblClose: TTntCheckBox;
@@ -2553,9 +2552,8 @@ begin
     TemplateEditor.ShowRightMargin:= cbMargin.Checked;
     TemplateEditor.RightMargin:= edMargin.Value;
     TemplateEditor.LineNumbers.NumberingStyle:= TLineNumberingStyle(edLineNums.ItemIndex);
-    TemplateEditor.StapleOffset:= edStapleOffset.Value;
-    opShowBookmarkColumn:= cbGutterBm.Checked;
-    opSyncEditIcon:= cbSyncIcon.Checked;
+    opShowBookmarkColumn:= cbGutterBmCol.Checked;
+    opSyncEditIcon:= cbGutterSyncIcon.Checked;
     opStapleKind:= cbStapleKind.ItemIndex;
 
     if cbDrawFocus.Checked then
@@ -2600,7 +2598,7 @@ begin
     opNonPrintEol:= cbNPrintEol.Checked;
     opNonPrintEolDetail:= cbNPrintEolEx.Checked;
 
-    opShowWrapMark:= cbDrawWrapMark.Checked;
+    opShowWrapMark:= cbGutterWrapMark.Checked;
     opShowCurrentColumn:= cbDrawCol.Checked;
 
     ApplyEdOptions;
@@ -2677,15 +2675,14 @@ begin
     cbHideCursor.Checked:= soHideCursorOnType in TemplateEditor.Options;
     cbDrawFocus.Checked:= soDrawCurLineFocus in TemplateEditor.Options;
     cbDrawLineBG.Checked:= TemplateEditor.DefaultStyles.CurrentLine.Enabled;
-    cbGutterBm.Checked:= opShowBookmarkColumn;
-    cbSyncIcon.Checked:= opSyncEditIcon;
+    cbGutterWrapMark.Checked:= opShowWrapMark;
+    cbGutterBmCol.Checked:= opShowBookmarkColumn;
+    cbGutterSyncIcon.Checked:= opSyncEditIcon;
     cbMargin.Checked:= TemplateEditor.ShowRightMargin;
     edMargin.Value:= TemplateEditor.RightMargin;
     edLineSpace.Value:= TemplateEditor.LineSpacing;
     edLineNums.ItemIndex:= Ord(TemplateEditor.LineNumbers.NumberingStyle);
-    edStapleOffset.Value:= TemplateEditor.StapleOffset;
     edColorUnder.Value:= opUnderlineColored;
-    cbDrawWrapMark.Checked:= opShowWrapMark;
     cbDrawCol.Checked:= opShowCurrentColumn;
     cbStapleKind.ItemIndex:= opStapleKind;
 
