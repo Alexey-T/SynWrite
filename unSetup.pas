@@ -269,7 +269,7 @@ type
     edLineNums: TTntComboBox;
     cbDrawFocus: TTntCheckBox;
     cbRuler: TTntCheckBox;
-    cbStaples: TTntComboBox;
+    cbStapleKind: TTntComboBox;
     edStapleOffset: TSpinEdit;
     cbDrawWrapMark: TTntCheckBox;
     cbDrawCol: TTntCheckBox;
@@ -428,8 +428,6 @@ type
     procedure cbSessSaveClick(Sender: TObject);
     procedure edFilterChange(Sender: TObject);
     procedure TimerFiltTimer(Sender: TObject);
-    procedure cbStaplesDrawItem(Control: TWinControl; Index: Integer;
-      Rect: TRect; State: TOwnerDrawState);
     procedure edIndentKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure bFiltClearClick(Sender: TObject);
@@ -1402,31 +1400,6 @@ procedure TfmSetup.TimerFiltTimer(Sender: TObject);
 begin
   TimerFilt.Enabled:= false;
   DoFillKeys;
-end;
-
-procedure TfmSetup.cbStaplesDrawItem(Control: TWinControl; Index: Integer;
-  Rect: TRect; State: TOwnerDrawState);
-begin
-  with cbStaples.Canvas do
-  begin
-    Brush.Color:= clWindow;
-    FillRect(Rect);
-    Pen.Color:= clBlack;
-    Pen.Style:= TPenStyle(Index);
-    Pen.Width:= 1;
-    MoveTo(Rect.Left+4, (Rect.Top+Rect.Bottom)div 2);
-    LineTo(Rect.Right-4, (Rect.Top+Rect.Bottom)div 2);
-    MoveTo(Rect.Left+4, (Rect.Top+Rect.Bottom)div 2+1);
-    LineTo(Rect.Right-4, (Rect.Top+Rect.Bottom)div 2+1);
-    if odSelected in State then
-    begin
-      Brush.Style:= bsClear;
-      Pen.Color:= clNavy;
-      Pen.Style:= psSolid;
-      InflateRect(Rect, -1, -1);
-      Rectangle(Rect);
-    end;
-  end;
 end;
 
 procedure TfmSetup.edIndentKeyDown(Sender: TObject; var Key: Word;
@@ -2581,9 +2554,9 @@ begin
     TemplateEditor.RightMargin:= edMargin.Value;
     TemplateEditor.LineNumbers.NumberingStyle:= TLineNumberingStyle(edLineNums.ItemIndex);
     TemplateEditor.StapleOffset:= edStapleOffset.Value;
-    TemplateEditor.StaplePen.Style:= TPenStyle(cbStaples.ItemIndex);
     opShowBookmarkColumn:= cbGutterBm.Checked;
     opSyncEditIcon:= cbSyncIcon.Checked;
+    opStapleKind:= cbStapleKind.ItemIndex;
 
     if cbDrawFocus.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soDrawCurLineFocus]
@@ -2697,13 +2670,7 @@ begin
 end;
 
 procedure TfmSetup.InitView;
-var
-  i: Integer;
 begin
-  cbStaples.Items.Clear;
-  for i:= 0 to Ord(psClear) do
-    cbStaples.Items.Add('-'); //empty items for line styles
-
   with fmMain do
   begin
     cbRuler.Checked:= TemplateEditor.HorzRuler.Visible;
@@ -2718,9 +2685,9 @@ begin
     edLineNums.ItemIndex:= Ord(TemplateEditor.LineNumbers.NumberingStyle);
     edStapleOffset.Value:= TemplateEditor.StapleOffset;
     edColorUnder.Value:= opUnderlineColored;
-    cbStaples.ItemIndex:= Ord(TemplateEditor.StaplePen.Style);
     cbDrawWrapMark.Checked:= opShowWrapMark;
     cbDrawCol.Checked:= opShowCurrentColumn;
+    cbStapleKind.ItemIndex:= opStapleKind;
 
     if not TemplateEditor.WordWrap then
       edWrap.ItemIndex:= 2

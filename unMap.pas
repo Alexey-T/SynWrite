@@ -63,6 +63,7 @@ begin
   edMap.Gutter.Visible:= false;
   edMap.DefaultStyles.SearchMark.Font.Color:= clNone;
   edMap.DefaultStyles.SearchMark.BgColor:= $F4F0F6;
+  edMap.StaplesEnabled:= false; //must for map(to not break main ed)
 end;
 
 
@@ -102,10 +103,6 @@ begin
   if Button=mbLeft then
   begin
     FMouseDown:= true;
-    {no need
-    edMap.Cursor:= crSizeNS;
-    SetCursor(Screen.Cursors[edMap.Cursor]);
-    }
   end;
 end;
 

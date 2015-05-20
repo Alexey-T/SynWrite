@@ -6765,15 +6765,7 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Reserved word'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'Id const'
+        DisplayName = 'Id keyword'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clNavy
         Font.Height = -13
@@ -6781,9 +6773,17 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Id Jquery'
+        DisplayName = 'Id standard'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clPurple
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+      end
+      item
+        DisplayName = 'Id Jquery'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlue
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
@@ -6907,15 +6907,20 @@ object SyntaxManager: TSyntaxManager
       end>
     BlockRules = <
       item
-        DisplayName = 'keywords'
-        StyleName = 'Reserved word'
+        DisplayName = 'id keywords'
+        StyleName = 'Id keyword'
         BlockType = btTagDetect
         ConditionList = <
           item
             TagList.Strings = (
+              'abstract'
+              'arguments'
+              'boolean'
               'break'
+              'byte'
               'case'
               'catch'
+              'char'
               'class'
               'const'
               'continue'
@@ -6923,45 +6928,84 @@ object SyntaxManager: TSyntaxManager
               'default'
               'delete'
               'do'
+              'double'
               'else'
               'enum'
+              'eval'
               'export'
               'extends'
               'false'
+              'final'
               'finally'
+              'float'
               'for'
               'function'
+              'goto'
               'if'
+              'implements'
               'import'
               'in'
+              'instanceof'
+              'int'
+              'interface'
+              'let'
+              'long'
+              'native'
               'new'
               'null'
+              'package'
+              'private'
+              'protected'
+              'public'
               'return'
+              'short'
+              'static'
               'super'
               'switch'
+              'synchronized'
               'this'
               'throw'
+              'throws'
+              'transient'
               'true'
               'try'
               'typeof'
               'var'
               'void'
+              'volatile'
               'while'
-              'with')
+              'with'
+              'yield')
             TokenTypes = 4
           end>
         HighlightPos = cpBound
         IgnoreAsParent = False
       end
       item
-        DisplayName = 'id const'
-        StyleName = 'Id const'
+        DisplayName = 'id standard'
+        StyleName = 'Id standard'
         BlockType = btTagDetect
         ConditionList = <
           item
             TagList.Strings = (
-              'false'
-              'true')
+              'Array'
+              'Date'
+              'hasOwnProperty'
+              'Infinity'
+              'isFinite'
+              'isNaN'
+              'isPrototypeOf'
+              'length'
+              'Math'
+              'name'
+              'NaN'
+              'Number'
+              'Object'
+              'prototype'
+              'String'
+              'toString'
+              'undefined'
+              'valueOf')
             TokenTypes = 4
           end>
         HighlightPos = cpAny
@@ -7095,7 +7139,6 @@ object SyntaxManager: TSyntaxManager
               'last'
               'last-child'
               'last-of-type'
-              'length'
               'live'
               'load'
               'lt'
@@ -7152,7 +7195,6 @@ object SyntaxManager: TSyntaxManager
               'progress'
               'promise'
               'prop'
-              'prototype'
               'proxy'
               'queue'
               'radio'
@@ -7412,14 +7454,14 @@ object SyntaxManager: TSyntaxManager
     SubAnalyzers = <>
     SampleText.Strings = (
       '//text text'
-      '$(some).visible true false '
+      'NaN Object $ offset'
       ''
-      'function Init() {'
+      'function init() {'
       #9'addMenuItem('#39'Txt'#39', '#39'Ctrl+\'#39#39');'
       #9'addMenuItem('#39'Txt3'#39', '#39'Ctrl+Alt+;'#39');'
       '}'
       ''
-      'var s_regex = /^<\/?\w[\w\:\-]*.*?>/gi;'
+      'var s_regex = /^<\/?\w.*?>/gi;'
       '    not_regex = 1 / 2 + (0xFF+10) / 3;'
       '    '
       'findNewEditPoint: function(inc, offset) {'
@@ -7434,7 +7476,7 @@ object SyntaxManager: TSyntaxManager
       ''
       'function render(){'
       #9#9'$('#39'#basket'#39').html('#39#39');'
-      #9#9'for(id in basket){'
+      #9#9'for (id in basket){'
       #9#9#9'if(basket[id].q>0){'
       #9#9#9#9'b=b+" \'
       #9#9#9#9#9'<div class='#39'"+cl+"'#39'> \'
@@ -7465,7 +7507,9 @@ object SyntaxManager: TSyntaxManager
       '-strings oneline '#39'...'#39
       '-strings multiline "..."'
       '-strings regex /.../gi'
-      '-strings heredoc')
+      '-strings heredoc'
+      ''
+      'Keywords: http://www.w3schools.com/js/js_reserved.asp')
     LineComment = '//'
     Charset = DEFAULT_CHARSET
   end

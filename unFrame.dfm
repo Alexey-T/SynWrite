@@ -206,6 +206,8 @@ object EditorFrame: TEditorFrame
       HorzRuler.Font.Height = -11
       HorzRuler.Font.Name = 'MS Sans Serif'
       HorzRuler.Font.Style = []
+      TextMargins.AllowDrag = False
+      TextMargins.DragWithCtrl = False
       TextMargins = <
         item
           Pen.Color = clSilver
@@ -418,6 +420,8 @@ object EditorFrame: TEditorFrame
       HorzRuler.Font.Height = -11
       HorzRuler.Font.Name = 'MS Sans Serif'
       HorzRuler.Font.Style = []
+      TextMargins.AllowDrag = False
+      TextMargins.DragWithCtrl = False
       TextMargins = <
         item
           Pen.Color = clSilver

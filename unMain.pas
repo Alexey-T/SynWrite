@@ -2935,6 +2935,7 @@ type
     FProjPreviewButton: TSpTbxItem;
 
     //opt
+    opStapleKind: integer;
     opShowBookmarkColumn: boolean;
     opGroupMode: TATGroupsMode;
     opGroupSplit: Integer;
@@ -3343,7 +3344,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.18.2080';
+  cSynVer = '6.18.2090';
   cSynPyVer = '1.0.147';
 
 const
@@ -4115,6 +4116,14 @@ begin
     Result.EditorSlave.Gutter.Bands[cBandBoommarks].Width:= 0;
   end;
 
+  case opStapleKind of
+    0: Result.EditorMaster.StaplePen.Style:= psSolid;
+    1: Result.EditorMaster.StaplePen.Style:= psDot;
+    2: Result.EditorMaster.StaplesEnabled:= false;
+  end;
+  Result.EditorSlave.StaplePen.Style:= Result.EditorMaster.StaplePen.Style;
+  Result.EditorSlave.StaplesEnabled:= Result.EditorMaster.StaplesEnabled;
+  
   UpdateEditorNonPrinted(Result.EditorMaster);
   UpdateEditorNonPrinted(Result.EditorSlave);
 
@@ -4635,6 +4644,7 @@ begin
     TemplateEditor.UndoLimit:= ReadInteger('Setup', 'Undo', 2000);
     opHintScroll:= ReadBool('Setup', 'HintScroll', false);
     opShowBookmarkColumn:= ReadBool('Setup', 'ShowBm', true);
+    opStapleKind:= ReadInteger('Setup', 'StapleKind', 0);
     opPyChangeDelay:= ReadInteger('Setup', 'PyChangeDelay', 3000);
 
     opShowPanelTitles:= ReadBool('View', 'PaneTitle', true);
@@ -5076,6 +5086,7 @@ begin
     WriteBool('Setup', 'BkUndo', opBkUndo);
     WriteBool('Setup', 'BrHi', opHiliteBrackets);
     WriteBool('Setup', 'ShowBm', opShowBookmarkColumn);
+    WriteInteger('Setup', 'StapleKind', opStapleKind);
 
     WriteString('Setup', 'Paths', UTF8Encode(opProjPaths));
     WriteBool('Setup', 'SpellEn', opSpellEn);
@@ -25476,6 +25487,7 @@ begin
       Ed.RightMargin:= CurrentEditor.RightMargin;
       Ed.Options:= CurrentEditor.Options;
       Ed.OptionsEx:= CurrentEditor.OptionsEx;
+      Ed.StaplesEnabled:= CurrentEditor.StaplesEnabled;
       Ed.StapleOffset:= CurrentEditor.StapleOffset;
       Ed.StaplePen.Assign(CurrentEditor.StaplePen);
 
