@@ -25,9 +25,11 @@ function EditorGotoModifiedLine(Ed: TSyntaxMemo; ANext: boolean; ASavedToo: bool
 procedure EditorPrint(Ed: TSyntaxMemo; ASelOnly: boolean;
   const ATitle: string; APrinter: TecSyntPrinter);
 function EditorGetBlockStaple(Ed: TSyntaxMemo; PosX, PosY: Integer): TBlockStaple;
-procedure EditorSetCaretShape(Ed: TSyntaxMemo; Opt: Integer);
 function EditorGetColorPropertyById(Ed: TSyntaxMemo; const Id: string): Longint;
 procedure EditorSetColorPropertyById(Ed: TSyntaxMemo; const Id: string; Color: Longint);
+
+type TATCaretShape = (cCrVert1px, cCrVert2px, cCrVert3px, cCrVertHalf, cCrFull, cCrHorzSmall, cCrHorzHalf);
+procedure EditorSetCaretShape(Ed: TSyntaxMemo; AShape: TATCaretShape; AInsMode: boolean);
 
 procedure EditorUnderlineColorItem(Ed: TSyntaxMemo;
   const StrItem: Widestring;
@@ -3191,43 +3193,50 @@ begin
     Result:= 0;
 end;
 
-procedure EditorSetCaretShape(Ed: TSyntaxMemo; Opt: Integer);
+procedure EditorSetCaretShape(Ed: TSyntaxMemo; AShape: TATCaretShape; AInsMode: boolean);
+var
+  sh: TecCaretShape;
 begin
-  case Opt of
-    0:
+  if AInsMode then
+    sh:= Ed.Caret.Insert
+  else
+    sh:= Ed.Caret.Overwrite;
+
+  case AShape of
+    cCrVert1px:
       begin
-        Ed.Caret.Insert.Width:= -1; //negative: vertical line x1
-        Ed.Caret.Insert.Height:= 100;
+        sh.Width:= -1; //negative: vertical line x1
+        sh.Height:= 100;
       end;
-    1:
+    cCrVert2px:
       begin
-        Ed.Caret.Insert.Width:= -2; //negative: vertical line x2
-        Ed.Caret.Insert.Height:= 100;
+        sh.Width:= -2; //negative: vertical line x2
+        sh.Height:= 100;
       end;
-    2:
+    cCrVert3px:
       begin
-        Ed.Caret.Insert.Width:= -3; //negative: vertical line x3
-        Ed.Caret.Insert.Height:= 100;
+        sh.Width:= -3; //negative: vertical line x3
+        sh.Height:= 100;
       end;
-    3:
+    cCrVertHalf:
       begin
-        Ed.Caret.Insert.Width:= 50; //percents
-        Ed.Caret.Insert.Height:= 100;
+        sh.Width:= 50; //percents
+        sh.Height:= 100;
       end;
-    4:
+    cCrFull:
       begin
-        Ed.Caret.Insert.Width:= 100;
-        Ed.Caret.Insert.Height:= 100;
+        sh.Width:= 100;
+        sh.Height:= 100;
       end;
-    5:
+    cCrHorzSmall:
       begin
-        Ed.Caret.Insert.Width:= 100;
-        Ed.Caret.Insert.Height:= 20;
+        sh.Width:= 100;
+        sh.Height:= 20;
       end;
-    6:
+    cCrHorzHalf:
       begin
-        Ed.Caret.Insert.Width:= 100;
-        Ed.Caret.Insert.Height:= 50;
+        sh.Width:= 100;
+        sh.Height:= 50;
       end;
     else
       raise Exception.Create('Unknown caret shape');

@@ -14,7 +14,7 @@ uses
   TntStdCtrls, TntComCtrls, TntForms, TntGrids,
   DKLang,
 
-  unMain, unSetupOvr,
+  unMain, unSetupOvr, unProcEditor,
   Menus, TntMenus;
 
 type
@@ -202,10 +202,10 @@ type
     TntLabel17: TTntLabel;
     cbSrQsCap: TTntCheckBox;
     boxCarets2: TTntGroupBox;
-    edCaretShape: TTntComboBox;
+    edCaretShapeIns: TTntComboBox;
     TntLabel40: TTntLabel;
     cbCaretSmart: TTntCheckBox;
-    cbCaretKeepOnPaste: TTntCheckBox;
+    cbCaretKeepPos: TTntCheckBox;
     tabNewOpen: TTntTabSheet;
     boxNew: TTntGroupBox;
     TntLabel4: TTntLabel;
@@ -370,6 +370,9 @@ type
     cbCaretVirtual: TTntCheckBox;
     cbCaretMulti: TTntCheckBox;
     LabelHelpCarets: TTntLabel;
+    cbCaretROnly: TTntCheckBox;
+    TntLabel18: TTntLabel;
+    edCaretShapeOvr: TTntComboBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1637,6 +1640,8 @@ begin
 
   OpenDialogPre.Filter:= cColorFilter;
   SaveDialogPre.Filter:= cColorFilter;
+
+  edCaretShapeOvr.Items.Assign(edCaretShapeIns.Items);
 end;
 
 procedure TfmSetup.tabCaretsShow(Sender: TObject);
@@ -1738,7 +1743,8 @@ begin
   with fmMain do
   begin
     opCaretsEnabled:= cbCaretMulti.Checked;
-    opCaretShape:= edCaretShape.ItemIndex;
+    opCaretShapeIns:= TATCaretShape(edCaretShapeIns.ItemIndex);
+    opCaretShapeOvr:= TATCaretShape(edCaretShapeOvr.ItemIndex);
     opCaretTime:= edCaretTime.Position;
 
     if cbCaretSmart.Checked then
@@ -1751,12 +1757,15 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options + [soKeepCaretInText];
 
-    if cbCaretKeepOnPaste.Checked then
+    if cbCaretKeepPos.Checked then
       TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx + [soKeepCaretPaste]
     else
       TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx - [soKeepCaretPaste];
 
-    TemplateEditor.Options:= TemplateEditor.Options + [soAlwaysShowCaret];
+    if cbCaretROnly.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options + [soAlwaysShowCaret]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soAlwaysShowCaret];
 
     ApplyCarets;
     ApplyColorsFontsToFrames;
@@ -2071,12 +2080,14 @@ begin
   with fmMain do
   begin
     cbCaretMulti.Checked:= opCaretsEnabled;
-    edCaretShape.ItemIndex:= opCaretShape;
+    edCaretShapeIns.ItemIndex:= Ord(opCaretShapeIns);
+    edCaretShapeOvr.ItemIndex:= Ord(opCaretShapeOvr);
     edCaretTime.Position:= opCaretTime;
 
     cbCaretSmart.Checked:= soSmartCaret in TemplateEditor.Options;
     cbCaretVirtual.Checked:= not (soKeepCaretInText in TemplateEditor.Options);
-    cbCaretKeepOnPaste.Checked:= soKeepCaretPaste in TemplateEditor.OptionsEx;
+    cbCaretKeepPos.Checked:= soKeepCaretPaste in TemplateEditor.OptionsEx;
+    cbCaretROnly.Checked:= soAlwaysShowCaret in TemplateEditor.Options;
   end;
 end;
 

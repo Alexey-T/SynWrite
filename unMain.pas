@@ -2952,7 +2952,8 @@ type
     opNonPrintSpaces,
     opNonPrintEol,
     opNonPrintEolDetail: boolean;
-    opCaretShape: integer;
+    opCaretShapeIns,
+    opCaretShapeOvr: TATCaretShape;
     opMaxTreeMatches: integer;
     opCaretsEnabled: boolean;
     opCaretsIndicator: integer;
@@ -4137,8 +4138,10 @@ begin
   Result.CaretsGutterColor:= opColorCaretsGutter;
   Result.CaretsIndicator:= opCaretsIndicator;
 
-  EditorSetCaretShape(Result.EditorMaster, opCaretShape);
-  EditorSetCaretShape(Result.EditorSlave, opCaretShape);
+  EditorSetCaretShape(Result.EditorMaster, opCaretShapeIns, true);
+  EditorSetCaretShape(Result.EditorSlave, opCaretShapeIns, true);
+  EditorSetCaretShape(Result.EditorMaster, opCaretShapeOvr, false);
+  EditorSetCaretShape(Result.EditorSlave, opCaretShapeOvr, false);
 
   PropsManager.Add(Result.EditorMaster);
   PropsManager.Add(Result.EditorSlave);
@@ -4645,7 +4648,7 @@ begin
 
     //setup
     opClipHook:= ReadBool('Setup', 'ClipHook', true);
-    TemplateEditor.UndoLimit:= ReadInteger('Setup', 'Undo', 2000);
+    TemplateEditor.UndoLimit:= ReadInteger('Setup', 'Undo', 5000);
     opHintScroll:= ReadBool('Setup', 'HintScroll', false);
     opShowBookmarkColumn:= ReadBool('Setup', 'ShowBm', true);
     opStapleOffset:= ReadInteger('Setup', 'StapleOffset', 1);
@@ -4823,7 +4826,8 @@ begin
     opMinimapFontSize:= ReadInteger('Setup', 'MinimapFont', 1);
     opMicroMap:= ReadBool('View', 'MicroMap', false);
     opShowCurrentColumn:= ReadBool('View', 'CurrCol', false);
-    opCaretShape:= ReadInteger('View', 'CaretType', 1);
+    opCaretShapeIns:= TATCaretShape(ReadInteger('View', 'CaretType', Ord(cCrVert1px)));
+    opCaretShapeOvr:= TATCaretShape(ReadInteger('View', 'CaretTypeOvr', Ord(cCrFull)));
     opCaretTime:= ReadInteger('View', 'CaretTime', Windows.GetCaretBlinkTime);
 
     NCount:= ReadInteger('View', 'NPrint', 0+2+4);
@@ -5066,7 +5070,8 @@ begin
     //view
     WriteBool('View', 'MicroMap', opMicroMap);
     WriteBool('View', 'CurrCol', opShowCurrentColumn);
-    WriteInteger('View', 'CaretType', opCaretShape);
+    WriteInteger('View', 'CaretType', Ord(opCaretShapeIns));
+    WriteInteger('View', 'CaretTypeOvr', Ord(opCaretShapeOvr));
     WriteInteger('View', 'CaretTime', opCaretTime);
 
     WriteInteger('View', 'NPrint',
@@ -23037,9 +23042,10 @@ begin
       CaretsGutterColor:= opColorCaretsGutter;
       CaretsIndicator:= opCaretsIndicator;
 
-      //apply "Block caret"
-      EditorSetCaretShape(EditorMaster, opCaretShape);
-      EditorSetCaretShape(EditorSlave, opCaretShape);
+      EditorSetCaretShape(EditorMaster, opCaretShapeIns, true);
+      EditorSetCaretShape(EditorSlave, opCaretShapeIns, true);
+      EditorSetCaretShape(EditorMaster, opCaretShapeOvr, false);
+      EditorSetCaretShape(EditorSlave, opCaretShapeOvr, false);
     end;
 end;
 
