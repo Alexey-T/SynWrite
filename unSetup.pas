@@ -195,9 +195,6 @@ type
     cbTreeDelay: TSpinEdit;
     TntLabel39: TTntLabel;
     tabCarets: TTntTabSheet;
-    boxCarets: TTntGroupBox;
-    cbCaretMulti: TTntCheckBox;
-    LabelHelpCarets: TTntLabel;
     LabelHelpAcpHtml: TTntLabel;
     boxFindTree: TTntGroupBox;
     cbSrExpand: TTntCheckBox;
@@ -205,12 +202,10 @@ type
     TntLabel17: TTntLabel;
     cbSrQsCap: TTntCheckBox;
     boxCarets2: TTntGroupBox;
-    edCaretType: TTntComboBox;
+    edCaretShape: TTntComboBox;
     TntLabel40: TTntLabel;
     cbCaretSmart: TTntCheckBox;
-    cbCaretInText: TTntCheckBox;
     cbCaretKeepOnPaste: TTntCheckBox;
-    cbCaretInRO: TTntCheckBox;
     tabNewOpen: TTntTabSheet;
     boxNew: TTntGroupBox;
     TntLabel4: TTntLabel;
@@ -276,7 +271,6 @@ type
     TntLabel2: TTntLabel;
     edUndoLimit: TSpinEdit;
     cbUndoMass: TTntCheckBox;
-    cbGroupRedo: TTntCheckBox;
     cbGroupUndo: TTntCheckBox;
     cbUndoAfterSave: TTntCheckBox;
     cbAutoIndent: TTntCheckBox;
@@ -373,6 +367,9 @@ type
     ShapeColor7: TShape;
     ShapeColor8: TShape;
     ShapeColor9: TShape;
+    cbCaretVirtual: TTntCheckBox;
+    cbCaretMulti: TTntCheckBox;
+    LabelHelpCarets: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1741,7 +1738,7 @@ begin
   with fmMain do
   begin
     opCaretsEnabled:= cbCaretMulti.Checked;
-    opCaretShape:= edCaretType.ItemIndex;
+    opCaretShape:= edCaretShape.ItemIndex;
     opCaretTime:= edCaretTime.Position;
 
     if cbCaretSmart.Checked then
@@ -1749,20 +1746,17 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soSmartCaret];
 
-    if cbCaretInText.Checked then
-      TemplateEditor.Options:= TemplateEditor.Options + [soKeepCaretInText]
+    if cbCaretVirtual.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options - [soKeepCaretInText]
     else
-      TemplateEditor.Options:= TemplateEditor.Options - [soKeepCaretInText];
+      TemplateEditor.Options:= TemplateEditor.Options + [soKeepCaretInText];
 
     if cbCaretKeepOnPaste.Checked then
       TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx + [soKeepCaretPaste]
     else
       TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx - [soKeepCaretPaste];
 
-    if cbCaretInRO.Checked then
-      TemplateEditor.Options:= TemplateEditor.Options + [soAlwaysShowCaret]
-    else
-      TemplateEditor.Options:= TemplateEditor.Options - [soAlwaysShowCaret];
+    TemplateEditor.Options:= TemplateEditor.Options + [soAlwaysShowCaret];
 
     ApplyCarets;
     ApplyColorsFontsToFrames;
@@ -1828,7 +1822,7 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soGroupUndo];
 
-    if cbGroupRedo.Checked then
+    if cbGroupUndo.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soGroupRedo]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soGroupRedo];
@@ -2077,13 +2071,12 @@ begin
   with fmMain do
   begin
     cbCaretMulti.Checked:= opCaretsEnabled;
-    edCaretType.ItemIndex:= opCaretShape;
+    edCaretShape.ItemIndex:= opCaretShape;
     edCaretTime.Position:= opCaretTime;
 
     cbCaretSmart.Checked:= soSmartCaret in TemplateEditor.Options;
-    cbCaretInText.Checked:= soKeepCaretInText in TemplateEditor.Options;
+    cbCaretVirtual.Checked:= not (soKeepCaretInText in TemplateEditor.Options);
     cbCaretKeepOnPaste.Checked:= soKeepCaretPaste in TemplateEditor.OptionsEx;
-    cbCaretInRO.Checked:= soAlwaysShowCaret in TemplateEditor.Options;
   end;
 end;
 
@@ -2171,7 +2164,6 @@ begin
   begin
     edUndoLimit.Value:= TemplateEditor.UndoLimit;
     cbGroupUndo.Checked:= soGroupUndo in TemplateEditor.Options;
-    cbGroupRedo.Checked:= soGroupRedo in TemplateEditor.Options;
     cbUndoAfterSave.Checked:= soUndoAfterSave in TemplateEditor.Options;
     cbUndoSimple.Checked:= soSimplifiedUndo in TemplateEditor.OptionsEx;
     cbUndoMass.Checked:= opBkUndo;
