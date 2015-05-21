@@ -4839,7 +4839,7 @@ begin
 
     opCaretsEnabled:= ReadBool('View', 'CaretsEn', true);
     opCaretsIndicator:= ReadInteger('Setup', 'CaretInd', 2);
-    opCaretsGutterBand:= ReadInteger('Setup', 'CaretIndBand', 0);
+    opCaretsGutterBand:= 0;
     ApplyCarets;
 
     TabColorsString:= ReadString('View', 'TabMisc', '');
