@@ -747,7 +747,7 @@ object fmSetup: TfmSetup
           OnClick = LabelHelpCaretsClick
         end
         object TntLabel18: TTntLabel
-          Left = 24
+          Left = 16
           Top = 44
           Width = 75
           Height = 13
@@ -756,7 +756,7 @@ object fmSetup: TfmSetup
         object edCaretShapeIns: TTntComboBox
           Left = 144
           Top = 16
-          Width = 57
+          Width = 81
           Height = 22
           Style = csDropDownList
           Font.Charset = DEFAULT_CHARSET
@@ -768,13 +768,15 @@ object fmSetup: TfmSetup
           ParentFont = False
           TabOrder = 0
           Items.Strings = (
-            ' '#9474'x1'
-            ' '#9474'x2'
-            ' '#9474'x3'
-            '  '#9612
-            '  '#9608
-            '  _'
-            '  '#9604)
+            ' '#9474'1px'
+            ' '#9474'2px'
+            ' '#9474'3px'
+            '  '#9612'50%'
+            '  '#9608' 100%'
+            '  _ 1px'
+            '  _ 2px'
+            '  _ 20%'
+            '  '#9604' 50%')
         end
         object cbCaretSmart: TTntCheckBox
           Left = 8
@@ -836,7 +838,7 @@ object fmSetup: TfmSetup
         object edCaretShapeOvr: TTntComboBox
           Left = 144
           Top = 40
-          Width = 57
+          Width = 81
           Height = 22
           Style = csDropDownList
           Font.Charset = DEFAULT_CHARSET

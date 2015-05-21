@@ -28,7 +28,18 @@ function EditorGetBlockStaple(Ed: TSyntaxMemo; PosX, PosY: Integer): TBlockStapl
 function EditorGetColorPropertyById(Ed: TSyntaxMemo; const Id: string): Longint;
 procedure EditorSetColorPropertyById(Ed: TSyntaxMemo; const Id: string; Color: Longint);
 
-type TATCaretShape = (cCrVert1px, cCrVert2px, cCrVert3px, cCrVertHalf, cCrFull, cCrHorzSmall, cCrHorzHalf);
+type TATCaretShape = (
+  cCrVert1px,
+  cCrVert2px,
+  cCrVert3px,
+  cCrVertHalf,
+  cCrFull,
+  cCrHorz1px,
+  cCrHorz2px,
+  cCrHorz20perc,
+  cCrHorzHalf
+  );
+
 procedure EditorSetCaretShape(Ed: TSyntaxMemo; AShape: TATCaretShape; AInsMode: boolean);
 
 procedure EditorUnderlineColorItem(Ed: TSyntaxMemo;
@@ -3228,7 +3239,17 @@ begin
         sh.Width:= 100;
         sh.Height:= 100;
       end;
-    cCrHorzSmall:
+    cCrHorz1px:
+      begin
+        sh.Width:= 100;
+        sh.Height:= -1;
+      end;
+    cCrHorz2px:
+      begin
+        sh.Width:= 100;
+        sh.Height:= -2;
+      end;
+    cCrHorz20perc:
       begin
         sh.Width:= 100;
         sh.Height:= 20;
