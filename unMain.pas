@@ -396,7 +396,7 @@ type
   end;
 
 const
-  cColorsNum = 67;
+  cColorsNum = 68;
 type
   TSynColors = array[0..cColorsNum-1] of TColor;
 
@@ -2979,6 +2979,7 @@ type
     opColorAcpBg: integer;
     opColorAcpPrefix: integer;
     opColorAcpHintText: integer;
+    opColorAcpHintText2: integer;
     opColorCaretsGutter: integer;
     opColorMicromapMarks: integer;
     opColorMicromapMisspelled: integer;
@@ -14258,7 +14259,9 @@ begin
   //ecACP uses SyntStyles
   SyntStyles.Styles[0].Font.Color:= opColorAcpPrefix;
   SyntStyles.Styles[1].Font.Color:= opColorAcpText;
-  SyntStyles.Styles[5].Font.Color:= opColorAcpHintText;
+  SyntStyles.Styles[3].Font.Color:= opColorAcpHintText;
+  SyntStyles.Styles[4].Font.Color:= opColorAcpHintText;
+  SyntStyles.Styles[5].Font.Color:= opColorAcpHintText2;
 end;
 
 procedure TfmMain.ecFullScrExecute(Sender: TObject);
@@ -24752,6 +24755,7 @@ begin
   opColorMicromapMisspelled:= C[64];
   opColorAcpPrefix:= C[65];
   opColorAcpHintText:= C[66];
+  opColorAcpHintText2:= C[67];
 
   //options
   Ed.Options:= TemplateEditor.Options;
@@ -24764,10 +24768,11 @@ end;
 
 procedure TfmMain.DoColorsArrayInit(var C: TSynColors);
 begin
-  opColorAcpText:= clWindowText;
   opColorAcpBg:= clWindow;
+  opColorAcpText:= clBlack;
   opColorAcpPrefix:= clPurple;
-  opColorAcpHintText:= clGray;
+  opColorAcpHintText:= clBlack;
+  opColorAcpHintText2:= clGray;
 
   opColorCaretsGutter:= clLtGray;
   opColorBkmk:= RGB(200, 240, 200);
@@ -24865,6 +24870,7 @@ begin
   C[64]:= opColorMicromapMisspelled;
   C[65]:= opColorAcpPrefix;
   C[66]:= opColorAcpHintText;
+  C[67]:= opColorAcpHintText2;
 end;
 
 procedure TfmMain.DoHandleQuickSearchEscape;

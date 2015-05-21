@@ -603,11 +603,12 @@ const
     'Micromap-BG', //63
     'Micromap-misspel', //64
     'Auto-complete-prefix', //65
-    'Auto-complete-hint' //66
+    'Auto-complete-hint', //66
+    'Auto-complete-hint-2' //67
     );
 
 const
-  cColorsOrder: array[0..59] of Integer = (
+  cColorsOrder: array[0..60] of Integer = (
     0,
     1,
     9,
@@ -667,6 +668,7 @@ const
     54, //acp text
     65, //acp prefix
     66, //acp hint
+    67, //acp hint2
     12,
     13,
     60,
