@@ -28,17 +28,30 @@ function EditorGetBlockStaple(Ed: TSyntaxMemo; PosX, PosY: Integer): TBlockStapl
 function EditorGetColorPropertyById(Ed: TSyntaxMemo; const Id: string): Longint;
 procedure EditorSetColorPropertyById(Ed: TSyntaxMemo; const Id: string; Color: Longint);
 
-type TATCaretShape = (
-  cCrVert1px,
-  cCrVert2px,
-  cCrVert3px,
-  cCrVertHalf,
-  cCrFull,
-  cCrHorz1px,
-  cCrHorz2px,
-  cCrHorz20perc,
-  cCrHorzHalf
-  );
+type
+  TATCaretShape = (
+    cCrVert1px,
+    cCrVert2px,
+    cCrVert3px,
+    cCrVertHalf,
+    cCrFull,
+    cCrHorz1px,
+    cCrHorz2px,
+    cCrHorz20perc,
+    cCrHorzHalf
+    );
+const
+  cCaretDesc: array[TATCaretShape] of string = (
+    '| 1px',
+    '| 2px',
+    '| 3px',
+    '| 50%',
+    '100%',
+    '_ 1px',
+    '_ 2px',
+    '_ 20%',
+    '_ 50%'
+    );
 
 procedure EditorSetCaretShape(Ed: TSyntaxMemo; AShape: TATCaretShape; AInsMode: boolean);
 

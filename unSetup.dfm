@@ -767,16 +767,6 @@ object fmSetup: TfmSetup
           ItemHeight = 14
           ParentFont = False
           TabOrder = 0
-          Items.Strings = (
-            ' '#9474'1px'
-            ' '#9474'2px'
-            ' '#9474'3px'
-            '  '#9612'50%'
-            '  '#9608' 100%'
-            '  _ 1px'
-            '  _ 2px'
-            '  _ 20%'
-            '  '#9604' 50%')
         end
         object cbCaretSmart: TTntCheckBox
           Left = 8
@@ -3164,7 +3154,6 @@ object fmSetup: TfmSetup
   end
   object DKLanguageController1: TDKLanguageController
     IgnoreList.Strings = (
-      'edCaretShape*'
       'LabelHelp*'
       'OpenDialogPre.*'
       'SaveDialogPre.*')

@@ -1632,6 +1632,8 @@ begin
 end;
 
 procedure TfmSetup.TntFormCreate(Sender: TObject);
+var
+  sh: TATCaretShape;
 begin
   fmOvr:= nil;
 
@@ -1641,6 +1643,11 @@ begin
   OpenDialogPre.Filter:= cColorFilter;
   SaveDialogPre.Filter:= cColorFilter;
 
+  //fill caret shape
+  edCaretShapeIns.Items.Clear;
+  for sh:= Low(TATCaretShape) to High(TATCaretShape) do
+    edCaretShapeIns.Items.Add('  '+cCaretDesc[sh]);
+    
   edCaretShapeOvr.Items.Assign(edCaretShapeIns.Items);
 end;
 
