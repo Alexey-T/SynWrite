@@ -197,12 +197,6 @@ type
     tabCarets: TTntTabSheet;
     boxCarets: TTntGroupBox;
     cbCaretMulti: TTntCheckBox;
-    TntLabel30: TTntLabel;
-    cbCaretIndNone: TTntRadioButton;
-    cbCaretIndLine: TTntRadioButton;
-    cbCaretIndGutter: TTntRadioButton;
-    TntLabel31: TTntLabel;
-    edCaretGutterCol: TSpinEdit;
     LabelHelpCarets: TTntLabel;
     LabelHelpAcpHtml: TTntLabel;
     boxFindTree: TTntGroupBox;
@@ -1747,10 +1741,6 @@ begin
   with fmMain do
   begin
     opCaretsEnabled:= cbCaretMulti.Checked;
-    if cbCaretIndNone.Checked then opCaretsIndicator:= 0 else
-     if cbCaretIndLine.Checked then opCaretsIndicator:= 1 else
-      if cbCaretIndGutter.Checked then opCaretsIndicator:= 2;
-    opCaretsGutterBand:= edCaretGutterCol.Value;
     opCaretShape:= edCaretType.ItemIndex;
     opCaretTime:= edCaretTime.Position;
 
@@ -2087,10 +2077,6 @@ begin
   with fmMain do
   begin
     cbCaretMulti.Checked:= opCaretsEnabled;
-    cbCaretIndNone.Checked:= opCaretsIndicator=0;
-    cbCaretIndLine.Checked:= opCaretsIndicator=1;
-    cbCaretIndGutter.Checked:= opCaretsIndicator=2;
-    edCaretGutterCol.Value:= opCaretsGutterBand;
     edCaretType.ItemIndex:= opCaretShape;
     edCaretTime.Position:= opCaretTime;
 

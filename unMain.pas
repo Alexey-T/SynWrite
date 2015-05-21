@@ -4838,8 +4838,8 @@ begin
     opHiliteBrackets:= ReadBool('Setup', 'BrHi', true);
 
     opCaretsEnabled:= ReadBool('View', 'CaretsEn', true);
-    opCaretsIndicator:= ReadInteger('View', 'CaretsInd', 2);
-    opCaretsGutterBand:= ReadInteger('View', 'CaretsGBand', 0);
+    opCaretsIndicator:= ReadInteger('Setup', 'CaretInd', 2);
+    opCaretsGutterBand:= ReadInteger('Setup', 'CaretIndBand', 0);
     ApplyCarets;
 
     TabColorsString:= ReadString('View', 'TabMisc', '');
@@ -5177,8 +5177,6 @@ begin
 
     WriteString('View', 'Colors', DoColorsArrayAsString(ColorsArray));
     WriteBool('View', 'CaretsEn', opCaretsEnabled);
-    WriteInteger('View', 'CaretsInd', opCaretsIndicator);
-    WriteInteger('View', 'CaretsGBand', opCaretsGutterBand);
 
     WriteInteger('Tree', 'Click', Ord(Tree.ClickAction));
     WriteInteger('Tree', 'Color', Tree.Color);
