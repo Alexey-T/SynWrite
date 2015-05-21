@@ -601,11 +601,13 @@ const
     'Ftp-log-server', //61
     'Ftp-log-error', //62
     'Micromap-BG', //63
-    'Micromap-misspel' //64
+    'Micromap-misspel', //64
+    'Auto-complete-prefix', //65
+    'Auto-complete-hint' //66
     );
 
 const
-  cColorsOrder: array[0..57] of Integer = (
+  cColorsOrder: array[0..59] of Integer = (
     0,
     1,
     9,
@@ -661,8 +663,10 @@ const
     52, //micromap marks
     51,
     53,
-    54,
-    55,
+    55, //acp bg
+    54, //acp text
+    65, //acp prefix
+    66, //acp hint
     12,
     13,
     60,
