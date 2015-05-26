@@ -6915,6 +6915,7 @@ object SyntaxManager: TSyntaxManager
             TagList.Strings = (
               'abstract'
               'arguments'
+              'await'
               'boolean'
               'break'
               'byte'
@@ -9232,7 +9233,6 @@ object SyntaxManager: TSyntaxManager
               'z-index'
               'zoom')
             TokenTypes = 4
-            IgnoreCase = True
           end>
         HighlightPos = cpAny
         IgnoreAsParent = False
@@ -9695,7 +9695,6 @@ object SyntaxManager: TSyntaxManager
               '-xv-voice-stress'
               '-xv-voice-volume')
             TokenTypes = 4
-            IgnoreCase = True
           end>
         HighlightPos = cpAny
         IgnoreAsParent = False
@@ -17896,7 +17895,7 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
-        BgColor = 15527922
+        BgColor = 15528434
         BorderColorRight = clLime
         BorderColorBottom = clLime
       end
@@ -17907,7 +17906,7 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
-        BgColor = 14477031
+        BgColor = 15528434
         FormatType = ftBackGround
       end
       item
@@ -17917,7 +17916,7 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
-        BgColor = 243833
+        BgColor = 41984
       end>
     TokenRules = <
       item

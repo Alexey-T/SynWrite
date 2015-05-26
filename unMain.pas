@@ -1239,11 +1239,8 @@ type
     SpTBXSeparatorItem7: TSpTBXSeparatorItem;
     StatusItemSelMode: TSpTBXLabelItem;
     SpTBXSeparatorItem8: TSpTBXSeparatorItem;
-    StatusItemInsMode: TSpTBXLabelItem;
-    SpTBXSeparatorItem9: TSpTBXSeparatorItem;
     StatusItemZoom: TSpTBXLabelItem;
     SpTBXSeparatorItem10: TSpTBXSeparatorItem;
-    StatusItemBusy: TSpTBXLabelItem;
     SpTBXSeparatorItem11: TSpTBXSeparatorItem;
     StatusItemHint: TSpTBXLabelItem;
     TBXMRUListItemFRecents: TSpTBXMRUListItem;
@@ -1316,7 +1313,6 @@ type
     SpTBXSeparatorItem26: TSpTBXSeparatorItem;
     TbxItemRunNewSnippet: TSpTBXItem;
     SD_Snippets: TSaveDialog;
-    SpTBXSeparatorItem27: TSpTBXSeparatorItem;
     StatusItemTabsize: TSpTBXLabelItem;
     TbxItemTreeSorted: TSpTBXItem;
     ColorDialogTabs: TColorDialog;
@@ -2018,7 +2014,6 @@ type
     procedure StatusItemROClick(Sender: TObject);
     procedure StatusItemWrapClick(Sender: TObject);
     procedure StatusItemSelModeClick(Sender: TObject);
-    procedure StatusItemInsModeClick(Sender: TObject);
     procedure StatusItemZoomClick(Sender: TObject);
     procedure TBXTabColorGetColor(Sender: TObject; ACol, ARow: Integer;
       var Color: TColor; var Name: WideString);
@@ -2148,6 +2143,7 @@ type
     procedure PopupStatusEncConvertPopup(Sender: TObject);
     procedure TbxItemAddonsConfigClick(Sender: TObject);
     procedure TBXItemClipDeleteSelClick(Sender: TObject);
+    procedure acMacroRecordAfterExecute(Sender: TObject);
 
   private
     cStatLine,
@@ -2443,6 +2439,7 @@ type
     procedure DoSaveStringToIni(const fn: string; const Str: string);
 
     //private UpdateNNN
+    procedure UpdateBusyIco;
     procedure UpdateFrameLineEnds(F: TEditorFrame; AFormat: TTextFormat; AManual: boolean);
     procedure UpdateToolbarItemAction(Item: TTBCustomItem; const SCmd: string);
     procedure UpdateNewDocMenu();
@@ -2478,7 +2475,6 @@ type
     procedure UpdateRecentsOnClose;
     procedure UpdateColorHint(AClearHint: boolean = true);
     procedure UpdateListTabs;
-    procedure UpdateBusyIco;
     procedure UpdateTreeFind_Initial(AStr: Widestring; const ADir: Widestring; AInTabs: boolean = false);
     procedure UpdateTreeFind_Results(AStr: Widestring; const ADir: Widestring; AStopped: boolean; AInTabs: boolean = false);
     procedure UpdateTreeFind_ReplaceResults(const ANodeText: Widestring; ANumFiles, ANumItems: integer; AStopped: boolean);
@@ -3349,7 +3345,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.18.2100';
+  cSynVer = '6.18.2105';
   cSynPyVer = '1.0.147';
 
 const
@@ -4503,12 +4499,6 @@ begin
 
   begin
     StatusItemCaret.Caption:= SStatusText(Ed);
-
-    if Ed.ReplaceMode then
-      StatusItemInsMode.Caption:= DKLangConstW('sOvr')
-    else
-      StatusItemInsMode.Caption:= DKLangConstW('sIns');
-
     StatusItemZoom.Caption:= IntToStr(Ed.Zoom) + '%';
 
     with StatusItemChar do
@@ -6870,9 +6860,6 @@ begin
   //tree update
   if GetCurrentThreadId = MainThreadID then
     CheckSynchronize;
-
-  //update icons
-  UpdateBusyIco;
 
   if StatusItemTabsize.ImageIndex>=0 then
     UpdateStatusbarTabsize;
@@ -9463,10 +9450,23 @@ begin
 end;
 
 procedure TfmMain.DoHint(S: WideString);
+var
+  SPrefix: Widestring;
 begin
+  if ecMacroRec.Recording then
+    SPrefix:= '['+DKLangConstW('statusmsg_macro')+'] '
+  {$ifdef SPELL}
+  else
+  if FSpellChecking then
+    SPrefix:= '['+DKLangConstW('statusmsg_spell')+'] '
+  {$endif}
+  else
+    SPrefix:= '';
+
   SDeleteFromW(S, #10);
   SDeleteFromW(S, #13);
-  StatusItemHint.Caption:= S;
+  StatusItemHint.Caption:= SPrefix+S;
+
   TimerHint.Enabled:= false;
   TimerHint.Enabled:= true;
 end;
@@ -10341,9 +10341,6 @@ begin
   UpdateTitle(CurrentFrame);
   UpdateStatusBar;
 
-  //other
-  StatusItemBusy.Hint:= DKLangConstW('MBusyIco');
-  //TbxItemSplitCaption.Caption:= DKLangConstW('Split_Vw');
   if SyntaxManager.CurrentLexer = nil then
     StatusItemLexer.Caption:= DKLangConstW('None');
 
@@ -22680,19 +22677,6 @@ begin
   {$endif}
 end;
 
-procedure TfmMain.UpdateBusyIco;
-begin
-  if ecMacroRec.Recording then
-    StatusItemBusy.ImageIndex:= 7
-  else
-  {$ifdef SPELL}
-  if FSpellChecking then
-    StatusItemBusy.ImageIndex:= 11
-  else
-  {$endif}
-    StatusItemBusy.ImageIndex:= 6;
-end;
-
 procedure TfmMain.TBXItemFoldAllClick(Sender: TObject);
 begin
   CurrentEditor.FullCollapse();
@@ -24584,12 +24568,6 @@ begin
       msColumn: SelectModeDefault:= msLine;
       msLine: SelectModeDefault:= msNormal;
     end;
-end;
-
-procedure TfmMain.StatusItemInsModeClick(Sender: TObject);
-begin
-  with CurrentEditor do
-    ReplaceMode:= not ReplaceMode;
 end;
 
 procedure TfmMain.StatusItemZoomClick(Sender: TObject);
@@ -28663,6 +28641,16 @@ begin
   SetListviewColumnsFromString(ListBookmarks, S);
 end;
 
+
+procedure TfmMain.UpdateBusyIco;
+begin
+  DoHint('');
+end;
+
+procedure TfmMain.acMacroRecordAfterExecute(Sender: TObject);
+begin
+  UpdateBusyIco;
+end;
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;
