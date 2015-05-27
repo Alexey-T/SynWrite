@@ -63,6 +63,18 @@ uses
   PythonGUIInputOutput;
 
 const
+  cImageIndexRoOn = 0;
+  cImageIndexRoOff = 1;    
+  cImageIndexWrapOn = 2;
+  cImageIndexWrapOff = 3;
+  cImageIndexSelNormal = 4;
+  cImageIndexSelColumn = 5;
+  cImageIndexSelLine = 6;
+  cImageIndexTabstopMode = 7;
+
+  cImageIndexSaveIcon = 2;
+  cImageIndexSaveIconPale = 3;
+
   cGutterBandSizeFold = 13;
   cGutterBandSizeBm = 16;
   cGutterBandSizeNumSpace = 10; //addition to line-numbers band width
@@ -4394,7 +4406,7 @@ begin
   sel2:= ed.HaveSelection;
   en_lex:= SyntaxManager.CurrentLexer<>nil;
 
-  TBXSubmenuBarSave.ImageIndex:= IfThen(frame.Modified, 2, 3);
+  TBXSubmenuBarSave.ImageIndex:= IfThen(frame.Modified, cImageIndexSaveIcon, cImageIndexSaveIconPale);
 
   //Hilite brackets
   TimerBrackets.Enabled:= true;
@@ -4427,20 +4439,20 @@ begin
   if Assigned(Status) then
   begin
     if ro then
-      StatusItemRO.ImageIndex:= 0
+      StatusItemRO.ImageIndex:= cImageIndexRoOn
     else
-      StatusItemRO.ImageIndex:= 1;
+      StatusItemRO.ImageIndex:= cImageIndexRoOff;
 
     case ed.SelectModeDefault of
-      msColumn: StatusItemSelMode.ImageIndex:= 9;
-      msLine: StatusItemSelMode.ImageIndex:= 10;
-      else StatusItemSelMode.ImageIndex:= 8;
+      msColumn: StatusItemSelMode.ImageIndex:= cImageIndexSelColumn;
+      msLine: StatusItemSelMode.ImageIndex:= cImageIndexSelLine;
+      else StatusItemSelMode.ImageIndex:= cImageIndexSelNormal;
     end;
 
     if ed.WordWrap then
-      StatusItemWrap.ImageIndex:= 3
+      StatusItemWrap.ImageIndex:= cImageIndexWrapOn
     else
-      StatusItemWrap.ImageIndex:= 4;
+      StatusItemWrap.ImageIndex:= cImageIndexWrapOff;
 
     UpdateStatusbarTabsize;
   end;
@@ -4503,17 +4515,6 @@ begin
 
     with StatusItemChar do
     begin
-      if opShowCharInfo then
-      begin
-        CustomWidth:= 100;
-        ImageIndex:= -1;
-      end
-      else
-      begin
-        CustomWidth:= 20;
-        ImageIndex:= 2;
-      end;
-
       if opShowCharInfo and (Ed.TextLength>0) and (not EditorHasNoCaret(Ed)) then
         Caption:= SStatusCharInfo(Ed)
       else
@@ -7427,7 +7428,7 @@ begin
   begin
     if Ed.IsTabstopMode then
     begin
-      StatusItemTabsize.ImageIndex:= 12;
+      StatusItemTabsize.ImageIndex:= cImageIndexTabstopMode;
       StatusItemTabsize.Caption:= '';
     end
     else
