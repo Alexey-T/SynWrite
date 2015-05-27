@@ -609,7 +609,6 @@ type
     TBXSeparatorItem19: TSpTbxSeparatorItem;
     TBXItemSWordNext: TSpTbxItem;
     TBXItemSWordPrior: TSpTbxItem;
-    TBXSeparatorItem20: TSpTbxSeparatorItem;
     TBXItemSMarkClear: TSpTbxItem;
     TBXItemEUnindent: TSpTbxItem;
     TBXItemEIndent: TSpTbxItem;
@@ -755,7 +754,6 @@ type
     TBXItemClipDeleteAll: TSpTBXItem;
     ecGotoNextFindResult: TAction;
     ecGotoPrevFindResult: TAction;
-    TBXSeparatorItem40: TSpTbxSeparatorItem;
     TBXItemSResPrev: TSpTbxItem;
     TBXItemSResNext: TSpTbxItem;
     TBXItemESyncEd: TSpTbxItem;
@@ -1428,6 +1426,7 @@ type
     TbxItemAddonsConfig: TSpTBXItem;
     TBXItemClipDeleteSel: TSpTBXItem;
     SpTBXSeparatorItem17: TSpTBXSeparatorItem;
+    TBXSubmenuSMarks: TSpTBXSubmenuItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
