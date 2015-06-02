@@ -3727,7 +3727,6 @@ object SyntaxManager: TSyntaxManager
               'void'
               'while')
             TokenTypes = 4
-            IgnoreCase = True
           end>
         HighlightPos = cpBound
         IgnoreAsParent = False
@@ -15202,6 +15201,7 @@ object SyntaxManager: TSyntaxManager
         ConditionList = <
           item
             TagList.Strings = (
+              'absolute'
               'abstract'
               'and'
               'array'

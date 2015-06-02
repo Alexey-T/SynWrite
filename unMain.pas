@@ -729,9 +729,7 @@ type
     TBXSeparatorItem36: TSpTbxSeparatorItem;
     TBXSeparatorItem37: TSpTbxSeparatorItem;
     acSetupLexerStyles: TAction;
-    TBXItemOLexerHi: TSpTbxItem;
     TBXSeparatorItem38: TSpTbxSeparatorItem;
-    TBXItemBarLexerStyle: TSpTBXItem;
     TBXItemEExtr: TSpTbxItem;
     TBXSeparatorItem39: TSpTbxSeparatorItem;
     TBXItemECaseSent: TSpTbxItem;

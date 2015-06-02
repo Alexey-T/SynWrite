@@ -127,6 +127,7 @@ begin
   end;
 
   FModified:= false;
+  TimerType.Enabled:= false;
 end;
 
 function SnippetItemString(const Info: TSynSnippetInfo): Widestring;
