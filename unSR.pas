@@ -6,7 +6,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, DKLang, ComCtrls, Menus, Buttons,
-  TntStdCtrls, TntClasses, TntForms, 
+  TntStdCtrls, TntClasses, TntForms,
   TntMenus, TntComCtrls, TntExtCtrls, TntClipbrd,
   unSearch, TntButtons;
 

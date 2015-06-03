@@ -9121,6 +9121,8 @@ begin
       else
         //Esc in editor
         case opEsc of
+          cEscNothing:
+            Exit;
           cEscCloseApp:
             acExit.Execute;
           cEscCloseTab:

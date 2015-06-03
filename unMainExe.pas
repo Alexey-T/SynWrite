@@ -462,6 +462,8 @@ begin
     else
       //Esc in editor
       case fmMain.opEsc of
+        cEscNothing:
+          Exit;
         cEscCloseApp:
           Close;
         cEscCloseTab:
