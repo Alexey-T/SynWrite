@@ -1,6 +1,6 @@
 object fmMenuPy: TfmMenuPy
-  Left = 247
-  Top = 474
+  Left = 314
+  Top = 475
   Width = 510
   Height = 322
   ActiveControl = Edit
@@ -57,15 +57,13 @@ object fmMenuPy: TfmMenuPy
     Font.Style = []
     ParentFont = False
     TabOrder = 2
-    object cbFuzzy: TTntCheckBox
+    object LabelInfo: TTntLabel
       Left = 0
       Top = 0
-      Width = 217
+      Width = 50
       Height = 16
       Align = alLeft
-      Caption = 'Fuzzy search'
-      TabOrder = 0
-      OnClick = cbFuzzyClick
+      Caption = ' F4: Fuzzy'
     end
   end
   object TimerType: TTimer

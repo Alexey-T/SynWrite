@@ -15,8 +15,8 @@ type
     Edit: TTntEdit;
     TimerType: TTimer;
     Panel1: TPanel;
-    cbFuzzy: TTntCheckBox;
     labHelp: TLabel;
+    LabelInfo: TTntLabel;
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
@@ -30,13 +30,13 @@ type
     procedure TntFormResize(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
     procedure labHelpClick(Sender: TObject);
-    procedure cbFuzzyClick(Sender: TObject);
     procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
     procedure TntFormDestroy(Sender: TObject);
     procedure ListKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
   private
     { Private declarations }
+    FFuzzy: boolean;
     procedure DoFilter;
   public
     { Public declarations }
@@ -84,7 +84,7 @@ begin
   //F4
   if (Key=vk_f4) and (Shift=[]) then
   begin
-    cbFuzzy.Checked:= not cbFuzzy.Checked;
+    FFuzzy:= not FFuzzy;
     DoFilter;
     Key:= 0;
     Exit
@@ -110,7 +110,7 @@ begin
     Top:= ReadInteger('Win', 'CmdListY', Top);
     Width:= ReadInteger('Win', 'CmdListW', Width);
     Height:= ReadInteger('Win', 'CmdListH', Height);
-    cbFuzzy.Checked:= ReadBool('Win', 'CmdListFuzzy', false);
+    FFuzzy:= ReadBool('Win', 'CmdListFuzzy', false);
   finally
     Free
   end;
@@ -119,7 +119,7 @@ end;
 procedure TfmMenuCmds.DoFilter;
   function SFiltered(const S: Widestring): boolean;
   begin
-    if cbFuzzy.Checked then
+    if FFuzzy then
       Result:= SFuzzyMatch(S, Edit.Text)
     else
       Result:= SSubstringMatch(S, Edit.Text);
@@ -241,7 +241,7 @@ begin
     ecTextOut(Canvas, rect.left, rect.top, S1);
 
     //filter chars
-    if cbFuzzy.Checked then
+    if FFuzzy then
     begin
       Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clBlue);
       SGetCharArray(S1, Edit.Text, Arr);
@@ -274,11 +274,6 @@ begin
   SynHelpTopic(helpCmdListDlg, Handle);
 end;
 
-procedure TfmMenuCmds.cbFuzzyClick(Sender: TObject);
-begin
-  DoFilter;
-end;
-
 procedure TfmMenuCmds.TntFormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
@@ -289,7 +284,7 @@ begin
     WriteInteger('Win', 'CmdListY', Top);
     WriteInteger('Win', 'CmdListW', Width);
     WriteInteger('Win', 'CmdListH', Height);
-    WriteBool('Win', 'CmdListFuzzy', cbFuzzy.Checked);
+    WriteBool('Win', 'CmdListFuzzy', FFuzzy);
   finally
     Free
   end;

@@ -15,7 +15,7 @@ type
     TimerType: TTimer;
     Panel1: TPanel;
     labHelp: TLabel;
-    cbFuzzy: TTntCheckBox;
+    LabelInfo: TTntLabel;
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
@@ -35,6 +35,7 @@ type
       Shift: TShiftState);
   private
     { Private declarations }
+    FFuzzy: boolean;
     procedure DoFilter;
   public
     { Public declarations }
@@ -81,7 +82,7 @@ begin
   //F4
   if (Key=vk_f4) and (Shift=[]) then
   begin
-    cbFuzzy.Checked:= not cbFuzzy.Checked;
+    FFuzzy:= not FFuzzy;
     DoFilter;
     Key:= 0;
     Exit
@@ -107,7 +108,7 @@ begin
     Top:= ReadInteger('Win', 'ProjListY', Top);
     Width:= ReadInteger('Win', 'ProjListW', Width);
     Height:= ReadInteger('Win', 'ProjListH', Height);
-    cbFuzzy.Checked:= ReadBool('Win', 'ProjListFuzzy', false);
+    FFuzzy:= ReadBool('Win', 'ProjListFuzzy', false);
   finally
     Free
   end;
@@ -126,7 +127,7 @@ procedure TfmMenuProj.DoFilter;
     SFilter:= Edit.Text;
     SContent:= '';
     IsCaseIgnore:= false;
-    IsFuzzy:= cbFuzzy.Checked;
+    IsFuzzy:= FFuzzy;
 
     // "@Word" starts case-sensitive content search,
     // "@@Word" starts case-insensitive
@@ -259,7 +260,7 @@ begin
     Canvas.LineTo(ClientWidth-2, n);
 
     //filter chars
-    if cbFuzzy.Checked then
+    if FFuzzy then
     begin
       Canvas.Font.Size:= Self.Font.Size;
       Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clBlue);
@@ -307,7 +308,7 @@ begin
     WriteInteger('Win', 'ProjListY', Top);
     WriteInteger('Win', 'ProjListW', Width);
     WriteInteger('Win', 'ProjListH', Height);
-    WriteBool('Win', 'ProjListFuzzy', cbFuzzy.Checked);
+    WriteBool('Win', 'ProjListFuzzy', FFuzzy);
   finally
     Free
   end;

@@ -16,7 +16,7 @@ type
     Edit: TTntEdit;
     TimerType: TTimer;
     Panel1: TPanel;
-    cbFuzzy: TTntCheckBox;
+    LabelInfo: TTntLabel;
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
@@ -35,6 +35,7 @@ type
       Shift: TShiftState);
   private
     { Private declarations }
+    FFuzzy: boolean;
     procedure DoFilter;
   public
     { Public declarations }
@@ -80,7 +81,7 @@ begin
   //F4
   if (Key=vk_f4) and (Shift=[]) then
   begin
-    cbFuzzy.Checked:= not cbFuzzy.Checked;
+    FFuzzy:= not FFuzzy;
     DoFilter;
     Key:= 0;
     Exit
@@ -104,7 +105,7 @@ begin
     Top:= ReadInteger('Win', 'PyListY', Top);
     Width:= ReadInteger('Win', 'PyListW', Width);
     Height:= ReadInteger('Win', 'PyListH', Height);
-    cbFuzzy.Checked:= ReadBool('Win', 'PyListFuzzy', false);
+    FFuzzy:= ReadBool('Win', 'PyListFuzzy', false);
   finally
     Free
   end;
@@ -119,7 +120,7 @@ procedure TfmMenuPy.DoFilter;
     IsFuzzy: boolean;
   begin
     SFilter:= Edit.Text;
-    IsFuzzy:= cbFuzzy.Checked;
+    IsFuzzy:= FFuzzy;
 
     SItem:= Str;
     SItemName:= SGetItem(SItem, #9);
@@ -236,7 +237,7 @@ begin
     ecTextOut(Canvas, rect.left, rect.top, SName);
 
     //filter chars
-    if cbFuzzy.Checked then
+    if FFuzzy then
     begin
       Canvas.Font.Size:= Self.Font.Size;
       Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clBlue);
@@ -278,7 +279,7 @@ begin
     WriteInteger('Win', 'PyListY', Top);
     WriteInteger('Win', 'PyListW', Width);
     WriteInteger('Win', 'PyListH', Height);
-    WriteBool('Win', 'PyListFuzzy', cbFuzzy.Checked);
+    WriteBool('Win', 'PyListFuzzy', FFuzzy);
   finally
     Free
   end;

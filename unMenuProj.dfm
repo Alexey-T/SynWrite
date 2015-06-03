@@ -1,5 +1,5 @@
 object fmMenuProj: TfmMenuProj
-  Left = 247
+  Left = 322
   Top = 474
   Width = 510
   Height = 322
@@ -74,15 +74,13 @@ object fmMenuProj: TfmMenuProj
       ParentFont = False
       OnClick = labHelpClick
     end
-    object cbFuzzy: TTntCheckBox
+    object LabelInfo: TTntLabel
       Left = 0
       Top = 0
-      Width = 217
+      Width = 50
       Height = 16
       Align = alLeft
-      Caption = 'Fuzzy search'
-      TabOrder = 0
-      OnClick = cbFuzzyClick
+      Caption = ' F4: Fuzzy'
     end
   end
   object TimerType: TTimer

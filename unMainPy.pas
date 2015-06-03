@@ -782,7 +782,6 @@ begin
             with TfmMenuPy.Create(nil) do
             try
               Caption:= StrCaption;
-              cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
               FListItems:= MenuItems;
               case Id of
                 0: FListStyle:= cSynPyMenuSingle;

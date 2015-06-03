@@ -22912,8 +22912,6 @@ begin
   with TfmMenuCmds.Create(Self) do
   try
     Caption:= DKLangConstW('zMCmdList');
-    cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
-    //labHelp.Caption:= DKLangConstW('zMHelp');
 
     UpdateMacroKeynames;
 
@@ -22979,8 +22977,6 @@ begin
     with TfmMenuProj.Create(Self) do
     try
       Caption:= DKLangConstW('zMProjList');
-      cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
-      //labHelp.Caption:= DKLangConstW('zMHelp');
 
       FIniFN:= Self.SynHistoryIni;
       fmProj:= Self.fmProj;
@@ -26727,8 +26723,6 @@ begin
   with TfmMenuSnippets.Create(Self) do
   try
     Caption:= DKLangConstW('zMSnippetList');
-    cbFuzzy.Caption:= DKLangConstW('zMCmdListFuzzy');
-    btnEdit.Caption:= DKLangConstW('zMEditSnip');
 
     Edit.Text:= SInitialText;
     MemoText.Font.Assign(CurrentEditor.Font);

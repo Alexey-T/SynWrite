@@ -88,24 +88,13 @@ object fmMenuSnippets: TfmMenuSnippets
       Font.Style = []
       ParentFont = False
       TabOrder = 1
-      object btnEdit: TTntSpeedButton
-        Left = 160
-        Top = -1
-        Width = 113
-        Height = 17
-        Caption = 'Edit [F5]'
-        Flat = True
-        OnClick = btnEditClick
-      end
-      object cbFuzzy: TTntCheckBox
+      object LabelInfo: TTntLabel
         Left = 0
         Top = 0
-        Width = 153
+        Width = 97
         Height = 16
         Align = alLeft
-        Caption = 'Fuzzy search'
-        TabOrder = 0
-        OnClick = cbFuzzyClick
+        Caption = ' F4: Fuzzy | F5: Edit'
       end
     end
   end

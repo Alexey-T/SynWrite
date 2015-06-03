@@ -18,8 +18,7 @@ type
     PanelLow: TPanel;
     MemoText: TTntMemo;
     Panel1: TPanel;
-    cbFuzzy: TTntCheckBox;
-    btnEdit: TTntSpeedButton;
+    LabelInfo: TTntLabel;
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
@@ -40,6 +39,7 @@ type
     procedure btnEditClick(Sender: TObject);
   private
     { Private declarations }
+    FFuzzy: boolean;
     procedure DoFilter;
   public
     { Public declarations }
@@ -84,7 +84,7 @@ begin
   //F4
   if (Key=vk_f4) and (Shift=[]) then
   begin
-    cbFuzzy.Checked:= not cbFuzzy.Checked;
+    FFuzzy:= not FFuzzy;
     DoFilter;
     Key:= 0;
     Exit
@@ -119,7 +119,7 @@ begin
     Top:= ReadInteger('Win', 'SnipY', Top);
     Width:= ReadInteger('Win', 'SnipW', Width);
     Height:= ReadInteger('Win', 'SnipH', Height);
-    cbFuzzy.Checked:= ReadBool('Win', 'SnipFuzzy', false);
+    FFuzzy:= ReadBool('Win', 'SnipFuzzy', false);
     PanelLow.Height:= ReadInteger('Win', 'SnipSplit', 100);
     Splitter1.Top:= 0;
   finally
@@ -140,7 +140,7 @@ end;
 procedure TfmMenuSnippets.DoFilter;
   function SFiltered(const S: Widestring): boolean;
   begin
-    if cbFuzzy.Checked then
+    if FFuzzy then
       Result:= SFuzzyMatch(S, Edit.Text)
     else
       Result:= SSubstringMatch(S, Edit.Text);
@@ -235,7 +235,7 @@ begin
     ecTextOut(Canvas, rect.left, rect.top, S1);
 
     //filter chars
-    if cbFuzzy.Checked then
+    if FFuzzy then
     begin
       Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clBlue);
       SGetCharArray(S1, Edit.Text, Arr);
@@ -277,7 +277,7 @@ begin
     WriteInteger('Win', 'SnipW', Width);
     WriteInteger('Win', 'SnipH', Height);
     WriteInteger('Win', 'SnipSplit', PanelLow.Height);
-    WriteBool('Win', 'SnipFuzzy', cbFuzzy.Checked);
+    WriteBool('Win', 'SnipFuzzy', FFuzzy);
   finally
     Free
   end;
