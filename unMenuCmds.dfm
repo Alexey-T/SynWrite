@@ -59,29 +59,13 @@ object fmMenuCmds: TfmMenuCmds
     Font.Style = []
     ParentFont = False
     TabOrder = 2
-    object labHelp: TLabel
-      Left = 475
-      Top = 0
-      Width = 19
-      Height = 16
-      Cursor = crHandPoint
-      Align = alRight
-      Caption = '( ? )'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlue
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsUnderline]
-      ParentFont = False
-      OnClick = labHelpClick
-    end
     object LabelInfo: TTntLabel
       Left = 0
       Top = 0
-      Width = 50
+      Width = 44
       Height = 16
       Align = alLeft
-      Caption = ' F4: Fuzzy'
+      Caption = '-----------'
     end
   end
   object KeysList: TSyntKeyMapping

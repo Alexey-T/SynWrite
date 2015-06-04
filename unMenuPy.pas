@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls,
-  TntStdCtrls, TntForms, TntClasses;
+  TntStdCtrls, TntForms, TntClasses, DKLang;
 
 type
   TSynPyMenuStyle = (cSynPyMenuSingle, cSynPyMenuDouble);
@@ -109,6 +109,9 @@ begin
   finally
     Free
   end;
+
+  LabelInfo.Caption:= WideFormat(' F4: %s',
+    [DKLangConstW('zMHintFuzzy')]);
 end;
 
 procedure TfmMenuPy.DoFilter;

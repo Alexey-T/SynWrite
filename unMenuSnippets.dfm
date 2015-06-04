@@ -91,10 +91,10 @@ object fmMenuSnippets: TfmMenuSnippets
       object LabelInfo: TTntLabel
         Left = 0
         Top = 0
-        Width = 97
+        Width = 84
         Height = 16
         Align = alLeft
-        Caption = ' F4: Fuzzy | F5: Edit'
+        Caption = '---------------------'
       end
     end
   end

@@ -7,7 +7,7 @@ uses
   Dialogs, StdCtrls,
   TntStdCtrls, TntForms,
   ExtCtrls,
-  ATxSProc, Buttons, TntButtons;
+  ATxSProc, Buttons, TntButtons, DKLang;
 
 type
   TfmMenuSnippets = class(TTntForm)
@@ -128,6 +128,10 @@ begin
 
   FModified:= false;
   TimerType.Enabled:= false;
+
+  LabelInfo.Caption:= WideFormat(' F4: %s | F5: %s',
+    [DKLangConstW('zMHintFuzzy'),
+     DKLangConstW('zMHintEdit')]);
 end;
 
 function SnippetItemString(const Info: TSynSnippetInfo): Widestring;

@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls,
   TntStdCtrls, TntForms, TntClasses,
-  ecKeyMap, ExtCtrls;
+  ecKeyMap, ExtCtrls, DKLang;
 
 type
   TfmMenuCmds = class(TTntForm)
@@ -15,7 +15,6 @@ type
     Edit: TTntEdit;
     TimerType: TTimer;
     Panel1: TPanel;
-    labHelp: TLabel;
     LabelInfo: TTntLabel;
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -114,6 +113,10 @@ begin
   finally
     Free
   end;
+
+  LabelInfo.Caption:= WideFormat(' F1: %s | F4: %s',
+    [DKLangConstW('zMHintHelp'),
+     DKLangConstW('zMHintFuzzy')]);
 end;
 
 procedure TfmMenuCmds.DoFilter;

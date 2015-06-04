@@ -60,10 +60,10 @@ object fmMenuPy: TfmMenuPy
     object LabelInfo: TTntLabel
       Left = 0
       Top = 0
-      Width = 50
+      Width = 52
       Height = 16
       Align = alLeft
-      Caption = ' F4: Fuzzy'
+      Caption = '-------------'
     end
   end
   object TimerType: TTimer
