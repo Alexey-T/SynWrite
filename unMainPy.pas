@@ -765,6 +765,7 @@ var
   StrCaption, StrText: Widestring;
   MenuItems: TTntStringList;
   NResult: Integer;
+  Form: TfmMenuPy;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'iss:dlg_menu', @Id, @PCaption, @PText)) then
@@ -779,8 +780,10 @@ begin
           MENU_SIMPLE,
           MENU_DOUBLE:
           begin
-            with TfmMenuPy.Create(nil) do
+            Form:= TfmMenuPy.Create(nil);
+            with Form do
             try
+              fmMain.UpdateMenuDialogBorder(Form);
               Caption:= StrCaption;
               FListItems:= MenuItems;
               case Id of

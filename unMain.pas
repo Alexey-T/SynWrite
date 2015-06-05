@@ -3154,6 +3154,7 @@ type
     procedure UpdateOnFrameChanged;
     procedure UpdateListBookmarks;
     procedure UpdateActiveTabColors;
+    procedure UpdateMenuDialogBorder(Form: TForm);
 
     property InitialKeyCount: Integer read FInitialKeyCount;
     property ListTabsColumns: string read GetListTabsColumns write SetListTabsColumns;
@@ -3354,7 +3355,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.18.2105';
+  cSynVer = '6.18.2110';
   cSynPyVer = '1.0.147';
 
 const
@@ -22907,15 +22908,18 @@ end;
 
 function TfmMain.DoShowCmdList(AOnlyStdCommands: boolean = false): Integer;
 var
+  Form: TfmMenuCmds;
   i: Integer;
 begin
   Result:= 0;
 
-  with TfmMenuCmds.Create(Self) do
+  Form:= TfmMenuCmds.Create(Self);
+  with Form do
   try
-    Caption:= DKLangConstW('zMCmdList');
-
+    UpdateMenuDialogBorder(Form);
     UpdateMacroKeynames;
+
+    Caption:= DKLangConstW('zMCmdList');
 
     //1) add commands
     KeysList.Assign(SyntKeyMapping);
@@ -22952,6 +22956,7 @@ procedure TfmMain.ecProjectListExecute(Sender: TObject);
 var
   fn: Widestring;
   Files: TTntStringList;
+  Form: TfmMenuProj;
   i: Integer;
 begin
   if IsProjectEmpty then
@@ -22976,8 +22981,10 @@ begin
     end;
 
     fn:= '';
-    with TfmMenuProj.Create(Self) do
+    Form:= TfmMenuProj.Create(Self);
+    with Form do
     try
+      UpdateMenuDialogBorder(Form);
       Caption:= DKLangConstW('zMProjList');
 
       FIniFN:= Self.SynHistoryIni;
@@ -26718,12 +26725,15 @@ end;
 function TfmMain.DoSnippetChoice(const SInitialText: string): integer;
 var
   IsModified: boolean;
+  Form: TfmMenuSnippets;
 begin
   Result:= -1;
   InitSnippets;
 
-  with TfmMenuSnippets.Create(Self) do
+  Form:= TfmMenuSnippets.Create(Self);
+  with Form do
   try
+    UpdateMenuDialogBorder(Form);
     Caption:= DKLangConstW('zMSnippetList');
 
     Edit.Text:= SInitialText;
@@ -28644,6 +28654,25 @@ end;
 procedure TfmMain.acMacroRecordAfterExecute(Sender: TObject);
 begin
   UpdateBusyIco;
+end;
+
+procedure TfmMain.UpdateMenuDialogBorder(Form: TForm);
+const
+  cSizeX = 520;
+  cMaxSizeY = 300;
+var
+  F: TEditorFrame;
+  P: TPoint;
+begin
+  F:= CurrentFrame;
+  Form.BorderStyle:= bsNone;
+  P.Y:= 0;
+  P.X:= F.Width div 2 - cSizeX div 2;
+  P:= F.ClientToScreen(P);
+  Form.Left:= P.X;
+  Form.Top:= P.Y;
+  Form.Height:= Min(F.Height, cMaxSizeY);
+  Form.Width:= cSizeX;
 end;
 
 initialization

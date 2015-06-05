@@ -114,11 +114,13 @@ begin
   if FIniFN<>'' then
   with TIniFile.Create(FIniFN) do
   try
+    {
     DoCenterForm(Handle, Self);
     Left:= ReadInteger('Win', 'SnipX', Left);
     Top:= ReadInteger('Win', 'SnipY', Top);
     Width:= ReadInteger('Win', 'SnipW', Width);
     Height:= ReadInteger('Win', 'SnipH', Height);
+    }
     FFuzzy:= ReadBool('Win', 'SnipFuzzy', false);
     PanelLow.Height:= ReadInteger('Win', 'SnipSplit', 100);
     Splitter1.Top:= 0;

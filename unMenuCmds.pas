@@ -104,11 +104,13 @@ begin
   if FIniFN<>'' then
   with TIniFile.Create(FIniFN) do
   try
+    {
     DoCenterForm(Handle, Self);
     Left:= ReadInteger('Win', 'CmdListX', Left);
     Top:= ReadInteger('Win', 'CmdListY', Top);
     Width:= ReadInteger('Win', 'CmdListW', Width);
     Height:= ReadInteger('Win', 'CmdListH', Height);
+    }
     FFuzzy:= ReadBool('Win', 'CmdListFuzzy', false);
   finally
     Free
