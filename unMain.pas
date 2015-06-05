@@ -3154,7 +3154,7 @@ type
     procedure UpdateOnFrameChanged;
     procedure UpdateListBookmarks;
     procedure UpdateActiveTabColors;
-    procedure UpdateMenuDialogBorder(Form: TForm);
+    procedure UpdateMenuDialogBorder(AForm: TForm);
 
     property InitialKeyCount: Integer read FInitialKeyCount;
     property ListTabsColumns: string read GetListTabsColumns write SetListTabsColumns;
@@ -28656,23 +28656,24 @@ begin
   UpdateBusyIco;
 end;
 
-procedure TfmMain.UpdateMenuDialogBorder(Form: TForm);
+procedure TfmMain.UpdateMenuDialogBorder(AForm: TForm);
 const
   cSizeX = 520;
-  cMaxSizeY = 300;
+  cMaxSizeY = 320;
 var
-  F: TEditorFrame;
+  Frame: TEditorFrame;
   P: TPoint;
 begin
-  F:= CurrentFrame;
-  Form.BorderStyle:= bsNone;
+  Frame:= CurrentFrame;
   P.Y:= 0;
-  P.X:= F.Width div 2 - cSizeX div 2;
-  P:= F.ClientToScreen(P);
-  Form.Left:= P.X;
-  Form.Top:= P.Y;
-  Form.Height:= Min(F.Height, cMaxSizeY);
-  Form.Width:= cSizeX;
+  P.X:= Frame.Width div 2 - cSizeX div 2;
+  P:= Frame.ClientToScreen(P);
+
+  AForm.BorderStyle:= bsNone;
+  AForm.Left:= P.X;
+  AForm.Top:= P.Y;
+  AForm.Height:= Min(Frame.Height, cMaxSizeY);
+  AForm.Width:= cSizeX;
 end;
 
 initialization

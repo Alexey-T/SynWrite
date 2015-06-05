@@ -100,13 +100,6 @@ begin
   if FIniFN<>'' then
   with TIniFile.Create(FIniFN) do
   try
-    {
-    DoCenterForm(Handle, Self);
-    Left:= ReadInteger('Win', 'PyListX', Left);
-    Top:= ReadInteger('Win', 'PyListY', Top);
-    Width:= ReadInteger('Win', 'PyListW', Width);
-    Height:= ReadInteger('Win', 'PyListH', Height);
-    }
     FFuzzy:= ReadBool('Win', 'PyListFuzzy', false);
   finally
     Free
@@ -280,10 +273,6 @@ begin
   if FIniFN<>'' then
   with TIniFile.Create(FIniFN) do
   try
-    WriteInteger('Win', 'PyListX', Left);
-    WriteInteger('Win', 'PyListY', Top);
-    WriteInteger('Win', 'PyListW', Width);
-    WriteInteger('Win', 'PyListH', Height);
     WriteBool('Win', 'PyListFuzzy', FFuzzy);
   finally
     Free
