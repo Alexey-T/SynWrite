@@ -17,6 +17,9 @@ uses
   unMain, unSetupOvr, unProcEditor,
   Menus, TntMenus;
 
+const
+  cMaxCaretTime = 1000*1000*1000;
+  
 type
   TfmSetup = class(TTntForm)
     Tabs: TTntPageControl;
@@ -1758,7 +1761,11 @@ begin
     opCaretsEnabled:= cbCaretMulti.Checked;
     opCaretShapeIns:= TATCaretShape(edCaretShapeIns.ItemIndex);
     opCaretShapeOvr:= TATCaretShape(edCaretShapeOvr.ItemIndex);
-    opCaretTime:= edCaretTime.Position;
+
+    if edCaretTime.Position=edCaretTime.Max then
+      opCaretTime:= cMaxCaretTime
+    else
+      opCaretTime:= edCaretTime.Position*100;
 
     if cbCaretSmart.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soSmartCaret]
@@ -2095,7 +2102,11 @@ begin
     cbCaretMulti.Checked:= opCaretsEnabled;
     edCaretShapeIns.ItemIndex:= Ord(opCaretShapeIns);
     edCaretShapeOvr.ItemIndex:= Ord(opCaretShapeOvr);
-    edCaretTime.Position:= opCaretTime;
+
+    if opCaretTime>=cMaxCaretTime then
+      edCaretTime.Position:= edCaretTime.Max
+    else
+      edCaretTime.Position:= opCaretTime div 100;
 
     cbCaretSmart.Checked:= soSmartCaret in TemplateEditor.Options;
     cbCaretVirtual.Checked:= not (soKeepCaretInText in TemplateEditor.Options);

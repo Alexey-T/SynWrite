@@ -789,14 +789,12 @@ object fmSetup: TfmSetup
         object edCaretTime: TTrackBar
           Left = 136
           Top = 72
-          Width = 142
+          Width = 193
           Height = 33
-          LineSize = 200
-          Max = 2000
-          Min = 200
-          PageSize = 200
-          Frequency = 300
-          Position = 500
+          Max = 14
+          Min = 3
+          PageSize = 1
+          Position = 5
           TabOrder = 2
           ThumbLength = 18
           TickMarks = tmBoth
