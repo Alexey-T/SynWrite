@@ -7576,7 +7576,7 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
-        BgColor = clInfoBk
+        BgColor = 14286847
         MultiLineBorder = True
       end
       item
