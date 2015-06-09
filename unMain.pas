@@ -2974,6 +2974,8 @@ type
     opAutoCloseQuotes2: boolean;
     opLexersOverride: string;
     opShowRecentColors: TSynRecentColors;
+    opShowMenuSizeX: integer;
+    opShowMenuSizeY: integer;
     opUnicodeNeeded: integer;
     opTabColors: array[0..Pred(cTabColors)] of integer;
     opClipHook: boolean;
@@ -4797,6 +4799,10 @@ begin
     opShowRecentColors:= TSynRecentColors(ReadInteger('Setup', 'RecColors', 0));
     opUnicodeNeeded:= ReadInteger('Setup', 'UnNeed', 0{don't suggest});
     opFollowTail:= ReadBool('Setup', 'Tail', false);
+
+    S:= ReadString('Setup', 'MenuSize', '');
+    opShowMenuSizeX:= StrToIntDef(SGetItem(S), 520);
+    opShowMenuSizeY:= StrToIntDef(SGetItem(S), 320);
 
     Tree.ClickAction:= TSyntaxTreeAction(ReadInteger('Tree', 'Click', Ord(Tree.ClickAction)));
     Tree.Color:= ReadInteger('Tree', 'Color', Tree.Color);
@@ -28657,23 +28663,20 @@ begin
 end;
 
 procedure TfmMain.UpdateMenuDialogBorder(AForm: TForm);
-const
-  cSizeX = 520;
-  cMaxSizeY = 320;
 var
   Frame: TEditorFrame;
   P: TPoint;
 begin
   Frame:= CurrentFrame;
   P.Y:= 0;
-  P.X:= Frame.Width div 2 - cSizeX div 2;
+  P.X:= Frame.Width div 2 - opShowMenuSizeX div 2;
   P:= Frame.ClientToScreen(P);
 
   AForm.BorderStyle:= bsNone;
   AForm.Left:= P.X;
   AForm.Top:= P.Y;
-  AForm.Height:= Min(Frame.Height, cMaxSizeY);
-  AForm.Width:= cSizeX;
+  AForm.Height:= Min(Frame.Height, opShowMenuSizeY);
+  AForm.Width:= opShowMenuSizeX;
 end;
 
 initialization
