@@ -28677,6 +28677,10 @@ begin
   AForm.Top:= P.Y;
   AForm.Height:= Min(Frame.Height, opShowMenuSizeY);
   AForm.Width:= opShowMenuSizeX;
+
+  //consider curr window size
+  AForm.Left:= Min(AForm.Left, Application.MainForm.Left+Application.MainForm.Width-AForm.Width);
+  AForm.Left:= Max(Max(AForm.Left, Application.MainForm.Left), 0);
 end;
 
 initialization
