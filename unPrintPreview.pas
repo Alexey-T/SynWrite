@@ -59,7 +59,9 @@ procedure DoEditorPrintPreview(APrinter: TecCustomPrinter; const ATitle: Widestr
 
 implementation
 
-uses unPrintSetup;
+uses
+  ecCmdConst,
+  unPrintSetup;
 
 {$R *.dfm}
 
@@ -115,7 +117,8 @@ end;
 
 procedure TfmPreview.PrintCmdExecute(Sender: TObject);
 begin
-  ecPreview.SyntPrinter.Print;
+  //ecPreview.SyntPrinter.Print;
+  (ecPreview.SyntPrinter as TecSyntPrinter).SyntMemo.ExecCommand(smPrint);
 end;
 
 procedure TfmPreview.edPageExit(Sender: TObject);

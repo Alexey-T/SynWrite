@@ -22373,8 +22373,15 @@ begin
     raise Exception.Create('Unknown owner of editor');
 end;
 
+type
+  TPrinterHack = class(TecSyntPrinter);
+
 procedure TfmMain.LoadPrintOptions;
 begin
+  //fix min-margin 10mm
+  TPrinterHack(ecSyntPrinter).PrnInfo.MinMargin:=
+    Rect(0, 0, 0, 0);
+
   PropsManagerPrint.IniFileName:= SynIni;
   PropsManagerPrint.LoadProps;
 
