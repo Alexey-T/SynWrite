@@ -3357,7 +3357,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.18.2120';
+  cSynVer = '6.18.2130';
   cSynPyVer = '1.0.147';
 
 const
@@ -28686,8 +28686,11 @@ begin
   AForm.Width:= opShowMenuSizeX;
 
   //consider curr window size
-  AForm.Left:= Min(AForm.Left, Application.MainForm.Left+Application.MainForm.Width-AForm.Width);
-  AForm.Left:= Max(Max(AForm.Left, Application.MainForm.Left), 0);
+  if Application.MainForm<>nil then
+  begin
+    AForm.Left:= Min(AForm.Left, Application.MainForm.Left+Application.MainForm.Width-AForm.Width);
+    AForm.Left:= Max(Max(AForm.Left, Application.MainForm.Left), 0);
+  end;  
 end;
 
 initialization
