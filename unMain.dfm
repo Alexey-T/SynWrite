@@ -871,7 +871,7 @@ object fmMain: TfmMain
       Customizable = False
       MenuBar = True
       object TBXSubmenuFile: TSpTBXSubmenuItem
-        Caption = '&File'
+        Caption = 'File'
         object TBXSubmenuItemFNew: TSpTBXSubmenuItem
           Caption = '&New'
           OnSelect = ButtonOnSelect
@@ -1186,7 +1186,7 @@ object fmMain: TfmMain
         end
       end
       object TBXSubmenuEdit: TSpTBXSubmenuItem
-        Caption = '&Edit'
+        Caption = 'Edit'
         OnPopup = TBXSubmenuEditPopup
         object TBXItemEUndo: TSpTBXItem
           Caption = '&Undo'
@@ -1705,7 +1705,7 @@ object fmMain: TfmMain
         end
       end
       object TBXSubmenuSearch: TSpTBXSubmenuItem
-        Caption = '&Search'
+        Caption = 'Search'
         object TBXItemSFind: TSpTBXItem
           Caption = '&Find...'
           Hint = 'Dialog "Find"'
@@ -1841,7 +1841,7 @@ object fmMain: TfmMain
         end
       end
       object TBXSubmenuBookmarks: TSpTBXSubmenuItem
-        Caption = '&Bookmarks'
+        Caption = 'Bookmarks'
         OnPopup = TBXSubmenuBookmarksPopup
         object TBXSubmenuItemBkSet: TSpTBXSubmenuItem
           Caption = '&Set numbered bookmark'
@@ -2076,7 +2076,7 @@ object fmMain: TfmMain
         end
       end
       object TBXSubmenuTools: TSpTBXSubmenuItem
-        Caption = '&Tools'
+        Caption = 'Tools'
         OnPopup = TBXSubmenuToolsPopup
         object TBXSubmenuExtTools: TSpTBXSubmenuItem
           Caption = 'External tools'
@@ -2158,7 +2158,7 @@ object fmMain: TfmMain
         end
       end
       object TBXSubmenuMacros: TSpTBXSubmenuItem
-        Caption = '&Macros'
+        Caption = 'Macros'
         OnPopup = TBXSubmenuMacrosPopup
         object TBXItemMacroRecord: TSpTBXItem
           Caption = 'Start &recording'
@@ -2294,11 +2294,11 @@ object fmMain: TfmMain
         end
       end
       object TBXSubmenuPlugins: TSpTBXSubmenuItem
-        Caption = 'Pl&ugins'
+        Caption = 'Plugins'
         Enabled = False
       end
       object TBXSubmenuOptions: TSpTBXSubmenuItem
-        Caption = '&Options'
+        Caption = 'Options'
         object TBXItemOSetup: TSpTBXItem
           Caption = '&Customize...'
           Hint = 'Dialog "Options"'
@@ -2402,7 +2402,7 @@ object fmMain: TfmMain
         end
       end
       object TBXSubmenuView: TSpTBXSubmenuItem
-        Caption = '&View'
+        Caption = 'View'
         object TBXSubmenuViewToolbars: TSpTBXSubmenuItem
           Caption = 'Tool&bars'
           OnSelect = ButtonOnSelect
@@ -2576,7 +2576,7 @@ object fmMain: TfmMain
         end
       end
       object TbxSubmenuWindow: TSpTBXSubmenuItem
-        Caption = '&Window'
+        Caption = 'Window'
         OnPopup = TbxSubmenuWindowPopup
         object SpTBXSeparatorItem29: TSpTBXSeparatorItem
         end
