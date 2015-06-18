@@ -17275,7 +17275,7 @@ object SyntaxManager: TSyntaxManager
         DisplayName = 'Comment end'
         StyleName = 'Comment'
         TokenType = 1
-        Expression = '# for use in <SCRIPT>'#13#10'-->'#13#10
+        Expression = '-->'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -17768,6 +17768,7 @@ object SyntaxManager: TSyntaxManager
       end>
     SampleText.Strings = (
       '<!DOCUMENT test="123">'
+      ''
       '<META1 error />'
       '<meta2>error</meta3>'
       '<html> '
