@@ -20,12 +20,16 @@ uses
   ecSyntAnal,
   ecUnicode,
   ecEdits,
+  ecMacroRec,
 
   IniFiles,
   PngImageList,
   SpTbxItem,
   ATxSProc;
 
+procedure DoMacroLoadFromFile(ACmd: TMacroRecord; const AFilename: string);
+procedure DoMacroSaveToFile(ACmd: TMacroRecord; const AFilename: string);
+  
 function GetListviewColumnsAsString(L: TTntListview): string;
 procedure SetListviewColumnsFromString(L: TTntListview; const S: string);
 
@@ -2710,6 +2714,44 @@ begin
   for i:= 0 to L.Columns.Count-1 do
     with L.Columns[i] do
       Width:= StrToIntDef(SGetItem(Str), Width);
+end;
+
+
+procedure DoMacroSaveToFile(ACmd: TMacroRecord; const AFilename: string);
+var
+  i: integer;
+begin
+  with TIniFile.Create(AFilename) do
+  try
+    WriteInteger('info', 'count', ACmd.Count);
+    WriteString('info', 'name', UTF8Encode(ACmd.Name));
+    for i:= 0 to ACmd.Count-1 do
+    begin
+      WriteInteger('cmd', Inttostr(i), ACmd.Events[i].Command);
+      WriteString('data', Inttostr(i), UTF8Encode(ACmd.Events[i].Data));
+    end;
+  finally
+    Free
+  end;
+end;
+
+procedure DoMacroLoadFromFile(ACmd: TMacroRecord; const AFilename: string);
+var
+  i: integer;
+begin
+  with TIniFile.Create(AFilename) do
+  try
+    ACmd.Name:= UTF8Decode(ReadString('info', 'name', 'nonamed'));
+    for i:= 0 to ReadInteger('info', 'count', 0)-1 do
+    begin
+      ACmd.Add(
+        ReadInteger('cmd', Inttostr(i), 0),
+        UTF8Decode(ReadString('data', Inttostr(i), ''))
+        );
+    end;
+  finally
+    Free
+  end;
 end;
 
 end.

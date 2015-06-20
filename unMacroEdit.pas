@@ -9,7 +9,10 @@ uses
   Dialogs, StdCtrls, ActnList, ecSyntMemo, ecMacroRec, ComCtrls, DKLang,
   ecHotKeyEdit, ecKeyMap,
   TntStdCtrls, TntComCtrls, TntForms,
-  Spin;
+  Spin, IniFiles;
+
+const
+  cExtMacro = 'synw-macro';
 
 type
   TfmMacroEdit = class(TTntForm)
@@ -46,6 +49,10 @@ type
     edTimes: TSpinEdit;
     bPlayTimes: TTntRadioButton;
     bPlayEof: TTntRadioButton;
+    btnMacroExport: TTntButton;
+    SaveDlg: TSaveDialog;
+    OpenDlg: TOpenDialog;
+    btnMacroImport: TTntButton;
     procedure FormCreate(Sender: TObject);
     procedure MacrosUpdate(Sender: TObject);
     procedure MacrosPlayUpdate(Sender: TObject);
@@ -75,6 +82,8 @@ type
     procedure edTimesKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure btnOkClick(Sender: TObject);
+    procedure btnMacroExportClick(Sender: TObject);
+    procedure btnMacroImportClick(Sender: TObject);
   private
     FPlayIdx: integer;
     FCanPlay: Boolean;
@@ -177,6 +186,11 @@ procedure TfmMacroEdit.FormCreate(Sender: TObject);
 begin
   FPlayIdx:= -1;
   FKeys:= TList.Create;
+
+  SaveDlg.Filter:= 'Macros|*.'+cExtMacro;
+  SaveDlg.DefaultExt:= cExtMacro;
+  OpenDlg.Filter:= 'Macros|*.'+cExtMacro;
+  OpenDlg.DefaultExt:= cExtMacro;
 end;
 
 procedure TfmMacroEdit.SetMacroRecorder(const Value: TecMacroRecorder);
@@ -523,4 +537,32 @@ begin
   ModalResult:= mrOk;
 end;
 
+
+procedure TfmMacroEdit.btnMacroExportClick(Sender: TObject);
+var
+  Cmd: TMacroRecord;
+begin
+  SaveDlg.FileName:= '';
+  if not SaveDlg.Execute then Exit;
+
+  Cmd:= Recorder[MacrosList.ItemIndex];
+  DoMacroSaveToFile(Cmd, SaveDlg.FileName);
+end;
+
+procedure TfmMacroEdit.btnMacroImportClick(Sender: TObject);
+var
+  Cmd: TMacroRecord;
+begin
+  OpenDlg.FileName:= '';
+  if not OpenDlg.Execute then Exit;
+
+  Cmd:= TMacroRecord.Create;
+  DoMacroLoadFromFile(Cmd, OpenDlg.Filename);
+
+  Recorder.AddMacro(Cmd);
+  FKeys.Add(nil);
+  FillMacrosList;
+end;
+
 end.
+

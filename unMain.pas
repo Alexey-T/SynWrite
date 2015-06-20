@@ -3357,7 +3357,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.18.2130';
+  cSynVer = '6.18.2135';
   cSynPyVer = '1.0.147';
 
 const
