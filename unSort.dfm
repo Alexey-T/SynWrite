@@ -112,7 +112,6 @@ object fmSort: TfmSort
       MinValue = 1
       TabOrder = 1
       Value = 1
-      OnChange = edCol1Change
       OnKeyDown = edCol1KeyDown
     end
     object edCol2: TSpinEdit
@@ -125,7 +124,6 @@ object fmSort: TfmSort
       MinValue = 1
       TabOrder = 3
       Value = 1
-      OnChange = edCol2Change
       OnKeyDown = edCol1KeyDown
     end
   end

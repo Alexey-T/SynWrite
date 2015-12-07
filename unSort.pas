@@ -28,10 +28,8 @@ type
     cbUnicode: TTntRadioButton;
     procedure cbCol1Click(Sender: TObject);
     procedure cbCol2Click(Sender: TObject);
-    procedure edCol1Change(Sender: TObject);
     procedure edCol1KeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure edCol2Change(Sender: TObject);
   private
     { Private declarations }
   public
@@ -67,18 +65,6 @@ begin
     Key:= 0;
     Exit
   end;
-end;
-
-procedure TfmSort.edCol1Change(Sender: TObject);
-begin
-  if edCol2.Value < edCol1.Value then
-    edCol2.Value:= edCol1.Value;
-end;
-
-procedure TfmSort.edCol2Change(Sender: TObject);
-begin
-  if edCol2.Value < edCol1.Value then
-    edCol1.Value:= edCol2.Value;
 end;
 
 end.

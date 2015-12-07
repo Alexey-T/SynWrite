@@ -7,12 +7,9 @@ del Readme\Src*.rar
 rem Src.rar
 start /min /wait winrar a Readme\Src.rar *.pas *.dpr *.dfm *.res Setup\setup*.* make*.bat zip*.bat
 start /min /wait winrar a -r Readme\Src.rar Res
-start /min /wait winrar a -ep Readme\Src.rar D:\SynLite\ATTabs\ATTabs.pas D:\SynLite\ATGroups\ATGroups.pas
+start /min /wait winrar a -ep Readme\Src.rar C\ATGroups\*.pas
 rem SrcTests.rar
 start /min /wait winrar a -r -x*.dll -x*.exe -x*.~* -x*.dcu -x*.dof -x*.drc -x*.map -x*.mes -x*.rar Readme\SrcTests.rar Tests\*
-rem SrcPlugins.rar
-start /min /wait winrar a -r -x*.dll -x*.exe -x*.~* -x*.dcu -x*.dof -x*.drc -x*.map -x*.mes -x*.rar -x*.ddp Readme\SrcPlugins.rar D:\SynPlugins
-start /min /wait winrar d -r Readme\SrcPlugins.rar *git\*
 
 rem SynWrite.rar
 start /min /wait winrar a %a% *.wlx *.inf Syn.exe SynHelper.exe LexLib.lxl Settings\Enc.cfg Settings\Lexers.cfg HL\* Readme\* Lang\* Data\autocomplete\* Data\colors\* Data\newdoc\* Data\outpresets\* Data\skins\* Data\conv\* Data\icons\* Data\htmltidy\* Data\websearch\* Tools\* Dictionaries\* Plugins\SynFTP\* *.dll python3*.* *.manifest DLLs\* Py\sw*.py 
