@@ -13975,13 +13975,13 @@ object SyntaxManager: TSyntaxManager
         ConditionList = <
           item
             TagList.Strings = (
+              '`'
+              '^'
               '!'
               '#'
-              '$'
-              '^'
-              '`'
-              '~'
               '+'
+              '~'
+              '$'
               'Alt'
               'AltDown'
               'AltUp'
@@ -15819,9 +15819,9 @@ object SyntaxManager: TSyntaxManager
         ConditionList = <
           item
             TagList.Strings = (
-              '('
+              ';'
               ':'
-              ';')
+              '(')
             TokenTypes = 8
           end
           item
@@ -16008,8 +16008,8 @@ object SyntaxManager: TSyntaxManager
           end
           item
             TagList.Strings = (
-              '.'
               ';'
+              '.'
               'type')
             CondType = tcMask
             TokenTypes = 14
@@ -19935,6 +19935,7 @@ object SyntaxManager: TSyntaxManager
               'md5'
               'md5_file'
               'mdecrypt_generic'
+              'memcache_debug'
               'Memcache::add'
               'Memcache::close'
               'Memcache::connect'
@@ -19948,7 +19949,6 @@ object SyntaxManager: TSyntaxManager
               'Memcache::pconnect'
               'Memcache::replace'
               'Memcache::set'
-              'memcache_debug'
               'memory_get_usage'
               'metaphone'
               'method_exists'
@@ -20121,7 +20121,6 @@ object SyntaxManager: TSyntaxManager
               'mysql_tablename'
               'mysql_thread_id'
               'mysql_unbuffered_query'
-              'mysqli()'
               'mysqli_affected_rows'
               'mysqli_autocommit'
               'mysqli_bind_param'
@@ -20228,6 +20227,7 @@ object SyntaxManager: TSyntaxManager
               'mysqli_thread_safe'
               'mysqli_use_result'
               'mysqli_warning_count'
+              'mysqli()'
               'mysqli->affected_rows'
               'mysqli->autocommit'
               'mysqli->change_user'
@@ -21108,6 +21108,10 @@ object SyntaxManager: TSyntaxManager
               'rad2deg'
               'rand'
               'range'
+              'rar_close'
+              'rar_entry_get'
+              'rar_list'
+              'rar_open'
               'Rar::extract'
               'Rar::getAttr'
               'Rar::getCrc'
@@ -21118,10 +21122,6 @@ object SyntaxManager: TSyntaxManager
               'Rar::getPackedSize'
               'Rar::getUnpackedSize'
               'Rar::getVersion'
-              'rar_close'
-              'rar_entry_get'
-              'rar_list'
-              'rar_open'
               'rawurldecode'
               'rawurlencode'
               'read_exif_data'
@@ -21679,7 +21679,6 @@ object SyntaxManager: TSyntaxManager
               'tcpwrap_check'
               'tempnam'
               'textdomain'
-              'tidy::__construct'
               'tidy_access_count'
               'tidy_clean_repair'
               'tidy_config_count'
@@ -21721,6 +21720,7 @@ object SyntaxManager: TSyntaxManager
               'tidy_set_encoding'
               'tidy_setopt'
               'tidy_warning_count'
+              'tidy::__construct'
               'tidyNode->isAsp'
               'tidyNode->isPhp'
               'time'
@@ -22363,7 +22363,7 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Identifier'
+        DisplayName = 'Id'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -22371,14 +22371,30 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Reserved word'
+        DisplayName = 'Id keyword'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clNavy
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
+      end
+      item
+        DisplayName = 'Comment'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clGray
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsItalic]
       end>
     TokenRules = <
+      item
+        DisplayName = 'Comment'
+        StyleName = 'Comment'
+        TokenType = 1
+        Expression = '//.*'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
       item
         DisplayName = 'String'
         StyleName = 'String'
@@ -22389,7 +22405,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Id'
-        StyleName = 'Identifier'
+        StyleName = 'Id'
         TokenType = 2
         Expression = '[a-z_]\w*'
         ColumnFrom = 0
@@ -22398,10 +22414,8 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Float'
         StyleName = 'Number'
-        TokenType = 6
-        Expression = 
-          '#with exp. dot is optional '#13#10'(\d+ \.)? \d+ e [\+\-]? \d+ |'#13#10'#wit' +
-          'hout exp. dot is required'#13#10'\d+ \. \d+'
+        TokenType = 5
+        Expression = '(\d+ \.)? \d+ e [\+\-]? \d+ |'#13#10'\d+ \. \d+'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -22424,7 +22438,7 @@ object SyntaxManager: TSyntaxManager
     BlockRules = <
       item
         DisplayName = 'Keyw'
-        StyleName = 'Reserved word'
+        StyleName = 'Id keyword'
         BlockType = btTagDetect
         ConditionList = <
           item
@@ -22446,12 +22460,15 @@ object SyntaxManager: TSyntaxManager
               '{')
             TokenTypes = 8
           end>
+        BlockOffset = 2
         BlockEnd = '}'
         EndOfTextClose = True
-        NameFmt = '%s2~s0'
+        NameFmt = '%s2'
+        RefToCondEnd = True
         HighlightPos = cpAny
+        CancelNextRules = True
         DrawStaple = True
-        CollapseFmt = '%s2~s0'
+        CollapseFmt = '%s2'
         IgnoreAsParent = False
       end
       item
@@ -22463,35 +22480,29 @@ object SyntaxManager: TSyntaxManager
               '}')
             TokenTypes = 8
           end>
+        BlockEnd = '{'
         HighlightPos = cpAny
+        CancelNextRules = True
         IgnoreAsParent = False
       end
       item
-        DisplayName = '['
+        DisplayName = 'param'
         ConditionList = <
           item
-            TagList.Strings = (
-              '[')
+            CondType = tcNotEqual
             TokenTypes = 8
-          end>
-        BlockEnd = ']'
-        EndOfTextClose = True
-        NameFmt = '%s2~s0'
-        HighlightPos = cpAny
-        DrawStaple = True
-        CollapseFmt = '%s2~s0'
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = ']'
-        BlockType = btRangeEnd
-        ConditionList = <
+          end
           item
             TagList.Strings = (
-              ']')
+              ':')
             TokenTypes = 8
+          end
+          item
+            TokenTypes = 16
           end>
+        NameFmt = '%s0'
         HighlightPos = cpAny
+        NoEndRule = True
         IgnoreAsParent = False
       end>
     CodeTemplates = <>
@@ -22528,15 +22539,15 @@ object SyntaxManager: TSyntaxManager
       'Identifier'
       'Symbol'
       'String'
-      'Integer const'
-      'Float const')
-    Extentions = 'json sublime-settings sublime-menu'
+      'Number')
+    Extentions = 'json'
     LexerName = 'JSON'
     Notes.Strings = (
       'Author: Alex, uvviewsoft.com'
       'Test'
       'http://json.org/example.html'
       'http://www.jquery4u.com/json/10-example-json-files/')
+    LineComment = '//'
     Charset = DEFAULT_CHARSET
   end
   object SyntAnal6: TLibSyntAnalyzer
@@ -26209,8 +26220,8 @@ object SyntaxManager: TSyntaxManager
               'parray'
               'photo'
               'pid'
-              'pkg::create'
               'pkg_mkIndex'
+              'pkg::create'
               'place'
               'platform'
               'platform::shell'
@@ -26246,7 +26257,6 @@ object SyntaxManager: TSyntaxManager
               'switch'
               'tailcall'
               'Tcl'
-              'tcl::prefix'
               'tcl_endOfWord'
               'tcl_findLibrary'
               'tcl_interactive'
@@ -26265,13 +26275,13 @@ object SyntaxManager: TSyntaxManager
               'tcl_wordBreakAfter'
               'tcl_wordBreakBefore'
               'tcl_wordchars'
+              'tcl::prefix'
               'tcltest'
               'tell'
               'text'
               'throw'
               'time'
               'tk'
-              'tk::mac'
               'tk_bisque'
               'tk_chooseColor'
               'tk_chooseDirectory'
@@ -26293,6 +26303,7 @@ object SyntaxManager: TSyntaxManager
               'tk_textCut'
               'tk_textPaste'
               'tk_version'
+              'tk::mac'
               'tkerror'
               'tkwait'
               'tm'
@@ -26300,6 +26311,8 @@ object SyntaxManager: TSyntaxManager
               'trace'
               'transchan'
               'try'
+              'ttk_image'
+              'ttk_vsapi'
               'ttk::button'
               'ttk::checkbutton'
               'ttk::combobox'
@@ -26321,8 +26334,6 @@ object SyntaxManager: TSyntaxManager
               'ttk::style'
               'ttk::treeview'
               'ttk::widget'
-              'ttk_image'
-              'ttk_vsapi'
               'unknown'
               'unload'
               'unset'

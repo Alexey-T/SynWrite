@@ -4,7 +4,7 @@ object fmAbout: TfmAbout
   ActiveControl = Button1
   BorderStyle = bsDialog
   Caption = 'About'
-  ClientHeight = 242
+  ClientHeight = 226
   ClientWidth = 330
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -40,7 +40,7 @@ object fmAbout: TfmAbout
     Left = 8
     Top = 44
     Width = 313
-    Height = 89
+    Height = 69
     Caption = 'About'
     TabOrder = 0
     object Label12: TTntLabel
@@ -87,29 +87,6 @@ object fmAbout: TfmAbout
       ParentFont = False
       OnClick = LabelWSite2Click
     end
-    object Label4: TTntLabel
-      Left = 8
-      Top = 64
-      Width = 28
-      Height = 13
-      Caption = 'Email:'
-    end
-    object LabelWMail: TTntLabel
-      Left = 88
-      Top = 64
-      Width = 123
-      Height = 13
-      Cursor = crHandPoint
-      Hint = 'mailto:support@uvviewsoft.com'
-      Caption = 'support@uvviewsoft.com'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlue
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      OnClick = LabelWMailClick
-    end
     object LabelWSite: TTntLabel
       Left = 88
       Top = 32
@@ -145,7 +122,7 @@ object fmAbout: TfmAbout
   end
   object gComp: TTntGroupBox
     Left = 8
-    Top = 136
+    Top = 120
     Width = 313
     Height = 69
     Caption = 'Components'
@@ -187,7 +164,7 @@ object fmAbout: TfmAbout
   end
   object Button1: TTntButton
     Left = 120
-    Top = 212
+    Top = 196
     Width = 90
     Height = 23
     Cancel = True
@@ -204,17 +181,16 @@ object fmAbout: TfmAbout
     Left = 216
     Top = 8
     LangData = {
-      0700666D41626F7574010100000001000000070043617074696F6E0110000000
+      0700666D41626F7574010100000001000000070043617074696F6E010E000000
       0B004C6162656C575469746C650000050067496E666F01010000000400000007
       0043617074696F6E0007004C6162656C31320101000000050000000700436170
       74696F6E0007004C6162656C3131010100000006000000070043617074696F6E
       0006004C6162656C39010100000007000000070043617074696F6E000A004C61
-      62656C574E616D6500000B004C6162656C575369746532000006004C6162656C
-      3401010000000D000000070043617074696F6E000A004C6162656C574D61696C
-      0000050067436F6D7001010000000F000000070043617074696F6E000B004C61
-      62656C57436F6D703100000700427574746F6E31010100000018000000070043
-      617074696F6E000D004C6162656C5756657273696F6E00000A004C6162656C57
-      5369746500000B004C6162656C57436F6D703200000A004C6162656C466F7275
-      6D010100000019000000070043617074696F6E00}
+      62656C574E616D6500000B004C6162656C5753697465320000050067436F6D70
+      01010000000F000000070043617074696F6E000B004C6162656C57436F6D7031
+      00000700427574746F6E31010100000018000000070043617074696F6E000D00
+      4C6162656C5756657273696F6E00000A004C6162656C575369746500000B004C
+      6162656C57436F6D703200000A004C6162656C466F72756D0101000000190000
+      00070043617074696F6E00}
   end
 end

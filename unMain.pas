@@ -1072,11 +1072,6 @@ type
     TBXItemClipsDir: TSpTbxItem;
     OD_Swatch: TOpenDialog;
     SD_Swatch: TSaveDialog;
-    TBXTabColor: TSpTbxColorPalette;
-    TBXSubmenuTabColor: TSpTbxSubmenuItem;
-    TBXItemTabColorMisc: TSpTbxItem;
-    TBXSeparatorItem77: TSpTbxSeparatorItem;
-    TBXItemTabColorDef: TSpTbxItem;
     ecSmartHl: TAction;
     TBXItemBkDropPortable: TSpTbxItem;
     ecDropPortableBk: TAction;
@@ -1425,6 +1420,7 @@ type
     TBXItemClipDeleteSel: TSpTBXItem;
     SpTBXSeparatorItem17: TSpTBXSeparatorItem;
     TBXSubmenuSMarks: TSpTBXSubmenuItem;
+    TbxItemTabColor: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1837,9 +1833,6 @@ type
     procedure TBXItemClipsAddTextClick(Sender: TObject);
     procedure TBXItemClipsEditClick(Sender: TObject);
     procedure TBXItemClipsDirClick(Sender: TObject);
-    procedure TBXTabColorChange(Sender: TObject);
-    procedure TBXSubmenuTabColorPopup(Sender: TTBCustomItem;
-      FromLink: Boolean);
     procedure TBXItemTabColorMiscClick(Sender: TObject);
     procedure TBXItemTabColorDefClick(Sender: TObject);
     procedure ecSmartHlExecute(Sender: TObject);
@@ -2024,10 +2017,6 @@ type
     procedure StatusItemWrapClick(Sender: TObject);
     procedure StatusItemSelModeClick(Sender: TObject);
     procedure StatusItemZoomClick(Sender: TObject);
-    procedure TBXTabColorGetColor(Sender: TObject; ACol, ARow: Integer;
-      var Color: TColor; var Name: WideString);
-    procedure TBXTabColorCellClick(Sender: TObject; ACol, ARow: Integer;
-      var Allow: Boolean);
     procedure StatusItemCaretDrawHint(Sender: TObject;
       AHintBitmap: TBitmap; var AHint: WideString;
       var PaintDefault: Boolean);
@@ -2404,9 +2393,6 @@ type
     procedure DoGetCommentProps(const Lexer: string;
       UseDefault: boolean;
       var sStart, sEnd: string; var IsMultiLine: boolean);
-    function GetTabColors: Widestring;
-    procedure SetTabColors(S: Widestring);
-    property TabColorsString: Widestring read GetTabColors write SetTabColors;
     procedure DoSetTabColorValue(NColor: TColor);
     procedure DoSetTabColorIndex(NIndex: Integer);
     procedure DoSetTabColorIndex_Current(NIndex: Integer);
@@ -2977,7 +2963,6 @@ type
     opShowMenuSizeX: integer;
     opShowMenuSizeY: integer;
     opUnicodeNeeded: integer;
-    opTabColors: array[0..Pred(cTabColors)] of integer;
     opClipHook: boolean;
     opColorFtpBlue,
     opColorFtpGreen,
@@ -3357,7 +3342,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.18.2135';
+  cSynVer = '6.18.2150';
   cSynPyVer = '1.0.147';
 
 const
@@ -4844,8 +4829,6 @@ begin
     opCaretsGutterBand:= 0;
     ApplyCarets;
 
-    TabColorsString:= ReadString('View', 'TabMisc', '');
-
     opShowCharInfo:= ReadBool('Setup', 'ChInf', false);
     opLang:= ReadInteger('Setup', 'Lang', 0);
     Status.Visible:= ReadBool('Setup', 'Stat', true);
@@ -5218,7 +5201,6 @@ begin
     WriteBool('View', 'TabBtn', opTabXButtons);
     WriteBool('View', 'TabPlus', opTabPlus);
     WriteBool('View', 'TabDown', opTabAtBottom);
-    WriteString('View', 'TabMisc', TabColorsString);
 
     WriteBool('Setup', 'ChInf', opShowCharInfo);
     WriteInteger('Setup', 'Lang', opLang);
@@ -7240,11 +7222,6 @@ begin
   {$endif}
 end;
 
-const
-  cDefColors: array[0..Pred(cTabColors)] of TColor =
-    ($0000FF, $007FFF, $00FFFF, $00FF00, $007F00,
-     $FFFFFF, $FFFF7F, $FF0000, $FF7F7F, $7F7F7F);
-
 procedure TfmMain.FormCreate(Sender: TObject);
 var
   i: integer;
@@ -7292,9 +7269,6 @@ begin
   ListTabs.Align:= alClient;
   ListBookmarks.Align:= alClient;
   plConsole.Align:= alClient;
-
-  //init colors
-  Move(cDefColors, opTabColors, SizeOf(opTabColors));
 
   //init plugins
   FillChar(FPluginsPanel, Sizeof(FPluginsPanel), 0);
@@ -11110,8 +11084,7 @@ begin
   enWinMove:= en_all and enWinOpen and not F.Modified and (FrameAllCount>1);
 
   TBXSubmenuItemToGroup.Enabled:= en_all and (Groups.PopupTabIndex>=0);
-  TBXSubmenuTabColor.Enabled:= en_all;
-
+  TBXItemTabColor.Enabled:= en_all;
   TBXItemTabSave.Enabled:= en_all;
   TBXItemTabSaveAs.Enabled:= en_all;
   TBXItemTabClose.Enabled:= en_all;
@@ -19840,11 +19813,6 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXTabColorChange(Sender: TObject);
-begin
-  DoSetTabColorValue(TbxTabColor.Color);
-end;
-
 procedure TfmMain.DoSetFrameTabColor(F: TEditorFrame; NColor: TColor);
 var
   NPages, NTab: Integer;
@@ -19888,26 +19856,11 @@ begin
             Exit;
         end;
       end;
-    1..10:
-      NColor:= opTabColors[NIndex-1];
     else
       raise Exception.Create('Unknown tab color index');
   end;
 
   DoSetFrameTabColor(FClickedFrame, NColor);
-end;
-
-procedure TfmMain.TBXSubmenuTabColorPopup(Sender: TTBCustomItem;
-  FromLink: Boolean);
-var
-  F: TEditorFrame;
-begin
-  F:= FClickedFrame;
-  if F<>nil then
-  begin
-    TbxTabColor.Color:= F.TabColor;
-    TbxItemTabColorDef.Checked:= F.TabColor=clNone;
-  end;
 end;
 
 procedure TfmMain.TBXItemTabColorMiscClick(Sender: TObject);
@@ -19920,30 +19873,6 @@ end;
 procedure TfmMain.TBXItemTabColorDefClick(Sender: TObject);
 begin
   DoSetTabColorValue(clNone);
-end;
-
-function TfmMain.GetTabColors: Widestring;
-var
-  i: Integer;
-begin
-  Result:= '';
-  for i:= 0 to High(opTabColors) do
-    Result:= Result+ SColorToHtmlCode(opTabColors[i])+',';
-end;
-
-procedure TfmMain.SetTabColors(S: Widestring);
-var
-  SItem: Widestring;
-  i: Integer;
-begin
-  if S='' then Exit;
-  for i:= 0 to High(opTabColors) do
-  begin
-    SItem:= SGetItem(S);
-    Delete(SItem, 1, 1);
-    if SItem='' then Break;
-    opTabColors[i]:= SHtmlCodeToColor(SItem);
-  end;
 end;
 
 procedure TfmMain.ClipsInsPress;
@@ -24590,19 +24519,6 @@ procedure TfmMain.StatusItemZoomClick(Sender: TObject);
 begin
   with Mouse.CursorPos do
     PopupZoom.Popup(X, Y);
-end;
-
-procedure TfmMain.TBXTabColorGetColor(Sender: TObject; ACol, ARow: Integer;
-  var Color: TColor; var Name: WideString);
-begin
-  Color:= opTabColors[ACol + ARow * 5];
-  Name:= SColorToHtmlCode(Color);
-end;
-
-procedure TfmMain.TBXTabColorCellClick(Sender: TObject; ACol,
-  ARow: Integer; var Allow: Boolean);
-begin
-  DoSetTabColorIndex(ACol + ARow * 5 + 1);
 end;
 
 procedure TfmMain.StatusItemCaretDrawHint(Sender: TObject;

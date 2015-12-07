@@ -338,7 +338,6 @@ type
     edTabMinLen: TSpinEdit;
     TntLabel29: TTntLabel;
     cbTabEntire: TTntCheckBox;
-    TntLabel13: TTntLabel;
     cbClipHook: TTntCheckBox;
     cbACloseQuote2: TTntCheckBox;
     cbACloseQuote1: TTntCheckBox;
@@ -360,16 +359,6 @@ type
     cbUndoSimple: TTntCheckBox;
     cbSelJump: TTntCheckBox;
     cbTabDblClose: TTntCheckBox;
-    ShapeColor0: TShape;
-    ShapeColor1: TShape;
-    ShapeColor2: TShape;
-    ShapeColor3: TShape;
-    ShapeColor4: TShape;
-    ShapeColor5: TShape;
-    ShapeColor6: TShape;
-    ShapeColor7: TShape;
-    ShapeColor8: TShape;
-    ShapeColor9: TShape;
     cbCaretVirtual: TTntCheckBox;
     cbCaretMulti: TTntCheckBox;
     LabelHelpCarets: TTntLabel;
@@ -469,8 +458,6 @@ type
     procedure bFontMenusClick(Sender: TObject);
     procedure LabMoreSkinsClick(Sender: TObject);
     procedure LabMoreIconsClick(Sender: TObject);
-    procedure ShapeColor0MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
@@ -1979,17 +1966,6 @@ begin
     if opTabWidthMin>opTabWidthMax then
       opTabWidthMax:= opTabWidthMin;
 
-    opTabColors[0]:= ShapeColor0.Brush.Color;
-    opTabColors[1]:= ShapeColor1.Brush.Color;
-    opTabColors[2]:= ShapeColor2.Brush.Color;
-    opTabColors[3]:= ShapeColor3.Brush.Color;
-    opTabColors[4]:= ShapeColor4.Brush.Color;
-    opTabColors[5]:= ShapeColor5.Brush.Color;
-    opTabColors[6]:= ShapeColor6.Brush.Color;
-    opTabColors[7]:= ShapeColor7.Brush.Color;
-    opTabColors[8]:= ShapeColor8.Brush.Color;
-    opTabColors[9]:= ShapeColor9.Brush.Color;
-
     ApplyTabOptions;
     ApplyFramesOptions;
   end;
@@ -2326,17 +2302,6 @@ begin
     edTabMinLen.Value:= opTabWidthMin;
     edTabMaxLen.Value:= opTabWidthMax;
     edTabAngle.Value:= opTabAngle;
-
-    ShapeColor0.Brush.Color:= opTabColors[0];
-    ShapeColor1.Brush.Color:= opTabColors[1];
-    ShapeColor2.Brush.Color:= opTabColors[2];
-    ShapeColor3.Brush.Color:= opTabColors[3];
-    ShapeColor4.Brush.Color:= opTabColors[4];
-    ShapeColor5.Brush.Color:= opTabColors[5];
-    ShapeColor6.Brush.Color:= opTabColors[6];
-    ShapeColor7.Brush.Color:= opTabColors[7];
-    ShapeColor8.Brush.Color:= opTabColors[8];
-    ShapeColor9.Brush.Color:= opTabColors[9];
   end;
 end;
 
@@ -2850,23 +2815,6 @@ end;
 procedure TfmSetup.LabMoreIconsClick(Sender: TObject);
 begin
   FOpenUrl('http://sourceforge.net/projects/synwrite-addons/files/IconSets/', Handle);
-end;
-
-procedure TfmSetup.ShapeColor0MouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var
-  Sh: TShape;
-begin
-  Sh:= Sender as TShape;
-  with TColorDialog.Create(nil) do
-  try
-    Options:= Options+[cdFullOpen];
-    Color:= Sh.Brush.Color;
-    if Execute then
-      Sh.Brush.Color:= Color;
-  finally
-    Free
-  end;
 end;
 
 end.

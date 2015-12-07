@@ -19,8 +19,8 @@ object fmClip: TfmClip
   object ListClip: TTntListBox
     Left = 0
     Top = 0
-    Width = 149
-    Height = 249
+    Width = 141
+    Height = 245
     Style = lbOwnerDrawFixed
     Align = alClient
     ItemHeight = 13

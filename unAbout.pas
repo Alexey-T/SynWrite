@@ -18,15 +18,12 @@ type
     Button1: TTntButton;
     LabelWSite2: TTntLabel;
     LabelWTitle: TTntLabel;
-    Label4: TTntLabel;
-    LabelWMail: TTntLabel;
     DKLanguageController1: TDKLanguageController;
     LabelWVersion: TLabel;
     LabelWSite: TTntLabel;
     LabelWComp2: TTntLabel;
     LabelForum: TTntLabel;
     procedure Button1Click(Sender: TObject);
-    procedure LabelWMailClick(Sender: TObject);
     procedure LabelWComp1Click(Sender: TObject);
     procedure LabelWSite2Click(Sender: TObject);
     procedure LabelWSiteClick(Sender: TObject);
@@ -56,11 +53,6 @@ end;
 procedure TfmAbout.FOp(const s: string);
 begin
   FOpenUrl(s, Handle);
-end;
-
-procedure TfmAbout.LabelWMailClick(Sender: TObject);
-begin
-  FOp('mailto:support@uvviewsoft.com?subject=SynWrite');
 end;
 
 procedure TfmAbout.LabelWComp1Click(Sender: TObject);

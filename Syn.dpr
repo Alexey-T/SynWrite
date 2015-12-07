@@ -4,9 +4,9 @@ SynWrite exe project...
 program Syn;
 
 uses
-  FastMM4,
-  FastMove,
-  FastCode,
+  //FastMM4,
+  //FastMove,
+  //FastCode,
   Forms,
   unMainExe in 'unMainExe.pas' {fmSynwrite},
   unMain in 'unMain.pas' {fmMain},
