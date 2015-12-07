@@ -24,7 +24,7 @@ object fmMenuPy: TfmMenuPy
     Left = 0
     Top = 24
     Width = 494
-    Height = 244
+    Height = 243
     Style = lbOwnerDrawFixed
     Align = alClient
     ItemHeight = 33
@@ -45,7 +45,7 @@ object fmMenuPy: TfmMenuPy
   end
   object Panel1: TPanel
     Left = 0
-    Top = 268
+    Top = 267
     Width = 494
     Height = 16
     Align = alBottom

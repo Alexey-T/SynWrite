@@ -785,6 +785,8 @@ begin
             try
               fmMain.UpdateMenuDialogBorder(Form);
               Caption:= StrCaption;
+              Font.Assign(fmMain.FFontMenus);
+
               FListItems:= MenuItems;
               case Id of
                 0: FListStyle:= cSynPyMenuSingle;

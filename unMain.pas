@@ -3342,7 +3342,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.19.2150';
+  cSynVer = '6.19.2155';
   cSynPyVer = '1.0.147';
 
 const
@@ -22861,6 +22861,9 @@ begin
     UpdateMenuDialogBorder(Form);
     UpdateMacroKeynames;
 
+    Font.Assign(FFontMenus);
+    List.ItemHeight:= FontHeightToItemHeight(Font);
+
     Caption:= DKLangConstW('zMCmdList');
 
     //1) add commands
@@ -22928,6 +22931,9 @@ begin
     try
       UpdateMenuDialogBorder(Form);
       Caption:= DKLangConstW('zMProjList');
+
+      Font.Assign(FFontMenus);
+      List.ItemHeight:= FontHeightToItemHeight(Font)*2;
 
       FIniFN:= Self.SynHistoryIni;
       fmProj:= Self.fmProj;
@@ -26664,6 +26670,9 @@ begin
   try
     UpdateMenuDialogBorder(Form);
     Caption:= DKLangConstW('zMSnippetList');
+
+    Font.Assign(FFontMenus);
+    List.ItemHeight:= FontHeightToItemHeight(Font);
 
     Edit.Text:= SInitialText;
     MemoText.Font.Assign(CurrentEditor.Font);

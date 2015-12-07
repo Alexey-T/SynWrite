@@ -91,8 +91,8 @@ end;
 procedure TfmMenuPy.FormShow(Sender: TObject);
 begin
   case FListStyle of
-    cSynPyMenuSingle: List.ItemHeight:= 20;
-    cSynPyMenuDouble: List.ItemHeight:= 33;
+    cSynPyMenuSingle: List.ItemHeight:= FontHeightToItemHeight(Font);
+    cSynPyMenuDouble: List.ItemHeight:= FontHeightToItemHeight(Font)*2;
   end;  
 
   DoFilter;
