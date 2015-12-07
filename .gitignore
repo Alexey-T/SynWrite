@@ -27,3 +27,4 @@ __history
 !Py/*.py
 !Py/syn_plugin_manager
 !Wiki/*
+!CFree/*
