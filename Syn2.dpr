@@ -8,9 +8,9 @@ library Syn2;
 {$R Syn.dkl_const.res}
 
 uses
-  FastMM4,
-  FastMove,
-  FastCode,
+  //FastMM4,
+  //FastMove,
+  //FastCode,
   SysUtils,
   Windows,
   Controls,
