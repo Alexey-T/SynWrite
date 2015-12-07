@@ -1129,7 +1129,7 @@ object SyntaxManager: TSyntaxManager
               'typedef')
             TokenTypes = 4
           end>
-        NameFmt = '%s[}]'
+        NameFmt = '%e0'
         HighlightPos = cpAny
         NoEndRule = True
         TreeItemImage = 4
