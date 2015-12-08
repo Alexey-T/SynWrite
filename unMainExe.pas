@@ -376,6 +376,8 @@ begin
 end;
 
 procedure TfmSynwrite.LoadPos;
+const
+  cReservePixels=80;
 begin
   with TIniFile.Create(SynHistoryIni) do
   try
@@ -383,11 +385,21 @@ begin
     Top:= ReadInteger('Win', 'Top', 200);
     Width:= ReadInteger('Win', 'Width', 780);
     Height:= ReadInteger('Win', 'Height', 550);
+
+    //2nd monitor removed: fix pos
+    if (Left>Screen.DesktopWidth-cReservePixels) or
+      (Top>Screen.DesktopHeight-cReservePixels) then
+    begin
+      Left:= 0;
+      Top:= 0;
+    end;
+
     if ReadBool('Win', 'Max', false) then
     begin
       WindowState:= wsMaximized;
       fmMain.DoRepaint; //need repaintin for Maximized window
     end;
+
     if ReadBool('Win', 'OnTop', false) then
       fmMain.ecOnTop.Execute;
   finally
