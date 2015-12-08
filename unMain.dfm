@@ -8759,61 +8759,61 @@ object fmMain: TfmMain
         DisplayName = 'Set tab color - custom'
       end
       item
-        Command = 1101
+        Command = 0
         KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Set tab color - color 1'
       end
       item
-        Command = 1102
+        Command = 0
         KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Set tab color - color 2'
       end
       item
-        Command = 1103
+        Command = 0
         KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Set tab color - color 3'
       end
       item
-        Command = 1104
+        Command = 0
         KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Set tab color - color 4'
       end
       item
-        Command = 1105
+        Command = 0
         KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Set tab color - color 5'
       end
       item
-        Command = 1106
+        Command = 0
         KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Set tab color - color 6'
       end
       item
-        Command = 1107
+        Command = 0
         KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Set tab color - color 7'
       end
       item
-        Command = 1108
+        Command = 0
         KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Set tab color - color 8'
       end
       item
-        Command = 1109
+        Command = 0
         KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Set tab color - color 9'
       end
       item
-        Command = 1110
+        Command = 0
         KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Set tab color - color 10'

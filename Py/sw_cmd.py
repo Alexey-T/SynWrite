@@ -595,16 +595,6 @@ cmd_TreeLevel8 = 1098
 cmd_TreeLevel9 = 1099
 
 cmd_TabColorDefault = 1100
-cmd_TabColor1 = 1101
-cmd_TabColor2 = 1102
-cmd_TabColor3 = 1103
-cmd_TabColor4 = 1104
-cmd_TabColor5 = 1105
-cmd_TabColor6 = 1106
-cmd_TabColor7 = 1107
-cmd_TabColor8 = 1108
-cmd_TabColor9 = 1109
-cmd_TabColor10 = 1110
 cmd_TabColorCustom = 1111
 
 cmd_OptionsTab_ProgramOpt = 1115
