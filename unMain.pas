@@ -11007,10 +11007,7 @@ begin
   begin
     F:= FramesAll[i];
     if F.Modified then
-    begin
       SaveFrame(F, False);
-      F.Modified:= False;
-    end;
   end;
 end;
 
