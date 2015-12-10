@@ -18263,7 +18263,7 @@ begin
   if opTabSwitcher and (NTabs>2) and AAllowModernSwitch then
   begin
     Switcher:= TabSwitchers[Groups.PagesIndexOf(Groups.PagesCurrent)];
-    NTabs:= Switcher.TabSwitch(ANext, Application.MainForm);
+    NTabs:= Switcher.TabSwitch(ANext, Application.MainForm, FFontMenus);
     if NTabs>=0 then
       Groups.PagesCurrent.Tabs.TabIndex:= NTabs;
   end

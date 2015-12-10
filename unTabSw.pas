@@ -3,7 +3,7 @@ unit unTabSw;
 interface
 
 uses
-  Classes;
+  Classes, Graphics;
 
 type
   TTabSwitcherGetTab = procedure(APagesNumber, ATabIndex: integer;
@@ -18,7 +18,7 @@ type
     OnGetTab: TTabSwitcherGetTab;
     constructor Create(APagesNumber: Integer);
     destructor Destroy; override;
-    function TabSwitch(ANext: boolean; AOwner: TComponent): integer;
+    function TabSwitch(ANext: boolean; AOwner: TComponent; AFont: TFont): integer;
     procedure UpdateTabList(TopItem, NewItem, DelItem: Integer);
     procedure MoveTabInList(NFrom, NTo: integer);
     procedure InitTabList(ACount: integer);
@@ -32,9 +32,11 @@ uses
   Dialogs,
   Forms,
   Controls,
-  unTabSwForm;
+  unTabSwForm,
+  unProc;
 
-function TTabSwitcher.TabSwitch(ANext: boolean; AOwner: TComponent): integer;
+function TTabSwitcher.TabSwitch(ANext: boolean; AOwner: TComponent;
+  AFont: TFont): integer;
 var
   i, n: Integer;
   TabName, TabFN, TabLex: Widestring;
@@ -43,8 +45,12 @@ begin
   if FTabList.Count=0 then Exit;
   with TfmTabSw.Create(AOwner) do
   try
+    Font.Assign(AFont);
+    List.ItemHeight:= FontHeightToItemHeight(AFont);
+
     FListFN.Clear;
     FListLex.Clear;
+
     for i:= 0 to FTabList.Count-1 do
     begin
       n:= Integer(FTabList[i]);

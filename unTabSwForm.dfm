@@ -53,14 +53,14 @@ object fmTabSw: TfmTabSw
       TabOrder = 1
       object Label1: TTntLabel
         Left = 6
-        Top = 4
+        Top = 1
         Width = 37
         Height = 16
         Caption = 'Label1'
       end
       object Label2: TTntLabel
         Left = 6
-        Top = 20
+        Top = 19
         Width = 37
         Height = 16
         Caption = 'Label2'
