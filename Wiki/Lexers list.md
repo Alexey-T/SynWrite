@@ -14,15 +14,20 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Asymptote
 * AutoHotkey
 * AutoIt
+* Automake
 * AviSynth
+* AWK
 * Bash script
 * Batch files
+* BibTeX
+* Boo
 * Brainfuck
 * C
 * C#
 * C++
 * Caml
 * Clarion
+* Clavier
 * Clipper
 * Clojure
 * CMake
@@ -88,12 +93,14 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Make files
 * Markdown
 * MATLAB
+* Metafont
 * MIB files
 * MIPS Assembly
 * Modelica
 * Modula 2
 * MSVS Solution
 * MySQL
+* Nemerle
 * NFO files
 * Nginx
 * Nim
@@ -102,7 +109,9 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * NSL Assembler
 * Oberon
 * Objective-C
+* OpenCL
 * OpenEdge
+* OpenSCAD
 * Parser3
 * Pascal
 * Pawn
@@ -117,6 +126,8 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Puppet
 * Python
 * R
+* R Markdown
+* Ragel
 * Razor
 * Resource script
 * RPG/IV
@@ -139,6 +150,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Tree
 * Twig
 * TypeScript
+* Vala
 * VBScript
 * Verilog HDL
 * VHDL
@@ -149,4 +161,5 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * WSH script
 * XML
 * XSLT
+* Yacc
 * YAML 

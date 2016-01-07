@@ -11,6 +11,9 @@ Icons: Aha               | | IconSets/icons.Aha.zip
 Icons: LibreOffice White | | IconSets/icons.LibreOffice_White.zip
 Icons: WinStd            | | IconSets/icons.WinStd.zip
 Icons: Silk              | | IconSets/icons.Silk.zip
+Text Statistics | Shows for text: count of lines, words, chars | PyPlugins/TextStat/plugin.Alexey.TextStatistics.zip
+Extract Emails | Finds emails in current file | PyPlugins/ExtractEmails/plugin.ExtractEmails.zip
+Keymap Report | Shows detailed report about Synwrite keymapping | PyPlugins/kvichans.KeymapReport/plugin.kvichans.KeymapReport.zip
 Explorer | Adds tab "Explorer" into Tree/Project panel | BinaryPlugins/Explorer/plugin.Explorer.zip
 Show Keymapping | Shows hotkeys in program as HTML page | PyPlugins/Alexey.ShowKeys/plugin.Alexey.ShowKeymapping.zip
 Column Markers | Commands to control "column markers" | PyPlugins/Alexey.ColMarkers/plugin.Alexey.ColumnMarkers.zip
@@ -233,6 +236,24 @@ Lexer: Visual dBase                 | | Lexers/lexer.Visual_dBase.zip
 Lexer: Prolog                       | | Lexers/lexer.Prolog.zip
 Lexer: ABAP                         | | Lexers/lexer.ABAP.zip
 Lexer: Nim                          | | Lexers/lexer.Nim.zip
+Lexer: VBScript                     | | Lexers/lexer.VBScript.zip
+Lexer: BibTeX                     | | Lexers/lexer.BibTeX.zip
+Lexer: OpenCL                     | | Lexers/lexer.OpenCL.zip
+Lexer: R Markdown                     | | Lexers/lexer.R_Markdown.zip
+Lexer: Nemerle                     | | Lexers/lexer.Nemerle.zip
+Lexer: Yacc                     | | Lexers/lexer.Yacc.zip
+Lexer: Bash script          | | Lexers/lexer.Bash_script.zip
+Lexer: JSON                    | | Lexers/lexer.JSON.zip
+Lexer: Boo                      | | Lexers/lexer.Boo.zip
+Lexer: Vala                      | | Lexers/lexer.Vala.zip
+Lexer: Automake                      | | Lexers/lexer.Automake.zip
+Lexer: AWK                      | | Lexers/lexer.AWK.zip
+Lexer: Metafont                      | | Lexers/lexer.Metafont.zip
+Lexer: Ragel                      | | Lexers/lexer.Ragel.zip
+Lexer: OpenSCAD                      | | Lexers/lexer.OpenSCAD.zip
+Lexer: NSIS                      | | Lexers/lexer.NSIS.zip
+Lexer: Inno Setup                      | | Lexers/lexer.Inno_Setup.zip
+Lexer: Clavier                      | | Lexers/lexer.Clavier.zip
 Translation: French               | | Languages/language.French.zip
 Translation: Hungarian            | | Languages/language.Hungarian.zip
 Translation: Spanish              | | Languages/language.Spanish.zip

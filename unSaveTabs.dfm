@@ -1,8 +1,8 @@
 object fmSaveTabs: TfmSaveTabs
   Left = 331
   Top = 477
-  Width = 567
-  Height = 318
+  Width = 537
+  Height = 292
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Save tabs?'
   Color = clBtnFace
@@ -21,8 +21,8 @@ object fmSaveTabs: TfmSaveTabs
   object List: TTntCheckListBox
     Left = 0
     Top = 0
-    Width = 421
-    Height = 280
+    Width = 521
+    Height = 222
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -34,17 +34,17 @@ object fmSaveTabs: TfmSaveTabs
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 421
-    Top = 0
-    Width = 130
-    Height = 280
-    Align = alRight
+    Left = 0
+    Top = 222
+    Width = 521
+    Height = 31
+    Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
     object bYes: TTntButton
-      Left = 6
-      Top = 72
-      Width = 120
+      Left = 310
+      Top = 6
+      Width = 100
       Height = 23
       Caption = '&Save'
       Default = True
@@ -52,18 +52,18 @@ object fmSaveTabs: TfmSaveTabs
       TabOrder = 0
     end
     object bNo: TTntButton
-      Left = 6
-      Top = 102
-      Width = 120
+      Left = 414
+      Top = 6
+      Width = 100
       Height = 23
-      Caption = '&Don'#39't save'
+      Caption = '&Ignore'
       ModalResult = 7
       TabOrder = 1
     end
     object bCancel: TTntButton
       Left = 6
-      Top = 182
-      Width = 120
+      Top = 6
+      Width = 100
       Height = 23
       Cancel = True
       Caption = 'Cancel'
@@ -72,8 +72,8 @@ object fmSaveTabs: TfmSaveTabs
     end
   end
   object DKLanguageController1: TDKLanguageController
-    Left = 424
-    Top = 208
+    Left = 296
+    Top = 24
     LangData = {
       0A00666D5361766554616273010100000001000000070043617074696F6E0105
       00000004004C6973740000060050616E656C3100000400625965730101000000

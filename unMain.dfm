@@ -2142,6 +2142,12 @@ object fmMain: TfmMain
           OnClick = TBXItemRunNumConvClick
           OnSelect = ButtonOnSelect
         end
+        object TbxSubmenuWeb: TSpTBXSubmenuItem
+          Caption = 'Web search'
+          Hint = 'Perform online search using one of installed presets'
+          OnSelect = ButtonOnSelect
+          OnPopup = TbxSubmenuWebPopup
+        end
         object SpTBXSeparatorItem26: TSpTBXSeparatorItem
         end
         object TbxItemRunNewSnippet: TSpTBXItem
@@ -2681,14 +2687,9 @@ object fmMain: TfmMain
         object TbxItemHelpPyDir: TSpTBXItem
           Caption = 'Browse Python-plugins folder'
           Hint = 'Browse Python-plugins folder contents'
+          Visible = False
           OnClick = TbxItemHelpPyDirClick
           OnSelect = ButtonOnSelect
-        end
-        object TbxSubmenuWeb: TSpTBXSubmenuItem
-          Caption = 'Web search'
-          Hint = 'Perform online search using one of installed presets'
-          OnSelect = ButtonOnSelect
-          OnPopup = TbxSubmenuWebPopup
         end
         object TBXSeparatorItem46: TSpTBXSeparatorItem
         end

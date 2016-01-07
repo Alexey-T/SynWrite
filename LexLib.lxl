@@ -11261,960 +11261,6 @@ object SyntaxManager: TSyntaxManager
     LineComment = '#'
     Charset = DEFAULT_CHARSET
   end
-  object SyntAnal26: TLibSyntAnalyzer
-    Formats = <
-      item
-        DisplayName = 'Command'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlue
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'Comment'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clGray
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsItalic]
-      end
-      item
-        DisplayName = 'Current'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clNone
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-        BgColor = clSilver
-        FormatType = ftBackGround
-      end
-      item
-        DisplayName = 'Directive'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clNavy
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'Number'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 159
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-      end
-      item
-        DisplayName = 'Parameter'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 33239
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-      end
-      item
-        DisplayName = 'String'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clTeal
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-      end
-      item
-        DisplayName = 'Variable'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clPurple
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-      end>
-    TokenRules = <
-      item
-        DisplayName = 'Any name'
-        TokenType = 1
-        Expression = '(un\.)? [a-z_]\w*'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Block Comment'
-        StyleName = 'Comment'
-        Expression = '(?s)/\*.*?(\*/|\Z)'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'CallBack'
-        TokenType = 1
-        Expression = '(un)?\.\w+'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Commands'
-        TokenType = 1
-        Expression = '[a-z!]\w*'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Comment'
-        StyleName = 'Comment'
-        Expression = '(\#|\;).*'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Constant'
-        StyleName = 'Variable'
-        TokenType = 1
-        Expression = '\$\{.*?\}'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Hexadecimal'
-        StyleName = 'Number'
-        TokenType = 7
-        Expression = '0x[\da-f]*'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Number'
-        StyleName = 'Number'
-        TokenType = 5
-        Expression = '\d+\.?\d*'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'String'
-        StyleName = 'String'
-        TokenType = 8
-        Expression = '(?s)(["'#39'`])(\\\\1|.)*?\1'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'Variable'
-        StyleName = 'Variable'
-        TokenType = 1
-        Expression = '\$\w+'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end>
-    BlockRules = <
-      item
-        DisplayName = 'Function'
-        StyleName = 'Current'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              'Function')
-          end>
-        BlockEnd = 'FunctionEnd'
-        NameFmt = '%s0 %s-1'
-        RefToCondEnd = True
-        DynHighlight = dhBound
-        HighlightPos = cpBoundTag
-        CollapseFmt = '%s0 %s-1'
-        TreeItemImage = 5
-        TreeGroupImage = 1
-        IgnoreAsParent = False
-        AutoCloseMode = acmCloseNearest
-        AutoCloseText = 'FunctionEnd'
-      end
-      item
-        DisplayName = 'FunctionEnd'
-        BlockName = 'Function'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              'FunctionEnd')
-          end>
-        RefToCondEnd = True
-        HighlightPos = cpAny
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'macro'
-        StyleName = 'Current'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '!macro')
-            IgnoreCase = True
-          end>
-        BlockEnd = 'macroend'
-        NameFmt = '%s0 %s-1'
-        RefToCondEnd = True
-        DynHighlight = dhBound
-        HighlightPos = cpBoundTag
-        CollapseFmt = '%s0 %s-1'
-        TreeItemImage = 6
-        TreeGroupImage = 1
-        IgnoreAsParent = False
-        AutoCloseMode = acmCloseNearest
-        AutoCloseText = '!macroend'
-      end
-      item
-        DisplayName = 'macroend'
-        BlockName = 'macro'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '!macroend')
-            IgnoreCase = True
-          end>
-        HighlightPos = cpAny
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'SectionGroup'
-        StyleName = 'Current'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              'SectionGroup')
-          end>
-        BlockEnd = 'SectionGroupEnd'
-        NameFmt = '%s0 %s-1'
-        RefToCondEnd = True
-        DynHighlight = dhBound
-        HighlightPos = cpBoundTag
-        CollapseFmt = '%s0 %s-1'
-        TreeItemImage = 1
-        TreeGroupImage = 1
-        IgnoreAsParent = False
-        AutoCloseMode = acmCloseNearest
-        AutoCloseText = 'SectionGroupEnd'
-      end
-      item
-        DisplayName = 'SectionGroupEnd'
-        BlockName = 'SectionGroup'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              'SectionGroupEnd')
-          end>
-        HighlightPos = cpAny
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'Section'
-        StyleName = 'Current'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              'Section')
-          end>
-        BlockEnd = 'SectionEnd'
-        NameFmt = '%sz0'
-        RefToCondEnd = True
-        DynHighlight = dhBound
-        HighlightPos = cpBoundTag
-        CollapseFmt = '%sz0'
-        TreeItemImage = 3
-        TreeGroupImage = 1
-        IgnoreAsParent = False
-        AutoCloseMode = acmCloseNearest
-        AutoCloseText = 'SectionEnd'
-      end
-      item
-        DisplayName = 'SectionEnd'
-        BlockName = 'Section'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              'SectionEnd')
-          end>
-        HighlightPos = cpAny
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'PageEx'
-        StyleName = 'Current'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              'PageEx')
-          end>
-        BlockEnd = 'PageExEnd'
-        NameFmt = '%s0 %s-1'
-        RefToCondEnd = True
-        DynHighlight = dhBound
-        HighlightPos = cpBoundTag
-        CollapseFmt = '%s0 %s-1'
-        TreeItemImage = 2
-        IgnoreAsParent = False
-        AutoCloseMode = acmCloseNearest
-        AutoCloseText = 'PageExEnd'
-      end
-      item
-        DisplayName = 'PageExEnd'
-        BlockName = 'PageEx'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              'PageExEnd')
-          end>
-        HighlightPos = cpAny
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'if'
-        StyleName = 'Current'
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '!if'
-              '!ifdef'
-              '!ifmacrodef'
-              '!ifmacrondef'
-              '!ifndef')
-            IgnoreCase = True
-          end>
-        BlockEnd = 'endif'
-        DisplayInTree = False
-        RefToCondEnd = True
-        DynHighlight = dhBound
-        HighlightPos = cpBoundTag
-        CollapseFmt = '%s0 %sz-1...'
-        IgnoreAsParent = False
-        AutoCloseMode = acmCloseNearest
-        AutoCloseText = '!endif'
-      end
-      item
-        DisplayName = 'endif'
-        BlockType = btRangeEnd
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '!endif')
-            IgnoreCase = True
-          end>
-        BlockEnd = 'if'
-        HighlightPos = cpAny
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'Commands'
-        StyleName = 'Command'
-        StatesPresent = 1
-        BlockType = btTagDetect
-        ConditionList = <
-          item
-            TagList.Strings = (
-              'abort'
-              'addbrandingimage'
-              'addsize'
-              'allowrootdirinstall'
-              'allowskipfiles'
-              'autoclosewindow'
-              'bgfont'
-              'bggradient'
-              'brandingtext'
-              'bringtofront'
-              'call'
-              'callinstdll'
-              'caption'
-              'changeui'
-              'checkbitmap'
-              'clearerrors'
-              'completedtext'
-              'componenttext'
-              'copyfiles'
-              'crccheck'
-              'createdirectory'
-              'createfont'
-              'createshortcut'
-              'delete'
-              'deleteinisec'
-              'deleteinistr'
-              'deleteregkey'
-              'deleteregvalue'
-              'detailprint'
-              'detailsbuttontext'
-              'dirshow'
-              'dirtext'
-              'dirvar'
-              'dirverify'
-              'enablewindow'
-              'enumregkey'
-              'enumregvalue'
-              'exch'
-              'exec'
-              'execshell'
-              'execwait'
-              'expandenvstrings'
-              'file'
-              'filebufsize'
-              'fileclose'
-              'fileerrortext'
-              'fileopen'
-              'fileread'
-              'filereadbyte'
-              'filereadutf16le'
-              'filereadword'
-              'fileseek'
-              'filewrite'
-              'filewritebyte'
-              'filewriteutf16le'
-              'filewriteword'
-              'findclose'
-              'findfirst'
-              'findnext'
-              'findproc'
-              'findwindow'
-              'flushini'
-              'function'
-              'functionend'
-              'getcurinsttype'
-              'getcurrentaddress'
-              'getdlgitem'
-              'getdllversion'
-              'getdllversionlocal'
-              'geterrorlevel'
-              'getfiletime'
-              'getfiletimelocal'
-              'getfullpathname'
-              'getfunctionaddress'
-              'getinstdirerror'
-              'getlabeladdress'
-              'gettempfilename'
-              'goto'
-              'hidewindow'
-              'icon'
-              'ifabort'
-              'iferrors'
-              'iffileexists'
-              'ifrebootflag'
-              'ifsilent'
-              'initpluginsdir'
-              'installbuttontext'
-              'installcolors'
-              'installdir'
-              'installdirregkey'
-              'instprogressflags'
-              'insttype'
-              'insttypegettext'
-              'insttypesettext'
-              'intcmp'
-              'intcmpu'
-              'intfmt'
-              'intop'
-              'iswindow'
-              'langstring'
-              'licensebkcolor'
-              'licensedata'
-              'licenseforceselection'
-              'licenselangstring'
-              'licensetext'
-              'loadlanguagefile'
-              'lockwindow'
-              'logset'
-              'logtext'
-              'messagebox'
-              'miscbuttontext'
-              'name'
-              'nop'
-              'outfile'
-              'page'
-              'pagecallbacks'
-              'pageex'
-              'pageexend'
-              'pop'
-              'push'
-              'quit'
-              'readenvstr'
-              'readinistr'
-              'readregdword'
-              'readregstr'
-              'reboot'
-              'regdll'
-              'rename'
-              'requestexecutionlevel'
-              'reservefile'
-              'return'
-              'rmdir'
-              'searchpath'
-              'section'
-              'sectionend'
-              'sectiongetflags'
-              'sectiongetinsttypes'
-              'sectiongetsize'
-              'sectiongettext'
-              'sectiongroup'
-              'sectiongroupend'
-              'sectionin'
-              'sectionsetflags'
-              'sectionsetinsttypes'
-              'sectionsetsize'
-              'sectionsettext'
-              'sendmessage'
-              'setautoclose'
-              'setbrandingimage'
-              'setcompress'
-              'setcompressionlevel'
-              'setcompressor'
-              'setcompressordictsize'
-              'setctlcolors'
-              'setcurinsttype'
-              'setdatablockoptimize'
-              'setdatesave'
-              'setdetailsprint'
-              'setdetailsview'
-              'seterrorlevel'
-              'seterrors'
-              'setfileattributes'
-              'setfont'
-              'setoutpath'
-              'setoverwrite'
-              'setpluginunload'
-              'setrebootflag'
-              'setregview'
-              'setshellvarcontext'
-              'setsilent'
-              'showinstdetails'
-              'showuninstdetails'
-              'showwindow'
-              'silentinstall'
-              'silentuninstall'
-              'sleep'
-              'spacetexts'
-              'strcmp'
-              'strcmps'
-              'strcpy'
-              'strlen'
-              'subcaption'
-              'uninstallbuttontext'
-              'uninstallcaption'
-              'uninstallicon'
-              'uninstallsubcaption'
-              'uninstalltext'
-              'uninstpage'
-              'unregdll'
-              'var'
-              'viaddversionkey'
-              'viproductversion'
-              'windowicon'
-              'writeinistr'
-              'writeregbin'
-              'writeregdword'
-              'writeregexpandstr'
-              'writeregstr'
-              'writeuninstaller'
-              'xpstyle')
-            IgnoreCase = True
-          end>
-        HighlightPos = cpBound
-        TreeItemImage = 1
-        TreeGroupImage = 1
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'Constants'
-        StyleName = 'Variable'
-        BlockType = btTagDetect
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '${__date__}'
-              '${__file__}'
-              '${__function__}'
-              '${__global__}'
-              '${__line__}'
-              '${__pageex__}'
-              '${__section__}'
-              '${__time__}'
-              '${__timestamp__}'
-              '${__uninstall__}'
-              '${nsis_version}'
-              '${nsisdir}'
-              '$0'
-              '$1'
-              '$2'
-              '$3'
-              '$4'
-              '$5'
-              '$6'
-              '$7'
-              '$8'
-              '$9'
-              '$admintools'
-              '$appdata'
-              '$cdburn_area'
-              '$cmdline'
-              '$commonfiles'
-              '$commonfiles32'
-              '$commonfiles64'
-              '$cookies'
-              '$desktop'
-              '$documents'
-              '$exedir'
-              '$exefile'
-              '$exepath'
-              '$favorites'
-              '$fonts'
-              '$history'
-              '$hwndparent'
-              '$instdir'
-              '$internet_cache'
-              '$language'
-              '$localappdata'
-              '$music'
-              '$nethood'
-              '$outdir'
-              '$pictures'
-              '$pluginsdir'
-              '$printhood'
-              '$profile'
-              '$programfiles'
-              '$programfiles32'
-              '$programfiles64'
-              '$quicklaunch'
-              '$r0'
-              '$r1'
-              '$r2'
-              '$r3'
-              '$r4'
-              '$r5'
-              '$r6'
-              '$r7'
-              '$r8'
-              '$r9'
-              '$recent'
-              '$resources'
-              '$resources_localized'
-              '$sendto'
-              '$smprograms'
-              '$smstartup'
-              '$startmenu'
-              '$sysdir'
-              '$temp'
-              '$templates'
-              '$videos'
-              '$windir')
-            IgnoreCase = True
-          end>
-        HighlightPos = cpAny
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'Directives'
-        StyleName = 'Directive'
-        BlockType = btTagDetect
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '!addincludedir'
-              '!addplugindir'
-              '!appendfile'
-              '!cd'
-              '!define'
-              '!delfile'
-              '!echo'
-              '!else'
-              '!endif'
-              '!error'
-              '!execute'
-              '!if'
-              '!ifdef'
-              '!ifmacrodef'
-              '!ifmacrondef'
-              '!ifndef'
-              '!include'
-              '!insertmacro'
-              '!macro'
-              '!macroend'
-              '!packhdr'
-              '!searchparse'
-              '!searchreplace'
-              '!system'
-              '!tempfile'
-              '!undef'
-              '!verbose'
-              '!warning'
-              'if'
-              'ifdef'
-              'ifmacrodef'
-              'ifmacrondef'
-              'ifndef')
-            IgnoreCase = True
-          end>
-        HighlightPos = cpAny
-        IgnoreAsParent = False
-      end
-      item
-        DisplayName = 'Parameters'
-        StyleName = 'Parameter'
-        BlockType = btTagDetect
-        ConditionList = <
-          item
-            TagList.Strings = (
-              '.onguiend'
-              '.onguiinit'
-              '.oninit'
-              '.oninstfailed'
-              '.oninstsuccess'
-              '.onmouseoversection'
-              '.onrebootfailed'
-              '.onselchange'
-              '.onuserabort'
-              '.onverifyinstdir'
-              'admin'
-              'all'
-              'alt'
-              'archive'
-              'auto'
-              'both'
-              'bottom'
-              'branding'
-              'bzip2'
-              'colored'
-              'components'
-              'componentsonlyoncustom'
-              'control'
-              'cur'
-              'current'
-              'custom'
-              'customstring'
-              'date'
-              'directory'
-              'enablecancel'
-              'end'
-              'ext'
-              'false'
-              'file_attribute_archive'
-              'file_attribute_hidden'
-              'file_attribute_normal'
-              'file_attribute_offline'
-              'file_attribute_readonly'
-              'file_attribute_system'
-              'file_attribute_temporary'
-              'filesonly'
-              'final'
-              'force'
-              'global'
-              'gray'
-              'hidden'
-              'hide'
-              'highest'
-              'hkcc'
-              'hkcr'
-              'hkcu'
-              'hkdd'
-              'hkey_classes_root'
-              'hkey_current_config'
-              'hkey_current_user'
-              'hkey_dyn_data'
-              'hkey_local_machine'
-              'hkey_performance_data'
-              'hkey_users'
-              'hklm'
-              'hkpd'
-              'hku'
-              'idabort'
-              'idcancel'
-              'idd_dir'
-              'idd_inst'
-              'idd_instfiles'
-              'idd_license'
-              'idd_selcom'
-              'idd_uninst'
-              'idd_verify'
-              'idignore'
-              'idno'
-              'idok'
-              'idretry'
-              'idyes'
-              'ifdiff'
-              'ifempty'
-              'ifnewer'
-              'ignorecase'
-              'imgid'
-              'instfiles'
-              'italic'
-              'lang'
-              'lastused'
-              'leave'
-              'left'
-              'license'
-              'listonly'
-              'lzma'
-              'math'
-              'mb_abortretryignore'
-              'mb_defbutton1'
-              'mb_defbutton2'
-              'mb_defbutton3'
-              'mb_defbutton4'
-              'mb_iconexclamation'
-              'mb_iconinformation'
-              'mb_iconquestion'
-              'mb_iconstop'
-              'mb_ok'
-              'mb_okcancel'
-              'mb_retrycancel'
-              'mb_right'
-              'mb_rtlreading'
-              'mb_setforeground'
-              'mb_topmost'
-              'mb_usericon'
-              'mb_yesno'
-              'mb_yesnocancel'
-              'nevershow'
-              'nocustom'
-              'noerrors'
-              'none'
-              'nonfatal'
-              'normal'
-              'off'
-              'offline'
-              'on'
-              'oname'
-              'open'
-              'print'
-              'readonly'
-              'rebootok'
-              'resizetofit'
-              'right'
-              'sd'
-              'set'
-              'shctx'
-              'shell_context'
-              'shift'
-              'short'
-              'show'
-              'silent'
-              'silentlog'
-              'smooth'
-              'solid'
-              'strike'
-              'sw_hide'
-              'sw_showmaximized'
-              'sw_showminimized'
-              'sw_shownormal'
-              'system'
-              'temporary'
-              'textonly'
-              'timeout'
-              'top'
-              'trimcenter'
-              'trimleft'
-              'trimright'
-              'true'
-              'try'
-              'un.onguiend '
-              'un.onguiinit'
-              'un.oninit'
-              'un.onrebootfailed'
-              'un.onselchange'
-              'un.onuninstfailed'
-              'un.onuninstsuccess'
-              'un.onuserabort'
-              'underline'
-              'uninstconfirm'
-              'user'
-              'utcdate'
-              'windows'
-              'zlib')
-            IgnoreCase = True
-          end>
-        HighlightPos = cpAny
-        IgnoreAsParent = False
-      end>
-    CodeTemplates = <>
-    SubAnalyzers = <>
-    SampleText.Strings = (
-      '/***************************'
-      '* Example NSIS Code'
-      '***************************/'
-      '  '
-      '!if 1 < 2 '
-      '  !echo "1 is smaller than 2!!"'
-      '!else if ! 3.1 > 1.99'
-      '  !error "this line should never appear"'
-      '!else'
-      '  !error "neither should this"'
-      '!endif'
-      ''
-      '!define SETUPNAME "Setup Name"'
-      '!include MUI2.nsh '
-      '!insertmacro MUI_PAGE_INSTFILES'
-      '!insertmacro MUI_LANGUAGE "English"'
-      ''
-      ';*** Runtime Switches'
-      'RequestExecutionlevel user'
-      'ShowInstDetails show'
-      ''
-      ';*** Compiler Flags'
-      'SetCompressionLevel 9'
-      '              '
-      'Name '#39'${SETUPNAME}'#39
-      'OutFile '#39'setup.exe'#39
-      '            '
-      '#Variables'
-      'Var File1'
-      'Var File2         '
-      ''
-      '!macro "MyMacro"'
-      '  MessageBox MB_OK|MB_ICONINFORMATION `Hello World!`'
-      '!macroend'
-      ''
-      'Section Main'
-      '  !insertmacro MyMacro'
-      'SectionEnd'
-      '              '
-      'SectionGroup MyGroup'
-      ''
-      '  Section "MySection1" '
-      #9'StrCpy $File1 "readme.txt"'
-      '    File /nonfatal "$File1" '
-      '  SectionEnd'
-      '              '
-      '  Section "MySection2"'
-      '  '#9'StrCpy $File2 "MyApp.exe"'
-      '  '#9'File /nonfatal "$File1"'
-      '  '#9'Call MyFunction'
-      '  SectionEnd     '
-      ''
-      'SectionGroupEnd'
-      '               '
-      'Function MyFunction'
-      '  StrCpy $0 $EXEDIR '
-      '  DetailPrint "Good bye!"  '
-      'FunctionEnd'
-      ''
-      'PageEx vico'
-      #9
-      'PageExEnd')
-    TokenTypeNames.Strings = (
-      'Comment'
-      'Identifier'
-      'Symbol'
-      'String'
-      'Integer const'
-      'Number'
-      'Preprocessor'
-      'Constant')
-    Extentions = 'nsh nsi'
-    LexerName = 'NSIS'
-    Notes.Strings = (
-      'Nullsoft Scriptable Install System'
-      'Author: Victor Emmanuel'
-      'E-mail: vicokoby@gmail.com')
-    LineComment = '#'
-    Charset = DEFAULT_CHARSET
-    Left = 144
-    Top = 184
-  end
   object SyntAnal58: TLibSyntAnalyzer
     Formats = <
       item
@@ -13985,13 +13031,13 @@ object SyntaxManager: TSyntaxManager
         ConditionList = <
           item
             TagList.Strings = (
-              '`'
-              '^'
               '!'
               '#'
-              '+'
-              '~'
               '$'
+              '^'
+              '`'
+              '~'
+              '+'
               'Alt'
               'AltDown'
               'AltUp'
@@ -15829,9 +14875,9 @@ object SyntaxManager: TSyntaxManager
         ConditionList = <
           item
             TagList.Strings = (
-              ';'
+              '('
               ':'
-              '(')
+              ';')
             TokenTypes = 8
           end
           item
@@ -16018,8 +15064,8 @@ object SyntaxManager: TSyntaxManager
           end
           item
             TagList.Strings = (
-              ';'
               '.'
+              ';'
               'type')
             CondType = tcMask
             TokenTypes = 14
@@ -19945,7 +18991,6 @@ object SyntaxManager: TSyntaxManager
               'md5'
               'md5_file'
               'mdecrypt_generic'
-              'memcache_debug'
               'Memcache::add'
               'Memcache::close'
               'Memcache::connect'
@@ -19959,6 +19004,7 @@ object SyntaxManager: TSyntaxManager
               'Memcache::pconnect'
               'Memcache::replace'
               'Memcache::set'
+              'memcache_debug'
               'memory_get_usage'
               'metaphone'
               'method_exists'
@@ -20131,6 +19177,7 @@ object SyntaxManager: TSyntaxManager
               'mysql_tablename'
               'mysql_thread_id'
               'mysql_unbuffered_query'
+              'mysqli()'
               'mysqli_affected_rows'
               'mysqli_autocommit'
               'mysqli_bind_param'
@@ -20237,7 +19284,6 @@ object SyntaxManager: TSyntaxManager
               'mysqli_thread_safe'
               'mysqli_use_result'
               'mysqli_warning_count'
-              'mysqli()'
               'mysqli->affected_rows'
               'mysqli->autocommit'
               'mysqli->change_user'
@@ -21118,10 +20164,6 @@ object SyntaxManager: TSyntaxManager
               'rad2deg'
               'rand'
               'range'
-              'rar_close'
-              'rar_entry_get'
-              'rar_list'
-              'rar_open'
               'Rar::extract'
               'Rar::getAttr'
               'Rar::getCrc'
@@ -21132,6 +20174,10 @@ object SyntaxManager: TSyntaxManager
               'Rar::getPackedSize'
               'Rar::getUnpackedSize'
               'Rar::getVersion'
+              'rar_close'
+              'rar_entry_get'
+              'rar_list'
+              'rar_open'
               'rawurldecode'
               'rawurlencode'
               'read_exif_data'
@@ -21689,6 +20735,7 @@ object SyntaxManager: TSyntaxManager
               'tcpwrap_check'
               'tempnam'
               'textdomain'
+              'tidy::__construct'
               'tidy_access_count'
               'tidy_clean_repair'
               'tidy_config_count'
@@ -21730,7 +20777,6 @@ object SyntaxManager: TSyntaxManager
               'tidy_set_encoding'
               'tidy_setopt'
               'tidy_warning_count'
-              'tidy::__construct'
               'tidyNode->isAsp'
               'tidyNode->isPhp'
               'time'
@@ -26230,8 +25276,8 @@ object SyntaxManager: TSyntaxManager
               'parray'
               'photo'
               'pid'
-              'pkg_mkIndex'
               'pkg::create'
+              'pkg_mkIndex'
               'place'
               'platform'
               'platform::shell'
@@ -26267,6 +25313,7 @@ object SyntaxManager: TSyntaxManager
               'switch'
               'tailcall'
               'Tcl'
+              'tcl::prefix'
               'tcl_endOfWord'
               'tcl_findLibrary'
               'tcl_interactive'
@@ -26285,13 +25332,13 @@ object SyntaxManager: TSyntaxManager
               'tcl_wordBreakAfter'
               'tcl_wordBreakBefore'
               'tcl_wordchars'
-              'tcl::prefix'
               'tcltest'
               'tell'
               'text'
               'throw'
               'time'
               'tk'
+              'tk::mac'
               'tk_bisque'
               'tk_chooseColor'
               'tk_chooseDirectory'
@@ -26313,7 +25360,6 @@ object SyntaxManager: TSyntaxManager
               'tk_textCut'
               'tk_textPaste'
               'tk_version'
-              'tk::mac'
               'tkerror'
               'tkwait'
               'tm'
@@ -26321,8 +25367,6 @@ object SyntaxManager: TSyntaxManager
               'trace'
               'transchan'
               'try'
-              'ttk_image'
-              'ttk_vsapi'
               'ttk::button'
               'ttk::checkbutton'
               'ttk::combobox'
@@ -26344,6 +25388,8 @@ object SyntaxManager: TSyntaxManager
               'ttk::style'
               'ttk::treeview'
               'ttk::widget'
+              'ttk_image'
+              'ttk_vsapi'
               'unknown'
               'unload'
               'unset'

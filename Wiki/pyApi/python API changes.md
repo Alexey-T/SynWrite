@@ -1,6 +1,11 @@
 Changes in Python API
 =====================
 
+jan 2016
+
+* release 1.0.148
+* add on_click
+
 feb 2015
 
 * release 1.0.147

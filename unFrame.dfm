@@ -2,7 +2,7 @@ object EditorFrame: TEditorFrame
   Left = 0
   Top = 0
   Width = 435
-  Height = 266
+  Height = 265
   Align = alClient
   AutoScroll = False
   Color = clWindow
@@ -13,7 +13,7 @@ object EditorFrame: TEditorFrame
     Left = 425
     Top = 0
     Width = 10
-    Height = 266
+    Height = 265
     Align = alRight
     ParentShowHint = False
     ShowHint = True
@@ -25,13 +25,13 @@ object EditorFrame: TEditorFrame
     Left = 0
     Top = 0
     Width = 425
-    Height = 266
+    Height = 265
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
     object SplitterEds: TSpTBXSplitter
       Left = 0
-      Top = 204
+      Top = 203
       Width = 425
       Height = 5
       Cursor = crSizeNS
@@ -48,7 +48,7 @@ object EditorFrame: TEditorFrame
       Left = 0
       Top = 0
       Width = 425
-      Height = 204
+      Height = 203
       NonPrintedSpaces = True
       NonPrintedEol = True
       NonPrintedEolDetails = False
@@ -253,7 +253,7 @@ object EditorFrame: TEditorFrame
       OnCheckChar = EditorMasterCheckChar
       OnZoom = EditorMasterZoom
       OnModifiedChanged = EditorMasterModifiedChanged
-      OnClick = EditorMasterEnter
+      OnClick = EditorMasterClick
       OnContextPopup = EditorMasterContextPopup
       OnEnter = EditorMasterEnter
       OnKeyDown = EditorMasterKeyDown
@@ -262,7 +262,7 @@ object EditorFrame: TEditorFrame
     end
     object EditorSlave: TSyntaxMemo
       Left = 0
-      Top = 209
+      Top = 208
       Width = 425
       Height = 57
       NonPrintedSpaces = True
@@ -467,7 +467,7 @@ object EditorFrame: TEditorFrame
       OnCheckChar = EditorMasterCheckChar
       OnZoom = EditorMasterZoom
       OnModifiedChanged = EditorMasterModifiedChanged
-      OnClick = EditorMasterEnter
+      OnClick = EditorMasterClick
       OnContextPopup = EditorMasterContextPopup
       OnEnter = EditorMasterEnter
       OnKeyDown = EditorMasterKeyDown

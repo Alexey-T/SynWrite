@@ -112,6 +112,7 @@ type
     procedure EditorMasterResize(Sender: TObject);
     procedure EditorMasterGetLineNumberStr(Sender: TObject; Line: Integer;
       var NumberStr: String);
+    procedure EditorMasterClick(Sender: TObject);
   private
     FTabCaption: Widestring;
     FBitmapMap: TBitmap;
@@ -366,19 +367,7 @@ begin
   TfmMain(Owner).UpdateActiveTabColors;
 
   TfmMain(Owner).DoPyEvent(Ed, cSynEventOnFocus, []);
-
-  //Ctrl+Alt+click - goto-definition
-  //(if no line selection is made with Ctrl+Alt+drag)
-  if IsCtrlAltPressed then
-    if not Ed.HaveSelection then
-    begin
-      EditorUpdateCaretPosFromMousePos(Ed);
-      TfmMain(Owner).DoFindId;
-    end;
-
-  FMouseClickOnNumbers:= EditorMouseCursorOnNumbers(Ed);
   FIsMasterFocused:= Ed=EditorMaster;
-  DoSyncMicromap;
 end;
 
 procedure TEditorFrame.EditorMasterSetBookmark(Snder: TObject;
@@ -1677,6 +1666,29 @@ var
 begin
   p:= HyperlinkHighlighter.HltRangeBndAt(APos);
   Result:= p.y > p.x;
+end;
+
+
+procedure TEditorFrame.EditorMasterClick(Sender: TObject);
+var
+  Ed: TSyntaxMemo;
+begin
+  Ed:= Sender as TSyntaxMemo;
+  EditorMasterEnter(Sender);
+
+  TfmMain(Owner).DoPyEvent(Ed, cSynEventOnClick, []);
+
+  //Ctrl+Alt+click - goto-definition
+  //(if no line selection is made with Ctrl+Alt+drag)
+  if IsCtrlAltPressed then
+    if not Ed.HaveSelection then
+    begin
+      EditorUpdateCaretPosFromMousePos(Ed);
+      TfmMain(Owner).DoFindId;
+    end;
+
+  FMouseClickOnNumbers:= EditorMouseCursorOnNumbers(Ed);
+  DoSyncMicromap;
 end;
 
 
