@@ -1676,7 +1676,8 @@ begin
   Ed:= Sender as TSyntaxMemo;
   EditorMasterEnter(Sender);
 
-  TfmMain(Owner).DoPyEvent(Ed, cSynEventOnClick, []);
+  TfmMain(Owner).DoPyEvent(Ed, cSynEventOnClick,
+    ['"'+ShiftStateToString(KeyboardStateToShiftState)+'"']);
 
   //Ctrl+Alt+click - goto-definition
   //(if no line selection is made with Ctrl+Alt+drag)
