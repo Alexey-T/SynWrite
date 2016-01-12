@@ -11,6 +11,7 @@ Icons: Aha               | | IconSets/icons.Aha.zip
 Icons: LibreOffice White | | IconSets/icons.LibreOffice_White.zip
 Icons: WinStd            | | IconSets/icons.WinStd.zip
 Icons: Silk              | | IconSets/icons.Silk.zip
+Python Intel | Intel commands for Python: auto-completion, goto-definition | PyPlugins/PythonIntel/plugin.Synw_Python_Intel.zip
 Text Statistics | Shows for text: count of lines, words, chars | PyPlugins/TextStat/plugin.Alexey.TextStatistics.zip
 Extract Emails | Finds emails in current file | PyPlugins/ExtractEmails/plugin.ExtractEmails.zip
 Keymap Report | Shows detailed report about Synwrite keymapping | PyPlugins/kvichans.KeymapReport/plugin.kvichans.KeymapReport.zip
@@ -107,7 +108,6 @@ Markdown Preview | Converts Markdown text to HTML, and opens HTML in browser | P
 DevDocs | Search with given words on DevDocs.io site | PyPlugins/Alexey.DevDocs/plugin.Alexey.DevDocs.zip
 Insert Unicode Char | Shows prompt for Unicode hex code, then inserts it | PyPlugins/Alexey.InsertUnicodeChar/plugin.Alexey.InsertUnicodeChar.zip
 VB SyncEdit | Calls SyncEditing for current function in VBScript | PyPlugins/Zyx.VBSyncEdit/plugin.Zyx.VBSyncEdit.zip
-SynJedi | Intelligent auto-completion for Python lexer | BinaryPlugins/SynJedi/plugin.SynJedi.rar
 SynCodeIntel | Intelligent auto-completion for several lexers: Python, PHP, Perl, Ruby, JavaScript, Tcl, etc | BinaryPlugins/SynCodeIntel/plugin.SynCodeIntel.rar
 SynSharp | Intelligent auto-completion for C# lexer | BinaryPlugins/SynSharp/plugin.SynSharp.rar
 FindIdPas | Finds declaration of identifiers for Pascal lexer | BinaryPlugins/FindIdPas/plugin.FindIdPas.rar
@@ -254,6 +254,10 @@ Lexer: OpenSCAD                      | | Lexers/lexer.OpenSCAD.zip
 Lexer: NSIS                      | | Lexers/lexer.NSIS.zip
 Lexer: Inno Setup                      | | Lexers/lexer.Inno_Setup.zip
 Lexer: Clavier                      | | Lexers/lexer.Clavier.zip
+Lexer: JavaScript Babel        | | Lexers/lexer.JavaScript_Babel.zip
+Lexer: HTML_                      | | Lexers/lexer.HTML_.zip
+Lexer: PHP_                      | | Lexers/lexer.PHP_.zip
+Lexer: ARM Assembly            | | Lexers/lexer.ARM_Assembly.zip
 Translation: French               | | Languages/language.French.zip
 Translation: Hungarian            | | Languages/language.Hungarian.zip
 Translation: Spanish              | | Languages/language.Spanish.zip
