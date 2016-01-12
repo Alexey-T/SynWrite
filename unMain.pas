@@ -3344,7 +3344,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.19.2165';
+  cSynVer = '6.19.2166';
   cSynPyVer = '1.0.148';
 
 const
@@ -24417,13 +24417,18 @@ end;
 
 procedure TfmMain.ApplyTabOptions;
 var
-  i: Integer;
+  i, NSize: Integer;
 begin
   if not Assigned(Groups) then Exit;
 
   Groups.SetTabFont(FFontTabs);
   Groups.SetTabOption(tabOptionFontSize, FFontTabs.Size);
-  
+
+  //this is for Win font scale 150-200%
+  NSize:= Trunc(Abs(FFontTabs.Height)*2.0)+2;
+  Groups.SetTabOption(tabOptionHeight1, NSize);
+  Groups.SetTabOption(tabOptionHeight2, NSize-2);
+
   Groups.SetTabOption(tabColorText, opColorTabText);
   Groups.SetTabOption(tabColorTextModified, opColorTabTextMod);
   Groups.SetTabOption(tabColorBgActive, opColorTabBgActive);
