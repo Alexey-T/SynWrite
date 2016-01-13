@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabProgSett
+    ActivePage = tabTabs
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -553,7 +553,7 @@ object fmSetup: TfmSetup
           Width = 57
           Height = 22
           Increment = 10
-          MaxValue = 350
+          MaxValue = 600
           MinValue = 50
           TabOrder = 9
           Value = 50
@@ -600,7 +600,7 @@ object fmSetup: TfmSetup
           Width = 57
           Height = 22
           Increment = 2
-          MaxValue = 100
+          MaxValue = 200
           MinValue = 4
           TabOrder = 10
           Value = 50
