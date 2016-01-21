@@ -1,0 +1,33 @@
+
+[L]
+MenuEdit=Modifica plugin
+MenuRemove=Rimuovi plugin
+MenuInstall=Installa
+MenuUpdate=Aggiorna
+CantCreTrash=Impossibile creare cartella cestino
+CantMoveToTr=Impossibile spostare la cartella nel cestino
+CantFindFile=Impossibile trovare il file:
+CfmRemove=Vuoi rimuovere il plugin:
+Removed=Il plugin è stato rimosso.
+Restart=Riavvia SynWryte per applicare le modifiche.
+CantRemove=Impossibile rimuovere i file del plugin
+CantGetList=Impossibile scaricare l'elenco plugin
+CantGetFile=Impossibile scaricare il file
+CantGetVer=Impossibile scaricare l'elenco versioni
+CantCompileRegex=Impossibile compilare regex
+CantParseList=Impossibile analizzare l'elenco
+CantWriteToDir=Impossibile scrivere nella cartella
+BadExt=Estensionw sconosciuta del pacchetto plugin (non è zip/rar)
+NoUrl=I plugin non hanno URL
+NoPlugins=L'elenco plugin è vuoto
+WaitList=Download elenco...
+WaitFile=Download file...
+WaitVer=Download elenco versioni...
+SavedAll=Plugin salvati:
+SaveToFolder=Salva nella cartella:
+SaveFails=Errore:
+Updated=Plugin aggiornati:
+ColName=Nome
+ColFolder=Cartella
+ColVLocal=Installato
+ColVRemote=Disponibile
