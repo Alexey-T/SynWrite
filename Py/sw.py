@@ -290,8 +290,8 @@ def dlg_input_ex(number, caption,
     else:
         return result.splitlines()
 
-def dlg_menu(id, caption, text):
-    return sw_api.dlg_menu(id, caption, text)
+def dlg_menu(id, caption, text, focused=0):
+    return sw_api.dlg_menu(id, caption, text, focused)
 def dlg_file(is_open, filename, folder, filters):
     return sw_api.dlg_file(is_open, filename, folder, filters)
 def dlg_folder(caption, folder):

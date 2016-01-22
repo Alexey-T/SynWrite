@@ -29,7 +29,6 @@ type
       Rect: TRect; State: TOwnerDrawState);
     procedure TntFormResize(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
-    procedure cbFuzzyClick(Sender: TObject);
     procedure TntFormClose(Sender: TObject; var Action: TCloseAction);
     procedure ListKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -44,6 +43,7 @@ type
     FColorSelBk: TColor;
     FListItems: TTntStringList;
     FListStyle: TSynPyMenuStyle;
+    FInitFocusedIndex: integer;
   end;
 
 implementation
@@ -89,13 +89,18 @@ begin
 end;
 
 procedure TfmMenuPy.FormShow(Sender: TObject);
+var
+  NFocused: integer;
 begin
   case FListStyle of
     cSynPyMenuSingle: List.ItemHeight:= FontHeightToItemHeight(Font);
     cSynPyMenuDouble: List.ItemHeight:= FontHeightToItemHeight(Font)*2;
-  end;  
+  end;
 
   DoFilter;
+
+  if (FInitFocusedIndex>=0) and (FInitFocusedIndex<List.Count) then
+    List.ItemIndex:= FInitFocusedIndex;
 
   if FIniFN<>'' then
   with TIniFile.Create(FIniFN) do
@@ -260,11 +265,6 @@ end;
 procedure TfmMenuPy.TntFormCreate(Sender: TObject);
 begin
   List.ItemHeight:= ScaleFontSize(List.ItemHeight, Self);
-end;
-
-procedure TfmMenuPy.cbFuzzyClick(Sender: TObject);
-begin
-  DoFilter;
 end;
 
 procedure TfmMenuPy.TntFormClose(Sender: TObject;

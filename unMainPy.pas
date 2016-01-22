@@ -764,11 +764,11 @@ var
   PCaption, PText: PAnsiChar;
   StrCaption, StrText: Widestring;
   MenuItems: TTntStringList;
-  NResult: Integer;
+  NResult, NFocused: Integer;
   Form: TfmMenuPy;
 begin
   with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iss:dlg_menu', @Id, @PCaption, @PText)) then
+    if Bool(PyArg_ParseTuple(Args, 'issi:dlg_menu', @Id, @PCaption, @PText, @NFocused)) then
     begin
       StrCaption:= UTF8Decode(AnsiString(PCaption));
       StrText:= UTF8Decode(AnsiString(PText));
@@ -800,6 +800,8 @@ begin
               FColorSelBk:= fmMain.opColorOutSelBk;
 
               NResult:= -1;
+              FInitFocusedIndex:= NFocused;
+
               if ShowModal=mrOk then
                 if List.ItemIndex>=0 then
                   NResult:= Integer(List.Items.Objects[List.ItemIndex]);
