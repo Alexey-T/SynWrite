@@ -1618,6 +1618,7 @@ var
   Line: Integer;
 begin
   Ed:= Sender as TSyntaxMemo;
+
   if EditorMouseCursorOnNumbers(Ed) and FMouseClickOnNumbers then
     if not Ed.HaveSelection then
     begin
@@ -1625,6 +1626,9 @@ begin
       if (Line>=0) and (Line<Ed.Lines.Count) then
         Ed.SetSelection(Ed.CaretPosToStrPos(Point(0, Line)), Ed.Lines.LineSpace(Line));
     end;
+
+  TfmMain(Owner).DoPyEvent(Ed, cSynEventOnClick,
+    ['"'+ShiftStateToString(Shift)+'"']);
 end;
 
 procedure TEditorFrame.EditorMasterResize(Sender: TObject);
@@ -1675,9 +1679,6 @@ var
 begin
   Ed:= Sender as TSyntaxMemo;
   EditorMasterEnter(Sender);
-
-  TfmMain(Owner).DoPyEvent(Ed, cSynEventOnClick,
-    ['"'+ShiftStateToString(KeyboardStateToShiftState)+'"']);
 
   //Ctrl+Alt+click - goto-definition
   //(if no line selection is made with Ctrl+Alt+drag)
