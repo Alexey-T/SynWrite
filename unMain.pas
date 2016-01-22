@@ -3345,7 +3345,7 @@ procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
   cSynVer = '6.19.2175';
-  cSynPyVer = '1.0.148';
+  cSynPyVer = '1.0.149';
 
 const
   cSynParamRO = '/ro';

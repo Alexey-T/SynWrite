@@ -3,6 +3,8 @@ Changes in Python API
 
 jan 2016
 
+* release 1.0.149
+* add param: dlg_menu(.., focused=0)
 * release 1.0.148
 * add on_click
 
