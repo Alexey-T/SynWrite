@@ -1626,9 +1626,6 @@ begin
       if (Line>=0) and (Line<Ed.Lines.Count) then
         Ed.SetSelection(Ed.CaretPosToStrPos(Point(0, Line)), Ed.Lines.LineSpace(Line));
     end;
-
-  TfmMain(Owner).DoPyEvent(Ed, cSynEventOnClick,
-    ['"'+ShiftStateToString(Shift)+'"']);
 end;
 
 procedure TEditorFrame.EditorMasterResize(Sender: TObject);
@@ -1676,6 +1673,7 @@ end;
 procedure TEditorFrame.EditorMasterClick(Sender: TObject);
 var
   Ed: TSyntaxMemo;
+  P: TPoint;
 begin
   Ed:= Sender as TSyntaxMemo;
   EditorMasterEnter(Sender);
@@ -1691,6 +1689,15 @@ begin
 
   FMouseClickOnNumbers:= EditorMouseCursorOnNumbers(Ed);
   DoSyncMicromap;
+
+  //disable mousedrag on gutter with shown dlg_menu
+  Ed.Dragging:= false; //TSyntaxMemo.Dragging is for FDragging var
+  
+  P:= Mouse.CursorPos;
+  P:= Ed.ScreenToClient(P);
+  if PtInRect(Ed.TextArea, P) then
+    TfmMain(Owner).DoPyEvent(Ed, cSynEventOnClick,
+      ['"'+ShiftStateToString(KeyboardStateToShiftState)+'"']);
 end;
 
 

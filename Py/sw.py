@@ -269,7 +269,7 @@ def msg_box(id, text=''):
 def msg_status(text):
     return sw_api.msg_status(text)
 
-def dlg_input(text, deftext, ini_fn, ini_section):
+def dlg_input(text, deftext, ini_fn='', ini_section=''):
     return sw_api.dlg_input(text, deftext, ini_fn, ini_section)
 
 def dlg_input_memo(caption, label, deftext):
