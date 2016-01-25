@@ -1355,7 +1355,7 @@ type
     TbxItemGroup4Grid: TSpTBXItem;
     TbxItemGroup4V: TSpTBXItem;
     TbxItemGroup4H: TSpTBXItem;
-    TbxItemGroup3as1p2: TSpTBXItem;
+    TbxItemGroup1p2V: TSpTBXItem;
     TBXSubmenuItemToGroup: TSpTBXSubmenuItem;
     TbxItemToGroupPrev: TSpTBXItem;
     TbxItemToGroupNext: TSpTBXItem;
@@ -1423,6 +1423,8 @@ type
     SpTBXSeparatorItem17: TSpTBXSeparatorItem;
     TBXSubmenuSMarks: TSpTBXSubmenuItem;
     TbxItemTabColor: TSpTBXItem;
+    TbxItemGroup1p2H: TSpTBXItem;
+    TbxSplit2: TSpTBXSeparatorItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -2093,7 +2095,7 @@ type
     procedure TbxItemGroup2VClick(Sender: TObject);
     procedure TbxItemGroup3HClick(Sender: TObject);
     procedure TbxItemGroup3VClick(Sender: TObject);
-    procedure TbxItemGroup3as1p2Click(Sender: TObject);
+    procedure TbxItemGroup1p2VClick(Sender: TObject);
     procedure TbxItemGroup4HClick(Sender: TObject);
     procedure TbxItemGroup4VClick(Sender: TObject);
     procedure TbxItemGroup4GridClick(Sender: TObject);
@@ -2144,6 +2146,7 @@ type
     procedure TbxItemAddonsConfigClick(Sender: TObject);
     procedure TBXItemClipDeleteSelClick(Sender: TObject);
     procedure acMacroRecordAfterExecute(Sender: TObject);
+    procedure TbxItemGroup1p2HClick(Sender: TObject);
 
   private
     cStatLine,
@@ -3344,7 +3347,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.19.2175';
+  cSynVer = '6.20.2185';
   cSynPyVer = '1.0.149';
 
 const
@@ -27755,9 +27758,9 @@ begin
   Groups.Mode:= gm3Horz;
 end;
 
-procedure TfmMain.TbxItemGroup3as1p2Click(Sender: TObject);
+procedure TfmMain.TbxItemGroup1p2VClick(Sender: TObject);
 begin
-  Groups.Mode:= gm3Plus;
+  Groups.Mode:= gm1plus2Vert;
 end;
 
 procedure TfmMain.TbxItemGroup4HClick(Sender: TObject);
@@ -27788,7 +27791,8 @@ begin
   TbxItemGroup2V.Checked:= Groups.Mode=gm2Horz;
   TbxItemGroup3H.Checked:= Groups.Mode=gm3Vert;
   TbxItemGroup3V.Checked:= Groups.Mode=gm3Horz;
-  TbxItemGroup3as1p2.Checked:= Groups.Mode=gm3Plus;
+  TbxItemGroup1p2V.Checked:= Groups.Mode=gm1plus2Vert;
+  TbxItemGroup1p2H.Checked:= Groups.Mode=gm1plus2Horz;
   TbxItemGroup4H.Checked:= Groups.Mode=gm4Vert;
   TbxItemGroup4V.Checked:= Groups.Mode=gm4Horz;
   TbxItemGroup4Grid.Checked:= Groups.Mode=gm4Grid;
@@ -28620,6 +28624,11 @@ begin
     AForm.Left:= Min(AForm.Left, Application.MainForm.Left+Application.MainForm.Width-AForm.Width);
     AForm.Left:= Max(Max(AForm.Left, Application.MainForm.Left), 0);
   end;  
+end;
+
+procedure TfmMain.TbxItemGroup1p2HClick(Sender: TObject);
+begin
+  Groups.Mode:= gm1plus2Horz;
 end;
 
 initialization
