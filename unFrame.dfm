@@ -255,6 +255,7 @@ object EditorFrame: TEditorFrame
       OnModifiedChanged = EditorMasterModifiedChanged
       OnClick = EditorMasterClick
       OnContextPopup = EditorMasterContextPopup
+      OnDblClick = EditorMasterDblClick
       OnEnter = EditorMasterEnter
       OnKeyDown = EditorMasterKeyDown
       OnMouseUp = EditorMasterMouseUp
@@ -469,6 +470,7 @@ object EditorFrame: TEditorFrame
       OnModifiedChanged = EditorMasterModifiedChanged
       OnClick = EditorMasterClick
       OnContextPopup = EditorMasterContextPopup
+      OnDblClick = EditorMasterDblClick
       OnEnter = EditorMasterEnter
       OnKeyDown = EditorMasterKeyDown
       OnMouseUp = EditorMasterMouseUp

@@ -169,6 +169,7 @@ type
     cSynEventOnSelect,
     cSynEventOnCaretMove,
     cSynEventOnClick,
+    cSynEventOnClickDbl,
     cSynEventOnNumber,
     cSynEventOnState,
     cSynEventOnFocus,
@@ -193,6 +194,7 @@ const
     'on_select',
     'on_caret_move',
     'on_click',
+    'on_click_dbl',
     'on_num',
     'on_state',
     'on_focus',
@@ -3347,8 +3349,8 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.20.2185';
-  cSynPyVer = '1.0.149';
+  cSynVer = '6.20.2190';
+  cSynPyVer = '1.0.150';
 
 const
   cSynParamRO = '/ro';

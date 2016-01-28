@@ -113,6 +113,7 @@ type
     procedure EditorMasterGetLineNumberStr(Sender: TObject; Line: Integer;
       var NumberStr: String);
     procedure EditorMasterClick(Sender: TObject);
+    procedure EditorMasterDblClick(Sender: TObject);
   private
     FTabCaption: Widestring;
     FBitmapMap: TBitmap;
@@ -1700,6 +1701,19 @@ begin
       ['"'+ShiftStateToString(KeyboardStateToShiftState)+'"']);
 end;
 
+
+procedure TEditorFrame.EditorMasterDblClick(Sender: TObject);
+var
+  Ed: TSyntaxMemo;
+  P: TPoint;
+begin
+  Ed:= Sender as TSyntaxMemo;
+  P:= Mouse.CursorPos;
+  P:= Ed.ScreenToClient(P);
+  if PtInRect(Ed.TextArea, P) then
+    TfmMain(Owner).DoPyEvent(Ed, cSynEventOnClickDbl,
+      ['"'+ShiftStateToString(KeyboardStateToShiftState)+'"']);
+end;
 
 initialization
   CF_DRAGCOLOR:= RegisterClipboardFormat(CFSTR_DRAGCOLOR);

@@ -3,6 +3,8 @@ Changes in Python API
 
 jan 2016
 
+* release 1.0.150
+* add on_click_dbl
 * release 1.0.149
 * add dlg_menu param "focused"
 * change dlg_input: last params optional

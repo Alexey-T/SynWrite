@@ -102,8 +102,8 @@ procedure EditorSelectParagraph(Ed: TSyntaxMemo);
   
 procedure EditorSetSelCoordAsString(Ed: TSyntaxMemo; const Str: string);
 function EditorGetSelCoordAsString(Ed: TSyntaxMemo): string;
-procedure EditorSetBookmarksAsString(Ed: TSyntaxMemo; const Str: string);
-function EditorGetBookmarksAsString(Ed: TSyntaxMemo): string;
+procedure EditorSetBookmarksAsString(Ed: TCustomSyntaxMemo; const Str: string);
+function EditorGetBookmarksAsString(Ed: TCustomSyntaxMemo): string;
 procedure EditorGetBookmarksAsSortedList(Ed: TSyntaxMemo; L: TList);
 procedure EditorGetBookmarksAsSortedList_Ex(Ed: TSyntaxMemo; L: TList);
 
@@ -2108,7 +2108,7 @@ begin
 end;
 
 
-function EditorGetBookmarksAsString(Ed: TSyntaxMemo): string;
+function EditorGetBookmarksAsString(Ed: TCustomSyntaxMemo): string;
 const
   cMaxItems = 200;
 var
@@ -2129,7 +2129,7 @@ begin
 end;
 
 
-procedure EditorSetBookmarksAsString(Ed: TSyntaxMemo; const Str: string);
+procedure EditorSetBookmarksAsString(Ed: TCustomSyntaxMemo; const Str: string);
 var
   S, SItem: Widestring;
   NIndexCount, NIndexThis, NPos: Integer;

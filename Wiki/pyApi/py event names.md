@@ -10,8 +10,9 @@ Id in SynPlugins.ini | Method signature | Description
 `on_change_slow` | `on_change_slow(self, ed_self)`     | Called after text changed, and after a delay (2-5 seconds, configurable in "Syn.ini" file). This is suitable for Lint plugins, which need to act after few seconds after last text-change.
 `on_select`      | `on_select(self, ed_self)`          | Called after selection changed.
 `on_caret_move`  | `on_caret_move(self, ed_self)`      | Called after caret moved.
-`on_click`       | `on_click(self, ed_self, state)`    | Called after mouse click. State is string of chars: "a" for Alt, "s" for Shift, "c" for Ctrl.
-`on_key`         | `on_key(self, ed_self, key, state)` | Called when user presses a key. `key` is int key code. `state` is few chars string: "a" if Alt pressed, "c" if Ctrl pressed, "s" if Shift pressed. Method can return `False` do disable key processing, other return value is ignored.
+`on_click`       | `on_click(self, ed_self, state)`    | Called after mouse click. `state` is string of chars: "a" for Alt, "s" for Shift, "c" for Ctrl.
+`on_click_dbl`   | `on_click_dbl(self, ed_self, state)` | Called after mouse double-click. `state`: same as in on_click.
+`on_key`         | `on_key(self, ed_self, key, state)` | Called when user presses a key. `key`: int key code. `state`: same as in on_click. Method can return `False` do disable key processing, other return value is ignored.
 `on_state`       | `on_state(self, ed_self, id)`       | Called before changing some editor state. `id` is one of values listed at [py property id]. Method can return `False` to disable state changing, other return value is ignored.
 `on_num`         | `on_num(self, ed_self, number)`     | Called to get string values for line-numbers gutter column. `number` is int line number, 0-based. Method must return str for this number.
 `on_focus`       | `on_focus(self, ed_self)`           | Called after editor is focused.

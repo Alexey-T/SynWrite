@@ -554,6 +554,7 @@ var
   CntPrev, i: integer;
   ASelRect: TRect;
   S: Widestring;
+  StrBm: string;
 begin
   Result:= False;
   FMatches:= 0;
@@ -624,7 +625,11 @@ begin
       FMatches);
     Result:= FMatches > 0;
     if Result then
+    begin
+      StrBm:= EditorGetBookmarksAsString(FControl);
       FControl.ReplaceText(0, FControl.TextLength, S);
+      EditorSetBookmarksAsString(FControl, StrBm);
+    end;
     Exit
   end;
 
