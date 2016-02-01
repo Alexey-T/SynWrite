@@ -214,7 +214,7 @@ Lexer: YAML                         | | Lexers/lexer.YAML.zip
 Lexer: Sass                         | | Lexers/lexer.Sass.zip
 Lexer: Nginx                        | | Lexers/lexer.Nginx.zip
 Lexer: Gherkin                      | | Lexers/lexer.Gherkin.zip
-Lexer: Jasmine                      | | Lexers/lexer.Jasmine.zip
+Lexer: Jasmine JVM Assembler        | | Lexers/lexer.Jasmine_JVM_Assembler.zip
 Lexer: Elm                          | | Lexers/lexer.Elm.zip
 Lexer: TOML                         | | Lexers/lexer.TOML.zip
 Lexer: Jinja2                       | | Lexers/lexer.Jinja2.zip
@@ -258,6 +258,11 @@ Lexer: JavaScript Babel        | | Lexers/lexer.JavaScript_Babel.zip
 Lexer: HTML_                      | | Lexers/lexer.HTML_.zip
 Lexer: PHP_                      | | Lexers/lexer.PHP_.zip
 Lexer: ARM Assembly            | | Lexers/lexer.ARM_Assembly.zip
+Lexer: Abaqus Keywords            | | Lexers/lexer.Abaqus_Keywords.zip
+Lexer: CRF files            | | Lexers/lexer.CRF.zip
+Lexer: Dockerfile            | | Lexers/lexer.Dockerfile.zip
+Lexer: Bitsquid SJSON   | | Lexers/lexer.Bitsquid_SJSON.zip
+Lexer: Java Velocity      | | Lexers/lexer.Java_Velocity.zip
 Translation: French               | | Languages/language.French.zip
 Translation: Hungarian            | | Languages/language.Hungarian.zip
 Translation: Spanish              | | Languages/language.Spanish.zip
