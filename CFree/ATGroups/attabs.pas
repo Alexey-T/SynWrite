@@ -37,7 +37,7 @@ uses
   Menus;
 
 type
-  atString = {$ifdef WIDE} UnicodeString {$else} string {$endif};
+  atString = {$ifdef WIDE} WideString {$else} string {$endif};
   TatPopupMenu = {$ifdef TNT} TTntPopupMenu {$else} TPopupMenu {$endif};
   TatMenuItem = {$ifdef TNT} TTntMenuItem {$else} TMenuItem {$endif};
 

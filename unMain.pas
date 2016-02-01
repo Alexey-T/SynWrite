@@ -3349,7 +3349,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.20.2190';
+  cSynVer = '6.20.2192';
   cSynPyVer = '1.0.150';
 
 const
@@ -28094,7 +28094,6 @@ begin
   ATabs.TabIndentTop:= 0;
   ATabs.TabIndentLeft:= 3;
   ATabs.TabIndentInit:= 0;
-  ATabs.TabIndentText:= 3;
   ATabs.TabHeight:= RefTabs.TabHeight-2;
   ATabs.Height:= ATabs.TabHeight+1;
 

@@ -1,7 +1,7 @@
 object fmSaveTabs: TfmSaveTabs
   Left = 331
   Top = 477
-  Width = 510
+  Width = 560
   Height = 278
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Save tabs?'
@@ -15,13 +15,14 @@ object fmSaveTabs: TfmSaveTabs
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnResize = TntFormResize
   OnShow = TntFormShow
   PixelsPerInch = 96
   TextHeight = 13
   object List: TTntCheckListBox
     Left = 0
     Top = 0
-    Width = 494
+    Width = 544
     Height = 204
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
@@ -36,31 +37,26 @@ object fmSaveTabs: TfmSaveTabs
   object Panel1: TPanel
     Left = 0
     Top = 204
-    Width = 494
+    Width = 544
     Height = 35
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    DesignSize = (
-      494
-      35)
     object bYes: TTntButton
-      Left = 283
+      Left = 131
       Top = 6
       Width = 100
       Height = 23
-      Anchors = [akTop, akRight]
       Caption = '&Save'
       Default = True
       ModalResult = 6
       TabOrder = 0
     end
     object bNo: TTntButton
-      Left = 388
+      Left = 228
       Top = 6
       Width = 100
       Height = 23
-      Anchors = [akTop, akRight]
       Caption = '&Ignore'
       ModalResult = 7
       TabOrder = 1
