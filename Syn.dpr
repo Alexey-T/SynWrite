@@ -73,7 +73,8 @@ uses
   unMacroCmd in 'unMacroCmd.pas' {fmMacroCmd},
   unInputCheckList in 'unInputCheckList.pas' {fmInputCheckList},
   unLexerImportRules in 'unLexerImportRules.pas' {fmLexerImportRules},
-  unLexerItems in 'unLexerItems.pas' {fmLexerItems: TFrame};
+  unLexerItems in 'unLexerItems.pas' {fmLexerItems: TFrame},
+  unColorPalette in 'unColorPalette.pas' {fmPalette};
 
 {$R *.res}
 {$R *.dkl_const.res}
@@ -85,6 +86,7 @@ begin
   Application.Title := 'SynWrite';
   Application.HintHidePause := 5000;
   Application.CreateForm(TfmSynwrite, fmSynwrite);
+  Application.CreateForm(TfmPalette, fmPalette);
   //550ms
   Application.Run;
 end.

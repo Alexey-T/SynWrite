@@ -1322,7 +1322,6 @@ type
     SD_Snippets: TSaveDialog;
     StatusItemTabsize: TSpTBXLabelItem;
     TbxItemTreeSorted: TSpTBXItem;
-    ColorDialogTabs: TColorDialog;
     PopupPanelTitle: TSpTBXPopupMenu;
     TbxItemPanelTitleBar: TSpTBXItem;
     TbxItemPanelTitleShowRight: TSpTBXItem;
@@ -3349,7 +3348,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.20.2192';
+  cSynVer = '6.20.2195';
   cSynPyVer = '1.0.150';
 
 const
@@ -3404,7 +3403,7 @@ uses
   unProcPy,
   unMainPy,
   unLexerLib, unSnipEd, unSaveTabs, unPrintPreview, unLexerProp,
-  unLexerStyles, unPrintSetup;
+  unLexerStyles, unPrintSetup, unColorPalette;
 
 {$R *.dfm}
 {$R Cur.res}
@@ -19835,6 +19834,12 @@ end;
 procedure TfmMain.DoSetTabColorValue(NColor: TColor);
 begin
   DoSetFrameTabColor(FClickedFrame, NColor);
+  Groups.Pages1.Tabs.Invalidate;
+  Groups.Pages2.Tabs.Invalidate;
+  Groups.Pages3.Tabs.Invalidate;
+  Groups.Pages4.Tabs.Invalidate;
+  Groups.Pages5.Tabs.Invalidate;
+  Groups.Pages6.Tabs.Invalidate;
 end;
 
 procedure TfmMain.DoSetTabColorIndex_Current(NIndex: Integer);
@@ -19844,34 +19849,22 @@ begin
 end;
 
 procedure TfmMain.DoSetTabColorIndex(NIndex: Integer);
-var
-  NColor: TColor;
 begin
-  case NIndex of
-    0:
-      NColor:= clNone;
-    -1:
-      begin
-        with ColorDialogTabs do
-        begin
-          if Execute then
-            NColor:= Color
-          else
-            Exit;
-        end;
-      end;
-    else
-      raise Exception.Create('Unknown tab color index');
-  end;
-
-  DoSetFrameTabColor(FClickedFrame, NColor);
 end;
 
 procedure TfmMain.TBXItemTabColorMiscClick(Sender: TObject);
 begin
-  with ColorDialogTabs do
-    if Execute then
-      DoSetTabColorValue(Color);
+  with TfmPalette.Create(Self) do
+  try
+    if Assigned(FClickedFrame) then
+      ResColor:= FClickedFrame.TabColor;
+    case ShowModal of
+      mrOk: DoSetTabColorValue(ResColor);
+      mrNo: DoSetTabColorValue(clNone);
+    end;
+  finally
+    Free
+  end;
 end;
 
 procedure TfmMain.TBXItemTabColorDefClick(Sender: TObject);
