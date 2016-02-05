@@ -16,7 +16,6 @@ type
     bNo: TTntButton;
     bCancel: TTntButton;
     procedure TntFormShow(Sender: TObject);
-    procedure TntFormResize(Sender: TObject);
   private
     { Private declarations }
   public
@@ -38,12 +37,6 @@ begin
     List.Checked[i]:= true;
 
   FixCheckListboxHorzScrollbar(List);
-end;
-
-procedure TfmSaveTabs.TntFormResize(Sender: TObject);
-begin
-  bNo.Left:= ClientWidth-bNo.Width-bCancel.Left;
-  bYes.Left:= bNo.Left-bYes.Width-bCancel.Left;
 end;
 
 end.

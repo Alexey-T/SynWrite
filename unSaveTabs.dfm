@@ -15,7 +15,6 @@ object fmSaveTabs: TfmSaveTabs
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnResize = TntFormResize
   OnShow = TntFormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -43,7 +42,7 @@ object fmSaveTabs: TfmSaveTabs
     BevelOuter = bvNone
     TabOrder = 1
     object bYes: TTntButton
-      Left = 131
+      Left = 123
       Top = 6
       Width = 100
       Height = 23
@@ -57,12 +56,12 @@ object fmSaveTabs: TfmSaveTabs
       Top = 6
       Width = 100
       Height = 23
-      Caption = '&Ignore'
+      Caption = '&Don'#39't save'
       ModalResult = 7
       TabOrder = 1
     end
     object bCancel: TTntButton
-      Left = 6
+      Left = 334
       Top = 6
       Width = 100
       Height = 23
