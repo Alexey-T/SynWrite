@@ -18,19 +18,20 @@ Keymap Report | Shows detailed report about Synwrite keymapping | PyPlugins/kvic
 Explorer | Adds tab "Explorer" into Tree/Project panel | BinaryPlugins/Explorer/plugin.Explorer.zip
 Show Keymapping | Shows hotkeys in program as HTML page | PyPlugins/Alexey.ShowKeys/plugin.Alexey.ShowKeymapping.zip
 Column Markers | Commands to control "column markers" | PyPlugins/Alexey.ColMarkers/plugin.Alexey.ColumnMarkers.zip
-Html Lines To List | Converts selected lines to HTML list (ul, ol) or table | PyPlugins/Alexey.HtmlLinesToList/plugin.Alexey.HtmlLinesToList.zip
+HTML Lines To List | Converts selected lines to HTML list (ul, ol) or table | PyPlugins/Alexey.HtmlLinesToList/plugin.Alexey.HtmlLinesToList.zip
 Emmet Lite | Emmet engine, see www.emmet.io | PyPlugins/Alexey.EmmetLite/plugin.Alexey.EmmetLite.zip
 NumToWords | Converts numbers to words: En, De, Fr, Sp, etc | PyPlugins/Alexey.NumToWords/plugin.Alexey.NumToWords.zip
 NumToWords Propis | Converts numbers to words: Russian | PyPlugins/Alexey.NumToWordsPropis/plugin.Alexey.NumToWordsPropis.zip
 Make Plugin | Creates new empty plugin | PyPlugins/Alexey.MakePlugin/plugin.Alexey.MakePlugin.zip
-Html Tidy | Integrates HTML Tidy tool, allows to format/validate HTML code | PyPlugins/Alexey.HtmlTidy/plugin.Alexey.HtmlTidy.zip
+HTML Beautify | Formats/indents HTML code | PyPlugins/Alexey.HtmlBeautify/plugin.Alexey.HtmlBeautify.zip
+HTML Tidy | Integrates HTML Tidy tool, allows to format/validate HTML code | PyPlugins/Alexey.HtmlTidy/plugin.Alexey.HtmlTidy.zip
 Lorem Ipsum | Inserts "Lorem Ipsum" text (placeholder for HTML) | PyPlugins/Alexey.Lorem/plugin.Alexey.LoremIpsum.zip
 Text Converter | Standard menu "Text converters" as plugin | PyPlugins/Alexey.TextConv/plugin.Alexey.TextConv.zip
 WebFont | Inserts into CSS code usage of external fonts from webfont.ru | PyPlugins/Alexey.WebFont/plugin.Alexey.WebFont.zip 
 Css AutoPrefixer | Inserts vendor prefixes into CSS code (requires Node.js) | PyPlugins/Alexey.CssAutoPrefixer/plugin.Alexey.CssAutoPrefixer.zip
 Increment | Increases/decreases number under caret (e.g. "100px", "1.20em") | PyPlugins/Alexey.Increment/plugin.Alexey.Increment.zip
 Color Picker | Shows dialog to insert any color code | PyPlugins/Alexey.ColorPicker/plugin.Alexey.ColorPicker.zip
-Html Preview Selection | Copies selection to temp HTML file and opens it in browser | PyPlugins/Alexey.HtmlPreviewSelection/plugin.Alexey.HtmlPreviewSelection.zip
+HTML Preview Selection | Copies selection to temp HTML file and opens it in browser | PyPlugins/Alexey.HtmlPreviewSelection/plugin.Alexey.HtmlPreviewSelection.zip
 CBlock | For selected lines, adds indent and surrounds with { } brackets | PyPlugins/Alexey.CBlock/plugin.Alexey.CBlock.zip
 Image Tag | Inserts IMG tag (or CSS lines) with info about selected image file (jpg, gif, png) | PyPlugins/Alexey.ImageTag/plugin.Alexey.ImageTag.zip
 Xml Format | Formats/indents XML code (uses xmlpp library) | PyPlugins/Alexey.XmlFormat/plugin.Alexey.XmlFormat.zip
