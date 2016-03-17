@@ -8374,37 +8374,6 @@ object SyntaxManager: TSyntaxManager
   object SyntAnal22: TLibSyntAnalyzer
     Formats = <
       item
-        DisplayName = 'Default'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-        FormatType = ftCustomFont
-        FormatFlags = [ffBold, ffItalic, ffUnderline, ffStrikeOut, ffReadOnly, ffHidden]
-      end
-      item
-        DisplayName = 'Text'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = [fsBold]
-        BorderColorLeft = clGray
-        BorderColorTop = clGray
-        BorderColorRight = clGray
-        BorderColorBottom = clGray
-        MultiLineBorder = True
-      end
-      item
-        DisplayName = 'Tag bound'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlue
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-      end
-      item
         DisplayName = 'Comment'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clGray
@@ -8413,31 +8382,23 @@ object SyntaxManager: TSyntaxManager
         Font.Style = [fsItalic]
       end
       item
-        DisplayName = 'CDATA'
+        DisplayName = 'Tag bound'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlue
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-      end
-      item
-        DisplayName = 'Tag Key'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clMaroon
-        Font.Height = -13
-        Font.Name = 'Courier New'
-        Font.Style = []
-      end
-      item
-        DisplayName = 'ERROR content'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clRed
+        Font.Color = clGray
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
       end
       item
-        DisplayName = 'Tag ident'
+        DisplayName = 'Tag id'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 16744576
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsBold]
+      end
+      item
+        DisplayName = 'Tag param'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clGreen
         Font.Height = -13
@@ -8445,20 +8406,42 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
       end
       item
-        DisplayName = 'Tag param'
+        DisplayName = 'Tag val'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clNavy
+        Font.Color = clTeal
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
       end
       item
-        DisplayName = 'Tag properties'
+        DisplayName = 'CDATA bound'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clNavy
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
+        BgColor = clSilver
+      end
+      item
+        DisplayName = 'CDATA text'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
+        BorderColorLeft = clGray
+        BorderColorTop = clGray
+        BorderColorRight = clGray
+        BorderColorBottom = clGray
+        MultiLineBorder = True
+      end
+      item
+        DisplayName = 'Error content'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clRed
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsBold]
       end
       item
         DisplayName = 'Current tag'
@@ -8467,11 +8450,11 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
-        BgColor = 15987699
+        BgColor = 14540253
         FormatType = ftBackGround
       end
       item
-        DisplayName = 'Current Block'
+        DisplayName = 'Current tag id'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clNone
         Font.Height = -13
@@ -8519,6 +8502,14 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
+      end
+      item
+        DisplayName = 'Spec char'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlue
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = []
       end>
     TokenRules = <
       item
@@ -8547,7 +8538,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'CDATA start'
-        StyleName = 'CDATA'
+        StyleName = 'CDATA bound'
         TokenType = 11
         Expression = '<!\[CDATA\['#13#10'#(?s)<!\[CDATA\[.*?(\]\]>|\Z)'#13#10
         ColumnFrom = 0
@@ -8555,7 +8546,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'CDATA Text'
-        StyleName = 'Text'
+        StyleName = 'CDATA text'
         BlockName = 'CDATA begin'
         Expression = '(?s)[^\]]*'#13#10
         ColumnFrom = 0
@@ -8605,7 +8596,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Tag param'
-        StyleName = 'Tag param'
+        StyleName = 'Tag val'
         BlockName = 'Tag begin'
         TokenType = 4
         Expression = '(?s) ("|'#39').*?(\1|$)'
@@ -8622,7 +8613,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Tag ident'
-        StyleName = 'Tag ident'
+        StyleName = 'Tag param'
         BlockName = 'Tag begin'
         TokenType = 2
         Expression = '[^>=\?\s/]*'
@@ -8631,15 +8622,15 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Error content'
-        StyleName = 'ERROR content'
+        StyleName = 'Error content'
         BlockName = 'Tag begin'
         Expression = '[^>\s]*'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
-        DisplayName = '&...'
-        StyleName = 'Tag Key'
+        DisplayName = '&char'
+        StyleName = 'Spec char'
         TokenType = 4
         Expression = '&\w+;'
         ColumnFrom = 0
@@ -8647,7 +8638,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Text'
-        StyleName = 'Text'
+        StyleName = 'CDATA text'
         BlockName = 'CDATA begin'
         NotParent = True
         TokenType = 4
@@ -8749,7 +8740,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Tag keys'
-        StyleName = 'Tag Key'
+        StyleName = 'Tag id'
         BlockType = btTagDetect
         ConditionList = <
           item
@@ -8763,7 +8754,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Tag block begin'
-        StyleName = 'Current Block'
+        StyleName = 'Current tag id'
         ConditionList = <
           item
             TokenTypes = 4
@@ -8859,7 +8850,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Tag attribute'
-        StyleName = 'Tag param'
+        StyleName = 'Tag val'
         BlockName = 'Tag begin'
         ConditionList = <
           item
@@ -8884,30 +8875,21 @@ object SyntaxManager: TSyntaxManager
       '<?xml version="1.0" encoding="ISO-8859-1" ?>'
       ''
       '<!DOCTYPE web-app ['
-      
-        '  <!ELEMENT web-app (icon?, display-name?, description?, distrib' +
-        'utable?,'
-      '  context-param*, filter*, filter-mapping*, listener*, servlet*,'
-      
-        '  servlet-mapping*, session-config?, mime-mapping*, welcome-file' +
-        '-list?,'
-      
-        '  error-page*, taglib*, resource-env-ref*, resource-ref*, securi' +
-        'ty-constraint*,'
-      
-        '  login-config?, security-role*, env-entry*, ejb-ref*,  ejb-loca' +
-        'l-ref*)>'
-      '  <!ELEMENT auth-constraint (description?, role-name*)>'
+      '  <!ELEMENT web-app (icon?, display-name?, ejb-local-ref*)>'
       '  <!ELEMENT auth-method (#PCDATA)>'
       '  <!ATTLIST exception-type id ID #IMPLIED>'
       ']>'
+      ''
+      '<![CDATA['
+      'Included text '
+      ']]>'
+      'Text &spec; text'
       ''
       '<web-app>'
       '    <display-name abc="123" def="true"></display-name>'
       '    <description></description>'
       '    <filter-mapping>'
       '        <filter-name></filter-name>'
-      '        <url-pattern></url-pattern>'
       '    </filter-mapping>'
       '</web-app>')
     TokenTypeNames.Strings = (
