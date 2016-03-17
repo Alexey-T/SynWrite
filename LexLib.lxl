@@ -21093,6 +21093,14 @@ object SyntaxManager: TSyntaxManager
         Font.Style = []
         BorderTypeBottom = blDot
         BorderColorBottom = clTeal
+      end
+      item
+        DisplayName = 'Color'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clRed
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsBold]
       end>
     TokenRules = <
       item
@@ -21121,6 +21129,14 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
+        DisplayName = 'Color'
+        StyleName = 'Color'
+        TokenType = 4
+        Expression = '\#[\da-f]+'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
         DisplayName = 'Symbol'
         StyleName = 'Symbol'
         TokenType = 3
@@ -21133,14 +21149,6 @@ object SyntaxManager: TSyntaxManager
         StyleName = 'Const'
         TokenType = 5
         Expression = '\#[\da-f]+\b |'#13#10'\b \d+(\.\d+)? (%|\w+)?'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
-        DisplayName = 'String in URL'
-        Enabled = False
-        StyleName = 'String'
-        Expression = '(?<=URL\s*\() .*? (?=\))'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -21315,9 +21323,8 @@ object SyntaxManager: TSyntaxManager
     Extentions = 'less'
     LexerName = 'LESS'
     Notes.Strings = (
-      'Author: Alex, uvviewsoft.com'
-      'Test:'
-      'http://lesscss.org/')
+      'Alex (Synwrite)'
+      'Test: http://lesscss.org/')
     LineComment = '//'
     Charset = DEFAULT_CHARSET
   end
@@ -21396,6 +21403,14 @@ object SyntaxManager: TSyntaxManager
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = [fsBold]
+      end
+      item
+        DisplayName = 'Color'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clRed
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsBold]
       end>
     TokenRules = <
       item
@@ -21424,18 +21439,18 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Const'
-        StyleName = 'Const'
-        TokenType = 5
-        Expression = '\#[\da-f]+\b |'#13#10'\b \d+(\.\d+)? (%|\w+)?'
+        DisplayName = 'Color'
+        StyleName = 'Color'
+        TokenType = 4
+        Expression = '\#[\da-f]+'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
-        DisplayName = 'String in URL'
-        Enabled = False
-        StyleName = 'String'
-        Expression = '(?<=URL\s*\() .*? (?=\))'
+        DisplayName = 'Const'
+        StyleName = 'Const'
+        TokenType = 5
+        Expression = '\#[\da-f]+\b |'#13#10'\b \d+(\.\d+)? (%|\w+)?'
         ColumnFrom = 0
         ColumnTo = 0
       end
