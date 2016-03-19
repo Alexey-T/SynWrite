@@ -6378,6 +6378,14 @@ object SyntaxManager: TSyntaxManager
         Font.Style = [fsItalic]
       end
       item
+        DisplayName = 'Comment doc'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clGray
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsItalic]
+      end
+      item
         DisplayName = 'Current block'
         Font.Charset = RUSSIAN_CHARSET
         Font.Color = clMaroon
@@ -6396,6 +6404,14 @@ object SyntaxManager: TSyntaxManager
         BorderColorBottom = clGray
       end>
     TokenRules = <
+      item
+        DisplayName = 'Comment doc'
+        StyleName = 'Comment doc'
+        TokenType = 1
+        Expression = '(?s)/\*\* .*?(\*/|\Z)'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
       item
         DisplayName = 'Comment'
         StyleName = 'Comment'
@@ -7087,11 +7103,11 @@ object SyntaxManager: TSyntaxManager
     CodeTemplates = <>
     SubAnalyzers = <>
     SampleText.Strings = (
-      '//text text'
+      '//Text'
       'NaN Object $ offset'
-      ''
+      '/** DocBlock '
+      '*/   /* Comment */'
       'class MyClass {'
-      '  ///'
       '}'
       ''
       'function init() {'
@@ -7146,6 +7162,7 @@ object SyntaxManager: TSyntaxManager
       '-strings multiline "..."'
       '-strings regex /.../gi'
       '-strings heredoc'
+      '-doc comments'
       ''
       'Keywords: http://www.w3schools.com/js/js_reserved.asp')
     LineComment = '//'
@@ -15367,6 +15384,14 @@ object SyntaxManager: TSyntaxManager
         Font.Style = [fsItalic]
       end
       item
+        DisplayName = 'Comment doc'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clGray
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsItalic]
+      end
+      item
         DisplayName = 'Number'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clNavy
@@ -15501,21 +15526,28 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Comment 1'
+        DisplayName = 'Comment doc'
+        StyleName = 'Comment doc'
+        Expression = '(?s)/\*\* .*? (\*/|\Z)'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
+        DisplayName = 'Comment block'
         StyleName = 'Comment'
         Expression = '(?s)/\*.*?(\*/|\Z)'
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
-        DisplayName = 'Comment 2'
+        DisplayName = 'Comment line 2'
         StyleName = 'Comment'
         Expression = '\#.*'#13#10
         ColumnFrom = 0
         ColumnTo = 0
       end
       item
-        DisplayName = 'Comment 3'
+        DisplayName = 'Comment line'
         StyleName = 'Comment'
         Expression = '// .* (?=\?>) | //.*$'
         ColumnFrom = 0
@@ -19820,6 +19852,8 @@ object SyntaxManager: TSyntaxManager
       end>
     SampleText.Strings = (
       '<?php //Example'
+      '/** Doc comment'
+      '*/  /* Comment */'
       ''
       'include "os.php";'
       'include_once $path."/os2.php";'
