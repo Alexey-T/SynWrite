@@ -22397,7 +22397,7 @@ object SyntaxManager: TSyntaxManager
         Font.Style = [fsItalic]
       end
       item
-        DisplayName = 'Identifier'
+        DisplayName = 'Id'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -22406,6 +22406,14 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Id keyword'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clPurple
+        Font.Height = -13
+        Font.Name = 'Courier New'
+        Font.Style = [fsBold]
+      end
+      item
+        DisplayName = 'Id keyword def'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
@@ -22423,7 +22431,7 @@ object SyntaxManager: TSyntaxManager
     TokenRules = <
       item
         DisplayName = 'Word1stTreeItem'
-        StyleName = 'Id keyword'
+        StyleName = 'Id keyword def'
         TokenType = 11
         Expression = '^[\x20\x09]*(def|class)\b'
         ColumnFrom = 0
@@ -22449,7 +22457,7 @@ object SyntaxManager: TSyntaxManager
       end
       item
         DisplayName = 'Word1stId'
-        StyleName = 'Identifier'
+        StyleName = 'Id'
         TokenType = 9
         Expression = '^[\x20\x09]*\w+'
         ColumnFrom = 0
@@ -22504,16 +22512,8 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Id __init__'
-        StyleName = 'Identifier'
-        TokenType = 2
-        Expression = '__\w+'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
         DisplayName = 'Id'
-        StyleName = 'Identifier'
+        StyleName = 'Id'
         TokenType = 2
         Expression = '[a-z_]\w*'
         ColumnFrom = 0
@@ -22561,6 +22561,22 @@ object SyntaxManager: TSyntaxManager
       end>
     BlockRules = <
       item
+        DisplayName = 'Keywords def'
+        StyleName = 'Id keyword def'
+        BlockType = btTagDetect
+        ConditionList = <
+          item
+            TagList.Strings = (
+              'class'
+              'def'
+              'global'
+              'lambda')
+            TokenTypes = 1540
+          end>
+        HighlightPos = cpAny
+        IgnoreAsParent = False
+      end
+      item
         DisplayName = 'Keywords'
         StyleName = 'Id keyword'
         BlockType = btTagDetect
@@ -22571,9 +22587,7 @@ object SyntaxManager: TSyntaxManager
               'as'
               'assert'
               'break'
-              'class'
               'continue'
-              'def'
               'del'
               'elif'
               'else'
@@ -22582,12 +22596,10 @@ object SyntaxManager: TSyntaxManager
               'finally'
               'for'
               'from'
-              'global'
               'if'
               'import'
               'in'
               'is'
-              'lambda'
               'not'
               'or'
               'pass'
@@ -22816,6 +22828,7 @@ object SyntaxManager: TSyntaxManager
       'import sys, sys2, sys3'
       'from csv import aa, bb'
       'str = r'#39'\test\test'#39' + u'#39'test'#39' + r"\test"'
+      'func = lambda x: x'
       ''
       '  def func(num):'
       '    for n in range(len(sys.argv)):'
