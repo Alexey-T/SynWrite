@@ -11,44 +11,45 @@ Icons: Aha               | | IconSets/icons.Aha.zip
 Icons: LibreOffice White | | IconSets/icons.LibreOffice_White.zip
 Icons: WinStd            | | IconSets/icons.WinStd.zip
 Icons: Silk              | | IconSets/icons.Silk.zip
-Python Intel | Intel commands for Python: auto-completion, goto-definition | PyPlugins/PythonIntel/plugin.Synw_Python_Intel.zip
-Text Statistics | Shows for text: count of lines, words, chars | PyPlugins/TextStat/plugin.Alexey.TextStatistics.zip
-Extract Emails | Finds emails in current file | PyPlugins/ExtractEmails/plugin.ExtractEmails.zip
-Keymap Report | Shows detailed report about Synwrite keymapping | PyPlugins/kvichans.KeymapReport/plugin.kvichans.KeymapReport.zip
-Explorer | Adds tab "Explorer" into Tree/Project panel | BinaryPlugins/Explorer/plugin.Explorer.zip
-Show Keymapping | Shows hotkeys in program as HTML page | PyPlugins/Alexey.ShowKeys/plugin.Alexey.ShowKeymapping.zip
-Column Markers | Commands to control "column markers" | PyPlugins/Alexey.ColMarkers/plugin.Alexey.ColumnMarkers.zip
-HTML Lines To List | Converts selected lines to HTML list (ul, ol) or table | PyPlugins/Alexey.HtmlLinesToList/plugin.Alexey.HtmlLinesToList.zip
-Emmet Lite | Emmet engine, see www.emmet.io | PyPlugins/Alexey.EmmetLite/plugin.Alexey.EmmetLite.zip
-NumToWords | Converts numbers to words: En, De, Fr, Sp, etc | PyPlugins/Alexey.NumToWords/plugin.Alexey.NumToWords.zip
-NumToWords Propis | Converts numbers to words: Russian | PyPlugins/Alexey.NumToWordsPropis/plugin.Alexey.NumToWordsPropis.zip
-Make Plugin | Creates new empty plugin | PyPlugins/Alexey.MakePlugin/plugin.Alexey.MakePlugin.zip
-HTML Beautify | Formats/indents HTML code | PyPlugins/Alexey.HtmlBeautify/plugin.Alexey.HtmlBeautify.zip
-HTML Tidy | Integrates HTML Tidy tool, allows to format/validate HTML code | PyPlugins/Alexey.HtmlTidy/plugin.Alexey.HtmlTidy.zip
-Lorem Ipsum | Inserts "Lorem Ipsum" text (placeholder for HTML) | PyPlugins/Alexey.Lorem/plugin.Alexey.LoremIpsum.zip
-Text Converter | Standard menu "Text converters" as plugin | PyPlugins/Alexey.TextConv/plugin.Alexey.TextConv.zip
-WebFont | Inserts into CSS code usage of external fonts from webfont.ru | PyPlugins/Alexey.WebFont/plugin.Alexey.WebFont.zip 
-Css AutoPrefixer | Inserts vendor prefixes into CSS code (requires Node.js) | PyPlugins/Alexey.CssAutoPrefixer/plugin.Alexey.CssAutoPrefixer.zip
-Increment | Increases/decreases number under caret (e.g. "100px", "1.20em") | PyPlugins/Alexey.Increment/plugin.Alexey.Increment.zip
-Color Picker | Shows dialog to insert any color code | PyPlugins/Alexey.ColorPicker/plugin.Alexey.ColorPicker.zip
-HTML Preview Selection | Copies selection to temp HTML file and opens it in browser | PyPlugins/Alexey.HtmlPreviewSelection/plugin.Alexey.HtmlPreviewSelection.zip
-CBlock | For selected lines, adds indent and surrounds with { } brackets | PyPlugins/Alexey.CBlock/plugin.Alexey.CBlock.zip
-Image Tag | Inserts IMG tag (or CSS lines) with info about selected image file (jpg, gif, png) | PyPlugins/Alexey.ImageTag/plugin.Alexey.ImageTag.zip
-Xml Format | Formats/indents XML code (uses xmlpp library) | PyPlugins/Alexey.XmlFormat/plugin.Alexey.XmlFormat.zip
-Xml Tidy | Formats/indents XML code (uses xml.dom library) | PyPlugins/Alexey.XmlTidy/plugin.Alexey.XmlTidy.zip
-Css CanIUse | Shows CSS info from site caniuse.com | PyPlugins/Alexey.CssCanIUse/plugin.Alexey.CssCanIUse.zip
-Sort by Length | Sorts entire text by length of lines (first short lines come) | PyPlugins/Alexey.SortByLength/plugin.Alexey.SortByLength.zip
-Carets Numbering | Inserts increasing numbers at all multi-carets | PyPlugins/Alexey.CaretsNumbering/plugin.Alexey.CaretsNumbering.zip
-Css Comb | Sorts CSS properties in specific order (CSScomb engine) | PyPlugins/Alexey.CssComb/plugin.Alexey.CssComb.zip
-W3C Validator | Allows to validate HTML/SVG document using online W3C checker | PyPlugins/Alexey.W3CValidator/plugin.Alexey.W3CValidator.zip
-Color Text Saved | Works with "Color Text", saves applied colors/styles to a helper file | PyPlugins/Alexey.ColorTextSaved/plugin.Alexey.ColorTextSaved.zip
-Color Text | Allows to colorize text blocks, like Notepad++ "Style token" | PyPlugins/Alexey.ColorText/plugin.Alexey.ColorText.zip
-Switch Header | Switches file pairs: c<>h, cpp<>h, cc<>h, asm<>inc | PyPlugins/Alexey.SwitchHeader/plugin.Alexey.SwitchHeader.zip
-Speech | Speaks text via Text-To-Speech service | BinaryPlugins/Speech/plugin.Speech.zip
-ExLexer | Exports any installed lexer to zip file (for others) | PyPlugins/Alexey.ExLexer/plugin.Alexey.ExLexer.zip
-Base Encoder | Allows to encode/decode text in Base64, Base32, Base16, Quoted-printable | PyPlugins/Alexey.BaseEncoder/plugin.Alexey.BaseEncoder.zip
-Hex Dump | Shows text in hex-dump format | PyPlugins/Alexey.HexDump/plugin.Alexey.HexDump.zip
-Gherkin Format | Formats code of Gherkin lexer | PyPlugins/Alexey.GherkinFormat/plugin.Alexey.GherkinFormat.zip
+reStructuredText Preview | Previews reST files as HTML in browser | PyPlugins/plugin.Alexey.reStructuredText_Preview.zip
+Python Intel | Intel commands for Python: auto-completion, goto-definition | PyPlugins/plugin.Alexey.PythonIntel.zip
+Text Statistics | Shows for text: count of lines, words, chars | PyPlugins/plugin.Alexey.TextStatistics.zip
+Extract Emails | Finds emails in current file | PyPlugins/plugin.Alexey.ExtractEmails.zip
+Keymap Report | Shows detailed report about Synwrite keymapping | PyPlugins/plugin.kvichans.KeymapReport.zip
+Explorer | Adds tab "Explorer" into Tree/Project panel | BinaryPlugins/plugin.Explorer.zip
+Show Keymapping | Shows hotkeys in program as HTML page | PyPlugins/plugin.Alexey.ShowKeymapping.zip
+Column Markers | Commands to control "column markers" | PyPlugins/plugin.Alexey.ColumnMarkers.zip
+HTML Lines To List | Converts selected lines to HTML list (ul, ol) or table | PyPlugins/plugin.Alexey.HtmlLinesToList.zip
+Emmet Lite | Emmet engine, see www.emmet.io | PyPlugins/plugin.Alexey.EmmetLite.zip
+NumToWords | Converts numbers to words: En, De, Fr, Sp, etc | PyPlugins/plugin.Alexey.NumToWords.zip
+NumToWords Propis | Converts numbers to words: Russian | PyPlugins/plugin.Alexey.NumToWordsPropis.zip
+Make Plugin | Creates new empty plugin | PyPlugins/plugin.Alexey.MakePlugin.zip
+HTML Beautify | Formats/indents HTML code | PyPlugins/plugin.Alexey.HtmlBeautify.zip
+HTML Tidy | Integrates HTML Tidy tool, allows to format/validate HTML code | PyPlugins/plugin.Alexey.HtmlTidy.zip
+Lorem Ipsum | Inserts "Lorem Ipsum" text (placeholder for HTML) | PyPlugins/plugin.Alexey.LoremIpsum.zip
+Text Converter | Standard menu "Text converters" as plugin | PyPlugins/plugin.Alexey.TextConv.zip
+WebFont | Inserts into CSS code usage of external fonts from webfont.ru | PyPlugins/plugin.Alexey.WebFont.zip 
+Css AutoPrefixer | Inserts vendor prefixes into CSS code (requires Node.js) | PyPlugins/plugin.Alexey.CssAutoPrefixer.zip
+Increment | Increases/decreases number under caret (e.g. "100px", "1.20em") | PyPlugins/plugin.Alexey.Increment.zip
+Color Picker | Shows dialog to insert any color code | PyPlugins/plugin.Alexey.ColorPicker.zip
+HTML Preview Selection | Copies selection to temp HTML file and opens it in browser | PyPlugins/plugin.Alexey.HtmlPreviewSelection.zip
+CBlock | For selected lines, adds indent and surrounds with { } brackets | PyPlugins/plugin.Alexey.CBlock.zip
+Image Tag | Inserts IMG tag (or CSS lines) with info about selected image file (jpg, gif, png) | PyPlugins/plugin.Alexey.ImageTag.zip
+Xml Format | Formats/indents XML code (uses xmlpp library) | PyPlugins/plugin.Alexey.XmlFormat.zip
+Xml Tidy | Formats/indents XML code (uses xml.dom library) | PyPlugins/plugin.Alexey.XmlTidy.zip
+Css CanIUse | Shows CSS info from site caniuse.com | PyPlugins/plugin.Alexey.CssCanIUse.zip
+Sort by Length | Sorts entire text by length of lines (first short lines come) | PyPlugins/plugin.Alexey.SortByLength.zip
+Carets Numbering | Inserts increasing numbers at all multi-carets | PyPlugins/plugin.Alexey.CaretsNumbering.zip
+Css Comb | Sorts CSS properties in specific order (CSScomb engine) | PyPlugins/plugin.Alexey.CssComb.zip
+W3C Validator | Allows to validate HTML/SVG document using online W3C checker | PyPlugins/plugin.Alexey.W3CValidator.zip
+Color Text Saved | Works with "Color Text", saves applied colors/styles to a helper file | PyPlugins/plugin.Alexey.ColorTextSaved.zip
+Color Text | Allows to colorize text blocks, like Notepad++ "Style token" | PyPlugins/plugin.Alexey.ColorText.zip
+Switch Header | Switches file pairs: c<>h, cpp<>h, cc<>h, asm<>inc | PyPlugins/plugin.Alexey.SwitchHeader.zip
+Speech | Speaks text via Text-To-Speech service | BinaryPlugins/plugin.Speech.zip
+ExLexer | Exports any installed lexer to zip file (for others) | PyPlugins/plugin.Alexey.ExLexer.zip
+Base Encoder | Allows to encode/decode text in Base64, Base32, Base16, Quoted-printable | PyPlugins/plugin.Alexey.BaseEncoder.zip
+Hex Dump | Shows text in hex-dump format | PyPlugins/plugin.Alexey.HexDump.zip
+Gherkin Format | Formats code of Gherkin lexer | PyPlugins/plugin.Alexey.GherkinFormat.zip
 Text converter: Translit | Transliterate En<->Ru | TextConverters/converter.Translit.zip
 Text converter: HTML colors | HTML color name <-> HTML color code | TextConverters/converter.HtmlColors.zip
 Text converter: URL encode | URL encoding / percent-encoding | TextConverters/converter.UrlEncode.zip
@@ -62,15 +63,15 @@ Snippets: Lua          | Snippets by myCrack | Snippets/snippets.myCrack.Lua.zip
 Snippets: AutoIt       | Snippets by myCrack | Snippets/snippets.myCrack.AutoIt.zip
 Snippets: Markdown     | Snippets by NoSi | Snippets/snippets.NoSi.Markdown.zip
 Snippets: nnCron       | Snippets by inquiro | Snippets/snippets.inquiro.nnCron.zip
-Color Margin | Colorizes right-margin for long lines | PyPlugins/Alexey.ColorMargin/plugin.Alexey.ColorMargin.zip
-Sum Lines | Calculates sum/min/max/mean of numbers in selected lines | PyPlugins/Alexey.SumLines/plugin.Alexey.SumLines.zip
-Plugin Manager | Manages SynWrite add-ons | PyPlugins/Alexey.PluginManager/plugin.Alexey.PluginManager.zip
-Ascii Art | Allows to draw text with several ASCII Art fonts | PyPlugins/Alexey.AsciiArt/plugin.Alexey.AsciiArt.zip
-Backup File | Creates backup copy of current file | PyPlugins/kvichans.BackupFile/plugin.kvichans.BackupFile.zip
-Ftp Log | Makes file SynFTP.log | PyPlugins/Alexey.FtpLog/plugin.Alexey.FtpLog.zip
-SynLint | Checks/validates syntax of current file, for many lexers | PyPlugins/Alexey.SynLint/plugin.Alexey.SynLint.zip
-YAML Format | Formats YAML code | PyPlugins/Alexey.YamlFormat/plugin.Alexey.YamlFormat.zip
-SQL Format | Formats SQL code | PyPlugins/Alexey.SqlFormat/plugin.Alexey.SqlFormat.zip
+Color Margin | Colorizes right-margin for long lines | PyPlugins/plugin.Alexey.ColorMargin.zip
+Sum Lines | Calculates sum/min/max/mean of numbers in selected lines | PyPlugins/plugin.Alexey.SumLines.zip
+Plugin Manager | Manages SynWrite add-ons | PyPlugins/plugin.Alexey.PluginManager.zip
+Ascii Art | Allows to draw text with several ASCII Art fonts | PyPlugins/plugin.Alexey.AsciiArt.zip
+Backup File | Creates backup copy of current file | PyPlugins/plugin.kvichans.BackupFile.zip
+Ftp Log | Makes file SynFTP.log | PyPlugins/plugin.Alexey.FtpLog.zip
+SynLint | Checks/validates syntax of current file, for many lexers | PyPlugins/plugin.Alexey.SynLint.zip
+YAML Format | Formats YAML code | PyPlugins/plugin.Alexey.YamlFormat.zip
+SQL Format | Formats SQL code | PyPlugins/plugin.Alexey.SqlFormat.zip
 Linter: CppCheck | SynLint subplugin for C++ lexer | Linters/linter.CppCheck.zip
 Linter: CppLint | SynLint subplugin for C++ lexer | Linters/linter.CppLint.zip
 Linter: CssLint | SynLint subplugin for CSS lexer | Linters/linter.CssLint.zip
@@ -86,32 +87,32 @@ Linter: Json | SynLint subplugin for JSON lexer | Linters/linter.Json.zip
 Linter: Modelica | SynLint subplugin for Modelica lexer | Linters/linter.Modelica.zip
 Linter: PhpL | SynLint subplugin for PHP lexer | Linters/linter.PhpL.zip
 Linter: PhpLint | SynLint subplugin for PHP lexer | Linters/linter.PhpLint.zip
-Linter: PyLint | SynLint subplugin for Python lexer | Linters/linter.PyLint.rar
+Linter: PyLint | SynLint subplugin for Python lexer | Linters/linter.PyLint.zip
 Linter: Ruby | SynLint subplugin for Ruby lexer | Linters/linter.Ruby.zip
 Linter: XmlLint_cygwin | SynLint subplugin for XML lexer | Linters/linter.XmlLint_cygwin.zip
 Linter: XmlLint_google | SynLint subplugin for XML lexer | Linters/linter.XmlLint_google.zip
-WinMerge Compare | Creates backups and calls WinMerge to compare current file with its backups | PyPlugins/kvichans.WinMergeCompare/plugin.kvichans.WinMergeCompare.zip
-DocBlock | Auto-enters docblock comments for lexers: JavaScript, PHP | PyPlugins/Alexey.DocBlock/plugin.Alexey.DocBlock.zip
-Print All | Prints w/out questions all opened editor tabs | PyPlugins/Alexey.PrintAll/plugin.Alexey.PrintAll.zip
-Staple Jump | Jumps to begin or end of block-staple under caret | PyPlugins/Alexey.StapleJump/plugin.Alexey.StapleJump.zip
-Html Class Complete | Auto-completion of CSS class names, for HTML lexer | PyPlugins/Alexey.HtmlClassComplete/plugin.Alexey.HtmlClassComplete.zip
-EdComplete | Completes fragment with parts of full text | PyPlugins/kvichans.EdComplete/plugin.kvichans.EdComplete.zip
-AStyle Format | Formats (beautifies) source code for lexers: C++, C, C#, Java, using good AStyle library | PyPlugins/Alexey.AStyleFormat/plugin.Alexey.AStyleFormat.zip
-Ruby Format | Formats (beautifies) source code for Ruby lexer | PyPlugins/Alexey.RubyFormat/plugin.Alexey.RubyFormat.zip
-Case Converter | Changes case of current word: the_snake_case, THE_UPPER_CASE, theCamelCase, ThePascalCase | PyPlugins/Alexey.CaseConverter/plugin.Alexey.CaseConverter.zip
-Css Prefixer | Inserts needed vendor prefixes into CSS code | PyPlugins/Alexey.CssPrefixer/plugin.Alexey.CssPrefixer.rar
-Extend Selection | Adds commands: "expand selection", "shrink selection" (lexer independant) | PyPlugins/kvichans.ExtendSelection/plugin.kvichans.ExtendSelection.zip
-Css Minifier | Makes CSS code more compact ("minify" it) | PyPlugins/Alexey.CssMinifier/plugin.Alexey.CssMinifier.rar
-Js Minifier | Makes JavaScript code more compact ("minify" it) | PyPlugins/Alexey.JsMinifier/plugin.Alexey.JsMinifier.rar
-Css Format | Formats CSS source code | PyPlugins/Alexey.CssFormat/plugin.Alexey.CssFormat.rar
-Js Format | Formats JavaScript and JSON source code | PyPlugins/Alexey.JsFormat/plugin.Alexey.JsFormat.rar
-Markdown Preview | Converts Markdown text to HTML, and opens HTML in browser | PyPlugins/Alexey.MarkdownPreview/plugin.Alexey.MarkdownPreview.zip
-DevDocs | Search with given words on DevDocs.io site | PyPlugins/Alexey.DevDocs/plugin.Alexey.DevDocs.zip
-Insert Unicode Char | Shows prompt for Unicode hex code, then inserts it | PyPlugins/Alexey.InsertUnicodeChar/plugin.Alexey.InsertUnicodeChar.zip
-VB SyncEdit | Calls SyncEditing for current function in VBScript | PyPlugins/Zyx.VBSyncEdit/plugin.Zyx.VBSyncEdit.zip
-SynCodeIntel | Intelligent auto-completion for several lexers: Python, PHP, Perl, Ruby, JavaScript, Tcl, etc | BinaryPlugins/SynCodeIntel/plugin.SynCodeIntel.rar
-SynSharp | Intelligent auto-completion for C# lexer | BinaryPlugins/SynSharp/plugin.SynSharp.rar
-FindIdPas | Finds declaration of identifiers for Pascal lexer | BinaryPlugins/FindIdPas/plugin.FindIdPas.rar
+WinMerge Compare | Creates backups and calls WinMerge to compare current file with its backups | PyPlugins/plugin.kvichans.WinMergeCompare.zip
+DocBlock | Auto-enters docblock comments for lexers: JavaScript, PHP | PyPlugins/plugin.Alexey.DocBlock.zip
+Print All | Prints w/out questions all opened editor tabs | PyPlugins/plugin.Alexey.PrintAll.zip
+Staple Jump | Jumps to begin or end of block-staple under caret | PyPlugins/plugin.Alexey.StapleJump.zip
+Html Class Complete | Auto-completion of CSS class names, for HTML lexer | PyPlugins/plugin.Alexey.HtmlClassComplete.zip
+EdComplete | Completes fragment with parts of full text | PyPlugins/plugin.kvichans.EdComplete.zip
+AStyle Format | Formats (beautifies) source code for lexers: C++, C, C#, Java, using good AStyle library | PyPlugins/plugin.Alexey.AStyleFormat.zip
+Ruby Format | Formats (beautifies) source code for Ruby lexer | PyPlugins/plugin.Alexey.RubyFormat.zip
+Case Converter | Changes case of current word: the_snake_case, THE_UPPER_CASE, theCamelCase, ThePascalCase | PyPlugins/plugin.Alexey.CaseConverter.zip
+Css Prefixer | Inserts needed vendor prefixes into CSS code | PyPlugins/plugin.Alexey.CssPrefixer.zip
+Extend Selection | Adds commands: "expand selection", "shrink selection" (lexer independant) | PyPlugins/plugin.kvichans.ExtendSelection.zip
+Css Minifier | Makes CSS code more compact ("minify" it) | PyPlugins/plugin.Alexey.CssMinifier.zip
+Js Minifier | Makes JavaScript code more compact ("minify" it) | PyPlugins/plugin.Alexey.JsMinifier.zip
+Css Format | Formats CSS source code | PyPlugins/plugin.Alexey.CssFormat.zip
+Js Format | Formats JavaScript and JSON source code | PyPlugins/plugin.Alexey.JsFormat.zip
+Markdown Preview | Converts Markdown text to HTML, and opens HTML in browser | PyPlugins/plugin.Alexey.MarkdownPreview.zip
+DevDocs | Search with given words on DevDocs.io site | PyPlugins/plugin.Alexey.DevDocs.zip
+Insert Unicode Char | Shows prompt for Unicode hex code, then inserts it | PyPlugins/plugin.Alexey.InsertUnicodeChar.zip
+VB SyncEdit | Calls SyncEditing for current function in VBScript | PyPlugins/plugin.Zyx.VBSyncEdit.zip
+SynCodeIntel | Intelligent auto-completion for several lexers: Python, PHP, Perl, Ruby, JavaScript, Tcl, etc | BinaryPlugins/plugin.SynCodeIntel.zip
+SynSharp | Intelligent auto-completion for C# lexer | BinaryPlugins/plugin.SynSharp.zip
+FindIdPas | Finds declaration of identifiers for Pascal lexer | BinaryPlugins/plugin.PascalFindId.zip
 Lexer: ActionScript                 | | Lexers/lexer.ActionScript.zip
 Lexer: Acu Cobol                    | | Lexers/lexer.Acu_Cobol.zip
 Lexer: Ada                          | | Lexers/lexer.Ada.zip
@@ -244,7 +245,6 @@ Lexer: R Markdown                     | | Lexers/lexer.R_Markdown.zip
 Lexer: Nemerle                     | | Lexers/lexer.Nemerle.zip
 Lexer: Yacc                     | | Lexers/lexer.Yacc.zip
 Lexer: Bash script          | | Lexers/lexer.Bash_script.zip
-Lexer: JSON                    | | Lexers/lexer.JSON.zip
 Lexer: Boo                      | | Lexers/lexer.Boo.zip
 Lexer: Vala                      | | Lexers/lexer.Vala.zip
 Lexer: Automake                      | | Lexers/lexer.Automake.zip
@@ -264,6 +264,10 @@ Lexer: CRF files            | | Lexers/lexer.CRF.zip
 Lexer: Dockerfile            | | Lexers/lexer.Dockerfile.zip
 Lexer: Bitsquid SJSON   | | Lexers/lexer.Bitsquid_SJSON.zip
 Lexer: Java Velocity      | | Lexers/lexer.Java_Velocity.zip
+Lexer: RTF      | | Lexers/lexer.RTF.zip
+Lexer: Assembly JWASM      | | Lexers/lexer.Assembly_JWASM.zip
+Lexer: ABC Notation | | Lexers/lexer.ABC_Notation.zip
+Lexer: reStructuredText | | Lexers/lexer.reStructuredText.zip
 Translation: French               | | Languages/language.French.zip
 Translation: Hungarian            | | Languages/language.Hungarian.zip
 Translation: Spanish              | | Languages/language.Spanish.zip

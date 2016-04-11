@@ -2,6 +2,8 @@ The following lexers (counting only important ones) exist for SynWrite.
 Most of them are not installed by default, they are located in Addons Manager "Install" list.
 
 * ABAP
+* Abaqus Keywords
+* ABC Notation
 * ActionScript
 * Acu Cobol
 * Ada
@@ -9,8 +11,10 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Apache Pig
 * AppleScript
 * Arduino
+* ARM Assembly
 * Assembly
 * Assembly FASM
+* Assembly JWASM
 * Asymptote
 * AutoHotkey
 * AutoIt
@@ -20,6 +24,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Bash script
 * Batch files
 * BibTeX
+* Bitsquid SJSON
 * Boo
 * Brainfuck
 * C
@@ -35,12 +40,14 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * CodeVisionAVR
 * CoffeeScript
 * ColdFusion
+* CRF files
 * CSS
 * CUDA C++
 * D
 * Dart
 * Delphi resources
 * Diff
+* Dockerfile
 * Eiffel
 * Elm
 * Erlang
@@ -76,9 +83,11 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Ini files
 * Inno Setup
 * Jade
-* Jasmine
+* Jasmine JVM Assembler
 * Java
+* Java Velocity
 * JavaScript
+* JavaScript Babel/ React JSX
 * JCL
 * Jinja2
 * JSON
@@ -90,7 +99,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Log files
 * Lua
 * Macro Scheduler script
-* Make files
+* Makefile
 * Markdown
 * MATLAB
 * Metafont
@@ -130,7 +139,9 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Ragel
 * Razor
 * Resource script
+* reStructuredText
 * RPG/IV
+* RTF (RichText)
 * Ruby
 * Rust
 * Sass

@@ -22263,7 +22263,7 @@ object SyntaxManager: TSyntaxManager
   object SyntAnal70: TLibSyntAnalyzer
     Formats = <
       item
-        DisplayName = 'Type'
+        DisplayName = 'Prefix'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clPurple
         Font.Height = -13
@@ -22281,7 +22281,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Params'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clGray
+        Font.Color = clOlive
         Font.Height = -11
         Font.Name = 'Courier New'
         Font.Style = []
@@ -22289,10 +22289,10 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Comment'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clTeal
+        Font.Color = clGray
         Font.Height = -13
         Font.Name = 'Courier New'
-        Font.Style = []
+        Font.Style = [fsItalic]
       end>
     TokenRules = <
       item
@@ -22303,10 +22303,10 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Type'
-        StyleName = 'Type'
+        DisplayName = 'Prefix'
+        StyleName = 'Prefix'
         TokenType = 1
-        Expression = '^\S+'
+        Expression = '^\w+'
         ColumnFrom = 0
         ColumnTo = 0
       end
@@ -22318,7 +22318,7 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Params( )'
+        DisplayName = 'Params'
         StyleName = 'Params'
         TokenType = 3
         Expression = '\(.*?\)'
@@ -22326,18 +22326,10 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
-        DisplayName = 'Params'
-        StyleName = 'Params'
-        TokenType = 3
-        Expression = '(?<=^\S+\s+\S+\s+) .+? (?=\|)'
-        ColumnFrom = 0
-        ColumnTo = 0
-      end
-      item
         DisplayName = 'Id'
         StyleName = 'Id'
         TokenType = 2
-        Expression = '[^\|\(\)]+?'
+        Expression = '(?<=^\w+\x20+) [^\(\)\|\x20\n\r]+'
         ColumnFrom = 0
         ColumnTo = 0
       end>
@@ -22345,19 +22337,22 @@ object SyntaxManager: TSyntaxManager
     CodeTemplates = <>
     SubAnalyzers = <>
     SampleText.Strings = (
-      'type Name (some params) |Comment'
+      'type name (some params) |Comment'
       'typ name%20name params |Comment'
       'type name(params)'
-      'typ name')
+      'typ name'
+      'keyw some'
+      'keyw some(test)'
+      '')
     TokenTypeNames.Strings = (
       'Comment'
-      'Type'
+      'Prefix'
       'Id'
       'Params ')
     Extentions = 'acp'
     LexerName = 'SynWrite acp files'
     Notes.Strings = (
-      'Author: Alex, uvviewsoft.com')
+      'Alex (Synwrite)')
     Charset = DEFAULT_CHARSET
     Left = 144
     Top = 184
@@ -22407,10 +22402,10 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Id keyword'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clPurple
+        Font.Color = clNavy
         Font.Height = -13
         Font.Name = 'Courier New'
-        Font.Style = [fsBold]
+        Font.Style = []
       end
       item
         DisplayName = 'Id keyword def'
@@ -22423,7 +22418,7 @@ object SyntaxManager: TSyntaxManager
       item
         DisplayName = 'Id function'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlue
+        Font.Color = clPurple
         Font.Height = -13
         Font.Name = 'Courier New'
         Font.Style = []
