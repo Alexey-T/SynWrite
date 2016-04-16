@@ -22049,10 +22049,18 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
+        DisplayName = 'HTML pre'
+        StyleName = 'Codeblock'
+        TokenType = 4
+        Expression = '(?s) <pre> .+? </pre>'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
         DisplayName = 'HTML Code'
         StyleName = 'HTML Code'
         TokenType = 9
-        Expression = '\&[^;]+\; |'#13#10'\<[^\>]+>'
+        Expression = '\&[^;]+\; |'#13#10'</?\w+>'
         ColumnFrom = 0
         ColumnTo = 0
       end
