@@ -19178,7 +19178,7 @@ object SyntaxManager: TSyntaxManager
     Extentions = 'py pyw rpy cpy sconstruct'
     LexerName = 'Python'
     SkipSpaces = False
-    FullRefreshSize = 80000
+    FullRefreshSize = 1000
     Notes.Strings = (
       'New Python lexer, by Alex (SynWrite)'
       'For indent-based folding lexer must be tweaked:'
