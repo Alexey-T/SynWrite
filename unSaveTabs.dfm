@@ -56,7 +56,7 @@ object fmSaveTabs: TfmSaveTabs
       Top = 6
       Width = 100
       Height = 23
-      Caption = '&Don'#39't save'
+      Caption = 'Don'#39'&t save'
       ModalResult = 7
       TabOrder = 1
     end

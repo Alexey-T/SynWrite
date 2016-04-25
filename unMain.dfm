@@ -8514,7 +8514,7 @@ object fmMain: TfmMain
           item
             KeyDefs = <
               item
-                ShortCut = 32848
+                ShortCut = 112
               end>
           end>
         Category = 'Search & Replace'
