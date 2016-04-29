@@ -1221,6 +1221,14 @@ begin
   PanelAltFind.Top:= PanelBtnOrig.Top;
   PanelAltRep.Left:= PanelAltFind.Left;
   PanelAltRep.Top:= PanelAltFind.Top;
+
+  cbTokens.Items.Clear;
+  cbTokens.Items.Add(DKLangConstW('find_all'));
+  cbTokens.Items.Add(DKLangConstW('find_cmt'));
+  cbTokens.Items.Add(DKLangConstW('find_str'));
+  cbTokens.Items.Add(DKLangConstW('find_cmtstr'));
+  cbTokens.Items.Add(DKLangConstW('find_no_cmtstr'));
+  cbTokens.Items.Add(DKLangConstW('find_no_cmt'));
 end;
 
 procedure TfmSR.cbOrigInSelClick(Sender: TObject);

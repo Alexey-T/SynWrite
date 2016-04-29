@@ -46,7 +46,8 @@ type
     tokensCmt,
     tokensStr,
     tokensCmtStr,
-    tokensExceptCmtStr
+    tokensExceptCmtStr,
+    tokensExceptCmt
     );
 
   TOnFindProgress = procedure(CurPos, MaxPos: Integer) of object;

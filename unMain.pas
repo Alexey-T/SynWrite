@@ -3348,7 +3348,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.20.2216';
+  cSynVer = '6.20.2218';
   cSynPyVer = '1.0.150';
 
 const
@@ -22400,6 +22400,8 @@ begin
       Result:= IsCmt or IsStr;
     tokensExceptCmtStr:
       Result:= not (IsCmt or IsStr);
+    tokensExceptCmt:
+      Result:= not IsCmt;  
   end;
 end;
 
