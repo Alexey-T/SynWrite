@@ -3348,7 +3348,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.20.2218';
+  cSynVer = '6.20.2220';
   cSynPyVer = '1.0.150';
 
 const
@@ -6565,9 +6565,6 @@ begin
         else
           Handled:= false;
       end;
-
-    sm_UpdateIniFile:
-      DoUpdateIniFileForNewRelease(SynIni);
 
     sm_PrintNowAll,
     sm_PrintNowSelection:

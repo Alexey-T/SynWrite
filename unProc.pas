@@ -48,7 +48,6 @@ procedure DoKeymappingTruncate(Map: TSyntKeyMapping; NCount: Integer);
 
 function STrimFolderName(const s: Widestring): Widestring;
 function DoGetLocalizedEncodingName(const Id: Widestring): Widestring;
-procedure DoUpdateIniFileForNewRelease(const SynIni: string);
 function FontStylesToString(const f: TFontStyles): string;
 function StringToFontStyles(const s: string): TFontStyles;
 function FontToString(F: TFont): string;
@@ -2092,43 +2091,6 @@ begin
   end;
 end;
 
-
-procedure DoUpdateIniFileForNewRelease(const SynIni: string);
-const
-  secTpl = 'Template';
-var
-  Op: TSyntaxMemoOptions;
-  OpEx: TSyntaxMemoOptionsEx;
-  S: string;
-begin
-  with TIniFile.Create(SynIni) do
-  try
-    //1) Options
-    S:= DoReadIniString_LargeData(SynIni, secTpl, 'Options');
-    if S='' then
-    begin
-      MsgInfo('Ini file doesn''t need an update. Command ignored.', 0);
-      Exit
-    end;
-
-    Op:= StringToEditorOptions(S);
-    WriteString('Setup', 'Flags', IntToHex(LongWord(Op), 8));
-
-    //2) OptionsEx
-    S:= DoReadIniString_LargeData(SynIni, secTpl, 'OptionsEx');
-    OpEx:= StringToEditorOptionsEx(S);
-    WriteString('Setup', 'FlagsEx', IntToHex(LongWord(OpEx), 8));
-
-    //Erase old
-    DeleteKey(secTpl, 'Options');
-    DeleteKey(secTpl, 'OptionsEx');
-    EraseSection('Template__Options');
-
-    MsgInfo('Ini file updated, restart SynWrite now without saving options', 0);
-  finally
-    Free
-  end;
-end;
 
 procedure DoKeymappingSplit(MapIn, MapOut1, MapOut2: TSyntKeyMapping; NCountInFirst: Integer);
 var

@@ -9367,7 +9367,7 @@ object fmMain: TfmMain
         DisplayName = 'Toggle Bookmarks panel focus'
       end
       item
-        Command = 1900
+        Command = 0
         KeyStrokes = <>
         Category = 'Options'
         DisplayName = 'Update ini file'

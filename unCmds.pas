@@ -459,8 +459,6 @@ const
   sm_EncodingConvert_Utf8NoBom = 1213;
   sm_EncodingConvert_Utf16LE = 1214;
   sm_EncodingConvert_Utf16BE = 1215;
-
-  sm_UpdateIniFile = 1900;
   //end of list
 
 implementation
