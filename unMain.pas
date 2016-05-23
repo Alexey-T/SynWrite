@@ -3340,8 +3340,8 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.20.2225';
-  cSynPyVer = '1.0.150';
+  cSynVer = '6.21.2240';
+  cSynPyVer = '1.0.151';
 
 const
   cSynParamRO = '/ro';
@@ -26384,6 +26384,7 @@ begin
     AddMethod('dlg_checklist', Py_dlg_checklist, '');
     AddMethod('dlg_file', Py_dlg_file, '');
     AddMethod('dlg_folder', Py_dlg_folder, '');
+    AddMethod('dlg_custom', Py_dlg_custom, '');
 
     AddMethod('app_version', Py_app_version, '');
     AddMethod('app_api_version', Py_app_api_version, '');

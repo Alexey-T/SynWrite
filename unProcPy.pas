@@ -5,7 +5,8 @@ interface
 uses
   PythonEngine,
   ecSyntMemo,
-  ATSyntMemo;
+  ATSyntMemo,
+  unProcCustomDialog;
 
 var
   PyEditor: function (AHandle: Integer): TSyntaxMemo = nil;
@@ -61,6 +62,7 @@ function Py_ini_write(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_input(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_input_ex(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_input_memo(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_dlg_custom(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_msg_box(Self, Args: PPyObject): PPyObject; cdecl;
 
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
@@ -750,6 +752,26 @@ begin
         end;
       end;
   end;
+end;
+
+
+function Py_dlg_custom(Self, Args : PPyObject): PPyObject; cdecl;
+var
+  PtrTitle, PtrText: PChar;
+  StrTitle, StrText, StrStateText: string;
+  NSizeX, NSizeY, NFocused, NButton: integer;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'siisi:dlg_custom', @PtrTitle, @NSizeX, @NSizeY, @PtrText, @NFocused)) then
+    begin
+      StrTitle:= string(PtrTitle);
+      StrText:= string(PtrText);
+      DoDialogCustom(StrTitle, NSizeX, NSizeY, StrText, NFocused, NButton, StrStateText);
+      if NButton<0 then
+        Result:= ReturnNone
+      else
+        Result:= Py_BuildValue('(is)', NButton, PChar(StrStateText));
+    end;
 end;
 
 function Py_dlg_input(Self, Args: PPyObject): PPyObject; cdecl;

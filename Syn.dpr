@@ -74,7 +74,8 @@ uses
   unInputCheckList in 'unInputCheckList.pas' {fmInputCheckList},
   unLexerImportRules in 'unLexerImportRules.pas' {fmLexerImportRules},
   unLexerItems in 'unLexerItems.pas' {fmLexerItems: TFrame},
-  unColorPalette in 'unColorPalette.pas' {fmPalette};
+  unColorPalette in 'unColorPalette.pas' {fmPalette},
+  unProcCustomDialog in 'unProcCustomDialog.pas';
 
 {$R *.res}
 {$R *.dkl_const.res}
