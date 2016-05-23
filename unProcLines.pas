@@ -471,7 +471,7 @@ begin
     end;
 
     //leave single space after separator
-    N:= Pos(Sep, S)+1;
+    N:= Pos(Sep, S)+Length(Sep);
     while (N<=Length(S)) and (S[N]=' ') do
       Delete(S, N, 1);
     Insert(' ', S, N);
