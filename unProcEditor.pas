@@ -140,7 +140,6 @@ procedure EditorExtendSelectionByPosition(Ed: TSyntaxMemo;
 
 procedure EditorSplitLinesByPosition(Ed: TSyntaxMemo; nCol: Integer);
 procedure EditorScrollToSelection(Ed: TSyntaxMemo; NSearchOffsetY: Integer);
-procedure EditorCenterSelectedLines(Ed: TSyntaxMemo);
 function EditorDeleteSelectedLines(Ed: TSyntaxMemo): Integer;
 function EditorEOL(Ed: TCustomSyntaxMemo): Widestring;
 procedure EditorToggleStreamComment(Ed: TSyntaxMemo; s1, s2: string; SepLines: boolean);
@@ -1373,33 +1372,6 @@ begin
   finally
     Ed.EndUpdate;
   end;
-end;
-
-
-procedure EditorCenterSelectedLines(Ed: TSyntaxMemo);
-var
-  Ln1, Ln2, i: Integer;
-  s: Widestring;
-begin
-  with Ed do
-    if (not ReadOnly) and (Lines.Count>0) then
-    begin
-      EditorGetSelLines(Ed, Ln1, Ln2);
-      Ed.BeginUpdate;
-      try
-        for i:= Ln1 to Ln2 do
-        begin
-          s:= Trim(Lines[i]);
-          if Length(s)<RightMargin then
-          begin
-            s:= StringOfChar(' ', (RightMargin-Length(s)) div 2) + s;
-            EditorReplaceLine(Ed, i, s, true{ForceUndo});
-          end;
-        end;
-      finally
-        Ed.EndUpdate;
-      end;
-    end;
 end;
 
 

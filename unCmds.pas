@@ -118,7 +118,6 @@ const
   sm_IndentLike1st = 780;
   sm_PasteNoCursorChange = 783;
   sm_CancelSelection = 786;
-  sm_CenterLines = 787;
   sm_ExtendSelByLine = 788;
   sm_SelectBrackets = 789;
   sm_CollapseParent = 790;
@@ -128,7 +127,6 @@ const
   sm_CommandsList = 794;
   sm_ScrollToSel = 795;
   sm_ProjectList = 796;
-  sm_AlignWithSeparator = 797;
   sm_ToggleShowGroup2 = 798;
   sm_PasteAsColumnBlock = 799;
 
@@ -516,7 +514,6 @@ begin
     smUncommentLines,
     smSortAscending,
     smSortDescending,
-    smAlignTokens,
     smMoveLinesUp,
     smMoveLinesDown,
     smDuplicateLine,

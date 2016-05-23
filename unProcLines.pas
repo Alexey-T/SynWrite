@@ -28,11 +28,6 @@ function DoListCommand_Trim(
   L: TTntStringList;
   Mode: TSynTrimMode): Integer;
 
-function DoListCommand_AlignWithSep(
-  L: TTntStringList;
-  const Sep: Widestring;
-  TabSize: Integer): Integer;
-
 function DoListCommand_Indent(
   List: TTntStringList;
   TabSize: Integer;
@@ -417,78 +412,6 @@ begin
   end;
 end;
 
-function DoListCommand_AlignWithSep(
-  L: TTntStringList;
-  const Sep: Widestring;
-  TabSize: Integer): Integer;
-  //
-  function PosSep(S: Widestring): Integer;
-  var
-    n: Integer;
-  begin
-    S:= SUntab(S, TabSize);
-    n:= 1;
-    while (n<=Length(S)) and ((S[n]=' ') or (S[n]=#9)) do
-      Inc(n);
-    Result:= ecPosEx(Sep, S, n);
-  end;
-var
-  i, N, NPos, NSize: Integer;
-  S, Spaces: Widestring;
-begin
-  Result:= 0;
-
-  //calculate maximal separator position in lines
-  NSize:= 0;
-  for i:= 0 to L.Count-1 do
-  begin
-    N:= PosSep(L[i]);
-    if N=0 then Continue;
-    //force space before separator:
-    if (N>1) and not IsSpaceChar(L[i][N-1]) then
-      Inc(N);
-    //remember max
-    if N>NSize then
-      NSize:= N;
-  end;
-  if NSize=0 then Exit;
-
-  for i:= 0 to L.Count-1 do
-  begin
-    //skip lines without separator
-    N:= PosSep(L[i]);
-    if N=0 then Continue;
-
-    S:= L[i];
-    NPos:= Pos(Sep, L[i]);
-    if NPos=0 then Continue;
-
-    //insert spaces before separator
-    if NSize<>N then
-    begin
-      Spaces:= StringOfChar(' ', NSize-N);
-      Insert(Spaces, S, NPos);
-    end;
-
-    //leave single space after separator
-    N:= Pos(Sep, S)+Length(Sep);
-    while (N<=Length(S)) and (S[N]=' ') do
-      Delete(S, N, 1);
-    Insert(' ', S, N);
-
-    //change string
-    if S<>L[i] then
-    begin
-      L[i]:= S;
-      Inc(Result);
-    end;
-  end;
-
-  {
-  if OptFill then
-    DoListCommand_Unspace(L, TabSize, false);
-    }
-end;
 
 function DoListCommand_RemoveBlanks(
   L: TTntStringList): Integer;

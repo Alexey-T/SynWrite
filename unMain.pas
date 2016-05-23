@@ -295,7 +295,6 @@ type
     cLineCmdUntab,
     cLineCmdSpacesToTabs,
     cLineCmdSpacesToTabsLead,
-    cLineCmdAlignWithSep,
     cLineCmdRemoveBlanks,
     cLineCmdRemoveDupBlanks,
     cLineCmdTrimLead,
@@ -1104,8 +1103,6 @@ type
     TBXSeparatorItem80: TSpTbxSeparatorItem;
     PluginACP: TAutoCompletePopup;
     ecCenterLines: TAction;
-    TBXSeparatorItem83: TSpTbxSeparatorItem;
-    TBXItemECenterLines: TSpTbxItem;
     ListTabs: TTntListView;
     ecToggleFocusTabs: TAction;
     TbxItemWinTabs: TSpTbxItem;
@@ -1159,7 +1156,6 @@ type
     TBXSeparatorItem85: TSpTbxSeparatorItem;
     TBXItemBarDedupAll: TSpTBXItem;
     TBXSeparatorItem95: TSpTbxSeparatorItem;
-    TBXItemEAlignWithSep: TSpTbxItem;
     ecAlignWithSep: TAction;
     TBXItemTabToggleSplit: TSpTBXItem;
     ecToggleShowGroup2: TAction;
@@ -1861,7 +1857,6 @@ type
       Shift: TShiftState);
     procedure ListPLogDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
-    procedure ecCenterLinesExecute(Sender: TObject);
     procedure TBXItemLeftTabsClick(Sender: TObject);
     procedure ListTabsClick(Sender: TObject);
     procedure ListTabsKeyDown(Sender: TObject; var Key: Word;
@@ -1937,7 +1932,6 @@ type
     procedure TBXItemECaseTitleClick(Sender: TObject);
     procedure TBXItemECaseSentClick(Sender: TObject);
     procedure TBXItemECaseInvertClick(Sender: TObject);
-    procedure TBXItemEAlignWithSepClick(Sender: TObject);
     procedure TBXItemERemBlanksClick(Sender: TObject);
     procedure TBXItemEReduceBlanksClick(Sender: TObject);
     procedure TBXItemETrimLeadClick(Sender: TObject);
@@ -1947,8 +1941,6 @@ type
     procedure TBXItemETabToSpClick(Sender: TObject);
     procedure TBXItemESpToTabClick(Sender: TObject);
     procedure TBXItemESpToTabLeadClick(Sender: TObject);
-    procedure TBXItemECenterLinesClick(Sender: TObject);
-    procedure ecAlignWithSepExecute(Sender: TObject);
     procedure TBXItemEJoinClick(Sender: TObject);
     procedure TBXItemESplitClick(Sender: TObject);
     procedure TBXItemECopyLineClick(Sender: TObject);
@@ -3348,7 +3340,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.20.2223';
+  cSynVer = '6.20.2225';
   cSynPyVer = '1.0.150';
 
 const
@@ -6024,12 +6016,10 @@ begin
     sm_PasteToColumn1: EditorPasteToFirstColumn(Ed);
     sm_PasteAsColumnBlock: begin if not EditorPasteAsColumnBlock(Ed) then MsgBeep; end;
     sm_CancelSelection: Ed.ResetSelection;
-    sm_CenterLines: ecCenterLines.Execute;
     sm_ExtendSelByLine: EditorExtendSelectionByOneLine(Ed);
     sm_SelectBrackets: EditorSelectBrackets(Ed, FPrevCaretPos);
     sm_CollapseParent: ecCollapseParent.Execute;
     sm_CollapseWithNested: ecCollapseWithNested.Execute;
-    sm_AlignWithSeparator: ecAlignWithSep.Execute;
     sm_ToggleShowGroup2: ecToggleShowGroup2.Execute;
     sm_SelectionExtend: DoExtendSelection(Ed);
     //sm_SelectionShrink: ecSelShrink.Execute;
@@ -9896,8 +9886,8 @@ begin
   UpdKey(tbxItemESortDesc, smSortDescending);
 
   //blank ops
-  UpdKey(TBXItemEAlignWithSep, sm_AlignWithSeparator);
-  UpdKey(TbxItemECenterLines, sm_CenterLines);
+  //UpdKey(TBXItemEAlignWithSep, sm_AlignWithSeparator);
+  //UpdKey(TbxItemECenterLines, sm_CenterLines);
   UpdKey(TbxItemETabToSp, sm_ConvertTabsToSpaces);
   UpdKey(TbxItemESpToTab, sm_ConvertSpacesToTabsAll);
   UpdKey(TBXItemERemDupSp, sm_RemoveDupSpaces);
@@ -21210,11 +21200,6 @@ begin
   Result:= cSynOK;
 end;
 
-procedure TfmMain.ecCenterLinesExecute(Sender: TObject);
-begin
-  EditorCenterSelectedLines(CurrentEditor);
-end;
-
 procedure TfmMain.TBXItemLeftTabsClick(Sender: TObject);
 begin
   TabsLeft.TabIndex:= Ord(tbTabs);
@@ -22081,7 +22066,7 @@ var
   Pos1, Pos2, i: Integer;
   Col1, Col2: Integer;
   L: TTntStringList;
-  S, Sep: Widestring;
+  S: Widestring;
   ok: boolean;
 begin
   Ed:= CurrentEditor;
@@ -22241,26 +22226,6 @@ begin
           MsgDoneLines(i);
         end;
 
-      cLineCmdAlignWithSep:
-        begin
-          //read separator from ini
-          with TIniFile.Create(SynHistoryIni) do
-          try
-            Sep:= UTF8Decode(ReadString('Win', 'AlignSep', '='));
-            ok:= DoInputString(DKLangConstW('zMEnterSep'), Sep) and (Sep<>'');
-            if ok then
-              WriteString('Win', 'AlignSep', UTF8Encode(Sep));
-          finally
-            Free
-          end;
-          //do alignment
-          if ok then
-          begin
-            i:= DoListCommand_AlignWithSep(L, Sep, EditorTabSize(Ed){, soOptimalFill in Ed.Options});
-            ok:= i>0;
-            MsgDoneLines(i);
-          end;
-        end;
       else
         ok:= false;
     end;
@@ -23216,11 +23181,6 @@ begin
   CurrentEditor.ExecCommand(sm_RandomCaseBlock);
 end;
 
-procedure TfmMain.TBXItemEAlignWithSepClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_AlignWithSeparator);
-end;
-
 procedure TfmMain.TBXItemERemBlanksClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_RemoveBlanks);
@@ -23264,16 +23224,6 @@ end;
 procedure TfmMain.TBXItemESpToTabLeadClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_ConvertSpacesToTabsLeading);
-end;
-
-procedure TfmMain.TBXItemECenterLinesClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_CenterLines);
-end;
-
-procedure TfmMain.ecAlignWithSepExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdAlignWithSep);
 end;
 
 procedure TfmMain.TBXItemEJoinClick(Sender: TObject);
