@@ -3348,7 +3348,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.20.2220';
+  cSynVer = '6.20.2223';
   cSynPyVer = '1.0.150';
 
 const
@@ -4658,7 +4658,6 @@ begin
     DoColorsArrayApply(ColorsArray, TemplateEditor);
 
     opTreeSorted:= ReadString('Setup', 'TreeSorted', '');
-    opUnderlineColored:= ReadInteger('Setup', 'ColorUnd', 3);
     opSyncEditIcon:= ReadBool('Setup', 'SyncEditIcon', true);
 
     opNewEnc:= ReadInteger('Setup', 'NEnc', 0);
@@ -5160,7 +5159,6 @@ begin
     WriteBool('Setup', 'CopyLnNoSel', opCopyLineIfNoSel);
     WriteInteger('Setup', 'SortM', Ord(opSortMode));
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
-    WriteInteger('Setup', 'ColorUnd', opUnderlineColored);
     WriteString('Setup', 'TreeSorted', opTreeSorted);
     WriteBool('Setup', 'SyncEditIcon', opSyncEditIcon);
 
@@ -8120,14 +8118,15 @@ procedure TfmMain.ApplyLexerOverrides(F: TEditorFrame; const Lexer: string);
   //c) need to set TabMode=tabs for Make files
 var
   ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-  AOptWordChars, AKeepBlanks, AAutoCase, AIndent, ATabColor: string;
+  AOptWordChars, AKeepBlanks, AAutoCase, AIndent,
+  ATabColor, AColorUnderline: string;
 begin
   if F=nil then Exit;
   with F do
   begin
     if not SGetLexerOverride(opLexersOverride, Lexer,
       ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-      AOptWordChars, AKeepBlanks, AAutoCase, AIndent, ATabColor) then
+      AOptWordChars, AKeepBlanks, AAutoCase, AIndent, ATabColor, AColorUnderline) then
     begin
       EditorMaster.TabList.AsString:= TemplateEditor.TabList.AsString;
       EditorSlave.TabList.AsString:= TemplateEditor.TabList.AsString;
@@ -8137,6 +8136,8 @@ begin
 
       EditorMaster.LineSpacing:= TemplateEditor.LineSpacing;
       EditorSlave.LineSpacing:= TemplateEditor.LineSpacing;
+
+      opUnderlineColored:= 0;
     end
     else
     begin
@@ -8240,6 +8241,12 @@ begin
       //11) override "Tab color"
       if ATabColor<>'' then
         DoSetFrameTabColor(F, StringToColor(ATabColor));
+
+      //12) override "Underline color"
+      if AColorUnderline='1' then
+        opUnderlineColored:= 3 //3 pixels line
+      else
+        opUnderlineColored:= 0; //disable  
     end;
 
     //overrides for "NFO files"
@@ -8249,7 +8256,7 @@ begin
       EditorSlave.LineSpacing:= 0;
     end;
 
-    //overrides for "Make files"
+    //overrides for "Makefile"
     if IsLexerMake(Lexer) then
     begin
       EditorMaster.TabMode:= tmTabChar;

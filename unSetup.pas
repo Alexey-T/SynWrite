@@ -312,8 +312,6 @@ type
     bKeyExtend: TTntButton;
     labHelpKeys: TTntLabel;
     bFontConsole: TTntButton;
-    edColorUnder: TSpinEdit;
-    LabelUnderline: TTntLabel;
     edNoSnippetsExt: TEdit;
     TntLabel34: TTntLabel;
     edTreeSorted: TTntEdit;
@@ -2569,8 +2567,6 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soVariableHorzScrollBar];
 
-    opUnderlineColored:= edColorUnder.Value;
-
     opNonPrint:= cbNPrintShow.Checked;
     opNonPrintSpaces:= cbNPrintSp.Checked;
     opNonPrintEol:= cbNPrintEol.Checked;
@@ -2660,7 +2656,6 @@ begin
     edMargin.Value:= TemplateEditor.RightMargin;
     edLineSpace.Value:= TemplateEditor.LineSpacing;
     edLineNums.ItemIndex:= Ord(TemplateEditor.LineNumbers.NumberingStyle);
-    edColorUnder.Value:= opUnderlineColored;
     cbDrawCol.Checked:= opShowCurrentColumn;
     cbStapleKind.ItemIndex:= opStapleKind;
 

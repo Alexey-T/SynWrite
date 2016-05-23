@@ -37,6 +37,7 @@ type
     edKeepBlanks: TTntComboBox;
     chkTabColor: TTntCheckBox;
     edTabColor: TColorBox;
+    chkColorUnderline: TTntCheckBox;
     procedure cbOvrClick(Sender: TObject);
     procedure ListLexClick(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
@@ -97,11 +98,12 @@ begin
   chkSpacing.Enabled:= en;
   chkAutoCase.Enabled:= en;
   chkTabColor.Enabled:= en;
+  chkColorUnderline.Enabled:= en;
 
   if not en then
   begin
     if ListLex.ItemIndex>=0 then
-      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '', '', '', '', '');
+      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '', '', '', '', '', '');
 
     DoClearAll;
     edText.Text:= FString;
@@ -112,13 +114,15 @@ procedure TfmSetupOvr.ListLexClick(Sender: TObject);
 var
   Ovr: boolean;
   ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-  AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent, ATabColor: string;
+  AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent,
+  ATabColor, AColorUnderline: string;
 begin
   if ListLex.ItemIndex>=0 then
   begin
     Ovr:= SGetLexerOverride(FString, ListLex.Items[ListLex.ItemIndex],
       ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-      AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent, ATabColor);
+      AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent,
+      ATabColor, AColorUnderline);
     cbOvr.Enabled:= true;
   end
   else
@@ -155,6 +159,7 @@ begin
       edTabColor.Selected:= clWhite;
     edWordChars.Text:= AOptWordChars;
     chkAutoCase.Checked:= Bool(StrToIntDef(ACaseCorrect, 0));
+    chkColorUnderline.Checked:= Boolean(StrToIntDef(AColorUnderline, 0));
   end
   else
   begin
@@ -177,6 +182,7 @@ begin
   chkSpacing.Checked:= false;
   chkTabColor.Checked:= false;
   chkAutoCase.Checked:= false;
+  chkColorUnderline.Checked:= false;
 
   edTabStops.Text:= FDefTabStop;
   edTabMode.ItemIndex:= FDefTabMode;
@@ -246,9 +252,10 @@ begin
         {Op6}IfThen(chkOptFill.Checked, IntToStr(edOptFill.ItemIndex)),
         {Op7}edWordChars.Text,
         {Op8}IfThen(chkKeepBlanks.Checked, IntToStr(edKeepBlanks.ItemIndex)),
-        {Op9}IfThen(chkAutoCase.Checked, IntToStr(Ord(chkAutoCase.Checked))),
+        {Op9}IfThen(chkAutoCase.Checked, '1'),
         {Op10}IfThen(chkIndent.Checked, IntToStr(edIndent.Value)),
-        {Op11}IfThen(chkTabColor.Checked, ColorToString(edTabColor.Selected))
+        {Op11}IfThen(chkTabColor.Checked, ColorToString(edTabColor.Selected)),
+        {Op12}IfThen(chkColorUnderline.Checked, '1')
         );
       edText.Text:= FString;
     end;

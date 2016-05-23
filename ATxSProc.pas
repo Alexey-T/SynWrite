@@ -57,9 +57,9 @@ procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3, Val
 function SBufferToString(BufPtr: Pointer; BufSize: Integer): Widestring;
 
 function SGetLexerOverride(const AOption, ALexer: string;
-  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11: string): boolean;
+  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string): boolean;
 procedure SSetLexerOverride(En: boolean; var AOption: string; const ALexer: string;
-  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11: string);
+  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string);
 
 procedure SDeleteDupSpaces(var s: Widestring);
 function SSpacesAtStart(const s: Widestring): Integer;
@@ -1004,13 +1004,13 @@ end;
 
 //------------------------
 procedure SSetLexerOverride(En: boolean; var AOption: string; const ALexer: string;
-  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11: string);
+  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string);
 var
   n, n2: integer;
   SVal: string;
 begin
-  SVal:= Format('%s=%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s;',
-    [ALexer, AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11]);
+  SVal:= Format('%s=%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s;',
+    [ALexer, AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12]);
 
   n:= Pos(';'+ALexer+'=', ';'+AOption+';');
   if n>0 then
@@ -1029,7 +1029,7 @@ begin
 end;
 
 function SGetLexerOverride(const AOption, ALexer: string;
-  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11: string): boolean;
+  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string): boolean;
 var
   n, n2: integer;
   s: Widestring;
@@ -1045,6 +1045,7 @@ begin
   AOp9:= '';
   AOp10:= '';
   AOp11:= '';
+  AOp12:= '';
 
   n:= Pos(';'+ALexer+'=', ';'+AOption+';');
   Result:= n>0;
@@ -1066,6 +1067,7 @@ begin
     AOp9:= SGetItem(s);
     AOp10:= SGetItem(s);
     AOp11:= SGetItem(s);
+    AOp12:= SGetItem(s);
     //Showmessage('"'+AOpt1+'" "'+AOpt2+'"');
   end;
 end;
