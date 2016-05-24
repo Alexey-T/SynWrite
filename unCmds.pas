@@ -149,8 +149,6 @@ const
   sm_ShowOnTop = 823;
   sm_FillBlockDialog = 824;
   sm_InsertTextDialog = 825;
-  sm_SpellLive = 826;
-  sm_SpellCheck = 827;
   sm_JoinLines = 828;
   sm_SplitLines = 829;
 
@@ -324,7 +322,6 @@ const
   sm_EditSynIni = 1012;
   sm_OpenBySelection = 1013;
   sm_CustomizeStylesDialog = 1014;
-  sm_CustomizeSpellCheckDialog = 1015;
   //free for options categories
 
   sm_CopySearchMarks = 1020;
@@ -428,7 +425,6 @@ const
   sm_OptionsTab_SessionsProject = 1128;
   sm_OptionsTab_AutoComplete = 1129;
   sm_OptionsTab_AutoSave = 1130;
-  sm_OptionsTab_SpellChecker = 1131;
   sm_OptionsTab_Paths = 1132;
   //free 1133;
   //free 1134;

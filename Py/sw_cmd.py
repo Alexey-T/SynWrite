@@ -360,8 +360,6 @@ cmd_SyncScrollVert = 822
 cmd_ShowOnTop = 823
 cmd_FillBlockDialog = 824
 cmd_InsertTextDialog = 825
-cmd_SpellLive = 826
-cmd_SpellCheck = 827
 cmd_JoinLines = 828
 cmd_SplitLines = 829
 
@@ -521,7 +519,6 @@ cmd_EditSynPluginsIni = 1011
 cmd_EditSynIni = 1012
 cmd_OpenBySelection = 1013
 cmd_CustomizeStylesDialog = 1014
-cmd_CustomizeSpellCheckDialog = 1015
 
 cmd_CopySearchMarks = 1020
 cmd_OpenProject = 1021
@@ -610,7 +607,6 @@ cmd_OptionsTab_History = 1127
 cmd_OptionsTab_SessionsProject = 1128
 cmd_OptionsTab_AutoComplete = 1129
 cmd_OptionsTab_AutoSave = 1130
-cmd_OptionsTab_SpellChecker = 1131
 cmd_OptionsTab_Paths = 1132
 cmd_OptionsTab_EditorUndo = 1135
 cmd_OptionsTab_EditorInsertFmt = 1136

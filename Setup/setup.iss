@@ -69,9 +69,7 @@ Source: "..\Data\snippets\Std.Pascal\*"; DestDir: "{app}\Data\snippets\Std.Pasca
 Source: "..\Data\snippets\Std.Php\*";    DestDir: "{app}\Data\snippets\Std.Php";    
 
 Source: "..\Tools\*"; DestDir: "{app}\Tools"; 
-Source: "..\Dictionaries\*"; DestDir: "{app}\Dictionaries"; 
 
-;;Source: "..\Plugins\Explorer\*"; DestDir: "{app}\Plugins\Explorer"; Flags: recursesubdirs; 
 Source: "..\Plugins\SynFTP\*"; DestDir: "{app}\Plugins\SynFTP"; Flags: recursesubdirs; 
 
 Source: "..\Py\syn_plugin_manager\*"; DestDir: "{app}\Py\syn_plugin_manager"; Excludes: "*.pyc"; Flags: recursesubdirs;

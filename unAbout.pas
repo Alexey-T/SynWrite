@@ -21,13 +21,11 @@ type
     DKLanguageController1: TDKLanguageController;
     LabelWVersion: TLabel;
     LabelWSite: TTntLabel;
-    LabelWComp2: TTntLabel;
     LabelForum: TTntLabel;
     procedure Button1Click(Sender: TObject);
     procedure LabelWComp1Click(Sender: TObject);
     procedure LabelWSite2Click(Sender: TObject);
     procedure LabelWSiteClick(Sender: TObject);
-    procedure LabelWComp2Click(Sender: TObject);
     procedure LabelForumClick(Sender: TObject);
   private
     { Private declarations }
@@ -68,11 +66,6 @@ end;
 procedure TfmAbout.LabelWSiteClick(Sender: TObject);
 begin
   FOp('http://www.uvviewsoft.com/synwrite/');
-end;
-
-procedure TfmAbout.LabelWComp2Click(Sender: TObject);
-begin
-  FOp('http://www.addictivesoftware.com/');
 end;
 
 procedure TfmAbout.LabelForumClick(Sender: TObject);

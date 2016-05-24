@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ExtCtrls, ComCtrls, ImgList, ActiveX,
   Menus, Math,
-  ecSyntMemo, ecSyntAnal, ecActns, ecExtHighlight, ecOleDrag, ecEmbObj, ecSpell,
+  ecSyntMemo, ecSyntAnal, ecActns, ecExtHighlight, ecOleDrag, ecEmbObj,
   ATFileNotificationSimple,
   ATSyntMemo, //this replaces TSyntaxMemo class
   TB2Item, SpTBXItem, SpTBXDkPanels;
@@ -26,7 +26,6 @@ type
 
 type
   TEditorFrame = class(TFrame)
-    ecSpellChecker: TecSpellChecker;
     HyperlinkHighlighter: THyperlinkHighlighter;
     TextSourceObj: TecEmbeddedObjects;
     PopupSplitEditors: TSpTBXPopupMenu;
@@ -93,8 +92,6 @@ type
     procedure PanelMapPaint(Sender: TObject);
     procedure PanelMapMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure ecSpellCheckerCheckWord(Sender: TObject;
-      const AWord: WideString; APos: Integer; var Valid: Boolean);
     procedure EditorMasterContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
     procedure EditorMasterFinishAnalysis(Sender: TObject);
@@ -134,7 +131,6 @@ type
     FTabColor: TColor;
     FSelPresent: boolean;
     FLineEndsChg,
-    FSpell,
     FNoBOM: boolean;
     FFileName: WideString;
     FOnTitleChanged: TEditorEvent;
@@ -157,7 +153,6 @@ type
     function GetMapLine(X, Y: Integer): Integer;
     function FocusedEditor: TSyntaxMemo;
     procedure UpdateMap(Ed: TSyntaxMemo);
-    procedure SetSpell(Value: boolean);
     function GetCaretsEnabled: boolean;
     function GetCaretsGutterBand: integer;
     function GetCaretsIndicator: integer;
@@ -190,11 +185,9 @@ type
     property IsAlertEnabled: boolean read FAlertEnabled write FAlertEnabled;
     property IsMasterFocused: boolean read FIsMasterFocused;
     property IsTreeSorted: boolean read FTreeSorted write FTreeSorted;
-    function IsEditorPosMisspelled(APos: Integer): boolean;
     function CurrentLexer: string;
     property CollapsedString1: Widestring read FCollapsedString1 write FCollapsedString1;
     property CollapsedString2: Widestring read FCollapsedString2 write FCollapsedString2;
-    function DoSpellContinue(AFromPos: Integer): Integer;
     procedure DoSyncMicromap;
     property ShowMap: boolean read GetShowMap write SetShowMap;
     property TabColor: TColor read FTabColor write FTabColor;
@@ -217,7 +210,6 @@ type
     property SplitPos: Double read FSplitPos write SetSplitPos;
     property SplitHorz: boolean read FSplitHorz write SetSplitHorz;
     property LineEndsChg: boolean read FLineEndsChg write FLineEndsChg;
-    property SpellLive: boolean read FSpell write SetSpell;
     property SkipBom: boolean read FNoBOM write FNoBOM;
     property FileName: Widestring read FFileName write FFileName;
     property Modified: boolean read GetModified write SetModified;
@@ -319,7 +311,6 @@ begin
   FFtpInfoPtr:= nil;
   FFtpInfoSize:= 0;
   FTabColor:= clNone;
-  FSpell:= False;
   FLineEndsChg:= False;
   FSplitHorz:= True;
   FSplitPos:= 0;
@@ -814,7 +805,6 @@ destructor TEditorFrame.Destroy;
 begin
   FreeFtpInfo;
 
-  ecSpellChecker.Active:= False;
   FNotif.Timer.Enabled:= False;
   FreeAndNil(FNotif);
   FreeAndNil(FBitmapMap);
@@ -1166,9 +1156,6 @@ begin
     PanelMapMouseDown(Self, mbLeft, Shift, X, Y);
 end;
 
-type
-  TecSpelLCheckerCrack = class(TecSpellChecker);
-
 procedure TEditorFrame.UpdateMap(Ed: TSyntaxMemo);
 var
   LinesMarked: TList;
@@ -1236,14 +1223,6 @@ begin
       begin
         N1:= Ed.StrPosToCaretPos(Items[i].StartPos).Y;
         LinesMarked.Add(Pointer(N1));
-      end;
-
-    //fill list of mis-spelled line numbers
-    with TecSpellCheckerCrack(ecSpellChecker) do
-      for i:= 0 to FRanges.Count-1 do
-      begin
-        N1:= Ed.StrPosToCaretPos(FRanges[i].StartPos).Y;
-        LinesSpell.Add(Pointer(N1));
       end;
 
     //draw line states
@@ -1348,80 +1327,14 @@ begin
   end;
 end;
 
-procedure TEditorFrame.ecSpellCheckerCheckWord(Sender: TObject;
-  const AWord: WideString; APos: Integer; var Valid: Boolean);
-begin
-  TfmMain(Owner).SynSpellCheckerCheckWord(Self, AWord, APos, Valid);
-end;
-
-procedure TEditorFrame.SetSpell(Value: boolean);
-begin
-  if FSpell<>Value then
-  begin
-    FSpell:= Value;
-    ecSpellChecker.Active:= FSpell;
-    //also update micromap after a delay
-    TimerMap.Enabled:= True;
-  end;
-end;
-
 procedure TEditorFrame.EditorMasterContextPopup(Sender: TObject;
   MousePos: TPoint; var Handled: Boolean);
 begin
   //needed to show Gutter menu?
   TfmMain(Owner).SynContextGutterPopup(Sender, MousePos, Handled);
   if Handled then Exit;
-
-  //needed to show spell-check menu?
-  if not FSpell then
-    begin Handled:= False; Exit end;
-
-  TfmMain(Owner).SynContextPopup(Self, MousePos, Handled);
-  if Handled then
-  begin
-    ecSpellChecker.Active:= False;
-    ecSpellChecker.Active:= True;
-    TimerMap.Enabled:= True;
-  end;
 end;
 
-function TEditorFrame.IsEditorPosMisspelled(APos: Integer): boolean;
-var
-  i, NStart, NEnd: Integer;
-begin
-  Result:= False;
-  if not FSpell then Exit;
-  with TecSpellCheckerCrack(ecSpellChecker) do
-    for i:= 0 to FRanges.Count-1 do
-    begin
-      NStart:= FRanges[i].StartPos;
-      NEnd:= FRanges[i].EndPos;
-      if (APos>=NStart) and (APos<NEnd) then
-      begin
-        Result:= True;
-        Break
-      end;
-    end;
-end;
-
-function TEditorFrame.DoSpellContinue(AFromPos: Integer): Integer;
-var
-  i, NStart: Integer;
-begin
-  Result:= -1;
-  if not FSpell then Exit;
-  with TecSpellCheckerCrack(ecSpellChecker) do
-    for i:= 0 to FRanges.Count-1 do
-    begin
-      NStart:= FRanges[i].StartPos;
-      //NEnd:= FRanges[i].EndPos;
-      if (NStart>=AFromPos) then
-      begin
-        Result:= NStart;
-        Break
-      end;
-    end;
-end;
 
 procedure TEditorFrame.EditorMasterFinishAnalysis(Sender: TObject);
 begin

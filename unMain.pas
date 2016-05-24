@@ -1,7 +1,6 @@
 {
 SynWrite main UI form.
 }
-//SPELL word must be defined in project options (if Addict lib available)
 //PERLRE word must be defined in project options
 {$Q-} //Disable int-checks to avoid integer exception in TabCtrl_GetXRect
 //{$define TabOrder} //Debug: show tabs switch-order in form caption
@@ -16,11 +15,6 @@ uses
   ActnList, Dialogs, ImgList, ExtCtrls, Graphics, IniFiles,
   TntForms, TntClasses,
   Gauges,
-
-  {$ifdef SPELL}
-  ad3LiveBase,
-  ad3Configuration,
-  {$endif}
 
   unFrame,
   unSearch,
@@ -58,7 +52,6 @@ uses
   ATxSProc,
   ecMacroRec,
   ecExtHighlight,
-  ecSpell,
   PythonEngine,
   PythonGUIInputOutput;
 
@@ -822,13 +815,8 @@ type
     TBXItemECpFullPath: TSpTbxItem;
     TBXItemECpFN: TSpTbxItem;
     ecToggleFocusFindRes: TAction;
-    TBXItemBarSpellChk: TSpTBXItem;
-    TBXSeparatorItem48: TSpTbxSeparatorItem;
     ecSpellCheck: TAction;
     ecSpellLive: TAction;
-    TBXSubmenuBarSpell: TSpTBXSubmenuItem;
-    TBXItemVSpellCheck: TSpTbxItem;
-    TBXItemVSpellLive: TSpTbxItem;
     TBXSeparatorItem49: TSpTbxSeparatorItem;
     TBXItemEJoin: TSpTbxItem;
     TBXItemESplit: TSpTbxItem;
@@ -887,7 +875,6 @@ type
     TBXItemBkCopy: TSpTbxItem;
     TBXItemBarGoto: TSpTBXItem;
     ecGoto: TAction;
-    TBXSeparatorItem12: TSpTbxSeparatorItem;
     TBXItemVSyncVert: TSpTbxItem;
     TBXItemVSyncHorz: TSpTbxItem;
     ecToggleFocusGroups: TAction;
@@ -1636,10 +1623,6 @@ type
     procedure TBXItemECpFullPathClick(Sender: TObject);
     procedure TBXItemECpDirPathClick(Sender: TObject);
     procedure ecToggleFocusFindResExecute(Sender: TObject);
-    procedure TBXItemBarSpellChkClick(Sender: TObject);
-    procedure ecSpellCheckExecute(Sender: TObject);
-    procedure ecSpellLiveExecute(Sender: TObject);
-    procedure TBXItemSpellLiveClick(Sender: TObject);
     procedure acMacroDialogExecute(Sender: TObject);
     procedure acMacro1Execute(Sender: TObject);
     procedure acMacro2Execute(Sender: TObject);
@@ -2177,14 +2160,6 @@ type
     FProjectIniting: boolean;
     FProjectFreeing: boolean;
 
-    FSpellMenuCaption: Widestring;
-    FSpellMenuTag: integer;
-    {$ifdef SPELL}
-    FSpell: TLiveAddictSpellBase;
-    FSpellPos: Integer;
-    FSpellChecking: boolean;
-    {$endif}
-
     FPluginsPanel: TPluginList_Panel;
     FPluginsFindid: TPluginList_Findid;
     FPluginsCommand: TPluginList_Command;
@@ -2447,7 +2422,6 @@ type
     procedure UpdateBookmarkMenus;
     procedure UpdateShortcuts;
     procedure UpdateLang;
-    procedure UpdateSpellLang;
     procedure UpdateEditorCaret(Ed: TSyntaxMemo);
     procedure UpdateEditorNonPrinted(Ed: TSyntaxMemo);
     procedure UpdateLexList;
@@ -2457,7 +2431,6 @@ type
 
     procedure UpdateNewFrame(F: TEditorFrame);
     procedure UpdateFrameEnc(Frame: TEditorFrame);
-    procedure UpdateFrameSpell(Frame: TEditorFrame; UpdFlag: boolean = true);
     procedure UpdateFrameZoom(F: TEditorFrame);
     procedure UpdateFrameMicroMap(F: TEditorFrame);
     procedure UpdateClickedFrame;
@@ -2548,19 +2521,6 @@ type
     procedure DoClearSearchMarks(Ed: TSyntaxMemo);
     procedure DoFixReplaceCaret(Ed: TSyntaxMemo);
     function FCanUseLexer(const fn: Widestring): boolean;
-    procedure SpellCopyClick(Sender: TObject);
-    procedure SpellCutClick(Sender: TObject);
-    procedure SpellPasteClick(Sender: TObject);
-    procedure SpellItemClick(Sender: TObject);
-    procedure SpellPopupDoMenu(Sender, Menu: TObject; XPos,
-      YPos: Integer; var PopupAction: Integer; var PopupWord: string);
-    procedure SpellPopupAddMenuItem(Sender, Menu,
-      SubMenu: TObject; Caption: string; Enable, HasChildren: Boolean;
-      Tag: Integer; var MenuItem: TObject);
-    procedure SpellPopupCreateMenu(Sender: TObject;
-      Owner: TComponent; var PopupMenu: TObject);
-    procedure SpellDialogShow(Sender: TObject);
-    procedure SpellPositionDialog(Sender: TObject);
 
     function SNewDocName(const fn: Widestring): string;
     procedure DoNewDocClick(Sender: TObject);
@@ -2574,7 +2534,6 @@ type
     procedure DoReplaceLine(Ed: TSyntaxMemo; NLine: integer; const S: Widestring; ForceUndo: boolean = false);
 
     procedure InitGroups;
-    procedure InitSpell;
     function DoClipItem: Widestring;
     //procedure DoClipsItemCopy;
     procedure DoClipItemCopy;
@@ -3025,8 +2984,6 @@ type
       //- fix procedure TfmMain.UpdateTools
       //
     opStatusText: array[TSynSelState] of string;
-    opSpellEn: boolean;
-    opSpellExt: string;
     opShowMenuIcons: boolean;
     opHiliteSmart: boolean;
     opHiliteSmartCase: boolean;
@@ -3129,8 +3086,7 @@ type
     function Plugin_FrameById(id: Integer): TEditorFrame;
 
     function SynClipsDir: string;
-    function SynDictDir: string;
-
+    
     procedure UpdateRO;
     procedure UpdateGutter(F: TEditorFrame; AUpdateCur: boolean = true);
     procedure UpdateQVTree(const fn: Widestring);
@@ -3153,7 +3109,6 @@ type
     procedure ApplyCarets;
     procedure ApplyUrlClick;
     procedure ApplyShowRecentColors;
-    procedure ApplySpell;
     procedure ApplyProj;
     procedure ApplyFramesOptions;
     procedure ApplyFramesGutters;
@@ -3178,7 +3133,6 @@ type
     procedure DoColorsArrayApply(const C: TSynColors; Ed: TSyntaxMemo);
 
     procedure DoFinderInit(AKeepFlags: boolean = false);
-    procedure DoSpellConfig(Sender: TObject);
     procedure DoAutoSave;
     procedure DoBackup(const AFilename: Widestring);
     procedure DoRepaint;
@@ -3221,9 +3175,6 @@ type
     procedure SynScroll(Sender: TObject);
     procedure SynChange(Sender: TObject);
     procedure SynGetTokenHint(Sender: TObject; TokenIndex: Integer; var HintText: String);
-    procedure SynSpellCheckerCheckWord(Sender: TObject;
-      const AWord: WideString; APos: Integer; var Valid: Boolean);
-    procedure SynContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure SynContextGutterPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 
     //frame---------------------------------------------------------------------
@@ -3372,14 +3323,7 @@ uses
   ATxUnpack,
   ATxImgHint,
 
-  {$ifdef SPELL}
-  ad3SpellBase,
-  ad3SpellLanguages,
-  ad3Ignore,
-  {$endif}
-
   TB2Consts,
-
   ecExports,
   ecZRegExpr,
   ecCmdConst,
@@ -3841,7 +3785,6 @@ begin
 
   UpdateOnFrameChanged;
   UpdateFrameEnc(Result);
-  UpdateFrameSpell(Result);
   UpdateFrameZoom(Result);
 
   //maybe set opened editor R/O for Lister plugin
@@ -3948,8 +3891,6 @@ begin
         SaveLastDir_UntitledFile(SD.FileName)
       else
         SaveLastDir(SD.FileName, SD.Filter, SD.FilterIndex);
-      //spell
-      UpdateFrameSpell(Frame);
     end;
   end
   else
@@ -4204,7 +4145,7 @@ end;
 
 procedure TfmMain.InitFrameTab(Frame: TEditorFrame);
 begin
-  UpdateFrameSpell(Frame);
+  //
 end;
 
 procedure TfmMain.CloseFrame(Frame: TEditorFrame);
@@ -4485,7 +4426,6 @@ begin
   TBXItemBarComm.Enabled:= (ed.Lines.Count>0) and not ro and en_lex;
   TBXItemBarUncom.Enabled:= TBXItemBarComm.Enabled;
 
-  ecSpellLive.Checked:= Frame.SpellLive;
   ecSyncScrollV.Enabled:= (Groups.PagesVisibleCount=2) and (Groups.Pages2.Tabs.TabCount>0);
   ecSyncScrollH.Enabled:= ecSyncScrollV.Enabled;
 
@@ -4747,9 +4687,6 @@ begin
     opEsc:= TSynEscMode(ReadInteger('Setup', 'Esc' + cExeSuffix[SynExe], Ord(cEscCloseApp)));
     opMruCheck:= ReadBool('Setup', 'MruCheck', false);
     opTabsReplace:= ReadBool('Setup', 'TabSp', false);
-
-    opSpellEn:= ReadBool('Setup', 'SpellEn', false);
-    opSpellExt:= ReadString('Setup', 'SpellExt', 'txt,diz');
 
     opAcpUseSingle:= ReadBool('ACP', 'UseSingl', false);
     opAcpHtm:= ReadBool('ACP', 'Htm', true);
@@ -5077,8 +5014,6 @@ begin
     WriteInteger('Setup', 'StapleKind', opStapleKind);
 
     WriteString('Setup', 'Paths', UTF8Encode(opProjPaths));
-    WriteBool('Setup', 'SpellEn', opSpellEn);
-    WriteString('Setup', 'SpellExt', opSpellExt);
 
     if SynExe then
     begin
@@ -6200,10 +6135,6 @@ begin
       DoFillBlock;
     sm_InsertTextDialog:
       DoInsertTextDialog;
-    sm_SpellLive:
-      ecSpellLive.Execute;
-    sm_SpellCheck:
-      ecSpellCheck.Execute;
     sm_JoinLines:
       EditorJoinLines(Ed);
     sm_SplitLines:
@@ -6360,7 +6291,6 @@ begin
     sm_EditSynPluginsIni:         DoOpenFile(SynPluginsIni);
     sm_OpenBySelection:           acOpenBySelection.Execute;
     sm_CustomizeStylesDialog:     acSetupLexerStyles.Execute;
-    sm_CustomizeSpellCheckDialog: DoSpellConfig(nil);
 
     //Options dialog tabs
     sm_OptionsTab_ProgramOpt: DoOptionsDialog(1);
@@ -6377,7 +6307,6 @@ begin
     sm_OptionsTab_EditorInsertFmt: DoOptionsDialog(13);
     sm_OptionsTab_EditorOverrides: DoOptionsDialog(14);
     sm_OptionsTab_AutoComplete: DoOptionsDialog(15);
-    sm_OptionsTab_SpellChecker: DoOptionsDialog(16);
     sm_OptionsTab_NewOpen: DoOptionsDialog(18);
     sm_OptionsTab_AutoSave: DoOptionsDialog(19);
     sm_OptionsTab_History: DoOptionsDialog(20);
@@ -6782,10 +6711,6 @@ begin
       Top:= Self.Monitor.Top + (Self.Monitor.Height - Height) div 2;
 
       //disable some items
-      {$ifndef SPELL}
-      boxSpellOpt.Visible:= false;
-      boxSpellLnk.Visible:= false;
-      {$endif}
       cbSavePos.Enabled:= SynExe;
       cbASaveFocus.Enabled:= SynExe;
       cbSessSave.Enabled:= SynExe;
@@ -7054,12 +6979,6 @@ begin
       Height:= ScaleFontSize(Height, Self);
   end;
 
-  {$ifndef SPELL}
-  TbxItemTbSpellLive.Enabled:= false;
-  TBXItemVSpellLive.Enabled:= false;
-  TBXItemVSpellCheck.Enabled:= false;
-  {$endif}
-
   if SynExe then
     if ParamStr(1)=cSynParamReg then
     begin
@@ -7094,10 +7013,6 @@ begin
 
   //init proj tree
   ApplyProj;
-
-  //init spell-checker
-  InitSpell;
-  UpdateSpellLang;
 
   //Py fields
   PyExeDir:= ExcludeTrailingPathDelimiter(SynDir);
@@ -9436,11 +9351,6 @@ var
 begin
   if ecMacroRec.Recording then
     SPrefix:= '['+DKLangConstW('statusmsg_macro')+'] '
-  {$ifdef SPELL}
-  else
-  if FSpellChecking then
-    SPrefix:= '['+DKLangConstW('statusmsg_spell')+'] '
-  {$endif}
   else
     SPrefix:= '';
 
@@ -9497,12 +9407,6 @@ begin
   except
     MsgError(DKLangConstW('zMCannotSaveIni'), Handle);
   end;
-
-  //close Spell dialog
-  {$ifdef SPELL}
-  if Assigned(FSpell) and Assigned(FSpell.DialogForm) then
-    FSpell.DialogForm.Close;
-  {$endif}
 
   //unset clip hook
   if Assigned(fmClip) then
@@ -9916,8 +9820,6 @@ begin
   //view
   UpdKey(TbxItemVSyncHorz, sm_SyncScrollHorz);
   UpdKey(TbxItemVSyncVert, sm_SyncScrollVert);
-  UpdKey(TbxItemVSpellLive, sm_SpellLive);
-  UpdKey(TbxItemVSpellCheck, sm_SpellCheck);
 
   //edit
   UpdKey(TbxItemEJoin, sm_JoinLines);
@@ -10357,27 +10259,6 @@ begin
   cStatCaretsBotLn:= ' '+DKLangConstW('stat_carets_btm')+' ';
 
   FUpdatePluginsLang:= true;
-end;
-
-procedure TfmMain.UpdateSpellLang;
-begin
-  {$ifdef SPELL}
-  if Assigned(FSpell) then
-    case LangManager.LanguageID of
-      1029: FSpell.UILanguage:= ltCzech;
-      1030: FSpell.UILanguage:= ltDanish;
-      1031: FSpell.UILanguage:= ltGerman;
-      1036: FSpell.UILanguage:= ltFrench;
-      1040: FSpell.UILanguage:= ltItalian;
-      1043: FSpell.UILanguage:= ltDutch;
-      1045: FSpell.UILanguage:= ltPolish;
-      1046: FSpell.UILanguage:= ltBrPort;
-      1049: FSpell.UILanguage:= ltRussian;
-      1053: FSpell.UILanguage:= ltSwedish;
-      3082: FSpell.UILanguage:= ltSpanish;
-      else FSpell.UILanguage:= ltEnglish;
-    end;
-  {$endif}
 end;
 
 procedure TfmMain.ecACPCloseUp(Sender: TObject; var Accept: Boolean);
@@ -13634,11 +13515,6 @@ begin
   Result:= SynDataSubdir(cSynDataClips);
 end;
 
-function TfmMain.SynDictDir: string;
-begin
-  Result:= SynDir + 'Dictionaries';
-end;
-
 procedure TfmMain.LoadClips;
 var
   S: string;
@@ -15338,166 +15214,11 @@ begin
   end;
 end;
 
-procedure TfmMain.InitSpell;
-begin
-  {$ifdef SPELL}
-  FSpellPos:= -1;
-  FSpellChecking:= false;
-  FSpell:= TLiveAddictSpellBase.Create(Self);
-  with FSpell do
-  begin
-    ConfigAvailableOptions:= [soUpcase, soNumbers, soAbbreviations, soPrimaryOnly, soDUalCaps];
-    ConfigFilename:= SynIniDir + 'SynSpell.ini'; //dupped, maybe Addict can't get it only here?
-    ConfigStorage:= csFile; //must be upper
-    ConfigDefaultMain.Add('American.adm');
-    ConfigDefaultActiveCustom:= 'Default.adu';
-    ConfigDictionaryDir.Clear;
-    ConfigDictionaryDir.Add(ExtractFileDir(SynIniDir));
-    ConfigDictionaryDir.Add(SynDir + 'Dictionaries');
-    ConfigFilename:= SynIniDir + 'SynSpell.ini'; //dupped
-    SuggestionsLearningDict:= SynIniDir + 'SynSpellLearn.adl';
-
-    DialogInitialPos:= ipUserDefined;
-    EndMessage:= emNever;
-    UILanguageFontControls.Name:= Self.Font.Name;
-    UILanguageFontText.Name:= Self.Font.Name;
-    UILanguageUseFonts:= true;
-
-    OnPopupCreateMenu:= SpellPopupCreateMenu;
-    OnPopupAddMenuItem:= SpellPopupAddMenuItem;
-    OnPopupDoMenu:= SpellPopupDoMenu;
-    OnSpellDialogShow:= SpellDialogShow;
-    OnPositionDialog:= SpellPositionDialog;
-  end;
-  {$endif}
-end;
-
-procedure TfmMain.DoSpellConfig(Sender: TObject);
-begin
-  {$ifdef SPELL}
-  if Assigned(FSpell) then
-    FSpell.Setup;
-  {$endif}
-end;
-
-procedure TfmMain.UpdateFrameSpell(Frame: TEditorFrame; UpdFlag: boolean = true);
-begin
-  {$ifdef SPELL}
-  if Assigned(FSpell) then
-  begin
-    if UpdFlag then
-      Frame.SpellLive:= opSpellEn and
-        ((Frame.FileName = '') or SFileExtensionMatch(Frame.FileName, opSpellExt));
-    ecSpellLive.Checked:= Frame.SpellLive;
-  end;
-  {$endif}
-end;
-
-procedure TfmMain.TBXItemBarSpellChkClick(Sender: TObject);
-begin
-  ecSpellCheck.Execute;
-end;
-
-procedure TfmMain.ecSpellCheckExecute(Sender: TObject);
-var
-  F: TEditorFrame;
-  Ed: TSyntaxMemo;
-  NStart, NEnd: Integer;
-  S, SPrev: string; //Addict is not Unicode aware
-  AMap, ASpellLiveBefore: boolean;
-begin
-  {$ifdef SPELL}
-  F:= CurrentFrame;
-  if F=nil then Exit;
-  if not Assigned(FSpell) then Exit;
-  if FSpellChecking then Exit;
-
-  Ed:= F.EditorMaster;
-  AMap:= F.ShowMap;
-  F.ShowMap:= false;
-
-  //need to set SpellLive
-  ASpellLiveBefore:= F.SpellLive;
-  if not ASpellLiveBefore then
-  begin
-    F.SpellLive:= true;
-    F.ecSpellChecker.Analyze(false{Background});
-  end;
-
-  FSpellPos:= -1;
-  FSpellChecking:= true;
-  UpdateBusyIco;
-
-  try
-    repeat
-      if FSpell.DialogForm<>nil then
-        FSpell.DialogForm.Close;
-
-      //get next misspelled word
-      FSpellPos:= F.DoSpellContinue(FSpellPos+1);
-      if FSpellPos<0 then
-      begin
-        Ed.ResetSelection;
-        F.ecSpellChecker.Active:= false;
-        F.ecSpellChecker.Active:= true;
-        F.SpellLive:= ASpellLiveBefore;
-        MsgInfo(DKLangConstW('zMSpellDone'), Handle);
-        Exit
-      end;
-
-      NStart:= FSpellPos;
-      NEnd:= NStart + EditorGetWordLengthForSpellCheck(Ed, NStart);
-
-      if NEnd<=NStart then
-        begin MsgBeep; Continue end;
-      S:= Copy(Ed.Lines.FText, NStart+1, NEnd-NStart);
-      Ed.SetSelection(NStart, NEnd-NStart);
-
-      //process messages
-      if (Ed.CaretPos.Y+1) mod 500 = 0 then
-        Application.ProcessMessages;
-      if Application.Terminated then Exit;
-
-      //show spell dialog
-      ////if not FSpell.CheckWord(S) then
-
-      SPrev:= S;
-      FSpell.CheckString(S);
-      if FSpell.CheckCanceled then
-      begin
-        Ed.ResetSelection;
-        Exit;
-      end;
-      if S<>SPrev then
-        Ed.ReplaceText(NStart, NEnd-NStart, S);
-    until false;
-  finally
-    FSpellChecking:= false;
-    UpdateBusyIco;
-    F.ShowMap:= AMap;
-    if AMap then
-      F.DoSyncMicromap;
-  end;
-  {$endif}
-end;
-
-procedure TfmMain.ecSpellLiveExecute(Sender: TObject);
-begin
-  with CurrentFrame do
-    SpellLive:= not SpellLive;
-  UpdateFrameSpell(CurrentFrame, false);
-end;
-
-procedure TfmMain.TBXItemSpellLiveClick(Sender: TObject);
-begin
-  ecSpellLive.Execute;
-end;
-
 function TfmMain.IsCommandForMacros(Cmd: integer): boolean;
 begin
   Result:=
     ((Cmd>=sm_Macro1) and (Cmd<=sm_Macro9)) or
-    ((Cmd>=sm_Macro10) and (Cmd<=sm_Macro30)); 
+    ((Cmd>=sm_Macro10) and (Cmd<=sm_Macro30));
 end;
 
 procedure TfmMain.acMacroDialogExecute(Sender: TObject);
@@ -16514,126 +16235,7 @@ procedure TfmMain.ecSplit80_20Execute(Sender: TObject);
 begin
   Groups.SplitPos:= 80;
 end;
-
-{
-http://www.addictive-software.com/addict3/other-downloads.htm
-Menu demo
-}
-procedure TfmMain.SpellPopupCreateMenu(Sender: TObject;
-  Owner: TComponent; var PopupMenu: TObject);
-var
-  AMenu: TSpTbxPopupMenu;
-  AMenuItem: TSpTbxItem;
-begin
-  AMenu:= TSpTbxPopupMenu.Create(Owner);
-	AMenu.AutoHotkeys:= maManual;
-	PopupMenu:= AMenu;
-
-  //info item
-	AMenuItem:= TSpTbxItem.Create(AMenu);
-	AMenuItem.Caption:= DKLangConstW('zMSpell');
-  AMenuItem.Enabled:= false;
-	AMenu.Items.Add(AMenuItem);
-  //cut
-	AMenuItem:= TSpTbxItem.Create(AMenu);
-	AMenuItem.Caption:= TbxItemCtxCut.Caption;
-  AMenuItem.Enabled:= CurrentEditor.HaveSelection;
-  AMenuItem.OnClick:= SpellCutClick;
-	AMenu.Items.Add(AMenuItem);
-  //copy
-	AMenuItem:= TSpTbxItem.Create(AMenu);
-	AMenuItem.Caption:= TbxItemCtxCopy.Caption;
-  AMenuItem.Enabled:= CurrentEditor.HaveSelection;
-  AMenuItem.OnClick:= SpellCopyClick;
-	AMenu.Items.Add(AMenuItem);
-  //paste
-	AMenuItem:= TSpTbxItem.Create(AMenu);
-	AMenuItem.Caption:= TbxItemCtxPaste.Caption;
-  AMenuItem.OnClick:= SpellPasteClick;
-	AMenu.Items.Add(AMenuItem);
-  //sep
-  AMenu.Items.Add(TSpTbxSeparatorItem.Create(AMenu));
-end;
-
-//same Menu demo
-procedure TfmMain.SpellPopupDoMenu(Sender, Menu: TObject;
-  XPos, YPos: Integer; var PopupAction: Integer; var PopupWord: string);
-begin
-  TSpTbxPopupMenu(Menu).Popup(XPos, YPos);
-  Application.ProcessMessages;
-
-  PopupWord:= FSpellMenuCaption;
-  PopupAction:= FSpellMenuTag;
-end;
-
-
-procedure TfmMain.SpellItemClick(Sender: TObject);
-begin
-  FSpellMenuCaption:= (Sender as TSpTbxItem).Caption;
-  FSpellMenuTag:= (Sender as TComponent).Tag;
-end;
-
-procedure TfmMain.SpellCopyClick(Sender: TObject);
-begin
-  ecCopy.Execute;
-end;
-
-procedure TfmMain.SpellCutClick(Sender: TObject);
-begin
-  ecCut.Execute;
-end;
-
-procedure TfmMain.SpellPasteClick(Sender: TObject);
-begin
-  ecPaste.Execute;
-end;
-
-procedure TfmMain.SpellPopupAddMenuItem(
-  Sender, Menu, SubMenu: TObject;
-  Caption: string; Enable, HasChildren: Boolean;
-  Tag: Integer; var MenuItem: TObject);
-var
-  vMenuItem: TTBCustomItem;
-begin
-  FSpellMenuTag:= 0;
-  if HasChildren then
-  begin
-    vMenuItem:= TSpTbxItem.Create(TComponent(Menu));
-    TSpTbxPopupMenu (Menu).Items.Add (vMenuItem);
-    (vMenuItem as TSpTbxItem).Caption:= Caption;
-    vMenuItem.Enabled:= Enabled;
-    vMenuItem.Tag:= Tag;
-    MenuItem:= vMenuItem;
-  end
-  else
-  begin
-    if Assigned (SubMenu) then
-    begin
-      vMenuItem:= TSpTbxItem.Create(TComponent(SubMenu));
-      TSpTbxItem (SubMenu).Add(vMenuItem);
-    end
-    else
-    begin
-      if Caption='-' then
-        vMenuItem:= TSpTbxSeparatorItem.Create(TComponent(Menu))
-      else
-        vMenuItem:= TSpTbxItem.Create(TComponent(Menu));
-      TSpTbxPopupMenu(Menu).Items.Add(vMenuItem);
-    end;
-
-    if (vMenuItem is TSpTbxItem) then
-      (vMenuItem as TSpTbxItem).Caption:= Caption;
-    vMenuItem.Enabled:= Enabled;
-    if (Tag > 0) then
-    begin
-      vMenuItem.Tag:= Tag;
-      vMenuItem.OnClick:= SpellItemClick;
-    end;
-    MenuItem:= vMenuItem;
-  end;
-end;
-
-
+ 
 procedure TfmMain.acMacroPlayBeforeExecute(Sender: TObject);
 begin
   FLastMacro:= ecMacroRec.Count-1;
@@ -20039,14 +19641,6 @@ begin
     DoSetFrameTabColor(CurrentFrame, NColor);
 end;
 
-procedure TfmMain.ApplySpell;
-var
-  i: Integer;
-begin
-  for i:= 0 to FrameAllCount-1 do
-    UpdateFrameSpell(FramesAll[i]);
-end;
-
 
 function TfmMain.OppositeFrame: TEditorFrame;
 begin
@@ -22472,30 +22066,6 @@ begin
   end;
 end;
 
-procedure TfmMain.SynSpellCheckerCheckWord(Sender: TObject;
-  const AWord: WideString; APos: Integer; var Valid: Boolean);
-  //
-  //
-var
-  F: TEditorFrame;
-  Ed: TSyntaxMemo;
-  En: boolean;
-begin
-  {$ifdef SPELL}
-  F:= Sender as TEditorFrame;
-  Ed:= F.EditorMaster;
-  En:= F.SpellLive;
-  Inc(APos);
-
-  if En and IsPositionMatchesTokens(Ed, APos, APos+1, tokensCmtStr) then
-    Valid:= FSpell.CheckWord(AWord) or F.IsUrlAtPosition(APos)
-  else
-    Valid:= true;
-  {$else}
-  Valid:= true;
-  {$endif}
-end;
-
 procedure TfmMain.SynContextGutterPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 var
   Ed: TSyntaxMemo;
@@ -22511,33 +22081,6 @@ begin
       PopupFoldLevel.Popup(X, Y);
 end;
 
-procedure TfmMain.SynContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
-var
-  F: TEditorFrame;
-  Ed: TSyntaxMemo;
-  AWord: Widestring;
-  S: Ansistring;
-  NStart, NEnd: Integer;
-begin
-  Handled:= false;
-  F:= Sender as TEditorFrame;
-  Ed:= F.EditorMaster;
-
-  if not F.IsEditorPosMisspelled(Ed.CaretStrPos) then Exit;
-  Handled:= true;
-
-  {$ifdef SPELL}
-  AWord:= Ed.WordAtPos(Ed.CaretPos);
-  MousePos:= Ed.ClientToScreen(MousePos);
-  S:= AWord;
-  if FSpell.ShowPopupMenu(Sender,
-    [spAdd, spIgnoreAll, spReplace], MousePos.X, MousePos.Y, S) = spReplace then
-  begin
-    Ed.WordRangeAtPos(Ed.CaretPos, NStart, NEnd);
-    Ed.ReplaceText(NStart, NEnd-NStart, S);
-  end;
-  {$endif}
-end;
 
 procedure TfmMain.DoCheckAutoShowACP(Ed: TSyntaxMemo);
 var
@@ -22564,28 +22107,6 @@ begin
       Break
     end;
   until false;
-end;
-
-procedure TfmMain.SpellDialogShow(Sender: TObject);
-begin
-  {$ifdef SPELL}
-  //not needed
-  {$endif}
-end;
-
-procedure TfmMain.SpellPositionDialog(Sender: TObject);
-var
-  F: TForm;
-begin
-  {$ifdef SPELL}
-  if Assigned(FSpell) and Assigned(FSpell.DialogForm) then
-  begin
-    F:= FSpell.DialogForm;
-    F.Left:= (Screen.Width - F.Width) div 2;
-    F.Top:= (Screen.Height - F.Height) div 2;
-    EditorCheckCaretOverlappedByForm(CurrentFrame.EditorMaster, F);
-  end;
-  {$endif}
 end;
 
 procedure TfmMain.TBXItemFoldAllClick(Sender: TObject);
@@ -26091,7 +25612,7 @@ begin
 
   if not FUnpackSingle(fn, dir_to, cInf, false{asAdmin}) then
   begin
-    MsgNoFile('Unzip.exe / Unrar.exe');
+    MsgNoFile('Unzip.exe');
     Exit
   end;
 
@@ -26215,8 +25736,7 @@ begin
     else
     begin
       s_msg:= WideFormat(DKLangConstW('zMInstallOk'), [dir_to]);
-      if MsgConfirm(s_msg, Handle, true{IsQuestion}) then
-        acRestart.Execute;
+      MsgInfo(s_msg, Handle);
     end;
 end;
 
@@ -28353,7 +27873,6 @@ begin
 
     sm_ToggleSmartHl:   Item.Action:= ecSmartHl;
     sm_ShowOnTop:       Item.Action:= ecOnTop;
-    sm_SpellLive:       Item.Action:= ecSpellLive;
     sm_SyncScrollHorz:  Item.Action:= ecSyncScrollH;
     sm_SyncScrollVert:  Item.Action:= ecSyncScrollV;
   end;

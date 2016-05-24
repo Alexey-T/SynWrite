@@ -179,17 +179,6 @@ type
     TntLabel15: TTntLabel;
     edFolders: TTntMemo;
     bAddFolder: TTntButton;
-    tabSpell: TTntTabSheet;
-    boxSpellOpt: TTntGroupBox;
-    TntLabel16: TTntLabel;
-    TntLabel24: TTntLabel;
-    edSpellExt: TTntEdit;
-    cbSpellEn: TTntCheckBox;
-    bSpellOpt: TTntButton;
-    boxSpellLnk: TTntGroupBox;
-    TntLabel27: TTntLabel;
-    labDictWww: TTntLabel;
-    labDictDir: TTntLabel;
     tabOvr: TTntTabSheet;
     edSrOffsetY: TSpinEdit;
     TntLabel32: TTntLabel;
@@ -434,10 +423,6 @@ type
     procedure edFoldersKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure tabPathShow(Sender: TObject);
-    procedure tabSpellShow(Sender: TObject);
-    procedure labDictWwwClick(Sender: TObject);
-    procedure labDictDirClick(Sender: TObject);
-    procedure bSpellOptClick(Sender: TObject);
     procedure tabOvrShow(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
     procedure tabCaretsShow(Sender: TObject);
@@ -491,7 +476,6 @@ type
     procedure ApplySessionsProjects;
     procedure ApplyAutoComplete;
     procedure ApplyAutoSave;
-    procedure ApplySpell;
     procedure ApplySearchFolders;
     procedure ApplyNewOpen;
 
@@ -516,7 +500,6 @@ type
     procedure InitSessionsProjects;
     procedure InitAutoComplete;
     procedure InitAutoSave;
-    procedure InitSpell;
     procedure InitSearchFolders;
   public
     { Public declarations }
@@ -719,7 +702,6 @@ begin
   if tabColors.Tag  <>0 then ApplyColors;
   if tabKey.Tag     <>0 then ApplyKeys;
   if tabPath.Tag    <>0 then ApplySearchFolders;
-  if tabSpell.Tag   <>0 then ApplySpell;
   if tabFiles.Tag   <>0 then ApplyFiles;
   if tabProgSett.Tag<>0 then ApplyProgSett;
   if tabTabs.Tag    <>0 then ApplyTabs;
@@ -1155,7 +1137,6 @@ begin
   AddTab(tabInsertFormat);
   AddTab(tabOvr);
   AddTab(tabACP);
-  AddTab(tabSpell);
 
   ListCat.Items.Add(DKLangConstW('zMOp_Files'));
   AddTab(tabNewOpen);
@@ -1596,28 +1577,6 @@ begin
   InitSearchFolders;
 end;
 
-procedure TfmSetup.tabSpellShow(Sender: TObject);
-begin
-  if tabSpell.Tag<>0 then Exit;
-  tabSpell.Tag:= 1;
-  InitSpell;
-end;
-
-procedure TfmSetup.labDictWwwClick(Sender: TObject);
-begin
-  FOpenUrl('http://www.addictivesoftware.com/dl-dictionaries.htm', Handle);
-end;
-
-procedure TfmSetup.labDictDirClick(Sender: TObject);
-begin
-  FExecute(fmMain.SynDictDir, '', '', Handle);
-end;
-
-procedure TfmSetup.bSpellOptClick(Sender: TObject);
-begin
-  fmMain.DoSpellConfig(nil);
-end;
-
 procedure TfmSetup.tabOvrShow(Sender: TObject);
 begin
   if tabOvr.Tag<>0 then Exit;
@@ -1931,16 +1890,6 @@ begin
     opHistProjectSave:= cbProjSave.Checked;
     opHistProjectLoad:= cbProjLoad.Checked;
     opHistProjectCloseTabs:= cbProjCloseTabs.Checked;
-  end;
-end;
-
-procedure TfmSetup.ApplySpell;
-begin
-  with fmMain do
-  begin
-    opSpellEn:= cbSpellEn.Checked;
-    opSpellExt:= edSpellExt.Text;
-    ApplySpell;
   end;
 end;
 
@@ -2275,14 +2224,6 @@ begin
   end;
 end;
 
-procedure TfmSetup.InitSpell;
-begin
-  with fmMain do
-  begin
-    cbSpellEn.Checked:= opSpellEn;
-    edSpellExt.Text:= opSpellExt;
-  end;
-end;
 
 procedure TfmSetup.InitTabs;
 begin

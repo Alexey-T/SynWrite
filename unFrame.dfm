@@ -477,21 +477,6 @@ object EditorFrame: TEditorFrame
       OnResize = EditorMasterResize
     end
   end
-  object ecSpellChecker: TecSpellChecker
-    OnCheckWord = ecSpellCheckerCheckWord
-    Style.Font.Charset = DEFAULT_CHARSET
-    Style.Font.Color = clWindowText
-    Style.Font.Height = -13
-    Style.Font.Name = 'Courier New'
-    Style.Font.Style = []
-    Style.FormatType = ftBackGround
-    Style.BorderTypeBottom = blWavyLine
-    Style.BorderColorBottom = clRed
-    Editor = EditorMaster
-    Active = False
-    Left = 172
-    Top = 32
-  end
   object HyperlinkHighlighter: THyperlinkHighlighter
     Rules = <
       item
