@@ -42,6 +42,9 @@ const
   cPyEditorHandleMin = 20;
   cPyEditorHandleMax = 1000;
 
+var
+  PyEscapeFlag: boolean = false;  
+
 implementation
 
 uses
@@ -1151,6 +1154,8 @@ const
   PROC_ADD_RECENT_COLOR = 7;
   PROC_GET_COMMAND      = 8;
   PROC_ADD_GUTTER_ICON  = 9;
+  PROC_GET_ESCAPE       = 10;
+  PROC_SET_ESCAPE       = 11;
 
 
 function Py_KeyCommandToTuple(Cmd: TecCommandItem): PPyObject;
@@ -1259,6 +1264,16 @@ begin
               Result:= Py_KeyCommandToTuple(fmMain.SyntKeyMapping.Items[NValue])
             else
               Result:= ReturnNone;
+          end;
+
+        PROC_GET_ESCAPE:
+          begin
+            Result:= PyBool_FromLong(Ord(PyEscapeFlag or Application.Terminated));
+          end;
+        PROC_SET_ESCAPE:
+          begin
+            PyEscapeFlag:= Str='1';
+            Result:= ReturnNone;
           end;
 
         else

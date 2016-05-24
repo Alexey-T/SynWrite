@@ -290,7 +290,6 @@ var
   SNameValue, SName, SValue, SListItem: string;
   NX1, NX2, NY1, NY2: integer;
   Ctl, CtlPrev: TControl;
-  bRO: Boolean;
 begin
   Ctl:= nil;
   SNameValue:= '';
@@ -553,10 +552,7 @@ begin
       if Ctl is TRadioButton then (Ctl as TRadioButton).Checked:= StrToBool(SValue);
       if Ctl is TEdit then
       begin
-        bRO:= (Ctl as TEdit).ReadOnly;
-        (Ctl as TEdit).ReadOnly:= false;
         (Ctl as TEdit).Text:= SValue;
-        (Ctl as TEdit).ReadOnly:= bRO;
       end;
       if Ctl is TComboBox then
       begin

@@ -11,6 +11,7 @@ uses
   TntForms, TntClasses,
   IniFiles,
   unMain,
+  unMainPy,
   ATSynPlugins,
   AppEvnts;
 
@@ -460,6 +461,8 @@ procedure TfmSynwrite.FormKeyDown(Sender: TObject; var Key: Word;
 begin
   if (Key = vk_escape) and (Shift = []) then
   begin
+    PyEscapeFlag:= True;
+
     //Esc in QSearch
     if fmMain.edQs.Focused then
       fmMain.DoHandleQuickSearchEscape

@@ -12,4 +12,5 @@ Id | Meaning
 `PROC_ADD_GUTTER_ICON` | Adds icon to gutter imagelist. Returns icon index, or `None` if cannot add. You can pass index to `Editor.set_bk`; imagelist is one for all editors. Pass to `text` bmp filename, size must be 16x16, 8bit color, transparent color is color of left-bottom pixel. 
 `PROC_ADD_RECENT_COLOR` | Adds color code to "Recent colors" menu (menu item at right side of main menu). Pass code as `str(color_code)`.
 `PROC_GET_COMMAND` | Returns property of internal command with index `int(text)`. Returns tuple `(command_int, category_name, command_name, hotkey_str_1, hotkey_str_2)` or `None` of index not correct (call it from 0 until you get None).
-  
+`PROC_GET_ESCAPE` | Gets bool: state of "Esc was pressed" flag.
+`PROC_SET_ESCAPE` | Sets state of "Esc was pressed" flag. Text must be '0'/'1' for off/on.
