@@ -139,7 +139,6 @@ const
   sm_ClearFilesHistory = 813;
   sm_QuickSearch = 814;
   sm_InsertDateTime = 815;
-  sm_ExtractTextDialog = 816;
   sm_GotoNextFindResult = 817;
   sm_GotoPrevFindResult = 818;
   sm_ToggleSyncEditing = 819;

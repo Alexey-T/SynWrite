@@ -20,7 +20,6 @@ uses
   unToolsOutput in 'unToolsOutput.pas' {fmToolOutput},
   VCLFixes,
   unProgress in 'unProgress.pas' {fmProgress},
-  unExtractStr in 'unExtractStr.pas' {fmExtract},
   unClip in 'unClip.pas' {fmClip},
   unProc in 'unProc.pas',
   unShell in 'unShell.pas' {fmShell},

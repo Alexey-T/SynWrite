@@ -726,7 +726,6 @@ type
     TBXSeparatorItem37: TSpTbxSeparatorItem;
     acSetupLexerStyles: TAction;
     TBXSeparatorItem38: TSpTbxSeparatorItem;
-    TBXItemEExtr: TSpTbxItem;
     TBXSeparatorItem39: TSpTbxSeparatorItem;
     TBXItemECaseSent: TSpTbxItem;
     TBXItemBarCaseSent: TSpTBXItem;
@@ -1572,7 +1571,6 @@ type
     procedure PopupFindPopup(Sender: TObject);
     procedure ecCopyAsRTFExecute(Sender: TObject);
     procedure acSetupLexerStylesExecute(Sender: TObject);
-    procedure TBXItemEExtrClick(Sender: TObject);
     procedure PopupStatusEncPopup(Sender: TObject);
     procedure ecSentCaseExecute(Sender: TObject);
     procedure TBXItemZSet25Click(Sender: TObject);
@@ -2674,7 +2672,6 @@ type
     procedure MsgBakEr(const fn: Widestring);
     procedure MsgBakOk(const fn: Widestring);
     procedure DoDateTime;
-    procedure DoExtractText;
     procedure DoAcpPopup;
     procedure DoFuncHintPopup;
     function DoCheckUnicodeNeeded(Frame: TEditorFrame): boolean;
@@ -3291,7 +3288,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.21.2240';
+  cSynVer = '6.21.2245';
   cSynPyVer = '1.0.151';
 
 const
@@ -3331,7 +3328,7 @@ uses
   cUtils,
 
   unSaveLex,
-  unSetup, unAbout, unEnc, unToolsList, unSRFiles, unExtractStr, unShell, unInsertText,
+  unSetup, unAbout, unEnc, unToolsList, unSRFiles, unShell, unInsertText,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unGotoBkmk, unFav,
   unMenuCmds, unMenuProj, unMenuSnippets,
@@ -6112,8 +6109,6 @@ begin
 
     sm_InsertDateTime:
       DoDateTime;
-    sm_ExtractTextDialog:
-      DoExtractText;
     sm_GotoNextFindResult:
       ecGotoNextFindResult.Execute;
     sm_GotoPrevFindResult:
@@ -9839,7 +9834,6 @@ begin
   UpdKey(TBXItemOFullScr, sm_ShowFullScreen);
 
   UpdKey(TBXItemESyncEd, sm_ToggleSyncEditing);
-  UpdKey(TbxItemEExtr, sm_ExtractTextDialog);
   UpdKey(TbxItemETime, sm_InsertDateTime);
 
   UpdKey(TBXItemFExit, sm_FileExit);
@@ -13257,30 +13251,6 @@ begin
   begin
     SaveLexLib;
     SyntaxManager.Modified:= false;
-  end;
-end;
-
-procedure TfmMain.TBXItemEExtrClick(Sender: TObject);
-begin
-  DoExtractText;
-end;
-
-procedure TfmMain.DoExtractText;
-begin
-  with TfmExtract.Create(Self) do
-  try
-    FSynIni:= Self.SynHistoryIni;
-    SRCount:= opSaveFindCount;
-    Memo:= Self.CurrentEditor;
-    case ShowModal of
-      mrYes:
-      begin
-        acNewTab.Execute;
-        Frames[FrameCount-1].EditorMaster.Text:= List.Items.Text;
-      end;
-    end;
-  finally
-    Release;
   end;
 end;
 
