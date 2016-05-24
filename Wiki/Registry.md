@@ -11,6 +11,8 @@ Icons: Aha               | | IconSets/icons.Aha.zip
 Icons: LibreOffice White | | IconSets/icons.LibreOffice_White.zip
 Icons: WinStd            | | IconSets/icons.WinStd.zip
 Icons: Silk              | | IconSets/icons.Silk.zip
+Spell Checker | Spell checker, based on Hunspell dictionaries | PyPlugins/plugin.Alexey.SpellChecker.zip
+Align by Separator | Alignes lines in selection, by separator-char (eg "=") | PyPlugins/plugin.kvichans.AlignBySeparator.zip
 reStructuredText Preview | Previews reST files as HTML in browser | PyPlugins/plugin.Alexey.reStructuredText_Preview.zip
 Python Intel | Intel commands for Python: auto-completion, goto-definition | PyPlugins/plugin.Alexey.PythonIntel.zip
 Text Statistics | Shows for text: count of lines, words, chars | PyPlugins/plugin.Alexey.TextStatistics.zip

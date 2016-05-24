@@ -1,3 +1,4 @@
+Align by Separator=2016.05.21
 Ascii Art=1.1.2
 AStyle Format=1.0.2
 Backup File=1.0.2
@@ -43,9 +44,11 @@ NumToWords Propis=0.6.0
 Plugin Manager=1.0.7
 Print All=0.5.0
 Python Intel=1.0.2
+reStructuredText Preview=2016.04.06
 Ruby Format=1.0.0
 Show Keymapping=1.0.0
 Speech=1.1.0
+Spell Checker=2016.05.23
 SQL Format=1.0.0
 Staple Jump=0.2.0
 Sum Lines=0.3.0

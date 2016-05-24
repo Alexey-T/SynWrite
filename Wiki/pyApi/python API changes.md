@@ -1,6 +1,11 @@
 Changes in Python API
 =====================
 
+may 2016
+
+* release 1.0.151
+* add dlg_custom()
+
 jan 2016
 
 * release 1.0.150
