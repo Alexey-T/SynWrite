@@ -48,18 +48,18 @@ params | Additional string, which is appended to the line of "SynPlugins.ini" fi
 
 Sections "iniN"
 ---------------
-If plugin needs more than one line in "SynPlugins.ini", add more sections: besides section "ini" add sections from "ini1" up to "ini120". List additional sections without gaps, e.g. no missed section allowed between "ini2" and "ini4".
+If plugin needs more than one line in "SynPlugins.ini", add more sections: besides section "ini" add sections from "ini1" up to "ini400". Sections can be with gaps, e.g. only 1, 10, 20, 40.
 
 Sections "lexerN"
 -----------------
-If type is "lexer", then instead of sections "iniN" you must use sections "lexer1" to "lexer120". These sections list lexer files (.lcf) and/or autocomplete files (.acp) present in package. 
-For each lexer "MyName" you must supply file "MyName.lcf" and/or file "MyName.acp" in package root (both are optional).
-Allowed keys:
+If type is "lexer", then instead of sections "iniN" you must use sections "lexer1" to "lexer120". These sections list lexers and/or autocomplete files (*.acp) present in package. Allowed keys:
 
 Id | Meaning
 ---|--------
-file | Lexer name (e.g. "MyName")
-link1 | Name of 1st linked lexer (e.g. if your lexer has sublexers C and C#, then link1 is "C", link2 is "C#")
+file | Lexer base filename w/o extension (e.g. "MyName"). You must supply file "MyName.lcf" and/or file "MyName.acp" in package root (both are optional) for each lexer section.
+link1 | Name of 1st linked lexer (e.g. if your lexer has sublexers C and C++, then 1st linked name is "C", 2nd "C++")
 link2 | Name of 2nd linked lexer
-... | ...
-link20 | Name of 20th linked lexer
+link3 | Name of 3rd linked lexer
+link4 | Name of 4th linked lexer
+link5 | Name of 5th linked lexer
+
