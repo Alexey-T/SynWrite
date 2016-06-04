@@ -80,7 +80,7 @@ const
   cDefaultCursor: array[boolean] of TCursor = (crHourGlass, crDefault);
   SynDefaultSyn = '(default).synw-session';
   cIconsDefault = 'Fugue 24x24';
-  cMaxSectionsInInf = 120;
+  cMaxSectionsInInf = 400;
   cMaxLexerLinksInInf = 20;
   cMinProgressFilesize = 120*1024;
   cColorIdxMin = 4; //index in "Recent colors" after "Clear list" and separator
@@ -25510,8 +25510,7 @@ var
 begin
   DoOpenArchive_HandleIni(fn_inf, subdir, 'ini', typ);
   for i:= 1 to cMaxSectionsInInf do
-    if not DoOpenArchive_HandleIni(fn_inf, subdir, 'ini'+IntToStr(i), typ) then
-      Break
+    DoOpenArchive_HandleIni(fn_inf, subdir, 'ini'+IntToStr(i), typ);
 end;
 
 function TfmMain.DoOpenArchive_HandleIni(const fn_ini, subdir, section: string; typ: TSynAddonType): boolean;
