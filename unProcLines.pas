@@ -6,7 +6,6 @@ uses
   Classes, TntClasses;
 
 type
-  TSynSortMode = (sortUnicodeRaw, sortUnicode, sortAscii, sortNumeric);
   TSynDedupMode = (cLineDedupAll, cLineDedupAdjacent, cLineDedupAllAndOrig);
   TSynTrimMode = (cTrimLead, cTrimTrail, cTrimAll, cTrimDups);
 
@@ -55,10 +54,7 @@ function DoListCommand_Deduplicate(
 
 function DoListCommand_Sort(
   List: TTntStringList;
-  AMode: TSynSortMode;
-  AAscend: boolean;
-  AShowDlg: boolean;
-  AColStart, AColEnd: integer): boolean;
+  AAscend: boolean): boolean;
 
 procedure DoList_DeleteLastEmpty(List: TTntStringList);
 
@@ -66,18 +62,15 @@ procedure DoList_DeleteLastEmpty(List: TTntStringList);
 implementation
 
 uses
-  SysUtils, unSort, Controls, Forms, Math,
+  SysUtils, Controls, Forms, Math,
   Dialogs,
   ecStrUtils,
   ATxSProc;
 
 var
   opSort: record
-    bAsc,
-    bCase,
-    bRemDups: boolean;
-    bType: TSynSortMode;
-    Col1, Col2: Integer;
+    bAscending,
+    bCaseSens: boolean;
   end;
 
 procedure DoList_DeleteLastEmpty(List: TTntStringList);
@@ -127,78 +120,22 @@ end;
 
 function _CompareLines(const S1, S2: Widestring): Integer;
 begin
-  case opSort.bType of
-    sortAscii:
-    begin
-      if opSort.bCase then
-        Result:= CompareStr(S1, S2)
-      else
-        Result:= CompareText(S1, S2);
-    end;
-    sortUnicode:
-    begin
-      if opSort.bCase then
-        Result:= WideCompareStr(S1, S2)
-      else
-        Result:= WideCompareText(S1, S2);
-    end;
-    else
-    begin
-      if opSort.bCase then
-        Result:= WideCompareStr_Raw(S1, S2)
-      else
-        Result:= WideCompareStr_Raw(WideUpperCase(S1), WideUpperCase(S2));
-    end;
-  end;
+  if opSort.bCaseSens then
+    Result:= WideCompareStr_Raw(S1, S2)
+  else
+    Result:= WideCompareStr_Raw(WideUpperCase(S1), WideUpperCase(S2));
 end;
 
 
 function _ListCompare(List: TTntStringList; Index1, Index2: Integer): Integer;
 var
-  S1, S2,
-  S1_org, S2_org: Widestring;
-  N1, N2: Integer;
-  ForceAlpha: boolean;
-const
-  cDef = Low(Integer);
+  S1, S2: Widestring;
 begin
-  Result:= 0;
   S1:= List[Index1];
   S2:= List[Index2];
-  S1_org:= S1;
-  S2_org:= S2;
+  Result:= _CompareLines(S1, S2);
 
-  if opSort.Col2>0 then
-  begin
-    Delete(S1, opSort.Col2+1, MaxInt);
-    Delete(S2, opSort.Col2+1, MaxInt);
-  end;
-  if opSort.Col1>0 then
-  begin
-    Delete(S1, 1, opSort.Col1-1);
-    Delete(S2, 1, opSort.Col1-1);
-  end;
-
-  ForceAlpha:= true;
-  if opSort.bType=sortNumeric then
-  begin
-    N1:= StrToIntDef(S1, cDef);
-    N2:= StrToIntDef(S2, cDef);
-    ForceAlpha:= (N1=cDef) or (N2=cDef);
-    if not ForceAlpha then
-      Result:= N1-N2;
-  end;
-
-  if ForceAlpha then
-  begin
-    Result:= _CompareLines(S1, S2);
-    //if substrings are equal, compare again the whole strings
-    if Result=0 then
-      if (S1<>S1_org) or (S2<>S2_org) then
-        Result:= _CompareLines(S1_org, S2_org);
-  end;
-
-  if not opSort.bAsc then
+  if not opSort.bAscending then
     Result:= -Result;
 end;
 
@@ -209,7 +146,7 @@ var
 begin
   for i:= List.Count-1 downto 1{!} do
   begin
-    if opSort.bCase then
+    if opSort.bCaseSens then
       same:= List[i]=List[i-1]
     else
       same:= WideSameText(List[i], List[i-1]);
@@ -229,73 +166,16 @@ end;
 
 function DoListCommand_Sort(
   List: TTntStringList;
-  AMode: TSynSortMode;
-  AAscend: boolean;
-  AShowDlg: boolean;
-  AColStart, AColEnd: integer): boolean;
+  AAscend: boolean): boolean;
 begin
   Result:= true;
   FillChar(opSort, SizeOf(opSort), 0);
-
-  if AShowDlg then
-    with TfmSort.Create(nil) do
-    try
-      case AMode of
-        sortUnicodeRaw: cbUnicodeRaw.Checked:= true;
-        sortUnicode: cbUnicode.Checked:= true;
-        sortAscii: cbAscii.Checked:= true;
-        sortNumeric: cbNumeric.Checked:= true;
-      end;
-
-      if AColStart>=0 then
-      begin
-        cbCol1.Checked:= true;
-        cbCol2.Checked:= true;
-        edCol1.Value:= AColStart;
-        edCol2.Value:= AColEnd;
-      end;
-
-      Result:= ShowModal=mrOk;
-      if not Result then Exit;
-
-      opSort.bAsc:= cbAsc.Checked;
-      opSort.bCase:= cbCase.Checked;
-      opSort.bRemDups:= cbRemDups.Checked;
-
-      if cbNumeric.Checked then
-        opSort.bType:= sortNumeric
-      else
-      if cbAscii.Checked then
-        opSort.bType:= sortAscii
-      else
-      if cbUnicodeRaw.Checked then
-        opSort.bType:= sortUnicodeRaw
-      else
-      if cbUnicode.Checked then
-        opSort.bType:= sortUnicode;
-
-      if cbCol1.Checked then
-        opSort.Col1:= edCol1.Value;
-      if cbCol2.Checked then
-        opSort.Col2:= edCol2.Value;
-    finally
-      Free
-    end
-  else
-  begin
-    opSort.bType:= AMode;
-    opSort.bAsc:= AAscend;
-  end;
+  opSort.bAscending:= AAscend;
 
   Screen.Cursor:= crHourGlass;
   try
-    //remove blanks
     DoRemoveListBlanks(List);
-    //sort
     List.CustomSort(_ListCompare);
-    //remove dups
-    if opSort.bRemDups then
-      DoRemoveListDups(List);
   finally
     Screen.Cursor:= crDefault;
   end;

@@ -281,7 +281,6 @@ type
   TSynLineCmd = (
     cLineCmdSortAsc,
     cLineCmdSortDesc,
-    cLineCmdSortDialog,
     cLineCmdDedupAll,
     cLineCmdDedupAllAndOrig,
     cLineCmdDedupAdjacent,
@@ -814,8 +813,6 @@ type
     TBXItemECpFullPath: TSpTbxItem;
     TBXItemECpFN: TSpTbxItem;
     ecToggleFocusFindRes: TAction;
-    ecSpellCheck: TAction;
-    ecSpellLive: TAction;
     TBXSeparatorItem49: TSpTbxSeparatorItem;
     TBXItemEJoin: TSpTbxItem;
     TBXItemESplit: TSpTbxItem;
@@ -1098,10 +1095,6 @@ type
     TBXItemPLogSaveAs: TSpTbxItem;
     TBXItemTabMoveToWindow: TSpTBXItem;
     TBXItemTabOpenInWindow: TSpTBXItem;
-    ecSortDialog: TAction;
-    TBXItemESortDialog: TSpTbxItem;
-    TBXSeparatorItem86: TSpTbxSeparatorItem;
-    TBXItemBarSortDialog: TSpTBXItem;
     TBXItemSSelBrackets: TSpTbxItem;
     PropsManagerPrint: TPropsManager;
     TimerTree: TTimer;
@@ -1141,7 +1134,6 @@ type
     TBXItemEDedupAll: TSpTbxItem;
     TBXSeparatorItem85: TSpTbxSeparatorItem;
     TBXItemBarDedupAll: TSpTBXItem;
-    TBXSeparatorItem95: TSpTbxSeparatorItem;
     ecAlignWithSep: TAction;
     TBXItemTabToggleSplit: TSpTBXItem;
     ecToggleShowGroup2: TAction;
@@ -1851,7 +1843,6 @@ type
     procedure TBXItemTabMoveToWindowClick(Sender: TObject);
     procedure TBXItemTabOpenInWindowClick(Sender: TObject);
     procedure ecEncodeHtmlCharsExecute(Sender: TObject);
-    procedure ecSortDialogExecute(Sender: TObject);
     procedure TBXItemSSelBracketsClick(Sender: TObject);
     procedure TimerTreeTimer(Sender: TObject);
     procedure PopupStatusLineEndsPopup(Sender: TObject);
@@ -1897,10 +1888,8 @@ type
     procedure TBXItemEDedupAdjacentClick(Sender: TObject);
     procedure TBXItemBarDedupAdjClick(Sender: TObject);
     procedure TBXItemBarDedupAllClick(Sender: TObject);
-    procedure TBXItemESortDialogClick(Sender: TObject);
     procedure TBXItemESortAscClick(Sender: TObject);
     procedure TBXItemESortDescClick(Sender: TObject);
-    procedure TBXItemBarSortDialogClick(Sender: TObject);
     procedure TBXItemBarSortAscClick(Sender: TObject);
     procedure TBXItemBarSortDescClick(Sender: TObject);
     procedure TBXItemBarCaseUpperClick(Sender: TObject);
@@ -2904,7 +2893,6 @@ type
     opCaretsIndicator: integer;
     opCaretsGutterBand: integer;
     opSingleClickURL: boolean;
-    opSortMode: TSynSortMode;
     opCopyLineIfNoSel: boolean;
     opLeftRightSelJump: boolean;
     opAutoCloseTags: boolean;
@@ -3288,7 +3276,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.21.2245';
+  cSynVer = '6.21.2250';
   cSynPyVer = '1.0.151';
 
 const
@@ -4312,7 +4300,7 @@ end;
 
 procedure TfmMain.UpdateStatusBar;
 var
-  ro, sel2, en_lex: boolean;
+  ro, sel2, en_lex, en_sort: boolean;
   ed: TSyntaxMemo;
   frame: TEditorFrame;
 begin
@@ -4413,12 +4401,14 @@ begin
   ecSentCase.Enabled:= sel2;
   ecGoto.Enabled:= ed.Lines.Count>0;
   ecRemoveBlanks.Enabled:= not ro;
-  ecSortDialog.Enabled:= (ed.Lines.Count>0) and not ro;
-  ecSortAscending.Enabled:= ecSortDialog.Enabled;
-  ecSortDescending.Enabled:= ecSortDialog.Enabled;
-  ecDedupAll.Enabled:= ecSortDialog.Enabled;
-  ecDedupAdjacent.Enabled:= ecSortDialog.Enabled;
-  TbxSubmenuCase.Enabled:= ecSortDialog.Enabled;
+  
+  en_sort:= (ed.Lines.Count>0) and not ro;
+  ecSortAscending.Enabled:= en_sort;
+  ecSortDescending.Enabled:= en_sort;
+  ecDedupAll.Enabled:= en_sort;
+  ecDedupAdjacent.Enabled:= en_sort;
+  TBXSubmenuSort.Enabled:= en_sort;
+  TbxSubmenuCase.Enabled:= en_sort;
 
   TBXItemBarComm.Enabled:= (ed.Lines.Count>0) and not ro and en_lex;
   TBXItemBarUncom.Enabled:= TBXItemBarComm.Enabled;
@@ -4710,7 +4700,6 @@ begin
     ApplyUrlClick;
 
     opLeftRightSelJump:= ReadBool('Setup', 'LeftRtJump', true);
-    opSortMode:= TSynSortMode(ReadInteger('Setup', 'SortM', 0));
     opCopyLineIfNoSel:= ReadBool('Setup', 'CopyLnNoSel', false);
     opShowRecentColors:= TSynRecentColors(ReadInteger('Setup', 'RecColors', 0));
     opUnicodeNeeded:= ReadInteger('Setup', 'UnNeed', 0{don't suggest});
@@ -5081,7 +5070,6 @@ begin
     WriteInteger('Setup', 'UnNeed', opUnicodeNeeded);
     WriteInteger('Setup', 'RecColors', Ord(opShowRecentColors));
     WriteBool('Setup', 'CopyLnNoSel', opCopyLineIfNoSel);
-    WriteInteger('Setup', 'SortM', Ord(opSortMode));
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
     WriteString('Setup', 'TreeSorted', opTreeSorted);
     WriteBool('Setup', 'SyncEditIcon', opSyncEditIcon);
@@ -5934,7 +5922,6 @@ begin
     sm_OnlineSearchMsdn: DoOnlineSearch_Name('MSDN');
 
     sm_NumericConverterDialog: ecNumericConverter.Execute;
-    sm_SortDialog: ecSortDialog.Execute;
     sm_ToggleLineCommentAlt: ecToggleLineCommentAlt.Execute;
 
     sm_GotoSelectionStartEnd: EditorJumpSelectionStartEnd(Ed);
@@ -9780,7 +9767,6 @@ begin
   //sort
   UpdKey(TBXItemEDedupAll, sm_RemoveDupsAll);
   UpdKey(TBXItemEDedupAdjacent, sm_RemoveDupsAdjacent);
-  UpdKey(TbxItemESortDialog, sm_SortDialog);
   UpdKey(tbxItemESortAsc, smSortAscending);
   UpdKey(tbxItemESortDesc, smSortDescending);
 
@@ -21618,17 +21604,11 @@ begin
   end;
 end;
 
-procedure TfmMain.ecSortDialogExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdSortDialog);
-end;
-
 procedure TfmMain.DoLinesCommand(Cmd: TSynLineCmd);
 var
   Ed: TSyntaxMemo;
   Ln1, Ln2: Integer;
   Pos1, Pos2, i: Integer;
-  Col1, Col2: Integer;
   L: TTntStringList;
   S: Widestring;
   ok: boolean;
@@ -21651,25 +21631,16 @@ begin
   else
     Pos2:= Ed.CaretPosToStrPos(Point(0, Ln2+1));
 
-  Col1:= -1;
-  Col2:= -1;
-  if Ed.HaveSelection and (Ed.SelectMode=msColumn) then
-  begin
-    Col1:= Ed.SelRect.Left+1;
-    Col2:= Ed.SelRect.Right;
-  end;
-
   L:= TTntStringList.Create;
   try
     for i:= Ln1 to Ln2 do
       L.Add(Ed.Lines[i]);
 
     case Cmd of
-      cLineCmdSortAsc,
+      cLineCmdSortAsc:
+        ok:= DoListCommand_Sort(L, true);
       cLineCmdSortDesc:
-        ok:= DoListCommand_Sort(L, opSortMode, Cmd=cLineCmdSortAsc, false{AShowDlg}, Col1, Col2);
-      cLineCmdSortDialog:
-        ok:= DoListCommand_Sort(L, opSortMode, true, true{AShowDlg}, Col1, Col2);
+        ok:= DoListCommand_Sort(L, false);
 
       cLineCmdDedupAll:
         begin
@@ -22582,11 +22553,6 @@ begin
   CurrentEditor.ExecCommand(sm_RemoveDupsAllAndOrig);
 end;
 
-procedure TfmMain.TBXItemESortDialogClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_SortDialog);
-end;
-
 procedure TfmMain.TBXItemESortAscClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smSortAscending);
@@ -22595,11 +22561,6 @@ end;
 procedure TfmMain.TBXItemESortDescClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(smSortDescending);
-end;
-
-procedure TfmMain.TBXItemBarSortDialogClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_SortDialog);
 end;
 
 procedure TfmMain.TBXItemBarSortAscClick(Sender: TObject);

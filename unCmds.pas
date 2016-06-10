@@ -208,7 +208,6 @@ const
   sm_OnlineSearchHTML4 = 886;
   sm_OnlineSearchHTML5 = 887;
   sm_NumericConverterDialog = 889;
-  sm_SortDialog = 891;
   sm_ToggleLineCommentAlt = 892;
   sm_SelectionExtend = 893;
   sm_SelectionShrink = 894;

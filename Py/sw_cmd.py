@@ -419,7 +419,6 @@ cmd_RereadOutputPanel = 884
 cmd_OnlineSearchHTML4 = 886
 cmd_OnlineSearchHTML5 = 887
 cmd_NumericConverterDialog = 889
-cmd_SortDialog = 891
 cmd_ToggleLineCommentAlt = 892
 cmd_SelectionExtend = 893
 cmd_SelectionShrink = 894

@@ -43,7 +43,6 @@ uses
   unClips in 'unClips.pas' {fmClips},
   unNumConv in 'unNumConv.pas' {fmNumConv: TTntForm},
   ATSynPlugins in 'ATSynPlugins.pas',
-  unSort in 'unSort.pas' {fmSort},
   unProcLines in 'unProcLines.pas',
   unMenuCmds in 'unMenuCmds.pas' {fmMenuCmds: TTntForm},
   unMenuProj in 'unMenuProj.pas' {fmMenuProj: TTntForm},

@@ -216,8 +216,6 @@ type
     cbMenuIcon: TTntCheckBox;
     cbFullTitle: TTntCheckBox;
     cbGroupLexers: TTntCheckBox;
-    cbSortMode: TTntComboBox;
-    TntLabel38: TTntLabel;
     TntLabel37: TTntLabel;
     cbRecColors: TTntComboBox;
     boxDateFormat: TTntGroupBox;
@@ -1832,7 +1830,6 @@ begin
 
     opSaveWndPos:= cbSavePos.Checked;
     opShowRecentColors:= TSynRecentColors(cbRecColors.ItemIndex);
-    opSortMode:= TSynSortMode(cbSortMode.ItemIndex);
     ApplyShowRecentColors;
     opLexerGroups:= cbGroupLexers.Checked;
     opShowMenuIcons:= cbMenuIcon.Checked;
@@ -2144,7 +2141,6 @@ begin
 
     cbSavePos.Checked:= opSaveWndPos;
     cbRecColors.ItemIndex:= Ord(opShowRecentColors);
-    cbSortMode.ItemIndex:= Ord(opSortMode);
     cbGroupLexers.Checked:= opLexerGroups;
     cbFullTitle.Checked:= opShowTitleFull;
     cbMenuIcon.Checked:= opShowMenuIcons;
