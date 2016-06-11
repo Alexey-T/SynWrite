@@ -10,9 +10,10 @@ unit unProcCustomDialog;
 interface
 
 uses
-  Classes, SysUtils, Graphics, Controls, StdCtrls, ExtCtrls, Forms,
+  Windows, Classes, SysUtils, Graphics, Controls, StdCtrls, ExtCtrls, Forms,
   CheckLst, Spin, ComCtrls, Dialogs,
-  Windows, ATLinkLabel;
+  TntControls, TntExtCtrls, TntComCtrls, TntStdCtrls, TntCheckLst, TntForms,
+  ATLinkLabel;
 
 procedure DoDialogCustom(const ATitle: string; ASizeX, ASizeY: integer;
   AText: string; AFocusedIndex: integer; out AButtonIndex: integer; out AStateText: string);
@@ -45,7 +46,7 @@ type
   { TDummyClass }
   TDummyClass = class
   public
-    Form: TForm;
+    Form: TTntForm;
     procedure DoOnShow(Sender: TObject);
     procedure DoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure DoOnChange(Sender: TObject);
@@ -62,13 +63,13 @@ end;
 function IsControlAutosizeY(C: TControl): boolean;
 begin
   Result:=
-    (C is TLabel) or
-    (C is TButton) or
+    (C is TTntLabel) or
+    (C is TTntButton) or
     //(C is TToggleBox) or
-    (C is TEdit) or
-    (C is TComboBox) or
-    (C is TCheckBox) or
-    (C is TRadioButton) or
+    (C is TTntEdit) or
+    (C is TTntCombobox) or
+    (C is TTntCheckBox) or
+    (C is TTntRadioButton) or
     (C is TSpinEdit);
 end;
 
@@ -77,41 +78,41 @@ begin
   Ctl.Height:= 23; //smaller
 end;
 
-function DoGetListviewState(C: TListView): string; forward;
+function DoGetListviewState(C: TTntListView): string; forward;
 function DoGetControlState(C: TControl): string;
 var
   i: integer;
 begin
   Result:= '';
 
-  if C is TEdit then
+  if C is TTntEdit then
   begin
-    Result:= (C as TEdit).Text;
+    Result:= UTF8Encode((C as TTntEdit).Text);
   end;
 
-  if C is TCheckBox then
-    Result:= IntToStr(Ord((C as TCheckBox).Checked));
+  if C is TTntCheckBox then
+    Result:= IntToStr(Ord((C as TTntCheckBox).Checked));
 
   //if C is TToggleBox then
   //  Result:= IntToStr(Ord((C as TToggleBox).Checked));
 
-  if C is TRadioButton then
-    Result:= IntToStr(Ord((C as TRadioButton).Checked));
+  if C is TTntRadioButton then
+    Result:= IntToStr(Ord((C as TTntRadioButton).Checked));
 
-  if C is TListBox then
-    Result:= IntToStr((C as TListBox).ItemIndex);
+  if C is TTntListbox then
+    Result:= IntToStr((C as TTntListbox).ItemIndex);
 
-  if C is TComboBox then
+  if C is TTntCombobox then
   begin
-    if (C as TComboBox).Style=csDropDownList then
-      Result:= IntToStr((C as TComboBox).ItemIndex)
+    if (C as TTntCombobox).Style=csDropDownList then
+      Result:= IntToStr((C as TTntCombobox).ItemIndex)
     else
-      Result:= (C as TComboBox).Text;
+      Result:= UTF8Encode((C as TTntCombobox).Text);
   end;
 
-  if C is TMemo then
+  if C is TTntMemo then
   begin
-    Result:= (C as TMemo).Lines.Text;
+    Result:= UTF8Encode((C as TTntMemo).Lines.Text);
     Result:= StringReplace(Result, #9, #2, [rfReplaceAll]);
     Result:= StringReplace(Result, #13#10, #9, [rfReplaceAll]);
     Result:= StringReplace(Result, #13, #9, [rfReplaceAll]);
@@ -135,12 +136,12 @@ begin
   if C is TSpinEdit then
     Result:= IntToStr((C as TSpinEdit).Value);
 
-  if C is TListView then
-    Result:= DoGetListviewState(C as TListView);
+  if C is TTntListView then
+    Result:= DoGetListviewState(C as TTntListView);
 end;
 
 
-function DoGetFormResult(AForm: TForm): string;
+function DoGetFormResult(AForm: TTntForm): string;
 var
   Str: string;
   i, j: integer;
@@ -157,7 +158,7 @@ begin
 end;
 
 
-procedure DoSetMemoState(C: TMemo; AValue: string);
+procedure DoSetMemoState(C: TTntMemo; AValue: string);
 var
   SItem: string;
 begin
@@ -204,10 +205,10 @@ begin
 end;
 
 
-procedure DoSetListviewItem(C: TListView; SListItem: string);
+procedure DoSetListviewItem(C: TTntListView; SListItem: string);
 var
   SItem: string;
-  Col: TListColumn;
+  Col: TTntListColumn;
   i: integer;
 begin
   if C.Columns.Count=0 then
@@ -216,7 +217,7 @@ begin
       SItem:= SGetItem(SListItem, #13);
       if SItem='' then break;
       Col:= C.Columns.Add;
-      Col.Caption:= SGetItem(SItem, '=');
+      Col.Caption:= UTF8Decode(SGetItem(SItem, '='));
       if SItem<>'' then
       begin
         if SItem[1]='L' then begin Delete(SItem, 1, 1); Col.Alignment:= taLeftJustify; end;
@@ -229,17 +230,17 @@ begin
   else
   begin
     SItem:= SGetItem(SListItem, #13);
-    C.Items.Add.Caption:= SItem;
+    C.Items.Add.Caption:= UTF8Decode(SItem);
     for i:= 1 to C.Columns.Count do
     begin
       SItem:= SGetItem(SListItem, #13);
-      C.Items[C.Items.Count-1].SubItems.Add(SItem);
+      C.Items[C.Items.Count-1].SubItems.Add(UTF8Decode(SItem));
     end;
   end;
 end;
 
 
-procedure DoSetListviewState(C: TListView; SValue: string);
+procedure DoSetListviewState(C: TTntListView; SValue: string);
 var
   N: integer;
   SItem: string;
@@ -268,7 +269,7 @@ begin
 end;
 
 
-function DoGetListviewState(C: TListView): string;
+function DoGetListviewState(C: TTntListView): string;
 // index;check0,check1,
 var
   i: integer;
@@ -285,7 +286,7 @@ begin
 end;
 
 
-procedure DoAddControl(AForm: TForm; ATextItems: string; ADummy: TDummyClass);
+procedure DoAddControl(AForm: TTntForm; ATextItems: string; ADummy: TDummyClass);
 var
   SNameValue, SName, SValue, SListItem: string;
   NX1, NX2, NY1, NY2: integer;
@@ -309,22 +310,22 @@ begin
     begin
       if SValue='check' then
       begin
-        Ctl:= TCheckBox.Create(AForm);
-        (Ctl as TCheckBox).OnClick:= ADummy.DoOnChange;
+        Ctl:= TTntCheckBox.Create(AForm);
+        (Ctl as TTntCheckBox).OnClick:= ADummy.DoOnChange;
       end;
       if SValue='radio' then
       begin
-        Ctl:= TRadioButton.Create(AForm);
-        (Ctl as TRadioButton).OnClick:= ADummy.DoOnChange;
+        Ctl:= TTntRadioButton.Create(AForm);
+        (Ctl as TTntRadioButton).OnClick:= ADummy.DoOnChange;
       end;
       if SValue='edit' then
       begin
-        Ctl:= TEdit.Create(AForm);
+        Ctl:= TTntEdit.Create(AForm);
       end;
       if SValue='listbox' then
       begin
-        Ctl:= TListBox.Create(AForm);
-        (Ctl as TListBox).OnClick:= ADummy.DoOnChange;
+        Ctl:= TTntListbox.Create(AForm);
+        (Ctl as TTntListbox).OnClick:= ADummy.DoOnChange;
       end;
       if SValue='spinedit' then
       begin
@@ -332,39 +333,39 @@ begin
       end;
       if SValue='memo' then
         begin
-          Ctl:= TMemo.Create(AForm);
-          (Ctl as TMemo).WordWrap:= false;
-          (Ctl as TMemo).ScrollBars:= ssBoth;
+          Ctl:= TTntMemo.Create(AForm);
+          (Ctl as TTntMemo).WordWrap:= false;
+          (Ctl as TTntMemo).ScrollBars:= ssBoth;
         end;
       if SValue='label' then
         begin
-          Ctl:= TLabel.Create(AForm);
+          Ctl:= TTntLabel.Create(AForm);
         end;
       if SValue='combo' then
         begin
-          Ctl:= TComboBox.Create(AForm);
+          Ctl:= TTntCombobox.Create(AForm);
         end;
       if SValue='combo_ro' then
         begin
-          Ctl:= TComboBox.Create(AForm);
-          (Ctl as TComboBox).Style:= csDropDownList;
-          (Ctl as TComboBox).OnChange:= ADummy.DoOnChange;
+          Ctl:= TTntCombobox.Create(AForm);
+          (Ctl as TTntCombobox).Style:= csDropDownList;
+          (Ctl as TTntCombobox).OnChange:= ADummy.DoOnChange;
         end;
       if SValue='button' then
         begin
-          Ctl:= TButton.Create(AForm);
-          (Ctl as TButton).ModalResult:= cButtonResultStart+ AForm.ControlCount;
+          Ctl:= TTntButton.Create(AForm);
+          (Ctl as TTntButton).ModalResult:= cButtonResultStart+ AForm.ControlCount;
           DoFixButtonHeight(Ctl);
         end;
       if SValue='checkbutton' then
         begin
-          Ctl:= TCheckBox.Create(AForm); //not TToggleBox in D7
-          (Ctl as TCheckBox).OnClick:= ADummy.DoOnChange;
+          Ctl:= TTntCheckBox.Create(AForm); //not TToggleBox in D7
+          (Ctl as TTntCheckBox).OnClick:= ADummy.DoOnChange;
           DoFixButtonHeight(Ctl);
         end;
       if SValue='radiogroup' then
       begin
-        Ctl:= TRadioGroup.Create(AForm);
+        Ctl:= TTntRadioGroup.Create(AForm);
       end;
       //if SValue='checkgroup' then
       //begin
@@ -372,9 +373,9 @@ begin
       //end;
       if SValue='checklistbox' then
       begin
-        Ctl:= TCheckListBox.Create(AForm);
-        (Ctl as TCheckListBox).OnClickCheck:= ADummy.DoOnChange;
-        (Ctl as TCheckListBox).OnClickCheck:= ADummy.DoOnChange;
+        Ctl:= TTntCheckListBox.Create(AForm);
+        (Ctl as TTntCheckListBox).OnClickCheck:= ADummy.DoOnChange;
+        (Ctl as TTntCheckListBox).OnClickCheck:= ADummy.DoOnChange;
       end;
 
       //disabled: label paints bad onto groupbox, Linux
@@ -384,15 +385,15 @@ begin
       if (SValue='listview') or
          (SValue='checklistview') then
       begin
-        Ctl:= TListView.Create(AForm);
-        (Ctl as TListView).ReadOnly:= true;
-        (Ctl as TListView).ColumnClick:= false;
-        (Ctl as TListView).ViewStyle:= vsReport;
-        (Ctl as TListView).RowSelect:= true;
-        (Ctl as TListView).HideSelection:= false;
-        (Ctl as TListView).Checkboxes:= (SValue='checklistview');
-        (Ctl as TListView).OnChange:= ADummy.DoOnListviewChange;
-        (Ctl as TListView).OnSelectItem:= ADummy.DoOnListviewSelect;
+        Ctl:= TTntListView.Create(AForm);
+        (Ctl as TTntListView).ReadOnly:= true;
+        (Ctl as TTntListView).ColumnClick:= false;
+        (Ctl as TTntListView).ViewStyle:= vsReport;
+        (Ctl as TTntListView).RowSelect:= true;
+        (Ctl as TTntListView).HideSelection:= false;
+        (Ctl as TTntListView).Checkboxes:= (SValue='checklistview');
+        (Ctl as TTntListView).OnChange:= ADummy.DoOnListviewChange;
+        (Ctl as TTntListView).OnSelectItem:= ADummy.DoOnListviewSelect;
       end;
 
       if SValue='linklabel' then
@@ -417,8 +418,8 @@ begin
       if AForm.ControlCount>=2 then
       begin
         CtlPrev:= AForm.Controls[AForm.ControlCount-2];
-        if CtlPrev is TLabel then
-          (CtlPrev as TLabel).FocusControl:= Ctl as TWinControl;
+        if CtlPrev is TTntLabel then
+          (CtlPrev as TTntLabel).FocusControl:= Ctl as TWinControl;
       end;
 
     //-------en
@@ -431,11 +432,11 @@ begin
     //-------cap
     if SName='cap' then
     begin
-      if (Ctl is TLabel) then (Ctl as TLabel).Caption:= SValue;
-      if (Ctl is TButton) then (Ctl as TButton).Caption:= SValue;
-      if (Ctl is TCheckbox) then (Ctl as TCheckbox).Caption:= SValue;
-      if (Ctl is TRadioButton) then (Ctl as TRadioButton).Caption:= SValue;
-      if (Ctl is TEdit) then (Ctl as TEdit).Text:= SValue;
+      if (Ctl is TTntLabel) then (Ctl as TTntLabel).Caption:= UTF8Decode(SValue);
+      if (Ctl is TTntButton) then (Ctl as TTntButton).Caption:= UTF8Decode(SValue);
+      if (Ctl is TTntCheckBox) then (Ctl as TTntCheckBox).Caption:= UTF8Decode(SValue);
+      if (Ctl is TTntRadioButton) then (Ctl as TTntRadioButton).Caption:= UTF8Decode(SValue);
+      if (Ctl is TTntEdit) then (Ctl as TTntEdit).Text:= UTF8Decode(SValue);
       Continue;
     end;
 
@@ -475,9 +476,9 @@ begin
     //-------props
     if SName='props' then
     begin
-      if Ctl is TButton then
+      if Ctl is TTntButton then
       begin
-        (Ctl as TButton).Default:= StrToBool(SGetItem(SValue));
+        (Ctl as TTntButton).Default:= StrToBool(SGetItem(SValue));
       end;
 
       if Ctl is TSpinEdit then
@@ -490,27 +491,27 @@ begin
       if Ctl is TLinkLabel then
         (Ctl as TLinkLabel).Link:= SValue;
 
-      if (Ctl is TEdit) or (Ctl is TMemo) then
+      if (Ctl is TTntEdit) or (Ctl is TTntMemo) then
       begin
         //RO
         if StrToBool(SGetItem(SValue)) then
         begin
-          if (Ctl is TEdit) then (Ctl as TEdit).ReadOnly:= true;
-          if (Ctl is TMemo) then (Ctl as TMemo).ReadOnly:= true;
+          if (Ctl is TTntEdit) then (Ctl as TTntEdit).ReadOnly:= true;
+          if (Ctl is TTntMemo) then (Ctl as TTntMemo).ReadOnly:= true;
           TCustomEditHack(Ctl).ParentColor:= true;
         end;
         //Monospaced
         if StrToBool(SGetItem(SValue)) then
         begin
-          if Ctl is TEdit then
+          if Ctl is TTntEdit then
           begin
-            (Ctl as TEdit).Font.Name:= 'Courier New';
-            (Ctl as TEdit).Font.Size:= 9;
+            (Ctl as TTntEdit).Font.Name:= 'Courier New';
+            (Ctl as TTntEdit).Font.Size:= 9;
           end;
-          if Ctl is TMemo then
+          if Ctl is TTntMemo then
           begin
-            (Ctl as TMemo).Font.Name:= 'Courier New';
-            (Ctl as TMemo).Font.Size:= 9;
+            (Ctl as TTntMemo).Font.Name:= 'Courier New';
+            (Ctl as TTntMemo).Font.Size:= 9;
           end;
         end;
         //Border
@@ -520,9 +521,9 @@ begin
           TCustomEditHack(Ctl).BorderStyle:= bsNone;
       end;
 
-      if (Ctl is TListView) then
+      if (Ctl is TTntListView) then
       begin
-        (Ctl as TListView).GridLines:= StrToBool(SGetItem(SValue));
+        (Ctl as TTntListView).GridLines:= StrToBool(SGetItem(SValue));
       end;
 
       Continue;
@@ -534,12 +535,12 @@ begin
       repeat
         SListItem:= SGetItem(SValue, #9);
         if SListItem='' then break;
-        if Ctl is TListbox then (Ctl as TListbox).Items.Add(SListItem);
-        if Ctl is TComboBox then (Ctl as TComboBox).Items.Add(SListItem);
+        if Ctl is TTntListbox then (Ctl as TTntListbox).Items.Add(UTF8Decode(SListItem));
+        if Ctl is TTntCombobox then (Ctl as TTntCombobox).Items.Add(UTF8Decode(SListItem));
         //if Ctl is TCheckGroup then (Ctl as TCheckGroup).Items.Add(SListItem);
-        if Ctl is TRadioGroup then (Ctl as TRadioGroup).Items.Add(SListItem);
-        if Ctl is TCheckListBox then (Ctl as TCheckListBox).Items.Add(SListItem);
-        if Ctl is TListView then DoSetListviewItem(Ctl as TListView, SListItem);
+        if Ctl is TTntRadioGroup then (Ctl as TTntRadioGroup).Items.Add(UTF8Decode(SListItem));
+        if Ctl is TTntCheckListBox then (Ctl as TTntCheckListBox).Items.Add(UTF8Decode(SListItem));
+        if Ctl is TTntListView then DoSetListviewItem(Ctl as TTntListView, UTF8Decode(SListItem));
       until false;
       Continue;
     end;
@@ -547,27 +548,27 @@ begin
     //-------val
     if SName='val' then
     begin
-      if Ctl is TCheckBox then (Ctl as TCheckBox).Checked:= StrToBool(SValue);
+      if Ctl is TTntCheckBox then (Ctl as TTntCheckBox).Checked:= StrToBool(SValue);
       //if Ctl is TToggleBox then (Ctl as TToggleBox).Checked:= StrToBool(SValue);
-      if Ctl is TRadioButton then (Ctl as TRadioButton).Checked:= StrToBool(SValue);
-      if Ctl is TEdit then
+      if Ctl is TTntRadioButton then (Ctl as TTntRadioButton).Checked:= StrToBool(SValue);
+      if Ctl is TTntEdit then
       begin
-        (Ctl as TEdit).Text:= SValue;
+        (Ctl as TTntEdit).Text:= UTF8Decode(SValue);
       end;
-      if Ctl is TComboBox then
+      if Ctl is TTntCombobox then
       begin
-        if (Ctl as TCombobox).Style=csDropDownList then
-          (Ctl as TCombobox).ItemIndex:= StrToIntDef(SValue, 0)
+        if (Ctl as TTntCombobox).Style=csDropDownList then
+          (Ctl as TTntCombobox).ItemIndex:= StrToIntDef(SValue, 0)
         else
-          (Ctl as TCombobox).Text:= SValue;
+          (Ctl as TTntCombobox).Text:= UTF8Decode(SValue);
       end;
-      if Ctl is TListBox then (Ctl as TListBox).ItemIndex:= StrToIntDef(SValue, 0);
-      if Ctl is TRadioGroup then (Ctl as TRadioGroup).ItemIndex:= StrToIntDef(SValue, 0);
+      if Ctl is TTntListbox then (Ctl as TTntListbox).ItemIndex:= StrToIntDef(SValue, 0);
+      if Ctl is TTntRadioGroup then (Ctl as TTntRadioGroup).ItemIndex:= StrToIntDef(SValue, 0);
       //if Ctl is TCheckGroup then DoSetCheckgroupState(Ctl as TCheckGroup, SValue);
-      if Ctl is TCheckListBox then DoSetChecklistboxState(Ctl as TCheckListBox, SValue);
-      if Ctl is TMemo then DoSetMemoState(Ctl as TMemo, SValue);
+      if Ctl is TTntCheckListBox then DoSetChecklistboxState(Ctl as TTntCheckListBox, SValue);
+      if Ctl is TTntMemo then DoSetMemoState(Ctl as TTntMemo, SValue);
       if Ctl is TSpinEdit then (Ctl as TSpinEdit).Value:= StrToIntDef(SValue, 0);
-      if Ctl is TListView then DoSetListviewState(Ctl as TListView, SValue);
+      if Ctl is TTntListView then DoSetListviewState(Ctl as TTntListView, SValue);
 
       Continue;
     end;
@@ -580,7 +581,7 @@ end;
 procedure DoDialogCustom(const ATitle: string; ASizeX, ASizeY: integer;
   AText: string; AFocusedIndex: integer; out AButtonIndex: integer; out AStateText: string);
 var
-  F: TForm;
+  F: TTntForm;
   Res: integer;
   SItem: string;
   Dummy: TDummyClass;
@@ -588,7 +589,7 @@ begin
   AButtonIndex:= -1;
   AStateText:= '';
 
-  F:= TForm.Create(nil);
+  F:= TTntForm.Create(nil);
   Dummy:= TDummyClass.Create;
   FDialogShown:= true;
   try
@@ -596,7 +597,7 @@ begin
     F.Position:= poScreenCenter;
     F.ClientWidth:= ASizeX;
     F.ClientHeight:= ASizeY;
-    F.Caption:= ATitle;
+    F.Caption:= UTF8Decode(ATitle);
     F.ShowHint:= true;
 
     repeat
@@ -640,8 +641,8 @@ var
   i: integer;
 begin
   for i:= 0 to Form.ControlCount-1 do
-    if Form.Controls[i] is TListview then
-      with (Form.Controls[i] as TListview) do
+    if Form.Controls[i] is TTntListView then
+      with (Form.Controls[i] as TTntListView) do
         if ItemFocused<>nil then
           ItemFocused.MakeVisible(false);
 end;
