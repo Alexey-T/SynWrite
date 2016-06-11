@@ -158,26 +158,12 @@ procedure EditorMarkSelEnd(Ed: TSyntaxMemo);
 type
   TSynEditorInsertMode = (mTxt, mNum, mBul);
   TSynEditorInsertPos = (pCol, pAfterSp, pAfterStr);
-  TSynEditorInsertData = record
-    NStart, NDigits: integer;
-    NBegin, NTail: Widestring;
-    NCounter: integer;
-    SText1, SText2: Widestring;
-    InsMode: TSynEditorInsertMode;
-    InsPos: TSynEditorInsertPos;
-    InsCol: Integer;
-    InsStrAfter: Widestring;
-    SkipEmpty: boolean;
-  end;
 
 type
   TSynHintEvent = procedure(Msg: Widestring) of object;
   TSynScrollLineTo = (cScrollToTop, cScrollToBottom, cScrollToMiddle);
 
-procedure EditorInsertTextData(Ed: TSyntaxMemo; const Data: TSynEditorInsertData;
-  AHintEvent: TSynHintEvent);
 procedure EditorScrollCurrentLineTo(Ed: TSyntaxMemo; Mode: TSynScrollLineTo);
-
 procedure EditorDuplicateLine(Ed: TSyntaxMemo);
 procedure EditorDeleteLine(Ed: TSyntaxMemo; NLine: integer; AUndo: boolean);
 procedure EditorReplaceLine(Ed: TSyntaxMemo; NLine: integer;
@@ -1557,111 +1543,6 @@ begin
     Ed.EndUpdate;
   end;
 end;
-
-procedure EditorInsertTextData(Ed: TSyntaxMemo;
-  const Data: TSynEditorInsertData;
-  AHintEvent: TSynHintEvent);
-const
-  cBulletStr = WideString(#$2022);
-var
-  iFrom, iTo, iCnt, i, n: Integer;
-  IsSel: boolean;
-  S: Widestring;
-begin
-  if Ed.ReadOnly then Exit;
-  EditorGetSelLines(Ed, iFrom, iTo);
-  IsSel:= iTo > iFrom;
-
-  with Ed do
-  with Data do
-  begin
-    BeginUpdate;
-    ResetSelection;
-    try
-      iCnt:= 0;
-      if not IsSel then
-      begin
-        //----counter times inserting
-        for i:= 1 to NCounter do
-        begin
-          if i mod 100 = 0 then
-            AHintEvent(WideFormat('%d / %d...', [i, NCounter]));
-
-          case InsMode of
-            mTxt: S:= SText1 + SText2;
-            mBul: S:= cBulletStr + ' ';
-            mNum: S:= NBegin + SFormatNum(NStart+i-1, NDigits) + NTail;
-            else S:= '';
-          end;
-          InsertText(
-            StringOfChar(' ', InsCol-1)
-            + S + EditorEOL(Ed));
-          Application.ProcessMessages; //needed for huge counter values  
-        end;
-      end
-      else
-      //----insert into selection
-      for i:= iFrom to iTo do
-      begin
-        if (Lines[i]='') and SkipEmpty then
-          Continue;
-        Inc(iCnt);
-
-        //Put caret
-        case InsPos of
-          pCol:
-            begin
-              CaretPos:= Point(InsCol-1, i);
-              //handle "Keep caret in text"
-              if soKeepCaretInText in Ed.Options then
-                if CaretPos.X<InsCol-1 then
-                  InsertText(StringOfChar(' ', (InsCol-1)-CaretPos.X));
-            end;
-          pAfterSp:
-            begin
-              CaretPos:= Point(SNumLeadSpaces(Lines[i]), i);
-            end;
-          else
-            begin
-              n:= Pos(InsStrAfter, Lines[i]);
-              if n=0 then Continue;
-              CaretPos:= Point(n-1+Length(InsStrAfter), i);
-            end;
-        end;
-
-        case InsMode of
-        //Text
-        mTxt:
-          begin
-            if SText1<>'' then
-            begin
-              InsertText(SText1);
-            end;
-            if SText2<>'' then
-            begin
-              CaretPos:= Point(Length(Lines[i]), i);
-              InsertText(SText2);
-            end;
-          end;
-        //Bullets
-        mBul:
-          begin
-            InsertText(cBulletStr + ' ');
-          end;
-        //Nums
-        mNum:
-          begin
-            s:= NBegin + SFormatNum(NStart+iCnt-1, NDigits) + NTail;
-            InsertText(s);
-          end;
-        end;//case
-      end;
-    finally
-      EndUpdate;
-    end;
-  end;
-end;
-
 
 procedure FixLineEnds(var S: Widestring; ATextFormat: TTextFormat);
 begin

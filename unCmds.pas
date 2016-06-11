@@ -147,7 +147,6 @@ const
   sm_SyncScrollVert = 822;
   sm_ShowOnTop = 823;
   sm_FillBlockDialog = 824;
-  sm_InsertTextDialog = 825;
   sm_JoinLines = 828;
   sm_SplitLines = 829;
 

@@ -358,7 +358,6 @@ cmd_SyncScrollHorz = 821
 cmd_SyncScrollVert = 822
 cmd_ShowOnTop = 823
 cmd_FillBlockDialog = 824
-cmd_InsertTextDialog = 825
 cmd_JoinLines = 828
 cmd_SplitLines = 829
 

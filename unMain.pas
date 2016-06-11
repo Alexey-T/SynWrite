@@ -768,7 +768,6 @@ type
     TBXItemOOnTop: TSpTbxItem;
     ecOnTop: TAction;
     TBXItemEFillBlock: TSpTbxItem;
-    TBXItemEInsText: TSpTbxItem;
     TBXSeparatorItem23: TSpTbxSeparatorItem;
     TBXItemCtxOpenSel: TSpTbxItem;
     TBXSeparatorItem45: TSpTbxSeparatorItem;
@@ -1590,7 +1589,6 @@ type
     procedure ecOnTopExecute(Sender: TObject);
     procedure tbMenuShortCut(var Msg: TWMKey; var Handled: Boolean);
     procedure TBXItemEFillBlockClick(Sender: TObject);
-    procedure TBXItemEInsTextClick(Sender: TObject);
     procedure TBXItemCtxOpenSelClick(Sender: TObject);
     procedure TBXItemORestoreStylesClick(Sender: TObject);
     procedure TBXItemCtxCustomizeClick(Sender: TObject);
@@ -2532,7 +2530,6 @@ type
     procedure DoAcpFromFile(List, Display: ecUnicode.TWideStrings);
     procedure DoAcpCommand;
     function DoAcpFromPlugins(const AAction: PWideChar): Widestring;
-    procedure DoInsertTextDialog;
     procedure DoFillBlock;
     //procedure DoRepaintTBs;
     //procedure DoRepaintTBs2;
@@ -3276,7 +3273,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.21.2250';
+  cSynVer = '6.21.2252';
   cSynPyVer = '1.0.151';
 
 const
@@ -3316,7 +3313,7 @@ uses
   cUtils,
 
   unSaveLex,
-  unSetup, unAbout, unEnc, unToolsList, unSRFiles, unShell, unInsertText,
+  unSetup, unAbout, unEnc, unToolsList, unSRFiles, unShell,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unGotoBkmk, unFav,
   unMenuCmds, unMenuProj, unMenuSnippets,
@@ -6115,8 +6112,6 @@ begin
       ecSyncScrollV.Execute;
     sm_FillBlockDialog:
       DoFillBlock;
-    sm_InsertTextDialog:
-      DoInsertTextDialog;
     sm_JoinLines:
       EditorJoinLines(Ed);
     sm_SplitLines:
@@ -9814,7 +9809,6 @@ begin
   UpdKey(TbxItemEToggleLineComment, sm_ToggleLineComment);
   UpdKey(TbxItemEToggleLineCommentAlt, sm_ToggleLineCommentAlt);
 
-  UpdKey(TBXItemEInsText, sm_InsertTextDialog);
   UpdKey(TBXItemEFillBlock, sm_FillBlockDialog);
   UpdKey(TBXItemOOnTop, sm_ShowOnTop);
   UpdKey(TBXItemOFullScr, sm_ShowFullScreen);
@@ -12423,7 +12417,6 @@ begin
 
   TBXItemEFillBlock.Enabled:= en and not ro;
   TBXItemEColumn.Enabled:= en and not ro;
-  TBXItemEInsText.Enabled:= not ro;
   TbxItemEToggleLineComment.Enabled:= not ro;
   TbxItemEToggleStreamComment.Enabled:= not ro;
 end;
@@ -14389,61 +14382,6 @@ begin
   EditorFillBlockRect(Ed, sData, bKeep);
 end;
 *)
-
-procedure TfmMain.TBXItemEInsTextClick(Sender: TObject);
-begin
-  DoInsertTextDialog;
-end;
-
-procedure TfmMain.DoInsertTextDialog;
-var
-  Ed: TSyntaxMemo;
-  F: TEditorFrame;
-  Data: TSynEditorInsertData;
-begin
-  Ed:= CurrentEditor;
-  if Ed.ReadOnly then Exit;
-  F:= FrameOfEditor(Ed);
-  FillChar(Data, SizeOf(Data), 0);
-
-  with TfmInsTxt.Create(nil) do
-  try
-    SIni:= Self.SynHistoryIni;
-    SetMode(EditorHasMultilineSelection(Ed));
-    if ShowModal<>mrOk then Exit;
-
-    Data.SText1:= ed1.Text;
-    Data.SText2:= ed2.Text;
-    if bText.Checked then Data.InsMode:= mTxt else
-     if bNumber.Checked then Data.InsMode:= mNum else
-      Data.InsMode:= mBul;
-    if bAtCol.Checked then Data.InsPos:= pCol else
-     if bAfterSp.Checked then Data.InsPos:= pAfterSp else
-      Data.InsPos:= pAfterStr;
-    Data.InsCol:= edCol.Value;
-    Data.InsStrAfter:= edStrAfter.Text;
-    Data.SkipEmpty:= cbSkip.Checked;
-    Data.NStart:= edStart.Value;
-    Data.NDigits:= edDigits.Value;
-    Data.NTail:= edTail.Text;
-    Data.NBegin:= edBegin.Text;
-    Data.NCounter:= edCounter.Value;
-  finally
-    Free
-  end;
-
-  F.LockMapUpdate:= true;
-  FLockUpdate:= true;
-  UpdateFormEnabled(false);
-  try
-    EditorInsertTextData(Ed, Data, DoHint);
-    DoHint('');
-  finally
-    UpdateFormEnabled(true);
-    FLockUpdate:= false;
-    F.LockMapUpdate:= false;
-  end;
-end;
 
 function DoFindFileInSubdirs(
   const sel: Widestring;
