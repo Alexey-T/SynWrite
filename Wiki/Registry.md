@@ -11,6 +11,10 @@ Icons: Aha               | | IconSets/icons.Aha.zip
 Icons: LibreOffice White | | IconSets/icons.LibreOffice_White.zip
 Icons: WinStd            | | IconSets/icons.WinStd.zip
 Icons: Silk              | | IconSets/icons.Silk.zip
+Insert Numbers | Gives dialog to insert numbered strings | PyPlugins/plugin.Alexey.InsertNumbers.zip
+Sort | Gives dialog to sort lines, with options | PyPlugins/plugin.Alexey.Sort.zip
+Insert Time | Inserts date/time stamp into text | PyPlugins/plugin.Alexey.InsertTime.zip
+Extract Strings | Finds by regex, strings in editor, and allows to copy them | PyPlugins/plugin.Alexey.ExtractStrings.zip
 Spell Checker | Spell checker, based on Hunspell dictionaries | PyPlugins/plugin.Alexey.SpellChecker.zip
 Align by Separator | Alignes lines in selection, by separator-char (eg "=") | PyPlugins/plugin.kvichans.AlignBySeparator.zip
 reStructuredText Preview | Previews reST files as HTML in browser | PyPlugins/plugin.Alexey.reStructuredText_Preview.zip
@@ -270,6 +274,7 @@ Lexer: RTF      | | Lexers/lexer.RTF.zip
 Lexer: Assembly JWASM      | | Lexers/lexer.Assembly_JWASM.zip
 Lexer: ABC Notation | | Lexers/lexer.ABC_Notation.zip
 Lexer: reStructuredText | | Lexers/lexer.reStructuredText.zip
+Lexer: MediaWiki | | Lexers/lexer.MediaWiki.zip
 Translation: French               | | Languages/language.French.zip
 Translation: Hungarian            | | Languages/language.Hungarian.zip
 Translation: Spanish              | | Languages/language.Spanish.zip
