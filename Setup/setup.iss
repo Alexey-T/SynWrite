@@ -48,7 +48,6 @@ Source: "..\Data\skins\*";        DestDir: "{app}\Data\skins";
 Source: "..\Data\icons\*";        DestDir: "{app}\Data\icons";
 Source: "..\Data\conv\*";         DestDir: "{app}\Data\conv";
 Source: "..\Data\outpresets\*";   DestDir: "{app}\Data\outpresets";
-Source: "..\Data\websearch\*";    DestDir: "{app}\Data\websearch";
 
 Source: "..\Data\clips\Arrows\*";                     DestDir: "{app}\Data\clips\Arrows";                    
 Source: "..\Data\clips\Currency symbols\*";           DestDir: "{app}\Data\clips\Currency symbols";          

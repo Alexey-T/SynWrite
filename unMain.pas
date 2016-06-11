@@ -110,8 +110,7 @@ type
     cSynDataNewDoc,
     cSynDataOutPresets,
     cSynDataSkins,
-    cSynDataSnippets,
-    cSynDataWebSearch
+    cSynDataSnippets
     );
 const
   cSynDataSubdirNames: array[TSynDataSubdirId] of string = (
@@ -123,8 +122,7 @@ const
     'newdoc',
     'outpresets',
     'skins',
-    'snippets',
-    'websearch'
+    'snippets'
     );
 
 type
@@ -1018,7 +1016,6 @@ type
     ecTreePrevBrother: TAction;
     TBXItemMarkGoLast: TSpTbxItem;
     TBXItemRunOpenFile: TSpTbxItem;
-    TBXItemSSelToken: TSpTbxItem;
     TBXItemTreeFindCopyToClipNode: TSpTbxItem;
     TBXSeparatorItem71: TSpTbxSeparatorItem;
     TBXItemClipCopyToEd: TSpTbxItem;
@@ -1136,7 +1133,6 @@ type
     ecAlignWithSep: TAction;
     TBXItemTabToggleSplit: TSpTBXItem;
     ecToggleShowGroup2: TAction;
-    TBXItemSSelExtend: TSpTbxItem;
     TBXItemTreeCollapseAll: TSpTbxItem;
     TBXItemTreeExpandAll: TSpTbxItem;
     TBXItemTreeLevel2: TSpTbxItem;
@@ -1364,7 +1360,6 @@ type
     ecExtractUniq: TAction;
     TBXItemEExtractUniq: TSpTBXItem;
     TBXItemBarDedupAndOrig: TSpTBXItem;
-    TbxSubmenuWeb: TSpTBXSubmenuItem;
     TbxItemTabSaveAs: TSpTBXItem;
     TbxItemTabSave: TSpTBXItem;
     SpTBXSeparatorItem15: TSpTBXSeparatorItem;
@@ -1769,7 +1764,6 @@ type
     procedure ecTreeNextBrotherExecute(Sender: TObject);
     procedure ecTreePrevBrotherExecute(Sender: TObject);
     procedure TBXItemRunOpenFileClick(Sender: TObject);
-    procedure TBXItemSSelTokenClick(Sender: TObject);
     procedure TBXItemTreeFindCopyToClipNodeClick(Sender: TObject);
     procedure TemplatePopupShow(Sender: TObject);
     procedure TBXItemClipCopyToEdClick(Sender: TObject);
@@ -1929,7 +1923,6 @@ type
     procedure ecToggleShowGroup2Execute(Sender: TObject);
     procedure PluginACPAfterComplete(Sender: TObject;
       const Item: WideString);
-    procedure TBXItemSSelExtendClick(Sender: TObject);
     procedure TBXItemTreeExpandAllClick(Sender: TObject);
     procedure TBXItemTreeCollapseAllClick(Sender: TObject);
     procedure TBXItemTreeLevel2Click(Sender: TObject);
@@ -2094,8 +2087,6 @@ type
     procedure ecExtractUniqExecute(Sender: TObject);
     procedure TBXItemEExtractUniqClick(Sender: TObject);
     procedure TBXItemBarDedupAndOrigClick(Sender: TObject);
-    procedure TbxSubmenuWebPopup(Sender: TTBCustomItem; FromLink: Boolean);
-    procedure WebSearchClick(Sender: TObject);
     procedure TbxItemTabSaveClick(Sender: TObject);
     procedure TbxItemTabSaveAsClick(Sender: TObject);
     procedure TbxItemAddonsInstallClick(Sender: TObject);
@@ -2611,9 +2602,6 @@ type
     procedure DoMacro_SetHotkey(n: integer; AKey: TKeyStroke);
     function DoMacro_GetName(n: integer): Widestring;
     function DoMacro_GetCommandName(n: integer; AWithKey: boolean = False): Widestring;
-
-    procedure DoOnlineSearch_Filename(const fn: string);
-    procedure DoOnlineSearch_Name(const Name: string);
 
     function GetTheme: string;
     procedure SetIcons(const S: string);
@@ -5910,13 +5898,6 @@ begin
     sm_OpenCurrentFile: DoOpenCurrentFile;
     sm_OpenCurrentFolder: DoOpenCurrentDir;
     sm_OpenCmdPrompt: DoOpenCmdPrompt;
-
-    sm_OnlineSearchHTML4: DoOnlineSearch_Name('HTML4');
-    sm_OnlineSearchHTML5: DoOnlineSearch_Name('HTML5');
-    sm_OnlineSearchGoogle: DoOnlineSearch_Name('Google');
-    sm_OnlineSearchPhp: DoOnlineSearch_Name('PHP.net');
-    sm_OnlineSearchWikipedia: DoOnlineSearch_Name('Wikipedia (en)');
-    sm_OnlineSearchMsdn: DoOnlineSearch_Name('MSDN');
 
     sm_NumericConverterDialog: ecNumericConverter.Execute;
     sm_ToggleLineCommentAlt: ecToggleLineCommentAlt.Execute;
@@ -9720,7 +9701,6 @@ begin
   UpdKey(TBXItemEExtractDupNoCase, sm_ExtractDupsNoCase);
   UpdKey(TBXItemEReverse, sm_ReverseLines);
   UpdKey(TBXItemEShuffle, sm_ShuffleLines);
-  UpdKey(TBXItemSSelExtend, sm_SelectionExtend);
 
   //multi-carets
   UpdKey(TbxItemCaretsRemove1, sm_CaretsRemoveLeaveFirst);
@@ -9783,7 +9763,6 @@ begin
 
   UpdKey(TbxItemHelpCommandList, sm_CommandsList);
   UpdKey(TbxItemERepeatCmd, sm_RepeatLastCommand);
-  UpdKey(TbxItemSSelToken, sm_SelectToken);
 
   //macro
   UpdKey(TbxItemMacroRepeat, sm_MacroRepeat);
@@ -11386,53 +11365,6 @@ begin
     FreeAndNil(L);
   end;
 end;
-
-procedure TfmMain.DoOnlineSearch_Name(const Name: string);
-var
-  fn: string;
-begin
-  fn:= SynDataSubdir(cSynDataWebSearch)+'\'+Name+'.ini';
-  if FileExists(fn) then
-    DoOnlineSearch_Filename(fn)
-  else
-    MsgNoFile(fn);  
-end;
-
-procedure TfmMain.DoOnlineSearch_Filename(const fn: string);
-const
-  cMacroWord = '{word}';
-  cMacroSel = '{sel}';
-var
-  SWeb, S: Widestring;
-begin
-  with TIniFile.Create(fn) do
-  try
-    SWeb:= UTF8Decode(ReadString('info', 'web', ''));
-    if SWeb='' then Exit;
-  finally
-    Free
-  end;
-
-  if Pos(cMacroWord, SWeb)>0 then
-  begin
-    with CurrentEditor do
-      S:= WideTrim(WordAtPos(CaretPos));
-    if S='' then
-      begin MsgNoSelection; Exit; end;
-    SReplaceW(SWeb, cMacroWord, S);
-  end;
-
-  if Pos(cMacroSel, SWeb)>0 then
-  begin
-    S:= EditorSelectedTextForWeb(CurrentEditor);
-    if S='' then
-      begin MsgNoSelection; Exit end;
-    SReplaceW(SWeb, cMacroSel, S);
-  end;
-
-  FOpenURL(SWeb, Handle);
-end;
-
 
 procedure TfmMain.DoOpenInBrowser(const fn: Widestring);
 begin
@@ -17730,11 +17662,6 @@ begin
   DoTreeJump(tgoPrevBro);
 end;
 
-procedure TfmMain.TBXItemSSelTokenClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_SelectToken);
-end;
-
 procedure TfmMain.TBXItemTreeFindCopyToClipNodeClick(Sender: TObject);
 begin
   //if root selected (Parent=nil), do "Copy search",
@@ -22791,11 +22718,6 @@ begin
   end
 end;
 
-procedure TfmMain.TBXItemSSelExtendClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_SelectionExtend);
-end;
-
 procedure TfmMain.TBXItemTreeExpandAllClick(Sender: TObject);
 begin
   DoTreeFocus;
@@ -23356,11 +23278,6 @@ begin
       if SCmd='m:{carets}' then
       begin
         Item.LinkSubitems:= TbxSubmenuItemCaretsOps;
-      end
-      else
-      if SCmd='m:{websearch}' then
-      begin
-        Item.LinkSubitems:= TbxSubmenuWeb;
       end
       else
       if SCmd='m:{addman}' then
@@ -27783,35 +27700,6 @@ end;
 procedure TfmMain.TBXItemTreeFindPreviewClick(Sender: TObject);
 begin
   TreeFind_ShowPreview;
-end;
-
-procedure TfmMain.TbxSubmenuWebPopup(Sender: TTBCustomItem;
-  FromLink: Boolean);
-var
-  LFiles: TTntStringList;
-  i: Integer;
-  MI: TSpTbxItem;
-begin
-  TbxSubmenuWeb.Clear;
-
-  LFiles:= TTNtStringList.Create;
-  try
-    FFindToList(LFiles, SynDataSubdir(cSynDataWebSearch), '*.ini', '', false, false, false, false);
-    for i:= 0 to LFiles.Count-1 do
-    begin
-      MI:= TSpTbxItem.Create(Self);
-      MI.Caption:= WideChangeFileExt(WideExtractFileName(LFiles[i]), '');
-      MI.OnClick:= WebSearchClick;
-      TbxSubmenuWeb.Add(MI);
-    end;
-  finally
-    FreeAndNil(LFiles);
-  end;
-end;
-
-procedure TfmMain.WebSearchClick(Sender: TObject);
-begin
-  DoOnlineSearch_Name((Sender as TSpTbxItem).Caption);
 end;
 
 procedure TfmMain.TbxItemTabSaveClick(Sender: TObject);

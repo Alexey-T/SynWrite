@@ -155,10 +155,6 @@ const
   sm_OpenBrowserChrome = 832;
   sm_OpenBrowserSafari = 833;
   sm_OpenCurrentFolder = 834;
-  sm_OnlineSearchPhp = 835;
-  sm_OnlineSearchGoogle = 836;
-  sm_OnlineSearchWikipedia = 837;
-  sm_OnlineSearchMsdn = 838;
   sm_MacrosDialog = 839;
 
   sm_BookmarksClear = 841;
@@ -204,8 +200,6 @@ const
   sm_ReplaceFromClip = 882; //not used
   sm_ReplaceFromClipAll = 883;
   sm_RereadOutputPanel = 884;
-  sm_OnlineSearchHTML4 = 886;
-  sm_OnlineSearchHTML5 = 887;
   sm_NumericConverterDialog = 889;
   sm_ToggleLineCommentAlt = 892;
   sm_SelectionExtend = 893;
