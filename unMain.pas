@@ -3261,7 +3261,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.21.2255';
+  cSynVer = '6.21.2260';
   cSynPyVer = '1.0.151';
 
 const
@@ -21476,9 +21476,13 @@ var
   Pos1, Pos2, i: Integer;
   L: TTntStringList;
   S: Widestring;
-  ok: boolean;
+  ok, bNeedRestoreSel: boolean;
+  Caret: TPoint;
 begin
   Ed:= CurrentEditor;
+  bNeedRestoreSel:= Ed.HaveSelection;
+  Caret:= Ed.CaretPos;
+
   if not Ed.HaveSelection then
   begin
     Ln1:= 0;
@@ -21648,8 +21652,11 @@ begin
     Ed.CaretStrPos:= Pos1; //needed! otherwise ReplaceText will leave trailing blanks after small block.
     Ed.ReplaceText(Pos1, Pos2-Pos1, S);
 
-    //restore selection Ln1...Ln2
-    Ed.SetSelection(Pos1, Length(S));
+    //restore selection or caret
+    if bNeedRestoreSel then
+      Ed.SetSelection(Pos1, Length(S))
+    else
+      Ed.CaretPos:= Caret;  
   finally
     Ed.EndUpdate;
   end;
