@@ -3711,7 +3711,8 @@ begin
 
   if IsFileArchive(AFileName) then
   begin
-    DoOpenArchive(AFileName, AParams);
+    if SynExe then
+      DoOpenArchive(AFileName, AParams);
     Result:= nil;
     Exit
   end;
@@ -21898,14 +21899,21 @@ end;
 procedure TfmMain.DoCheckAutoShowACP(Ed: TSyntaxMemo);
 var
   N, NLen, i: Integer;
+  IsCmt, IsStr: boolean;
 begin
   if (opAcpNum=0) or (ecACP.StartExpr<>'') then Exit;
   if ecACP.Visible then Exit;
 
   N:= Ed.CaretStrPos;
   if N>Length(Ed.Lines.FText) then Exit;
+
   //don't do Autocomplete if next char is wordchar
   if IsWordChar(Ed.Lines.Chars[N+1]) then Exit;
+
+  //don't do Autocomplete if inside comment/string
+  //(no option for it, good)
+  EditorGetTokenType(Ed, N, N, IsCmt, IsStr);
+  if IsCmt or IsStr then Exit;
 
   //NLen is length of word before caret
   NLen:= 1;

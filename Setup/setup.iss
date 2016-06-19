@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.21.2255
+AppVersion=6.21.2260
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -49,27 +49,27 @@ Source: "..\Data\icons\*";        DestDir: "{app}\Data\icons";
 Source: "..\Data\conv\*";         DestDir: "{app}\Data\conv";
 Source: "..\Data\outpresets\*";   DestDir: "{app}\Data\outpresets";
 
-Source: "..\Data\clips\Arrows\*";                     DestDir: "{app}\Data\clips\Arrows";                    
-Source: "..\Data\clips\Currency symbols\*";           DestDir: "{app}\Data\clips\Currency symbols";          
-Source: "..\Data\clips\Greek alphabet (lower)\*";     DestDir: "{app}\Data\clips\Greek alphabet (lower)";    
-Source: "..\Data\clips\Greek alphabet (upper)\*";     DestDir: "{app}\Data\clips\Greek alphabet (upper)";    
-Source: "..\Data\clips\HTML - Arrows\*";              DestDir: "{app}\Data\clips\HTML - Arrows";             
-Source: "..\Data\clips\HTML - Color names\*";         DestDir: "{app}\Data\clips\HTML - Color names";        
-Source: "..\Data\clips\HTML - Color names+values\*";  DestDir: "{app}\Data\clips\HTML - Color names+values"; 
-Source: "..\Data\clips\HTML - Letters\*";             DestDir: "{app}\Data\clips\HTML - Letters";            
-Source: "..\Data\clips\HTML - Math symbols\*";        DestDir: "{app}\Data\clips\HTML - Math symbols";       
-Source: "..\Data\clips\HTML - Special characters\*";  DestDir: "{app}\Data\clips\HTML - Special characters"; 
-Source: "..\Data\clips\Math symbols\*";               DestDir: "{app}\Data\clips\Math symbols";              
-Source: "..\Data\clips\Quote selection\*";            DestDir: "{app}\Data\clips\Quote selection";           
-Source: "..\Data\clips\Special characters\*";         DestDir: "{app}\Data\clips\Special characters";        
+Source: "..\Data\clips\Arrows\*";                     DestDir: "{app}\Data\clips\Arrows";
+Source: "..\Data\clips\Currency symbols\*";           DestDir: "{app}\Data\clips\Currency symbols";
+Source: "..\Data\clips\Greek alphabet (lower)\*";     DestDir: "{app}\Data\clips\Greek alphabet (lower)";
+Source: "..\Data\clips\Greek alphabet (upper)\*";     DestDir: "{app}\Data\clips\Greek alphabet (upper)";
+Source: "..\Data\clips\HTML - Arrows\*";              DestDir: "{app}\Data\clips\HTML - Arrows";
+Source: "..\Data\clips\HTML - Color names\*";         DestDir: "{app}\Data\clips\HTML - Color names";
+Source: "..\Data\clips\HTML - Color names+values\*";  DestDir: "{app}\Data\clips\HTML - Color names+values";
+Source: "..\Data\clips\HTML - Letters\*";             DestDir: "{app}\Data\clips\HTML - Letters";
+Source: "..\Data\clips\HTML - Math symbols\*";        DestDir: "{app}\Data\clips\HTML - Math symbols";
+Source: "..\Data\clips\HTML - Special characters\*";  DestDir: "{app}\Data\clips\HTML - Special characters";
+Source: "..\Data\clips\Math symbols\*";               DestDir: "{app}\Data\clips\Math symbols";
+Source: "..\Data\clips\Quote selection\*";            DestDir: "{app}\Data\clips\Quote selection";
+Source: "..\Data\clips\Special characters\*";         DestDir: "{app}\Data\clips\Special characters";
 
-Source: "..\Data\snippets\Std.C\*";      DestDir: "{app}\Data\snippets\Std.C";      
-Source: "..\Data\snippets\Std.Pascal\*"; DestDir: "{app}\Data\snippets\Std.Pascal"; 
-Source: "..\Data\snippets\Std.Php\*";    DestDir: "{app}\Data\snippets\Std.Php";    
+Source: "..\Data\snippets\Std.C\*";      DestDir: "{app}\Data\snippets\Std.C";
+Source: "..\Data\snippets\Std.Pascal\*"; DestDir: "{app}\Data\snippets\Std.Pascal";
+Source: "..\Data\snippets\Std.Php\*";    DestDir: "{app}\Data\snippets\Std.Php";
 
-Source: "..\Tools\*"; DestDir: "{app}\Tools"; 
+Source: "..\Tools\*"; DestDir: "{app}\Tools";
 
-Source: "..\Plugins\SynFTP\*"; DestDir: "{app}\Plugins\SynFTP"; Flags: recursesubdirs; 
+Source: "..\Plugins\SynFTP\*"; DestDir: "{app}\Plugins\SynFTP"; Flags: recursesubdirs;
 
 Source: "..\Py\syn_plugin_manager\*"; DestDir: "{app}\Py\syn_plugin_manager"; Excludes: "*.pyc"; Flags: recursesubdirs;
 Source: "..\Py\syn_color_picker\*"; DestDir: "{app}\Py\syn_color_picker"; Excludes: "*.pyc"; Flags: recursesubdirs;
