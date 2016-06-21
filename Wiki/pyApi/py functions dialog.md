@@ -10,7 +10,7 @@ Function | Description
 `dlg_checklist(caption, columns, items, size_x, size_y)` | Shows dialog with ListView with checkmarks. Returns list of bool: checked states of lines, or empty list if dialog cancelled. `caption` is dialog caption. `columns` is "\n"-separated column items, each item is "\t"-separated: title and `str(column_width)`, where `column_width` can be missed or zero for autosize. `items` is "\n"-separated dialog lines, each line is "\t"-separated column strings. 1st column can begin with `"*"` to check this line. `size_x`, `size_y` are dialog sizes.
 `dlg_file(is_open, filename, folder, filters)` | Shows "Open file" or "Save file as" dialog. Returns filename or `None` if cancelled. `is_open` is bool: Open or Save dialog, `filename` is initial filename (can be empty and without path), `folder` is initial folder (can be empty), `filters` is file-masks string (can be empty). If filename is "*", multi-selection is enabled and result is list of str, not str.  
 `dlg_folder(caption, folder)` | Shows "Select folder" dialog. Returns folder path or `None` if cancelled. `caption` is prompt text (can be empty), `folder` is initial folder (can be empty).
-`dlg_custom(caption, size_x, size_y, text, focused=-1)` | Shows user-made dialog. Info http://wiki.freepascal.org/CudaText_API#dlg_custom , about 90% is working here. No support for Togglebox, Checkgroup.
+`dlg_custom(caption, size_x, size_y, text, focused=-1)` | Shows user-made dialog. Info http://wiki.freepascal.org/CudaText_API#dlg_custom . Code is ported from Cudatext. No support for types: "checkbutton", "checkgroup".
 
 File filter
 -----------

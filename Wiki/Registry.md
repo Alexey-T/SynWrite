@@ -11,6 +11,10 @@ Icons: Aha               | | IconSets/icons.Aha.zip
 Icons: LibreOffice White | | IconSets/icons.LibreOffice_White.zip
 Icons: WinStd            | | IconSets/icons.WinStd.zip
 Icons: Silk              | | IconSets/icons.Silk.zip
+Favorites | Manages "favorites" file list | PyPlugins/plugin.kvichans.Favorites.zip
+Rename File | Shows dialog to rename file | PyPlugins/plugin.kvichans.RenameFile.zip
+Encode | Encodes text with transformations (Base64, URL escape, HTML/XML escape, Hash, etc) | PyPlugins/plugin.Alexey.Encode.zip
+Online Search | Opens browser with search for selection or cur-word | PyPlugins/plugin.Alexey.OnlineSearch.zip
 Insert Numbers | Gives dialog to insert numbered strings | PyPlugins/plugin.Alexey.InsertNumbers.zip
 Sort | Gives dialog to sort lines, with options | PyPlugins/plugin.Alexey.Sort.zip
 Insert Time | Inserts date/time stamp into text | PyPlugins/plugin.Alexey.InsertTime.zip
