@@ -25,7 +25,7 @@ implementation
 
 const
   cButtonResultStart=100;
-  cTagActive = -1; //must be <0, as >=0 used for tab-order
+  cTagActive=1;
 
 var
   FDialogShown: boolean = false;
@@ -452,7 +452,7 @@ begin
     if SName='act' then
     begin
       if SValue='1' then
-        Ctl.Tag:= cTagActive;
+        Ctl.HelpContext:= cTagActive;
       Continue;
     end;
 
@@ -665,8 +665,7 @@ procedure TDummyClass.DoOnChange(Sender: TObject);
 var
   i: integer;
 begin
-  //Tag=cTagActive means that control changing closes form
-  if (Sender as TControl).Tag=cTagActive then
+  if (Sender as TControl).HelpContext=cTagActive then
     for i:= 0 to Form.ControlCount-1 do
       if Form.Controls[i]=Sender then
       begin
