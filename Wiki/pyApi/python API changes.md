@@ -1,11 +1,16 @@
 Changes in Python API
 =====================
 
+jun 2016
+
+* release 1.0.152
+* del Favorites api, cmds
+
 may 2016
 
 * release 1.0.151
 * add dlg_custom()
-* add app_proc: PROC_SET_ESCAPE PROC_GET_ESCAPE
+* add app_proc: PROC_SET_ESCAPE, PROC_GET_ESCAPE
 
 jan 2016
 

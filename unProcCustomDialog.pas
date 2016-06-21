@@ -345,10 +345,12 @@ begin
       if SValue='combo' then
         begin
           Ctl:= TTntCombobox.Create(AForm);
+          (Ctl as TTntCombobox).DropDownCount:= 20;
         end;
       if SValue='combo_ro' then
         begin
           Ctl:= TTntCombobox.Create(AForm);
+          (Ctl as TTntCombobox).DropDownCount:= 20;
           (Ctl as TTntCombobox).Style:= csDropDownList;
           (Ctl as TTntCombobox).OnChange:= ADummy.DoOnChange;
         end;

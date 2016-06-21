@@ -82,7 +82,6 @@ const
   sm_FileExit = 745;
   sm_FileCloseAndDelete = 746;
   sm_FileMoveToOtherView = 747;
-  sm_FileRenameDialog = 748;
 
   sm_FileBackup = 750;
   sm_ToggleStreamComment = 751;
@@ -108,9 +107,6 @@ const
   sm_SplitViewsVertHorz = 770;
   sm_SplitSlaveVertHorz = 771;
   sm_GotoBookmarkDialog = 772;
-  sm_Fav_AddFile = 773;
-  sm_Fav_Organize = 774;
-  sm_Fav_AddProject = 775;
   sm_ToggleFocusClips = 776;
   sm_ToggleSmartHl = 777;
   sm_DropPortableBk = 778;
@@ -318,7 +314,6 @@ const
   sm_CopySearchMarks = 1020;
   sm_OpenProject = 1021;
   sm_AddFileToProject = 1022;
-  sm_FavoriteProjects = 1023;
   sm_NewProject = 1024;
   sm_PasteAndSelect = 1025;
   sm_InsertBlankLineAbove = 1026;

@@ -1033,16 +1033,9 @@ type
     ecSplitSlaveVertHorz: TAction;
     ecGotoBk: TAction;
     TBXItemBkGoto: TSpTbxItem;
-    TBXSubmenuItemFav: TSpTBXSubmenuItem;
-    TBXItemFavAddFile: TSpTbxItem;
-    TBXItemFavManage: TSpTbxItem;
-    acFavAddFile: TAction;
-    acFavManage: TAction;
     TbxSubmenuColors: TSpTBXSubmenuItem;
     ImageListColorRecent: TImageList;
     TBXItemCtxAddColor: TSpTbxItem;
-    TBXItemFavAddProj: TSpTbxItem;
-    acFavAddProj: TAction;
     TBXSeparatorItem75: TSpTbxSeparatorItem;
     TBXItemTabAddToProj: TSpTBXItem;
     ecToggleFocusClips: TAction;
@@ -1060,8 +1053,6 @@ type
     TBXSeparatorItem78: TSpTbxSeparatorItem;
     ecGotoPortableBk: TAction;
     TBXItemBkGotoPortable: TSpTbxItem;
-    acRename: TAction;
-    TBXItemFRename: TSpTbxItem;
     TBXItemRunNumConv: TSpTbxItem;
     ecNumericConverter: TAction;
     ecIndentLike1st: TAction;
@@ -1267,7 +1258,6 @@ type
     TBXMRUListItem_Projects: TSpTBXMRUListItem;
     SpTBXSeparatorItem24: TSpTBXSeparatorItem;
     TBXItemProjRecentClear: TSpTBXItem;
-    SpTBXSeparatorItem21: TSpTBXSeparatorItem;
     TBXItemProjGoto: TSpTBXItem;
     TBXItemProjNew: TSpTBXItem;
     TbxItemCtxTool16: TSpTBXItem;
@@ -1781,16 +1771,9 @@ type
     procedure ecSplitSlaveVertHorzExecute(Sender: TObject);
     procedure ecGotoBkExecute(Sender: TObject);
     procedure TBXItemBkGotoClick(Sender: TObject);
-    procedure TBXItemFavAddFileClick(Sender: TObject);
-    procedure TBXItemFavManageClick(Sender: TObject);
-    procedure acFavManageExecute(Sender: TObject);
     procedure TBXItemCtxAddColorClick(Sender: TObject);
     procedure TbxSubmenuColorsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
-    procedure TBXItemFavAddProjClick(Sender: TObject);
-    procedure acFavAddFileExecute(Sender: TObject);
-    procedure acFavAddProjExecute(Sender: TObject);
-    procedure TBXSubmenuItemFavPopup(Sender: TTBCustomItem; FromLink: Boolean);
     procedure TBXItemTabAddToProjClick(Sender: TObject);
     procedure TreeContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
@@ -1805,7 +1788,6 @@ type
     procedure TBXItemBkDropPortableClick(Sender: TObject);
     procedure ecDropPortableBkExecute(Sender: TObject);
     procedure ecGotoPortableBkExecute(Sender: TObject);
-    procedure acRenameExecute(Sender: TObject);
     procedure TBXItemRunNumConvClick(Sender: TObject);
     procedure ecNumericConverterExecute(Sender: TObject);
     procedure TBXItemEUnindentClick(Sender: TObject);
@@ -2337,7 +2319,6 @@ type
       const ADir: Widestring;
       AOutAppend: boolean): boolean;
 
-    procedure DoAddFav(const fn: Widestring);
     procedure NumConvInsert(Sender: TObject; const S: string; Typ: TSynNumType);
     procedure DoGetCommentProps(const Lexer: string;
       UseDefault: boolean;
@@ -2718,8 +2699,6 @@ type
     procedure DoOpenProject; overload;
     procedure DoAddFileToProject;
     procedure DoAddFilesToProject;
-    procedure DoFavoriteProjects;
-    procedure DoFavoritesDialog(ATab: Integer = -1);
     procedure DoPasteAndSelect;
     procedure DoCopyURL;
     procedure DoOpenURL;
@@ -3174,7 +3153,6 @@ type
     function FrameForFilename(const fn: Widestring): TEditorFrame;
     function DoCheckCommandLineTwo: boolean;
     procedure DoEnumLexers(L: TTntStrings; AlsoDisabled: boolean = false);
-    procedure DoEnumFavs(L: TTntStringList);
     procedure DoEnumProjFiles(L: TTntStringList);
     procedure DoEnumIcons(L: TTntStringList);
 
@@ -3200,7 +3178,6 @@ type
 
     function SynIni: string;
     function SynToolbarsIni: string;
-    function SynFavIni: string;
     function SynStylesIni: string;
     function SynHistoryStatesIni: string;
     function SynFoldStatesIni: string;
@@ -3220,7 +3197,6 @@ type
     function SynLexersExCfg: string;
     function SynLexLib: string;
 
-    function DoGetFavList: Widestring;
     function DoGetSearchPaths: Widestring;
     function DoFindCommand(
       Ed: TSyntaxMemo;
@@ -3261,8 +3237,8 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.21.2260';
-  cSynPyVer = '1.0.151';
+  cSynVer = '6.22.2270';
+  cSynPyVer = '1.0.152';
 
 const
   cSynParamRO = '/ro';
@@ -3303,7 +3279,7 @@ uses
   unSaveLex,
   unSetup, unAbout, unEnc, unToolsList, unSRFiles, unShell,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
-  unProcTabbin, unGotoBkmk, unFav,
+  unProcTabbin, unGotoBkmk, 
   unMenuCmds, unMenuProj, unMenuSnippets,
   unToolbarProp, unHideItems,
   unProcPy,
@@ -5157,11 +5133,6 @@ begin
   Result:= SynIniDir + 'SynToolbars.ini';
 end;
 
-function TfmMain.SynFavIni: string;
-begin
-  Result:= SynIniDir + 'SynFav.ini';
-end;
-
 function TfmMain.SynStylesIni: string;
 begin
   Result:= SynIniDir + 'SynStyles.ini';
@@ -6124,9 +6095,6 @@ begin
     sm_FileSave: if acSave.Enabled then acSave.Execute;
     sm_FileSaveAs: if acSaveAs.Enabled then acSaveAs.Execute;
     sm_FileSaveAll: acSaveAll.Execute;
-    sm_Fav_AddFile: acFavAddFile.Execute;
-    sm_Fav_AddProject: acFavAddProj.Execute;
-    sm_Fav_Organize: acFavManage.Execute;
 
     //tab closing commands are special, they destroy current editor,
     //so need to perform them not in OnExecuteCommand
@@ -6135,7 +6103,6 @@ begin
     sm_FileCloseAll,
     sm_FileCloseOthers,
     sm_FileCloseOthersAllGroups,
-    sm_FileRenameDialog,
     sm_FileOpenSession,
     sm_FileAddSession,
     sm_FileCloseSession:
@@ -6297,7 +6264,6 @@ begin
     sm_OpenProject: DoOpenProject;
     sm_AddFileToProject: DoAddFileToProject;
     sm_AddFilesToProject: DoAddFilesToProject;
-    sm_FavoriteProjects: DoFavoriteProjects;
     sm_SaveProject: DoSaveProject;
     sm_UpdateProject: DoUpdateProject;
 
@@ -9803,7 +9769,6 @@ begin
   UpdKey(TbxItemFCloseAll, sm_FileCloseAll);
   UpdKey(TbxItemFCloseOth, sm_FileCloseOthers);
   UpdKey(TbxItemFSaveAll, sm_FileSaveAll);
-  UpdKey(TbxItemFRename, sm_FileRenameDialog);
   //
   UpdKey(TbxItemSResNext, sm_GotoNextFindResult);
   UpdKey(TbxItemSResPrev, sm_GotoPrevFindResult);
@@ -9831,10 +9796,6 @@ begin
   UpdKey(tbxItemFReopen, sm_FileReopen);
   UpdKey(tbxItemFSave, sm_FileSave);
   UpdKey(tbxItemFSaveAs, sm_FileSaveAs);
-
-  UpdKey(tbxItemFavAddFile, sm_Fav_AddFile);
-  UpdKey(tbxItemFavAddProj, sm_Fav_AddProject);
-  UpdKey(tbxItemFavManage, sm_Fav_Organize);
 
   UpdKey(TBXItemFSesOpen, sm_FileOpenSession);
   UpdKey(TBXItemFSesSave, sm_FileSaveSession);
@@ -11496,8 +11457,6 @@ begin
       acCloseOthersThisGroup.Execute;
     sm_FileCloseOthersAllGroups:
       acCloseOthersAllGroups.Execute;
-    sm_FileRenameDialog:
-      acRename.Execute;
     sm_FileOpenSession:
       DoSessionOpenDialog;
     sm_FileAddSession:
@@ -18664,73 +18623,6 @@ begin
   CurrentEditor.ExecCommand(sm_GotoBookmarkDialog);
 end;
 
-procedure TfmMain.TBXItemFavAddFileClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_Fav_AddFile);
-end;
-
-procedure TfmMain.TBXItemFavManageClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_Fav_Organize);
-end;
-
-procedure TfmMain.DoAddFav(const fn: Widestring);
-var
-  fn_ini: string;
-  L: TTntStringList;
-begin
-  if fn='' then
-    begin MsgBeep; Exit end;
-  fn_ini:= SynFavIni;
-
-  L:= TTntStringList.Create;
-  try
-    if FileExists(fn_ini) then
-      L.LoadFromFile(fn_ini);
-    if L.IndexOf(fn)<0 then
-    begin
-      L.Add(fn);
-      L.SaveToFile(fn_ini);
-    end;
-  finally
-    FreeAndNil(L);
-  end;
-
-  DoHint(WideFormat(DKLangConstW('zMFavAdded'), [fn]));
-end;
-
-procedure TfmMain.acFavManageExecute(Sender: TObject);
-begin
-  DoFavoritesDialog;
-end;
-
-procedure TfmMain.DoFavoritesDialog(ATab: Integer = -1);
-begin
-  with TfmFav.Create(nil) do
-  try
-    FIniFN:= SynFavIni;
-    FOptFN:= SynHistoryIni;
-    FFavTab:= ATab;
-    
-    if ShowModal=mrOk then
-    begin
-      if FCurrentFileName<>'' then
-        if IsFileExist(FCurrentFileName) then
-        begin
-          if IsFileProject(FCurrentFileName) then
-            DoOpenProject(FCurrentFileName)
-          else
-            DoOpenFile(FCurrentFileName);
-        end
-        else
-        if not DoPlugin_OpenFavorite(FCurrentFileName) then
-          MsgNoFile(FCurrentFileName);
-    end;
-  finally
-    Free
-  end;
-end;
-
 procedure TfmMain.ApplyFramesOptions;
 var
   i, N: Integer;
@@ -18966,21 +18858,6 @@ begin
   Files.Add(CurrentLexerForFile);
 end;
 
-procedure TfmMain.TBXItemFavAddProjClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_Fav_AddProject);
-end;
-
-procedure TfmMain.acFavAddFileExecute(Sender: TObject);
-begin
-  DoAddFav(CurrentFrame.FileName);
-end;
-
-procedure TfmMain.acFavAddProjExecute(Sender: TObject);
-begin
-  DoAddFav(CurrentProjectFN);
-end;
-
 function TfmMain.CurrentProjectFN: Widestring;
 begin
   Result:= '';
@@ -18998,13 +18875,6 @@ begin
   end
   else
     MsgBeep;
-end;
-
-procedure TfmMain.TBXSubmenuItemFavPopup(Sender: TTBCustomItem;
-  FromLink: Boolean);
-begin
-  TBXItemFavAddFile.Enabled:= CurrentFrame.FileName<>'';
-  TBXItemFavAddProj.Enabled:= CurrentProjectFN<>'';
 end;
 
 procedure TfmMain.ProjGetWorkDir(Sender: TObject; Files: TTntStrings);
@@ -19406,63 +19276,6 @@ begin
     InsertText(SPadding+s1+'NOTE: '+s+' '+s2);
   end;
 end;
-
-
-procedure TfmMain.acRenameExecute(Sender: TObject);
-var
-  F: TEditorFrame;
-  fn, fn_new, sName: Widestring;
-  NColor: TColor;
-begin
-  F:= CurrentFrame;
-  fn:= F.FileName;
-  if fn='' then
-    begin MsgBeep; Exit end;
-  NColor:= F.TabColor;
-
-  if F.IsFtp then
-    if not MsgConfirmFtp then
-      Exit
-    else
-      F.FreeFtpInfo;
-
-  repeat
-    sName:= WideExtractFileName(fn);
-    if not DoInputFilename(DKLangConstW('zMRename'), sName) then Exit;
-
-    fn_new:= WideExtractFilePath(fn) + sName;
-
-    //allow to rename to non-existent name
-    if not IsFileExist(fn_new) then
-      Break
-    else
-    //allow to only change filename case
-    if WideUpperCase(fn_new) = WideUpperCase(fn) then
-      Break
-    else
-    //don't allow to overwrite existing file
-      MsgBeep;
-  until false;
-
-  acClose.Execute;
-  if not MoveFileW(PWChar(fn), PWChar(fn_new)) then
-  begin
-    MsgRenameError(fn, fn_new, Handle);
-    DoOpenFile(fn);
-  end
-  else
-  begin
-    //rename successful
-    SynMruFiles.DeleteItem(fn);
-    DoOpenFile(fn_new);
-    DoPlugin_RefreshFiles(fn_new);
-    DoProjectRenameFile(fn, fn_new);
-  end;
-
-  if NColor<>clNone then
-    DoSetFrameTabColor(CurrentFrame, NColor);
-end;
-
 
 function TfmMain.OppositeFrame: TEditorFrame;
 begin
@@ -20137,14 +19950,6 @@ begin
   begin
     Result:= PluginAction_GetProjectFN(Integer(A2), A1);
     Exit;
-  end;
-
-  //---------------------
-  if (act=cActionAddToFavorites) then
-  begin
-    DoAddFav(PWChar(A1));
-    Result:= cSynOK;
-    Exit
   end;
 
   //---------------------
@@ -21141,10 +20946,6 @@ begin
     cSynIdSearchPaths:
       begin
         s:= DoGetSearchPaths;
-      end;
-    cSynIdFavoritesText:
-      begin
-        s:= DoGetFavList;
       end;
     else
       begin
@@ -24105,30 +23906,6 @@ begin
   Status.InvalidateBackground();
 end;
 
-procedure TfmMain.DoEnumFavs(L: TTntStringList);
-var
-  fn: string;
-begin
-  L.Clear;
-  fn:= SynFavIni;
-  if IsFileExist(fn) then
-    L.LoadFromFile(fn);
-end;
-
-function TfmMain.DoGetFavList: Widestring;
-var
-  L: TTntStringList;
-begin
-  Result:= '';
-  L:= TTntStringList.Create;
-  try
-    DoEnumFavs(L);
-    Result:= L.Text;
-  finally
-    FreeAndNil(L);
-  end;
-end;
-
 procedure TfmMain.acSetupLexerLibExecute(Sender: TObject);
 begin
   DoLexerLibraryDialog(SyntaxManager, ImgListTree);
@@ -24271,11 +24048,6 @@ function TfmMain.IsWordChar(ch: WideChar): boolean;
 begin
   //count '#' as wordchar for HTML color codes
   Result:= ecStrUtils.IsWordChar(ch) or (Pos(ch, opWordChars+'#')>0);
-end;
-
-procedure TfmMain.DoFavoriteProjects;
-begin
-  DoFavoritesDialog(cSynFavTabProjects);
 end;
 
 procedure TfmMain.ShowProj;

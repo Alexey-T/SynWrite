@@ -109,13 +109,12 @@ function LoadPngIconEx(ImageList: TPngImageList; const fn: string): boolean;
 
 function DoInputCharCode(
   var Str: Widestring; var Num: LongWord; const fnIni: string): boolean;
-function DoInputFilename(
-  const SCaption: Widestring;
-  var SValue: Widestring): boolean;
+
 function DoInputString(
   const SCaption: Widestring;
   var SValue: Widestring;
   const IniFN: string = ''; const IniSection: string = ''): boolean;
+
 function DoInputCheckList(const ACaption, AColumns, AItems: Widestring;
   ASizeX, ASizeY: Integer): string;
 
@@ -307,7 +306,6 @@ uses
   ATxFProc,
   unSRTree,
   unInputSimple,
-  unInputFilename,
   unInputCheckList,
   unToolsList,
   unSnipEd,
@@ -1056,23 +1054,6 @@ begin
   ed.SelStart:= N2;
   ed.SelLength:= N1-N2;
   ed.SelText:= '';
-end;
-
-function DoInputFilename(const SCaption: Widestring; var SValue: Widestring): boolean;
-begin
-  with TfmInputFilename.Create(nil) do
-  try
-    labRename.Caption:= SCaption;
-
-    edName.Text:= WideChangeFileExt(SValue, '');
-    edExt.Text:= Copy(WideExtractFileExt(SValue), 2, MaxInt);
-
-    Result:= ShowModal=mrOk;
-    if Result then
-      SValue:= GetFN;
-  finally
-    Free
-  end;
 end;
 
 function DoInputString(const SCaption: Widestring; var SValue: Widestring;

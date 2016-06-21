@@ -527,7 +527,7 @@ begin
   SDir:= WideExtractFileDir(SPrevFN);
   SPrevFN:= WideExtractFileName(SPrevFN);
   SNewFN:= SPrevFN;
-  if not DoInputFilename(DKLangConstW('zMRename'), SNewFN) then Exit;
+  if not DoInputString(DKLangConstW('zMRename'), SNewFN) then Exit;
 
   if not FFileMove(SDir+'\'+SPrevFN, SDir+'\'+SNewFN) then
   begin

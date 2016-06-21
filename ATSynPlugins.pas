@@ -44,7 +44,6 @@ const
   cSynIdSelectedLines = -3;
   cSynIdCurrentLine = -4;
   cSynIdSearchPaths = -5;
-  cSynIdFavoritesText = -6;
 
 //log command id, for cActionControlLog
 const
@@ -59,7 +58,6 @@ const
   cActionOpenFile           : PWideChar = 'OpenFile';
   cActionOpenFtpFile        : PWideChar = 'OpenFtpFile';
   cActionGetOpenedFileName  : PWideChar = 'GetOpenedFile';
-  cActionAddToFavorites     : PWideChar = 'AddToFav';
   cActionGetMsg             : PWideChar = 'GetM';
   cActionControlLog         : PWideChar = 'LogCmd';
   cActionParseRegex         : PWideChar = 'ParseRE';

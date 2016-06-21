@@ -377,7 +377,6 @@ const
   FILENAME_PROJECT_FILES   = -14;
   FILENAME_LEXLIB          = -20;
   FILENAME_PATHS           = -21;
-  FILENAME_FAVS            = -22;
 
 function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
 const
@@ -417,18 +416,6 @@ begin
             List:= TTntStringList.Create;
             try
               fmMain.DoEnumProjFiles(List);
-              Result:= Py_StringList(List);
-            finally
-              FreeAndNil(List);
-            end;
-            Exit
-          end;
-
-        FILENAME_FAVS:
-          begin
-            List:= TTntStringList.Create;
-            try
-              fmMain.DoEnumFavs(List);
               Result:= Py_StringList(List);
             finally
               FreeAndNil(List);

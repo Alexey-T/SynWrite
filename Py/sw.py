@@ -17,12 +17,12 @@ SEL_COLUMN = 1
 SEL_LINES  = 2
 
 EDENC_ANSI       = 0
-EDENC_OEM        = 1 
-EDENC_MAC        = 2 
-EDENC_UTF8_BOM   = -1 
-EDENC_UTF8_NOBOM = -2 
-EDENC_UTF16_LE   = -3 
-EDENC_UTF16_BE   = -4 
+EDENC_OEM        = 1
+EDENC_MAC        = 2
+EDENC_UTF8_BOM   = -1
+EDENC_UTF8_NOBOM = -2
+EDENC_UTF16_LE   = -3
+EDENC_UTF16_BE   = -4
 
 GROUPING_ONE     = 1
 GROUPING_2VERT   = 2
@@ -107,7 +107,6 @@ FILENAME_PROJECT_SESSION = -13
 FILENAME_PROJECT_FILES   = -14
 FILENAME_LEXLIB          = -20
 FILENAME_PATHS           = -21
-FILENAME_FAVS            = -22
 
 PROC_GET_CLIP         = 1
 PROC_SET_CLIP         = 2
@@ -266,7 +265,7 @@ PROP_COLOR_SYNCEDIT_BG           = 'syncedit_bg'
 def ed_handles():
     r0, r1 = sw_api.ed_handles()
     return range(r0, r1+1)
-    
+
 def msg_box(id, text=''):
     return sw_api.msg_box(id, text)
 def msg_status(text):
@@ -304,9 +303,9 @@ def dlg_snippet(name, alias, lexers, text):
 def dlg_checklist(caption, columns, items, size_x, size_y):
     items = sw_api.dlg_checklist(caption, columns, items, size_x, size_y)
     return [(s=='1') for s in items]
-    
+
 def dlg_custom(caption, size_x, size_y, text, focused=-1):
-    return sw_api.dlg_custom(caption, size_x, size_y, text, focused)    
+    return sw_api.dlg_custom(caption, size_x, size_y, text, focused)
 
 def app_version():
     return sw_api.app_version()

@@ -21,7 +21,7 @@ object fmProj: TfmProj
     Left = 0
     Top = 26
     Width = 338
-    Height = 245
+    Height = 244
     Align = alClient
     DragMode = dmAutomatic
     HideSelection = False
