@@ -139,6 +139,9 @@ begin
 
   if C is TTntListView then
     Result:= DoGetListviewState(C as TTntListView);
+
+  if C is TTntTabControl then
+    Result:= IntToStr((C as TTntTabControl).TabIndex);
 end;
 
 
@@ -404,6 +407,12 @@ begin
         Ctl:= TLinkLabel.Create(AForm);
       end;
 
+      if SValue='tabs' then
+      begin
+        Ctl:= TTntTabControl.Create(AForm);
+        (Ctl as TTntTabControl).OnChange:= ADummy.DoOnChange;
+      end;
+
       //set parent
       if Assigned(Ctl) then
       begin
@@ -530,6 +539,10 @@ begin
         (Ctl as TTntListView).GridLines:= StrToBool(SGetItem(SValue));
       end;
 
+      if (Ctl is TTntTabControl) then
+        if SValue='1' then
+          (Ctl as TTntTabControl).TabPosition:= tpBottom;
+
       Continue;
     end;
 
@@ -545,6 +558,7 @@ begin
         if Ctl is TTntRadioGroup then (Ctl as TTntRadioGroup).Items.Add(UTF8Decode(SListItem));
         if Ctl is TTntCheckListBox then (Ctl as TTntCheckListBox).Items.Add(UTF8Decode(SListItem));
         if Ctl is TTntListView then DoSetListviewItem(Ctl as TTntListView, UTF8Decode(SListItem));
+        if Ctl is TTntTabControl then (Ctl as TTntTabControl).Tabs.Add(UTF8Decode(SListItem));
       until false;
       Continue;
     end;
@@ -573,6 +587,7 @@ begin
       if Ctl is TTntMemo then DoSetMemoState(Ctl as TTntMemo, SValue);
       if Ctl is TSpinEdit then (Ctl as TSpinEdit).Value:= StrToIntDef(SValue, 0);
       if Ctl is TTntListView then DoSetListviewState(Ctl as TTntListView, SValue);
+      if Ctl is TTntTabControl then (Ctl as TTntTabControl).TabIndex:= StrToIntDef(SValue, 0);
 
       Continue;
     end;
