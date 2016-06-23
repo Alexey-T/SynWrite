@@ -13,4 +13,3 @@ Id | Meaning
 `FILENAME_PROJECT_FILES` | project's all filenames, list of str
 `FILENAME_LEXLIB` | lexer-library filename
 `FILENAME_PATHS` | search-paths, str ";"-separated
-`FILENAME_FAVS` | all favorite-items, list of str

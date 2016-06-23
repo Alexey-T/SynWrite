@@ -3,6 +3,8 @@ Changes in Python API
 
 jun 2016
 
+* release 1.0.153
+* add dlg_custom: "type=tabs"
 * release 1.0.152
 * del Favorites api, cmds
 

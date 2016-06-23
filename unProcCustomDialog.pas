@@ -170,7 +170,7 @@ begin
   repeat
     SItem:= SGetItem(AValue, #9);
     if SItem='' then break;
-    C.Lines.Add(SItem);
+    C.Lines.Add(UTF8Decode(SItem));
   until false;
 end;
 
