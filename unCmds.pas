@@ -125,6 +125,7 @@ const
   sm_ProjectList = 796;
   sm_ToggleShowGroup2 = 798;
   sm_PasteAsColumnBlock = 799;
+  sm_ToggleShowMicromap = 800;
 
   //free
   sm_Menu_EncodingsConvert = 809;

@@ -3237,7 +3237,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.22.2272';
+  cSynVer = '6.22.2274';
   cSynPyVer = '1.0.153';
 
 const
@@ -5924,6 +5924,7 @@ begin
     sm_CommandsList: ecCommandsList.Execute;
     sm_ScrollToSel: EditorScrollToSelection(Ed, opFindOffsetTop);
     sm_ProjectList: ecProjectList.Execute;
+    sm_ToggleShowMicromap: with CurrentFrame do ShowMap:= not ShowMap;
 
     sm_RemoveDupsAll: ecDedupAll.Execute;
     sm_RemoveDupsAllAndOrig: ecDedupAllAndOrig.Execute;

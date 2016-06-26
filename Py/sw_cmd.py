@@ -337,6 +337,7 @@ cmd_ScrollToSel = 795
 cmd_ProjectList = 796
 cmd_ToggleShowGroup2 = 798
 cmd_PasteAsColumnBlock = 799
+cmd_ToggleShowMicromap = 800
 
 cmd_Menu_EncodingsConvert = 809
 cmd_Menu_EncodingsChange = 810
