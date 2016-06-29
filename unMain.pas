@@ -2797,6 +2797,7 @@ type
     procedure DoPluginsManager_Update;
     procedure DoPluginsManager_Config;
     function IsCommandForMacros(Cmd: integer): boolean;
+    function IsTextSizeOkForAutoHilite(Ed: TSyntaxMemo): Boolean;
     //end of private
 
   protected
@@ -2920,7 +2921,6 @@ type
     opBigSize: integer; //size in Mb for lexer-off
     opBkUndo: boolean;
     opProjPaths: Widestring;
-    opHiliteBrackets: boolean;
     opColorOutSelBk,
     opColorOutSelText,
     opColorOutRedText,
@@ -2938,6 +2938,8 @@ type
     opHiliteSmartCase: boolean;
     opHiliteSmartWords: boolean;
     opHiliteSmartOnClick: boolean;
+    opHiliteBrackets: boolean;
+    opHiliteBigSizeMb: integer;
     opDateFmt,
     opDateFmtPLog: string;
     opFileBackup: TSynBackup;
@@ -3237,7 +3239,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.22.2274';
+  cSynVer = '6.22.2280';
   cSynPyVer = '1.0.153';
 
 const
@@ -4629,6 +4631,8 @@ begin
     opHiliteSmartCase:= ReadBool('Setup', 'SmHiCase', false);
     opHiliteSmartWords:= ReadBool('Setup', 'SmHiWords', true);
     opHiliteSmartOnClick:= ReadBool('Setup', 'SmHiClick', false);
+    opHiliteBrackets:= ReadBool('Setup', 'BrHi', true);
+    opHiliteBigSizeMb:= ReadInteger('Setup', 'HiliteBigSize', 4);
 
     opDateFmt:= ReadString('Setup', 'DateFmt', 'h:mm dd.mm.yyyy');
     opDateFmtPLog:= ReadString('Setup', 'DateFmtP', 'hh:mm');
@@ -4704,7 +4708,6 @@ begin
     opBigSize:= ReadInteger('Setup', 'BigSize', 4);
     opBkUndo:= ReadBool('Setup', 'BkUndo', false);
     opProjPaths:= UTF8Decode(ReadString('Setup', 'Paths', ''));
-    opHiliteBrackets:= ReadBool('Setup', 'BrHi', true);
 
     opCaretsEnabled:= ReadBool('View', 'CaretsEn', true);
     opCaretsIndicator:= ReadInteger('Setup', 'CaretInd', 2);
@@ -5018,6 +5021,7 @@ begin
     WriteBool('Setup', 'SmHiCase', opHiliteSmartCase);
     WriteBool('Setup', 'SmHiWords', opHiliteSmartWords);
     WriteBool('Setup', 'SmHiClick', opHiliteSmartOnClick);
+    WriteInteger('Setup', 'HiliteBigSize', opHiliteBigSizeMb);
 
     WriteString('Setup', 'DateFmt', opDateFmt);
     WriteString('Setup', 'DateFmtP', opDateFmtPLog);
@@ -12241,7 +12245,9 @@ var
 begin
   Ed:= CurrentEditor;
   if Ed=nil then Exit;
+  if not IsTextSizeOkForAutoHilite(Ed) then Exit;
   if FSelBlank and (Ed.SelLength=0) then Exit;
+
   Ed.ResetSearchMarks;
   s:= Ed.SelText;
   FSelBlank:= Ed.SelLength=0;
@@ -12254,6 +12260,11 @@ begin
   end;
 
   DoFind_MarkAll(s);
+end;
+
+function TfmMain.IsTextSizeOkForAutoHilite(Ed: TSyntaxMemo): Boolean;
+begin
+  Result:= Ed.TextLength div (1024*1024) < opHiliteBigSizeMb;
 end;
 
 procedure TfmMain.TimerSelTimer(Sender: TObject);
@@ -13678,27 +13689,26 @@ procedure TfmMain.DoBracketsHilite(Ed: TSyntaxMemo);
 var
   n1, n2: Integer;
 begin
-  if Ed<>nil then
-    with Ed do
-    begin
-      if not opHiliteBrackets then
-      begin
-        //Invalidate needed to prevent bug: "Current line hiliting" leaves on multiple lines,
-        //with SelectModeDefault=msColumn
-        Invalidate;
-        Exit;
-      end;
+  if Ed=nil then Exit;
+  if not IsTextSizeOkForAutoHilite(Ed) then Exit;
 
-      if HaveSelection then Exit;
-      EditorFindBrackets(Ed, n1, n2);
-      if n2<0 then Exit;
+  if not opHiliteBrackets then
+  begin
+    //Invalidate needed to prevent bug: "Current line hiliting" leaves on multiple lines,
+    //with SelectModeDefault=msColumn
+    Ed.Invalidate;
+    Exit;
+  end;
 
-      Ed.BracketsHilited:= true;
-      SearchMarks.Clear;
-      SearchMarks.Add(ecLists.TRange.Create(n1, n1+1));
-      SearchMarks.Add(ecLists.TRange.Create(n2, n2+1));
-      Invalidate;
-    end;
+  if Ed.HaveSelection then Exit;
+  EditorFindBrackets(Ed, n1, n2);
+  if n2<0 then Exit;
+
+  Ed.BracketsHilited:= true;
+  Ed.SearchMarks.Clear;
+  Ed.SearchMarks.Add(ecLists.TRange.Create(n1, n1+1));
+  Ed.SearchMarks.Add(ecLists.TRange.Create(n2, n2+1));
+  Ed.Invalidate;
 end;
 
 procedure TfmMain.TBXItemFSesAddClick(Sender: TObject);
@@ -24210,6 +24220,7 @@ var
   MCarets: boolean;
 begin
   Ed:= CurrentEditor;
+  if not IsTextSizeOkForAutoHilite(Ed) then Exit;
 
   //don't allow to work for many carets
   F:= FrameOfEditor(Ed);
@@ -27644,6 +27655,7 @@ procedure TfmMain.TbxItemGroup1p2HClick(Sender: TObject);
 begin
   Groups.Mode:= gm1plus2Horz;
 end;
+
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;

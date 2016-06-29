@@ -230,9 +230,6 @@ type
     boxSelFmt: TTntGroupBox;
     cbUrlHilite: TTntCheckBox;
     cbUrlClick: TTntCheckBox;
-    cbHiliteSmart: TTntCheckBox;
-    cbHiliteSmartCase: TTntCheckBox;
-    cbHiliteBrackets: TTntCheckBox;
     cbCopyLineNoSel: TTntCheckBox;
     cbColorOnEmpty: TTntCheckBox;
     boxView: TTntGroupBox;
@@ -291,8 +288,6 @@ type
     labLangInfo: TTntLabel;
     cbLang: TTntComboBox;
     cbAcpParamHints: TTntCheckBox;
-    cbHiliteSmartClick: TTntCheckBox;
-    cbHiliteSmartWords: TTntCheckBox;
     cbProjSessSave: TTntCheckBox;
     cbProjSessOpen: TTntCheckBox;
     cbProjCloseTabs: TTntCheckBox;
@@ -350,6 +345,14 @@ type
     cbCaretROnly: TTntCheckBox;
     TntLabel18: TTntLabel;
     edCaretShapeOvr: TTntComboBox;
+    boxAutoHilite: TTntGroupBox;
+    cbHiliteSmart: TTntCheckBox;
+    cbHiliteSmartClick: TTntCheckBox;
+    cbHiliteSmartCase: TTntCheckBox;
+    cbHiliteSmartWords: TTntCheckBox;
+    cbHiliteBrackets: TTntCheckBox;
+    edHiliteBigSize: TSpinEdit;
+    TntLabel13: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2393,6 +2396,8 @@ begin
     opHiliteSmartCase:= cbHiliteSmartCase.Checked;
     opHiliteSmartWords:= cbHiliteSmartWords.Checked;
     opHiliteBrackets:= cbHiliteBrackets.Checked;
+    opHiliteBigSizeMb:= edHiliteBigSize.Value;
+
     opCopyLineIfNoSel:= cbCopyLineNoSel.Checked;
     opLeftRightSelJump:= cbSelJump.Checked;
 
@@ -2555,6 +2560,7 @@ begin
     cbHiliteSmartCase.Checked:= opHiliteSmartCase;
     cbHiliteSmartWords.Checked:= opHiliteSmartWords;
     cbHiliteBrackets.Checked:= opHiliteBrackets;
+    edHiliteBigSize.Value:= opHiliteBigSizeMb;
 
     cbSelJump.Checked:= opLeftRightSelJump;
     cbCopyLineNoSel.Checked:= opCopyLineIfNoSel;
