@@ -8222,13 +8222,7 @@ object fmMain: TfmMain
       end
       item
         Command = 0
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16497
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'File'
         DisplayName = 'Rename file'
       end
