@@ -28,6 +28,9 @@ type
   TMyPopupMenu = {$ifdef SP} TSpTbxPopupMenu {$else} TPopupMenu {$endif};
 
 type
+
+  { TATPages }
+
   TATPages = class(TPanel)
   private
     FTabs: TATTabs;
@@ -98,10 +101,11 @@ type
     tabOptionShowEntireColor,
     tabOptionDoubleClickClose,
     tabOptionDragDrop,
-    tabOptionHeight1,
-    tabOptionHeight2,
+    tabOptionHeight,
+    tabOptionHeightInner,
     tabOptionWidthMin,
     tabOptionWidthMax,
+    tabOptionIndentTop,
     tabOptionIndentInit,
     tabOptionIndentInter,
     tabOptionIndentColor,
@@ -130,6 +134,9 @@ type
   TATGroupsNums = 1..6;
 
 type
+
+  { TATGroups }
+
   TATGroups = class(TPanel)
   private
     FSplit1,
@@ -200,7 +207,6 @@ type
     function PagesSetIndex(ANum: Integer): boolean;
     procedure PagesSetNext(ANext: boolean);
     function PagesIndexOf(APages: TATPages): Integer;
-    function PagesIndexOfControl(ACtl: TControl): Integer;
     function PagesNextIndex(AIndex: Integer; ANext: boolean; AEnableEmpty: boolean): Integer;
     procedure PagesAndTabIndexOfControl(AObject: TObject; var NPages, NTab: Integer);
     //
@@ -336,6 +342,7 @@ begin
   FTabs.OnTabEmpty:= TabEmpty;
   FTabs.OnTabOver:= TabOver;
   FTabs.OnTabMove:= TabMove;
+  FTabs.DragMode:= dmAutomatic; //allow DnD between groups
 
   FTabs.TabAngle:= 0;
   FTabs.TabHeight:= 24;
@@ -1321,21 +1328,6 @@ begin
 end;
 
 
-function TATGroups.PagesIndexOfControl(ACtl: TControl): Integer;
-var
-  i, j: Integer;
-begin
-  for i:= Low(Pages) to High(Pages) do
-    with Pages[i] do
-      for j:= 0 to Tabs.TabCount-1 do
-        if Tabs.GetTabData(j).TabObject = ACtl then
-        begin
-          Result:= i;
-          Exit
-        end;
-  Result:= -1;
-end;
-
 function TATGroups.PagesIndexOf(APages: TATPages): Integer;
 var
   i: Integer;
@@ -1482,10 +1474,11 @@ begin
         tabOptionDoubleClickClose: TabDoubleClickClose:= Boolean(N);
         tabOptionDragDrop:         TabDragEnabled:= Boolean(N);
         tabOptionAngle:            TabAngle:= N;
-        tabOptionHeight1:          Height:= N;
-        tabOptionHeight2:          TabHeight:= N;
+        tabOptionHeight:           Height:= N;
+        tabOptionHeightInner:      TabHeight:= N;
         tabOptionWidthMin:         TabWidthMin:= N;
         tabOptionWidthMax:         TabWidthMax:= N;
+        tabOptionIndentTop:        TabIndentTop:= N;
         tabOptionIndentInit:       TabIndentInit:= N;
         tabOptionIndentInter:      TabIndentInter:= N;
         tabOptionIndentColor:      TabIndentColor:= N;
