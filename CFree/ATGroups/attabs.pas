@@ -72,6 +72,8 @@ type
     AElemType: TATTabElemType; ATabIndex: Integer;
     ACanvas: TCanvas; const ARect: TRect; var ACanDraw: boolean) of object;
   TATTabMoveEvent = procedure (Sender: TObject; NFrom, NTo: Integer) of object;  
+  TATTabChangeQueryEvent = procedure (Sender: TObject; ANewTabIndex: Integer;
+    var ACanChange: boolean) of object;
 
 type
   TATTriType = (triDown, triLeft, triRight);
@@ -165,6 +167,7 @@ type
     FOnTabEmpty: TNotifyEvent;
     FOnTabOver: TATTabOverEvent;
     FOnTabMove: TATTabMoveEvent;
+    FOnTabChangeQuery: TATTabChangeQueryEvent;
 
     procedure DoPaintTo(C: TCanvas);
     procedure DoPaintBgTo(C: TCanvas; const ARect: TRect);
@@ -288,6 +291,7 @@ type
     property OnTabEmpty: TNotifyEvent read FOnTabEmpty write FOnTabEmpty;
     property OnTabOver: TATTabOverEvent read FOnTabOver write FOnTabOver;
     property OnTabMove: TATTabMoveEvent read FOnTabMove write FOnTabMove;
+    property OnTabChangeQuery: TATTabChangeQueryEvent read FOnTabChangeQuery write FOnTabChangeQuery;
   end;
 
 implementation
@@ -307,12 +311,12 @@ begin
   Result:= true;
   {$endif}
 
-  {$ifdef darwin}
-  exit(false);
+  {$ifdef linux}
+  Result:= true;
   {$endif}
 
-  {$ifdef linux}
-  exit(false);
+  {$ifdef darwin}
+  Result:= false;
   {$endif}
 end;
 
@@ -576,6 +580,7 @@ begin
   FOnTabMenu:= nil;
   FOnTabDrawBefore:= nil;
   FOnTabDrawAfter:= nil;
+  FOnTabChangeQuery:= nil;
 end;
 
 destructor TATTabs.Destroy;
@@ -618,6 +623,7 @@ var
   AType: TATTabElemType;
   AInvert: Integer;
   TempCaption: atString;
+  bNeedMoreSpace: boolean;
 begin
   //optimize for 200 tabs
   if ARect.Left>=ClientWidth then exit;
@@ -633,9 +639,10 @@ begin
   else
     AInvert:= 1;
 
-  NIndentL:= FTabAngle+FTabIndentLeft;
-  NIndentR:= NIndentL+IfThen(ACloseBtn, FTabIndentXRight);
   RectText:= Rect(ARect.Left+FTabAngle, ARect.Top, ARect.Right-FTabAngle, ARect.Bottom);
+  bNeedMoreSpace:= (RectText.Right-RectText.Left<=30) and (ACaption<>TabShowPlusText);
+  NIndentL:= IfThen(not bNeedMoreSpace, FTabAngle+FTabIndentLeft, 2);
+  NIndentR:= NIndentL+IfThen(ACloseBtn, FTabIndentXRight);
   C.FillRect(RectText);
   RectText:= Rect(ARect.Left+NIndentL, ARect.Top, ARect.Right-NIndentR, ARect.Bottom);
 
@@ -666,33 +673,36 @@ begin
   end;
 
   //caption
-  C.Font.Assign(Self.Font);
-  if AModified then
-    C.Font.Color:= FColorFontModified;
+  if RectText.Right-RectText.Left>=8 then
+  begin
+    C.Font.Assign(Self.Font);
+    if AModified then
+      C.Font.Color:= FColorFontModified;
 
-  TempCaption:= IfThen(AModified, FTabShowModifiedText) + ACaption;
+    TempCaption:= IfThen(AModified, FTabShowModifiedText) + ACaption;
 
-  NIndentTop:= (FTabHeight - C.TextHeight('Wj')) div 2 + 1;
+    NIndentTop:= (FTabHeight - C.TextHeight('Wj')) div 2 + 1;
 
-  {$ifdef WIDE}
-  ExtTextOutW(C.Handle,
-    RectText.Left,
-    RectText.Top+NIndentTop,
-    ETO_CLIPPED{+ETO_OPAQUE},
-    @RectText,
-    PWChar(TempCaption),
-    Length(TempCaption),
-    nil);
-  {$else}
-  ExtTextOut(C.Handle,
-    RectText.Left,
-    RectText.Top+NIndentTop,
-    ETO_CLIPPED{+ETO_OPAQUE},
-    @RectText,
-    PChar(TempCaption),
-    Length(TempCaption),
-    nil);
-  {$endif}
+    {$ifdef WIDE}
+    ExtTextOutW(C.Handle,
+      RectText.Left,
+      RectText.Top+NIndentTop,
+      ETO_CLIPPED{+ETO_OPAQUE},
+      @RectText,
+      PWChar(TempCaption),
+      Length(TempCaption),
+      nil);
+    {$else}
+    ExtTextOut(C.Handle,
+      RectText.Left,
+      RectText.Top+NIndentTop,
+      ETO_CLIPPED{+ETO_OPAQUE},
+      @RectText,
+      PChar(TempCaption),
+      Length(TempCaption),
+      nil);
+    {$endif}
+  end;
 
   //borders
   if FTabBottom then
@@ -1323,9 +1333,18 @@ begin
 end;
 
 procedure TATTabs.SetTabIndex(AIndex: Integer);
+var
+  CanChange: boolean;
 begin
   if IsIndexOk(AIndex) then
   begin
+    CanChange:= true;
+    if Assigned(FOnTabChangeQuery) then
+    begin
+      FOnTabChangeQuery(Self, AIndex, CanChange);
+      if not CanChange then Exit;
+    end;
+
     FTabIndex:= AIndex;
     Invalidate;
     if Assigned(FOnTabClick) then

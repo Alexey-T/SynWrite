@@ -342,7 +342,7 @@ begin
   FTabs.OnTabEmpty:= TabEmpty;
   FTabs.OnTabOver:= TabOver;
   FTabs.OnTabMove:= TabMove;
-  FTabs.DragMode:= dmAutomatic; //allow DnD between groups
+  FTabs.DragMode:= dmManual; //allow DnD between groups
 
   FTabs.TabAngle:= 0;
   FTabs.TabHeight:= 24;

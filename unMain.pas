@@ -88,7 +88,7 @@ const
 const
   cPyConsoleMaxCount = 1000;
   cPyConsolePrompt = '>>> ';
-  cPyConsoleInit = 'print("Python", sys.version)';
+  cPyConsoleInit = '_v = sys.version_info; print("Python %d.%d.%d"%(_v[0],_v[1],_v[2]) )';
   cPyConsoleClear = '-';
   cPyConsolePrint = '=';
   cPyPrefix = 'py:';
@@ -3239,7 +3239,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.22.2280';
+  cSynVer = '6.22.2282';
   cSynPyVer = '1.0.153';
 
 const
@@ -23514,8 +23514,8 @@ begin
 
   //this is for Win font scale 150-200%
   NSize:= Trunc(Abs(FFontTabs.Height)*2.0)+2;
-  Groups.SetTabOption(tabOptionHeight1, NSize);
-  Groups.SetTabOption(tabOptionHeight2, NSize-2);
+  Groups.SetTabOption(tabOptionHeight, NSize);
+  Groups.SetTabOption(tabOptionHeightInner, NSize-2);
 
   Groups.SetTabOption(tabColorText, opColorTabText);
   Groups.SetTabOption(tabColorTextModified, opColorTabTextMod);
