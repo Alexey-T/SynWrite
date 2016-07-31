@@ -3,8 +3,9 @@ import re
 import time
 import urllib.request
 from sw import *
+from . import opt
 
-MINUTES = 3 #download if list is older
+MINUTES = 2 #download if list is older
 V_REG = 'Registry'
 V_REG_VER = 'RegistryVersions'
 
@@ -14,10 +15,16 @@ def msg(id):
 def get_url(url, fn):
     if os.path.isfile(fn):
         os.remove(fn)
+        
+    if opt.proxy:
+        proxy = urllib.request.ProxyHandler({'http': opt.proxy, 'https': opt.proxy})
+        opener = urllib.request.build_opener(proxy)
+        urllib.request.install_opener(opener)
+
     try:
         urllib.request.urlretrieve(url, fn)
-    except:
-        pass
+    except Exception as e:
+        print(e)
         
 def file_aged(fn):
     if os.path.isfile(fn):

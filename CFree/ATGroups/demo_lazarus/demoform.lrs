@@ -1,0 +1,75 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TfmTest','FORMDATA',[
+  'TPF0'#7'TfmTest'#6'fmTest'#4'Left'#3#160#0#6'Height'#3#186#1#3'Top'#3#248#0#5
+  +'Width'#3#23#3#7'Caption'#6#6'Groups'#12'ClientHeight'#3#166#1#11'ClientWidt'
+  +'h'#3#23#3#5'Color'#7#9'clBtnFace'#10'Font.Color'#7#12'clWindowText'#11'Font'
+  +'.Height'#2#245#9'Font.Name'#6#6'Tahoma'#4'Menu'#7#9'MainMenu1'#8'OnCreate'#7
+  +#10'FormCreate'#6'OnShow'#7#8'FormShow'#10'LCLVersion'#6#3'1.5'#0#9'TTreeVie'
+  +'w'#4'Tree'#4'Left'#2#0#6'Height'#3#143#1#3'Top'#2#0#5'Width'#2'y'#5'Align'#7
+  +#6'alLeft'#17'DefaultItemHeight'#2#16#8'DragMode'#7#11'dmAutomatic'#13'HideS'
+  +'election'#8#6'Indent'#2#19#8'TabOrder'#2#0#7'Visible'#8#10'OnDragDrop'#7#12
+  +'TreeDragDrop'#10'OnDragOver'#7#12'TreeDragOver'#7'Options'#11#17'tvoAutoIte'
+  +'mHeight'#21'tvoKeepCollapsedNodes'#14'tvoShowButtons'#12'tvoShowLines'#11't'
+  +'voShowRoot'#11'tvoToolTips'#13'tvoThemedDraw'#0#10'Items.Data'#10#172#0#0#0
+  +#249#255#255#255#2#0#3#0#0#0#0#0#0#0#0#0#0#0#255#255#255#255#255#255#255#255
+  +#0#0#0#0#0#0#0#0#0#4#0#0#0'Test'#0#0#0#0#0#0#0#0#255#255#255#255#255#255#255
+  +#255#2#0#0#0#0#0#0#0#1#5#0#0#0'Test2'#0#0#0#0#0#0#0#0#255#255#255#255#255#255
+  +#255#255#0#0#0#0#0#0#0#0#0#3#0#0#0'TT2'#0#0#0#0#0#0#0#0#255#255#255#255#255
+  +#255#255#255#0#0#0#0#0#0#0#0#0#3#0#0#0'TT1'#0#0#0#0#0#0#0#0#255#255#255#255
+  +#255#255#255#255#0#0#0#0#0#0#0#0#0#2#0#0#0'TT'#0#0#10'TStatusBar'#6'Status'#4
+  +'Left'#2#0#6'Height'#2#23#3'Top'#3#143#1#5'Width'#3#23#3#6'Panels'#14#0#0#0
+  +#10'TPopupMenu'#10'PopupMenu1'#4'left'#3#152#1#3'top'#2'P'#0#9'TMenuItem'#8
+  +'mnuClose'#7'Caption'#6#5'close'#0#9'TMenuItem'#12'mnuCloseThis'#7'Caption'#6
+  +#4'this'#7'OnClick'#7#17'mnuCloseThisClick'#0#0#9'TMenuItem'#15'mnuCloseOthS'
+  +'ame'#7'Caption'#6#19'others (same group)'#7'OnClick'#7#20'mnuCloseOthSameCl'
+  +'ick'#0#0#9'TMenuItem'#14'mnuCloseOthAll'#7'Caption'#6#19'others (all groups'
+  +')'#7'OnClick'#7#19'mnuCloseOthAllClick'#0#0#9'TMenuItem'#2'N5'#7'Caption'#6
+  +#1'-'#0#0#9'TMenuItem'#10'mnuCloseLt'#7'Caption'#6#22'left tabs (same group)'
+  +#7'OnClick'#7#15'mnuCloseLtClick'#0#0#9'TMenuItem'#10'mnuCloseRt'#7'Caption'
+  +#6#23'right tabs (same group)'#7'OnClick'#7#15'mnuCloseRtClick'#0#0#9'TMenuI'
+  +'tem'#2'N6'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#15'mnuCloseAllThis'#7'Caption'
+  +#6#16'all (same group)'#7'OnClick'#7#20'mnuCloseAllThisClick'#0#0#9'TMenuIte'
+  +'m'#11'mnuCloseAll'#7'Caption'#6#3'all'#7'OnClick'#7#16'mnuCloseAllClick'#0#0
+  +#0#9'TMenuItem'#2'N1'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#2'm1'#7'Caption'#6
+  +#10'to group 1'#7'OnClick'#7#7'm1Click'#0#0#9'TMenuItem'#2'm2'#7'Caption'#6
+  +#10'to group 2'#7'OnClick'#7#7'm2Click'#0#0#9'TMenuItem'#2'm3'#7'Caption'#6
+  +#10'to group 3'#7'OnClick'#7#7'm3Click'#0#0#9'TMenuItem'#2'm4'#7'Caption'#6
+  +#10'to group 4'#7'OnClick'#7#7'm4Click'#0#0#9'TMenuItem'#9'togroup51'#7'Capt'
+  +'ion'#6#10'to group 5'#7'OnClick'#7#14'togroup51Click'#0#0#9'TMenuItem'#9'to'
+  +'group61'#7'Caption'#6#10'to group 6'#7'OnClick'#7#14'togroup61Click'#0#0#9
+  +'TMenuItem'#2'N3'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#5'mNext'#7'Caption'#6#13
+  +'to group next'#7'OnClick'#7#10'mNextClick'#0#0#9'TMenuItem'#4'mPre'#7'Capti'
+  +'on'#6#13'to group prev'#7'OnClick'#7#9'mPreClick'#0#0#0#9'TMainMenu'#9'Main'
+  +'Menu1'#4'left'#3'p'#1#3'top'#2'`'#0#9'TMenuItem'#5'Mode1'#7'Caption'#6#4'Mo'
+  +'de'#0#9'TMenuItem'#3'N11'#7'Caption'#6#6'single'#7'OnClick'#7#8'N11Click'#0
+  +#0#9'TMenuItem'#7'N2horz1'#7'Caption'#6#6'2 horz'#7'OnClick'#7#12'N2horz1Cli'
+  +'ck'#0#0#9'TMenuItem'#7'N2vert1'#7'Caption'#6#6'2 vert'#7'OnClick'#7#12'N2ve'
+  +'rt1Click'#0#0#9'TMenuItem'#7'N3horz1'#7'Caption'#6#6'3 horz'#7'OnClick'#7#12
+  +'N3horz1Click'#0#0#9'TMenuItem'#7'N3vert1'#7'Caption'#6#6'3 vert'#7'OnClick'
+  +#7#12'N3vert1Click'#0#0#9'TMenuItem'#4'N121'#7'Caption'#6#8'3 as 1+2'#7'OnCl'
+  +'ick'#7#9'N121Click'#0#0#9'TMenuItem'#7'N4horz1'#7'Caption'#6#6'4 horz'#7'On'
+  +'Click'#7#12'N4horz1Click'#0#0#9'TMenuItem'#7'N4vert1'#7'Caption'#6#6'4 vert'
+  +#7'OnClick'#7#12'N4vert1Click'#0#0#9'TMenuItem'#7'N4grid1'#7'Caption'#6#6'4 '
+  +'grid'#7'OnClick'#7#12'N4grid1Click'#0#0#9'TMenuItem'#7'N6grid1'#7'Caption'#6
+  +#6'6 grid'#7'OnClick'#7#12'N6grid1Click'#0#0#0#9'TMenuItem'#6'Focus1'#7'Capt'
+  +'ion'#6#5'Focus'#0#9'TMenuItem'#3'N12'#7'Caption'#6#7'group 1'#8'ShortCut'#2
+  +'p'#7'OnClick'#7#8'N12Click'#0#0#9'TMenuItem'#3'N21'#7'Caption'#6#7'group 2'
+  +#8'ShortCut'#2'q'#7'OnClick'#7#8'N21Click'#0#0#9'TMenuItem'#3'N31'#7'Caption'
+  +#6#7'group 3'#8'ShortCut'#2'r'#7'OnClick'#7#8'N31Click'#0#0#9'TMenuItem'#3'N'
+  +'41'#7'Caption'#6#7'group 4'#8'ShortCut'#2's'#7'OnClick'#7#8'N41Click'#0#0#9
+  +'TMenuItem'#7'group51'#7'Caption'#6#7'group 5'#8'ShortCut'#2't'#7'OnClick'#7
+  +#12'group51Click'#0#0#9'TMenuItem'#7'group61'#7'Caption'#6#7'group 6'#8'Shor'
+  +'tCut'#2'u'#7'OnClick'#7#12'group61Click'#0#0#9'TMenuItem'#2'N2'#7'Caption'#6
+  +#1'-'#0#0#9'TMenuItem'#5'Next1'#7'Caption'#6#10'group next'#8'ShortCut'#2'x'
+  +#7'OnClick'#7#10'Next1Click'#0#0#9'TMenuItem'#3'Pr1'#7'Caption'#6#10'group p'
+  +'rev'#8'ShortCut'#2'y'#7'OnClick'#7#8'Pr1Click'#0#0#0#9'TMenuItem'#8'Movetab'
+  +'1'#7'Caption'#6#16'Move current tab'#0#9'TMenuItem'#7'tonext1'#7'Caption'#6
+  ,#13'to next group'#7'OnClick'#7#12'tonext1Click'#0#0#9'TMenuItem'#7'toprev1'
+  +#7'Caption'#6#13'to prev group'#7'OnClick'#7#12'toprev1Click'#0#0#9'TMenuIte'
+  +'m'#2'N4'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#13'toothergroup1'#7'Caption'#6
+  +'!to opposite group (1->2, 2..6->1)'#7'OnClick'#7#18'toothergroup1Click'#0#0
+  +#0#9'TMenuItem'#5'mTree'#7'Caption'#6#4'Tree'#7'OnClick'#7#10'mTreeClick'#0#9
+  +'TMenuItem'#13'mnuTreeToggle'#7'Caption'#6#11'Toggle tree'#7'OnClick'#7#18'm'
+  +'nuTreeToggleClick'#0#0#0#0#0
+]);

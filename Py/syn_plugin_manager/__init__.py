@@ -6,74 +6,57 @@ from .worklocal import syn_py, syn_plugins_ini, get_py_title, get_installed_list
 from .workremote import msg, get_url, get_item_url, get_avail_list, get_plugin_zip
 from .workupd import Info, get_update_info
 from .ver_str import *
+from . import opt
 
-SAVE_DIR = r'c:\SynWrite_saved_plugins'
 UPDATER_X = 520
 UPDATER_Y = 500
-INI_FN = 'SynAddonsManager.ini'
-ini_fn = os.path.join(app_ini_dir(), INI_FN)
-ini_section = 'op'
-ini_key_proxy = 'proxy_http'
-ini_key_savedir = 'save_dir'
+ini_fn = os.path.join(app_ini_dir(), 'SynAddonsManager.ini')
 
 class Command:
 
-    def apply_proxy(self):
-        proxy = ini_read(ini_fn, ini_section, ini_key_proxy, '')
-        os.environ['http_proxy'] = proxy
-        os.environ['https_proxy'] = proxy
-        ###msg_box(MSG_INFO, 'Proxy used: '+os.environ['http_proxy'])
-    
+    def __init__(self):
+        opt.proxy = ini_read(ini_fn, 'op', 'proxy', opt.proxy)
+        opt.save_dir = ini_read(ini_fn, 'op', 'save_dir', opt.save_dir)
+
     def config(self):
-        proxy = ini_read(ini_fn, ini_section, ini_key_proxy, '')
-        dir = ini_read(ini_fn, ini_section, ini_key_savedir, SAVE_DIR)
-        s = dlg_input_ex(2, 'Addons Manager', 
-          'Proxy, e.g. myserver.com:2000', proxy,
-          'Folder for "Download all"', dir)
-        if not s: return
-        proxy = s[0]
-        dir = s[1]
-        ini_write(ini_fn, ini_section, ini_key_proxy, proxy)
-        ini_write(ini_fn, ini_section, ini_key_savedir, dir)
+        res = dlg_input_ex(2, 'Addons Manager options',
+          'Proxy, e.g. http://proxy.site.com:2010', opt.proxy,
+          'Folder for "Download all"', opt.save_dir)
+        if not res: return
+        opt.proxy = res[0]
+        opt.save_dir = res[1]
+        ini_write(ini_fn, 'op', 'proxy', opt.proxy)
+        ini_write(ini_fn, 'op', 'save_dir', opt.save_dir)
 
     def update(self):
-        self.apply_proxy()
-        
-        if app_api_version() < '1.0.143':
-            msg_box(MSG_ERROR, 'Needed app update')
-            return
-    
         infos = get_update_info()
-        
-        marked = lambda info: '*' if is_version_newer(info.v_local, info.v_remote) else ''        
+
+        marked = lambda info: '*' if is_version_newer(info.v_local, info.v_remote) else ''
         text = '\n'.join([
-          marked(info) + info.name + '\t' + 
-          os.path.basename(info.path) + '\t' + 
-          info.v_local + '\t' + 
-          info.v_remote + '\t' 
+          marked(info) + info.name + '\t' +
+          os.path.basename(info.path) + '\t' +
+          info.v_local + '\t' +
+          info.v_remote + '\t'
           for info in infos])
-           
+
         columns = '%s\n%s\t150\n%s\t70\n%s\t70' % (msg('ColName'), msg('ColFolder'), msg('ColVLocal'), msg('ColVRemote'))
         checked = dlg_checklist(msg('MenuUpdate'), columns, text, UPDATER_X, UPDATER_Y)
         if not checked: return
         items = [info for (n, info) in enumerate(infos) if checked[n] and info.base_url]
         if not items: return
-        
+
         for info in items:
             url = get_item_url(info.base_url)
             if not url: continue
             fn = get_plugin_zip(url)
             if not fn: continue
             file_open(fn, '/s /v'+info.v_remote)
-            
+
         text = msg('Updated') + '\n\n' + '\n'.join([i.name for i in items]) + '\n\n' + msg('Restart')
         msg_box(MSG_INFO, text)
 
     def download_all(self):
-        self.apply_proxy()
-
-        dir = ini_read(ini_fn, ini_section, ini_key_savedir, SAVE_DIR)
-        dir = dlg_input(msg('SaveToFolder'), dir, '', '')
+        dir = dlg_input(msg('SaveToFolder'), opt.save_dir, '', '')
         if not dir:
             return
         if not os.path.isdir(dir):
@@ -82,11 +65,11 @@ class Command:
             except:
                 msg_box(MSG_ERROR, msg('CantWriteToDir')+'\n'+dir)
                 return
-    
+
         msg_status(msg('WaitList'))
         items = get_avail_list()
         msg_status('')
-        
+
         if type(items) == str:
             msg_box(MSG_ERROR, msg(items))
             return
@@ -94,7 +77,7 @@ class Command:
             msg_box(MSG_ERROR, msg('NoPlugins'))
             return
 
-        bads = []            
+        bads = []
         for (i, item) in enumerate(items):
             name = item[0]
             desc = item[1]
@@ -106,26 +89,26 @@ class Command:
                 print('Invalid item: '+name+': '+url1)
                 msg_box(BEEP_ERROR)
                 continue
-                
+
             url = get_item_url(url1)
             while not url:
                 if not msg_box(MSG_CONFIRM, 'Cannot resolve URL for "%s".\nRetry?' % name):
                     break
                 url = get_item_url(url1)
-            
+
             if not url:
                 bads += [url1]
                 print('Invalid url: '+name+': '+url1)
                 msg_box(BEEP_ERROR)
                 continue
-                                   
+
             dirbase = url1[:url1.find('/')]
             dirbase = os.path.join(dir, dirbase)
             if not os.path.isdir(dirbase):
-                os.mkdir(dirbase) 
+                os.mkdir(dirbase)
             fn = os.path.join(dirbase, os.path.basename(url))
             fn = urllib.parse.unquote(fn)
-           
+
             msg_status(msg('WaitFile')+' ['+str(i+1)+'/'+str(len(items))+'] '+os.path.basename(url))
             get_url(url, fn)
             if not os.path.isfile(fn):
@@ -133,31 +116,29 @@ class Command:
                 print('Cannot download: '+name+': '+url)
                 msg_box(BEEP_ERROR)
                 continue
-                             
+
         s = msg('SavedAll')+'\n'
         s += dir+'\n'
         s += msg('SaveFails')+' '+str(len(bads))
         msg_box(MSG_INFO, s)
-            
+
 
     def menu_install(self):
-        self.apply_proxy()
-
         msg_status(msg('WaitList'))
         items = get_avail_list()
         msg_status('')
-        
+
         if type(items) == str:
             msg_box(MSG_ERROR, msg(items))
             return
         if not items:
             msg_box(MSG_ERROR, msg('NoPlugins'))
             return
-            
+
         text = '\n'.join([l[0] + '\t' + l[1] for l in items])
         num = dlg_menu(MENU_DOUBLE, msg('MenuInstall'), text)
         if num is None: return
-        
+
         name = items[num][0]
         url = get_item_url(items[num][2])
         version = items[num][3]
