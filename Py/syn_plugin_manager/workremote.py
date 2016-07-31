@@ -5,7 +5,6 @@ import urllib.request
 from sw import *
 from . import opt
 
-MINUTES = 2 #download if list is older
 V_REG = 'Registry'
 V_REG_VER = 'RegistryVersions'
 
@@ -29,7 +28,7 @@ def get_url(url, fn):
 def file_aged(fn):
     if os.path.isfile(fn):
         age = int(time.time() - os.stat(fn).st_mtime)
-        return age > MINUTES*60
+        return age > opt.cache_minutes * 60
     else:
         return True
 
@@ -128,7 +127,7 @@ def get_plugin_zip(url):
     
 
 if __name__ == '__main__':
-    url = 'PyPlugins/kvichans.BackupFile/plugin.kvichans.BackupFile.zip'
+    url = 'PyPlugins/plugin.kvichans.BackupFile.zip'
 #    print('Url:')
 #    print(get_item_url(url))
     
