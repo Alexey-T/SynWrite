@@ -77,8 +77,17 @@ class Command:
             msg_box(MSG_ERROR, msg('NoPlugins'))
             return
 
+        app_proc(PROC_SET_ESCAPE, '0')
+
         bads = []
         for (i, item) in enumerate(items):
+
+            if app_proc(PROC_GET_ESCAPE, ''):
+                app_proc(PROC_SET_ESCAPE, '0')
+                if msg_box(MSG_CONFIRM, 'Stop downloading?'):
+                    msg_status('Downloading stopped')
+                    return
+
             name = item[0]
             desc = item[1]
             url1 = item[2]
