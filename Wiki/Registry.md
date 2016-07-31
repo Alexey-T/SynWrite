@@ -279,6 +279,10 @@ Lexer: Assembly JWASM      | | Lexers/lexer.Assembly_JWASM.zip
 Lexer: ABC Notation | | Lexers/lexer.ABC_Notation.zip
 Lexer: reStructuredText | | Lexers/lexer.reStructuredText.zip
 Lexer: MediaWiki | | Lexers/lexer.MediaWiki.zip
+Lexer: Elixir | | Lexers/lexer.Elixir.zip
+Lexer: Windows Resource Script | | Lexers/lexer.Windows_Resource_Script.zip
+Lexer: VimL | | Lexers/lexer.VimL.zip
+Lexer: Intel HEX | | Lexers/lexer.Intel_HEX.zip
 Translation: French               | | Languages/language.French.zip
 Translation: Hungarian            | | Languages/language.Hungarian.zip
 Translation: Spanish              | | Languages/language.Spanish.zip
