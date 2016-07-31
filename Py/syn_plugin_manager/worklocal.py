@@ -23,7 +23,7 @@ def get_installed_list(binary_too=False):
         l2 = [os.path.join(dir, fn) for fn in l2 if not fn in ('Explorer', 'SynFTP')]
         l2 = [fn for fn in l2 if os.path.isdir(fn)]
     
-    return l+l2
+    return sorted(l+l2)
 
 def get_py_desc_list(dir):
     desc = []
