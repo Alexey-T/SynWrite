@@ -11,6 +11,8 @@ Icons: Aha               | | IconSets/icons.Aha.zip
 Icons: LibreOffice White | | IconSets/icons.LibreOffice_White.zip
 Icons: WinStd            | | IconSets/icons.WinStd.zip
 Icons: Silk              | | IconSets/icons.Silk.zip
+Intext Bookmarks | Manager of permanent (comments) bookmarks | PyPlugins/plugin.kvichans.IntextBookmarks.zip
+Explorer Integration | Integrates SynWrite with Windows Explorer | PyPlugins/plugin.Alexey.ExplorerIntegration.zip
 Favorites | Manages "favorites" file list | PyPlugins/plugin.kvichans.Favorites.zip
 Rename File | Shows dialog to rename file | PyPlugins/plugin.kvichans.RenameFile.zip
 Encode | Encodes text with transformations (Base64, URL escape, HTML/XML escape, Hash, etc) | PyPlugins/plugin.Alexey.Encode.zip
