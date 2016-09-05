@@ -62,14 +62,11 @@ Methods, other | Description
 `get_alerts()` | Returns bool flag for "alerts": are confirmation message-boxes enabled for "Close tab" command.
 `set_alerts(value)` | Sets bool flag for "alerts".
 `get_staple(x, y)` | Returns range of block-staple (indentation guide) for text position `(x, y)`. It's `None` if no staple at this position, or 2-tuple: `(range_offset_start, range_offset_end)`.
-`get_indexes()` | Returns group-index (1-based) and tab-index (0-based) of editor as 2-tuple. 
 `get_enc()` | Returns encoding: int, one of `EDENC_nnnn` or positive value equals to some OS codepage (e.g. 1250).
 `set_enc()` | Sets encoding. Note that both main editor and its brother editor will change encoding; encoding changes in-memory only. 
 
 Methods, color-related | Description
 ---------------------- | -----------------
-`get_tabcolor()` | Returns tab-header color, int value. It's `COLOR_NONE` if not set.
-`set_tabcolor(value)` | Sets tab-header color, int value. Pass `COLOR_NONE` to remove custom color.
 `set_attr(id, color)` | Changes user text-attrib of selection (only single selection). Pass to `id` constants `ATTRIB_nnnn`, `color` is to set font or bg color.
 `get_attr()` | Returns list of user text-attrib ranges. Each list item is range info, 5-list: `[range_start, range_end, color_font, color_bg, styles]`. Styles is str with chars: 'b' for bold, 'i' for italic, 'u' for underline, 's' for strikeout. Colors are `COLOR_NONE` if they are not set.
 

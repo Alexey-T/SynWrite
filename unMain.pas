@@ -3228,7 +3228,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.22.2310';
+  cSynVer = '6.23.2310';
   cSynPyVer = '1.0.154';
 
 const
@@ -25355,9 +25355,6 @@ begin
     AddMethod('ed_get_filename', Py_ed_get_filename, '');
     AddMethod('ed_get_alerts', Py_ed_get_alerts, '');
     AddMethod('ed_set_alerts', Py_ed_set_alerts, '');
-    AddMethod('ed_get_tabcolor', Py_ed_get_tabcolor, '');
-    AddMethod('ed_set_tabcolor', Py_ed_set_tabcolor, '');
-    AddMethod('ed_get_indexes', Py_ed_get_indexes, '');
     AddMethod('ed_get_enc', Py_ed_get_enc, '');
     AddMethod('ed_set_enc', Py_ed_set_enc, '');
 

@@ -16,13 +16,12 @@ function Py_ed_get_alerts(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_alerts(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_enc(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_enc(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_tabcolor(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_tabcolor(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_indexes(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_prop_wrapper(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_complete(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_focus(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_find(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_set_prop(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_msg_status(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_snippet(Self, Args: PPyObject): PPyObject; cdecl;
@@ -82,6 +81,50 @@ uses
   SpTbxDkPanels,
   TB2Dock;
 
+const
+  PROP_NUMS        = 1;
+  PROP_EOL         = 2;
+  PROP_WRAP        = 3;
+  PROP_RO          = 4;
+  PROP_MARGIN      = 5;
+  PROP_FOLDING     = 6;
+  PROP_TAB_SPACES  = 8;
+  PROP_TAB_SIZE    = 9;
+  PROP_COL_MARKERS = 10;
+  PROP_TEXT_EXTENT = 11;
+  PROP_ZOOM        = 12;
+  PROP_INSERT      = 13;
+  PROP_MODIFIED    = 14;
+  PROP_VIS_LINES   = 15;
+  PROP_VIS_COLS    = 16;
+  PROP_LEFT        = 17;
+  PROP_TOP         = 18;
+  PROP_BOTTOM      = 19;
+  PROP_RULER       = 20;
+  PROP_TOKEN_TYPE  = 21;
+  PROP_LEXER_FILE  = 22;
+  PROP_LEXER_CARET = 23;
+  PROP_LEXER_POS   = 24;
+  PROP_COLOR       = 25;
+  PROP_NON_PRINTED         = 26;
+  PROP_NON_PRINTED_SPACES  = 27;
+  PROP_NON_PRINTED_ENDS    = 28;
+  PROP_NON_PRINTED_ENDS_EX = 29;
+  PROP_TAG                 = 30;
+  PROP_LINE_STATE          = 31;
+  PROP_KEEP_TRAIL_BLANKS   = 32;
+  PROP_KEEP_CARET_IN_TEXT  = 33;
+  PROP_AUTO_INDENT         = 34;
+  PROP_LAST_LINE_SHOW      = 35;
+  PROP_TAB_FILL            = 36;
+  PROP_WRAP_AT_MARGIN      = 37;
+  PROP_INDEX_GROUP         = 40;
+  PROP_INDEX_TAB           = 41;
+  PROP_TAB_TITLE           = 42;
+  PROP_TAB_COLOR           = 43;
+  PROP_TAB_ID              = 44;
+
+  
 function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
@@ -699,52 +742,6 @@ begin
       Result:= ReturnNone;
     end;
 end;
-
-function Py_ed_get_tabcolor(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H: Integer;
-  Flag: Integer;
-  Ed: TSyntaxMemo;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:get_tabcolor', @H)) then
-    begin
-      Ed:= PyEditor(H);
-      Flag:= fmMain.FrameOfEditor(Ed).TabColor;
-      Result:= PyInt_FromLong(Flag);
-    end;
-end;
-
-function Py_ed_set_tabcolor(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H, Flag: Integer;
-  Ed: TSyntaxMemo;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:set_tabcolor', @H, @Flag)) then
-    begin
-      Ed:= PyEditor(H);
-      fmMain.DoSetFrameTabColor(fmMain.FrameOfEditor(Ed), Flag);
-      Result:= ReturnNone;
-    end;
-end;
-
-
-function Py_ed_get_indexes(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H: Integer;
-  Ed: TSyntaxMemo;
-  Num1, Num2: Integer;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:get_indexes', @H)) then
-    begin
-      Ed:= PyEditor(H);
-      fmMain.GetEditorIndexes(Ed, Num1, Num2);
-      Result:= Py_BuildValue('(ii)', Num1, Num2);
-    end;
-end;
-
 
 
 function Py_ed_set_prop_wrapper(Self, Args: PPyObject): PPyObject; cdecl;
@@ -1436,6 +1433,306 @@ begin
       Result:= ReturnNone;
     end;
 end;
+
+function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, Id, NValue, Num1, Num2: Integer;
+  Size: TSize;
+  Ed: TSyntaxMemo;
+  Ptr: PAnsiChar;
+  Str: Widestring;
+  IsCmt, IsStr: boolean;
+  An: TSyntAnalyzer;
+  Frame: TEditorFrame;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iis:get_prop', @H, @Id, @Ptr)) then
+    begin
+      Ed:= PyEditor(H);
+      Frame:= fmMain.FrameOfEditor(Ed);
+      
+      Str:= UTF8Decode(AnsiString(Ptr));
+      NValue:= StrToIntDef(Str, 0);
+
+      if Ed=nil then
+      begin
+        Result:= ReturnNone;
+        Exit
+      end;  
+
+      case Id of
+        PROP_NUMS:
+          Result:= PyBool_FromLong(Ord(Ed.LineNumbers.Visible));
+        PROP_EOL:
+          Result:= PyUnicode_FromWideString(EditorEOL(Ed));
+        PROP_WRAP:
+          Result:= PyBool_FromLong(Ord(Ed.WordWrap));
+        PROP_RO:
+          Result:= PyBool_FromLong(Ord(Ed.ReadOnly));
+        PROP_MARGIN:
+          Result:= PyInt_FromLong(Ed.RightMargin);
+        PROP_FOLDING:
+          Result:= PyBool_FromLong(Ord(not Ed.DisableFolding));
+
+        PROP_NON_PRINTED:
+          Result:= PyBool_FromLong(Ord(Ed.NonPrinted.Visible));
+        PROP_NON_PRINTED_SPACES:
+          Result:= PyBool_FromLong(Ord(Ed.NonPrintedSpaces));
+        PROP_NON_PRINTED_ENDS:
+          Result:= PyBool_FromLong(Ord(Ed.NonPrintedEol));
+        PROP_NON_PRINTED_ENDS_EX:
+          Result:= PyBool_FromLong(Ord(Ed.NonPrintedEolDetails));
+
+        PROP_TAB_SPACES:
+          Result:= PyBool_FromLong(Ord(Ed.TabMode = tmSpaces));
+        PROP_TAB_SIZE:
+          Result:= PyInt_FromLong(EditorTabSize(Ed));
+        PROP_COL_MARKERS:
+          Result:= PyUnicode_FromWideString(Ed.ColMarkersString);
+        PROP_TEXT_EXTENT:
+          begin
+            Size:= Ed.DefTextExt;
+            Result:= Py_BuildValue('(ii)', Size.cx, Size.cy);
+          end;
+        PROP_ZOOM:
+          Result:= PyInt_FromLong(Ed.Zoom);
+        PROP_INSERT:
+          Result:= PyBool_FromLong(Ord(not Ed.ReplaceMode));
+        PROP_MODIFIED:
+          Result:= PyBool_FromLong(Ord(Ed.Modified));
+        PROP_VIS_LINES:
+          Result:= PyInt_FromLong(Ed.VisibleLines);
+        PROP_VIS_COLS:
+          Result:= PyInt_FromLong(Ed.VisibleCols);
+        PROP_LEFT:
+          Result:= PyInt_FromLong(Ed.ScrollPosX);
+        PROP_TOP:
+          Result:= PyInt_FromLong(Ed.TopLine);
+        PROP_BOTTOM:
+          Result:= PyInt_FromLong(EditorGetBottomLineIndex(Ed));
+        PROP_RULER:
+          Result:= PyBool_FromLong(Ord(Ed.HorzRuler.Visible));
+
+        PROP_TOKEN_TYPE:
+          begin
+            //some issue?: needed position incremented
+            EditorGetTokenType(Ed, NValue+1, NValue+1, IsCmt, IsStr);
+            if IsCmt then Str:= 'c' else
+             if IsStr then Str:= 's' else
+              Str:= '';
+            Result:= PyUnicode_FromWideString(Str);
+          end;
+
+        PROP_LEXER_FILE:
+          begin
+            An:= Ed.TextSource.SyntaxAnalyzer;
+            if An<>nil then
+              Str:= An.LexerName
+            else
+              Str:= '';
+            Result:= PyUnicode_FromWideString(Str);
+          end;
+        PROP_LEXER_CARET:
+          begin
+            Str:= EditorCurrentLexerForPos(Ed, Ed.CaretStrPos);
+            Result:= PyUnicode_FromWideString(Str);
+          end;
+        PROP_LEXER_POS:
+          begin
+            Str:= EditorCurrentLexerForPos(Ed, NValue);
+            Result:= PyUnicode_FromWideString(Str);
+          end;
+
+        PROP_COLOR:
+          begin
+            Result:= PyInt_FromLong(EditorGetColorPropertyById(Ed, Str));
+          end;
+
+        PROP_TAG:
+          Result:= PyUnicode_FromWideString(Ed.UserTag);
+
+        PROP_LINE_STATE:
+          begin
+            if (NValue>=0) and (NValue<Ed.Lines.Count) then
+              NValue:= Ord(Ed.Lines.LineState[NValue])
+            else
+              NValue:= 0;
+            Result:= PyInt_FromLong(NValue);
+          end;
+
+        PROP_KEEP_TRAIL_BLANKS:
+          Result:= PyBool_FromLong(Ord(soKeepTrailingBlanks in Ed.Options));
+        PROP_KEEP_CARET_IN_TEXT:
+          Result:= PyBool_FromLong(Ord(soKeepCaretInText in Ed.Options));
+        PROP_AUTO_INDENT:
+          Result:= PyBool_FromLong(Ord(soAutoIndentMode in Ed.Options));
+        PROP_LAST_LINE_SHOW:
+          Result:= PyBool_FromLong(Ord(soScrollLastLine in Ed.Options));
+        PROP_TAB_FILL:
+          Result:= PyBool_FromLong(Ord(soOptimalFill in Ed.Options));
+        PROP_WRAP_AT_MARGIN:
+          Result:= PyBool_FromLong(Ord(soBreakOnRightMargin in Ed.Options));
+
+        PROP_TAB_ID:
+          Result:= PyInt_FromLong(Frame.TabId);
+        PROP_TAB_COLOR:
+          Result:= PyInt_FromLong(Frame.TabColor);
+        PROP_TAB_TITLE:
+          Result:= PyUnicode_FromWideString(Frame.TabCaption);
+
+        PROP_INDEX_GROUP:
+          begin
+            fmMain.GetEditorIndexes(Ed, Num1, Num2);
+            Result:= PyInt_FromLong(Num1-1); //was 1-based
+          end;
+        PROP_INDEX_TAB:
+          begin
+            fmMain.GetEditorIndexes(Ed, Num1, Num2);
+            Result:= PyInt_FromLong(Num2);
+          end;
+
+        else
+          Result:= ReturnNone;
+      end;
+    end;
+end;
+
+
+function Py_ed_set_prop(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, Id: Integer;
+  Ed: TSyntaxMemo;
+  P: PAnsiChar;
+  StrVal, Str1, Str2: Widestring;
+  NumVal: Integer;
+  Frame: TEditorFrame;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iis:set_prop', @H, @Id, @P)) then
+    begin
+      Ed:= PyEditor(H);
+      Frame:= fmMain.FrameOfEditor(Ed);
+
+      StrVal:= UTF8Decode(AnsiString(P));
+      NumVal:= StrToIntDef(StrVal, 0);
+
+      case Id of
+        PROP_NUMS:
+          Ed.LineNumbers.Visible:= Bool(NumVal);
+        PROP_WRAP:
+          Ed.WordWrap:= Bool(NumVal);
+        PROP_RO:
+          Ed.ReadOnly:= Bool(NumVal);
+        PROP_MARGIN:
+          Ed.RightMargin:= NumVal;
+        PROP_FOLDING:
+          Ed.DisableFolding:= not Bool(NumVal);
+
+        PROP_NON_PRINTED:
+          Ed.NonPrinted.Visible:= Bool(NumVal);
+        PROP_NON_PRINTED_SPACES:
+          Ed.NonPrintedSpaces:= Bool(NumVal);
+        PROP_NON_PRINTED_ENDS:
+          Ed.NonPrintedEol:= Bool(NumVal);
+        PROP_NON_PRINTED_ENDS_EX:
+          Ed.NonPrintedEolDetails:= Bool(NumVal);
+
+        PROP_TAB_SPACES:
+          begin
+            if Bool(NumVal) then
+              Ed.TabMode:= tmSpaces
+            else
+              Ed.TabMode:= tmTabChar;
+          end;      
+        PROP_TAB_SIZE:
+          begin
+            Ed.TabList.Clear;
+            Ed.TabList.Add(NumVal);
+          end;
+        PROP_COL_MARKERS:
+        begin
+          Ed.ColMarkersString:= StrVal;
+          Ed.DoUpdateMargins;
+        end;
+        PROP_ZOOM:
+          Ed.Zoom:= NumVal;
+        PROP_INSERT:
+          Ed.ReplaceMode:= not Bool(NumVal);
+        PROP_LEFT:
+          Ed.ScrollPosX:= NumVal;
+        PROP_TOP:
+          Ed.TopLine:= NumVal;
+        PROP_RULER:
+          Ed.HorzRuler.Visible:= Bool(NumVal);
+        PROP_COLOR:
+          begin
+            Str1:= SGetItem(StrVal);
+            Str2:= SGetItem(StrVal);
+            NumVal:= StrToIntDef(Str2, $FF{red color});
+            EditorSetColorPropertyById(Ed, Str1, NumVal);
+          end;
+        PROP_TAG:
+          Ed.UserTag:= StrVal;
+
+        PROP_KEEP_TRAIL_BLANKS:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soKeepTrailingBlanks]
+            else
+              Ed.Options:= Ed.Options - [soKeepTrailingBlanks];
+          end;
+        PROP_KEEP_CARET_IN_TEXT:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soKeepCaretInText]
+            else
+              Ed.Options:= Ed.Options - [soKeepCaretInText];
+          end;
+        PROP_AUTO_INDENT:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soAutoIndentMode]
+            else
+              Ed.Options:= Ed.Options - [soAutoIndentMode];
+          end;
+        PROP_LAST_LINE_SHOW:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soScrollLastLine]
+            else
+              Ed.Options:= Ed.Options - [soScrollLastLine];
+          end;
+        PROP_TAB_FILL:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soOptimalFill]
+            else
+              Ed.Options:= Ed.Options - [soOptimalFill];
+          end;
+        PROP_WRAP_AT_MARGIN:
+          begin
+            if Bool(NumVal) then
+              Ed.Options:= Ed.Options + [soBreakOnRightMargin]
+            else
+              Ed.Options:= Ed.Options - [soBreakOnRightMargin];
+          end;
+
+        PROP_TAB_COLOR:
+          begin
+            fmMain.DoSetFrameTabColor(Frame, NumVal);
+            fmMain.Groups.Pages1.Tabs.Invalidate;
+            fmMain.Groups.Pages2.Tabs.Invalidate;
+            fmMain.Groups.Pages3.Tabs.Invalidate;
+            fmMain.Groups.Pages4.Tabs.Invalidate;
+            fmMain.Groups.Pages5.Tabs.Invalidate;
+            fmMain.Groups.Pages6.Tabs.Invalidate;
+          end;
+      end;
+
+      Result:= ReturnNone;
+    end;
+end;
+
 
 
 end.

@@ -18,9 +18,9 @@ Id | Read/ Write/ Event | Meaning
 `PROP_MODIFIED` | R | bool: editor text is modified (after last save).
 `PROP_VIS_LINES` | R | int: number of visible lines (not considering word-wrap).
 `PROP_VIS_COLS` | R | int: number of visible columns.
-`PROP_LEFT` | RW | int: horizontal scroll value (index of left visible column).
-`PROP_TOP` | RW | int: vertical scroll value (index of top visible line).
-`PROP_BOTTOM` | R | int: index of line visible at bottom of editor (considering word-wrap).
+`PROP_LEFT`, `PROP_COLUMN_LEFT` | RW | int: horizontal scroll value (index of left visible column).
+`PROP_TOP`, `PROP_LINE_TOP` | RW | int: vertical scroll value (index of top visible line).
+`PROP_BOTTOM`, `PROP_LINE_BOTTOM` | R | int: index of line visible at bottom of editor (considering word-wrap).
 `PROP_RULER` | RWE | bool: horizontal ruler is visible.
 `PROP_TOKEN_TYPE` | R | string: token type at absolute offset, given by string `value`. Returns `'c'` for comment, `'s'` for string, empty string otherwise. 
 `PROP_LEXER_FILE` | R | string: lexer name for entire file (empty string means lexer is not used).
@@ -39,7 +39,11 @@ Id | Read/ Write/ Event | Meaning
 `PROP_LAST_LINE_SHOW` | RW | bool: flag "Allow scrolling to last line" (last line shows on top/bottom of control). 
 `PROP_TAB_FILL` | RW | bool: flag "Optimal fill indent using Tab chars".    
 `PROP_WRAP_AT_MARGIN` | RW | bool: flag "Word-wrap at right margin" (instead of wrap at editor edge).      
-
+`PROP_INDEX_GROUP` | R | int: index of group with editor's tab, 0-based.
+`PROP_INDEX_TAB` | R | int: index of editor's tab in group, 0-based.
+`PROP_TAB_TITLE` | R | str: title of tab, useful for untitled tabs.
+`PROP_TAB_COLOR` | RW | int: color of tab containing editor; COLOR_NONE if not set.
+`PROP_TAB_ID` | R | int: unique tab's identifier (one number for main/secondary editors in tab), it is not changed when tab is moved.
 
 Notes
 -----

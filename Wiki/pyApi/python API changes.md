@@ -5,6 +5,10 @@ sep 2016
 
 * release 1.0.154
 * add: lexer_proc: LEXER_GET_COMMENT
+* add: ed.get_prop: PROP_INDEX_GROUP, PROP_INDEX_TAB, PROP_TAB_TITLE, PROP_TAB_COLOR, PROP_TAB_ID
+* add: ed.get_prop: aliases PROP_LINE_TOP, PROP_LINE_BOTTOM, PROP_COLUMN_LEFT
+* del: ed.get_tabcolor, ed.set_tabcolor (use PROP_TAB_COLOR)
+* del: ed.get_indexes (use PROP_INDEX_GROUP, PROP_INDEX_TAB)
 
 jun 2016
 

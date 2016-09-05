@@ -113,6 +113,8 @@ type
     procedure EditorMasterDblClick(Sender: TObject);
   private
     FTabCaption: Widestring;
+    FTabColor: TColor;
+    FTabId: Integer;
     FBitmapMap: TBitmap;
     FMouseClickOnNumbers: boolean;
     FAlertEnabled: boolean;
@@ -128,7 +130,6 @@ type
     FCollapsedRestored2: boolean;
     FFtpInfoPtr: Pointer;
     FFtpInfoSize: Integer;
-    FTabColor: TColor;
     FSelPresent: boolean;
     FLineEndsChg,
     FNoBOM: boolean;
@@ -191,6 +192,7 @@ type
     procedure DoSyncMicromap;
     property ShowMap: boolean read GetShowMap write SetShowMap;
     property TabColor: TColor read FTabColor write FTabColor;
+    property TabId: Integer read FTabId;
     procedure DoBkToggle(Ed: TCustomSyntaxMemo; LineNum: integer);
     procedure DoTitleChanged;
     procedure DoStartNotif;
@@ -242,10 +244,9 @@ uses
 
 {$R *.dfm}
 
-
-//type
-//  TControlHack = class(TControl);
-
+var
+  FLastTabId: integer = 0;
+  
 procedure TEditorFrame.FrameResize(Sender: TObject);
 begin
   SplitPos:= SplitPos;
@@ -311,6 +312,9 @@ begin
   FFtpInfoPtr:= nil;
   FFtpInfoSize:= 0;
   FTabColor:= clNone;
+  Inc(FLastTabId);
+  FTabId:= FLastTabId;
+
   FLineEndsChg:= False;
   FSplitHorz:= True;
   FSplitPos:= 0;
