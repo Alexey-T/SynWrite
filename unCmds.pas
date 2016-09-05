@@ -109,8 +109,8 @@ const
   sm_GotoBookmarkDialog = 772;
   sm_ToggleFocusClips = 776;
   sm_ToggleSmartHl = 777;
-  sm_DropPortableBk = 778;
-  sm_GotoPortableBk = 779;
+  //sm_DropPortableBk = 778;
+  //sm_GotoPortableBk = 779;
   sm_IndentLike1st = 780;
   sm_PasteNoCursorChange = 783;
   sm_CancelSelection = 786;

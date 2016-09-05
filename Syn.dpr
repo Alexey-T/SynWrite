@@ -33,7 +33,6 @@ uses
   unTabSw in 'unTabSw.pas',
   unTabSwForm in 'unTabSwForm.pas' {fmTabSw},
   unSetupOvr in 'unSetupOvr.pas' {fmSetupOvr},
-  unGotoBkmk in 'unGotoBkmk.pas' {fmGotoBkmk},
   unProj in 'unProj.pas' {fmProj},
   unProjAddDir in 'unProjAddDir.pas' {fmProjAddDir: TTntForm},
   unProjProps in 'unProjProps.pas' {fmProjProps: TTntForm},

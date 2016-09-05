@@ -1047,11 +1047,7 @@ type
     OD_Swatch: TOpenDialog;
     SD_Swatch: TSaveDialog;
     ecSmartHl: TAction;
-    TBXItemBkDropPortable: TSpTbxItem;
-    ecDropPortableBk: TAction;
     TBXSeparatorItem78: TSpTbxSeparatorItem;
-    ecGotoPortableBk: TAction;
-    TBXItemBkGotoPortable: TSpTbxItem;
     TBXItemRunNumConv: TSpTbxItem;
     ecNumericConverter: TAction;
     ecIndentLike1st: TAction;
@@ -1218,7 +1214,6 @@ type
     TBXItemBarPClip: TSpTBXItem;
     TBXSubmenuMarkers: TSpTBXSubmenuItem;
     TBXSubmenuBkOps: TSpTBXSubmenuItem;
-    TBXSubmenuBkPortable: TSpTBXSubmenuItem;
     SpTBXSeparatorItem16: TSpTBXSeparatorItem;
     SpTBXSeparatorItem19: TSpTBXSeparatorItem;
     PopupFoldLevel: TSpTBXPopupMenu;
@@ -1783,9 +1778,6 @@ type
     procedure TBXItemTabColorMiscClick(Sender: TObject);
     procedure TBXItemTabColorDefClick(Sender: TObject);
     procedure ecSmartHlExecute(Sender: TObject);
-    procedure TBXItemBkDropPortableClick(Sender: TObject);
-    procedure ecDropPortableBkExecute(Sender: TObject);
-    procedure ecGotoPortableBkExecute(Sender: TObject);
     procedure TBXItemRunNumConvClick(Sender: TObject);
     procedure ecNumericConverterExecute(Sender: TObject);
     procedure TBXItemEUnindentClick(Sender: TObject);
@@ -3236,7 +3228,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.22.2300';
+  cSynVer = '6.22.2305';
   cSynPyVer = '1.0.153';
 
 const
@@ -3277,13 +3269,16 @@ uses
   unSaveLex,
   unSetup, unAbout, unEnc, unToolsList, unSRFiles,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
-  unProcTabbin, unGotoBkmk, 
-  unMenuCmds, unMenuProj, unMenuSnippets,
-  unToolbarProp, unHideItems,
+  unProcTabbin, 
+  unMenuCmds,
+  unMenuProj,
+  unMenuSnippets,
+  unToolbarProp,
+  unHideItems,
   unProcPy,
   unMainPy,
   unLexerLib, unSnipEd, unSaveTabs, unPrintPreview, unLexerProp,
-  unLexerStyles, unPrintSetup, unColorPalette;
+  unLexerStyles, unPrintSetup, unColorPalette, unMenuPy;
 
 {$R *.dfm}
 {$R Cur.res}
@@ -5878,8 +5873,6 @@ begin
     sm_GotoBookmarkDialog: ecGotoBk.Execute;
     sm_ReplaceFromClipAll: ecReplaceSelFromClipAll.Execute;
     sm_RereadOutputPanel: acRereadOut.Execute;
-    sm_DropPortableBk: ecDropPortableBk.Execute;
-    sm_GotoPortableBk: ecGotoPortableBk.Execute;
     sm_IndentLike1st: ecIndentLike1st.Execute;
     sm_PasteNoCursorChange: EditorPasteNoCaretChange(Ed);
     sm_PasteToColumn1: EditorPasteToFirstColumn(Ed);
@@ -9849,8 +9842,6 @@ begin
   UpdKey(tbxItemB8, smGotoBookmark8);
   UpdKey(tbxItemB9, smGotoBookmark9);
 
-  UpdKey(TBXItemBkGotoPortable, sm_GotoPortableBk);
-  UpdKey(TBXItemBkDropPortable, sm_DropPortableBk);
   UpdKey(TbxItemBkGoto, sm_GotoBookmarkDialog);
   UpdKey(tbxItemBkClear, sm_BookmarksClear);
   UpdKey(tbxItemBkToggle, sm_BookmarksToggle);
@@ -18401,195 +18392,66 @@ end;
 
 procedure TfmMain.ecGotoBkExecute(Sender: TObject);
 var
-  i, nPos: Integer;
-  L: TList;
-  ed: TSyntaxMemo;
+  Ed: TSyntaxMemo;
+  Str: Widestring;
+  Form: TfmMenuPy;
+  ListNums: TList;
+  ListItems: TTntStringList;
+  i: Integer;
 begin
-  ed:= CurrentEditor;
-  L:= TList.Create;
+  Ed:= CurrentEditor;
+  ListNums:= TList.Create;
+  ListItems:= TTntStringList.Create;
 
   try
     //create bookmarks list
-    Screen.Cursor:= crHourGlass;
-    try
-      EditorGetBookmarksAsSortedList(ed, L);
-      if L.Count=0 then
-        begin MsgBeep; Exit end;
-    finally
-      Screen.Cursor:= crDefault;
-    end;
+    EditorGetBookmarksAsSortedList(ed, ListNums);
+    if ListNums.Count=0 then Exit;
 
-    with TfmGotoBkmk.Create(nil) do
+    Form:= TfmMenuPy.Create(nil);
+    with Form do
     try
+      Self.UpdateMenuDialogBorder(Form);
+      Font.Assign(Self.FFontMenus);
+
       FIniFN:= Self.SynHistoryIni;
+      FColorSel:= Self.opColorOutSelText;
+      FColorSelBk:= Self.opColorOutSelBk;
+      FListItems:= ListItems;
 
-      //fill form
-      List.Font.Assign(ed.Font);
-      List.Items.Clear;
-      for i:= 0 to L.Count-1 do
-        List.Items.Add(EditorGetBookmarkDesc(Ed, Integer(L[i]), 60, true, true));
+      for i:= 0 to ListNums.Count-1 do
+      begin
+        Str:= EditorGetBookmarkDesc(Ed, Integer(ListNums[i]), 60, true, true);
+        FListItems.Add(Str);
+      end;
 
       //select curr bookmk
-      List.ItemIndex:= 0;
-      nPos:= ed.CaretStrPos;
-      for i:= L.Count-1 downto 0 do
-        if ed.Bookmarks[Integer(L[i])] <= nPos then
-          begin List.ItemIndex:= i; Break end;
-      List.Selected[List.ItemIndex]:= true;
+      for i:= ListNums.Count-1 downto 0 do
+        if Ed.Bookmarks[Integer(ListNums[i])] <= Ed.CaretStrPos then
+          begin FInitFocusedIndex:= i; Break end;
 
       if ShowModal=mrOk then
       begin
-        i:= List.ItemIndex;
+        i:= -1;
+        if List.ItemIndex>=0 then
+          i:= Integer(List.Items.Objects[List.ItemIndex]);
         if i>=0 then
         begin
           //Shift pressed?
           if GetKeyState(vk_shift)<0 then
-            EditorSelectToPosition(ed, ed.Bookmarks[Integer(L[i])])
+            EditorSelectToPosition(Ed, Ed.Bookmarks[Integer(ListNums[i])])
           else
-            ed.GotoBookmark(Integer(L[i]));
+            Ed.GotoBookmark(Integer(ListNums[i]));
 
-          EditorCenterPos(ed, true{GotoMode}, opFindOffsetTop);
+          EditorCenterPos(Ed, true{GotoMode}, opFindOffsetTop);
         end;
       end;
     finally
       Free
     end;
   finally
-    FreeAndNil(L);
-  end;
-end;
-
-procedure TfmMain.ecGotoPortableBkExecute(Sender: TObject);
-var
-  CmtBegin, CmtEnd,
-  CmtBegin1, CmtBegin2: string;
-  StripBkmk: boolean;
-  //
-  function BkStr(const S: Widestring; NLine: Integer): Widestring;
-  var
-    n: Integer;
-  begin
-    Result:= S;
-    SReplaceAllW(Result, #9, EditorTabExpansion(CurrentEditor));
-
-    try
-      if not StripBkmk then Exit;
-
-      n:= Pos(CmtBegin, Result);
-      if n=0 then Exit;
-      Delete(Result, 1, n+Length(CmtBegin)+4);
-
-      if CmtEnd<>'' then
-      begin
-        n:= Pos(CmtEnd, Result);
-        if n=0 then Exit;
-        Delete(Result, n, MaxInt);
-      end;
-
-      Result:= WideTrim(Result);
-    finally
-      Result:= IntToStr(NLine+1)+':  '+Result;
-    end;
-  end;
-  //
-  function IsBk(const s: Widestring): boolean;
-  var
-    n: Integer;
-  begin
-    if CmtBegin='' then
-      begin Result:= false; Exit end;
-    n:= Pos(CmtBegin1, s);
-    if n=0 then
-      n:= Pos(CmtBegin2, s);
-    Result:= n>0;
-    if Result and (CmtEnd<>'') then
-      Result:= PosEx(CmtEnd, s, n)>0;
-  end;
-  //
-var
-  i, nPos: Integer;
-  L: TList;
-  L_Str: TTntStringList;
-  ed: TSyntaxMemo;
-  MLine: boolean;
-  SLastLexer, SLexer: string;
-begin
-  ed:= CurrentEditor;
-  L:= TList.Create;
-  L_Str:= TTntStringList.Create;
-
-  CmtBegin:= '';
-  CmtEnd:= '';
-  CmtBegin1:= '';
-  CmtBegin2:= '';
-  SLastLexer:= '?';
-  StripBkmk:= Bool(SynHiddenOption('BkStrip', 0));
-
-  try
-    //create bookmarks list
-    Screen.Cursor:= crHourGlass;
-    try
-      for i:= 0 to ed.Lines.Count-1 do
-      begin
-        SLexer:= CurrentLexerForLine(ed, i);
-        if SLexer<>SLastLexer then
-        begin
-          SLastLexer:= SLexer;
-          DoGetCommentProps(SLexer, true, CmtBegin, CmtEnd, MLine);
-          CmtBegin1:= CmtBegin+'NOTE';
-          CmtBegin2:= CmtBegin+'TODO';
-        end;
-
-        if IsBk(ed.Lines[i]) then
-        begin
-          L.Add(Pointer(i));
-          L_Str.Add(BkStr(ed.Lines[i], i));
-        end;
-      end;
-    finally
-      Screen.Cursor:= crDefault;
-    end;
-
-    if L.Count=0 then
-      begin DoHint(DKlangConstW('zMNoBookmk')); MsgBeep; Exit end;
-
-    with TfmGotoBkmk.Create(nil) do
-    try
-      FIniFN:= Self.SynHistoryIni;
-
-      //fill form
-      List.Font.Assign(ed.Font);
-      List.Items.Clear;
-      List.Items.AddStrings(L_Str);
-
-      //select curr bookmk
-      List.ItemIndex:= 0;
-      nPos:= ed.CurrentLine;
-      for i:= L.Count-1 downto 0 do
-        if Integer(L[i]) <= nPos then
-          begin List.ItemIndex:= i; Break end;
-      List.Selected[List.ItemIndex]:= true;
-
-      if ShowModal=mrOk then
-      begin
-        i:= List.ItemIndex;
-        if i>=0 then
-        begin
-          //Shift pressed?
-          if GetKeyState(vk_shift)<0 then
-            EditorSelectToPosition(ed, ed.CaretPosToStrPos(Point(0, Integer(L[i]))))
-          else
-            ed.CaretPos:= Point(0, Integer(L[i]));
-
-          EditorCenterPos(ed, true{GotoMode}, opFindOffsetTop);
-        end;
-      end;
-    finally
-      Free
-    end;
-  finally
-    FreeAndNil(L_Str);
-    FreeAndNil(L);
+    FreeAndNil(ListItems);
+    FreeAndNil(ListNums);
   end;
 end;
 
@@ -19228,30 +19090,6 @@ begin
   UpdateStatusBar;
 end;
 
-procedure TfmMain.TBXItemBkDropPortableClick(Sender: TObject);
-begin
-  ecDropPortableBk.Execute;
-end;
-
-procedure TfmMain.ecDropPortableBkExecute(Sender: TObject);
-var
-  S, SPadding: Widestring;
-  s1, s2: string;
-  MLine: boolean;
-begin
-  if CurrentEditor.ReadOnly then Exit;
-
-  DoGetCommentProps(CurrentLexer, true, s1, s2, MLine);
-  if s1='' then Exit;
-
-  if not MsgInput('zMBkName', S) then Exit;
-
-  with CurrentEditor do
-  begin
-    SPadding:= ''; //StringOfChar(' ', 2);
-    InsertText(SPadding+s1+'NOTE: '+s+' '+s2);
-  end;
-end;
 
 function TfmMain.OppositeFrame: TEditorFrame;
 begin
