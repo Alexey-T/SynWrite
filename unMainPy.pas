@@ -122,6 +122,7 @@ const
   LEXER_GET_MOD     = 3;
   LEXER_GET_LINKS   = 4;
   LEXER_GET_STYLES  = 5;
+  LEXER_GET_COMMENT = 6;
   LEXER_SET_NAME    = 10;
   LEXER_SET_ENABLED = 11;
   LEXER_SET_EXT     = 12;
@@ -213,6 +214,16 @@ begin
             else
               Result:= ReturnNone;
           end;
+
+        LEXER_GET_COMMENT:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+              Result:= PyString_FromString(PChar(string(An.LineComment)))
+            else
+              Result:= ReturnNone;
+          end;
+
 
         LEXER_SET_ENABLED:
           begin

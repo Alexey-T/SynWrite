@@ -10,6 +10,7 @@ Id | Meaning
 `LEXER_GET_MOD` | Returns bool: lexer-library is modified. `text` is ignored.
 `LEXER_GET_LINKS` | Returns list of str: sublexers names of lexer with name `text`, or `None` if empty.
 `LEXER_GET_STYLES` | Returns list of str: styles names of lexer with name `text`, or `None` if empty.
+`LEXER_GET_COMMENT` | Returns str: line-comment string for lexer with name `text`, or `None` if cannot find lexer.
 `LEXER_SET_NAME` | Sets for lexer with name `text1` new name `text2`.
 `LEXER_SET_ENABLED` | Sets for lexer with name `text1` enabled-flag `text2`: `"0"` or `"1"`.
 `LEXER_SET_EXT` | Sets for lexer with name `text1` extensions-list `text2`. 

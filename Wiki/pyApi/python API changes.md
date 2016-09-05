@@ -1,12 +1,17 @@
 Changes in Python API
 =====================
 
+sep 2016
+
+* release 1.0.154
+* add: lexer_proc: LEXER_GET_COMMENT
+
 jun 2016
 
 * release 1.0.153
-* add dlg_custom: "type=tabs"
+* add: dlg_custom: "type=tabs"
 * release 1.0.152
-* del Favorites api, cmds
+* del: Favorites api, cmds
 
 may 2016
 
