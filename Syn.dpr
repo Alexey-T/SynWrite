@@ -22,7 +22,6 @@ uses
   unProgress in 'unProgress.pas' {fmProgress},
   unClip in 'unClip.pas' {fmClip},
   unProc in 'unProc.pas',
-  unShell in 'unShell.pas' {fmShell},
   unLoadLexStyles in 'unLoadLexStyles.pas' {fmLoadLex},
   unMacroEdit in 'unMacroEdit.pas' {fmMacroEdit},
   unGoto in 'unGoto.pas' {fmGoto},

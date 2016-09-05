@@ -305,7 +305,6 @@ const
   sm_HideMenuItemsDialog = 1007;
   sm_RestoreStylesDialog = 1008;
   sm_ExternalToolsDialog = 1009;
-  sm_ExplorerIntegrationDialog = 1010;
   sm_EditSynPluginsIni = 1011;
   sm_EditSynIni = 1012;
   sm_OpenBySelection = 1013;

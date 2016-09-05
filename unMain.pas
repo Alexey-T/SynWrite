@@ -761,7 +761,6 @@ type
     TBXItemBarSyncV: TSpTBXItem;
     ecSyncScrollH: TAction;
     ecSyncScrollV: TAction;
-    TBXItemOShell: TSpTbxItem;
     TBXSubmenuView: TSpTBXSubmenuItem;
     TBXItemOOnTop: TSpTbxItem;
     ecOnTop: TAction;
@@ -1570,7 +1569,6 @@ type
     procedure TBXItemTbCloseAllClick(Sender: TObject);
     procedure ecSyncScrollHExecute(Sender: TObject);
     procedure ecSyncScrollVExecute(Sender: TObject);
-    procedure TBXItemOShellClick(Sender: TObject);
     procedure ecOnTopExecute(Sender: TObject);
     procedure tbMenuShortCut(var Msg: TWMKey; var Handled: Boolean);
     procedure TBXItemEFillBlockClick(Sender: TObject);
@@ -2764,7 +2762,6 @@ type
     function DoCheckAutoCorrectCase(Ed: TSyntaxMemo): boolean;
     procedure UpadateFilenameForExport;
     procedure DoConfigTools;
-    procedure DoConfigShellOptions;
     procedure DoConfigHideItems;
     procedure DoConfigRestoreStyles;
     procedure DoToggleTabDirs;
@@ -3239,14 +3236,13 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.22.2290';
+  cSynVer = '6.22.2300';
   cSynPyVer = '1.0.153';
 
 const
   cSynParamRO = '/ro';
   cSynParamSingleInst = '/s';
   cSynParamLineNum = '/n=';
-  cSynParamReg = '/reg';
   cSynParamTwo = '/two=';
   cSynParamCmp = '/cmp=';
 
@@ -3279,7 +3275,7 @@ uses
   cUtils,
 
   unSaveLex,
-  unSetup, unAbout, unEnc, unToolsList, unSRFiles, unShell,
+  unSetup, unAbout, unEnc, unToolsList, unSRFiles,
   unLoadLexStyles, unMacroEdit, unGoto, unCmds,
   unProcTabbin, unGotoBkmk, 
   unMenuCmds, unMenuProj, unMenuSnippets,
@@ -6216,7 +6212,6 @@ begin
     sm_HideMenuItemsDialog:       DoConfigHideItems;
     sm_RestoreStylesDialog:       DoConfigRestoreStyles;
     sm_ExternalToolsDialog:       DoConfigTools;
-    sm_ExplorerIntegrationDialog: DoConfigShellOptions;
 
     sm_EditSynIni:                DoOpenFile(SynIni);
     sm_EditSynPluginsIni:         DoOpenFile(SynPluginsIni);
@@ -6910,21 +6905,12 @@ begin
   end;
 
   if SynExe then
-    if ParamStr(1)=cSynParamReg then
-    begin
-      LoadLexLib;
-      TBXItemOShellClick(Self);
-      Application.Terminate;
-    end;
-
-  if SynExe then
   begin
     SetForegroundWindow(Application.Handle); //For focusing taskbar button
     Application.BringToFront;               //For bringing to front
   end;
 
   TbxItemORo.Visible:= not SynExe;
-  TbxItemOShell.Enabled:= SynExe;
   TBXItemOEditSynPluginsIni.Enabled:= SynExe;
   TbxItemCtxCustomize.Visible:= QuickView;
   TbxItemWinExplorer.Enabled:= SynExe;
@@ -14164,27 +14150,6 @@ begin
     EdOther.ScrollPosX:= EdSrc.ScrollPosX;
 end;
 
-procedure TfmMain.TBXItemOShellClick(Sender: TObject);
-begin
-  DoConfigShellOptions;
-end;
-
-procedure TfmMain.DoConfigShellOptions;
-var
-  i: Integer;
-begin
-  with TfmShell.Create(nil) do
-  try
-    FLex.Clear;
-    for i:= 0 to SyntaxManager.AnalyzerCount-1 do
-      with SyntaxManager.Analyzers[i] do
-        if (not Internal) and (Extentions <> '') then
-          FLex.Add(LexerName + '=' + Extentions);
-    ShowModal;
-  finally
-    Release
-  end;
-end;
 
 procedure TfmMain.UpdateRO;
   procedure RO;
