@@ -344,7 +344,6 @@ cmd_Menu_LineEnds = 812
 
 cmd_ClearFilesHistory = 813
 cmd_QuickSearch = 814
-cmd_InsertDateTime = 815
 cmd_GotoNextFindResult = 817
 cmd_GotoPrevFindResult = 818
 cmd_ToggleSyncEditing = 819

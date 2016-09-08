@@ -218,12 +218,6 @@ type
     cbGroupLexers: TTntCheckBox;
     TntLabel37: TTntLabel;
     cbRecColors: TTntComboBox;
-    boxDateFormat: TTntGroupBox;
-    edDateFmt: TTntEdit;
-    LabelHelpDateFmt: TTntLabel;
-    TntLabel20: TTntLabel;
-    edDateFmtP: TTntEdit;
-    TntLabel33: TTntLabel;
     boxIndent: TTntGroupBox;
     Label1: TTntLabel;
     edIndent: TSpinEdit;
@@ -2377,9 +2371,6 @@ begin
 
     ApplyFramesOptions;
     ApplyColorsFontsToFrames;
-
-    opDateFmt:= edDateFmt.Text;
-    opDateFmtPLog:= edDateFmtP.Text;
   end;
 end;
 
@@ -2542,9 +2533,6 @@ begin
     cbUnindentAlign.Checked:= soUnindentKeepAlign in TemplateEditor.Options;
     cbOptFill.Checked:= soOptimalFill in TemplateEditor.Options;
     cbKeepBlank.Checked:= soKeepTrailingBlanks in TemplateEditor.Options;
-
-    edDateFmt.Text:= opDateFmt;
-    edDateFmtP.Text:= opDateFmtPLog;
   end;
 end;
 

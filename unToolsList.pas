@@ -131,7 +131,7 @@ uses
 {$R *.dfm}
 
 const
-  ccStr: array[0..26] of string = (
+  cToolMacros: array[0..26] of string = (
     '"{FileName}"',
     '"{FileDir}"',
     '"{FileNameOnly}"',
@@ -322,7 +322,7 @@ end;
 
 procedure TfmTools.p0Click(Sender: TObject);
 begin
-  edPar.Text:= edPar.Text + ccStr[TMenuItem(Sender).Tag];
+  edPar.Text:= edPar.Text + cToolMacros[TMenuItem(Sender).Tag];
   edPar.SelStart:= Length(edPar.Text);
   edParChange(Self);
 end;
@@ -341,7 +341,7 @@ procedure TfmTools.TntFormCreate(Sender: TObject);
   begin
     m.Tag:= n;
     m.OnClick:= p0Click;
-    m.Caption:= ccStr[n];
+    m.Caption:= cToolMacros[n];
   end;
   //
 var

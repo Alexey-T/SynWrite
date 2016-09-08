@@ -671,7 +671,6 @@ type
     TBXSeparatorItem30: TSpTbxSeparatorItem;
     TBXItemFClearRecents: TSpTBXItem;
     TbxSubmenuWindow: TSpTBXSubmenuItem;
-    TBXItemETime: TSpTbxItem;
     TBXSubmenuTools: TSpTBXSubmenuItem;
     TBXItemRunOpenDir: TSpTbxItem;
     TBXSubmenuEncodings: TSpTBXSubmenuItem;
@@ -1016,7 +1015,6 @@ type
     TBXItemMarkGoLast: TSpTbxItem;
     TBXItemRunOpenFile: TSpTbxItem;
     TBXItemTreeFindCopyToClipNode: TSpTbxItem;
-    TBXSeparatorItem71: TSpTbxSeparatorItem;
     TBXItemClipCopyToEd: TSpTbxItem;
     TBXItemClipCopyToClip: TSpTbxItem;
     TBXSeparatorItem72: TSpTbxSeparatorItem;
@@ -1497,7 +1495,6 @@ type
     procedure TBXItemFClearRecentsClick(Sender: TObject);
     procedure TbxSubmenuWindowPopup(Sender: TTBCustomItem; FromLink: Boolean);
     procedure TBXSubmenuEncConvertPopup(Sender: TTBCustomItem; FromLink: Boolean);
-    procedure TBXItemETimeClick(Sender: TObject);
     procedure TBXItemEPasteClick(Sender: TObject);
     procedure TBXItemEDeleteClick(Sender: TObject);
     procedure TBXItemESelectAllClick(Sender: TObject);
@@ -2616,7 +2613,6 @@ type
 
     procedure MsgBakEr(const fn: Widestring);
     procedure MsgBakOk(const fn: Widestring);
-    procedure DoDateTime;
     procedure DoAcpPopup;
     procedure DoFuncHintPopup;
     function DoCheckUnicodeNeeded(Frame: TEditorFrame): boolean;
@@ -2929,8 +2925,7 @@ type
     opHiliteSmartOnClick: boolean;
     opHiliteBrackets: boolean;
     opHiliteBigSizeMb: integer;
-    opDateFmt,
-    opDateFmtPLog: string;
+    opDateFmtPluginLog: string;
     opFileBackup: TSynBackup;
     opEsc: TSynEscMode;
     opHistProjectSave,
@@ -3228,7 +3223,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.23.2310';
+  cSynVer = '6.23.2320';
   cSynPyVer = '1.0.154';
 
 const
@@ -4625,8 +4620,7 @@ begin
     opHiliteBrackets:= ReadBool('Setup', 'BrHi', true);
     opHiliteBigSizeMb:= ReadInteger('Setup', 'HiliteBigSize', 4);
 
-    opDateFmt:= ReadString('Setup', 'DateFmt', 'h:mm dd.mm.yyyy');
-    opDateFmtPLog:= ReadString('Setup', 'DateFmtP', 'hh:mm');
+    opDateFmtPluginLog:= ReadString('Setup', 'DateFmtPlugin', 'hh:mm');
     opFileBackup:= TSynBackup(ReadInteger('Setup', 'Back', 0));
     opEsc:= TSynEscMode(ReadInteger('Setup', 'Esc' + cExeSuffix[SynExe], Ord(cEscCloseApp)));
     opMruCheck:= ReadBool('Setup', 'MruCheck', false);
@@ -5014,8 +5008,6 @@ begin
     WriteBool('Setup', 'SmHiClick', opHiliteSmartOnClick);
     WriteInteger('Setup', 'HiliteBigSize', opHiliteBigSizeMb);
 
-    WriteString('Setup', 'DateFmt', opDateFmt);
-    WriteString('Setup', 'DateFmtP', opDateFmtPLog);
     WriteInteger('Setup', 'Back', Ord(opFileBackup));
     WriteInteger('Setup', 'Esc' + cExeSuffix[SynExe], Ord(opEsc));
     WriteBool('Setup', 'MruCheck', opMruCheck);
@@ -6038,8 +6030,6 @@ begin
           edQs.SetFocus;
       end;
 
-    sm_InsertDateTime:
-      DoDateTime;
     sm_GotoNextFindResult:
       ecGotoNextFindResult.Execute;
     sm_GotoPrevFindResult:
@@ -9744,7 +9734,6 @@ begin
   UpdKey(TBXItemOFullScr, sm_ShowFullScreen);
 
   UpdKey(TBXItemESyncEd, sm_ToggleSyncEditing);
-  UpdKey(TbxItemETime, sm_InsertDateTime);
 
   UpdKey(TBXItemFExit, sm_FileExit);
   UpdKey(TBXItemFClearRecents, sm_ClearFilesHistory);
@@ -11247,18 +11236,6 @@ begin
   UpdateEncMenu(TBXSubmenuEncConvert, True{AConvEnc});
 end;
 
-procedure TfmMain.TBXItemETimeClick(Sender: TObject);
-begin
-  DoDateTime;
-end;
-
-procedure TfmMain.DoDateTime;
-begin
-  with CurrentEditor do
-    if not ReadOnly then
-      InsertText(FormatDateTime(opDateFmt, Now));
-end;
-
 
 procedure TfmMain.TBXItemEPasteClick(Sender: TObject);
 begin
@@ -12292,7 +12269,6 @@ begin
   TBXItemEDup.Enabled:= not ro;
   TBXItemEDelLn.Enabled:= not ro;
   TBXItemETable.Enabled:= not ro;
-  TBXItemETime.Enabled:= not ro;
   TBXItemEJoin.Enabled:= en and not ro;
   TBXItemESplit.Enabled:= not ro;
 
@@ -18153,8 +18129,6 @@ begin
       SReplaceAllW(Result, '{FileDate}', FormatFileTime(NTime));
     if Pos('{FileDate2}', Result)>0 then
       SReplaceAllW(Result, '{FileDate2}', FormatFileTimeAlt(NTime));
-    if Pos('{FileDateOp}', Result)>0 then
-      SReplaceAllW(Result, '{FileDateOp}', FormatFileTimeFmt(NTime, opDateFmt));
   end
   else
   begin
@@ -19868,8 +19842,8 @@ begin
 
     cSynLogCmdAddLine:
       begin
-        if opDateFmtPLog<>'' then
-          S:= FormatDateTime(opDateFmtPLog, Now) + ' '
+        if opDateFmtPluginLog<>'' then
+          S:= FormatDateTime(opDateFmtPluginLog, Now) + ' '
         else
           S:= '';
 
