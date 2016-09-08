@@ -596,7 +596,6 @@ type
     TBXItemOLexerLib: TSpTbxItem;
     TBXSubmenuSearch: TSpTBXSubmenuItem;
     TBXItemSGoto: TSpTbxItem;
-    TBXSeparatorItem21: TSpTbxSeparatorItem;
     TBXItemSNext: TSpTbxItem;
     TBXItemSPrev: TSpTbxItem;
     TBXSeparatorItem19: TSpTbxSeparatorItem;
@@ -1373,6 +1372,7 @@ type
     TbxItemTabColor: TSpTBXItem;
     TbxItemGroup1p2H: TSpTBXItem;
     TbxSplit2: TSpTBXSeparatorItem;
+    SpTBXSeparatorItem9: TSpTBXSeparatorItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
