@@ -15298,6 +15298,7 @@ object SyntaxManager: TSyntaxManager
           item
             TagList.Strings = (
               'bool'
+              'false'
               'float'
               'int'
               'mixed'
