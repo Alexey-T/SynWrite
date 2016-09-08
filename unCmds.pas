@@ -115,7 +115,6 @@ const
   sm_PasteNoCursorChange = 783;
   sm_CancelSelection = 786;
   sm_ExtendSelByLine = 788;
-  sm_SelectBrackets = 789;
   sm_CollapseParent = 790;
   sm_CollapseWithNested = 791;
   sm_FindCommand = 792;

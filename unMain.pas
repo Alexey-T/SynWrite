@@ -700,7 +700,6 @@ type
     TBXSeparatorItem35: TSpTbxSeparatorItem;
     TBXItemECutApp: TSpTbxItem;
     TBXItemECopyApp: TSpTbxItem;
-    TBXItemSGoBracket: TSpTbxItem;
     plOut: TSpTbxDockablePanel;
     ListOut: TTntListBox;
     TBXItemBarPOut: TSpTBXItem;
@@ -749,7 +748,6 @@ type
     TBXItemFSesAdd: TSpTbxItem;
     ecFullScr: TAction;
     TBXItemOFullScr: TSpTbxItem;
-    TimerBrackets: TTimer;
     TBXSeparatorItem41: TSpTbxSeparatorItem;
     TBXItemTabCopyDir: TSpTBXItem;
     TBXItemTabCopyFull: TSpTBXItem;
@@ -1075,7 +1073,6 @@ type
     TBXItemPLogSaveAs: TSpTbxItem;
     TBXItemTabMoveToWindow: TSpTBXItem;
     TBXItemTabOpenInWindow: TSpTBXItem;
-    TBXItemSSelBrackets: TSpTbxItem;
     PropsManagerPrint: TPropsManager;
     TimerTree: TTimer;
     ecCollapseParent: TAction;
@@ -1513,7 +1510,6 @@ type
     procedure TBXItemCtxCutAppendClick(Sender: TObject);
     procedure TBXSubmenuEditPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
-    procedure TBXItemSGoBracketClick(Sender: TObject);
     procedure plOutResize(Sender: TObject);
     procedure ecShowOutExecute(Sender: TObject);
     procedure plOutVisibleChanged(Sender: TObject);
@@ -1553,7 +1549,6 @@ type
     procedure TBXItemFSesAddClick(Sender: TObject);
     procedure ecFullScrExecute(Sender: TObject);
     procedure edQsExit(Sender: TObject);
-    procedure TimerBracketsTimer(Sender: TObject);
     procedure TBXItemTabCopyFNClick(Sender: TObject);
     procedure TBXItemTabCopyFullClick(Sender: TObject);
     procedure TBXItemTabCopyDirClick(Sender: TObject);
@@ -1804,7 +1799,6 @@ type
     procedure TBXItemTabMoveToWindowClick(Sender: TObject);
     procedure TBXItemTabOpenInWindowClick(Sender: TObject);
     procedure ecEncodeHtmlCharsExecute(Sender: TObject);
-    procedure TBXItemSSelBracketsClick(Sender: TObject);
     procedure TimerTreeTimer(Sender: TObject);
     procedure PopupStatusLineEndsPopup(Sender: TObject);
     procedure TBXItemFoldAllClick(Sender: TObject);
@@ -2161,7 +2155,6 @@ type
     FListResFN_Prev: Widestring; //previous filename for mass search/replace
     FOutItem: Integer; //ListOut item index for right-click
     FOutVisible: boolean; //Visible state for Output panel
-    FPrevCaretPos: Integer; //saved caret pos before executing "Select brackets"
 
     FAcpLexer: string; //ACP list was loaded for this lexer
     FAcpAgain: boolean; //ACP need to show again after closing (for html/css)
@@ -2502,7 +2495,6 @@ type
     procedure SaveLastDir_UntitledFile(const FN: Widestring);
     procedure SetFullscreen(AValue: boolean);
     procedure SetOnTop(V: boolean);
-    procedure DoBracketsHilite(Ed: TSyntaxMemo);
     procedure DoListCopy(Sender: TTntListbox);
     procedure DoListCopyAll(Sender: TTntListbox);
     procedure DoHandleKeysInPanels(var Key: Word; Shift: TShiftState);
@@ -2923,7 +2915,6 @@ type
     opHiliteSmartCase: boolean;
     opHiliteSmartWords: boolean;
     opHiliteSmartOnClick: boolean;
-    opHiliteBrackets: boolean;
     opHiliteBigSizeMb: integer;
     opDateFmtPluginLog: string;
     opFileBackup: TSynBackup;
@@ -4267,9 +4258,6 @@ begin
 
   TBXSubmenuBarSave.ImageIndex:= IfThen(frame.Modified, cImageIndexSaveIcon, cImageIndexSaveIconPale);
 
-  //Hilite brackets
-  TimerBrackets.Enabled:= true;
-
   ecReadOnly.Checked:= ro;
   ecWrap.Checked:= ed.WordWrap;
   ecLineNums.Checked:= ed.LineNumbers.Visible;
@@ -4617,7 +4605,6 @@ begin
     opHiliteSmartCase:= ReadBool('Setup', 'SmHiCase', false);
     opHiliteSmartWords:= ReadBool('Setup', 'SmHiWords', true);
     opHiliteSmartOnClick:= ReadBool('Setup', 'SmHiClick', false);
-    opHiliteBrackets:= ReadBool('Setup', 'BrHi', true);
     opHiliteBigSizeMb:= ReadInteger('Setup', 'HiliteBigSize', 4);
 
     opDateFmtPluginLog:= ReadString('Setup', 'DateFmtPlugin', 'hh:mm');
@@ -4945,7 +4932,6 @@ begin
     WriteInteger('Setup', 'Undo', TemplateEditor.UndoLimit);
     WriteInteger('Setup', 'BigSize', opBigSize);
     WriteBool('Setup', 'BkUndo', opBkUndo);
-    WriteBool('Setup', 'BrHi', opHiliteBrackets);
     WriteBool('Setup', 'ShowBm', opShowBookmarkColumn);
     WriteInteger('Setup', 'StapleKind', opStapleKind);
 
@@ -5871,7 +5857,6 @@ begin
     sm_PasteAsColumnBlock: begin if not EditorPasteAsColumnBlock(Ed) then MsgBeep; end;
     sm_CancelSelection: Ed.ResetSelection;
     sm_ExtendSelByLine: EditorExtendSelectionByOneLine(Ed);
-    sm_SelectBrackets: EditorSelectBrackets(Ed, FPrevCaretPos);
     sm_CollapseParent: ecCollapseParent.Execute;
     sm_CollapseWithNested: ecCollapseWithNested.Execute;
     sm_ToggleShowGroup2: ecToggleShowGroup2.Execute;
@@ -6147,7 +6132,6 @@ begin
     sm_CaretDecY:  EditorMoveCaretByNChars(Ed, 0, -SynHiddenOption('MovY', 10));
 
     //misc
-    smChangeRangeSide: begin if not EditorJumpRange(Ed) then MsgBeep; end;
     sm_CopySearchMarks: DoCopySearchMarks(Ed);
 
     //macros
@@ -9857,8 +9841,6 @@ begin
   UpdKey(tbxItemSWordNext, smFindCurrentWordNext);
   UpdKey(tbxItemSWordPrior, smFindCurrentWordPrior);
   UpdKey(tbxItemSGoto, smGotoLine);
-  UpdKey(TBXItemSGoBracket, smChangeRangeSide);
-  UpdKey(TbxItemSSelBrackets, sm_SelectBrackets);
   //
   UpdKey(tbxItemORO, sm_OptReadOnly);
   UpdKey(tbxItemOTree, sm_OptShowLeftPanel);
@@ -12228,12 +12210,6 @@ begin
     DoSmartHilite;
 end;
 
-procedure TfmMain.TimerBracketsTimer(Sender: TObject);
-begin
-  TimerBrackets.Enabled:= false;
-  DoBracketsHilite(CurrentEditor);
-end;
-
 procedure TfmMain.TBXItemCtxCopyAppendClick(Sender: TObject);
 begin
   CurrentEditor.ExecCommand(sm_CopyAppend);
@@ -12276,11 +12252,6 @@ begin
   TBXItemEColumn.Enabled:= en and not ro;
   TbxItemEToggleLineComment.Enabled:= not ro;
   TbxItemEToggleStreamComment.Enabled:= not ro;
-end;
-
-procedure TfmMain.TBXItemSGoBracketClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(smChangeRangeSide);
 end;
 
 procedure TfmMain.plOutResize(Sender: TObject);
@@ -13637,32 +13608,6 @@ begin
     MsgBeep;
 end;
 
-
-procedure TfmMain.DoBracketsHilite(Ed: TSyntaxMemo);
-var
-  n1, n2: Integer;
-begin
-  if Ed=nil then Exit;
-  if not IsTextSizeOkForAutoHilite(Ed) then Exit;
-
-  if not opHiliteBrackets then
-  begin
-    //Invalidate needed to prevent bug: "Current line hiliting" leaves on multiple lines,
-    //with SelectModeDefault=msColumn
-    Ed.Invalidate;
-    Exit;
-  end;
-
-  if Ed.HaveSelection then Exit;
-  EditorFindBrackets(Ed, n1, n2);
-  if n2<0 then Exit;
-
-  Ed.BracketsHilited:= true;
-  Ed.SearchMarks.Clear;
-  Ed.SearchMarks.Add(ecLists.TRange.Create(n1, n1+1));
-  Ed.SearchMarks.Add(ecLists.TRange.Create(n2, n2+1));
-  Ed.Invalidate;
-end;
 
 procedure TfmMain.TBXItemFSesAddClick(Sender: TObject);
 begin
@@ -21252,11 +21197,6 @@ begin
   end;
 end;
 
-procedure TfmMain.TBXItemSSelBracketsClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_SelectBrackets);
-end;
-
 function TfmMain.FrameOfEditor(Ed: TSyntaxMemo): TEditorFrame;
 begin
   if Ed.Owner is TEditorFrame then
@@ -23964,23 +23904,11 @@ end;
 procedure TfmMain.SynCaretPosChanged(Sender: TObject);
 var
   Ed: TSyntaxMemo;
-  NeedDraw: boolean;
 begin
   Ed:= CurrentEditor;
   if Ed=nil then Exit;
-  NeedDraw:= false;
 
   ATSyntMemo.TSyntaxMemo(Ed).DoUpdateMargins;
-
-  if Ed.BracketsHilited then
-  begin
-    Ed.BracketsHilited:= false;
-    Ed.SearchMarks.Clear;
-    NeedDraw:= true;
-  end;
-
-  if NeedDraw then
-    Ed.Invalidate;
 
   DoSmartHiliteOnClick;
 

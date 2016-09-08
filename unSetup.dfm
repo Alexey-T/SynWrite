@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabInsertFormat
+    ActivePage = tabSelHL
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -2556,12 +2556,12 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 168
         Width = 529
-        Height = 137
+        Height = 129
         Caption = 'Auto-highlight'
         TabOrder = 1
         object TntLabel13: TTntLabel
           Left = 64
-          Top = 106
+          Top = 98
           Width = 231
           Height = 13
           Caption = 'Disable auto-highlights in files bigger than ... Mb'
@@ -2598,22 +2598,14 @@ object fmSetup: TfmSetup
           Caption = 'Whole words only'
           TabOrder = 3
         end
-        object cbHiliteBrackets: TTntCheckBox
-          Left = 8
-          Top = 80
-          Width = 256
-          Height = 17
-          Caption = 'Highlight pair brackets'
-          TabOrder = 4
-        end
         object edHiliteBigSize: TSpinEdit
           Left = 8
-          Top = 103
+          Top = 95
           Width = 49
           Height = 22
           MaxValue = 100
           MinValue = 1
-          TabOrder = 5
+          TabOrder = 4
           Value = 1
           OnKeyDown = edIndentKeyDown
         end
@@ -2901,7 +2893,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0144010000
+      0700666D5365747570010100000001000000070043617074696F6E0143010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3197,9 +3189,8 @@ object fmSetup: TfmSetup
       74436C69636B010100000000030000070043617074696F6E001100636248696C
       697465536D61727443617365010100000002030000070043617074696F6E0012
       00636248696C697465536D617274576F72647301010000000403000007004361
-      7074696F6E001000636248696C697465427261636B6574730101000000060300
-      00070043617074696F6E000F00656448696C69746542696753697A6500000A00
-      546E744C6162656C3133010100000008030000070043617074696F6E00}
+      7074696F6E000F00656448696C69746542696753697A6500000A00546E744C61
+      62656C3133010100000008030000070043617074696F6E00}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]

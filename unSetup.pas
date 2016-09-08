@@ -344,7 +344,6 @@ type
     cbHiliteSmartClick: TTntCheckBox;
     cbHiliteSmartCase: TTntCheckBox;
     cbHiliteSmartWords: TTntCheckBox;
-    cbHiliteBrackets: TTntCheckBox;
     edHiliteBigSize: TSpinEdit;
     TntLabel13: TTntLabel;
     procedure bApplyClick(Sender: TObject);
@@ -2386,7 +2385,6 @@ begin
     opHiliteSmartOnClick:= cbHiliteSmartClick.Checked;
     opHiliteSmartCase:= cbHiliteSmartCase.Checked;
     opHiliteSmartWords:= cbHiliteSmartWords.Checked;
-    opHiliteBrackets:= cbHiliteBrackets.Checked;
     opHiliteBigSizeMb:= edHiliteBigSize.Value;
 
     opCopyLineIfNoSel:= cbCopyLineNoSel.Checked;
@@ -2547,7 +2545,6 @@ begin
     cbHiliteSmartClick.Checked:= opHiliteSmartOnClick;
     cbHiliteSmartCase.Checked:= opHiliteSmartCase;
     cbHiliteSmartWords.Checked:= opHiliteSmartWords;
-    cbHiliteBrackets.Checked:= opHiliteBrackets;
     edHiliteBigSize.Value:= opHiliteBigSizeMb;
 
     cbSelJump.Checked:= opLeftRightSelJump;

@@ -325,7 +325,6 @@ cmd_IndentLike1st = 780
 cmd_PasteNoCursorChange = 783
 cmd_CancelSelection = 786
 cmd_ExtendSelByLine = 788
-cmd_SelectBrackets = 789
 cmd_CollapseParent = 790
 cmd_CollapseWithNested = 791
 cmd_FindCommand = 792

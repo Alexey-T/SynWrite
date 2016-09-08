@@ -29,7 +29,6 @@ function STruncateLong(const Str: Widestring; MaxLen: Integer; CutMiddle: boolea
 procedure SReplaceAllPercentChars(var S: string);
 function SReplaceAllEols(const S, SReplace: Widestring): Widestring;
 function SStripFromTab(const S: Widestring): Widestring;
-function SFindOpeningBracket(const S: Widestring; nFromPos: Integer): Integer;
 
 function SColorToHtmlCode(C: Integer): string;
 function SHtmlCodeToColor(const s: string): Integer;
@@ -1293,48 +1292,6 @@ function IsStringListed(const S, List: string): boolean;
 begin
   Result:= (S <> '') and
     (Pos(','+S+',', ','+List+',') > 0);
-end;
-
-function SFindOpeningBracket(const S: Widestring; nFromPos: Integer): Integer;
-var
-  n, nLockRound, nLockSquare, nLockCurly: Integer;
-begin
-  Result:= -1;
-  n:= nFromPos;
-  nLockRound:= 0;
-  nLockSquare:= 0;
-  nLockCurly:= 0;
-
-  repeat
-    Dec(n);
-    if n<1 then Break;
-
-    if S[n]=')' then begin Inc(nLockRound); Continue end;
-    if S[n]=']' then begin Inc(nLockSquare); Continue end;
-    if S[n]='}' then begin Inc(nLockCurly); Continue end;
-
-    if S[n]='(' then
-    begin
-      if nLockRound=0 then
-        begin Result:= n; Exit end
-      else
-        begin Dec(nLockRound); Continue end;
-    end;
-    if S[n]='[' then
-    begin
-      if nLockSquare=0 then
-        begin Result:= n; Exit end
-      else
-        begin Dec(nLockSquare); Continue end;
-    end;
-    if S[n]='{' then
-    begin
-      if nLockCurly=0 then
-        begin Result:= n; Exit end
-      else
-        begin Dec(nLockCurly); Continue end;
-    end;
-  until false;
 end;
 
 

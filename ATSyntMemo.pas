@@ -187,7 +187,6 @@ type
   public
     MarkersLen: TList; //length of ins-points, which are marked with Markers
     ColMarkers: array[0..14] of integer;
-    BracketsHilited: boolean;
     UserTag: Widestring;
     function IsTabstopMode: boolean;
     procedure DoJumpToNextTabstop;
