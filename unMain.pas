@@ -2765,7 +2765,7 @@ type
 
     function GetUntitledString: Widestring;
     procedure DoAddKeymappingCommand(const ACommand: Integer;
-      const ACategory, ACaption, AHotkey: Widestring);
+      ACategory, ACaption, AHotkey: Widestring);
 
     procedure DoPluginsManager_Install;
     procedure DoPluginsManager_Remove;
@@ -3214,7 +3214,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.23.2320';
+  cSynVer = '6.23.2322';
   cSynPyVer = '1.0.154';
 
 const
@@ -27041,11 +27041,18 @@ end;
 
 
 procedure TfmMain.DoAddKeymappingCommand(const ACommand: Integer;
-  const ACategory, ACaption, AHotkey: Widestring);
+  ACategory, ACaption, AHotkey: Widestring);
 var
   S, SItem: Widestring;
 begin
+  //filter out menu-separators
+  if Pos('\-', ACaption)>0 then exit;
+
+  //make nicer str for "Sort\Sort asc"
+  SReplaceAllW(ACaption, '\', ': ');
+
   SyntKeyMapping.Add(ACommand, ACategory, '', ACaption);
+  
   with SyntKeyMapping do
     with Items[Items.Count-1] do
     begin
