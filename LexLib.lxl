@@ -6021,6 +6021,14 @@ object SyntaxManager: TSyntaxManager
         ColumnTo = 0
       end
       item
+        DisplayName = 'String ticks'
+        StyleName = 'String regex'
+        TokenType = 4
+        Expression = '` .*? (`|$)'
+        ColumnFrom = 0
+        ColumnTo = 0
+      end
+      item
         DisplayName = 'String Regex'
         StyleName = 'String regex'
         TokenType = 4
@@ -6096,6 +6104,7 @@ object SyntaxManager: TSyntaxManager
             TagList.Strings = (
               'abstract'
               'arguments'
+              'as'
               'await'
               'boolean'
               'break'
@@ -6121,6 +6130,7 @@ object SyntaxManager: TSyntaxManager
               'finally'
               'float'
               'for'
+              'from'
               'function'
               'goto'
               'if'
