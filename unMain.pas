@@ -110,7 +110,8 @@ type
     cSynDataNewDoc,
     cSynDataOutPresets,
     cSynDataSkins,
-    cSynDataSnippets
+    cSynDataSnippets,
+    cSynDataLexerLib
     );
 const
   cSynDataSubdirNames: array[TSynDataSubdirId] of string = (
@@ -122,7 +123,8 @@ const
     'newdoc',
     'outpresets',
     'skins',
-    'snippets'
+    'snippets',
+    'lexlib'
     );
 
 type
@@ -2573,7 +2575,6 @@ type
     function GetCaretTime: Integer;
 
     function DoConfirmClose: boolean;
-    function DoConfirmSaveLexLib: boolean;
     function DoConfirmSaveSession(CanCancel: boolean; ExitCmd: boolean = false): boolean;
     function DoConfirmMaybeBinaryFile(const fn: Widestring): boolean;
 
@@ -2591,7 +2592,6 @@ type
     procedure SaveMacros;
     procedure SavePrintOptions;
     procedure SaveLexLib;
-    procedure SaveLexLibFilename;
     procedure SaveToolbarsProps;
     function DoReadTotalHistory: Widestring;
 
@@ -3172,7 +3172,6 @@ type
     function SynConverterFilename(const Name: string): string;
     function SynLexersCfg: string;
     function SynLexersExCfg: string;
-    function SynLexLib: string;
 
     function DoGetSearchPaths: Widestring;
     function DoFindCommand(
@@ -3214,7 +3213,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.23.2330';
+  cSynVer = '6.24.2340';
   cSynPyVer = '1.0.154';
 
 const
@@ -5289,26 +5288,11 @@ begin
   Result:= true;
 end;
 
-function TfmMain.SynLexLib: string;
-begin
-  Result:= SynDir + 'LexLib.lxl';
-end;
-
 procedure TfmMain.SaveLexLib;
 begin
   SyntaxManager.SaveToFile(SyntaxManager.FileName);
 end;
 
-function TfmMain.DoConfirmSaveLexLib: boolean;
-begin
-  Result:= true;
-  if SyntaxManager.Modified then
-  begin
-    if MsgConfirm(DKLangConstW('MSavLex'), Handle) then
-      SaveLexLib;
-    SyntaxManager.Modified:= false;
-  end;
-end;
 
 procedure TfmMain.SynKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
@@ -6905,38 +6889,67 @@ begin
   InitPanelsTabs;
   InitGroups;
   DoPlugins_InitTabs; //after InitPanelsTabs
-  
+
   TabsLeft.TabIndex:= FTabLeft;
   TabsRight.TabIndex:= FTabRight;
   TabsOut.TabIndex:= FTabOut;
 end;
 
-procedure TfmMain.LoadLexLib;
+
+procedure TfmMain.LoadLexlib;
 var
-  fn_std, fn: string;
+  dir, fn, lexname: string;
+  L: TTntStringList;
+  an: TSyntAnalyzer;
+  ini: TIniFile;
+  i, j: integer;
 begin
-  fn_std:= SynLexLib;
+  SyntaxManager.Clear;
 
-  with TIniFile.Create(SynIni) do
+  //load .lcf files to lib
+  dir:= SynDataSubdir(cSynDataLexerLib);
+  L:= TTntStringList.Create;
   try
-    fn:= ReadString('Setup', 'LexLib', '');
+    FFindToList(L, dir, '*.lcf', '', false, False, false, false);
+    L.Sort;
+
+    if L.Count=0 then
+    begin
+      DoHint('Cannot find lexer files (data\lexlib\*.lcf)');
+      exit
+    end;
+
+    for i:= 0 to L.Count-1 do
+    begin
+      an:= SyntaxManager.AddAnalyzer;
+      an.LoadFromFile(L[i]);
+    end;
   finally
-    Free
+    FreeAndNil(L);
   end;
 
-  if fn='' then
-    fn:= fn_std
-  else
+  //correct sublexer links
+  for i:= 0 to SyntaxManager.AnalyzerCount-1 do
   begin
-    if (ExtractFileDir(fn)='') then
-      fn:= ExtractFilePath(fn_std) + fn
-    else
-      fn:= fn_std;
+    an:= SyntaxManager.Analyzers[i];
+    fn:= dir+'\'+an.LexerName+'.cuda-lexmap';
+    if FileExists(fn) then
+    begin
+      ini:= TIniFile.Create(fn);
+      try
+        for j:= 0 to an.SubAnalyzers.Count-1 do
+        begin
+          lexname:= ini.ReadString('ref', IntToStr(j), '');
+          if lexname<>'' then
+            an.SubAnalyzers[j].SyntAnalyzer:= SyntaxManager.FindAnalyzer(lexname);
+        end;
+      finally
+        FreeAndNil(ini);
+      end;
+    end;
   end;
-
-  if IsFileExist(fn) then
-    SyntaxManager.LoadFromFile(fn);
 end;
+
 
 procedure TfmMain.DoFind_CurrentWord(ANext: boolean);
 var
@@ -9489,22 +9502,6 @@ end;
 procedure TfmMain.FrameSaveState(Sender: TObject);
 begin
   SaveFrameState(Sender as TEditorFrame);
-end;
-
-procedure TfmMain.SaveLexLibFilename;
-var
-  fn: string;
-begin
-  fn:= SyntaxManager.FileName;
-  if UpperCase(ExtractFileDir(fn)) = UpperCase(ExtractFileDir(SynLexLib)) then
-    fn:= ExtractFileName(fn);
-
-  with TIniFile.Create(SynIni) do
-  try
-    WriteString('Setup', 'LexLib', fn);
-  finally
-    Free
-  end;
 end;
 
   //1st shortcut for command
@@ -23637,8 +23634,6 @@ end;
 procedure TfmMain.acSetupLexerLibExecute(Sender: TObject);
 begin
   DoLexerLibraryDialog(SyntaxManager, ImgListTree);
-  SaveLexLibFilename;
-  DoConfirmSaveLexLib;
 end;
 
 procedure TfmMain.TbxItemTabReloadClick(Sender: TObject);
@@ -27118,7 +27113,6 @@ begin
   if DoLexerPropDialog(SyntaxManager.CurrentLexer, ImgListTree) then
   begin
     SyntaxManager.Modified:= true;
-    DoConfirmSaveLexLib;
   end;
 end;
 

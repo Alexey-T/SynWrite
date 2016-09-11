@@ -14,55 +14,27 @@ type
     ToolBar1: TTntToolBar;
     ImageList1: TImageList;
     ActionList1: TActionList;
-    actOpenLib: TAction;
-    actSaveLib: TAction;
     actLexerProps: TAction;
-    actImportLexer: TAction;
-    actExportLexer: TAction;
     actDeleteLexer: TAction;
     actNewLexer: TAction;
-    btnOpen: TTntToolButton;
-    btnSaveAs: TTntToolButton;
     btnNew: TTntToolButton;
     btnConf: TTntToolButton;
-    ToolButton5: TTntToolButton;
     ToolButton6: TTntToolButton;
-    btnImport: TTntToolButton;
-    btnExport: TTntToolButton;
     btnDelete: TTntToolButton;
-    ToolButton10: TTntToolButton;
-    ToolButton11: TTntToolButton;
-    actClose: TAction;
-    btnClose: TTntToolButton;
-    ToolButton13: TTntToolButton;
-    DlgOpenLib: TOpenDialog;
-    DlgSaveLib: TSaveDialog;
-    DlgOpenLexer: TOpenDialog;
-    DlgSaveLexer: TSaveDialog;
     btnCopy: TTntToolButton;
     ToolButton16: TTntToolButton;
     actCopy: TAction;
-    actClear: TAction;
-    btnClear: TTntToolButton;
     DKLanguageController1: TDKLanguageController;
     LV: TTntCheckListBox;
     procedure actLexerPropsUpdate(Sender: TObject);
-    procedure actOpenLibExecute(Sender: TObject);
-    procedure actSaveLibExecute(Sender: TObject);
-    procedure actImportLexerExecute(Sender: TObject);
     procedure actLexerPropsExecute(Sender: TObject);
-    procedure actExportLexerExecute(Sender: TObject);
     procedure actNewLexerExecute(Sender: TObject);
     procedure actDeleteLexerExecute(Sender: TObject);
-    procedure actCloseExecute(Sender: TObject);
     procedure actCopyExecute(Sender: TObject);
-    procedure actClearUpdate(Sender: TObject);
-    procedure actClearExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure LVClickCheck(Sender: TObject);
-    procedure TntFormCreate(Sender: TObject);
   private
     FLexLib: TSyntaxManager;
     FTreeImages: TImageList;
@@ -97,10 +69,6 @@ begin
   UpdateList;
 end;
 
-procedure TfmLexerLibrary.actCloseExecute(Sender: TObject);
-begin
-  Close;
-end;
 
 procedure TfmLexerLibrary.actLexerPropsUpdate(Sender: TObject);
 begin
@@ -173,54 +141,9 @@ begin
     end;
   finally
     FreeAndNil(sl);
-  end;  
-end;
-
-procedure TfmLexerLibrary.actOpenLibExecute(Sender: TObject);
-begin
-  if FLexLib.FileName<>'' then
-  begin
-    DlgOpenLib.InitialDir:= ExtractFileDir(FLexLib.FileName);
-    DlgOpenLib.FileName:= ExtractFileName(FLexLib.FileName);
-  end;
-
-  if DlgOpenLib.Execute then
-  begin
-    FLexLib.LoadFromFile(DlgOpenLib.FileName);
-    UpdateList;
   end;
 end;
 
-procedure TfmLexerLibrary.actSaveLibExecute(Sender: TObject);
-begin
-  if FLexLib.FileName <> '' then
-  begin
-    DlgSaveLib.InitialDir:= ExtractFileDir(FLexLib.FileName);
-    DlgSaveLib.FileName:= ExtractFileName(FLexLib.FileName);
-  end;
-
-  if DlgSaveLib.Execute then
-  begin
-    FLexLib.SaveToFile(DlgSaveLib.FileName);
-    UpdateTitle;
-  end;
-end;
-
-procedure TfmLexerLibrary.actImportLexerExecute(Sender: TObject);
-var
-  an: TSyntAnalyzer;
-begin
-  if DlgOpenLexer.Execute then
-  begin
-    an:= FLexLib.AddAnalyzer;
-    try
-      an.LoadFromFile(DlgOpenLexer.FileName);
-    except
-      FreeAndNil(an);
-    end;
-    UpdateList;
-  end;
-end;
 
 procedure TfmLexerLibrary.actLexerPropsExecute(Sender: TObject);
 var
@@ -234,23 +157,6 @@ begin
       LV.Items[LV.ItemIndex]:= LexerNameWithLinks(An);
       FLexLib.Modified:= True;
     end;
-  end;
-end;
-
-procedure TfmLexerLibrary.actExportLexerExecute(Sender: TObject);
-var
-  S: string;
-begin
-  if LV.ItemIndex>=0 then
-  begin
-    S:= LV.Items[LV.ItemIndex];
-    S:= StringReplace(S, '/', '_', [rfReplaceAll]);
-    S:= StringReplace(S, '\', '_', [rfReplaceAll]);
-    S:= StringReplace(S, ':', '_', [rfReplaceAll]);
-    S:= StringReplace(S, '|', '_', [rfReplaceAll]);
-    DlgSaveLexer.FileName:= S;
-    if DlgSaveLexer.Execute then
-      (LV.Items.Objects[LV.ItemIndex] as TSyntAnalyzer).SaveToFile(DlgSaveLexer.FileName);
   end;
 end;
 
@@ -295,20 +201,6 @@ begin
   end;
 end;
 
-procedure TfmLexerLibrary.actClearUpdate(Sender: TObject);
-begin
-  actClear.Enabled:= FLexLib.AnalyzerCount > 0;
-end;
-
-procedure TfmLexerLibrary.actClearExecute(Sender: TObject);
-begin
-  if MsgConfirm(DKLangConstW('MDLexx'), Handle) then
-  begin
-    FLexLib.Clear;
-    UpdateList;
-  end;
-end;
-
 procedure TfmLexerLibrary.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -330,7 +222,7 @@ end;
 
 procedure TfmLexerLibrary.UpdateTitle;
 begin
-  Caption:= DKLangConstW('zMLexerLib') + ' - '+ ExtractFileName(FLexLib.FileName);
+  Caption:= DKLangConstW('zMLexerLib');
 end;
 
 procedure TfmLexerLibrary.LVClickCheck(Sender: TObject);
@@ -343,20 +235,6 @@ begin
     an.Internal:= not LV.Checked[LV.ItemIndex];
     FLexLib.Modified:= True;
   end;
-end;
-
-procedure TfmLexerLibrary.TntFormCreate(Sender: TObject);
-begin
-  DlgOpenLib.DefaultExt:= 'lxl';
-  DlgSaveLib.DefaultExt:= 'lxl';
-  DlgOpenLexer.DefaultExt:= 'lcf';
-  DlgSaveLexer.DefaultExt:= 'lcf';
-
-  DlgOpenLib.Filter:= '*.lxl|*.lxl';
-  DlgSaveLib.Filter:= DlgOpenLib.Filter;
-
-  DlgOpenLexer.Filter:= '*.lcf|*.lcf';
-  DlgSaveLexer.Filter:= DlgOpenLexer.Filter;
 end;
 
 end.

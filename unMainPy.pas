@@ -429,7 +429,6 @@ const
   FILENAME_PROJECT_WORKDIR = -12;
   FILENAME_PROJECT_SESSION = -13;
   FILENAME_PROJECT_FILES   = -14;
-  FILENAME_LEXLIB          = -20;
   FILENAME_PATHS           = -21;
 
 function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
@@ -462,7 +461,6 @@ begin
         FILENAME_PROJECT_MAIN: Str:= fmMain.CurrentProjectMainFN;
         FILENAME_PROJECT_WORKDIR: Str:= fmMain.CurrentProjectWorkDir;
         FILENAME_PROJECT_SESSION: Str:= fmMain.CurrentProjectSessionFN;
-        FILENAME_LEXLIB: Str:= fmMain.SynLexLib;
         FILENAME_PATHS: Str:= fmMain.DoGetSearchPaths;
 
         FILENAME_PROJECT_FILES:
