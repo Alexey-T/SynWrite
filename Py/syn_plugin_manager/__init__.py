@@ -39,7 +39,7 @@ class Command:
           info.v_remote + '\t'
           for info in infos])
 
-        columns = '%s\n%s\t150\n%s\t70\n%s\t70' % (msg('ColName'), msg('ColFolder'), msg('ColVLocal'), msg('ColVRemote'))
+        columns = '%s\n%s\t150\n%s\t85\n%s\t85' % (msg('ColName'), msg('ColFolder'), msg('ColVLocal'), msg('ColVRemote'))
         checked = dlg_checklist(msg('MenuUpdate'), columns, text, UPDATER_X, UPDATER_Y)
         if not checked: return
         items = [info for (n, info) in enumerate(infos) if checked[n] and info.base_url]
