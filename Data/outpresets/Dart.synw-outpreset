@@ -1,0 +1,8 @@
+[Tool]
+name=Dart
+exe=dart2js.bat
+[Regex]
+s=(.+?):(\d+):(\d+): Error:.+
+fn=1
+line=2
+col=3
