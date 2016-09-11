@@ -26,5 +26,6 @@ __history
 !Setup/*
 !Py/*.py
 !Py/syn_plugin_manager
+!Py/syn_insert_time
 !Wiki/*
 !CFree/*
