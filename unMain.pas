@@ -3214,7 +3214,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.23.2322';
+  cSynVer = '6.23.2330';
   cSynPyVer = '1.0.154';
 
 const
@@ -19144,12 +19144,12 @@ var
 begin
   DirExe:= ExtractFileDir(Application.ExeName);
   //Panel plugins
-  //DoPlugins_PreinstallPlugin('Explorer', DirExe+'\Plugins\Explorer\install.inf', true);
   DoPlugins_PreinstallPlugin('SynFTP', DirExe+'\Plugins\SynFTP\install.inf', true);
   //Command plugins
   DoPlugins_PreinstallPlugin('Color Picker', DirExe+'\Py\syn_color_picker\install.inf', false);
   DoPlugins_PreinstallPlugin('HTML Tidy\Menu', DirExe+'\Py\syn_html_tidy\install.inf', false);
   DoPlugins_PreinstallPlugin('Make Plugin', DirExe+'\Py\syn_make_plugin\install.inf', false);
+  DoPlugins_PreinstallPlugin('Insert Time', DirExe+'\Py\syn_insert_time\install.inf', false);
 end;
 
 procedure TfmMain.DoPlugins_PreinstallPlugin(const AId, fn_inf: string; AIsPanelPlugin: boolean);

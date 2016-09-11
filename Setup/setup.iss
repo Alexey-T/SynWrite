@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.23.2320
+AppVersion=6.23.2330
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -75,6 +75,7 @@ Source: "..\Py\syn_plugin_manager\*"; DestDir: "{app}\Py\syn_plugin_manager"; Ex
 Source: "..\Py\syn_color_picker\*"; DestDir: "{app}\Py\syn_color_picker"; Excludes: "*.pyc"; Flags: recursesubdirs;
 Source: "..\Py\syn_html_tidy\*"; DestDir: "{app}\Py\syn_html_tidy"; Excludes: "*.pyc"; Flags: recursesubdirs;
 Source: "..\Py\syn_make_plugin\*"; DestDir: "{app}\Py\syn_make_plugin"; Excludes: "*.pyc"; Flags: recursesubdirs;
+Source: "..\Py\syn_insert_time\*"; DestDir: "{app}\Py\syn_insert_time"; Excludes: "*.pyc"; Flags: recursesubdirs;
 
 [Icons]
 Name: "{group}\SynWrite"; Filename: "{app}\Syn.exe"
