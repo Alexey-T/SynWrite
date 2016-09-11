@@ -11,5 +11,4 @@ Id | Meaning
 `FILENAME_PROJECT_WORKDIR` | project's "working folder"
 `FILENAME_PROJECT_SESSION` | project's session filename
 `FILENAME_PROJECT_FILES` | project's all filenames, list of str
-`FILENAME_LEXLIB` | lexer-library filename
 `FILENAME_PATHS` | search-paths, str ";"-separated
