@@ -1,0 +1,2 @@
+
+- doesn't work "move cur tab to next group" after n steps(3 groups: 2-3 ok, 3-1 ok, 1-2 not ok)

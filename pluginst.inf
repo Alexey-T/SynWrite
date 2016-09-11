@@ -1,0 +1,5 @@
+[plugininstall]
+description=SynWrite - plugin-editor with syntax highlighting
+type=wlx
+file=Syn2.wlx
+defaultdir=Syn2

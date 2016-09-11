@@ -1,0 +1,10 @@
+[info]
+title=Insert Time
+desc=Inserts current date/time into text
+type=py-plugin
+subdir=syn_insert_time
+
+[ini]
+section=Commands
+id=Insert Time
+params=run

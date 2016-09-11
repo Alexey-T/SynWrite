@@ -1,0 +1,10 @@
+[info]
+title=Plugin Manager
+desc=Allows to manage SynWrite plugins
+type=py-plugin
+subdir=syn_plugin_manager
+
+[ini]
+section=Commands
+id=Plugin Manager\Install...
+params=menu_install;;;
