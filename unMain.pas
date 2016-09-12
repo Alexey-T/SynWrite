@@ -503,10 +503,8 @@ type
     ParamCompletion: TParamCompletion;
     TemplatePopup: TTemplatePopup;
     ecFind: TAction;
-    TBXSubmenuBarSetup: TSpTBXSubmenuItem;
+    TBXItemBarSetup: TSpTBXItem;
     TBXSeparatorItem1: TSpTbxSeparatorItem;
-    TBXItemBarLexer: TSpTBXItem;
-    TBXItemBarLexerLib: TSpTBXItem;
     PopupLexers: TSpTBXPopupMenu;
     ecWrap: TAction;
     ecLineNums: TAction;
@@ -14395,20 +14393,9 @@ end;
 
 
 procedure TfmMain.DoConfigRestoreStyles;
-  //------
-  function FindAn(const S: string): TSyntAnalyzer;
-  var i: Integer;
-  begin
-    Result:= nil;
-    with SyntaxManager do
-      for i:= 0 to AnalyzerCount-1 do
-        if Analyzers[i].LexerName = S {case-sens!} then
-          begin Result:= Analyzers[i]; Exit end;
-  end;
 var
-  i: Integer;
   An: TSyntAnalyzer;
-  S: string;
+  i: Integer;
 begin
   with TfmLoadLex.Create(nil) do
   try
@@ -14418,20 +14405,18 @@ begin
       for i:= 0 to List.Count-1 do
         if List.Checked[i] then
         begin
-          An:= FindAn(List.Items[i]);
-          if An<>nil then
+          An:= SyntaxManager.FindAnalyzer(List.Items[i]);
+          if Assigned(An) then
           begin
             LoadLexerStylesFromFile(An, SynStylesIni);
-            S:= S + List.Items[i] + #13;
+            DoLexerSaveToFile(An, LexerFilename(An.LexerName, SynDataSubdir(cSynDataLexerLib)));
           end
           else
             MsgWarn(WideFormat(DKLangConstW('MNLex'), [List.Items[i]]), Handle);
         end;
-      //SaveLexLib;
-      //MsgInfo(S);
     end;
   finally
-    Release
+    Free
   end;
 end;
 
