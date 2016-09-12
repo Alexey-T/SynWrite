@@ -3,6 +3,9 @@ Changes in Python API
 
 sep 2016
 
+* release 1.0.155
+* del: id FILENAME_LEXLIB
+
 * release 1.0.154
 * add: lexer_proc: LEXER_GET_COMMENT
 * add: ed.get_prop: PROP_INDEX_GROUP, PROP_INDEX_TAB, PROP_TAB_TITLE, PROP_TAB_COLOR, PROP_TAB_ID

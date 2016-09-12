@@ -3213,8 +3213,8 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.24.2340';
-  cSynPyVer = '1.0.154';
+  cSynVer = '6.24.2350';
+  cSynPyVer = '1.0.155';
 
 const
   cSynParamRO = '/ro';
