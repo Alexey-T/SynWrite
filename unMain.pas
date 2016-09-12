@@ -24770,8 +24770,10 @@ begin
             An.SubAnalyzers[i-1].SyntAnalyzer:= AnLink;
       end;
 
-    //SaveLexLib;
+    //del temp file
     FDelete(fn_lexer);
+    //save to data/lexlib
+    DoLexerSaveToFile(An, LexerFilename(An.LexerName, SynDataSubdir(cSynDataLexerLib)));
   end;
 
   if FileExists(fn_acp) then

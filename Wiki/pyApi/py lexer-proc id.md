@@ -15,10 +15,8 @@ Id | Meaning
 `LEXER_SET_ENABLED` | Sets for lexer with name `text1` enabled-flag `text2`: `"0"` or `"1"`.
 `LEXER_SET_EXT` | Sets for lexer with name `text1` extensions-list `text2`. 
 `LEXER_SET_LINKS` | Sets for lexer with name `text1` sublexers names: pass as `text2` "vertical line"-separated sublexer names (any number allowed).
-`LEXER_SAVE_LIB` | Saves lexer-library file.
 `LEXER_DELETE` | Deletes lexer with name `text`.
 `LEXER_IMPORT` | Adds new lexer from file-name `text`. Returns name of this lexer, or `None` if import failed.
 `LEXER_EXPORT` | Saves lexer with name `text1` into file-name `text2` (recommended extension is "lcf").
 `LEXER_CONFIG` | Shows properties dialog for lexer with name `text`. Returns bool: user pressed OK.
-`LEXER_CONFIG_ALT` | Shows simplified properties dialog for lexer with name `text`. Returns bool: user pressed OK.
 `LEXER_ACTIVATE` | Makes lexer with name `text` active for current editor. Empty string, or non-existing name, turns lexer off.

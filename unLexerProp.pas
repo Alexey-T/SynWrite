@@ -56,8 +56,6 @@ type
     ComboBox19: TTntComboBox;
     Label28: TTntLabel;
     ComboBox23: TComboBox;
-    Button9: TTntButton;
-    Button10: TTntButton;
     OD: TOpenDialog;
     SD: TSaveDialog;
     Label33: TTntLabel;
@@ -235,8 +233,6 @@ type
     procedure Edit1Exit(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Memo1Exit(Sender: TObject);
-    procedure Button9Click(Sender: TObject);
-    procedure Button10Click(Sender: TObject);
     procedure CheckBox10Click(Sender: TObject);
     procedure ComboBox19Change(Sender: TObject);
     procedure Memo2Exit(Sender: TObject);
@@ -361,7 +357,7 @@ var
 implementation
 
 uses
-  ecCodeTemplDlg, ecEditsRes;
+  ecEditsRes;
 
 {$R *.dfm}
 
@@ -381,25 +377,6 @@ begin
   finally
     Free;
   end;
-end;
-
-var
-  SyntLexerDlg: TfmLexerProp = nil;
-
-function CustomizeLexerLocal(SyntAnal: TSyntAnalyzer): Boolean;
-begin
-  if not Assigned(SyntLexerDlg) then
-  begin
-    SyntLexerDlg := TfmLexerProp.Create(nil);
-    SyntLexerDlg.FormStyle := fsStayOnTop;
-  end;
-  with SyntLexerDlg do
-   begin
-    FSynt.Assign(SyntAnal);
-    FEditSynt := SyntAnal;
-    SHow;
-   end;
-    Result := True;
 end;
 
 
@@ -526,24 +503,6 @@ begin
     FSynt.Gramma.Gramma := SyntaxMemo9.Lines.Text;
   FSynt.LineComment := Edit14.Text;
   FSynt.AlwaysSyncBlockAnal := CheckBox28.Checked;
-end;
-
-procedure TfmLexerProp.Button9Click(Sender: TObject);
-begin
-  if SD.Execute then
-    begin
-      GetCommonProps;
-      FSynt.SaveToFile(SD.FileName);
-    end;
-end;
-
-procedure TfmLexerProp.Button10Click(Sender: TObject);
-begin
-  if OD.Execute then
-   begin
-    FSynt.LoadFromFile(OD.FileName);
-    FormShow(nil);
-   end;
 end;
 
 procedure TfmLexerProp.CheckBox17Click(Sender: TObject);

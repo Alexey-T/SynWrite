@@ -29,7 +29,6 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ;;Source: "Portable.ini"; DestDir: "{app}"; Tasks: "portable"
 Source: "..\Syn.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\SynHelper.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\LexLib.lxl"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Settings\Enc.cfg"; DestDir: "{app}\Settings"; Flags: ignoreversion
 Source: "..\Settings\Lexers.cfg"; DestDir: "{app}\Settings"; Flags: ignoreversion
 Source: "..\Lang\*"; DestDir: "{app}\Lang"; Flags: ignoreversion
@@ -41,6 +40,7 @@ Source: "..\python*.zip"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\*.manifest"; DestDir: "{app}"; Flags: ignoreversion
 
+Source: "..\Data\lexlib\*";       DestDir: "{app}\Data\lexlib";
 Source: "..\Data\autocomplete\*"; DestDir: "{app}\Data\autocomplete";
 Source: "..\Data\colors\*"; 	  DestDir: "{app}\Data\colors";
 Source: "..\Data\newdoc\*";       DestDir: "{app}\Data\newdoc";

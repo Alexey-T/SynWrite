@@ -88,7 +88,7 @@ begin
     if an.Tag>0 then
     begin
       an.Tag:= 0;
-      an.SaveToFile(LexerFilename(an.LexerName, ALexerLibDir));
+      DoLexerSaveToFile(an, LexerFilename(an.LexerName, ALexerLibDir));
     end;
   end;
 

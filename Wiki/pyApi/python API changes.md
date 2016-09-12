@@ -5,6 +5,7 @@ sep 2016
 
 * release 1.0.155
 * del: id FILENAME_LEXLIB
+* del: id LEXER_SAVE_LIB, LEXER_CONFIG_ALT
 
 * release 1.0.154
 * add: lexer_proc: LEXER_GET_COMMENT

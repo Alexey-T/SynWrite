@@ -170,12 +170,10 @@ const
   LEXER_SET_ENABLED = 11;
   LEXER_SET_EXT     = 12;
   LEXER_SET_LINKS   = 13;
-  LEXER_SAVE_LIB    = 20;
   LEXER_DELETE      = 21;
   LEXER_IMPORT      = 22;
   LEXER_EXPORT      = 23;
   LEXER_CONFIG      = 24;
-  LEXER_CONFIG_ALT  = 25;
   LEXER_ACTIVATE    = 26;
 var
   Id: Integer;
@@ -304,6 +302,10 @@ begin
             begin
               An:= fmMain.SyntaxManager.AddAnalyzer;
               An.LoadFromFile(Str1);
+
+              //also save to data/lexlib
+              DoLexerSaveToFile(An, LexerFilename(An.LexerName, fmMain.SynDataSubdir(cSynDataLexerLib)));
+
               Result:= PyUnicode_FromWideString(An.LexerName);
             end
             else
@@ -314,7 +316,7 @@ begin
             An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
             begin
-              An.SaveToFile(Str2);
+              DoLexerSaveToFile(An, Str2);
               Result:= PyBool_FromLong(1);
             end
             else
@@ -334,20 +336,6 @@ begin
               Result:= PyBool_FromLong(Ord(An.CustomizeLexer))
             else
               Result:= ReturnNone;
-          end;
-        LEXER_CONFIG_ALT:
-          begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
-            if Assigned(An) then
-              Result:= PyBool_FromLong(Ord(An.Customize))
-            else
-              Result:= ReturnNone;
-          end;
-        LEXER_SAVE_LIB:
-          begin
-            with fmMain.SyntaxManager do
-              SaveToFile(FileName);
-            Result:= ReturnNone;
           end;
         LEXER_ACTIVATE:
           begin

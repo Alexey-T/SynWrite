@@ -3203,15 +3203,6 @@ object fmLexerProp: TfmLexerProp
     DesignSize = (
       601
       31)
-    object Button9: TTntButton
-      Left = 8
-      Top = 4
-      Width = 85
-      Height = 23
-      Caption = '&Export'
-      TabOrder = 3
-      OnClick = Button9Click
-    end
     object Button8: TTntButton
       Left = 332
       Top = 4
@@ -3232,15 +3223,6 @@ object fmLexerProp: TfmLexerProp
       Caption = '&Cancel'
       ModalResult = 2
       TabOrder = 2
-    end
-    object Button10: TTntButton
-      Left = 98
-      Top = 4
-      Width = 85
-      Height = 23
-      Caption = '&Import'
-      TabOrder = 4
-      OnClick = Button10Click
     end
     object Button1: TTntButton
       Left = 422
