@@ -35,7 +35,11 @@ procedure SetListviewColumnsFromString(L: TTntListview; const S: string);
 
 procedure DoSortMenu(Menu: TSpTbxSubmenuItem);
 procedure DoRemovePluginsIniLines(const fn_ini, dir: string; IsBinaryPlugin: boolean);
+
 function DoFindLexerForFilename(LexLib: TSyntaxManager; const FileName: string): TSyntAnalyzer;
+procedure DoLexerSaveToFile(an: TSyntAnalyzer; const AFilename: string);
+function LexerFilename(const ALexerName, ADir: string): string;
+function LexerNameWithLinks(an: TSyntAnalyzer): Widestring;
 
 procedure DoIconSet_DetectSizes(const dir: string; var SizeX, SizeY: Integer);
 function DoIconSet_LoadFromTar(L: TPngImageList; const fn_tar: string): boolean;
@@ -2695,6 +2699,75 @@ begin
   finally
     Free
   end;
+end;
+
+function LexerFilename(const ALexerName, ADir: string): string;
+begin
+  if ADir='' then
+    raise Exception.Create('not inited LexerFilename.Dir');
+
+  Result:= ALexerName;
+  SReplaceAll(Result, '/', '_');
+  SReplaceAll(Result, '\', '_');
+  SReplaceAll(Result, '"', '_');
+  SReplaceAll(Result, '*', '_');
+  Result:= ADir+'\'+Result+'.lcf';
+end;
+
+
+function LexerNameWithLinks(an: TSyntAnalyzer): Widestring;
+var
+  sl: TStringList;
+  i: integer;
+begin
+  Result:= an.LexerName;
+
+  sl:= TStringList.Create;
+  try
+    sl.Duplicates:= dupIgnore;
+    sl.Sorted:= true;
+    
+    for i:= 0 to an.SubAnalyzers.Count-1 do
+    begin
+      if an.SubAnalyzers[i].SyntAnalyzer=nil then
+      begin
+        Result:= an.LexerName + '   (' + DKLangConstW('zMLexerLinkBroken') + ')';
+        Exit
+      end;
+      sl.Add(an.SubAnalyzers[i].SyntAnalyzer.LexerName);
+    end;
+
+    for i:= 0 to sl.Count-1 do
+    begin
+      if i=0 then
+        Result:= Result + '   ('+DKLangConstW('zMLexerLinks') + ': ';
+      Result:= Result + sl[i] + IfThen(i<sl.Count-1, ', ', ')');
+    end;
+  finally
+    FreeAndNil(sl);
+  end;    
+end;
+
+procedure DoLexerSaveToFile(an: TSyntAnalyzer; const AFilename: string);
+var
+  fnLexmap: string;
+  ini: TIniFile;
+  i: integer;
+begin
+  an.SaveToFile(AFilename);
+
+  fnLexmap:= ChangeFileExt(AFilename, '.cuda-lexmap');
+  if an.SubAnalyzers.Count>0 then
+  begin
+    ini:= TIniFile.Create(fnLexmap);
+    try
+      for i:= 0 to an.SubAnalyzers.Count-1 do
+        if Assigned(an.SubAnalyzers[i].SyntAnalyzer) then
+          ini.WriteString('ref', IntToStr(i), an.SubAnalyzers[i].SyntAnalyzer.LexerName);
+    finally
+      FreeAndNil(ini);
+    end;
+  end;    
 end;
 
 end.

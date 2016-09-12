@@ -3,6 +3,7 @@ object fmSaveTabs: TfmSaveTabs
   Top = 477
   Width = 560
   Height = 278
+  ActiveControl = bYes
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Save tabs?'
   Color = clBtnFace

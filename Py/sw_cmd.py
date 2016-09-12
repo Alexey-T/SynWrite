@@ -501,7 +501,6 @@ cmd_ExternalToolsDialog = 1009
 cmd_EditSynPluginsIni = 1011
 cmd_EditSynIni = 1012
 cmd_OpenBySelection = 1013
-cmd_CustomizeStylesDialog = 1014
 
 cmd_CopySearchMarks = 1020
 cmd_OpenProject = 1021

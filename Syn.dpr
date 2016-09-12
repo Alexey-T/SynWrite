@@ -61,7 +61,6 @@ uses
   unSaveTabs in 'unSaveTabs.pas' {fmSaveTabs},
   unPrintPreview in 'unPrintPreview.pas' {fmPreview},
   unLexerProp in 'unLexerProp.pas',
-  unLexerStyles in 'unLexerStyles.pas',
   unPrintSetup in 'unPrintSetup.pas' {fmPrintSetup},
   unMacroCmd in 'unMacroCmd.pas' {fmMacroCmd},
   unInputCheckList in 'unInputCheckList.pas' {fmInputCheckList},

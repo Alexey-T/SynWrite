@@ -306,7 +306,6 @@ const
   sm_EditSynPluginsIni = 1011;
   sm_EditSynIni = 1012;
   sm_OpenBySelection = 1013;
-  sm_CustomizeStylesDialog = 1014;
   //free for options categories
 
   sm_CopySearchMarks = 1020;

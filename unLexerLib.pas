@@ -19,10 +19,10 @@ type
     actNewLexer: TAction;
     btnNew: TTntToolButton;
     btnConf: TTntToolButton;
-    ToolButton6: TTntToolButton;
+    ToolButtonSep2: TTntToolButton;
     btnDelete: TTntToolButton;
     btnCopy: TTntToolButton;
-    ToolButton16: TTntToolButton;
+    ToolButtonSep1: TTntToolButton;
     actCopy: TAction;
     DKLanguageController1: TDKLanguageController;
     LV: TTntCheckListBox;
@@ -38,22 +38,34 @@ type
   private
     FLexLib: TSyntaxManager;
     FTreeImages: TImageList;
-    procedure UpdateTitle;
     procedure UpdateList;
   public
   end;
 
-procedure DoLexerLibraryDialog(ALexerLib: TSyntaxManager; ATreeImages: TImageList);
+procedure DoLexerLibraryDialog(ALexerLib: TSyntaxManager; ATreeImages: TImageList;
+  const ALexerLibDir: string);
 
 implementation
 
 uses
-  StrUtils, unProc, unLexerProp, unLexerStyles;
+  StrUtils,
+  ATxSProc,
+  unProc,
+  unLexerProp;
 
 {$R *.dfm}
 
-procedure DoLexerLibraryDialog(ALexerLib: TSyntaxManager; ATreeImages: TImageList);
+procedure DoLexerLibraryDialog(ALexerLib: TSyntaxManager; ATreeImages: TImageList;
+  const ALexerLibDir: string);
+var
+  PrevNames: TStringList;
+  an: TSyntAnalyzer;
+  i: integer;
 begin
+  PrevNames:= TStringList.Create;
+  for i:= 0 to ALexerLib.AnalyzerCount-1 do
+    PrevNames.Add(ALexerLib.Analyzers[i].LexerName);
+
   with TfmLexerLibrary.Create(nil) do
   try
     FLexLib:= ALexerLib;
@@ -62,10 +74,30 @@ begin
   finally
     Free;
   end;
+
+  //find analizers which were deleted/renamed,
+  //and del their old files
+  for i:= 0 to PrevNames.Count-1 do
+    if ALexerLib.FindAnalyzer(PrevNames[i])=nil then
+      DeleteFile(LexerFilename(PrevNames[i], ALexerLibDir));
+
+  //find modified analizers, and export to files
+  for i:= 0 to ALexerLib.AnalyzerCount-1 do
+  begin
+    an:= ALexerLib.Analyzers[i];
+    if an.Tag>0 then
+    begin
+      an.Tag:= 0;
+      an.SaveToFile(LexerFilename(an.LexerName, ALexerLibDir));
+    end;
+  end;
+
+  FreeAndNil(PrevNames);
 end;
 
 procedure TfmLexerLibrary.FormShow(Sender: TObject);
 begin
+  Caption:= DKLangConstW('zMLexerLib');
   UpdateList;
 end;
 
@@ -75,46 +107,12 @@ begin
   (Sender as TAction).Enabled:= LV.ItemIndex>=0;
 end;
 
-function LexerNameWithLinks(an: TSyntAnalyzer): Widestring;
-var
-  sl: TStringList;
-  i: integer;
-begin
-  Result:= an.LexerName;
-
-  sl:= TStringList.Create;
-  try
-    sl.Duplicates:= dupIgnore;
-    sl.Sorted:= true;
-    
-    for i:= 0 to an.SubAnalyzers.Count-1 do
-    begin
-      if an.SubAnalyzers[i].SyntAnalyzer=nil then
-      begin
-        Result:= an.LexerName + '   (' + DKLangConstW('zMLexerLinkBroken') + ')';
-        Exit
-      end;
-      sl.Add(an.SubAnalyzers[i].SyntAnalyzer.LexerName);
-    end;
-
-    for i:= 0 to sl.Count-1 do
-    begin
-      if i=0 then
-        Result:= Result + '   ('+DKLangConstW('zMLexerLinks') + ': ';
-      Result:= Result + sl[i] + IfThen(i<sl.Count-1, ', ', ')');
-    end;
-  finally
-    FreeAndNil(sl);
-  end;    
-end;
-
 procedure TfmLexerLibrary.UpdateList;
 var
-  i, cur: Integer;
   sl: TStringList;
   an: TSyntAnalyzer;
+  i, cur: Integer;
 begin
-  UpdateTitle;
   sl:= TStringList.Create;
   try
     sl.Duplicates:= dupAccept;
@@ -156,6 +154,7 @@ begin
     begin
       LV.Items[LV.ItemIndex]:= LexerNameWithLinks(An);
       FLexLib.Modified:= True;
+      An.Tag:= 1;
     end;
   end;
 end;
@@ -168,6 +167,7 @@ begin
   if DoLexerPropDialog(An, FTreeImages) then
   begin
     FLexLib.Modified:= True;
+    An.Tag:= 1;
     UpdateList;
   end
   else
@@ -195,6 +195,7 @@ begin
     an:= FLexLib.AddAnalyzer;
     an.Assign(anPrev);
     an.LexerName:= anPrev.LexerName+' (copy)';
+    an.Tag:= 1;
     LV.Items.AddObject(an.LexerName, an);
     LV.Checked[LV.Items.Count-1]:= not an.Internal;
     UpdateList;
@@ -220,11 +221,6 @@ begin
   end;  
 end;
 
-procedure TfmLexerLibrary.UpdateTitle;
-begin
-  Caption:= DKLangConstW('zMLexerLib');
-end;
-
 procedure TfmLexerLibrary.LVClickCheck(Sender: TObject);
 var
   an: TSyntAnalyzer;
@@ -233,9 +229,11 @@ begin
   begin
     an:= LV.Items.Objects[LV.ItemIndex] as TSyntAnalyzer;
     an.Internal:= not LV.Checked[LV.ItemIndex];
+    an.Tag:= 1;
     FLexLib.Modified:= True;
   end;
 end;
+
 
 end.
 

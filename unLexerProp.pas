@@ -354,11 +354,14 @@ type
 
 function DoLexerPropDialog(ALexer: TSyntAnalyzer; AImages: TImageList): Boolean;
 
+var
+  OnBackupLexerStyles: procedure(ALexer: TSyntAnalyzer) of object;
+
+
 implementation
 
 uses
-  ecCodeTemplDlg, ecEditsRes,
-  unLexerStyles;
+  ecCodeTemplDlg, ecEditsRes;
 
 {$R *.dfm}
 

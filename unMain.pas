@@ -720,7 +720,6 @@ type
     TBXItemTreeFindNav: TSpTbxItem;
     TBXSeparatorItem36: TSpTbxSeparatorItem;
     TBXSeparatorItem37: TSpTbxSeparatorItem;
-    acSetupLexerStyles: TAction;
     TBXSeparatorItem38: TSpTbxSeparatorItem;
     TBXSeparatorItem39: TSpTbxSeparatorItem;
     TBXItemECaseSent: TSpTbxItem;
@@ -1329,7 +1328,7 @@ type
     ecReplaceInProject: TAction;
     TbxItemSRepInProject: TSpTBXItem;
     ecPreviewActionNew: TAction;
-    acSetupLexerNew: TAction;
+    acSetupLexer: TAction;
     ecPageSetupActionNew: TAction;
     TBXItemECaseRandom: TSpTBXItem;
     TBXItemBarCaseRandom: TSpTBXItem;
@@ -1535,7 +1534,6 @@ type
     procedure TBXItemOOFindClick(Sender: TObject);
     procedure PopupFindPopup(Sender: TObject);
     procedure ecCopyAsRTFExecute(Sender: TObject);
-    procedure acSetupLexerStylesExecute(Sender: TObject);
     procedure PopupStatusEncPopup(Sender: TObject);
     procedure ecSentCaseExecute(Sender: TObject);
     procedure TBXItemZSet25Click(Sender: TObject);
@@ -2040,7 +2038,7 @@ type
     procedure ecPreviewActionNewExecute(Sender: TObject);
     procedure TBXItemBarPreviewClick(Sender: TObject);
     procedure TBXItemFPreviewClick(Sender: TObject);
-    procedure acSetupLexerNewExecute(Sender: TObject);
+    procedure acSetupLexerExecute(Sender: TObject);
     procedure ecPageSetupActionNewExecute(Sender: TObject);
     procedure edQsKeyPress(Sender: TObject; var Key: Char);
     procedure TBXItemECaseRandomClick(Sender: TObject);
@@ -2591,7 +2589,6 @@ type
     procedure SaveOptionsRecent;
     procedure SaveMacros;
     procedure SavePrintOptions;
-    procedure SaveLexLib;
     procedure SaveToolbarsProps;
     function DoReadTotalHistory: Widestring;
 
@@ -3263,7 +3260,7 @@ uses
   unProcPy,
   unMainPy,
   unLexerLib, unSnipEd, unSaveTabs, unPrintPreview, unLexerProp,
-  unLexerStyles, unPrintSetup, unColorPalette, unMenuPy;
+  unPrintSetup, unColorPalette, unMenuPy;
 
 {$R *.dfm}
 {$R Cur.res}
@@ -4311,8 +4308,7 @@ begin
   acClose.Enabled:= not Quickview;
   acOpen.Enabled:= not Quickview;
   acNewWindow.Enabled:= SynExe;
-  acSetupLexerNew.Enabled:= en_lex;
-  acSetupLexerStyles.Enabled:= en_lex;
+  acSetupLexer.Enabled:= en_lex;
   ecFullScr.Enabled:= SynExe;
   ecOnTop.Enabled:= SynExe;
   TBXSubmenuAddons.Enabled:= SynExe;
@@ -5288,11 +5284,6 @@ begin
   Result:= true;
 end;
 
-procedure TfmMain.SaveLexLib;
-begin
-  SyntaxManager.SaveToFile(SyntaxManager.FileName);
-end;
-
 
 procedure TfmMain.SynKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
@@ -6072,7 +6063,7 @@ begin
     sm_FileExportHtml: acExportHTML.Execute;
 
     sm_OptSetup: acSetup.Execute;
-    sm_OptSetupLexer: acSetupLexerNew.Execute;
+    sm_OptSetupLexer: acSetupLexer.Execute;
     sm_OptSetupLexerLib: acSetupLexerLib.Execute;
     sm_OptReadOnly: ecReadOnly.Execute;
     sm_OptShowLeftPanel: ecShowTree.Execute;
@@ -6167,7 +6158,6 @@ begin
     sm_EditSynIni:                DoOpenFile(SynIni);
     sm_EditSynPluginsIni:         DoOpenFile(SynPluginsIni);
     sm_OpenBySelection:           acOpenBySelection.Execute;
-    sm_CustomizeStylesDialog:     acSetupLexerStyles.Execute;
 
     //Options dialog tabs
     sm_OptionsTab_ProgramOpt: DoOptionsDialog(1);
@@ -7821,21 +7811,6 @@ begin
   Clipboard.AsText:= FPopupUrl;
 end;
 
-(*
-function TfmMain.EscapedAcpChars: string;
-const
-  Ch = '.#()[]{}<>^$*+-?|:';
-var
-  i:Integer;
-begin
-  Result:= '\w';
-  for i:= 1 to Length(opAcpChars) do
-    if Pos(opAcpChars[i], Ch)>0 then
-      Result:= Result + '\' + opAcpChars[i]
-    else
-      Result:= Result + opAcpChars[i];
-end;
-*)
 
 procedure TfmMain.SyntaxManagerChange(Sender: TObject);
 var
@@ -7843,8 +7818,7 @@ var
   Lexer: string;
 begin
   UpdateTools;
-  acSetupLexerStyles.Enabled:= SyntaxManager.CurrentLexer<>nil;
-  acSetupLexerNew.Enabled:= acSetupLexerStyles.Enabled;
+  acSetupLexer.Enabled:= SyntaxManager.CurrentLexer<>nil;
   
   Lexer:= '';
   opWordChars:= '';
@@ -13046,18 +13020,6 @@ begin
   end;
 end;
 
-procedure TfmMain.acSetupLexerStylesExecute(Sender: TObject);
-var
-  An: TSyntAnalyzer;
-begin
-  An:= SyntaxManager.CurrentLexer;
-  if DoLexerStylesDialog(An) then
-  begin
-    SaveLexLib;
-    SyntaxManager.Modified:= false;
-  end;
-end;
-
 procedure TfmMain.PopupStatusEncPopup(Sender: TObject);
 begin
   UpdateEncMenu(PopupStatusEnc);
@@ -14465,7 +14427,7 @@ begin
           else
             MsgWarn(WideFormat(DKLangConstW('MNLex'), [List.Items[i]]), Handle);
         end;
-      SaveLexLib;
+      //SaveLexLib;
       //MsgInfo(S);
     end;
   finally
@@ -23633,7 +23595,8 @@ end;
 
 procedure TfmMain.acSetupLexerLibExecute(Sender: TObject);
 begin
-  DoLexerLibraryDialog(SyntaxManager, ImgListTree);
+  DoLexerLibraryDialog(SyntaxManager, ImgListTree,
+    SynDataSubdir(cSynDataLexerLib));
 end;
 
 procedure TfmMain.TbxItemTabReloadClick(Sender: TObject);
@@ -23651,7 +23614,7 @@ begin
   end;
 end;
 
-(*
+(* 
 procedure TfmMain.DoRememberTempFile(const fn: Widestring);
 begin
   if FTempFilenames.IndexOf(fn)<0 then
@@ -24807,7 +24770,7 @@ begin
             An.SubAnalyzers[i-1].SyntAnalyzer:= AnLink;
       end;
 
-    SaveLexLib;
+    //SaveLexLib;
     FDelete(fn_lexer);
   end;
 
@@ -27108,11 +27071,20 @@ begin
   CurrentEditor.ExecCommand(smPrintPreview);
 end;
 
-procedure TfmMain.acSetupLexerNewExecute(Sender: TObject);
+procedure TfmMain.acSetupLexerExecute(Sender: TObject);
+var
+  An: TSyntAnalyzer;
+  PrevName: string;
 begin
-  if DoLexerPropDialog(SyntaxManager.CurrentLexer, ImgListTree) then
+  An:= SyntaxManager.CurrentLexer;
+  PrevName:= An.LexerName;
+
+  if DoLexerPropDialog(An, ImgListTree) then
   begin
-    SyntaxManager.Modified:= true;
+    if An.LexerName<>PrevName then
+      DeleteFile(LexerFilename(PrevName, SynDataSubdir(cSynDataLexerLib)));
+
+    DoLexerSaveToFile(An, LexerFilename(An.LexerName, SynDataSubdir(cSynDataLexerLib)));
   end;
 end;
 
