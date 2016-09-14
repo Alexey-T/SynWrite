@@ -1,4 +1,4 @@
-object SyntAnal38: TLibSyntAnalyzer
+object SyntAnal18: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Symbol'
@@ -207,6 +207,7 @@ object SyntAnal38: TLibSyntAnalyzer
           TagList.Strings = (
             'abstract'
             'arguments'
+            'async'
             'await'
             'boolean'
             'break'
