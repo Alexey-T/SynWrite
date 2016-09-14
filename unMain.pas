@@ -3208,7 +3208,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.24.2350';
+  cSynVer = '6.25.2360';
   cSynPyVer = '1.0.155';
 
 const
@@ -25113,10 +25113,12 @@ end;
 procedure TfmMain.PythonEngine1AfterInit(Sender: TObject);
 var
   SDir, S1, S2, S3: string;
+  fn_zip: string;
 begin
+  fn_zip:= ChangeFileExt(PythonEngine1.DllName, '.zip');
   SDir:= ExtractFilePath(Application.ExeName);
-  S1:= SDir + 'DLLs';
-  S2:= SDir + 'python33.zip';
+  S1:= SDir + fn_zip;
+  S2:= SDir + 'DLLs';
   S3:= SDir + 'Py';
   Py_SetSysPath([S1, S2, S3]);
 end;

@@ -61,8 +61,8 @@ Js Format | Formats JavaScript and JSON source code | PyPlugins/plugin.Alexey.Js
 Js Minifier | Makes JavaScript code more compact ("minify" it) | PyPlugins/plugin.Alexey.JsMinifier.zip
 Keymap Report | Shows detailed report about Synwrite keymapping | PyPlugins/plugin.kvichans.KeymapReport.zip
 Lexer: ABAP                         | | Lexers/lexer.ABAP.zip
-Lexer: Abaqus Keywords            | | Lexers/lexer.Abaqus_Keywords.zip
-Lexer: ABC Notation | | Lexers/lexer.ABC_Notation.zip
+Lexer: Abaqus Keywords              | | Lexers/lexer.Abaqus_Keywords.zip
+Lexer: ABC Notation                 | | Lexers/lexer.ABC_Notation.zip
 Lexer: ActionScript                 | | Lexers/lexer.ActionScript.zip
 Lexer: Acu Cobol                    | | Lexers/lexer.Acu_Cobol.zip
 Lexer: Ada                          | | Lexers/lexer.Ada.zip
@@ -71,19 +71,20 @@ Lexer: Apache config                | | Lexers/lexer.Apache_config.zip
 Lexer: Apache Pig                   | | Lexers/lexer.Apache_Pig.zip
 Lexer: AppleScript                  | | Lexers/lexer.AppleScript.zip
 Lexer: Arduino                      | | Lexers/lexer.Arduino.zip
-Lexer: ARM Assembly            | | Lexers/lexer.ARM_Assembly.zip
 Lexer: ASAP2                        | | Lexers/lexer.ASAP2.zip
+Lexer: Assembly ARM                 | | Lexers/lexer.Assembly_ARM.zip
 Lexer: Assembly FASM                | | Lexers/lexer.Assembly_FASM.zip
-Lexer: Assembly JWASM      | | Lexers/lexer.Assembly_JWASM.zip
+Lexer: Assembly JWASM               | | Lexers/lexer.Assembly_JWASM.zip
+Lexer: Assembly MIPS                | | Lexers/lexer.Assembly_MIPS.zip
 Lexer: Asymptote                    | | Lexers/lexer.Asymptote.zip
-Lexer: Automake                      | | Lexers/lexer.Automake.zip
+Lexer: Automake                     | | Lexers/lexer.Automake.zip
 Lexer: AviSynth                     | | Lexers/lexer.AviSynth.zip
-Lexer: AWK                      | | Lexers/lexer.AWK.zip
-Lexer: Bash script          | | Lexers/lexer.Bash_script.zip
-Lexer: BibTeX                     | | Lexers/lexer.BibTeX.zip
-Lexer: Bitsquid SJSON   | | Lexers/lexer.Bitsquid_SJSON.zip
-Lexer: Bohemia SQF     | | Lexers/lexer.Bohemia_SQF.zip
-Lexer: Boo                      | | Lexers/lexer.Boo.zip
+Lexer: AWK                          | | Lexers/lexer.AWK.zip
+Lexer: Bash script                  | | Lexers/lexer.Bash_script.zip
+Lexer: BibTeX                       | | Lexers/lexer.BibTeX.zip
+Lexer: Bitsquid SJSON               | | Lexers/lexer.Bitsquid_SJSON.zip
+Lexer: Bohemia SQF                  | | Lexers/lexer.Bohemia_SQF.zip
+Lexer: Boo                          | | Lexers/lexer.Boo.zip
 Lexer: Brainfuck                    | | Lexers/lexer.Brainfuck.zip
 Lexer: Caml                         | | Lexers/lexer.Caml.zip
 Lexer: Clarion                      | | Lexers/lexer.Clarion.zip
@@ -95,13 +96,13 @@ Lexer: Cobol                        | | Lexers/lexer.Cobol.zip
 Lexer: CodeVisionAVR                | | Lexers/lexer.CodeVisionAVR.zip
 Lexer: CoffeeScript                 | | Lexers/lexer.CoffeeScript.zip
 Lexer: ColdFusion                   | | Lexers/lexer.ColdFusion.zip
-Lexer: CRF files            | | Lexers/lexer.CRF.zip
+Lexer: CRF files                    | | Lexers/lexer.CRF.zip
 Lexer: CUDA C++                     | | Lexers/lexer.CUDA_C%2B%2B.zip
 Lexer: D                            | | Lexers/lexer.D.zip
 Lexer: Dart                         | | Lexers/lexer.Dart.zip
-Lexer: Dockerfile            | | Lexers/lexer.Dockerfile.zip
+Lexer: Dockerfile                   | | Lexers/lexer.Dockerfile.zip
 Lexer: Eiffel                       | | Lexers/lexer.Eiffel.zip
-Lexer: Elixir | | Lexers/lexer.Elixir.zip
+Lexer: Elixir                       | | Lexers/lexer.Elixir.zip
 Lexer: Elm                          | | Lexers/lexer.Elm.zip
 Lexer: Erlang                       | | Lexers/lexer.Erlang.zip
 Lexer: Euphoria                     | | Lexers/lexer.Euphoria.zip
@@ -127,17 +128,17 @@ Lexer: HTML Laravel Blade           | | Lexers/lexer.HTML_Laravel_Blade.zip
 Lexer: HTML Mustache                | | Lexers/lexer.HTML_Mustache.zip
 Lexer: HTML Siteleaf Liquid         | | Lexers/lexer.HTML_Siteleaf_Liquid.zip
 Lexer: HTML Smarty                  | | Lexers/lexer.HTML_Smarty.zip
-Lexer: HTML_                      | | Lexers/lexer.HTML_.zip
+Lexer: HTML_                        | | Lexers/lexer.HTML_.zip
 Lexer: IDL files                    | | Lexers/lexer.IDL_files.zip
 Lexer: IDL language                 | | Lexers/lexer.IDL_language.zip
 Lexer: Informix 4GL                 | | Lexers/lexer.Informix_4GL.zip
-Lexer: Inno Setup                      | | Lexers/lexer.Inno_Setup.zip
-Lexer: Intel HEX | | Lexers/lexer.Intel_HEX.zip
+Lexer: Inno Setup                   | | Lexers/lexer.Inno_Setup.zip
+Lexer: Intel HEX                    | | Lexers/lexer.Intel_HEX.zip
 Lexer: Jade                         | | Lexers/lexer.Jade.zip
 Lexer: Jasmine JVM Assembler        | | Lexers/lexer.Jasmine_JVM_Assembler.zip
 Lexer: Java                         | | Lexers/lexer.Java.zip
-Lexer: Java Velocity      | | Lexers/lexer.Java_Velocity.zip
-Lexer: JavaScript Babel        | | Lexers/lexer.JavaScript_Babel.zip
+Lexer: Java Velocity                | | Lexers/lexer.Java_Velocity.zip
+Lexer: JavaScript Babel             | | Lexers/lexer.JavaScript_Babel.zip
 Lexer: JCL                          | | Lexers/lexer.JCL.zip
 Lexer: Jinja2                       | | Lexers/lexer.Jinja2.zip
 Lexer: Julia                        | | Lexers/lexer.Julia.zip
@@ -147,46 +148,45 @@ Lexer: Lisp                         | | Lexers/lexer.Lisp.zip
 Lexer: Logfiles                     | | Lexers/lexer.Logfiles.zip
 Lexer: MacroScript (Macro Sheduler) | | Lexers/lexer.MacroScript_(Macro_Sheduler).zip
 Lexer: MATLAB                       | | Lexers/lexer.MATLAB.zip
-Lexer: MediaWiki | | Lexers/lexer.MediaWiki.zip
-Lexer: Metafont                      | | Lexers/lexer.Metafont.zip
+Lexer: MediaWiki                    | | Lexers/lexer.MediaWiki.zip
+Lexer: Metafont                     | | Lexers/lexer.Metafont.zip
 Lexer: MIB files (SNMP protocol)    | | Lexers/lexer.MIB_files_(SNMP_protocol).zip
-Lexer: MIPS Assembly                | | Lexers/lexer.MIPS_Assembly.zip
 Lexer: Modelica                     | | Lexers/lexer.Modelica.zip
 Lexer: Modula 2                     | | Lexers/lexer.Modula_2.zip
 Lexer: MSVS Solution                | | Lexers/lexer.MSVS_Solution.zip
 Lexer: MySQL SQL                    | | Lexers/lexer.MySQL_SQL.zip
 Lexer: MySQL Stored Procedures      | | Lexers/lexer.MySQL_Stored_Procedures.zip
-Lexer: Nemerle                     | | Lexers/lexer.Nemerle.zip
+Lexer: Nemerle                      | | Lexers/lexer.Nemerle.zip
 Lexer: NFO files                    | | Lexers/lexer.NFO_files.zip
 Lexer: Nginx                        | | Lexers/lexer.Nginx.zip
 Lexer: Nim                          | | Lexers/lexer.Nim.zip
 Lexer: nnCron                       | | Lexers/lexer.nnCron.zip
-Lexer: NSIS                      | | Lexers/lexer.NSIS.zip
+Lexer: NSIS                         | | Lexers/lexer.NSIS.zip
 Lexer: NSL Assembler                | | Lexers/lexer.NSL_Assembler.zip
 Lexer: Oberon                       | | Lexers/lexer.Oberon.zip
 Lexer: Objective-C                  | | Lexers/lexer.Objective-C.zip
 Lexer: OneC (1C)                    | | Lexers/lexer.OneC_(1C).zip
-Lexer: OpenCL                     | | Lexers/lexer.OpenCL.zip
+Lexer: OpenCL                       | | Lexers/lexer.OpenCL.zip
 Lexer: OpenEdge ABL                 | | Lexers/lexer.OpenEdge_ABL.zip
-Lexer: OpenSCAD                      | | Lexers/lexer.OpenSCAD.zip
+Lexer: OpenSCAD                     | | Lexers/lexer.OpenSCAD.zip
 Lexer: Parser3                      | | Lexers/lexer.Parser3.zip
 Lexer: Pawn                         | | Lexers/lexer.Pawn.zip
 Lexer: PAX Pascal                   | | Lexers/lexer.PAX_Pascal.zip
-Lexer: PHP_                      | | Lexers/lexer.PHP_.zip
+Lexer: PHP_                         | | Lexers/lexer.PHP_.zip
 Lexer: Pike                         | | Lexers/lexer.Pike.zip
 Lexer: PL/SQL                       | | Lexers/lexer.PL_SQL.zip
 Lexer: PostScript                   | | Lexers/lexer.PostScript.zip
 Lexer: Prolog                       | | Lexers/lexer.Prolog.zip
 Lexer: Puppet                       | | Lexers/lexer.Puppet.zip
 Lexer: R                            | | Lexers/lexer.R.zip
-Lexer: R Markdown                     | | Lexers/lexer.R_Markdown.zip
-Lexer: Ragel                      | | Lexers/lexer.Ragel.zip
+Lexer: R Markdown                   | | Lexers/lexer.R_Markdown.zip
+Lexer: Ragel                        | | Lexers/lexer.Ragel.zip
 Lexer: Razor                        | | Lexers/lexer.Razor.zip
 Lexer: Regular expressions          | | Lexers/lexer.Regular_expressions.zip
-Lexer: reStructuredText | | Lexers/lexer.reStructuredText.zip
+Lexer: reStructuredText             | | Lexers/lexer.reStructuredText.zip
 Lexer: Rexx                         | | Lexers/lexer.Rexx.zip
 Lexer: RPG IV                       | | Lexers/lexer.RPG_IV.zip
-Lexer: RTF      | | Lexers/lexer.RTF.zip
+Lexer: RTF                          | | Lexers/lexer.RTF.zip
 Lexer: Rust                         | | Lexers/lexer.Rust.zip
 Lexer: Sass                         | | Lexers/lexer.Sass.zip
 Lexer: Scala                        | | Lexers/lexer.Scala.zip
@@ -207,19 +207,19 @@ Lexer: TOML                         | | Lexers/lexer.TOML.zip
 Lexer: Tree                         | | Lexers/lexer.Tree.zip
 Lexer: Twig                         | | Lexers/lexer.Twig.zip
 Lexer: TypeScript                   | | Lexers/lexer.TypeScript.zip
-Lexer: Vala                      | | Lexers/lexer.Vala.zip
+Lexer: Vala                         | | Lexers/lexer.Vala.zip
 Lexer: VBScript                     | | Lexers/lexer.VBScript.zip
 Lexer: Verilog HDL                  | | Lexers/lexer.Verilog_HDL.zip
 Lexer: VHDL                         | | Lexers/lexer.VHDL.zip
-Lexer: VimL | | Lexers/lexer.VimL.zip
+Lexer: VimL                         | | Lexers/lexer.VimL.zip
 Lexer: Virgil                       | | Lexers/lexer.Virgil.zip
 Lexer: Visual Basic                 | | Lexers/lexer.Visual_Basic.zip
 Lexer: Visual dBase                 | | Lexers/lexer.Visual_dBase.zip
 Lexer: WinBuilder script            | | Lexers/lexer.WinBuilder_script.zip
-Lexer: Windows Resource Script | | Lexers/lexer.Windows_Resource_Script.zip
+Lexer: Windows Resource Script      | | Lexers/lexer.Windows_Resource_Script.zip
 Lexer: WSH script                   | | Lexers/lexer.WSH_script.zip
 Lexer: XSLT                         | | Lexers/lexer.XSLT.zip
-Lexer: Yacc                     | | Lexers/lexer.Yacc.zip
+Lexer: Yacc                         | | Lexers/lexer.Yacc.zip
 Lexer: YAML                         | | Lexers/lexer.YAML.zip
 Linter: CppCheck | SynLint subplugin for C++ lexer | Linters/linter.CppCheck.zip
 Linter: CppLint | SynLint subplugin for C++ lexer | Linters/linter.CppLint.zip

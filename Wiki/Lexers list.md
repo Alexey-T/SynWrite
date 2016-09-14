@@ -11,10 +11,11 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Apache Pig
 * AppleScript
 * Arduino
-* ARM Assembly
 * Assembly
+* Assembly ARM
 * Assembly FASM
 * Assembly JWASM
+* Assembly MIPS
 * Asymptote
 * AutoHotkey
 * AutoIt
@@ -25,6 +26,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Batch files
 * BibTeX
 * Bitsquid SJSON
+* Bohemia SQF
 * Boo
 * Brainfuck
 * C
@@ -49,6 +51,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Diff
 * Dockerfile
 * Eiffel
+* Elixir
 * Elm
 * Erlang
 * Euphoria
@@ -82,6 +85,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Informix 4GL
 * Ini files
 * Inno Setup
+* Intel HEX
 * Jade
 * Jasmine JVM Assembler
 * Java
@@ -102,9 +106,9 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Makefile
 * Markdown
 * MATLAB
+* MediaWiki
 * Metafont
 * MIB files
-* MIPS Assembly
 * Modelica
 * Modula 2
 * MSVS Solution
@@ -138,7 +142,6 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * R Markdown
 * Ragel
 * Razor
-* Resource script
 * reStructuredText
 * RPG/IV
 * RTF (RichText)
@@ -165,10 +168,12 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * VBScript
 * Verilog HDL
 * VHDL
+* VimL (Vimscript)
 * Virgil
 * Visual Basic
 * Visual dBase
 * WinBuilder script
+* Windows Resource Script
 * WSH script
 * XML
 * XSLT
