@@ -1257,10 +1257,10 @@ type
     edConsole: TTntComboBox;
     ecToggleFocusConsole: TAction;
     TBXItemWinConsole: TSpTBXItem;
-    PythonGUIInputOutput1: TPythonGUIInputOutput;
-    PythonEngine1: TPythonEngine;
+    PyIO: TPythonGUIInputOutput;
+    PyEngine: TPythonEngine;
     MemoConsole: TTntMemo;
-    PythonModule: TPythonModule;
+    PyModule: TPythonModule;
     TbxItemHelpPyDir: TSpTBXItem;
     TbxItemRunSnippets: TSpTBXItem;
     SpTBXSeparatorItem26: TSpTBXSeparatorItem;
@@ -1970,17 +1970,16 @@ type
     procedure TbxTabConsoleClick(Sender: TObject);
     procedure edConsoleKeyPress(Sender: TObject; var Key: Char);
     procedure ecToggleFocusConsoleExecute(Sender: TObject);
-    procedure PythonEngine1BeforeLoad(Sender: TObject);
     procedure edConsoleKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure MemoConsoleKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure PythonEngine1AfterInit(Sender: TObject);
-    procedure PythonModuleInitialization(Sender: TObject);
-    procedure PythonGUIInputOutput1SendUniData(Sender: TObject;
+    procedure PyEngineAfterInit(Sender: TObject);
+    procedure PyModuleInitialization(Sender: TObject);
+    procedure PyIOSendUniData(Sender: TObject;
       const Data: WideString);
     procedure TbxItemHelpPyDirClick(Sender: TObject);
-    procedure PythonGUIInputOutput1ReceiveUniData(Sender: TObject;
+    procedure PyIOReceiveUniData(Sender: TObject;
       var Data: WideString);
     procedure MemoConsoleDblClick(Sender: TObject);
     procedure TbxItemRunSnippetsClick(Sender: TObject);
@@ -2770,6 +2769,7 @@ type
     procedure DoPluginsManager_Config;
     function IsCommandForMacros(Cmd: integer): boolean;
     function IsTextSizeOkForAutoHilite(Ed: TSyntaxMemo): Boolean;
+    procedure InitPythonProps;
     //end of private
 
   protected
@@ -3208,7 +3208,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.25.2360';
+  cSynVer = '6.25.2365';
   cSynPyVer = '1.0.155';
 
 const
@@ -7021,6 +7021,7 @@ begin
   SynDir:= ExtractFilePath(GetModuleName(HInstance));
   SynDirForHelpFiles:= SynDir + 'Readme';
   InitSynIniDir;
+  InitPythonProps;
 
   EditorSynLexersCfg:= SynLexersCfg;
   EditorSynLexersExCfg:= SynLexersExCfg;
@@ -25062,18 +25063,21 @@ begin
   end;
 end;
 
-procedure TfmMain.PythonEngine1BeforeLoad(Sender: TObject);
+procedure TfmMain.InitPythonProps;
+var
+  DirExe: string;
 begin
   //note: for Lister plugin DllPath will be wrong, but it's ok:
   //even with correct DllPath Python won't load in Lister plugin
   //(cannot find MSVCRT DLLs).
   //note: need to set FatalAbort = FatalMsgDlg = False.
   //note: don't check SynExe here (not yet inited).
-  with Sender as TPythonEngine do
-  begin
-    DllPath:= ExtractFilePath(ParamStr(0));
-    InitScript.Add(cPyConsoleInit);
-  end;
+
+  DirExe:= ExtractFileDir(ParamStr(0));
+  PyEngine.DllPath:= DirExe+'\';
+  PyEngine.DllName:= ExtractFilename(FFindFirstFile(DirExe, 'python3*.dll'));
+  PyEngine.InitScript.Add(cPyConsoleInit);
+  PyEngine.LoadDll;
 end;
 
 procedure TfmMain.edConsoleKeyDown(Sender: TObject; var Key: Word;
@@ -25110,23 +25114,21 @@ begin
   DoHandleKeysInPanels(Key, Shift);
 end;
 
-procedure TfmMain.PythonEngine1AfterInit(Sender: TObject);
+procedure TfmMain.PyEngineAfterInit(Sender: TObject);
 var
-  SDir, S1, S2, S3: string;
-  fn_zip: string;
+  path, fn_zip: string;
 begin
-  fn_zip:= ChangeFileExt(PythonEngine1.DllName, '.zip');
-  SDir:= ExtractFilePath(Application.ExeName);
-  S1:= SDir + fn_zip;
-  S2:= SDir + 'DLLs';
-  S3:= SDir + 'Py';
-  Py_SetSysPath([S1, S2, S3]);
+  fn_zip:= ChangeFileExt(PyEngine.DllName, '.zip');
+  path:= ExtractFilePath(Application.ExeName);
+  Py_SetSysPath([
+    path + fn_zip,
+    path + 'DLLs',
+    path + 'Py'
+    ]);
 end;
 
 
-//{$I unMainPy.pas}
-
-procedure TfmMain.PythonModuleInitialization(Sender: TObject);
+procedure TfmMain.PyModuleInitialization(Sender: TObject);
 begin
   with Sender as TPythonModule do
   begin
@@ -25228,7 +25230,7 @@ begin
   end;
 end;
 
-procedure TfmMain.PythonGUIInputOutput1SendUniData(Sender: TObject;
+procedure TfmMain.PyIOSendUniData(Sender: TObject;
   const Data: WideString);
 begin
   DoPyConsole_LogString(Data);
@@ -25289,7 +25291,7 @@ begin
   FOpenURL(SynPyDir, Handle);
 end;
 
-procedure TfmMain.PythonGUIInputOutput1ReceiveUniData(Sender: TObject;
+procedure TfmMain.PyIOReceiveUniData(Sender: TObject;
   var Data: WideString);
 begin
   Data:= '';
