@@ -2769,7 +2769,7 @@ type
     procedure DoPluginsManager_Config;
     function IsCommandForMacros(Cmd: integer): boolean;
     function IsTextSizeOkForAutoHilite(Ed: TSyntaxMemo): Boolean;
-    procedure InitPythonProps;
+    procedure InitPythonEngine;
     //end of private
 
   protected
@@ -7021,7 +7021,7 @@ begin
   SynDir:= ExtractFilePath(GetModuleName(HInstance));
   SynDirForHelpFiles:= SynDir + 'Readme';
   InitSynIniDir;
-  InitPythonProps;
+  InitPythonEngine;
 
   EditorSynLexersCfg:= SynLexersCfg;
   EditorSynLexersExCfg:= SynLexersExCfg;
@@ -25063,9 +25063,7 @@ begin
   end;
 end;
 
-procedure TfmMain.InitPythonProps;
-var
-  DirExe: string;
+procedure TfmMain.InitPythonEngine;
 begin
   //note: for Lister plugin DllPath will be wrong, but it's ok:
   //even with correct DllPath Python won't load in Lister plugin
@@ -25073,9 +25071,8 @@ begin
   //note: need to set FatalAbort = FatalMsgDlg = False.
   //note: don't check SynExe here (not yet inited).
 
-  DirExe:= ExtractFileDir(ParamStr(0));
-  PyEngine.DllPath:= DirExe+'\';
-  PyEngine.DllName:= ExtractFilename(FFindFirstFile(DirExe, 'python3*.dll'));
+  PyEngine.DllPath:= SynDir;
+  PyEngine.DllName:= ExtractFilename(FFindFirstFile(SynDir, 'python3*.dll'));
   PyEngine.InitScript.Add(cPyConsoleInit);
   PyEngine.LoadDll;
 end;
@@ -25116,14 +25113,13 @@ end;
 
 procedure TfmMain.PyEngineAfterInit(Sender: TObject);
 var
-  path, fn_zip: string;
+  fn_zip: string;
 begin
   fn_zip:= ChangeFileExt(PyEngine.DllName, '.zip');
-  path:= ExtractFilePath(Application.ExeName);
   Py_SetSysPath([
-    path + fn_zip,
-    path + 'DLLs',
-    path + 'Py'
+    SynDir + fn_zip,
+    SynDir + 'DLLs',
+    SynDir + 'Py'
     ]);
 end;
 
