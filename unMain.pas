@@ -3208,7 +3208,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.25.2365';
+  cSynVer = '6.25.2370';
   cSynPyVer = '1.0.155';
 
 const
@@ -21144,6 +21144,12 @@ end;
 
 function TfmMain.FrameOfEditor(Ed: TSyntaxMemo): TEditorFrame;
 begin
+  if Ed=nil then
+  begin
+    Result:= CurrentFrame;
+    exit
+  end;
+
   if Ed.Owner is TEditorFrame then
     Result:= Ed.Owner as TEditorFrame
   else
@@ -25075,6 +25081,12 @@ begin
   PyEngine.DllName:= ExtractFilename(FFindFirstFile(SynDir, 'python3*.dll'));
   PyEngine.InitScript.Add(cPyConsoleInit);
   PyEngine.LoadDll;
+
+  try
+    if GetPythonEngine=nil then Exit;
+  except
+    DoPyConsole_LogString('Python engine not inited. You need correct python3*.dll with helper files, in app folder.');
+  end;
 end;
 
 procedure TfmMain.edConsoleKeyDown(Sender: TObject; var Key: Word;
@@ -25816,6 +25828,14 @@ var
 begin
   //empty string result means "no handlers for event"
   Result:= '';
+
+  try
+    if CurrentEditor=nil then exit;
+    if GetPythonEngine=nil then exit;
+  except
+    Exit
+  end;
+
   SCurLexer:= CurrentLexerForFile;
 
   for i:= Low(FPluginsEvent) to High(FPluginsEvent) do

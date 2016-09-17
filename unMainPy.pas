@@ -689,14 +689,14 @@ function Py_ed_get_filename(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H: Integer;
   Ed: TSyntaxMemo;
-  Str: Widestring;
+  Frame: TEditorFrame;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'i:get_filename', @H)) then
     begin
       Ed:= PyEditor(H);
-      Str:= fmMain.FrameOfEditor(Ed).FileName;
-      Result:= PyUnicode_FromWideString(Str);
+      Frame:= fmMain.FrameOfEditor(Ed);
+      Result:= PyUnicode_FromWideString(Frame.FileName);
     end;
 end;
 

@@ -618,6 +618,12 @@ begin
       StrKey:= UTF8Decode(AnsiString(P3));
       StrVal:= UTF8Decode(AnsiString(P4));
 
+      if (StrFN='') or (StrSess='') or (StrKey='') then
+      begin
+        Result:= PyString_FromString('');
+        exit
+      end;
+
       fn:= StrFN;
       if ExtractFileDir(fn)='' then
         fn:= PyIniDir + '\' + fn;
