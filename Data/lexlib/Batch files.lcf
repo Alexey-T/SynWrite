@@ -1,4 +1,4 @@
-object SyntAnal82: TLibSyntAnalyzer
+object SyntAnal6: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Label'
@@ -30,7 +30,7 @@ object SyntAnal82: TLibSyntAnalyzer
       Font.Color = clNavy
       Font.Height = -13
       Font.Name = 'Courier New'
-      Font.Style = [fsBold, fsUnderline]
+      Font.Style = [fsBold]
     end
     item
       DisplayName = 'Params'
@@ -43,10 +43,10 @@ object SyntAnal82: TLibSyntAnalyzer
     item
       DisplayName = 'Echo'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clGreen
+      Font.Color = clTeal
       Font.Height = -13
       Font.Name = 'Courier New'
-      Font.Style = [fsBold]
+      Font.Style = []
     end
     item
       DisplayName = 'Symbol'
@@ -67,18 +67,18 @@ object SyntAnal82: TLibSyntAnalyzer
     item
       DisplayName = 'Variable'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clNavy
+      Font.Color = clGreen
       Font.Height = -13
       Font.Name = 'Courier New'
-      Font.Style = [fsBold]
+      Font.Style = []
     end
     item
       DisplayName = 'Int'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clPurple
+      Font.Color = clNavy
       Font.Height = -13
       Font.Name = 'Courier New'
-      Font.Style = [fsBold]
+      Font.Style = []
     end>
   TokenRules = <
     item
@@ -93,7 +93,7 @@ object SyntAnal82: TLibSyntAnalyzer
       DisplayName = 'Comment2'
       StyleName = 'Comment'
       TokenType = 1
-      Expression = '^\:\:.*'
+      Expression = '\: [\:\+\=,;\x20] .*'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -101,7 +101,7 @@ object SyntAnal82: TLibSyntAnalyzer
       DisplayName = 'Label'
       StyleName = 'Label'
       TokenType = 3
-      Expression = '^\s*:\w+|(?<=goto\s+)\S+'#13#10
+      Expression = '^\s*:\w+|(?<=goto\s+)\S+'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -123,38 +123,21 @@ object SyntAnal82: TLibSyntAnalyzer
       DisplayName = 'Symbol'
       StyleName = 'Symbol'
       TokenType = 2
-      Expression = '[\+\-\*\(\)\[\]\{\}\<>\.,~!&\|;:=%\^\#]'
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
-      DisplayName = 'echostd'
-      StyleName = 'Echo'
-      Expression = '(?<=@?echo)\s+".*'
+      Expression = '[\+\-\*\(\)\[\]\{\}\<>\.,~!&\|;:=%\^\#@]'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
       DisplayName = 'Echo'
-      StyleName = 'Key words'
-      TokenType = 5
-      Expression = '@?echo(\soff)?\b'#13#10
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
-      DisplayName = 'echo text'
-      Enabled = False
       StyleName = 'Echo'
-      BlockName = 'echo start'
       StrictParent = True
       TokenType = 4
-      Expression = '[^<>\|\n]*[\n]*'
+      Expression = '(?<=\b echo \x20) [^<>\|\n\r&]*'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = 'QuotationMarks'
+      DisplayName = 'String'
       StyleName = 'QuotationMarks'
       Expression = '".*?("|$)'
       ColumnFrom = 0
@@ -163,7 +146,7 @@ object SyntAnal82: TLibSyntAnalyzer
     item
       DisplayName = 'Int'
       StyleName = 'Int'
-      Expression = '\b\d+\b'
+      Expression = '0x[0-9a-f]+ | \d+'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -177,7 +160,7 @@ object SyntAnal82: TLibSyntAnalyzer
     end>
   BlockRules = <
     item
-      DisplayName = 'Key words'
+      DisplayName = 'Keywords'
       StyleName = 'Key words'
       BlockType = btTagDetect
       ConditionList = <
@@ -225,6 +208,7 @@ object SyntAnal82: TLibSyntAnalyzer
             'echo.'
             'else'
             'Endlocal'
+            'Equ'
             'errorlevel'
             'Eventcreate'
             'Eventquery'
@@ -292,6 +276,7 @@ object SyntAnal82: TLibSyntAnalyzer
             'Perfmon'
             'Ping'
             'Popd'
+            'powershell'
             'Print'
             'Prncnfg'
             'Prndrvr'
@@ -360,36 +345,6 @@ object SyntAnal82: TLibSyntAnalyzer
         end>
       HighlightPos = cpBound
       IgnoreAsParent = False
-    end
-    item
-      DisplayName = 'echo start'
-      StyleName = 'Echo'
-      ConditionList = <
-        item
-          TagList.Strings = (
-            'echo')
-          TokenTypes = 32
-          IgnoreCase = True
-        end>
-      BlockEnd = 'echo end'
-      NotCollapsed = True
-      Highlight = True
-      DisplayInTree = False
-      DynHighlight = dhRange
-      HighlightPos = cpBound
-      IgnoreAsParent = False
-    end
-    item
-      DisplayName = 'echo end'
-      BlockName = 'echo start'
-      StrictParent = True
-      BlockType = btRangeEnd
-      ConditionList = <
-        item
-          TokenTypes = 16
-        end>
-      HighlightPos = cpBound
-      IgnoreAsParent = False
     end>
   CodeTemplates = <>
   SubAnalyzers = <>
@@ -419,6 +374,6 @@ object SyntAnal82: TLibSyntAnalyzer
   Notes.Strings = (
     'Changes: Alexey (SynWrite)')
   RestartFromLineStart = True
-  LineComment = 'rem '
+  LineComment = '::'
   Charset = DEFAULT_CHARSET
 end
