@@ -1,9 +1,9 @@
-object SyntAnal57: TLibSyntAnalyzer
+object SyntAnal34: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Identifier'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clMaroon
+      Font.Color = clBlack
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
@@ -20,7 +20,7 @@ object SyntAnal57: TLibSyntAnalyzer
     item
       DisplayName = 'String'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlue
+      Font.Color = clTeal
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
@@ -28,7 +28,7 @@ object SyntAnal57: TLibSyntAnalyzer
     item
       DisplayName = 'Comment'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clRed
+      Font.Color = clGray
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = [fsItalic]

@@ -1,4 +1,4 @@
-object SyntAnal58: TLibSyntAnalyzer
+object SyntAnal32: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Symbol'
@@ -51,7 +51,7 @@ object SyntAnal58: TLibSyntAnalyzer
     item
       DisplayName = 'Variable'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clPurple
+      Font.Color = clGreen
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
@@ -67,7 +67,7 @@ object SyntAnal58: TLibSyntAnalyzer
     item
       DisplayName = 'String regex'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clGreen
+      Font.Color = clOlive
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
@@ -75,7 +75,7 @@ object SyntAnal58: TLibSyntAnalyzer
     item
       DisplayName = 'String here-doc'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clOlive
+      Font.Color = clTeal
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
@@ -127,7 +127,7 @@ object SyntAnal58: TLibSyntAnalyzer
       DisplayName = 'String regex'
       StyleName = 'String regex'
       TokenType = 4
-      Expression = '/(\\/|.)*?(/)'
+      Expression = '/(\\/|.)*?(/) [igm]?'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -143,7 +143,7 @@ object SyntAnal58: TLibSyntAnalyzer
       DisplayName = 'String HereDoc'
       StyleName = 'String here-doc'
       TokenType = 4
-      Expression = '(?s) \<\<[`"]? (\w+) [`"]? .*? ^\1'
+      Expression = '(?s)<<[`"\-~]? (\w+)\b .*? ^[\x20\x09]*\1'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -248,10 +248,12 @@ object SyntAnal58: TLibSyntAnalyzer
             'if'
             'in'
             'module'
+            'new'
             'next'
             'nil'
             'not'
             'or'
+            'prepend'
             'raise'
             'redo'
             'require'

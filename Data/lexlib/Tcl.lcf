@@ -1,4 +1,4 @@
-object SyntAnal5: TLibSyntAnalyzer
+object SyntAnal37: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Comment'
@@ -76,7 +76,7 @@ object SyntAnal5: TLibSyntAnalyzer
       DisplayName = 'Comment'
       StyleName = 'Comment'
       TokenType = 1
-      Expression = '\#[\s\#\-].*$'#13#10'| \#\z'
+      Expression = '\#.*'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -170,6 +170,8 @@ object SyntAnal5: TLibSyntAnalyzer
             'destroy'
             'destructor'
             'dict'
+            'else'
+            'elseif'
             'encoding'
             'entry'
             'env'
@@ -256,8 +258,8 @@ object SyntAnal5: TLibSyntAnalyzer
             'parray'
             'photo'
             'pid'
-            'pkg::create'
             'pkg_mkIndex'
+            'pkg::create'
             'place'
             'platform'
             'platform::shell'
@@ -293,7 +295,6 @@ object SyntAnal5: TLibSyntAnalyzer
             'switch'
             'tailcall'
             'Tcl'
-            'tcl::prefix'
             'tcl_endOfWord'
             'tcl_findLibrary'
             'tcl_interactive'
@@ -312,13 +313,13 @@ object SyntAnal5: TLibSyntAnalyzer
             'tcl_wordBreakAfter'
             'tcl_wordBreakBefore'
             'tcl_wordchars'
+            'tcl::prefix'
             'tcltest'
             'tell'
             'text'
             'throw'
             'time'
             'tk'
-            'tk::mac'
             'tk_bisque'
             'tk_chooseColor'
             'tk_chooseDirectory'
@@ -340,6 +341,7 @@ object SyntAnal5: TLibSyntAnalyzer
             'tk_textCut'
             'tk_textPaste'
             'tk_version'
+            'tk::mac'
             'tkerror'
             'tkwait'
             'tm'
@@ -347,6 +349,8 @@ object SyntAnal5: TLibSyntAnalyzer
             'trace'
             'transchan'
             'try'
+            'ttk_image'
+            'ttk_vsapi'
             'ttk::button'
             'ttk::checkbutton'
             'ttk::combobox'
@@ -368,8 +372,6 @@ object SyntAnal5: TLibSyntAnalyzer
             'ttk::style'
             'ttk::treeview'
             'ttk::widget'
-            'ttk_image'
-            'ttk_vsapi'
             'unknown'
             'unload'
             'unset'
@@ -401,6 +403,7 @@ object SyntAnal5: TLibSyntAnalyzer
       DisplayInTree = False
       HighlightPos = cpAny
       DrawStaple = True
+      CollapseFmt = '{ ... }'
       IgnoreAsParent = False
     end
     item
@@ -431,6 +434,7 @@ object SyntAnal5: TLibSyntAnalyzer
       NameFmt = '%sz0'
       RefToCondEnd = True
       HighlightPos = cpAny
+      CollapseFmt = '%s0 ...'
       NoEndRule = True
       IgnoreAsParent = False
     end>
