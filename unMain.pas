@@ -3208,7 +3208,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.25.2370';
+  cSynVer = '6.25.2380';
   cSynPyVer = '1.0.155';
 
 const
@@ -10863,12 +10863,17 @@ var
   F: TEditorFrame;
   Str, SSec: string;
 begin
+  if IsFileExist(fn) then
+    DeleteFile(fn);
   FSessionFN:= fn;
 
-  //session dir may not exist, for portable install
+  //session dir may not exist, try to create,
+  //if not created: exit
   Str:= SExtractFileDir(fn);
   if not IsDirExist(Str) then
     CreateDir(Str);
+  if not IsDirExist(Str) then
+    Exit;
 
   try
     with TIniFile.Create(fn) do
