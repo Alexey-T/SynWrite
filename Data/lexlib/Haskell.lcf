@@ -1,4 +1,4 @@
-object SyntAnal86: TLibSyntAnalyzer
+object SyntAnal14: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Marked block'
@@ -88,7 +88,7 @@ object SyntAnal86: TLibSyntAnalyzer
       DisplayName = 'Comm2'
       StyleName = 'Comm'
       TokenType = 1
-      Expression = '(?s)\{-.*?(-\}|\Z)'
+      Expression = '(?s)\{- (\{.+?\}|.)*?(-\}|\Z)'
       ColumnFrom = 0
       ColumnTo = 0
     end

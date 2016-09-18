@@ -1,4 +1,4 @@
-object SyntAnalyzer10: TLibSyntAnalyzer
+object SyntAnal10: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Style'
@@ -101,6 +101,14 @@ object SyntAnalyzer10: TLibSyntAnalyzer
       Font.Style = []
       BgColor = clMoneyGreen
       FormatType = ftBackGround
+    end
+    item
+      DisplayName = 'ParamCustom'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clLime
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
     end>
   TokenRules = <
     item
@@ -120,10 +128,10 @@ object SyntAnalyzer10: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
-      DisplayName = 'String in URL'
+      DisplayName = 'String in func'
       StyleName = 'String'
       TokenType = 4
-      Expression = '(?<=URL\s*\() .+? (?=\))'
+      Expression = '(?<=url \x20* \() .*? (?=\))'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -132,6 +140,14 @@ object SyntAnalyzer10: TLibSyntAnalyzer
       StyleName = 'Comment'
       TokenType = 1
       Expression = '(?s)/\*.*?(\*/|\Z)'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'ParamCustom'
+      StyleName = 'ParamCustom'
+      TokenType = 2
+      Expression = '\-\-\w[\w\-]*'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -150,7 +166,7 @@ object SyntAnalyzer10: TLibSyntAnalyzer
       BlockName = 'Style begin'
       NotParent = True
       TokenType = 2
-      Expression = ':{1,2}\w+'
+      Expression = ':{1,2}[\w\-]+'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -158,7 +174,7 @@ object SyntAnalyzer10: TLibSyntAnalyzer
       DisplayName = 'Symbol'
       StyleName = 'Symbol'
       TokenType = 5
-      Expression = '[;:,%\(\)\[\]@=/\*>\+!\^\$]'
+      Expression = '[;:,%\(\)\[\]@=/\*>\-\+!\^\$\|~]'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -175,7 +191,7 @@ object SyntAnalyzer10: TLibSyntAnalyzer
       DisplayName = 'Number'
       StyleName = 'Number'
       TokenType = 7
-      Expression = '-?\d*\.?\d+'
+      Expression = '[\-\+]? \d*\.\d+ (e[\-\+]?\d+)? |'#13#10'[\-\+]? \d*\.?\d+'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -1162,7 +1178,8 @@ object SyntAnalyzer10: TLibSyntAnalyzer
   SampleText.Strings = (
     '/* Comment */'
     '.name, .name2 { '
-    '  font-size: 18pt; '
+    '  font-size: 18pt;'
+    '  --my-var: 10.2e+2; /* custom prop; float */'
     '  color: #000099;'
     '  width: 100%; '
     '  background: url("../img.gif") no-repeat;'
