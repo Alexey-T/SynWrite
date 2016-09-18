@@ -1,4 +1,4 @@
-object SyntAnal21: TLibSyntAnalyzer
+object SyntAnal22: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Comment'
@@ -85,7 +85,7 @@ object SyntAnal21: TLibSyntAnalyzer
       DisplayName = 'String'
       StyleName = 'String'
       TokenType = 4
-      Expression = '".*? ("|$)'
+      Expression = '("|'#39') .*? (\1|$)'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -93,7 +93,7 @@ object SyntAnal21: TLibSyntAnalyzer
       DisplayName = 'Param'
       StyleName = 'Param'
       TokenType = 5
-      Expression = '^\x20*? \w+ \x20*? (?=(=|:=))  '
+      Expression = '^\x20*? \w+ \x20*? (?=(=|:=|\+=))  '
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -231,8 +231,8 @@ object SyntAnal21: TLibSyntAnalyzer
     'Section'
     'Label')
   Extentions = 
-    '/makefile /makefile.gnu /makefile.gcc /makefile.bor /makefile.ms' +
-    'c /makefile.vc /makefile.dm /makefile.bcc'
+    'mak /makefile /makefile.gnu /makefile.gcc /makefile.bor /makefil' +
+    'e.msc /makefile.vc /makefile.dm /makefile.bcc'
   LexerName = 'Makefile'
   Notes.Strings = (
     'Alex (Synwrite)'
