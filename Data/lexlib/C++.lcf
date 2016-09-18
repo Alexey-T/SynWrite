@@ -1,4 +1,4 @@
-object SyntAnal78: TLibSyntAnalyzer
+object SyntAnal9: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Default'
@@ -50,6 +50,22 @@ object SyntAnal78: TLibSyntAnalyzer
       Font.Style = [fsBold]
     end
     item
+      DisplayName = 'Id type'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clPurple
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'Id special'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clOlive
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
       DisplayName = 'Comment'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clGray
@@ -94,7 +110,7 @@ object SyntAnal78: TLibSyntAnalyzer
       FormatType = ftBackGround
     end
     item
-      DisplayName = 'Id in angles'
+      DisplayName = 'Generic param'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlue
       Font.Height = -13
@@ -107,6 +123,14 @@ object SyntAnal78: TLibSyntAnalyzer
       StyleName = 'String'
       TokenType = 4
       Expression = '"(\\"|\\\\|.)*?("|$)'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'String raw'
+      StyleName = 'String'
+      TokenType = 4
+      Expression = 'R"\( .+? \)" |'#13#10'R"(.+?)\( .+? \)\1"'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -130,7 +154,7 @@ object SyntAnal78: TLibSyntAnalyzer
       DisplayName = 'Hex'
       StyleName = 'Number'
       TokenType = 5
-      Expression = '0x[\da-f]+'
+      Expression = '0x[\da-f'#39']+ |'#13#10'0b[01'#39']+'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -139,8 +163,8 @@ object SyntAnal78: TLibSyntAnalyzer
       StyleName = 'Number'
       TokenType = 5
       Expression = 
-        '#with exp. dot is optional '#13#10'(\d+ \.)? \d+ e [\+\-]? \d+ |'#13#10'#wit' +
-        'hout exp. dot is required'#13#10'\d+ \. \d+'
+        '#with exp. dot is optional '#13#10'(\d[\d'#39']* \.)? \d[\d'#39']* e [\+\-]? \' +
+        'd[\d'#39']* |'#13#10'#without exp. dot is required'#13#10'\d[\d'#39']* \. \d[\d'#39']*'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -148,7 +172,7 @@ object SyntAnal78: TLibSyntAnalyzer
       DisplayName = 'Integer'
       StyleName = 'Number'
       TokenType = 5
-      Expression = '\d+L?'
+      Expression = '\d[\d'#39']* [ul]*'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -177,10 +201,10 @@ object SyntAnal78: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
-      DisplayName = 'Id <name>'
-      StyleName = 'Id in angles'
+      DisplayName = 'GenericParam'
+      StyleName = 'Generic param'
       TokenType = 2
-      Expression = '<\w+>'
+      Expression = '<\w*>'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -240,6 +264,128 @@ object SyntAnal78: TLibSyntAnalyzer
       ConditionList = <
         item
           TagList.Strings = (
+            'align'
+            'alignas'
+            'alignof'
+            'asm'
+            'auto'
+            'bool'
+            'break'
+            'case'
+            'catch'
+            'cdecl'
+            'char'
+            'class'
+            'const'
+            'const_cast'
+            'constexpr'
+            'continue'
+            'default'
+            'delete'
+            'do'
+            'double'
+            'dynamic_cast'
+            'else'
+            'enum'
+            'explicit'
+            'export'
+            'extern'
+            'false'
+            'final'
+            'float'
+            'for'
+            'friend'
+            'goto'
+            'if'
+            'inline'
+            'int'
+            'long'
+            'mutable'
+            'namespace'
+            'new'
+            'noexcept'
+            'operator'
+            'override'
+            'pascal'
+            'private'
+            'property'
+            'protected'
+            'public'
+            'register'
+            'reinterpret_cast'
+            'return'
+            'short'
+            'signed'
+            'size_t'
+            'sizeof'
+            'static'
+            'static_assert'
+            'static_cast'
+            'struct'
+            'switch'
+            'this'
+            'thread_local'
+            'throw'
+            'true'
+            'try'
+            'typedef'
+            'typeid'
+            'typename'
+            'union'
+            'unsigned'
+            'using'
+            'uuid'
+            'virtual'
+            'void'
+            'volatile'
+            'wchar_t'
+            'while')
+          TokenTypes = 4
+        end>
+      HighlightPos = cpBound
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = 'id types'
+      StyleName = 'Id type'
+      BlockType = btTagDetect
+      ConditionList = <
+        item
+          TagList.Strings = (
+            'auto'
+            'bool'
+            'char'
+            'char16_t'
+            'char32_t'
+            'double'
+            'false'
+            'float'
+            'int'
+            'long'
+            'nullptr'
+            'short'
+            'signed'
+            'string'
+            'template'
+            'true'
+            'uint16_t'
+            'uint32_t'
+            'unsigned'
+            'vector'
+            'void'
+            'wchar_t')
+          TokenTypes = 4
+        end>
+      HighlightPos = cpAny
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = 'id special'
+      StyleName = 'Id special'
+      BlockType = btTagDetect
+      ConditionList = <
+        item
+          TagList.Strings = (
             '__asm'
             '__automated'
             '__cdecl'
@@ -250,10 +396,14 @@ object SyntAnal78: TLibSyntAnalyzer
             '__except'
             '__export'
             '__fastcall'
+            '__FILE__'
             '__finally'
+            '__func__'
+            '__FUNCTION__'
             '__import'
             '__inline'
             '__int64'
+            '__LINE__'
             '__msfastcall'
             '__msreturn'
             '__pascal'
@@ -269,70 +419,14 @@ object SyntAnal78: TLibSyntAnalyzer
             '_import'
             '_pascal'
             '_stdcall'
-            'asm'
-            'auto'
-            'bool'
-            'break'
-            'case'
-            'catch'
-            'cdecl'
-            'char'
-            'class'
-            'const'
-            'continue'
-            'default'
-            'delete'
-            'do'
-            'double'
-            'else'
-            'enum'
-            'explicit'
-            'export'
-            'extern'
+            'dllimport'
             'false'
-            'float'
-            'for'
-            'friend'
-            'goto'
-            'if'
-            'inline'
-            'int'
-            'long'
-            'mutable'
-            'namespace'
-            'new'
-            'operator'
-            'pascal'
-            'private'
-            'protected'
-            'public'
-            'register'
-            'return'
-            'short'
-            'signed'
-            'size_t'
-            'sizeof'
-            'static'
-            'struct'
-            'switch'
-            'this'
-            'throw'
-            'true'
-            'try'
-            'typedef'
-            'typeid'
-            'typename'
-            'union'
-            'unsigned'
-            'uuid'
-            'virtual'
-            'void'
-            'volatile'
-            'wchar_t'
-            'while')
+            'NULL'
+            'nullptr'
+            'true')
           TokenTypes = 4
         end>
-      HighlightPos = cpBound
+      HighlightPos = cpAny
       IgnoreAsParent = False
     end
     item
@@ -618,7 +712,7 @@ object SyntAnal78: TLibSyntAnalyzer
       StyleName = 'Asm BG'
       StartExpression = '\#asm\s*\(\s*"'
       EndExpression = '"\)'
-      SyntAnalyzer = SyntAnalyzer13
+      SyntAnalyzer = SyntAnal2
       IncludeBounds = True
     end>
   SampleText.Strings = (
@@ -685,7 +779,7 @@ object SyntAnal78: TLibSyntAnalyzer
   Extentions = 'c cpp cxx h hpp hxx inl cc'
   LexerName = 'C++'
   Notes.Strings = (
-    'Redone: Alex (SynWrite)')
+    'Reworked C++ lexer by Alexey (SynWrite)')
   LineComment = '//'
   Charset = DEFAULT_CHARSET
 end
