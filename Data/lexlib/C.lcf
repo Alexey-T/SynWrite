@@ -1,4 +1,4 @@
-object SyntAnal55: TLibSyntAnalyzer
+object SyntAnal7: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Default'
@@ -473,6 +473,10 @@ object SyntAnal55: TLibSyntAnalyzer
           TokenTypes = 8
         end
         item
+          CondType = tcSkip
+          TokenTypes = 2
+        end
+        item
           TokenTypes = 4
         end
         item
@@ -493,7 +497,7 @@ object SyntAnal55: TLibSyntAnalyzer
       StyleName = 'Asm BG'
       StartExpression = '\#asm\s*\(\s*"'
       EndExpression = '"\)'
-      SyntAnalyzer = SyntAnalyzer13
+      SyntAnalyzer = SyntAnal2
     end
     item
       DisplayName = 'asm-endasm'
@@ -501,7 +505,7 @@ object SyntAnal55: TLibSyntAnalyzer
       StyleName = 'Preprocessor'
       StartExpression = '\#asm'
       EndExpression = '\#endasm'
-      SyntAnalyzer = SyntAnalyzer13
+      SyntAnalyzer = SyntAnal2
     end>
   SampleText.Strings = (
     '/* Test */'

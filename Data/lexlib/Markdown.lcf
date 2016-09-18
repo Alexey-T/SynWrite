@@ -1,4 +1,4 @@
-object SyntAnal67: TLibSyntAnalyzer
+object SyntAnal23: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Heading'
@@ -262,8 +262,8 @@ object SyntAnal67: TLibSyntAnalyzer
       StyleName = 'Reference'
       TokenType = 6
       Expression = 
-        '^\[[^\]\^]+\]:.*?($|\z) |'#13#10'\[[^\]]+\]\[[^\]]+\] |'#13#10'\(@[^\)]*\) #' +
-        'pandoc list reference'
+        '^\[[^\]\^]+\]:.*?($|\z) |'#13#10'!? \[[^\]]+\]\[[^\]]*\] |'#13#10'\(@[^\)]*\' +
+        ') #pandoc list reference'
       ColumnFrom = 0
       ColumnTo = 0
     end
