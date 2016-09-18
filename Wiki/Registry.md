@@ -77,6 +77,8 @@ Lexer: Assembly FASM                | | Lexers/lexer.Assembly_FASM.zip
 Lexer: Assembly JWASM               | | Lexers/lexer.Assembly_JWASM.zip
 Lexer: Assembly MIPS                | | Lexers/lexer.Assembly_MIPS.zip
 Lexer: Asymptote                    | | Lexers/lexer.Asymptote.zip
+Lexer: AutoHotkey                   | | Lexers/lexer.AutoHotkey.zip
+Lexer: AutoIt                       | | Lexers/lexer.AutoIt.zip
 Lexer: Automake                     | | Lexers/lexer.Automake.zip
 Lexer: AviSynth                     | | Lexers/lexer.AviSynth.zip
 Lexer: AWK                          | | Lexers/lexer.AWK.zip
