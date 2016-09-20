@@ -117,7 +117,7 @@ Lexer: GAMS                         | | Lexers/lexer.GAMS.zip
 Lexer: Gherkin                      | | Lexers/lexer.Gherkin.zip
 Lexer: GLSL                         | | Lexers/lexer.GLSL.zip
 Lexer: Gold Parser                  | | Lexers/lexer.Gold_Parser.zip
-Lexer: Graphviz                     | | Lexers/lexer.Graphviz.zip
+Lexer: Graphviz DOT                 | | Lexers/lexer.Graphviz_DOT.zip
 Lexer: Great Cow Basic              | | Lexers/lexer.Great_Cow_Basic.zip
 Lexer: Groovy                       | | Lexers/lexer.Groovy.zip
 Lexer: Haml                         | | Lexers/lexer.Haml.zip
@@ -147,7 +147,8 @@ Lexer: Julia                        | | Lexers/lexer.Julia.zip
 Lexer: KiXtart                      | | Lexers/lexer.KiXtart.zip
 Lexer: LaTeX                        | | Lexers/lexer.LaTeX.zip
 Lexer: Lisp                         | | Lexers/lexer.Lisp.zip
-Lexer: Logfiles                     | | Lexers/lexer.Logfiles.zip
+Lexer: Log files                    | | Lexers/lexer.Logfiles.zip
+Lexer: Lola-2                       | | Lexers/lexer.Lola-2.zip
 Lexer: MacroScript (Macro Sheduler) | | Lexers/lexer.MacroScript_(Macro_Sheduler).zip
 Lexer: MATLAB                       | | Lexers/lexer.MATLAB.zip
 Lexer: MediaWiki                    | | Lexers/lexer.MediaWiki.zip
@@ -175,6 +176,7 @@ Lexer: Parser3                      | | Lexers/lexer.Parser3.zip
 Lexer: Pawn                         | | Lexers/lexer.Pawn.zip
 Lexer: PAX Pascal                   | | Lexers/lexer.PAX_Pascal.zip
 Lexer: PHP_                         | | Lexers/lexer.PHP_.zip
+Lexer: PICL                         | | Lexers/lexer.PICL.zip
 Lexer: Pike                         | | Lexers/lexer.Pike.zip
 Lexer: PL/SQL                       | | Lexers/lexer.PL_SQL.zip
 Lexer: PostScript                   | | Lexers/lexer.PostScript.zip

@@ -65,7 +65,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * GLSL
 * Go
 * Gold Parser
-* Graphviz
+* Graphviz DOT
 * Great Cow Basic
 * Groovy
 * Haml
@@ -101,6 +101,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * LESS
 * Lisp
 * Log files
+* Lola-2
 * Lua
 * Macro Scheduler script
 * Makefile
@@ -130,6 +131,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Pawn
 * Perl
 * PHP
+* PICL
 * Pike
 * PL/SQL
 * PostScript
