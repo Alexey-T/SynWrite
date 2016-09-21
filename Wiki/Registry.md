@@ -199,12 +199,14 @@ Lexer: Slim                         | | Lexers/lexer.Slim.zip
 Lexer: Smalltalk                    | | Lexers/lexer.Smalltalk.zip
 Lexer: SQL (Blue)                   | | Lexers/lexer.SQL_Blue.zip
 Lexer: SQL (White)                  | | Lexers/lexer.SQL_White.zip
+Lexer: Squirrel                     | | Lexers/lexer.Squirrel.zip
 Lexer: Standard ML                  | | Lexers/lexer.Standard_ML.zip
 Lexer: Stata                        | | Lexers/lexer.Stata.zip
 Lexer: Stylus                       | | Lexers/lexer.Stylus.zip
 Lexer: Swift                        | | Lexers/lexer.Swift.zip
 Lexer: T-SQL                        | | Lexers/lexer.T-SQL.zip
 Lexer: Tcl                          | | Lexers/lexer.Tcl.zip
+Lexer: Textile                      | | Lexers/lexer.Textile.zip
 Lexer: Text Russian detector        | | Lexers/lexer.Text_Russian_detector.zip
 Lexer: Text with indentation        | | Lexers/lexer.Text_with_indentation.zip
 Lexer: TOML                         | | Lexers/lexer.TOML.zip
@@ -281,6 +283,7 @@ Text converter: ROTxx | ROT13, ROT47, ROTX | TextConverters/converter.ROT13_ROT4
 Text converter: Translit | Transliterate En<->Ru | TextConverters/converter.Translit.zip
 Text converter: URL encode | URL encoding / percent-encoding | TextConverters/converter.UrlEncode.zip
 Text Statistics | Shows for text: count of lines, words, chars | PyPlugins/plugin.Alexey.TextStatistics.zip
+Textile Preview | Shows Textile files as HTML page in browser | PyPlugins/plugin.Alexey.TextilePreview.zip
 Translation: Chinese Simplified   | | Languages/language.Ch_Simplified.zip
 Translation: Chinese Traditional  | | Languages/language.Ch_Traditional.zip
 Translation: Czech                | | Languages/language.Czech.zip

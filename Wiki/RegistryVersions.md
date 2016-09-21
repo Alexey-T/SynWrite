@@ -67,6 +67,7 @@ SynJedi=1.0.5
 SynLint=1.0.3
 SynSharp=1.1.2
 Text Converter=1.0.0
+Textile Preview=2016.09.20
 VB SyncEdit=0.3.0
 WebFont=1.1.0
 WinMerge Compare=1.1.5

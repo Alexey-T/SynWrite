@@ -156,12 +156,14 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Slim
 * Smalltalk
 * SQL
+* Squirrel
 * Standard ML
 * Stata
 * Stylus
 * Swift
 * T-SQL
 * Tcl/Tk
+* Textile
 * TOML
 * Tree
 * Twig
