@@ -1,15 +1,6 @@
 object SyntAnal6: TLibSyntAnalyzer
   Formats = <
     item
-      DisplayName = 'Default'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -13
-      Font.Name = 'Courier New'
-      Font.Style = []
-      FormatType = ftCustomFont
-    end
-    item
       DisplayName = 'Symbol'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clMaroon
@@ -34,7 +25,7 @@ object SyntAnal6: TLibSyntAnalyzer
       Font.Style = []
     end
     item
-      DisplayName = 'Identifier'
+      DisplayName = 'Id'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -13
@@ -42,9 +33,25 @@ object SyntAnal6: TLibSyntAnalyzer
       Font.Style = []
     end
     item
-      DisplayName = 'Reserved word'
+      DisplayName = 'Id keyword'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = [fsBold]
+    end
+    item
+      DisplayName = 'Is spec'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clPurple
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'Id Linq'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 12615808
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = [fsBold]
@@ -53,6 +60,14 @@ object SyntAnal6: TLibSyntAnalyzer
       DisplayName = 'Comment'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clGray
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = [fsItalic]
+    end
+    item
+      DisplayName = 'Comment doc'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 12615808
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = [fsItalic]
@@ -82,8 +97,26 @@ object SyntAnal6: TLibSyntAnalyzer
       BorderColorRight = clSilver
       BorderTypeBottom = blSolid
       BorderColorBottom = clSilver
+    end
+    item
+      DisplayName = 'Xml doc BG'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+      BgColor = clMoneyGreen
+      FormatType = ftBackGround
     end>
   TokenRules = <
+    item
+      DisplayName = 'Comment doc'
+      StyleName = 'Comment doc'
+      TokenType = 1
+      Expression = '///.*'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
     item
       DisplayName = 'Comment 1'
       StyleName = 'Comment'
@@ -127,7 +160,7 @@ object SyntAnal6: TLibSyntAnalyzer
     end
     item
       DisplayName = 'Id keyword'
-      StyleName = 'Reserved word'
+      StyleName = 'Id keyword'
       TokenType = 2
       Expression = '\b(if | foreach | while | catch)\b'
       ColumnFrom = 0
@@ -135,7 +168,7 @@ object SyntAnal6: TLibSyntAnalyzer
     end
     item
       DisplayName = 'Id'
-      StyleName = 'Identifier'
+      StyleName = 'Id'
       TokenType = 2
       Expression = '[a-z_]\w*'
       ColumnFrom = 0
@@ -166,18 +199,18 @@ object SyntAnal6: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
-      DisplayName = 'Region'
+      DisplayName = 'Preprocessor'
       StyleName = 'Preprocessor'
       TokenType = 6
-      Expression = '\#region'
+      Expression = '\# \x20* \w+'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = 'Preprocessor'
-      StyleName = 'Preprocessor'
-      TokenType = 6
-      Expression = '\#\w*'
+      DisplayName = 'Char'
+      StyleName = 'String'
+      TokenType = 4
+      Expression = #39'.*?('#39'|$)'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -196,24 +229,18 @@ object SyntAnal6: TLibSyntAnalyzer
       Expression = '[/\+\-\*:=<>&/\|\^!~]+'
       ColumnFrom = 0
       ColumnTo = 0
-    end
-    item
-      DisplayName = 'Char'
-      StyleName = 'String'
-      TokenType = 4
-      Expression = #39'.*?('#39'|$)'
-      ColumnFrom = 0
-      ColumnTo = 0
     end>
   BlockRules = <
     item
-      DisplayName = 'Keywords'
-      StyleName = 'Reserved word'
+      DisplayName = 'Id keywords'
+      StyleName = 'Id keyword'
       BlockType = btTagDetect
       ConditionList = <
         item
           TagList.Strings = (
             'abstract'
+            'add'
+            'as'
             'base'
             'bool'
             'break'
@@ -266,12 +293,14 @@ object SyntAnal6: TLibSyntAnalyzer
             'public'
             'readonly'
             'ref'
+            'remove'
             'return'
             'sbyte'
             'sealed'
             'set'
             'short'
             'sizeof'
+            'stackalloc'
             'static'
             'string'
             'struct'
@@ -287,6 +316,8 @@ object SyntAnal6: TLibSyntAnalyzer
             'unsafe'
             'ushort'
             'using'
+            'value'
+            'var'
             'virtual'
             'void'
             'where'
@@ -295,6 +326,59 @@ object SyntAnal6: TLibSyntAnalyzer
           TokenTypes = 4
         end>
       HighlightPos = cpBound
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = 'Id types'
+      StyleName = 'Is spec'
+      BlockType = btTagDetect
+      ConditionList = <
+        item
+          TagList.Strings = (
+            'bool'
+            'byte'
+            'char'
+            'decimal'
+            'double'
+            'float'
+            'int'
+            'long'
+            'object'
+            'sbyte'
+            'short'
+            'string'
+            'uint'
+            'ulong'
+            'ushort'
+            'void')
+          TokenTypes = 4
+        end>
+      HighlightPos = cpAny
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = 'Id Linq'
+      StyleName = 'Id Linq'
+      BlockType = btTagDetect
+      ConditionList = <
+        item
+          TagList.Strings = (
+            'ascending'
+            'by'
+            'descending'
+            'equals'
+            'from'
+            'group'
+            'into'
+            'join'
+            'let'
+            'on'
+            'orderby'
+            'select'
+            'where')
+          TokenTypes = 4
+        end>
+      HighlightPos = cpAny
       IgnoreAsParent = False
     end
     item
@@ -401,8 +485,9 @@ object SyntAnal6: TLibSyntAnalyzer
         end>
       IdentIndex = -1
       BlockEnd = 'end of class'
-      NameFmt = '%s-1'
+      NameFmt = 'class %s-1'
       HighlightPos = cpBound
+      CollapseFmt = 'class %s-1'
       TreeItemImage = 1
       IgnoreAsParent = False
     end
@@ -859,18 +944,14 @@ object SyntAnal6: TLibSyntAnalyzer
       IgnoreAsParent = False
     end>
   CodeTemplates = <>
-  SubAnalyzers = <
-    item
-      DisplayName = 'XML doc'
-      Enabled = False
-      StartExpression = '///'
-      EndExpression = '(?s)(\r\n | ///)'
-      SyntAnalyzer = SyntAnal37
-    end>
+  SubAnalyzers = <>
   SampleText.Strings = (
     '//Comment'
-    '#region Test'
-    'test = @"raw\d\dd\" + "str\"d\"" + 0xA0F0;'
+    '   ///Comment doc'
+    '   ///doc'
+    '#  pragma Test'
+    'test = @"raw\" + "str\"d\"" + '#39'd'#39' + 0xA0F0;'
+    'from nn select dd; //Linq'
     'enum Days {P1, P2, P3};'
     ' '
     'public class Stack: IEdit, IEdit2'
@@ -885,7 +966,7 @@ object SyntAnal6: TLibSyntAnalyzer
     '  }'
     '  public object IEdit.Pop() {'
     '    if (first == null)'
-    '      throw new Exception("Can'#39't Pop from an empty Stack.");'
+    '      throw new Exception("Err");'
     '    else {'
     '      return temp;'
     '    }'
@@ -920,8 +1001,11 @@ object SyntAnal6: TLibSyntAnalyzer
     'r> ('#39'='#39' | '#39','#39' | '#39';'#39');'#13#10#13#10'Params = <Identifier> | Params <Identif' +
     'ier> | Params ('#39','#39' | '#39'.'#39' | '#39';'#39' | '#39':'#39' | '#39'['#39' | '#39']'#39');'#13#10'func = <Iden' +
     'tifier> ('#39'['#39' '#39']'#39')? Complex_name '#39'('#39' Params? '#39')'#39' '#39'{'#39';'#13#10
-  Extentions = 'cs'
+  Extentions = 'cs csx'
   LexerName = 'C#'
+  Notes.Strings = (
+    'Original was from EControl package'
+    'Improved much by Alexey (SynWrite)')
   LineComment = '//'
   Charset = DEFAULT_CHARSET
 end
