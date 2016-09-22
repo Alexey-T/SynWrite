@@ -1,4 +1,4 @@
-object SyntAnal19: TLibSyntAnalyzer
+object SyntAnal3: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Comment'
@@ -148,7 +148,7 @@ object SyntAnal19: TLibSyntAnalyzer
       DisplayName = 'Symbol'
       StyleName = 'Symbol'
       TokenType = 6
-      Expression = '[\+\-\*\(\)\[\]\{\}\<>\.,~!&\|;:=%\^\#\$\?\\]'
+      Expression = '[\+\*\(\)\[\]\{\}\<>\.,~!&\|;:=%\^\#\$\?\\]'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -170,13 +170,13 @@ object SyntAnal19: TLibSyntAnalyzer
       DisplayName = 'Command'
       StyleName = 'Params'
       TokenType = 2
-      Expression = '\w+'
+      Expression = '\w[\w\-]+'
       ColumnFrom = 0
       ColumnTo = 0
     end>
   BlockRules = <
     item
-      DisplayName = 'Key words'
+      DisplayName = 'Keywords'
       StyleName = 'Key words'
       BlockType = btTagDetect
       ConditionList = <
@@ -186,6 +186,7 @@ object SyntAnal19: TLibSyntAnalyzer
             'adduser'
             'alias'
             'apropos'
+            'apt'
             'apt-get'
             'aptitude'
             'aspell'
@@ -234,6 +235,7 @@ object SyntAnal19: TLibSyntAnalyzer
             'dmesg'
             'do'
             'done'
+            'dpkg-deb'
             'du'
             'echo'
             'egrep'
@@ -440,8 +442,10 @@ object SyntAnal19: TLibSyntAnalyzer
             'write'
             'xargs'
             'xdg-open'
+            'xz'
             'yes'
             'zcat'
+            'zip'
             'zless')
           TokenTypes = 4
           IgnoreCase = True
