@@ -1,4 +1,4 @@
-object SyntAnal8: TLibSyntAnalyzer
+object SyntAnal6: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Default'
@@ -82,14 +82,6 @@ object SyntAnal8: TLibSyntAnalyzer
       BorderColorRight = clSilver
       BorderTypeBottom = blSolid
       BorderColorBottom = clSilver
-    end
-    item
-      DisplayName = 'GenericParam'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clPurple
-      Font.Height = -13
-      Font.Name = 'Courier New'
-      Font.Style = []
     end>
   TokenRules = <
     item
@@ -118,10 +110,18 @@ object SyntAnal8: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
+      DisplayName = 'String raw'
+      StyleName = 'String'
+      TokenType = 4
+      Expression = '@" .*? ("|$)'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
       DisplayName = 'String'
       StyleName = 'String'
       TokenType = 4
-      Expression = '(?s)".*?("|\Z)'
+      Expression = '(?s) "(\\"|\\\\|.)*?("|\Z)'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -178,13 +178,6 @@ object SyntAnal8: TLibSyntAnalyzer
       StyleName = 'Preprocessor'
       TokenType = 6
       Expression = '\#\w*'
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
-      DisplayName = 'GenericParam'
-      StyleName = 'GenericParam'
-      Expression = '<\w+>'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -872,10 +865,12 @@ object SyntAnal8: TLibSyntAnalyzer
       Enabled = False
       StartExpression = '///'
       EndExpression = '(?s)(\r\n | ///)'
-      SyntAnalyzer = SyntAnal39
+      SyntAnalyzer = SyntAnal37
     end>
   SampleText.Strings = (
-    '//C# syntax highlighting'
+    '//Comment'
+    '#region Test'
+    'test = @"raw\d\dd\" + "str\"d\"" + 0xA0F0;'
     'enum Days {P1, P2, P3};'
     ' '
     'public class Stack: IEdit, IEdit2'
@@ -892,8 +887,6 @@ object SyntAnal8: TLibSyntAnalyzer
     '    if (first == null)'
     '      throw new Exception("Can'#39't Pop from an empty Stack.");'
     '    else {'
-    '      object temp = first.Value;'
-    '      first = first.Next;'
     '      return temp;'
     '    }'
     '  }'
