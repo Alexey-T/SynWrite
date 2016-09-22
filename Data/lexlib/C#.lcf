@@ -81,7 +81,7 @@ object SyntAnal6: TLibSyntAnalyzer
       Font.Style = [fsItalic]
     end
     item
-      DisplayName = 'Current block'
+      DisplayName = 'Bracket BG'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -13
@@ -97,16 +97,6 @@ object SyntAnal6: TLibSyntAnalyzer
       BorderColorRight = clSilver
       BorderTypeBottom = blSolid
       BorderColorBottom = clSilver
-    end
-    item
-      DisplayName = 'Xml doc BG'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Courier New'
-      Font.Style = []
-      BgColor = clMoneyGreen
-      FormatType = ftBackGround
     end>
   TokenRules = <
     item
@@ -457,7 +447,7 @@ object SyntAnal6: TLibSyntAnalyzer
     end
     item
       DisplayName = '{'
-      StyleName = 'Current block'
+      StyleName = 'Bracket BG'
       ConditionList = <
         item
           TagList.Strings = (
@@ -501,7 +491,9 @@ object SyntAnal6: TLibSyntAnalyzer
         end>
       IdentIndex = -1
       BlockEnd = 'end of namespace'
+      NameFmt = 'ns %s-1'
       HighlightPos = cpBound
+      CollapseFmt = 'ns %s-1'
       TreeItemImage = 0
       IgnoreAsParent = False
     end
@@ -555,64 +547,6 @@ object SyntAnal6: TLibSyntAnalyzer
         item
           TagList.Strings = (
             '}')
-          TokenTypes = 8
-        end>
-      HighlightPos = cpBound
-      IgnoreAsParent = False
-    end
-    item
-      DisplayName = '('
-      StyleName = 'Current block'
-      ConditionList = <
-        item
-          TagList.Strings = (
-            '(')
-          TokenTypes = 8
-        end>
-      BlockEnd = ')'
-      NotCollapsed = True
-      DisplayInTree = False
-      DynHighlight = dhBound
-      HighlightPos = cpBoundTagBegin
-      DynSelectMin = True
-      IgnoreAsParent = False
-    end
-    item
-      DisplayName = ')'
-      BlockType = btRangeEnd
-      ConditionList = <
-        item
-          TagList.Strings = (
-            ')')
-          TokenTypes = 8
-        end>
-      HighlightPos = cpBound
-      IgnoreAsParent = False
-    end
-    item
-      DisplayName = '['
-      StyleName = 'Current block'
-      ConditionList = <
-        item
-          TagList.Strings = (
-            '[')
-          TokenTypes = 8
-        end>
-      BlockEnd = ']'
-      DisplayInTree = False
-      DynHighlight = dhBound
-      HighlightPos = cpBoundTagBegin
-      DynSelectMin = True
-      CollapseFmt = '[ ... ]'
-      IgnoreAsParent = False
-    end
-    item
-      DisplayName = ']'
-      BlockType = btRangeEnd
-      ConditionList = <
-        item
-          TagList.Strings = (
-            ']')
           TokenTypes = 8
         end>
       HighlightPos = cpBound
