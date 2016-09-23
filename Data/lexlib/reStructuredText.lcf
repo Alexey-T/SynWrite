@@ -125,6 +125,14 @@ object SyntAnal29: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
+      DisplayName = 'List'
+      StyleName = 'List'
+      TokenType = 6
+      Expression = '^(\*+|\#+\.|\d+\.) \x20 .+'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
       DisplayName = 'Bold-Italic'
       StyleName = 'Bold-Italic'
       TokenType = 1
@@ -144,7 +152,7 @@ object SyntAnal29: TLibSyntAnalyzer
       DisplayName = 'Italic'
       StyleName = 'Italic'
       TokenType = 1
-      Expression = '(?s) (\*) \S.*? (\*|")'
+      Expression = '(?s) \* \S.*? (\*|$)'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -190,14 +198,6 @@ object SyntAnal29: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
-      DisplayName = 'List'
-      StyleName = 'List'
-      TokenType = 6
-      Expression = '^(\*+|\#+\.|\d+\.) \x20 .+'
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
       DisplayName = 'Text'
       StyleName = 'Text'
       TokenType = 1
@@ -223,15 +223,15 @@ object SyntAnal29: TLibSyntAnalyzer
     'Head'
     '+++++++'
     ''
-    '* This is a bulleted list.'
-    '* It has two items, the second'
+    '** This is a bulleted list.'
+    '** It has two items, the second'
     '  item uses two lines.'
     ''
     '1. This is a numbered list.'
     '2. It has two items too.'
     ''
-    '#. This is a numbered list.'
-    '#. It has two items too.'
+    '###. This is a numbered list.'
+    '###. It has two items too.'
     ''
     '****************************************'
     'HTTPie '
