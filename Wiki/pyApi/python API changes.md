@@ -3,10 +3,10 @@ Changes in Python API
 
 sep 2016
 
+* deprecated actions of get_app_prop(), soon will be deleted: PROP_GROUP_INDEX, PROP_GROUPS, PROP_EDITOR_BY_INDEX 
 * release 1.0.155
 * del: id FILENAME_LEXLIB
 * del: id LEXER_SAVE_LIB, LEXER_CONFIG_ALT
-
 * release 1.0.154
 * add: lexer_proc: LEXER_GET_COMMENT
 * add: ed.get_prop: PROP_INDEX_GROUP, PROP_INDEX_TAB, PROP_TAB_TITLE, PROP_TAB_COLOR, PROP_TAB_ID
@@ -24,33 +24,33 @@ jun 2016
 may 2016
 
 * release 1.0.151
-* add dlg_custom()
-* add app_proc: PROC_SET_ESCAPE, PROC_GET_ESCAPE
+* add: dlg_custom()
+* add: app_proc: PROC_SET_ESCAPE, PROC_GET_ESCAPE
 
 jan 2016
 
 * release 1.0.150
-* add on_click_dbl
+* add: on_click_dbl
 * release 1.0.149
-* add dlg_menu param "focused"
+* add: dlg_menu param "focused"
 * change dlg_input: last params optional
 * release 1.0.148
-* add on_click
+* add: on_click
 
 feb 2015
 
 * release 1.0.147
-* add app_proc id "get command"
-* del app_proc id "report keys"
+* add: app_proc: PROC_GET_COMMAND
+* del: app_proc: id "report keys"
 
 jan 2015
 
 * release 1.0.146
-* add editor-property ids
-* add Editor.get_enc
-* add Editor.set_enc
-* add app_proc id "add recent color"
-* del app_proc id "color picker ex"
+* add: editor-property ids
+* add: Editor.get_enc
+* add: Editor.set_enc
+* add: app_proc id "add recent color"
+* del: app_proc id "color picker ex"
 
 nov 2014
 

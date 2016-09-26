@@ -26,16 +26,22 @@ Id | Access | Type | Meaning
 `PROP_RECENT_NEWDOC`   | R | list of str | List of recent new-document templates or `None` if recent-list empty.
 `PROP_EVENTS` | W | str | Registering properties of event plugin. 3 strings ";"-separated: plugin module name, events list (like in "SynPlugins.ini", see [py event names], pass empty string to remove events for plugin), lexers list (like in "SynPlugins.ini", pass empty string for all lexers). Example: `'syn_docblock;on_key,k13;JavaScript,PHP;'`.
 `PROP_GROUP_MODE`  | RW | int | Tabs-grouping mode. One of `GROUPING_nnnn` constants.
+
+Deprecated actions
+------------------
+
+Soon, at end of 2016, these will be deleted.
+
+Id | Access | Type | Meaning
+---|--------|------|--------
 `PROP_GROUP_INDEX` | R  | int | Index of active tab-group. 1-based.
-`PROP_GROUPS`      | R  | str | Count of tabs in each tab-group. It's ","-separated list of ints. "2,4,0," shows: "3 groups visible, 2 tabs in group1, 4 tabs in group2". "2,0,0,6," shows: "4 groups visible, 2 tabs in group1, 6 tabs in group4".
-`PROP_EDITOR_BY_INDEX` | R | int | Handle (pass it to `Editor()` to make object) of editor at given group-index and tab-index. `value` parameter must be 3 numbers ","-separated. First number: group index (from 1 to currently 6; -1 for current group). Second number: tab index (from 0; -1 for current tab). 3rd number: 1 for editor-master, 2 for editor-slave, other for auto (master or slave, which is focused). Returns -1 if no such editor found.  
+`PROP_GROUPS`      | R  | str | Count of tabs in each tab-group. It's ","-separated list of ints.
+`PROP_EDITOR_BY_INDEX` | R | int | Handle of editor at given group-index and tab-index. `value` parameter must be 3 numbers ","-separated.
 
-Notes:
+Notes
+------
 
-- When setting, always pass string values
-- When setting bool value, pass one of strings: `'0'` or `'1'`
+- When setting bool, pass one of strings: '0' or '1'
 - When getting coords, you get 4-tuple of int: `(x1, y1, x2, y2)`
-- When setting coords, you should pass such string value:
-  `str(x1) + ',' + str(y1) + ',' + str(x2) + ',' + str(y2)`
-
-Possible values of dock id are listed at [py dock id].
+- When setting coords, you should pass string: `'%d,%d,%d,%d' % (x1, y1, x2, y2)`
+- Possible values of dock id: [py dock id]
