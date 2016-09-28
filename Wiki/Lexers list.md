@@ -8,11 +8,13 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Acu Cobol
 * Ada
 * Apache config
+* Apache Hive
 * Apache Pig
 * AppleScript
 * Arduino
 * Assembly
 * Assembly ARM
+* Assembly AVR
 * Assembly FASM
 * Assembly JWASM
 * Assembly MIPS
@@ -181,5 +183,5 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * WSH script
 * XML
 * XSLT
-* Yacc
+* Yacc (Bison)
 * YAML 

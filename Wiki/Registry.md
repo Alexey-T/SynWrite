@@ -68,11 +68,13 @@ Lexer: Acu Cobol                    | | Lexers/lexer.Acu_Cobol.zip
 Lexer: Ada                          | | Lexers/lexer.Ada.zip
 Lexer: Adobe Flash                  | | Lexers/lexer.Adobe_Flash.zip
 Lexer: Apache config                | | Lexers/lexer.Apache_config.zip
+Lexer: Apache Hive                  | | Lexers/lexer.Apache_Hive.zip
 Lexer: Apache Pig                   | | Lexers/lexer.Apache_Pig.zip
 Lexer: AppleScript                  | | Lexers/lexer.AppleScript.zip
 Lexer: Arduino                      | | Lexers/lexer.Arduino.zip
 Lexer: ASAP2                        | | Lexers/lexer.ASAP2.zip
 Lexer: Assembly ARM                 | | Lexers/lexer.Assembly_ARM.zip
+Lexer: Assembly AVR                 | | Lexers/lexer.Assembly_AVR.zip
 Lexer: Assembly FASM                | | Lexers/lexer.Assembly_FASM.zip
 Lexer: Assembly JWASM               | | Lexers/lexer.Assembly_JWASM.zip
 Lexer: Assembly MIPS                | | Lexers/lexer.Assembly_MIPS.zip
