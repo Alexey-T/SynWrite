@@ -74,6 +74,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Harbour
 * Haskell
 * Haxe
+* HJSON
 * HTML
 * HTML Diafan
 * HTML Embedded JS

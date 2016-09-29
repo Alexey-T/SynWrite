@@ -125,6 +125,7 @@ Lexer: Groovy                       | | Lexers/lexer.Groovy.zip
 Lexer: Haml                         | | Lexers/lexer.Haml.zip
 Lexer: Harbour                      | | Lexers/lexer.Harbour.zip
 Lexer: Haxe                         | | Lexers/lexer.Haxe.zip
+Lexer: HJSON                         | | Lexers/lexer.HJSON.zip
 Lexer: HTML Diafan                  | | Lexers/lexer.HTML_Diafan.zip
 Lexer: HTML Embedded JS             | | Lexers/lexer.HTML_Embedded_JS.zip
 Lexer: HTML Handlebars              | | Lexers/lexer.HTML_Handlebars.zip
