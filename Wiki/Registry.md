@@ -78,6 +78,7 @@ Lexer: Assembly AVR                 | | Lexers/lexer.Assembly_AVR.zip
 Lexer: Assembly FASM                | | Lexers/lexer.Assembly_FASM.zip
 Lexer: Assembly JWASM               | | Lexers/lexer.Assembly_JWASM.zip
 Lexer: Assembly MIPS                | | Lexers/lexer.Assembly_MIPS.zip
+Lexer: Assembly Z80 SjASM           | | Lexers/lexer.Assembly_Z80_SjASM.zip
 Lexer: Asymptote                    | | Lexers/lexer.Asymptote.zip
 Lexer: AutoHotkey                   | | Lexers/lexer.AutoHotkey.zip
 Lexer: AutoIt                       | | Lexers/lexer.AutoIt.zip

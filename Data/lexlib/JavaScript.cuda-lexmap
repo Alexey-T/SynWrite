@@ -1,18 +1,15 @@
-[ref]
-0=XML
-
 [map]
 Symbol=Symbol
 Number=Number
 String=String
-Id=Id
+String regex=String2
+Identifier=Id
 Id keyword=IdKeyword
-Id spec=Id1
-Id Linq=Id2
+Id standard=Id1
+Id jquery=Id2
 Comment=Comment
 Comment doc=CommentDoc
-Preprocessor=Comment2
-Bracket BG=BracketBG
+Current block=BracketBG
 
 [comments]
 str1=/*

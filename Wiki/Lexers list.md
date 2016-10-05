@@ -18,6 +18,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Assembly FASM
 * Assembly JWASM
 * Assembly MIPS
+* Assembly Z80 SjASM
 * Asymptote
 * AutoHotkey
 * AutoIt

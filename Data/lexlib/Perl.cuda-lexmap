@@ -4,18 +4,15 @@ Symbol=Symbol
 Number=Number
 String=String
 Identifier=Id
-Reserved word=IdKeyword
 Comment=Comment
-Preprocessor=Comment2
-Current block=CurBlockBG
-Asm BG=IncludeBG1
-
-[ref]
-0=Assembly
-1=Assembly
+Reserved word=IdKeyword
+Marked block=-
+Variable=IdVar
+Something=String3
+String regex=String2
 
 [comments]
-str1=/*
-str2=*/
+full1==pod
+full2==cut
 styles_cmt=Comment
 styles_str=String
