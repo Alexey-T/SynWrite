@@ -71,7 +71,6 @@ const
   sm_OptNonPrint = 733;
   sm_ToggleFocusTree = 734;
   sm_ToggleFocusClip = 735;
-  sm_ToggleLineComment = 738;
   sm_ToggleFocusOutput = 739;
 
   sm_FileNewWindow = 740;
@@ -84,7 +83,6 @@ const
   sm_FileMoveToOtherView = 747;
 
   sm_FileBackup = 750;
-  sm_ToggleStreamComment = 751;
   sm_CopyFilename = 752;
   sm_CopyFullPath = 753;
   sm_CopyDirPath = 754;
@@ -196,7 +194,6 @@ const
   sm_ReplaceFromClipAll = 883;
   sm_RereadOutputPanel = 884;
   sm_NumericConverterDialog = 889;
-  sm_ToggleLineCommentAlt = 892;
   sm_SelectionExtend = 893;
   sm_SelectionShrink = 894;
   sm_ReverseLines = 895;
@@ -489,8 +486,6 @@ begin
 
     smChangeRangeSide,
 
-    smCommentLines,
-    smUncommentLines,
     smSortAscending,
     smSortDescending,
     smMoveLinesUp,
@@ -509,7 +504,6 @@ begin
     smCopyPasteAbove,
     smCopyPasteBelow,
 
-    sm_ToggleLineCommentAlt,
     sm_GotoNextBlank,
     sm_GotoPrevBlank,
     sm_SelectParagraph,

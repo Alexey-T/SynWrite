@@ -449,8 +449,6 @@ type
     TBXSubmenuBarSave: TSpTBXSubmenuItem;
     acExportRTF: TecExportRTFAction;
     acExportHTML: TecExportHTMLAction;
-    ecCommentLines: TecCommentLines;
-    ecUnCommentLines: TecUnCommentLines;
     ecSortAscending: TAction;
     ecSortDescending: TAction;
     acSetupLexerLib: TAction;
@@ -469,8 +467,6 @@ type
     TBXItemBarDelete: TSpTBXItem;
     tbView: TSpTbxToolbar;
     TBXSubmenuBarNPrint: TSpTBXSubmenuItem;
-    TBXItemBarComm: TSpTBXItem;
-    TBXItemBarUncom: TSpTBXItem;
     TBXSeparatorItem2: TSpTbxSeparatorItem;
     TBXItemBarIndent: TSpTBXItem;
     TBXItemBarUnindent: TSpTBXItem;
@@ -516,7 +512,6 @@ type
     acNewTab: TAction;
     TBXSubmenuBarNew: TSpTBXSubmenuItem;
     TBXItemBarCaseInvert: TSpTBXItem;
-    TBXSeparatorItem10: TSpTbxSeparatorItem;
     Status: TSpTbxStatusBar;
     TBXSubmenuSort: TSpTBXSubmenuItem;
     TBXItemBarSortAsc: TSpTBXItem;
@@ -783,15 +778,8 @@ type
     ecToggleFocusTree: TAction;
     ecToggleFocusClip: TAction;
     TBXSeparatorItem46: TSpTbxSeparatorItem;
-    TBXSubmenuItemCommentOps: TSpTBXSubmenuItem;
-    TBXItemEComm: TSpTbxItem;
-    TBXItemEUncomm: TSpTbxItem;
-    TBXItemEToggleLineComment: TSpTbxItem;
-    ecToggleLineComment: TAction;
     ecToggleFocusOutput: TAction;
     acBackup: TAction;
-    ecToggleStreamComment: TAction;
-    TBXItemEToggleStreamComment: TSpTbxItem;
     TBXSubmenuItemIndentOps: TSpTBXSubmenuItem;
     TBXSubmenuItemLineOps: TSpTBXSubmenuItem;
     TBXItemEMoveDn: TSpTbxItem;
@@ -1077,8 +1065,6 @@ type
     ecCollapseWithNested: TAction;
     ecSpToTabLeading: TAction;
     TBXItemESpToTabLead: TSpTbxItem;
-    ecToggleLineCommentAlt: TAction;
-    TBXItemEToggleLineCommentAlt: TSpTbxItem;
     TBXItemCtxPasteToColumn1: TSpTbxItem;
     ecCommandsList: TAction;
     TBXItemHelpCommandList: TSpTBXItem;
@@ -1370,7 +1356,6 @@ type
     TBXSubmenuSMarks: TSpTBXSubmenuItem;
     TbxItemTabColor: TSpTBXItem;
     TbxItemGroup1p2H: TSpTBXItem;
-    TbxSplit2: TSpTBXSeparatorItem;
     SpTBXSeparatorItem9: TSpTBXSeparatorItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
@@ -1567,10 +1552,8 @@ type
     procedure ecToggleFocusTreeExecute(Sender: TObject);
     procedure ecToggleFocusClipExecute(Sender: TObject);
     procedure TBXItemFReopenClick(Sender: TObject);
-    procedure ecToggleLineCommentExecute(Sender: TObject);
     procedure ecToggleFocusOutputExecute(Sender: TObject);
     procedure acBackupExecute(Sender: TObject);
-    procedure ecToggleStreamCommentExecute(Sender: TObject);
     procedure TBXItemEMoveUpClick(Sender: TObject);
     procedure TBXItemEMoveDnClick(Sender: TObject);
     procedure TBXItemHelpDonateClick(Sender: TObject);
@@ -1772,8 +1755,6 @@ type
     procedure ecNumericConverterExecute(Sender: TObject);
     procedure TBXItemEUnindentClick(Sender: TObject);
     procedure ecIndentLike1stExecute(Sender: TObject);
-    procedure TBXItemEToggleLineCommentClick(Sender: TObject);
-    procedure TBXItemEToggleStreamCommentClick(Sender: TObject);
     procedure TBXItemOOPLogClick(Sender: TObject);
     procedure TBXItemPLogFindClick(Sender: TObject);
     procedure TBXItemPLogClearClick(Sender: TObject);
@@ -1811,8 +1792,6 @@ type
     procedure ecSortAscendingExecute(Sender: TObject);
     procedure ecSortDescendingExecute(Sender: TObject);
     procedure ecSpToTabLeadingExecute(Sender: TObject);
-    procedure ecToggleLineCommentAltExecute(Sender: TObject);
-    procedure TBXItemEToggleLineCommentAltClick(Sender: TObject);
     procedure TBXSubmenuCtxMorePopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TBXItemFoldRangesInSelClick(Sender: TObject);
@@ -1906,8 +1885,6 @@ type
     procedure TBXItemFoldLevel7Click(Sender: TObject);
     procedure TBXItemFoldLevel8Click(Sender: TObject);
     procedure TBXItemFoldLevel9Click(Sender: TObject);
-    procedure TBXItemBarCommClick(Sender: TObject);
-    procedure TBXItemBarUncomClick(Sender: TObject);
     procedure TBXItemTUser1Click(Sender: TObject);
     procedure TBXItemTUser2Click(Sender: TObject);
     procedure TBXItemTUser3Click(Sender: TObject);
@@ -2262,7 +2239,8 @@ type
     procedure DoPlugins_LoadCommands(const fn_plug_ini: string);
     procedure DoPlugins_LoadEvents(const fn_plug_ini: string);
     procedure DoPlugins_InitTabs;
-    procedure DoPlugins_PreinstallPlugin(const AId, fn_inf: string; AIsPanelPlugin: boolean);
+    procedure DoPlugins_PreinstallPlugin(const ARequiredIniKey, AFilenameInf: string;
+      AIsPanelPlugin: boolean; var AReport: string);
     procedure DoPlugins_PreinstallDefaults;
     //-------------------------------------------
     //
@@ -2297,9 +2275,6 @@ type
       AOutAppend: boolean): boolean;
 
     procedure NumConvInsert(Sender: TObject; const S: string; Typ: TSynNumType);
-    procedure DoGetCommentProps(const Lexer: string;
-      UseDefault: boolean;
-      var sStart, sEnd: string; var IsMultiLine: boolean);
     procedure DoSetTabColorValue(NColor: TColor);
     procedure DoSetTabColorIndex(NIndex: Integer);
     procedure DoSetTabColorIndex_Current(NIndex: Integer);
@@ -2402,7 +2377,6 @@ type
     function GetHtmlListFN: string;
     function GetCssListFN: string;
     function GetHtmlTabbingFN: string;
-    function GetLexerComment(const Lexer: string): string;
 
     function CurrentLexer: string;
     function CurrentLexerForFile: string;
@@ -2612,12 +2586,10 @@ type
     procedure ApplyPreviewZoom(NValue: Integer);
     procedure DoCheckAutoShowACP(Ed: TSyntaxMemo);
     procedure DoLinesCommand(Cmd: TSynLineCmd);
-    procedure DoToggleLineComment(Alt: boolean);
     procedure DoCopyFilenameToClipboard(F: TEditorFrame; Cmd: TSynCopyNameCmd);
     function IsCommandAllowedInMacro(Cmd: Integer): boolean;
     procedure DoTreeLevel(NLevel: Integer);
     procedure DoFoldLevel(NLevel: Integer);
-    procedure DoToolbarCommentUncomment(AComment: boolean);
     procedure LoadToolbarProp(Toolbar: TSpTbxToolbar; Ini: TCustomIniFile; const Id: string);
     procedure SaveToolbarProp(Toolbar: TSpTbxToolbar; Ini: TCustomIniFile; const Id: string);
     procedure SavePanelProp(Panel: TSpTbxDockablePanel; Ini: TCustomIniFile; const Id: string);
@@ -3165,12 +3137,6 @@ type
     function SynIconsDir: string;
     function SynSkinFilename(const Name: string): string;
     function SynConverterFilename(const Name: string): string;
-    function SynLexersCfg: string;
-    function SynLexersExCfg: string;
-    function SynLexerFilenameEx(const ALexName, AExt: string): string;
-    function SynLexerFilename_lcf(const ALexName: string): string;
-    function SynLexerFilename_lexmap(const ALexName: string): string;
-    function SynLexerCommentsProperty(const ALexerName, AKey: string): string;
 
     function DoGetSearchPaths: Widestring;
     function DoFindCommand(
@@ -3212,7 +3178,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.26.2400';
+  cSynVer = '6.26.2420';
   cSynPyVer = '1.0.156';
 
 const
@@ -4322,8 +4288,6 @@ begin
 
   ecUndo.Update;
   ecRedo.Update;
-  ecCommentLines.Update;
-  ecUncommentLines.Update;
   ecIndent.Update;
   ecUnindent.Update;
   ecSortAscending.Update;
@@ -4344,9 +4308,6 @@ begin
   ecDedupAdjacent.Enabled:= en_sort;
   TBXSubmenuSort.Enabled:= en_sort;
   TbxSubmenuCase.Enabled:= en_sort;
-
-  TBXItemBarComm.Enabled:= (ed.Lines.Count>0) and not ro and en_lex;
-  TBXItemBarUncom.Enabled:= TBXItemBarComm.Enabled;
 
   ecSyncScrollV.Enabled:= (Groups.PagesVisibleCount=2) and (Groups.Pages2.Tabs.TabCount>0);
   ecSyncScrollH.Enabled:= ecSyncScrollV.Enabled;
@@ -5812,8 +5773,6 @@ begin
     sm_OpenCmdPrompt: DoOpenCmdPrompt;
 
     sm_NumericConverterDialog: ecNumericConverter.Execute;
-    sm_ToggleLineCommentAlt: ecToggleLineCommentAlt.Execute;
-
     sm_GotoSelectionStartEnd: EditorJumpSelectionStartEnd(Ed);
     sm_GotoBookmarkDialog: ecGotoBk.Execute;
     sm_ReplaceFromClipAll: ecReplaceSelFromClipAll.Execute;
@@ -6014,14 +5973,6 @@ begin
           else
             Handled:= false;
       end;
-
-    smCommentLines,
-    smUncommentLines:
-      EditorCommentUncommentLines(Ed, Command = smCommentLines);
-    sm_ToggleLineComment:
-      ecToggleLineComment.Execute;
-    sm_ToggleStreamComment:
-      ecToggleStreamComment.Execute;
 
     //file
     sm_FileNew: acNewTab.Execute;
@@ -7014,11 +6965,9 @@ begin
   SynExe:= true;
   SynDir:= ExtractFilePath(GetModuleName(HInstance));
   SynDirForHelpFiles:= SynDir + 'Readme';
+  SynLexerDir:= SynDataSubdir(cSynDataLexerLib);
   InitSynIniDir;
   InitPythonEngine;
-
-  EditorSynLexersCfg:= SynLexersCfg;
-  EditorSynLexersExCfg:= SynLexersExCfg;
 
   SynMruFiles:= TSynMruList.Create;
   SynMruSessions:= TSynMruList.Create;
@@ -9673,9 +9622,6 @@ begin
   UpdKey(TbxItemECpDirPath, sm_CopyDirPath);
   UpdKey(TbxItemEMoveUp, smMoveLinesUp);
   UpdKey(TbxItemEMoveDn, smMoveLinesDown);
-  UpdKey(TbxItemEToggleStreamComment, sm_ToggleStreamComment);
-  UpdKey(TbxItemEToggleLineComment, sm_ToggleLineComment);
-  UpdKey(TbxItemEToggleLineCommentAlt, sm_ToggleLineCommentAlt);
 
   UpdKey(TBXItemEFillBlock, sm_FillBlockDialog);
   UpdKey(TBXItemOOnTop, sm_ShowOnTop);
@@ -9746,8 +9692,6 @@ begin
   UpdKey(tbxItemEDup, smDuplicateLine);
   UpdKey(tbxItemEDelLn, smDeleteLine);
   UpdKey(tbxItemETable, smSelCharacter);
-  UpdKey(tbxItemEComm, smCommentLines);
-  UpdKey(tbxItemEUncomm, smUncommentLines);
   UpdKey(tbxItemEIndent, smBlockIndent);
   UpdKey(tbxItemEUnindent, smBlockUnindent);
   UpdKey(tbxItemECaseUpper, smUpperCaseBlock);
@@ -12205,8 +12149,6 @@ begin
 
   TBXItemEUndo.Enabled:= not ro;
   TBXItemERedo.Enabled:= not ro;
-  TBXItemEComm.Enabled:= not ro;
-  TBXItemEUncomm.Enabled:= not ro;
   TBXItemEIndent.Enabled:= not ro;
   TBXItemEUnindent.Enabled:= not ro;
   TbxItemEMoveUp.Enabled:= not ro;
@@ -12219,8 +12161,6 @@ begin
 
   TBXItemEFillBlock.Enabled:= en and not ro;
   TBXItemEColumn.Enabled:= en and not ro;
-  TbxItemEToggleLineComment.Enabled:= not ro;
-  TbxItemEToggleStreamComment.Enabled:= not ro;
 end;
 
 procedure TfmMain.plOutResize(Sender: TObject);
@@ -14617,65 +14557,6 @@ begin
   acReread.Execute;
 end;
 
-procedure TfmMain.ecToggleLineCommentExecute(Sender: TObject);
-begin
-  DoToggleLineComment(false);
-end;
-
-procedure TfmMain.DoToggleLineComment(Alt: boolean);
-var
-  An: TSyntAnalyzer;
-  Ed: TSyntaxMemo;
-  sCom: Widestring;
-  nLine1, nLine2, n: Integer;
-  NeedUncomm: boolean;
-begin
-  Ed:= CurrentEditor;
-  An:= EditorCurrentAnalyzerForPos(Ed, Ed.CaretStrPos);
-
-  //get comment chars
-  if An<>nil then
-    sCom:= An.LineComment
-  else
-    sCom:= '';
-  if sCom='' then
-    begin MsgBeep; Exit; end;
-
-  //get NeedUncomm
-  with Ed do
-  begin
-    if SelLength=0 then
-      n:= CaretPos.Y
-    else
-      n:= StrPosToCaretPos(SelStart).Y;
-
-    if (n>=0) and (n<Lines.Count) then
-      NeedUncomm:= SBegin(WideTrim(Lines[n]), sCom)
-    else
-      begin MsgBeep; Exit; end;
-  end;
-
-  //work for: selection is small, 1-line, so better to unselect
-  //(to move caret down after toggling comment)
-  if Ed.SelLength>0 then
-  begin
-    Ed.GetSelectedLines(nLine1, nLine2);
-    if nLine1=nLine2 then
-    begin
-      Ed.CaretStrPos:= Ed.SelStart;
-      Ed.ResetSelection;
-    end;
-  end;
-
-  //toggle comment
-  if NeedUncomm then
-    ecUncommentLines.Execute
-  else
-  if Alt then
-    EditorCommentLinesAlt(Ed, sCom)
-  else
-    ecCommentLines.Execute;
-end;
 
 procedure TfmMain.ecToggleFocusOutputExecute(Sender: TObject);
 begin
@@ -14713,69 +14594,6 @@ begin
       MsgBeep;
 end;
 
-procedure TfmMain.DoGetCommentProps(const Lexer: string;
-  UseDefault: boolean;
-  var sStart, sEnd: string; var IsMultiLine: boolean);
-const
-  DefStart = '(*';
-  DefEnd = '*)';
-var
-  n: Integer;
-  s: string;
-begin
-  sStart:= '';
-  sEnd:= '';
-  IsMultiLine:= false;
-
-  if (Lexer='') and UseDefault then
-    begin sStart:= DefStart; sEnd:= DefEnd; Exit end;
-
-  if UseDefault then
-  begin
-    sStart:= GetLexerComment(Lexer);
-    if sStart<>'' then Exit;
-  end;
-
-  s:= DoReadLexersCfg('Comments', Lexer);
-  if s='' then
-  begin
-    IsMultiLine:= true;
-    s:= DoReadLexersCfg('CommentsForLines', Lexer);
-  end;
-
-  n:= Pos(',', s);
-  if (s='') or (n=0) then
-  begin
-    if UseDefault then
-      begin sStart:= DefStart; sEnd:= DefEnd; end
-    else
-      MsgWarn(WideFormat(DKLangConstW('MNCmt'), [Lexer]), Handle);
-    Exit;
-  end;
-
-  sStart:= Copy(s, 1, n-1);
-  sEnd:= Copy(s, n+1, MaxInt);
-end;
-
-procedure TfmMain.ecToggleStreamCommentExecute(Sender: TObject);
-var
-  Ed: TSyntaxMemo;
-  s1, s2, Lexer: string;
-  MLine: boolean;
-begin
-  Ed:= CurrentEditor;
-  Lexer:= CurrentLexer;
-  if Lexer='' then
-    begin MsgBeep; Exit end;
-
-  if Ed.ReadOnly then Exit;
-  if Ed.SelLength=0 then
-    begin MsgNoSelection; Exit end;
-
-  DoGetCommentProps(Lexer, false, s1, s2, MLine);
-  if s1<>'' then
-    EditorToggleStreamComment(Ed, s1, s2, MLine);
-end;
 
 procedure TfmMain.TBXItemEMoveUpClick(Sender: TObject);
 begin
@@ -17310,15 +17128,6 @@ begin
     Result:= SyntaxManager.CurrentLexer.LexerName;
 end;
 
-function TfmMain.GetLexerComment(const Lexer: string): string;
-var
-  An: TSyntAnalyzer;
-begin
-  Result:= '';
-  An:= SyntaxManager.FindAnalyzer(Lexer);
-  if An<>nil then
-    Result:= An.LineComment;
-end;
 
 function TfmMain.DoSmartTagTabbing: boolean;
 var
@@ -19007,13 +18816,8 @@ begin
 end;
 
 procedure TfmMain.NumConvInsert(Sender: TObject; const S: string; Typ: TSynNumType);
-var
-  SCode: string;
 begin
-  SCode:= S;
-  if Typ=numHex then
-    SCode:= EditorFormatHexCode(CurrentEditor, S);
-  CurrentEditor.InsertText(SCode);
+  CurrentEditor.InsertText(S);
 end;
 
 procedure TfmMain.TBXItemEUnindentClick(Sender: TObject);
@@ -19072,46 +18876,42 @@ begin
   FocusEditor;
 end;
 
-procedure TfmMain.TBXItemEToggleLineCommentClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ToggleLineComment);
-end;
-
-procedure TfmMain.TBXItemEToggleStreamCommentClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ToggleStreamComment);
-end;
-
 procedure TfmMain.DoPlugins_PreinstallDefaults;
 var
-  DirExe: string;
+  SReport: string;
 begin
-  DirExe:= ExtractFileDir(Application.ExeName);
+  SReport:= '';
+
   //Panel plugins
-  DoPlugins_PreinstallPlugin('SynFTP', DirExe+'\Plugins\SynFTP\install.inf', true);
+  DoPlugins_PreinstallPlugin('SynFTP', SynDir+'\Plugins\SynFTP\install.inf', true, SReport);
   //Command plugins
-  DoPlugins_PreinstallPlugin('Color Picker', DirExe+'\Py\syn_color_picker\install.inf', false);
-  DoPlugins_PreinstallPlugin('HTML Tidy\Menu', DirExe+'\Py\syn_html_tidy\install.inf', false);
-  DoPlugins_PreinstallPlugin('Make Plugin', DirExe+'\Py\syn_make_plugin\install.inf', false);
-  DoPlugins_PreinstallPlugin('Insert Time', DirExe+'\Py\syn_insert_time\install.inf', false);
+  DoPlugins_PreinstallPlugin('Color Picker', SynDir+'\Py\syn_color_picker\install.inf', false, SReport);
+  DoPlugins_PreinstallPlugin('HTML Tidy\Menu', SynDir+'\Py\syn_html_tidy\install.inf', false, SReport);
+  DoPlugins_PreinstallPlugin('Make Plugin', SynDir+'\Py\syn_make_plugin\install.inf', false, SReport);
+  DoPlugins_PreinstallPlugin('Insert Time', SynDir+'\Py\syn_insert_time\install.inf', false, SReport);
+  DoPlugins_PreinstallPlugin('Comments\Remove line comment', SynDir+'\Py\syn_comments\install.inf', false, SReport);
+
+  if SReport<>'' then
+    MsgInfo('Preinstalled plugins:'#13+SReport, Handle);
 end;
 
-procedure TfmMain.DoPlugins_PreinstallPlugin(const AId, fn_inf: string; AIsPanelPlugin: boolean);
+procedure TfmMain.DoPlugins_PreinstallPlugin(const ARequiredIniKey, AFilenameInf: string;
+  AIsPanelPlugin: boolean; var AReport: string);
 var
   s_section, s_title: string;
   n_type: TSynAddonType;
 begin
-  if not FileExists(fn_inf) then Exit;
+  if not FileExists(AFilenameInf) then Exit;
   if AIsPanelPlugin then s_section:= 'Panels' else s_section:= 'Commands';
 
   with TIniFile.Create(SynPluginsIni) do
   try
-    if ReadString(s_section, AId, '')<>'' then Exit
+    if ReadString(s_section, ARequiredIniKey, '')<>'' then Exit
   finally
     Free
   end;
 
-  with TIniFile.Create(fn_inf) do
+  with TIniFile.Create(AFilenameInf) do
   try
     s_title:= ReadString('info', 'title', '');
     n_type:= StringToAddonType(ReadString('info', 'type', ''));
@@ -19120,9 +18920,10 @@ begin
   end;
 
   if n_type=cAddonTypeNone then Exit;
-  MsgInfo('Preinstalling plugin: '+s_title, Handle);
-  DoOpenArchive_HandleIniSections(fn_inf,
-    ExtractFileName(ExtractFileDir(fn_inf)),
+  AReport:= AReport+s_title+#13;
+
+  DoOpenArchive_HandleIniSections(AFilenameInf,
+    ExtractFileName(ExtractFileDir(AFilenameInf)),
     n_type);
 end;
 
@@ -21573,16 +21374,6 @@ begin
   DoLinesCommand(cLineCmdSpacesToTabsLead);
 end;
 
-procedure TfmMain.TBXItemEToggleLineCommentAltClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ToggleLineCommentAlt);
-end;
-
-procedure TfmMain.ecToggleLineCommentAltExecute(Sender: TObject);
-begin
-  DoToggleLineComment(true);
-end;
-
 procedure TfmMain.TBXSubmenuCtxMorePopup(Sender: TTBCustomItem;
   FromLink: Boolean);
 var
@@ -22364,48 +22155,6 @@ begin
   CurrentEditor.ExecCommand(sm_FoldLevel9);
 end;
 
-procedure TfmMain.TBXItemBarCommClick(Sender: TObject);
-begin
-  DoToolbarCommentUncomment(true);
-end;
-
-procedure TfmMain.TBXItemBarUncomClick(Sender: TObject);
-begin
-  DoToolbarCommentUncomment(false);
-end;
-
-procedure TfmMain.DoToolbarCommentUncomment(AComment: boolean);
-var
-  Lex: string;
-  Cmd: Integer;
-begin
-  //this code is to call "Toggle stream comment" for HTML and CSS.
-  //on other lexs it should call default commands "Comment lines"/"Uncomment lines"
-  Lex:= CurrentLexer;
-  if IsLexerHTML(Lex) or IsLexerCSS(Lex) then
-    CurrentEditor.ExecCommand(sm_ToggleStreamComment)
-  else
-  begin
-    Cmd:= IfThen(AComment, smCommentLines, smUncommentLines);
-    if ecCommentLines.Enabled then
-      CurrentEditor.ExecCommand(Cmd)
-    else
-      MsgBeep;
-  end;
-end;
-
-{
-function TfmMain.DockTypeToName(Typ: TSynDock): string;
-begin
-  case Typ of
-    sdockTop: Result:= TbxDockTop.Name;
-    sdockLeft: Result:= TbxDockLeft.Name;
-    sdockRight: Result:= TbxDockRight.Name;
-    sdockBottom: Result:= TbxDockBottom.Name;
-    else raise Exception.Create('Unknown dock type');
-  end;
-end;
-}
 
 procedure TfmMain.LoadToolbarProp(
   Toolbar: TSpTbxToolbar;
@@ -22762,11 +22511,6 @@ begin
       if SCmd='m:{blank}' then
       begin
         Item.LinkSubitems:= TBXSubmenuItemBlankOps;
-      end
-      else
-      if SCmd='m:{cmt}' then
-      begin
-        Item.LinkSubitems:= TBXSubmenuItemCommentOps;
       end
       else
       if SCmd='m:{carets}' then
@@ -27335,48 +27079,6 @@ end;
 procedure TfmMain.TbxItemGroup1p2HClick(Sender: TObject);
 begin
   Groups.Mode:= gm1plus2Horz;
-end;
-
-
-function TfmMain.SynLexerFilenameEx(const ALexName, AExt: string): string;
-begin
-  Result:= ALexName;
-  Result:= StringReplace(Result, ':', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, '/', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, '\', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, '*', '_', [rfReplaceAll]);
-
-  Result:= SynDataSubdir(cSynDataLexerLib) + '\' + Result + AExt;
-end;
-
-function TfmMain.SynLexerFilename_lexmap(const ALexName: string): string;
-begin
-  Result:= SynLexerFilenameEx(ALexName, '.cuda-lexmap');
-end;
-
-function TfmMain.SynLexerFilename_lcf(const ALexName: string): string;
-begin
-  Result:= SynLexerFilenameEx(ALexName, '.lcf');
-end;
-
-function TfmMain.SynLexerCommentsProperty(const ALexerName, AKey: string): string;
-begin
-  with TIniFile.Create(SynLexerFilename_lexmap(ALexerName)) do
-  try
-    Result:= Trim(ReadString('comments', AKey, ''));
-  finally
-    Free
-  end;
-end;
-
-function TfmMain.SynLexersCfg: string;
-begin
-  Result:= SynIniDir + 'Lexers.cfg';
-end;
-
-function TfmMain.SynLexersExCfg: string;
-begin
-  Result:= SynIniDir + 'LexersEx.cfg';
 end;
 
 

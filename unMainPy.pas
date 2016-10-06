@@ -270,7 +270,7 @@ begin
                 Str:= 'styles_cmt'
               else
                 Str:= 'styles_str';
-              Str:= fmMain.SynLexerCommentsProperty(An.LexerName, Str);
+              Str:= LexerCommentsProperty(An.LexerName, Str);
 
               List:= TTntStringList.Create;
               try
@@ -314,8 +314,10 @@ begin
                 Str1:= 'full1';
                 Str2:= 'full2';
               end;
-              Str1:= fmMain.SynLexerCommentsProperty(An.LexerName, Str1);
-              Str2:= fmMain.SynLexerCommentsProperty(An.LexerName, Str2);
+
+              Str1:= LexerCommentsProperty(An.LexerName, Str1);
+              Str2:= LexerCommentsProperty(An.LexerName, Str2);
+
               if (Str1<>'') and (Str2<>'') then
                 Result:= Py_BuildValue('(ss)', PChar(string(Str1)), PChar(string(Str2)))
               else

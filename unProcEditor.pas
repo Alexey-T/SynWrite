@@ -16,6 +16,10 @@ uses
   ecStrUtils,
   ecPrint;
 
+var
+  SynLexerDir: string = '?';
+function LexerCommentsProperty(const ALexerName, AKey: string): string;
+  
 procedure LexerEnumSublexers(An: TSyntAnalyzer; List: TTntStringList);
 procedure LexerEnumStyles(An: TSyntAnalyzer; List: TTntStringList);
 procedure LexerSetSublexers(SyntaxManager: TSyntaxManager; An: TSyntAnalyzer; const Links: string);
@@ -62,13 +66,12 @@ procedure EditorUnderlineColorItem(Ed: TSyntaxMemo;
 const
   cRegexColorRgb = '\bRGBA?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\,?\s*(\d*\.?\d+)?\s*\)';
 
-function EditorFormatHexCode(Ed: TSyntaxMemo; const SHexCode: string): string;
 procedure EditorInsertColorCode(Ed: TSyntaxMemo; Code: Integer);
 procedure EditorGetColorCodeRange(Ed: TSyntaxMemo; var NStart, NEnd: integer; var NColor: integer);
-function DoReadLexersCfg(const ASection, AId: string): string;
 
 function EditorGetTokenName(Ed: TSyntaxMemo; StartPos, EndPos: integer): string;
-procedure EditorGetTokenType(Ed: TSyntaxMemo; StartPos, EndPos: Integer; var IsCmt, IsStr: boolean);
+procedure EditorGetTokenType(Ed: TSyntaxMemo; StartPos, EndPos: Integer;
+  var IsCmt, IsStr: boolean);
 
 procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer; const SHint: string);
 procedure EditorClearBookmarks(Ed: TSyntaxMemo);
@@ -120,7 +123,6 @@ procedure EditorDeleteToFileBegin(Ed: TSyntaxMemo);
 procedure EditorDeleteToFileEnd(Ed: TSyntaxMemo);
 procedure EditorJoinLines(Ed: TSyntaxMemo);
 procedure EditorMoveCaretByNChars(Ed: TSyntaxMemo; DX, DY: Integer);
-procedure EditorCommentUncommentLines(Ed: TSyntaxMemo; AComment: boolean);
 function EditorToggleSyncEditing(Ed: TSyntaxMemo): boolean;
 procedure EditorKeepCaretOnScreen(Ed: TSyntaxMemo);
 procedure EditorDoHomeKey(Ed: TSyntaxMemo);
@@ -137,7 +139,6 @@ procedure EditorSplitLinesByPosition(Ed: TSyntaxMemo; nCol: Integer);
 procedure EditorScrollToSelection(Ed: TSyntaxMemo; NSearchOffsetY: Integer);
 function EditorDeleteSelectedLines(Ed: TSyntaxMemo): Integer;
 function EditorEOL(Ed: TCustomSyntaxMemo): Widestring;
-procedure EditorToggleStreamComment(Ed: TSyntaxMemo; s1, s2: string; SepLines: boolean);
 procedure EditorFillBlockRect(Ed: TSyntaxMemo; SData: Widestring; bKeep: boolean);
 
 function EditorCurrentAnalyzerForPos(Ed: TSyntaxMemo; NPos: integer): TSyntAnalyzer;
@@ -199,7 +200,6 @@ function EditorWordLength(Ed: TSyntaxMemo): Integer;
 function EditorGetSelTextLimited(Ed: TSyntaxMemo; MaxLen: Integer): Widestring;
 function EditorGetCollapsedRanges(Ed: TSyntaxMemo): string;
 procedure EditorSetCollapsedRanges(Ed: TSyntaxMemo; S: Widestring);
-procedure EditorCommentLinesAlt(Ed: TSyntaxMemo; const sComment: Widestring);
 
 procedure EditorCollapseWithNested(Ed: TSyntaxMemo; Line: Integer);
 procedure EditorCollapseParentRange(Ed: TSyntaxMemo; APos: Integer);
@@ -207,10 +207,6 @@ procedure EditorUncollapseLine(Ed: TCustomSyntaxMemo; Line: Integer);
 function IsEditorLineCollapsed(Ed: TCustomSyntaxMemo; Line: Integer): boolean;
 
 procedure EditorCenterPos(Ed: TCustomSyntaxMemo; AGotoMode: boolean; NOffsetY: Integer);
-
-var
-  EditorSynLexersCfg: string = '';
-  EditorSynLexersExCfg: string = '';
 
 type
   TSynTextCase = (
@@ -245,8 +241,37 @@ uses
   ecExports;
 
 var
-  FListCommentStyles: TStringList = nil; //holds "Comments" style list
-  FListStringStyles: TStringList = nil; //holds "Strings" style list
+  _TokenLexer: string = '';
+  _TokenStylesStrings: string = '';
+  _TokenStylesComments: string = '';
+
+
+function LexerFilenameEx(const ALexerName, AExt: string): string;
+begin
+  Result:= ALexerName;
+  Result:= StringReplace(Result, ':', '_', [rfReplaceAll]);
+  Result:= StringReplace(Result, '/', '_', [rfReplaceAll]);
+  Result:= StringReplace(Result, '\', '_', [rfReplaceAll]);
+  Result:= StringReplace(Result, '*', '_', [rfReplaceAll]);
+
+  Result:= SynLexerDir+'\'+Result+AExt;
+end;
+
+function LexerFilenameMap(const ALexName: string): string;
+begin
+  Result:= LexerFilenameEx(ALexName, '.cuda-lexmap');
+end;
+
+function LexerCommentsProperty(const ALexerName, AKey: string): string;
+begin
+  with TIniFile.Create(LexerFilenameMap(ALexerName)) do
+  try
+    Result:= Trim(ReadString('comments', AKey, ''));
+  finally
+    Free
+  end;
+end;
+
 
 procedure EditorSearchMarksToList(Ed: TSyntaxmemo; List: TTntStrings);
 var
@@ -447,41 +472,7 @@ begin
   if (StartPos>=t.StartPos) and (EndPos<=t.EndPos) then
     Result:= t.Style.DisplayName;
 end;
-
-procedure EditorCommentLinesAlt(Ed: TSyntaxMemo; const sComment: Widestring);
-var
-  S: ecString;
-  i, FirstLine, LastLine: integer;
-  CaretOld: TPoint;
-  NeedDown: boolean;
-begin
-  if sComment='' then Exit;
-
-  Ed.GetSelectedLines(FirstLine, LastLine);
-  CaretOld:= Ed.CaretPos;
-  NeedDown:= not Ed.HaveSelection;
-  if NeedDown then
-    Inc(CaretOld.Y);
-
-  Ed.BeginUpdate;
-  Ed.ResetSelection;
-  try
-    for i:= LastLine downto FirstLine do
-     begin
-       if i<Ed.Lines.Count then
-         S:= Ed.Lines[i]
-       else
-         S:= '';
-
-       Ed.CaretPos := Point(SSpacesAtStart(S), i);
-       Ed.InsertText(sComment);
-     end;
-    Ed.CaretPos := CaretOld;
-  finally
-    Ed.EndUpdate;
-  end;
-end;
-
+ 
 procedure EditorCollapseWithNested(Ed: TSyntaxMemo; Line: Integer);
 var
   i: Integer;
@@ -1257,70 +1248,6 @@ begin
   end;
 end;
 
-//s1 - comment start mark
-//s2 - comment end mark
-//SepLines - need to place comment marks on separate lines
-procedure EditorToggleStreamComment(Ed: TSyntaxMemo; s1, s2: string; SepLines: boolean);
-var
-  n, nLen: Integer;
-  Uncomm: boolean;
-  Eol: string;
-begin
-  with Ed do
-  begin
-    n:= SelStart;
-    nLen:= SelLength;
-    SetSelection(n, 0);
-
-    if SepLines then
-      Uncomm:= false
-    else
-      Uncomm:= (Copy(Lines.FText, n+1, Length(s1)) = s1) and
-             (Copy(Lines.FText, n+nLen-Length(s2)+1, Length(s2)) = s2);
-             
-    if not Uncomm then
-    begin
-      //do comment
-      if SepLines then
-      begin
-        Eol:= EditorEOL(Ed);
-        if (n-Length(Eol)>=0) and
-          (Copy(Lines.FText, n-Length(Eol)+1, Length(Eol)) = Eol) then
-          s1:= s1+Eol
-        else
-          s1:= Eol+s1+Eol;
-        if Copy(Lines.FText, n+nLen-Length(Eol)+1, Length(Eol)) = Eol then
-          s2:= s2+Eol
-        else
-          s2:= Eol+s2+Eol;
-      end;
-        
-      BeginUpdate;
-      try
-        CaretStrPos:= n;
-        InsertText(s1);
-        CaretStrPos:= n+nLen+Length(s1);
-        InsertText(s2);
-      finally
-        EndUpdate;
-      end;
-    end
-    else
-    begin
-      //do uncomment
-      BeginUpdate;
-      try
-        CaretStrPos:= n+nLen-Length(s2);
-        DeleteText(Length(s2));
-        CaretStrPos:= n;
-        DeleteText(Length(s1));
-      finally
-        EndUpdate;
-      end;
-    end;
-  end;
-end;
-
 
 function EditorDeleteSelectedLines(Ed: TSyntaxMemo): Integer;
 var
@@ -1684,20 +1611,6 @@ begin
     end;
 end;
 
-
-//do like Delphi: move caret down after
-procedure EditorCommentUncommentLines(Ed: TSyntaxMemo; AComment: boolean);
-var
-  sel: boolean;
-begin
-  with Ed do
-  begin
-    sel:= HaveSelection;
-    LineComments(AComment);
-    if not sel then
-      ExecCommand(smDown);
-  end;
-end;
 
 procedure EditorMoveCaretByNChars(Ed: TSyntaxMemo; DX, DY: Integer);
 begin
@@ -2491,53 +2404,6 @@ begin
     (P.X >= 0) and (P.X < Ed.Gutter.Bands[0].Width);
 end;
 
-procedure InitStyleLists;
-var
-  AListCmt, AListStr: TStringList;
-begin
-  if FListCommentStyles=nil then
-  begin
-    FListCommentStyles:= TStringList.Create;
-    FListStringStyles:= TStringList.Create;
-
-    with TIniFile.Create(EditorSynLexersCfg) do
-    try
-      ReadSectionValues('CommentStyles', FListCommentStyles);
-      ReadSectionValues('StringStyles', FListStringStyles);
-    finally
-      Free
-    end;
-
-    AListCmt:= TStringList.Create;
-    AListStr:= TStringList.Create;
-    try
-      with TIniFile.Create(EditorSynLexersExCfg) do
-      try
-        ReadSectionValues('CommentStyles', AListCmt);
-        ReadSectionValues('StringStyles', AListStr);
-        FListCommentStyles.AddStrings(AListCmt);
-        FListStringStyles.AddStrings(AListStr);
-      finally
-        Free
-      end;
-    finally
-      FreeAndNil(AListStr);
-      FreeAndNil(AListCmt);
-    end;
-  end;
-end;
-
-
-function IsStyleListed(const Style, Lexer: string; List: TStringList): boolean;
-var
-  Val: string;
-begin
-  Result:= false;
-  if (Style='') or (Lexer='') then Exit;
-  Val:= List.Values[Lexer];
-  if Val<>'' then
-    Result:= IsStringListed(Style, Val);
-end;
 
 procedure EditorGetTokenType(Ed: TSyntaxMemo;
   StartPos, EndPos: Integer;
@@ -2545,25 +2411,29 @@ procedure EditorGetTokenType(Ed: TSyntaxMemo;
 var
   Lexer, Style: string;
 begin
+  IsCmt:= false;
+  IsStr:= false;
   Lexer:= EditorCurrentLexerForPos(Ed, StartPos);
   if Lexer='' then Exit;
   Style:= EditorGetTokenName(Ed, StartPos, EndPos);
 
-  InitStyleLists;
+  if _TokenLexer<>Lexer then
+  begin
+    _TokenLexer:= Lexer;
+    _TokenStylesStrings:= LexerCommentsProperty(Lexer, 'styles_str');
+    _TokenStylesComments:= LexerCommentsProperty(Lexer, 'styles_cmt');
+  end;
 
-  //we treat empty Style as string, but only for those lexers, which aren't
-  //listed in [CommentStyles], [StringStyles]
+  IsCmt:= IsStringListed(Style, _TokenStylesComments);
+  IsStr:= IsStringListed(Style, _TokenStylesStrings);
+
+  //treat empty style as "string", but only for lexers, which aren't described
   if (Style='') and
-    (FListCommentStyles.IndexOfName(Lexer)<0) and
-    (FListStringStyles.IndexOfName(Lexer)<0) then
+    (_TokenStylesComments='') and
+    (_TokenStylesStrings='') then
   begin
     IsCmt:= false;
     IsStr:= true;
-  end
-  else
-  begin
-    IsCmt:= IsStyleListed(Style, Lexer, FListCommentStyles);
-    IsStr:= IsStyleListed(Style, Lexer, FListStringStyles);
   end;
 end;
 
@@ -2605,46 +2475,13 @@ begin
 end;
 
 
-function DoReadLexersCfg(const ASection, AId: string): string;
-begin
-  with TIniFile.Create(EditorSynLexersCfg) do
-  try
-    Result:= ReadString(ASection, AId, '');
-  finally
-    Free
-  end;
-
-  if Result='' then
-    with TIniFile.Create(EditorSynLexersExCfg) do
-    try
-      Result:= ReadString(ASection, AId, '');
-    finally
-      Free
-    end;
-end;
-
-
 procedure EditorInsertColorCode(Ed: TSyntaxMemo; Code: Integer);
 var
   wStart, wEnd, NColor: Integer;
-  SLexer, SCode, SFormat: string;
+  SCode: string;
 begin
   //get color for HTML
   SCode:= SColorToHtmlCode(Code);
-
-  //get color formatted for current lexer
-  SLexer:= EditorCurrentLexerForPos(Ed, Ed.CaretStrPos);
-  if SLexer<>'' then
-    SFormat:= DoReadLexersCfg('ColorValues', SLexer)
-  else
-    SFormat:= '';
-  if SFormat<>'' then
-  begin
-    SReplace(SFormat, 'rr', IntToHex(GetRValue(Code), 2));
-    SReplace(SFormat, 'gg', IntToHex(GetGValue(Code), 2));
-    SReplace(SFormat, 'bb', IntToHex(GetBValue(Code), 2));
-    SCode:= SFormat;
-  end;
 
   with Ed do
     if not ReadOnly then
@@ -2664,25 +2501,6 @@ begin
     end;
 end;
 
-
-function EditorFormatHexCode(Ed: TSyntaxMemo; const SHexCode: string): string;
-var
-  SLexer, SFormat: string;
-begin
-  Result:= SHexCode;
-  SLexer:= EditorCurrentLexerForPos(Ed, Ed.CaretStrPos);
-  if SLexer<>'' then
-    SFormat:= DoReadLexersCfg('HexValues', SLexer)
-  else
-    SFormat:= '';
-  if SFormat<>'' then
-  begin
-    SReplace(SFormat, '{v}', SHexCode);
-    if (SFormat<>'') and (SFormat[1] in ['a'..'f', 'A'..'F']) then
-      SFormat:= '0'+SFormat;
-    Result:= SFormat;
-  end
-end;
 
 const
   PROP_COLOR_TEXT                  = 'text';
@@ -3268,13 +3086,5 @@ begin
   until false;
 end;
 
-
-initialization
-
-finalization
-  if Assigned(FListCommentStyles) then
-    FreeAndNil(FListCommentStyles);
-  if Assigned(FListStringStyles) then
-    FreeAndNil(FListStringStyles);
 
 end.

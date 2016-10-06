@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.26.2400
+AppVersion=6.26.2420
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -23,21 +23,18 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
-;;Name: "portable"; Description: "Make folder portable"; Flags: unchecked
 
 [Files]
-;;Source: "Portable.ini"; DestDir: "{app}"; Tasks: "portable"
 Source: "..\Syn.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\SynHelper.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Settings\Enc.cfg"; DestDir: "{app}\Settings"; Flags: ignoreversion
-Source: "..\Settings\Lexers.cfg"; DestDir: "{app}\Settings"; Flags: ignoreversion
 Source: "..\Lang\*"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Readme\*"; DestDir: "{app}\Readme"; Flags: ignoreversion
 
-Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: ignoreversion
 Source: "..\Py\sw*.py"; DestDir: "{app}\Py"; Flags: ignoreversion
 Source: "..\python*.zip"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\DLLs\*"; DestDir: "{app}\DLLs"; Flags: ignoreversion
 Source: "..\*.manifest"; DestDir: "{app}"; Flags: ignoreversion
 
 Source: "..\Data\lexlib\*";       DestDir: "{app}\Data\lexlib";
@@ -76,6 +73,7 @@ Source: "..\Py\syn_color_picker\*"; DestDir: "{app}\Py\syn_color_picker"; Exclud
 Source: "..\Py\syn_html_tidy\*"; DestDir: "{app}\Py\syn_html_tidy"; Excludes: "*.pyc"; Flags: recursesubdirs;
 Source: "..\Py\syn_make_plugin\*"; DestDir: "{app}\Py\syn_make_plugin"; Excludes: "*.pyc"; Flags: recursesubdirs;
 Source: "..\Py\syn_insert_time\*"; DestDir: "{app}\Py\syn_insert_time"; Excludes: "*.pyc"; Flags: recursesubdirs;
+Source: "..\Py\syn_comments\*"; DestDir: "{app}\Py\syn_comments"; Excludes: "*.pyc"; Flags: recursesubdirs;
 
 [Icons]
 Name: "{group}\SynWrite"; Filename: "{app}\Syn.exe"
