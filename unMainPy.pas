@@ -124,7 +124,7 @@ const
   PROP_TAB_COLOR           = 43;
   PROP_TAB_ID              = 44;
 
-  
+
 function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
@@ -159,22 +159,26 @@ end;
 
 function Py_lexer_proc(Self, Args : PPyObject): PPyObject; cdecl;
 const
-  LEXER_GET_LIST    = 0;
-  LEXER_GET_ENABLED = 1;
-  LEXER_GET_EXT     = 2;
-  LEXER_GET_MOD     = 3;
-  LEXER_GET_LINKS   = 4;
-  LEXER_GET_STYLES  = 5;
-  LEXER_GET_COMMENT = 6;
-  LEXER_SET_NAME    = 10;
-  LEXER_SET_ENABLED = 11;
-  LEXER_SET_EXT     = 12;
-  LEXER_SET_LINKS   = 13;
-  LEXER_DELETE      = 21;
-  LEXER_IMPORT      = 22;
-  LEXER_EXPORT      = 23;
-  LEXER_CONFIG      = 24;
-  LEXER_ACTIVATE    = 26;
+  LEXER_GET_LIST            = 0;
+  LEXER_GET_ENABLED         = 1;
+  LEXER_GET_EXT             = 2;
+  LEXER_GET_MOD             = 3;
+  LEXER_GET_LINKS           = 4;
+  LEXER_GET_STYLES          = 5;
+  LEXER_GET_COMMENT         = 6;
+  LEXER_GET_COMMENT_STREAM  = 7;
+  LEXER_GET_COMMENT_LINED   = 8;
+  LEXER_SET_NAME            = 10;
+  LEXER_SET_ENABLED         = 11;
+  LEXER_SET_EXT             = 12;
+  LEXER_SET_LINKS           = 13;
+  LEXER_GET_STYLES_COMMENTS = 16;
+  LEXER_GET_STYLES_STRINGS  = 17;
+  LEXER_DELETE              = 21;
+  LEXER_IMPORT              = 22;
+  LEXER_EXPORT              = 23;
+  LEXER_CONFIG              = 24;
+  LEXER_ACTIVATE            = 26;
 var
   Id: Integer;
   Ptr: PAnsiChar;
@@ -256,11 +260,62 @@ begin
               Result:= ReturnNone;
           end;
 
+        LEXER_GET_STYLES_COMMENTS,
+        LEXER_GET_STYLES_STRINGS:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+            begin
+              if Id=LEXER_GET_STYLES_COMMENTS then
+                Str:= 'styles_cmt'
+              else
+                Str:= 'styles_str';
+
+              List:= TTntStringList.Create;
+              try
+                List.Text:= fmMain.SynLexerCommentsProperty(An.LexerName, Str);
+                Result:= Py_StringList(List);
+              finally
+                FreeAndNil(List);
+              end;
+            end
+            else
+              Result:= ReturnNone;
+          end;
+
+
         LEXER_GET_COMMENT:
           begin
             An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
               Result:= PyString_FromString(PChar(string(An.LineComment)))
+            else
+              Result:= ReturnNone;
+          end;
+
+        LEXER_GET_COMMENT_STREAM,
+        LEXER_GET_COMMENT_LINED:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            if Assigned(An) then
+            begin
+              if Id=LEXER_GET_COMMENT_STREAM then
+              begin
+                Str1:= 'str1';
+                Str2:= 'str2'
+              end
+              else
+              begin
+                Str1:= 'full1';
+                Str2:= 'full2';
+              end;
+              Str1:= fmMain.SynLexerCommentsProperty(An.LexerName, Str1);
+              Str2:= fmMain.SynLexerCommentsProperty(An.LexerName, Str2);
+              if (Str1<>'') and (Str2<>'') then
+                Result:= Py_BuildValue('(ss)', PChar(string(Str1)), PChar(string(Str2)))
+              else
+                Result:= ReturnNone;
+            end
             else
               Result:= ReturnNone;
           end;

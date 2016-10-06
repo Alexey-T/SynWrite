@@ -3167,6 +3167,10 @@ type
     function SynConverterFilename(const Name: string): string;
     function SynLexersCfg: string;
     function SynLexersExCfg: string;
+    function SynLexerFilenameEx(const ALexName, AExt: string): string;
+    function SynLexerFilename_lcf(const ALexName: string): string;
+    function SynLexerFilename_lexmap(const ALexName: string): string;
+    function SynLexerCommentsProperty(const ALexerName, AKey: string): string;
 
     function DoGetSearchPaths: Widestring;
     function DoFindCommand(
@@ -3208,8 +3212,8 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.25.2380';
-  cSynPyVer = '1.0.155';
+  cSynVer = '6.26.2400';
+  cSynPyVer = '1.0.156';
 
 const
   cSynParamRO = '/ro';
@@ -5142,16 +5146,6 @@ end;
 function TfmMain.SynConverterFilename(const Name: string): string;
 begin
   Result:= SynDataSubdir(cSynDataConv) + '\' + Name + '.txt';
-end;
-
-function TfmMain.SynLexersCfg: string;
-begin
-  Result:= SynIniDir + 'Lexers.cfg';
-end;
-
-function TfmMain.SynLexersExCfg: string;
-begin
-  Result:= SynIniDir + 'LexersEx.cfg';
 end;
 
 function TfmMain.LoadFrameState(Frame: TEditorFrame; const fn: WideString): boolean;
@@ -27341,6 +27335,48 @@ end;
 procedure TfmMain.TbxItemGroup1p2HClick(Sender: TObject);
 begin
   Groups.Mode:= gm1plus2Horz;
+end;
+
+
+function TfmMain.SynLexerFilenameEx(const ALexName, AExt: string): string;
+begin
+  Result:= ALexName;
+  Result:= StringReplace(Result, ':', '_', [rfReplaceAll]);
+  Result:= StringReplace(Result, '/', '_', [rfReplaceAll]);
+  Result:= StringReplace(Result, '\', '_', [rfReplaceAll]);
+  Result:= StringReplace(Result, '*', '_', [rfReplaceAll]);
+
+  Result:= SynDataSubdir(cSynDataLexerLib) + '\' + Result + AExt;
+end;
+
+function TfmMain.SynLexerFilename_lexmap(const ALexName: string): string;
+begin
+  Result:= SynLexerFilenameEx(ALexName, '.cuda-lexmap');
+end;
+
+function TfmMain.SynLexerFilename_lcf(const ALexName: string): string;
+begin
+  Result:= SynLexerFilenameEx(ALexName, '.lcf');
+end;
+
+function TfmMain.SynLexerCommentsProperty(const ALexerName, AKey: string): string;
+begin
+  with TIniFile.Create(SynLexerFilename_lexmap(ALexerName)) do
+  try
+    Result:= Trim(ReadString('comments', AKey, ''));
+  finally
+    Free
+  end;
+end;
+
+function TfmMain.SynLexersCfg: string;
+begin
+  Result:= SynIniDir + 'Lexers.cfg';
+end;
+
+function TfmMain.SynLexersExCfg: string;
+begin
+  Result:= SynIniDir + 'LexersEx.cfg';
 end;
 
 

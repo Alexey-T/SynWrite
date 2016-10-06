@@ -1,9 +1,16 @@
 Changes in Python API
 =====================
 
+oct 2016
+
+* release 1.0.156
+* add: lexer_proc: LEXER_GET_COMMENT_STREAM, LEXER_GET_COMMENT_LINED
+* add: lexer_proc: LEXER_GET_STYLES_COMMENTS, LEXER_GET_STYLES_STRINGS
+* deprecated id of lexer_proc: LEXER_ACTIVATE
+* deprecated id of get_app_prop, soon will be deleted: PROP_GROUP_INDEX, PROP_GROUPS, PROP_EDITOR_BY_INDEX 
+
 sep 2016
 
-* deprecated actions of get_app_prop(), soon will be deleted: PROP_GROUP_INDEX, PROP_GROUPS, PROP_EDITOR_BY_INDEX 
 * release 1.0.155
 * del: id FILENAME_LEXLIB
 * del: id LEXER_SAVE_LIB, LEXER_CONFIG_ALT
