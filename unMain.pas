@@ -26752,26 +26752,28 @@ procedure TfmMain.DoAddKeymappingCommand(const ACommand: Integer;
   ACategory, ACaption, AHotkey: Widestring);
 var
   S, SItem: Widestring;
+  NKey1, NKey2, NKey: Cardinal;
 begin
-  //filter out menu-separators
+  //ignore menu-separators
   if Pos('\-', ACaption)>0 then exit;
-
-  //make nicer str for "Sort\Sort asc"
+  //make nicer caption
   SReplaceAllW(ACaption, '\', ': ');
 
-  SyntKeyMapping.Add(ACommand, ACategory, '', ACaption);
-  
-  with SyntKeyMapping do
-    with Items[Items.Count-1] do
-    begin
-      S:= AHotkey;
-      with KeyStrokes.Add.KeyDefs do
-      repeat
-        SItem:= SGetItem(S, '|');
-        if SItem='' then Break;
-        Add.ShortCut:= TextToShortCut(SItem);
-      until false;  
-    end;  
+  //calc hotkeys
+  NKey1:= 0;
+  NKey2:= 0;
+  S:= AHotkey;
+  SItem:= SGetItem(S, '|');
+  if SItem<>'' then
+    NKey1:= TextToShortCut(SItem);
+  SItem:= SGetItem(S, '|');
+  if SItem<>'' then
+    NKey2:= TextToShortCut(SItem);
+
+  //hotkey: EControl needs 2 words packed into dword
+  NKey:= NKey1 + (NKey2 shl 16);
+
+  SyntKeyMapping.Add(ACommand, ACategory, '', ACaption, NKey);
 end;
 
 function TfmMain.DoConfirmMaybeBinaryFile(const fn: Widestring): boolean;

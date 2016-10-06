@@ -2938,7 +2938,6 @@ object fmMain: TfmMain
       Caption = 'Copy'
       Hint = 'Copy selection to clipboard'
       ImageIndex = 7
-      ShortCut = 16451
     end
     object ecCut: TecCut
       Tag = 302
@@ -2946,7 +2945,6 @@ object fmMain: TfmMain
       Caption = 'Cut'
       Hint = 'Cut selection to clipboard'
       ImageIndex = 8
-      ShortCut = 16472
     end
     object ecPaste: TecPaste
       Tag = 303
@@ -2954,7 +2952,6 @@ object fmMain: TfmMain
       Caption = 'Paste'
       Hint = 'Paste clipboard'
       ImageIndex = 9
-      ShortCut = 16470
     end
     object ecClear: TecClear
       Tag = 307
@@ -2962,7 +2959,6 @@ object fmMain: TfmMain
       Caption = 'Delete'
       Hint = 'Clear current selection'
       ImageIndex = 10
-      ShortCut = 16430
     end
     object ecSelectAll: TecSelectAll
       Tag = 306
@@ -2970,7 +2966,6 @@ object fmMain: TfmMain
       Caption = 'Select all'
       Hint = 'Select all text'
       ImageIndex = 11
-      ShortCut = 16449
     end
     object ecUndo: TecUndo
       Tag = 304
@@ -2978,7 +2973,6 @@ object fmMain: TfmMain
       Caption = 'Undo'
       Hint = 'Undo last action'
       ImageIndex = 12
-      ShortCut = 16474
     end
     object ecRedo: TecRedo
       Tag = 305
@@ -2986,7 +2980,6 @@ object fmMain: TfmMain
       Caption = 'Redo'
       Hint = 'Redo last undone action'
       ImageIndex = 13
-      ShortCut = 24666
     end
     object ecIndent: TecIndent
       Tag = 350
@@ -2994,7 +2987,6 @@ object fmMain: TfmMain
       Caption = 'Indent'
       Hint = 'Indent selection'
       ImageIndex = 14
-      ShortCut = 16393
     end
     object ecUnindent: TecUnindent
       Tag = 351
@@ -3002,21 +2994,18 @@ object fmMain: TfmMain
       Caption = 'Unindent'
       Hint = 'Unindent selection'
       ImageIndex = 15
-      ShortCut = 8201
     end
     object ecLowerCase: TecLowerCase
       Tag = 366
       Category = 'Edit'
       Caption = 'Lower case'
       ImageIndex = 19
-      ShortCut = 16459
     end
     object ecUpperCase: TecUpperCase
       Tag = 365
       Category = 'Edit'
       Caption = 'Upper case'
       ImageIndex = 20
-      ShortCut = 16459
     end
     object ecTitleCase: TAction
       Tag = 368
@@ -3068,7 +3057,6 @@ object fmMain: TfmMain
       Category = 'Find'
       Hint = 'Dialog "Find"'
       ImageIndex = 32
-      ShortCut = 16454
       OnExecute = ecFindExecute
     end
     object ecWrap: TAction
