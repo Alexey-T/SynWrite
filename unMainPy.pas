@@ -270,10 +270,15 @@ begin
                 Str:= 'styles_cmt'
               else
                 Str:= 'styles_str';
+              Str:= fmMain.SynLexerCommentsProperty(An.LexerName, Str);
 
               List:= TTntStringList.Create;
               try
-                List.Text:= fmMain.SynLexerCommentsProperty(An.LexerName, Str);
+                repeat
+                  Str1:= SGetItem(Str);
+                  if Str1='' then Break;
+                  List.Add(Str1);
+                until false;
                 Result:= Py_StringList(List);
               finally
                 FreeAndNil(List);
