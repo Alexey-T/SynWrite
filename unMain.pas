@@ -279,8 +279,6 @@ type
     );
 
   TSynLineCmd = (
-    cLineCmdSortAsc,
-    cLineCmdSortDesc,
     cLineCmdDedupAll,
     cLineCmdDedupAllAndOrig,
     cLineCmdDedupAdjacent,
@@ -449,8 +447,6 @@ type
     TBXSubmenuBarSave: TSpTBXSubmenuItem;
     acExportRTF: TecExportRTFAction;
     acExportHTML: TecExportHTMLAction;
-    ecSortAscending: TAction;
-    ecSortDescending: TAction;
     acSetupLexerLib: TAction;
     TimerTick: TTimer;
     PopupStatusEnc: TSpTBXPopupMenu;
@@ -513,9 +509,6 @@ type
     TBXSubmenuBarNew: TSpTBXSubmenuItem;
     TBXItemBarCaseInvert: TSpTBXItem;
     Status: TSpTbxStatusBar;
-    TBXSubmenuSort: TSpTBXSubmenuItem;
-    TBXItemBarSortAsc: TSpTBXItem;
-    TBXItemBarSortDesc: TSpTBXItem;
     ecCharPopup: TecSelCharPopup;
     TBXItemBarWordPrev: TSpTBXItem;
     TBXSeparatorItem9: TSpTbxSeparatorItem;
@@ -599,9 +592,6 @@ type
     TBXItemSMarkClear: TSpTbxItem;
     TBXItemEUnindent: TSpTbxItem;
     TBXItemEIndent: TSpTbxItem;
-    TBXSubmenuItemSortOps: TSpTBXSubmenuItem;
-    TBXItemESortAsc: TSpTbxItem;
-    TBXItemESortDesc: TSpTbxItem;
     TBXSubmenuItemCaseOps: TSpTBXSubmenuItem;
     TBXItemECaseUpper: TSpTbxItem;
     TBXItemECaseLower: TSpTbxItem;
@@ -866,7 +856,6 @@ type
     TBXItemValClear: TSpTBXItem;
     ecToggleFocusValidate: TAction;
     TBXItemEDedupAdjacent: TSpTbxItem;
-    TBXItemBarDedupAdj: TSpTBXItem;
     TBXSubmenuItemSess: TSpTbxSubmenuItem;
     TBXSeparatorItem59: TSpTbxSeparatorItem;
     TBXItemSessClr: TSpTbxItem;
@@ -1093,8 +1082,6 @@ type
     ecDedupAdjacent: TAction;
     TBXSeparatorItem94: TSpTbxSeparatorItem;
     TBXItemEDedupAll: TSpTbxItem;
-    TBXSeparatorItem85: TSpTbxSeparatorItem;
-    TBXItemBarDedupAll: TSpTBXItem;
     ecAlignWithSep: TAction;
     TBXItemTabToggleSplit: TSpTBXItem;
     ecToggleShowGroup2: TAction;
@@ -1322,7 +1309,6 @@ type
     ecDedupAllAndOrig: TAction;
     ecExtractUniq: TAction;
     TBXItemEExtractUniq: TSpTBXItem;
-    TBXItemBarDedupAndOrig: TSpTBXItem;
     TbxItemTabSaveAs: TSpTBXItem;
     TbxItemTabSave: TSpTBXItem;
     SpTBXSeparatorItem15: TSpTBXSeparatorItem;
@@ -1789,8 +1775,6 @@ type
     procedure TBXItemFoldWithNestedClick(Sender: TObject);
     procedure TBXItemFoldSelBlockClick(Sender: TObject);
     procedure TBXItemFoldNearestBlockClick(Sender: TObject);
-    procedure ecSortAscendingExecute(Sender: TObject);
-    procedure ecSortDescendingExecute(Sender: TObject);
     procedure ecSpToTabLeadingExecute(Sender: TObject);
     procedure TBXSubmenuCtxMorePopup(Sender: TTBCustomItem;
       FromLink: Boolean);
@@ -4290,8 +4274,6 @@ begin
   ecRedo.Update;
   ecIndent.Update;
   ecUnindent.Update;
-  ecSortAscending.Update;
-  ecSortDescending.Update;
 
   ecUpperCase.Update;
   ecLowerCase.Update;
@@ -4302,11 +4284,8 @@ begin
   ecRemoveBlanks.Enabled:= not ro;
   
   en_sort:= (ed.Lines.Count>0) and not ro;
-  ecSortAscending.Enabled:= en_sort;
-  ecSortDescending.Enabled:= en_sort;
   ecDedupAll.Enabled:= en_sort;
   ecDedupAdjacent.Enabled:= en_sort;
-  TBXSubmenuSort.Enabled:= en_sort;
   TbxSubmenuCase.Enabled:= en_sort;
 
   ecSyncScrollV.Enabled:= (Groups.PagesVisibleCount=2) and (Groups.Pages2.Tabs.TabCount>0);
@@ -5756,12 +5735,6 @@ begin
       else
         Handled:= false;
     end;
-
-    //sorting
-    smSortAscending:
-      ecSortAscending.Execute;
-    smSortDescending:
-      ecSortDescending.Execute;
 
     //tools
     sm_OpenBrowserFirefox: DoOpenInBrowser('firefox.exe');
@@ -9580,12 +9553,8 @@ begin
   //sort
   UpdKey(TBXItemEDedupAll, sm_RemoveDupsAll);
   UpdKey(TBXItemEDedupAdjacent, sm_RemoveDupsAdjacent);
-  UpdKey(tbxItemESortAsc, smSortAscending);
-  UpdKey(tbxItemESortDesc, smSortDescending);
 
   //blank ops
-  //UpdKey(TBXItemEAlignWithSep, sm_AlignWithSeparator);
-  //UpdKey(TbxItemECenterLines, sm_CenterLines);
   UpdKey(TbxItemETabToSp, sm_ConvertTabsToSpaces);
   UpdKey(TbxItemESpToTab, sm_ConvertSpacesToTabsAll);
   UpdKey(TBXItemERemDupSp, sm_RemoveDupSpaces);
@@ -20786,10 +20755,6 @@ begin
       L.Add(Ed.Lines[i]);
 
     case Cmd of
-      cLineCmdSortAsc:
-        ok:= DoListCommand_Sort(L, true);
-      cLineCmdSortDesc:
-        ok:= DoListCommand_Sort(L, false);
 
       cLineCmdDedupAll:
         begin
@@ -21357,16 +21322,6 @@ begin
     ecMacroRec.AtFileEnd:= true;
     ecMacroRec.StopPlayback:= true;
   end;
-end;
-
-procedure TfmMain.ecSortAscendingExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdSortAsc);
-end;
-
-procedure TfmMain.ecSortDescendingExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdSortDesc);
 end;
 
 procedure TfmMain.ecSpToTabLeadingExecute(Sender: TObject);

@@ -169,10 +169,6 @@ cmd_ToggleWordWrap   = 531
 cmd_ToggleFolding    = 532
 cmd_ToggleLineNumbersVisible = 533
 
-cmd_CommentLines    = 560  # Comments selected lines
-cmd_UncommentLines  = 561  # Uncomments selected lines
-cmd_SortAscending   = 562  # Ascending sort of selected lines
-cmd_SortDescending  = 563  # Descending sort of selected lines
 cmd_GotoLine        = 564  # Go to line number
 cmd_MoveLinesUp     = 566  # Moves selected lines one line up
 cmd_MoveLinesDown   = 567  # Moves selected lines one line down
@@ -283,7 +279,6 @@ cmd_OptFolding = 732
 cmd_OptNonPrint = 733
 cmd_ToggleFocusTree = 734
 cmd_ToggleFocusClip = 735
-cmd_ToggleLineComment = 738
 cmd_ToggleFocusOutput = 739
 
 cmd_FileNewWindow = 740
@@ -296,7 +291,6 @@ cmd_FileCloseAndDelete = 746
 cmd_FileMoveToOtherView = 747
 
 cmd_FileBackup = 750
-cmd_ToggleStreamComment = 751
 cmd_CopyFilename = 752
 cmd_CopyFullPath = 753
 cmd_CopyDirPath = 754
@@ -405,7 +399,6 @@ cmd_ReplaceFromClip = 882 #not used
 cmd_ReplaceFromClipAll = 883
 cmd_RereadOutputPanel = 884
 cmd_NumericConverterDialog = 889
-cmd_ToggleLineCommentAlt = 892
 cmd_SelectionExtend = 893
 cmd_SelectionShrink = 894
 cmd_ReverseLines = 895

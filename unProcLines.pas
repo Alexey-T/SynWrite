@@ -52,10 +52,6 @@ function DoListCommand_Deduplicate(
   List: TTntStringList;
   AMode: TSynDedupMode): Integer;
 
-function DoListCommand_Sort(
-  List: TTntStringList;
-  AAscend: boolean): boolean;
-
 procedure DoList_DeleteLastEmpty(List: TTntStringList);
 
 
@@ -69,7 +65,6 @@ uses
 
 var
   opSort: record
-    bAscending,
     bCaseSens: boolean;
   end;
 
@@ -80,63 +75,6 @@ begin
   N:= List.Count;
   if (N>0) and (List[N-1]='') then
     List.Delete(N-1);
-end;
-
-{
-function IsLastEOL(List: TTntStringList): boolean;
-var
-  N: Integer;
-begin
-  N:= List.Count;
-  if N>0 then
-    Result:= (Length(List[N-1])>=2) and (Copy(List[N-1], Length(List[N-1])-1, 2)=sLineBreak)
-  else
-    Result:= false;
-end;
-}
-
-function WideCompareStr_Raw(const S1, S2: Widestring): Integer;
-var
-  i, LenMin, LenMax: Integer;
-begin
-  Result:= 0;
-  LenMin:= Min(Length(S1), Length(S2));
-  LenMax:= Max(Length(S1), Length(S2));
-  for i:= 1 to LenMax do
-    if i<=LenMin then
-    begin
-      if S1[i]<>S2[i] then
-      begin
-        Result:= Ord(S1[i])-Ord(S2[i]);
-        Exit
-      end;
-    end
-    else
-    begin
-      Result:= Length(S1)-Length(S2);
-      Exit
-    end;
-end;
-
-function _CompareLines(const S1, S2: Widestring): Integer;
-begin
-  if opSort.bCaseSens then
-    Result:= WideCompareStr_Raw(S1, S2)
-  else
-    Result:= WideCompareStr_Raw(WideUpperCase(S1), WideUpperCase(S2));
-end;
-
-
-function _ListCompare(List: TTntStringList; Index1, Index2: Integer): Integer;
-var
-  S1, S2: Widestring;
-begin
-  S1:= List[Index1];
-  S2:= List[Index2];
-  Result:= _CompareLines(S1, S2);
-
-  if not opSort.bAscending then
-    Result:= -Result;
 end;
 
 procedure DoRemoveListDups(List: TTntStringList);
@@ -162,23 +100,6 @@ begin
   for i:= List.Count-1 downto 0 do
     if List[i]='' then
       List.Delete(i);
-end;
-
-function DoListCommand_Sort(
-  List: TTntStringList;
-  AAscend: boolean): boolean;
-begin
-  Result:= true;
-  FillChar(opSort, SizeOf(opSort), 0);
-  opSort.bAscending:= AAscend;
-
-  Screen.Cursor:= crHourGlass;
-  try
-    DoRemoveListBlanks(List);
-    List.CustomSort(_ListCompare);
-  finally
-    Screen.Cursor:= crDefault;
-  end;
 end;
 
 

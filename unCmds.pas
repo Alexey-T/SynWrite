@@ -486,8 +486,6 @@ begin
 
     smChangeRangeSide,
 
-    smSortAscending,
-    smSortDescending,
     smMoveLinesUp,
     smMoveLinesDown,
     smDuplicateLine,
