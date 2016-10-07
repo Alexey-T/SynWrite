@@ -3485,7 +3485,6 @@ begin
     fmMain:= TfmMain.CreateParented(ListerWin);
     with fmMain do
     begin
-      SynExe:= False;
       InitSynIniDir;
 
       //synchronize our form and Lister
@@ -6932,15 +6931,19 @@ end;
 
 procedure TfmMain.FormCreate(Sender: TObject);
 var
-  i: integer;
+  ModFilename: string;
   Cur: HIcon;
+  i: integer;
 begin
-  SynExe:= true;
-  SynDir:= ExtractFilePath(GetModuleName(HInstance));
-  SynDirForHelpFiles:= SynDir + 'Readme';
+  ModFilename:= GetModuleName(HInstance);
+  SynExe:= LowerCase(ExtractFileExt(ModFilename))='.exe';
+  SynDir:= ExtractFilePath(ModFilename);
+  SynDirForHelpFiles:= SynDir+'Readme';
   SynLexerDir:= SynDataSubdir(cSynDataLexerLib);
   InitSynIniDir;
-  InitPythonEngine;
+
+  if SynExe then
+    InitPythonEngine;
 
   SynMruFiles:= TSynMruList.Create;
   SynMruSessions:= TSynMruList.Create;
@@ -26707,7 +26710,8 @@ procedure TfmMain.DoAddKeymappingCommand(const ACommand: Integer;
   ACategory, ACaption, AHotkey: Widestring);
 var
   S, SItem: Widestring;
-  NKey1, NKey2, NKey: Cardinal;
+  NKey1, NKey2: TShortcut;
+  NKey: Cardinal;
 begin
   //ignore menu-separators
   if Pos('\-', ACaption)>0 then exit;
@@ -26725,8 +26729,11 @@ begin
   if SItem<>'' then
     NKey2:= TextToShortCut(SItem);
 
+  DoFixShortcut(NKey1);
+  DoFixShortcut(NKey2);
+
   //hotkey: EControl needs 2 words packed into dword
-  NKey:= NKey1 + (NKey2 shl 16);
+  NKey:= MakeLong(NKey1, NKey2);
 
   SyntKeyMapping.Add(ACommand, ACategory, '', ACaption, NKey);
 end;

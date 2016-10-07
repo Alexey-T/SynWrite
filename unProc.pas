@@ -29,10 +29,11 @@ uses
 
 procedure DoMacroLoadFromFile(ACmd: TMacroRecord; const AFilename: string);
 procedure DoMacroSaveToFile(ACmd: TMacroRecord; const AFilename: string);
-  
+
 function GetListviewColumnsAsString(L: TTntListview): string;
 procedure SetListviewColumnsFromString(L: TTntListview; const S: string);
 
+procedure DoFixShortcut(var N: TShortCut);
 procedure DoSortMenu(Menu: TSpTbxSubmenuItem);
 procedure DoRemovePluginsIniLines(const fn_ini, dir: string; IsBinaryPlugin: boolean);
 
@@ -2769,5 +2770,13 @@ begin
     end;
   end;    
 end;
+
+procedure DoFixShortcut(var N: TShortCut);
+begin
+  //fix for Ctrl+/, Alt+/
+  if N and $FF = $6F then
+    N:= N and not $FF or $BF;
+end;
+
 
 end.
