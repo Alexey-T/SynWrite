@@ -19,7 +19,7 @@ Id | Meaning
 `LEXER_SET_ENABLED` | Sets for lexer with name `text1` enabled-flag `text2`: `"0"` or `"1"`.
 `LEXER_SET_EXT` | Sets for lexer with name `text1` extensions-list `text2`. 
 `LEXER_SET_LINKS` | Sets for lexer with name `text1` sublexers names: pass as `text2` "vertical line"-separated sublexer names (any number allowed).
-`LEXER_DETECT` | Detects lexer name from file name `text`. Gets None of cannot detect. Detection sees file extension or name before extension (e.g. "path\makefile.gcc" gives "Makefile").
+`LEXER_DETECT` | Detects lexer name from file name. Gets None if cannot detect. Detection sees file extension or name before extension (e.g. "path\makefile.gcc" gives "Makefile").
 `LEXER_DELETE` | Deletes lexer with name `text`.
 `LEXER_IMPORT` | Adds new lexer from file-name `text`. Returns name of this lexer, or None if import failed.
 `LEXER_EXPORT` | Saves lexer with name `text1` into file-name `text2` (recommended extension is "lcf").
