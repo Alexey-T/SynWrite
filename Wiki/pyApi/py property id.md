@@ -22,10 +22,10 @@ Id | Read/ Write/ Event | Meaning
 `PROP_TOP`, `PROP_LINE_TOP` | RW | int: vertical scroll value (index of top visible line).
 `PROP_BOTTOM`, `PROP_LINE_BOTTOM` | R | int: index of line visible at bottom of editor (considering word-wrap).
 `PROP_RULER` | RWE | bool: horizontal ruler is visible.
-`PROP_TOKEN_TYPE` | R | string: token type at absolute offset, given by string `value`. Returns `'c'` for comment, `'s'` for string, empty string otherwise. 
-`PROP_LEXER_FILE` | R | string: lexer name for entire file (empty string means lexer is not used).
+`PROP_LEXER_FILE` | RW | string: lexer name for entire file (empty string: no lexer used).
 `PROP_LEXER_CARET` | R | string: lexer name for current caret position (note that lexers may have sublexers, like CSS in HTML).
 `PROP_LEXER_POS` | R | string: lexer name for absolute offset, given by string `value`.
+`PROP_TOKEN_TYPE` | R | string: token type at absolute offset, given by string `value`. Returns 'c' for comment, 's' for string, empty string otherwise. 
 `PROP_COLOR` | RW | int: some color property, given by string `value`. When getting, pass `value = color_id`. When setting, pass `value = color_id + ',' + str(color_value)`. `color_id` must be one of `PROP_COLOR_nnnn` string constants. 
 `PROP_NON_PRINTED`         | RW | bool: non-printable chars: enabled flag.
 `PROP_NON_PRINTED_SPACES`  | RW | bool: non-printable spaces/tabs shown.

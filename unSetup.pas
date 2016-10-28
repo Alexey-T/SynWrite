@@ -1822,7 +1822,6 @@ begin
     Status.Visible:= cbStat.Checked;
     opEsc:= TSynEscMode(cbEsc.ItemIndex);
     opSingleInstance:= cbInst.Checked;
-    ApplyInst;
 
     opSaveWndPos:= cbSavePos.Checked;
     opShowRecentColors:= TSynRecentColors(cbRecColors.ItemIndex);

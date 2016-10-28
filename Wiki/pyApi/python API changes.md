@@ -3,6 +3,10 @@ Changes in Python API
 
 oct 2016
 
+* release 1.0.157
+* add: lexer_proc: LEXER_DETECT
+* add: ed.set_prop: can set PROP_LEXER_FILE
+* del: ed.get_prop: PROP_RECENT_NEWDOC
 * release 1.0.156
 * add: lexer_proc: LEXER_GET_COMMENT_STREAM, LEXER_GET_COMMENT_LINED
 * add: lexer_proc: LEXER_GET_STYLES_COMMENTS, LEXER_GET_STYLES_STRINGS

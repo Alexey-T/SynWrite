@@ -107,7 +107,6 @@ type
     cSynDataColors,
     cSynDataConv,
     cSynDataIcons,
-    cSynDataNewDoc,
     cSynDataOutPresets,
     cSynDataSkins,
     cSynDataSnippets,
@@ -120,7 +119,6 @@ const
     'colors',
     'conv',
     'icons',
-    'newdoc',
     'outpresets',
     'skins',
     'snippets',
@@ -531,10 +529,8 @@ type
     TBXItemFSaveAs: TSpTbxItem;
     TBXItemFSave: TSpTbxItem;
     TBXItemFReopen: TSpTbxItem;
-    TBXItemFNewWin: TSpTbxItem;
     TBXItemFNew: TSpTbxItem;
     TBXSeparatorItem15: TSpTbxSeparatorItem;
-    TBXSubmenuItemFNew: TSpTBXSubmenuItem;
     TBXItemFPreview: TSpTbxItem;
     TBXItemFPrint: TSpTbxItem;
     TBXItemFPageSetup: TSpTbxItem;
@@ -638,7 +634,6 @@ type
     PopupTabContext: TSpTBXPopupMenu;
     TBXItemTabCloseOthers: TSpTBXItem;
     TBXItemTabClose: TSpTBXItem;
-    TBXSeparatorItem28: TSpTbxSeparatorItem;
     ImageListCloseBtn: TImageList;
     acSaveAll: TAction;
     TBXItemFSaveAll: TSpTbxItem;
@@ -1175,8 +1170,6 @@ type
     TBXMRUListItem_Sess: TSpTBXMRUListItem;
     SpTBXSeparatorItem12: TSpTBXSeparatorItem;
     SpTBXSeparatorItem13: TSpTBXSeparatorItem;
-    SpTBXSeparatorItem14: TSpTBXSeparatorItem;
-    TBXMRUListItemFNew: TSpTBXMRUListItem;
     TBXItemBarPClip: TSpTBXItem;
     TBXSubmenuMarkers: TSpTBXSubmenuItem;
     TBXSubmenuBkOps: TSpTBXSubmenuItem;
@@ -1595,8 +1588,6 @@ type
     procedure TBXItemFSesSaveClick(Sender: TObject);
     procedure TBXItemFSesCloseClick(Sender: TObject);
     procedure ecRemoveBlanksExecute(Sender: TObject);
-    procedure TBXSubmenuItemFNewPopup(Sender: TTBCustomItem;
-      FromLink: Boolean);
     procedure ecRemoveLinesExecute(Sender: TObject);
     procedure ecTrimLeadExecute(Sender: TObject);
     procedure ecTrimTrailExecute(Sender: TObject);
@@ -1904,8 +1895,6 @@ type
       FromLink: Boolean);
     procedure TBXSubmenuItemSessPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
-    procedure TBXMRUListItemFNewClick(Sender: TObject;
-      const Filename: WideString);
     procedure StatusResize(Sender: TObject);
     procedure acSetupLexerLibExecute(Sender: TObject);
     procedure TbxItemTabReloadClick(Sender: TObject);
@@ -2020,6 +2009,8 @@ type
     procedure TBXItemClipDeleteSelClick(Sender: TObject);
     procedure acMacroRecordAfterExecute(Sender: TObject);
     procedure TbxItemGroup1p2HClick(Sender: TObject);
+    procedure TBXSubmenuBarNewPopup(Sender: TTBCustomItem;
+      FromLink: Boolean);
 
   private
     cStatLine,
@@ -2063,7 +2054,6 @@ type
     FPluginsEvent: TPluginList_Event;
     FPluginsAcp: TPluginList_Acp;
 
-    FListNewDocs: TTntStringList; //filenames of newdoc-templates
     FListFiles: TTntStringList; //filenames list of mass search/replace operation
     FPanelDrawBusy: boolean;
     FSyncBusy: boolean;
@@ -2303,7 +2293,6 @@ type
     procedure UpdateBusyIco;
     procedure UpdateFrameLineEnds(F: TEditorFrame; AFormat: TTextFormat; AManual: boolean);
     procedure UpdateToolbarItemAction(Item: TTBCustomItem; const SCmd: string);
-    procedure UpdateNewDocMenu();
     procedure UpdateTreeProps;
     procedure UpdateTitle(Sender: TFrame);
     procedure UpdateAcp(const Lexer: string);
@@ -2414,9 +2403,6 @@ type
     procedure DoFixReplaceCaret(Ed: TSyntaxMemo);
     function FCanUseLexer(const fn: Widestring): boolean;
 
-    function SNewDocName(const fn: Widestring): string;
-    procedure DoNewDocClick(Sender: TObject);
-    procedure DoNewDocFolderClick(Sender: TObject);
     procedure DoTabIndexClick(n: integer);
     procedure DoRtTabIndexClick(n: integer);
 
@@ -2456,7 +2442,6 @@ type
     function DoNavigate_ListOut(const Str: Widestring): boolean;
     function DoNavigate_ListVal(const Str: Widestring): boolean;
     function IsNavigatableLine(const Str: Widestring): boolean;
-    procedure DoNewDoc(const fn: Widestring);
     procedure AppException(Sender: TObject; E: Exception);
     function MsgEncReload: boolean;
     function MsgConfirmFtp: boolean;
@@ -2754,7 +2739,6 @@ type
     SynMruFiles: TSynMruList;
     SynMruSessions: TSynMruList;
     SynMruProjects: TSynMruList;
-    SynMruNewdoc: TSynMruList;
 
     FProjPreview: TSpTBXDockablePanel;
     FProjPreviewFilename: Widestring;
@@ -2992,7 +2976,6 @@ type
     procedure ApplyTips;
     procedure ApplyAutoSave;
     procedure ApplyDefaultFonts;
-    procedure ApplyInst;
     procedure ApplyQs;
     procedure ApplyEdOptions;
     procedure ApplyFonts;
@@ -3162,8 +3145,8 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.26.2420';
-  cSynPyVer = '1.0.156';
+  cSynVer = '6.27.2430';
+  cSynPyVer = '1.0.157';
 
 const
   cSynParamRO = '/ro';
@@ -4485,7 +4468,6 @@ begin
     opTabSwitcher:= ReadBool('Setup', 'TabSw', true);
 
     opSingleInstance:= ReadBool('Setup', 'Inst', false);
-    ApplyInst;
     opShowQsCaptions:= ReadBool('Setup', 'QsCap', false);
     ApplyQs;
     opHiliteUrls:= ReadBool('Setup', 'Link', true);
@@ -6948,7 +6930,6 @@ begin
   SynMruFiles:= TSynMruList.Create;
   SynMruSessions:= TSynMruList.Create;
   SynMruProjects:= TSynMruList.Create;
-  SynMruNewdoc:= TSynMruList.Create;
 
   //make panels font non-bold
   plTree.Options.RightAlignSpacer.FontSettings.Style:= [];
@@ -6997,7 +6978,6 @@ begin
 
   FPanelDrawBusy:= false;
   FSyncBusy:= false;
-  FListNewDocs:= TTntStringList.Create;
   FListFiles:= TTntStringList.Create;
   FListLexersSorted:= TTntStringList.Create;
   FListSnippets:= nil;
@@ -7277,7 +7257,6 @@ begin
   FreeAndNil(SynMruFiles);
   FreeAndNil(SynMruSessions);
   FreeAndNil(SynMruProjects);
-  FreeAndNil(SynMruNewdoc);
 
   //FreeAndNil(FTempFilenames);
   FreeAndNil(FUserToolbarCommands);
@@ -7294,7 +7273,6 @@ begin
 
   FreeAndNil(Finder);
   FreeAndNil(FListFiles);
-  FreeAndNil(FListNewDocs);
   FreeAndNil(FListLexersSorted);
   FreeAndNil(FFontTabs);
   FreeAndNil(FFontMenus);
@@ -9630,7 +9608,6 @@ begin
   UpdKey(tbxItemFPrint, smPrint);
   UpdKey(tbxItemFPreview, smPrintPreview);
   UpdKey(tbxItemFNew, sm_FileNew);
-  UpdKey(tbxItemFNewWin, sm_FileNewWindow);
   UpdKey(tbxItemFOpen, sm_FileOpen);
   UpdKey(tbxItemFReopen, sm_FileReopen);
   UpdKey(tbxItemFSave, sm_FileSave);
@@ -10538,59 +10515,6 @@ begin
   Groups.CloseTabs(tabCloseCurrent, true);
 end;
 
-function TfmMain.SNewDocName(const fn: Widestring): string;
-var
-  an: TSyntAnalyzer;
-  s: string;
-begin
-  Result:= ChangeFileExt(ExtractFileName(fn), '');
-  SDeleteFrom(Result, '_'); //"_UTF8" suffix may exist
-
-  s:= '?';
-  an:= DoFindLexerForFilename(SyntaxManager, fn);
-  if an<>nil then s:= an.LexerName;
-
-  Result:= s + #9 + Result;
-end;
-
-procedure TfmMain.DoNewDoc(const fn: Widestring);
-var
-  Enc: Integer;
-  Ini: TIniFile;
-  Ed: TSyntaxMemo;
-begin
-  if not IsFileExist(fn) then Exit;
-
-  //add template to MRU list
-  Ini:= TIniFile.Create(SynHistoryIni);
-  try
-    SynMruNewdoc.AddItem(fn);
-    SaveMruList(SynMruNewdoc, Ini, 'MRU_Newdoc');
-  finally
-    FreeAndNil(Ini);
-  end;
-
-  //calculate encoding, consider "_UTF8" filename suffix
-  Enc:= CP_ACP;
-  if Pos('_UTF8', ExtractFileName(fn))>0 then
-    Enc:= cp__UTF8_noBOM;
-
-  //need new tab?
-  if CurrentEditor=nil then Exit;
-  if (CurrentFrame.FileName<>'') or (CurrentEditor.Lines.Count>0) then
-    acNewTab.Execute;
-
-  //load template file
-  Ed:= CurrentEditor;
-  Ed.LoadFromFile(fn);
-  Ed.Modified:= true;
-
-  Ed.TextSource.SyntaxAnalyzer:= DoFindLexerForFilename(SyntaxManager, fn);
-  UpdateLexerTo(Ed.TextSource.SyntaxAnalyzer);
-
-  //apply encoding
-  ApplyFrameEncodingAndReload(CurrentFrame, Enc);
-end;
 
 //tab X button rect
 procedure TabCtrl_GetXRect(H: THandle; TabIndex: Integer; var R: TRect);
@@ -15385,104 +15309,6 @@ begin
   DoLinesCommand(cLineCmdRemoveBlanks);
 end;
 
-{
-http://delphi.about.com/cs/adptips2004/a/bltip0304_3.htm
-}
-procedure TfmMain.TBXSubmenuItemFNewPopup(Sender: TTBCustomItem;
-  FromLink: Boolean);
-begin
-  UpdateNewDocMenu;
-end;
-
-procedure TfmMain.UpdateNewDocMenu();
-var
-  i: Integer;
-  mi: TSpTbxItem;
-  miSub: TSpTbxSubmenuItem;
-  Names: TStringList;
-  ch: char;
-  NeedSub: boolean;
-  Ini: TIniFile;
-const
-  chSet = ['A'..'Z', '?'];
-begin
-  FListNewDocs.Clear;
-  FFindToList(FListNewDocs,
-    SynDataSubdir(cSynDataNewDoc),
-    '*.*',
-    '',
-    false{SubDirs},
-    false, false, false);
-
-  Names:= TStringList.Create;
-  for i:= 0 to FListNewDocs.Count-1 do
-    Names.AddObject(SNewDocName(FListNewDocs[i]), Pointer(i));
-  Names.Sort;
-
-  //fill MRU items
-  Ini:= TIniFile.Create(SynHistoryIni);
-  try
-    LoadMruList(SynMruNewdoc, Ini, 'MRU_Newdoc', 5{MaxCount}, true);
-  finally
-    FreeAndNil(Ini);
-  end;
-
-  with TBXMRUListItemFNew do
-  begin
-    Clear;
-    for i:= SynMruNewdoc.Items.Count-1 downto 0 do
-      MRUAdd(SynMruNewdoc.Items[i]);
-  end;
-
-  //del items
-  with TbxSubmenuItemFNew do
-    for i:= Count-1 downto 0 do
-      if Items[i].Tag>0 then
-        Items[i].Free;
-
-  //add items
-  for ch:= Low(ch) to High(ch) do
-    if ch in chSet then
-    begin
-      NeedSub:= false;
-      for i:= 0 to Names.Count-1 do
-        if UpCase(Names[i][1]) = ch then
-          begin NeedSub:= true; Break end;
-      if not NeedSub then Continue;
-
-      //add submenu
-      miSub:= TSpTbxSubmenuItem.Create(Self);
-      miSub.Caption:= ch;
-      miSub.Tag:= 1;
-
-      TbxSubmenuItemFNew.Add(miSub);
-      //fill submenu
-      for i:= 0 to Names.Count-1 do
-        if UpCase(Names[i][1]) = ch then
-        begin
-          mi:= TSpTbxItem.Create(Self);
-          mi.OnClick:= DoNewDocClick;
-          mi.Caption:= Names[i];
-          mi.Tag:= Integer(Names.Objects[i]) + 1;
-          miSub.Add(mi);
-        end;
-    end;
-
-  //add "Browse folder"
-  TbxSubmenuItemFNew.Add(TSpTbxSeparatorItem.Create(Self));
-  mi:= TSpTbxItem.Create(Self);
-  mi.OnClick:= DoNewDocFolderClick;
-  mi.Caption:= DKLangConstW('OpNew');
-  mi.Tag:= 1;
-  TbxSubmenuItemFNew.Add(mi);
-
-  //fix too big menuitems height
-  FixMruBigImageList(TBXMRUListItemFNew);
-  FixMenuBigImageList(TbxSubmenuItemFNew);
-
-  FreeAndNil(Names);
-end;
-
 procedure TfmMain.FixMenuBigImageList(Menu: TSpTbxSubmenuItem);
 var
   i: Integer;
@@ -15499,22 +15325,6 @@ begin
   with Menu do
     for i:= 0 to Count-1 do
       Items[i].Images:= ImageListStatus;
-end;
-
-procedure TfmMain.DoNewDocFolderClick(Sender: TObject);
-begin
-  FOpenURL(SynDataSubdir(cSynDataNewDoc), Handle);
-end;
-
-procedure TfmMain.DoNewDocClick(Sender: TObject);
-var
-  n: Integer;
-begin
-  n:= (Sender as TComponent).Tag - 1;
-  if (n>=0) and (n<=FListNewDocs.Count-1) then
-    DoNewDoc(FListNewDocs[n])
-  else
-    MsgBeep(true);
 end;
 
 procedure TfmMain.ecRemoveLinesExecute(Sender: TObject);
@@ -18567,11 +18377,6 @@ begin
 end;
 }
 
-procedure TfmMain.ApplyInst;
-begin
-  TbxItemFNewWin.Enabled:= SynExe and not opSingleInstance;
-end;
-
 procedure TfmMain.ApplyDefaultFonts;
 const
   cc = 'Consolas';
@@ -18861,6 +18666,7 @@ begin
   DoPlugins_PreinstallPlugin('HTML Tidy\Menu', SynDir+'\Py\syn_html_tidy\install.inf', false, SReport);
   DoPlugins_PreinstallPlugin('Make Plugin', SynDir+'\Py\syn_make_plugin\install.inf', false, SReport);
   DoPlugins_PreinstallPlugin('Insert Time', SynDir+'\Py\syn_insert_time\install.inf', false, SReport);
+  DoPlugins_PreinstallPlugin('New File', SynDir+'\Py\syn_new_file\install.inf', false, SReport);
   DoPlugins_PreinstallPlugin('Comments\Remove line comment', SynDir+'\Py\syn_comments\install.inf', false, SReport);
 
   if SReport<>'' then
@@ -22406,11 +22212,6 @@ begin
         Item.LinkSubitems:= TBXSubmenuItemFRecents;
       end
       else
-      if SCmd='m:{new}' then
-      begin
-        Item.LinkSubitems:= TBXSubmenuItemFNew;
-      end
-      else
       if SCmd='m:{sess}' then
       begin
         Item.LinkSubitems:= TBXSubmenuItemSess;
@@ -23274,12 +23075,6 @@ begin
   end;
 end;
 
-
-procedure TfmMain.TBXMRUListItemFNewClick(Sender: TObject;
-  const Filename: WideString);
-begin
-  DoNewDoc(Filename);
-end;
 
 procedure TfmMain.StatusResize(Sender: TObject);
 begin
@@ -27045,6 +26840,12 @@ begin
   Groups.Mode:= gm1plus2Horz;
 end;
 
+
+procedure TfmMain.TBXSubmenuBarNewPopup(Sender: TTBCustomItem;
+  FromLink: Boolean);
+begin
+  Py_RunPlugin_Command('syn_new_file', 'menu');
+end;
 
 initialization
   unProcPy.PyEditor:= MainPyEditor;

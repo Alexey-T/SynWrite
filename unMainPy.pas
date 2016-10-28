@@ -174,6 +174,7 @@ const
   LEXER_SET_LINKS           = 13;
   LEXER_GET_STYLES_COMMENTS = 16;
   LEXER_GET_STYLES_STRINGS  = 17;
+  LEXER_DETECT              = 20;
   LEXER_DELETE              = 21;
   LEXER_IMPORT              = 22;
   LEXER_EXPORT              = 23;
@@ -383,6 +384,14 @@ begin
             end
             else
               Result:= PyBool_FromLong(0);
+          end;
+        LEXER_DETECT:
+          begin
+            An:= DoFindLexerForFilename(fmMain.SyntaxManager, Str1);
+            if Assigned(An) then
+              Result:= PyString_FromString(PChar(An.LexerName))
+            else
+              Result:= ReturnNone;
           end;
         LEXER_DELETE:
           begin
@@ -1005,7 +1014,6 @@ const
   PROP_RECENT_FILES    = 135;
   PROP_RECENT_SESSIONS = 136;
   PROP_RECENT_PROJECTS = 137;
-  PROP_RECENT_NEWDOC   = 138;
   PROP_RECENT_COLORS   = 139;
 
   PROP_EVENTS          = 140;
@@ -1076,11 +1084,6 @@ begin
           begin
             fmMain.TBXSubmenuItemProjRecentsPopup(nil, false); //update SynMruProjects
             Result:= Py_StringList(fmMain.SynMruProjects.Items);
-          end;
-        PROP_RECENT_NEWDOC:
-          begin
-            fmMain.TBXSubmenuItemFNewPopup(nil, false); //update SynMruNewdoc
-            Result:= Py_StringList(fmMain.SynMruNewdoc.Items);
           end;
 
         PROP_FILENAME_SESSION:
@@ -1654,6 +1657,7 @@ var
   StrVal, Str1, Str2: Widestring;
   NumVal: Integer;
   Frame: TEditorFrame;
+  An: TSyntAnalyzer;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'iis:set_prop', @H, @Id, @P)) then
@@ -1719,6 +1723,15 @@ begin
             NumVal:= StrToIntDef(Str2, $FF{red color});
             EditorSetColorPropertyById(Ed, Str1, NumVal);
           end;
+
+        PROP_LEXER_FILE:
+          begin
+            An:= fmMain.SyntaxManager.FindAnalyzer(StrVal);
+            fmMain.CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= An;
+            fmMain.UpdateLexerTo(An);
+            fmMain.UpdateStatusBar;
+          end;    
+
         PROP_TAG:
           Ed.UserTag:= StrVal;
 

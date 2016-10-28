@@ -1,6 +1,6 @@
 [Setup]
 AppName=SynWrite
-AppVersion=6.26.2420
+AppVersion=6.27.2430
 AppPublisher=UVViewSoft
 AppPublisherURL=http://uvviewsoft.com
 AppSupportURL=http://uvviewsoft.com
@@ -74,6 +74,7 @@ Source: "..\Py\syn_html_tidy\*"; DestDir: "{app}\Py\syn_html_tidy"; Excludes: "*
 Source: "..\Py\syn_make_plugin\*"; DestDir: "{app}\Py\syn_make_plugin"; Excludes: "*.pyc"; Flags: recursesubdirs;
 Source: "..\Py\syn_insert_time\*"; DestDir: "{app}\Py\syn_insert_time"; Excludes: "*.pyc"; Flags: recursesubdirs;
 Source: "..\Py\syn_comments\*"; DestDir: "{app}\Py\syn_comments"; Excludes: "*.pyc"; Flags: recursesubdirs;
+Source: "..\Py\syn_new_file\*"; DestDir: "{app}\Py\syn_new_file"; Excludes: "*.pyc"; Flags: recursesubdirs;
 
 [Icons]
 Name: "{group}\SynWrite"; Filename: "{app}\Syn.exe"
