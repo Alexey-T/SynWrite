@@ -38,6 +38,7 @@ Hex Dump | Shows text in hex-dump format | PyPlugins/plugin.Alexey.HexDump.zip
 HTML Beautify | Formats/indents HTML code | PyPlugins/plugin.Alexey.HtmlBeautify.zip
 HTML Class Complete | Auto-completion of CSS class names, for HTML lexer | PyPlugins/plugin.Alexey.HtmlClassComplete.zip
 HTML Lines To List | Converts selected lines to HTML list (ul, ol) or table | PyPlugins/plugin.Alexey.HtmlLinesToList.zip
+HTML Ops | Commands to add tags to selection | PyPlugins/plugin.Alexey.HTML_Ops.zip
 HTML Preview Selection | Copies selection to temp HTML file and opens it in browser | PyPlugins/plugin.Alexey.HtmlPreviewSelection.zip
 HTML Tidy | Integrates HTML Tidy tool, allows to format/validate HTML code | PyPlugins/plugin.Alexey.HtmlTidy.zip
 Icons: Aha               | | IconSets/icons.Aha.zip

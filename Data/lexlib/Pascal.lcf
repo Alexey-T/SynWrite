@@ -1,4 +1,4 @@
-object SyntAnal88: TLibSyntAnalyzer
+object SyntAnal23: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Default'
@@ -202,10 +202,26 @@ object SyntAnal88: TLibSyntAnalyzer
       Font.Name = 'Courier New'
       Font.Style = [fsStrikeOut]
       BgColor = clYellow
+    end
+    item
+      DisplayName = 'Id types'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clNavy
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'Id messages'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clOlive
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
     end>
   TokenRules = <
     item
-      DisplayName = 'Any name'
+      DisplayName = 'Id'
       StyleName = 'Identifier'
       TokenType = 2
       Expression = '[a-z_]\w*'
@@ -316,7 +332,7 @@ object SyntAnal88: TLibSyntAnalyzer
     end>
   BlockRules = <
     item
-      DisplayName = 'Key words'
+      DisplayName = 'Id keywords'
       StyleName = 'Reserved word'
       BlockType = btTagDetect
       ConditionList = <
@@ -335,6 +351,7 @@ object SyntAnal88: TLibSyntAnalyzer
             'const'
             'constructor'
             'contains'
+            'default'
             'destructor'
             'dispinterface'
             'div'
@@ -356,7 +373,6 @@ object SyntAnal88: TLibSyntAnalyzer
             'if'
             'implementation'
             'in'
-            'index'
             'inherited'
             'initialization'
             'inline'
@@ -416,6 +432,241 @@ object SyntAnal88: TLibSyntAnalyzer
           IgnoreCase = True
         end>
       HighlightPos = cpBound
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = 'Id types'
+      StyleName = 'Id types'
+      BlockType = btTagDetect
+      ConditionList = <
+        item
+          TagList.Strings = (
+            'AnsiChar'
+            'AnsiString'
+            'Bool'
+            'Boolean'
+            'Byte'
+            'ByteBool'
+            'Cardinal'
+            'Char'
+            'Double'
+            'DWord'
+            'Extended'
+            'Float'
+            'HBitmap'
+            'HDC'
+            'HResult'
+            'HWnd'
+            'Int64'
+            'Integer'
+            'LongBool'
+            'LongInt'
+            'LongWord'
+            'LResult'
+            'NativeInt'
+            'PAnsiChar'
+            'PChar'
+            'Pointer'
+            'PtrInt'
+            'PWideChar'
+            'QWord'
+            'Real'
+            'ShortInt'
+            'ShortString'
+            'Single'
+            'SizeInt'
+            'Smallint'
+            'string'
+            'TAction'
+            'TActionEvent'
+            'TActionList'
+            'TActionListState'
+            'TAlign'
+            'TAlignSet'
+            'TAnchorKind'
+            'TAnchors'
+            'TAnchorSideReference'
+            'TApplicationProperties'
+            'TArrow'
+            'TAsyncProcess'
+            'TBasicAction'
+            'TBasicActionClass'
+            'TBevel'
+            'TBitBtn'
+            'TBitBtnKind'
+            'TBitBtnKinds'
+            'TBitmap'
+            'TBorderStyle'
+            'TBrush'
+            'TButton'
+            'TButtonGlyph'
+            'TButtonLayout'
+            'TButtonPanel'
+            'TButtonState'
+            'TCalcEdit'
+            'TCalculatorDialog'
+            'TCalendar'
+            'TCalendarDialog'
+            'TCanvas'
+            'TCaption'
+            'TCheckBox'
+            'TCheckCombobox'
+            'TCheckGroup'
+            'TCheckListbox'
+            'TColorBox'
+            'TColorButton'
+            'TColorDialog'
+            'TColorListbox'
+            'TCombobox'
+            'TComboboxEx'
+            'TComponent'
+            'TComponentClass'
+            'TComponentName'
+            'TControl'
+            'TControlBar'
+            'TControlBorderStyle'
+            'TControlCanvas'
+            'TCoolbar'
+            'TCursor'
+            'TCustomActionList'
+            'TCustomBitBtn'
+            'TCustomBitmap'
+            'TCustomControl'
+            'TCustomEdit'
+            'TCustomForm'
+            'TCustomImageList'
+            'TCustomMemo'
+            'TCustomSpeedButton'
+            'TDateEdit'
+            'TDirectoryEdit'
+            'TDrawGrid'
+            'TEdit'
+            'TEditButton'
+            'TFileListbox'
+            'TFilenameEdit'
+            'TFilterCombobox'
+            'TFindDialog'
+            'TFloatSpinEdit'
+            'TFlowPanel'
+            'TFontDialog'
+            'TForm'
+            'TFormBorderStyle'
+            'TFormStyle'
+            'TFrame'
+            'TGlyphShowMode'
+            'TGraphic'
+            'TGroupBox'
+            'THandle'
+            'THeaderControl'
+            'THelpContext'
+            'THelpType'
+            'THintEvent'
+            'TIcon'
+            'TIdleTimer'
+            'TImage'
+            'TImageIndex'
+            'TImageList'
+            'TLabel'
+            'TLabeledEdit'
+            'TLCLComponent'
+            'TList'
+            'TListbox'
+            'TListView'
+            'TLMessage'
+            'TMainMenu'
+            'TMaskEdit'
+            'TMemo'
+            'TMenuItem'
+            'TMessage'
+            'TMetafile'
+            'TModalResult'
+            'TMouse'
+            'TMouseButton'
+            'TNotebook'
+            'TNotifyEvent'
+            'TObject'
+            'TOpenDialog'
+            'TOpenPictureDialog'
+            'TPageControl'
+            'TPaintBox'
+            'TPanel'
+            'TPen'
+            'TPersistent'
+            'TPicture'
+            'TPoint'
+            'TPopupMenu'
+            'TPopupNotifier'
+            'TProcess'
+            'TProcessUtf8'
+            'TProgressBar'
+            'TRadioButton'
+            'TRadioGroup'
+            'TReader'
+            'TRect'
+            'TReplaceDialog'
+            'TSaveDialog'
+            'TSavePictureDialog'
+            'TScreen'
+            'TScrollbar'
+            'TScrollBox'
+            'TSelectDirectoryDialog'
+            'TShape'
+            'TShellListview'
+            'TShellTreeview'
+            'TShiftState'
+            'TShortcut'
+            'TShortcutList'
+            'TSize'
+            'TSmallPoint'
+            'TSpeedButton'
+            'TSpinEdit'
+            'TSplitter'
+            'TStaticText'
+            'TStatusbar'
+            'TStringGrid'
+            'TStringList'
+            'TStrings'
+            'TTabControl'
+            'TTaskDialog'
+            'TTimeEdit'
+            'TTimer'
+            'TToggleBox'
+            'TToolbar'
+            'TTrackBar'
+            'TTranslateString'
+            'TTrayIcon'
+            'TTreeView'
+            'TUpDown'
+            'TUtf8Char'
+            'TValueListEditor'
+            'TWinControl'
+            'TWriter'
+            'TypeInfo'
+            'UnicodeString'
+            'Variant'
+            'WideChar'
+            'WideString'
+            'Word'
+            'WordBool')
+          TokenTypes = 4
+          IgnoreCase = True
+        end>
+      HighlightPos = cpAny
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = 'Id messages'
+      StyleName = 'Id messages'
+      BlockType = btTagDetect
+      ConditionList = <
+        item
+          TagList.Strings = (
+            '(WM|LM|CM)_\w+')
+          CondType = tcMask
+          TokenTypes = 4
+          IgnoreCase = True
+        end>
+      HighlightPos = cpAny
       IgnoreAsParent = False
     end
     item
@@ -922,9 +1173,9 @@ object SyntAnal88: TLibSyntAnalyzer
       ConditionList = <
         item
           TagList.Strings = (
-            '('
+            ';'
             ':'
-            ';')
+            '(')
           TokenTypes = 8
         end
         item
@@ -1111,8 +1362,8 @@ object SyntAnal88: TLibSyntAnalyzer
         end
         item
           TagList.Strings = (
-            '.'
             ';'
+            '.'
             'type')
           CondType = tcMask
           TokenTypes = 14
@@ -1378,7 +1629,7 @@ object SyntAnal88: TLibSyntAnalyzer
       DisplayName = 'asm section'
       StartExpression = 'asm\b'#13#10
       EndExpression = 'end'#13#10
-      SyntAnalyzer = SyntAnalyzer13
+      SyntAnalyzer = SyntAnal2
     end>
   SampleText.Strings = (
     'unit Test;    '
