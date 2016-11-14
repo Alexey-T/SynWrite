@@ -68,5 +68,5 @@ Width and height of menu dialogs, e.g. "Commands list", "Snippets".
 
 --------------------
 DateFmtPlugin=hh:mm
-Date/time format for plugins (value is Delphi date/time specifiers).
+Date/time format for plugins, doc about value: http://docwiki.embarcadero.com/Libraries/Seattle/en/System.SysUtils.DateTimeToString
 When FTP plugin makes log, it adds date/time prefix, if option not empty.
