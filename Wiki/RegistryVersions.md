@@ -31,6 +31,7 @@ Favorites=2016.06.22
 FindIdPas=0.3.0
 Ftp Log=0.2.0
 Hex Dump=0.3.0
+Hilite=2016.11.14
 HTML Beautify=1.0.0
 HTML Class Complete=0.6.2
 HTML Lines To List=0.8.4

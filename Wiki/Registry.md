@@ -35,6 +35,7 @@ FindIdPas | Finds declaration of identifiers for Pascal lexer | BinaryPlugins/pl
 Ftp Log | Makes file SynFTP.log | PyPlugins/plugin.Alexey.FtpLog.zip
 Gherkin Format | Formats code of Gherkin lexer | PyPlugins/plugin.Alexey.GherkinFormat.zip
 Hex Dump | Shows text in hex-dump format | PyPlugins/plugin.Alexey.HexDump.zip
+Hilite | Highlightes occurances of clicked or selected text | PyPlugins/plugin.Alexey.Hilite.zip
 HTML Beautify | Formats/indents HTML code | PyPlugins/plugin.Alexey.HtmlBeautify.zip
 HTML Class Complete | Auto-completion of CSS class names, for HTML lexer | PyPlugins/plugin.Alexey.HtmlClassComplete.zip
 HTML Lines To List | Converts selected lines to HTML list (ul, ol) or table | PyPlugins/plugin.Alexey.HtmlLinesToList.zip
