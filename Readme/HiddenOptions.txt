@@ -1,0 +1,66 @@
+This file lists SynWrite hidden options, i.e. flags not visible in the Options dialog.
+They must be set in file "Syn.ini" in section [Setup].
+Use menu command "Options -- Advanced -- Edit file Syn.ini".
+Bool has only two possible values: 0/1 (mean off/on).
+
+--------------------
+Utf8Buffer=64
+Sets buffer size, in Kb, of UTF-8 detection procedure. Increase it if UTF-8 detection fails on big files.
+
+--------------------
+Tooltips=1
+Bool. Enables tooltips for long strings in listviews/treeviews.
+
+--------------------
+MaxWordLen=100
+Maximal length of text, which is handled by commands "Find current word next/ prior".
+
+--------------------
+MarkDeletedModified=1
+Bool. Enables, when auto-reload in on, to mark deleted file as modified ("*" char in tab caption).
+
+--------------------
+KeyComboIgnoreCtrl=1
+Bool. Enables to ignore Ctrl/Alt/Shift modifiers in key combinations (e.g. [Ctrl+Q,Ctrl+A]), in 2nd/3rd/etc parts of combo.
+
+--------------------
+MovX=20
+MovY=10
+These options specify horiz. and vert. offsets, used by 4 commands: "Move cursor left/right/up/down by <N> chars".
+
+--------------------
+SessionMaxFiles=0
+If set to positive value N, then additional confirmation will be shown on session saving/loading: "Session contains many files (more than N). Are you sure you want to save/load it?"
+
+--------------------
+PyChangeDelay=3000
+Delays (in msec) for Python plugins on_change_slow event.
+
+--------------------
+HintScroll=0
+Bool. Enables hint "Line NNNN" for editor vertical scrollbar, when scrollbar thumb is dragged.
+
+--------------------
+Items of command-plugins can be hidden in editor context menu (not in the main menu "Tools"). To do this, add "-" char after ";" char at end of lines in [Commands] section of SynPlugins.ini file (use command "Options - Advanced - Edit file SynPlugins.ini").
+Example:
+  Plugin Manager\Edit plugin...=py:syn_plugin_manager;menu_edit;;;-
+
+--------------------
+MinimapFont=1
+Font size (pix) for minimap. Default is like Sublime.
+
+--------------------
+StapleOffset=1
+Offset of "block staples" (indentation guide) lines to the left. If set to -1, staple will offset to right, w/o edges at top/bottom.
+
+--------------------
+CaretInd=2
+Indicating of multi-carets. 0: none, 1: by line bg color (if "draw current line bg" enabled), 2: by gutter bg color.
+
+--------------------
+MenuSize=520,320
+Width and height of menu dialogs, e.g. "Commands list", "Snippets".
+
+--------------------
+DateFmtPlugin=hh:mm
+Date/time format for plugins (in Delphi specifiers). When FTP plugin logs, it adds date/time prefix, if option not empty.
