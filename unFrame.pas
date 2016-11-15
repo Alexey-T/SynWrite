@@ -130,7 +130,6 @@ type
     FCollapsedRestored2: boolean;
     FFtpInfoPtr: Pointer;
     FFtpInfoSize: Integer;
-    FSelPresent: boolean;
     FLineEndsChg,
     FNoBOM: boolean;
     FFileName: WideString;
@@ -930,26 +929,10 @@ end;
 procedure TEditorFrame.EditorMasterSelectionChanged(Sender: TObject);
 var
   Ed: TSyntaxMemo;
-  SelCleared: boolean;
 begin
   Ed:= Sender as TSyntaxMemo;
   EditorMasterCaretPosChanged(Sender);
-
-  SelCleared:= FSelPresent and not Ed.HaveSelection;
-  FSelPresent:= Ed.HaveSelection;
-
-  if TfmMain(Owner).opHiliteSmart then
-  begin
-    if Ed.HaveSelection then
-      TfmMain(Owner).TimerSel.Enabled:= True;
-    if SelCleared then
-    begin
-      Ed.ResetSearchMarks;
-      UpdateMap(Ed);
-    end;
-  end;
-
-  TfmMain(Owner).DoPyEvent(Sender as TSyntaxMemo, cSynEventOnSelect, []);
+  TfmMain(Owner).DoPyEvent(Ed, cSynEventOnSelect, []);
 end;
 
 procedure TEditorFrame.EditorMasterZoom(Sender: TObject);

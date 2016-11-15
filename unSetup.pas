@@ -339,13 +339,6 @@ type
     cbCaretROnly: TTntCheckBox;
     TntLabel18: TTntLabel;
     edCaretShapeOvr: TTntComboBox;
-    boxAutoHilite: TTntGroupBox;
-    cbHiliteSmart: TTntCheckBox;
-    cbHiliteSmartClick: TTntCheckBox;
-    cbHiliteSmartCase: TTntCheckBox;
-    cbHiliteSmartWords: TTntCheckBox;
-    edHiliteBigSize: TSpinEdit;
-    TntLabel13: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2380,12 +2373,6 @@ begin
     opSingleClickURL:= cbUrlClick.Checked;
     ApplyUrlClick;
 
-    opHiliteSmart:= cbHiliteSmart.Checked;
-    opHiliteSmartOnClick:= cbHiliteSmartClick.Checked;
-    opHiliteSmartCase:= cbHiliteSmartCase.Checked;
-    opHiliteSmartWords:= cbHiliteSmartWords.Checked;
-    opHiliteBigSizeMb:= edHiliteBigSize.Value;
-
     opCopyLineIfNoSel:= cbCopyLineNoSel.Checked;
     opLeftRightSelJump:= cbSelJump.Checked;
 
@@ -2539,12 +2526,6 @@ begin
   begin
     cbUrlHilite.Checked:= opHiliteUrls;
     cbUrlClick.Checked:= opSingleClickURL;
-
-    cbHiliteSmart.Checked:= opHiliteSmart;
-    cbHiliteSmartClick.Checked:= opHiliteSmartOnClick;
-    cbHiliteSmartCase.Checked:= opHiliteSmartCase;
-    cbHiliteSmartWords.Checked:= opHiliteSmartWords;
-    edHiliteBigSize.Value:= opHiliteBigSizeMb;
 
     cbSelJump.Checked:= opLeftRightSelJump;
     cbCopyLineNoSel.Checked:= opCopyLineIfNoSel;

@@ -668,7 +668,6 @@ type
     acCloseAndDelete: TAction;
     ecReplaceInFiles: TAction;
     TBXItemSRepInFiles: TSpTBXItem;
-    TimerSel: TTimer;
     TBXSubmenuCtxMore: TSpTBXSubmenuItem;
     TBXItemCtxCopyUrl: TSpTbxItem;
     TBXItemCtxCopyAppend: TSpTbxItem;
@@ -1012,7 +1011,6 @@ type
     TBXItemClipsDir: TSpTbxItem;
     OD_Swatch: TOpenDialog;
     SD_Swatch: TSaveDialog;
-    ecSmartHl: TAction;
     TBXSeparatorItem78: TSpTbxSeparatorItem;
     TBXItemRunNumConv: TSpTbxItem;
     ecNumericConverter: TAction;
@@ -1468,7 +1466,6 @@ type
     procedure acExitExecute(Sender: TObject);
     procedure acCloseAndDeleteExecute(Sender: TObject);
     procedure ecReplaceInFilesExecute(Sender: TObject);
-    procedure TimerSelTimer(Sender: TObject);
     procedure TBXItemCtxCopyAppendClick(Sender: TObject);
     procedure TBXItemCtxCutAppendClick(Sender: TObject);
     procedure TBXSubmenuEditPopup(Sender: TTBCustomItem;
@@ -1727,7 +1724,6 @@ type
     procedure TBXItemClipsDirClick(Sender: TObject);
     procedure TBXItemTabColorMiscClick(Sender: TObject);
     procedure TBXItemTabColorDefClick(Sender: TObject);
-    procedure ecSmartHlExecute(Sender: TObject);
     procedure TBXItemRunNumConvClick(Sender: TObject);
     procedure ecNumericConverterExecute(Sender: TObject);
     procedure TBXItemEUnindentClick(Sender: TObject);
@@ -2355,8 +2351,6 @@ type
     function CurrentLexerForFile: string;
     function DoSnippetTabbing: boolean;
     function DoSmartTagTabbing: boolean;
-    procedure DoSmartHilite;
-    procedure DoSmartHiliteOnClick;
     procedure DoHandleLastCmd(Command: integer; Data: pointer);
 
     procedure MsgFound;
@@ -2709,7 +2703,6 @@ type
     procedure DoPluginsManager_Update;
     procedure DoPluginsManager_Config;
     function IsCommandForMacros(Cmd: integer): boolean;
-    function IsTextSizeOkForAutoHilite(Ed: TSyntaxMemo): Boolean;
     procedure InitPythonEngine;
     //end of private
 
@@ -2846,11 +2839,6 @@ type
       //
     opStatusText: array[TSynSelState] of string;
     opShowMenuIcons: boolean;
-    opHiliteSmart: boolean;
-    opHiliteSmartCase: boolean;
-    opHiliteSmartWords: boolean;
-    opHiliteSmartOnClick: boolean;
-    opHiliteBigSizeMb: integer;
     opDateFmtPluginLog: string;
     opFileBackup: TSynBackup;
     opEsc: TSynEscMode;
@@ -4193,7 +4181,6 @@ begin
   ecLineNums.Checked:= ed.LineNumbers.Visible;
   ecFolding.Checked:= not ed.DisableFolding;
   ecRuler.Checked:= ed.HorzRuler.Visible;
-  ecSmartHl.Checked:= opHiliteSmart;
   ecFullScr.Checked:= ShowFullScreen;
 
   ecNonPrint.Checked:= ed.NonPrinted.Visible;
@@ -4518,12 +4505,6 @@ begin
     opUtf8BufferSizeKb:= ReadInteger('Setup', 'Utf8Buffer', 64);
     opShowMenuIcons:= ReadBool('Setup', 'MenuIcon', false);
     ApplyShowIconsInMenus;
-
-    opHiliteSmart:= ReadBool('Setup', 'SmHi', false);
-    opHiliteSmartCase:= ReadBool('Setup', 'SmHiCase', false);
-    opHiliteSmartWords:= ReadBool('Setup', 'SmHiWords', true);
-    opHiliteSmartOnClick:= ReadBool('Setup', 'SmHiClick', false);
-    opHiliteBigSizeMb:= ReadInteger('Setup', 'HiliteBigSize', 4);
 
     opDateFmtPluginLog:= ReadString('Setup', 'DateFmtPlugin', 'hh:mm');
     opFileBackup:= TSynBackup(ReadInteger('Setup', 'Back', 0));
@@ -4905,12 +4886,6 @@ begin
 
     WriteBool('Setup', 'MenuIcon', opShowMenuIcons);
     WriteBool('Setup', 'Beep', opBeep);
-
-    WriteBool('Setup', 'SmHi', opHiliteSmart);
-    WriteBool('Setup', 'SmHiCase', opHiliteSmartCase);
-    WriteBool('Setup', 'SmHiWords', opHiliteSmartWords);
-    WriteBool('Setup', 'SmHiClick', opHiliteSmartOnClick);
-    WriteInteger('Setup', 'HiliteBigSize', opHiliteBigSizeMb);
 
     WriteInteger('Setup', 'Back', Ord(opFileBackup));
     WriteInteger('Setup', 'Esc' + cExeSuffix[SynExe], Ord(opEsc));
@@ -5971,7 +5946,6 @@ begin
     sm_OptFolding: ecFolding.Execute;
     sm_OptNonPrint: ecNonPrint.Execute;
     sm_OptRuler: ecRuler.Execute;
-    sm_ToggleSmartHl: ecSmartHl.Execute;
 
     sm_ToggleFocusTree: ecToggleFocusTree.Execute;
     sm_ToggleFocusClip: ecToggleFocusClip.Execute;
@@ -11954,10 +11928,12 @@ begin
   Finder.FindText:= Str;
   Finder.ReplaceText:= '';
   Finder.Flags:= [ftEntireScope];
-  if opHiliteSmartWords then
-    Finder.Flags:= Finder.Flags + [ftWholeWords];
-  if opHiliteSmartCase then
-    Finder.Flags:= Finder.Flags + [ftCaseSens];
+
+  //del'ed coz SmartHilite deleted
+  //if opHiliteSmartWords then
+  //  Finder.Flags:= Finder.Flags + [ftWholeWords];
+  //if opHiliteSmartCase then
+  //  Finder.Flags:= Finder.Flags + [ftCaseSens];
 
   Finder.OnAfterExecute:= nil;
   Finder.OnBeforeExecute:= nil;
@@ -11982,42 +11958,6 @@ begin
   Finder.OnNotFound:= PrevEvent3;
 end;
 
-procedure TfmMain.DoSmartHilite;
-var
-  Ed: TSyntaxMemo;
-  s: Widestring;
-  i: Integer;
-begin
-  Ed:= CurrentEditor;
-  if Ed=nil then Exit;
-  if not IsTextSizeOkForAutoHilite(Ed) then Exit;
-  if FSelBlank and (Ed.SelLength=0) then Exit;
-
-  Ed.ResetSearchMarks;
-  s:= Ed.SelText;
-  FSelBlank:= Ed.SelLength=0;
-
-  if opHiliteSmartWords then
-  begin
-    //Selection must be a word
-    for i:= 1 to Length(s) do
-      if not IsWordChar(s[i]) then Exit;
-  end;
-
-  DoFind_MarkAll(s);
-end;
-
-function TfmMain.IsTextSizeOkForAutoHilite(Ed: TSyntaxMemo): Boolean;
-begin
-  Result:= Ed.TextLength div (1024*1024) < opHiliteBigSizeMb;
-end;
-
-procedure TfmMain.TimerSelTimer(Sender: TObject);
-begin
-  TimerSel.Enabled:= false;
-  if opHiliteSmart then
-    DoSmartHilite;
-end;
 
 procedure TfmMain.TBXItemCtxCopyAppendClick(Sender: TObject);
 begin
@@ -18533,12 +18473,6 @@ begin
     end;
 end;
 
-procedure TfmMain.ecSmartHlExecute(Sender: TObject);
-begin
-  opHiliteSmart:= not opHiliteSmart;
-  UpdateStatusBar;
-end;
-
 
 function TfmMain.OppositeFrame: TEditorFrame;
 begin
@@ -23356,45 +23290,10 @@ begin
 
   ATSyntMemo.TSyntaxMemo(Ed).DoUpdateMargins;
 
-  DoSmartHiliteOnClick;
-
   UpdateLexer;
   UpdateStatusBar;
 end;
 
-procedure TfmMain.DoSmartHiliteOnClick;
-var
-  Ed: TSyntaxMemo;
-  NPos: Integer;
-  S: Widestring;
-  F: TEditorFrame;
-  MCarets: boolean;
-begin
-  Ed:= CurrentEditor;
-  if not IsTextSizeOkForAutoHilite(Ed) then Exit;
-
-  //don't allow to work for many carets
-  F:= FrameOfEditor(Ed);
-  MCarets:= (F<>nil) and (F.CaretsCount>1);
-  if MCarets and opHiliteSmartOnClick then
-  begin
-    DoClearSearchMarks(Ed);
-    Exit
-  end;
-
-  if opHiliteSmartOnClick then
-  begin
-    DoClearSearchMarks(Ed);
-    NPos:= Ed.CaretStrPos;
-    if not Ed.HaveSelection then
-	  if IsWordChar(Ed.Lines.Chars[NPos+1]) then
-	  begin
-      S:= Ed.WordAtPos(Ed.CaretPos);
-      if S<>'' then
-        DoFind_MarkAll(S);
-	  end;
-  end;
-end;
 
 procedure TfmMain.DoPasteAndSelect;
 begin
@@ -26639,7 +26538,6 @@ begin
     sm_OptNonPrintBoth:   Item.Action:= ecNonPrintBoth;
     sm_OptNonPrintEolDetails: Item.Action:= ecNonPrintEolDetails;
 
-    sm_ToggleSmartHl:   Item.Action:= ecSmartHl;
     sm_ShowOnTop:       Item.Action:= ecOnTop;
     sm_SyncScrollHorz:  Item.Action:= ecSyncScrollH;
     sm_SyncScrollVert:  Item.Action:= ecSyncScrollV;

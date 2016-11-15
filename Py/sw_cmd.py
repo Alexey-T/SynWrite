@@ -314,7 +314,6 @@ cmd_SplitViewsVertHorz = 770
 cmd_SplitSlaveVertHorz = 771
 cmd_GotoBookmarkDialog = 772
 cmd_ToggleFocusClips = 776
-cmd_ToggleSmartHl = 777
 cmd_IndentLike1st = 780
 cmd_PasteNoCursorChange = 783
 cmd_CancelSelection = 786

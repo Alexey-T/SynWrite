@@ -2552,64 +2552,6 @@ object fmSetup: TfmSetup
           TabOrder = 6
         end
       end
-      object boxAutoHilite: TTntGroupBox
-        Left = 8
-        Top = 168
-        Width = 529
-        Height = 129
-        Caption = 'Auto-highlight'
-        TabOrder = 1
-        object TntLabel13: TTntLabel
-          Left = 64
-          Top = 98
-          Width = 231
-          Height = 13
-          Caption = 'Disable auto-highlights in files bigger than ... Mb'
-        end
-        object cbHiliteSmart: TTntCheckBox
-          Left = 8
-          Top = 16
-          Width = 361
-          Height = 17
-          Caption = 'Highlight all occurences of selected word'
-          TabOrder = 0
-        end
-        object cbHiliteSmartClick: TTntCheckBox
-          Left = 8
-          Top = 32
-          Width = 361
-          Height = 17
-          Caption = 'Highlight all occurences of clicked word'
-          TabOrder = 1
-        end
-        object cbHiliteSmartCase: TTntCheckBox
-          Left = 24
-          Top = 48
-          Width = 243
-          Height = 17
-          Caption = 'Case sensitive'
-          TabOrder = 2
-        end
-        object cbHiliteSmartWords: TTntCheckBox
-          Left = 24
-          Top = 64
-          Width = 243
-          Height = 17
-          Caption = 'Whole words only'
-          TabOrder = 3
-        end
-        object edHiliteBigSize: TSpinEdit
-          Left = 8
-          Top = 95
-          Width = 49
-          Height = 22
-          MaxValue = 100
-          MinValue = 1
-          TabOrder = 4
-          Value = 1
-          OnKeyDown = edIndentKeyDown
-        end
-      end
     end
     object tabInsertFormat: TTntTabSheet
       Caption = 'Insert/Format'
@@ -2893,7 +2835,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E0143010000
+      0700666D5365747570010100000001000000070043617074696F6E013C010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3183,14 +3125,7 @@ object fmSetup: TfmSetup
       43617074696F6E000F004C6162656C48656C7043617265747300000C00636243
       61726574524F6E6C790101000000FB020000070043617074696F6E000A00546E
       744C6162656C31380101000000FD020000070043617074696F6E000F00656443
-      6172657453686170654F767200000D00626F784175746F48696C697465010100
-      0000FE020000070043617074696F6E000D00636248696C697465536D61727401
-      01000000FF020000070043617074696F6E001200636248696C697465536D6172
-      74436C69636B010100000000030000070043617074696F6E001100636248696C
-      697465536D61727443617365010100000002030000070043617074696F6E0012
-      00636248696C697465536D617274576F72647301010000000403000007004361
-      7074696F6E000F00656448696C69746542696753697A6500000A00546E744C61
-      62656C3133010100000008030000070043617074696F6E00}
+      6172657453686170654F76720000}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
