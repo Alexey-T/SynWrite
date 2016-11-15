@@ -7927,10 +7927,10 @@ object fmMain: TfmMain
         DisplayName = 'Toggle Text Clips panel focus'
       end
       item
-        Command = 777
+        Command = 0
         KeyStrokes = <>
         Category = 'Options'
-        DisplayName = 'Toggle smart highlighting'
+        DisplayName = 'Toggle smart highlighting (del)'
       end
       item
         Command = 0
