@@ -4,8 +4,9 @@ Legend:
  * changed
 
 
-6.28.2442
-* fix: manifest file for high-dpi
+6.28.2444
+- fix: installer of lexer forgot to copy .cuda-lexmap
+- fix: manifest file for high-dpi
 
 6.28.2440
 * change: deleted stuff "Select/Hilite - Auto-hilites", use plugin Hilite now (Synw code has 5 opts, plugin has 10 opts, via config file)

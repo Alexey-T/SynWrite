@@ -3133,7 +3133,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.28.2440';
+  cSynVer = '6.28.2444';
   cSynPyVer = '1.0.157';
 
 const
@@ -24117,7 +24117,9 @@ function TfmMain.DoOpenArchive_HandleLexer(const fn_ini, section: string): boole
 var
   s_file, dir: string;
   s_links: array[1..cMaxLexerLinksInInf] of string;
-  fn_lexer, fn_acp, fn_acp_target: string;
+  fn_lexer, fn_lexer_target,
+  fn_lexmap, fn_lexmap_target,
+  fn_acp, fn_acp_target: string;
   An, AnLink: TSyntAnalyzer;
   i: Integer;
 begin
@@ -24136,9 +24138,14 @@ begin
   if not Result then Exit;
 
   fn_lexer:= dir + '\' + s_file + '.lcf';
+  fn_lexmap:= dir + '\' + s_file + '.cuda-lexmap';
   fn_acp:= dir + '\' + s_file + '.acp';
-  fn_acp_target:= GetAcpFN(s_file);
 
+  fn_lexer_target:= SynDataSubdir(cSynDataLexerLib) + '\' + ExtractFileName(fn_lexer);
+  fn_lexmap_target:= SynDataSubdir(cSynDataLexerLib) + '\' + ExtractFileName(fn_lexmap);
+  fn_acp_target:= SynDataSubdir(cSynDataAutocomp) + '\' + ExtractFileName(fn_acp);
+
+  //1) name.lcf
   if FileExists(fn_lexer) then
   begin
     An:= SyntaxManager.FindAnalyzer(s_file);
@@ -24157,12 +24164,18 @@ begin
             An.SubAnalyzers[i-1].SyntAnalyzer:= AnLink;
       end;
 
-    //del temp file
+    FFileCopy(fn_lexer, fn_lexer_target);
     FDelete(fn_lexer);
-    //save to data/lexlib
-    DoLexerSaveToFile(An, LexerFilename(An.LexerName, SynDataSubdir(cSynDataLexerLib)));
   end;
 
+  //2) name.cuda-lexmap
+  if FileExists(fn_lexmap) then
+  begin
+    FFileCopy(fn_lexmap, fn_lexmap_target);
+    FDelete(fn_lexmap);
+  end;
+
+  //3) name.acp
   if FileExists(fn_acp) then
   begin
     FFileCopy(fn_acp, fn_acp_target);
