@@ -46,6 +46,12 @@ Methods, scrolling | Description
 `set_top(num)` | Sets index of top visible line (vertical scroll position). 
 `set_left(num)` | Sets index of left visible column (horizontal scroll position). 
 
+Methods, marks | Description
+-------------- | -----------------
+`marks(id, npos, nlen, ntag)` | Perform action on search-marks. See [py marks id].
+`get_marks()` (deprecated) | Returns list of search-marks. It's list of 2-tuples `(npos, nlen)`, or None. 
+`add_mark(npos, nlen)` (deprecated) | Adds search-mark with given position/len. Pass `npos=-1` to remove all marks.
+
 Methods, other | Description
 -------------- | -----------------
 `get_filename()` | Returns file-name of editor.
@@ -53,8 +59,6 @@ Methods, other | Description
 `set_prop(id, value)` | Sets some editor property. `value` is string, use "0" and "1" for bool values, use `str()` for int values. Possible `id` values are listed at [py property id].  
 `get_split()` | Returns split properties of editor tab as 2-tuple: `(horizontal, percent_value)`, where value is in range 0..100.
 `set_split(horz, value)` | Sets split properties of editor tab. `horz` is bool: perform horizontal split. `value` is int in range 0..100: specifies split percent position, 0 means unsplit.
-`get_marks()` | Returns list of search-marks placed in editor. It's `None` or non-empty list of int pairs: `[[start0, len0], [start1, len1], ...]`. 
-`add_mark(start, len)` | Adds search-mark with given absolute offset and length. Pass `start=-1` to remove all search-marks.
 `get_bk(id)` | Returns list of bookmarks positions. Possible values of `id` are listed at [py bookmark id]. 
 `set_bk(id, pos, icon=-1, color=-1, hint='')` | Sets or clears bookmarks. Possible values of `id` are listed at [py bookmark id]. `pos` is absolute offset of bookmark, it can be `-1` for numbered bookmark to clear it. `icon` can be used for unnumbered bookmarks, any `GUTTER_nnnn` constant. `color` can be used for unnumbered bookmarks, it's int RGB color of bookmarked line. `hint` is tooltip string for bookmark icon; hint beginning with `"!"` char disables saving of bookmark in program history.
 `get_sync_ranges()` | Returns list of sync-editing ranges in editor. It's `None` or non-empty list of int pairs: `[[start0, len0], [start1, len1], ...]`.

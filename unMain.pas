@@ -3133,8 +3133,8 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.28.2444';
-  cSynPyVer = '1.0.157';
+  cSynVer = '6.28.2450';
+  cSynPyVer = '1.0.158';
 
 const
   cSynParamRO = '/ro';
@@ -24643,6 +24643,7 @@ begin
     AddMethod('ed_lock', Py_ed_lock, '');
     AddMethod('ed_unlock', Py_ed_unlock, '');
     AddMethod('ed_find', Py_ed_find, '');
+    AddMethod('ed_marks', Py_ed_marks, '');
   end;
 end;
 

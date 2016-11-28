@@ -49,6 +49,12 @@ ATTRIB_SET_ITALIC      = 3
 ATTRIB_SET_UNDERLINE   = 4
 ATTRIB_SET_STRIKEOUT   = 5
 
+MARKS_GET           = 1
+MARKS_ADD           = 2
+MARKS_DELETE        = 3
+MARKS_DELETE_ALL    = 4
+MARKS_DELETE_BY_TAG = 5
+
 LOG_CLEAR         = 0
 LOG_ADD           = 1
 LOG_SET_PANEL     = 2
@@ -468,6 +474,8 @@ class Editor:
         return sw_api.ed_focus(self.h)
     def get_marks(self):
         return sw_api.ed_get_marks(self.h)
+    def marks(self, id, npos, nlen, ntag):
+        return sw_api.ed_marks(self.h, id, npos, nlen, ntag)
     def complete(self, text, len, show_menu=True):
         return sw_api.ed_complete(self.h, text, len, show_menu)
     def get_split(self):

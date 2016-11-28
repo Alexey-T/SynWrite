@@ -94,6 +94,8 @@ function Py_ed_insert_snippet(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_text_line(Self, Args: PPyObject): PPyObject; cdecl;
 
+function Py_ed_marks(Self, Args: PPyObject): PPyObject; cdecl;
+
 implementation
 
 uses
@@ -120,6 +122,14 @@ uses
 
 const
   cMaxBookmarks = 10000;
+
+const
+  MARKS_GET = 1;
+  MARKS_ADD = 2;
+  MARKS_DELETE = 3;
+  MARKS_DELETE_ALL = 4;
+  MARKS_DELETE_BY_TAG = 5;
+
     
 function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -202,6 +212,70 @@ begin
       Result:= ReturnNone;
     end;
 end;
+
+function Py_ed_marks(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, NStart, NLen, NTag, NId, i: Integer;
+  Ed: TSyntaxMemo;
+  ComArray: Variant;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iiiii:marks', @H, @NId, @NStart, @NLen, @NTag)) then
+    begin
+      Ed:= PyEditor(H);
+      case NId of
+        MARKS_GET:
+          begin
+            NLen:= Ed.SearchMarks.Count;
+            if NLen>0 then
+            begin
+              ComArray:= VarArrayCreate([0, NLen-1, 0, 2], varInteger);
+              for i:= 0 to NLen-1 do
+              begin
+                ComArray[i, 0]:= Ed.SearchMarks[i].StartPos;
+                ComArray[i, 1]:= Ed.SearchMarks[i].Size;
+                ComArray[i, 2]:= Ed.SearchMarks[i].Tag;
+              end;
+              Result:= VariantAsPyObject(ComArray);
+            end
+            else
+              Result:= ReturnNone;
+          end;
+        MARKS_ADD:
+          begin
+            Ed.SearchMarks.Add(TRange.Create(NStart, NStart + NLen, NTag));
+            Ed.Invalidate;
+            Result:= ReturnNone;
+          end;
+        MARKS_DELETE:
+          begin
+            if (NStart>=0) and (NStart<Ed.SearchMarks.Count) then
+            begin
+              Ed.SearchMarks.Delete(NStart);
+              Ed.Invalidate;
+            end;  
+            Result:= ReturnNone;
+          end;
+        MARKS_DELETE_ALL:
+          begin
+            Ed.ResetSearchMarks;
+            Ed.Invalidate;
+            Result:= ReturnNone;
+          end;
+        MARKS_DELETE_BY_TAG:
+          begin
+            for i:= Ed.SearchMarks.Count-1 downto 0 do
+              if Ed.SearchMarks[i].Tag=NTag then
+                Ed.SearchMarks.Delete(i);
+            Ed.Invalidate;
+            Result:= ReturnNone;
+          end;
+        else
+          Result:= ReturnNone;
+      end;
+    end;
+end;
+
 
 function Py_ed_add_sync_range(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1067,7 +1141,7 @@ begin
       end
       else
         Result:= ReturnNone;
-    end;  
+    end;
 end;
 
 function Py_ed_get_sync_ranges(Self, Args: PPyObject): PPyObject; cdecl;

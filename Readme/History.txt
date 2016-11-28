@@ -4,7 +4,8 @@ Legend:
  * changed
 
 
-6.28.2444
+6.28.2450
++ api (for search-marks)
 - fix: installer of lexer forgot to copy .cuda-lexmap
 - fix: manifest file for high-dpi
 
