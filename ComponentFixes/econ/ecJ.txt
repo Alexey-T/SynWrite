@@ -1,0 +1,12 @@
+ecSyntMemo.pas
+comment block:
+
+  with Message do
+    case Msg of
+      WM_GETTEXTLENGTH: Result := Lines.TextLength;
+      WM_SETTEXT:       begin
+      .....
+  //comment till end of case block
+
+and add after block:
+  inherited;

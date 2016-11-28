@@ -1,0 +1,90 @@
+//ecPrint.pas
+
+  TecCustomPrinter = class(TComponent)
+  private
+    FFontText: TFont;//AT
+    FFontTextBefore: TFont;
+    procedure SetFontText(const Value: TFont);//AT
+
+  public
+    property FontText: TFont read FFontText write SetFontText; //AT
+
+  protected
+    procedure DoInitPrinting;//AT
+    procedure DoDonePrinting;//AT
+    procedure BeforePrint(Canvas: TCanvas); override;//AT
+    procedure AfterPrint(Canvas: TCanvas); override;//AT
+    procedure DoUpdatePagesWork;//AT (renamed DoUpdatePages)
+    procedure DoUpdatePages; override;
+
+//////////
+constructor TecCustomPrinter.Create(AOwner: TComponent);
+
+  FFontText := TFont.Create;//AT block
+  FFontText.Name := 'Courier New';
+  FFontText.Size := 10;
+  FFontTextBefore:= TFont.Create;
+
+  FFontHeader := TFont.Create;
+  FFontHeader.Name := 'Courier New';
+  FFontHeader.Size := 10;
+
+  FFontFooter := TFont.Create;
+  FFontFooter.Name := 'Courier New';
+  FFontFooter.Size := 10;
+
+////////
+destructor TecCustomPrinter.Destroy;
+begin
+  FPrnInfo.Free;
+  FFontHeader.Free;
+  FFontFooter.Free;
+  FFontText.Free; //AT
+  FFontTextBefore.Free;//AT
+  FFields.Free;
+  inherited;
+end;
+
+////////
+procedure TecCustomPrinter.SetFontText(const Value: TFont); //AT
+begin
+  FFontText.Assign(Value);
+  Changed;
+end;
+
+////
+procedure TecSyntPrinter.DoUpdatePagesWork;//AT renamed MZ code doupdatepages
+
+////
+procedure TecSyntPrinter.DoInitPrinting;//AT
+begin
+  FFontTextBefore.Assign(FSyntMemo.Font);
+  FSyntMemo.Font:= FFontText;
+end;
+
+procedure TecSyntPrinter.DoDonePrinting;//AT
+begin
+  FSyntMemo.Font:= FFontTextBefore;
+end;
+
+procedure TecSyntPrinter.DoUpdatePages;//AT
+begin
+  DoInitPrinting;
+  try
+    DoUpdatePagesWork;
+  finally
+    DoDonePrinting;
+  end;    
+end;
+
+procedure TecSyntPrinter.BeforePrint;//AT
+begin
+  DoInitPrinting;
+  inherited;
+end;
+
+procedure TecSyntPrinter.AfterPrint;//AT
+begin
+  inherited;
+  DoDonePrinting;
+end;

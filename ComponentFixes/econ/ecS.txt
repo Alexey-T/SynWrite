@@ -1,0 +1,22 @@
+ecKeyMap.pas
+
+  //after
+  KeyMapping.Add(smUncommentLines,           SMisc, 'Uncomment lines',  'Uncomment selected lines');
+
+  //AT add:
+  KeyMapping.Add(738,                        SMisc, 'Toggle line comment',  'Toggle line comment');
+  KeyMapping.Add(751,                        SMisc, 'Toggle stream comment',  'Toggle stream comment');
+  KeyMapping.Add(792,                        SMisc, 'Find/replace action',  'Find/replace action');
+  KeyMapping.Add(873,                        SMisc, 'Select to word end',  'Select to word end');
+  KeyMapping.Add(651,                        SMisc, 'Auto-complete current word',  'Auto-complete current word');
+  //
+
+
+ecMacroCmdEditDlg.pas
+
+//before
+        else
+          if DataEdit.Text <> '' then
+            raise Exception.Create('This command does not support data');
+//add
+        792: ; //AT - sm_FindCommand

@@ -1,0 +1,48 @@
+ecSyntMemo.pas
+
+//add func
+function IsSignChar(Ch: WideChar): boolean;//AT
+begin
+  Result := Pos(Ch, '-+!@#%^&*=/\|^&.,:;?~') > 0;
+end;
+
+function IsHexChar(Ch: WideChar): boolean;//AT
+begin
+  Result := Pos(Ch, '1234567890abcdefABCDEF') > 0;
+end;
+
+//modify
+procedure TCustomSyntaxMemo.WordRangeAtPos(Pos: TPoint; var wStart, wEnd: integer);
+....
+begin
+  if Lines.Count = 0 then Exit;
+  if Pos.Y < Lines.Count then  s := Lines[Pos.Y]
+   else s := '';
+  k1 := min(Pos.X + 1, Length(S));
+
+  //AT
+  //fix for selecting "-----" or "+++++" as word
+  if (k1 > 0) and (k1 <= Length(s)) and IsSignChar(s[k1]) then
+  begin
+    while (k1 > 1) and IsSignChar(s[k1-1]) do Dec(k1);
+    wStart := CaretPosToStrPos(Point(k1-1, Pos.Y));
+    while (k1 < Length(s)) and IsSignChar(s[k1+1]) do Inc(k1);
+    wEnd := CaretPosToStrPos(Point(k1, Pos.Y));
+    Exit;
+  end;
+
+  //old code
+  while (k1 > 1) do
+  ........
+
+  ........
+    wStart := CaretPosToStrPos(Point(k1 - 1, Pos.Y));
+    wEnd := CaretPosToStrPos(Point(k2 - 1, Pos.Y));
+
+    //AT
+    //addition to select color token #AABBCC (len=6) or #AAA (len=3)
+    if (k1>1) and IsHexChar(s[k1]) and (s[k1-1]='#') then
+      if ((k2-k1)=6) or ((k2-k1)=3) then
+        Dec(wStart);
+   end;
+end;

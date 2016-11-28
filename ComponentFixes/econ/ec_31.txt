@@ -1,0 +1,57 @@
+1.
+ecHotKeyEdit.pas
+ecKeyMap.pas
+Replace usages of ShortcutToText to _ShortcutToText
+and add uses of unit ecSysUtils (if not added).
+
+2.
+ecSysUtils.pas
+add public function 
+function _ShortCutToText(ShortCut: TShortCut): string; //AT
+
+//AT
+function GetSpecialName(ShortCut: TShortCut): string;
+var
+  ScanCode: Integer;
+  KeyName: array[0..255] of Char;
+begin
+  Result := '';
+  ScanCode := MapVirtualKey(WordRec(ShortCut).Lo, 0) shl 16;
+  if ScanCode <> 0 then
+  begin
+    GetKeyNameText(ScanCode, KeyName, SizeOf(KeyName));
+    GetSpecialName := KeyName;
+  end;
+end;
+
+function _ShortCutToText(ShortCut: TShortCut): string; //AT
+var
+  Name: string;
+begin
+  case WordRec(ShortCut).Lo of
+    $08, $09:
+      Name := MenuKeyCaps[TMenuKeyCap(Ord(mkcBkSp) + WordRec(ShortCut).Lo - $08)];
+    $0D: Name := MenuKeyCaps[mkcEnter];
+    $1B: Name := MenuKeyCaps[mkcEsc];
+    $20..$28:
+      Name := MenuKeyCaps[TMenuKeyCap(Ord(mkcSpace) + WordRec(ShortCut).Lo - $20)];
+    $2D..$2E:
+      Name := MenuKeyCaps[TMenuKeyCap(Ord(mkcIns) + WordRec(ShortCut).Lo - $2D)];
+    $30..$39: Name := Chr(WordRec(ShortCut).Lo - $30 + Ord('0'));
+    $41..$5A: Name := Chr(WordRec(ShortCut).Lo - $41 + Ord('A'));
+    $60..$69: Name := 'Num'+ Chr(WordRec(ShortCut).Lo - $60 + Ord('0'));
+    $70..$87: Name := 'F' + IntToStr(WordRec(ShortCut).Lo - $6F);
+  else
+    Name := GetSpecialName(ShortCut);
+  end;
+  if Name <> '' then
+  begin
+    Result := '';
+    if ShortCut and scShift <> 0 then Result := Result + MenuKeyCaps[mkcShift];
+    if ShortCut and scCtrl <> 0 then Result := Result + MenuKeyCaps[mkcCtrl];
+    if ShortCut and scAlt <> 0 then Result := Result + MenuKeyCaps[mkcAlt];
+    Result := Result + Name;
+  end
+  else Result := '';
+end;
+

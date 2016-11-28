@@ -1,0 +1,10 @@
+PythonGUIInputOutput.pas: comment unneeded "inherited":
+
+procedure TPythonGUIInputOutput.SendUniData(const Data: UnicodeString);
+begin
+  //inherited; //AT
+  if Assigned(FOnSendUniData) then
+    inherited
+  else
+    DisplayString( Data );
+end;

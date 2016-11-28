@@ -1,0 +1,27 @@
+ecSyntMemo small patches:
+
+----
+      smFirstLetter: if FCaretPos.Y < Lines.Count then
+                     begin
+                       x := FirstLetter(Lines[FCaretPos.Y]);
+                       if x = FCaretPos.X then x := 0; //AT
+                       CaretPos := SkipHidden(x, FCaretPos.Y, False);
+                     end;
+      smLastLetter:  if FCaretPos.Y < Lines.Count then
+                     begin
+                       x := LastLetter(Lines[FCaretPos.Y]);
+                       if (x = FCaretPos.X) or (x = 0) then x := LineLength(FCaretPos.Y); //AT
+                       CaretPos := SkipHidden(x, FCaretPos.Y, True);
+                     end;
+----
+     //MZ: 
+     //bug in rendering functions (for long strings)
+     //if ElemLen > 256 then ElemLen := 256;
+     
+     //AT: it's needed (e.g. lines longer than 4700 are invisible) but with bigger value, e.g. 512:
+     if ElemLen > 512 then ElemLen := 512;
+----
+      smPageBottom:  CaretPos := SkipHidden(FCaretPos.X, TopLine + VisibleLines - 2, True); //AT "-2"
+----
+      procedure CollapsedChanged: move declaration from private to public
+  

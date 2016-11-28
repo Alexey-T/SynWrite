@@ -1,0 +1,140 @@
+//cStrings.pas
+
+//interface part
+uses
+  unSearch,
+  ecStrUtils;
+
+function  PosStrW(const F, S: WideString; const Index: Integer = 1; 
+  const AsciiCaseSensitive: Boolean = True;
+  const WholeWords: Boolean = False): Integer; //AT
+function  StrReplaceW(const Find, Replace, S: WideString): Widestring; overload;
+function  StrReplaceW(const Find, Replace, S: WideString;
+  const AsciiCaseSensitive: Boolean;
+  const WholeWords: Boolean;
+  FromPos: integer;
+  var ReplaceCnt: integer): WideString; overload;
+
+var
+  FundFinder: TTextFinder = nil;
+
+//implementation part
+
+//AT
+function IsReplaceOk(StartPos, FindLen: Integer): Boolean;
+begin
+  Result := True;
+  if Assigned(FundFinder) and Assigned(FundFinder.OnCanAccept) then
+    FundFinder.OnCanAccept(FundFinder, StartPos, StartPos+FindLen-1, Result);
+end;
+
+//AT
+function IsWordOK(const S, F: Widestring; const Index: Integer; WholeWords: boolean): boolean;
+begin
+  Result := True;
+  if not WholeWords then Exit;
+  if ((Index=1) or not IsWordChar(S[Index]) or not IsWordChar(S[Index-1])) and
+    ((Index>=Length(S)-Length(F)+1) or not IsWordChar(S[Index+Length(F)-1]) or not IsWordChar(S[Index+Length(F)]))
+      then Exit;
+  Result:= False;
+end;
+
+function PosStrW(const F, S: WideString; const Index: Integer;
+    const AsciiCaseSensitive: Boolean;
+    const WholeWords: Boolean): Integer; //AT
+var P, Q    : PWideChar;
+    L, M, I : Integer;
+begin
+  L := Length(S);
+  M := Length(F);
+  if (L = 0) or (Index > L) or (M = 0) or (M > L) then
+    begin
+      Result := 0;
+      exit;
+    end;
+  Q := Pointer(F);
+  if Index < 1 then
+    I := 1
+  else
+    I := Index;
+  P := Pointer(S);
+  Inc(P, I - 1);
+  Dec(L, M - 1);
+  if AsciiCaseSensitive then
+    while I <= L do
+      if StrPMatchW(P, Q, M) and IsWordOK(S, F, I, WholeWords) then //AT
+        begin
+          Result := I;
+          exit;
+        end else
+        begin
+          Inc(P);
+          Inc(I);
+        end
+  else
+    while I <= L do
+      if StrPMatchNoAsciiCaseW(P, Q, M) and IsWordOK(S, F, I, WholeWords) then //AT
+        begin
+          Result := I;
+          exit;
+        end else
+        begin
+          Inc(P);
+          Inc(I);
+        end;
+  Result := 0;
+end;
+
+//AT
+function StrReplaceW(const Find, Replace, S: WideString): Widestring;
+var
+  N: Integer;
+begin
+  StrReplaceW(Find, Replace, S, True, False, 1, N);
+end;
+
+//AT
+function StrReplaceW(const Find, Replace, S: WideString;
+  const AsciiCaseSensitive: Boolean;
+  const WholeWords: Boolean;
+  FromPos: integer;
+  var ReplaceCnt: integer): WideString;
+var FindLen    : Integer;
+    Matches    : StrReplaceMatchArray;
+    C, I, J, K : Integer;
+begin
+  ReplaceCnt := 0; //AT
+  FindLen := Length(Find);
+  if FindLen = 0 then // nothing to find
+    begin
+      Result := S;
+      exit;
+    end;
+  I := PosStrW(Find, S, FromPos, AsciiCaseSensitive, WholeWords); //AT
+  if I = 0 then // not found
+    begin
+      Result := S;
+      exit;
+    end;
+  J := 1;
+  Result := '';
+  repeat
+    C := 0;
+    repeat
+      if IsReplaceOK(I, FindLen) then //AT
+      begin
+        Matches[C] := I;
+        Inc(C);
+        Inc(ReplaceCnt); //AT
+      end;
+      Inc(I, FindLen);
+      I := PosStrW(Find, S, I, AsciiCaseSensitive, WholeWords); //AT
+    until (I = 0) or (C = 4096);
+    if I = 0 then
+      K := Length(S)
+    else
+      K := I - 1;
+    Result := Result + StrReplaceBlockW(FindLen, Replace, S, J, K, C, Matches);
+    J := K + 1;
+  until I = 0;
+end;

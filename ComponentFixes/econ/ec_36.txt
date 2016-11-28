@@ -1,0 +1,6 @@
+ecEmbObj.pas
+
+  TecEmbeddedObjects = class(...)
+  public
+    FFormatRanges: TRangeList;//AT moved to public
+    FStyles: TStyleCache;//AT moved to public

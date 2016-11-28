@@ -1,0 +1,12 @@
+ecActns.pas
+
+in interface part add:
+
+var
+  ecExportsBaseFilename: string = '';
+
+in procedure TecBaseExportAction.DoExecute add:
+
+    SaveDialog.Options:= Options;
+    SaveDialog.FileName:= ecExportsBaseFilename; //AT
+

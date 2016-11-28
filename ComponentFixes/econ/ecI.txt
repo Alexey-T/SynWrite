@@ -1,0 +1,4 @@
+//ecSyntMemo.pas
+
+    procedure GotoMarker(Marker: TMarker);
+move from "private" to "public" part of TCustomSyntaxMemo.

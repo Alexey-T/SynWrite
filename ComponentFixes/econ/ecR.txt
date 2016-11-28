@@ -1,0 +1,7 @@
+ecSyntAnal.pas
+
+procedure TLoadableComponent.LoadFromFile(const FileName: string);
+var
+  Stream: TFileStream;
+begin
+  FFileName := FileName; //add this line

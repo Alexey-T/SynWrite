@@ -1,0 +1,15 @@
+ecMacroRec.pas
+
+procedure TecMacroRecorder.BeforeCommand
+//at end change
+         else FRecorded.Add(Command);
+//to         
+         else FRecorded.Add(Command, PecChar(Data));
+
+
+function TecMacroRecorder.Play
+//at end of "case" change
+          else SyntMemo.ExecCommand(m[i].Command);
+//to
+          else SyntMemo.ExecCommand(m[i].Command, PecChar(m[i].Data));
+        
