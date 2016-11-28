@@ -36,7 +36,7 @@ Methods, text handling | Description
 `replace(start, len, text)` | Replaces text at any position: from absolute offset, with given length, to new string value. 
 `insert(text)` | Inserts string, at caret position. 
 `insert_snippet(text, sel='', fname='')` | Inserts snippet text, at caret position. `text` is snippet text (tabstops allowed). `sel` is value for `${sel}` macro. `fname` is value for `${fname}` macro (path/ext are ignored).
-`get_indent(x, y)` | Returns string of spaces and/or tab-chars, which is correct indentation string for given (x, y) coords. (Tab chars are used only when needed.)
+`get_indent(x, y)` (deprecated) | Returns string of spaces/tabs, which is correct indentation string for given (x, y) coords. (Tab chars are used only when needed.)
 `get_word(x, y)` | Returns properties of a word at given (x, y) coords, as 3-tuple: `(offset, len, text)`.
 
 Methods, scrolling | Description

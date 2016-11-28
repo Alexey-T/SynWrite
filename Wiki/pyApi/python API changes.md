@@ -5,6 +5,7 @@ nov 2016
 
 * release 1.0.158
 * deprecated: ed.get_marks, ed.add_mark
+* deprecated: ed.get_indent
 * added: ed.marks
 
 oct 2016
