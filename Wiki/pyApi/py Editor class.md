@@ -1,7 +1,7 @@
 Class `Editor` contains methods listed below.
 
-Methods, carets-related | Description
-------------------------- | -----------------
+Methods, carets | Description
+--------------- | -----------------
 `get_caret_xy()` | Returns caret phisical coords (x, y) as 2-tuple. (Where x is column index, y is line index, all 0-based.)
 `get_caret_pos()` | Returns caret absolute offset (0-based).
 `set_caret_xy(x, y)` | Sets caret phisical coords (x, y).
@@ -13,8 +13,8 @@ Methods, carets-related | Description
 `xy_log(x, y)` | Converts text phisical coords (x, y) to logical coords (x, y) 2-tuple. Logical coords consider tab-characters size, while phisical do not.
 `log_xy(x, y)` | Converts text logical coords (x, y) to phisical coords (x, y) 2-tuple. 
 
-Methods, selection handling | Description
-------------------------- | -----------------
+Methods, selections | Description
+------------------- | -----------------
 `get_sel_mode()` | Returns current selection mode: one of values `SEL_NORMAL`, `SEL_COLUMN`, `SEL_LINES`.
 `get_sel_lines()` | Returns indexes of first and last lines with selection, as 2-tuple `(line_start, line_end)`. Can be used for all selection modes, and even when nothing is selected.
 `get_sel()` | Returns selection position for "normal" mode: selection absolute offset and selection length, as 2-tuple. 
@@ -36,7 +36,7 @@ Methods, text handling | Description
 `replace(start, len, text)` | Replaces text at any position: from absolute offset, with given length, to new string value. 
 `insert(text)` | Inserts string, at caret position. 
 `insert_snippet(text, sel='', fname='')` | Inserts snippet text, at caret position. `text` is snippet text (tabstops allowed). `sel` is value for `${sel}` macro. `fname` is value for `${fname}` macro (path/ext are ignored).
-`get_indent(x, y)` (deprecated) | Returns string of spaces/tabs, which is correct indentation string for given (x, y) coords. (Tab chars are used only when needed.)
+(deprecated) `get_indent(x, y)` | Returns string of spaces/tabs, which is correct indentation string for given (x, y) coords. (Tab chars are used only when needed.)
 `get_word(x, y)` | Returns properties of a word at given (x, y) coords, as 3-tuple: `(offset, len, text)`.
 
 Methods, scrolling | Description
@@ -48,19 +48,17 @@ Methods, scrolling | Description
 
 Methods, marks | Description
 -------------- | -----------------
-`marks(id, npos, nlen, ntag)` | Perform action on search-marks. See [py marks id].
-`get_marks()` (deprecated) | Returns list of search-marks. It's list of 2-tuples `(npos, nlen)`, or None. 
-`add_mark(npos, nlen)` (deprecated) | Adds search-mark with given position/len. Pass `npos=-1` to remove all marks.
+`marks(id, npos, nlen, ntag)` | Performs action on search-marks. See [py marks id].
+(deprecated) `get_marks()` | Gets search-marks. List of 2-tuples `(npos, nlen)`, or None. 
+(deprecated) `add_mark(npos, nlen)` | Adds search-mark with given position/len. Pass `npos=-1` to remove all marks.
 
 Methods, other | Description
 -------------- | -----------------
-`get_filename()` | Returns file-name of editor.
+`get_filename()` | Returns file-name of editor, or empty str.
 `get_prop(id, value='')` | Returns some editor property. Possible `id` values are listed at [py property id]. `value` is optional string parameter.  
 `set_prop(id, value)` | Sets some editor property. `value` is string, use "0" and "1" for bool values, use `str()` for int values. Possible `id` values are listed at [py property id].  
 `get_split()` | Returns split properties of editor tab as 2-tuple: `(horizontal, percent_value)`, where value is in range 0..100.
 `set_split(horz, value)` | Sets split properties of editor tab. `horz` is bool: perform horizontal split. `value` is int in range 0..100: specifies split percent position, 0 means unsplit.
-`get_bk(id)` | Returns list of bookmarks positions. Possible values of `id` are listed at [py bookmark id]. 
-`set_bk(id, pos, icon=-1, color=-1, hint='')` | Sets or clears bookmarks. Possible values of `id` are listed at [py bookmark id]. `pos` is absolute offset of bookmark, it can be `-1` for numbered bookmark to clear it. `icon` can be used for unnumbered bookmarks, any `GUTTER_nnnn` constant. `color` can be used for unnumbered bookmarks, it's int RGB color of bookmarked line. `hint` is tooltip string for bookmark icon; hint beginning with `"!"` char disables saving of bookmark in program history.
 `get_sync_ranges()` | Returns list of sync-editing ranges in editor. It's `None` or non-empty list of int pairs: `[[start0, len0], [start1, len1], ...]`.
 `add_sync_range(start, len)` | Adds sync-editing range with given absolute offset and length. Pass `start=-1` to remove all ranges.
 `get_alerts()` | Returns bool flag for "alerts": are confirmation message-boxes enabled for "Close tab" command.
@@ -69,7 +67,20 @@ Methods, other | Description
 `get_enc()` | Returns encoding: int, one of `EDENC_nnnn` or positive value equals to some OS codepage (e.g. 1250).
 `set_enc()` | Sets encoding. Note that both main editor and its brother editor will change encoding; encoding changes in-memory only. 
 
-Methods, color-related | Description
+Methods, bookmarks | Description
+------------------ | -----------------
+`bookmarks(id, pos, tag, icon=-1, color=-1, hint='')` | Performs action on bookmarks. See [py bookmarks id].
+(deprecated) `get_bk(id)` | Gets list of bookmarks. See [py bookmark id]. 
+(deprecated) `set_bk(id, pos, icon=-1, color=-1, hint='')` | Sets/deletes bookmarks. See [py bookmark id]. 
+
+Params: 
+
+* `pos` is absolute offset (for set_bk: set `pos=-1` for numbered bookmark to clear it).
+* `icon` can be used for unnumbered bookmarks, any `GUTTER_nnnn` constant.
+* `color` can be used for unnumbered bookmarks, it's int RGB color of bookmarked line.
+* `hint` is tooltip string for bookmark icon; hint beginning with `"!"` char disables saving of bookmark in program history.
+
+Methods, color-attribs | Description
 ---------------------- | -----------------
 `set_attr(id, color)` | Changes user text-attrib of selection (only single selection). Pass to `id` constants `ATTRIB_nnnn`, `color` is to set font or bg color.
 `get_attr()` | Returns list of user text-attrib ranges. Each list item is range info, 5-list: `[range_start, range_end, color_font, color_bg, styles]`. Styles is str with chars: 'b' for bold, 'i' for italic, 'u' for underline, 's' for strikeout. Colors are `COLOR_NONE` if they are not set.
