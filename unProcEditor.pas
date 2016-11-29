@@ -74,6 +74,8 @@ procedure EditorGetTokenType(Ed: TSyntaxMemo; StartPos, EndPos: Integer;
   var IsCmt, IsStr: boolean);
 
 procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer; const SHint: string);
+//^-- deprecated, delete ltr
+procedure EditorBookmarkAddWithTag(Ed: TSyntaxMemo; NTag, NPos, NIcon, NColor: Integer; const SHint: string);
 procedure EditorClearBookmarks(Ed: TSyntaxMemo);
 procedure EditorSetBookmarkUnnumbered(Ed: TSyntaxMemo; NPos, NIcon, NColor: Integer; const SHint: string);
 function EditorGetBookmarkDesc(Ed: TSyntaxMemo;
@@ -2381,6 +2383,7 @@ begin
 end;
 
 procedure EditorBookmarkCommand(Ed: TSyntaxMemo; NCmd, NPos, NIcon, NColor: Integer; const SHint: string);
+//deprecated, delete ltr
 begin
   case NCmd of
     0..9:
@@ -2390,6 +2393,19 @@ begin
       end;
     -1: EditorSetBookmarkUnnumbered(Ed, NPos, NIcon, NColor, SHint);
     -2: EditorClearBookmarks(Ed);
+  end;
+end;
+
+procedure EditorBookmarkAddWithTag(Ed: TSyntaxMemo; NTag, NPos, NIcon, NColor: Integer; const SHint: string);
+begin
+  case NTag of
+    0:
+      EditorSetBookmarkUnnumbered(Ed, NPos, NIcon, NColor, SHint);
+    1..10:
+      begin
+        Ed.Bookmarks[NTag-1]:= NPos;
+        Ed.Invalidate;
+      end;
   end;
 end;
 

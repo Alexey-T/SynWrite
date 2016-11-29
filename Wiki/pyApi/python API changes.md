@@ -4,9 +4,11 @@ Changes in Python API
 nov 2016
 
 * release 1.0.158
-* deprecated: ed.get_marks, ed.add_mark
-* deprecated: ed.get_indent
 * added: ed.marks
+* added: ed.bookmarks
+* deprecated: ed.get_marks, ed.add_mark
+* deprecated: ed.get_bk, ed.set_bk
+* deprecated: ed.get_indent
 
 oct 2016
 

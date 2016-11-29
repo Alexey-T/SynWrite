@@ -46,12 +46,6 @@ Methods, scrolling | Description
 `set_top(num)` | Sets index of top visible line (vertical scroll position). 
 `set_left(num)` | Sets index of left visible column (horizontal scroll position). 
 
-Methods, marks | Description
--------------- | -----------------
-`marks(id, npos, nlen, ntag)` | Performs action on search-marks. See [py marks id].
-(deprecated) `get_marks()` | Gets search-marks. List of 2-tuples `(npos, nlen)`, or None. 
-(deprecated) `add_mark(npos, nlen)` | Adds search-mark with given position/len. Pass `npos=-1` to remove all marks.
-
 Methods, other | Description
 -------------- | -----------------
 `get_filename()` | Returns file-name of editor, or empty str.
@@ -66,6 +60,12 @@ Methods, other | Description
 `get_staple(x, y)` | Returns range of block-staple (indentation guide) for text position `(x, y)`. It's `None` if no staple at this position, or 2-tuple: `(range_offset_start, range_offset_end)`.
 `get_enc()` | Returns encoding: int, one of `EDENC_nnnn` or positive value equals to some OS codepage (e.g. 1250).
 `set_enc()` | Sets encoding. Note that both main editor and its brother editor will change encoding; encoding changes in-memory only. 
+
+Methods, search-marks | Description
+--------------------- | -----------------
+`marks(id, npos, nlen, ntag)` | Performs action on search-marks. See [py marks id].
+(deprecated) `get_marks()` | Gets search-marks. List of 2-tuples `(npos, nlen)`, or None. 
+(deprecated) `add_mark(npos, nlen)` | Adds search-mark with given position/len. Pass `npos=-1` to remove all marks.
 
 Methods, bookmarks | Description
 ------------------ | -----------------

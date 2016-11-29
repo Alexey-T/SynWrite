@@ -77,6 +77,11 @@ BK_GET_ALL   = -3
 BK_SET_UNNUM = -1
 BK_CLEAR     = -2
 
+BM_GET        = 1
+BM_ADD        = 2
+BM_DELETE     = 3
+BM_DELETE_ALL = 4
+
 GUTTER_ICON_INFO   = 14
 GUTTER_ICON_STOP   = 15
 GUTTER_ICON_WARN   = 16
@@ -490,6 +495,8 @@ class Editor:
         return sw_api.ed_get_bk(self.h, id)
     def set_bk(self, id, pos, icon=-1, color=-1, hint=''):
         return sw_api.ed_set_bk(self.h, id, pos, icon, color, hint)
+    def bookmarks(self, id, pos, tag, icon=-1, color=-1, hint=''):
+        return sw_api.ed_bookmarks(self.h, id, pos, tag, icon, color, hint)
     def get_staple(self, posx, posy):
         return sw_api.ed_get_staple(self.h, posx, posy)
     def set_attr(self, id, color):

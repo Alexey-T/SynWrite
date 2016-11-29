@@ -8,6 +8,7 @@ uses
 function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_app_api_version(Self, Args : PPyObject): PPyObject; cdecl;
 function Py_app_log(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_bookmarks(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_split(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_get_split(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
@@ -123,6 +124,12 @@ const
   PROP_TAB_TITLE           = 42;
   PROP_TAB_COLOR           = 43;
   PROP_TAB_ID              = 44;
+
+const
+  BM_GET        = 1;
+  BM_ADD        = 2;
+  BM_DELETE     = 3;
+  BM_DELETE_ALL = 4;
 
 
 function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
@@ -907,6 +914,83 @@ begin
 
   fmMain.UpdateListBookmarks;  
 end;
+
+
+function Py_ed_bookmarks(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H, NId, NPos, NTag, NIcon, NColor: Integer;
+  NLen, i: integer;
+  Ed, Ed2: TSyntaxMemo;
+  PHint: PAnsiChar;
+  SHint: Widestring;
+  ComArray: Variant;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'iiiiiis:bookmarks',
+              @H, @NId, @NPos, @NTag, @NIcon, @NColor, @PHint)) then
+    begin
+      Ed:= PyEditor(H);
+      Ed2:= fmMain.BrotherEditor(Ed);
+      SHint:= UTF8Decode(AnsiString(PHint));
+
+      case NId of
+        BM_GET:
+          begin
+            NLen:= Ed.BookmarkObj.Count;
+            if NLen>0 then
+            begin
+              ComArray:= VarArrayCreate([0, NLen-1, 0, 1], varInteger);
+              for i:= 0 to NLen-1 do
+              begin
+                //get BmIndex (0..9, or bigger), convert to api tag
+                NPos:= Ed.BookmarkObj.Items[i].BmIndex;
+                if (NPos>=0) and (NPos<=9) then
+                  Inc(NPos)
+                else
+                  NPos:= 0;
+
+                ComArray[i, 0]:= Ed.BookmarkObj.Items[i].Position;
+                ComArray[i, 1]:= NPos;
+              end;
+              Result:= VariantAsPyObject(ComArray);
+            end
+            else
+              Result:= ReturnNone;
+          end;
+
+        BM_ADD:
+          begin
+            EditorBookmarkAddWithTag(Ed, NTag, NPos, NIcon, NColor, SHint);
+            EditorBookmarkAddWithTag(Ed2, NTag, NPos, NIcon, NColor, SHint);
+            Result:= ReturnNone;
+          end;
+
+        BM_DELETE:
+          begin
+            if (NPos>=0) and (NPos<Ed.BookmarkObj.Count) then
+              Ed.BookmarkObj.Delete(NPos);
+            if (NPos>=0) and (NPos<Ed2.BookmarkObj.Count) then
+              Ed2.BookmarkObj.Delete(NPos);
+            Ed.Invalidate;
+            Ed2.Invalidate;
+            Result:= ReturnNone;
+          end;
+
+        BM_DELETE_ALL:
+          begin
+            EditorClearBookmarks(Ed);
+            EditorClearBookmarks(Ed2);
+            Result:= ReturnNone;
+          end;
+          
+        else
+          Result:= ReturnNone;
+      end;
+    end;
+
+  fmMain.UpdateListBookmarks;
+end;
+
 
 
 function Py_rect(const R: TRect): PPyObject; cdecl;

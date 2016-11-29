@@ -24585,6 +24585,7 @@ begin
     AddMethod('ed_get_staple', Py_ed_get_staple, '');
     AddMethod('ed_get_bk', Py_ed_get_bk, '');
     AddMethod('ed_set_bk', Py_ed_set_bk, '');
+    AddMethod('ed_bookmarks', Py_ed_bookmarks, '');
     AddMethod('ed_get_sync_ranges', Py_ed_get_sync_ranges, '');
     AddMethod('ed_add_sync_range', Py_ed_add_sync_range, '');
     AddMethod('ed_focus', Py_ed_focus, '');
