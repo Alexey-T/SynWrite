@@ -224,7 +224,6 @@ type
     boxSelFmt: TTntGroupBox;
     cbUrlHilite: TTntCheckBox;
     cbUrlClick: TTntCheckBox;
-    cbCopyLineNoSel: TTntCheckBox;
     cbColorOnEmpty: TTntCheckBox;
     boxView: TTntGroupBox;
     LabelSpace: TTntLabel;
@@ -270,7 +269,6 @@ type
     cbCopyRtf: TTntCheckBox;
     cbSelGreedy: TTntCheckBox;
     cbSelLineByDClick: TTntCheckBox;
-    cbSelPreserve: TTntCheckBox;
     cbSelOverwrite: TTntCheckBox;
     boxTabs2: TTntGroupBox;
     edTabStops: TTntEdit;
@@ -339,6 +337,8 @@ type
     cbCaretROnly: TTntCheckBox;
     TntLabel18: TTntLabel;
     edCaretShapeOvr: TTntComboBox;
+    cbCutLineNoSel: TTntCheckBox;
+    cbCopyLineNoSel: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2374,6 +2374,7 @@ begin
     ApplyUrlClick;
 
     opCopyLineIfNoSel:= cbCopyLineNoSel.Checked;
+    opCutLineIfNoSel:= cbCutLineNoSel.Checked;
     opLeftRightSelJump:= cbSelJump.Checked;
 
     if cbColorOnEmpty.Checked then
@@ -2386,10 +2387,13 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soOverwriteBlocks];
 
+    {
     if cbSelPreserve.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soPersistentBlocks]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soPersistentBlocks];
+      }
+    TemplateEditor.Options:= TemplateEditor.Options - [soPersistentBlocks];
 
     if cbSelLineByDClick.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soDoubleClickLine]
@@ -2529,11 +2533,12 @@ begin
 
     cbSelJump.Checked:= opLeftRightSelJump;
     cbCopyLineNoSel.Checked:= opCopyLineIfNoSel;
+    cbCutLineNoSel.Checked:= opCutLineIfNoSel;
     cbCopyRtf.Checked:= soCopyAsRTF in TemplateEditor.Options;
     cbColorOnEmpty.Checked:= not (soNormalSelToLineEnd in TemplateEditor.OptionsEx);
 
     cbSelOverwrite.Checked:= sooverwriteBlocks in TemplateEditor.Options;
-    cbSelPreserve.Checked:= soPersistentBlocks in TemplateEditor.Options;
+    //cbSelPreserve.Checked:= soPersistentBlocks in TemplateEditor.Options;
     cbSelLineByDClick.Checked:= soDoubleClickLine in TemplateEditor.Options;
     cbSelByWords.Checked:= soAllowSelectByWords in TemplateEditor.OptionsEx;
     cbSelDragDrop.Checked:= soDragText in TemplateEditor.Options;

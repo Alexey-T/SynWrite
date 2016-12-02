@@ -2053,7 +2053,6 @@ type
     FListFiles: TTntStringList; //filenames list of mass search/replace operation
     FPanelDrawBusy: boolean;
     FSyncBusy: boolean;
-    FSelBlank: boolean; //selection is blank (for Smart Hilite)
     FFullscreen: boolean; //full-screen
     FOnTop: boolean; //always-on-top
     FBoundsRectOld: TRect;
@@ -2764,6 +2763,7 @@ type
     opCaretsGutterBand: integer;
     opSingleClickURL: boolean;
     opCopyLineIfNoSel: boolean;
+    opCutLineIfNoSel: boolean;
     opLeftRightSelJump: boolean;
     opAutoCloseTags: boolean;
     opAutoCloseBrackets: boolean;
@@ -3133,7 +3133,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.28.2450';
+  cSynVer = '6.28.2455';
   cSynPyVer = '1.0.158';
 
 const
@@ -4538,6 +4538,7 @@ begin
 
     opLeftRightSelJump:= ReadBool('Setup', 'LeftRtJump', true);
     opCopyLineIfNoSel:= ReadBool('Setup', 'CopyLnNoSel', false);
+    opCutLineIfNoSel:= ReadBool('Setup', 'CutLnNoSel', false);
     opShowRecentColors:= TSynRecentColors(ReadInteger('Setup', 'RecColors', 0));
     opUnicodeNeeded:= ReadInteger('Setup', 'UnNeed', 0{don't suggest});
     opFollowTail:= ReadBool('Setup', 'Tail', false);
@@ -4898,6 +4899,7 @@ begin
     WriteInteger('Setup', 'UnNeed', opUnicodeNeeded);
     WriteInteger('Setup', 'RecColors', Ord(opShowRecentColors));
     WriteBool('Setup', 'CopyLnNoSel', opCopyLineIfNoSel);
+    WriteBool('Setup', 'CutLnNoSel', opCutLineIfNoSel);
     WriteBool('Setup', 'UrlClick', opSingleClickURL);
     WriteString('Setup', 'TreeSorted', opTreeSorted);
     WriteBool('Setup', 'SyncEditIcon', opSyncEditIcon);
@@ -5373,7 +5375,7 @@ begin
       end;
     smCut:
       begin
-        if not Ed.HaveSelection and opCopyLineIfNoSel then
+        if not Ed.HaveSelection and opCutLineIfNoSel then
           EditorCopyOrCutCurrentLine(Ed, true)
         else
           Handled:= false;
@@ -21616,7 +21618,7 @@ begin
   with CurrentEditor do
     if not HaveSelection then
     begin
-      if opCopyLineIfNoSel then
+      if opCutLineIfNoSel then
         ExecCommand(sm_CutLine)
       else
         MsgBeep;
