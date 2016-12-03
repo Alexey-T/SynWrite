@@ -8,8 +8,8 @@ from .workupd import Info, get_update_info
 from .ver_str import *
 from . import opt
 
-UPDATER_X = 520
-UPDATER_Y = 500
+UPDATER_X = 526
+UPDATER_Y = 510
 ini_fn = os.path.join(app_ini_dir(), 'SynAddonsManager.ini')
 
 class Command:
@@ -31,18 +31,37 @@ class Command:
     def update(self):
         infos = get_update_info()
 
-        marked = lambda info: '*' if is_version_newer(info.v_local, info.v_remote) else ''
-        text = '\n'.join([
-          marked(info) + info.name + '\t' +
-          os.path.basename(info.path) + '\t' +
-          info.v_local + '\t' +
-          info.v_remote + '\t'
-          for info in infos])
+        info_selected = lambda info: '1' if is_version_newer(info.v_local, info.v_remote) else '0'
 
-        columns = '%s\n%s\t150\n%s\t85\n%s\t85' % (msg('ColName'), msg('ColFolder'), msg('ColVLocal'), msg('ColVRemote'))
-        checked = dlg_checklist(msg('MenuUpdate'), columns, text, UPDATER_X, UPDATER_Y)
-        if not checked: return
-        items = [info for (n, info) in enumerate(infos) if checked[n] and info.base_url]
+        text_col = [
+          info.name + '\r' +
+          os.path.basename(info.path) + '\r' +
+          info.v_local + '\r' +
+          info.v_remote
+          for info in infos]
+        text_col_head = '%s=170\r%s=130\r%s=90\r%s=90' % (msg('ColName'), msg('ColFolder'), msg('ColVLocal'), msg('ColVRemote'))
+        text_items = '\t'.join([text_col_head]+text_col)
+        text_val = '0;'+','.join([info_selected(info) for info in infos])
+          
+        id_ok = 0
+        id_listview = 2
+        c1 = chr(1)                   
+        text = '\n'.join([ 
+          c1.join(['type=button', 'pos=314,480,414,0', 'cap=OK']),
+          c1.join(['type=button', 'pos=420,480,520,0', 'cap=Cancel']),
+          c1.join(['type=checklistview', 'pos=6,6,520,470', 'items='+text_items, 'val='+text_val, 'props=1']),
+          ])
+        
+        res = dlg_custom(msg('MenuUpdate'), UPDATER_X, UPDATER_Y, text)
+        if res is None: return
+        
+        res, text = res
+        if res != id_ok: return
+
+        text = text.splitlines()[id_listview]
+        text = text.split(';')[1].split(',')
+        
+        items = [info for (n, info) in enumerate(infos) if text[n]=='1' and info.base_url]
         if not items: return
 
         for info in items:
