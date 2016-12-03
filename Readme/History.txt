@@ -4,10 +4,11 @@ Legend:
  * changed
 
 
-6.28.2455
-+ option "Cut line if no selection" (was "Copy/Cut line if no selection")
+6.29.2470
++ option "Cut line if no selection" (was "Copy/Cut line...", now 2 opts)
 * delete option "Preserve selection" (caused problems with plugins, they want caret at selection)
 * lex Pascal: drop hilites of "types", "implementation backgnd"
+* api
 
 6.28.2450
 + api (for search-marks)

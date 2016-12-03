@@ -26,7 +26,6 @@ function Py_ed_set_prop(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_msg_status(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_snippet(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_dlg_checklist(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_file(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_dlg_folder(Self, Args: PPyObject): PPyObject; cdecl;
 function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
@@ -1451,24 +1450,6 @@ begin
     end;
 end;
 
-function Py_dlg_checklist(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  PtrCaption, PtrColumns, PtrItems: PAnsiChar;
-  StrCaption, StrColumns, StrItems: Widestring;
-  NSizeX, NSizeY: Integer;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'sssii:dlg_checklist',
-      @PtrCaption, @PtrColumns, @PtrItems, @NSizeX, @NSizeY)) then
-    begin
-      StrCaption:= UTF8Decode(AnsiString(PtrCaption));
-      StrColumns:= UTF8Decode(AnsiString(PtrColumns));
-      StrItems:= UTF8Decode(AnsiString(PtrItems));
-
-      StrItems:= DoInputCheckList(StrCaption, StrColumns, StrItems, NSizeX, NSizeY);
-      Result:= PyUnicode_FromWideString(StrItems);
-    end;
-end;
 
 function Py_dlg_folder(Self, Args: PPyObject): PPyObject; cdecl;
 var

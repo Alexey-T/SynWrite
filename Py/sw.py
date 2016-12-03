@@ -320,9 +320,6 @@ def dlg_folder(caption, folder):
     return sw_api.dlg_folder(caption, folder)
 def dlg_snippet(name, alias, lexers, text):
     return sw_api.dlg_snippet(name, alias, lexers, text)
-def dlg_checklist(caption, columns, items, size_x, size_y):
-    items = sw_api.dlg_checklist(caption, columns, items, size_x, size_y)
-    return [(s=='1') for s in items]
 
 def dlg_custom(caption, size_x, size_y, text, focused=-1):
     return sw_api.dlg_custom(caption, size_x, size_y, text, focused)
