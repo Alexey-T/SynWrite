@@ -63,7 +63,6 @@ uses
   unLexerProp in 'unLexerProp.pas',
   unPrintSetup in 'unPrintSetup.pas' {fmPrintSetup},
   unMacroCmd in 'unMacroCmd.pas' {fmMacroCmd},
-  unInputCheckList in 'unInputCheckList.pas' {fmInputCheckList},
   unLexerImportRules in 'unLexerImportRules.pas' {fmLexerImportRules},
   unLexerItems in 'unLexerItems.pas' {fmLexerItems: TFrame},
   unColorPalette in 'unColorPalette.pas' {fmPalette},

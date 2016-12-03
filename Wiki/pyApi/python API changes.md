@@ -1,10 +1,13 @@
 Changes in Python API
 =====================
 
-nov 2016
+dec 2016
 
 * release 1.0.159
-* deleted: dlg_checklist (use dlg_custom intstead)
+* deleted: dlg_checklist (use dlg_custom instead)
+
+nov 2016
+
 * release 1.0.158
 * added: ed.marks
 * added: ed.bookmarks

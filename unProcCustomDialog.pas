@@ -557,7 +557,7 @@ begin
         //if Ctl is TCheckGroup then (Ctl as TCheckGroup).Items.Add(SListItem);
         if Ctl is TTntRadioGroup then (Ctl as TTntRadioGroup).Items.Add(UTF8Decode(SListItem));
         if Ctl is TTntCheckListBox then (Ctl as TTntCheckListBox).Items.Add(UTF8Decode(SListItem));
-        if Ctl is TTntListView then DoSetListviewItem(Ctl as TTntListView, UTF8Decode(SListItem));
+        if Ctl is TTntListView then DoSetListviewItem(Ctl as TTntListView, SListItem);
         if Ctl is TTntTabControl then (Ctl as TTntTabControl).Tabs.Add(UTF8Decode(SListItem));
       until false;
       Continue;
