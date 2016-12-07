@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabCarets
+    ActivePage = tabView
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -2251,8 +2251,8 @@ object fmSetup: TfmSetup
           ItemHeight = 13
           TabOrder = 6
           Items.Strings = (
-            'Default'
-            'Delphi style'
+            'All'
+            'Each 10th'
             'Each 5th'
             'Only current')
         end

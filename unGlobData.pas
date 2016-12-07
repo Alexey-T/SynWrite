@@ -70,6 +70,7 @@ function SynSnippetsDir: string;
 function SynIconsDir: string;
 function SynPyDir: string;
 function SynSkinFilename(const Name: string): string;
+function SynClipsDir: string;
 
 function IsLexerListed(const Lexer, List: string): boolean;
 function IsLexerHTML(const s: string): boolean;
@@ -322,6 +323,11 @@ end;
 function SynSkinFilename(const Name: string): string;
 begin
   Result:= SynSkinsDir + '\' + Copy(Name, 2, MaxInt) + '.skn';
+end;
+
+function SynClipsDir: string;
+begin
+  Result:= SynDataSubdir(cSynDataClips);
 end;
 
 

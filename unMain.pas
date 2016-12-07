@@ -2059,7 +2059,6 @@ type
     function MsgConfirmSaveFrame(Frame: TEditorFrame; CanCancel: boolean=true): TModalResult;
     procedure InitFrameTab(Frame: TEditorFrame);
     function SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
-    function OppositeFrame: TEditorFrame;
     function IsFramePropertiesStringForFilename(const fn: Widestring; const Str: string): boolean;
     function FrameGetPropertiesString(F: TEditorFrame): string;
     procedure FrameSetPropertiesString(F: TEditorFrame; const Str: string; EncodingOnly: boolean);
@@ -2836,8 +2835,6 @@ type
     function PluginAction(AHandle: Pointer; AName: PWideChar; A1, A2, A3, A4: Pointer): Integer; stdcall;
     function Plugin_FrameById(id: Integer): TEditorFrame;
 
-    function SynClipsDir: string;
-    
     procedure UpdateRO;
     procedure UpdateGutter(F: TEditorFrame; AUpdateCur: boolean = true);
     procedure UpdateQVTree(const fn: Widestring);
@@ -2909,6 +2906,7 @@ type
     procedure DoOpenProjectSession;
     procedure SaveFrameState(F: TEditorFrame);
     function LoadFrameState(Frame: TEditorFrame; const fn: WideString): boolean;
+    function OppositeFrame: TEditorFrame;
 
     procedure DoOpenSession(AFilename: string; AddMode: boolean = false);
     procedure DoCloseSession(PromptToSave: boolean);
@@ -3061,8 +3059,7 @@ uses
   unMenuSnippets,
   unToolbarProp,
   unHideItems,
-  unProcPy,
-  unMainPy,
+  unPyApi,
   unLexerLib, unSnipEd, unSaveTabs, unPrintPreview, unLexerProp,
   unPrintSetup, unColorPalette, unMenuPy;
 
@@ -6454,10 +6451,6 @@ begin
 
   //init proj tree
   ApplyProj;
-
-  //Py fields
-  PyExeDir:= ExcludeTrailingPathDelimiter(SynDir);
-  PyIniDir:= ExcludeTrailingPathDelimiter(SynIniDir);
 
   //init objects
   InitPanelsTabs;
@@ -12668,11 +12661,6 @@ begin
     if opClipHook then
       InitHook;
   end;
-end;
-
-function TfmMain.SynClipsDir: string;
-begin
-  Result:= SynDataSubdir(cSynDataClips);
 end;
 
 procedure TfmMain.LoadClips;
@@ -24572,37 +24560,6 @@ begin
   TbxItemPanelTitleBar.Checked:= opShowPanelTitles;
 end;
 
-function MainPyEditor(H: Integer): TSyntaxMemo;
-var
-  nTab: Integer;
-begin
-  Result:= nil;
-  if Assigned(fmMain) then
-  begin
-    case H of
-      0:
-        Result:= fmMain.CurrentEditor;
-      1:
-        Result:= fmMain.BrotherEditor(fmMain.CurrentEditor);
-      2:
-        Result:= fmMain.OppositeFrame.EditorMaster;
-      3:
-        Result:= fmMain.OppositeFrame.EditorSlave;
-      cPyEditorHandleMin..
-      cPyEditorHandleMax:
-        begin
-          nTab:= H-cPyEditorHandleMin;
-          if (nTab>=0) and (nTab<fmMain.FrameAllCount) then
-            Result:= fmMain.FramesAll[nTab].EditorMaster
-          else
-            Result:= nil;
-        end;
-      else
-        Result:= TSyntaxMemo(Pointer(H));
-    end;
-  end;
-end;
-
 procedure TfmMain.DoWorkaround_QViewHorzScroll;
 begin
   //fix incorrect ScrollPosX>0
@@ -26382,10 +26339,6 @@ procedure TfmMain.TBXSubmenuBarNewPopup(Sender: TTBCustomItem;
 begin
   Py_RunPlugin_Command('syn_new_file', 'menu');
 end;
-
-initialization
-
-  unProcPy.PyEditor:= MainPyEditor;
 
 end.
 

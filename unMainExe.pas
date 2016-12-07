@@ -11,7 +11,7 @@ uses
   TntForms, TntClasses,
   IniFiles,
   unMain,
-  unMainPy,
+  unPyApi,
   unGlobData,
   ATSynPlugins,
   AppEvnts;
