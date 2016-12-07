@@ -7,6 +7,7 @@ uses
   ecSyntMemo,
   ATSyntMemo;
 
+procedure Py_InitApiModule(AModule: TPythonModule);
 procedure Py_SetSysPath(const Dirs: array of string);
 procedure Py_ConvertSessionToNewFormat(const fnIn, fnOut: Widestring);
 function Py_RunPlugin_Command(const SId, SCmd: string): string;
@@ -19,105 +20,6 @@ const
   cSynPropFolding = 'sw.PROP_FOLDING';
   cSynPropNums    = 'sw.PROP_NUMS';
   cSynPropRuler   = 'sw.PROP_RULER';
-
-function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
-function Py_app_api_version(Self, Args : PPyObject): PPyObject; cdecl;
-function Py_app_log(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_split(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_split(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_filename(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_alerts(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_alerts(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_enc(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_enc(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_prop_wrapper(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_complete(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_focus(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_find(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_prop(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_msg_status(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_dlg_snippet(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_dlg_file(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_dlg_folder(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_file_save(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_lexer_proc(Self, Args : PPyObject): PPyObject; cdecl;
-function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
-function Py_set_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
-function Py_app_proc(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_handles(Self, Args : PPyObject): PPyObject; cdecl;
-
-function Py_text_local(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_text_convert(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_regex_parse(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_get_staple(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_bk(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_attr(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_attr(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_get_sync_ranges(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_add_sync_range(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_get_carets(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_add_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_get_marks(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_add_mark(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_bookmarks(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_marks(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_get_indent(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_word(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_cmd(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_lock(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_unlock(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_app_exe_dir(Self, Args : PPyObject): PPyObject; cdecl;
-function Py_app_ini_dir(Self, Args : PPyObject): PPyObject; cdecl;
-function Py_ini_read(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ini_write(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_dlg_input(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_dlg_input_ex(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_dlg_input_memo(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_dlg_custom(Self, Args : PPyObject): PPyObject; cdecl;
-function Py_msg_box(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_text_sel(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_text_line(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_text_len(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_text_substr(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_get_caret_pos(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_caret_pos(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_caret_xy(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_pos_xy(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_xy_pos(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_xy_log(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_log_xy(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_get_line_count(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_line_prop(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_get_sel_mode(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_sel(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_sel_rect(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_sel(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_sel_rect(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_get_sel_lines(Self, Args: PPyObject): PPyObject; cdecl;
-
-function Py_ed_replace(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_insert(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_insert_snippet(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_text_all(Self, Args: PPyObject): PPyObject; cdecl;
-function Py_ed_set_text_line(Self, Args: PPyObject): PPyObject; cdecl;
 
 var
   PyEscapeFlag: boolean = false;
@@ -142,6 +44,7 @@ uses
   TntDialogs,
   TntFileCtrl,
   unGlobData,
+  unPyApiConst,
   unMain,
   unFrame,
   unSR,
@@ -167,57 +70,9 @@ uses
   TB2Dock;
 
 const
-  PROP_NUMS        = 1;
-  PROP_EOL         = 2;
-  PROP_WRAP        = 3;
-  PROP_RO          = 4;
-  PROP_MARGIN      = 5;
-  PROP_FOLDING     = 6;
-  PROP_TAB_SPACES  = 8;
-  PROP_TAB_SIZE    = 9;
-  PROP_COL_MARKERS = 10;
-  PROP_TEXT_EXTENT = 11;
-  PROP_ZOOM        = 12;
-  PROP_INSERT      = 13;
-  PROP_MODIFIED    = 14;
-  PROP_VIS_LINES   = 15;
-  PROP_VIS_COLS    = 16;
-  PROP_LEFT        = 17;
-  PROP_TOP         = 18;
-  PROP_BOTTOM      = 19;
-  PROP_RULER       = 20;
-  PROP_TOKEN_TYPE  = 21;
-  PROP_LEXER_FILE  = 22;
-  PROP_LEXER_CARET = 23;
-  PROP_LEXER_POS   = 24;
-  PROP_COLOR       = 25;
-  PROP_NON_PRINTED         = 26;
-  PROP_NON_PRINTED_SPACES  = 27;
-  PROP_NON_PRINTED_ENDS    = 28;
-  PROP_NON_PRINTED_ENDS_EX = 29;
-  PROP_TAG                 = 30;
-  PROP_LINE_STATE          = 31;
-  PROP_KEEP_TRAIL_BLANKS   = 32;
-  PROP_KEEP_CARET_IN_TEXT  = 33;
-  PROP_AUTO_INDENT         = 34;
-  PROP_LAST_LINE_SHOW      = 35;
-  PROP_TAB_FILL            = 36;
-  PROP_WRAP_AT_MARGIN      = 37;
-  PROP_INDEX_GROUP         = 40;
-  PROP_INDEX_TAB           = 41;
-  PROP_TAB_TITLE           = 42;
-  PROP_TAB_COLOR           = 43;
-  PROP_TAB_ID              = 44;
-
-const
-  BM_GET        = 1;
-  BM_ADD        = 2;
-  BM_DELETE     = 3;
-  BM_DELETE_ALL = 4;
-
-const
   cPyEditorHandleMin = 20;
   cPyEditorHandleMax = 1000;
+  cMaxBookmarks = 10000;
 
 
 function PyEditor(H: Integer): TSyntaxMemo;
@@ -285,28 +140,6 @@ begin
 end;
 
 function Py_lexer_proc(Self, Args : PPyObject): PPyObject; cdecl;
-const
-  LEXER_GET_LIST            = 0;
-  LEXER_GET_ENABLED         = 1;
-  LEXER_GET_EXT             = 2;
-  LEXER_GET_MOD             = 3;
-  LEXER_GET_LINKS           = 4;
-  LEXER_GET_STYLES          = 5;
-  LEXER_GET_COMMENT         = 6;
-  LEXER_GET_COMMENT_STREAM  = 7;
-  LEXER_GET_COMMENT_LINED   = 8;
-  LEXER_SET_NAME            = 10;
-  LEXER_SET_ENABLED         = 11;
-  LEXER_SET_EXT             = 12;
-  LEXER_SET_LINKS           = 13;
-  LEXER_GET_STYLES_COMMENTS = 16;
-  LEXER_GET_STYLES_STRINGS  = 17;
-  LEXER_DETECT              = 20;
-  LEXER_DELETE              = 21;
-  LEXER_IMPORT              = 22;
-  LEXER_EXPORT              = 23;
-  LEXER_CONFIG              = 24;
-  LEXER_ACTIVATE            = 26;
 var
   Id: Integer;
   Ptr: PAnsiChar;
@@ -606,17 +439,6 @@ begin
   end;
 end;
 
-const
-  FILENAME_CURRENT         = -1;
-  FILENAME_OPPOSITE        = -2;
-  FILENAME_SESSION         = -3;
-  FILENAME_PROJECT         = -10;
-  FILENAME_PROJECT_MAIN    = -11;
-  FILENAME_PROJECT_WORKDIR = -12;
-  FILENAME_PROJECT_SESSION = -13;
-  FILENAME_PROJECT_FILES   = -14;
-  FILENAME_PATHS           = -21;
-
 function Py_file_get_name(Self, Args: PPyObject): PPyObject; cdecl;
 const
   cNone = '?';
@@ -733,20 +555,6 @@ begin
   end;
 end;
 
-const
-  Find_op_Case     = 1;
-  Find_op_Words    = 1 shl 1;
-  Find_op_Back     = 1 shl 2;
-  Find_op_Sel      = 1 shl 3;
-  Find_op_Entire   = 1 shl 4;
-  Find_op_Regex    = 1 shl 5;
-  Find_op_Regex_S  = 1 shl 6;
-  Find_op_Prompt   = 1 shl 8;
-  Find_op_Wrap     = 1 shl 9;
-  Find_op_SkipCol  = 1 shl 10;
-  Find_op_Bkmk     = 1 shl 14;
-  Find_op_ExtSel   = 1 shl 15;
-
 function Py_ed_find(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H: Integer;
@@ -800,19 +608,6 @@ begin
 end;
 
 function Py_app_log(Self, Args: PPyObject): PPyObject; cdecl;
-const
-  LOG_CLEAR         = 0;
-  LOG_ADD           = 1;
-  LOG_SET_PANEL     = 2;
-  LOG_SET_REGEX     = 3;
-  LOG_SET_LINE_ID   = 4;
-  LOG_SET_COL_ID    = 5;
-  LOG_SET_NAME_ID   = 6;
-  LOG_SET_FILENAME  = 7;
-  LOG_SET_ZEROBASE  = 8;
-  LOG_CONSOLE_CLEAR = 20;
-  LOG_CONSOLE_ADD   = 21;
-  LOG_CONSOLE_GET   = 22;
 var
   Ptr: PAnsiChar;
   Str: Widestring;
@@ -928,19 +723,7 @@ begin
 end;
 
 
-function Py_ed_set_prop_wrapper(Self, Args: PPyObject): PPyObject; cdecl;
-begin
-  Result:= Py_ed_set_prop(Self, Args);
-  fmMain.CurrentEditor.Invalidate;
-  fmMain.UpdateStatusBar;
-end;
-
-
 function Py_dlg_menu(Self, Args: PPyObject): PPyObject; cdecl;
-const
-  MENU_SIMPLE = 0;
-  MENU_DOUBLE = 1;
-  MENU_STD    = 2;
 var
   Id: Integer;
   PCaption, PText: PAnsiChar;
@@ -1142,16 +925,6 @@ begin
     Panel.BoundsRect:= R;
 end;
 
-const
-  DOCK_NONE = '';
-  DOCK_LEFT = 'l';
-  DOCK_LEFT1 = 'L';
-  DOCK_RIGHT = 'r';
-  DOCK_RIGHT1 = 'R';
-  DOCK_BOTTOM = 'b';
-  DOCK_BOTTOM1 = 'B';
-  DOCK_TOP = 't';
-
 procedure _SetPanelDock(Panel: TSpTBXDockablePanel; const DockId: string);
 begin
   if DockId=DOCK_NONE then Panel.Floating:= true else
@@ -1189,42 +962,7 @@ begin
     Result:= GetPythonEngine.ReturnNone;
 end;
 
-const
-  PROP_COORD_WINDOW  = 100;
-  PROP_COORD_TREE    = 101;
-  PROP_COORD_CLIP    = 102;
-  PROP_COORD_OUT     = 103;
-  PROP_COORD_PRE     = 104;
 
-  PROP_DOCK_TREE     = 105;
-  PROP_DOCK_CLIP     = 106;
-  PROP_DOCK_OUT      = 107;
-  PROP_DOCK_PRE      = 108;
-
-  PROP_COORD_DESKTOP  = 120;
-  PROP_COORD_MONITOR  = 121;
-  PROP_COORD_MONITOR0 = 122;
-  PROP_COORD_MONITOR1 = 123;
-  PROP_COORD_MONITOR2 = 124;
-  PROP_COORD_MONITOR3 = 125;
-
-  PROP_SPLIT_MAIN_POS = 129;
-  PROP_GROUP_MODE     = 130;
-  PROP_GROUP_INDEX    = 131;
-
-  PROP_FILENAME_SESSION = 132;
-  PROP_FILENAME_PROJECT = 133;
-
-  PROP_RECENT_FILES    = 135;
-  PROP_RECENT_SESSIONS = 136;
-  PROP_RECENT_PROJECTS = 137;
-  PROP_RECENT_COLORS   = 139;
-
-  PROP_EVENTS          = 140;
-  PROP_EDITOR_BY_INDEX = 141;
-  PROP_GROUPS          = 142;
-
-  
 function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 var
   Id: Integer;
@@ -1393,19 +1131,6 @@ begin
       Result:= ReturnNone;
     end;
 end;
-
-const
-  PROC_GET_CLIP         = 1;
-  PROC_SET_CLIP         = 2;
-  PROC_LOCK_STATUS      = 3;
-  PROC_UNLOCK_STATUS    = 4;
-  PROC_SOUND            = 5;
-  PROC_COLOR_PICKER     = 6;
-  PROC_ADD_RECENT_COLOR = 7;
-  PROC_GET_COMMAND      = 8;
-  PROC_ADD_GUTTER_ICON  = 9;
-  PROC_GET_ESCAPE       = 10;
-  PROC_SET_ESCAPE       = 11;
 
 
 function Py_KeyCommandToTuple(Cmd: TecCommandItem): PPyObject;
@@ -1980,19 +1705,15 @@ begin
     end;
 end;
 
-
-const
-  cMaxBookmarks = 10000;
-
-const
-  MARKS_GET = 1;
-  MARKS_ADD = 2;
-  MARKS_DELETE = 3;
-  MARKS_DELETE_ALL = 4;
-  MARKS_DELETE_BY_TAG = 5;
+function Py_ed_set_prop_wrapper(Self, Args: PPyObject): PPyObject; cdecl;
+begin
+  Result:= Py_ed_set_prop(Self, Args);
+  fmMain.CurrentEditor.Invalidate;
+  fmMain.UpdateStatusBar;
+end;
 
 
-function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
+function Py_ed_get_text_all(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H: Integer;
 begin
@@ -2206,11 +1927,6 @@ begin
       Result:= Py_BuildValue('(iiii)', R.Left, R.Top, R.Right, R.Bottom);
     end;
 end;
-
-const
-  SEL_NORMAL = 0;
-  SEL_COLUMN = 1;
-  SEL_LINES  = 2;
 
 function Py_ed_get_sel_mode(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -3235,16 +2951,6 @@ begin
     end;
 end;
 
-const
-  ATTRIB_CLEAR_ALL       = -1;
-  ATTRIB_CLEAR_SELECTION = -2;
-  ATTRIB_COLOR_FONT      = 0;
-  ATTRIB_COLOR_BG        = 1;
-  ATTRIB_SET_BOLD        = 2;
-  ATTRIB_SET_ITALIC      = 3;
-  ATTRIB_SET_UNDERLINE   = 4;
-  ATTRIB_SET_STRIKEOUT   = 5;
-
 function Py_ed_set_attr(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H, NId, NColor: Integer;
@@ -3315,6 +3021,110 @@ begin
       Ed:= PyEditor(H);
       Result:= _EditorGetStyleRanges(Ed);
     end;
+end;
+
+
+procedure Py_InitApiModule(AModule: TPythonModule);
+begin
+  with AModule do
+  begin
+    AddMethod('msg_box', Py_msg_box, '');
+    AddMethod('msg_status', Py_msg_status, '');
+    AddMethod('dlg_input', Py_dlg_input, '');
+    AddMethod('dlg_input_ex', Py_dlg_input_ex, '');
+    AddMethod('dlg_input_memo', Py_dlg_input_memo, '');
+    AddMethod('dlg_menu', Py_dlg_menu, '');
+    AddMethod('dlg_snippet', Py_dlg_snippet, '');
+    AddMethod('dlg_file', Py_dlg_file, '');
+    AddMethod('dlg_folder', Py_dlg_folder, '');
+    AddMethod('dlg_custom', Py_dlg_custom, '');
+
+    AddMethod('app_version', Py_app_version, '');
+    AddMethod('app_api_version', Py_app_api_version, '');
+    AddMethod('app_exe_dir', Py_app_exe_dir, '');
+    AddMethod('app_ini_dir', Py_app_ini_dir, '');
+    AddMethod('app_log', Py_app_log, '');
+    AddMethod('app_proc', Py_app_proc, '');
+    AddMethod('lexer_proc', Py_lexer_proc, '');
+    AddMethod('ed_handles', Py_ed_handles, '');
+
+    AddMethod('ini_read', Py_ini_read, '');
+    AddMethod('ini_write', Py_ini_write, '');
+
+    AddMethod('file_open', Py_file_open, '');
+    AddMethod('file_save', Py_file_save, '');
+    AddMethod('file_get_name', Py_file_get_name, '');
+    AddMethod('text_local', Py_text_local, '');
+    AddMethod('text_convert', Py_text_convert, '');
+    AddMethod('regex_parse', Py_regex_parse, '');
+
+    AddMethod('get_app_prop', Py_get_app_prop, '');
+    AddMethod('set_app_prop', Py_set_app_prop, '');
+
+    AddMethod('ed_get_staple', Py_ed_get_staple, '');
+    AddMethod('ed_get_bk', Py_ed_get_bk, '');
+    AddMethod('ed_set_bk', Py_ed_set_bk, '');
+    AddMethod('ed_bookmarks', Py_ed_bookmarks, '');
+    AddMethod('ed_get_sync_ranges', Py_ed_get_sync_ranges, '');
+    AddMethod('ed_add_sync_range', Py_ed_add_sync_range, '');
+    AddMethod('ed_focus', Py_ed_focus, '');
+    AddMethod('ed_complete', Py_ed_complete, '');
+    AddMethod('ed_get_split', Py_ed_get_split, '');
+    AddMethod('ed_set_split', Py_ed_set_split, '');
+    AddMethod('ed_set_attr', Py_ed_set_attr, '');
+    AddMethod('ed_get_attr', Py_ed_get_attr, '');
+
+    AddMethod('ed_get_text_all', Py_ed_get_text_all, '');
+    AddMethod('ed_get_text_sel', Py_ed_get_text_sel, '');
+    AddMethod('ed_get_text_line', Py_ed_get_text_line, '');
+    AddMethod('ed_get_text_len', Py_ed_get_text_len, '');
+    AddMethod('ed_get_text_substr', Py_ed_get_text_substr, '');
+    AddMethod('ed_get_indent', Py_ed_get_indent, '');
+
+    AddMethod('ed_get_caret_xy', Py_ed_get_caret_xy, '');
+    AddMethod('ed_get_caret_pos', Py_ed_get_caret_pos, '');
+    AddMethod('ed_set_caret_xy', Py_ed_set_caret_xy, '');
+    AddMethod('ed_set_caret_pos', Py_ed_set_caret_pos, '');
+    AddMethod('ed_add_caret_xy', Py_ed_add_caret_xy, '');
+    AddMethod('ed_add_mark', Py_ed_add_mark, '');
+
+    AddMethod('ed_pos_xy', Py_ed_pos_xy, '');
+    AddMethod('ed_xy_pos', Py_ed_xy_pos, '');
+    AddMethod('ed_log_xy', Py_ed_log_xy, '');
+    AddMethod('ed_xy_log', Py_ed_xy_log, '');
+
+    AddMethod('ed_get_line_count', Py_ed_get_line_count, '');
+    AddMethod('ed_get_line_prop', Py_ed_get_line_prop, '');
+    AddMethod('ed_get_carets', Py_ed_get_carets, '');
+    AddMethod('ed_get_marks', Py_ed_get_marks, '');
+    AddMethod('ed_get_prop', Py_ed_get_prop, '');
+    AddMethod('ed_set_prop', Py_ed_set_prop_wrapper, '');
+    AddMethod('ed_get_filename', Py_ed_get_filename, '');
+    AddMethod('ed_get_alerts', Py_ed_get_alerts, '');
+    AddMethod('ed_set_alerts', Py_ed_set_alerts, '');
+    AddMethod('ed_get_enc', Py_ed_get_enc, '');
+    AddMethod('ed_set_enc', Py_ed_set_enc, '');
+
+    AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
+    AddMethod('ed_get_sel_lines', Py_ed_get_sel_lines, '');
+    AddMethod('ed_get_sel', Py_ed_get_sel, '');
+    AddMethod('ed_get_sel_rect', Py_ed_get_sel_rect, '');
+    AddMethod('ed_set_sel', Py_ed_set_sel, '');
+    AddMethod('ed_set_sel_rect', Py_ed_set_sel_rect, '');
+
+    AddMethod('ed_replace', Py_ed_replace, '');
+    AddMethod('ed_insert', Py_ed_insert, '');
+    AddMethod('ed_insert_snippet', Py_ed_insert_snippet, '');
+    AddMethod('ed_set_text_all', Py_ed_set_text_all, '');
+    AddMethod('ed_set_text_line', Py_ed_set_text_line, '');
+    AddMethod('ed_get_word', Py_ed_get_word, '');
+
+    AddMethod('ed_cmd', Py_ed_cmd, '');
+    AddMethod('ed_lock', Py_ed_lock, '');
+    AddMethod('ed_unlock', Py_ed_unlock, '');
+    AddMethod('ed_find', Py_ed_find, '');
+    AddMethod('ed_marks', Py_ed_marks, '');
+  end;
 end;
 
 end.

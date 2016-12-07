@@ -66,7 +66,8 @@ uses
   unLexerItems in 'unLexerItems.pas' {fmLexerItems: TFrame},
   unColorPalette in 'unColorPalette.pas' {fmPalette},
   unProcCustomDialog in 'unProcCustomDialog.pas',
-  unGlobData in 'unGlobData.pas';
+  unGlobData in 'unGlobData.pas',
+  unPyApiConst in 'unPyApiConst.pas';
 
 {$R *.res}
 {$R *.dkl_const.res}
