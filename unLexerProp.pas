@@ -420,10 +420,12 @@ begin
   UpdateCharsets;
   // for sub lexers
   ComboBox32.Items.Clear;
+  Assert(Assigned(FEditSynt.Owner));
   with FEditSynt.Owner do
    for i := 0 to ComponentCount - 1 do
     if Components[i] is TSyntAnalyzer then
      ComboBox32.Items.AddObject((Components[i] as TSyntAnalyzer).LexerName, Components[i]);
+
   // Set token type names
   SyntaxMemo7.Lines.Text := FSynt.TokenTypeNames.Text;
   SyntaxMemo7.Modified := False;

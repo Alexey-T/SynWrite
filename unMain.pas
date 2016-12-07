@@ -2252,7 +2252,7 @@ type
     function GetCssListFN: string;
     function GetHtmlTabbingFN: string;
 
-    function CurrentLexer: string;
+    function CurrentLexerForCaret: string;
     function CurrentLexerForFile: string;
     function DoSnippetTabbing: boolean;
     function DoSmartTagTabbing: boolean;
@@ -3475,7 +3475,7 @@ begin
       SD.InitialDir:= LastDir;
     SD.Filter:= SynFilesFilter;
 
-    ALexerName:= Frame.CurrentLexer;
+    ALexerName:= CurrentLexerForFile;
     if ALexerName<>'' then
       SD.FilterIndex:= SFilterNameToIdx(SD.Filter, ALexerName)
     else
@@ -3950,7 +3950,7 @@ begin
 
   ro:= ed.ReadOnly;
   sel2:= ed.HaveSelection;
-  en_lex:= SyntaxManager.CurrentLexer<>nil;
+  en_lex:= CurrentLexerForFile<>'';
 
   TBXSubmenuBarSave.ImageIndex:= IfThen(frame.Modified, cImageIndexSaveIcon, cImageIndexSaveIconPale);
 
@@ -7230,7 +7230,7 @@ begin
   FAcpHtm:= false;
   FAcpHtmTags:= false;
   FAcpHtmClosing:= false;
-  Lexer:= CurrentLexer;
+  Lexer:= CurrentLexerForCaret;
 
   if opAcpForceText then
   begin
@@ -7295,7 +7295,7 @@ begin
   TBXItemCtxCopyHTML.Enabled:= Ed.HaveSelection;
   TBXItemCtxCopyRTF.Enabled:= Ed.HaveSelection;
   TBXItemCtxPaste.Enabled:= Clipboard.HasFormat(cf_text);
-  TBXItemCtxFindID.Enabled:= (CurrentFrame.FileName<>'') and IsLexerFindID(CurrentLexer);
+  TBXItemCtxFindID.Enabled:= (CurrentFrame.FileName<>'') and IsLexerFindID(CurrentLexerForCaret);
 
   //update "Copy URL"
   {
@@ -7331,15 +7331,12 @@ var
   Lexer: string;
 begin
   UpdateTools;
-  acSetupLexer.Enabled:= SyntaxManager.CurrentLexer<>nil;
-  
-  Lexer:= '';
+  Lexer:= CurrentLexerForFile;
   opWordChars:= '';
+  acSetupLexer.Enabled:= Lexer<>'';
 
-  if SyntaxManager.CurrentLexer<>nil then
+  if Lexer<>'' then
   begin
-    Lexer:= SyntaxManager.CurrentLexer.LexerName;
-
     //some overrides for few lexers
     if IsLexerCSS(Lexer) then
     begin
@@ -7380,7 +7377,7 @@ begin
   else
   begin
     if CurrentFrame<>nil then
-      StatusItemLexer.Caption:= CurrentFrame.CurrentLexer;
+      StatusItemLexer.Caption:= CurrentLexerForFile;
     if StatusItemLexer.Caption='' then
       StatusItemLexer.Caption:= DKLangConstW('None');
   end;
@@ -8471,7 +8468,7 @@ begin
   for i:= Low(opTools) to High(opTools) do
    with opTools[i] do
      if (ToolCaption<>'') and (ToolCommand<>'') and (S=ToolKeys) and
-       ((ToolLexer='') or (CurrentFrame.CurrentLexer=ToolLexer)) then
+       ((ToolLexer='') or (CurrentLexerForFile=ToolLexer)) then
     begin
       DoTool_Run(opTools[i]);
       Key:= 0;
@@ -9537,7 +9534,7 @@ begin
     DoEnumLexers(L);
 
     if DoTool_ConfigList(opTools, Self, L, true,
-      CurrentFrame.CurrentLexer,
+      CurrentLexerForFile,
       SynDataSubdir(cSynDataOutPresets),
       '') then
     begin
@@ -9566,7 +9563,7 @@ begin
   UpdateTitle(CurrentFrame);
   UpdateStatusBar;
 
-  if SyntaxManager.CurrentLexer = nil then
+  if CurrentLexerForFile='' then
     StatusItemLexer.Caption:= DKLangConstW('None');
 
   //Project items:
@@ -14021,7 +14018,7 @@ procedure TfmMain.UpdateLexer;
 var
   Lexer: string;
 begin
-  Lexer:= CurrentLexer;
+  Lexer:= CurrentLexerForCaret;
   if Lexer<>FAcpLexer then
     UpdateAcp(Lexer);
 end;
@@ -16470,7 +16467,7 @@ begin
     Result:= '';
 end;
 
-function TfmMain.CurrentLexer: string;
+function TfmMain.CurrentLexerForCaret: string;
 var
   Ed: TSyntaxMemo;
 begin
@@ -16482,10 +16479,14 @@ begin
 end;
 
 function TfmMain.CurrentLexerForFile: string;
+var
+  F: TEditorFrame;
 begin
-  Result:= '';
-  if SyntaxManager.CurrentLexer<>nil then
-    Result:= SyntaxManager.CurrentLexer.LexerName;
+  F:= CurrentFrame;
+  if Assigned(F) then
+    Result:= F.CurrentLexerName
+  else
+    Result:= '';  
 end;
 
 
@@ -16500,7 +16501,7 @@ var
 begin
   Result:= false;
   if not opAcpTabbing then Exit;
-  if not IsLexerHTML(CurrentLexer) then Exit;
+  if not IsLexerHTML(CurrentLexerForCaret) then Exit;
 
   Ed:= CurrentEditor;
   if Ed.ReadOnly then Exit;
@@ -16702,7 +16703,7 @@ begin
     AFN:= F.FileName;
     if AFN='' then
       AFN:= F.TabCaption;
-    ALex:= F.CurrentLexer;
+    ALex:= F.CurrentLexerName;
   end
   else
   begin
@@ -16731,7 +16732,7 @@ begin
   if SFileExtensionMatch(CurrentFrame.FileName, opTemplateTabbingExcept) then Exit;
   if Ed.ReadOnly then Exit;
 
-  StrLexer:= CurrentLexer;
+  StrLexer:= CurrentLexerForCaret;
   StrId:= EditorGetWordBeforeCaret(Ed, true);
   if StrId='' then Exit;
 
@@ -16795,7 +16796,7 @@ begin
   UpdateColorHint(false);
 
   if s='' then Exit;
-  if not IsLexerWithColors(CurrentLexer) then Exit;
+  if not IsLexerWithColors(CurrentLexerForCaret) then Exit;
 
   //show selected color first
   sel:= CurrentEditor.SelText;
@@ -17346,7 +17347,7 @@ var
   Err: string;
 begin
   Result:= false;
-  if opAutoCloseTags and IsLexerWithTags(CurrentLexer) then
+  if opAutoCloseTags and IsLexerWithTags(CurrentLexerForCaret) then
   begin
     Result:= EditorAutoCloseTag(CurrentEditor, Err);
     if not Result then
@@ -19437,7 +19438,7 @@ begin
 
   for i:= Low(FPluginsFindid) to High(FPluginsFindid) do
     with FPluginsFindid[i] do
-      if IsLexerListed(CurrentLexer, SLexers) then
+      if IsLexerListed(CurrentLexerForCaret, SLexers) then
       begin
         DoPlugin_LoadGotoDef(i);
         CurrentEditor.ResetSelection; //reset selection caused by Ctrl+Alt+click
@@ -19467,7 +19468,7 @@ begin
   Result:= '';
   for i:= Low(FPluginsAcp) to High(FPluginsAcp) do
     with FPluginsAcp[i] do
-      if IsLexerListed(CurrentLexer, SLexers) then
+      if IsLexerListed(CurrentLexerForCaret, SLexers) then
       begin
         DoHint(DKLangConstW('zMTryAcp')+' '+ExtractFileName(SFileName));
 
@@ -19603,7 +19604,7 @@ begin
     if (SFileName='') then
       begin MsgBeep; Exit; end;
 
-    if (SLexers<>'') and not IsLexerListed(CurrentLexer, SLexers) then
+    if (SLexers<>'') and not IsLexerListed(CurrentLexerForCaret, SLexers) then
     begin
       DoHint(WideFormat(DKLangConstW('zMNoneLexer'), [SLexers]));
       MsgBeep;
@@ -19921,7 +19922,7 @@ begin
     cSynPropLinesCount: SetNum(Ed.Lines.Count);
     cSynPropTopLine: SetNum(Ed.TopLine);
     cSynPropReadOnly: SetNum(Ord(Ed.ReadOnly));
-    cSynPropLexer: SetStr(CurrentLexer);
+    cSynPropLexer: SetStr(CurrentLexerForCaret);
     cSynPropLexerForFile: SetStr(CurrentLexerForFile);
     cSynPropLineEnds: SetStr(EditorEOL(Ed));
     cSynPropRightMargin: SetNum(Ed.RightMargin);
@@ -21326,7 +21327,7 @@ begin
 
   //we have two variants of code: for usual code (Pascal/C/PHP/etc) and for HTML/XML.
   //HTML/XML case is special, need precise jumps considering "<" and ">".
-  Lex:= CurrentLexer;
+  Lex:= CurrentLexerForCaret;
   if IsLexerHTML(Lex) or IsLexerXML(Lex) then
   begin
     EditorExtendSelectionByLexer_HTML(Ed);
@@ -23549,7 +23550,7 @@ begin
 
     if cSynHistoryEnc in opSaveEditor then
       Add(Result, cFramePropEnc, IntToStr(DoGetFrameEncoding(F)));
-    Add(Result, cFramePropLexer, F.CurrentLexer);
+    Add(Result, cFramePropLexer, F.CurrentLexerName);
     Add(Result, cFramePropWrap, IntToStr(Ord(F.EditorMaster.WordWrap)));
     Add(Result, cFramePropSplit, IntToStr(Ord(F.SplitHorz)) + ',' + IntToStr(Round(F.SplitPos)));
 
@@ -24322,7 +24323,7 @@ begin
     MemoText.Font.Assign(CurrentEditor.Font);
 
     FInfoList:= Self.FListSnippets;
-    FCurrentLexer:= Self.CurrentLexer;
+    FCurrentLexer:= Self.CurrentLexerForCaret;
 
     FIniFN:= SynHistoryIni;
     FColorSel:= opColorOutSelText;
@@ -24377,7 +24378,7 @@ var
   ADir: string;
 begin
   DoClearSnippet(AInfo);
-  AInfo.Lexers:= CurrentLexer;
+  AInfo.Lexers:= CurrentLexerForFile;
   ADir:= SynSnippetsDir;
 
   if DoSnippetEditorDialog(AInfo) then
@@ -25091,7 +25092,6 @@ end;
 
 procedure TfmMain.UpdateLexerTo(An: TSyntAnalyzer);
 begin
-  SyntaxManager.CurrentLexer:= An;
   SyntaxManagerChange(Self);
 end;
 
@@ -25979,8 +25979,12 @@ procedure TfmMain.acSetupLexerExecute(Sender: TObject);
 var
   An: TSyntAnalyzer;
   PrevName: string;
+  F: TEditorFrame;
 begin
-  An:= SyntaxManager.CurrentLexer;
+  F:= CurrentFrame;
+  if F=nil then exit;
+  An:= F.CurrentLexerObj;
+  if An=nil then exit;
   PrevName:= An.LexerName;
 
   if DoLexerPropDialog(An, ImgListTree) then

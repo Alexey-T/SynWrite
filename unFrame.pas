@@ -188,7 +188,8 @@ type
     property IsAlertEnabled: boolean read FAlertEnabled write FAlertEnabled;
     property IsMasterFocused: boolean read FIsMasterFocused;
     property IsTreeSorted: boolean read FTreeSorted write FTreeSorted;
-    function CurrentLexer: string;
+    function CurrentLexerObj: TSyntAnalyzer;
+    function CurrentLexerName: string;
     property CollapsedString1: Widestring read FCollapsedString1 write FCollapsedString1;
     property CollapsedString2: Widestring read FCollapsedString2 write FCollapsedString2;
     procedure DoSyncMicromap;
@@ -1434,11 +1435,20 @@ begin
     IsWord:= (ch = '$') or (Pos(ch, TfmMain(Owner).opWordChars) > 0);
 end;
 
-function TEditorFrame.CurrentLexer: string;
+function TEditorFrame.CurrentLexerObj: TSyntAnalyzer;
 begin
-  Result:= '';
-  if EditorMaster.TextSource.SyntaxAnalyzer<>nil then
-    Result:= EditorMaster.TextSource.SyntaxAnalyzer.LexerName;
+  Result:= EditorMaster.TextSource.SyntaxAnalyzer;
+end;
+
+function TEditorFrame.CurrentLexerName: string;
+var
+  An: TSyntAnalyzer;
+begin
+  An:= CurrentLexerObj;
+  if Assigned(An) then
+    Result:= An.LexerName
+  else
+    Result:= '';
 end;
 
 

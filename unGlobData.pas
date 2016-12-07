@@ -409,6 +409,9 @@ begin
 end;
 
 
+var
+  DummyComponent: TComponent;
+  
 initialization
 
   SynModuleFilename:= GetModuleName(HInstance);
@@ -417,11 +420,13 @@ initialization
   SynIniDir:= SynDir + 'Settings\';
   SynDirForHelpFiles:= SynDir + 'Readme';
   SynLexerDir:= SynDataSubdir(cSynDataLexerLib);
-  SyntaxManager:= TSyntaxManager.Create(nil);
+
+  DummyComponent:= TComponent.Create(nil);
+  SyntaxManager:= TSyntaxManager.Create(DummyComponent);
 
 finalization
 
-  if Assigned(SyntaxManager) then
-    FreeAndNil(SyntaxManager);
+  FreeAndNil(SyntaxManager);
+  FreeAndNil(DummyComponent);
 
 end.
