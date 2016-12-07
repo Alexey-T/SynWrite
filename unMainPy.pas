@@ -3,6 +3,7 @@ unit unMainPy;
 interface
 
 uses
+  unGlobData,
   PythonEngine;
 
 function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
@@ -134,13 +135,13 @@ const
 function Py_app_version(Self, Args : PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
-    Result:= PyString_FromString(cSynVer);
+    Result:= PyString_FromString(cSynVersion);
 end;
 
 function Py_app_api_version(Self, Args : PPyObject): PPyObject; cdecl;
 begin
   with GetPythonEngine do
-    Result:= PyString_FromString(cSynPyVer);
+    Result:= PyString_FromString(cSynApiVersion);
 end;
 
 function Py_StringList(List: TTntStrings): PPyObject; cdecl;
@@ -856,7 +857,7 @@ begin
                   raise Exception.Create('Unknown menu style: '+IntToStr(Id))
               end;
 
-              FIniFN:= fmMain.SynHistoryIni;
+              FIniFN:= SynHistoryIni;
               FColorSel:= fmMain.opColorOutSelText;
               FColorSelBk:= fmMain.opColorOutSelBk;
 

@@ -12,6 +12,7 @@ uses
   IniFiles,
   unMain,
   unMainPy,
+  unGlobData,
   ATSynPlugins,
   AppEvnts;
 

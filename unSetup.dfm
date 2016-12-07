@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabSelHL
+    ActivePage = tabCarets
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -655,6 +655,7 @@ object fmSetup: TfmSetup
           Width = 81
           Height = 22
           Style = csDropDownList
+          DropDownCount = 20
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -725,6 +726,7 @@ object fmSetup: TfmSetup
           Width = 81
           Height = 22
           Style = csDropDownList
+          DropDownCount = 20
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11

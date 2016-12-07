@@ -66,7 +66,8 @@ uses
   unLexerImportRules in 'unLexerImportRules.pas' {fmLexerImportRules},
   unLexerItems in 'unLexerItems.pas' {fmLexerItems: TFrame},
   unColorPalette in 'unColorPalette.pas' {fmPalette},
-  unProcCustomDialog in 'unProcCustomDialog.pas';
+  unProcCustomDialog in 'unProcCustomDialog.pas',
+  unGlobData in 'unGlobData.pas';
 
 {$R *.res}
 {$R *.dkl_const.res}

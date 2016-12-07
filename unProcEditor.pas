@@ -14,10 +14,9 @@ uses
   ATSyntMemo,
   ecMemoStrings,
   ecStrUtils,
-  ecPrint;
+  ecPrint,
+  unGlobData;
 
-var
-  SynLexerDir: string = '?';
 function LexerCommentsProperty(const ALexerName, AKey: string): string;
   
 procedure LexerEnumSublexers(An: TSyntAnalyzer; List: TTntStringList);

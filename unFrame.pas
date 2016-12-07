@@ -13,7 +13,10 @@ uses
   ecSyntMemo, ecSyntAnal, ecActns, ecExtHighlight, ecOleDrag, ecEmbObj,
   ATFileNotificationSimple,
   ATSyntMemo, //this replaces TSyntaxMemo class
-  TB2Item, SpTBXItem, SpTBXDkPanels;
+  unGlobData,
+  TB2Item,
+  SpTBXItem,
+  SpTBXDkPanels;
 
 const
   cMaxBk = 1*1000*1000; //max bookmarks count

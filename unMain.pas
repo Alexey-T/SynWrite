@@ -16,6 +16,7 @@ uses
   TntForms, TntClasses,
   Gauges,
 
+  unGlobData,
   unFrame,
   unSearch,
   unSearchInList,
@@ -101,31 +102,6 @@ const
   cPyPluginManager = 'syn_plugin_manager';
 
 type
-  TSynDataSubdirId = (
-    cSynDataAutocomp,
-    cSynDataClips,
-    cSynDataColors,
-    cSynDataConv,
-    cSynDataIcons,
-    cSynDataOutPresets,
-    cSynDataSkins,
-    cSynDataSnippets,
-    cSynDataLexerLib
-    );
-const
-  cSynDataSubdirNames: array[TSynDataSubdirId] of string = (
-    'autocomplete',
-    'clips',
-    'colors',
-    'conv',
-    'icons',
-    'outpresets',
-    'skins',
-    'snippets',
-    'lexlib'
-    );
-
-type
   TSynEditorHistoryItem = (
     cSynHistoryCaret,
     cSynHistoryEnc,
@@ -150,55 +126,6 @@ const
   cFramePropFold     = 'fold';
 
 type
-  TSynPyEvent = (
-    cSynEventOnOpen,
-    cSynEventOnSaveAfter,
-    cSynEventOnSaveBefore,
-    cSynEventOnKey,
-    cSynEventOnChange,
-    cSynEventOnChangeSlow,
-    cSynEventOnSelect,
-    cSynEventOnCaretMove,
-    cSynEventOnClick,
-    cSynEventOnClickDbl,
-    cSynEventOnNumber,
-    cSynEventOnState,
-    cSynEventOnFocus,
-    cSynEventOnLexer,
-    cSynEventOnComplete,
-    cSynEventOnFuncHint,
-    cSynEventOnGotoDef,
-    cSynEventOnConsole,
-    cSynEventOnPanelLog,
-    cSynEventOnCompare
-    );
-  TSynPyEvents = set of TSynPyEvent;
-
-const
-  cSynPyEvent: array[TSynPyEvent] of string = (
-    'on_open',
-    'on_save',
-    'on_save_pre',
-    'on_key',
-    'on_change',
-    'on_change_slow',
-    'on_select',
-    'on_caret_move',
-    'on_click',
-    'on_click_dbl',
-    'on_num',
-    'on_state',
-    'on_focus',
-    'on_lexer',
-    'on_complete',
-    'on_func_hint',
-    'on_goto_def',
-    'on_console',
-    'on_panel_log',
-    'on_compare'
-    );
-
-type
   TSynGroupId = (
     cSynGroupCurrent,
     cSynGroupOpposite,
@@ -210,34 +137,18 @@ type
     cSynGroup6
     );
 
-type
   TSynBinaryAct = (
     cBinaryDontOpen,
     cBinaryAlwaysOpen,
     cBinaryPrompt
     );
 
-type
   TSynQuickSearchType = (
     cQsNext,
     cQsPrev,
     cQsAgain
     );
 
-type
-  TSynAddonType = (
-    cAddonTypeNone,
-    cAddonTypeBinPlugin,
-    cAddonTypePyPlugin,
-    cAddonTypeData,
-    cAddonTypeLexer,
-    cAddonTypeRoot
-    );
-const
-  cSynAddonType: array[TSynAddonType] of string =
-    ('', 'plugin', 'py-plugin', 'template', 'lexer', 'root-addon');
-
-type
   TSynEscMode = (
     cEscNothing,
     cEscCloseApp,
@@ -402,18 +313,6 @@ const
   cColorsNum = 68;
 type
   TSynColors = array[0..cColorsNum-1] of TColor;
-
-var
-  ModFilename: string;
-  SynExe: boolean;
-  SynDir: string;
-  SynIniDir: string;
-  SynCommandlineSessionFN: string;
-  SynCommandlineProjectFN: string;
-  SyntaxManager: TSyntaxManager = nil;
-
-procedure LoadLexerLib;
-function SynDataSubdir(Id: TSynDataSubdirId): string;
 
 
 type
@@ -2447,7 +2346,6 @@ type
     function MsgEncReload: boolean;
     function MsgConfirmFtp: boolean;
 
-    procedure InitSynIniDir;
     procedure LexListClick(Sender: TObject);
 
     procedure Finder_OnBeforeExecute(Sender: TObject);
@@ -3079,23 +2977,6 @@ type
     function CurrentProjectWorkDir: Widestring;
     function CurrentProjectDir: Widestring;
 
-    function SynIni: string;
-    function SynToolbarsIni: string;
-    function SynStylesIni: string;
-    function SynHistoryStatesIni: string;
-    function SynFoldStatesIni: string;
-    function SynMacrosIni: string;
-    function SynHideIni: string;
-    function SynHistoryIni: string;
-    function SynPluginsIni: string;
-    function SynPluginIni(const SCaption: string): string;
-    function SynSkinsDir: string;
-    function SynPyDir: string;
-    function SynSnippetsDir: string;
-    function SynIconsDir: string;
-    function SynSkinFilename(const Name: string): string;
-    function SynConverterFilename(const Name: string): string;
-
     function DoGetSearchPaths: Widestring;
     function DoFindCommand(
       Ed: TSyntaxMemo;
@@ -3135,10 +3016,6 @@ function MsgConfirmBinary(const fn: WideString; H: THandle): boolean;
 function MsgConfirmCreate(const fn: Widestring; H: THandle): boolean;
 procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
-
-const
-  cSynVer = '6.29.2475';
-  cSynPyVer = '1.0.159';
 
 const
   cSynParamRO = '/ro';
@@ -3195,11 +3072,6 @@ uses
 const
   cConverterHtml1 = 'HTML - all entities';
   cConverterHtml2 = 'HTML - entities except brackets';
-
-const
-  cSynColorSwatchExt = 'synw-colorstring';
-  cSynSnippetExt = 'synw-snippet';
-  cSynSessionExt = 'synw-session';
 
 const
   cRegexColorCode = '\#\w{3,6}';
@@ -3264,106 +3136,6 @@ begin
 end;
 
 
-const
-  cLexerCss = 'CSS';
-  cLexerCssList = 'LESS,SASS,SCSS,Sass,Stylus';
-  cLexerText = 'Text files';
-  cLexerIni = 'Ini files';
-  cLexerXML = 'XML';
-  cLexerJS = 'JavaScript';
-  cLexerNfo = 'NFO files';
-  cLexerMake = 'Make files';
-  cLexerProperties = 'Properties';
-
-function IsLexerListed(const Lexer, List: string): boolean;
-begin
-  Result:= IsStringListed(LowerCase(Lexer), LowerCase(List));
-end;
-
-function IsLexerHTML(const s: string): boolean;
-begin
-  Result:= Pos('HTML', s)>0;
-end;
-
-function IsLexerPHP(const s: string): boolean;
-begin
-  Result:= Pos('PHP', s)>0;
-end;
-
-function IsLexerPas(const s: string): boolean;
-begin
-  Result:= Pos('Pascal', s)>0;
-end;
-
-function IsLexerCSS(const s: string; CanBeLess: boolean = true): boolean;
-begin
-  Result:= (s=cLexerCss) or
-    (CanBeLess and IsLexerListed(s, cLexerCssList));
-end;
-
-function IsLexerJS(const s: string): boolean;
-begin
-  Result:= s=cLexerJS;
-end;
-
-function IsLexerXML(const s: string): boolean;
-begin
-  Result:= s=cLexerXML;
-end;
-
-function IsLexerWithTags(const s: string): boolean;
-begin
-  Result:= IsLexerHTML(s) or IsLexerXML(s);
-end;
-
-function IsLexerWithImages(const s: string): boolean;
-begin
-  Result:= IsLexerHTML(s) or IsLexerCSS(s);
-end;
-
-function IsLexerIni(const s: string): boolean;
-begin
-  Result:= s=cLexerIni;
-end;
-
-function IsLexerNFO(const s: string): boolean;
-begin
-  Result:= s=cLexerNfo;
-end;
-
-function IsLexerMake(const s: string): boolean;
-begin
-  Result:= s=cLexerMake;
-end;
-
-function IsLexerProp(const s: string): boolean;
-begin
-  Result:= s=cLexerProperties;
-end;
-
-function IsLexerWithColors(const s: string): boolean;
-begin
-  Result:=
-    IsLexerCSS(s) or
-    IsLexerHTML(s) or
-    IsLexerJS(s) or
-    IsLexerPHP(s) or
-    IsLexerProp(s) or
-    IsLexerIni(s);
-end;
-
-//-------------------
-const
-  cLister_itm_wrap    = $FFFC;
-  cLister_itm_percent = $FFFE;
-
-type
-  TListerPluginInfo = record
-    PlugWinProc: Pointer; //callback function of our form
-    PlugForm: TfmMain;    //our form
-  end;
-
-//----------------------------------------------------------------------------------
 procedure TfmMain.CreateParams(var Params: TCreateParams);
 begin
   inherited CreateParams(Params);
@@ -3377,6 +3149,13 @@ begin
   hLister:= hWindow;
   QuickView:= GetParent(hLister) <> 0;
 end;
+
+type
+  TListerPluginInfo = record
+    PlugWinProc: Pointer;
+    PlugForm: TfmMain;
+  end;
+
 
 //hook form messages
 function HookDestroy(hWin: HWND; Msg, wParam, lParam: LongInt): LongInt; stdcall;
@@ -3460,8 +3239,6 @@ begin
     fmMain:= TfmMain.CreateParented(ListerWin);
     with fmMain do
     begin
-      InitSynIniDir;
-
       //synchronize our form and Lister
       //Application.Handle:= ListerWin;
       Application.OnException:= AppException;
@@ -4429,7 +4206,7 @@ begin
 
     opNewEnc:= ReadInteger('Setup', 'NEnc', 0);
     opNewLineEnds:= ReadInteger('Setup', 'NLe', 0);
-    opNewLexer:= ReadString('Setup', 'NLex', cLexerText);
+    opNewLexer:= ReadString('Setup', 'NLex', '');
 
     opAutoCloseTags:= ReadBool('Setup', 'ACloseTag', false);
     opAutoCloseBrackets:= ReadBool('Setup', 'ACloseBr', false);
@@ -4978,76 +4755,6 @@ begin
  except
    MsgError(DKLangConstW('zMCannotSaveIni'), Handle);
  end;
-end;
-
-function FAppDataPath: string;
-begin
-  Result:= SExpandVars('%AppData%\');
-end;
-
-procedure TfmMain.InitSynIniDir;
-begin
-  SynIniDir:= SynDir + 'Settings\';
-end;
-
-function TfmMain.SynPluginIni(const SCaption: string): string;
-begin
-  Result:= SynIniDir + 'SynPlugin' + SCaption + '.ini';
-end;
-
-function TfmMain.SynIni: string;
-begin
-  Result:= SynIniDir + 'Syn.ini';
-end;
-
-function TfmMain.SynToolbarsIni: string;
-begin
-  Result:= SynIniDir + 'SynToolbars.ini';
-end;
-
-function TfmMain.SynStylesIni: string;
-begin
-  Result:= SynIniDir + 'SynStyles.ini';
-end;
-
-function TfmMain.SynHistoryIni: string;
-begin
-  Result:= SynIniDir + 'SynHistory.ini';
-end;
-
-function TfmMain.SynHistoryStatesIni: string;
-begin
-  Result:= SynIniDir + 'SynHistoryStates.ini';
-end;
-
-function TfmMain.SynFoldStatesIni: string;
-begin
-  Result:= SynIniDir + 'SynFoldStates.ini';
-end;
-
-function TfmMain.SynMacrosIni: string;
-begin
-  Result:= SynIniDir + 'SynMacros.ini';
-end;
-
-function TfmMain.SynHideIni: string;
-begin
-  Result:= SynIniDir + 'SynHide.ini';
-end;
-
-function TfmMain.SynPluginsIni: string;
-begin
-  Result:= SynIniDir + 'SynPlugins.ini';
-end;
-
-function SynDataSubdir(Id: TSynDataSubdirId): string;
-begin
-  Result:= SynDir + 'Data\' + cSynDataSubdirNames[Id];
-end;
-
-function TfmMain.SynConverterFilename(const Name: string): string;
-begin
-  Result:= SynDataSubdir(cSynDataConv) + '\' + Name + '.txt';
 end;
 
 function TfmMain.LoadFrameState(Frame: TEditorFrame; const fn: WideString): boolean;
@@ -6763,63 +6470,6 @@ begin
 end;
 
 
-procedure LoadLexerLib;
-var
-  dir, fn, lexname: string;
-  L: TTntStringList;
-  an: TSyntAnalyzer;
-  ini: TIniFile;
-  i, j: integer;
-begin
-  //dont load again (if Lister plg called before)
-  if SyntaxManager.AnalyzerCount>0 then Exit;  
-  SyntaxManager.Clear;
-
-  //load .lcf files to lib
-  dir:= SynDataSubdir(cSynDataLexerLib);
-  L:= TTntStringList.Create;
-  try
-    FFindToList(L, dir, '*.lcf', '', false, False, false, false);
-    L.Sort;
-
-    if L.Count=0 then
-    begin
-      //DoHint('Cannot find lexer files (data\lexlib\*.lcf)');
-      exit
-    end;
-
-    for i:= 0 to L.Count-1 do
-    begin
-      an:= SyntaxManager.AddAnalyzer;
-      an.LoadFromFile(L[i]);
-    end;
-  finally
-    FreeAndNil(L);
-  end;
-
-  //correct sublexer links
-  for i:= 0 to SyntaxManager.AnalyzerCount-1 do
-  begin
-    an:= SyntaxManager.Analyzers[i];
-    fn:= dir+'\'+an.LexerName+'.cuda-lexmap';
-    if FileExists(fn) then
-    begin
-      ini:= TIniFile.Create(fn);
-      try
-        for j:= 0 to an.SubAnalyzers.Count-1 do
-        begin
-          lexname:= ini.ReadString('ref', IntToStr(j), '');
-          if lexname<>'' then
-            an.SubAnalyzers[j].SyntAnalyzer:= SyntaxManager.FindAnalyzer(lexname);
-        end;
-      finally
-        FreeAndNil(ini);
-      end;
-    end;
-  end;
-end;
-
-
 procedure TfmMain.DoFind_CurrentWord(ANext: boolean);
 var
   NStart, NEnd, NMaxLen: integer;
@@ -6898,8 +6548,6 @@ var
   Cur: HIcon;
   i: integer;
 begin
-  InitSynIniDir;
-
   if SynExe then
     InitPythonEngine;
 
@@ -8842,7 +8490,7 @@ procedure TfmMain.TBXItemAbClick(Sender: TObject);
 begin
   with TfmAbout.Create(Self) do
     try
-      LabelWVersion.Caption:= cSynVer;
+      LabelWVersion.Caption:= cSynVersion;
       Left:= Self.Monitor.Left + (Self.Monitor.Width - Width) div 2;
       Top:= Self.Monitor.Top + (Self.Monitor.Height - Height) div 2;
       ShowModal;
@@ -14177,7 +13825,7 @@ var
 begin
   with TfmLoadLex.Create(nil) do
   try
-    SIniStyles:= Self.SynStylesIni;
+    SIniStyles:= SynStylesIni;
     if ShowModal=mrOk then
     begin
       for i:= 0 to List.Count-1 do
@@ -15546,7 +15194,7 @@ begin
     FinderInTree:= TFinderInTree.Create(Self);
   with FinderInTree do
   begin
-    IniFN:= Self.SynHistoryIni;
+    IniFN:= SynHistoryIni;
     if Assigned(fmSR) then
       SearchText:= fmSR.Text1;
     Control:= Self.CurrentTreeview;
@@ -15794,7 +15442,7 @@ begin
     FinderInList:= TFinderInList.Create(Self);
   with FinderInList do
   begin
-    IniFN:= Self.SynHistoryIni;
+    IniFN:= SynHistoryIni;
     if Assigned(fmSR) then
       SearchText:= fmSR.Text1;
     Control:= CurrentListbox;
@@ -17810,7 +17458,7 @@ begin
       Self.UpdateMenuDialogBorder(Form);
       Font.Assign(Self.FFontMenus);
 
-      FIniFN:= Self.SynHistoryIni;
+      FIniFN:= SynHistoryIni;
       FColorSel:= Self.opColorOutSelText;
       FColorSelBk:= Self.opColorOutSelBk;
       FListItems:= ListItems;
@@ -21163,7 +20811,7 @@ begin
         LexList.Add('Lexer: ' + FListLexersSorted[i]);
     end;    
 
-    FIniFN:= Self.SynHistoryIni;
+    FIniFN:= SynHistoryIni;
     FColorSel:= opColorOutSelText;
     FColorSelBk:= opColorOutSelBk;
 
@@ -21215,7 +20863,7 @@ begin
       Font.Assign(FFontMenus);
       List.ItemHeight:= FontHeightToItemHeight(Font)*2;
 
-      FIniFN:= Self.SynHistoryIni;
+      FIniFN:= SynHistoryIni;
       fmProj:= Self.fmProj;
       FListFiles:= Files;
       FColorSel:= opColorOutSelText;
@@ -22761,32 +22409,6 @@ begin
     for i:= SynMruSessions.Items.Count-1 downto 0 do
       MRUAdd(SynMruSessions.Items[i]);
   end;
-end;
-
-function TfmMain.SynSkinsDir: string;
-begin
-  Result:= SynDataSubdir(cSynDataSkins);
-end;
-
-function TfmMain.SynSnippetsDir: string;
-begin
-  Result:= SynDataSubdir(cSynDataSnippets);
-end;
-
-function TfmMain.SynIconsDir: string;
-begin
-  Result:= SynDataSubdir(cSynDataIcons);
-end;
-
-function TfmMain.SynPyDir: string;
-begin
-  //at the time of this call, SynDir not yet inited
-  Result:= ExtractFilePath(ParamStr(0)) + 'Py';
-end;
-
-function TfmMain.SynSkinFilename(const Name: string): string;
-begin
-  Result:= SynSkinsDir + '\' + Copy(Name, 2, MaxInt) + '.skn';
 end;
 
 procedure TfmMain.DoColorsArrayApply(const C: TSynColors; Ed: TSyntaxMemo);
@@ -24813,7 +24435,7 @@ begin
     FInfoList:= Self.FListSnippets;
     FCurrentLexer:= Self.CurrentLexer;
 
-    FIniFN:= Self.SynHistoryIni;
+    FIniFN:= SynHistoryIni;
     FColorSel:= opColorOutSelText;
     FColorSelBk:= opColorOutSelBk;
 
@@ -26763,19 +26385,7 @@ end;
 
 initialization
 
-  ModFilename:= GetModuleName(HInstance);
-  SynExe:= LowerCase(ExtractFileExt(ModFilename))='.exe';
-  SynDir:= ExtractFilePath(ModFilename);
-  SynDirForHelpFiles:= SynDir+'Readme';
-  SynLexerDir:= SynDataSubdir(cSynDataLexerLib);
-  SyntaxManager:= TSyntaxManager.Create(nil);
-
   unProcPy.PyEditor:= MainPyEditor;
-
-finalization
-
-  if Assigned(SyntaxManager) then
-    FreeAndNil(SyntaxManager);
 
 end.
 

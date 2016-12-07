@@ -9,13 +9,14 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, StdCtrls, ExtCtrls, Grids, Spin,
+  Menus, TntMenus,
 
   ecSyntMemo, ecKeyMap, ecHotKeyEdit, ecPopupCtrl,
   TntStdCtrls, TntComCtrls, TntForms, TntGrids,
   DKLang,
 
-  unMain, unSetupOvr, unProcEditor,
-  Menus, TntMenus;
+  unGlobData,
+  unMain, unSetupOvr, unProcEditor;
 
 const
   cMaxCaretTime = 1000*1000*1000;

@@ -21,6 +21,7 @@ uses
   unSearch in 'unSearch.pas',
   unSR in 'unSR.pas' {fmSR},
   unAbout in 'unAbout.pas' {fmAbout},
+  unGlobData,
   iniFiles,
   ATxFProc,
   ATSynPlugins,

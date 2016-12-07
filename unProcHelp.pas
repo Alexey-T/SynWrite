@@ -4,7 +4,6 @@ interface
 
 function FHelpLangSuffix: string;
 function FHelpFilename: string;
-var SynDirForHelpFiles: string;
 
 type
   TSynHelpId = (
@@ -49,6 +48,7 @@ implementation
 
 uses
   SysUtils,
+  unGlobData,
   DKLang,
   ATxFProc;
 
