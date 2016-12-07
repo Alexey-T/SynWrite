@@ -404,8 +404,17 @@ type
   TSynColors = array[0..cColorsNum-1] of TColor;
 
 var
+  ModFilename: string;
+  SynExe: boolean;
+  SynDir: string;
+  SynIniDir: string;
   SynCommandlineSessionFN: string;
   SynCommandlineProjectFN: string;
+  SyntaxManager: TSyntaxManager = nil;
+
+procedure LoadLexerLib;
+function SynDataSubdir(Id: TSynDataSubdirId): string;
+
 
 type
   TfmMain = class(TTntForm)
@@ -418,7 +427,6 @@ type
     TBXItemBarSaveAs: TSpTBXItem;
     SD: TTntSaveDialog;
     OD: TTntOpenDialog;
-    SyntaxManager: TSyntaxManager;
     PropsManager: TPropsManager;
     ecSyntPrinter: TecSyntPrinter;
     PopupEditor: TSpTbxPopupMenu;
@@ -2515,7 +2523,6 @@ type
     procedure LoadMap;
     procedure LoadClips;
     procedure LoadIni;
-    procedure LoadLexLib;
     procedure LoadMacros;
     procedure LoadPrintOptions;
     procedure LoadHideIni;
@@ -2712,9 +2719,6 @@ type
     //end of protected
 
   public
-    SynDir: string;
-    SynIniDir: string;
-    SynExe: boolean;
     SynProjectSessionFN: string;
 
     Groups: TATGroups;
@@ -3085,7 +3089,6 @@ type
     function SynHistoryIni: string;
     function SynPluginsIni: string;
     function SynPluginIni(const SCaption: string): string;
-    function SynDataSubdir(Id: TSynDataSubdirId): string;
     function SynSkinsDir: string;
     function SynPyDir: string;
     function SynSnippetsDir: string;
@@ -3122,6 +3125,7 @@ var
   opListerQVTree: string;
   opListerTextOnly: integer;
   opListerStartRO: boolean;
+  opListerQuitOnUnknownFiles: boolean;
 
 function SynStart(ListerWin: HWND; const FileToLoad: WideString): HWND;
 procedure SynStop(hWin: HWND);
@@ -3133,7 +3137,7 @@ procedure MsgFileTooBig(const fn: Widestring; H: THandle);
 procedure MsgCannotCreate(const fn: Widestring; H: THandle);
 
 const
-  cSynVer = '6.29.2470';
+  cSynVer = '6.29.2475';
   cSynPyVer = '1.0.159';
 
 const
@@ -5036,7 +5040,7 @@ begin
   Result:= SynIniDir + 'SynPlugins.ini';
 end;
 
-function TfmMain.SynDataSubdir(Id: TSynDataSubdirId): string;
+function SynDataSubdir(Id: TSynDataSubdirId): string;
 begin
   Result:= SynDir + 'Data\' + cSynDataSubdirNames[Id];
 end;
@@ -6732,9 +6736,9 @@ begin
   TBXItemWinConsole.Enabled:= SynExe;
 
   //init main
+  LoadLexerLib;
   LoadIni;
   PropsManager.UpdateAll;
-  LoadLexLib;
   LoadMacros;
   LoadClip;
   LoadHideIni;
@@ -6759,7 +6763,7 @@ begin
 end;
 
 
-procedure TfmMain.LoadLexlib;
+procedure LoadLexerLib;
 var
   dir, fn, lexname: string;
   L: TTntStringList;
@@ -6767,6 +6771,8 @@ var
   ini: TIniFile;
   i, j: integer;
 begin
+  //dont load again (if Lister plg called before)
+  if SyntaxManager.AnalyzerCount>0 then Exit;  
   SyntaxManager.Clear;
 
   //load .lcf files to lib
@@ -6778,7 +6784,7 @@ begin
 
     if L.Count=0 then
     begin
-      DoHint('Cannot find lexer files (data\lexlib\*.lcf)');
+      //DoHint('Cannot find lexer files (data\lexlib\*.lcf)');
       exit
     end;
 
@@ -6889,15 +6895,9 @@ end;
 
 procedure TfmMain.FormCreate(Sender: TObject);
 var
-  ModFilename: string;
   Cur: HIcon;
   i: integer;
 begin
-  ModFilename:= GetModuleName(HInstance);
-  SynExe:= LowerCase(ExtractFileExt(ModFilename))='.exe';
-  SynDir:= ExtractFilePath(ModFilename);
-  SynDirForHelpFiles:= SynDir+'Readme';
-  SynLexerDir:= SynDataSubdir(cSynDataLexerLib);
   InitSynIniDir;
 
   if SynExe then
@@ -11354,7 +11354,7 @@ begin
 
   with TfmSRFiles.Create(Self) do
   try
-    SR_IniDir:= Self.SynIniDir;
+    SR_IniDir:= SynIniDir;
     SR_InProject:= AInProject;
     SR_CurrentDir:= SExtractFileDir(CurrentFrame.FileName);
     SR_CurrentFile:= SExtractFileName(CurrentFrame.FileName);
@@ -26762,7 +26762,20 @@ begin
 end;
 
 initialization
+
+  ModFilename:= GetModuleName(HInstance);
+  SynExe:= LowerCase(ExtractFileExt(ModFilename))='.exe';
+  SynDir:= ExtractFilePath(ModFilename);
+  SynDirForHelpFiles:= SynDir+'Readme';
+  SynLexerDir:= SynDataSubdir(cSynDataLexerLib);
+  SyntaxManager:= TSyntaxManager.Create(nil);
+
   unProcPy.PyEditor:= MainPyEditor;
+
+finalization
+
+  if Assigned(SyntaxManager) then
+    FreeAndNil(SyntaxManager);
 
 end.
 

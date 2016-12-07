@@ -1246,12 +1246,12 @@ end;
 
 function TfmSetup.GetColorPresetFN(const Name: string): string;
 begin
-  Result:= fmMain.SynDataSubdir(cSynDataColors) + '\' + Name + '.' + cColorExt;
+  Result:= SynDataSubdir(cSynDataColors) + '\' + Name + '.' + cColorExt;
 end;
 
 procedure TfmSetup.FixWnd;
 begin
-  if not fmMain.SynExe then
+  if not SynExe then
   begin
     SetForegroundWindow(fmMain.hLister);
     SetForegroundWindow(Handle);

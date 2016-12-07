@@ -4,6 +4,10 @@ Legend:
  * changed
 
 
+6.29.2475
++ (Totalcmd plugin) added option QuitOnUnknownFiles; see Readme\HiddenOptionsForLister.txt
+* (Totalcmd plugin) renamed option TxOnly -> TextOnly
+
 6.29.2470
 + option "Cut line if no selection" (was "Copy/Cut line...", now 2 opts)
 * delete option "Preserve selection" (caused problems with plugins, they want caret at selection)

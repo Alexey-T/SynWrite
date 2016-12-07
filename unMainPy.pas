@@ -214,7 +214,7 @@ begin
           end;
         LEXER_GET_ENABLED:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
               Result:= PyBool_FromLong(Ord(not An.Internal))
             else
@@ -222,7 +222,7 @@ begin
           end;
         LEXER_GET_EXT:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
               Result:= PyUnicode_FromWideString(An.Extentions)
             else
@@ -230,12 +230,12 @@ begin
           end;
         LEXER_GET_MOD:
           begin
-            Result:= PyBool_FromLong(Ord(fmMain.SyntaxManager.Modified));
+            Result:= PyBool_FromLong(Ord(SyntaxManager.Modified));
           end;
 
         LEXER_GET_LINKS:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
             begin
               List:= TTntStringList.Create;
@@ -252,7 +252,7 @@ begin
 
         LEXER_GET_STYLES:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
             begin
               List:= TTntStringList.Create;
@@ -270,7 +270,7 @@ begin
         LEXER_GET_STYLES_COMMENTS,
         LEXER_GET_STYLES_STRINGS:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
             begin
               if Id=LEXER_GET_STYLES_COMMENTS then
@@ -298,7 +298,7 @@ begin
 
         LEXER_GET_COMMENT:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
               Result:= PyString_FromString(PChar(string(An.LineComment)))
             else
@@ -308,7 +308,7 @@ begin
         LEXER_GET_COMMENT_STREAM,
         LEXER_GET_COMMENT_LINED:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
             begin
               if Id=LEXER_GET_COMMENT_STREAM then
@@ -337,21 +337,21 @@ begin
 
         LEXER_SET_ENABLED:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
               An.Internal:= Str2='0';
             Result:= ReturnNone;
           end;
         LEXER_SET_NAME:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
               An.LexerName:= Str2;
             Result:= ReturnNone;
           end;
         LEXER_SET_EXT:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
               An.Extentions:= Str2;
             Result:= ReturnNone;
@@ -359,9 +359,9 @@ begin
 
         LEXER_SET_LINKS:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
-              LexerSetSublexers(fmMain.SyntaxManager, An, Str2);
+              LexerSetSublexers(SyntaxManager, An, Str2);
             Result:= ReturnNone;
           end;
 
@@ -369,11 +369,11 @@ begin
           begin
             if FileExists(Str1) then
             begin
-              An:= fmMain.SyntaxManager.AddAnalyzer;
+              An:= SyntaxManager.AddAnalyzer;
               An.LoadFromFile(Str1);
 
               //also save to data/lexlib
-              DoLexerSaveToFile(An, LexerFilename(An.LexerName, fmMain.SynDataSubdir(cSynDataLexerLib)));
+              DoLexerSaveToFile(An, LexerFilename(An.LexerName, SynDataSubdir(cSynDataLexerLib)));
 
               Result:= PyUnicode_FromWideString(An.LexerName);
             end
@@ -382,7 +382,7 @@ begin
           end;
         LEXER_EXPORT:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
             begin
               DoLexerSaveToFile(An, Str2);
@@ -393,7 +393,7 @@ begin
           end;
         LEXER_DETECT:
           begin
-            An:= DoFindLexerForFilename(fmMain.SyntaxManager, Str1);
+            An:= DoFindLexerForFilename(SyntaxManager, Str1);
             if Assigned(An) then
               Result:= PyString_FromString(PChar(An.LexerName))
             else
@@ -401,14 +401,14 @@ begin
           end;
         LEXER_DELETE:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
               An.Free;
             Result:= ReturnNone;
           end;
         LEXER_CONFIG:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             if Assigned(An) then
               Result:= PyBool_FromLong(Ord(An.CustomizeLexer))
             else
@@ -416,7 +416,7 @@ begin
           end;
         LEXER_ACTIVATE:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(Str1);
+            An:= SyntaxManager.FindAnalyzer(Str1);
             fmMain.CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= An;
             fmMain.UpdateLexerTo(An);
             Result:= ReturnNone;
@@ -1791,7 +1791,7 @@ begin
 
         PROP_LEXER_FILE:
           begin
-            An:= fmMain.SyntaxManager.FindAnalyzer(StrVal);
+            An:= SyntaxManager.FindAnalyzer(StrVal);
             fmMain.CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= An;
             fmMain.UpdateLexerTo(An);
             fmMain.UpdateStatusBar;

@@ -24,7 +24,8 @@ uses
   iniFiles,
   ATxFProc,
   ATSynPlugins,
-  VCLFixes;
+  VCLFixes,
+  unProc;
 
 const
   LISTPLUGIN_OK    = 0;
@@ -74,9 +75,22 @@ var
 begin
   S:= FileToLoad;
   if (S<>'') and ((S[Length(S)]='\') or IsFileTooBig(S) or IsNotTextFile(S)) then
-    Result:= 0
-  else
-    Result:= SynStart(ListerWin, S);
+  begin
+    Result:= 0;
+    Exit
+  end;
+
+  if opListerQuitOnUnknownFiles then
+  begin
+    LoadLexerLib;
+    if DoFindLexerForFilename(SyntaxManager, S)=nil then
+    begin
+      Result:= 0;
+      Exit;
+    end;
+  end;
+
+  Result:= SynStart(ListerWin, S);
 end;
 
 function ListLoad(ListerWin: HWND; FileToLoad: PAnsiChar; ShowFlags: integer): HWND; stdcall;
@@ -302,8 +316,9 @@ begin
     opListerQVToolbars:= ReadString('Syn2', 'QViewToolbars', '');
     opListerQVTree:= ReadString('Syn2', 'QViewTree', '');
     opListerQVReadOnly:= ReadBool('Syn2', 'QViewRO', true);
-    opListerTextOnly:= ReadInteger('Syn2', 'TxOnly', 0);
+    opListerTextOnly:= ReadInteger('Syn2', 'TextOnly', 0);
     opListerStartRO:= ReadBool('Syn2', 'RO', false);
+    opListerQuitOnUnknownFiles:= ReadBool('Syn2', 'QuitOnUnknownFiles', false);
   finally
     Free;
   end;
