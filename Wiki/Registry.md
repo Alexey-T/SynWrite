@@ -235,6 +235,7 @@ Lexer: WSH script                   | | Lexers/lexer.WSH_script.zip
 Lexer: XSLT                         | | Lexers/lexer.XSLT.zip
 Lexer: Yacc                         | | Lexers/lexer.Yacc.zip
 Lexer: YAML                         | | Lexers/lexer.YAML.zip
+Lexer: ZenScript (MineTweaker)      | | Lexers/lexer.ZenScript_(MineTweaker).zip
 Linter: CppCheck | SynLint subplugin for C++ lexer | Linters/linter.CppCheck.zip
 Linter: CppLint | SynLint subplugin for C++ lexer | Linters/linter.CppLint.zip
 Linter: CssLint | SynLint subplugin for CSS lexer | Linters/linter.CssLint.zip

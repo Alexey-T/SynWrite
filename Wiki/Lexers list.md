@@ -189,3 +189,4 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * XSLT
 * Yacc (Bison)
 * YAML 
+* ZenScript (MineTweaker)
