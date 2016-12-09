@@ -4,12 +4,12 @@ Note: QuickView is a special TotalCmd mode, which is activated by Ctrl+Q key in 
 
 -----------
 SynDialog
-Bool (0/1).
+Bool (0/1)
 Allows SynWrite to show its own custom Search/Replace dialog, instead of default Lister dialog.  
 
 -----------
 TcHistory
-Bool (0/1).
+Bool (0/1)
 Allows SynWrite to use Total Commander ini file directly, section [SearchText] inside it. When on, SynWrite will store its search strings history directly into TotalCmd ini file.  
 
 -----------
@@ -23,12 +23,12 @@ This allows to show Tree panel in QuickView mode for specified file extensions o
 
 -----------
 QViewRO
-Bool (0/1).
+Bool (0/1)
 Turns on/off "Read-only" mode for QuickView.  
 
 -----------
 RO
-Bool (0/1).
+Bool (0/1)
 Turns on/off "Read-only" mode for non-QuickView.  
 
 -----------
@@ -39,7 +39,7 @@ TextOnly
 
 -----------
 QuitOnUnknownFiles
-Bool (0/1).
+Bool (0/1)
 If on, then Synwrite won't load on files, which don't have lexer assigned.
 
 -----------
