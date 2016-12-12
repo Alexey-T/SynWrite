@@ -130,8 +130,9 @@ Lexer: Groovy                       | | Lexers/lexer.Groovy.zip
 Lexer: Haml                         | | Lexers/lexer.Haml.zip
 Lexer: Harbour                      | | Lexers/lexer.Harbour.zip
 Lexer: Haxe                         | | Lexers/lexer.Haxe.zip
-Lexer: HJSON                         | | Lexers/lexer.HJSON.zip
+Lexer: HJSON                        | | Lexers/lexer.HJSON.zip
 Lexer: HTML Diafan                  | | Lexers/lexer.HTML_Diafan.zip
+Lexer: HTML Django DTL              | | Lexers/lexer.HTML_Django_DTL.zip
 Lexer: HTML Embedded JS             | | Lexers/lexer.HTML_Embedded_JS.zip
 Lexer: HTML Handlebars              | | Lexers/lexer.HTML_Handlebars.zip
 Lexer: HTML Laravel Blade           | | Lexers/lexer.HTML_Laravel_Blade.zip
@@ -187,6 +188,7 @@ Lexer: PHP_                         | | Lexers/lexer.PHP_.zip
 Lexer: PICL                         | | Lexers/lexer.PICL.zip
 Lexer: Pike                         | | Lexers/lexer.Pike.zip
 Lexer: PL/SQL                       | | Lexers/lexer.PL_SQL.zip
+Lexer: PlantUML                     | | Lexers/lexer.PlantUML.zip
 Lexer: PostScript                   | | Lexers/lexer.PostScript.zip
 Lexer: Prolog                       | | Lexers/lexer.Prolog.zip
 Lexer: Puppet                       | | Lexers/lexer.Puppet.zip

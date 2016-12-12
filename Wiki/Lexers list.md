@@ -80,6 +80,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * HJSON
 * HTML
 * HTML Diafan
+* HTML Django DTL
 * HTML Embedded JS
 * HTML Handlebars
 * HTML Laravel Blade
@@ -140,6 +141,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * PICL
 * Pike
 * PL/SQL
+* PlantUML
 * PostScript
 * PowerShell
 * Prolog
