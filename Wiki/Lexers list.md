@@ -103,6 +103,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Jinja2
 * JSON
 * Julia
+* Kivy
 * KiXtart
 * LaTeX
 * LESS

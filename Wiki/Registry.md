@@ -153,6 +153,7 @@ Lexer: JavaScript Babel             | | Lexers/lexer.JavaScript_Babel.zip
 Lexer: JCL                          | | Lexers/lexer.JCL.zip
 Lexer: Jinja2                       | | Lexers/lexer.Jinja2.zip
 Lexer: Julia                        | | Lexers/lexer.Julia.zip
+Lexer: Kivy                         | | Lexers/lexer.Kivy.zip
 Lexer: KiXtart                      | | Lexers/lexer.KiXtart.zip
 Lexer: LaTeX                        | | Lexers/lexer.LaTeX.zip
 Lexer: Lisp                         | | Lexers/lexer.Lisp.zip
