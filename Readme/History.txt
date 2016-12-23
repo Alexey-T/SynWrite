@@ -4,6 +4,10 @@ Legend:
  * changed
 
 
+6.30.2492
+- fix: autocomplete list closed by '-' chr
+- fix: lex HTML, for updated Twig lexer
+
 6.30.2490
 + (Totalcmd plugin) added option QuitOnUnknownFiles; see Readme\HiddenOptionsForLister.txt
 * (Totalcmd plugin) renamed option TxOnly to TextOnly

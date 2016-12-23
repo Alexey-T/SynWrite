@@ -1,0 +1,11 @@
+ecPopupCtrl.pas
+Fix to not close with accept, Autocomplete popup, by '-' char
+
+procedure TCustomAutoCompletePopup.ParentWndProc(var Message: TMessage);
+at end:
+      if (Message.WParam <> 8)
+      ..... 
+        CloseUp(...);
+        
+change line to
+        CloseUp(false);
