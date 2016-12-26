@@ -188,23 +188,13 @@ type
     );
 
   TSynLineCmd = (
-    cLineCmdDedupAll,
-    cLineCmdDedupAllAndOrig,
-    cLineCmdDedupAdjacent,
     cLineCmdUntab,
     cLineCmdSpacesToTabs,
     cLineCmdSpacesToTabsLead,
-    cLineCmdRemoveBlanks,
-    cLineCmdRemoveDupBlanks,
     cLineCmdTrimLead,
     cLineCmdTrimTrail,
     cLineCmdTrimAll,
     cLineCmdRemoveDupSpaces,
-    cLineCmdReverse,
-    cLineCmdShuffle,
-    cLineCmdExtractDupsCase,
-    cLineCmdExtractDupsNoCase,
-    cLineCmdExtractUniq,
     cLineCmdIndent,
     cLineCmdUnIndent
     );
@@ -756,17 +746,13 @@ type
     TBXSeparatorItem57: TSpTbxSeparatorItem;
     TBXItemValClear: TSpTBXItem;
     ecToggleFocusValidate: TAction;
-    TBXItemEDedupAdjacent: TSpTbxItem;
     TBXSubmenuItemSess: TSpTbxSubmenuItem;
     TBXSeparatorItem59: TSpTbxSeparatorItem;
     TBXItemSessClr: TSpTbxItem;
     TBXItemFSesSave: TSpTbxItem;
     TBXItemFSesClose: TSpTbxItem;
-    ecRemoveBlanks: TAction;
-    TBXItemERemBlanks: TSpTbxItem;
     ecRemoveLines: TAction;
     TBXSubmenuItemBlankOps: TSpTBXSubmenuItem;
-    TBXSeparatorItem60: TSpTbxSeparatorItem;
     TBXItemETrimAll: TSpTbxItem;
     TBXItemETrimTrail: TSpTbxItem;
     TBXItemETrimLead: TSpTbxItem;
@@ -810,8 +796,6 @@ type
     ecFindInTreePrev: TAction;
     ecTreeNext: TAction;
     ecTreePrev: TAction;
-    ecReduceBlanks: TAction;
-    TBXItemEReduceBlanks: TSpTbxItem;
     ecSplitLeft: TAction;
     ecSplitRight: TAction;
     ecFindNextWithExtend: TAction;
@@ -938,7 +922,6 @@ type
     TBXItemCtxPasteNoCurChange: TSpTbxItem;
     TBXSeparatorItem80: TSpTbxSeparatorItem;
     PluginACP: TAutoCompletePopup;
-    ecCenterLines: TAction;
     ListTabs: TTntListView;
     ecToggleFocusTabs: TAction;
     TbxItemWinTabs: TSpTbxItem;
@@ -978,11 +961,6 @@ type
     TBXItemCaretsFromMarksLeft: TSpTbxItem;
     TBXItemEColumn: TSpTbxItem;
     ecEditColumn: TAction;
-    ecDedupAll: TAction;
-    ecDedupAdjacent: TAction;
-    TBXSeparatorItem94: TSpTbxSeparatorItem;
-    TBXItemEDedupAll: TSpTbxItem;
-    ecAlignWithSep: TAction;
     TBXItemTabToggleSplit: TSpTBXItem;
     ecToggleShowGroup2: TAction;
     TBXItemTreeCollapseAll: TSpTbxItem;
@@ -997,11 +975,6 @@ type
     TBXItemTreeLevel9: TSpTbxItem;
     TBXItemTreeLevel8: TSpTbxItem;
     TBXItemTreeLevel7: TSpTbxItem;
-    ecReverseLines: TAction;
-    TBXSeparatorItem68: TSpTbxSeparatorItem;
-    TBXItemEReverse: TSpTbxItem;
-    ecShuffleLines: TAction;
-    TBXItemEShuffle: TSpTbxItem;
     tbUser1: TSpTbxToolbar;
     tbUser2: TSpTbxToolbar;
     tbUser3: TSpTbxToolbar;
@@ -1013,11 +986,6 @@ type
     TBXItemOToolbar3: TSpTbxItem;
     TBXItemOToolbar2: TSpTbxItem;
     TBXItemOToolbar1: TSpTbxItem;
-    ecExtractDupsCase: TAction;
-    ecExtractDupsNoCase: TAction;
-    TBXSeparatorItem7: TSpTbxSeparatorItem;
-    TBXItemEExtractDupNoCase: TSpTbxItem;
-    TBXItemEExtractDupCase: TSpTbxItem;
     ecNonPrintOff: TAction;
     ecNonPrintSpaces: TAction;
     ecNonPrintEol: TAction;
@@ -1203,10 +1171,6 @@ type
     TBXItemBarCaseRandom: TSpTBXItem;
     acRestart: TAction;
     TBXItemTreeFindPreview: TSpTBXItem;
-    TBXItemEDedupAllOrig: TSpTBXItem;
-    ecDedupAllAndOrig: TAction;
-    ecExtractUniq: TAction;
-    TBXItemEExtractUniq: TSpTBXItem;
     TbxItemTabSaveAs: TSpTBXItem;
     TbxItemTabSave: TSpTBXItem;
     SpTBXSeparatorItem15: TSpTBXSeparatorItem;
@@ -1491,7 +1455,6 @@ type
     procedure TBXItemSessClrClick(Sender: TObject);
     procedure TBXItemFSesSaveClick(Sender: TObject);
     procedure TBXItemFSesCloseClick(Sender: TObject);
-    procedure ecRemoveBlanksExecute(Sender: TObject);
     procedure ecRemoveLinesExecute(Sender: TObject);
     procedure ecTrimLeadExecute(Sender: TObject);
     procedure ecTrimTrailExecute(Sender: TObject);
@@ -1519,7 +1482,6 @@ type
     procedure ecFindInTreePrevExecute(Sender: TObject);
     procedure ecTreeNextExecute(Sender: TObject);
     procedure ecTreePrevExecute(Sender: TObject);
-    procedure ecReduceBlanksExecute(Sender: TObject);
     procedure ecSplitLeftExecute(Sender: TObject);
     procedure ecSplitRightExecute(Sender: TObject);
     procedure TreeKeyPress(Sender: TObject; var Key: Char);
@@ -1692,12 +1654,6 @@ type
     procedure TBXItemCaretsFromMarksClearClick(Sender: TObject);
     procedure TBXItemEColumnClick(Sender: TObject);
     procedure ecEditColumnExecute(Sender: TObject);
-    procedure ecDedupAllExecute(Sender: TObject);
-    procedure ecDedupAdjacentExecute(Sender: TObject);
-    procedure TBXItemEDedupAllClick(Sender: TObject);
-    procedure TBXItemEDedupAdjacentClick(Sender: TObject);
-    procedure TBXItemBarDedupAdjClick(Sender: TObject);
-    procedure TBXItemBarDedupAllClick(Sender: TObject);
     procedure TBXItemESortAscClick(Sender: TObject);
     procedure TBXItemESortDescClick(Sender: TObject);
     procedure TBXItemBarSortAscClick(Sender: TObject);
@@ -1712,8 +1668,6 @@ type
     procedure TBXItemECaseTitleClick(Sender: TObject);
     procedure TBXItemECaseSentClick(Sender: TObject);
     procedure TBXItemECaseInvertClick(Sender: TObject);
-    procedure TBXItemERemBlanksClick(Sender: TObject);
-    procedure TBXItemEReduceBlanksClick(Sender: TObject);
     procedure TBXItemETrimLeadClick(Sender: TObject);
     procedure TBXItemETrimTrailClick(Sender: TObject);
     procedure TBXItemETrimAllClick(Sender: TObject);
@@ -1751,10 +1705,6 @@ type
     procedure TBXItemTreeLevel7Click(Sender: TObject);
     procedure TBXItemTreeLevel8Click(Sender: TObject);
     procedure TBXItemTreeLevel9Click(Sender: TObject);
-    procedure ecReverseLinesExecute(Sender: TObject);
-    procedure TBXItemEReverseClick(Sender: TObject);
-    procedure ecShuffleLinesExecute(Sender: TObject);
-    procedure TBXItemEShuffleClick(Sender: TObject);
     procedure TBXItemFoldLevel2Click(Sender: TObject);
     procedure TBXItemFoldLevel3Click(Sender: TObject);
     procedure TBXItemFoldLevel4Click(Sender: TObject);
@@ -1769,10 +1719,6 @@ type
     procedure TBXItemOToolbar1Click(Sender: TObject);
     procedure TBXItemOToolbar2Click(Sender: TObject);
     procedure TBXItemOToolbar3Click(Sender: TObject);
-    procedure ecExtractDupsCaseExecute(Sender: TObject);
-    procedure ecExtractDupsNoCaseExecute(Sender: TObject);
-    procedure TBXItemEExtractDupCaseClick(Sender: TObject);
-    procedure TBXItemEExtractDupNoCaseClick(Sender: TObject);
     procedure ecNonPrintSpacesExecute(Sender: TObject);
     procedure ecNonPrintEolExecute(Sender: TObject);
     procedure ecNonPrintBothExecute(Sender: TObject);
@@ -1895,11 +1841,6 @@ type
     procedure TBXItemBarCaseRandomClick(Sender: TObject);
     procedure acRestartExecute(Sender: TObject);
     procedure TBXItemTreeFindPreviewClick(Sender: TObject);
-    procedure TBXItemEDedupAllOrigClick(Sender: TObject);
-    procedure ecDedupAllAndOrigExecute(Sender: TObject);
-    procedure ecExtractUniqExecute(Sender: TObject);
-    procedure TBXItemEExtractUniqClick(Sender: TObject);
-    procedure TBXItemBarDedupAndOrigClick(Sender: TObject);
     procedure TbxItemTabSaveClick(Sender: TObject);
     procedure TbxItemTabSaveAsClick(Sender: TObject);
     procedure TbxItemAddonsInstallClick(Sender: TObject);
@@ -4028,11 +3969,8 @@ begin
   ecTitleCase.Enabled:= sel2;
   ecSentCase.Enabled:= sel2;
   ecGoto.Enabled:= ed.Lines.Count>0;
-  ecRemoveBlanks.Enabled:= not ro;
-  
+
   en_sort:= (ed.Lines.Count>0) and not ro;
-  ecDedupAll.Enabled:= en_sort;
-  ecDedupAdjacent.Enabled:= en_sort;
   TbxSubmenuCase.Enabled:= en_sort;
 
   ecSyncScrollV.Enabled:= (Groups.PagesVisibleCount=2) and (Groups.Pages2.Tabs.TabCount>0);
@@ -5426,15 +5364,10 @@ begin
     sm_CollapseWithNested: ecCollapseWithNested.Execute;
     sm_ToggleShowGroup2: ecToggleShowGroup2.Execute;
     sm_SelectionExtend: DoExtendSelection(Ed);
-    //sm_SelectionShrink: ecSelShrink.Execute;
-    sm_ReverseLines: ecReverseLines.Execute;
-    sm_ShuffleLines: ecShuffleLines.Execute;
     sm_DeleteToFileBegin: EditorDeleteToFileBegin(Ed);
     sm_DeleteToFileEnd: EditorDeleteToFileEnd(Ed);
 
     //blank operations
-    sm_RemoveBlanks: ecRemoveBlanks.Execute;
-    sm_ReduceBlanks: ecReduceBlanks.Execute;
     sm_TrimLeading: ecTrimLead.Execute;
     sm_TrimTrailing: ecTrimTrail.Execute;
     sm_TrimAll: ecTrimAll.Execute;
@@ -5460,13 +5393,6 @@ begin
     sm_ScrollToSel: EditorScrollToSelection(Ed, opFindOffsetTop);
     sm_ProjectList: ecProjectList.Execute;
     sm_ToggleShowMicromap: with CurrentFrame do ShowMap:= not ShowMap;
-
-    sm_RemoveDupsAll: ecDedupAll.Execute;
-    sm_RemoveDupsAllAndOrig: ecDedupAllAndOrig.Execute;
-    sm_RemoveDupsAdjacent: ecDedupAdjacent.Execute;
-    sm_ExtractDupsCase: ecExtractDupsCase.Execute;
-    sm_ExtractDupsNoCase: ecExtractDupsNoCase.Execute;
-    sm_ExtractUniqueLines: ecExtractUniq.Execute;
 
     //macros 1-9
     sm_MacroRepeat: acMacroRepeat.Execute;
@@ -9103,11 +9029,6 @@ begin
   UpdKey(TBXItemONPrintAll, sm_OptNonPrintBoth);
   UpdKey(TBXItemONPrintEolDetails, sm_OptNonPrintEolDetails);
 
-  UpdKey(TBXItemEExtractDupCase, sm_ExtractDupsCase);
-  UpdKey(TBXItemEExtractDupNoCase, sm_ExtractDupsNoCase);
-  UpdKey(TBXItemEReverse, sm_ReverseLines);
-  UpdKey(TBXItemEShuffle, sm_ShuffleLines);
-
   //multi-carets
   UpdKey(TbxItemCaretsRemove1, sm_CaretsRemoveLeaveFirst);
   UpdKey(TbxItemCaretsRemove2, sm_CaretsRemoveLeaveLast);
@@ -9145,16 +9066,10 @@ begin
   UpdKey(TbxItemWinConsole, sm_ToggleFocusConsole);
   UpdKey(TbxItemWinBkmk, sm_ToggleFocusBookmarks);
 
-  //sort
-  UpdKey(TBXItemEDedupAll, sm_RemoveDupsAll);
-  UpdKey(TBXItemEDedupAdjacent, sm_RemoveDupsAdjacent);
-
   //blank ops
   UpdKey(TbxItemETabToSp, sm_ConvertTabsToSpaces);
   UpdKey(TbxItemESpToTab, sm_ConvertSpacesToTabsAll);
   UpdKey(TBXItemERemDupSp, sm_RemoveDupSpaces);
-  UpdKey(TbxItemERemBlanks, sm_RemoveBlanks);
-  UpdKey(TbxItemEReduceBlanks, sm_ReduceBlanks);
   UpdKey(TbxItemETrimLead, sm_TrimLeading);
   UpdKey(TbxItemETrimTrail, sm_TrimTrailing);
   UpdKey(TbxItemETrimAll, sm_TrimAll);
@@ -14781,11 +14696,6 @@ begin
   end;
 end;
 
-procedure TfmMain.ecReduceBlanksExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdRemoveDupBlanks);
-end;
-
 
 procedure TfmMain.TBXItemSessClrClick(Sender: TObject);
 begin
@@ -14879,10 +14789,6 @@ begin
   end;
 end;
 
-procedure TfmMain.ecRemoveBlanksExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdRemoveBlanks);
-end;
 
 procedure TfmMain.FixMenuBigImageList(Menu: TSpTbxSubmenuItem);
 var
@@ -20138,25 +20044,6 @@ begin
 
     case Cmd of
 
-      cLineCmdDedupAll:
-        begin
-          i:= DoListCommand_Deduplicate(L, cLineDedupAll);
-          ok:= i>0;
-          MsgDelLines(i);
-        end;
-      cLineCmdDedupAllAndOrig:
-        begin
-          i:= DoListCommand_Deduplicate(L, cLineDedupAllAndOrig);
-          ok:= i>0;
-          MsgDelLines(i);
-        end;
-      cLineCmdDedupAdjacent:
-        begin
-          i:= DoListCommand_Deduplicate(L, cLineDedupAdjacent);
-          ok:= i>0;
-          MsgDelLines(i);
-        end;
-
       cLineCmdTrimLead:
         begin
           i:= DoListCommand_Trim(L, cTrimLead);
@@ -20180,15 +20067,6 @@ begin
           i:= DoListCommand_Trim(L, cTrimDups);
           ok:= i>0;
           MsgDoneLines(i);
-        end;
-
-      cLineCmdReverse:
-        begin
-          ok:= DoListCommand_Reverse(L);
-        end;
-      cLineCmdShuffle:
-        begin
-          ok:= DoListCommand_Shuffle(L);
         end;
 
       cLineCmdUntab:
@@ -20219,42 +20097,6 @@ begin
       cLineCmdSpacesToTabsLead:
         begin
           ok:= DoListCommand_Unspace(L, EditorTabSize(Ed), true);
-        end;
-
-      cLineCmdRemoveBlanks:
-        begin
-          i:= DoListCommand_RemoveBlanks(L);
-          ok:= i>0;
-          MsgDelLines(i);
-        end;
-      cLineCmdRemoveDupBlanks:
-        begin
-          i:= DoListCommand_RemoveDupBlanks(L);
-          ok:= i>0;
-          MsgDelLines(i);
-        end;
-
-      cLineCmdExtractDupsCase,
-      cLineCmdExtractDupsNoCase,
-      cLineCmdExtractUniq:
-        begin
-          case Cmd of
-            cLineCmdExtractDupsCase:
-              i:= DoListCommand_ExtractDups(L, true);
-            cLineCmdExtractDupsNoCase:
-              i:= DoListCommand_ExtractDups(L, false);
-            cLineCmdExtractUniq:
-              i:= DoListCommand_ExtractUniq(L);
-            else
-              i:= 0;
-          end;
-          ok:= false;
-          if i>0 then
-          begin
-            acNewTab.Execute;
-            CurrentEditor.InsertText(L.Text);
-          end;
-          MsgDoneLines(i);
         end;
 
       else
@@ -20995,50 +20837,6 @@ begin
         ExecCommand(sm_CaretsFromSelLeft);
 end;
 
-procedure TfmMain.ecDedupAllExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdDedupAll);
-end;
-
-procedure TfmMain.ecDedupAllAndOrigExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdDedupAllAndOrig);
-end;
-
-procedure TfmMain.ecDedupAdjacentExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdDedupAdjacent);
-end;
-
-procedure TfmMain.TBXItemEDedupAllClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_RemoveDupsAll);
-end;
-
-procedure TfmMain.TBXItemEDedupAllOrigClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_RemoveDupsAllAndOrig);
-end;
-
-procedure TfmMain.TBXItemEDedupAdjacentClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_RemoveDupsAdjacent);
-end;
-
-procedure TfmMain.TBXItemBarDedupAdjClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_RemoveDupsAdjacent);
-end;
-
-procedure TfmMain.TBXItemBarDedupAllClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_RemoveDupsAll);
-end;
-
-procedure TfmMain.TBXItemBarDedupAndOrigClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_RemoveDupsAllAndOrig);
-end;
 
 procedure TfmMain.TBXItemESortAscClick(Sender: TObject);
 begin
@@ -21120,15 +20918,6 @@ begin
   CurrentEditor.ExecCommand(sm_RandomCaseBlock);
 end;
 
-procedure TfmMain.TBXItemERemBlanksClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_RemoveBlanks);
-end;
-
-procedure TfmMain.TBXItemEReduceBlanksClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ReduceBlanks);
-end;
 
 procedure TfmMain.TBXItemETrimLeadClick(Sender: TObject);
 begin
@@ -21421,25 +21210,6 @@ begin
   DoTreeLevel(9);
 end;
 
-procedure TfmMain.ecReverseLinesExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdReverse);
-end;
-
-procedure TfmMain.TBXItemEReverseClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ReverseLines);
-end;
-
-procedure TfmMain.ecShuffleLinesExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdShuffle);
-end;
-
-procedure TfmMain.TBXItemEShuffleClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ShuffleLines);
-end;
 
 procedure TfmMain.DoFoldLevel(NLevel: Integer);
 var
@@ -22015,36 +21785,6 @@ begin
   for i:= 0 to L.Count-1 do
     L[i]:= ChangeFileExt(ExtractFileName(L[i]), '');
   L.Sort;
-end;
-
-procedure TfmMain.ecExtractDupsCaseExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdExtractDupsCase);
-end;
-
-procedure TfmMain.ecExtractDupsNoCaseExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdExtractDupsNoCase);
-end;
-
-procedure TfmMain.ecExtractUniqExecute(Sender: TObject);
-begin
-  DoLinesCommand(cLineCmdExtractUniq);
-end;
-
-procedure TfmMain.TBXItemEExtractDupCaseClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ExtractDupsCase);
-end;
-
-procedure TfmMain.TBXItemEExtractDupNoCaseClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ExtractDupsNoCase);
-end;
-
-procedure TfmMain.TBXItemEExtractUniqClick(Sender: TObject);
-begin
-  CurrentEditor.ExecCommand(sm_ExtractUniqueLines);
 end;
 
 
@@ -26244,6 +25984,8 @@ procedure TfmMain.TBXSubmenuBarNewPopup(Sender: TTBCustomItem;
 begin
   Py_RunPlugin_Command('syn_new_file', 'menu');
 end;
+
+ 
 
 end.
 

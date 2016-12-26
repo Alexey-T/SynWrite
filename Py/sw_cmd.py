@@ -365,10 +365,7 @@ cmd_BookmarksDeleteUnmarked = 848
 cmd_BookmarksPaste = 849
 cmd_BookmarksInverse = 850
 
-cmd_RemoveDupsAll = 851
 cmd_ConvertSpacesToTabsLeading = 852
-cmd_RemoveDupsAdjacent = 855
-cmd_RemoveBlanks = 856
 cmd_TrimLeading = 857
 cmd_TrimTrailing = 858
 cmd_TrimAll = 859
@@ -381,7 +378,6 @@ cmd_RepeatLastCommand = 865
 cmd_MarkersClear = 866
 cmd_TreeNextNode = 867
 cmd_TreePrevNode = 868
-cmd_ReduceBlanks = 869
 cmd_GotoNextBlank = 870
 cmd_GotoPrevBlank = 871
 cmd_SelectParagraph = 872
@@ -400,10 +396,8 @@ cmd_RereadOutputPanel = 884
 cmd_NumericConverterDialog = 889
 cmd_SelectionExtend = 893
 cmd_SelectionShrink = 894
-cmd_ReverseLines = 895
 cmd_DeleteToFileBegin = 896
 cmd_DeleteToFileEnd = 897
-cmd_ShuffleLines = 898
 
 cmd_MacroRepeat = 900
 cmd_Macro1 = 901
@@ -479,8 +473,6 @@ cmd_FoldLevel7 = 987
 cmd_FoldLevel8 = 988
 cmd_FoldLevel9 = 989
 
-cmd_ExtractDupsCase = 1000
-cmd_ExtractDupsNoCase = 1001
 cmd_OptNonPrintOff = 1002
 cmd_OptNonPrintSpaces = 1003
 cmd_OptNonPrintEol = 1004
@@ -547,8 +539,6 @@ cmd_OpenEntireFolder = 1069
 cmd_SentenceCaseBlock = 1070
 cmd_RandomCaseBlock = 1071
 cmd_RestartProgram = 1072
-cmd_RemoveDupsAndOrigins = 1073
-cmd_ExtractUniqueLines = 1074
 
 cmd_TreeCollapseAll = 1090
 cmd_TreeExpandAll = 1091

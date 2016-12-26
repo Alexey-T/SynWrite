@@ -158,10 +158,7 @@ const
   sm_BookmarksPaste = 849;
   sm_BookmarksInverse = 850;
 
-  sm_RemoveDupsAll = 851;
   sm_ConvertSpacesToTabsLeading = 852;
-  sm_RemoveDupsAdjacent = 855;
-  sm_RemoveBlanks = 856;
   sm_TrimLeading = 857;
   sm_TrimTrailing = 858;
   sm_TrimAll = 859;
@@ -174,7 +171,6 @@ const
   sm_MarkersClear = 866;
   sm_TreeNextNode = 867;
   sm_TreePrevNode = 868;
-  sm_ReduceBlanks = 869;
   sm_GotoNextBlank = 870;
   sm_GotoPrevBlank = 871;
   sm_SelectParagraph = 872;
@@ -193,10 +189,8 @@ const
   sm_NumericConverterDialog = 889;
   sm_SelectionExtend = 893;
   sm_SelectionShrink = 894;
-  sm_ReverseLines = 895;
   sm_DeleteToFileBegin = 896;
   sm_DeleteToFileEnd = 897;
-  sm_ShuffleLines = 898;
 
   sm_MacroRepeat = 900;
   sm_Macro1 = 901;
@@ -286,8 +280,6 @@ const
   sm_FoldLevel9 = 989;
   //free
 
-  sm_ExtractDupsCase = 1000;
-  sm_ExtractDupsNoCase = 1001;
   sm_OptNonPrintOff = 1002;
   sm_OptNonPrintSpaces = 1003;
   sm_OptNonPrintEol = 1004;
@@ -354,8 +346,6 @@ const
   sm_SentenceCaseBlock = 1070;
   sm_RandomCaseBlock = 1071;
   sm_RestartProgram = 1072;
-  sm_RemoveDupsAllAndOrig = 1073;
-  sm_ExtractUniqueLines = 1074;
   //free
 
   //Tree commands

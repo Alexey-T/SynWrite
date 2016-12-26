@@ -6,22 +6,7 @@ uses
   Classes, TntClasses;
 
 type
-  TSynDedupMode = (cLineDedupAll, cLineDedupAdjacent, cLineDedupAllAndOrig);
   TSynTrimMode = (cTrimLead, cTrimTrail, cTrimAll, cTrimDups);
-
-function DoListCommand_ExtractDups(
-  List: TTntStringList;
-  CaseSens: boolean): Integer;
-function DoListCommand_ExtractUniq(
-  List: TTntStringList): Integer;
-function DoListCommand_Reverse(
-  L: TTntStringList): boolean;
-function DoListCommand_Shuffle(
-  L: TTntStringList): boolean;
-function DoListCommand_RemoveBlanks(
-  L: TTntStringList): Integer;
-function DoListCommand_RemoveDupBlanks(
-  L: TTntStringList): Integer;
 
 function DoListCommand_Trim(
   L: TTntStringList;
@@ -48,9 +33,6 @@ function DoListCommand_Untab(
   List: TTntStringList;
   TabSize: Integer): Integer;
 
-function DoListCommand_Deduplicate(
-  List: TTntStringList;
-  AMode: TSynDedupMode): Integer;
 
 procedure DoList_DeleteLastEmpty(List: TTntStringList);
 
@@ -126,64 +108,6 @@ begin
 end;
 
 
-function DoListCommand_Deduplicate(
-  List: TTntStringList;
-  AMode: TSynDedupMode): Integer;
-var
-  i: Integer;
-  L: TTntStringList;
-begin
-  Result:= 0;
-  Screen.Cursor:= crHourGlass;
-  try
-    DoList_DeleteLastEmpty(List);
-
-    case AMode of
-      cLineDedupAdjacent:
-        begin
-          for i:= List.Count-1 downto 1{not 0} do
-            if (List[i]=List[i-1]) then
-            begin
-              List.Delete(i);
-              Inc(Result);
-            end;
-        end;
-      cLineDedupAll,
-      cLineDedupAllAndOrig:
-        begin
-          L:= TTntStringList.Create;
-          try
-            for i:= 0 to List.Count-1 do
-              L.AddObject(List[i], Pointer(i));
-            L.Sort;
-
-            //mark Objects with non-nil, for all duplicate lines
-            for i:= L.Count-1 downto 1{not 0} do
-              if L[i]=L[i-1] then
-              begin
-                List.Objects[Integer(L.Objects[i])]:= Pointer(1);
-                if AMode=cLineDedupAllAndOrig then
-                  List.Objects[Integer(L.Objects[i-1])]:= Pointer(1);
-              end;
-
-            //delete marked  
-            for i:= List.Count-1 downto 0 do
-              if List.Objects[i]<>nil then
-              begin
-                List.Delete(i);
-                Inc(Result);
-              end;
-          finally
-            FreeAndNil(L);
-          end;
-        end;
-    end;
-  finally
-    Screen.Cursor:= crDefault;
-  end;
-end;
-
-
 function DoListCommand_Unspace(
   List: TTntStringList;
   TabSize: Integer;
@@ -214,35 +138,6 @@ begin
 end;
 
 
-function DoListCommand_RemoveBlanks(
-  L: TTntStringList): Integer;
-var
-  i: Integer;
-begin
-  Result:= 0;
-  for i:= L.Count-1 downto 0 do
-    if Trim(L[i])='' then
-    begin
-      L.Delete(i);
-      Inc(Result);
-    end;
-end;
-
-function DoListCommand_RemoveDupBlanks(
-  L: TTntStringList): Integer;
-var
-  i: Integer;
-begin
-  Result:= 0;
-  for i:= L.Count-1 downto 1{not 0} do
-    if (Trim(L[i])='') and (Trim(L[i-1])='') then
-    begin
-      L.Delete(i);
-      Inc(Result);
-    end;
-end;
-
-
 function DoListCommand_Trim(
   L: TTntStringList;
   Mode: TSynTrimMode): Integer;
@@ -270,110 +165,6 @@ begin
   end;
 end;
 
-
-function DoListCommand_Reverse(
-  L: TTntStringList): boolean;
-var
-  i: Integer;
-  LRes: TTntStringList;
-begin
-  Result:= L.Count>1;
-  LRes:= TTntStringList.Create;
-  try
-    for i:= L.Count-1 downto 0 do
-      LRes.Add(L[i]);
-    L.Assign(LRes);
-  finally
-    FreeAndNil(LRes);
-  end;
-end;
-
-function DoListCommand_Shuffle(
-  L: TTntStringList): boolean;
-var
-  i, N: Integer;
-  LRes: TTntStringList;
-begin
-  Result:= L.Count>1;
-  LRes:= TTntStringList.Create;
-  try
-    for i:= L.Count-1 downto 0 do
-    begin
-      N:= Random(L.Count);
-      LRes.Add(L[N]);
-      L.Delete(N);
-    end;
-    L.Assign(LRes);
-  finally
-    FreeAndNil(LRes);
-  end;
-end;
-
-function DoListCommand_ExtractDups(List: TTntStringList; CaseSens: boolean): Integer;
-var
-  L: TTntStringList;
-  i: Integer;
-  same: boolean;
-begin
-  L:= TTntStringList.Create;
-  try
-    for i:= 0 to List.Count-1 do
-      L.AddObject(List[i], Pointer(i));
-    L.Sort;
-
-    List.Clear;
-    for i:= L.Count-1 downto 1{not 0} do
-    begin
-      if CaseSens then
-        same:= (WideCompareStr(L[i], L[i-1])=0)
-      else
-        same:= (WideCompareText(L[i], L[i-1])=0);
-      if same then
-        List.Insert(0, L[i]);
-    end;
-  finally
-    FreeAndNil(L);
-  end;
-
-  //remove empty lines
-  for i:= List.Count-1 downto 0 do
-    if List[i]='' then
-      List.Delete(i);
-
-  Result:= List.Count;
-end;
-
-function DoListCommand_ExtractUniq(List: TTntStringList): Integer;
-var
-  L: TTntStringList;
-  i: Integer;
-  dup: boolean;
-begin
-  L:= TTntStringList.Create;
-  try
-    L.AddStrings(List);
-    L.Sort;
-
-    List.Clear;
-    for i:= L.Count-1 downto 0 do
-    begin
-      dup:=
-        ((i>0) and (L[i]=L[i-1])) or
-        ((i<L.Count-1) and (L[i]=L[i+1]));
-      if not dup then
-        List.Insert(0, L[i]);
-    end;
-  finally
-    FreeAndNil(L);
-  end;
-
-  //remove empty lines
-  for i:= List.Count-1 downto 0 do
-    if List[i]='' then
-      List.Delete(i);
-
-  Result:= List.Count;
-end;
 
 function DoListCommand_Indent(
   List: TTntStringList;
