@@ -1,0 +1,293 @@
+date/time         : 2013-11-29, 19:16:16, 546ms
+computer name     : HOMEAP
+user name         : User <admin>
+registered owner  : User / Home
+operating system  : Windows XP Service Pack 3 build 2600
+system language   : Russian
+system up time    : 7 days 22 hours
+program up time   : 13 seconds
+processors        : 4x Intel(R) Core(TM) i3-2120 CPU @ 3.30GHz
+physical memory   : 2843/3564 MB (free/total)
+free disk space   : (C:) 43,22 GB (D:) 138,20 GB
+display mode      : 1280x1024, 32 bit
+process id        : $d64
+allocated memory  : 8,73 MB
+executable        : Project2.exe
+exec. date/time   : 2013-11-29 19:16
+compiled with     : Delphi 7
+madExcept version : 4.0.6
+callstack crc     : $869e3a07, $65de00f1, $65de00f1
+exception number  : 1
+exception class   : EIdSocketError
+exception message : Socket Error # 10061 Connection refused.
+
+main thread ($84):
+004b1f0b +037 Project2.exe IdStack                 TIdStack.RaiseSocketError
+004b1e59 +039 Project2.exe IdStack                 TIdStack.CheckForSocketError
+004b1e1a +006 Project2.exe IdStack                 TIdStack.CheckForSocketError
+004b5258 +190 Project2.exe IdIOHandlerSocket       TIdIOHandlerSocket.ConnectClient
+004b754a +0f2 Project2.exe IdTCPClient             TIdTCPClient.Connect
+004b789b +09f Project2.exe ATxHttpProc       58 +7 UrlRequest
+004b7bc5 +089 Project2.exe Unit1             35 +2 TForm1.Button1Click
+0048ed70 +064 Project2.exe Controls                TControl.Click
+00485414 +01c Project2.exe StdCtrls                TButton.Click
+00485508 +00c Project2.exe StdCtrls                TButton.CNCommand
+0048ebd8 +188 Project2.exe Controls                TControl.WndProc
+00491b23 +157 Project2.exe Controls                TWinControl.WndProc
+004852d8 +06c Project2.exe StdCtrls                TButtonControl.WndProc
+0048e9a8 +024 Project2.exe Controls                TControl.Perform
+00491c5b +023 Project2.exe Controls                DoControlMsg
+004922b3 +00b Project2.exe Controls                TWinControl.WMCommand
+004a88d4 +02c Project2.exe Forms                   TCustomForm.WMCommand
+0048ebd8 +188 Project2.exe Controls                TControl.WndProc
+00491b23 +157 Project2.exe Controls                TWinControl.WndProc
+004a692d +421 Project2.exe Forms                   TCustomForm.WndProc
+004917a0 +02c Project2.exe Controls                TWinControl.MainWndProc
+00477928 +014 Project2.exe Classes                 StdWndProc
+7c90e470 +010 ntdll.dll                            KiUserCallbackDispatcher
+7e3792de +044 user32.dll                           SendMessageW
+7e37a993 +016 user32.dll                           CallWindowProcA
+00491c07 +0d7 Project2.exe Controls                TWinControl.DefaultHandler
+0048f178 +010 Project2.exe Controls                TControl.WMLButtonUp
+0048ebd8 +188 Project2.exe Controls                TControl.WndProc
+00491b23 +157 Project2.exe Controls                TWinControl.WndProc
+004852d8 +06c Project2.exe StdCtrls                TButtonControl.WndProc
+004917a0 +02c Project2.exe Controls                TWinControl.MainWndProc
+00477928 +014 Project2.exe Classes                 StdWndProc
+7e3696c2 +00a user32.dll                           DispatchMessageA
+004acc43 +083 Project2.exe Forms                   TApplication.ProcessMessage
+004acc62 +00a Project2.exe Forms                   TApplication.HandleMessage
+004ace82 +096 Project2.exe Forms                   TApplication.Run
+004b8077 +03b Project2.exe Project2          17 +3 initialization
+
+modules:
+00400000 Project2.exe                  D:\S\Tests\SynJedi_test_server
+10000000 AM32-33707.dll 4.73.0.30530   C:\Program Files\Ad Muncher
+5b260000 uxtheme.dll    6.0.2900.5512  C:\WIN_NEW\system32
+5d5b0000 comctl32.dll   5.82.2900.6028 C:\WIN_NEW\system32
+698b0000 hnetcfg.dll    5.1.2600.5589  C:\WIN_NEW\system32
+71a30000 mswsock.dll    5.1.2600.5625  C:\WIN_NEW\system32
+71a70000 wshtcpip.dll   5.1.2600.5512  C:\WIN_NEW\System32
+71a80000 WS2HELP.dll    5.1.2600.5512  C:\WIN_NEW\system32
+71a90000 WS2_32.dll     5.1.2600.5512  C:\WIN_NEW\system32
+71ab0000 wsock32.dll    5.1.2600.5512  C:\WIN_NEW\system32
+746e0000 MSCTF.dll      5.1.2600.5512  C:\WIN_NEW\system32
+75310000 msctfime.ime   5.1.2600.5768  C:\WIN_NEW\system32
+76360000 IMM32.DLL      5.1.2600.5512  C:\WIN_NEW\system32
+76380000 comdlg32.dll   6.0.2900.5512  C:\WIN_NEW\system32
+77110000 oleaut32.dll   5.1.2600.6341  C:\WIN_NEW\system32
+773c0000 comctl32.dll   6.0.2900.6028  C:\WIN_NEW\WinSxS\x86_Microsoft.Windows.Common-Controls_6595b64144ccf1df_6.0.2600.6028_x-ww_61e65202
+774d0000 ole32.dll      5.1.2600.6168  C:\WIN_NEW\system32
+77910000 SETUPAPI.dll   5.1.2600.5512  C:\WIN_NEW\system32
+77bf0000 version.dll    5.1.2600.5512  C:\WIN_NEW\system32
+77c00000 msvcrt.dll     7.0.2600.5512  C:\WIN_NEW\system32
+77dc0000 advapi32.dll   5.1.2600.5755  C:\WIN_NEW\system32
+77e70000 RPCRT4.dll     5.1.2600.6022  C:\WIN_NEW\system32
+77f10000 GDI32.dll      5.1.2600.5698  C:\WIN_NEW\system32
+77f60000 SHLWAPI.dll    6.0.2900.5912  C:\WIN_NEW\system32
+77fe0000 Secur32.dll    5.1.2600.5834  C:\WIN_NEW\system32
+7c800000 kernel32.dll   5.1.2600.6293  C:\WIN_NEW\system32
+7c900000 ntdll.dll      5.1.2600.6055  C:\WIN_NEW\system32
+7c9c0000 shell32.dll    6.0.2900.6242  C:\WIN_NEW\system32
+7e360000 user32.dll     5.1.2600.5512  C:\WIN_NEW\system32
+
+processes:
+000 Idle                  0    0
+004 System                0    0   normal
+570 smss.exe              0    0   normal C:\WIN_NEW\system32
+5f0 csrss.exe             0    0
+60c winlogon.exe          46   14  high   C:\WIN_NEW\system32
+638 services.exe          4    2   normal C:\WIN_NEW\system32
+644 lsass.exe             6    3   normal C:\WIN_NEW\system32
+708 svchost.exe           4    1   normal C:\WIN_NEW\system32
+74c svchost.exe           0    0
+41c svchost.exe           11   37  normal C:\WIN_NEW\System32
+444 svchost.exe           4    1   normal C:\WIN_NEW\system32
+5d8 svchost.exe           0    0
+7ac svchost.exe           0    0
+118 spoolsv.exe           13   8   normal C:\WIN_NEW\system32
+1f4 svchost.exe           0    0
+284 ekrn.exe              24   13  normal C:\Program Files\ESET\ESET Smart Security
+2dc jqs.exe               4    2   idle   C:\Program Files\Java\jre7\bin
+300 nvsvc32.exe           23   5   normal C:\WIN_NEW\system32
+4d4 daemonu.exe           0    0
+4a8 svchost.exe           4    2   normal C:\WIN_NEW\system32
+0e0 alg.exe               0    0
+2c8 wmiapsrv.exe          4    2   normal C:\WIN_NEW\system32\wbem
+e64 Explorer.EXE          409  164 normal C:\WIN_NEW
+eb8 egui.exe              160  53  normal C:\Program Files\ESET\ESET Smart Security
+ec8 AdMunch.exe           27   19  normal C:\Program Files\Ad Muncher
+c0c ctfmon.exe            28   12  normal C:\WIN_NEW\system32
+c38 DTLite.exe            188  55  normal C:\Program Files\DAEMON Tools Lite
+f58 AutoHotkey.exe        20   15  normal C:\Program Files\AutoHotkey
+10c wscntfy.exe           20   8   normal C:\WIN_NEW\system32
+ca4 YandexDisk.exe        42   32  normal C:\Program Files\Yandex\YandexDisk\bin
+a10 YandexDiskStarter.exe 4    2   normal C:\Program Files\Yandex\YandexDisk\bin
+968 uTorrent.exe          308  171 normal C:\Documents and Settings\User\Application Data\uTorrent
+e94 QIPShot.exe           2274 188 normal C:\Documents and Settings\User\Local Settings\Application Data\QIP\QIP Shot
+c6c delphi32.exe          728  279 normal C:\Borland\Delphi7\Bin
+d64 Project2.exe          72   45  normal D:\S\Tests\SynJedi_test_server
+
+hardware:
++ DVD и CD-ROM дисководы
+  - CD-ROM дисковод
+  - DTSOFT Virtual CdRom Device
++ IDE ATA/ATAPI контроллеры
+  - Intel(R) 7 Series/C216 Chipset Family 2 port Serial ATA Storage Controller - 1E08 (driver 9.3.0.1008)
+  - Intel(R) 7 Series/C216 Chipset Family 4 port Serial ATA Storage Controller - 1E00 (driver 9.3.0.1008)
+  - Вторичный канал IDE
+  - Вторичный канал IDE
+  - Первичный канал IDE
+  - Первичный канал IDE
++ SCSI и RAID контроллеры
+  - ARXSW0H2 IDE Controller
++ Видеоадаптеры
+  - NVIDIA GeForce GT 440  (driver 6.14.12.9573)
++ Дисковые устройства
+  - Hitachi HTS545032B9A300 USB Device
+  - JetFlash TS1GJF110 USB Device
+  - Дисковый накопитель
++ Звуковые, видео и игровые устройства
+  - NVIDIA High Definition Audio (driver 1.3.12.0)
+  - NVIDIA High Definition Audio (driver 1.3.12.0)
+  - NVIDIA High Definition Audio (driver 1.3.12.0)
+  - NVIDIA High Definition Audio (driver 1.3.12.0)
+  - Realtek High Definition Audio (driver 5.10.0.6554)
+  - Аудио кодеки
+  - Видео кодеки
+  - Драйверы аудио (без PnP)
+  - Устройства записи видео (без PnP)
+  - Устройство управления
++ Клавиатуры
+  - Стандартная (101/102 клавиши) или клавиатура PS/2 Microsoft Natural
++ Компьютер
+  - Многопроцессорный компьютер с ACPI
++ Контроллеры универсальной последовательной шины USB
+  - Intel(R) 7 Series/C216 Chipset Family USB Enhanced Host Controller - 1E26 (driver 9.3.0.1011)
+  - Intel(R) 7 Series/C216 Chipset Family USB Enhanced Host Controller - 1E2D (driver 9.3.0.1011)
+  - Запоминающее устройство для USB
+  - Запоминающее устройство для USB
+  - Корневой USB концентратор
+  - Корневой USB концентратор
+  - Универсальный USB концентратор
+  - Универсальный USB концентратор
++ Мониторы
+  - Модуль подключения монитора
++ Мыши и иные указывающие устройства
+  - HID-совместимая мышь
++ Порты (COM и LPT)
+  - Последовательный порт (COM1)
++ Процессоры
+  - Intel(R) Core(TM) i3-2120 CPU @ 3.30GHz
+  - Intel(R) Core(TM) i3-2120 CPU @ 3.30GHz
+  - Intel(R) Core(TM) i3-2120 CPU @ 3.30GHz
+  - Intel(R) Core(TM) i3-2120 CPU @ 3.30GHz
++ Сетевые платы
+  - Atheros AR8151 PCI-E Gigabit Ethernet Controller (driver 2.0.4.4)
+  - Atheros AR8151 PCI-E Gigabit Ethernet Controller - Eset Personal Firewall Miniport (driver 6.0.308.0)
+  - Atheros AR8151 PCI-E Gigabit Ethernet Controller - VirtualBox Bridged Networking Driver Miniport (driver 4.1.22.0)
+  - Atheros AR8151 PCI-E Gigabit Ethernet Controller - Минипорт планировщика пакетов
+  - D-Link DFE-520TX PCI Fast Ethernet Adapter - Eset Personal Firewall Miniport (driver 6.0.308.0)
+  - D-Link DFE-520TX PCI Fast Ethernet Adapter - VirtualBox Bridged Networking Driver Miniport (driver 4.1.22.0)
+  - D-Link DFE-520TX PCI Fast Ethernet Adapter - Минипорт планировщика пакетов
+  - NVIDIA nForce Networking Controller - Eset Personal Firewall Miniport (driver 6.0.308.0)
+  - NVIDIA nForce Networking Controller - VirtualBox Bridged Networking Driver Miniport (driver 4.1.22.0)
+  - NVIDIA nForce Networking Controller - Минипорт планировщика пакетов
+  - VirtualBox Host-Only Ethernet Adapter (driver 4.1.22.0)
+  - VirtualBox Host-Only Ethernet Adapter - Eset Personal Firewall Miniport (driver 6.0.308.0)
+  - VirtualBox Host-Only Ethernet Adapter - Минипорт планировщика пакетов
+  - Минипорт WAN (IP)
+  - Минипорт WAN (IP) - Eset Personal Firewall Miniport (driver 6.0.308.0)
+  - Минипорт WAN (IP) - Минипорт планировщика пакетов
+  - Минипорт WAN (L2TP)
+  - Минипорт WAN (PPPoE)
+  - Минипорт WAN (PPTP)
+  - Прямой параллельный порт
++ Системные устройства
+  - 2nd Generation Intel(R) Core(TM) Processor Family DRAM Controller - 0100 (driver 9.2.0.1026)
+  - CMOS и часы
+  - DAEMON Tools Virtual Bus (driver 5.0.1.282)
+  - Intel(R) 7 Series/C216 Chipset Family PCI Express Root Port 1 - 1E10 (driver 9.3.0.1011)
+  - Intel(R) 7 Series/C216 Chipset Family PCI Express Root Port 3 - 1E14 (driver 9.3.0.1011)
+  - Intel(R) 7 Series/C216 Chipset Family SMBus Host Controller - 1E22 (driver 9.3.0.1011)
+  - Intel(R) 7 Series/C216 Chipset Family Universal Serial Bus (USB) Controller - 1E31 (driver 9.3.0.1018)
+  - Intel(R) 82801 PCI мост - 244E
+  - Intel(R) 82802 Firmware концентратор
+  - Intel(R) B75 Express Chipset LPC Controller - 1E49 (driver 9.3.0.1011)
+  - Microsoft ACPI-совместимая система
+  - Xeon E3-1200/2nd Generation Intel(R) Core(TM) Processor Family PCI Express Root Port - 0101 (driver 9.2.0.1026)
+  - Вентилятор ACPI
+  - Вентилятор ACPI
+  - Вентилятор ACPI
+  - Вентилятор ACPI
+  - Вентилятор ACPI
+  - Высокоточный таймер событий
+  - Диспетчер логических дисков
+  - Диспетчер томов
+  - Драйвер Microsoft System Management BIOS
+  - Драйвер клавиатуры сервера терминалов
+  - Драйвер мыши сервера терминалов
+  - Драйвер шины Microsoft UAA для High Definition Audio
+  - Драйвер шины Microsoft UAA для High Definition Audio
+  - Кнопка включения питания ACPI
+  - Кнопка фиксированной возможности ACPI
+  - Контроллер прямого доступа к памяти
+  - Перенаправитель устройства сервера терминалов
+  - Перечислитель программных устройств Plug and Play
+  - Порт чтения данных ISAPNP
+  - Программируемый контроллер прерываний
+  - Процессор числовых данных
+  - Расширенная шина ввода/вывода
+  - Ресурсы системной платы
+  - Ресурсы системной платы
+  - Ресурсы системной платы
+  - Ресурсы системной платы
+  - Ресурсы системной платы
+  - Системная плата
+  - Системный таймер
+  - Термальная зона ACPI
+  - Термальная зона ACPI
+  - Устройство обновления микропрограмм
+  - Шина PCI
++ Устройства HID (Human Interface Devices)
+  - HID-совместимое устройство
+  - HID-совместимое устройство управления
+  - USB HID-совместимое устройство
+
+stack dump:
+0012d41c  10 1f 4b 00 de fa ed 0e - 01 00 00 00 07 00 00 00  ..K.............
+0012d42c  30 d4 12 00 10 1f 4b 00 - 64 50 a1 00 08 04 4b 00  0.....K.dP....K.
+0012d43c  4d 27 00 00 84 d4 12 00 - 64 d4 12 00 4c d4 12 00  M'......d...L...
+0012d44c  88 d4 12 00 84 3e 40 00 - 64 d4 12 00 f8 4c a1 00  .....>@.d....L..
+0012d45c  00 00 00 00 00 00 00 00 - 78 d4 12 00 5e 1e 4b 00  ........x...^.K.
+0012d46c  68 2b 00 00 ff ff ff ff - 60 13 a1 00 bc d4 12 00  h+......`.......
+0012d47c  1f 1e 4b 00 ff ff ff ff - 5d 52 4b 00 d8 d4 12 00  ..K.....]RK.....
+0012d48c  84 3e 40 00 bc d4 12 00 - 08 f7 12 00 ff ff ff ff  .>@.............
+0012d49c  d0 4d 4b 00 00 00 00 00 - d8 4f a1 00 0b ff ff ff  .MK......O......
+0012d4ac  00 00 00 00 68 2b 00 00 - 04 4e a1 00 14 4e a1 00  ....h+...N...N..
+0012d4bc  0c d5 12 00 4d 75 4b 00 - ff ff ff ff 00 00 00 00  ....MuK.........
+0012d4cc  00 00 00 00 00 00 00 00 - 00 00 00 00 e4 d4 12 00  ................
+0012d4dc  c3 3f 40 00 0c d5 12 00 - 14 d5 12 00 84 3e 40 00  .?@..........>@.
+0012d4ec  0c d5 12 00 08 f7 12 00 - b0 7c 4b 00 84 f5 12 00  .........|K.....
+0012d4fc  04 4e a1 00 d8 4c a1 00 - 00 00 00 00 10 4c a1 00  .N...L.......L..
+0012d50c  44 f5 12 00 a1 78 4b 00 - 20 d5 12 00 84 3e 40 00  D....xK. ....>@.
+0012d51c  44 f5 12 00 54 f5 12 00 - 84 3e 40 00 44 f5 12 00  D...T....>@.D...
+0012d52c  f8 53 48 00 4c 2b a1 00 - 38 b5 14 00 00 00 00 00  .SH.L+..8.......
+0012d53c  00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00  ................
+0012d54c  00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00  ................
+
+disassembling:
+[...]
+004b788b      mov     ecx, [eax]
+004b788d      call    dword ptr [ecx+$8c]
+004b7893 58   or      edx, -1
+004b7896      mov     eax, [ebp-$c]
+004b7899      mov     ecx, [eax]
+004b789b    > call    dword ptr [ecx+$94]
+004b78a1 59   mov     eax, [ebp-4]
+004b78a4      call    -$b3041 ($404868)      ; System.@LStrLen
+004b78a9      push    eax
+004b78aa      lea     eax, [ebp-4]
+004b78ad      call    -$b2df2 ($404ac0)      ; System.@UniqueStringA
+[...]
+
