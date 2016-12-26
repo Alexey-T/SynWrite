@@ -27,6 +27,8 @@ __history
 !Wiki/*
 !CFree/*
 !Data/*
+!Lang/*
+!Tests/*
 !ComponentFixes/*
 !Readme/*.odt
 !Readme/*.txt
