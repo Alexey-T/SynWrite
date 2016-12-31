@@ -2460,6 +2460,24 @@ begin
   end;
 end;
 
+
+function Py_msg_box_new(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  Ptr: PAnsiChar;
+  Str: Widestring;
+  Flags: integer;
+begin
+  with GetPythonEngine do
+  begin
+    if Bool(PyArg_ParseTuple(Args, 'si:msg_box_new', @Ptr, @Flags)) then
+    begin
+      Str:= UTF8Decode(AnsiString(Ptr));
+      Result:= PyInt_FromLong(MsgBox(Str, Flags));
+    end;
+  end;
+end;
+
+
 function Py_msg_box(Self, Args: PPyObject): PPyObject; cdecl;
 var
   N: Integer;
@@ -3029,6 +3047,7 @@ begin
   with AModule do
   begin
     AddMethod('msg_box', Py_msg_box, '');
+    AddMethod('msg_box_new', Py_msg_box_new, '');
     AddMethod('msg_status', Py_msg_status, '');
     AddMethod('dlg_input', Py_dlg_input, '');
     AddMethod('dlg_input_ex', Py_dlg_input_ex, '');

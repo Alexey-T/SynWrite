@@ -1,6 +1,11 @@
 Changes in Python API
 =====================
 
+jan 2017
+
+* release 1.0.160
+* add: msg_box has 2nd form, CudaText compatible, to port stuff from Cud
+
 dec 2016
 
 * release 1.0.159

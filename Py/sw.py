@@ -1,5 +1,24 @@
 import sw_api
 
+MB_OK               = 0x00000000
+MB_OKCANCEL         = 0x00000001
+MB_ABORTRETRYIGNORE = 0x00000002
+MB_YESNOCANCEL      = 0x00000003
+MB_YESNO            = 0x00000004
+MB_RETRYCANCEL      = 0x00000005
+MB_ICONERROR        = 0x00000010
+MB_ICONQUESTION     = 0x00000020
+MB_ICONWARNING      = 0x00000030
+MB_ICONINFO         = 0x00000040
+
+ID_OK     = 1
+ID_CANCEL = 2
+ID_ABORT  = 3
+ID_RETRY  = 4
+ID_IGNORE = 5
+ID_YES    = 6
+ID_NO     = 7
+
 MSG_INFO      = 0
 MSG_WARN      = 1
 MSG_ERROR     = 2
@@ -286,8 +305,12 @@ def ed_handles():
     r0, r1 = sw_api.ed_handles()
     return range(r0, r1+1)
 
-def msg_box(id, text=''):
-    return sw_api.msg_box(id, text)
+def msg_box(n1, n2):
+    if type(n1) is int:
+        return sw_api.msg_box(n1, n2)
+    else:
+        return sw_api.msg_box_new(n1, n2)
+    
 def msg_status(text):
     return sw_api.msg_status(text)
 

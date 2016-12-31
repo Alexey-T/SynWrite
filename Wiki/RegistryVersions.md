@@ -28,6 +28,7 @@ Explorer Integration=2016.09.05
 Extend Selection=0.8.2
 Extract Strings=2016.05.24
 Favorites=2016.06.22
+Filter Lines=2016.12.29
 FindIdPas=0.3.0
 Ftp Log=0.2.0
 Hex Dump=0.3.0

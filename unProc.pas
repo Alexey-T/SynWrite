@@ -203,6 +203,7 @@ function SFilterNum(const s: string): integer;
 function SFilterIdxToExt(const Filter: string; Index: integer): string;
 function SFilterNameToIdx(const AFilter, ALexerName: string): integer;
 
+function MsgBox(const Str: Widestring; Flags: Longint): integer;
 procedure MsgInfo(const S: WideString; H: THandle);
 procedure MsgWarn(const S: WideString; H: THandle);
 procedure MsgError(const S: WideString; H: THandle);
@@ -314,7 +315,13 @@ uses
   ComCtrls,
   LibTar;
 
-procedure MsgInfo(const S: WideString; H: THandle);
+function MsgBox(const Str: Widestring; Flags: Longint): integer;
+begin
+  Result:= MessageBoxW(Application.MainForm.Handle,
+    PWChar(Str), 'SynWrite', Flags);
+end;
+
+procedure MsgInfo(const S: WideString; H: THandle);
 begin
   MessageBoxW(H, PWChar(S), 'SynWrite',
     mb_ok or mb_iconinformation or mb_taskmodal);

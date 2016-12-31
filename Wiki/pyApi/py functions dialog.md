@@ -1,6 +1,6 @@
 Function | Description
 ---------|------------
-`msg_box(id, text)` | Shows message-box or plays sound signal. Possible values if `id` are listed at [py msgbox id].
+`msg_box(id, text) / msg_box(text, flags)` | Shows message box. Function has 2 forms: old and new (CudaText compatible). See [py msgbox id].
 `msg_status(text)` | Shows text in program status-bar. (Show delay is not configurable). 
 `dlg_input(text, deftext, ini_fn='', ini_section='')` | Shows dialog for entering single string. `text` is prompt text, `deftext` is default input text, `ini_fn` is ini filename (without path) which holds input history (or empty string if history not needed), `ini_section` is section name in ini file (or empty string if history not needed). Returns entered string, or `None` if dialog cancelled.
 `dlg_input_memo(caption, label, deftext)` | Shows dialog for entering multi-line text. Returns entered string, or `None` if dialog cancelled.
