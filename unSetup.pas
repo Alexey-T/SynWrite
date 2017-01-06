@@ -340,6 +340,8 @@ type
     edCaretShapeOvr: TTntComboBox;
     cbCutLineNoSel: TTntCheckBox;
     cbCopyLineNoSel: TTntCheckBox;
+    bColorCustom: TTntButton;
+    ColorDialog1: TColorDialog;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -429,6 +431,7 @@ type
     procedure bFontMenusClick(Sender: TObject);
     procedure LabMoreSkinsClick(Sender: TObject);
     procedure LabMoreIconsClick(Sender: TObject);
+    procedure bColorCustomClick(Sender: TObject);
   private
     { Private declarations }
     fmOvr: TfmSetupOvr;
@@ -2724,6 +2727,15 @@ end;
 procedure TfmSetup.LabMoreIconsClick(Sender: TObject);
 begin
   FOpenUrl('http://sourceforge.net/projects/synwrite-addons/files/IconSets/', Handle);
+end;
+
+procedure TfmSetup.bColorCustomClick(Sender: TObject);
+begin
+  ColorDialog1.Color:= cbColors.Selected;
+  if not ColorDialog1.Execute then exit;
+  cbColors.Selected:= ColorDialog1.Color;
+  cbColors.OnSelect(nil);
+  cbColors.Invalidate;
 end;
 
 end.

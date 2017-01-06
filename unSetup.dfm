@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabView
+    ActivePage = tabColors
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -313,9 +313,9 @@ object fmSetup: TfmSetup
         end
         object LabelColorInf: TTntLabel
           Left = 288
-          Top = 64
+          Top = 88
           Width = 233
-          Height = 65
+          Height = 41
           AutoSize = False
           Caption = 
             'Assign color from the right colorbox to any element in the left ' +
@@ -339,10 +339,10 @@ object fmSetup: TfmSetup
           Left = 288
           Top = 32
           Width = 233
-          Height = 22
+          Height = 24
           NoneColorColor = clWhite
-          Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbIncludeNone, cbCustomColor, cbPrettyNames]
-          DropDownCount = 20
+          Style = [cbStandardColors, cbExtendedColors, cbIncludeNone, cbCustomColor, cbPrettyNames]
+          DropDownCount = 30
           ItemHeight = 18
           TabOrder = 1
           OnSelect = cbColorsSelect
@@ -351,7 +351,7 @@ object fmSetup: TfmSetup
           Left = 288
           Top = 192
           Width = 230
-          Height = 21
+          Height = 23
           Caption = 'Load color preset...'
           TabOrder = 3
           OnClick = bColorLoadClick
@@ -360,10 +360,19 @@ object fmSetup: TfmSetup
           Left = 288
           Top = 216
           Width = 230
-          Height = 21
+          Height = 23
           Caption = 'Save color preset...'
-          TabOrder = 2
+          TabOrder = 4
           OnClick = bColorSaveClick
+        end
+        object bColorCustom: TTntButton
+          Left = 288
+          Top = 64
+          Width = 230
+          Height = 23
+          Caption = 'Choose color...'
+          TabOrder = 2
+          OnClick = bColorCustomClick
         end
       end
     end
@@ -2833,7 +2842,7 @@ object fmSetup: TfmSetup
     Left = 276
     Top = 400
     LangData = {
-      0700666D5365747570010100000001000000070043617074696F6E013C010000
+      0700666D5365747570010100000001000000070043617074696F6E013E010000
       04005461627300000900746162436F6C6F727301010000009501000007004361
       7074696F6E00070067436F6C6F7273010100000067000000070043617074696F
       6E0006004C6162656C34010100000068000000070043617074696F6E0006004C
@@ -3123,7 +3132,8 @@ object fmSetup: TfmSetup
       000F006564436172657453686170654F767200000E0063624375744C696E654E
       6F53656C0102000000FF020000070043617074696F6EFE020000040048696E74
       000F006362436F70794C696E654E6F53656C0102000000010300000700436170
-      74696F6E00030000040048696E7400}
+      74696F6E00030000040048696E74000C0062436F6C6F72437573746F6D010100
+      000002030000070043617074696F6E000C00436F6C6F724469616C6F67310000}
   end
   object OpenDialogPre: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
@@ -3151,5 +3161,10 @@ object fmSetup: TfmSetup
     Items = <>
     Left = 200
     Top = 400
+  end
+  object ColorDialog1: TColorDialog
+    Options = [cdFullOpen, cdSolidColor, cdAnyColor]
+    Left = 452
+    Top = 259
   end
 end

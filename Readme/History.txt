@@ -4,6 +4,9 @@ Legend:
  * changed
 
 
+6.31.2504
++ improve colors/theme settings: added btn "choose color", hidden sys colors, color dlg keeps custom items
+
 6.31.2500
 * removed commands, they live in plugin Sort: remove dup lines, remove dups+origins, remove adjacent dups, extract dups, extract uniques, remove blank lines, reverse lines, shuffle lines
 - fix: autocomplete list closed by '-' chr
