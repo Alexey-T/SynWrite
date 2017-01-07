@@ -5,7 +5,8 @@ interface
 uses
   PythonEngine,
   ecSyntMemo,
-  ATSyntMemo;
+  ATSyntMemo,
+  unColorBox;
 
 procedure Py_InitApiModule(AModule: TPythonModule);
 procedure Py_SetSysPath(const Dirs: array of string);

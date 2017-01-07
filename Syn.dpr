@@ -67,7 +67,8 @@ uses
   unColorPalette in 'unColorPalette.pas' {fmPalette},
   unProcCustomDialog in 'unProcCustomDialog.pas',
   unGlobData in 'unGlobData.pas',
-  unPyApiConst in 'unPyApiConst.pas';
+  unPyApiConst in 'unPyApiConst.pas',
+  unColorBox in 'unColorBox.pas';
 
 {$R *.res}
 {$R *.dkl_const.res}

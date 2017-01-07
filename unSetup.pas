@@ -16,6 +16,7 @@ uses
   DKLang,
 
   unGlobData,
+  unColorBox,
   unMain, unSetupOvr, unProcEditor;
 
 const

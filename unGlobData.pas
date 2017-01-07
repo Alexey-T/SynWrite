@@ -3,15 +3,17 @@ unit unGlobData;
 interface
 
 uses
-  SysUtils, Classes, IniFiles,
+  SysUtils, Classes,
+  ExtCtrls,
   Dialogs,
+  IniFiles,
   TntClasses,
   ATxFProc,
   ATxSProc,
   ecSyntAnal;
 
 const
-  cSynVersion = '6.31.2505';
+  cSynVersion = '6.31.2506';
   cSynApiVersion = '1.0.160';
 
 var
@@ -24,7 +26,6 @@ var
   SynCommandlineSessionFN: string;
   SynCommandlineProjectFN: string;
   SyntaxManager: TSyntaxManager = nil;
-  ColorDialogMain: TColorDialog;
 
 type
   TSynDataSubdirId = (
@@ -414,6 +415,8 @@ end;
 var
   DummyComponent: TComponent;
   
+{ TColorBox }
+
 initialization
 
   SynModuleFilename:= GetModuleName(HInstance);
@@ -426,12 +429,8 @@ initialization
   DummyComponent:= TComponent.Create(nil);
   SyntaxManager:= TSyntaxManager.Create(DummyComponent);
 
-  ColorDialogMain:= TColorDialog.Create(nil);
-  ColorDialogMain.Options:= [cdFullOpen, cdSolidColor, cdAnyColor];
-
 finalization
 
-  FreeAndNil(ColorDialogMain);
   FreeAndNil(SyntaxManager);
   FreeAndNil(DummyComponent);
 

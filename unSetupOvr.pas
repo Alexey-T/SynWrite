@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   TntForms,
-  Dialogs, StdCtrls, TntStdCtrls, DKLang, Spin, ExtCtrls;
+  Dialogs, StdCtrls, TntStdCtrls, DKLang, Spin, ExtCtrls,
+  unColorBox{TColorBox};
 
 type
   TfmSetupOvr = class(TTntForm)
