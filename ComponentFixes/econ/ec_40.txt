@@ -1,0 +1,8 @@
+ecsnStyleEdit.pas (Frame)
+
+in the 1st "uses" add using of Synw unit unColorBox,
+to share ColorDialogMain for LexerProps dialog
+
+uses
+  .........
+  unColorBox{custom TColorBox};
