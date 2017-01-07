@@ -11,8 +11,82 @@ Method name in "Command" class should be:
 * Command plugins: "run" or other.
 * Event plugins: one of [py event names].
 
-Funcs
-=====
+List of functions
+=================
 
 * [python API functions]
 * [python API changes]
+
+Example for command plugin
+==========================
+
+`install.inf` declares method "run" with lexers attached.
+
+```
+[info]
+title=AStyle Format
+desc=Formats source code for these lexers: C, C++, C#, Java; uses AStyle library
+type=py-plugin
+subdir=syn_astyle_format
+
+[ini]
+section=Commands
+id=AStyle Format\Format
+params=run;C,C++,C#,Java;;
+```
+
+`__init__.py` has code of method "run".
+
+```
+from sw import *
+import sys
+import os
+
+class Command:
+    def run(self):
+        pass
+        #some work
+```
+
+
+Example for event plugin
+========================
+
+`install.inf` declares event "on_caret_move" and method "jump".
+
+```
+[info]
+title=Brackets Hilite
+desc=Highlights pair brackets for caret position, when caret moves
+type=py-plugin
+subdir=syn_brackets_hilite
+
+[ini1]
+section=Events
+id=BracketsHilite
+params=on_caret_move
+
+[ini2]
+section=Commands
+id=Brackets Hilite\Go to pair bracket
+params=jump
+```
+
+`__init__.py` has code for event, and for method.
+
+```
+import os
+import shutil
+from sw import *
+
+class Command:
+
+    def on_caret_move(self, ed_self):
+        pass
+        #handle event
+        
+    def jump(self):
+        pass
+        #work
+```
+

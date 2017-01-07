@@ -158,6 +158,7 @@ Lexer: Kivy                         | | Lexers/lexer.Kivy.zip
 Lexer: KiXtart                      | | Lexers/lexer.KiXtart.zip
 Lexer: LaTeX                        | | Lexers/lexer.LaTeX.zip
 Lexer: Lisp                         | | Lexers/lexer.Lisp.zip
+Lexer: LiveCode                     | | Lexers/lexer.LiveCode.zip
 Lexer: Log files                    | | Lexers/lexer.Logfiles.zip
 Lexer: Lola-2                       | | Lexers/lexer.Lola-2.zip
 Lexer: MacroScript (Macro Sheduler) | | Lexers/lexer.MacroScript_(Macro_Sheduler).zip

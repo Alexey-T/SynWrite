@@ -341,7 +341,6 @@ type
     cbCutLineNoSel: TTntCheckBox;
     cbCopyLineNoSel: TTntCheckBox;
     bColorCustom: TTntButton;
-    ColorDialog1: TColorDialog;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2731,9 +2730,9 @@ end;
 
 procedure TfmSetup.bColorCustomClick(Sender: TObject);
 begin
-  ColorDialog1.Color:= cbColors.Selected;
-  if not ColorDialog1.Execute then exit;
-  cbColors.Selected:= ColorDialog1.Color;
+  ColorDialogMain.Color:= cbColors.Selected;
+  if not ColorDialogMain.Execute then exit;
+  cbColors.Selected:= ColorDialogMain.Color;
   cbColors.OnSelect(nil);
   cbColors.Invalidate;
 end;

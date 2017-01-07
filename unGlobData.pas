@@ -4,13 +4,14 @@ interface
 
 uses
   SysUtils, Classes, IniFiles,
+  Dialogs,
   TntClasses,
   ATxFProc,
   ATxSProc,
   ecSyntAnal;
 
 const
-  cSynVersion = '6.31.2504';
+  cSynVersion = '6.31.2505';
   cSynApiVersion = '1.0.160';
 
 var
@@ -23,6 +24,7 @@ var
   SynCommandlineSessionFN: string;
   SynCommandlineProjectFN: string;
   SyntaxManager: TSyntaxManager = nil;
+  ColorDialogMain: TColorDialog;
 
 type
   TSynDataSubdirId = (
@@ -424,8 +426,12 @@ initialization
   DummyComponent:= TComponent.Create(nil);
   SyntaxManager:= TSyntaxManager.Create(DummyComponent);
 
+  ColorDialogMain:= TColorDialog.Create(nil);
+  ColorDialogMain.Options:= [cdFullOpen, cdSolidColor, cdAnyColor];
+
 finalization
 
+  FreeAndNil(ColorDialogMain);
   FreeAndNil(SyntaxManager);
   FreeAndNil(DummyComponent);
 

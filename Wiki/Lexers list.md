@@ -108,6 +108,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * LaTeX
 * LESS
 * Lisp
+* LiveCode script
 * Log files
 * Lola-2
 * Lua

@@ -1203,16 +1203,11 @@ begin
         PROC_COLOR_PICKER:
           begin
             NValue:= StrToIntDef(Str, 0);
-            with TColorDialog.Create(fmMain) do
-            try
-              Color:= NValue;
-              if Execute then
-                Result:= PyInt_FromLong(Color)
-              else
-                Result:= PyInt_FromLong(-1);
-            finally
-              Free
-            end;
+            ColorDialogMain.Color:= NValue;
+            if ColorDialogMain.Execute then
+              Result:= PyInt_FromLong(ColorDialogMain.Color)
+            else
+              Result:= PyInt_FromLong(-1);
           end;
 
         PROC_ADD_RECENT_COLOR:
