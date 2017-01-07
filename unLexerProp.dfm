@@ -467,7 +467,7 @@ object fmLexerProp: TfmLexerProp
           end
         end
       end
-      inline SyntStyleFrame1: TSyntStyleFrame
+      inline SyntStyleFrame1: TfmLexerPropStyles
         Left = 299
         Top = 0
         Width = 294

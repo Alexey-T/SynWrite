@@ -18,10 +18,16 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls, ecSyntAnal, ExtCtrls, ecSyntMemo,
-  unLexerItems, Buttons, ecsnStyleEdit, ecsnCodeTempl, ImgList, ecPopupCtrl,
-  ecSyntGramma, ecStrUtils, ecSyntTree, ecsnRuleStates, DKLang,
+  Dialogs, StdCtrls, ComCtrls, 
+  ExtCtrls, Buttons, ImgList, 
+  ecSyntMemo,
+  ecSyntAnal, 
+  ecsnCodeTempl, ecPopupCtrl,
+  ecSyntGramma, ecStrUtils, ecSyntTree, ecsnRuleStates, 
   ecExtHighlight,
+  unLexerItems, 
+  unLexerPropStyles,
+  DKLang,
   TntForms, TntControls, TntStdCtrls, TntExtCtrls, TntComCtrls, TntButtons;
 
 type
@@ -132,7 +138,7 @@ type
     ComboBox22: TComboBox;
     Label30: TTntLabel;
     CheckBox17: TTntCheckBox;
-    SyntStyleFrame1: TSyntStyleFrame;
+    SyntStyleFrame1: TfmLexerPropStyles;
     Label2: TTntLabel;
     Edit7: TTntEdit;
     ComboBox1: TComboBox;
