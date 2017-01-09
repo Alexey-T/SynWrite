@@ -4,9 +4,10 @@ Legend:
  * changed
 
 
-6.31.2512
+6.31.2515
++ command line param /print: syn.exe /print "filename"
 * AddonManager: download all: skip big sized plugins SynCodeIntel, SynSharp (25M)
-- fix: console edit/memo font color didnt apply
+- fix: console edit/memo font color wasnt set
 
 6.31.2510
 + improve colors/theme settings: added btn "choose color", hide "sys colors"
