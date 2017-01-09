@@ -11982,7 +11982,10 @@ begin
   ListPLog.Font:= ListOut.Font;
 
   MemoConsole.Color:= ListOut.Color;
+  MemoConsole.Font:= ListOut.Font;
+  
   edConsole.Color:= ListOut.Color;
+  edConsole.Font:= ListOut.Font;
 
   ListOut.ItemHeight:= FontHeightToItemHeight(ListOut.Font);
   ListVal.ItemHeight:= ListOut.ItemHeight;

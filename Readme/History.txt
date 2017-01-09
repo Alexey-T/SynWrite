@@ -4,7 +4,9 @@ Legend:
  * changed
 
 
+6.31.2512
 * AddonManager: download all: skip big sized plugins SynCodeIntel, SynSharp (25M)
+- fix: console edit/memo font color didnt apply
 
 6.31.2510
 + improve colors/theme settings: added btn "choose color", hide "sys colors"

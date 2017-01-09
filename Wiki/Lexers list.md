@@ -169,6 +169,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Squirrel
 * Standard ML
 * Stata
+* Strace
 * Stylus
 * Swift
 * T-SQL

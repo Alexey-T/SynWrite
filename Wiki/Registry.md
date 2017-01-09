@@ -214,6 +214,7 @@ Lexer: SQL (White)                  | | Lexers/lexer.SQL_White.zip
 Lexer: Squirrel                     | | Lexers/lexer.Squirrel.zip
 Lexer: Standard ML                  | | Lexers/lexer.Standard_ML.zip
 Lexer: Stata                        | | Lexers/lexer.Stata.zip
+Lexer: Strace                       | | Lexers/lexer.Strace.zip
 Lexer: Stylus                       | | Lexers/lexer.Stylus.zip
 Lexer: Swift                        | | Lexers/lexer.Swift.zip
 Lexer: T-SQL                        | | Lexers/lexer.T-SQL.zip
