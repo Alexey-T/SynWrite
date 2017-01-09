@@ -111,6 +111,11 @@ class Command:
             desc = item[1]
             url1 = item[2]
             #also other indexes exist
+            
+            if name=='SynCodeIntel' or \
+               name=='SynSharp':
+                print('Skipped downloading: '+name)
+                continue
 
             if not name:
                 bads += [url1]

@@ -32,7 +32,6 @@ Extract Emails | Finds emails in current file | PyPlugins/plugin.Alexey.ExtractE
 Extract Strings | Finds by regex, strings in editor, and allows to copy them | PyPlugins/plugin.Alexey.ExtractStrings.zip
 Favorites | Manages "favorites" file list | PyPlugins/plugin.kvichans.Favorites.zip
 Filter Lines | Finds lines, mathing some string or reg-ex | PyPlugins/plugin.Alexey.Filter_Lines.zip
-FindIdPas | Finds declaration of identifiers for Pascal lexer | BinaryPlugins/plugin.PascalFindId.zip
 Ftp Log | Makes file SynFTP.log | PyPlugins/plugin.Alexey.FtpLog.zip
 Gherkin Format | Formats code of Gherkin lexer | PyPlugins/plugin.Alexey.GherkinFormat.zip
 Hex Dump | Shows text in hex-dump format | PyPlugins/plugin.Alexey.HexDump.zip

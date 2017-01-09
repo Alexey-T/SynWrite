@@ -4,6 +4,8 @@ Legend:
  * changed
 
 
+* AddonManager: download all: skip big sized plugins SynCodeIntel, SynSharp (25M)
+
 6.31.2510
 + improve colors/theme settings: added btn "choose color", hide "sys colors"
 + color-dialogs keep user items for a)options dlg, b)lexer props dlg
