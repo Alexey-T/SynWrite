@@ -298,10 +298,11 @@ Text converter: Translit | Transliterate En<->Ru | TextConverters/converter.Tran
 Text converter: URL encode | URL encoding / percent-encoding | TextConverters/converter.UrlEncode.zip
 Text Statistics | Shows for text: count of lines, words, chars | PyPlugins/plugin.Alexey.TextStatistics.zip
 Textile Preview | Shows Textile files as HTML page in browser | PyPlugins/plugin.Alexey.TextilePreview.zip
+Translation: German               | | Languages/language.German.zip
+Translation: French               | | Languages/language.French.zip
 Translation: Chinese Simplified   | | Languages/language.Ch_Simplified.zip
 Translation: Chinese Traditional  | | Languages/language.Ch_Traditional.zip
 Translation: Czech                | | Languages/language.Czech.zip
-Translation: French               | | Languages/language.French.zip
 Translation: Hungarian            | | Languages/language.Hungarian.zip
 Translation: Italian              | | Languages/language.Italian.zip
 Translation: Japanese             | | Languages/language.Jap.zip
