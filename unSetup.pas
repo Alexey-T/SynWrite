@@ -1593,6 +1593,9 @@ begin
     edCaretShapeIns.Items.Add('  '+cCaretDesc[sh]);
     
   edCaretShapeOvr.Items.Assign(edCaretShapeIns.Items);
+
+  //Delphi needs
+  cbColors.AddItem('(None)', TObject(clNone));
 end;
 
 procedure TfmSetup.tabCaretsShow(Sender: TObject);

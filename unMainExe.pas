@@ -347,22 +347,26 @@ begin
       fmMain.DoOpenSession(SynCommandlineSessionFN);
     end
     else
-    for i:= 1 to WideParamCount do
     begin
-      S:= WideParamStr(i);
-      if IsUnneededParam(S) then Continue;
+      //read filenames from cmd-line
+      for i:= 1 to WideParamCount do
+      begin
+        S:= WideParamStr(i);
+        if IsUnneededParam(S) then Continue;
 
-      //open cmd-line parameter
-      if IsDirExist(S) then
-        fmMain.DoOpenFolder(S)
-      else
-        fmMain.DoOpenFile(S);
-      fmMain.UpdateRO;
+        //open cmd-line parameter
+        if IsDirExist(S) then
+          fmMain.DoOpenFolder(S)
+        else
+          fmMain.DoOpenFile(S);
+        fmMain.UpdateRO;
 
-      //if file empty (new), uncheck R/O
-      if FGetFileSize(S)=0 then
-        if fmMain.ecReadOnly.Checked then
-          fmMain.ecReadOnly.Execute;
+        //if file empty (new), uncheck R/O
+        if FGetFileSize(S)=0 then
+          if fmMain.ecReadOnly.Checked then
+            fmMain.ecReadOnly.Execute;
+      end;
+      fmMain.DoCheckCommandLinePrint;
     end;
   end;
 end;

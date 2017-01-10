@@ -1891,7 +1891,6 @@ type
     FSessionFN: string;
     FProjectIniting: boolean;
     FProjectFreeing: boolean;
-    FCommandLinePrintTested: Boolean;
 
     FPluginsPanel: TPluginList_Panel;
     FPluginsFindid: TPluginList_Findid;
@@ -2893,7 +2892,7 @@ type
     procedure DoFindId;
     function FrameForFilename(const fn: Widestring): TEditorFrame;
     function DoCheckCommandLineTwo: boolean;
-    procedure DoCheckCommandLinePrint(Ed: TSyntaxMemo);
+    procedure DoCheckCommandLinePrint;
     procedure DoEnumLexers(L: TTntStrings; AlsoDisabled: boolean = false);
     procedure DoEnumProjFiles(L: TTntStringList);
     procedure DoEnumIcons(L: TTntStringList);
@@ -3365,9 +3364,6 @@ begin
     DoReplace_TabsToSpaces(Result);
 
   DoPyEvent(Result.EditorMaster, cSynEventOnOpen, []);
-
-  if SynExe then
-    DoCheckCommandLinePrint(Result.EditorMaster);
 end;
 
 procedure TfmMain.UpdateFrameEnc(Frame: TEditorFrame);
@@ -22998,18 +22994,35 @@ begin
 end;
 
 
-procedure TfmMain.DoCheckCommandLinePrint(Ed: TSyntaxMemo);
+procedure TfmMain.DoCheckCommandLinePrint;
 var
+  Ok: boolean;
+  F: TEditorFrame;
   i: integer;
 begin
-  if FCommandLinePrintTested then exit;
+  Ok:= false;
   for i:= 1 to ParamCount do
     if ParamStr(i)=cSynParamPrint then
     begin
-      Ed.ExecCommand(smPrint);
+      Ok:= true;
       Break;
-    end;  
-  FCommandLinePrintTested:= true;
+    end;
+  if not Ok then exit;
+
+  LoadPrintOptions;
+  fmMain.PrinterSetupDialog.Execute;
+  
+  for i:= 0 to FrameCount-1 do
+  begin
+    F:= Frames[i];
+    if F.FileName<>'' then
+      EditorPrint(
+        F.EditorMaster,
+        False,
+        ExtractFileName(F.FileName),
+        ecSyntPrinter
+        );
+  end;
 end;
 
 

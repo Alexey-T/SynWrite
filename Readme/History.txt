@@ -4,9 +4,12 @@ Legend:
  * changed
 
 
-6.31.2515
-+ command line param /print: syn.exe /print "filename"
+6.32.2530
++ command line param /print: syn.exe /print file1 file2 ...
++ updated TutorialPlugins
 * AddonManager: download all: skip big sized plugins SynCodeIntel, SynSharp (25M)
+* removed German files to addon
+- fix: none-color was removed in Lexer Prop dlg
 - fix: console edit/memo font color wasnt set
 
 6.31.2510

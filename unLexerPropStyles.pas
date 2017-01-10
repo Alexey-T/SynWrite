@@ -110,6 +110,9 @@ begin
   inherited;
   FullEdit := False;
   SetControls;
+  
+  //for Delphi7, add "none"
+  ColorBox1.AddItem('(None)', TObject(clNone));
 end;
 
 procedure TfmLexerPropStyles.PaintWindow(DC: HDC);
