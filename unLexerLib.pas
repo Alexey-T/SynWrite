@@ -7,6 +7,7 @@ uses
   TntForms,
   Dialogs, StdCtrls, Buttons, ActnList, ImgList, ToolWin,
   CheckLst, ComCtrls,
+  unGlobData,
   ecSyntAnal, DKLang, TntCheckLst, TntComCtrls;
 
 type
@@ -146,11 +147,12 @@ end;
 procedure TfmLexerLibrary.actLexerPropsExecute(Sender: TObject);
 var
   An: TSyntAnalyzer;
+  fnLexmap: string;
 begin
   if LV.ItemIndex>=0 then
   begin
     An:= LV.Items.Objects[LV.ItemIndex] as TSyntAnalyzer;
-    if DoLexerPropDialog(An, FTreeImages) then
+    if DoLexerPropDialog(An, FTreeImages, SynLexerMapFilename(An.LexerName)) then
     begin
       LV.Items[LV.ItemIndex]:= LexerNameWithLinks(An);
       FLexLib.Modified:= True;
@@ -164,7 +166,7 @@ var
   An: TSyntAnalyzer;
 begin
   An:= FLexLib.AddAnalyzer;
-  if DoLexerPropDialog(An, FTreeImages) then
+  if DoLexerPropDialog(An, FTreeImages, SynLexerMapFilename(An.LexerName)) then
   begin
     FLexLib.Modified:= True;
     An.Tag:= 1;

@@ -9556,8 +9556,8 @@ object fmMain: TfmMain
     OnChange = ecACPChange
     OnCloseUp = ecACPCloseUp
     OnShow = ecACPShow
-    Left = 480
-    Top = 232
+    Left = 512
+    Top = 160
   end
   object ParamCompletion: TParamCompletion
     DeclSeparator = ','
@@ -9578,7 +9578,7 @@ object fmMain: TfmMain
     Controls = <>
     CommandID = 652
     Left = 512
-    Top = 232
+    Top = 216
   end
   object TemplatePopup: TTemplatePopup
     Templates = <>
@@ -9606,8 +9606,8 @@ object fmMain: TfmMain
     ToolHint.Font.Style = []
     Controls = <>
     OnShow = TemplatePopupShow
-    Left = 544
-    Top = 232
+    Left = 568
+    Top = 208
   end
   object PopupLexers: TSpTBXPopupMenu
     OnPopup = PopupLexersPopup
@@ -9662,8 +9662,8 @@ object fmMain: TfmMain
       '*.Caption'
       '*.Hint')
     OnLanguageChanged = DKLanguageController1LanguageChanged
-    Left = 577
-    Top = 233
+    Left = 633
+    Top = 89
     LangData = {
       0600666D4D61696E0001810300000A00544258446F636B546F70000006007462
       46696C650101000000B5020000070043617074696F6E0010005442585375626D
@@ -13135,8 +13135,8 @@ object fmMain: TfmMain
     ToolHint.Formatted = True
     Controls = <>
     OnShow = PluginACPShow
-    Left = 456
-    Top = 232
+    Left = 472
+    Top = 168
   end
   object PropsManagerPrint: TPropsManager
     Template = TemplateEditor
@@ -13305,8 +13305,8 @@ object fmMain: TfmMain
     UnicodeIO = True
     RawOutput = False
     Output = MemoConsole
-    Left = 487
-    Top = 200
+    Left = 543
+    Top = 88
   end
   object PyEngine: TPythonEngine
     AutoLoad = False
@@ -13319,16 +13319,16 @@ object fmMain: TfmMain
     IO = PyIO
     PyFlags = [pfUnicode, pfIgnoreEnvironmentFlag]
     OnAfterInit = PyEngineAfterInit
-    Left = 464
-    Top = 200
+    Left = 512
+    Top = 88
   end
   object PyModule: TPythonModule
     Engine = PyEngine
     OnInitialization = PyModuleInitialization
     ModuleName = 'sw_api'
     Errors = <>
-    Left = 511
-    Top = 200
+    Left = 575
+    Top = 88
   end
   object SD_Snippets: TSaveDialog
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]

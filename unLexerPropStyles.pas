@@ -7,17 +7,18 @@
 {     support@econtrol.ru                                                     }
 {                                                                             }
 { *************************************************************************** }
-{$I ecSyntEdit.INC}
+// Changed for SynWrite by Alexey T (SynWrite)
 
 unit unLexerPropStyles;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  {$IFNDEF EC_VCL6_UP} ecColCombo,{$ENDIF}
-  StdCtrls, ExtCtrls, ecSyntAnal, ecStrUtils, TntStdCtrls,
-  unColorBox{custom TColorBox};
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  StdCtrls, ExtCtrls,
+  ecSyntAnal,
+  TntStdCtrls,
+  unColorBox, Dialogs{custom TColorBox};
 
 type
   TfmLexerPropStyles = class(TFrame)
@@ -89,9 +90,6 @@ procedure SetColorBox(ColorBox: TColorBox; Color: TColor);
 implementation
 
 {$R *.dfm}
-{$IFDEF EC_DOTNET}
-uses Types, Variants;
-{$ENDIF}
 
 procedure SetColorBox(ColorBox: TColorBox; Color: TColor);
 var idx: integer;
@@ -113,6 +111,7 @@ begin
   
   //for Delphi7, add "none"
   ColorBox1.AddItem('(None)', TObject(clNone));
+  ColorBox2.AddItem('(None)', TObject(clNone));
 end;
 
 procedure TfmLexerPropStyles.PaintWindow(DC: HDC);
@@ -325,8 +324,8 @@ end;
 
 procedure TfmLexerPropStyles.ComboBox7Change(Sender: TObject);
 begin
-  if FSelfChange or (FStyle = nil) then Exit;
-  FStyle.ChangeCase := TChangeCase(ComboBox7.ItemIndex);
+//  if FSelfChange or (FStyle = nil) then Exit;
+//  FStyle.ChangeCase := TChangeCase(ComboBox7.ItemIndex);
 end;
 
 end.

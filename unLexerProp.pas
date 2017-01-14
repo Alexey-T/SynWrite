@@ -1,7 +1,7 @@
 {
 Original:
-EControl Syntax Editor SDK                                                 
-Copyright (c) 2004 - 2008 EControl Ltd., Zaharov Michael                   
+EControl Syntax Editor SDK
+Copyright (c) 2004 - 2008 EControl Ltd., Zaharov Michael
 
 Modified by: Alexey (SynWrite)
 - renamed class, set fonts, hidden gutter, passed imagelist for tree
@@ -18,12 +18,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls, 
-  ExtCtrls, Buttons, ImgList, 
+  Dialogs, StdCtrls, ComCtrls,
+  ExtCtrls, Buttons, ImgList, IniFiles,
   ecSyntMemo,
-  ecSyntAnal, 
+  ecSyntAnal,
   ecsnCodeTempl, ecPopupCtrl,
-  ecSyntGramma, ecStrUtils, ecSyntTree, ecsnRuleStates, 
+  ecSyntGramma, ecStrUtils, ecSyntTree, ecsnRuleStates,
   ecExtHighlight,
   unLexerItems, 
   unLexerPropStyles,
@@ -62,8 +62,6 @@ type
     ComboBox19: TTntComboBox;
     Label28: TTntLabel;
     ComboBox23: TComboBox;
-    OD: TOpenDialog;
-    SD: TSaveDialog;
     Label33: TTntLabel;
     Edit3: TTntEdit;
     Label34: TTntLabel;
@@ -200,8 +198,6 @@ type
     Edit13: TTntEdit;
     Label6: TTntLabel;
     ComboBox7: TComboBox;
-    Label7: TTntLabel;
-    Edit14: TTntEdit;
     CheckBox28: TTntCheckBox;
     Label31: TTntLabel;
     ComboBox8: TComboBox;
@@ -227,6 +223,19 @@ type
     CharSet_Combo: TComboBox;
     DKLanguageController1: TDKLanguageController;
     HyperlinkHighlighter: THyperlinkHighlighter;
+    TntTabSheet1: TTntTabSheet;
+    Label7: TTntLabel;
+    EditCmtLine: TTntEdit;
+    TntLabel1: TTntLabel;
+    TntLabel2: TTntLabel;
+    EditCmtBlock1: TTntEdit;
+    EditCmtBlock2: TTntEdit;
+    EditCmtLines1: TTntEdit;
+    EditCmtLines2: TTntEdit;
+    TntLabel3: TTntLabel;
+    EditStylesComments: TTntEdit;
+    EditStylesStrings: TTntEdit;
+    TntLabel4: TTntLabel;
     procedure FormShow(Sender: TObject);
     procedure FormatChanhged(Sender: TObject);
     procedure ComboBox17Change(Sender: TObject);
@@ -354,7 +363,11 @@ type
     property EditedLexer: TSyntAnalyzer read FEditSynt;
   end;
 
-function DoLexerPropDialog(ALexer: TSyntAnalyzer; AImages: TImageList): Boolean;
+function DoLexerPropDialog(
+  ALexer: TSyntAnalyzer;
+  AImages: TImageList;
+  const AFilenameLexmap: string
+  ): Boolean;
 
 var
   OnBackupLexerStyles: procedure(ALexer: TSyntAnalyzer) of object;
@@ -367,21 +380,55 @@ uses
 
 {$R *.dfm}
 
-function DoLexerPropDialog(ALexer: TSyntAnalyzer; AImages: TImageList): Boolean;
+function DoLexerPropDialog(
+  ALexer: TSyntAnalyzer;
+  AImages: TImageList;
+  const AFilenameLexmap: string
+  ): Boolean;
+var
+  Form: TfmLexerProp;
+  Ini: TIniFile;
 begin
-  with TfmLexerProp.Create(nil) do
+  Form := TfmLexerProp.Create(nil);
+  Ini := TIniFile.Create(AFilenameLexmap);
+
   try
-    FSynt.Assign(ALexer);
-    FEditSynt := ALexer;
-    SyntaxTreeView1.Images:= AImages;
-    Result := ShowModal = mrOk;
+    Form.FSynt.Assign(ALexer);
+    Form.FEditSynt := ALexer;
+    Form.SyntaxTreeView1.Images := AImages;
+
+    Form.EditCmtBlock1.Text := Ini.ReadString('comments', 'str1', '');
+    Form.EditCmtBlock2.Text := Ini.ReadString('comments', 'str2', '');
+    Form.EditCmtLines1.Text := Ini.ReadString('comments', 'full1', '');
+    Form.EditCmtLines2.Text := Ini.ReadString('comments', 'full2', '');
+    Form.EditStylesComments.Text := Ini.ReadString('comments', 'styles_cmt', '');
+    Form.EditStylesStrings.Text := Ini.ReadString('comments', 'styles_str', '');
+
+    Result := Form.ShowModal = mrOk;
     if Result then
     begin
-      ALexer.Assign(FSynt);
+      ALexer.Assign(Form.FSynt);
       OnBackupLexerStyles(ALexer);
+
+      Ini.WriteString('comments', 'str1', Form.EditCmtBlock1.Text);
+      Ini.WriteString('comments', 'str2', Form.EditCmtBlock2.Text);
+
+      if Form.EditCmtLines1.Text<>'' then
+        Ini.WriteString('comments', 'full1', Form.EditCmtLines1.Text)
+      else
+        Ini.DeleteKey('comments', 'full1');
+      if Form.EditCmtLines2.Text<>'' then
+        Ini.WriteString('comments', 'full2', Form.EditCmtLines2.Text)
+      else
+        Ini.DeleteKey('comments', 'full2');
+
+      Ini.WriteString('comments', 'styles_cmt', Form.EditStylesComments.Text);
+      Ini.WriteString('comments', 'styles_str', Form.EditStylesStrings.Text);
     end;
   finally
-    Free;
+    if Assigned(Ini) then
+      FreeAndNil(Ini);
+    FreeAndNil(Form);
   end;
 end;
 
@@ -415,12 +462,6 @@ procedure TfmLexerProp.FormShow(Sender: TObject);
 var
   i: integer;
 begin
-  //AT
-  OD.DefaultExt:= 'lcf';
-  SD.DefaultExt:= OD.DefaultExt;
-  OD.Filter:= '*.lcf|*.lcf';
-  SD.Filter:= OD.Filter;
-
   // Character set support
   FillCharSetCombo;
   UpdateCharsets;
@@ -446,7 +487,7 @@ begin
   CheckBox3.Checked := FSynt.ParseEndOfLine;
   CheckBox3.Enabled := FSynt.SkipSpaces;
   CheckBox28.Checked := FSynt.AlwaysSyncBlockAnal;
-  Edit14.Text := FSynt.LineComment;
+  EditCmtLine.Text := FSynt.LineComment;
   SyntColFrame1.Collection := FSynt.Formats;
   SyntColFrame2.Collection := FSynt.TokenRules;
   SyntColFrame3.Collection := FSynt.BlockRules;
@@ -509,7 +550,7 @@ begin
     FSynt.Notes.Text := SyntaxMemo8.Lines.Text;
   if SyntaxMemo9.Modified then
     FSynt.Gramma.Gramma := SyntaxMemo9.Lines.Text;
-  FSynt.LineComment := Edit14.Text;
+  FSynt.LineComment := EditCmtLine.Text;
   FSynt.AlwaysSyncBlockAnal := CheckBox28.Checked;
 end;
 

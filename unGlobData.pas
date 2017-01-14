@@ -13,7 +13,7 @@ uses
   ecSyntAnal;
 
 const
-  cSynVersion = '6.32.2530';
+  cSynVersion = '6.32.2535';
   cSynApiVersion = '1.0.160';
 
 var
@@ -73,6 +73,7 @@ function SynSnippetsDir: string;
 function SynIconsDir: string;
 function SynPyDir: string;
 function SynSkinFilename(const Name: string): string;
+function SynLexerMapFilename(const Name: string): string;
 function SynClipsDir: string;
 
 function IsLexerListed(const Lexer, List: string): boolean;
@@ -331,6 +332,11 @@ end;
 function SynClipsDir: string;
 begin
   Result:= SynDataSubdir(cSynDataClips);
+end;
+
+function SynLexerMapFilename(const Name: string): string;
+begin
+  Result:= SynDataSubdir(cSynDataLexerLib)+'\'+Name+'.cuda-lexmap';
 end;
 
 

@@ -20398,6 +20398,7 @@ begin
     Dec(i);
     if NLen>=opAcpNum then
     begin
+      ShowMessage('acp auto');///tst
       DoAcpPopup;
       Break
     end;
@@ -25765,7 +25766,7 @@ begin
   if An=nil then exit;
   PrevName:= An.LexerName;
 
-  if DoLexerPropDialog(An, ImgListTree) then
+  if DoLexerPropDialog(An, ImgListTree, SynLexerMapFilename(An.LexerName)) then
   begin
     if An.LexerName<>PrevName then
       DeleteFile(LexerFilename(PrevName, SynDataSubdir(cSynDataLexerLib)));

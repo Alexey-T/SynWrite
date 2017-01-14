@@ -4,6 +4,9 @@ Legend:
  * changed
 
 
+6.32.2535
++ Lexer Props dialog: tab "commenting" for all comment-props like CudaText has; makes file data\lexlib\*.cuda-lexmap
+
 6.32.2530
 + command line param /print: syn.exe /print file1 file2 ...
 + updated TutorialPlugins

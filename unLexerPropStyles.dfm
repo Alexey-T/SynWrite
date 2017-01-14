@@ -1,4 +1,4 @@
-object SyntStyleFrame: TfmLexerPropStyles
+object fmLexerPropStyles: TfmLexerPropStyles
   Left = 0
   Top = 0
   Width = 289
