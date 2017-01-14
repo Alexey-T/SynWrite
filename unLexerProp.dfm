@@ -2,7 +2,7 @@ object fmLexerProp: TfmLexerProp
   Left = 332
   Top = 191
   Width = 617
-  Height = 632
+  Height = 680
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Lexer properties'
   Color = clBtnFace
@@ -456,9 +456,9 @@ object fmLexerProp: TfmLexerProp
       object LabelStylesCmt: TTntLabel
         Left = 8
         Top = 176
-        Width = 97
+        Width = 194
         Height = 13
-        Caption = 'Styles of comments:'
+        Caption = 'Styles of comments (comma-separated):'
         FocusControl = EditCmtLine
       end
       object LabelStylesStr: TTntLabel
@@ -1034,7 +1034,7 @@ object fmLexerProp: TfmLexerProp
         Top = 0
         Width = 416
         Height = 337
-        ActivePage = TabRulesCond
+        ActivePage = TabRulesProp
         Align = alClient
         TabOrder = 1
         object TabRulesProp: TTntTabSheet
@@ -3255,7 +3255,7 @@ object fmLexerProp: TfmLexerProp
   end
   object Panel_Buttons: TTntPanel
     Left = 0
-    Top = 562
+    Top = 610
     Width = 601
     Height = 31
     Align = alBottom
@@ -3300,20 +3300,20 @@ object fmLexerProp: TfmLexerProp
     Left = 0
     Top = 368
     Width = 601
-    Height = 194
+    Height = 242
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
     object Splitter7: TSplitter
       Left = 145
       Top = 0
-      Height = 194
+      Height = 242
     end
     object SyntaxMemo1: TSyntaxMemo
       Left = 148
       Top = 0
       Width = 453
-      Height = 194
+      Height = 242
       NonPrintedSpaces = True
       NonPrintedEol = True
       NonPrintedEolDetails = False
@@ -3486,7 +3486,7 @@ object fmLexerProp: TfmLexerProp
       Left = 0
       Top = 0
       Width = 145
-      Height = 194
+      Height = 242
       SyntaxMemo = SyntaxMemo1
       AutoSynchronize = False
       Align = alLeft
