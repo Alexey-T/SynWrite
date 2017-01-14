@@ -126,7 +126,6 @@ function ScaleFontSize(Size: Integer; Form: TForm): Integer;
 
 procedure FixDraw(Ctl: TWinControl; SizeX: boolean = true);
 procedure FixFPU;
-procedure FixFilenamePath(var S: Widestring);
 function IsDirOkForSaving(const S: Widestring): boolean;
 
 function IsImageHint(const S: string): boolean; overload;
@@ -1014,12 +1013,6 @@ end;
 function IsDirOkForSaving(const S: Widestring): boolean;
 begin
   Result:= (Pos(':', S)=0) or IsDirInWindowsDir(S) or IsDirExist(S);
-end;
-
-procedure FixFilenamePath(var S: Widestring);
-begin
-  if WideExtractFileDir(S)='' then
-    S:= WideExcludeTrailingBackslash(WideGetCurrentDir)+'\'+S;
 end;
 
 procedure FixFPU;

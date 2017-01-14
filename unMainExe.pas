@@ -93,8 +93,9 @@ function IsUnneededParam(var S: Widestring): boolean;
 begin
   Result:= (S='') or (S[1]='/') or
     (WideLowerCase(WideExtractFileName(S))='notepad.exe');
+  //work for relative paths
   if not Result then
-    FixFilenamePath(S);
+    S:= WideExpandFileName(S);
 end;
 
 function SynInstanceNeeded: boolean;
