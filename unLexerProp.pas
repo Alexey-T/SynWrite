@@ -33,13 +33,13 @@ uses
 type
   TfmLexerProp = class(TTntForm)
     PageControl1: TTntPageControl;
-    TabSheet1: TTntTabSheet;
-    TabSheet2: TTntTabSheet;
-    TabSheet3: TTntTabSheet;
+    TabStyles: TTntTabSheet;
+    TabParser: TTntTabSheet;
+    TabRules: TTntTabSheet;
     Button1: TTntButton;
     Button2: TTntButton;
     SyntaxMemo1: TSyntaxMemo;
-    TabSheet5: TTntTabSheet;
+    TabCommon: TTntTabSheet;
     Label21: TTntLabel;
     ComboBox17: TComboBox;
     Label22: TTntLabel;
@@ -49,7 +49,7 @@ type
     Label29: TTntLabel;
     ComboBox21: TComboBox;
     PageControl2: TTntPageControl;
-    TabSheet7: TTntTabSheet;
+    TabRulesProp: TTntTabSheet;
     Label1: TTntLabel;
     Edit1: TTntEdit;
     Label20: TTntLabel;
@@ -79,7 +79,7 @@ type
     CheckBox7: TTntCheckBox;
     CheckBox8: TTntCheckBox;
     SyntaxMemo4: TSyntaxMemo;
-    TabSheet9: TTntTabSheet;
+    TabRulesHilite: TTntTabSheet;
     Label27: TTntLabel;
     ComboBox20: TComboBox;
     CheckBox14: TTntCheckBox;
@@ -105,8 +105,8 @@ type
     Panel5: TTntPanel;
     Panel6: TTntPanel;
     Panel7: TTntPanel;
-    TabSheet4: TTntTabSheet;
-    TabSheet8: TTntTabSheet;
+    TabRulesCond: TTntTabSheet;
+    TabSublex: TTntTabSheet;
     SyntColFrame4: TfmLexerItems;
     Splitter2: TSplitter;
     Splitter3: TSplitter;
@@ -149,9 +149,9 @@ type
     Label8: TTntLabel;
     Edit8: TTntEdit;
     Label10: TTntLabel;
-    TabSheet10: TTntTabSheet;
+    TabNotes: TTntTabSheet;
     SyntaxMemo8: TSyntaxMemo;
-    TabSheet11: TTntTabSheet;
+    TabGrammar: TTntTabSheet;
     Panel1: TTntPanel;
     TreeView1: TTreeView;
     Panel10: TTntPanel;
@@ -167,7 +167,7 @@ type
     Edit10: TTntEdit;
     Label13: TTntLabel;
     Edit11: TTntEdit;
-    TabSheet12: TTntTabSheet;
+    TabRulesTxtRng: TTntTabSheet;
     Edit5: TTntEdit;
     Label38: TTntLabel;
     Label39: TTntLabel;
@@ -221,21 +221,21 @@ type
     RuleStatesFrame3: TRuleStatesFrame;
     Label50: TTntLabel;
     CharSet_Combo: TComboBox;
-    DKLanguageController1: TDKLanguageController;
+    DKLng: TDKLanguageController;
     HyperlinkHighlighter: THyperlinkHighlighter;
-    TntTabSheet1: TTntTabSheet;
-    Label7: TTntLabel;
+    TabComments: TTntTabSheet;
+    LabelCmtLine: TTntLabel;
     EditCmtLine: TTntEdit;
-    TntLabel1: TTntLabel;
-    TntLabel2: TTntLabel;
+    LabelCmtRange: TTntLabel;
+    LabelCmtFull: TTntLabel;
     EditCmtBlock1: TTntEdit;
     EditCmtBlock2: TTntEdit;
     EditCmtLines1: TTntEdit;
     EditCmtLines2: TTntEdit;
-    TntLabel3: TTntLabel;
+    LabelStylesCmt: TTntLabel;
     EditStylesComments: TTntEdit;
     EditStylesStrings: TTntEdit;
-    TntLabel4: TTntLabel;
+    LabelStylesStr: TTntLabel;
     procedure FormShow(Sender: TObject);
     procedure FormatChanhged(Sender: TObject);
     procedure ComboBox17Change(Sender: TObject);
@@ -310,7 +310,7 @@ type
     procedure CheckBox4Click(Sender: TObject);
     procedure Edit10Exit(Sender: TObject);
     procedure Edit11Exit(Sender: TObject);
-    procedure TabSheet11Exit(Sender: TObject);
+    procedure TabGrammarExit(Sender: TObject);
     procedure CheckBox5Click(Sender: TObject);
     procedure ComboBox4Change(Sender: TObject);
     procedure ComboBox3Change(Sender: TObject);
@@ -1438,7 +1438,7 @@ begin
    end;
 end;
 
-procedure TfmLexerProp.TabSheet11Exit(Sender: TObject);
+procedure TfmLexerProp.TabGrammarExit(Sender: TObject);
 begin
   SpeedButton3Click(nil);
 end;

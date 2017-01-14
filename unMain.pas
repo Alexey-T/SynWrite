@@ -20398,7 +20398,6 @@ begin
     Dec(i);
     if NLen>=opAcpNum then
     begin
-      ShowMessage('acp auto');///tst
       DoAcpPopup;
       Break
     end;

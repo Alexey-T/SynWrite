@@ -147,7 +147,6 @@ end;
 procedure TfmLexerLibrary.actLexerPropsExecute(Sender: TObject);
 var
   An: TSyntAnalyzer;
-  fnLexmap: string;
 begin
   if LV.ItemIndex>=0 then
   begin
