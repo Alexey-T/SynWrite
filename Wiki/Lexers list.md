@@ -37,6 +37,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * C
 * C#
 * C++
+* Caffe Prototxt
 * Caml
 * Clarion
 * Clavier

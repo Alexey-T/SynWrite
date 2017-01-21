@@ -95,6 +95,7 @@ Lexer: Bitsquid SJSON               | | Lexers/lexer.Bitsquid_SJSON.zip
 Lexer: Bohemia SQF                  | | Lexers/lexer.Bohemia_SQF.zip
 Lexer: Boo                          | | Lexers/lexer.Boo.zip
 Lexer: Brainfuck                    | | Lexers/lexer.Brainfuck.zip
+Lexer: Caffe Prototxt               | | Lexers/lexer.Caffe_Prototxt.zip
 Lexer: Caml                         | | Lexers/lexer.Caml.zip
 Lexer: Clarion                      | | Lexers/lexer.Clarion.zip
 Lexer: Clavier                      | | Lexers/lexer.Clavier.zip

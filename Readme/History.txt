@@ -4,7 +4,9 @@ Legend:
  * changed
 
 
-6.32.2535
+6.32.2540
+* renamed cmds: "Collapse" to "Fold", "Expand" to "Unfold"
+- fix lexer-parser, when Python part inserted to Latex file
 + Lexer Props dialog: tab "commenting" for all comment-props like CudaText has; makes file data\lexlib\*.cuda-lexmap
 
 6.32.2530

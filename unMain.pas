@@ -1059,9 +1059,6 @@ type
     TBXSeparatorItem89: TSpTBXSeparatorItem;
     TBXItemFoldRangesInSel: TSpTBXItem;
     TBXItemUnfoldRangesInSel: TSpTBXItem;
-    TBXSeparatorItem88: TSpTBXSeparatorItem;
-    TBXItemFoldParent: TSpTBXItem;
-    TBXItemFoldWithNested: TSpTBXItem;
     TBXSubmenuFoldLevel: TSpTBXSubmenuItem;
     TBXItemFoldLevel2: TSpTBXItem;
     TBXItemFoldLevel3: TSpTBXItem;
