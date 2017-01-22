@@ -2609,7 +2609,6 @@ type
     opAutoCloseBracketsNoEsc: boolean;
     opAutoCloseQuotes1: boolean;
     opAutoCloseQuotes2: boolean;
-    opLexersOverride: string;
     opShowRecentColors: TSynRecentColors;
     opShowMenuSizeX: integer;
     opShowMenuSizeY: integer;
@@ -4149,7 +4148,6 @@ begin
     opAutoCloseQuotes2:= ReadBool('Setup', 'ACloseQ2', false);
 
     opLexerGroups:= ReadBool('Setup', 'LexCat', true);
-    opLexersOverride:= ReadString('Setup', 'LexOvr', '');
 
     if QuickView then
       opTabVisible:= false
@@ -4582,7 +4580,6 @@ begin
     WriteBool('Setup', 'TabDnD', opTabDragDrop);
     WriteBool('Setup', 'TabSw', opTabSwitcher);
 
-    WriteString('Setup', 'LexOvr', opLexersOverride);
     WriteBool('Setup', 'Inst', opSingleInstance);
     WriteBool('Setup', 'QsCap', opShowQsCaptions);
     WriteBool('Setup', 'LexCat', opLexerGroups);
@@ -7322,10 +7319,6 @@ end;
 
 
 procedure TfmMain.ApplyLexerOverrides(F: TEditorFrame; const Lexer: string);
-  //here we override editor options:
-  //a) overrides for "Lexers overrides" option
-  //b) need to reduce LineSpacing for NFO files
-  //c) need to set TabMode=tabs for Make files
 var
   ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
   AOptWordChars, AKeepBlanks, AAutoCase, AIndent,
@@ -7334,7 +7327,7 @@ begin
   if F=nil then Exit;
   with F do
   begin
-    if not SGetLexerOverride(opLexersOverride, Lexer,
+    if not DoLexerOverridesLoad(Lexer,
       ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
       AOptWordChars, AKeepBlanks, AAutoCase, AIndent, ATabColor, AColorUnderline) then
     begin
@@ -7450,7 +7443,15 @@ begin
 
       //11) override "Tab color"
       if ATabColor<>'' then
+      begin
         DoSetFrameTabColor(F, StringToColor(ATabColor));
+        Groups.Pages1.Tabs.Invalidate;
+        Groups.Pages2.Tabs.Invalidate;
+        Groups.Pages3.Tabs.Invalidate;
+        Groups.Pages4.Tabs.Invalidate;
+        Groups.Pages5.Tabs.Invalidate;
+        Groups.Pages6.Tabs.Invalidate;
+      end;
 
       //12) override "Underline color"
       if AColorUnderline='1' then
@@ -7459,19 +7460,6 @@ begin
         opUnderlineColored:= 0; //disable  
     end;
 
-    //overrides for "NFO files"
-    if IsLexerNFO(Lexer) then
-    begin
-      EditorMaster.LineSpacing:= 0;
-      EditorSlave.LineSpacing:= 0;
-    end;
-
-    //overrides for "Makefile"
-    if IsLexerMake(Lexer) then
-    begin
-      EditorMaster.TabMode:= tmTabChar;
-      EditorSlave.TabMode:= tmTabChar;
-    end;
   end;
 end;
 
@@ -16704,7 +16692,6 @@ begin
   UpdateColorHint(false);
 
   if s='' then Exit;
-  if not IsLexerWithColors(CurrentLexerForCaret) then Exit;
 
   //show selected color first
   sel:= CurrentEditor.SelText;

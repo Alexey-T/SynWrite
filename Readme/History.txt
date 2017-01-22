@@ -4,6 +4,11 @@ Legend:
  * changed
 
 
+6.33.2550
+* change: lexer-overrides now save into "settings\lexer NNNN.ini" files. Delete old string in Syn.ini: [Setup] LexOvr.
+* removed builtin lexer-overrides (of line-spacing opt) for lexers Makefiles, Nfo files
+- apply lexer-override of tab-color didnt repaint tab
+
 6.32.2540
 * renamed cmds: "Collapse" to "Fold", "Expand" to "Unfold"
 - fix lexer-parser, when Python part inserted to Latex file

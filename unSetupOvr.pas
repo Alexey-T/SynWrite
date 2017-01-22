@@ -6,6 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   TntForms,
   Dialogs, StdCtrls, TntStdCtrls, DKLang, Spin, ExtCtrls,
+  unGlobData,
   unColorBox{TColorBox};
 
 type
@@ -13,14 +14,12 @@ type
     ListLex: TTntListBox;
     Label1: TTntLabel;
     edTabStops: TTntEdit;
-    edText: TEdit;
     cbOvr: TTntCheckBox;
     DKLanguageController1: TDKLanguageController;
     edMargin: TSpinEdit;
     edSpacing: TSpinEdit;
     edWordChars: TTntEdit;
     LabelWordChars: TTntLabel;
-    LabelTextShow: TLabel;
     chkAutoCase: TTntCheckBox;
     LabelHelpAutoCase: TTntLabel;
     edIndent: TSpinEdit;
@@ -44,7 +43,6 @@ type
     procedure TntFormShow(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
     procedure edTabStopsChange(Sender: TObject);
-    procedure LabelTextShowClick(Sender: TObject);
     procedure LabelHelpAutoCaseClick(Sender: TObject);
     procedure chkTabStopsClick(Sender: TObject);
   private
@@ -53,7 +51,6 @@ type
     procedure DoClearAll;
   public
     { Public declarations }
-    FString: string;
     FDefTabStop: string;
     FDefTabMode,
     FDefIndent,
@@ -75,6 +72,7 @@ uses
 procedure TfmSetupOvr.cbOvrClick(Sender: TObject);
 var
   en: boolean;
+  fn: string;
 begin
   en:= cbOvr.Checked;
   edTabStops.Enabled:= en;
@@ -104,10 +102,13 @@ begin
   if not en then
   begin
     if ListLex.ItemIndex>=0 then
-      SSetLexerOverride(en, FString, ListLex.Items[ListLex.ItemIndex], '', '', '', '', '', '', '', '', '', '', '', '');
+    begin
+      fn:= SynLexerOverrideFilename(ListLex.Items[ListLex.ItemIndex]);
+      if FileExists(fn) then
+        DeleteFile(fn);
+    end;  
 
     DoClearAll;
-    edText.Text:= FString;
   end;
 end;
 
@@ -120,7 +121,7 @@ var
 begin
   if ListLex.ItemIndex>=0 then
   begin
-    Ovr:= SGetLexerOverride(FString, ListLex.Items[ListLex.ItemIndex],
+    Ovr:= DoLexerOverridesLoad(ListLex.Items[ListLex.ItemIndex],
       ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
       AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent,
       ATabColor, AColorUnderline);
@@ -209,7 +210,6 @@ begin
   edOptFill.ItemIndex:= 0;
   edTabColor.Selected:= clWhite;
   edWordChars.Text:= '';
-  edText.Text:= FString;
   ListLex.ItemIndex:= 0;
   ListLexClick(Self);
 end;
@@ -243,7 +243,7 @@ begin
         edWordChars.Text:= S;
       end;
 
-      SSetLexerOverride(true, FString,
+      DoLexerOverridesSave(
         ListLex.Items[ListLex.ItemIndex],
         {Op1}IfThen(chkTabStops.Checked, edTabStops.Text),
         {Op2}IfThen(chkTabMode.Checked, IntToStr(edTabMode.ItemIndex)),
@@ -258,14 +258,7 @@ begin
         {Op11}IfThen(chkTabColor.Checked, ColorToString(edTabColor.Selected)),
         {Op12}IfThen(chkColorUnderline.Checked, '1')
         );
-      edText.Text:= FString;
     end;
-end;
-
-procedure TfmSetupOvr.LabelTextShowClick(Sender: TObject);
-begin
-  with edText do
-    Visible:= not Visible; 
 end;
 
 procedure TfmSetupOvr.LabelHelpAutoCaseClick(Sender: TObject);

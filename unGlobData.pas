@@ -13,7 +13,7 @@ uses
   ecSyntAnal;
 
 const
-  cSynVersion = '6.32.2540';
+  cSynVersion = '6.33.2550';
   cSynApiVersion = '1.0.160';
 
 var
@@ -74,6 +74,7 @@ function SynIconsDir: string;
 function SynPyDir: string;
 function SynSkinFilename(const Name: string): string;
 function SynLexerMapFilename(const Name: string): string;
+function SynLexerOverrideFilename(const Name: string): string;
 function SynClipsDir: string;
 
 function IsLexerListed(const Lexer, List: string): boolean;
@@ -81,25 +82,15 @@ function IsLexerHTML(const s: string): boolean;
 function IsLexerPHP(const s: string): boolean;
 function IsLexerPas(const s: string): boolean;
 function IsLexerCSS(const s: string; CanBeLess: boolean = true): boolean;
-function IsLexerJS(const s: string): boolean;
 function IsLexerXML(const s: string): boolean;
 function IsLexerWithTags(const s: string): boolean;
 function IsLexerWithImages(const s: string): boolean;
-function IsLexerIni(const s: string): boolean;
-function IsLexerNFO(const s: string): boolean;
-function IsLexerMake(const s: string): boolean;
-function IsLexerProp(const s: string): boolean;
-function IsLexerWithColors(const s: string): boolean;
 
 const
   cLexerCss = 'CSS';
   cLexerCssList = 'LESS,SASS,SCSS,Sass,Stylus';
-  cLexerIni = 'Ini files';
   cLexerXML = 'XML';
   cLexerJS = 'JavaScript';
-  cLexerNfo = 'NFO files';
-  cLexerMake = 'Make files';
-  cLexerProperties = 'Properties';
 
 const
   cSynColorSwatchExt = 'synw-colorstring';
@@ -178,6 +169,16 @@ const
     'root-addon'
     );
 
+function DoLexerOverridesLoad(const ALexer: string;
+  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string): boolean;
+procedure DoLexerOverridesSave(const ALexer: string;
+  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string);
+
+function IsFileProject(const fn: Widestring): boolean;
+function IsFileSession(const fn: Widestring): boolean;
+function IsFileArchive(const fn: Widestring): boolean;
+function IsFileSnippet(const fn: Widestring): boolean;
+    
 
 implementation
 
@@ -339,6 +340,10 @@ begin
   Result:= SynDataSubdir(cSynDataLexerLib)+'\'+Name+'.cuda-lexmap';
 end;
 
+function SynLexerOverrideFilename(const Name: string): string;
+begin
+  Result:= SynIniDir+'lexer '+Name+'.ini';
+end;
 
 function IsLexerListed(const Lexer, List: string): boolean;
 begin
@@ -366,11 +371,6 @@ begin
     (CanBeLess and IsLexerListed(s, cLexerCssList));
 end;
 
-function IsLexerJS(const s: string): boolean;
-begin
-  Result:= s=cLexerJS;
-end;
-
 function IsLexerXML(const s: string): boolean;
 begin
   Result:= s=cLexerXML;
@@ -386,35 +386,90 @@ begin
   Result:= IsLexerHTML(s) or IsLexerCSS(s);
 end;
 
-function IsLexerIni(const s: string): boolean;
+//------------------------
+procedure DoLexerOverridesSave(const ALexer: string;
+  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string);
+var
+  fn: string;
 begin
-  Result:= s=cLexerIni;
+  fn:= SynLexerOverrideFilename(ALexer);
+  with TIniFile.Create(fn) do
+  try
+    WriteString('Setup', 'TabStops', AOp1);
+    WriteString('Setup', 'TabMode', AOp2);
+    WriteString('Setup', 'WrapMode', AOp3);
+    WriteString('Setup', 'Margin', AOp4);
+    WriteString('Setup', 'LineSpacing', AOp5);
+    WriteString('Setup', 'OptFill', AOp6);
+    WriteString('Setup', 'WordChars', AOp7);
+    WriteString('Setup', 'KeepBlanks', AOp8);
+    WriteString('Setup', 'AutoCase', AOp9);
+    WriteString('Setup', 'Indent', AOp10);
+    WriteString('Setup', 'TabColor', AOp11);
+    WriteString('Setup', 'ColorUnderline', AOp12);
+  finally
+    Free
+  end;
 end;
 
-function IsLexerNFO(const s: string): boolean;
+function DoLexerOverridesLoad(const ALexer: string;
+  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string): boolean;
+var
+  fn: string;
 begin
-  Result:= s=cLexerNfo;
+  AOp1:= '';
+  AOp2:= '';
+  AOp3:= '';
+  AOp4:= '';
+  AOp5:= '';
+  AOp6:= '';
+  AOp7:= '';
+  AOp8:= '';
+  AOp9:= '';
+  AOp10:= '';
+  AOp11:= '';
+  AOp12:= '';
+
+  fn:= SynLexerOverrideFilename(ALexer);
+  Result:= FileExists(fn);
+  if Result then
+    with TIniFile.Create(fn) do
+    try
+      AOp1:= ReadString('Setup', 'TabStops', AOp1);
+      AOp2:= ReadString('Setup', 'TabMode', AOp2);
+      AOp3:= ReadString('Setup', 'WrapMode', AOp3);
+      AOp4:= ReadString('Setup', 'Margin', AOp4);
+      AOp5:= ReadString('Setup', 'LineSpacing', AOp5);
+      AOp6:= ReadString('Setup', 'OptFill', AOp6);
+      AOp7:= ReadString('Setup', 'WordChars', AOp7);
+      AOp8:= ReadString('Setup', 'KeepBlanks', AOp8);
+      AOp9:= ReadString('Setup', 'AutoCase', AOp9);
+      AOp10:= ReadString('Setup', 'Indent', AOp10);
+      AOp11:= ReadString('Setup', 'TabColor', AOp11);
+      AOp12:= ReadString('Setup', 'ColorUnderline', AOp12);
+    finally
+      Free
+    end;
 end;
 
-function IsLexerMake(const s: string): boolean;
+function IsFileProject(const fn: Widestring): boolean;
 begin
-  Result:= s=cLexerMake;
+  Result:= SFileExtensionMatch(fn, 'synw-proj');
 end;
 
-function IsLexerProp(const s: string): boolean;
+function IsFileSession(const fn: Widestring): boolean;
 begin
-  Result:= s=cLexerProperties;
+  Result:= SFileExtensionMatch(fn, 'synw-session');
 end;
 
-function IsLexerWithColors(const s: string): boolean;
+function IsFileSnippet(const fn: Widestring): boolean;
 begin
-  Result:=
-    IsLexerCSS(s) or
-    IsLexerHTML(s) or
-    IsLexerJS(s) or
-    IsLexerPHP(s) or
-    IsLexerProp(s) or
-    IsLexerIni(s);
+  Result:= SFileExtensionMatch(fn, 'synw-snippet');
+end;
+
+function IsFileArchive(const fn: Widestring): boolean;
+begin
+  Result:= SFileExtensionMatch(fn, 'zip');
 end;
 
 

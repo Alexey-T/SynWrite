@@ -1732,7 +1732,7 @@ end;
 
 procedure TfmSetup.ApplyEditorOverrides;
 begin
-  fmMain.opLexersOverride:= fmOvr.FString;
+  //none
 end;
 
 procedure TfmSetup.ApplyFonts;
@@ -2039,7 +2039,6 @@ begin
 
   with fmOvr do
   begin
-    FString:= fmMain.opLexersOverride;
     FDefTabStop:= fmMain.TemplateEditor.TabList.AsString;
     case fmMain.TemplateEditor.TabMode of
       tmSpaces: FDefTabMode:= 0;

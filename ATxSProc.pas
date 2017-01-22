@@ -55,11 +55,6 @@ function IsBracketChar(ch: WideChar): boolean;
 procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3, Val4, Val5: Widestring);
 function SBufferToString(BufPtr: Pointer; BufSize: Integer): Widestring;
 
-function SGetLexerOverride(const AOption, ALexer: string;
-  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string): boolean;
-procedure SSetLexerOverride(En: boolean; var AOption: string; const ALexer: string;
-  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string);
-
 procedure SDeleteDupSpaces(var s: Widestring);
 function SSpacesAtStart(const s: Widestring): Integer;
 procedure SReplaceSpToTabLeading(var s: Widestring; const spaces: Widestring);
@@ -148,10 +143,6 @@ procedure I64LimitMin(var N: Int64; const Value: Int64);
 procedure I64LimitMax(var N: Int64; const Value: Int64);
 
 function SFileExtensionMatch(const FileName: WideString; const ExtList: AnsiString): Boolean;
-function IsFileProject(const fn: Widestring): boolean;
-function IsFileSession(const fn: Widestring): boolean;
-function IsFileArchive(const fn: Widestring): boolean;
-function IsFileSnippet(const fn: Widestring): boolean;
 
 
 implementation
@@ -999,96 +990,6 @@ begin
   //if more than 1 CR/LF exist in line, don't delete anything
   if Pos(sLineBreak, Result) > 0 then
     Result:= s;
-end;
-
-//------------------------
-procedure SSetLexerOverride(En: boolean; var AOption: string; const ALexer: string;
-  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string);
-var
-  n, n2: integer;
-  SVal: string;
-begin
-  SVal:= Format('%s=%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s;',
-    [ALexer, AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12]);
-
-  n:= Pos(';'+ALexer+'=', ';'+AOption+';');
-  if n>0 then
-  begin
-    n2:= PosEx(';', AOption, n);
-    if n2=0 then Exit;
-    Delete(AOption, n, n2-n+1);
-    if En then
-      Insert(SVal, AOption, n);
-  end
-  else
-    if En then
-    begin
-      AOption:= AOption+SVal;
-    end;
-end;
-
-function SGetLexerOverride(const AOption, ALexer: string;
-  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string): boolean;
-var
-  n, n2: integer;
-  s: Widestring;
-begin
-  AOp1:= '';
-  AOp2:= '';
-  AOp3:= '';
-  AOp4:= '';
-  AOp5:= '';
-  AOp6:= '';
-  AOp7:= '';
-  AOp8:= '';
-  AOp9:= '';
-  AOp10:= '';
-  AOp11:= '';
-  AOp12:= '';
-
-  n:= Pos(';'+ALexer+'=', ';'+AOption+';');
-  Result:= n>0;
-  if Result then
-  begin
-    n:= PosEx('=', AOption, n);
-    if n=0 then begin Result:= false; Exit end;
-    n2:= PosEx(';', AOption, n);
-    if n2=0 then begin Result:= false; Exit end;
-    s:= Copy(AOption, n+1, n2-n-1);
-    AOp1:= SGetItem(s);
-    AOp2:= SGetItem(s);
-    AOp3:= SGetItem(s);
-    AOp4:= SGetItem(s);
-    AOp5:= SGetItem(s);
-    AOp6:= SGetItem(s);
-    AOp7:= SGetItem(s);
-    AOp8:= SGetItem(s);
-    AOp9:= SGetItem(s);
-    AOp10:= SGetItem(s);
-    AOp11:= SGetItem(s);
-    AOp12:= SGetItem(s);
-    //Showmessage('"'+AOpt1+'" "'+AOpt2+'"');
-  end;
-end;
-
-function IsFileProject(const fn: Widestring): boolean;
-begin
-  Result:= SFileExtensionMatch(fn, 'synw-proj');
-end;
-
-function IsFileSession(const fn: Widestring): boolean;
-begin
-  Result:= SFileExtensionMatch(fn, 'synw-session');
-end;
-
-function IsFileSnippet(const fn: Widestring): boolean;
-begin
-  Result:= SFileExtensionMatch(fn, 'synw-snippet');
-end;
-
-function IsFileArchive(const fn: Widestring): boolean;
-begin
-  Result:= SFileExtensionMatch(fn, 'rar,zip');
 end;
 
 function IsUpperChar(Ch: WideChar): boolean;
