@@ -4,6 +4,9 @@ Legend:
  * changed
 
 
+6.33
++ add: TutorialLexer4
+
 6.33.2550
 * change: lexer-overrides now save into "settings\lexer NNNN.ini" files. Delete old string in Syn.ini: [Setup] LexOvr.
 * removed builtin lexer-overrides (of line-spacing opt) for lexers Makefiles, Nfo files
