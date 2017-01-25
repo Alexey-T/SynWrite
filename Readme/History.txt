@@ -6,6 +6,7 @@ Legend:
 
 6.33
 + add: TutorialLexer4
++ upd lexer Asm (more keywords, block comment; thanks Michele Pes)
 
 6.33.2550
 * change: lexer-overrides now save into "settings\lexer NNNN.ini" files. Delete old string in Syn.ini: [Setup] LexOvr.
