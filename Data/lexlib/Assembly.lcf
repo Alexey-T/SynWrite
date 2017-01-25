@@ -1,4 +1,4 @@
-object SyntAnalyzer13: TLibSyntAnalyzer
+object SyntAnal2: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Default'
@@ -75,10 +75,26 @@ object SyntAnalyzer13: TLibSyntAnalyzer
     end>
   TokenRules = <
     item
-      DisplayName = 'Comment'
+      DisplayName = 'Comment /*-*/'
       StyleName = 'Comment'
       TokenType = 1
-      Expression = ';.*'
+      Expression = '(?s)/\*.*?(\*/|\Z)'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Comment //'
+      StyleName = 'Comment'
+      TokenType = 1
+      Expression = '//.*'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Comment #|;'
+      StyleName = 'Comment'
+      TokenType = 1
+      Expression = '[;|\#].*'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -163,6 +179,24 @@ object SyntAnalyzer13: TLibSyntAnalyzer
             'esc'
             'esi'
             'esp'
+            'fs'
+            'gs'
+            'r10'
+            'r11'
+            'r12'
+            'r13'
+            'r14'
+            'r15'
+            'r8'
+            'r9'
+            'rax'
+            'rbp'
+            'rbx'
+            'rcx'
+            'rdi'
+            'rdx'
+            'rsi'
+            'rsp'
             'si'
             'sp'
             'ss')
@@ -185,8 +219,11 @@ object SyntAnalyzer13: TLibSyntAnalyzer
             'aas'
             'adc'
             'add'
+            'align'
             'and'
             'arpl'
+            'ascii'
+            'asciz'
             'assume'
             'bound'
             'bsf'
@@ -233,6 +270,7 @@ object SyntAnalyzer13: TLibSyntAnalyzer
             'eq'
             'equ'
             'exitm'
+            'extern'
             'extrn'
             'f2xm1'
             'fabs'
@@ -315,6 +353,7 @@ object SyntAnalyzer13: TLibSyntAnalyzer
             'fucom'
             'fucomp'
             'fucompp'
+            'func'
             'fwait'
             'fxam'
             'fxch'
@@ -322,6 +361,8 @@ object SyntAnalyzer13: TLibSyntAnalyzer
             'fyl2x'
             'fyl2xp1'
             'ge'
+            'global'
+            'globl'
             'group'
             'gs'
             'gt'
@@ -472,6 +513,7 @@ object SyntAnalyzer13: TLibSyntAnalyzer
             'scasb'
             'scasd'
             'scasw'
+            'section'
             'seg'
             'segcs'
             'segds'
@@ -480,6 +522,7 @@ object SyntAnalyzer13: TLibSyntAnalyzer
             'seggs'
             'segment'
             'segss'
+            'set'
             'seta'
             'setae'
             'setb'
@@ -521,6 +564,7 @@ object SyntAnalyzer13: TLibSyntAnalyzer
             'sldt'
             'small'
             'smsw'
+            'space'
             'st'
             'stc'
             'std'
@@ -530,6 +574,7 @@ object SyntAnalyzer13: TLibSyntAnalyzer
             'stosd'
             'stosw'
             'str'
+            'string'
             'struc'
             'sub'
             'subttl'
@@ -548,7 +593,8 @@ object SyntAnalyzer13: TLibSyntAnalyzer
             'xadd'
             'xchg'
             'xlat'
-            'xor')
+            'xor'
+            'zero')
           TokenTypes = 4
           IgnoreCase = True
         end>
@@ -683,6 +729,12 @@ object SyntAnalyzer13: TLibSyntAnalyzer
   SubAnalyzers = <>
   SampleText.Strings = (
     '; x86 assembly sample source'
+    '# Another comment'
+    '// C-style comment'
+    '/**'
+    ' * Multi-line'
+    ' * C-style comment'
+    ' */'
     'CODE SEGMENT'#9'BYTE PUBLIC '
     '    ASSUME'#9'CS:CODE'
     '    '
@@ -731,7 +783,7 @@ object SyntAnalyzer13: TLibSyntAnalyzer
     'Symbol'
     'String'
     'Number')
-  Extentions = 'asm'
+  Extentions = 'asm s'
   LexerName = 'Assembly'
   Notes.Strings = (
     'Original from EControl,'
