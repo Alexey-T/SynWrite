@@ -126,6 +126,7 @@ Lexer: Gherkin                      | | Lexers/lexer.Gherkin.zip
 Lexer: GLSL                         | | Lexers/lexer.GLSL.zip
 Lexer: Gold Parser                  | | Lexers/lexer.Gold_Parser.zip
 Lexer: Graphviz DOT                 | | Lexers/lexer.Graphviz_DOT.zip
+Lexer: GraphQL                      | | Lexers/lexer.GraphQL.zip
 Lexer: Great Cow Basic              | | Lexers/lexer.Great_Cow_Basic.zip
 Lexer: Groovy                       | | Lexers/lexer.Groovy.zip
 Lexer: Haml                         | | Lexers/lexer.Haml.zip
@@ -277,6 +278,7 @@ Snippets: CssReset (for CSS) | Snippet by Alexey | Snippets/snippets.Alexey.CssR
 Snippets: FakeImg (for HTML) | Snippet by Alexey | Snippets/snippets.Alexey.FakeImg.zip
 Snippets: HTML Handlebars    | Snippets by Alexey | Snippets/snippets.Alexey.Handlebars.zip
 Snippets: Java         | Snippets by Alexey | Snippets/snippets.Alexey.Java.zip
+Snippets: JavaScript   | Snippets by kvichans | Snippets/snippets.kvichans.JavaScript.zip
 Snippets: Lua          | Snippets by myCrack | Snippets/snippets.myCrack.Lua.zip
 Snippets: Markdown     | Snippets by NoSi | Snippets/snippets.NoSi.Markdown.zip
 Snippets: nnCron       | Snippets by inquiro | Snippets/snippets.inquiro.nnCron.zip

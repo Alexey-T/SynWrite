@@ -72,6 +72,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Go
 * Gold Parser
 * Graphviz DOT
+* GraphQL
 * Great Cow Basic
 * Groovy
 * Haml
