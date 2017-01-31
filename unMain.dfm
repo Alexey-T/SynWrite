@@ -1751,7 +1751,7 @@ object fmMain: TfmMain
         Caption = 'Tools'
         OnPopup = TBXSubmenuToolsPopup
         object TBXSubmenuExtTools: TSpTBXSubmenuItem
-          Caption = 'External tools'
+          Caption = 'Tools'
           object TbxItemTool1: TSpTBXItem
           end
           object TbxItemTool2: TSpTBXItem
@@ -1786,10 +1786,10 @@ object fmMain: TfmMain
           end
         end
         object TbxSubmenuProjTools: TSpTBXSubmenuItem
-          Caption = 'Project tools'
+          Caption = 'Tools for project'
         end
         object TBXItemOTools: TSpTBXItem
-          Caption = '&Customize external tools...'
+          Caption = '&Customize tools...'
           Hint = 'Customize additional tools'
           OnClick = TBXItemOToolsClick
           OnSelect = ButtonOnSelect

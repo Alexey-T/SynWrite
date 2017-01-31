@@ -2545,6 +2545,7 @@ type
     procedure DoPluginsManager_Config;
     function IsCommandForMacros(Cmd: integer): boolean;
     procedure InitPythonEngine;
+    procedure DoSnippetsCheckMulCarets;
     //end of private
 
   protected
@@ -2741,6 +2742,7 @@ type
     FLockUpdate: boolean;
     FFinderTotalSize: Int64;
     FFinderDoneSize: Int64;
+    FShownMultiCaretsDisabledError: boolean;
 
     Finder: TSynFinderReplacer;
     FinderInTree: TFinderInTree;
@@ -16616,6 +16618,17 @@ begin
       TemplatePopup.CloseUp(true);
 end;
 
+
+procedure TfmMain.DoSnippetsCheckMulCarets;
+begin
+  if not opCaretsEnabled then
+  begin
+    if not FShownMultiCaretsDisabledError then
+      MsgWarn(DKLangConstW('zMCaretsOffSnipsEr'), Handle);
+    FShownMultiCaretsDisabledError:= true;
+  end;
+end;
+
 function TfmMain.DoSnippetTabbing: boolean;
 var
   Ed: TSyntaxMemo;
@@ -16627,6 +16640,8 @@ begin
   if not opTemplateTabbing then Exit;
   if SFileExtensionMatch(CurrentFrame.FileName, opTemplateTabbingExcept) then Exit;
   if Ed.ReadOnly then Exit;
+
+  DoSnippetsCheckMulCarets;
 
   StrLexer:= CurrentLexerForCaret;
   StrId:= EditorGetWordBeforeCaret(Ed, true);
@@ -24112,6 +24127,8 @@ var
 begin
   Ed:= CurrentEditor;
   if Ed.ReadOnly then Exit;
+
+  DoSnippetsCheckMulCarets;
 
   Index:= DoSnippetChoice(SInitialText);
   if Index>=0 then
