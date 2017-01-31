@@ -2504,6 +2504,7 @@ type
     procedure DoSnippetListDialog(const SInitialText: string);
     procedure DoSnippetNew;
     procedure DoSnippetsReload;
+    procedure DoSnippetsCheckMulCarets;
     procedure ApplyPanelTitles;
     procedure DoQuickSearch(AMode: TSynQuickSearchType);
     procedure DoWorkaround_QViewHorzScroll;
@@ -2545,7 +2546,6 @@ type
     procedure DoPluginsManager_Config;
     function IsCommandForMacros(Cmd: integer): boolean;
     procedure InitPythonEngine;
-    procedure DoSnippetsCheckMulCarets;
     //end of private
 
   protected
@@ -2742,7 +2742,7 @@ type
     FLockUpdate: boolean;
     FFinderTotalSize: Int64;
     FFinderDoneSize: Int64;
-    FShownMultiCaretsDisabledError: boolean;
+    FShownMultiCaretsOffSnipsError: boolean;
 
     Finder: TSynFinderReplacer;
     FinderInTree: TFinderInTree;
@@ -16623,9 +16623,9 @@ procedure TfmMain.DoSnippetsCheckMulCarets;
 begin
   if not opCaretsEnabled then
   begin
-    if not FShownMultiCaretsDisabledError then
+    if not FShownMultiCaretsOffSnipsError then
       MsgWarn(DKLangConstW('zMCaretsOffSnipsEr'), Handle);
-    FShownMultiCaretsDisabledError:= true;
+    FShownMultiCaretsOffSnipsError:= true;
   end;
 end;
 
