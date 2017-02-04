@@ -4,6 +4,7 @@ interface
 
 uses
   PythonEngine,
+  ExtCtrls,
   ecSyntMemo,
   ATSyntMemo,
   unColorBox;
@@ -940,9 +941,7 @@ function Py_get_app_prop(Self, Args : PPyObject): PPyObject; cdecl;
 var
   Id: Integer;
   Ptr: PAnsiChar;
-  Str, Str1, Str2, Str3: Widestring;
-  Num1, Num2, Num3, i: Integer;
-  Ed: TSyntaxMemo;
+  Str: Widestring;
 begin
   with GetPythonEngine do
     if Bool(PyArg_ParseTuple(Args, 'is:get_app_prop', @Id, @Ptr)) then
@@ -2879,6 +2878,88 @@ begin
 end;
 
 
+function Py_timer_proc(Self, Args: PPyObject): PPyObject; cdecl;
+const
+  cMinTime = 150;
+var
+  NId, NValue, N: integer;
+  PtrName: PAnsiChar;
+  StrName: WideString;
+  Timer: TTimer;
+begin
+  with GetPythonEngine do
+  begin
+    if Bool(PyArg_ParseTuple(Args, 'isi:timer_proc', @NId, @PtrName, @NValue)) then
+    begin
+      StrName:= UTF8Decode(AnsiString(PtrName));
+      if not IsStringRegex(StrName, '[a-z]\w+\.[a-z]\w*') then
+      begin
+        Result:= PyBool_FromLong(0);
+        Exit
+      end;
+
+      case NId of
+        TIMER_START,
+        TIMER_START_ONE:
+          begin
+            if NValue<cMinTime then
+            begin
+              Result:= PyBool_FromLong(0);
+              Exit
+            end;
+
+            N:= fmMain.FListTimers.IndexOf(StrName);
+            if N>=0 then
+              Timer:= TTimer(fmMain.FListTimers.Objects[N])
+            else
+            begin
+              Timer:= TTimer.Create(fmMain);
+              Timer.OnTimer:= fmMain.DoPyTimerTick;
+              fmMain.FListTimers.AddObject(StrName, Timer);
+            end;
+
+            if NId=TIMER_START_ONE then
+              Timer.Tag:= 1
+            else
+              Timer.Tag:= 0;
+
+            Timer.Enabled:= false;
+            Timer.Interval:= NValue;
+            Timer.Enabled:= true;
+            Result:= PyBool_FromLong(1);
+            Exit
+          end;
+
+        TIMER_STOP,
+        TIMER_DELETE:
+          begin
+            N:= fmMain.FListTimers.IndexOf(StrName);
+            if N<0 then
+            begin
+              Result:= PyBool_FromLong(0);
+              Exit
+            end;
+            Timer:= TTimer(fmMain.FListTimers.Objects[N]);
+            Timer.Enabled:= false;
+
+            if NId=TIMER_DELETE then
+            begin
+              Timer.Free;
+              fmMain.FListTimers.Delete(N);
+            end;
+
+            Result:= PyBool_FromLong(1);
+            Exit
+          end;
+
+        else
+          Result:= ReturnNone;
+      end;
+    end;
+  end;
+end;
+
+
 procedure Py_InitApiModule(AModule: TPythonModule);
 begin
   with AModule do
@@ -2903,6 +2984,7 @@ begin
     AddMethod('app_proc', Py_app_proc, '');
     AddMethod('lexer_proc', Py_lexer_proc, '');
     AddMethod('ed_handles', Py_ed_handles, '');
+    AddMethod('timer_proc', Py_timer_proc, '');
 
     AddMethod('ini_read', Py_ini_read, '');
     AddMethod('ini_write', Py_ini_write, '');

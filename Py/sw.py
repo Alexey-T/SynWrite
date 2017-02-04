@@ -241,6 +241,11 @@ EDITOR_CURR_BRO = 1
 EDITOR_OPP      = 2
 EDITOR_OPP_BRO  = 3
 
+TIMER_START     = 0
+TIMER_START_ONE = 1
+TIMER_STOP      = 2
+TIMER_DELETE    = 3
+
 FIND_ACTION_FIND_NEXT    = 0
 FIND_ACTION_FIND_ALL     = 1
 FIND_ACTION_COUNT        = 3
@@ -365,6 +370,8 @@ def lexer_proc(id, text):
     return sw_api.lexer_proc(id, text)
 def app_proc(id, text=''):
     return sw_api.app_proc(id, text)
+def timer_proc(id, callback, interval):
+    return sw_api.timer_proc(id, callback, interval)
 
 def ini_read(filename, section, key, value):
     return sw_api.ini_read(filename, section, key, value)

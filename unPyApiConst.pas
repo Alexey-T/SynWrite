@@ -194,6 +194,11 @@ const
   Find_op_Bkmk     = 1 shl 14;
   Find_op_ExtSel   = 1 shl 15;
 
+  TIMER_START     = 0;
+  TIMER_START_ONE = 1;
+  TIMER_STOP      = 2;
+  TIMER_DELETE    = 3;
+
 implementation
 
 end.

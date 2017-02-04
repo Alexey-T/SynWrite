@@ -5,6 +5,7 @@ Changes in Python API
 feb 2017
 
 * release 1.0.161
+* add: timer_proc
 * deleted deprecated: ed.get_marks, ed.add_mark
 * deleted deprecated: ed.get_bk, ed.set_bk
 * deleted deprecated: ed.get_indent

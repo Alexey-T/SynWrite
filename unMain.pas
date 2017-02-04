@@ -2739,6 +2739,7 @@ type
     opOpenAsOem,
     opOpenAsUtf8: string;
 
+    FListTimers: TStringList;
     FLockUpdate: boolean;
     FFinderTotalSize: Int64;
     FFinderDoneSize: Int64;
@@ -2896,6 +2897,7 @@ type
     procedure DoEnumIcons(L: TTntStringList);
 
     //Python public
+    procedure DoPyTimerTick(Sender: TObject);
     procedure DoPyConsole_LogString(const Str: Widestring);
     function DoPyEvent(AEd: TSyntaxMemo; AEvent: TSynPyEvent;
       const AParams: array of string): Widestring;
@@ -6519,6 +6521,7 @@ begin
 
   FPanelDrawBusy:= false;
   FSyncBusy:= false;
+  FListTimers:= TStringList.Create;
   FListFiles:= TTntStringList.Create;
   FListLexersSorted:= TTntStringList.Create;
   FListSnippets:= nil;
@@ -6794,6 +6797,10 @@ var
   i: Integer;
 begin
   TimerTick.Enabled:= false;
+
+  for i:= 0 to FListTimers.Count-1 do
+    TTimer(FListTimers.Objects[i]).Enabled:= false;
+  FreeAndNil(FListTimers);
 
   FreeAndNil(SynMruFiles);
   FreeAndNil(SynMruSessions);
@@ -26024,7 +26031,26 @@ begin
   Py_RunPlugin_Command('syn_new_file', 'menu');
 end;
 
- 
+
+procedure TfmMain.DoPyTimerTick(Sender: TObject);
+var
+  Timer: TTimer;
+  N: integer;
+  SName, SName1, SName2: WideString;
+begin
+  Timer:= Sender as TTimer;
+  N:= FListTimers.IndexOfObject(Timer);
+  if N<0 then exit;
+
+  if Timer.Tag=1 then
+    Timer.Enabled:= false;
+
+  SName:= FListTimers[N];
+  SName1:= SGetItem(SName, '.');
+  SName2:= SName;
+  Py_RunPlugin_Command(SName1, SName2);
+end;
+
 
 end.
 

@@ -17,5 +17,5 @@ Function | Description
 `get_app_prop(id, value='')` | Returns some application-level property. Possible values of `id` are listed at [py app-property id].
 `set_app_prop(id, value)` | Sets some application-level property. Possible values of `id` are listed at [py app-property id].
 `lexer_proc(id, text)` | Performs lexers-related action. Possible values of `id` are listed at [py lexer-proc id].
+`timer_proc(id, callback, interval)` | Perform timer action. Documented at http://wiki.freepascal.org/CudaText_API#timer_proc
 `ed_handles()` | Returns range object with all tabs editor handles. Pass all these handles to `Editor` constructor, to get editor objects. Here is example which prints all tabs contents: `for h in ed_handles(): print('---'); print(Editor(h).get_text_all());`
- 
