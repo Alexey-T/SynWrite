@@ -66,7 +66,6 @@ const
 
   PROP_SPLIT_MAIN_POS = 129;
   PROP_GROUP_MODE     = 130;
-  PROP_GROUP_INDEX    = 131;
 
   PROP_FILENAME_SESSION = 132;
   PROP_FILENAME_PROJECT = 133;
@@ -77,8 +76,6 @@ const
   PROP_RECENT_COLORS   = 139;
 
   PROP_EVENTS          = 140;
-  PROP_EDITOR_BY_INDEX = 141;
-  PROP_GROUPS          = 142;
 
 const
   PROC_GET_CLIP         = 1;
@@ -119,7 +116,6 @@ const
   LEXER_IMPORT              = 22;
   LEXER_EXPORT              = 23;
   LEXER_CONFIG              = 24;
-  LEXER_ACTIVATE            = 26;
 
 const
   FILENAME_CURRENT         = -1;

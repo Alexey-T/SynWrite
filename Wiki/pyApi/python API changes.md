@@ -1,6 +1,16 @@
 Changes in Python API
 =====================
 
+
+feb 2017
+
+* release 1.0.161
+* deleted deprecated: ed.get_marks, ed.add_mark
+* deleted deprecated: ed.get_bk, ed.set_bk
+* deleted deprecated: ed.get_indent
+* deleted deprecated: id LEXER_ACTIVATE
+* deleted deprecated: id PROP_GROUP_INDEX, PROP_GROUPS, PROP_EDITOR_BY_INDEX 
+
 jan 2017
 
 * release 1.0.160

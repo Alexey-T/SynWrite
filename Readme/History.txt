@@ -4,7 +4,8 @@ Legend:
  * changed
 
 
-6.33
+6.34.2565
+* deleted deprecated APIs
 + add: TutorialLexer4
 + upd lexer Asm (more keywords, block comment; thanks Michele Pes)
 

@@ -129,7 +129,6 @@ LEXER_DELETE              = 21
 LEXER_IMPORT              = 22
 LEXER_EXPORT              = 23
 LEXER_CONFIG              = 24
-LEXER_ACTIVATE            = 26
 
 FILENAME_CURRENT         = -1
 FILENAME_OPPOSITE        = -2
@@ -215,7 +214,6 @@ PROP_COORD_MONITOR2 = 124
 PROP_COORD_MONITOR3 = 125
 PROP_SPLIT_MAIN_POS = 129
 PROP_GROUP_MODE     = 130
-PROP_GROUP_INDEX    = 131
 PROP_FILENAME_SESSION = 132
 PROP_FILENAME_PROJECT = 133
 PROP_RECENT_FILES    = 135
@@ -223,8 +221,6 @@ PROP_RECENT_SESSIONS = 136
 PROP_RECENT_PROJECTS = 137
 PROP_RECENT_COLORS   = 139
 PROP_EVENTS          = 140
-PROP_EDITOR_BY_INDEX = 141
-PROP_GROUPS          = 142
 
 LINESTATE_NORMAL   = 0
 LINESTATE_MODIFIED = 1
@@ -408,8 +404,6 @@ class Editor:
         return sw_api.ed_add_caret_xy(self.h, x, y, len)
     def get_carets(self):
         return sw_api.ed_get_carets(self.h)
-    def add_mark(self, start, len):
-        return sw_api.ed_add_mark(self.h, start, len)
     def xy_pos(self, x, y):
         return sw_api.ed_xy_pos(self.h, x, y)
     def pos_xy(self, pos):
@@ -487,8 +481,6 @@ class Editor:
         return sw_api.ed_set_text_all(self.h, text)
     def set_text_line(self, num, text):
         return sw_api.ed_set_text_line(self.h, num, text)
-    def get_indent(self, x, y):
-        return sw_api.ed_get_indent(self.h, x, y)
     def cmd(self, id, text=''):
         return sw_api.ed_cmd(self.h, id, text)
     def lock(self):
@@ -497,8 +489,6 @@ class Editor:
         return sw_api.ed_unlock(self.h)
     def focus(self):
         return sw_api.ed_focus(self.h)
-    def get_marks(self):
-        return sw_api.ed_get_marks(self.h)
     def marks(self, id, npos, nlen, ntag):
         return sw_api.ed_marks(self.h, id, npos, nlen, ntag)
     def complete(self, text, len, show_menu=True):
@@ -511,10 +501,6 @@ class Editor:
         return sw_api.ed_get_sync_ranges(self.h)
     def add_sync_range(self, start, len):
         return sw_api.ed_add_sync_range(self.h, start, len)
-    def get_bk(self, id):
-        return sw_api.ed_get_bk(self.h, id)
-    def set_bk(self, id, pos, icon=-1, color=-1, hint=''):
-        return sw_api.ed_set_bk(self.h, id, pos, icon, color, hint)
     def bookmarks(self, id, pos, tag, icon=-1, color=-1, hint=''):
         return sw_api.ed_bookmarks(self.h, id, pos, tag, icon, color, hint)
     def get_staple(self, posx, posy):

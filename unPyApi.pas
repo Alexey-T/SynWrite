@@ -369,13 +369,6 @@ begin
             else
               Result:= ReturnNone;
           end;
-        LEXER_ACTIVATE:
-          begin
-            An:= SyntaxManager.FindAnalyzer(Str1);
-            fmMain.CurrentFrame.EditorMaster.TextSource.SyntaxAnalyzer:= An;
-            fmMain.UpdateLexerTo(An);
-            Result:= ReturnNone;
-          end;
         else
           Result:= ReturnNone;
       end;
@@ -798,27 +791,6 @@ begin
     end;
 end;
 
-function Py_ed_set_bk(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H, NId, NPos, NIcon, NColor: Integer;
-  Ed, Ed2: TSyntaxMemo;
-  PHint: PAnsiChar;
-  SHint: Widestring;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iiiiis:set_bk', @H, @NId, @NPos, @NIcon, @NColor, @PHint)) then
-    begin
-      Ed:= PyEditor(H);
-      Ed2:= fmMain.BrotherEditor(Ed);
-      SHint:= UTF8Decode(AnsiString(PHint));
-      EditorBookmarkCommand(Ed, NId, NPos, NIcon, NColor, SHint);
-      EditorBookmarkCommand(Ed2, NId, NPos, NIcon, NColor, SHint);
-      Result:= ReturnNone;
-    end;
-
-  fmMain.UpdateListBookmarks;  
-end;
-
 
 function Py_ed_bookmarks(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1016,8 +988,6 @@ begin
           Result:= PyInt_FromLong(fmMain.Groups.SplitPos);
         PROP_GROUP_MODE:
           Result:= PyInt_FromLong(Ord(fmMain.Groups.Mode));
-        PROP_GROUP_INDEX:
-          Result:= PyInt_FromLong(fmMain.Groups.PagesIndexOf(fmMain.Groups.PagesCurrent));
 
         PROP_RECENT_FILES:
           Result:= Py_StringList(fmMain.SynMruFiles.Items);
@@ -1033,29 +1003,6 @@ begin
           Result:= PyUnicode_FromWideString(fmMain.CurrentSessionFN);
         PROP_FILENAME_PROJECT:
           Result:= PyUnicode_FromWideString(fmMain.CurrentProjectFN);
-
-        PROP_EDITOR_BY_INDEX:
-          begin
-            Str1:= SGetItem(Str);
-            Str2:= SGetItem(Str);
-            Str3:= SGetItem(Str);
-            Num1:= StrToIntDef(Str1, -1);
-            Num2:= StrToIntDef(Str2, -1);
-            Num3:= StrToIntDef(Str3, -1);
-            Ed:= fmMain.GetEditorByIndex(Num1, Num2, Num3);
-            if Ed=nil then
-              Result:= PyInt_FromLong(-1)
-            else
-              Result:= PyInt_FromLong(Integer(Pointer(Ed)));
-          end;
-
-        PROP_GROUPS:
-          begin
-            Str:= '';
-            for i:= Low(TATGroupsNums) to fmMain.Groups.PagesVisibleCount do
-              Str:= Str+IntToStr(fmMain.Groups.Pages[i].Tabs.TabCount)+',';
-            Result:= PyUnicode_FromWideString(Str);
-          end;  
       end;
     end;
 end;
@@ -1771,25 +1718,6 @@ begin
     end;
 end;
 
-function Py_ed_add_mark(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H, NStart, NLen: Integer;
-  Ed: TSyntaxMemo;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:add_mark', @H, @NStart, @NLen)) then
-    begin
-      Ed:= PyEditor(H);
-      if (NStart=-1) then
-        Ed.ResetSearchMarks
-      else
-      begin
-        Ed.SearchMarks.Add(TRange.Create(NStart, NStart + NLen));
-        Ed.Invalidate;
-      end;
-      Result:= ReturnNone;
-    end;
-end;
 
 function Py_ed_marks(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -2715,32 +2643,6 @@ begin
 end;
 
 
-function Py_ed_get_marks(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H, NLen, i: Integer;
-  ComArray: Variant;
-  Ed: TSyntaxMemo;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:get_marks', @H)) then
-    begin
-      Ed:= PyEditor(H);
-      NLen:= Ed.SearchMarks.Count;
-      if NLen>0 then
-      begin
-        ComArray:= VarArrayCreate([0, NLen-1, 0, 1], varInteger);
-        for i:= 0 to NLen-1 do
-        begin
-          ComArray[i, 0]:= Ed.SearchMarks[i].StartPos;
-          ComArray[i, 1]:= Ed.SearchMarks[i].Size;
-        end;
-        Result:= VariantAsPyObject(ComArray);
-      end
-      else
-        Result:= ReturnNone;
-    end;
-end;
-
 function Py_ed_get_sync_ranges(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H, NLen, i: Integer;
@@ -2826,18 +2728,6 @@ begin
     end;
 end;
 
-function Py_ed_get_indent(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H, X, Y: Integer;
-  Str: Widestring;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'iii:xy_pos', @H, @X, @Y)) then
-    begin
-      Str:= EditorIndentStringForPos(PyEditor(H), Point(X, Y));
-      Result:= PyUnicode_FromWideString(Str);
-    end;
-end;
 
 procedure Py_SetSysPath(const Dirs: array of string);
 var
@@ -2876,55 +2766,6 @@ begin
     end;
 end;
 
-
-function Py_ed_get_bk(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H, NId, NIndex, NPos, NLen: Integer;
-  Ed: TSyntaxMemo;
-  Allow: boolean;
-  ComArray: Variant;
-  List: TList;
-  i: Integer;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:get_bk', @H, @NId)) then
-    begin
-      Ed:= PyEditor(H);
-
-      List:= TList.Create;
-      try
-        for i:= 0 to Ed.BookmarkObj.Count-1 do
-        begin
-          NIndex:= Ed.BookmarkObj.Items[i].BmIndex;
-          NPos:= Ed.BookmarkObj.Items[i].Position;
-          case NId of
-            0..9: Allow:= NIndex = NId;
-            -1: Allow:= NIndex>=10;
-            -2: Allow:= NIndex<10;
-            -3: Allow:= true;
-            else Allow:= false;
-          end;
-          if Allow then
-            List.Add(Pointer(NPos));
-        end;
-
-        NLen:= List.Count;
-        if NLen>0 then
-        begin
-          ComArray:= VarArrayCreate([0, NLen-1], varInteger);
-          for i:= 0 to NLen-1 do
-          begin
-            ComArray[i]:= Integer(List[i]);
-          end;
-          Result:= VariantAsPyObject(ComArray);
-        end
-        else
-          Result:= ReturnNone;
-      finally
-        FreeAndNil(List);
-      end;
-    end;
-end;
 
 function Py_text_convert(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -3077,8 +2918,6 @@ begin
     AddMethod('set_app_prop', Py_set_app_prop, '');
 
     AddMethod('ed_get_staple', Py_ed_get_staple, '');
-    AddMethod('ed_get_bk', Py_ed_get_bk, '');
-    AddMethod('ed_set_bk', Py_ed_set_bk, '');
     AddMethod('ed_bookmarks', Py_ed_bookmarks, '');
     AddMethod('ed_get_sync_ranges', Py_ed_get_sync_ranges, '');
     AddMethod('ed_add_sync_range', Py_ed_add_sync_range, '');
@@ -3094,14 +2933,12 @@ begin
     AddMethod('ed_get_text_line', Py_ed_get_text_line, '');
     AddMethod('ed_get_text_len', Py_ed_get_text_len, '');
     AddMethod('ed_get_text_substr', Py_ed_get_text_substr, '');
-    AddMethod('ed_get_indent', Py_ed_get_indent, '');
 
     AddMethod('ed_get_caret_xy', Py_ed_get_caret_xy, '');
     AddMethod('ed_get_caret_pos', Py_ed_get_caret_pos, '');
     AddMethod('ed_set_caret_xy', Py_ed_set_caret_xy, '');
     AddMethod('ed_set_caret_pos', Py_ed_set_caret_pos, '');
     AddMethod('ed_add_caret_xy', Py_ed_add_caret_xy, '');
-    AddMethod('ed_add_mark', Py_ed_add_mark, '');
 
     AddMethod('ed_pos_xy', Py_ed_pos_xy, '');
     AddMethod('ed_xy_pos', Py_ed_xy_pos, '');
@@ -3111,7 +2948,6 @@ begin
     AddMethod('ed_get_line_count', Py_ed_get_line_count, '');
     AddMethod('ed_get_line_prop', Py_ed_get_line_prop, '');
     AddMethod('ed_get_carets', Py_ed_get_carets, '');
-    AddMethod('ed_get_marks', Py_ed_get_marks, '');
     AddMethod('ed_get_prop', Py_ed_get_prop, '');
     AddMethod('ed_set_prop', Py_ed_set_prop_wrapper, '');
     AddMethod('ed_get_filename', Py_ed_get_filename, '');
