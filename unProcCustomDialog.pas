@@ -679,16 +679,12 @@ begin
 end;
 
 procedure TDummyClass.DoOnChange(Sender: TObject);
-var
-  i: integer;
 begin
   if (Sender as TControl).HelpContext=cTagActive then
-    for i:= 0 to Form.ControlCount-1 do
-      if Form.Controls[i]=Sender then
-      begin
-        Form.ModalResult:= cButtonResultStart+i;
-        exit
-      end;
+  begin
+    Form.ModalResult:= cButtonResultStart+(Sender as TControl).Tag; 
+    exit
+  end;
 end;
 
 procedure TDummyClass.DoOnSelChange(Sender: TObject; User: boolean);
