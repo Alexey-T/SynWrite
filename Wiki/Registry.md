@@ -268,7 +268,7 @@ NumToWords Propis | Converts numbers to words: Russian | PyPlugins/plugin.Alexey
 NumToWords | Converts numbers to words: En, De, Fr, Sp, etc | PyPlugins/plugin.Alexey.NumToWords.zip
 Online Search | Opens browser with search for selection or cur-word | PyPlugins/plugin.Alexey.OnlineSearch.zip
 Print All | Prints w/out questions all opened editor tabs | PyPlugins/plugin.Alexey.PrintAll.zip
-Python Intel | Intel commands for Python: auto-completion, goto-definition | PyPlugins/plugin.Alexey.PythonIntel.zip
+Python Intel | Code intelligence for Python: auto-completion, goto-definition, etc | PyPlugins/plugin.Alexey.PythonIntel.zip
 Rename File | Shows dialog to rename file | PyPlugins/plugin.kvichans.RenameFile.zip
 reStructuredText Preview | Previews reST files as HTML in browser | PyPlugins/plugin.Alexey.reStructuredText_Preview.zip
 Ruby Format | Formats (beautifies) source code for Ruby lexer | PyPlugins/plugin.Alexey.RubyFormat.zip

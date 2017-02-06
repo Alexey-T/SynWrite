@@ -1,6 +1,7 @@
 Function | Description
 ---------|------------
-`msg_box(id, text) / msg_box(text, flags)` | Shows message box. Function has 2 forms: old and new (CudaText compatible). See [py msgbox id].
+`msg_box(id, text)` | Shows message box. See [py msgbox id].
+`msg_box(text, flags)` | Show message box, new version, from CudaText. Documented at http://wiki.freepascal.org/CudaText_API#msg_box
 `msg_status(text)` | Shows text in program status-bar. (Show delay is not configurable). 
 `dlg_input(text, deftext, ini_fn='', ini_section='')` | Shows dialog for entering single string. `text` is prompt text, `deftext` is default input text, `ini_fn` is ini filename (without path) which holds input history (or empty string if history not needed), `ini_section` is section name in ini file (or empty string if history not needed). Returns entered string, or `None` if dialog cancelled.
 `dlg_input_memo(caption, label, deftext)` | Shows dialog for entering multi-line text. Returns entered string, or `None` if dialog cancelled.
@@ -9,7 +10,7 @@ Function | Description
 `dlg_snippet(name, alias, lexers, text)` | Shows dialog to edit snippet properties. Returns 4-tuple of string, or `None` if dialog cancelled.
 `dlg_file(is_open, filename, folder, filters)` | Shows "Open file" or "Save file as" dialog. Returns filename or `None` if cancelled. `is_open` is bool: Open or Save dialog, `filename` is initial filename (can be empty and without path), `folder` is initial folder (can be empty), `filters` is file-masks string (can be empty). If filename is "*", multi-selection is enabled and result is list of str, not str.  
 `dlg_folder(caption, folder)` | Shows "Select folder" dialog. Returns folder path or `None` if cancelled. `caption` is prompt text (can be empty), `folder` is initial folder (can be empty).
-`dlg_custom(caption, size_x, size_y, text, focused=-1)` | Shows user-made dialog. Info http://wiki.freepascal.org/CudaText_API#dlg_custom . Code is ported from Cudatext. No support for types: "checkbutton", "checkgroup".
+`dlg_custom(caption, size_x, size_y, text, focused=-1)` | Shows user-made dialog. Info http://wiki.freepascal.org/CudaText_API#dlg_custom . Code is 90% ported from CudaText. Not supported types: "checkbutton", "checkgroup", "image".
 
 File filter
 -----------
