@@ -1,7 +1,7 @@
 Align by Separator=2016.05.21
 Ascii Art=1.1.2
 AStyle Format=1.0.2
-Backup File=1.0.2
+Backup File=2017.02.07
 Base Encoder=0.4.0
 Brackets Hilite=2016.12.08
 Carets Numbering=1.0.0

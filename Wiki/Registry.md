@@ -2,7 +2,7 @@
 Align by Separator | Alignes lines in selection, by separator-char (eg "=") | PyPlugins/plugin.kvichans.AlignBySeparator.zip
 Ascii Art | Allows to draw text with several ASCII Art fonts | PyPlugins/plugin.Alexey.AsciiArt.zip
 AStyle Format | Formats (beautifies) source code for lexers: C++, C, C#, Java, using good AStyle library | PyPlugins/plugin.Alexey.AStyleFormat.zip
-Backup File | Creates backup copy of current file | PyPlugins/plugin.kvichans.BackupFile.zip
+Backup File | Creates backup copy of current file | PyPlugins/plugin.kvichans.Backup_File.zip
 Base Encoder | Allows to encode/decode text in Base64, Base32, Base16, Quoted-printable | PyPlugins/plugin.Alexey.BaseEncoder.zip
 Brackets Hilite | Hilites pair brackets, jumps to pair bracket | PyPlugins/plugin.Alexey.BracketsHilite.zip
 Carets Numbering | Inserts increasing numbers at all multi-carets | PyPlugins/plugin.Alexey.CaretsNumbering.zip

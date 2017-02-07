@@ -1,9 +1,10 @@
 Changes in Python API
 =====================
 
-
 feb 2017
 
+* release 1.0.162
+* add: app_proc: PROC_GET_KEYSTATE
 * release 1.0.161
 * add: timer_proc
 * deleted deprecated: ed.get_marks, ed.add_mark

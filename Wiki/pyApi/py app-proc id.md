@@ -14,3 +14,4 @@ Id | Meaning
 `PROC_GET_COMMAND` | Returns property of internal command with index `int(text)`. Returns tuple `(command_int, category_name, command_name, hotkey_str_1, hotkey_str_2)` or `None` of index not correct (call it from 0 until you get None).
 `PROC_GET_ESCAPE` | Gets bool: state of "Esc was pressed" flag.
 `PROC_SET_ESCAPE` | Sets state of "Esc was pressed" flag. Text must be '0'/'1' for off/on.
+`PROC_GET_KEYSTATE` | Gets state of pressed special keys. String has "c" for Ctrl pressed, "a" for Alt, "s" for Shift.
