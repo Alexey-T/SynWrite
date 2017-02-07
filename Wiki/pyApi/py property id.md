@@ -41,9 +41,10 @@ Id | Read/ Write/ Event | Meaning
 `PROP_WRAP_AT_MARGIN` | RW | bool: flag "Word-wrap at right margin" (instead of wrap at editor edge).      
 `PROP_INDEX_GROUP` | R | int: index of group with editor's tab, 0-based.
 `PROP_INDEX_TAB` | R | int: index of editor's tab in group, 0-based.
-`PROP_TAB_TITLE` | R | str: title of tab, useful for untitled tabs.
+`PROP_TAB_TITLE` | RW | str: title of tab, useful for untitled tabs.
 `PROP_TAB_COLOR` | RW | int: color of tab containing editor; COLOR_NONE if not set.
 `PROP_TAB_ID` | R | int: unique tab's identifier (one number for main/secondary editors in tab), it is not changed when tab is moved.
+`PROP_ENC` | RW | int: encoding of text. If value>2, it's OS codepage (see MSDN help page). Else it's one of `EDENC_nnnn` values.
 
 Notes
 -----

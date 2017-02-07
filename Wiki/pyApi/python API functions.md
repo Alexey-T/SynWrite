@@ -116,8 +116,6 @@ Methods, other | Description
 `get_alerts()` | Returns bool flag for "alerts": are confirmation message-boxes enabled for "Close tab" command.
 `set_alerts(value)` | Sets bool flag for "alerts".
 `get_staple(x, y)` | Returns range of block-staple (indentation guide) for text position `(x, y)`. It's `None` if no staple at this position, or 2-tuple: `(range_offset_start, range_offset_end)`.
-`get_enc()` | Returns encoding: int, one of `EDENC_nnnn` or positive value equals to some OS codepage (e.g. 1250).
-`set_enc()` | Sets encoding. Note that both main editor and its brother editor will change encoding; encoding changes in-memory only. 
 
 Methods, search-marks | Description
 --------------------- | -----------------
