@@ -39,6 +39,7 @@ const
   PROP_LAST_LINE_SHOW      = 35;
   PROP_TAB_FILL            = 36;
   PROP_WRAP_AT_MARGIN      = 37;
+  PROP_ENC                 = 38;
   PROP_INDEX_GROUP         = 40;
   PROP_INDEX_TAB           = 41;
   PROP_TAB_TITLE           = 42;

@@ -192,6 +192,7 @@ PROP_AUTO_INDENT         = 34
 PROP_LAST_LINE_SHOW      = 35
 PROP_TAB_FILL            = 36
 PROP_WRAP_AT_MARGIN      = 37
+PROP_ENC                 = 38
 PROP_INDEX_GROUP         = 40
 PROP_INDEX_TAB           = 41
 PROP_TAB_TITLE           = 42
@@ -464,11 +465,6 @@ class Editor:
         return sw_api.ed_set_tabcolor(self.h, value)
     def get_indexes(self):
         return sw_api.ed_get_indexes(self.h)
-
-    def get_enc(self):
-        return sw_api.ed_get_enc(self.h)
-    def set_enc(self, value):
-        return sw_api.ed_set_enc(self.h, value)
 
     def get_top(self):
         return sw_api.ed_get_prop(self.h, PROP_TOP, '')

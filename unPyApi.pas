@@ -1314,35 +1314,6 @@ begin
     end;
 end;
 
-function Py_ed_get_enc(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H: Integer;
-  Value: Integer;
-  Ed: TSyntaxMemo;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'i:get_enc', @H)) then
-    begin
-      Ed:= PyEditor(H);
-      Value:= fmMain.DoGetFrameEncoding(fmMain.FrameOfEditor(Ed));
-      Result:= PyInt_FromLong(Value);
-    end;
-end;
-
-function Py_ed_set_enc(Self, Args: PPyObject): PPyObject; cdecl;
-var
-  H, Value: Integer;
-  Ed: TSyntaxMemo;
-begin
-  with GetPythonEngine do
-    if Bool(PyArg_ParseTuple(Args, 'ii:set_enc', @H, @Value)) then
-    begin
-      Ed:= PyEditor(H);
-      fmMain.DoSetFrameEncoding(fmMain.FrameOfEditor(Ed), Value);
-      fmMain.UpdateStatusBar;
-      Result:= ReturnNone;
-    end;
-end;
 
 function Py_ed_get_prop(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1489,6 +1460,8 @@ begin
           Result:= PyInt_FromLong(Frame.TabColor);
         PROP_TAB_TITLE:
           Result:= PyUnicode_FromWideString(Frame.TabCaption);
+        PROP_ENC:
+          Result:= PyInt_FromLong(Frame.Encoding);
 
         PROP_INDEX_GROUP:
           begin
@@ -1646,6 +1619,15 @@ begin
             fmMain.Groups.Pages4.Tabs.Invalidate;
             fmMain.Groups.Pages5.Tabs.Invalidate;
             fmMain.Groups.Pages6.Tabs.Invalidate;
+          end;
+
+        PROP_TAB_TITLE:
+          Frame.TabCaption:= StrVal;
+
+        PROP_ENC:
+          begin
+            Frame.Encoding:= NumVal;
+            fmMain.UpdateStatusBar;
           end;
       end;
 
@@ -3041,8 +3023,6 @@ begin
     AddMethod('ed_get_filename', Py_ed_get_filename, '');
     AddMethod('ed_get_alerts', Py_ed_get_alerts, '');
     AddMethod('ed_set_alerts', Py_ed_set_alerts, '');
-    AddMethod('ed_get_enc', Py_ed_get_enc, '');
-    AddMethod('ed_set_enc', Py_ed_set_enc, '');
 
     AddMethod('ed_get_sel_mode', Py_ed_get_sel_mode, '');
     AddMethod('ed_get_sel_lines', Py_ed_get_sel_lines, '');

@@ -2931,8 +2931,6 @@ type
     procedure DoClearSearchHistory;
     procedure DoSetFrameTabColor(F: TEditorFrame; NColor: TColor);
     function DoAddGutterIcon(const fn: string): Integer;
-    function DoGetFrameEncoding(F: TEditorFrame): integer;
-    procedure DoSetFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
     procedure DoAddRecentColor(N: Integer);
     //end of public
   end;
@@ -3038,12 +3036,6 @@ const
   cAcpCharsCss = '-#!@.'; //don't include ':'
   cAcpCharsPhp = '$'; //include '$'
   cAcpCharsHtm = ''; //empty?
-
-const
-  cp__UTF8       = -1;
-  cp__UTF8_noBOM = -2;
-  cp__Unicode    = -3;
-  cp__UnicodeBE  = -4;
 
 function SAcpItem(const s1, s2: string): string;
 begin
@@ -3335,7 +3327,7 @@ begin
     Result:= DoAddTab(Groups.PagesCurrent, false);
 
   //reset encoding for new frame
-  DoSetFrameEncoding(Result, 0);
+  Result.Encoding:= 0;
 
   if FCanUseLexer(AFileName) then
     Result.EditorMaster.TextSource.SyntaxAnalyzer:= DoFindLexerForFilename(SyntaxManager, AFileName)
@@ -7591,51 +7583,14 @@ begin
     end;
 end;
 
-procedure TfmMain.DoSetFrameEncoding(Frame: TEditorFrame; AEnc: Integer);
-begin
-  if Frame<>nil then
-  with Frame do
-  begin
-    SkipBom:= False;
-    case AEnc of
-    cp__UTF8:
-      begin
-        EditorMaster.TextSource.Lines.CodePage:= 0;
-        EditorMaster.TextSource.Lines.TextCoding:= tcUTF8;
-      end;
-    cp__UTF8_noBOM:
-      begin
-        SkipBom:= True;
-        EditorMaster.TextSource.Lines.CodePage:= 0;
-        EditorMaster.TextSource.Lines.TextCoding:= tcUTF8;
-      end;
-    cp__Unicode:
-      begin
-        EditorMaster.TextSource.Lines.CodePage:= 0;
-        EditorMaster.TextSource.Lines.TextCoding:= tcUnicode;
-      end;
-    cp__UnicodeBE:
-      begin
-        EditorMaster.TextSource.Lines.CodePage:= 0;
-        EditorMaster.TextSource.Lines.TextCoding:= tcSwapUnicode;
-      end;
-    else
-      begin
-        EditorMaster.TextSource.Lines.TextCoding:= tcANSI;
-        EditorMaster.TextSource.Lines.CodePage:= AEnc;
-      end;
-    end;
-  end;
-end;
-
 
 procedure TfmMain.ApplyFrameEncodingAndReload(Frame: TEditorFrame; AEnc: Integer;
   ACanReload: boolean = true);
 begin
-  if Frame<>nil then
+  if Assigned(Frame) then
     with Frame do
     begin
-      DoSetFrameEncoding(Frame, AEnc);
+      Frame.Encoding:= AEnc;
 
       if ACanReload and (FileName <> '') then
         if (not Modified) or MsgEncReload then
@@ -12377,7 +12332,7 @@ procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
       else
         MI.OnClick:= MenuitemSetEncoding;
       MI.RadioItem:= true;
-      MI.Checked:= DoGetFrameEncoding(CurrentFrame) = Tag;
+      MI.Checked:= CurrentFrame.Encoding=Tag;
     end;
 
     if M is TSpTbxPopupMenu then
@@ -12417,7 +12372,7 @@ procedure TfmMain.UpdateEncMenu(M: TObject; AConvEnc: boolean = false);
       else
         MI.OnClick:= MenuitemSetEncoding;
       MI.RadioItem:= true;
-      MI.Checked:= DoGetFrameEncoding(CurrentFrame) = Tag;
+      MI.Checked:= CurrentFrame.Encoding=Tag;
       if not IsUnicode then
         MI.Enabled:= EncOK(Tag);
       M.Add(MI);
@@ -12498,22 +12453,6 @@ begin
     Add('Mac', CP_MACCP);
     Add('OEM (DOS)', CP_OEMCP);
     Add('ANSI (Windows)', CP_ACP);
-  end;
-end;
-
-function TfmMain.DoGetFrameEncoding(F: TEditorFrame): integer;
-begin
-  case F.EditorMaster.TextSource.Lines.TextCoding of
-    tcUTF8:
-      Result:= IfThen(F.SkipBom, cp__UTF8_noBOM, cp__UTF8);
-    tcUnicode:
-      Result:= cp__Unicode;
-    tcSwapUnicode:
-      Result:= cp__UnicodeBE;
-    tcAnsi:
-      Result:= F.EditorMaster.TextSource.Lines.Codepage;
-    else
-      Result:= cp_ACP;
   end;
 end;
 
@@ -23333,7 +23272,7 @@ begin
     Result:= Utf8Encode(F.FileName) + ';';
 
     if cSynHistoryEnc in opSaveEditor then
-      Add(Result, cFramePropEnc, IntToStr(DoGetFrameEncoding(F)));
+      Add(Result, cFramePropEnc, IntToStr(F.Encoding));
     Add(Result, cFramePropLexer, F.CurrentLexerName);
     Add(Result, cFramePropWrap, IntToStr(Ord(F.EditorMaster.WordWrap)));
     Add(Result, cFramePropSplit, IntToStr(Ord(F.SplitHorz)) + ',' + IntToStr(Round(F.SplitPos)));
@@ -23404,10 +23343,7 @@ begin
       begin
         //apply encoding field, don't touch others
         if (SId=cFramePropEnc) and (cSynHistoryEnc in opSaveEditor) then
-          begin
-            NVal:= StrToIntDef(SVal, 0);
-            DoSetFrameEncoding(F, NVal);
-          end
+          F.Encoding:= StrToIntDef(SVal, 0)
         else
           Continue;
       end;

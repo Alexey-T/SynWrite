@@ -165,6 +165,9 @@ type
     function GetCaretsGutterColor: TColor;
     procedure SetCaretsGutterColor(V: TColor);
     procedure EditorCtrlClick(Sender: TObject; const Pnt: TPoint; var Handled: boolean);
+    function GetEncoding: integer;
+    procedure SetEncoding(AValue: Integer);
+
   protected
   public
     //ftp--------------
@@ -184,6 +187,7 @@ type
     property CaretsGutterBand: integer read GetCaretsGutterBand write SetCaretsGutterBand;
     property CaretsGutterColor: TColor read GetCaretsGutterColor write SetCaretsGutterColor;
     property CaretsIndicator: integer read GetCaretsIndicator write SetCaretsIndicator;
+    property Encoding: Integer read GetEncoding write SetEncoding;
 
     property IsAlertEnabled: boolean read FAlertEnabled write FAlertEnabled;
     property IsMasterFocused: boolean read FIsMasterFocused;
@@ -1627,6 +1631,57 @@ begin
     TfmMain(Owner).DoPyEvent(Ed, cSynEventOnClickDbl,
       ['"'+ShiftStateToString(KeyboardStateToShiftState)+'"']);
 end;
+
+function TEditorFrame.GetEncoding: integer;
+begin
+  case EditorMaster.TextSource.Lines.TextCoding of
+    tcUTF8:
+      Result:= IfThen(SkipBom, cp__UTF8_noBOM, cp__UTF8);
+    tcUnicode:
+      Result:= cp__Unicode;
+    tcSwapUnicode:
+      Result:= cp__UnicodeBE;
+    tcAnsi:
+      Result:= EditorMaster.TextSource.Lines.Codepage;
+    else
+      Result:= cp_ACP;
+  end;
+end;
+
+procedure TEditorFrame.SetEncoding(AValue: Integer);
+begin
+  SkipBom:= False;
+  case AValue of
+    cp__UTF8:
+      begin
+        EditorMaster.TextSource.Lines.CodePage:= 0;
+        EditorMaster.TextSource.Lines.TextCoding:= tcUTF8;
+      end;
+    cp__UTF8_noBOM:
+      begin
+        SkipBom:= True;
+        EditorMaster.TextSource.Lines.CodePage:= 0;
+        EditorMaster.TextSource.Lines.TextCoding:= tcUTF8;
+      end;
+    cp__Unicode:
+      begin
+        EditorMaster.TextSource.Lines.CodePage:= 0;
+        EditorMaster.TextSource.Lines.TextCoding:= tcUnicode;
+      end;
+    cp__UnicodeBE:
+      begin
+        EditorMaster.TextSource.Lines.CodePage:= 0;
+        EditorMaster.TextSource.Lines.TextCoding:= tcSwapUnicode;
+      end;
+    else
+      begin
+        EditorMaster.TextSource.Lines.TextCoding:= tcANSI;
+        EditorMaster.TextSource.Lines.CodePage:= AValue;
+      end;
+  end;
+end;
+
+
 
 initialization
   CF_DRAGCOLOR:= RegisterClipboardFormat(CFSTR_DRAGCOLOR);

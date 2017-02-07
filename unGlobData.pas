@@ -52,6 +52,12 @@ const
     'lexlib'
     );
 
+const
+  cp__UTF8       = -1;
+  cp__UTF8_noBOM = -2;
+  cp__Unicode    = -3;
+  cp__UnicodeBE  = -4;
+
 
 procedure LoadLexerLib;
 function FAppDataPath: string;
