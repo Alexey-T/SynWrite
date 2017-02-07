@@ -1193,6 +1193,12 @@ begin
             Result:= ReturnNone;
           end;
 
+        PROC_GET_KEYSTATE:
+          begin
+            Result:= PyString_FromString(PChar(
+              ConvertShiftStateToString(KeyboardStateToShiftState)));
+          end;
+
         else
           Result:= ReturnNone;
       end;

@@ -33,6 +33,7 @@ procedure DoMacroSaveToFile(ACmd: TMacroRecord; const AFilename: string);
 function GetListviewColumnsAsString(L: TTntListview): string;
 procedure SetListviewColumnsFromString(L: TTntListview; const S: string);
 
+function ConvertShiftStateToString(const Shift: TShiftState): string;
 procedure DoFixShortcut(var N: TShortCut);
 procedure DoSortMenu(Menu: TSpTbxSubmenuItem);
 procedure DoRemovePluginsIniLines(const fn_ini, dir: string; IsBinaryPlugin: boolean);
@@ -2711,6 +2712,16 @@ begin
   //fix for Ctrl+/, Alt+/
   if N and $FF = $6F then
     N:= N and not $FF or $BF;
+end;
+
+
+function ConvertShiftStateToString(const Shift: TShiftState): string;
+begin
+  Result:=
+    IfThen(ssShift in Shift, 's')+
+    IfThen(ssCtrl in Shift, 'c')+
+    IfThen(ssAlt in Shift, 'a');
+    //IfThen(ssMeta in Shift, 'm'); //no in VCL
 end;
 
 

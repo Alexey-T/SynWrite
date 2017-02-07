@@ -89,6 +89,7 @@ const
   PROC_ADD_GUTTER_ICON  = 9;
   PROC_GET_ESCAPE       = 10;
   PROC_SET_ESCAPE       = 11;
+  PROC_GET_KEYSTATE     = 20;
 
 const
   SEL_NORMAL = 0;
