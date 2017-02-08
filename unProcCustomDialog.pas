@@ -145,20 +145,37 @@ begin
 end;
 
 
+function DoGetFormControlByIndex(AForm: TTntForm; AIndex: Integer): TControl;
+var
+  Ctl: TControl;
+  i: integer;
+begin
+  Result:= nil;
+  for i:= 0 to AForm.ControlCount-1 do
+  begin
+    Ctl:= AForm.Controls[i];
+    if Ctl.Tag=AIndex then
+    begin
+      Result:= Ctl;
+      Exit
+    end;
+  end;  
+end;
+
 function DoGetFormResult(AForm: TTntForm): string;
 var
   Str: string;
-  i, j: integer;
+  Ctl: TControl;
+  i: integer;
 begin
   Result:= '';
-  //weird loop. reason: VCL gives bad order of controls. 
-  for j:= 0 to AForm.ControlCount-1 do
-    for i:= 0 to AForm.ControlCount-1 do
-      if AForm.Controls[i].Tag=j then
-      begin
-        Str:= DoGetControlState(AForm.Controls[i]);
-        Result:= Result+Str+#10;
-      end;
+  //weird loop. reason: VCL gives bad order of controls.
+  for i:= 0 to AForm.ControlCount-1 do
+  begin
+    Ctl:= DoGetFormControlByIndex(AForm, i);
+    Str:= DoGetControlState(Ctl);
+    Result:= Result+Str+#10;
+  end;
 end;
 
 
@@ -290,12 +307,14 @@ begin
 end;
 
 
-procedure DoAddControl(AForm: TTntForm; ATextItems: string; ADummy: TDummyClass);
+function DoAddControl(AForm: TTntForm; ATextItems: string; ADummy: TDummyClass;
+  AIndex: integer): TControl;
 var
   SNameValue, SName, SValue, SListItem: string;
   NX1, NX2, NY1, NY2: integer;
   Ctl, CtlPrev: TControl;
 begin
+  Result:= nil;
   Ctl:= nil;
   SNameValue:= '';
   SName:= '';
@@ -417,7 +436,8 @@ begin
       if Assigned(Ctl) then
       begin
         Ctl.Parent:= AForm;
-        Ctl.Tag:= AForm.ControlCount-1; //to get in ok order
+        Ctl.Tag:= AIndex; //to get in ok order
+        Result:= Ctl;
       end;
       Continue;
     end;
@@ -426,12 +446,13 @@ begin
     if not Assigned(Ctl) then exit;
 
     //adjust previous label's FocusControl
-    if Ctl is TWinControl then
-      if AForm.ControlCount>=2 then
+    if AIndex>0 then
+      if Ctl is TWinControl then
       begin
-        CtlPrev:= AForm.Controls[AForm.ControlCount-2];
-        if CtlPrev is TTntLabel then
-          (CtlPrev as TTntLabel).FocusControl:= Ctl as TWinControl;
+        CtlPrev:= DoGetFormControlByIndex(AForm, AIndex-1);
+        if Assigned(CtlPrev) then
+          if CtlPrev is TTntLabel then
+            (CtlPrev as TTntLabel).FocusControl:= Ctl as TWinControl;
       end;
 
     //-------en
@@ -601,9 +622,10 @@ procedure DoDialogCustom(const ATitle: string; ASizeX, ASizeY: integer;
   AText: string; AFocusedIndex: integer; out AButtonIndex: integer; out AStateText: string);
 var
   F: TTntForm;
-  Res: integer;
+  Res, i: integer;
   SItem: string;
   Dummy: TDummyClass;
+  Ctl: TControl;
 begin
   AButtonIndex:= -1;
   AStateText:= '';
@@ -619,16 +641,16 @@ begin
     F.Caption:= UTF8Decode(ATitle);
     F.ShowHint:= true;
 
-    repeat
+    for i:= 0 to 100000 do
+    begin
       SItem:= SGetItem(AText, #10);
       if SItem='' then break;
-      DoAddControl(F, SItem, Dummy);
-    until false;
+      Ctl:= DoAddControl(F, SItem, Dummy, i);
 
-    if (AFocusedIndex>=0) and (AFocusedIndex<F.ControlCount) then
-      if F.Controls[AFocusedIndex].Enabled then
-        if F.Controls[AFocusedIndex] is TWinControl then
-          F.ActiveControl:= F.Controls[AFocusedIndex] as TWinControl;
+      if i=AFocusedIndex then
+        if Ctl.Enabled then
+          F.ActiveControl:= Ctl as TWinControl;
+    end;
 
     Dummy.Form:= F;
     F.KeyPreview:= true;
