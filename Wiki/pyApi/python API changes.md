@@ -4,6 +4,7 @@ Changes in Python API
 feb 2017
 
 * release 1.0.162
+* change: ed.set_text_line(-1, s) adds new line
 * add: app_proc: PROC_GET_KEYSTATE
 * add: PROP_TAB_TITLE writable
 * add: PROP_ENC: readable/writable

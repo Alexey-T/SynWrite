@@ -82,20 +82,19 @@ Methods, selections | Description
 
 Methods, text handling | Description
 ---------------------- | -----------------
-`get_text_all()` | Returns entire editor text. (Line ends are as is). 
+`get_text_all()` | Returns entire editor text (EOLs are as preserved). 
 `get_text_sel()` | Returns selected text block (or empty string if nothing selected). 
-`get_text_line(num)` | Returns line with index `num` (0-based), or current line if `num = -1`. 
+`get_text_line(num)` | Returns line with given index (0-based). 
 `get_text_len()` | Returns length of entire editor text. 
 `get_text_substr(start, len)` | Returns substring of entire editor text, from absolute offset `start` (0-based), with length `len`. 
 `get_line_count()` | Returns number of lines in entire text. 
-`get_line_prop(num)` | Returns for line with index `num` properties 2-tuple: (<line length without EOL chars>, <line length including EOL chars>). You can pass int value `-1` for current line.
-`set_text_all(text)` | Sets entire editor text to given string value. 
-`set_text_line(num, text)` | Sets line with index `num` to given string value (without line ends). 
-`replace(start, len, text)` | Replaces text at any position: from absolute offset, with given length, to new string value. 
-`insert(text)` | Inserts string, at caret position. 
+`get_line_prop(num)` | Returns for line with given index 2-tuple: `(line_length_without_EOL_chars, line_length_including_EOL_chars)`.
+`set_text_all(text)` | Sets entire editor text to given value.
+`set_text_line(num, text)` | Sets line with given index to given string (without EOLs). Use -1 to add new line. 
+`replace(start, len, text)` | Replaces text at any position: from absolute offset, with given length, to new text. 
+`insert(text)` | Inserts text (can be multi-line, with any EOLs), at caret position. 
 `insert_snippet(text, sel='', fname='')` | Inserts snippet text, at caret position. `text` is snippet text (tabstops allowed). `sel` is value for `${sel}` macro. `fname` is value for `${fname}` macro (path/ext are ignored).
-(deprecated) `get_indent(x, y)` | Returns string of spaces/tabs, which is correct indentation string for given (x, y) coords. (Tab chars are used only when needed.)
-`get_word(x, y)` | Returns properties of a word at given (x, y) coords, as 3-tuple: `(offset, len, text)`.
+`get_word(x, y)` | Returns properties of a word at given coords, as 3-tuple: `(offset, len, text)`.
 
 Methods, scrolling | Description
 ------------------ | -----------------
@@ -117,24 +116,10 @@ Methods, other | Description
 `set_alerts(value)` | Sets bool flag for "alerts".
 `get_staple(x, y)` | Returns range of block-staple (indentation guide) for text position `(x, y)`. It's `None` if no staple at this position, or 2-tuple: `(range_offset_start, range_offset_end)`.
 
-Methods, search-marks | Description
---------------------- | -----------------
+Methods, marks | Description
+-------------- | -----------------
+`bookmarks(id, pos, tag, icon=-1, color=-1, hint='')` | Performs action on bookmarks. See [py bookmarks id]. 
 `marks(id, npos, nlen, ntag)` | Performs action on search-marks. See [py marks id].
-(deprecated) `get_marks()` | Gets search-marks. List of 2-tuples `(npos, nlen)`, or None. 
-(deprecated) `add_mark(npos, nlen)` | Adds search-mark with given position/len. Pass `npos=-1` to remove all marks.
-
-Methods, bookmarks | Description
------------------- | -----------------
-`bookmarks(id, pos, tag, icon=-1, color=-1, hint='')` | Performs action on bookmarks. See [py bookmarks id].
-(deprecated) `get_bk(id)` | Gets list of bookmarks. See [py bookmark id]. 
-(deprecated) `set_bk(id, pos, icon=-1, color=-1, hint='')` | Sets/deletes bookmarks. See [py bookmark id]. 
-
-Params: 
-
-* `pos` is absolute offset (for set_bk: set `pos=-1` for numbered bookmark to clear it).
-* `icon` can be used for unnumbered bookmarks, any `GUTTER_nnnn` constant.
-* `color` can be used for unnumbered bookmarks, it's int RGB color of bookmarked line.
-* `hint` is tooltip string for bookmark icon; hint beginning with `"!"` char disables saving of bookmark in program history.
 
 Methods, color-attribs | Description
 ---------------------- | -----------------
