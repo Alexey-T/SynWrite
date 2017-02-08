@@ -120,7 +120,6 @@ class Command:
             if not name:
                 bads += [url1]
                 print('Invalid item: '+name+': '+url1)
-                msg_box(BEEP_ERROR)
                 continue
 
             url = get_item_url(url1)
@@ -132,7 +131,6 @@ class Command:
             if not url:
                 bads += [url1]
                 print('Invalid url: '+name+': '+url1)
-                msg_box(BEEP_ERROR)
                 continue
 
             dirbase = url1[:url1.find('/')]
@@ -147,7 +145,6 @@ class Command:
             if not os.path.isfile(fn):
                 bads += [url]
                 print('Cannot download: '+name+': '+url)
-                msg_box(BEEP_ERROR)
                 continue
 
         s = msg('SavedAll')+'\n'
