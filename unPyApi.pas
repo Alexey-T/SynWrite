@@ -1961,7 +1961,11 @@ begin
       Ed:= PyEditor(H);
       Str:= UTF8Decode(AnsiString(Ptr));
       if (N = -1) then
-        N:= Ed.CurrentLine;
+      begin
+        N:= Ed.Lines.Add(Str);
+        Ed.Modified:= True;
+      end
+      else
       if (N >= 0) and (N < Ed.Lines.Count) then
         EditorReplaceLine(Ed, N, Str, true);
       Result:= ReturnNone;

@@ -82,8 +82,8 @@ Methods, selections | Description
 
 Methods, text handling | Description
 ---------------------- | -----------------
-`get_text_all()` | Returns entire editor text (EOLs are as preserved). 
-`get_text_sel()` | Returns selected text block (or empty string if nothing selected). 
+`get_text_all()` | Returns entire editor text (EOLs are preserved). 
+`get_text_sel()` | Returns selected text block, or empty str if nothing selected. 
 `get_text_line(num)` | Returns line with given index (0-based). 
 `get_text_len()` | Returns length of entire editor text. 
 `get_text_substr(start, len)` | Returns substring of entire editor text, from absolute offset `start` (0-based), with length `len`. 
