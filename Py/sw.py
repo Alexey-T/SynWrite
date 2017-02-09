@@ -313,7 +313,7 @@ def msg_box(n1, n2):
         return sw_api.msg_box(n1, n2)
     else:
         return sw_api.msg_box_new(n1, n2)
-    
+
 def msg_status(text):
     return sw_api.msg_status(text)
 
@@ -393,9 +393,20 @@ def text_convert(text, filename, back=False):
 def regex_parse(regex, data):
     return sw_api.regex_parse(regex, data)
 
-#----------------------------------
-# Editor class
 
+def to_str(v):
+    if isinstance(v, list) or isinstance(v, tuple):
+        return ','.join(map(to_str, v))
+
+    if isinstance(v, bool):
+        if v:
+            return '1'
+        else:
+            return '0'
+
+    return str(v)
+
+#Editor
 class Editor:
     h = 0
     def __init__(self, handle):
@@ -450,9 +461,9 @@ class Editor:
     def get_word(self, x, y):
         return sw_api.ed_get_word(self.h, x, y)
     def get_prop(self, id, value=''):
-        return sw_api.ed_get_prop(self.h, id, value)
+        return sw_api.ed_get_prop(self.h, id, to_str(value))
     def set_prop(self, id, value):
-        return sw_api.ed_set_prop(self.h, id, value)
+        return sw_api.ed_set_prop(self.h, id, to_str(value))
     def get_filename(self):
         return sw_api.ed_get_filename(self.h)
     def get_alerts(self):
