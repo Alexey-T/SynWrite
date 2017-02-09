@@ -26,14 +26,12 @@ type
     chkTabStops: TTntCheckBox;
     chkTabMode: TTntCheckBox;
     chkWrap: TTntCheckBox;
-    chkOptFill: TTntCheckBox;
     chkKeepBlanks: TTntCheckBox;
     chkIndent: TTntCheckBox;
     chkMargin: TTntCheckBox;
     chkSpacing: TTntCheckBox;
     edTabMode: TTntComboBox;
     edWrap: TTntComboBox;
-    edOptFill: TTntComboBox;
     edKeepBlanks: TTntComboBox;
     chkTabColor: TTntCheckBox;
     edTabColor: TColorBox;
@@ -81,7 +79,6 @@ begin
   edIndent.Enabled:= en;
   edMargin.Enabled:= en;
   edSpacing.Enabled:= en;
-  edOptFill.Enabled:= en;
   edWordChars.Enabled:= en;
   edKeepBlanks.Enabled:= en;
   edTabColor.Enabled:= en;
@@ -90,7 +87,6 @@ begin
   chkTabStops.Enabled:= en;
   chkTabMode.Enabled:= en;
   chkWrap.Enabled:= en;
-  chkOptFill.Enabled:= en;
   chkKeepBlanks.Enabled:= en;
   chkIndent.Enabled:= en;
   chkMargin.Enabled:= en;
@@ -140,7 +136,6 @@ begin
     chkTabStops.Checked:= ATabStops<>'';
     chkTabMode.Checked:= ATabMode<>'';
     chkWrap.Checked:= AWrap<>'';
-    chkOptFill.Checked:= AOptFill<>'';
     chkKeepBlanks.Checked:= AKeepBlanks<>'';
     chkIndent.Checked:= AIndent<>'';
     chkMargin.Checked:= AMargin<>'';
@@ -150,7 +145,6 @@ begin
     edTabStops.Text:= ATabStops;
     edTabMode.ItemIndex:= StrToIntDef(ATabMode, FDefTabMode);
     edWrap.ItemIndex:= StrToIntDef(AWrap, 0);
-    edOptFill.ItemIndex:= StrToIntDef(AOptFill, 0);
     edKeepBlanks.ItemIndex:= StrToIntDef(AKeepBlanks, 0);
     edIndent.Value:= StrToIntDef(AIndent, FDefIndent);
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
@@ -177,7 +171,6 @@ begin
   chkTabStops.Checked:= false;
   chkTabMode.Checked:= false;
   chkWrap.Checked:= false;
-  chkOptFill.Checked:= false;
   chkKeepBlanks.Checked:= false;
   chkIndent.Checked:= false;
   chkMargin.Checked:= false;
@@ -189,7 +182,6 @@ begin
   edTabStops.Text:= FDefTabStop;
   edTabMode.ItemIndex:= FDefTabMode;
   edWrap.ItemIndex:= 0;
-  edOptFill.ItemIndex:= 0;
   edKeepBlanks.ItemIndex:= 0;
   edIndent.Value:= FDefIndent;
   edMargin.Value:= FDefMargin;
@@ -207,7 +199,6 @@ begin
   edIndent.Value:= FDefIndent;
   edMargin.Value:= FDefMargin;
   edSpacing.Value:= FDefSpacing;
-  edOptFill.ItemIndex:= 0;
   edTabColor.Selected:= clWhite;
   edWordChars.Text:= '';
   ListLex.ItemIndex:= 0;
@@ -250,7 +241,7 @@ begin
         {Op3}IfThen(chkWrap.Checked, IntToStr(edWrap.ItemIndex)),
         {Op4}IfThen(chkMargin.Checked, IntToStr(edMargin.Value)),
         {Op5}IfThen(chkSpacing.Checked, IntToStr(edSpacing.Value)),
-        {Op6}IfThen(chkOptFill.Checked, IntToStr(edOptFill.ItemIndex)),
+        {Op6}'',
         {Op7}edWordChars.Text,
         {Op8}IfThen(chkKeepBlanks.Checked, IntToStr(edKeepBlanks.ItemIndex)),
         {Op9}IfThen(chkAutoCase.Checked, '1'),

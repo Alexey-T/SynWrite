@@ -221,7 +221,6 @@ type
     TntLabel37: TTntLabel;
     cbRecColors: TTntComboBox;
     boxIndent: TTntGroupBox;
-    Label1: TTntLabel;
     edIndent: TSpinEdit;
     boxSelFmt: TTntGroupBox;
     cbUrlHilite: TTntCheckBox;
@@ -258,7 +257,6 @@ type
     cbAutoIndent: TTntCheckBox;
     cbBackspUnindent: TTntCheckBox;
     cbUnindentAlign: TTntCheckBox;
-    cbOptFill: TTntCheckBox;
     cbKeepBlank: TTntCheckBox;
     cbFold: TTntCheckBox;
     cbFixLineSize: TTntCheckBox;
@@ -342,6 +340,7 @@ type
     cbCutLineNoSel: TTntCheckBox;
     cbCopyLineNoSel: TTntCheckBox;
     bColorCustom: TTntButton;
+    LabelBlickIndent: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2356,15 +2355,12 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soUnindentKeepAlign];
 
-    if cbOptFill.Checked then
-      TemplateEditor.Options:= TemplateEditor.Options + [soOptimalFill]
-    else
-      TemplateEditor.Options:= TemplateEditor.Options - [soOptimalFill];
-
     if cbKeepBlank.Checked then
       TemplateEditor.Options:= TemplateEditor.Options + [soKeepTrailingBlanks]
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soKeepTrailingBlanks];
+
+    TemplateEditor.Options:= TemplateEditor.Options - [soOptimalFill];
 
     ApplyFramesOptions;
     ApplyColorsFontsToFrames;
@@ -2525,7 +2521,6 @@ begin
     cbAutoIndent.Checked:= soAutoIndentMode in TemplateEditor.Options;
     cbBackspUnindent.Checked:= soBackUnindent in TemplateEditor.Options;
     cbUnindentAlign.Checked:= soUnindentKeepAlign in TemplateEditor.Options;
-    cbOptFill.Checked:= soOptimalFill in TemplateEditor.Options;
     cbKeepBlank.Checked:= soKeepTrailingBlanks in TemplateEditor.Options;
   end;
 end;

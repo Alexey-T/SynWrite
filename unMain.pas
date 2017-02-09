@@ -7399,19 +7399,7 @@ begin
       end;  
 
       //6) override "Optimal fill"
-      if AOptFill<>'' then
-      begin
-        if Bool(StrToIntDef(AOptFill, 0)) then
-          begin
-            EditorMaster.Options:= EditorMaster.Options + [soOptimalFill];
-            EditorSlave.Options:= EditorSlave.Options + [soOptimalFill];
-          end
-        else
-          begin
-            EditorMaster.Options:= EditorMaster.Options - [soOptimalFill];
-            EditorSlave.Options:= EditorSlave.Options - [soOptimalFill];
-          end;
-      end;
+      //deleted
 
       //7) override "Word chars"
       opWordChars:= AOptWordChars;
@@ -20029,14 +20017,12 @@ begin
       cLineCmdIndent:
         ok:= DoListCommand_Indent(L,
                EditorTabSize(Ed),
-               Ed.BlockIndent,
-               soOptimalFill in Ed.Options
+               Ed.BlockIndent
                );
       cLineCmdUnIndent:
         ok:= DoListCommand_UnIndent(L,
                EditorTabSize(Ed),
                Ed.BlockIndent,
-               soOptimalFill in Ed.Options,
                soUnindentKeepAlign in Ed.Options
                );
 
@@ -23310,7 +23296,7 @@ var
   S, SItem, SId, SVal: Widestring;
   Ed: TSyntaxMemo;
   pnt: TPoint;
-  EdIndex, NVal{, NVal2}: Integer;
+  EdIndex: Integer;
   //Analyzer: TSyntAnalyzer;
 begin
   (*

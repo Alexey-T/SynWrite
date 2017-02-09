@@ -4,7 +4,9 @@ Legend:
  * changed
 
 
-6.34.2570
+6.35.2580
+* opt "Block indent" can be >0 (indent in spaces), <0 (indent in tabs)
+* opt "Optimal fill with tabs" removed, no need with BlockIndent<0
 + more API
 
 6.34.2565

@@ -15,13 +15,12 @@ function DoListCommand_Trim(
 function DoListCommand_Indent(
   List: TTntStringList;
   TabSize: Integer;
-  IndentSize: Integer;
-  UseTabChar: boolean): boolean;
+  IndentSize: Integer): boolean;
+
 function DoListCommand_UnIndent(
   List: TTntStringList;
   TabSize: Integer;
   IndentSize: Integer;
-  UseTabChar: boolean;
   KeepAlign: boolean): boolean;
 
 function DoListCommand_Unspace(
@@ -169,14 +168,20 @@ end;
 function DoListCommand_Indent(
   List: TTntStringList;
   TabSize: Integer;
-  IndentSize: Integer;
-  UseTabChar: boolean): boolean;
+  IndentSize: Integer): boolean;
 var
-  i, Num: Integer;
+  bUseTabs: Boolean;
   SAdd, STabString, SIndent, SData, SNew: Widestring;
+  i, Num: Integer;
 begin
   Result:= false;
-  SAdd:= StringOfChar(' ', IndentSize);
+
+  bUseTabs:= IndentSize<0;
+  if not bUseTabs then
+    SAdd:= StringOfChar(' ', IndentSize)
+  else
+    SAdd:= StringOfChar(#9, Abs(IndentSize));  
+
   STabString:= StringOfChar(' ', TabSize);
 
   for i:= 0 to List.Count-1 do
@@ -189,7 +194,7 @@ begin
 
       //add spaces to indent, and reapply tabs to whole indent
       SIndent:= SAdd+SUntab(SIndent, TabSize);
-      if UseTabChar then
+      if bUseTabs then
         SReplaceSpToTabLeading(SIndent, STabString);
 
       SNew:= '';
@@ -207,14 +212,18 @@ function DoListCommand_UnIndent(
   List: TTntStringList;
   TabSize: Integer;
   IndentSize: Integer;
-  UseTabChar: boolean;
   KeepAlign: boolean): boolean;
 var
+  bUseTabs: Boolean;
   i, Num: Integer;
   S, STabString, SIndent, SData, SNew: Widestring;
 begin
   Result:= false;
   STabString:= StringOfChar(' ', TabSize);
+
+  bUseTabs:= IndentSize<0;
+  if bUseTabs then
+    IndentSize:= Abs(IndentSize)*TabSize;
 
   if KeepAlign then
     for i:= 0 to List.Count-1 do
@@ -240,7 +249,7 @@ begin
       //decrease indent, reapply tabs to indent
       SIndent:= SUntab(SIndent, TabSize);
       Delete(SIndent, 1, IndentSize);
-      if UseTabChar then
+      if bUseTabs then
         SReplaceSpToTabLeading(SIndent, STabString);
 
       //compiler bug? if SIndent='', SData='', SNew is previous line SNew (not '')
