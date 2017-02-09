@@ -4,11 +4,12 @@ Changes in Python API
 feb 2017
 
 * release 1.0.162
-* add: ed.get_prop/set_prop: can use value of number/bool/list/tuple
-* change: ed.set_text_line(-1, s) adds new line
+* add: file_open: param "group"
 * add: app_proc: PROC_GET_KEYSTATE
+* add: ed.get_prop/set_prop: can use value of number/bool/list/tuple
 * add: PROP_TAB_TITLE writable
 * add: PROP_ENC: readable/writable
+* change: ed.set_text_line(-1, s) adds new line
 * deleted: ed.get_enc, ed.set_enc
 * release 1.0.161
 * add: timer_proc
