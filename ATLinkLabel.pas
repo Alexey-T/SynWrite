@@ -20,8 +20,8 @@ type
     FColorLinkNormal: TColor;
     FColorLinkMouseover: TColor;
     procedure SetLink(AValue: string);
-    procedure MouseEnter;
-    procedure MouseLeave;
+    procedure MouseEnter(Sender: TObject);
+    procedure MouseLeave(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
   protected
@@ -42,6 +42,8 @@ begin
   ColorLinkNormal:= clBlue;
   ColorLinkMouseover:= clRed;
   Font.Color:= ColorLinkNormal;
+  OnMouseEnter:= MouseEnter;
+  OnMouseLeave:= MouseLeave;
 end;
 
 procedure TLinkLabel.SetLink(AValue: string);

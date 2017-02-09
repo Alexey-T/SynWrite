@@ -65,6 +65,7 @@ function IsControlAutosizeY(C: TControl): boolean;
 begin
   Result:=
     (C is TTntLabel) or
+    (C is TLinkLabel) or
     (C is TTntButton) or
     //(C is TToggleBox) or
     (C is TTntEdit) or
@@ -307,6 +308,75 @@ begin
 end;
 
 
+procedure DoControlSetProps(C: TControl; S: string);
+begin
+  if C is TTntButton then
+  begin
+    (C as TTntButton).Default:= StrToBool(SGetItem(S));
+    exit;
+  end;
+
+  if C is TSpinEdit then
+  begin
+    (C as TSpinEdit).MinValue:= StrToIntDef(SGetItem(S), 0);
+    (C as TSpinEdit).MaxValue:= StrToIntDef(SGetItem(S), 100);
+    (C as TSpinEdit).Increment:= StrToIntDef(SGetItem(S), 1);
+    exit;
+  end;
+
+  if C is TLinkLabel then
+  begin
+    (C as TLinkLabel).Link:= S;
+    exit;
+  end;
+
+  if (C is TTntEdit) or (C is TTntMemo) then
+  begin
+    //RO
+    if StrToBool(SGetItem(S)) then
+    begin
+      if (C is TTntEdit) then (C as TTntEdit).ReadOnly:= true;
+      if (C is TTntMemo) then (C as TTntMemo).ReadOnly:= true;
+      TCustomEditHack(C).ParentColor:= true;
+    end;
+    //Monospaced
+    if StrToBool(SGetItem(S)) then
+    begin
+      if C is TTntEdit then
+      begin
+        (C as TTntEdit).Font.Name:= 'Courier New';
+        (C as TTntEdit).Font.Size:= 9;
+      end;
+      if C is TTntMemo then
+      begin
+        (C as TTntMemo).Font.Name:= 'Courier New';
+        (C as TTntMemo).Font.Size:= 9;
+      end;
+    end;
+    //Border
+    if StrToBool(SGetItem(S)) then
+      TCustomEditHack(C).BorderStyle:= bsSingle
+    else
+      TCustomEditHack(C).BorderStyle:= bsNone;
+
+    exit;
+  end;
+
+  if (C is TTntListView) then
+  begin
+    (C as TTntListView).GridLines:= StrToBool(SGetItem(S));
+    Exit;
+  end;
+
+  if (C is TTntTabControl) then
+  begin
+    if S='1' then
+      (C as TTntTabControl).TabPosition:= tpBottom;
+    exit;
+  end;
+end;
+
+
 function DoAddControl(AForm: TTntForm; ATextItems: string; ADummy: TDummyClass;
   AIndex: integer): TControl;
 var
@@ -465,6 +535,7 @@ begin
     //-------cap
     if SName='cap' then
     begin
+      if (Ctl is TLinkLabel) then (Ctl as TLinkLabel).Caption:= UTF8Decode(SValue);
       if (Ctl is TTntLabel) then (Ctl as TTntLabel).Caption:= UTF8Decode(SValue);
       if (Ctl is TTntButton) then (Ctl as TTntButton).Caption:= UTF8Decode(SValue);
       if (Ctl is TTntCheckBox) then (Ctl as TTntCheckBox).Caption:= UTF8Decode(SValue);
@@ -510,60 +581,7 @@ begin
     //-------props
     if SName='props' then
     begin
-      if Ctl is TTntButton then
-      begin
-        (Ctl as TTntButton).Default:= StrToBool(SGetItem(SValue));
-      end;
-
-      if Ctl is TSpinEdit then
-      begin
-        (Ctl as TSpinEdit).MinValue:= StrToIntDef(SGetItem(SValue), 0);
-        (Ctl as TSpinEdit).MaxValue:= StrToIntDef(SGetItem(SValue), 100);
-        (Ctl as TSpinEdit).Increment:= StrToIntDef(SGetItem(SValue), 1);
-      end;
-
-      if Ctl is TLinkLabel then
-        (Ctl as TLinkLabel).Link:= SValue;
-
-      if (Ctl is TTntEdit) or (Ctl is TTntMemo) then
-      begin
-        //RO
-        if StrToBool(SGetItem(SValue)) then
-        begin
-          if (Ctl is TTntEdit) then (Ctl as TTntEdit).ReadOnly:= true;
-          if (Ctl is TTntMemo) then (Ctl as TTntMemo).ReadOnly:= true;
-          TCustomEditHack(Ctl).ParentColor:= true;
-        end;
-        //Monospaced
-        if StrToBool(SGetItem(SValue)) then
-        begin
-          if Ctl is TTntEdit then
-          begin
-            (Ctl as TTntEdit).Font.Name:= 'Courier New';
-            (Ctl as TTntEdit).Font.Size:= 9;
-          end;
-          if Ctl is TTntMemo then
-          begin
-            (Ctl as TTntMemo).Font.Name:= 'Courier New';
-            (Ctl as TTntMemo).Font.Size:= 9;
-          end;
-        end;
-        //Border
-        if StrToBool(SGetItem(SValue)) then
-          TCustomEditHack(Ctl).BorderStyle:= bsSingle
-        else
-          TCustomEditHack(Ctl).BorderStyle:= bsNone;
-      end;
-
-      if (Ctl is TTntListView) then
-      begin
-        (Ctl as TTntListView).GridLines:= StrToBool(SGetItem(SValue));
-      end;
-
-      if (Ctl is TTntTabControl) then
-        if SValue='1' then
-          (Ctl as TTntTabControl).TabPosition:= tpBottom;
-
+      DoControlSetProps(Ctl, SValue);
       Continue;
     end;
 
