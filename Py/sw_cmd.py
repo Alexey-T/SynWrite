@@ -290,7 +290,6 @@ cmd_FileExit = 745
 cmd_FileCloseAndDelete = 746
 cmd_FileMoveToOtherView = 747
 
-cmd_FileBackup = 750
 cmd_CopyFilename = 752
 cmd_CopyFullPath = 753
 cmd_CopyDirPath = 754
