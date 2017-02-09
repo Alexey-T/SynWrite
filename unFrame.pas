@@ -420,7 +420,6 @@ const
   fa = (file_attribute_readonly or file_attribute_hidden or file_attribute_system);
 begin
   if FSavingBusy then Exit;
-  TfmMain(Owner).DoBackup(AFileName);
 
   //handle ReadOnly/Hidden/System attribs
   attr:= -1;

@@ -157,12 +157,6 @@ type
     cEscMinimizeApp
     );
 
-  TSynBackup = (
-    cBakNone,
-    cBakAppdata,
-    cBakSameDir
-    );
-
   TSynLastDirMode = (
     cLastDirCurrentFile,
     cLastDirRemember,
@@ -660,7 +654,6 @@ type
     ecToggleFocusClip: TAction;
     TBXSeparatorItem46: TSpTbxSeparatorItem;
     ecToggleFocusOutput: TAction;
-    acBackup: TAction;
     TBXSubmenuItemIndentOps: TSpTBXSubmenuItem;
     TBXSubmenuItemLineOps: TSpTBXSubmenuItem;
     TBXItemEMoveDn: TSpTbxItem;
@@ -1397,7 +1390,6 @@ type
     procedure ecToggleFocusClipExecute(Sender: TObject);
     procedure TBXItemFReopenClick(Sender: TObject);
     procedure ecToggleFocusOutputExecute(Sender: TObject);
-    procedure acBackupExecute(Sender: TObject);
     procedure TBXItemEMoveUpClick(Sender: TObject);
     procedure TBXItemEMoveDnClick(Sender: TObject);
     procedure TBXItemHelpDonateClick(Sender: TObject);
@@ -2375,8 +2367,6 @@ type
     procedure DoHideMenuItem(const Str: string);
     function IsLexerFindID(const Lex: string): boolean;
 
-    procedure MsgBakEr(const fn: Widestring);
-    procedure MsgBakOk(const fn: Widestring);
     procedure DoAcpPopup;
     procedure DoFuncHintPopup;
     function DoCheckUnicodeNeeded(Frame: TEditorFrame): boolean;
@@ -2679,7 +2669,6 @@ type
     opStatusText: array[TSynSelState] of string;
     opShowMenuIcons: boolean;
     opDateFmtPluginLog: string;
-    opFileBackup: TSynBackup;
     opEsc: TSynEscMode;
     opHistProjectSave,
     opHistProjectLoad: boolean;
@@ -2821,7 +2810,6 @@ type
 
     procedure DoFinderInit(AKeepFlags: boolean = false);
     procedure DoAutoSave;
-    procedure DoBackup(const AFilename: Widestring);
     procedure DoRepaint;
     procedure DoDropFile(const fn: Widestring; IntoProj: boolean = false);
     procedure DoTabSwitch(ANext: boolean; AAllowModernSwitch: boolean = true);
@@ -2830,7 +2818,8 @@ type
     function IsMouseOverProject: boolean;
 
     constructor CreateParented(hWindow: HWND);
-    function DoOpenFile(const AFileName: WideString; const AParams: Widestring = ''): TEditorFrame;
+    function DoOpenFile(const AFileName: WideString;
+      AGroupIndex: integer = -1; const AParams: Widestring = ''): TEditorFrame;
     procedure DoOpenProject(const fn: Widestring); overload;
     procedure DoOpenArchive(const fn, AParams: Widestring);
     function DoOpenArchive_HandleIni(const fn_ini, subdir, section: string; typ: TSynAddonType): boolean;
@@ -3282,7 +3271,8 @@ begin
     CurrentEditor.Invalidate;
 end;
 
-function TfmMain.DoOpenFile(const AFileName: WideString; const AParams: Widestring = ''): TEditorFrame;
+function TfmMain.DoOpenFile(const AFileName: WideString;
+  AGroupIndex: integer = -1; const AParams: Widestring = ''): TEditorFrame;
 var
   F: TEditorFrame;
 begin
@@ -3319,12 +3309,19 @@ begin
     Exit;
   end;
 
-  //create new frame and load file
-  F:= CurrentFrame;
-  if (F <> nil) and (F.FileName = '') and (not F.Modified) then
-    Result:= F
+  if (AGroupIndex>=Low(TATGroupsNums)) and
+     (AGroupIndex<=High(TATGroupsNums)) then
+  begin
+    Result:= DoAddTab(Groups.Pages[AGroupIndex+1], false)
+  end  
   else
-    Result:= DoAddTab(Groups.PagesCurrent, false);
+  begin
+    F:= CurrentFrame;
+    if Assigned(F) and (F.FileName='') and (not F.Modified) then
+      Result:= F
+    else
+      Result:= DoAddTab(Groups.PagesCurrent, false);
+  end;
 
   //reset encoding for new frame
   Result.Encoding:= 0;
@@ -4216,7 +4213,6 @@ begin
     ApplyShowIconsInMenus;
 
     opDateFmtPluginLog:= ReadString('Setup', 'DateFmtPlugin', 'hh:mm');
-    opFileBackup:= TSynBackup(ReadInteger('Setup', 'Back', 0));
     opEsc:= TSynEscMode(ReadInteger('Setup', 'Esc' + cExeSuffix[SynExe], Ord(cEscCloseApp)));
     opMruCheck:= ReadBool('Setup', 'MruCheck', false);
     opTabsReplace:= ReadBool('Setup', 'TabSp', false);
@@ -4596,7 +4592,6 @@ begin
     WriteBool('Setup', 'MenuIcon', opShowMenuIcons);
     WriteBool('Setup', 'Beep', opBeep);
 
-    WriteInteger('Setup', 'Back', Ord(opFileBackup));
     WriteInteger('Setup', 'Esc' + cExeSuffix[SynExe], Ord(opEsc));
     WriteBool('Setup', 'MruCheck', opMruCheck);
     WriteBool('Setup', 'TabSp', opTabsReplace);
@@ -5592,7 +5587,6 @@ begin
 
     sm_SplitViewsVertHorz: ecSplitViewsVertHorz.Execute;
     sm_SplitSlaveVertHorz: ecSplitSlaveVertHorz.Execute;
-    sm_FileBackup: acBackup.Execute;
 
     //copy path
     sm_CopyFilename: DoCopyFilenameToClipboard(CurrentFrame, cCmdCopyFileName);
@@ -12840,45 +12834,6 @@ begin
   end;
 end;
 
-procedure TfmMain.MsgBakEr(const fn: Widestring);
-begin
-  MsgError(WideFormat(DKLangConstW('MBakEr'), [fn]), Handle);
-end;
-
-procedure TfmMain.MsgBakOk(const fn: Widestring);
-begin
-  MsgInfo(WideFormat(DKLangConstW('MBakOk'), [fn]), Handle);
-end;
-
-procedure TfmMain.DoBackup(const AFilename: Widestring);
-var
-  Dest: Widestring;
-const
-  ROMask = FILE_ATTRIBUTE_READONLY or FILE_ATTRIBUTE_HIDDEN or FILE_ATTRIBUTE_SYSTEM;
-begin
-  case opFileBackup of
-    cBakAppdata:
-      begin
-      Dest:= FAppDataPath + 'SynWrite\Backup';
-      WideForceDirectories(Dest);
-      Dest:= Dest+'\'+WideExtractFileName(AFileName);
-      end;
-    cBakSameDir:
-      Dest:= AFileName+'.bak';
-    else
-      Exit;
-  end;
-  if IsFileExist(AFileName) and (FGetFileSize(AFileName)>0) then
-  begin
-    //clear RO/H/S attr
-    if IsFileExist(Dest) then
-      SetFileAttributesW(PWChar(Dest),
-        GetFileAttributesW(PWChar(Dest)) and not ROMask);
-
-    if not FFileCopy(AFileName, Dest) then
-      MsgBakEr(Dest);
-  end;
-end;
 
 function TfmMain.LastDir: Widestring;
 begin
@@ -13888,22 +13843,6 @@ begin
     if Self.Enabled and ListOut.CanFocus then
       ListOut.SetFocus
   end;
-end;
-
-procedure TfmMain.acBackupExecute(Sender: TObject);
-var Dest:Widestring;
-begin
-  with CurrentFrame do
-    if (FileName<>'') and (FGetFileSize(FileName)>0) then
-    begin
-      Dest:= FileName+'.bak';
-      if not FFileCopy(FileName, Dest) then
-        MsgBakEr(Dest)
-      else
-        MsgBakOk(Dest)
-    end
-    else
-      MsgBeep;
 end;
 
 
@@ -19516,7 +19455,7 @@ begin
       if (Items[N] is TSpTbxSubmenuItem) then
         ItemSub:= (Items[N] as TSpTbxSubmenuItem)
       else
-        begin MsgBeep; Exit end;
+        Exit;
     end;
 
     //separater menu id begins with "-"

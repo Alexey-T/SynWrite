@@ -82,7 +82,6 @@ const
   sm_FileCloseAndDelete = 746;
   sm_FileMoveToOtherView = 747;
 
-  sm_FileBackup = 750;
   sm_CopyFilename = 752;
   sm_CopyFullPath = 753;
   sm_CopyDirPath = 754;

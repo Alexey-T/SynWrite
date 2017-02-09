@@ -76,8 +76,6 @@ type
     cbDirLast: TTntComboBox;
     edDirLast: TTntEdit;
     bDirLast: TTntButton;
-    TntLabel10: TTntLabel;
-    cbBak: TTntComboBox;
     edAcpNum: TSpinEdit;
     gAcp2: TTntGroupBox;
     cbAcpFile: TTntCheckBox;
@@ -1764,7 +1762,6 @@ begin
     opSaveFindCount:= edFindCount.Value;
     opLastDirMode:= TSynLastDirMode(cbDirLast.ItemIndex);
     opLastDirPath:= edDirLast.Text;
-    opFileBackup:= TSynBackup(cbBak.ItemIndex);
 
     opSaveEditor:= [];
     if cbHistoryCaret.Checked then Include(opSaveEditor, cSynHistoryCaret);
@@ -2094,7 +2091,6 @@ begin
     cbHistoryCleanRecents.Checked:= opMruCheck;
     cbDirLast.ItemIndex:= Ord(opLastDirMode);
     edDirLast.Text:= opLastDirPath;
-    cbBak.ItemIndex:= Ord(opFileBackup);
 
     cbHistoryCaret.Checked:= cSynHistoryCaret in opSaveEditor;
     cbHistoryEnc.Checked:= cSynHistoryEnc in opSaveEditor;

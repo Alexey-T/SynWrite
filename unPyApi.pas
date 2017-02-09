@@ -533,18 +533,19 @@ end;
 function Py_file_open(Self, Args: PPyObject): PPyObject; cdecl;
 var
   PtrName, PtrParam: PAnsiChar;
-  fn, param: Widestring;
+  StrName, StrParam: Widestring;
+  NGroup: integer;
   ok: boolean;
 begin
   with GetPythonEngine do
   begin
-    if Bool(PyArg_ParseTuple(Args, 'ss:file_open', @PtrName, @PtrParam)) then
+    if Bool(PyArg_ParseTuple(Args, 'sis:file_open', @PtrName, @NGroup, @PtrParam)) then
     begin
-      fn:= UTF8Decode(AnsiString(PtrName));
-      param:= UTF8Decode(AnsiString(PtrParam));
-      ok:= (fn='') or IsFileExist(fn);
+      StrName:= UTF8Decode(AnsiString(PtrName));
+      StrParam:= UTF8Decode(AnsiString(PtrParam));
+      ok:= (StrName='') or IsFileExist(StrName);
       if ok then
-        fmMain.DoOpenFile(fn, param);
+        fmMain.DoOpenFile(StrName, NGroup, StrParam);
       Result:= PyBool_FromLong(Ord(ok));
     end;
   end;
