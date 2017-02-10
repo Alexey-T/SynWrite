@@ -526,6 +526,8 @@ class Editor:
         return sw_api.ed_get_attr(self.h)
     def find(self, action, opt, tokens, sfind, sreplace):
         return sw_api.ed_find(self.h, action, opt, tokens, sfind, sreplace)
+    def save(self, filename=''):
+        return sw_api.ed_save(self.h, filename)        
 
 #----------------------------------------
 

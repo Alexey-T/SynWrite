@@ -206,7 +206,7 @@ type
     procedure DoStopNotif;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure SaveFile(AFileName: Widestring);
+    function SaveFile(AFileName: Widestring): Boolean;
     procedure LoadFile(const AFileName: Widestring);
     function IsTheFile(const AFileName: Widestring): Boolean;
     function IsSplitted: boolean;
@@ -398,7 +398,7 @@ begin
 end;
 
 {$warnings off}
-procedure TEditorFrame.SaveFile(AFileName: Widestring);
+function TEditorFrame.SaveFile(AFileName: Widestring): Boolean;
   //
   procedure ErrorWritable;
   begin
@@ -419,6 +419,7 @@ var
 const
   fa = (file_attribute_readonly or file_attribute_hidden or file_attribute_system);
 begin
+  Result:= false;
   if FSavingBusy then Exit;
 
   //handle ReadOnly/Hidden/System attribs
@@ -450,6 +451,8 @@ begin
       Modified:= False;
     except
       ErrorCantSave;
+      FSavingBusy:= False;
+      Exit;
     end;
     if not Modified then Break;
     if not WidePromptForFileName(AFileName, '', ext, '', '', True) then Break;
@@ -464,6 +467,8 @@ begin
   //restore ReadOnly/Hidden/System attribs
   if (attr <> -1) then
     SetFileAttributesW(PWChar(FileName), attr);
+
+  Result:= true;
 end;
 {$warnings on}
 

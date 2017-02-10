@@ -689,6 +689,35 @@ begin
     end;
 end;
 
+function Py_ed_save(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  H: Integer;
+  Ed: TSyntaxMemo;
+  Frame: TEditorFrame;
+  PtrName: PChar;
+  StrName: WideString;
+  Ok: Boolean;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'is:save', @H, @PtrName)) then
+    begin
+      Ed:= PyEditor(H);
+      Frame:= fmMain.FrameOfEditor(Ed);
+      StrName:= UTF8Decode(AnsiString(PtrName));
+
+      if StrName<>'' then
+      begin
+        Frame.FileName:= StrName;
+        //Frame.Lexer:= ...
+      end;
+
+      Ok:= false;
+      if Assigned(Frame) and (Frame.FileName<>'') then //cannot save untitled
+        Ok:= Frame.SaveFile(StrName);
+      Result:= PyBool_FromLong(Ord(Ok));
+    end;
+end;
+
 function Py_ed_get_alerts(Self, Args: PPyObject): PPyObject; cdecl;
 var
   H: Integer;
@@ -2528,6 +2557,7 @@ begin
   end;
 end;
 
+
 //No such method on PythonEngine code
 function Py_EvalStringAsWideString(const command: string): Widestring;
 var
@@ -3048,6 +3078,7 @@ begin
     AddMethod('ed_unlock', Py_ed_unlock, '');
     AddMethod('ed_find', Py_ed_find, '');
     AddMethod('ed_marks', Py_ed_marks, '');
+    AddMethod('ed_save', Py_ed_save, '');
   end;
 end;
 
