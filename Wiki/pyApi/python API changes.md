@@ -4,6 +4,7 @@ Changes in Python API
 feb 2017
 
 * release 1.0.162
+* add: ed.save
 * add: file_open: param "group"
 * add: app_proc: PROC_GET_KEYSTATE
 * add: ed.get_prop/set_prop: can use value of number/bool/list/tuple
