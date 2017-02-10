@@ -4,9 +4,9 @@ Legend:
  * changed
 
 
-6.35.2580
+6.35.2590
 * opt "Block indent" can be >0 (indent in spaces), <0 (indent in tabs)
-* opt "Optimal fill with tabs" removed, no need with BlockIndent<0
+* opt "Optimal fill with tabs" removed (not needed with BlockIndent<0)
 * opt "Backup file" removed, use powerful plugin "Backup File"
 + more API
 

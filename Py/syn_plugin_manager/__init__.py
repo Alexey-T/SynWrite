@@ -69,7 +69,7 @@ class Command:
             if not url: continue
             fn = get_plugin_zip(url)
             if not fn: continue
-            file_open(fn, '/s /v'+info.v_remote)
+            file_open(fn, params='/s /v'+info.v_remote)
 
         text = msg('Updated') + '\n\n' + '\n'.join([i.name for i in items]) + '\n\n' + msg('Restart')
         msg_box(MSG_INFO, text)
@@ -174,7 +174,7 @@ class Command:
         version = items[num][3]
         fn = get_plugin_zip(url)
         if fn:
-            file_open(fn, '/v'+version)
+            file_open(fn, params='/v'+version)
 
     def do_menu(self, items, caption):
         names = [get_py_title(dir) + '\t' + os.path.basename(dir) for dir in items]
