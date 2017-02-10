@@ -705,15 +705,10 @@ begin
       Frame:= fmMain.FrameOfEditor(Ed);
       StrName:= UTF8Decode(AnsiString(PtrName));
 
-      if StrName<>'' then
-      begin
-        Frame.FileName:= StrName;
-        //Frame.Lexer:= ...
-      end;
-
       Ok:= false;
-      if Assigned(Frame) and (Frame.FileName<>'') then //cannot save untitled
-        Ok:= Frame.SaveFile(StrName);
+      if Assigned(Frame) then
+        Ok:= fmMain.SaveFrame(Frame, False, StrName);
+
       Result:= PyBool_FromLong(Ord(Ok));
     end;
 end;

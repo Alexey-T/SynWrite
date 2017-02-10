@@ -128,7 +128,7 @@ Methods, color-attribs | Description
 
 Methods, misc | Description
 ------------- | -----------------
-`save(filename="")` | Saves text to disk. If param filename not empty, uses it (untitled tab becomes titled). Cannot save untitled tab. Gets bool: file is named and saved.
+`save(filename="")` | Saves text to disk. If param filename not empty, uses it (untitled tab becomes titled). Shows save-as dialog for untitled tabs. Gets bool: file is saved.
 `lock()` | Increases lock-counter, so editor window will not redraw ifself if counter is non-zero. Each `lock` call must be coupled with `unlock` call later in your code.
 `unlock()` | Decreases lock-counter. If counter becomes zero, editor window will be redrawn.
 `focus()` | Focuses editor control.

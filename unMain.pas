@@ -1988,7 +1988,6 @@ type
     procedure FrameSaveState(Sender: TObject);
     function MsgConfirmSaveFrame(Frame: TEditorFrame; CanCancel: boolean=true): TModalResult;
     procedure InitFrameTab(Frame: TEditorFrame);
-    function SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
     function IsFramePropertiesStringForFilename(const fn: Widestring; const Str: string): boolean;
     function FrameGetPropertiesString(F: TEditorFrame): string;
     procedure FrameSetPropertiesString(F: TEditorFrame; const Str: string; EncodingOnly: boolean);
@@ -2865,6 +2864,8 @@ type
     function CreateFrame: TEditorFrame;
     procedure CloseFrame(Frame: TEditorFrame);
     procedure CloseFrameWithCfm(F: TEditorFrame; var ACanClose, ACanContinue: boolean);
+    function SaveFrame(Frame: TEditorFrame; APromtDialog: Boolean;
+      const ANewFileName: Widestring = ''): boolean;
     //---------------------------------------------------------------------
 
     property opCaretTime: integer read GetCaretTime write SetCaretTime;
@@ -3383,10 +3384,11 @@ begin
   end;
 end;
 
-function TfmMain.SaveFrame(Frame: TEditorFrame; PromtDialog: Boolean): boolean;
+function TfmMain.SaveFrame(Frame: TEditorFrame; APromtDialog: Boolean;
+  const ANewFileName: Widestring = ''): boolean;
 var
-  AUntitled: boolean;
-  ALexerName: string;
+  bUntitled: boolean;
+  SLexer: string;
 begin
   Result:= true;
   if Frame=nil then Exit;
@@ -3395,21 +3397,24 @@ begin
   if not DoCheckUnicodeNeeded(Frame) then Exit;
   if DoPyEvent(Frame.EditorMaster, cSynEventOnSaveBefore, [])=cPyFalse then Exit;
 
-  AUntitled:= Frame.FileName='';
-  if not PromtDialog then
-    PromtDialog:= AUntitled;
+  if ANewFileName<>'' then
+    Frame.FileName:= ANewFileName;
 
-  if PromtDialog then
+  bUntitled:= Frame.FileName='';
+  if not APromtDialog then
+    APromtDialog:= bUntitled;
+
+  if APromtDialog then
   begin
-    if AUntitled then
+    if bUntitled then
       SD.InitialDir:= LastDir_UntitledFile
     else
       SD.InitialDir:= LastDir;
     SD.Filter:= SynFilesFilter;
 
-    ALexerName:= CurrentLexerForFile;
-    if ALexerName<>'' then
-      SD.FilterIndex:= SFilterNameToIdx(SD.Filter, ALexerName)
+    SLexer:= CurrentLexerForFile;
+    if SLexer<>'' then
+      SD.FilterIndex:= SFilterNameToIdx(SD.Filter, SLexer)
     else
       SD.FilterIndex:= SFilterNum(SD.Filter);
 
@@ -3429,7 +3434,7 @@ begin
           SFilterIdxToExt(SD.Filter, SD.FilterIndex),
           WideExtractFileDir(SD.FileName));
 
-      Frame.SaveFile(SD.FileName);
+      Result:= Frame.SaveFile(SD.FileName);
       SynMruFiles.AddItem(SD.FileName);
       DoPyEvent(Frame.EditorMaster, cSynEventOnSaveAfter, []);
 
@@ -3441,7 +3446,7 @@ begin
       UpdateLexerTo(Frame.EditorMaster.TextSource.SyntaxAnalyzer);
 
       //save last dir
-      if AUntitled then
+      if bUntitled then
         SaveLastDir_UntitledFile(SD.FileName)
       else
         SaveLastDir(SD.FileName, SD.Filter, SD.FilterIndex);
@@ -3459,7 +3464,7 @@ begin
       Exit
     end;
 
-    Frame.SaveFile(Frame.FileName);
+    Result:= Frame.SaveFile(Frame.FileName);
     DoPyEvent(Frame.EditorMaster, cSynEventOnSaveAfter, []);
 
     //save on ftp
@@ -3486,7 +3491,7 @@ begin
     UpdateFrameEnc(Frame);
   end;
 
-  if AUntitled then
+  if bUntitled then
     UpdateListBookmarks;
 end;
 
