@@ -2,6 +2,7 @@
 Align by Separator | Alignes lines in selection, by separator-char (eg "=") | PyPlugins/plugin.kvichans.AlignBySeparator.zip
 Ascii Art | Allows to draw text with several ASCII Art fonts | PyPlugins/plugin.Alexey.AsciiArt.zip
 AStyle Format | Formats (beautifies) source code for lexers: C++, C, C#, Java, using good AStyle library | PyPlugins/plugin.Alexey.AStyleFormat.zip
+Find in Files | Gives dialog to search for multiple files containing some string/regex, like in file managers | PyPlugins/plugin.kvichans.FindInFiles.zip
 Backup File | Creates backup copy of current file | PyPlugins/plugin.kvichans.Backup_File.zip
 Base Encoder | Allows to encode/decode text in Base64, Base32, Base16, Quoted-printable | PyPlugins/plugin.Alexey.BaseEncoder.zip
 Brackets Hilite | Hilites pair brackets, jumps to pair bracket | PyPlugins/plugin.Alexey.BracketsHilite.zip
@@ -313,7 +314,6 @@ Translation: Spanish              | | Languages/language.Spanish.zip
 VB SyncEdit | Calls SyncEditing for current function in VBScript | PyPlugins/plugin.Zyx.VBSyncEdit.zip
 W3C Validator | Allows to validate HTML/SVG document using online W3C checker | PyPlugins/plugin.Alexey.W3CValidator.zip
 WebFont | Inserts into CSS code usage of external fonts from webfont.ru | PyPlugins/plugin.Alexey.WebFont.zip 
-WinMerge Compare | Creates backups and calls WinMerge to compare current file with its backups | PyPlugins/plugin.kvichans.WinMergeCompare.zip
 Xml Format | Formats/indents XML code (uses xmlpp library) | PyPlugins/plugin.Alexey.XmlFormat.zip
 Xml Tidy | Formats/indents XML code (uses xml.dom library) | PyPlugins/plugin.Alexey.XmlTidy.zip
 YAML Format | Formats YAML code | PyPlugins/plugin.Alexey.YamlFormat.zip
