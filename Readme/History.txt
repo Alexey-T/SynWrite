@@ -4,6 +4,10 @@ Legend:
  * changed
 
 
+6.35.2600
++ dialog Page Setup: variable #Pagecount#
++ api
+
 6.35.2590
 * opt "Block indent" can be >0 (indent in spaces), <0 (indent in tabs)
 * opt "Optimal fill with tabs" removed (not needed with BlockIndent<0)

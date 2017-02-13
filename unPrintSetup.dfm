@@ -654,12 +654,14 @@ object fmPrintSetup: TfmPrintSetup
     ShowWhenNone = False
     Items.WideStrings = (
       '#PAGE#'
+      '#PAGECOUNT#'
       '#TITLE#'
       '#DATE#'
       '#TIME#'
       '#DATETIME#')
     DisplayItems.WideStrings = (
       'PAGE'
+      'PAGECOUNT'
       'TITLE'
       'DATE'
       'TIME'
