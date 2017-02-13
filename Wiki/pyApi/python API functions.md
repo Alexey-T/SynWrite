@@ -44,6 +44,7 @@ More functions | Description
 `lexer_proc(id, text)` | Performs lexers-related action. Possible values of `id` are listed at [py lexer-proc id].
 `timer_proc(id, callback, interval)` | Performs action on timers. Documented at http://wiki.freepascal.org/CudaText_API#timer_proc
 `ed_handles()` | Returns range object with all tabs editor handles. Pass all these handles to `Editor` constructor, to get editor objects. Here is example which prints all tabs contents: `for h in ed_handles(): print('---'); print(Editor(h).get_text_all());`
+`ed_group(index)` | Gets Editor object for active editor in tab-group with given group-index. Index: currently 0..5. Gets None for incorrect index, or if no tabs in this group.
 
 
 Editor class

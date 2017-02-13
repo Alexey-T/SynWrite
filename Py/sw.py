@@ -307,6 +307,11 @@ PROP_COLOR_SYNCEDIT_BG           = 'syncedit_bg'
 def ed_handles():
     r0, r1 = sw_api.ed_handles()
     return range(r0, r1+1)
+    
+def ed_group(n):
+    h = sw_api.ed_group(n)
+    if h:
+        return Editor(h)
 
 def msg_box(n1, n2):
     if type(n1) is int:

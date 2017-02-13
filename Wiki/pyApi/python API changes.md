@@ -3,6 +3,8 @@ Changes in Python API
 
 feb 2017
 
+* release 1.0.163
+* add: ed_group
 * release 1.0.162
 * add: ed.save
 * add: file_open: param "group"

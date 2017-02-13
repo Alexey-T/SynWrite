@@ -63,6 +63,7 @@ uses
   ecLists,
   ecStrUtils,
   ecEmbObj,
+  ATTabs,
   ATGroups,
   ATxFProc,
   ATxSProc,
@@ -1242,6 +1243,39 @@ begin
   with GetPythonEngine do
     Result:= Py_BuildValue('(ii)', nMin, nMax);
 end;
+
+
+function Py_ed_group(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  Index: integer;
+  Pages: TATPages;
+  Data: TATTabData;
+  Ed: TSyntaxMemo;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'i:ed_group', @Index)) then
+    begin
+      //need 1-based index
+      Inc(Index, Low(TATGroupsNums));
+      if not (Index in [Low(TATGroupsNums)..High(TATGroupsNums)]) then
+      begin
+        Result:= ReturnNone;
+        exit
+      end;  
+
+      Pages:= fmMain.Groups.Pages[Index];
+      Data:= Pages.Tabs.GetTabData(Pages.Tabs.TabIndex);
+      if Data=nil then
+      begin
+        Result:= ReturnNone;
+        exit
+      end;  
+
+      Ed:= (Data.TabObject as TEditorFrame).EditorMaster;
+      Result:= PyLong_FromLong(Integer(Ed));
+    end;
+end;
+  
 
 function Py_dlg_snippet(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -3001,8 +3035,9 @@ begin
     AddMethod('app_log', Py_app_log, '');
     AddMethod('app_proc', Py_app_proc, '');
     AddMethod('lexer_proc', Py_lexer_proc, '');
-    AddMethod('ed_handles', Py_ed_handles, '');
     AddMethod('timer_proc', Py_timer_proc, '');
+    AddMethod('ed_handles', Py_ed_handles, '');
+    AddMethod('ed_group', Py_ed_group, '');
 
     AddMethod('ini_read', Py_ini_read, '');
     AddMethod('ini_write', Py_ini_write, '');
