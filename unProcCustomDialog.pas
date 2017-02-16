@@ -330,6 +330,16 @@ begin
     exit;
   end;
 
+  if C is TTntLabel then
+  begin
+    if StrToBool(SGetItem(S)) then
+    begin
+      (C as TTntLabel).AutoSize:= false;
+      (C as TTntLabel).Alignment:= taRightJustify;
+    end;
+    exit;
+  end;
+
   if (C is TTntEdit) or (C is TTntMemo) then
   begin
     //RO

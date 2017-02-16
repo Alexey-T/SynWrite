@@ -3,6 +3,8 @@ Changes in Python API
 
 feb 2017
 
+* release 1.0.164
+* add: dlg_custom: "label" has "props" to right-align
 * release 1.0.163
 * add: ed_group
 * release 1.0.162

@@ -13,8 +13,8 @@ uses
   ecSyntAnal;
 
 const
-  cSynVersion = '6.35.2600';
-  cSynApiVersion = '1.0.163';
+  cSynVersion = '6.35.2602';
+  cSynApiVersion = '1.0.164';
 
 var
   SynModuleFilename: string;
