@@ -10,10 +10,11 @@ uses
   TntClasses,
   ATxFProc,
   ATxSProc,
+  ATSynPlugins,
   ecSyntAnal;
 
 const
-  cSynVersion = '6.35.2610';
+  cSynVersion = '6.36.2620';
   cSynApiVersion = '1.0.164';
 
 var
@@ -74,6 +75,7 @@ function SynMacrosIni: string;
 function SynHideIni: string;
 function SynPluginsIni: string;
 function SynHotkeysIni: string;
+function SynHotkeys_Section_FromCommandCode(ACommand: integer): string;
 function SynConverterFilename(const Name: string): string;
 function SynSkinsDir: string;
 function SynSnippetsDir: string;
@@ -176,6 +178,52 @@ const
     'root-addon'
     );
 
+type
+  TPluginList_Command = array[0..150] of record
+    SCaption: Widestring;
+    SFilename: string;
+    SLexers: string;
+    SCmd: string;
+  end;
+
+  TPluginList_Event = array[0..70] of record
+    SFilename: string;
+    SLexers: string;
+    SKeycodes: string;
+    Events: TSynPyEvents;
+  end;
+
+  TPluginList_Findid = array[0..30] of record
+    SFilename: string;
+    SLexers: string;
+  end;
+
+  TPluginList_Acp = TPluginList_FindId;
+
+  TPluginList_Panel = array[0..10] of record
+    SCaption: string;
+    SFileName: string;
+    SState: Widestring;
+    FDll: THandle;
+    FWindow: THandle;
+    FForm: Pointer;
+    FSynInit: TSynInit;
+    FSynOpenForm: TSynOpenForm;
+    FSynCloseForm: TSynCloseForm;
+    FSynAction: TSynAction;
+  end;
+
+var
+  FPluginsPanel: TPluginList_Panel;
+  FPluginsFindid: TPluginList_Findid;
+  FPluginsCommand: TPluginList_Command;
+  FPluginsEvent: TPluginList_Event;
+  FPluginsAcp: TPluginList_Acp;
+
+const
+  cPyCommandBase = 5000;
+  cPyCommandLast = cPyCommandBase+500;
+    
 function DoLexerOverridesLoad(const ALexer: string;
   var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string): boolean;
 procedure DoLexerOverridesSave(const ALexer: string;
@@ -484,6 +532,26 @@ begin
   Result:= SFileExtensionMatch(fn, 'zip');
 end;
 
+
+function SynHotkeys_Section_FromCommandCode(ACommand: integer): string;
+var
+  N: integer;
+begin
+  Result:= '';
+  case ACommand of
+    1..cPyCommandBase-1:
+      begin
+        Result:= IntToStr(ACommand);
+      end;
+    cPyCommandBase..cPyCommandLast:
+      begin
+        N:= ACommand-cPyCommandBase;
+        Result:=
+          FPluginsCommand[N].SFilename+','+
+          FPluginsCommand[N].SCmd;
+      end;
+  end;
+end;
 
 var
   DummyComponent: TComponent;

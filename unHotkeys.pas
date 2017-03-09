@@ -26,6 +26,8 @@ type
     procedure btnAdd2Click(Sender: TObject);
     procedure TntFormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure TntFormDestroy(Sender: TObject);
+    procedure TntFormCreate(Sender: TObject);
   private
     CurrentIndex: integer;
     procedure DoKeyClear(N: integer);
@@ -42,11 +44,27 @@ var
 
 function GetHotkeyStringFromCommandItem(
   AItem: TecCommandItem; AKeyIndex: integer): string;
+function GetHotkeyAsStringWithSep(
+  AItem: TecCommandItem; AKeyIndex: integer): string;
 
 
 implementation
 
 {$R *.dfm}
+
+function GetHotkeyAsStringWithSep(
+  AItem: TecCommandItem; AKeyIndex: integer): string;
+var
+  i: integer;
+begin
+  Result:= '';
+  if (AKeyIndex<AItem.KeyStrokes.Count) then
+    for i:= 0 to AItem.KeyStrokes.Items[AKeyIndex].KeyDefs.Count-1 do
+    begin
+      if Result<>'' then Result:= Result+'|';
+      Result:= Result+AItem.KeyStrokes.Items[AKeyIndex].KeyDefs[i].AsString;
+    end;
+end;
 
 function GetHotkeyStringFromCommandItem(
   AItem: TecCommandItem; AKeyIndex: integer): string;
@@ -149,6 +167,17 @@ begin
   PanelWait.Hide;
   UpdateState;
   Key:= 0;
+end;
+
+procedure TfmHotkeys.TntFormDestroy(Sender: TObject);
+begin
+  if Assigned(CommandItem) then
+    FreeAndNil(CommandItem);
+end;
+
+procedure TfmHotkeys.TntFormCreate(Sender: TObject);
+begin
+  CommandItem:= TecCommandItem.Create(nil);
 end;
 
 end.

@@ -6,6 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Menus,
   TntStdCtrls, TntForms, TntClasses,
+  unGlobData,
   ecKeyMap, ExtCtrls, DKLang;
 
 type
@@ -67,6 +68,7 @@ procedure TfmMenuCmds.DoDialogHotkeys(AOwner: TComponent; ACommand: integer);
 var
   Form: TfmHotkeys;
   KeyIndex, i: Integer;
+  SSection: string;
 begin
   KeyIndex:= -1;
   for i:= 0 to KeysList.Items.Count-1 do
@@ -76,14 +78,26 @@ begin
 
   Form:= TfmHotkeys.Create(AOwner);
   try
-    Form.CommandItem:= KeysList.Items[KeyIndex];
+    Form.CommandItem.Assign(KeysList.Items[KeyIndex]);
     if Form.ShowModal=mrOk then
     begin
-      //todo: SynHotkeys.ini
+       KeysList.Items[KeyIndex].Assign(Form.CommandItem);
+       DoFilter;
+
+       with TIniFile.Create(SynHotkeysIni) do
+       try
+         SSection:= SynHotkeys_Section_FromCommandCode(ACommand);
+         EraseSection(SSection);
+         WriteString(SSection, 'name', StringReplace(Form.CommandItem.DisplayName, '&', '', [rfReplaceAll]));
+         WriteString(SSection, 's1', GetHotkeyAsStringWithSep(Form.CommandItem, 0));
+         WriteString(SSection, 's2', GetHotkeyAsStringWithSep(Form.CommandItem, 1));
+       finally
+         Free
+       end;
     end;
   finally
     FreeAndNil(Form);
-  end;    
+  end;
 end;
 
 procedure TfmMenuCmds.FormKeyDown(Sender: TObject; var Key: Word;

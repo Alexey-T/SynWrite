@@ -14,6 +14,8 @@ object fmHotkeys: TfmHotkeys
   KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
+  OnCreate = TntFormCreate
+  OnDestroy = TntFormDestroy
   OnKeyDown = TntFormKeyDown
   OnShow = TntFormShow
   PixelsPerInch = 96

@@ -98,7 +98,6 @@ const
   cPyTrue = 'True';
   cPyFalse = 'False';
   cPyNone = 'None';
-  cPyCommandBase = 5000;
   cPyPluginManager = 'syn_plugin_manager';
 
 type
@@ -198,40 +197,6 @@ type
     cCmdCopyFullName,
     cCmdCopyFilePath
     );
-
-  TPluginList_Command = array[0..150] of record
-    SCaption: Widestring;
-    SFilename: string;
-    SLexers: string;
-    SCmd: string;
-  end;
-
-  TPluginList_Event = array[0..70] of record
-    SFilename: string;
-    SLexers: string;
-    SKeycodes: string;
-    Events: TSynPyEvents;
-  end;
-
-  TPluginList_Findid = array[0..30] of record
-    SFilename: string;
-    SLexers: string;
-  end;
-
-  TPluginList_Acp = TPluginList_FindId;
-
-  TPluginList_Panel = array[0..10] of record
-    SCaption: string;
-    SFileName: string;
-    SState: Widestring;
-    FDll: THandle;
-    FWindow: THandle;
-    FForm: Pointer;
-    FSynInit: TSynInit;
-    FSynOpenForm: TSynOpenForm;
-    FSynCloseForm: TSynCloseForm;
-    FSynAction: TSynAction;
-  end;
 
 type
   TSynLogPanelProps = record
@@ -1880,12 +1845,6 @@ type
     FSessionFN: string;
     FProjectIniting: boolean;
     FProjectFreeing: boolean;
-
-    FPluginsPanel: TPluginList_Panel;
-    FPluginsFindid: TPluginList_Findid;
-    FPluginsCommand: TPluginList_Command;
-    FPluginsEvent: TPluginList_Event;
-    FPluginsAcp: TPluginList_Acp;
 
     FListFiles: TTntStringList; //filenames list of mass search/replace operation
     FPanelDrawBusy: boolean;
@@ -5875,8 +5834,7 @@ begin
 
     //end of commands list
 
-    cPyCommandBase..
-    cPyCommandBase+500:
+    cPyCommandBase..cPyCommandLast:
       DoPyCommandPlugin(Command-cPyCommandBase);
 
     else
