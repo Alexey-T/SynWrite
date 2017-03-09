@@ -15,8 +15,13 @@ uses
   TntControls, TntExtCtrls, TntComCtrls, TntStdCtrls, TntCheckLst, TntForms,
   ATLinkLabel;
 
-procedure DoDialogCustom(const ATitle: string; ASizeX, ASizeY: integer;
-  AText: string; AFocusedIndex: integer; out AButtonIndex: integer; out AStateText: string);
+procedure DoDialogCustom(
+ const ATitle: string;
+ ASizeX, ASizeY: integer;
+ AText: string;
+ AFocusedIndex: integer;
+ out AButtonIndex: integer;
+ out AStateText: string);
 
 function IsDialogCustomShown: boolean;
 
