@@ -185,7 +185,7 @@ function IsFileProject(const fn: Widestring): boolean;
 function IsFileSession(const fn: Widestring): boolean;
 function IsFileArchive(const fn: Widestring): boolean;
 function IsFileSnippet(const fn: Widestring): boolean;
-    
+
 
 implementation
 
@@ -485,7 +485,7 @@ begin
 end;
 
 
-var
+var
   DummyComponent: TComponent;
   
 { TColorBox }
