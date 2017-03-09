@@ -43,6 +43,7 @@ type
     { Public declarations }
     //PyList: TTntStringList;
     LexList: TTntStringList;
+    LexerName: string;
     FIniFN: string;
     FColorSel: TColor;
     FColorSelBk: TColor;
@@ -68,7 +69,7 @@ procedure TfmMenuCmds.DoDialogHotkeys(AOwner: TComponent; ACommand: integer);
 var
   Form: TfmHotkeys;
   KeyIndex, i: Integer;
-  SSection: string;
+  SSection, SLexer: string;
 begin
   KeyIndex:= -1;
   for i:= 0 to KeysList.Items.Count-1 do
@@ -79,12 +80,19 @@ begin
   Form:= TfmHotkeys.Create(AOwner);
   try
     Form.CommandItem.Assign(KeysList.Items[KeyIndex]);
+    Form.chkForLexer.Enabled:= LexerName<>'';
+    
     if Form.ShowModal=mrOk then
     begin
        KeysList.Items[KeyIndex].Assign(Form.CommandItem);
        DoFilter;
 
-       with TIniFile.Create(SynHotkeysIni) do
+       if Form.chkForLexer.Checked then
+         SLexer:= LexerName
+       else
+         SLexer:= '';
+         
+       with TIniFile.Create(SynHotkeysIni(SLexer)) do
        try
          SSection:= SynHotkeys_Section_FromCommandCode(ACommand);
          EraseSection(SSection);

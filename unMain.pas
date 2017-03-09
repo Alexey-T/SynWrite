@@ -20460,6 +20460,7 @@ begin
 
     Font.Assign(FFontMenus);
     List.ItemHeight:= FontHeightToItemHeight(Font);
+    LexerName:= CurrentLexerForFile;
 
     Caption:= DKLangConstW('zMCmdList');
 

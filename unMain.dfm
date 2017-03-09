@@ -4550,13 +4550,7 @@ object fmMain: TfmMain
       end
       item
         Command = 740
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 24654
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'File'
         DisplayName = 'New window'
       end
@@ -4592,13 +4586,7 @@ object fmMain: TfmMain
       end
       item
         Command = 706
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 24659
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'File'
         DisplayName = 'Save file as'
       end

@@ -3,7 +3,7 @@ object fmHotkeys: TfmHotkeys
   Top = 455
   BorderStyle = bsDialog
   Caption = 'Hotkeys'
-  ClientHeight = 191
+  ClientHeight = 207
   ClientWidth = 412
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -36,23 +36,23 @@ object fmHotkeys: TfmHotkeys
   end
   object btnOk: TTntButton
     Left = 216
-    Top = 160
+    Top = 176
     Width = 91
     Height = 23
     Caption = 'OK'
     Default = True
     ModalResult = 1
-    TabOrder = 4
+    TabOrder = 5
   end
   object btnCancel: TTntButton
     Left = 312
-    Top = 160
+    Top = 176
     Width = 91
     Height = 23
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
-    TabOrder = 5
+    TabOrder = 6
   end
   object btnClear1: TTntButton
     Left = 56
@@ -97,7 +97,15 @@ object fmHotkeys: TfmHotkeys
     Height = 97
     BevelOuter = bvNone
     Caption = 'Press a hotkey...'
-    TabOrder = 6
+    TabOrder = 7
     Visible = False
+  end
+  object chkForLexer: TTntCheckBox
+    Left = 8
+    Top = 152
+    Width = 305
+    Height = 17
+    Caption = 'For current lexer only'
+    TabOrder = 4
   end
 end

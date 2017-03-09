@@ -19,6 +19,7 @@ type
     btnClear2: TTntButton;
     btnAdd2: TTntButton;
     PanelWait: TTntPanel;
+    chkForLexer: TTntCheckBox;
     procedure TntFormShow(Sender: TObject);
     procedure btnClear1Click(Sender: TObject);
     procedure btnClear2Click(Sender: TObject);
@@ -32,11 +33,14 @@ type
     CurrentIndex: integer;
     procedure DoKeyClear(N: integer);
     procedure DoKeyAdd(N: Integer);
+    procedure SetWaitMode(b: Boolean);
+    function GetWaitMode: Boolean;
     { Private declarations }
   public
     { Public declarations }
     CommandItem: TecCommandItem;
     procedure UpdateState;
+    property WaitMode: boolean read GetWaitMode write SetWaitMode;
   end;
 
 var
@@ -130,7 +134,7 @@ end;
 procedure TfmHotkeys.DoKeyAdd(N: Integer);
 begin
   CurrentIndex:= N;
-  PanelWait.Show;
+  WaitMode:= True;
 end;
 
 procedure TfmHotkeys.btnAdd1Click(Sender: TObject);
@@ -148,7 +152,7 @@ procedure TfmHotkeys.TntFormKeyDown(Sender: TObject; var Key: Word;
 var
   Sh: TShortCut;
 begin
-  if not PanelWait.Visible then exit;
+  if not WaitMode then exit;
 
   if (Key=vk_menu) or (Key=vk_lmenu) or (Key=vk_rmenu) or
     (Key=vk_shift) or (Key=vk_lshift) or (Key=vk_rshift) or
@@ -164,9 +168,17 @@ begin
     CommandItem.KeyStrokes.Add;
   CommandItem.KeyStrokes[CurrentIndex].KeyDefs.Add.ShortCut:= Sh;
 
-  PanelWait.Hide;
+  WaitMode:= False;
   UpdateState;
   Key:= 0;
+end;
+
+procedure TfmHotkeys.SetWaitMode(b: Boolean);
+begin
+  PanelWait.Visible:= b;
+  chkForLexer.Visible:= not b;
+  btnOk.Visible:= not b;
+  btnCancel.Visible:= not b;
 end;
 
 procedure TfmHotkeys.TntFormDestroy(Sender: TObject);
@@ -178,6 +190,11 @@ end;
 procedure TfmHotkeys.TntFormCreate(Sender: TObject);
 begin
   CommandItem:= TecCommandItem.Create(nil);
+end;
+
+function TfmHotkeys.GetWaitMode: Boolean;
+begin
+  Result:= PanelWait.Visible;
 end;
 
 end.

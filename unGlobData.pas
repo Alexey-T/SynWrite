@@ -74,7 +74,7 @@ function SynFoldStatesIni: string;
 function SynMacrosIni: string;
 function SynHideIni: string;
 function SynPluginsIni: string;
-function SynHotkeysIni: string;
+function SynHotkeysIni(const ALexerName: string): string;
 function SynHotkeys_Section_FromCommandCode(ACommand: integer): string;
 function SynConverterFilename(const Name: string): string;
 function SynSkinsDir: string;
@@ -355,9 +355,12 @@ begin
   Result:= SynIniDir + 'SynPlugins.ini';
 end;
 
-function SynHotkeysIni: string;
+function SynHotkeysIni(const ALexerName: string): string;
 begin
-  Result:= SynIniDir + 'SynHotkeys.ini';
+  if ALexerName='' then
+    Result:= SynIniDir + 'SynHotkeys.ini'
+  else
+    Result:= SynIniDir + Format('SynHotkeys lexer %s.ini', [ALexerName]);
 end;
 
 function SynConverterFilename(const Name: string): string;
