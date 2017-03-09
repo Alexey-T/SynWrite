@@ -26,7 +26,7 @@ object fmMenuCmds: TfmMenuCmds
     Left = 0
     Top = 24
     Width = 494
-    Height = 244
+    Height = 243
     Style = lbOwnerDrawFixed
     Align = alClient
     ItemHeight = 16
@@ -47,7 +47,7 @@ object fmMenuCmds: TfmMenuCmds
   end
   object Panel1: TPanel
     Left = 0
-    Top = 268
+    Top = 267
     Width = 494
     Height = 16
     Align = alBottom

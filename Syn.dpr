@@ -68,7 +68,8 @@ uses
   unProcCustomDialog in 'unProcCustomDialog.pas',
   unGlobData in 'unGlobData.pas',
   unPyApiConst in 'unPyApiConst.pas',
-  unColorBox in 'unColorBox.pas';
+  unColorBox in 'unColorBox.pas',
+  unHotkeys in 'unHotkeys.pas' {fmHotkeys};
 
 {$R *.res}
 {$R *.dkl_const.res}

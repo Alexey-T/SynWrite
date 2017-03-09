@@ -13,7 +13,7 @@ uses
   ecSyntAnal;
 
 const
-  cSynVersion = '6.35.2602';
+  cSynVersion = '6.35.2610';
   cSynApiVersion = '1.0.164';
 
 var
@@ -73,6 +73,7 @@ function SynFoldStatesIni: string;
 function SynMacrosIni: string;
 function SynHideIni: string;
 function SynPluginsIni: string;
+function SynHotkeysIni: string;
 function SynConverterFilename(const Name: string): string;
 function SynSkinsDir: string;
 function SynSnippetsDir: string;
@@ -304,6 +305,11 @@ end;
 function SynPluginsIni: string;
 begin
   Result:= SynIniDir + 'SynPlugins.ini';
+end;
+
+function SynHotkeysIni: string;
+begin
+  Result:= SynIniDir + 'SynHotkeys.ini';
 end;
 
 function SynConverterFilename(const Name: string): string;

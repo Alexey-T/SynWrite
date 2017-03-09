@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls,
+  Dialogs, StdCtrls, Menus,
   TntStdCtrls, TntForms, TntClasses,
   ecKeyMap, ExtCtrls, DKLang;
 
@@ -37,6 +37,8 @@ type
     { Private declarations }
     FFuzzy: boolean;
     procedure DoFilter;
+    procedure DoDialogHotkeys(AOwner: TComponent; ACommand: integer);
+    function GetHotkeyStringFromCommandItem(AItem: TecCommandItem; AKeyIndex: integer): string;
   public
     { Public declarations }
     //PyList: TTntStringList;
@@ -58,12 +60,38 @@ uses
   ecStrUtils,
   unProc,
   unProcHelp,
-  ATxSProc;
+  ATxSProc, unHotkeys;
 
 {$R *.dfm}
 
+procedure TfmMenuCmds.DoDialogHotkeys(AOwner: TComponent; ACommand: integer);
+var
+  F: TfmHotkeys;
+  Str1: string;
+  KeyIndex, i: Integer;
+begin
+  KeyIndex:= -1;
+  for i:= 0 to KeysList.Items.Count-1 do
+    if KeysList.Items[i].Command=ACommand then
+      begin KeyIndex:= i; break end;
+  if KeyIndex<0 then exit;
+
+  F:= TfmHotkeys.Create(AOwner);
+  try
+    F.labelInfo1.Caption:= '1)  '+GetHotkeyStringFromCommandItem(KeysList.Items[KeyIndex], 0);
+    F.labelInfo2.Caption:= '2)  '+GetHotkeyStringFromCommandItem(KeysList.Items[KeyIndex], 1);
+    if F.ShowModal=mrOk then
+    begin
+    end;
+  finally
+    FreeAndNil(F);
+  end;    
+end;
+
 procedure TfmMenuCmds.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
+var
+  S, SItem: Widestring;
 begin
   //Esc
   if (Key=vk_escape) and (Shift=[]) then
@@ -77,6 +105,16 @@ begin
   begin
     if List.ItemIndex>=0 then
       ModalResult:= mrOk;
+    Key:= 0;
+    Exit
+  end;
+  //F9
+  if (Key=vk_f9) and (Shift=[]) then
+  begin
+    if List.ItemIndex>=0 then
+    begin
+      DoDialogHotkeys(Self, integer(List.Items.Objects[List.ItemIndex]));
+    end;
     Key:= 0;
     Exit
   end;
@@ -114,6 +152,15 @@ begin
      DKLangConstW('zMHintFuzzy')]);
 end;
 
+
+function TfmMenuCmds.GetHotkeyStringFromCommandItem(
+  AItem: TecCommandItem; AKeyIndex: integer): string;
+begin
+  Result:= '';
+  if (AKeyIndex<AItem.KeyStrokes.Count) then
+    Result:= AItem.KeyStrokes[AKeyIndex].AsString;
+end;
+
 procedure TfmMenuCmds.DoFilter;
   function SFiltered(const S: Widestring): boolean;
   begin
@@ -141,6 +188,7 @@ begin
           if ListCat[j]=KeysList.Items[i].Category then
             if KeysList.Items[i].Command>0 then
             begin
+              //todo: use Gethotkey
               S:= KeysList.Items[i].Category + ': ' + KeysList.Items[i].DisplayName;
               if KeysList.Items[i].KeyStrokes.Count>0 then
               begin
