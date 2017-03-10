@@ -17,7 +17,9 @@ uses
 
   unGlobData,
   unColorBox,
-  unMain, unSetupOvr, unProcEditor;
+  unMain,
+  unSetupOvr,
+  unProcEditor;
 
 const
   cMaxCaretTime = 1000*1000*1000;
@@ -33,9 +35,6 @@ type
     FontDialog: TFontDialog;
     KeyList: TTntStringGrid;
     KeyMapping: TSyntKeyMapping;
-    ecHotKey: TecHotKey;
-    bKeySet: TTntButton;
-    bKeyClear: TTntButton;
     tabFiles: TTntTabSheet;
     gColors: TTntGroupBox;
     Label4: TTntLabel;
@@ -48,7 +47,6 @@ type
     Label11: TTntLabel;
     cbStat: TTntCheckBox;
     tabACP: TTntTabSheet;
-    bKeyFind: TTntButton;
     DKLanguageController1: TDKLanguageController;
     cbColors: TColorBox;
     cbInst: TTntCheckBox;
@@ -281,8 +279,6 @@ type
     cbProjSessSave: TTntCheckBox;
     cbProjSessOpen: TTntCheckBox;
     cbProjCloseTabs: TTntCheckBox;
-    bKeyExtend: TTntButton;
-    labHelpKeys: TTntLabel;
     bFontConsole: TTntButton;
     edNoSnippetsExt: TEdit;
     TntLabel34: TTntLabel;
@@ -304,7 +300,6 @@ type
     TntLabel3: TTntLabel;
     bFontTabs: TTntButton;
     LabelLangMore: TTntLabel;
-    KeyMappingPy: TSyntKeyMapping;
     edTabMinLen: TSpinEdit;
     TntLabel29: TTntLabel;
     cbTabEntire: TTntCheckBox;
@@ -339,6 +334,7 @@ type
     cbCopyLineNoSel: TTntCheckBox;
     bColorCustom: TTntButton;
     LabelBlickIndent: TTntLabel;
+    labelHtokeyInfo: TTntLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -347,7 +343,6 @@ type
     procedure tabColorsShow(Sender: TObject);
     procedure ListColorsClick(Sender: TObject);
     procedure cbColorsSelect(Sender: TObject);
-    procedure bKeySetClick(Sender: TObject);
     procedure tabKeyShow(Sender: TObject);
     procedure KeyListMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -360,8 +355,6 @@ type
       MousePos: TPoint; var Handled: Boolean);
     procedure KeyListMouseWheelUp(Sender: TObject; Shift: TShiftState;
       MousePos: TPoint; var Handled: Boolean);
-    procedure bKeyClearClick(Sender: TObject);
-    procedure ecHotKeyChange(Sender: TObject);
     procedure tabFilesShow(Sender: TObject);
     procedure bFontTextClick(Sender: TObject);
     procedure bFontNumbersClick(Sender: TObject);
@@ -372,7 +365,6 @@ type
     procedure tabACPShow(Sender: TObject);
     procedure btnClearEdHistoryClick(Sender: TObject);
     procedure btnClearFindHistoryClick(Sender: TObject);
-    procedure bKeyFindClick(Sender: TObject);
     procedure bFontRulerClick(Sender: TObject);
     procedure bFontAcpClick(Sender: TObject);
     procedure edTabModeChange(Sender: TObject);
@@ -420,8 +412,6 @@ type
     procedure tabSelHLShow(Sender: TObject);
     procedure tabInsertFormatShow(Sender: TObject);
     procedure tabUndoShow(Sender: TObject);
-    procedure bKeyExtendClick(Sender: TObject);
-    procedure labHelpKeysClick(Sender: TObject);
     procedure bFontConsoleClick(Sender: TObject);
     procedure bFontTabsClick(Sender: TObject);
     procedure LabelLangMoreClick(Sender: TObject);
@@ -438,8 +428,6 @@ type
     //procedure MenuLexersClick(Sender: TObject);
     function MsgConfirmKeyOvr(const SCategory, SName: Widestring): boolean;
     procedure DoFontConfig(btn: TTntButton);
-    function DoCheckKeyDups(const KeyStr: string): boolean;
-    procedure UpdateKeyButtons;
     procedure DoFillKeys;
     procedure FixWnd;
     function GetColorPresetFN(const Name: string): string;
@@ -455,7 +443,6 @@ type
     procedure ApplyTabs;
     procedure ApplyEditorCarets;
     procedure ApplyEditorOverrides;
-    procedure ApplyKeys;
     procedure ApplyFiles;
     procedure ApplySearch;
     procedure ApplyTree;
@@ -688,7 +675,6 @@ begin
   if tabTree.Tag    <>0 then ApplyTree;
   if tabFonts.Tag   <>0 then ApplyFonts;
   if tabColors.Tag  <>0 then ApplyColors;
-  if tabKey.Tag     <>0 then ApplyKeys;
   if tabPath.Tag    <>0 then ApplySearchFolders;
   if tabFiles.Tag   <>0 then ApplyFiles;
   if tabProgSett.Tag<>0 then ApplyProgSett;
@@ -788,7 +774,6 @@ begin
   tabKey.Tag:= 1;
 
   InitKeys;
-  UpdateKeyButtons;
 end;
 
 function SKeysOf(c: TecCommandItem): string;
@@ -849,7 +834,7 @@ begin
 
           //add item
           Cells[0,j]:= IntToStr(i);
-          Cells[1,j]:= KeyMapping.Items[i].DisplayName;
+          Cells[1,j]:= StringReplace(KeyMapping.Items[i].DisplayName, '&', '', [rfReplaceAll]);
           Cells[2,j]:= '';
           Cells[3,j]:= '';
           if KeyMapping.Items[i].KeyStrokes.Count>0 then
@@ -950,7 +935,6 @@ end;
 procedure TfmSetup.KeyListClick(Sender: TObject);
 begin
   KeyList.Repaint;
-  UpdateKeyButtons;
 end;
 
 procedure TfmSetup.KeyListMouseWheelUp(Sender: TObject; Shift: TShiftState;
@@ -974,6 +958,7 @@ begin
 end;
 
 function TfmSetup.MsgConfirmKeyOvr(const SCategory, SName: Widestring): boolean;
+//not used now
 var
   s: Widestring;
 begin
@@ -981,109 +966,6 @@ begin
   Result:= MsgConfirm(s + #13#13 + DKLangConstW('zKeyOvr'), Handle);
 end;
 
-function TfmSetup.DoCheckKeyDups(const KeyStr: string): boolean;
-var
-  mapindex, keyindex: Integer;
-  i, j: Integer;
-begin
-  Result:= true;
-  mapindex:= -1;
-  keyindex:= -1;
-
-  with KeyMapping do
-    for i:= 0 to Items.Count-1 do
-      for j:= 0 to Items[i].KeyStrokes.Count-1 do
-        if Items[i].KeyStrokes[j].AsString=KeyStr then
-        begin
-          if MsgConfirmKeyOvr(Items[i].Category, Items[i].DisplayName) then
-          begin
-            mapindex:= i;
-            keyindex:= j;
-            Break;
-          end
-          else
-          begin
-            Result:= false;
-            Exit
-          end;
-        end;
-
-  if mapindex>=0 then
-  begin
-    //clear old hotkey
-    KeyMapping.Items[mapindex].KeyStrokes.Delete(keyindex);
-    //clear KeyList cell
-    for i:= 0 to KeyList.RowCount-1 do
-      if GetKeymappingIndex(i)=mapindex then
-      begin
-        KeyList.Cells[keyindex+2, i]:= '';
-        if keyindex=0 then
-        begin
-          KeyList.Cells[2, i]:= KeyList.Cells[3, i];
-          KeyList.Cells[3, i]:= '';
-        end;
-      end;
-  end;
-end;
-
-procedure TfmSetup.bKeySetClick(Sender: TObject);
-var
-  c, r, mapindex, keyindex: integer;
-begin
-  if ecHotKey.Text='' then Exit;
-  c:= KeyList.Selection.Left;
-  r:= KeyList.Selection.Top;
-
-  //find dup keys
-  if not DoCheckKeyDups(ecHotkey.Text) then Exit;
-
-  //assign new hotkey
-  mapindex:= GetKeymappingIndex(r);
-  keyindex:= c-2;
-  if mapindex<0 then Exit;
-
-  with KeyMapping.Items[mapindex] do
-  begin
-    case KeyStrokes.Count of
-      0: begin KeyStrokes.Add; keyindex:= 0; end;
-      1: begin if keyindex>0 then begin KeyStrokes.Add; keyindex:= 1; end; end;
-      2: begin end;
-      else
-        raise Exception.Create(Format('Unexpected number of keystrokes, %d', [KeyStrokes.Count]));
-    end;
-
-    KeyStrokes[keyindex].KeyDefs.Clear;
-    KeyStrokes[keyindex].KeyDefs.Add.ShortCut:= ecHotKey.HotKey;
-    KeyList.Cells[keyindex+2, r]:= KeyStrokes[keyindex].AsString;
-  end;
-
-  UpdateKeyButtons;
-end;
-
-procedure TfmSetup.bKeyClearClick(Sender: TObject);
-var
-  c, r, mapindex, keyindex: integer;
-begin
-  c:= KeyList.Selection.Left;
-  r:= KeyList.Selection.Top;
-  mapindex:= GetKeymappingIndex(r);
-  keyindex:= c-2;
-
-  if mapindex<0 then Exit;
-  if keyindex=0 then
-    KeyList.Cells[2, r]:= KeyList.Cells[3, r];
-  KeyList.Cells[3, r]:= '';
-
-  KeyMapping.Items[mapindex].KeyStrokes.Delete(keyindex);
-
-  ecHotKey.Text:= '';
-  ecHotKeyChange(Self);
-end;
-
-procedure TfmSetup.ecHotKeyChange(Sender: TObject);
-begin
-  UpdateKeyButtons;
-end;
 
 //misc
 procedure TfmSetup.tabFilesShow(Sender: TObject);
@@ -1184,33 +1066,6 @@ procedure TfmSetup.btnClearFindHistoryClick(Sender: TObject);
 begin
   fmMain.DoClearSearchHistory;
   btnClearFindHistory.Enabled:= false;
-end;
-
-procedure TfmSetup.bKeyFindClick(Sender: TObject);
-var
-  i, j, k: Integer;
-  g: TGridRect;
-begin
-  if ecHotKey.Text='' then Exit;
-  for i:= 1 to KeyList.RowCount-1 do
-    for j:= 2 to 3 do
-      if (KeyList.Cells[j, i]=ecHotKey.Text) then
-      begin
-        g.Left:= j;
-        g.Top:= i;
-        g.Right:= g.Left;
-        g.Bottom:= g.Top;
-        k:= i-2;
-        if k<1 then k:= 1;
-        if k>KeyList.RowCount-KeyList.VisibleRowCount then
-          k:= KeyList.RowCount-KeyList.VisibleRowCount;
-        KeyList.TopRow:= k;
-        KeyList.Selection:= g;
-        KeyList.Repaint;
-        Exit;
-      end;
-
-  MsgInfo(DKLangConstW('zKeyNotUsed'), Handle);
 end;
 
 procedure TfmSetup.edTabModeChange(Sender: TObject);
@@ -1838,11 +1693,6 @@ begin
   end;
 end;
 
-procedure TfmSetup.ApplyKeys;
-begin
-  DoKeymappingJoin(KeyMapping, KeyMappingPy, fmMain.SyntKeyMapping);
-end;
-
 procedure TfmSetup.ApplySearch;
 begin
   with fmMain do
@@ -2143,11 +1993,7 @@ var
   L: TTntStringList;
   i: Integer;
 begin
-  //copy keymapping from fmMain, only first InitialKeyCount items
-  DoKeymappingSplit(fmMain.SyntKeyMapping, KeyMapping, KeyMappingPy, fmMain.InitialKeyCount);
-
-    //debug
-    //ShowMessage('py keys: '+Inttostr(KeyMappingPy.Items.Count));
+  KeyMapping.Assign(fmMain.SyntKeyMapping);
 
   //list categories
   L:= TTntStringList.Create;
@@ -2601,101 +2447,6 @@ function TfmSetup.GetKeymappingIndex(Row: integer): integer;
 begin
   Result:= StrToIntDef(KeyList.Cells[0, Row], -1);
 end;
-
-procedure TfmSetup.bKeyExtendClick(Sender: TObject);
-var
-  c, r, mapindex, keyindex: integer;
-  stroke, strokeTest: TKeyStroke;
-begin
-  if ecHotKey.Text='' then Exit;
-  if ecHotKey.Hotkey=0 then
-    begin MessageBeep(mb_iconwarning); Exit end;
-
-  c:= KeyList.Selection.Left;
-  r:= KeyList.Selection.Top;
-  mapindex:= GetKeymappingIndex(r);
-  keyindex:= c-2;
-  if mapindex<0 then Exit;
-
-  stroke:= nil;
-  if (keyindex>=0) and (keyindex<KeyMapping.Items[mapindex].KeyStrokes.Count) then
-    stroke:= KeyMapping.Items[mapindex].KeyStrokes[keyindex];
-  if stroke=nil then
-    begin MessageBeep(mb_iconwarning); Exit end;
-
-  //check for dups
-  strokeTest:= TKeyStroke.Create(nil);
-  try
-    strokeTest.Assign(stroke);
-    strokeTest.KeyDefs.Add.ShortCut:= ecHotKey.HotKey;
-    if not DoCheckKeyDups(strokeTest.AsString) then Exit;
-  finally
-    FreeAndNil(strokeTest);
-  end;
-
-  stroke.KeyDefs.Add.ShortCut:= ecHotKey.HotKey;
-  KeyList.Cells[c, r]:= stroke.AsString;
-end;
-
-procedure TfmSetup.UpdateKeyButtons;
-var
-  IsCellSet, IsKeySet: boolean;
-begin
-  IsCellSet:= KeyList.Cells[KeyList.Selection.Left, KeyList.Selection.Top] <> '';
-  IsKeySet:= ecHotkey.Text <> '';
-
-  bKeySet.Enabled:= IsKeySet;
-  bKeyExtend.Enabled:= IsKeySet and IsCellSet;
-  bKeyClear.Enabled:= IsCellSet;
-  bKeyFind.Enabled:= IsKeySet;
-end;
-
-procedure TfmSetup.labHelpKeysClick(Sender: TObject);
-begin
-  SynHelpTopic(helpKeys, Handle);
-end;
-
-{
-//deprecated code.
-//shows menu with all lexest list.
-//may be useful later.
-procedure TfmSetup.bAcpFixCaseClick(Sender: TObject);
-var
-  L: TTntStringList;
-  i: Integer;
-  MI: TTntMenuItem;
-  P: TPoint;
-begin
-  PopupLexers.Items.Clear;
-
-  L:= TTntStringList.Create;
-  try
-    fmMain.DoEnumLexers(L);
-    L.Sort;
-
-    for i:= 0 to L.Count-1 do
-    begin
-      MI:= TTntMenuItem.Create(Self);
-      MI.Caption:= L[i];
-      MI.OnClick:= MenuLexersClick;
-      PopupLexers.Items.Add(MI);
-
-      if (i>0) and (i mod 30 = 0) then
-      begin
-        MI:= TTntMenuItem.Create(Self);
-        MI.Caption:= '-';
-        MI.Break:= mbBarBreak;
-        PopupLexers.Items.Add(MI);
-      end;
-    end;
-  finally
-    FreeAndNil(L);
-  end;
-
-  P:= bAcpFixCase.ClientToScreen(Point(0, 0));
-  PopupLexers.Popup(P.X, P.Y);
-end;
-}
 
 procedure TfmSetup.bFontTabsClick(Sender: TObject);
 begin

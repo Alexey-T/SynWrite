@@ -4,10 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Menus,
+  Dialogs, StdCtrls, ExtCtrls, Menus,
   TntStdCtrls, TntForms, TntClasses,
   unGlobData,
-  ecKeyMap, ExtCtrls, DKLang;
+  ecKeyMap,
+  DKLang;
 
 type
   TfmMenuCmds = class(TTntForm)
@@ -61,7 +62,8 @@ uses
   ecStrUtils,
   unProc,
   unProcHelp,
-  ATxSProc, unHotkeys;
+  unHotkeys,
+  ATxSProc;
 
 {$R *.dfm}
 
