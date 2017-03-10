@@ -657,7 +657,6 @@ type
     acMacro7: TAction;
     acMacro8: TAction;
     acMacro9: TAction;
-    PropsManagerKeys: TPropsManager;
     TBXSeparatorItem53: TSpTbxSeparatorItem;
     TBXItemMacro9: TSpTbxItem;
     TBXItemMacro8: TSpTbxItem;
@@ -13916,8 +13915,6 @@ end;
 procedure TfmMain.SaveMacros;
 begin
   ecMacroRec.SaveToFile(SynMacrosIni);
-  PropsManagerKeys.IniFileName:= SynIni;
-  PropsManagerKeys.SaveProps;
 end;
 
 procedure TfmMain.DoMacro_Run(n: Integer);

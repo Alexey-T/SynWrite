@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Menus,
   TntControls, TntClasses, TntForms, TntStdCtrls,
-  ecKeyMap, ExtCtrls, TntExtCtrls;
+  ecKeyMap, ExtCtrls, TntExtCtrls, DKLang;
 
 type
   TfmHotkeys = class(TTntForm)
@@ -20,6 +20,7 @@ type
     btnAdd2: TTntButton;
     PanelWait: TTntPanel;
     chkForLexer: TTntCheckBox;
+    DKLang1: TDKLanguageController;
     procedure TntFormShow(Sender: TObject);
     procedure btnClear1Click(Sender: TObject);
     procedure btnClear2Click(Sender: TObject);
@@ -96,7 +97,6 @@ const
 var
   Str1, Str2: string;
 begin
-  Caption:= StringReplace('Hotkey: '+CommandItem.DisplayName, '&', '', [rfReplaceAll]);
   Str1:= GetHotkeyStringFromCommandItem(CommandItem, 0);
   Str2:= GetHotkeyStringFromCommandItem(CommandItem, 1);
   labelInfo1.Caption:= '1)  '+Str1;
@@ -111,6 +111,8 @@ end;
 
 procedure TfmHotkeys.TntFormShow(Sender: TObject);
 begin
+  Caption:= DKLangConstW('cap_Hotkey')+': '+
+    StringReplace(CommandItem.DisplayName, '&', '', [rfReplaceAll]);
   PanelWait.Align:= alClient;
   UpdateState;
 end;
