@@ -403,14 +403,17 @@ object fmMain: TfmMain
       DockableTo = [dpLeft, dpRight]
       DockPos = 4
       HideWhenInactive = False
+      ParentShowHint = False
+      ShowHint = False
       TabOrder = 0
       OnDockChanged = plTreeDockChanged
       OnMove = tbViewMove
       OnResize = plTreeResize
       OnVisibleChanged = plTreeVisibleChanged
+      Options.TitleBarMaxSize = 100
       object Tree: TSyntaxTreeView
         Left = 0
-        Top = 19
+        Top = 25
         Width = 246
         Height = 109
         ClickAction = staMoveCaret
@@ -435,7 +438,7 @@ object fmMain: TfmMain
       end
       object ListTabs: TTntListView
         Left = 0
-        Top = 128
+        Top = 134
         Width = 246
         Height = 150
         Align = alTop
@@ -480,16 +483,19 @@ object fmMain: TfmMain
       Height = 185
       Caption = 'Output'
       DockPos = 0
+      ParentShowHint = False
+      ShowHint = False
       TabOrder = 0
       Visible = False
       OnMove = tbViewMove
       OnResize = plOutResize
       OnVisibleChanged = plOutVisibleChanged
+      Options.TitleBarMaxSize = 100
       object ListOut: TTntListBox
         Left = 0
-        Top = 19
+        Top = 25
         Width = 112
-        Height = 162
+        Height = 156
         Style = lbOwnerDrawFixed
         Align = alLeft
         Font.Charset = DEFAULT_CHARSET
@@ -510,9 +516,9 @@ object fmMain: TfmMain
       end
       object ListVal: TTntListBox
         Left = 112
-        Top = 19
+        Top = 25
         Width = 112
-        Height = 162
+        Height = 156
         Style = lbOwnerDrawFixed
         Align = alLeft
         Font.Charset = DEFAULT_CHARSET
@@ -532,9 +538,9 @@ object fmMain: TfmMain
       end
       object TreeFind: TTntTreeView
         Left = 224
-        Top = 19
+        Top = 25
         Width = 113
-        Height = 162
+        Height = 156
         Align = alLeft
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -557,9 +563,9 @@ object fmMain: TfmMain
       end
       object ListPLog: TTntListBox
         Left = 337
-        Top = 19
+        Top = 25
         Width = 121
-        Height = 162
+        Height = 156
         Style = lbOwnerDrawFixed
         Align = alLeft
         ItemHeight = 13
@@ -572,15 +578,15 @@ object fmMain: TfmMain
       end
       object plConsole: TPanel
         Left = 458
-        Top = 19
+        Top = 25
         Width = 151
-        Height = 162
+        Height = 156
         Align = alLeft
         BevelOuter = bvNone
         TabOrder = 5
         object edConsole: TTntComboBox
           Left = 0
-          Top = 139
+          Top = 133
           Width = 151
           Height = 23
           Align = alBottom
@@ -599,7 +605,7 @@ object fmMain: TfmMain
           Left = 0
           Top = 0
           Width = 151
-          Height = 139
+          Height = 133
           Align = alClient
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -663,11 +669,14 @@ object fmMain: TfmMain
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ParentShowHint = False
+      ShowHint = False
       TabOrder = 0
       Visible = False
       OnMove = tbViewMove
       OnResize = plClipResize
       OnVisibleChanged = plClipVisibleChanged
+      Options.TitleBarMaxSize = 100
     end
   end
   object Status: TSpTBXStatusBar
