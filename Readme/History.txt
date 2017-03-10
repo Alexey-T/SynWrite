@@ -6,10 +6,11 @@ Legend:
 
 6.36.2660
 + new config for hotkeys used now. SynHotkeys.ini (later also "SynHotkeys lexer nnnnn.ini"). one for usual commands and plugins.
++ new dialog to configure hotkeys: in Commands dlg (F1), press F9
 * old hotkeys not read now: from Syn.ini, from SynPlugins.ini (was bad design)
 * you should delete section in Syn.ini: [Template__SyntKeyMapping.AsString]
-+ new dialog to configure hotkeys: in Commands(F1) press F9
 * hotkeys part in Options dlg: now read-only, cannot change hotkeys there
+* SynPlugins.ini: not used last 2 items for command plugins: ;hotkey;flags . To hide command plugin in context menu, now use "_" char prefix in command caption.
 
 6.35.2600
 + dialog Page Setup: variable #Pagecount#

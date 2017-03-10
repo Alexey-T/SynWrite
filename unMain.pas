@@ -24395,7 +24395,7 @@ procedure TfmMain.DoPlugins_LoadEvents(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
-  sKey, sValue, sValue2, sValue3, sValue4, sValue5: Widestring;
+  sKey, sValue, sValue2, sValue3: Widestring;
 begin
   //clear Event list
   for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
@@ -24420,7 +24420,7 @@ begin
     NIndex:= Low(FPluginsEvent);
     for i:= 0 to ListSec.Count-1 do
     begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4, sValue5);
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3);
       if (sKey='') or (sValue='') then Continue;
 
       if NIndex<=High(FPluginsEvent) then
@@ -24443,7 +24443,8 @@ procedure TfmMain.DoPlugins_LoadCommands(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, NCommandId, i: Integer;
-  sKey, sValue, sValue2, sValueLexers, sValueHotkey, sValueFlags: Widestring;
+  sValueCaption, sValueFilename, sValueMethod, sValueLexers: Widestring;
+  bHiddenInMenu: Boolean;
 begin
   //clear Command list
   for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
@@ -24472,34 +24473,40 @@ begin
     NIndex:= Low(FPluginsCommand);
     for i:= 0 to ListSec.Count-1 do
     begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValueLexers, sValueHotkey, sValueFlags);
+      SGetKeyAndValues(ListSec[i],
+        sValueCaption,
+        sValueFilename,
+        sValueMethod,
+        sValueLexers);
 
-      if (sValue=cPyPrefix+cPyPluginManager) then Continue; //don't add Plugin Manager here
-      if (sKey='') or (sValue='') then Continue;
-      //field sValueFlags is for future
+      bHiddenInMenu:= SBegin(sValueCaption, '_');
+      if bHiddenInMenu then Delete(sValueCaption, 1, 1);
+
+      if (sValueFilename=cPyPrefix+cPyPluginManager) then Continue; //don't add Plugin Manager here
+      if (sValueCaption='') or (sValueFilename='') then Continue;
 
       if NIndex<=High(FPluginsCommand) then
       begin
-        if SBegin(sValue, cPyPrefix) or SBegin(sValue, '-') then
-          FPluginsCommand[NIndex].SFileName:= sValue
+        if SBegin(sValueFilename, cPyPrefix) or SBegin(sValueFilename, '-') then
+          FPluginsCommand[NIndex].SFileName:= sValueFilename
         else
-          FPluginsCommand[NIndex].SFileName:= SynDir + 'Plugins\' + sValue;
-        FPluginsCommand[NIndex].SCmd:= sValue2;
+          FPluginsCommand[NIndex].SFileName:= SynDir + 'Plugins\' + sValueFilename;
+        FPluginsCommand[NIndex].SCmd:= sValueMethod;
         FPluginsCommand[NIndex].SLexers:= sValueLexers;
-        FPluginsCommand[NIndex].SCaption:= sKey;
+        FPluginsCommand[NIndex].SCaption:= sValueCaption;
         NCommandId:= cPyCommandBase+NIndex;
 
         //1) add to keymapping (not shortcuts)
-        DoAddKeymappingCommand(NCommandId, 'Plugin', sKey);
+        DoAddKeymappingCommand(NCommandId, 'Plugin', sValueCaption);
 
         //2) add to main-menu
-        DoPlugin_AddMenuItem(TBXSubmenuPlugins, sKey, NIndex, NCommandId);
+        DoPlugin_AddMenuItem(TBXSubmenuPlugins, sValueCaption, NIndex, NCommandId);
 
         //3) add to context menu (if enabled)
-        if Pos('-', sValueFlags)=0 then
+        if not bHiddenInMenu then
         begin
           TBXSubmenuCtxPlugins.Visible:= true;
-          DoPlugin_AddMenuItem(TBXSubmenuCtxPlugins, sKey, NIndex, NCommandId);
+          DoPlugin_AddMenuItem(TBXSubmenuCtxPlugins, sValueCaption, NIndex, NCommandId);
         end;
 
         Inc(NIndex);
@@ -24517,7 +24524,7 @@ procedure TfmMain.DoPlugins_LoadAutoComplete(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
-  sKey, sValue, sValue2, sValue3, sValue4, sValue5: Widestring;
+  sKey, sValue, sValue2, sValue3: Widestring;
 begin
   //clear ACP list
   for i:= Low(FPluginsAcp) to High(FPluginsAcp) do
@@ -24541,7 +24548,7 @@ begin
     NIndex:= Low(FPluginsAcp);
     for i:= 0 to ListSec.Count-1 do
     begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4, sValue5);
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3);
       if (sKey='') or (sValue='') then Continue;
 
       if NIndex<=High(FPluginsAcp) then
@@ -24563,7 +24570,7 @@ procedure TfmMain.DoPlugins_LoadGotoDef(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
-  sKey, sValue, sValue2, sValue3, sValue4, sValue5: Widestring;
+  sKey, sValue, sValue2, sValue3: Widestring;
 begin
   //clear FindID list
   for i:= Low(FPluginsFindid) to High(FPluginsFindid) do
@@ -24587,7 +24594,7 @@ begin
     NIndex:= Low(FPluginsFindid);
     for i:= 0 to ListSec.Count-1 do
     begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4, sValue5);
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3);
       if (sKey='') or (sValue='') then Continue;
 
       if NIndex<=High(FPluginsFindid) then
@@ -24609,7 +24616,7 @@ procedure TfmMain.DoPlugins_LoadPanels(const fn_plug_ini: string);
 var
   ListSec: TStringList;
   NIndex, i: Integer;
-  sKey, sValue, sValue2, sValue3, sValue4, sValue5: Widestring;
+  sKey, sValue, sValue2, sValue3: Widestring;
 begin
   //clear Panels list
   for i:= Low(FPluginsPanel) to High(FPluginsPanel) do
@@ -24633,7 +24640,7 @@ begin
     NIndex:= Low(FPluginsPanel);
     for i:= 0 to ListSec.Count-1 do
     begin
-      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3, sValue4, sValue5);
+      SGetKeyAndValues(ListSec[i], sKey, sValue, sValue2, sValue3);
       if (sKey='') or (sValue='') then Continue;
       if (sKey='SynFTP') then sKey:= 'FTP'; //show simplier title
 

@@ -7906,13 +7906,7 @@ object fmMain: TfmMain
       end
       item
         Command = 796
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 32839
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Projects'
         DisplayName = 'Dialog "Project files list"'
       end

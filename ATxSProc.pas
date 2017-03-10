@@ -52,7 +52,7 @@ function IsUpperChar(Ch: WideChar): boolean;
 function IsQuoteChar(ch: WideChar): boolean;
 function IsBracketChar(ch: WideChar): boolean;
 
-procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3, Val4, Val5: Widestring);
+procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3: Widestring);
 function SBufferToString(BufPtr: Pointer; BufSize: Integer): Widestring;
 
 procedure SDeleteDupSpaces(var s: Widestring);
@@ -998,7 +998,7 @@ begin
 end;
 
 
-procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3, Val4, Val5: Widestring);
+procedure SGetKeyAndValues(const Str: Widestring; var Key, Val1, Val2, Val3: Widestring);
 var
   n: Integer;
   Val: Widestring;
@@ -1007,8 +1007,6 @@ begin
   Val1:= '';
   Val2:= '';
   Val3:= '';
-  Val4:= '';
-  Val5:= '';
 
   n:= Pos('=', Str);
   if n=0 then Exit;
@@ -1018,8 +1016,6 @@ begin
   Val1:= SGetItem(Val, ';');
   Val2:= SGetItem(Val, ';');
   Val3:= SGetItem(Val, ';');
-  Val4:= SGetItem(Val, ';');
-  Val5:= SGetItem(Val, ';');
 end;
 
 function SBufferToString(BufPtr: Pointer; BufSize: Integer): Widestring;

@@ -167,9 +167,11 @@ begin
     Free
   end;
 
-  LabelInfo.Caption:= WideFormat(' F1: %s | F4: %s',
+  LabelInfo.Caption:= WideFormat(' F1: %s | F4: %s | F9: %s',
     [DKLangConstW('zMHintHelp'),
-     DKLangConstW('zMHintFuzzy')]);
+     DKLangConstW('zMHintFuzzy'),
+     DKLangConstW('zMHintHotkey')
+     ]);
 end;
 
 
