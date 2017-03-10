@@ -14,7 +14,7 @@ uses
   ecSyntAnal;
 
 const
-  cSynVersion = '6.36.2660';
+  cSynVersion = '6.36.2665';
   cSynApiVersion = '1.0.164';
 
 var
@@ -223,7 +223,8 @@ var
 const
   cPyCommandBase = 5000;
   cPyCommandLast = cPyCommandBase+500;
-    
+  cLexListBase = 6000; //must be bigger than cPyCommandBase
+
 function DoLexerOverridesLoad(const ALexer: string;
   var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string): boolean;
 procedure DoLexerOverridesSave(const ALexer: string;

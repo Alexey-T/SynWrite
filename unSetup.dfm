@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabKey
+    ActivePage = tabView
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -2097,14 +2097,14 @@ object fmSetup: TfmSetup
         Height = 224
         TabOrder = 0
         object LabelSpace: TTntLabel
-          Left = 56
+          Left = 72
           Top = 124
           Width = 58
           Height = 13
           Caption = 'Line spacing'
         end
         object LabelMargin: TTntLabel
-          Left = 56
+          Left = 72
           Top = 100
           Width = 60
           Height = 13
@@ -2147,7 +2147,7 @@ object fmSetup: TfmSetup
         object edLineSpace: TSpinEdit
           Left = 8
           Top = 120
-          Width = 41
+          Width = 57
           Height = 22
           Hint = 'Vertical spacing between lines.'
           MaxValue = 10
@@ -2159,7 +2159,7 @@ object fmSetup: TfmSetup
         object edMargin: TSpinEdit
           Left = 8
           Top = 95
-          Width = 41
+          Width = 57
           Height = 22
           Hint = 'Right margin column position.'
           MaxValue = 300

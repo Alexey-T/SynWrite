@@ -13,7 +13,6 @@ uses
 type
   TfmMenuCmds = class(TTntForm)
     List: TTntListBox;
-    KeysList: TSyntKeyMapping;
     Edit: TTntEdit;
     TimerType: TTimer;
     Panel1: TPanel;
@@ -42,16 +41,12 @@ type
     procedure DoDialogHotkeys(AOwner: TComponent; ACommand: integer);
   public
     { Public declarations }
-    //PyList: TTntStringList;
+    Keymap: TSyntKeyMapping;
     LexList: TTntStringList;
     LexerName: string;
-    FIniFN: string;
-    FColorSel: TColor;
-    FColorSelBk: TColor;
+    FColorSelText: TColor;
+    FColorSelBG: TColor;
   end;
-
-const
-  cLexListBase = 6000; //must be bigger than cPyCommandBase=5000
 
 implementation
 
@@ -74,19 +69,19 @@ var
   SSection, SLexer: string;
 begin
   KeyIndex:= -1;
-  for i:= 0 to KeysList.Items.Count-1 do
-    if KeysList.Items[i].Command=ACommand then
+  for i:= 0 to Keymap.Items.Count-1 do
+    if Keymap.Items[i].Command=ACommand then
       begin KeyIndex:= i; break end;
   if KeyIndex<0 then exit;
 
   Form:= TfmHotkeys.Create(AOwner);
   try
-    Form.CommandItem.Assign(KeysList.Items[KeyIndex]);
+    Form.CommandItem.Assign(Keymap.Items[KeyIndex]);
     Form.chkForLexer.Enabled:= LexerName<>'';
     
     if Form.ShowModal=mrOk then
     begin
-       KeysList.Items[KeyIndex].Assign(Form.CommandItem);
+       Keymap.Items[KeyIndex].Assign(Form.CommandItem);
        DoFilter;
 
        if Form.chkForLexer.Checked then
@@ -159,8 +154,7 @@ procedure TfmMenuCmds.FormShow(Sender: TObject);
 begin
   DoFilter;
 
-  if FIniFN<>'' then
-  with TIniFile.Create(FIniFN) do
+  with TIniFile.Create(SynHistoryIni) do
   try
     FFuzzy:= ReadBool('Win', 'CmdListFuzzy', false);
   finally
@@ -190,26 +184,26 @@ var
 begin
   ListCat:= TTntStringList.Create;
   try
-    for i:= 0 to KeysList.Items.Count-1 do
-      if ListCat.IndexOf(KeysList.Items[i].Category)<0 then
-        ListCat.Add(KeysList.Items[i].Category);
+    for i:= 0 to Keymap.Items.Count-1 do
+      if ListCat.IndexOf(Keymap.Items[i].Category)<0 then
+        ListCat.Add(Keymap.Items[i].Category);
 
     List.Items.BeginUpdate;
     try
       List.Items.Clear;
       for j:= 0 to ListCat.Count-1 do
-        for i:= 0 to KeysList.Items.Count-1 do
-          if ListCat[j]=KeysList.Items[i].Category then
-            if KeysList.Items[i].Command>0 then
+        for i:= 0 to Keymap.Items.Count-1 do
+          if ListCat[j]=Keymap.Items[i].Category then
+            if Keymap.Items[i].Command>0 then
             begin
-              S:= KeysList.Items[i].Category + ': ' + KeysList.Items[i].DisplayName;
-              SKey1:= Hotkey_GetHotkeyAsString(KeysList.Items[i], 0);
-              SKey2:= Hotkey_GetHotkeyAsString(KeysList.Items[i], 1);
+              S:= Keymap.Items[i].Category + ': ' + Keymap.Items[i].DisplayName;
+              SKey1:= Hotkey_GetHotkeyAsString(Keymap.Items[i], 0);
+              SKey2:= Hotkey_GetHotkeyAsString(Keymap.Items[i], 1);
               SKey:= SKey1;
               if SKey2<>'' then
                 SKey:= SKey+' / '+SKey2;
               if SFiltered(S) then
-                List.Items.AddObject(S + #9 + SKey, Pointer(KeysList.Items[i].Command));
+                List.Items.AddObject(S + #9 + SKey, Pointer(Keymap.Items[i].Command));
             end;
 
       for i:= 0 to LexList.Count-1 do
@@ -277,7 +271,7 @@ begin
   with Control as TTntListbox do
   begin
     if odSelected in State then
-      Canvas.Brush.Color:= FColorSelBk
+      Canvas.Brush.Color:= FColorSelBG
     else
       Canvas.Brush.Color:= Color;
     Canvas.FillRect(Rect);
@@ -293,7 +287,7 @@ begin
     ecTextOut(Canvas, rect.right-n, rect.top, S2);
 
     //caption
-    Canvas.Font.Color:= IfThen(odSelected in State, FColorSel, Font.Color);
+    Canvas.Font.Color:= IfThen(odSelected in State, FColorSelText, Font.Color);
     ecTextOut(Canvas, rect.left, rect.top, S1);
 
     //filter chars
@@ -333,8 +327,7 @@ end;
 procedure TfmMenuCmds.TntFormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
-  if FIniFN<>'' then
-  with TIniFile.Create(FIniFN) do
+  with TIniFile.Create(SynHistoryIni) do
   try
     WriteBool('Win', 'CmdListFuzzy', FFuzzy);
   finally

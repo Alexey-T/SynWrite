@@ -20451,26 +20451,26 @@ var
   i: Integer;
 begin
   Result:= 0;
-
   Form:= TfmMenuCmds.Create(Self);
-  with Form do
   try
     UpdateMenuDialogBorder(Form);
     UpdateMacroKeynames;
 
-    Font.Assign(FFontMenus);
-    List.ItemHeight:= FontHeightToItemHeight(Font);
-    LexerName:= CurrentLexerForFile;
-
-    Caption:= DKLangConstW('zMCmdList');
-
-    //1) add commands
-    KeysList.Assign(SyntKeyMapping);
+    Form.Font.Assign(FFontMenus);
+    Form.List.ItemHeight:= FontHeightToItemHeight(Form.Font);
+    Form.LexerName:= CurrentLexerForFile;
+    Form.Caption:= DKLangConstW('zMCmdList');
 
     if AOnlyStdCommands then
-      DoKeymappingTruncate(KeysList, FInitialKeyCount)
+    begin
+      Form.Keymap:= TSyntKeyMapping.Create(Form);
+      Form.Keymap.Assign(SyntKeyMapping);
+      DoKeymappingTruncate(Form.Keymap, FInitialKeyCount)
+    end
     else
     begin
+      //1) add commands
+      Form.Keymap:= SyntKeyMapping;
       //2) add lexers
       FListLexersSorted.Clear;
       FListLexersSorted.Sorted:= true;
@@ -20478,20 +20478,19 @@ begin
         if not SyntaxManager.Analyzers[i].Internal then
           FListLexersSorted.AddObject(SyntaxManager.Analyzers[i].LexerName, Pointer(i));
       for i:= 0 to FListLexersSorted.Count-1 do
-        LexList.Add('Lexer: ' + FListLexersSorted[i]);
-    end;    
+        Form.LexList.Add('Lexer: ' + FListLexersSorted[i]);
+    end;
 
-    FIniFN:= SynHistoryIni;
-    FColorSel:= opColorOutSelText;
-    FColorSelBk:= opColorOutSelBk;
+    Form.FColorSelText:= opColorOutSelText;
+    Form.FColorSelBG:= opColorOutSelBk;
 
-    if ShowModal=mrOk then
+    if Form.ShowModal=mrOk then
     begin
-      if List.ItemIndex>=0 then
-        Result:= Integer(List.Items.Objects[List.ItemIndex]);
+      if Form.List.ItemIndex>=0 then
+        Result:= Integer(Form.List.Items.Objects[Form.List.ItemIndex]);
     end;
   finally
-    Free;
+    FreeAndNil(Form);
   end;
 end;
 

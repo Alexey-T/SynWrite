@@ -68,11 +68,6 @@ object fmMenuCmds: TfmMenuCmds
       Caption = '-----------'
     end
   end
-  object KeysList: TSyntKeyMapping
-    Items = <>
-    Left = 360
-    Top = 4
-  end
   object TimerType: TTimer
     Enabled = False
     Interval = 500
