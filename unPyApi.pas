@@ -1203,8 +1203,8 @@ begin
         PROC_GET_COMMAND:
           begin
             NValue:= StrToIntDef(Str, -1);
-            if (NValue>=0) and (NValue<fmMain.SyntKeyMapping.Items.Count) then
-              Result:= Py_KeyCommandToTuple(fmMain.SyntKeyMapping.Items[NValue])
+            if (NValue>=0) and (NValue<fmMain.AppKeymap.Items.Count) then
+              Result:= Py_KeyCommandToTuple(fmMain.AppKeymap.Items[NValue])
             else
               Result:= ReturnNone;
           end;

@@ -34,7 +34,6 @@ type
     bOk: TTntButton;
     FontDialog: TFontDialog;
     KeyList: TTntStringGrid;
-    KeyMapping: TSyntKeyMapping;
     tabFiles: TTntTabSheet;
     gColors: TTntGroupBox;
     Label4: TTntLabel;
@@ -426,6 +425,7 @@ type
     FLangChanged: boolean;
 
     //procedure MenuLexersClick(Sender: TObject);
+    function Keymap: TSyntKeyMapping;
     function MsgConfirmKeyOvr(const SCategory, SName: Widestring): boolean;
     procedure DoFontConfig(btn: TTntButton);
     procedure DoFillKeys;
@@ -787,9 +787,9 @@ end;
 
 procedure TfmSetup.DoFillKeys;
 var
-  i, j, k: integer;
   old: Widestring;
   g: TGridRect;
+  i, j, k: integer;
 begin
   with KeyList do
   begin
@@ -803,17 +803,17 @@ begin
     old:= '';
 
     for k:= 0 to cbKeyCat.Items.Count-1 do //categories
-      for i:= 0 to KeyMapping.Items.Count-1 do //items
+      for i:= 0 to Keymap.Items.Count-1 do //items
         //item filtered?
-        if SSubstringMatch(KeyMapping.Items[i].DisplayName, edFilter.Text) or
-          SSubstringMatch(SKeysOf(KeyMapping.Items[i]), edFilter.Text) then
-        if KeyMapping.Items[i].Category = cbKeyCat.Items[k] then
+        if SSubstringMatch(Keymap.Items[i].DisplayName, edFilter.Text) or
+          SSubstringMatch(SKeysOf(Keymap.Items[i]), edFilter.Text) then
+        if Keymap.Items[i].Category = cbKeyCat.Items[k] then
         begin
-          if not KeyMapping.Items[i].Customizable then
+          if not Keymap.Items[i].Customizable then
             Continue;
-          if KeyMapping.Items[i].Command <= 0 then //unused items
+          if Keymap.Items[i].Command <= 0 then //unused items
           begin
-            KeyMapping.Items[i].KeyStrokes.Clear;
+            Keymap.Items[i].KeyStrokes.Clear;
             Continue;
           end;
 
@@ -821,10 +821,10 @@ begin
           KeyList.RowHeights[KeyList.RowCount-1]:= KeyList.RowHeights[0];
 
           //add category
-          if old<>KeyMapping.Items[i].Category then
+          if old<>Keymap.Items[i].Category then
           begin
             Cells[0,j]:= '-';
-            Cells[1,j]:= KeyMapping.Items[i].Category;
+            Cells[1,j]:= Keymap.Items[i].Category;
             Cells[2,j]:= '';
             Cells[3,j]:= '';
             old:= Cells[1,j];
@@ -834,13 +834,13 @@ begin
 
           //add item
           Cells[0,j]:= IntToStr(i);
-          Cells[1,j]:= StringReplace(KeyMapping.Items[i].DisplayName, '&', '', [rfReplaceAll]);
+          Cells[1,j]:= StringReplace(Keymap.Items[i].DisplayName, '&', '', [rfReplaceAll]);
           Cells[2,j]:= '';
           Cells[3,j]:= '';
-          if KeyMapping.Items[i].KeyStrokes.Count>0 then
-            Cells[2,j]:= KeyMapping.Items[i].KeyStrokes.Items[0].AsString;
-          if KeyMapping.Items[i].KeyStrokes.Count>1 then
-            Cells[3,j]:= KeyMapping.Items[i].KeyStrokes.Items[1].AsString;
+          if Keymap.Items[i].KeyStrokes.Count>0 then
+            Cells[2,j]:= Keymap.Items[i].KeyStrokes.Items[0].AsString;
+          if Keymap.Items[i].KeyStrokes.Count>1 then
+            Cells[3,j]:= Keymap.Items[i].KeyStrokes.Items[1].AsString;
           Inc(j);
         end;
   end;
@@ -1993,15 +1993,13 @@ var
   L: TTntStringList;
   i: Integer;
 begin
-  KeyMapping.Assign(fmMain.SyntKeyMapping);
-
   //list categories
   L:= TTntStringList.Create;
   try
-    for i:= 0 to KeyMapping.Items.Count-1 do
-      if KeyMapping.Items[i].Customizable then
-        if L.IndexOf(KeyMapping.Items[i].Category)<0 then
-          L.Add(KeyMapping.Items[i].Category);
+    for i:= 0 to Keymap.Items.Count-1 do
+      if Keymap.Items[i].Customizable then
+        if L.IndexOf(Keymap.Items[i].Category)<0 then
+          L.Add(Keymap.Items[i].Category);
 
     cbKeyCat.Items.AddStrings(L);
     cbKeyCat.ItemIndex:= 0;
@@ -2480,6 +2478,11 @@ begin
   cbColors.Selected:= ColorDialogMain.Color;
   cbColors.OnSelect(nil);
   cbColors.Invalidate;
+end;
+
+function TfmSetup.Keymap: TSyntKeyMapping;
+begin
+  Result:= fmMain.AppKeymap;
 end;
 
 end.

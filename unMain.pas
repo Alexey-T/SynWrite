@@ -282,7 +282,7 @@ type
     ImgListGutter: TImageList;
     TBXItemCtxCopy: TSpTbxItem;
     TBXSubmenuBarOpen: TSpTBXSubmenuItem;
-    SyntKeyMapping: TSyntKeyMapping;
+    AppKeymap: TSyntKeyMapping;
     ecCopy: TecCopy;
     ecCut: TecCut;
     ecPaste: TecPaste;
@@ -3551,8 +3551,8 @@ begin
 
   Result.EditorMaster.BorderStyle:= SynBorderStyleEditor;
   Result.EditorSlave.BorderStyle:= SynBorderStyleEditor;
-  Result.EditorMaster.KeyMapping:= SyntKeyMapping;
-  Result.EditorSlave.KeyMapping:= SyntKeyMapping;
+  Result.EditorMaster.KeyMapping:= AppKeymap;
+  Result.EditorSlave.KeyMapping:= AppKeymap;
 
   Result.HyperlinkHighlighter.Active:= opHiliteUrls;
   Result.HyperlinkHighlighter.Style.Font.Color:= opColorLink;
@@ -4153,7 +4153,7 @@ begin
     EdConsole.Font:= MemoConsole.Font;
 
     //keys
-    SyntKeyMapping.UseFirstControlKeys:= ReadBool('Setup', 'KeyComboIgnoreCtrl', true);
+    AppKeymap.UseFirstControlKeys:= ReadBool('Setup', 'KeyComboIgnoreCtrl', true);
 
     //status props
     opStatusText[selNone]:= ReadString('View', 'StatusNoSel', '{LineNum} : {ColNum} ({TotalLines})');
@@ -4282,9 +4282,9 @@ begin
       FTabOut:= Ord(tbOutput);
 
     //opt
-    FInitialKeyCount:= SyntKeymapping.Items.Count;
+    FInitialKeyCount:= AppKeymap.Items.Count;
     PropsManager.LoadProps(ini);
-    DoKeymappingTruncate(SyntKeyMapping, FInitialKeyCount);
+    DoKeymappingTruncate(AppKeymap, FInitialKeyCount);
 
     //force KeepSelMode and FloatMarkers
     with TemplateEditor do
@@ -4898,7 +4898,7 @@ begin
 
         //if current char is 2nd part of key-combination, don't handle it
         //(consider also ecRepeatCmd.Execute context)
-        if (SyntKeyMapping.IsHandledCmd(Ed.KeyQueue)<>0) and
+        if (AppKeymap.IsHandledCmd(Ed.KeyQueue)<>0) and
           not FLastCmdPlaying and
           not ecMacroRec.Plying then
         begin
@@ -8277,7 +8277,7 @@ begin
 
   //Handle configured keys
   S:= ShortcutToText(Shortcut(Key, Shift));
-  with SyntKeyMapping do
+  with AppKeymap do
     for i:= 0 to Items.Count-1 do
       with Items[i] do
         if ((KeyStrokes.Count > 0) and (KeyStrokes[0].AsString = S)) or
@@ -8818,7 +8818,7 @@ end;
     c: TecCommandItem;
   begin
     Result:= 0;
-    c:= SyntKeyMapping.CommandByID(id);
+    c:= AppKeymap.CommandByID(id);
     if Assigned(c) and
       (c.KeyStrokes.Count>0) and
       (c.KeyStrokes[0].KeyDefs.Count>0) then
@@ -8830,7 +8830,7 @@ end;
   var
     c: TecCommandItem;
   begin
-    c:= SyntKeyMapping.CommandByID(id);
+    c:= AppKeymap.CommandByID(id);
     if Assigned(c) and (c.KeyStrokes.Count>0) then
       Result:= c.KeyStrokes[0].AsString
     else
@@ -8844,7 +8844,7 @@ end;
   begin
     Result:= false;
     if sh=0 then Exit;
-    c:= SyntKeyMapping.CommandByID(cmd);
+    c:= AppKeymap.CommandByID(cmd);
     if Assigned(c) then
       Result:=
         ((c.KeyStrokes.Count>0) and
@@ -8869,7 +8869,7 @@ end;
     cmd: TecCommandItem;
   begin
     id:= DoMacro_GetCommandId(n-1);
-    cmd:= SyntKeyMapping.CommandByID(id);
+    cmd:= AppKeymap.CommandByID(id);
     if cmd.KeyStrokes.Count>0 then
     begin
       Result:= TKeyStroke.Create(nil);
@@ -8885,7 +8885,7 @@ end;
     cmd: TecCommandItem;
   begin
     id:= DoMacro_GetCommandId(n-1);
-    cmd:= SyntKeyMapping.CommandByID(id);
+    cmd:= AppKeymap.CommandByID(id);
     if Assigned(cmd) then
     begin
       cmd.KeyStrokes.Clear;
@@ -13884,8 +13884,8 @@ begin
 
   //list of keys which give warning on pressing ok if used in dlg
   BusyKeys:= TStringList.Create;
-  for i:= 0 to SyntKeyMapping.Items.Count-1 do
-    with SyntKeyMapping.Items[i] do
+  for i:= 0 to AppKeymap.Items.Count-1 do
+    with AppKeymap.Items[i] do
       if not IsCommandForMacros(Command) then
         for j:= 0 to KeyStrokes.Count-1 do
           BusyKeys.Add(KeyStrokes.Items[j].AsString);
@@ -15416,7 +15416,7 @@ procedure TfmMain.UpdateMacroKeynames;
   procedure KeyN(cmd: integer; const NewName: string);
   var i: integer;
   begin
-    with SyntKeyMapping do
+    with AppKeymap do
       for i:= 0 to Items.Count-1 do
         if Items[i].Command=cmd then
         begin
@@ -20464,13 +20464,13 @@ begin
     if AOnlyStdCommands then
     begin
       Form.Keymap:= TSyntKeyMapping.Create(Form);
-      Form.Keymap.Assign(SyntKeyMapping);
+      Form.Keymap.Assign(AppKeymap);
       DoKeymappingTruncate(Form.Keymap, FInitialKeyCount)
     end
     else
     begin
       //1) add commands
-      Form.Keymap:= SyntKeyMapping;
+      Form.Keymap:= AppKeymap;
       //2) add lexers
       FListLexersSorted.Clear;
       FListLexersSorted.Sorted:= true;
@@ -21312,8 +21312,8 @@ begin
     N:= StrToIntDef(Cmd, 0);
     if N=0 then Exit;
 
-    for i:= 0 to SyntKeyMapping.Items.Count-1 do
-      with SyntKeyMapping.Items[i] do
+    for i:= 0 to AppKeymap.Items.Count-1 do
+      with AppKeymap.Items[i] do
         if Command = N then
         begin
           Result:= Category + ': ' + DisplayName;
@@ -25526,7 +25526,7 @@ begin
   NKey:= MakeLong(NKey1, NKey2);
   }
 
-  SyntKeyMapping.Add(ACommand, ACategory, '', ACaption, {NKey}0);
+  AppKeymap.Add(ACommand, ACategory, '', ACaption, {NKey}0);
 end;
 
 function TfmMain.DoConfirmMaybeBinaryFile(const fn: Widestring): boolean;
@@ -25893,7 +25893,7 @@ begin
       NCmd:= StrToIntDef(SSection, 0);
       if NCmd>0 then
       begin
-        CmdItem:= SyntKeyMapping.Items.ItemByID(NCmd);
+        CmdItem:= AppKeymap.Items.ItemByID(NCmd);
         if Assigned(CmdItem) then
         begin
           Hotkey_SetFromString(CmdItem, 0, SKey1);
@@ -25910,7 +25910,7 @@ begin
             FPluginsCommand[iPlugin].SFilename+','+
             FPluginsCommand[iPlugin].SCmd then
           begin
-            CmdItem:= SyntKeyMapping.Items.ItemByID(cPyCommandBase+iPlugin);
+            CmdItem:= AppKeymap.Items.ItemByID(cPyCommandBase+iPlugin);
             if Assigned(CmdItem) then
             begin
               Hotkey_SetFromString(CmdItem, 0, SKey1);
