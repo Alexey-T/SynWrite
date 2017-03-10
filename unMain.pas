@@ -29,6 +29,7 @@ uses
   unSR,
   unProcLines,
   unTabSw,
+  unHotkeys,
 
   TB2Item, TB2Dock, TB2Toolbar,
   TB2MDI, TB2ExtItems,
@@ -2301,6 +2302,7 @@ type
     function DoConfirmSaveSession(CanCancel: boolean; ExitCmd: boolean = false): boolean;
     function DoConfirmMaybeBinaryFile(const fn: Widestring): boolean;
 
+    procedure LoadHotkeys(const ALexerName: string);
     procedure LoadClip;
     procedure LoadProj;
     procedure LoadProjPreview;
@@ -2483,7 +2485,7 @@ type
 
     function GetUntitledString: Widestring;
     procedure DoAddKeymappingCommand(const ACommand: Integer;
-      ACategory, ACaption, AHotkey: Widestring);
+      ACategory, ACaption: Widestring);
 
     procedure DoPluginsManager_Install;
     procedure DoPluginsManager_Remove;
@@ -6330,6 +6332,7 @@ begin
   InitPanelsTabs;
   InitGroups;
   DoPlugins_InitTabs; //after InitPanelsTabs
+  LoadHotkeys(''); //after plugins
 
   TabsLeft.TabIndex:= FTabLeft;
   TabsRight.TabIndex:= FTabRight;
@@ -24486,8 +24489,8 @@ begin
         FPluginsCommand[NIndex].SCaption:= sKey;
         NCommandId:= cPyCommandBase+NIndex;
 
-        //1) add to keymapping
-        DoAddKeymappingCommand(NCommandId, 'Plugin', sKey, sValueHotkey);
+        //1) add to keymapping (not shortcuts)
+        DoAddKeymappingCommand(NCommandId, 'Plugin', sKey);
 
         //2) add to main-menu
         DoPlugin_AddMenuItem(TBXSubmenuPlugins, sKey, NIndex, NCommandId);
@@ -25505,35 +25508,19 @@ end;
 
 
 procedure TfmMain.DoAddKeymappingCommand(const ACommand: Integer;
-  ACategory, ACaption, AHotkey: Widestring);
-var
-  S, SItem: Widestring;
-  NKey1, NKey2: TShortcut;
-  NKey: Cardinal;
+  ACategory, ACaption: Widestring);
 begin
   //ignore menu-separators
   if Pos('\-', ACaption)>0 then exit;
   //make nicer caption
   SReplaceAllW(ACaption, '\', ': ');
 
-  //calc hotkeys
-  NKey1:= 0;
-  NKey2:= 0;
-  S:= AHotkey;
-  SItem:= SGetItem(S, '|');
-  if SItem<>'' then
-    NKey1:= TextToShortCut(SItem);
-  SItem:= SGetItem(S, '|');
-  if SItem<>'' then
-    NKey2:= TextToShortCut(SItem);
-
-  DoFixShortcut(NKey1);
-  DoFixShortcut(NKey2);
-
+  {
   //hotkey: EControl needs 2 words packed into dword
   NKey:= MakeLong(NKey1, NKey2);
+  }
 
-  SyntKeyMapping.Add(ACommand, ACategory, '', ACaption, NKey);
+  SyntKeyMapping.Add(ACommand, ACategory, '', ACaption, {NKey}0);
 end;
 
 function TfmMain.DoConfirmMaybeBinaryFile(const fn: Widestring): boolean;
@@ -25871,6 +25858,67 @@ begin
   SName1:= SGetItem(SName, '.');
   SName2:= SName;
   Py_RunPlugin_Command(SName1, SName2);
+end;
+
+
+procedure TfmMain.LoadHotkeys(const ALexerName: string);
+var
+  fn: string;
+  Ini: TIniFile;
+  ListSections: TStringList;
+  SSection, SKey1, SKey2: string;
+  CmdItem: TecCommandItem;
+  NCmd, iSection, iPlugin: integer;
+begin
+  fn:= SynHotkeysIni(ALexerName);
+  if not FileExists(fn) then exit;
+
+  Ini:= TIniFile.Create(fn);
+  ListSections:= TStringList.Create;
+
+  try
+    Ini.ReadSections(ListSections);
+    for iSection:= 0 to ListSections.Count-1 do
+    begin
+      SSection:= ListSections[iSection];
+      SKey1:= Ini.ReadString(SSection, 's1', '');
+      SKey2:= Ini.ReadString(SSection, 's2', '');
+
+      NCmd:= StrToIntDef(SSection, 0);
+      if NCmd>0 then
+      begin
+        CmdItem:= SyntKeyMapping.Items.ItemByID(NCmd);
+        if Assigned(CmdItem) then
+        begin
+          Hotkey_SetFromString(CmdItem, 0, SKey1);
+          Hotkey_SetFromString(CmdItem, 1, SKey2);
+        end;
+      end
+      else
+      if SBegin(SSection, cPyPrefix) then //e.g. 'py:syn_ddd,run'
+      begin
+        for iPlugin:= 0 to High(FPluginsCommand) do
+        begin
+          if FPluginsCommand[iPlugin].SFilename='' then Break;
+          if SSection =
+            FPluginsCommand[iPlugin].SFilename+','+
+            FPluginsCommand[iPlugin].SCmd then
+          begin
+            CmdItem:= SyntKeyMapping.Items.ItemByID(cPyCommandBase+iPlugin);
+            if Assigned(CmdItem) then
+            begin
+              Hotkey_SetFromString(CmdItem, 0, SKey1);
+              Hotkey_SetFromString(CmdItem, 1, SKey2);
+            end;
+            Break
+          end;
+        end;
+      end;
+    end;
+  finally
+    FreeAndNil(ListSections);
+    FreeAndNil(Ini);
+  end;
 end;
 
 

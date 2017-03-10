@@ -6,7 +6,9 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, Menus,
   TntControls, TntClasses, TntForms, TntStdCtrls,
-  ecKeyMap, ExtCtrls, TntExtCtrls, DKLang;
+  ExtCtrls, TntExtCtrls,
+  ecKeyMap,
+  DKLang;
 
 type
   TfmHotkeys = class(TTntForm)
@@ -31,12 +33,12 @@ type
     procedure TntFormDestroy(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
   private
+    { Private declarations }
     CurrentIndex: integer;
     procedure DoKeyClear(N: integer);
     procedure DoKeyAdd(N: Integer);
     procedure SetWaitMode(b: Boolean);
     function GetWaitMode: Boolean;
-    { Private declarations }
   public
     { Public declarations }
     CommandItem: TecCommandItem;
@@ -47,45 +49,72 @@ type
 var
   fmHotkeys: TfmHotkeys;
 
-function GetHotkeyStringFromCommandItem(
+const
+  Hotkey_ComboSeparator = ' * ';
+function Hotkey_GetHotkeyAsString(
   AItem: TecCommandItem; AKeyIndex: integer): string;
-function GetHotkeyAsStringWithSep(
-  AItem: TecCommandItem; AKeyIndex: integer): string;
-
+procedure Hotkey_SetFromString(
+  AItem: TecCommandItem; AKeyIndex: integer; AString: string);
 
 implementation
 
 {$R *.dfm}
 
-function GetHotkeyAsStringWithSep(
+
+function Hotkey_GetItem(var s: string): string;
+const
+  sep = Hotkey_ComboSeparator;
+var
+  i: integer;
+begin
+  i:= Pos(sep, s);
+  if i=0 then i:= MaxInt div 2;
+  Result:= Copy(s, 1, i-1);
+  Delete(s, 1, i+Length(sep)-1);
+end;
+
+procedure Hotkey_SetFromString(
+  AItem: TecCommandItem; AKeyIndex: integer; AString: string);
+var
+  SKey: string;
+  NKey: TShortCut;
+begin
+  while (AKeyIndex>=AItem.KeyStrokes.Count) do
+  begin
+    if AString='' then exit;
+    AItem.KeyStrokes.Add;
+  end;
+
+  AItem.KeyStrokes[AKeyIndex].KeyDefs.Clear;
+  repeat
+    SKey:= Hotkey_GetItem(AString);
+    if SKey='' then Break;
+    NKey:= TextToShortCut(SKey);
+    if NKey=0 then Break;
+      AItem.KeyStrokes[AKeyIndex].KeyDefs.Add.ShortCut:= NKey;
+  until false;
+end;
+
+function Hotkey_GetHotkeyAsString(
   AItem: TecCommandItem; AKeyIndex: integer): string;
 var
   i: integer;
 begin
   Result:= '';
   if (AKeyIndex<AItem.KeyStrokes.Count) then
-    for i:= 0 to AItem.KeyStrokes.Items[AKeyIndex].KeyDefs.Count-1 do
+    for i:= 0 to AItem.KeyStrokes[AKeyIndex].KeyDefs.Count-1 do
     begin
-      if Result<>'' then Result:= Result+'|';
-      Result:= Result+AItem.KeyStrokes.Items[AKeyIndex].KeyDefs[i].AsString;
+      if Result<>'' then Result:= Result+Hotkey_ComboSeparator;
+      Result:= Result+AItem.KeyStrokes[AKeyIndex].KeyDefs[i].AsString;
     end;
 end;
 
-function GetHotkeyStringFromCommandItem(
-  AItem: TecCommandItem; AKeyIndex: integer): string;
-begin
-  Result:= '';
-  if (AKeyIndex<AItem.KeyStrokes.Count) then
-    Result:= AItem.KeyStrokes[AKeyIndex].AsString;
-end;
-
-function GetHotkeyLength(
+function Hotkey_GetHotkeyLen(
   AItem: TecCommandItem; AKeyIndex: integer): integer;
 begin
   Result:= 0;
   if (AKeyIndex<AItem.KeyStrokes.Count) then
     Result:= AItem.KeyStrokes[AKeyIndex].KeyDefs.Count;
-
 end;
 
 
@@ -97,16 +126,16 @@ const
 var
   Str1, Str2: string;
 begin
-  Str1:= GetHotkeyStringFromCommandItem(CommandItem, 0);
-  Str2:= GetHotkeyStringFromCommandItem(CommandItem, 1);
+  Str1:= Hotkey_GetHotkeyAsString(CommandItem, 0);
+  Str2:= Hotkey_GetHotkeyAsString(CommandItem, 1);
   labelInfo1.Caption:= '1)  '+Str1;
   labelInfo2.Caption:= '2)  '+Str2;
 
   btnClear1.Enabled:= Str1<>'';
   btnClear2.Enabled:= Str2<>'';
 
-  btnAdd1.Enabled:= (GetHotkeyLength(CommandItem, 0)<cMaxLen);
-  btnAdd2.Enabled:= (GetHotkeyLength(CommandItem, 1)<cMaxLen) and (Str1<>'');
+  btnAdd1.Enabled:= (Hotkey_GetHotkeyLen(CommandItem, 0)<cMaxLen);
+  btnAdd2.Enabled:= (Hotkey_GetHotkeyLen(CommandItem, 1)<cMaxLen) and (Str1<>'');
 end;
 
 procedure TfmHotkeys.TntFormShow(Sender: TObject);

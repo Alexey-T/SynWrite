@@ -97,8 +97,8 @@ begin
          SSection:= SynHotkeys_Section_FromCommandCode(ACommand);
          EraseSection(SSection);
          WriteString(SSection, 'name', StringReplace(Form.CommandItem.DisplayName, '&', '', [rfReplaceAll]));
-         WriteString(SSection, 's1', GetHotkeyAsStringWithSep(Form.CommandItem, 0));
-         WriteString(SSection, 's2', GetHotkeyAsStringWithSep(Form.CommandItem, 1));
+         WriteString(SSection, 's1', Hotkey_GetHotkeyAsString(Form.CommandItem, 0));
+         WriteString(SSection, 's2', Hotkey_GetHotkeyAsString(Form.CommandItem, 1));
        finally
          Free
        end;
@@ -199,8 +199,8 @@ begin
             if KeysList.Items[i].Command>0 then
             begin
               S:= KeysList.Items[i].Category + ': ' + KeysList.Items[i].DisplayName;
-              SKey1:= GetHotkeyStringFromCommandItem(KeysList.Items[i], 0);
-              SKey2:= GetHotkeyStringFromCommandItem(KeysList.Items[i], 1);
+              SKey1:= Hotkey_GetHotkeyAsString(KeysList.Items[i], 0);
+              SKey2:= Hotkey_GetHotkeyAsString(KeysList.Items[i], 1);
               SKey:= SKey1;
               if SKey2<>'' then
                 SKey:= SKey+' / '+SKey2;
