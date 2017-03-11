@@ -65,7 +65,7 @@ uses
 procedure TfmMenuCmds.DoDialogHotkeys(AOwner: TComponent; ACommand: integer);
 var
   Form: TfmHotkeys;
-  KeyIndex, i: Integer;
+  KeyIndex, i, n: Integer;
 begin
   KeyIndex:= -1;
   for i:= 0 to Keymap.Items.Count-1 do
@@ -81,7 +81,11 @@ begin
     if Form.ShowModal=mrOk then
     begin
       Keymap.Items[KeyIndex].Assign(Form.CommandItem);
+      i:= List.ItemIndex;
+      n:= List.TopIndex;
       DoFilter;
+      List.ItemIndex:= i;
+      List.TopIndex:= n;
     end;
   finally
     FreeAndNil(Form);
