@@ -2792,16 +2792,27 @@ end;
 
 procedure Hotkey_SaveToFile(const ALexerName: string; ACmdItem: TecCommandItem);
 var
-  SSection, SName: string;
+  SSection, SKey1, SKey2: string;
+  CmdItemOriginal: TecCommandItem;
 begin
   with TIniFile.Create(SynHotkeysIni(ALexerName)) do
   try
     SSection:= SynHotkeys_Section_FromCommandCode(ACmdItem.Command);
-    SName:= StringReplace(ACmdItem.DisplayName, '&', '', [rfReplaceAll]);
     EraseSection(SSection);
-    WriteString(SSection, 'name', SName);
-    WriteString(SSection, 's1', Hotkey_AsString(ACmdItem, 0));
-    WriteString(SSection, 's2', Hotkey_AsString(ACmdItem, 1));
+
+    SKey1:= Hotkey_AsString(ACmdItem, 0);
+    SKey2:= Hotkey_AsString(ACmdItem, 1);
+
+    //if same item exists in original keymap,
+    //just delete ini section
+    CmdItemOriginal:= AppKeymapOriginal.Items.ItemByID(ACmdItem.Command);
+    if Assigned(CmdItemOriginal) then
+      if (SKey1=Hotkey_AsString(CmdItemOriginal, 0)) and
+         (SKey2=Hotkey_AsString(CmdItemOriginal, 1)) then Exit;
+
+    WriteString(SSection, 'name', ACmdItem.DisplayName);
+    WriteString(SSection, 's1', SKey1);
+    WriteString(SSection, 's2', SKey2);
   finally
     Free
   end;
