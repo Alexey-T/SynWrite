@@ -11,6 +11,7 @@ Legend:
 * you should delete section in Syn.ini: [Template__SyntKeyMapping.AsString]
 * hotkeys part in Options dlg: now read-only, cannot change hotkeys there
 * SynPlugins.ini: not used last 2 items for command plugins: ;hotkey;flags . To hide command plugin in context menu, now use "_" char prefix in command caption.
++ install.inf: in [iniNNN] allowed line "hotkey=" to set command item's hotkey, e.g. combo key is "hotkey=Ctrl+Alt+A * Ctrl+B * Ctrl+C"
 
 6.35.2600
 + dialog Page Setup: variable #Pagecount#

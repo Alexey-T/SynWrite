@@ -9554,7 +9554,7 @@ object fmMain: TfmMain
     Left = 320
     Top = 360
   end
-  object DKLanguageController1: TDKLanguageController
+  object DKLang1: TDKLanguageController
     IgnoreList.Strings = (
       'ac*.Category'
       'bbg*.Caption'
@@ -9575,7 +9575,7 @@ object fmMain: TfmMain
     StoreList.Strings = (
       '*.Caption'
       '*.Hint')
-    OnLanguageChanged = DKLanguageController1LanguageChanged
+    OnLanguageChanged = DKLang1LanguageChanged
     Left = 633
     Top = 89
     LangData = {

@@ -462,7 +462,7 @@ type
     TBXItemETable: TSpTbxItem;
     TBXSubmenuLexers: TSpTBXSubmenuItem;
     TBXItemEDup: TSpTbxItem;
-    DKLanguageController1: TDKLanguageController;
+    DKLang1: TDKLanguageController;
     TBXItemOTools: TSpTbxItem;
     TBXSeparatorItem22: TSpTbxSeparatorItem;
     TBXItemBkClear: TSpTbxItem;
@@ -1267,7 +1267,7 @@ type
     procedure TBXItemSMarkAllClick(Sender: TObject);
     procedure TBXItemHelpTopicsClick(Sender: TObject);
     procedure TBXItemTabCloseClick(Sender: TObject);
-    procedure DKLanguageController1LanguageChanged(Sender: TObject);
+    procedure DKLang1LanguageChanged(Sender: TObject);
     procedure acCloseExecute(Sender: TObject);
     procedure acSaveAllExecute(Sender: TObject);
     procedure acCloseAllExecute(Sender: TObject);
@@ -9366,7 +9366,7 @@ begin
   StatusItemHint.Caption:= '';
 end;
 
-procedure TfmMain.DKLanguageController1LanguageChanged(Sender: TObject);
+procedure TfmMain.DKLang1LanguageChanged(Sender: TObject);
 begin
   UpdateLang;
 end;
@@ -23416,7 +23416,8 @@ end;
 
 function TfmMain.DoOpenArchive_HandleIni(const fn_ini, subdir, section: string; typ: TSynAddonType): boolean;
 var
-  s_section, s_id, s_file, s_params, s_value: string;
+  s_section, s_id, s_file, s_params, s_hotkey,
+  s_method, s_lexers, s_lexer_item, s_value: Widestring;
 begin
   with TIniFile.Create(fn_ini) do
   try
@@ -23424,6 +23425,7 @@ begin
     s_id:= ReadString(section, 'id', '');
     s_file:= ReadString(section, 'file', '');
     s_params:= ReadString(section, 'params', '');
+    s_hotkey:= ReadString(section, 'hotkey', '');
   finally
     Free
   end;
@@ -23451,6 +23453,35 @@ begin
     WriteString(s_section, s_id, s_value);
   finally
     Free
+  end;
+
+  //if hotkey set, write to "SynHotkeys.ini"
+  //or to each "SynHotkeys lexer nnn.ini"
+  if s_hotkey<>'' then
+  begin
+    s_method:= SGetItem(s_params, ';');
+    s_lexers:= SGetItem(s_params, ';');
+    s_value:= 'py:'+subdir+','+s_method;
+    if s_lexers='' then
+    begin
+      with TIniFile.Create(SynHotkeysIni('')) do
+      try
+        WriteString(s_value, 's1', s_hotkey);
+      finally
+        Free
+      end
+    end
+    else
+    repeat
+      s_lexer_item:= SGetItem(s_lexers, ',');
+      if s_lexer_item='' then Break;
+      with TIniFile.Create(SynHotkeysIni(s_lexer_item)) do
+      try
+        WriteString(s_value, 's1', s_hotkey);
+      finally
+        Free
+      end
+    until false;
   end;
 
   ///debug
