@@ -4650,13 +4650,13 @@ object fmMain: TfmMain
         Command = 0
         KeyStrokes = <>
         Category = 'Comments'
-        DisplayName = 'Line comment'
+        DisplayName = 'Line comment (del)'
       end
       item
         Command = 0
         KeyStrokes = <>
         Category = 'Comments'
-        DisplayName = 'Line uncomment'
+        DisplayName = 'Line uncomment (del)'
       end
       item
         Command = 715
@@ -6346,13 +6346,7 @@ object fmMain: TfmMain
       end
       item
         Command = 432
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 40996
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Markers'
         DisplayName = 'Swap marker (keep position, jump back)'
       end
@@ -6442,13 +6436,7 @@ object fmMain: TfmMain
       end
       item
         Command = 718
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16490
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Zoom'
         DisplayName = 'Reset zoom'
       end
@@ -6700,15 +6688,9 @@ object fmMain: TfmMain
       end
       item
         Command = 0
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16453
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Search & Replace'
-        DisplayName = 'Dialog "Extract strings"'
+        DisplayName = 'Dialog "Extract strings" (del)'
       end
       item
         Command = 1070
@@ -6840,7 +6822,7 @@ object fmMain: TfmMain
         Command = 0
         KeyStrokes = <>
         Category = 'Comments'
-        DisplayName = 'Toggle line comment'
+        DisplayName = 'Toggle line comment (del)'
       end
       item
         Command = 739
@@ -6858,7 +6840,7 @@ object fmMain: TfmMain
         Command = 0
         KeyStrokes = <>
         Category = 'Comments'
-        DisplayName = 'Toggle stream comment'
+        DisplayName = 'Toggle stream comment (del)'
       end
       item
         Command = 752
@@ -6886,27 +6868,15 @@ object fmMain: TfmMain
       end
       item
         Command = 0
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 118
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Options'
-        DisplayName = 'Toggle live spelling'
+        DisplayName = 'Toggle live spelling (del)'
       end
       item
         Command = 0
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 32886
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Miscellaneous'
-        DisplayName = 'Perform spell check'
+        DisplayName = 'Perform spell check (del)'
       end
       item
         Command = 828
@@ -7084,61 +7054,31 @@ object fmMain: TfmMain
       end
       item
         Command = 910
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 32817
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Activate tab #1'
       end
       item
         Command = 911
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 32818
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Activate tab #2'
       end
       item
         Command = 912
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 32819
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Activate tab #3'
       end
       item
         Command = 913
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 32820
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Activate tab #4'
       end
       item
         Command = 914
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 32821
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Tabs'
         DisplayName = 'Activate tab #5'
       end
@@ -7722,13 +7662,13 @@ object fmMain: TfmMain
         Command = 0
         KeyStrokes = <>
         Category = 'Favorites'
-        DisplayName = 'Add current file to Favorites'
+        DisplayName = 'Add current file to Favorites (del)'
       end
       item
         Command = 0
         KeyStrokes = <>
         Category = 'Favorites'
-        DisplayName = 'Organize Favorites'
+        DisplayName = 'Organize Favorites (del)'
       end
       item
         Command = 776
@@ -7848,7 +7788,7 @@ object fmMain: TfmMain
         Command = 0
         KeyStrokes = <>
         Category = 'Selection operations'
-        DisplayName = 'Select brackets'
+        DisplayName = 'Select brackets (del)'
       end
       item
         Command = -1
@@ -7872,7 +7812,7 @@ object fmMain: TfmMain
         Command = 0
         KeyStrokes = <>
         Category = 'Comments'
-        DisplayName = 'Toggle line comment (at nonspace)'
+        DisplayName = 'Toggle line comment at nonspace (del)'
       end
       item
         Command = 793
@@ -7996,13 +7936,7 @@ object fmMain: TfmMain
       end
       item
         Command = 0
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 24763
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Blank operations'
         DisplayName = 'Align by separator (deleted)'
       end
@@ -8022,13 +7956,13 @@ object fmMain: TfmMain
         Command = 0
         KeyStrokes = <>
         Category = 'Selection operations'
-        DisplayName = 'Shrink selection'
+        DisplayName = 'Shrink selection (del)'
       end
       item
         Command = 0
         KeyStrokes = <>
         Category = 'Favorites'
-        DisplayName = 'Add current project to Favorites'
+        DisplayName = 'Add current project to Favorites (del)'
       end
       item
         Command = 0
@@ -8472,7 +8406,7 @@ object fmMain: TfmMain
         Command = 0
         KeyStrokes = <>
         Category = 'Favorites'
-        DisplayName = 'Organize Favorite projects'
+        DisplayName = 'Organize Favorite projects (del)'
       end
       item
         Command = 1021
@@ -8907,8 +8841,8 @@ object fmMain: TfmMain
         DisplayName = 'Toggle show micro-map'
       end>
     UseFirstControlKeys = True
-    Left = 776
-    Top = 324
+    Left = 344
+    Top = 244
   end
   object TimerTick: TTimer
     Interval = 500
