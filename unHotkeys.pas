@@ -7,6 +7,7 @@ uses
   Dialogs, StdCtrls, Menus,
   TntControls, TntClasses, TntForms, TntStdCtrls,
   ExtCtrls, TntExtCtrls,
+  StrUtils,
   ecKeyMap,
   unProc,
   DKLang;
@@ -63,8 +64,6 @@ implementation
 { TfmHotkeys }
 
 procedure TfmHotkeys.UpdateState;
-const
-  cMaxLen=3;
 var
   Str1, Str2: string;
 begin
@@ -76,8 +75,8 @@ begin
   btnClear1.Enabled:= Str1<>'';
   btnClear2.Enabled:= Str2<>'';
 
-  btnAdd1.Enabled:= (Hotkey_GetHotkeyLen(CommandItem, 0)<cMaxLen);
-  btnAdd2.Enabled:= (Hotkey_GetHotkeyLen(CommandItem, 1)<cMaxLen) and (Str1<>'');
+  btnAdd1.Enabled:= (Hotkey_GetHotkeyLen(CommandItem, 0) < Hotkey_MaxComboLen);
+  btnAdd2.Enabled:= (Hotkey_GetHotkeyLen(CommandItem, 1) < Hotkey_MaxComboLen) and (Str1<>'');
 end;
 
 procedure TfmHotkeys.TntFormShow(Sender: TObject);
@@ -210,7 +209,10 @@ begin
   if CheckDuplicateHotkey(0) and
     CheckDuplicateHotkey(1) then
   begin
-    Hotkey_SaveToFile(CurrentLexer, CommandItem);
+    Hotkey_SaveToFile(
+      IfThen(chkForLexer.Checked, CurrentLexer, ''),
+      CommandItem
+      );
     ModalResult:= mrOk;
   end;
 end;

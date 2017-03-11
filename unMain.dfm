@@ -6849,10 +6849,10 @@ object fmMain: TfmMain
         DisplayName = 'Toggle Output panel focus'
       end
       item
-        Command = 750
+        Command = 0
         KeyStrokes = <>
         Category = 'File'
-        DisplayName = 'Create backup copy'
+        DisplayName = 'Create backup copy (del)'
       end
       item
         Command = 0

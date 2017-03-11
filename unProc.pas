@@ -30,6 +30,7 @@ uses
 
 const
   Hotkey_ComboSeparator = ' * ';
+  Hotkey_MaxComboLen = 3;
 function Hotkey_AsString(AItem: TecCommandItem; AKeyIndex: integer): string;
 procedure Hotkey_SetFromString(AItem: TecCommandItem; AKeyIndex: integer; AString: string);
 function Hotkey_GetHotkeyLen(AItem: TecCommandItem; AKeyIndex: integer): integer;
