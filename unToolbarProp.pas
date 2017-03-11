@@ -81,8 +81,6 @@ type
     mnuCase: TTntMenuItem;
     mnuBlanks: TTntMenuItem;
     mnuCarets: TTntMenuItem;
-    mnuComments: TTntMenuItem;
-    mnuWeb: TTntMenuItem;
     mnuAddons: TTntMenuItem;
     procedure FormShow(Sender: TObject);
     procedure btnIconSizeClick(Sender: TObject);
@@ -121,8 +119,6 @@ type
     procedure mnuCaseClick(Sender: TObject);
     procedure mnuBlanksClick(Sender: TObject);
     procedure mnuCaretsClick(Sender: TObject);
-    procedure mnuCommentsClick(Sender: TObject);
-    procedure mnuWebClick(Sender: TObject);
     procedure mnuAddonsClick(Sender: TObject);
   private
     { Private declarations }
@@ -864,19 +860,9 @@ begin
   DoMenuSys('m:{blank}', mnuBlanks.Caption);
 end;
 
-procedure TfmToolbarProp.mnuCommentsClick(Sender: TObject);
-begin
-  DoMenuSys('m:{cmt}', mnuComments.Caption);
-end;
-
 procedure TfmToolbarProp.mnuCaretsClick(Sender: TObject);
 begin
   DoMenuSys('m:{carets}', mnuCarets.Caption);
-end;
-
-procedure TfmToolbarProp.mnuWebClick(Sender: TObject);
-begin
-  DoMenuSys('m:{websearch}', mnuWeb.Caption);
 end;
 
 procedure TfmToolbarProp.mnuAddonsClick(Sender: TObject);
