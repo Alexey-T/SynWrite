@@ -8,6 +8,7 @@ uses
   TntControls, TntClasses, TntForms, TntStdCtrls,
   ExtCtrls, TntExtCtrls,
   ecKeyMap,
+  unProc,
   DKLang;
 
 type
@@ -32,6 +33,7 @@ type
       Shift: TShiftState);
     procedure TntFormDestroy(Sender: TObject);
     procedure TntFormCreate(Sender: TObject);
+    procedure btnOkClick(Sender: TObject);
   private
     { Private declarations }
     CurrentIndex: integer;
@@ -39,9 +41,14 @@ type
     procedure DoKeyAdd(N: Integer);
     procedure SetWaitMode(b: Boolean);
     function GetWaitMode: Boolean;
+    function CheckDuplicateHotkey(AKeyIndex: integer): Boolean;
+    function MsgConfirmOverwriteHotkey(
+      const SHotkey, SCategory, SName: Widestring): boolean;
   public
     { Public declarations }
     CommandItem: TecCommandItem;
+    Keymap: TSyntKeyMapping;
+    CurrentLexer: string;
     procedure UpdateState;
     property WaitMode: boolean read GetWaitMode write SetWaitMode;
   end;
@@ -49,74 +56,9 @@ type
 var
   fmHotkeys: TfmHotkeys;
 
-const
-  Hotkey_ComboSeparator = ' * ';
-function Hotkey_GetHotkeyAsString(
-  AItem: TecCommandItem; AKeyIndex: integer): string;
-procedure Hotkey_SetFromString(
-  AItem: TecCommandItem; AKeyIndex: integer; AString: string);
-
 implementation
 
 {$R *.dfm}
-
-
-function Hotkey_GetItem(var s: string): string;
-const
-  sep = Hotkey_ComboSeparator;
-var
-  i: integer;
-begin
-  i:= Pos(sep, s);
-  if i=0 then i:= MaxInt div 2;
-  Result:= Copy(s, 1, i-1);
-  Delete(s, 1, i+Length(sep)-1);
-end;
-
-procedure Hotkey_SetFromString(
-  AItem: TecCommandItem; AKeyIndex: integer; AString: string);
-var
-  SKey: string;
-  NKey: TShortCut;
-begin
-  while (AKeyIndex>=AItem.KeyStrokes.Count) do
-  begin
-    if AString='' then exit;
-    AItem.KeyStrokes.Add;
-  end;
-
-  AItem.KeyStrokes[AKeyIndex].KeyDefs.Clear;
-  repeat
-    SKey:= Hotkey_GetItem(AString);
-    if SKey='' then Break;
-    NKey:= TextToShortCut(SKey);
-    if NKey=0 then Break;
-      AItem.KeyStrokes[AKeyIndex].KeyDefs.Add.ShortCut:= NKey;
-  until false;
-end;
-
-function Hotkey_GetHotkeyAsString(
-  AItem: TecCommandItem; AKeyIndex: integer): string;
-var
-  i: integer;
-begin
-  Result:= '';
-  if (AKeyIndex<AItem.KeyStrokes.Count) then
-    for i:= 0 to AItem.KeyStrokes[AKeyIndex].KeyDefs.Count-1 do
-    begin
-      if Result<>'' then Result:= Result+Hotkey_ComboSeparator;
-      Result:= Result+AItem.KeyStrokes[AKeyIndex].KeyDefs[i].AsString;
-    end;
-end;
-
-function Hotkey_GetHotkeyLen(
-  AItem: TecCommandItem; AKeyIndex: integer): integer;
-begin
-  Result:= 0;
-  if (AKeyIndex<AItem.KeyStrokes.Count) then
-    Result:= AItem.KeyStrokes[AKeyIndex].KeyDefs.Count;
-end;
-
 
 { TfmHotkeys }
 
@@ -126,8 +68,8 @@ const
 var
   Str1, Str2: string;
 begin
-  Str1:= Hotkey_GetHotkeyAsString(CommandItem, 0);
-  Str2:= Hotkey_GetHotkeyAsString(CommandItem, 1);
+  Str1:= Hotkey_AsString(CommandItem, 0);
+  Str2:= Hotkey_AsString(CommandItem, 1);
   labelInfo1.Caption:= '1)  '+Str1;
   labelInfo2.Caption:= '2)  '+Str2;
 
@@ -227,5 +169,51 @@ function TfmHotkeys.GetWaitMode: Boolean;
 begin
   Result:= PanelWait.Visible;
 end;
+
+function TfmHotkeys.MsgConfirmOverwriteHotkey(const SHotkey, SCategory, SName: Widestring): boolean;
+var
+  s: Widestring;
+begin
+  s:= SHotkey + #13 + DKLangConstW('zKeyUsed') + #13 + SCategory + ': ' + SName;
+  Result:= MsgConfirm(s + #13#13 + DKLangConstW('zKeyOvr'), Handle);
+end;
+
+function TfmHotkeys.CheckDuplicateHotkey(AKeyIndex: integer): Boolean;
+var
+  strCheck, strGlobal: string;
+  KeyIndex, i: integer;
+begin
+  Result:= true;
+  strCheck:= Hotkey_AsString(CommandItem, AKeyIndex);
+  if strCheck='' then exit;
+
+  for i:= 0 to Keymap.Items.Count-1 do
+    for KeyIndex:= 0 to 1 do
+    begin
+      strGlobal:= Hotkey_AsString(Keymap.Items[i], KeyIndex);
+      if strCheck=strGlobal then
+      begin
+        Result:= MsgConfirmOverwriteHotkey(
+          strCheck,
+          Keymap.Items[i].Category,
+          Keymap.Items[i].DisplayName);
+        if not Result then exit;
+        //save overwritten item
+        Keymap.Items[i].KeyStrokes.Items[KeyIndex].KeyDefs.Clear;
+        Hotkey_SaveToFile('', Keymap.Items[i]);
+      end;
+    end;
+end;
+
+procedure TfmHotkeys.btnOkClick(Sender: TObject);
+begin
+  if CheckDuplicateHotkey(0) and
+    CheckDuplicateHotkey(1) then
+  begin
+    Hotkey_SaveToFile(CurrentLexer, CommandItem);
+    ModalResult:= mrOk;
+  end;
+end;
+
 
 end.

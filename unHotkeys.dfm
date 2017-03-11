@@ -40,8 +40,8 @@ object fmHotkeys: TfmHotkeys
     Height = 23
     Caption = 'OK'
     Default = True
-    ModalResult = 1
     TabOrder = 5
+    OnClick = btnOkClick
   end
   object btnCancel: TTntButton
     Left = 312
@@ -105,6 +105,7 @@ object fmHotkeys: TfmHotkeys
     Width = 305
     Height = 17
     Caption = 'For current lexer only'
+    Enabled = False
     TabOrder = 4
   end
   object DKLang1: TDKLanguageController

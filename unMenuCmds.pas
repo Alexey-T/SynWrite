@@ -66,7 +66,6 @@ procedure TfmMenuCmds.DoDialogHotkeys(AOwner: TComponent; ACommand: integer);
 var
   Form: TfmHotkeys;
   KeyIndex, i: Integer;
-  SSection, SLexer: string;
 begin
   KeyIndex:= -1;
   for i:= 0 to Keymap.Items.Count-1 do
@@ -77,28 +76,12 @@ begin
   Form:= TfmHotkeys.Create(AOwner);
   try
     Form.CommandItem.Assign(Keymap.Items[KeyIndex]);
-    Form.chkForLexer.Enabled:= LexerName<>'';
-    
+    Form.Keymap:= Keymap;
+    Form.CurrentLexer:= LexerName;
     if Form.ShowModal=mrOk then
     begin
-       Keymap.Items[KeyIndex].Assign(Form.CommandItem);
-       DoFilter;
-
-       if Form.chkForLexer.Checked then
-         SLexer:= LexerName
-       else
-         SLexer:= '';
-         
-       with TIniFile.Create(SynHotkeysIni(SLexer)) do
-       try
-         SSection:= SynHotkeys_Section_FromCommandCode(ACommand);
-         EraseSection(SSection);
-         WriteString(SSection, 'name', StringReplace(Form.CommandItem.DisplayName, '&', '', [rfReplaceAll]));
-         WriteString(SSection, 's1', Hotkey_GetHotkeyAsString(Form.CommandItem, 0));
-         WriteString(SSection, 's2', Hotkey_GetHotkeyAsString(Form.CommandItem, 1));
-       finally
-         Free
-       end;
+      Keymap.Items[KeyIndex].Assign(Form.CommandItem);
+      DoFilter;
     end;
   finally
     FreeAndNil(Form);
@@ -197,8 +180,8 @@ begin
             if Keymap.Items[i].Command>0 then
             begin
               S:= Keymap.Items[i].Category + ': ' + Keymap.Items[i].DisplayName;
-              SKey1:= Hotkey_GetHotkeyAsString(Keymap.Items[i], 0);
-              SKey2:= Hotkey_GetHotkeyAsString(Keymap.Items[i], 1);
+              SKey1:= Hotkey_AsString(Keymap.Items[i], 0);
+              SKey2:= Hotkey_AsString(Keymap.Items[i], 1);
               SKey:= SKey1;
               if SKey2<>'' then
                 SKey:= SKey+' / '+SKey2;

@@ -426,7 +426,6 @@ type
 
     //procedure MenuLexersClick(Sender: TObject);
     function Keymap: TSyntKeyMapping;
-    function MsgConfirmKeyOvr(const SCategory, SName: Widestring): boolean;
     procedure DoFontConfig(btn: TTntButton);
     procedure DoFillKeys;
     procedure FixWnd;
@@ -956,16 +955,6 @@ begin
   if TopRow<RowCount-VisibleRowCount then
     TopRow:= TopRow+Mouse.WheelScrollLines;
 end;
-
-function TfmSetup.MsgConfirmKeyOvr(const SCategory, SName: Widestring): boolean;
-//not used now
-var
-  s: Widestring;
-begin
-  s:= DKLangConstW('zKeyUsed') + #13 + SCategory + ' / ' + SName;
-  Result:= MsgConfirm(s + #13#13 + DKLangConstW('zKeyOvr'), Handle);
-end;
-
 
 //misc
 procedure TfmSetup.tabFilesShow(Sender: TObject);

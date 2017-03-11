@@ -5,7 +5,7 @@ interface
 uses
   ExtCtrls, Types, Forms, SysUtils,
   Classes, Graphics, Controls, StdCtrls,
-  Messages,
+  Messages, Menus,
 
   TntComCtrls,
   TntStdCtrls,
@@ -25,7 +25,15 @@ uses
   IniFiles,
   PngImageList,
   SpTbxItem,
-  ATxSProc;
+  ATxSProc,
+  unGlobData;
+
+const
+  Hotkey_ComboSeparator = ' * ';
+function Hotkey_AsString(AItem: TecCommandItem; AKeyIndex: integer): string;
+procedure Hotkey_SetFromString(AItem: TecCommandItem; AKeyIndex: integer; AString: string);
+function Hotkey_GetHotkeyLen(AItem: TecCommandItem; AKeyIndex: integer): integer;
+procedure Hotkey_SaveToFile(const ALexerName: string; ACmdItem: TecCommandItem);
 
 procedure DoMacroLoadFromFile(ACmd: TMacroRecord; const AFilename: string);
 procedure DoMacroSaveToFile(ACmd: TMacroRecord; const AFilename: string);
@@ -2722,6 +2730,80 @@ begin
     IfThen(ssCtrl in Shift, 'c')+
     IfThen(ssAlt in Shift, 'a');
     //IfThen(ssMeta in Shift, 'm'); //no in VCL
+end;
+
+
+function Hotkey_GetItem(var s: string): string;
+const
+  sep = Hotkey_ComboSeparator;
+var
+  i: integer;
+begin
+  i:= Pos(sep, s);
+  if i=0 then i:= MaxInt div 2;
+  Result:= Copy(s, 1, i-1);
+  Delete(s, 1, i+Length(sep)-1);
+end;
+
+procedure Hotkey_SetFromString(
+  AItem: TecCommandItem; AKeyIndex: integer; AString: string);
+var
+  SKey: string;
+  NKey: TShortCut;
+begin
+  while (AKeyIndex>=AItem.KeyStrokes.Count) do
+  begin
+    if AString='' then exit;
+    AItem.KeyStrokes.Add;
+  end;
+
+  AItem.KeyStrokes[AKeyIndex].KeyDefs.Clear;
+  repeat
+    SKey:= Hotkey_GetItem(AString);
+    if SKey='' then Break;
+    NKey:= TextToShortCut(SKey);
+    if NKey=0 then Break;
+      AItem.KeyStrokes[AKeyIndex].KeyDefs.Add.ShortCut:= NKey;
+  until false;
+end;
+
+function Hotkey_AsString(
+  AItem: TecCommandItem; AKeyIndex: integer): string;
+var
+  i: integer;
+begin
+  Result:= '';
+  if (AKeyIndex<AItem.KeyStrokes.Count) then
+    for i:= 0 to AItem.KeyStrokes[AKeyIndex].KeyDefs.Count-1 do
+    begin
+      if Result<>'' then Result:= Result+Hotkey_ComboSeparator;
+      Result:= Result+AItem.KeyStrokes[AKeyIndex].KeyDefs[i].AsString;
+    end;
+end;
+
+function Hotkey_GetHotkeyLen(
+  AItem: TecCommandItem; AKeyIndex: integer): integer;
+begin
+  Result:= 0;
+  if (AKeyIndex<AItem.KeyStrokes.Count) then
+    Result:= AItem.KeyStrokes[AKeyIndex].KeyDefs.Count;
+end;
+
+procedure Hotkey_SaveToFile(const ALexerName: string; ACmdItem: TecCommandItem);
+var
+  SSection, SName: string;
+begin
+  with TIniFile.Create(SynHotkeysIni(ALexerName)) do
+  try
+    SSection:= SynHotkeys_Section_FromCommandCode(ACmdItem.Command);
+    SName:= StringReplace(ACmdItem.DisplayName, '&', '', [rfReplaceAll]);
+    EraseSection(SSection);
+    WriteString(SSection, 'name', SName);
+    WriteString(SSection, 's1', Hotkey_AsString(ACmdItem, 0));
+    WriteString(SSection, 's2', Hotkey_AsString(ACmdItem, 1));
+  finally
+    Free
+  end;
 end;
 
 
