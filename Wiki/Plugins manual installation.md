@@ -21,8 +21,8 @@ Example of folder structure:
 How to register
 ===============
 
-Both binary and Python plugins need to be registered in the "SynPlugins.ini" file, which is located in SynWrite program folder (note: not in %AppData%, always in program folder).
-An example of this file:
+Both binary and Python plugins need to be registered in the SynPlugins.ini file, which is in Settings subfolder of SynWrite folder.
+Example of this file:
 
     [Panels]
     Explorer=Explorer\Explorer.dll
@@ -40,9 +40,9 @@ An example of this file:
 Sections in ini
 ===============
 
-* Panels: lists Panel plugins.
 * Commands: lists Command plugins, with their parameters, separated with ";".
 * Events: lists Event plugins, with their parameters, separated with ";". 
+* Panels: lists Panel plugins.
 * Complete: lists binary Auto-completion plugins, with their lexers list. Filename should be in form "FolderName\FileName.dll".
 * FindID: lists binary Goto-definition plugins, with their lexers list. Filename should be in form "FolderName\FileName.dll".
 
