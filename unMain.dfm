@@ -7828,13 +7828,7 @@ object fmMain: TfmMain
       end
       item
         Command = 788
-        KeyStrokes = <
-          item
-            KeyDefs = <
-              item
-                ShortCut = 16460
-              end>
-          end>
+        KeyStrokes = <>
         Category = 'Selection operations'
         DisplayName = 'Extend selection by line'
       end
@@ -8913,8 +8907,8 @@ object fmMain: TfmMain
         DisplayName = 'Toggle show micro-map'
       end>
     UseFirstControlKeys = True
-    Left = 328
-    Top = 260
+    Left = 776
+    Top = 324
   end
   object TimerTick: TTimer
     Interval = 500
