@@ -1,6 +1,8 @@
-Plugins and add-ons for SynWrite can be installed automatically. You should pack files into RAR or ZIP archive and place text file "install.inf" into archive root. Then user should open your rar/zip archive in SynWrite, and program will suggest auto-installation of this archive.
+Install.inf
+===========
+Add-ons for SynWrite can be installed automatically. You should pack files into ZIP archive and place text file "install.inf" into archive root. Then user should open zip in SynWrite, and program will suggest auto-installation of this package.
 
-Example of file "install.inf" for SynJedi plugin:
+Example of install.inf for SynJedi plugin:
 
     [info]
     title=SynJedi
@@ -24,6 +26,7 @@ Example for Python command plugin (lexers C/C++ specified):
     section=Commands
     id=My Sample
     params=run;C,C++
+    hotkey=Alt+C
 
 Section "info"
 --------------
@@ -50,8 +53,9 @@ Sections needed only for plugins and have such fields:
     * Panels
     * Complete
     * FindID
-* id: Text before "=" char for "SynPlugins.ini" file. For command plugins: if it is "Submenu\ItemName", then menu item in submenu will appear. 
-    * To specify separators in submenu (don't use them in root menu), write them like this: 1st separator with id "Submenu\\-1" with params "nnn" (any string), 2nd separator with id "Submenu\\-2" with params "nnn", etc.
+* id: Text before "=" char for "SynPlugins.ini" file. For command plugins: if it is "Submenu\ItemName", then menu item in submenu will appear. To specify separators in submenu (don't use them in root menu), write them like this: 
+    * 1st separator with id "Submenu\\-1" with params "nnn" (any string)
+    * 2nd separator with id "Submenu\\-2" with params "nnn", etc.
 * file: Only for binary plugins: DLL file name of plugin (without path).
 * params: Additional string, which is appended to the line of "SynPlugins.ini" file. It's one or more parameters, separated with ";". For panel plugins it's empty. For command/ auto-completion/ find-id plugins it's comma-separated lexers list.
 * hotkey: Hotkey for command plugin item (optional). Example of simple values: "Alt+A", "Ctrl+Shift+F1", example of combo keys: "Ctrl+Shift+A * Ctrl+B * Ctrl+C". If lexers list (in params=) empty, then hotkey saves to file SynHotkeys.ini. If lexers list not empty, then hotkey saves to each "SynHotkeys lexer nnnn.ini" for all mentioned lexers.
