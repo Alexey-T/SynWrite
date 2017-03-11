@@ -11,6 +11,7 @@ uses
   ATxFProc,
   ATxSProc,
   ATSynPlugins,
+  ecKeyMap,
   ecSyntAnal;
 
 const
@@ -179,8 +180,10 @@ const
     );
 
 type
-  TPluginList_Command = array[0..150] of record
-    SCaption: Widestring;
+  TPluginList_Command = array[0..200] of record
+    SCaptionRaw: Widestring;
+    SCaptionNice: WideString;
+    IsSeparator: Boolean;
     SFilename: string;
     SLexers: string;
     SCmd: string;
@@ -219,6 +222,7 @@ var
   FPluginsCommand: TPluginList_Command;
   FPluginsEvent: TPluginList_Event;
   FPluginsAcp: TPluginList_Acp;
+  AppKeymapOriginal: TSyntKeyMapping;
 
 const
   cPyCommandBase = 5000;
@@ -559,7 +563,7 @@ end;
 
 var
   DummyComponent: TComponent;
-  
+
 { TColorBox }
 
 initialization
@@ -573,9 +577,11 @@ initialization
 
   DummyComponent:= TComponent.Create(nil);
   SyntaxManager:= TSyntaxManager.Create(DummyComponent);
+  AppKeymapOriginal:= TSyntKeyMapping.Create(DummyComponent);
 
 finalization
 
+  FreeAndNil(AppKeymapOriginal);
   FreeAndNil(SyntaxManager);
   FreeAndNil(DummyComponent);
 

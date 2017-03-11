@@ -833,7 +833,7 @@ begin
 
           //add item
           Cells[0,j]:= IntToStr(i);
-          Cells[1,j]:= StringReplace(Keymap.Items[i].DisplayName, '&', '', [rfReplaceAll]);
+          Cells[1,j]:= Keymap.Items[i].DisplayName;
           Cells[2,j]:= '';
           Cells[3,j]:= '';
           if Keymap.Items[i].KeyStrokes.Count>0 then

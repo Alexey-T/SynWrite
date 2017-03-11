@@ -81,8 +81,7 @@ end;
 
 procedure TfmHotkeys.TntFormShow(Sender: TObject);
 begin
-  Caption:= DKLangConstW('cap_Hotkey')+': '+
-    StringReplace(CommandItem.DisplayName, '&', '', [rfReplaceAll]);
+  Caption:= DKLangConstW('cap_Hotkey')+': '+CommandItem.DisplayName;
   PanelWait.Align:= alClient;
   UpdateState;
 end;
@@ -151,6 +150,10 @@ begin
   chkForLexer.Visible:= not b;
   btnOk.Visible:= not b;
   btnCancel.Visible:= not b;
+  btnClear1.Visible:= not b;
+  btnClear2.Visible:= not b;
+  btnAdd1.Visible:= not b;
+  btnAdd2.Visible:= not b;
 end;
 
 procedure TfmHotkeys.TntFormDestroy(Sender: TObject);
@@ -179,21 +182,23 @@ end;
 
 function TfmHotkeys.CheckDuplicateHotkey(AKeyIndex: integer): Boolean;
 var
-  strCheck, strGlobal: string;
+  SCheck: string;
   KeyIndex, i: integer;
 begin
   Result:= true;
-  strCheck:= Hotkey_AsString(CommandItem, AKeyIndex);
-  if strCheck='' then exit;
+  SCheck:= Hotkey_AsString(CommandItem, AKeyIndex);
+  if SCheck='' then exit;
 
   for i:= 0 to Keymap.Items.Count-1 do
     for KeyIndex:= 0 to 1 do
     begin
-      strGlobal:= Hotkey_AsString(Keymap.Items[i], KeyIndex);
-      if strCheck=strGlobal then
+      //skip same item
+      if Keymap.Items[i].Command=CommandItem.Command then Continue;
+      //compare by AsString
+      if SCheck=Hotkey_AsString(Keymap.Items[i], KeyIndex) then
       begin
         Result:= MsgConfirmOverwriteHotkey(
-          strCheck,
+          SCheck,
           Keymap.Items[i].Category,
           Keymap.Items[i].DisplayName);
         if not Result then exit;

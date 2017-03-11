@@ -6291,6 +6291,7 @@ end;
 
 procedure TfmMain.FormShow(Sender: TObject);
 begin
+  AppKeymapOriginal.Assign(AppKeymap);
   FixSplitters;
   ApplyDefaultFonts;
 
@@ -21604,7 +21605,7 @@ begin
   for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
     with FPluginsCommand[i] do
       if SFileName<>'' then
-        if not SBegin(ExtractFileName(SCaption), '-') then
+        if not IsSeparator then
         begin
           S:= SFileName + '/' + SCmd;
           if not SBegin(S, cPyPrefix) then
@@ -24480,7 +24481,9 @@ begin
   for i:= Low(FPluginsCommand) to High(FPluginsCommand) do
     with FPluginsCommand[i] do
     begin
-      SCaption:= '';
+      SCaptionRaw:= '';
+      SCaptionNice:= '';
+      IsSeparator:= false;
       SFileName:= '';
       SLexers:= '';
       SCmd:= '';
@@ -24523,11 +24526,15 @@ begin
           FPluginsCommand[NIndex].SFileName:= SynDir + 'Plugins\' + sValueFilename;
         FPluginsCommand[NIndex].SCmd:= sValueMethod;
         FPluginsCommand[NIndex].SLexers:= sValueLexers;
-        FPluginsCommand[NIndex].SCaption:= sValueCaption;
+        FPluginsCommand[NIndex].SCaptionRaw:= sValueCaption;
+        FPluginsCommand[NIndex].SCaptionNice:=
+          StringReplace(sValueCaption, '&', '', [rfReplaceAll]);
+        FPluginsCommand[NIndex].IsSeparator:= SBegin(ExtractFileName(sValueCaption), '-');
+
         NCommandId:= cPyCommandBase+NIndex;
 
-        //1) add to keymapping (not shortcuts)
-        DoAddKeymappingCommand(NCommandId, 'Plugin', sValueCaption);
+        //1) add to keymapping
+        DoAddKeymappingCommand(NCommandId, 'Plugin', FPluginsCommand[NIndex].SCaptionNice);
 
         //2) add to main-menu
         DoPlugin_AddMenuItem(TBXSubmenuPlugins, sValueCaption, NIndex, NCommandId);
