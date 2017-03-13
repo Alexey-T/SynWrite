@@ -1,4 +1,7 @@
-Values of flags in new form: `msg_box(text, flags)`:
+New form: `msg_box(text, flags)`
+==============================
+
+Values of flags:
 
 * MB_OK
 * MB_OKCANCEL
@@ -14,7 +17,7 @@ Add to flags, to show icons:
 * MB_ICONWARNING
 * MB_ICONINFO
 
-Return values:
+Gets values:
 
 * ID_OK
 * ID_CANCEL
@@ -25,15 +28,16 @@ Return values:
 * ID_NO
 
 
-Values of id in old form: `msg_box(id, text)`:
+Old form: `msg_box(id, text)`
+=============================
 
-Id | Meaning
----|--------
-`MSG_INFO` | One-line message-box, with Info icon.      
-`MSG_WARN` | One-line message-box, with Warning icon.      
-`MSG_ERROR` | One-line message-box, with Error icon.
-`MSG_CONFIRM` | One-line message-box, with two buttons: OK, Cancel. Gets bool: OK pressed.
-`MSG_CONFIRM_Q` | Same as previous, but with question icon.
-`BEEP_INFO` | Sound signal, Info kind. 
-`BEEP_WARN` | Sound signal, Warning kind.  
-`BEEP_ERROR` | Sound signal, Error kind.
+Values of id:
+
+* MSG_INFO: One-line message-box, with Info icon.      
+* MSG_WARN: One-line message-box, with Warning icon.      
+* MSG_ERROR: One-line message-box, with Error icon.
+* MSG_CONFIRM: One-line message-box, with two buttons: OK, Cancel. Gets bool: OK pressed.
+* MSG_CONFIRM_Q: Same as previous, but with question icon.
+* BEEP_INFO: Sound signal, Info kind. 
+* BEEP_WARN: Sound signal, Warning kind.  
+* BEEP_ERROR: Sound signal, Error kind.

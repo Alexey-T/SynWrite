@@ -1,10 +1,8 @@
 Possible values of `dlg_menu(id, caption, text)` id:
 
-Id | Meaning
----|--------
-`MENU_SIMPLE` | Single-height menu dialog. 
-`MENU_DOUBLE` | Double-height menu dialog.
-`MENU_STD` | Standard Windows menu.
+* MENU_SIMPLE: Single-height menu dialog. 
+* MENU_DOUBLE: Double-height menu dialog.
+* MENU_STD: Standard Windows menu.
 
 Passed strings
 --------------

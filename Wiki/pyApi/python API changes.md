@@ -1,6 +1,12 @@
 Changes in Python API
 =====================
 
+mar 2017
+
+* release 1.0.165
+* add: app_proc: PROC_HOTKEY_INT_TO_STR
+* add: app_proc: PROC_HOTKEY_STR_TO_INT
+
 feb 2017
 
 * release 1.0.164
