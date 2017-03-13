@@ -10,17 +10,18 @@ Dialog functions
 ----------------
 
 * msg_box(id, text): Shows message box. See [py msgbox id].
-* msg_box(text, flags): Shows message box, new version, from CudaText. Documented at http://wiki.freepascal.org/CudaText_API#msg_box
+* msg_box(text, flags): Shows message box, new version, compatible with CudaText. Documented at http://wiki.freepascal.org/CudaText_API#msg_box
 * msg_status(text): Shows text in program status-bar. (Show delay is not configurable). 
-* dlg_input(text, deftext, ini_fn='', ini_section=''): Shows dialog for entering single string. `text` is prompt text, `deftext` is default input text, `ini_fn` is ini filename (without path) which holds input history (or empty string if history not needed), `ini_section` is section name in ini file (or empty string if history not needed). Returns entered string, or `None` if dialog cancelled.
-* dlg_input_memo(caption, label, deftext): Shows dialog for entering multi-line text. Returns entered string, or `None` if dialog cancelled.
-* dlg_input_ex(number, caption, label1, text1='', ..., label10='', text10=''): Shows dialog to input several strings at once. `number` is number of input fields, from 1 to 10. `labelN` is prompt above N-th input feild. `textN` is default string in N-th input field. Returns list of 10 strings entered, or `None` if dialog cancelled.
-* dlg_menu(id, caption, text, focused=0): Shows menu dialog. Possible values of `id` and function details are listed at [py menu id]. Returns index of selected item (0-based), or `None` if menu cancelled. Param focused is index of initial selected item.
-* dlg_snippet(name, alias, lexers, text): Shows dialog to edit snippet properties. Returns 4-tuple of string, or `None` if dialog cancelled.
-* dlg_file(is_open, filename, folder, filters): Shows "Open file" or "Save file as" dialog. Returns filename or `None` if cancelled. `is_open` is bool: Open or Save dialog, `filename` is initial filename (can be empty and without path), `folder` is initial folder (can be empty), `filters` is file-masks string (can be empty). If filename is `"*"`, multi-selection is enabled and result is list of str, not str. Example string for filters: `"Help files|*.chm|Batch files|*.bat;*.cmd|"`. Vertical line separates filters and caption/mask in each filter.
-* dlg_folder(caption, dir): Shows "Select folder" dialog. Returns folder path or `None` if cancelled. `caption` is prompt text (can be empty), `folder` is initial folder (can be empty).
+* dlg_input(text, deftext, ini_fn='', ini_section=''): Shows dialog for entering single string. `text` is prompt text, `deftext` is default input text, `ini_fn` is ini filename (without path) which holds input history (or empty string if history not needed), `ini_section` is section name in ini file (or empty string if history not needed). Returns entered string, or None if dialog cancelled.
+* dlg_input_memo(caption, label, deftext): Shows dialog for entering multi-line text. Returns entered string, or None if dialog cancelled.
+* dlg_input_ex(number, caption, label1, text1='', ..., label10='', text10=''): Shows dialog to input several strings at once. `number` is number of input fields, from 1 to 10. `labelN` is prompt above N-th input feild. `textN` is default string in N-th input field. Returns list of 10 strings entered, or None if dialog cancelled.
+* dlg_menu(id, caption, text, focused=0): Shows menu dialog. Possible values of `id` and function details are listed at [py menu id]. Returns index of selected item (0-based), or None if menu cancelled. Param focused is index of initial selected item.
+* dlg_snippet(name, alias, lexers, text): Shows dialog to edit snippet properties. Returns 4-tuple of string, or None if dialog cancelled.
+* dlg_file(is_open, filename, folder, filters): Shows "Open file" or "Save file as" dialog. Returns filename or None if cancelled. `is_open` is bool: Open or Save dialog, `filename` is initial filename (can be empty and without path), `folder` is initial folder (can be empty), `filters` is file-masks string (can be empty). If filename is `"*"`, multi-selection is enabled and result is list of str, not str. Example string for filters: `"Help files|*.chm|Batch files|*.bat;*.cmd|"`. Vertical line separates filters and caption/mask in each filter.
+* dlg_folder(caption, dir): Shows "Select folder" dialog. Returns folder path or None if cancelled. `caption` is prompt text (can be empty), `folder` is initial folder (can be empty).
 * dlg_dir(caption, dir): same as dlg_folder.
-* dlg_color(color): Shows "Color Picker" dialog, with given initial int RGB color. Gets int color code, or `None` if cancelled.
+* dlg_color(color): Shows "Color Picker" dialog, with given initial int RGB color. Gets RGB color, or None if cancelled.
+* dlg_hotkey(caption=""): Shows dialog to input hotkey. Gets str of hotkey (e.g. "F1", "Ctrl+Alt+B"), or None if cancelled.
 * dlg_custom(caption, size_x, size_y, text, focused=-1): Shows user-made dialog. Documented at http://wiki.freepascal.org/CudaText_API#dlg_custom . Code is 90% ported from CudaText. Not supported control types: "checkbutton", "checkgroup", "image".
 
 Versions
@@ -29,6 +30,12 @@ Versions
 * app_version(): Returns SynWrite program version string. 
 * app_api_version(): Returns SynWrite API version string: 3 numbers, dot-separated. 
 
+Ini files functions
+-------------------
+
+* ini_read(filename, section, key, def_value): Reads one string from ini-file. If filename w/o path, then subfolder Settings (of app folder) used. For plugins configs: recommended to use filename prefix "syn_". 
+* ini_write(filename, section, key, value): Writes one string to ini-file. Same syntax as with ini_read. 
+
 Misc functions
 --------------
 
@@ -36,13 +43,11 @@ Misc functions
 * app_ini_dir(): Returns folder path of SynWrite configuration files.
 * app_log(id, text): Controls contents of log-panels and console-panel. Possible values of `id` are listed at [py log id].
 * app_proc(id, text=''): Performs some application-level action. Possible values of `id` are listed at [py app-proc id].
-* ini_read(filename, section, key, value): Reads a string from ini-file. Filename should be without path (folder of program ini-files is used then). Recommended filename prefix is `"syn_"`. Default value passed as `value`. 
-* ini_write(filename, section, key, value): Writes a string to ini-file. Same syntax as with `ini_read`. 
 * file_open(filename, group=-1, params=''): Opens editor-tab for given filename. If filename already opened, its tab always activates. Pass empty str to open untitled tab. Param `group` is 0-based index of tabs-group (0..5), -1 means "use active group". Param `params` is optional str: if it contains "/s", then installation of zip-filename will be silent. Returns bool: `filename` is empty or exists.
 * file_save(): Saves current editor-tab (shows "Save as" dialog for unnamed tab).
-* file_get_name(id): Returns misc filename. Possible values of `id` are listed at [py filename id]. For incorrect `id` value, `None` is returned. To enumerate all editor-tabs, start with `id = 0`, and increase it until you get `None`.
+* file_get_name(id): Returns misc filename. Possible values of `id` are listed at [py filename id]. For incorrect `id` value, None is returned. To enumerate all editor-tabs, start with `id = 0`, and increase it until you get None.
 * text_local(id, filename): Returns single string, from localization lang-file. Lang-files of your plugin must have names, described in [Plugins translation]. `id` is string identifier, `filename` is full path of any file in the same folder and lang-file - usually pass here `__file__` variable.
-* text_convert(text, filename, back=False): Returns string converted using text-converter file (see help topic about text converters). Returns `None` if converter file is not found.
+* text_convert(text, filename, back=False): Returns string converted using text-converter file (see help topic about text converters). Returns None if converter file is not found.
 * regex_parse(regex, text): Parses string using regex, into 8 substrings, each substring is found by regex group (regex groups are defined as usual, by round brackets). Returns substrings as 8-tuple.
 * get_app_prop(id, value=''): Returns some application-level property. Possible values of `id` are listed at [py app-property id].
 * set_app_prop(id, value): Sets some application-level property. Possible values of `id` are listed at [py app-property id].
@@ -68,7 +73,7 @@ Class Editor methods, carets
 * get_caret_pos(): Returns caret absolute offset (0-based).
 * set_caret_xy(x, y): Sets caret phisical coords (x, y).
 * set_caret_pos(pos): Sets caret absolute offset.
-* get_carets(): Returns list of multi-carets positions and selections. It's `None` or non-empty list of int triples: `[[x0, y0, len0], [x1, y1, len1], ...]`. `lenN` is selection length for N-th caret: negative for selection to the beginning, positive for selection to the end, or 0.  
+* get_carets(): Returns list of multi-carets positions and selections. It's None or non-empty list of int triples: `[[x0, y0, len0], [x1, y1, len1], ...]`. `lenN` is selection length for N-th caret: negative for selection to the beginning, positive for selection to the end, or 0.  
 * add_caret_xy(x, y, len=0): Adds multi-caret at phisical coords (x, y) with given selection length (positive, negative, or 0). Pass `x=-1` to remove multi-carets and leave usual caret.
 * xy_pos(x, y): Converts text phisical coords (x, y) to absolute offset.
 * pos_xy(pos): Converts text absolute offset to phisical coords (x, y) 2-tuple.  
@@ -114,11 +119,11 @@ Class Editor methods, misc properties
 * set_prop(id, value): Sets some editor property. `value` is string, use "0" and "1" for bool values, use `str()` for int values. Possible `id` values are listed at [py property id].  
 * get_split(): Returns split properties of editor tab as 2-tuple: `(horizontal, percent_value)`, where value is in range 0..100.
 * set_split(horz, value): Sets split properties of editor tab. `horz` is bool: perform horizontal split. `value` is int in range 0..100: specifies split percent position, 0 means unsplit.
-* get_sync_ranges(): Returns list of sync-editing ranges in editor. It's `None` or non-empty list of int pairs: `[[start0, len0], [start1, len1], ...]`.
+* get_sync_ranges(): Returns list of sync-editing ranges in editor. It's None or non-empty list of int pairs: `[[start0, len0], [start1, len1], ...]`.
 * add_sync_range(start, len): Adds sync-editing range with given absolute offset and length. Pass `start=-1` to remove all ranges.
 * get_alerts(): Returns bool flag for "alerts": are confirmation message-boxes enabled for "Close tab" command.
 * set_alerts(value): Sets bool flag for "alerts".
-* get_staple(x, y): Returns range of block-staple (indentation guide) for text position `(x, y)`. It's `None` if no staple at this position, or 2-tuple: `(range_offset_start, range_offset_end)`.
+* get_staple(x, y): Returns range of block-staple (indentation guide) for text position `(x, y)`. It's None if no staple at this position, or 2-tuple: `(range_offset_start, range_offset_end)`.
 
 Class Editor methods, marks
 ---------------------------

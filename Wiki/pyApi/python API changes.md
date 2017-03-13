@@ -8,6 +8,7 @@ mar 2017
 * add: app_proc: PROC_HOTKEY_INT_TO_STR
 * add: app_proc: PROC_HOTKEY_STR_TO_INT
 * add: dlg_color
+* add: dlg_hotkey
 * add: dlg_dir alias for dlg_folder
 * deleted: PROC_COLOR_PICKER
 
