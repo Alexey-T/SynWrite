@@ -4,9 +4,9 @@ Changes in Python API
 mar 2017
 
 * release 1.0.165
+* add: app_proc: PROC_KEYMAP
 * add: app_proc: PROC_HOTKEY_INT_TO_STR
 * add: app_proc: PROC_HOTKEY_STR_TO_INT
-* add: app_proc: PROC_GET_COMMAND_INITIAL
 * add: dlg_color
 * add: dlg_dir alias for dlg_folder
 * deleted: PROC_COLOR_PICKER

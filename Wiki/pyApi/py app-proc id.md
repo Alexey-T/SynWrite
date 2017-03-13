@@ -19,7 +19,9 @@ Keymapping
 ==========
 
 * PROC_GET_COMMAND: Gets item from keymapping, with index `int(text)`. Gets tuple `(int_command, str_category, str_name, str_hotkey1, str_hotkey2)` or None if index not correct. To enumarate all items, call it from "0" until you get None. Plugin items have category "Plugin".
-* PROC_GET_COMMAND_INITIAL: Same as PROC_GET_COMMAND, but for initial keymapping, which was before reading hotkey config(s) (less items, no items for plugins).  
+* PROC_KEYMAP: Gets keymapping. It's list of dicts:
+    * for usual commands: example: `{'type': 'cmd', 'command': 700, 'category': 'File', 'name': 'New file', 'hotkey1': 'Ctrl+N', 'hotkey1init': 'Ctrl+N', 'hotkey2': 'Shift+Ctrl+Alt+N', 'hotkey2init': ''}`
+    * for plugins: example: `{'type': 'py', 'module': 'syn_lint', 'method': 'run', 'name': 'SynLint', 'hotkey1': 'Ctrl+L * L', 'hotkey2': ''}`
 
 Misc
 ====

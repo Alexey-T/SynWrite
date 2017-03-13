@@ -1113,7 +1113,8 @@ var
 begin
   Key1:= Hotkey_AsString(ACmdItem, 0);
   Key2:= Hotkey_AsString(ACmdItem, 1);
-  Result:= GetPythonEngine.Py_BuildValue('(issss)',
+  with GetPythonEngine do
+  Result:= Py_BuildValue('(issss)',
     ACmdItem.Command,
     PChar(UTF8Encode(ACmdItem.Category)),
     PChar(UTF8Encode(ACmdItem.DisplayName)),
@@ -1121,6 +1122,87 @@ begin
     PChar(UTF8Encode(Key2))
     );
 end;
+
+function Py_Keymap(AKeymap: TSyntKeyMapping): PPyObject;
+var
+  CmdItem, CmdItemInit: TecCommandItem;
+  SKey1, SKey2, SKey1_init, SKey2_init: string;
+  SPyFilename, SPyMethod: string;
+  NLen, NPluginIndex, i: integer;
+begin
+  with GetPythonEngine do
+  begin
+    NLen:= AKeymap.Items.Count;
+    Result:= PyList_New(NLen);
+    if not Assigned(Result) then
+      raise EPythonError.Create('Cannot create PyList');
+    for i:= 0 to NLen-1 do
+    begin
+      CmdItem:= AKeymap.Items[i];
+      SKey1:= Hotkey_AsString(CmdItem, 0);
+      SKey2:= Hotkey_AsString(CmdItem, 1);
+      SKey1_init:= '';
+      SKey2_init:= '';
+
+      case CmdItem.Command of
+        cPyCommandBase..cPyCommandLast:
+          begin
+            NPluginIndex:= CmdItem.Command-cPyCommandBase;
+            SPyFilename:= FPluginsCommand[NPluginIndex].SFilename;
+            SPyMethod:= FPluginsCommand[NPluginIndex].SCmd;
+            if SBegin(SPyFilename, cPyPrefix) then
+              Delete(SPyFilename, 1, Length(cPyPrefix));
+
+            PyList_SetItem(Result, i,
+              Py_BuildValue('{ssssssssssss}',
+                PChar('type'),
+                PChar('py'),
+                PChar('module'),
+                PChar(UTF8Encode(SPyFilename)),
+                PChar('method'),
+                PChar(UTF8Encode(SPyMethod)),
+                PChar('name'),
+                PChar(UTF8Encode(CmdItem.DisplayName)),
+                PChar('hotkey1'),
+                PChar(UTF8Encode(SKey1)),
+                PChar('hotkey2'),
+                PChar(UTF8Encode(SKey2)),
+                ));
+          end;
+        else
+          begin
+            if i<AppKeymapOriginal.Items.Count then
+            begin
+              CmdItemInit:= AppKeymapOriginal.Items[i];
+              SKey1_init:= Hotkey_AsString(CmdItemInit, 0);
+              SKey2_init:= Hotkey_AsString(CmdItemInit, 1);
+            end;
+
+            PyList_SetItem(Result, i,
+              Py_BuildValue('{sssissssssssssss}',
+                PChar('type'),
+                PChar('cmd'),
+                PChar('command'),
+                CmdItem.Command,
+                PChar('category'),
+                PChar(UTF8Encode(CmdItem.Category)),
+                PChar('name'),
+                PChar(UTF8Encode(CmdItem.DisplayName)),
+                PChar('hotkey1'),
+                PChar(UTF8Encode(SKey1)),
+                PChar('hotkey2'),
+                PChar(UTF8Encode(SKey2)),
+                PChar('hotkey1init'),
+                PChar(UTF8Encode(SKey1_init)),
+                PChar('hotkey2init'),
+                PChar(UTF8Encode(SKey2_init)),
+                ));
+          end;
+      end;
+    end;
+  end;
+end;
+
 
 function Py_app_proc(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -1194,13 +1276,10 @@ begin
             else
               Result:= ReturnNone;
           end;
-        PROC_GET_COMMAND_INITIAL:
+
+        PROC_KEYMAP:
           begin
-            NValue:= StrToIntDef(Str, -1);
-            if (NValue>=0) and (NValue<AppKeymapOriginal.Items.Count) then
-              Result:= Py_KeyCommandToTuple(AppKeymapOriginal.Items[NValue])
-            else
-              Result:= ReturnNone;
+            Result:= Py_Keymap(fmMain.AppKeymap);
           end;
 
         PROC_GET_ESCAPE:
