@@ -59,6 +59,7 @@ uses
   unInputMemo,
   unProcCustomDialog,
   unProcHelp,
+  unHotkey,
   ecSyntAnal,
   ecKeyMap,
   ecLists,
@@ -1127,7 +1128,7 @@ function Py_Keymap(AKeymap: TSyntKeyMapping): PPyObject;
 var
   CmdItem, CmdItemInit: TecCommandItem;
   SKey1, SKey2, SKey1_init, SKey2_init: string;
-  SPyFilename, SPyMethod: string;
+  SPyModule, SPyMethod, SPyLexers: string;
   NLen, NPluginIndex, i: integer;
 begin
   with GetPythonEngine do
@@ -1148,19 +1149,22 @@ begin
         cPyCommandBase..cPyCommandLast:
           begin
             NPluginIndex:= CmdItem.Command-cPyCommandBase;
-            SPyFilename:= FPluginsCommand[NPluginIndex].SFilename;
+            SPyModule:= FPluginsCommand[NPluginIndex].SFilename;
             SPyMethod:= FPluginsCommand[NPluginIndex].SCmd;
-            if SBegin(SPyFilename, cPyPrefix) then
-              Delete(SPyFilename, 1, Length(cPyPrefix));
+            SPyLexers:= FPluginsCommand[NPluginIndex].SLexers;
+            if SBegin(SPyModule, cPyPrefix) then
+              Delete(SPyModule, 1, Length(cPyPrefix));
 
             PyList_SetItem(Result, i,
               Py_BuildValue('{ssssssssssss}',
                 PChar('type'),
                 PChar('py'),
                 PChar('module'),
-                PChar(UTF8Encode(SPyFilename)),
+                PChar(UTF8Encode(SPyModule)),
                 PChar('method'),
                 PChar(UTF8Encode(SPyMethod)),
+                PChar('lexers'),
+                PChar(UTF8Encode(SPyLexers)),
                 PChar('name'),
                 PChar(UTF8Encode(CmdItem.DisplayName)),
                 PChar('hotkey1'),
@@ -1420,6 +1424,24 @@ begin
         Result:= ReturnNone;
     end;
 end;
+
+function Py_dlg_hotkey(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  PtrTitle: PAnsiChar;
+  StrTitle: Widestring;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 's:dlg_hotkey', @PtrTitle)) then
+    begin
+      StrTitle:= UTF8Decode(AnsiString(PtrTitle));
+      StrTitle:= DoDialogHotkeyInput(StrTitle);
+      if StrTitle<>'' then
+        Result:= PyUnicode_FromWideString(StrTitle)
+      else
+        Result:= ReturnNone;  
+    end;
+end;
+
 
 function Py_dlg_file(Self, Args: PPyObject): PPyObject; cdecl;
 var
@@ -3126,6 +3148,7 @@ begin
     AddMethod('dlg_file', Py_dlg_file, '');
     AddMethod('dlg_folder', Py_dlg_folder, '');
     AddMethod('dlg_color', Py_dlg_color, '');
+    AddMethod('dlg_hotkey', Py_dlg_hotkey, '');
     AddMethod('dlg_custom', Py_dlg_custom, '');
 
     AddMethod('app_version', Py_app_version, '');

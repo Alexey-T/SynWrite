@@ -355,8 +355,10 @@ dlg_dir = dlg_folder
     
 def dlg_snippet(name, alias, lexers, text):
     return sw_api.dlg_snippet(name, alias, lexers, text)
-def dlg_color(value):
-    return sw_api.dlg_color(value)    
+def dlg_color(color):
+    return sw_api.dlg_color(color)
+def dlg_hotkey(title=""):
+    return sw_api.dlg_hotkey(title)    
 
 def dlg_custom(caption, size_x, size_y, text, focused=-1):
     return sw_api.dlg_custom(caption, size_x, size_y, text, focused)

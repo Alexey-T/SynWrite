@@ -69,7 +69,8 @@ uses
   unGlobData in 'unGlobData.pas',
   unPyApiConst in 'unPyApiConst.pas',
   unColorBox in 'unColorBox.pas',
-  unHotkeys in 'unHotkeys.pas' {fmHotkeys};
+  unHotkeys in 'unHotkeys.pas' {fmHotkeys},
+  unHotkey in 'unHotkey.pas' {fmHotkey};
 
 {$R *.res}
 {$R *.dkl_const.res}
