@@ -1573,7 +1573,6 @@ type
     procedure TBXItemPLogSaveAsClick(Sender: TObject);
     procedure TBXItemTabMoveToWindowClick(Sender: TObject);
     procedure TBXItemTabOpenInWindowClick(Sender: TObject);
-    procedure ecEncodeHtmlCharsExecute(Sender: TObject);
     procedure TimerTreeTimer(Sender: TObject);
     procedure PopupStatusLineEndsPopup(Sender: TObject);
     procedure TBXItemFoldAllClick(Sender: TObject);
@@ -1704,7 +1703,6 @@ type
     procedure TBXSubmenuViewToolbarsPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
     procedure TimerMinimapTimer(Sender: TObject);
-    procedure ecEncodeHtmlChars2Execute(Sender: TObject);
     procedure TbxItemMenuXClick(Sender: TObject);
     procedure TbxItemMenuXXClick(Sender: TObject);
     procedure TBXItemProjOpenClick(Sender: TObject);
@@ -2390,7 +2388,6 @@ type
 
     function SynHiddenOption(const Id: string; Default: integer): Integer;
     procedure DoCopySearchMarks(Ed: TSyntaxMemo);
-    procedure DoTextConverter(Ed: TSyntaxMemo; const fn: Widestring; ToBack: boolean);
 
     procedure ShowProj;
     procedure DoOpenProject; overload;
@@ -2956,10 +2953,6 @@ uses
 
 {$R *.dfm}
 {$R Cur.res}
-
-const
-  cConverterHtml1 = 'HTML - all entities';
-  cConverterHtml2 = 'HTML - entities except brackets';
 
 const
   cRegexColorCode = '\#\w{3,6}';
@@ -22285,49 +22278,6 @@ begin
   SyncMapPos;
 end;
 
-
-procedure TfmMain.DoTextConverter(Ed: TSyntaxMemo; const fn: Widestring; ToBack: boolean);
-var
-  SFrom, STo: Widestring;
-  NStart, NLen: Integer;
-  ToAll: boolean;
-begin
-  if Ed.ReadOnly then Exit;
-  if not IsFileExist(fn) then
-    begin MsgNoFile(fn); Exit end;
-
-  ToAll:= Ed.SelLength=0;
-  if ToAll then
-  begin
-    SFrom:= Ed.Lines.FText;
-    NStart:= 0;
-    NLen:= Length(SFrom);
-  end
-  else
-  begin
-    SFrom:= Ed.SelText;
-    NStart:= Ed.SelStart;
-    NLen:= Ed.SelLength;
-  end;
-
-  STo:= SDecodeUsingFileTable(SFrom, fn, ToBack);
-  if STo=SFrom then
-    begin MsgDoneLines(0); MsgBeep; Exit end;
-
-  Ed.ReplaceText(NStart, NLen, STo);
-  if not ToAll then
-    Ed.SetSelection(NStart, Length(STo));
-end;
-
-procedure TfmMain.ecEncodeHtmlCharsExecute(Sender: TObject);
-begin
-  DoTextConverter(CurrentEditor, SynConverterFilename(cConverterHtml1), false);
-end;
-
-procedure TfmMain.ecEncodeHtmlChars2Execute(Sender: TObject);
-begin
-  DoTextConverter(CurrentEditor, SynConverterFilename(cConverterHtml2), false);
-end;
 
 procedure TfmMain.ProjGotoFile(Sender: TObject);
 begin
