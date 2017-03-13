@@ -9,7 +9,6 @@ Clipboard
 Hotkeys
 =======
 
-* PROC_REPORT_KEYS: Creates HTML report with editor key-mapping, `text` is filename.
 * PROC_GET_ESCAPE: Gets state of Esc-key-pressed flag (bool). Flag is set on each Esc press since app start.
 * PROC_SET_ESCAPE: Sets state of Esc-key-pressed flag. Text must be "0"/"1" for bool values.
 * PROC_GET_KEYSTATE: Gets state of pressed special keys (str). String has "c" for Ctrl pressed, "a" for Alt, "s" for Shift.
@@ -27,6 +26,5 @@ Misc
 * PROC_LOCK_STATUS: Disables updating of status-bar first field (to speed-up text processing).    
 * PROC_UNLOCK_STATUS: Enables updating of status-bar first field.
 * PROC_SOUND: Plays sound file `text` in wav format. Pass empty string to stop currently played sound. Returns bool: filename exists or empty.
-* PROC_COLOR_PICKER: Shows color-picker dialog. Pass initial color value as `str(color_value)`. Returns int color value or -1 if dialog cancelled.
 * PROC_ADD_GUTTER_ICON: Adds icon to gutter imagelist. Returns icon index, or `None` if cannot add. You can pass index to `Editor.set_bk`; imagelist is one for all editors. Pass to `text` bmp filename, size must be 16x16, 8bit color, transparent color is color of left-bottom pixel. 
 * PROC_ADD_RECENT_COLOR: Adds color code to "Recent colors" menu (menu item at right side of main menu). Pass code as `str(color_code)`.
