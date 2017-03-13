@@ -15,16 +15,17 @@ Hotkeys
 * PROC_HOTKEY_INT_TO_STR: Converts given int hotkey to string. Gets empty str for unknown code.
 * PROC_HOTKEY_STR_TO_INT: Converts given string hotkey to int. Gets 0 for incorrect string. Example: converts "ctrl+shift+v" to "24662", which is then converted to "Shift+Ctrl+V". 
 
-Plugins calls
-=============
+Keymapping
+==========
 
-* PROC_GET_COMMAND: Returns property of internal command with index `int(text)`. Returns tuple `(command_int, category_name, command_name, hotkey_str_1, hotkey_str_2)` or `None` of index not correct (call it from 0 until you get None).
+* PROC_GET_COMMAND: Gets item from keymapping, with index `int(text)`. Gets tuple `(int_command, str_category, str_name, str_hotkey1, str_hotkey2)` or None if index not correct. To enumarate all items, call it from "0" until you get None. Plugin items have category "Plugin".
+* PROC_GET_COMMAND_INITIAL: Same as PROC_GET_COMMAND, but for initial keymapping, which was before reading hotkey config(s) (less items, no items for plugins).  
 
 Misc
 ====
 
 * PROC_LOCK_STATUS: Disables updating of status-bar first field (to speed-up text processing).    
 * PROC_UNLOCK_STATUS: Enables updating of status-bar first field.
-* PROC_SOUND: Plays sound file `text` in wav format. Pass empty string to stop currently played sound. Returns bool: filename exists or empty.
 * PROC_ADD_GUTTER_ICON: Adds icon to gutter imagelist. Returns icon index, or `None` if cannot add. You can pass index to `Editor.set_bk`; imagelist is one for all editors. Pass to `text` bmp filename, size must be 16x16, 8bit color, transparent color is color of left-bottom pixel. 
 * PROC_ADD_RECENT_COLOR: Adds color code to "Recent colors" menu (menu item at right side of main menu). Pass code as `str(color_code)`.
+* PROC_SOUND: Plays sound file `text` in wav format. Pass empty string to stop currently played sound. Returns bool: filename exists or empty.

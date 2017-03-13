@@ -1,10 +1,10 @@
 Modules
 -------
 
-- `sw_api`: Built-in module (no file for it).
-- `sw`: Implements all functions, constants and objects listed below. (Module file is in the "Py" subfolder).
-- `sw_cmd`: Lists editor command ids.
-- `sw_keys`: Lists int key codes.
+* sw: All functions, constants and objects listed below.
+* sw_api: Low-level built-in module (no file).
+* sw_cmd: Int command codes for `ed.cmd`.
+* sw_keys: Int hotkey codes for `on_key`.
 
 Dialog functions
 ----------------
