@@ -5727,18 +5727,6 @@ object fmMain: TfmMain
         DisplayName = 'Break line at current position, leave caret'
       end
       item
-        Command = 0
-        KeyStrokes = <>
-        Category = 'Inserting text'
-        DisplayName = 'Insert a character (uses parameter)'
-      end
-      item
-        Command = 0
-        KeyStrokes = <>
-        Category = 'Inserting text'
-        DisplayName = 'Insert a whole string (uses parameter)'
-      end
-      item
         Command = 568
         KeyStrokes = <
           item
@@ -7818,61 +7806,61 @@ object fmMain: TfmMain
         Command = 1092
         KeyStrokes = <>
         Category = 'Syntax tree'
-        DisplayName = 'Tree - Collapse level 2'
+        DisplayName = 'Tree - Fold level 2'
       end
       item
         Command = 1093
         KeyStrokes = <>
         Category = 'Syntax tree'
-        DisplayName = 'Tree - Collapse level 3'
+        DisplayName = 'Tree - Fold level 3'
       end
       item
         Command = 1094
         KeyStrokes = <>
         Category = 'Syntax tree'
-        DisplayName = 'Tree - Collapse level 4'
+        DisplayName = 'Tree - Fold level 4'
       end
       item
         Command = 1095
         KeyStrokes = <>
         Category = 'Syntax tree'
-        DisplayName = 'Tree - Collapse level 5'
+        DisplayName = 'Tree - Fold level 5'
       end
       item
         Command = 1096
         KeyStrokes = <>
         Category = 'Syntax tree'
-        DisplayName = 'Tree - Collapse level 6'
+        DisplayName = 'Tree - Fold level 6'
       end
       item
         Command = 1097
         KeyStrokes = <>
         Category = 'Syntax tree'
-        DisplayName = 'Tree - Collapse level 7'
+        DisplayName = 'Tree - Fold level 7'
       end
       item
         Command = 1098
         KeyStrokes = <>
         Category = 'Syntax tree'
-        DisplayName = 'Tree - Collapse level 8'
+        DisplayName = 'Tree - Fold level 8'
       end
       item
         Command = 1099
         KeyStrokes = <>
         Category = 'Syntax tree'
-        DisplayName = 'Tree - Collapse level 9'
+        DisplayName = 'Tree - Fold level 9'
       end
       item
         Command = 1090
         KeyStrokes = <>
         Category = 'Syntax tree'
-        DisplayName = 'Tree - Collapse all'
+        DisplayName = 'Tree - Fold all'
       end
       item
         Command = 1091
         KeyStrokes = <>
         Category = 'Syntax tree'
-        DisplayName = 'Tree - Expand all'
+        DisplayName = 'Tree - Unfold all'
       end
       item
         Command = 1135

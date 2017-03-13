@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabView
+    ActivePage = tabKey
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -793,7 +793,7 @@ object fmSetup: TfmSetup
         ColCount = 4
         Ctl3D = False
         DefaultColWidth = 110
-        DefaultRowHeight = 17
+        DefaultRowHeight = 16
         FixedCols = 0
         RowCount = 2
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goColSizing, goThumbTracking]
@@ -813,7 +813,7 @@ object fmSetup: TfmSetup
         Width = 281
         Height = 21
         Style = csDropDownList
-        DropDownCount = 40
+        DropDownCount = 60
         ItemHeight = 13
         TabOrder = 0
         OnChange = cbKeyCatChange
