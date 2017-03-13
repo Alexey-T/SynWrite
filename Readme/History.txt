@@ -4,7 +4,7 @@ Legend:
  * changed
 
 
-6.36.2660
+6.36.2680
 + new config for hotkeys used now. SynHotkeys.ini (later also "SynHotkeys lexer nnnnn.ini"). one for usual commands and plugins.
 + new dialog to configure hotkeys: in Commands dlg (F1), press F9
 * old hotkeys not read now: from Syn.ini, from SynPlugins.ini (was bad design)
@@ -12,6 +12,7 @@ Legend:
 * hotkeys part in Options dlg: now read-only, cannot change hotkeys there
 * SynPlugins.ini: not used last 2 items for command plugins: ;hotkey;flags . To hide command plugin in context menu, now use "_" char prefix in command caption.
 + install.inf: in [iniNNN] allowed line "hotkey=" to set command item's hotkey, e.g. combo key is "hotkey=Ctrl+Alt+A * Ctrl+B * Ctrl+C"
+* removed translations for items (about 300) in Commands dialog (to make translation easy)
 
 6.35.2600
 + dialog Page Setup: variable #Pagecount#
