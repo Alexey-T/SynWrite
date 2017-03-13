@@ -5,6 +5,7 @@ interface
 uses
   PythonEngine,
   ExtCtrls,
+  Menus,
   ecSyntMemo,
   ATSyntMemo,
   unColorBox;
@@ -1225,7 +1226,18 @@ begin
               ConvertShiftStateToString(KeyboardStateToShiftState)));
           end;
 
-        else
+        PROC_HOTKEY_INT_TO_STR:
+          begin
+            Str:= ShortCutToText(StrToIntDef(Str, 0));
+            Result:= PyString_FromString(PChar(string(Str)));
+          end;
+        PROC_HOTKEY_STR_TO_INT:
+          begin
+            Str:= IntToStr(TextToShortCut(Str));
+            Result:= PyString_FromString(PChar(string(Str)));
+          end;
+
+        else
           Result:= ReturnNone;
       end;
     end;

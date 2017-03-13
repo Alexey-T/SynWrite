@@ -16,7 +16,7 @@ uses
 
 const
   cSynVersion = '6.36.2680';
-  cSynApiVersion = '1.0.164';
+  cSynApiVersion = '1.0.165';
 
 var
   SynModuleFilename: string;

@@ -91,6 +91,9 @@ const
   PROC_GET_ESCAPE       = 10;
   PROC_SET_ESCAPE       = 11;
   PROC_GET_KEYSTATE     = 20;
+  PROC_HOTKEY_INT_TO_STR = 21;
+  PROC_HOTKEY_STR_TO_INT = 22;
+
 
 const
   SEL_NORMAL = 0;
