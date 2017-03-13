@@ -1107,21 +1107,16 @@ begin
 end;
 
 
-function Py_KeyCommandToTuple(Cmd: TecCommandItem): PPyObject;
+function Py_KeyCommandToTuple(ACmdItem: TecCommandItem): PPyObject;
 var
   Key1, Key2: string;
 begin
-  Key1:= '';
-  Key2:= '';
-  if Cmd.KeyStrokes.Count>0 then
-    Key1:= Cmd.KeyStrokes[0].AsString;
-  if Cmd.KeyStrokes.Count>1 then
-    Key2:= Cmd.KeyStrokes[1].AsString;
-
+  Key1:= Hotkey_AsString(ACmdItem, 0);
+  Key2:= Hotkey_AsString(ACmdItem, 1);
   Result:= GetPythonEngine.Py_BuildValue('(issss)',
-    Cmd.Command,
-    PChar(UTF8Encode(Cmd.Category)),
-    PChar(UTF8Encode(Cmd.DisplayName)),
+    ACmdItem.Command,
+    PChar(UTF8Encode(ACmdItem.Category)),
+    PChar(UTF8Encode(ACmdItem.DisplayName)),
     PChar(UTF8Encode(Key1)),
     PChar(UTF8Encode(Key2))
     );
@@ -1196,6 +1191,14 @@ begin
             NValue:= StrToIntDef(Str, -1);
             if (NValue>=0) and (NValue<fmMain.AppKeymap.Items.Count) then
               Result:= Py_KeyCommandToTuple(fmMain.AppKeymap.Items[NValue])
+            else
+              Result:= ReturnNone;
+          end;
+        PROC_GET_COMMAND_INITIAL:
+          begin
+            NValue:= StrToIntDef(Str, -1);
+            if (NValue>=0) and (NValue<AppKeymapOriginal.Items.Count) then
+              Result:= Py_KeyCommandToTuple(AppKeymapOriginal.Items[NValue])
             else
               Result:= ReturnNone;
           end;
