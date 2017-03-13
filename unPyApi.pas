@@ -1174,16 +1174,6 @@ begin
             Result:= ReturnNone;
           end;
 
-        PROC_COLOR_PICKER:
-          begin
-            NValue:= StrToIntDef(Str, 0);
-            ColorDialogMain.Color:= NValue;
-            if ColorDialogMain.Execute then
-              Result:= PyInt_FromLong(ColorDialogMain.Color)
-            else
-              Result:= PyInt_FromLong(-1);
-          end;
-
         PROC_ADD_RECENT_COLOR:
           begin
             NValue:= StrToIntDef(Str, -1);
@@ -1331,6 +1321,21 @@ begin
         Result:= PyUnicode_FromWideString(StrFolder)
       else
         Result:= ReturnNone;  
+    end;
+end;
+
+function Py_dlg_color(Self, Args: PPyObject): PPyObject; cdecl;
+var
+  NValue: integer;
+begin
+  with GetPythonEngine do
+    if Bool(PyArg_ParseTuple(Args, 'i:dlg_color', @NValue)) then
+    begin
+      ColorDialogMain.Color:= NValue;
+      if ColorDialogMain.Execute then
+        Result:= PyInt_FromLong(ColorDialogMain.Color)
+      else
+        Result:= ReturnNone;
     end;
 end;
 
@@ -3038,6 +3043,7 @@ begin
     AddMethod('dlg_snippet', Py_dlg_snippet, '');
     AddMethod('dlg_file', Py_dlg_file, '');
     AddMethod('dlg_folder', Py_dlg_folder, '');
+    AddMethod('dlg_color', Py_dlg_color, '');
     AddMethod('dlg_custom', Py_dlg_custom, '');
 
     AddMethod('app_version', Py_app_version, '');

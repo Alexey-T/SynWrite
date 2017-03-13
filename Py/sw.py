@@ -145,7 +145,6 @@ PROC_SET_CLIP         = 2
 PROC_LOCK_STATUS      = 3
 PROC_UNLOCK_STATUS    = 4
 PROC_SOUND            = 5
-PROC_COLOR_PICKER     = 6
 PROC_ADD_RECENT_COLOR = 7
 PROC_GET_COMMAND      = 8
 PROC_ADD_GUTTER_ICON  = 9
@@ -351,8 +350,12 @@ def dlg_file(is_open, filename, folder, filters):
     return sw_api.dlg_file(is_open, filename, folder, filters)
 def dlg_folder(caption, folder):
     return sw_api.dlg_folder(caption, folder)
+dlg_dir = dlg_folder
+    
 def dlg_snippet(name, alias, lexers, text):
     return sw_api.dlg_snippet(name, alias, lexers, text)
+def dlg_color(value):
+    return sw_api.dlg_color(value)    
 
 def dlg_custom(caption, size_x, size_y, text, focused=-1):
     return sw_api.dlg_custom(caption, size_x, size_y, text, focused)

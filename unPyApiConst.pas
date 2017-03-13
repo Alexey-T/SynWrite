@@ -84,7 +84,6 @@ const
   PROC_LOCK_STATUS      = 3;
   PROC_UNLOCK_STATUS    = 4;
   PROC_SOUND            = 5;
-  PROC_COLOR_PICKER     = 6;
   PROC_ADD_RECENT_COLOR = 7;
   PROC_GET_COMMAND      = 8;
   PROC_ADD_GUTTER_ICON  = 9;
