@@ -1,0 +1,30 @@
+object fmHotkey: TfmHotkey
+  Left = 499
+  Top = 499
+  BorderStyle = bsDialog
+  ClientHeight = 184
+  ClientWidth = 381
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poMainFormCenter
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  PixelsPerInch = 96
+  TextHeight = 13
+  object PanelWait: TTntPanel
+    Left = 0
+    Top = 0
+    Width = 381
+    Height = 184
+    Align = alClient
+    BevelOuter = bvNone
+    Caption = 'Hotkey...'
+    TabOrder = 0
+  end
+end
