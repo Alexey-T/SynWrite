@@ -1,5 +1,5 @@
 [info]
-title=Addon Manager
+title=Plugin Manager
 desc=Allows to manage SynWrite add-ons
 type=py-plugin
 subdir=syn_plugin_manager
