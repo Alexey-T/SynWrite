@@ -8,25 +8,25 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms,
+  AppEvnts,
   TntForms, TntClasses,
   IniFiles,
   unMain,
   unPyApi,
   unGlobData,
-  ATSynPlugins,
-  AppEvnts;
+  ATSynPlugins;
 
 type
   TfmSynwrite = class(TTntForm)
-    ApplicationEvents1: TApplicationEvents;
+    AppEv: TApplicationEvents;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure ApplicationEvents1Deactivate(Sender: TObject);
-    procedure ApplicationEvents1Message(var Msg: tagMSG;
+    procedure AppEvDeactivate(Sender: TObject);
+    procedure AppEvMessage(var Msg: tagMSG;
       var Handled: Boolean);
   private
     { Private declarations }
@@ -556,7 +556,7 @@ begin
   end;
 end;
 
-procedure TfmSynwrite.ApplicationEvents1Deactivate(Sender: TObject);
+procedure TfmSynwrite.AppEvDeactivate(Sender: TObject);
 begin
   if fmMain.opASaveOnFocus then
     fmMain.DoAutoSave;
@@ -568,7 +568,7 @@ begin
 end;
 
 
-procedure TfmSynwrite.ApplicationEvents1Message(var Msg: tagMSG;
+procedure TfmSynwrite.AppEvMessage(var Msg: tagMSG;
   var Handled: Boolean);
 var
   h: THandle;
