@@ -19,9 +19,9 @@ object fmSynwrite: TfmSynwrite
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object ApplicationEvents1: TApplicationEvents
-    OnDeactivate = ApplicationEvents1Deactivate
-    OnMessage = ApplicationEvents1Message
+  object AppEv: TApplicationEvents
+    OnDeactivate = AppEvDeactivate
+    OnMessage = AppEvMessage
     Left = 240
     Top = 60
   end

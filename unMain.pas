@@ -4274,17 +4274,20 @@ begin
     if FTabOut=Ord(tbPluginsLog) then //don't restore last avtive Log panel
       FTabOut:= Ord(tbOutput);
 
-    //opt
+    //read from PropsManager
     FInitialKeyCount:= AppKeymap.Items.Count;
     PropsManager.LoadProps(ini);
     DoKeymappingTruncate(AppKeymap, FInitialKeyCount);
 
+    //get OptimalFill from TabMode
+    if TemplateEditor.TabMode=tmTabChar then
+      TemplateEditor.Options:= TemplateEditor.Options + [soOptimalFill]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soOptimalFill];
+
     //force KeepSelMode and FloatMarkers
-    with TemplateEditor do
-    begin
-      Options:= Options + [soKeepSelMode, soFloatMarkers];
-      OptionsEx:= OptionsEx + [soKeepSearchMarks];
-    end;
+    TemplateEditor.Options:= TemplateEditor.Options + [soKeepSelMode, soFloatMarkers];
+    TemplateEditor.OptionsEx:= TemplateEditor.OptionsEx + [soKeepSearchMarks];
 
     ApplyACP;
     ApplyOut;
