@@ -4,6 +4,9 @@ Legend:
  * changed
 
 
+6.38
+* AddonManager uses registry not on SF.net, but on Github - faster
+
 6.36.2680
 + new config for hotkeys used now. SynHotkeys.ini (later also "SynHotkeys lexer nnnnn.ini"). one for usual commands and plugins.
 + new dialog to configure hotkeys: in Commands dlg (F1), press F9

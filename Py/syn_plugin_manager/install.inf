@@ -1,10 +1,12 @@
 [info]
-title=Plugin Manager
-desc=Allows to manage SynWrite plugins
+title=Addon Manager
+desc=Allows to manage SynWrite add-ons
 type=py-plugin
 subdir=syn_plugin_manager
 
 [ini]
 section=Commands
 id=Plugin Manager\Install...
-params=menu_install;;;
+params=menu_install;
+
+;other sections not present, they are known to SynWrite binary code anyway

@@ -2,11 +2,14 @@ import os
 import re
 import time
 import urllib.request
+import tempfile
 from sw import *
 from . import opt
 
-V_REG = 'Registry'
-V_REG_VER = 'RegistryVersions'
+#Github repo Alexey-T/SynWrite-registry
+URL_REG_LIST = 'https://raw.githubusercontent.com/Alexey-T/SynWrite-registry/master/registry-addons.txt'
+URL_REG_VER = 'https://raw.githubusercontent.com/Alexey-T/SynWrite-registry/master/registry-versions.txt'
+
 
 def msg(id):
     return text_local(id, __file__)
@@ -14,7 +17,7 @@ def msg(id):
 def get_url(url, fn):
     if os.path.isfile(fn):
         os.remove(fn)
-        
+
     if opt.proxy:
         proxy = urllib.request.ProxyHandler({'http': opt.proxy, 'https': opt.proxy})
         opener = urllib.request.build_opener(proxy)
@@ -24,7 +27,7 @@ def get_url(url, fn):
         urllib.request.urlretrieve(url, fn)
     except Exception as e:
         print(e)
-        
+
 def file_aged(fn):
     if os.path.isfile(fn):
         age = int(time.time() - os.stat(fn).st_mtime)
@@ -32,24 +35,6 @@ def file_aged(fn):
     else:
         return True
 
-def get_wiki_text(name):
-    REGEX = "text=\w?('.*?'\s)"
-    url = 'https://sourceforge.net/p/synwrite/wiki/%s/raw' % name
-    fn = os.path.join(os.getenv('temp'), 'SynWrite_%s.txt' % name)
-    if file_aged(fn):
-        get_url(url, fn)
-    if not os.path.isfile(fn): 
-        return ''
-    s = open(fn, 'r').read()
-    r = re.compile(REGEX, re.S)
-    if not r: return ValueError
-    rr = r.search(s)
-    if not rr: raise ValueError 
-    s = rr.group(1)
-    s = s.replace('\n', '')
-    s = s.replace('  ', ' ')
-    s = eval(s)
-    return s
 
 def get_item_url(item):
     try:
@@ -59,22 +44,31 @@ def get_item_url(item):
     except:
         return
 
+
 def get_avail_list():
     msg_status(msg('WaitList'))
-    text = get_wiki_text(V_REG)
+    fn_list = os.path.join(tempfile.gettempdir(), 'synwrite_registry_list.txt')
+    fn_ver = os.path.join(tempfile.gettempdir(), 'synwrite_registry_ver.txt')
+
+    print('Reading channel:', URL_REG_LIST)
+    get_url(URL_REG_LIST, fn_list)
+    if not os.path.isfile(fn_list):
+        print('Cannot download registry list')
+        return
+
+    print('Reading channel:', URL_REG_VER)
+    get_url(URL_REG_VER, fn_ver)
+    if not os.path.isfile(fn_ver):
+        print('Cannot download registry versions')
+        return
+
     msg_status('')
+
+    text = open(fn_list, mode='r').read()
     if not text:
-        return "CantGetList"
-    
-    items = text.split('\r\n')
-    
-    #remove leading wiki text
-    last = False
-    for i in range(len(items)):
-        if items[0].startswith('--'):
-            last = True
-        del items[0]
-        if last: break
+        print('Cannot download+read registry list')
+        return
+    items = text.splitlines()
 
     #make list of lists, item[3] is empty
     items = sorted(items, key=str.lower) #case-insensitive
@@ -87,50 +81,50 @@ def get_avail_list():
             res += [props]
 
     #write version to item[3] for each item
-    msg_status(msg('WaitVer')) 
-    text = get_wiki_text(V_REG_VER)
-    msg_status('')
-    if text:
-        items = text.split('\r\n')
-        for item in items:
-            verinfo = item.split('=')
-            if len(verinfo)==2:
-                for r in res:
-                    if r[0] == verinfo[0]:
-                        r[3] = verinfo[1]
-                        break
+    text = open(fn_ver, mode='r').read()
+    if not text:
+        print('Cannot download+read registry versions')
+        return
+
+    items = text.splitlines()
+    for item in items:
+        verinfo = item.split('=')
+        if len(verinfo)==2:
+            for r in res:
+                if r[0] == verinfo[0]:
+                    r[3] = verinfo[1]
+                    break
 
     return res
+
 
 def get_plugin_zip(url):
     if not url:
         msg_box(MSG_ERROR, msg('NoUrl'))
         return
-    
+
     if '.zip' in url:
         ext = '.zip'
-    elif '.rar' in url:
-        ext = '.rar'
     else:
         msg_box(MSG_ERROR, msg('BadExt'))
         return
     fn = os.path.join(os.getenv('temp'), 'SynWrite_plugin'+ext)
-    
+
     msg_status(msg('WaitFile')+' '+url)
     get_url(url, fn)
     msg_status('')
-    
+
     if not os.path.isfile(fn):
         msg_box(MSG_ERROR, msg('CantGetFile')+'\n'+url)
         return
     return fn
-    
+
 
 if __name__ == '__main__':
     url = 'PyPlugins/plugin.kvichans.BackupFile.zip'
 #    print('Url:')
 #    print(get_item_url(url))
-    
+
     items = get_avail_list()
     if type(items)==str:
         print(items)
