@@ -2189,7 +2189,11 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soKeepTrailingBlanks];
 
-    TemplateEditor.Options:= TemplateEditor.Options - [soOptimalFill];
+    //OptimalFill: get value from TabMode
+    if TemplateEditor.TabMode=tmTabChar then
+      TemplateEditor.Options:= TemplateEditor.Options + [soOptimalFill]
+    else
+      TemplateEditor.Options:= TemplateEditor.Options - [soOptimalFill];
 
     ApplyFramesOptions;
     ApplyColorsFontsToFrames;

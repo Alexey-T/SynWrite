@@ -5,7 +5,8 @@ Legend:
 
 
 6.38
-* AddonManager uses registry not on SF.net, but on Github - faster
++ AddonManager uses registry not on SF.net, but on Github - faster
+- fix: Auto-indent must make line with tab-chars, of tab-chars used
 
 6.36.2680
 + new config for hotkeys used now. SynHotkeys.ini (later also "SynHotkeys lexer nnnnn.ini"). one for usual commands and plugins.
