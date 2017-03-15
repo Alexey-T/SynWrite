@@ -244,7 +244,6 @@ type
     cbAutoIndent: TTntCheckBox;
     cbBackspUnindent: TTntCheckBox;
     cbUnindentAlign: TTntCheckBox;
-    cbKeepBlank: TTntCheckBox;
     cbFold: TTntCheckBox;
     cbFixLineSize: TTntCheckBox;
     cbFixColMove: TTntCheckBox;
@@ -327,6 +326,7 @@ type
     LabelBlickIndent: TTntLabel;
     labelHtokeyInfo: TTntLabel;
     lblInfoAutoShowACP: TLabel;
+    cbDeleteBlanks: TTntCheckBox;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -2157,10 +2157,10 @@ begin
     else
       TemplateEditor.Options:= TemplateEditor.Options - [soUnindentKeepAlign];
 
-    if cbKeepBlank.Checked then
-      TemplateEditor.Options:= TemplateEditor.Options + [soKeepTrailingBlanks]
+    if cbDeleteBlanks.Checked then
+      TemplateEditor.Options:= TemplateEditor.Options - [soKeepTrailingBlanks]
     else
-      TemplateEditor.Options:= TemplateEditor.Options - [soKeepTrailingBlanks];
+      TemplateEditor.Options:= TemplateEditor.Options + [soKeepTrailingBlanks];
 
     //OptimalFill: get value from TabMode
     if TemplateEditor.TabMode=tmTabChar then
@@ -2327,7 +2327,7 @@ begin
     cbAutoIndent.Checked:= soAutoIndentMode in TemplateEditor.Options;
     cbBackspUnindent.Checked:= soBackUnindent in TemplateEditor.Options;
     cbUnindentAlign.Checked:= soUnindentKeepAlign in TemplateEditor.Options;
-    cbKeepBlank.Checked:= soKeepTrailingBlanks in TemplateEditor.Options;
+    cbDeleteBlanks.Checked:= not (soKeepTrailingBlanks in TemplateEditor.Options);
   end;
 end;
 

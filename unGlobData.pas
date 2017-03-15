@@ -15,7 +15,7 @@ uses
   ecSyntAnal;
 
 const
-  cSynVersion = '6.38.b4';
+  cSynVersion = '6.38.b5';
   cSynApiVersion = '1.0.165';
 
 var
@@ -470,7 +470,7 @@ begin
     WriteString('Setup', 'LineSpacing', AOp5);
     WriteString('Setup', 'OptFill', AOp6);
     WriteString('Setup', 'WordChars', AOp7);
-    WriteString('Setup', 'KeepBlanks', AOp8);
+    WriteString('Setup', 'DeleteTrailBlanks', AOp8);
     WriteString('Setup', 'AutoCase', AOp9);
     WriteString('Setup', 'Indent', AOp10);
     WriteString('Setup', 'TabColor', AOp11);
@@ -512,7 +512,7 @@ begin
       AOp5:= ReadString('Setup', 'LineSpacing', AOp5);
       AOp6:= ReadString('Setup', 'OptFill', AOp6);
       AOp7:= ReadString('Setup', 'WordChars', AOp7);
-      AOp8:= ReadString('Setup', 'KeepBlanks', AOp8);
+      AOp8:= ReadString('Setup', 'DeleteTrailBlanks', AOp8);
       AOp9:= ReadString('Setup', 'AutoCase', AOp9);
       AOp10:= ReadString('Setup', 'Indent', AOp10);
       AOp11:= ReadString('Setup', 'TabColor', AOp11);

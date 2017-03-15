@@ -4,11 +4,12 @@ Legend:
  * changed
 
 
-6.38.2710
+6.38.2720
 + AddonManager uses registry not on SF.net, but on Github - faster
 * deleted 4 cmds: "Move cursor N chars up/down/left/right"; use plugin "Move Caret" with same funcs
 * deleted 3 opts: "Auto-complete - Auto show words from cur file"; use plugin "Complete From Text" with same funcs 
 * you should delete old Syn.ini keys: [ACP] File, [ACP] FChars, [ACP] FSize
+* change: opt "Keep trailing blanks" changed to reversed opt "Delete trailing blanks"
 * change: opt "Auto-show autocomplete after .. chars" moved to Overrides page
 - fix: "Auto-show autocomplete after .. chars" didn't work with plugins
 - fix: Auto-indent must make line with tab-chars, if tab-chars used

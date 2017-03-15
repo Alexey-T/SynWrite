@@ -4,10 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  TntForms,
-  Dialogs, StdCtrls, TntStdCtrls, DKLang, Spin, ExtCtrls,
+  StdCtrls, ExtCtrls, Spin, Dialogs,
+  TntForms, TntStdCtrls,
+  DKLang,
   unGlobData,
-  unColorBox{TColorBox};
+  unColorBox;
 
 type
   TfmSetupOvr = class(TTntForm)
@@ -15,7 +16,7 @@ type
     Label1: TTntLabel;
     edTabStops: TTntEdit;
     cbOvr: TTntCheckBox;
-    DKLanguageController1: TDKLanguageController;
+    DKLang1: TDKLanguageController;
     edMargin: TSpinEdit;
     edSpacing: TSpinEdit;
     edWordChars: TTntEdit;
@@ -26,25 +27,24 @@ type
     chkTabStops: TTntCheckBox;
     chkTabMode: TTntCheckBox;
     chkWrap: TTntCheckBox;
-    chkKeepBlanks: TTntCheckBox;
     chkIndent: TTntCheckBox;
     chkMargin: TTntCheckBox;
     chkSpacing: TTntCheckBox;
     edTabMode: TTntComboBox;
     edWrap: TTntComboBox;
-    edKeepBlanks: TTntComboBox;
+    edDeleteBlanks: TTntComboBox;
     chkTabColor: TTntCheckBox;
     edTabColor: TColorBox;
     chkColorUnderline: TTntCheckBox;
     chkAutoShowACP: TTntCheckBox;
     edAutoShowACP: TSpinEdit;
+    chkDeleteBlanks: TTntCheckBox;
     procedure cbOvrClick(Sender: TObject);
     procedure ListLexClick(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
-    procedure TntFormCreate(Sender: TObject);
     procedure edTabStopsChange(Sender: TObject);
     procedure LabelHelpAutoCaseClick(Sender: TObject);
-    procedure chkTabStopsClick(Sender: TObject);
+    procedure chkUpdate(Sender: TObject);
   private
     { Private declarations }
     FUpdLock: boolean;
@@ -55,8 +55,7 @@ type
     FDefTabMode,
     FDefIndent,
     FDefMargin,
-    FDefSpacing,
-    FDefOptFill: integer;
+    FDefSpacing: integer;
     procedure UpdateString;
   end;
 
@@ -82,7 +81,7 @@ begin
   edMargin.Enabled:= en;
   edSpacing.Enabled:= en;
   edWordChars.Enabled:= en;
-  edKeepBlanks.Enabled:= en;
+  edDeleteBlanks.Enabled:= en;
   edTabColor.Enabled:= en;
   LabelWordChars.Enabled:= en;
   edAutoShowACP.Enabled:= en;
@@ -90,7 +89,7 @@ begin
   chkTabStops.Enabled:= en;
   chkTabMode.Enabled:= en;
   chkWrap.Enabled:= en;
-  chkKeepBlanks.Enabled:= en;
+  chkDeleteBlanks.Enabled:= en;
   chkIndent.Enabled:= en;
   chkMargin.Enabled:= en;
   chkSpacing.Enabled:= en;
@@ -116,14 +115,14 @@ procedure TfmSetupOvr.ListLexClick(Sender: TObject);
 var
   Ovr: boolean;
   ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-  AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent,
+  AOptWordChars, ADeleteBlanks, ACaseCorrect, AIndent,
   ATabColor, AColorUnderline, AAutoShowACP: string;
 begin
   if ListLex.ItemIndex>=0 then
   begin
     Ovr:= DoLexerOverridesLoad(ListLex.Items[ListLex.ItemIndex],
       ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-      AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent,
+      AOptWordChars, ADeleteBlanks, ACaseCorrect, AIndent,
       ATabColor, AColorUnderline, AAutoShowACP);
     cbOvr.Enabled:= true;
   end
@@ -140,7 +139,7 @@ begin
     chkTabStops.Checked:= ATabStops<>'';
     chkTabMode.Checked:= ATabMode<>'';
     chkWrap.Checked:= AWrap<>'';
-    chkKeepBlanks.Checked:= AKeepBlanks<>'';
+    chkDeleteBlanks.Checked:= ADeleteBlanks<>'';
     chkIndent.Checked:= AIndent<>'';
     chkMargin.Checked:= AMargin<>'';
     chkSpacing.Checked:= ASpacing<>'';
@@ -150,7 +149,7 @@ begin
     edTabStops.Text:= ATabStops;
     edTabMode.ItemIndex:= StrToIntDef(ATabMode, FDefTabMode);
     edWrap.ItemIndex:= StrToIntDef(AWrap, 0);
-    edKeepBlanks.ItemIndex:= StrToIntDef(AKeepBlanks, 0);
+    edDeleteBlanks.ItemIndex:= StrToIntDef(ADeleteBlanks, 0);
     edIndent.Value:= StrToIntDef(AIndent, FDefIndent);
     edMargin.Value:= StrToIntDef(AMargin, FDefMargin);
     edSpacing.Value:= StrToIntDef(ASpacing, FDefSpacing);
@@ -177,7 +176,7 @@ begin
   chkTabStops.Checked:= false;
   chkTabMode.Checked:= false;
   chkWrap.Checked:= false;
-  chkKeepBlanks.Checked:= false;
+  chkDeleteBlanks.Checked:= false;
   chkIndent.Checked:= false;
   chkMargin.Checked:= false;
   chkSpacing.Checked:= false;
@@ -189,7 +188,7 @@ begin
   edTabStops.Text:= FDefTabStop;
   edTabMode.ItemIndex:= FDefTabMode;
   edWrap.ItemIndex:= 0;
-  edKeepBlanks.ItemIndex:= 0;
+  edDeleteBlanks.ItemIndex:= 0;
   edIndent.Value:= FDefIndent;
   edMargin.Value:= FDefMargin;
   edSpacing.Value:= FDefSpacing;
@@ -213,11 +212,6 @@ begin
   ListLexClick(Self);
 end;
 
-procedure TfmSetupOvr.TntFormCreate(Sender: TObject);
-begin
-//
-end;
-
 procedure TfmSetupOvr.edTabStopsChange(Sender: TObject);
 begin
   UpdateString;
@@ -235,7 +229,6 @@ begin
       if (Pos(',', edWordChars.Text)>0) or
         (Pos(';', edWordChars.Text)>0) then
       begin
-        MessageBeep(mb_iconwarning);
         S:= edWordChars.Text;
         SReplaceAllW(S, ',', '');
         SReplaceAllW(S, ';', '');
@@ -251,7 +244,7 @@ begin
         {Op5}IfThen(chkSpacing.Checked, IntToStr(edSpacing.Value)),
         {Op6}'',
         {Op7}edWordChars.Text,
-        {Op8}IfThen(chkKeepBlanks.Checked, IntToStr(edKeepBlanks.ItemIndex)),
+        {Op8}IfThen(chkDeleteBlanks.Checked, IntToStr(edDeleteBlanks.ItemIndex)),
         {Op9}IfThen(chkAutoCase.Checked, '1'),
         {Op10}IfThen(chkIndent.Checked, IntToStr(edIndent.Value)),
         {Op11}IfThen(chkTabColor.Checked, ColorToString(edTabColor.Selected)),
@@ -266,7 +259,7 @@ begin
   SynHelpTopic(helpAutoCase, Handle);
 end;
 
-procedure TfmSetupOvr.chkTabStopsClick(Sender: TObject);
+procedure TfmSetupOvr.chkUpdate(Sender: TObject);
 begin
   UpdateString;
 end;

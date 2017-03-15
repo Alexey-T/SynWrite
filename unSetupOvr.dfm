@@ -15,7 +15,6 @@ object fmSetupOvr: TfmSetupOvr
   OldCreateOrder = False
   Position = poScreenCenter
   ShowHint = True
-  OnCreate = TntFormCreate
   OnShow = TntFormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -116,7 +115,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 17
     Caption = 'Auto-correct identifier case'
     TabOrder = 18
-    OnClick = edTabStopsChange
+    OnClick = chkUpdate
   end
   object edIndent: TSpinEdit
     Left = 376
@@ -136,7 +135,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 17
     Caption = 'Tab stops'
     TabOrder = 2
-    OnClick = chkTabStopsClick
+    OnClick = chkUpdate
   end
   object chkTabMode: TTntCheckBox
     Left = 160
@@ -145,7 +144,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 17
     Caption = 'Tab mode'
     TabOrder = 4
-    OnClick = chkTabStopsClick
+    OnClick = chkUpdate
   end
   object chkWrap: TTntCheckBox
     Left = 160
@@ -154,16 +153,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 17
     Caption = 'Wrap mode'
     TabOrder = 6
-    OnClick = chkTabStopsClick
-  end
-  object chkKeepBlanks: TTntCheckBox
-    Left = 160
-    Top = 96
-    Width = 215
-    Height = 17
-    Caption = 'Keep trailing blanks'
-    TabOrder = 8
-    OnClick = chkTabStopsClick
+    OnClick = chkUpdate
   end
   object chkIndent: TTntCheckBox
     Left = 160
@@ -172,7 +162,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 17
     Caption = 'Block indent size (<0: in tabs)'
     TabOrder = 10
-    OnClick = chkTabStopsClick
+    OnClick = chkUpdate
   end
   object chkMargin: TTntCheckBox
     Left = 160
@@ -181,7 +171,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 17
     Caption = 'Right margin'
     TabOrder = 12
-    OnClick = chkTabStopsClick
+    OnClick = chkUpdate
   end
   object chkSpacing: TTntCheckBox
     Left = 160
@@ -190,7 +180,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 17
     Caption = 'Line spacing'
     TabOrder = 14
-    OnClick = chkTabStopsClick
+    OnClick = chkUpdate
   end
   object edTabMode: TTntComboBox
     Left = 376
@@ -222,7 +212,7 @@ object fmSetupOvr: TfmSetupOvr
       'On, at window edge'
       'On, at right margin')
   end
-  object edKeepBlanks: TTntComboBox
+  object edDeleteBlanks: TTntComboBox
     Left = 376
     Top = 96
     Width = 153
@@ -243,7 +233,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 17
     Caption = 'UI tab color'
     TabOrder = 20
-    OnClick = edTabStopsChange
+    OnClick = chkUpdate
   end
   object edTabColor: TColorBox
     Left = 376
@@ -262,7 +252,7 @@ object fmSetupOvr: TfmSetupOvr
     Height = 17
     Caption = 'Underline HTML colors'
     TabOrder = 19
-    OnClick = edTabStopsChange
+    OnClick = chkUpdate
   end
   object chkAutoShowACP: TTntCheckBox
     Left = 160
@@ -272,7 +262,7 @@ object fmSetupOvr: TfmSetupOvr
     Caption = 'After typing ... chars, auto-show auto-complete (0: disabled)'
     TabOrder = 16
     WordWrap = True
-    OnClick = chkTabStopsClick
+    OnClick = chkUpdate
   end
   object edAutoShowACP: TSpinEdit
     Left = 376
@@ -285,7 +275,16 @@ object fmSetupOvr: TfmSetupOvr
     Value = 0
     OnChange = edTabStopsChange
   end
-  object DKLanguageController1: TDKLanguageController
+  object chkDeleteBlanks: TTntCheckBox
+    Left = 160
+    Top = 96
+    Width = 209
+    Height = 17
+    Caption = 'Delete trailing blanks on save'
+    TabOrder = 8
+    OnClick = chkUpdate
+  end
+  object DKLang1: TDKLanguageController
     Left = 48
     Top = 200
     LangData = {
@@ -300,16 +299,17 @@ object fmSetupOvr: TfmSetupOvr
       006564496E64656E7400000B0063686B54616253746F707301010000001B0000
       00070043617074696F6E000A0063686B5461624D6F646501010000001C000000
       070043617074696F6E00070063686B5772617001010000001D00000007004361
-      7074696F6E000D0063686B4B656570426C616E6B7301010000001F0000000700
-      43617074696F6E00090063686B496E64656E7401010000002000000007004361
-      7074696F6E00090063686B4D617267696E010100000021000000070043617074
-      696F6E000A0063686B53706163696E6701010000002200000007004361707469
-      6F6E00090065645461624D6F646501010000001700000005004974656D730006
-      0065645772617001010000001800000005004974656D73000C0065644B656570
+      7074696F6E00090063686B496E64656E74010100000020000000070043617074
+      696F6E00090063686B4D617267696E010100000021000000070043617074696F
+      6E000A0063686B53706163696E67010100000022000000070043617074696F6E
+      00090065645461624D6F646501010000001700000005004974656D7300060065
+      645772617001010000001800000005004974656D73000E00656444656C657465
       426C616E6B7301010000001A00000005004974656D73000B0063686B54616243
       6F6C6F72010100000023000000070043617074696F6E000A006564546162436F
       6C6F720000110063686B436F6C6F72556E6465726C696E650101000000240000
       00070043617074696F6E000E0063686B4175746F53686F774143500101000000
-      25000000070043617074696F6E000D0065644175746F53686F774143500000}
+      25000000070043617074696F6E000D0065644175746F53686F7741435000000F
+      0063686B44656C657465426C616E6B7301010000002600000007004361707469
+      6F6E00}
   end
 end

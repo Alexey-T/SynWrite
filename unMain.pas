@@ -7247,7 +7247,7 @@ end;
 procedure TfmMain.ApplyLexerOverrides(F: TEditorFrame; const Lexer: string);
 var
   ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-  AOptWordChars, AKeepBlanks, AAutoCase, AIndent,
+  AOptWordChars, ADeleteBlanks, AAutoCase, AIndent,
   ATabColor, AColorUnderline, AAutoShowACP: string;
 begin
   if F=nil then Exit;
@@ -7255,7 +7255,7 @@ begin
   begin
     if not DoLexerOverridesLoad(Lexer,
       ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-      AOptWordChars, AKeepBlanks, AAutoCase, AIndent,
+      AOptWordChars, ADeleteBlanks, AAutoCase, AIndent,
       ATabColor, AColorUnderline, AAutoShowACP) then
     begin
       EditorMaster.TabList.AsString:= TemplateEditor.TabList.AsString;
@@ -7330,18 +7330,18 @@ begin
       //7) override "Word chars"
       opWordChars:= AOptWordChars;
 
-      //8) override "Keep trailing blanks"
-      if AKeepBlanks<>'' then
+      //8) override "Delete trailing blanks"
+      if ADeleteBlanks<>'' then
       begin
-        if Bool(StrToIntDef(AKeepBlanks, 0)) then
-        begin
-          EditorMaster.Options:= EditorMaster.Options + [soKeepTrailingBlanks];
-          EditorSlave.Options:= EditorSlave.Options + [soKeepTrailingBlanks];
-        end
-        else
+        if Bool(StrToIntDef(ADeleteBlanks, 0)) then
         begin
           EditorMaster.Options:= EditorMaster.Options - [soKeepTrailingBlanks];
           EditorSlave.Options:= EditorSlave.Options - [soKeepTrailingBlanks];
+        end
+        else
+        begin
+          EditorMaster.Options:= EditorMaster.Options + [soKeepTrailingBlanks];
+          EditorSlave.Options:= EditorSlave.Options + [soKeepTrailingBlanks];
         end;
       end;
 
