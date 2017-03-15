@@ -29,7 +29,7 @@ object fmSetup: TfmSetup
     Top = 0
     Width = 545
     Height = 397
-    ActivePage = tabInsertFormat
+    ActivePage = tabCarets
     Style = tsButtons
     TabOrder = 0
     object tabProgSett: TTntTabSheet
@@ -632,9 +632,9 @@ object fmSetup: TfmSetup
         object TntLabel41: TTntLabel
           Left = 8
           Top = 88
-          Width = 44
+          Width = 74
           Height = 13
-          Caption = 'Blink time'
+          Caption = 'Caret blink time'
         end
         object LabelHelpCarets: TTntLabel
           Left = 256
@@ -2100,10 +2100,10 @@ object fmSetup: TfmSetup
           Width = 57
           Height = 22
           Hint = 'Right margin column position.'
-          MaxValue = 300
-          MinValue = 1
+          MaxValue = 1000
+          MinValue = 10
           TabOrder = 4
-          Value = 1
+          Value = 10
           OnKeyDown = edIndentKeyDown
         end
         object cbMargin: TTntCheckBox
@@ -2498,7 +2498,7 @@ object fmSetup: TfmSetup
         Left = 8
         Top = 116
         Width = 529
-        Height = 69
+        Height = 93
         Caption = 'Tabulations'
         TabOrder = 1
         object Label16: TTntLabel
@@ -2544,8 +2544,8 @@ object fmSetup: TfmSetup
             'SmartTab')
         end
         object cbReplaceTabs: TTntCheckBox
-          Left = 264
-          Top = 12
+          Left = 8
+          Top = 68
           Width = 256
           Height = 17
           Hint = 'Replace existing tabs with spaces also on file opening.'
