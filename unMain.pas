@@ -2204,7 +2204,6 @@ type
     procedure DoAcpCss(List, Display: ecUnicode.TWideStrings);
     procedure DoAcpHtm(List, Display: ecUnicode.TWideStrings);
     procedure DoAcpHtmForTag(const STag, SAtr: string; List, Display: ecUnicode.TWideStrings);
-    procedure DoAcpFromFile(List, Display: ecUnicode.TWideStrings);
     procedure DoAcpCommand;
     function DoAcpFromPlugins(const AAction: PWideChar): Widestring;
     procedure DoFillBlock;
@@ -2641,15 +2640,11 @@ type
     opTabsReplace: boolean; //replace tabs->spaces on reading
     opTemplateTabbing: boolean; //use Tab key for code templates
     opTemplateTabbingExcept: string; //exclution file-ext list for ^^
-    opAcpForceText: boolean; //enable to show only words from current file
     opAcpUseSingle: boolean; //auto insert single match
     opAcpChars: string; //additional word chars (lexer specific)
     opAcpHtm: boolean; //Special ACP for HTML
     opAcpCss: boolean; //Special ACP for CSS
     opAcpTabbing: boolean; //Special SmartTagTabbing feature
-    opAcpFile: boolean; //ACP from curr file
-    opAcpFileChars: integer; //Min word length for ACP from file
-    opAcpFileSize: real; //Max file size for ACP from file
     opAcpNum: integer; //Num of chars that starts ACP
     opAcpHintDelay: integer;
     opSingleInstance: boolean; //single instance
@@ -4178,9 +4173,6 @@ begin
     opAcpHtm:= ReadBool('ACP', 'Htm', true);
     opAcpCss:= ReadBool('ACP', 'Css', true);
     opAcpTabbing:= ReadBool('ACP', 'Tabbing', true);
-    opAcpFile:= ReadBool('ACP', 'File', true);
-    opAcpFileChars:= ReadInteger('ACP', 'FChars', 3);
-    opAcpFileSize:= ReadFloat('ACP', 'FSize', 2.0);
     opAcpNum:= ReadInteger('ACP', 'Num', 0);
     opAcpHintDelay:= ReadInteger('ACP', 'HintDelay', 1500);
     ecACP.ShowWhenNone:= ReadBool('ACP', 'IfNone', true);
@@ -4586,9 +4578,6 @@ begin
     WriteBool('ACP', 'Htm', opAcpHtm);
     WriteBool('ACP', 'Css', opAcpCss);
     WriteBool('ACP', 'Tabbing', opAcpTabbing);
-    WriteBool('ACP', 'File', opAcpFile);
-    WriteInteger('ACP', 'FChars', opAcpFileChars);
-    WriteFloat('ACP', 'FSize', opAcpFileSize);
     WriteInteger('ACP', 'Num', opAcpNum);
     WriteInteger('ACP', 'HintDelay', opAcpHintDelay);
     WriteBool('ACP', 'IfNone', ecACP.ShowWhenNone);
@@ -5665,8 +5654,6 @@ begin
     sm_SaveFolding: DoSaveFolding;
     sm_LoadFolding: DoLoadFolding;
     sm_OpenLastClosedFile: DoOpenLastClosedFile;
-    sm_AcpForceTextOn: opAcpForceText:= true;
-    sm_AcpForceTextOff: opAcpForceText:= false;
 
     //select-mode commands
     smNormalSelect: Ed.SelectModeDefault:= msNormal;
@@ -6488,7 +6475,6 @@ begin
     TabSwitchers[i].OnGetTab:= GetTabName;
   end;
 
-  opAcpForceText:= false;
   FFullscreen:= false;
   FOnTop:= false;
   FLockUpdate:= false;
@@ -7104,12 +7090,6 @@ begin
   FAcpHtmClosing:= false;
   Lexer:= CurrentLexerForCaret;
 
-  if opAcpForceText then
-  begin
-    DoAcpFromFile(List, Display);
-    Exit
-  end;
-
   if (opAcpHtm and IsLexerHTML(Lexer)) or
      (opAcpCss and IsLexerCSS(Lexer, false)) then
     begin
@@ -7118,7 +7098,6 @@ begin
         DoAcpCss(List, Display)
       else
         DoAcpHtm(List, Display);
-      DoAcpFromFile(List, Display);
       Exit
     end;
 
@@ -7130,9 +7109,6 @@ begin
     Display.Assign(FAcpList_Display);
     FAcpAgain:= false;
   end;
-
-  //get words from file
-  DoAcpFromFile(List, Display);
 end;
 
 procedure TfmMain.ecACPCheckChar(Sender: TObject; C: Word;
@@ -13468,80 +13444,6 @@ begin
   end;
 end;
 
-procedure TfmMain.DoAcpFromFile(List, Display: ecUnicode.TWideStrings);
-const
-  cNonWordChars = '''"';
-var
-  S, SWord: Widestring;
-  LL: TTntStringList;
-  i, NCaret: Integer;
-  IsWord, AtCaret: boolean;
-begin
-  if not opAcpFile then
-    Exit;
-
-  S:= CurrentEditor.Text;
-  i:= Round(opAcpFileSize * (1024*1024));
-  if Length(S) > i then
-    SetLength(S, i);
-
-  LL:= TTntStringList.Create;
-  LL.Sorted:= true;
-  LL.Duplicates:= dupIgnore;
-  SWord:= '';
-  NCaret:= CurrentEditor.CaretStrPos;
-  AtCaret:= false;
-
-  try
-    for i:= 1 to Length(S)+1 {Len+1} do
-    begin
-      //if i mod 10 = 0 then
-      //  MsgAcpFile('Searching '+IntToStr(i*100 div Length(s))+'%');
-
-      if i<=Length(S) then
-      begin
-        IsWord:= IsWordChar(S[i]) or
-          (Pos(S[i], opAcpChars)>0) or
-          (S[i]='%') or
-          ((S[i]='.') and (i<Length(S)) and IsWordChar(S[i+1]));
-        if Pos(S[i], cNonWordChars)>0 then
-          IsWord:= false;  
-      end
-      else
-        IsWord:= false;
-
-      //trailing ':' can't be wordchar (':' is wordchar for CSS)
-      if (i>1) and (S[i]=':') and IsWordChar(S[i-1]) then
-        IsWord:= false;
-
-      if not IsWord then
-      begin
-        if Length(SWord) >= opAcpFileChars then
-          if not AtCaret then
-            LL.Add(SWord);
-        SWord:= '';
-        AtCaret:= false;
-      end
-      else
-      begin
-        SWord:= SWord + S[i];
-        if i=NCaret then
-          AtCaret:= true;
-      end;
-    end;
-
-    S:= SAcpItem(DKLangConstW('typed'), ''); //beginning of Display string
-    for i:= 0 to LL.Count-1 do
-    begin
-      //if List.IndexOf(LL[i])<0 then //<-- don't use, it freezes on large file!!
-      List.Add(LL[i]);
-      Display.Add(S + LL[i]);
-    end;
-  finally
-    FreeAndNil(LL);
-    DoHint('');
-  end;
-end;
 
 procedure TfmMain.DoBackupLexerStyles(ALexer: TSyntAnalyzer);
 begin
@@ -20898,10 +20800,7 @@ begin
   PluginACP.Items.Clear;
   PluginACP.DisplayItems.Clear;
 
-  if not opAcpForceText then
-    SText:= DoAcpFromPlugins(cActionGetAutoComplete)
-  else
-    SText:= '';
+  SText:= DoAcpFromPlugins(cActionGetAutoComplete);
 
   //Python plugin?
   //it must show popup by itself.

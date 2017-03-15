@@ -4,11 +4,13 @@ Legend:
  * changed
 
 
-6.38
+6.38.2710
 + AddonManager uses registry not on SF.net, but on Github - faster
-- fix: Auto-indent must make line with tab-chars, if tab-chars used
+* deleted 4 cmds: "Move cursor N chars up/down/left/right"; use plugin "Move Caret" with same funcs
+* deleted 3 opts: "Auto-complete - Auto show words from cur file"; use plugin "Complete From Text" with same funcs 
+* you should delete old Syn.ini keys: [ACP] File, [ACP] FChars, [ACP] FSize
 - fix: "Auto-show autocomplete after n chars" didn't work with autocompl plugins
-* deleted 4 cmds: "Move cursor N chars up/down/left/right"; use plugin Move Caret with same funcs
+- fix: Auto-indent must make line with tab-chars, if tab-chars used
 
 6.36.2680
 + new config for hotkeys used now. SynHotkeys.ini (later also "SynHotkeys lexer nnnnn.ini"). one for usual commands and plugins.

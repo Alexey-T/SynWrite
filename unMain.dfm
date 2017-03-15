@@ -4740,7 +4740,7 @@ object fmMain: TfmMain
               end>
           end>
         Category = 'Hints'
-        DisplayName = 'Auto-complete popup'
+        DisplayName = 'Auto-completion popup'
       end
       item
         Command = 652
@@ -4753,12 +4753,6 @@ object fmMain: TfmMain
           end>
         Category = 'Hints'
         DisplayName = 'Function parameters popup'
-      end
-      item
-        Command = 651
-        KeyStrokes = <>
-        Category = 'Hints'
-        DisplayName = 'Code template popup (obsolete)'
       end
       item
         Command = 630
@@ -4787,13 +4781,13 @@ object fmMain: TfmMain
       item
         Command = 611
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Replace next'
       end
       item
         Command = 613
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Replace all'
       end
       item
@@ -4817,7 +4811,7 @@ object fmMain: TfmMain
                 ShortCut = 24614
               end>
           end>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Find current word prior'
       end
       item
@@ -4829,14 +4823,14 @@ object fmMain: TfmMain
                 ShortCut = 24616
               end>
           end>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Find current word next'
       end
       item
         Command = 603
         KeyStrokes = <>
-        Category = 'Search & Replace'
-        DisplayName = 'Find all (mark)'
+        Category = 'Search/Replace'
+        DisplayName = 'Find all, mark'
       end
       item
         Command = 602
@@ -4847,7 +4841,7 @@ object fmMain: TfmMain
                 ShortCut = 16498
               end>
           end>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Find previous'
       end
       item
@@ -4859,7 +4853,7 @@ object fmMain: TfmMain
                 ShortCut = 114
               end>
           end>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Find next'
       end
       item
@@ -4871,7 +4865,7 @@ object fmMain: TfmMain
                 ShortCut = 16454
               end>
           end>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Dialog "Find"'
       end
       item
@@ -4895,13 +4889,13 @@ object fmMain: TfmMain
       item
         Command = 620
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Lister Find'
       end
       item
         Command = 621
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Lister Find next'
       end
       item
@@ -6377,7 +6371,7 @@ object fmMain: TfmMain
       item
         Command = 622
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Lister Find previous'
       end
       item
@@ -6395,7 +6389,7 @@ object fmMain: TfmMain
       item
         Command = 814
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Quick search'
       end
       item
@@ -6485,7 +6479,7 @@ object fmMain: TfmMain
                 ShortCut = 16456
               end>
           end>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Dialog "Replace"'
       end
       item
@@ -6503,7 +6497,7 @@ object fmMain: TfmMain
       item
         Command = 617
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Dialog "Find/Replace in files"'
       end
       item
@@ -6935,13 +6929,13 @@ object fmMain: TfmMain
       item
         Command = 863
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Find string from clipboard - next'
       end
       item
         Command = 864
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Find string from clipboard - previous'
       end
       item
@@ -7127,13 +7121,13 @@ object fmMain: TfmMain
       item
         Command = 875
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Find next - and extend selection'
       end
       item
         Command = 876
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Find previous - and extend selection'
       end
       item
@@ -7307,7 +7301,7 @@ object fmMain: TfmMain
       item
         Command = 883
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Replace all occurences of selected string with clipboard'
       end
       item
@@ -7421,7 +7415,7 @@ object fmMain: TfmMain
                 ShortCut = 112
               end>
           end>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Dialog "Commands"'
       end
       item
@@ -7947,18 +7941,6 @@ object fmMain: TfmMain
         DisplayName = 'Open last closed file'
       end
       item
-        Command = 1036
-        KeyStrokes = <>
-        Category = 'Hints'
-        DisplayName = 'Turn on auto-complete mode "Only words from file"'
-      end
-      item
-        Command = 1037
-        KeyStrokes = <>
-        Category = 'Hints'
-        DisplayName = 'Turn off auto-complete mode "Only words from file"'
-      end
-      item
         Command = 1038
         KeyStrokes = <>
         Category = 'Selection operations'
@@ -8123,7 +8105,7 @@ object fmMain: TfmMain
       item
         Command = 618
         KeyStrokes = <>
-        Category = 'Search & Replace'
+        Category = 'Search/Replace'
         DisplayName = 'Dialog "Find/Replace in project"'
       end
       item

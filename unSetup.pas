@@ -74,12 +74,6 @@ type
     edDirLast: TTntEdit;
     bDirLast: TTntButton;
     edAcpNum: TSpinEdit;
-    gAcp2: TTntGroupBox;
-    cbAcpFile: TTntCheckBox;
-    edAcpFileChars: TSpinEdit;
-    edAcpFileSize: TEdit;
-    LabelAcpFileChars: TTntLabel;
-    LabelAcpFileSize: TTntLabel;
     cbKeyCat: TTntComboBox;
     TntLabel19: TTntLabel;
     cbEsc: TTntComboBox;
@@ -388,7 +382,6 @@ type
     procedure LabelHelpTabbinClick(Sender: TObject);
     procedure LabelHelpACloseClick(Sender: TObject);
     procedure cbACloseBrClick(Sender: TObject);
-    procedure cbAcpFileClick(Sender: TObject);
     procedure ListColorsDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
     procedure ListCatClick(Sender: TObject);
@@ -1273,16 +1266,6 @@ begin
   cbACloseBrEsc.Enabled:= cbACloseBr.Checked or cbACloseQuote1.Checked or cbACloseQuote2.Checked;
 end;
 
-procedure TfmSetup.cbAcpFileClick(Sender: TObject);
-var en: boolean;
-begin
-  en:= cbAcpFile.Checked;
-  edAcpFileChars.Enabled:= en;
-  edAcpFileSize.Enabled:= en;
-  LabelAcpFileChars.Enabled:= en;
-  LabelAcpFileSize.Enabled:= en;
-end;
-
 procedure TfmSetup.ListColorsDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 const
@@ -1491,9 +1474,6 @@ begin
     ecACP.FilterType:= TAutoCompleteFilter(cbAcpFilter.ItemIndex);
     opAcpHintDelay:= edAcpHintDelay.Value;
     ApplyACP;
-    opAcpFile:= cbAcpFile.Checked;
-    opAcpFileChars:= edAcpFileChars.Value;
-    opAcpFileSize:= StrToFloatDef(edAcpFileSize.Text, opAcpFileSize);
 
     opTemplateTabbingExcept:= edNoSnippetsExt.Text;
   end;
@@ -1781,10 +1761,6 @@ begin
     edAcpNum.Value:= opAcpNum;
     cbAcpNone.Checked:= ecACP.ShowWhenNone;
     cbAcpFilter.ItemIndex:= integer(ecACP.FilterType);
-    cbAcpFile.Checked:= opAcpFile;
-    cbAcpFileClick(Self);
-    edAcpFileChars.Value:= opAcpFileChars;
-    edAcpFileSize.Text:= FloatToStrF(opAcpFileSize, ffGeneral, 2{precision}, 8{digits});
     edAcpDrop.Value:= ecACP.DropDownCount;
     edAcpHintDelay.Value:= opAcpHintDelay;
 
