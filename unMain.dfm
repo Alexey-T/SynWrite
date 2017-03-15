@@ -2551,11 +2551,11 @@ object fmMain: TfmMain
       DefaultStyles.SelectioMark.BgColor = clHighlight
       DefaultStyles.SelectioMark.FormatType = ftColor
       DefaultStyles.SearchMark.Font.Charset = DEFAULT_CHARSET
-      DefaultStyles.SearchMark.Font.Color = clWhite
+      DefaultStyles.SearchMark.Font.Color = clBlack
       DefaultStyles.SearchMark.Font.Height = -13
       DefaultStyles.SearchMark.Font.Name = 'Courier New'
       DefaultStyles.SearchMark.Font.Style = []
-      DefaultStyles.SearchMark.BgColor = clGreen
+      DefaultStyles.SearchMark.BgColor = clMoneyGreen
       DefaultStyles.SearchMark.FormatType = ftColor
       DefaultStyles.CurrentLine.Enabled = False
       DefaultStyles.CurrentLine.Font.Charset = DEFAULT_CHARSET
