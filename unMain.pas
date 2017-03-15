@@ -75,7 +75,6 @@ const
   cGutterBandSizeNumSpace = 10; //addition to line-numbers band width
   opMruForPlugin = false; //use recent list for Lister-plugin
   cMaxFilesInFolder = 50; //if more folder in dir, show confirmation for "Syn.exe dir"
-  cTabColors = 10; //number of user-defined tab colors
   cFixedWindowItems = 5; //number of fixed items in Window menu
   cMaxTreeLen = 250; //"find in files" result tree: max node length
   cMaxLinesInstantMinimap = 50*1000; //max lines for which OnScroll will update minimap instantly
@@ -20228,7 +20227,7 @@ begin
     Dec(i);
     if NLen>=opAcpNum then
     begin
-      DoAcpPopup;
+      DoAcpCommand;
       Break
     end;
   until false;
