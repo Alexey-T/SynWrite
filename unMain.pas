@@ -20100,26 +20100,26 @@ end;
 
 procedure TfmMain.DoCheckAutoShowACP(Ed: TSyntaxMemo);
 var
-  N, NLen, i: Integer;
-  IsCmt, IsStr: boolean;
+  NPos, NLen, i: Integer;
+  //IsCmt, IsStr: boolean;
 begin
   if (opAcpNum=0) or (ecACP.StartExpr<>'') then Exit;
   if ecACP.Visible then Exit;
 
-  N:= Ed.CaretStrPos;
-  if N>Length(Ed.Lines.FText) then Exit;
+  NPos:= Ed.CaretStrPos;
+  if NPos>Length(Ed.Lines.FText) then Exit;
 
   //don't do Autocomplete if next char is wordchar
-  if IsWordChar(Ed.Lines.Chars[N+1]) then Exit;
+  if IsWordChar(Ed.Lines.Chars[NPos+1]) then Exit;
 
-  //don't do Autocomplete if inside comment/string
-  //(no option for it, good)
-  EditorGetTokenType(Ed, N, N, IsCmt, IsStr);
-  if IsCmt or IsStr then Exit;
+  //don't do Autocomplete if inside comment
+  //-- disabled, problems with "after typed .. chars" for new lexer
+  //EditorGetTokenType(Ed, N, N, IsCmt, IsStr);
+  //if IsCmt then Exit;
 
   //NLen is length of word before caret
   NLen:= 1;
-  i:= N+1;
+  i:= NPos+1;
   repeat
     if (i<=1) or not IsWordChar(Ed.Lines.Chars[i-1]) then Break;
     Inc(NLen);
