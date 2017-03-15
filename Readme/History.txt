@@ -6,7 +6,9 @@ Legend:
 
 6.38
 + AddonManager uses registry not on SF.net, but on Github - faster
-- fix: Auto-indent must make line with tab-chars, of tab-chars used
+- fix: Auto-indent must make line with tab-chars, if tab-chars used
+- fix: "Auto-show autocomplete after n chars" didn't work with autocompl plugins
+* deleted 4 cmds: "Move cursor N chars up/down/left/right"; use plugin Move Caret with same funcs
 
 6.36.2680
 + new config for hotkeys used now. SynHotkeys.ini (later also "SynHotkeys lexer nnnnn.ini"). one for usual commands and plugins.

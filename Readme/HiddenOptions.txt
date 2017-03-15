@@ -24,11 +24,6 @@ KeyComboIgnoreCtrl=1
 Bool. Enables to ignore Ctrl/Alt/Shift modifiers in key combinations (e.g. [Ctrl+Q,Ctrl+A]), in 2nd/3rd/etc parts of combo.
 
 --------------------
-MovX=20
-MovY=10
-These options specify horiz. and vert. offsets, used by 4 commands: "Move cursor left/right/up/down by <N> chars".
-
---------------------
 SessionMaxFiles=0
 If set to positive value N, then additional confirmation will be shown on session saving/loading: "Session contains many files (more than N). Are you sure you want to save/load it?"
 

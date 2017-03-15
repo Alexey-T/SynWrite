@@ -123,7 +123,6 @@ function EditorAutoCloseBracket(Ed: TSyntaxMemo; ch: Widechar;
 procedure EditorDeleteToFileBegin(Ed: TSyntaxMemo);
 procedure EditorDeleteToFileEnd(Ed: TSyntaxMemo);
 procedure EditorJoinLines(Ed: TSyntaxMemo);
-procedure EditorMoveCaretByNChars(Ed: TSyntaxMemo; DX, DY: Integer);
 function EditorToggleSyncEditing(Ed: TSyntaxMemo): boolean;
 procedure EditorKeepCaretOnScreen(Ed: TSyntaxMemo);
 procedure EditorDoHomeKey(Ed: TSyntaxMemo);
@@ -1612,16 +1611,6 @@ begin
     end;
 end;
 
-
-procedure EditorMoveCaretByNChars(Ed: TSyntaxMemo; DX, DY: Integer);
-begin
-  with Ed do
-    if DY <> 0 then
-      CaretPos:= Point(CaretPos.X, CaretPos.Y + DY)
-    else
-      //need to goto next/prev line if at edge
-      CaretStrPos:= CaretStrPos + DX;
-end;
 
 procedure EditorCopyOrCutCurrentLine(Ed: TSyntaxMemo; ACut: boolean);
 begin

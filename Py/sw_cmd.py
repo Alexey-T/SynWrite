@@ -300,10 +300,6 @@ cmd_ToggleFocusMap = 758
 cmd_ToggleFocusProj = 759
 cmd_ToggleFocusTabs = 760
 
-cmd_CaretIncX = 761
-cmd_CaretDecX = 762
-cmd_CaretIncY = 763
-cmd_CaretDecY = 764
 cmd_TreeParent = 765
 cmd_TreeNextBrother = 766
 cmd_TreePrevBrother = 767

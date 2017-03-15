@@ -7263,30 +7263,6 @@ object fmMain: TfmMain
         DisplayName = '#30'
       end
       item
-        Command = 761
-        KeyStrokes = <>
-        Category = 'Navigation, no select'
-        DisplayName = 'Move cursor right <N> chars'
-      end
-      item
-        Command = 762
-        KeyStrokes = <>
-        Category = 'Navigation, no select'
-        DisplayName = 'Move cursor left <N> chars'
-      end
-      item
-        Command = 763
-        KeyStrokes = <>
-        Category = 'Navigation, no select'
-        DisplayName = 'Move cursor down <N> lines'
-      end
-      item
-        Command = 764
-        KeyStrokes = <>
-        Category = 'Navigation, no select'
-        DisplayName = 'Move cursor up <N> lines'
-      end
-      item
         Command = 877
         KeyStrokes = <>
         Category = 'Markers'

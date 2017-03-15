@@ -92,10 +92,6 @@ const
   sm_ToggleFocusProj = 759;
   sm_ToggleFocusTabs = 760;
 
-  sm_CaretIncX = 761;
-  sm_CaretDecX = 762;
-  sm_CaretIncY = 763;
-  sm_CaretDecY = 764;
   sm_TreeParent = 765;
   sm_TreeNextBrother = 766;
   sm_TreePrevBrother = 767;

@@ -5553,12 +5553,6 @@ begin
     sm_CopyFullPath: DoCopyFilenameToClipboard(CurrentFrame, cCmdCopyFullName);
     sm_CopyDirPath:  DoCopyFilenameToClipboard(CurrentFrame, cCmdCopyFilePath);
 
-    //move caret
-    sm_CaretIncX:  EditorMoveCaretByNChars(Ed, +SynHiddenOption('MovX', 20), 0);
-    sm_CaretDecX:  EditorMoveCaretByNChars(Ed, -SynHiddenOption('MovX', 20), 0);
-    sm_CaretIncY:  EditorMoveCaretByNChars(Ed, 0, +SynHiddenOption('MovY', 10));
-    sm_CaretDecY:  EditorMoveCaretByNChars(Ed, 0, -SynHiddenOption('MovY', 10));
-
     //misc
     sm_CopySearchMarks: DoCopySearchMarks(Ed);
 
