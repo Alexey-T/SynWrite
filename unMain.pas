@@ -2645,7 +2645,7 @@ type
     opAcpHtm: boolean; //Special ACP for HTML
     opAcpCss: boolean; //Special ACP for CSS
     opAcpTabbing: boolean; //Special SmartTagTabbing feature
-    opAcpNum: integer; //Num of chars that starts ACP
+    opAcpNum: integer; //Count of chars that auto-show auto-complete
     opAcpHintDelay: integer;
     opSingleInstance: boolean; //single instance
     opLang: integer;
@@ -4173,7 +4173,7 @@ begin
     opAcpHtm:= ReadBool('ACP', 'Htm', true);
     opAcpCss:= ReadBool('ACP', 'Css', true);
     opAcpTabbing:= ReadBool('ACP', 'Tabbing', true);
-    opAcpNum:= ReadInteger('ACP', 'Num', 0);
+    opAcpNum:= 0; //ReadInteger('ACP', 'Num', 0);
     opAcpHintDelay:= ReadInteger('ACP', 'HintDelay', 1500);
     ecACP.ShowWhenNone:= ReadBool('ACP', 'IfNone', true);
     opTemplateTabbing:= true; //ReadBool('ACP', 'TplTab', true);
@@ -4578,7 +4578,7 @@ begin
     WriteBool('ACP', 'Htm', opAcpHtm);
     WriteBool('ACP', 'Css', opAcpCss);
     WriteBool('ACP', 'Tabbing', opAcpTabbing);
-    WriteInteger('ACP', 'Num', opAcpNum);
+    //WriteInteger('ACP', 'Num', opAcpNum);
     WriteInteger('ACP', 'HintDelay', opAcpHintDelay);
     WriteBool('ACP', 'IfNone', ecACP.ShowWhenNone);
     WriteBool('ACP', 'ParamHints', ParamCompletion.Enabled);
@@ -7248,14 +7248,15 @@ procedure TfmMain.ApplyLexerOverrides(F: TEditorFrame; const Lexer: string);
 var
   ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
   AOptWordChars, AKeepBlanks, AAutoCase, AIndent,
-  ATabColor, AColorUnderline: string;
+  ATabColor, AColorUnderline, AAutoShowACP: string;
 begin
   if F=nil then Exit;
   with F do
   begin
     if not DoLexerOverridesLoad(Lexer,
       ATabStop, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
-      AOptWordChars, AKeepBlanks, AAutoCase, AIndent, ATabColor, AColorUnderline) then
+      AOptWordChars, AKeepBlanks, AAutoCase, AIndent,
+      ATabColor, AColorUnderline, AAutoShowACP) then
     begin
       EditorMaster.TabList.AsString:= TemplateEditor.TabList.AsString;
       EditorSlave.TabList.AsString:= TemplateEditor.TabList.AsString;
@@ -7371,9 +7372,11 @@ begin
       if AColorUnderline='1' then
         opUnderlineColored:= 3 //3 pixels line
       else
-        opUnderlineColored:= 0; //disable  
-    end;
+        opUnderlineColored:= 0; //disable
 
+      //13) Auto-show autocomplete
+      opAcpNum:= StrToIntDef(AAutoShowACP, 0);
+    end;
   end;
 end;
 

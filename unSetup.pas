@@ -73,7 +73,6 @@ type
     cbDirLast: TTntComboBox;
     edDirLast: TTntEdit;
     bDirLast: TTntButton;
-    edAcpNum: TSpinEdit;
     cbKeyCat: TTntComboBox;
     TntLabel19: TTntLabel;
     cbEsc: TTntComboBox;
@@ -115,7 +114,6 @@ type
     cbAcpUseSingle: TTntCheckBox;
     cbACloseTags: TTntCheckBox;
     TntLabel7: TTntLabel;
-    TntLabel12: TTntLabel;
     LabelHelpAClose: TTntLabel;
     cbACloseBr: TTntCheckBox;
     cbACloseBrEsc: TTntCheckBox;
@@ -328,6 +326,7 @@ type
     bColorCustom: TTntButton;
     LabelBlickIndent: TTntLabel;
     labelHtokeyInfo: TTntLabel;
+    lblInfoAutoShowACP: TLabel;
     procedure bApplyClick(Sender: TObject);
     procedure bCanClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1465,7 +1464,6 @@ begin
     opAutoCloseBracketsNoEsc:= cbACloseBrEsc.Checked;
     opAutoCloseQuotes1:= cbACloseQuote1.Checked;
     opAutoCloseQuotes2:= cbACloseQuote2.Checked;
-    opAcpNum:= edAcpNum.Value;
     opAcpUseSingle:= cbAcpUseSingle.Checked;
     ParamCompletion.Enabled:= cbAcpParamHints.Checked;
     SyntaxManagerChange(nil);
@@ -1758,7 +1756,6 @@ begin
 
     cbAcpParamHints.Checked:= ParamCompletion.Enabled;
     cbAcpUseSingle.Checked:= opAcpUseSingle;
-    edAcpNum.Value:= opAcpNum;
     cbAcpNone.Checked:= ecACP.ShowWhenNone;
     cbAcpFilter.ItemIndex:= integer(ecACP.FilterType);
     edAcpDrop.Value:= ecACP.DropDownCount;

@@ -28,14 +28,14 @@ object fmSetupOvr: TfmSetupOvr
   end
   object LabelWordChars: TTntLabel
     Left = 160
-    Top = 268
-    Width = 116
+    Top = 300
+    Width = 112
     Height = 13
-    Caption = 'Word chars (additional):'
+    Caption = 'Word chars (additional)'
   end
   object LabelHelpAutoCase: TTntLabel
     Left = 376
-    Top = 194
+    Top = 226
     Width = 19
     Height = 13
     Cursor = crHandPoint
@@ -100,22 +100,22 @@ object fmSetupOvr: TfmSetupOvr
   end
   object edWordChars: TTntEdit
     Left = 376
-    Top = 266
+    Top = 296
     Width = 153
     Height = 21
     Hint = 
       'Additional chars, which will be treated as part of words, by wor' +
       'd double-clicking, smart highlighting, etc.'
-    TabOrder = 20
+    TabOrder = 22
     OnChange = edTabStopsChange
   end
   object chkAutoCase: TTntCheckBox
     Left = 160
-    Top = 192
+    Top = 224
     Width = 215
     Height = 17
     Caption = 'Auto-correct identifier case'
-    TabOrder = 16
+    TabOrder = 18
     OnClick = edTabStopsChange
   end
   object edIndent: TSpinEdit
@@ -238,37 +238,58 @@ object fmSetupOvr: TfmSetupOvr
   end
   object chkTabColor: TTntCheckBox
     Left = 160
-    Top = 240
+    Top = 272
     Width = 215
     Height = 17
-    Caption = 'Tab color'
-    TabOrder = 18
+    Caption = 'UI tab color'
+    TabOrder = 20
     OnClick = edTabStopsChange
   end
   object edTabColor: TColorBox
     Left = 376
-    Top = 238
+    Top = 270
     Width = 153
     Height = 22
     Style = [cbStandardColors, cbExtendedColors, cbCustomColor, cbPrettyNames]
     ItemHeight = 16
-    TabOrder = 19
+    TabOrder = 21
     OnChange = edTabStopsChange
   end
   object chkColorUnderline: TTntCheckBox
     Left = 160
-    Top = 216
+    Top = 248
     Width = 215
     Height = 17
     Caption = 'Underline HTML colors'
-    TabOrder = 17
+    TabOrder = 19
     OnClick = edTabStopsChange
+  end
+  object chkAutoShowACP: TTntCheckBox
+    Left = 160
+    Top = 188
+    Width = 215
+    Height = 33
+    Caption = 'After typing ... chars, auto-show auto-complete (0: disabled)'
+    TabOrder = 16
+    WordWrap = True
+    OnClick = chkTabStopsClick
+  end
+  object edAutoShowACP: TSpinEdit
+    Left = 376
+    Top = 192
+    Width = 57
+    Height = 22
+    MaxValue = 20
+    MinValue = 0
+    TabOrder = 17
+    Value = 0
+    OnChange = edTabStopsChange
   end
   object DKLanguageController1: TDKLanguageController
     Left = 48
     Top = 200
     LangData = {
-      0A00666D53657475704F7672010100000001000000070043617074696F6E0118
+      0A00666D53657475704F7672010100000001000000070043617074696F6E011A
       00000006004C6162656C31010100000002000000070043617074696F6E000700
       4C6973744C657800000A00656454616253746F70730000050063624F76720101
       0000000A000000070043617074696F6E00080065644D617267696E0000090065
@@ -288,6 +309,7 @@ object fmSetupOvr: TfmSetupOvr
       426C616E6B7301010000001A00000005004974656D73000B0063686B54616243
       6F6C6F72010100000023000000070043617074696F6E000A006564546162436F
       6C6F720000110063686B436F6C6F72556E6465726C696E650101000000240000
-      00070043617074696F6E00}
+      00070043617074696F6E000E0063686B4175746F53686F774143500101000000
+      25000000070043617074696F6E000D0065644175746F53686F774143500000}
   end
 end

@@ -15,7 +15,7 @@ uses
   ecSyntAnal;
 
 const
-  cSynVersion = '6.38.b3';
+  cSynVersion = '6.38.b4';
   cSynApiVersion = '1.0.165';
 
 var
@@ -230,9 +230,9 @@ const
   cLexListBase = 6000; //must be bigger than cPyCommandBase
 
 function DoLexerOverridesLoad(const ALexer: string;
-  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string): boolean;
+  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12, AOp13: string): boolean;
 procedure DoLexerOverridesSave(const ALexer: string;
-  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string);
+  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12, AOp13: string);
 
 function IsFileProject(const fn: Widestring): boolean;
 function IsFileSession(const fn: Widestring): boolean;
@@ -456,7 +456,7 @@ end;
 
 //------------------------
 procedure DoLexerOverridesSave(const ALexer: string;
-  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string);
+  const AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12, AOp13: string);
 var
   fn: string;
 begin
@@ -475,13 +475,14 @@ begin
     WriteString('Setup', 'Indent', AOp10);
     WriteString('Setup', 'TabColor', AOp11);
     WriteString('Setup', 'ColorUnderline', AOp12);
+    WriteString('Setup', 'AutoShowACP', AOp13);
   finally
     Free
   end;
 end;
 
 function DoLexerOverridesLoad(const ALexer: string;
-  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12: string): boolean;
+  var AOp1, AOp2, AOp3, AOp4, AOp5, AOp6, AOp7, AOp8, AOp9, AOp10, AOp11, AOp12, AOp13: string): boolean;
 var
   fn: string;
 begin
@@ -497,6 +498,7 @@ begin
   AOp10:= '';
   AOp11:= '';
   AOp12:= '';
+  AOp13:= '';
 
   fn:= SynLexerOverrideFilename(ALexer);
   Result:= FileExists(fn);
@@ -515,6 +517,7 @@ begin
       AOp10:= ReadString('Setup', 'Indent', AOp10);
       AOp11:= ReadString('Setup', 'TabColor', AOp11);
       AOp12:= ReadString('Setup', 'ColorUnderline', AOp12);
+      AOp13:= ReadString('Setup', 'AutoShowACP', AOp13);
     finally
       Free
     end;

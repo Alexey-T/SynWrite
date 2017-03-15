@@ -36,6 +36,8 @@ type
     chkTabColor: TTntCheckBox;
     edTabColor: TColorBox;
     chkColorUnderline: TTntCheckBox;
+    chkAutoShowACP: TTntCheckBox;
+    edAutoShowACP: TSpinEdit;
     procedure cbOvrClick(Sender: TObject);
     procedure ListLexClick(Sender: TObject);
     procedure TntFormShow(Sender: TObject);
@@ -83,6 +85,7 @@ begin
   edKeepBlanks.Enabled:= en;
   edTabColor.Enabled:= en;
   LabelWordChars.Enabled:= en;
+  edAutoShowACP.Enabled:= en;
 
   chkTabStops.Enabled:= en;
   chkTabMode.Enabled:= en;
@@ -94,6 +97,7 @@ begin
   chkAutoCase.Enabled:= en;
   chkTabColor.Enabled:= en;
   chkColorUnderline.Enabled:= en;
+  chkAutoShowACP.Enabled:= en;
 
   if not en then
   begin
@@ -113,14 +117,14 @@ var
   Ovr: boolean;
   ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
   AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent,
-  ATabColor, AColorUnderline: string;
+  ATabColor, AColorUnderline, AAutoShowACP: string;
 begin
   if ListLex.ItemIndex>=0 then
   begin
     Ovr:= DoLexerOverridesLoad(ListLex.Items[ListLex.ItemIndex],
       ATabStops, ATabMode, AWrap, AMargin, ASpacing, AOptFill,
       AOptWordChars, AKeepBlanks, ACaseCorrect, AIndent,
-      ATabColor, AColorUnderline);
+      ATabColor, AColorUnderline, AAutoShowACP);
     cbOvr.Enabled:= true;
   end
   else
@@ -141,6 +145,7 @@ begin
     chkMargin.Checked:= AMargin<>'';
     chkSpacing.Checked:= ASpacing<>'';
     chkTabColor.Checked:= ATabColor<>'';
+    chkAutoShowACP.Checked:= AAutoShowACP<>'';
 
     edTabStops.Text:= ATabStops;
     edTabMode.ItemIndex:= StrToIntDef(ATabMode, FDefTabMode);
@@ -156,6 +161,7 @@ begin
     edWordChars.Text:= AOptWordChars;
     chkAutoCase.Checked:= Bool(StrToIntDef(ACaseCorrect, 0));
     chkColorUnderline.Checked:= Boolean(StrToIntDef(AColorUnderline, 0));
+    edAutoShowACP.Value:= StrToIntDef(AAutoShowACP, 0);
   end
   else
   begin
@@ -178,6 +184,7 @@ begin
   chkTabColor.Checked:= false;
   chkAutoCase.Checked:= false;
   chkColorUnderline.Checked:= false;
+  chkAutoShowACP.Checked:= false;
 
   edTabStops.Text:= FDefTabStop;
   edTabMode.ItemIndex:= FDefTabMode;
@@ -188,6 +195,7 @@ begin
   edSpacing.Value:= FDefSpacing;
   edTabColor.Selected:= clWhite;
   edWordChars.Text:= '';
+  edAutoShowACP.Value:= 0;
 end;
 
 
@@ -247,7 +255,8 @@ begin
         {Op9}IfThen(chkAutoCase.Checked, '1'),
         {Op10}IfThen(chkIndent.Checked, IntToStr(edIndent.Value)),
         {Op11}IfThen(chkTabColor.Checked, ColorToString(edTabColor.Selected)),
-        {Op12}IfThen(chkColorUnderline.Checked, '1')
+        {Op12}IfThen(chkColorUnderline.Checked, '1'),
+        {Op13}IfThen(chkAutoShowACP.Checked, IntToStr(edAutoShowACP.Value))
         );
     end;
 end;
