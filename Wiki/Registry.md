@@ -14,6 +14,7 @@ Color Picker | Shows dialog to insert any color code | PyPlugins/plugin.Alexey.C
 Color Text Saved | Works with "Color Text", saves applied colors/styles to a helper file | PyPlugins/plugin.Alexey.ColorTextSaved.zip
 Color Text | Allows to colorize text blocks, like Notepad++ "Style token" | PyPlugins/plugin.Alexey.ColorText.zip
 Column Markers | Commands to control "column markers" | PyPlugins/plugin.Alexey.ColumnMarkers.zip
+Complete From Text | Auto-completion (Ctrl+Space) list with words from current text | PyPlugins/plugin.Alexey.Complete_From_Text.zip
 Css AutoPrefixer | Inserts vendor prefixes into CSS code (requires Node.js) | PyPlugins/plugin.Alexey.CssAutoPrefixer.zip
 Css CanIUse | Shows CSS info from site caniuse.com | PyPlugins/plugin.Alexey.CssCanIUse.zip
 Css Comb | Sorts CSS properties in specific order (CSScomb engine) | PyPlugins/plugin.Alexey.CssComb.zip
@@ -265,6 +266,7 @@ Linter: XmlLint_cygwin | SynLint subplugin for XML lexer | Linters/linter.XmlLin
 Linter: XmlLint_google | SynLint subplugin for XML lexer | Linters/linter.XmlLint_google.zip
 Lorem Ipsum | Inserts "Lorem Ipsum" text (placeholder for HTML) | PyPlugins/plugin.Alexey.LoremIpsum.zip
 Markdown Preview | Converts Markdown text to HTML, and opens HTML in browser | PyPlugins/plugin.Alexey.MarkdownPreview.zip
+Move Caret | Moves caret N chars lefter/righter/upper/lower | PyPlugins/plugin.Alexey.Move_Caret.zip
 NumToWords Propis | Converts numbers to words: Russian | PyPlugins/plugin.Alexey.NumToWordsPropis.zip
 NumToWords | Converts numbers to words: En, De, Fr, Sp, etc | PyPlugins/plugin.Alexey.NumToWords.zip
 Online Search | Opens browser with search for selection or cur-word | PyPlugins/plugin.Alexey.OnlineSearch.zip
