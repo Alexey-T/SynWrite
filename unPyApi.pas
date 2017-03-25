@@ -2906,6 +2906,7 @@ var
   Str: AnsiString;
   i: Integer;
 begin
+  if not PythonOK then exit;
   Str:= '';
   for i:= 0 to Length(Dirs)-1 do
     Str:= Str + SWideStringToPythonString(Dirs[i]) + ',';

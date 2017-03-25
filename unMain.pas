@@ -19239,11 +19239,11 @@ end;
 
 procedure TfmMain.DoPyCommandPlugin(N: Integer);
 begin
+  if not PythonOK then exit;
   if (N>=Low(FPluginsCommand)) and (N<=High(FPluginsCommand)) then
   with FPluginsCommand[N] do
   begin
-    if (SFileName='') then
-      begin MsgBeep; Exit; end;
+    if (SFileName='') then Exit;
 
     if (SLexers<>'') and not IsLexerListed(CurrentLexerForCaret, SLexers) then
     begin
@@ -23502,6 +23502,7 @@ var
 begin
   DoPyConsole_LogString(cPyConsolePrompt + Str);
 
+  if not PythonOK then exit;
   Handled:= DoPyEvent(CurrentEditor, cSynEventOnConsole,
     [SWideStringToPythonString(Str)]) = cPyTrue;
 
@@ -23659,6 +23660,9 @@ function TfmMain.DoPyLoadPlugin(const SFilename, SCmd: string): string;
 var
   SId: string;
 begin
+  Result:= '';
+  if not PythonOK then exit;
+  
   SId:= SFilename;
   if SBegin(SId, cPyPrefix) then
     Delete(SId, 1, Length(cPyPrefix));
@@ -23679,6 +23683,9 @@ function TfmMain.DoPyLoadPluginWithParams(
 var
   SId: string;
 begin
+  Result:= '';
+  if not PythonOK then exit;
+  
   SId:= SFilename;
   if SBegin(SId, cPyPrefix) then
     Delete(SId, 1, Length(cPyPrefix));
@@ -24210,6 +24217,7 @@ var
 begin
   //empty string result means "no handlers for event"
   Result:= '';
+  if not PythonOK then exit;
 
   try
     if CurrentEditor=nil then exit;
