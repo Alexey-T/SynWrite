@@ -200,6 +200,7 @@ Lexer: Prolog                       | | Lexers/lexer.Prolog.zip
 Lexer: Puppet                       | | Lexers/lexer.Puppet.zip
 Lexer: R                            | | Lexers/lexer.R.zip
 Lexer: R Markdown                   | | Lexers/lexer.R_Markdown.zip
+Lexer: Racket                       | | Lexers/lexer.Racket.zip
 Lexer: Ragel                        | | Lexers/lexer.Ragel.zip
 Lexer: Razor                        | | Lexers/lexer.Razor.zip
 Lexer: Regular expressions          | | Lexers/lexer.Regular_expressions.zip

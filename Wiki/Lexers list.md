@@ -154,6 +154,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Python
 * R
 * R Markdown
+* Racket
 * Ragel
 * Razor
 * reStructuredText
