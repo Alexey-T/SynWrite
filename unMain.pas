@@ -94,7 +94,6 @@ const
   cPyConsolePrint = '=';
   cPyPrefix = 'py:';
   cBinaryPrefix = 'binary:';
-  cPyNotInited = 'Python engine not inited';
   cPyTrue = 'True';
   cPyFalse = 'False';
   cPyNone = 'None';
@@ -23508,29 +23507,25 @@ begin
 
   if not Handled then
   try
-    with GetPythonEngine do
+    SNew:= Str;
+    if SBegin(SNew, cPyConsolePrint) then
     begin
-      SNew:= Str;
-      if SBegin(SNew, cPyConsolePrint) then
-      begin
-        Delete(SNew, 1, Length(cPyConsolePrint));
-        SNew:= 'print('+SNew+')'
-      end
-      else
-      if IsWordString(SNew, true) then
-        SNew:= 'print('+SNew+')';
+      Delete(SNew, 1, Length(cPyConsolePrint));
+      SNew:= 'print('+SNew+')'
+    end
+    else
+    if IsWordString(SNew, true) then
+      SNew:= 'print('+SNew+')';
 
-      ExecString(UTF8Encode(SNew));
+    GetPythonEngine.ExecString(UTF8Encode(SNew));
 
-      //code fails on entering "import sys"
-      {
-      Obj:= EvalString(UTF8Encode(Str));
-      if Obj<>Py_None then
-        DoPyConsole_LogString(PyObjectAsString(Obj));
-      }
-    end;
+    //code fails on entering "import sys"
+    {
+    Obj:= EvalString(UTF8Encode(Str));
+    if Obj<>Py_None then
+      DoPyConsole_LogString(PyObjectAsString(Obj));
+    }
   except
-    MsgBeep(true);
   end;
 
   edConsole.Text:= Str;
@@ -23592,11 +23587,8 @@ begin
   PyEngine.InitScript.Add(cPyConsoleInit);
   PyEngine.LoadDll;
 
-  try
-    if GetPythonEngine=nil then Exit;
-  except
+  if not PythonOK then
     DoPyConsole_LogString('Python engine not inited. You need correct python3*.dll with helper files, in app folder.');
-  end;
 end;
 
 procedure TfmMain.edConsoleKeyDown(Sender: TObject; var Key: Word;
@@ -23667,12 +23659,6 @@ begin
   if SBegin(SId, cPyPrefix) then
     Delete(SId, 1, Length(cPyPrefix));
 
-  if not GetPythonEngine.Initialized then
-  begin
-    DoPyConsole_LogString(cPyNotInited);
-    Exit
-  end;
-
   Result:= Py_RunPlugin_Command(SId, SCmd);
 end;
 
@@ -23689,12 +23675,6 @@ begin
   SId:= SFilename;
   if SBegin(SId, cPyPrefix) then
     Delete(SId, 1, Length(cPyPrefix));
-
-  if not GetPythonEngine.Initialized then
-  begin
-    DoPyConsole_LogString(cPyNotInited);
-    Exit
-  end;
 
   Result:= Py_RunPlugin_Event(SId, SCmd, AEd, AParams);
 end;
@@ -24218,14 +24198,7 @@ begin
   //empty string result means "no handlers for event"
   Result:= '';
   if not PythonOK then exit;
-
-  try
-    if CurrentEditor=nil then exit;
-    if GetPythonEngine=nil then exit;
-  except
-    Exit
-  end;
-
+  if CurrentEditor=nil then exit;
   SCurLexer:= CurrentLexerForFile;
 
   for i:= Low(FPluginsEvent) to High(FPluginsEvent) do
@@ -24574,6 +24547,7 @@ var
   fn, Cmd: string;
   L: TStringList;
 begin
+  if not PythonOK then exit;
   fn:= SynPyDir + '\sw_reset_plugins.py';
   if not FileExists(fn) then
     begin MsgNoFile(fn); Exit end;
