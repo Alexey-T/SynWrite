@@ -1,0 +1,21 @@
+Allow tab-key to close autocomplete popup
+//ecPopupCtrl.pas, add part about vk_tab
+
+procedure TPopupControl.ParentWndProc(var Message: TMessage);
+..
+  case Message.Msg of
+    WM_KEYDOWN:
+      begin
+         if Message.WParam = VK_ESCAPE then
+         begin
+           CloseUp(False);
+           PeekMessage(msg, FParent.Handle, WM_CHAR, WM_CHAR, PM_REMOVE);
+           Exit;
+         end;
+         if Message.WParam=VK_TAB then
+         begin
+           CloseUp(True);
+           PeekMessage(msg, FParent.Handle, WM_CHAR, WM_CHAR, PM_REMOVE);
+           Exit;
+         end;
+      end;
