@@ -1158,6 +1158,7 @@ type
     TbxItemTabColor: TSpTBXItem;
     TbxItemGroup1p2H: TSpTBXItem;
     SpTBXSeparatorItem9: TSpTBXSeparatorItem;
+    TbxItemOExplorer: TSpTBXItem;
     procedure acOpenExecute(Sender: TObject);
     procedure ecTitleCaseExecute(Sender: TObject);
     procedure WindowItemClick(Sender: TObject);
@@ -1805,6 +1806,7 @@ type
     procedure TbxItemGroup1p2HClick(Sender: TObject);
     procedure TBXSubmenuBarNewPopup(Sender: TTBCustomItem;
       FromLink: Boolean);
+    procedure TbxItemOExplorerClick(Sender: TObject);
 
   private
     cStatLine,
@@ -3894,6 +3896,7 @@ begin
   ecFullScr.Enabled:= SynExe;
   ecOnTop.Enabled:= SynExe;
   TBXSubmenuAddons.Enabled:= SynExe;
+  TbxItemOExplorer.Enabled:= SynExe;
 
   ecCopy.Update;
   ecCut.Update;
@@ -25795,6 +25798,13 @@ begin
   end;
 end;
 
+
+procedure TfmMain.TbxItemOExplorerClick(Sender: TObject);
+begin
+  MsgInfo('Please install plugin "Explorer Integration" via Add-ons Manager, '+
+    'it gives dialog to integrate SynWrite into Explorer context menu and double-click',
+    Handle);
+end;
 
 end.
 
