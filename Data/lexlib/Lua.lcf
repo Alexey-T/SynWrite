@@ -1,4 +1,4 @@
-object SyntAnal90: TLibSyntAnalyzer
+object SyntAnal19: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Comment'
@@ -63,6 +63,14 @@ object SyntAnal90: TLibSyntAnalyzer
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
+    end
+    item
+      DisplayName = 'String2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clOlive
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
     end>
   TokenRules = <
     item
@@ -91,7 +99,7 @@ object SyntAnal90: TLibSyntAnalyzer
     end
     item
       DisplayName = 'StrLongBracket'
-      StyleName = 'String'
+      StyleName = 'String2'
       TokenType = 4
       Expression = '(?s)\[\[ .*? (\]\] | \Z)'
       ColumnFrom = 0
@@ -99,7 +107,7 @@ object SyntAnal90: TLibSyntAnalyzer
     end
     item
       DisplayName = 'StrLongBracket2'
-      StyleName = 'String'
+      StyleName = 'String2'
       TokenType = 4
       Expression = '(?s)\[(=+)\[ .*? (\]\1\] | \Z)'
       ColumnFrom = 0
@@ -138,10 +146,18 @@ object SyntAnal90: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
-      DisplayName = 'Symb'
+      DisplayName = 'Symbol single'
       StyleName = 'Symbol'
       TokenType = 3
-      Expression = '[\+\-/\*\(\)\[\]\{\}\<>\.,~!&\|;:=%\^\#]'
+      Expression = '[\(\)\[\]\{\}]'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Symbol'
+      StyleName = 'Symbol'
+      TokenType = 3
+      Expression = '[\+\-/\*\<>\.,~!&\|;:=%\^\#]+'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -154,7 +170,7 @@ object SyntAnal90: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
-      DisplayName = 'NumFlo'
+      DisplayName = 'NumFloat'
       StyleName = 'Number'
       TokenType = 6
       Expression = '\d+(\.\d+)? e[\+\-]?\d+ |'#13#10'\d+\.\d+ '

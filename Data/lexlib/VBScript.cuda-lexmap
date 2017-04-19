@@ -10,7 +10,8 @@ Function separator=SeparLine
 Function background=CurBlockBG
 Current block bound=BracketBG
 Operator Keywords=Id1
-
 [comments]
 styles_cmt=Comment
 styles_str=String
+str1=
+str2=
