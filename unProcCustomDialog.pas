@@ -37,6 +37,7 @@ var
 
 type
   TCustomEditHack = class(TCustomEdit);
+  TControlHack = class(TControl);
 
 function SGetItem(var S: string; const sep: Char = ','): string;
 var
@@ -406,6 +407,18 @@ begin
     (C as TImage).Stretch:= StrToBool(SGetItem(S));
     exit
   end;
+
+  if (C is TTntPanel) then
+  begin
+    (C as TTntPanel).BorderWidth:= StrToIntDef(SGetItem(S), 0);
+    if (C as TTntPanel).BorderWidth>0 then
+      (C as TTntPanel).BorderStyle:= bsSingle;
+
+    (C as TTntPanel).Color:= StrToIntDef(SGetItem(S), clBtnFace);
+    (C as TTntPanel).Font.Color:= StrToIntDef(SGetItem(S), clBlack);
+    //(C as TTntPanel).BorderColor:= StrToIntDef(SGetItem(S), clBlack);
+    exit
+  end;
 end;
 
 
@@ -465,6 +478,7 @@ begin
       if SValue='label' then
         begin
           Ctl:= TTntLabel.Create(AForm);
+          (Ctl as TTntLabel).AutoSize:= false;
         end;
       if SValue='combo' then
         begin
@@ -532,6 +546,14 @@ begin
       begin
         Ctl:= TTntTabControl.Create(AForm);
         (Ctl as TTntTabControl).OnChange:= ADummy.DoOnChange;
+      end;
+
+      if SValue='colorpanel' then
+      begin
+        Ctl:= TTntPanel.Create(AForm);
+        (Ctl as TTntPanel).OnClick:= ADummy.DoOnChange;
+        (Ctl as TTntPanel).BevelInner:= bvNone;
+        (Ctl as TTntPanel).BevelOuter:= bvNone;
       end;
 
       if SValue='image' then
@@ -608,6 +630,7 @@ begin
       if (Ctl is TTntCheckBox) then (Ctl as TTntCheckBox).Caption:= UTF8Decode(SValue);
       if (Ctl is TTntRadioButton) then (Ctl as TTntRadioButton).Caption:= UTF8Decode(SValue);
       if (Ctl is TTntEdit) then (Ctl as TTntEdit).Text:= UTF8Decode(SValue);
+      if (Ctl is TTntPanel) then (Ctl as TTntPanel).Caption:= UTF8Decode(SValue);
       Continue;
     end;
 
@@ -642,6 +665,30 @@ begin
       Ctl.Top:= NY1;
       if not IsControlAutosizeY(Ctl) then
         Ctl.Height:= NY2-NY1;
+      Continue;
+    end;
+
+    //-------
+    if SName='color' then
+    begin
+      with TControlHack(Ctl) do
+        Color:= StrToIntDef(SValue, Color);
+      Continue;
+    end;
+
+    if SName='font_name' then
+    begin
+      TControlHack(Ctl).Font.Name:= SValue;
+      Continue;
+    end;
+    if SName='font_size' then
+    begin
+      TControlHack(Ctl).Font.Size:= StrToIntDef(SValue, 9);
+      Continue;
+    end;
+    if SName='font_color' then
+    begin
+      TControlHack(Ctl).Font.Color:= StrToIntDef(SValue, clBlack);
       Continue;
     end;
 
