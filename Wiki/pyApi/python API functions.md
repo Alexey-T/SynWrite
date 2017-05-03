@@ -28,7 +28,7 @@ Dialog functions
     * checkbutton
     * checklistbox
     * checklistview
-    * colorpanel, limitation: "props=int_border_size,int_back_color,int_font_color"
+    * colorpanel
     * combo
     * combo_ro
     * edit
