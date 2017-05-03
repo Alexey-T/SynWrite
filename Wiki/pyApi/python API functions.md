@@ -22,7 +22,26 @@ Dialog functions
 * dlg_dir(caption, dir): same as dlg_folder.
 * dlg_color(color): Shows "Color Picker" dialog, with given initial int RGB color. Gets RGB color, or None if cancelled.
 * dlg_hotkey(caption=""): Shows dialog to input hotkey. Gets str of hotkey (e.g. "F1", "Ctrl+Alt+B"), or None if cancelled.
-* dlg_custom(caption, size_x, size_y, text, focused=-1): Shows user-made dialog. Documented at http://wiki.freepascal.org/CudaText_API#dlg_custom . Code is 90% ported from CudaText. Not supported control types: "checkbutton", "checkgroup", "image".
+* dlg_custom(caption, size_x, size_y, text, focused=-1): Shows user-made dialog. Documented at http://wiki.freepascal.org/CudaText_API#dlg_custom . Code is ported from old CudaText. Supported control types: 
+    * button
+    * check
+    * checkbutton
+    * checklistbox
+    * checklistview
+    * colorpanel, limitation: "props=int_border_size,int_back_color,int_font_color"
+    * combo
+    * combo_ro
+    * edit
+    * image, limitation: "props=bool_center,bool_stretch", only bmp/jpg/png images
+    * label
+    * linklabel
+    * listbox
+    * listview
+    * memo
+    * radio
+    * radiogroup
+    * spinedit
+    * tabs
 
 Versions
 --------
