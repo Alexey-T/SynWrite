@@ -13,7 +13,8 @@ uses
   Windows, Classes, SysUtils, Graphics, Controls, StdCtrls, ExtCtrls, Forms,
   CheckLst, Spin, ComCtrls, Dialogs,
   TntControls, TntExtCtrls, TntComCtrls, TntStdCtrls, TntCheckLst, TntForms,
-  ATLinkLabel;
+  ATLinkLabel,
+  ATPanelColor;
 
 procedure DoDialogCustom(
  const ATitle: string;
@@ -408,15 +409,12 @@ begin
     exit
   end;
 
-  if (C is TTntPanel) then
+  if (C is TATPanelColor) then
   begin
-    (C as TTntPanel).BorderWidth:= StrToIntDef(SGetItem(S), 0);
-    if (C as TTntPanel).BorderWidth>0 then
-      (C as TTntPanel).BorderStyle:= bsSingle;
-
-    (C as TTntPanel).Color:= StrToIntDef(SGetItem(S), clBtnFace);
-    (C as TTntPanel).Font.Color:= StrToIntDef(SGetItem(S), clBlack);
-    //(C as TTntPanel).BorderColor:= StrToIntDef(SGetItem(S), clBlack);
+    (C as TATPanelColor).BorderWidth:= StrToIntDef(SGetItem(S), 0);
+    (C as TATPanelColor).Color:= StrToIntDef(SGetItem(S), clBtnFace);
+    (C as TATPanelColor).Font.Color:= StrToIntDef(SGetItem(S), clBlack);
+    (C as TATPanelColor).BorderColor:= StrToIntDef(SGetItem(S), clBlack);
     exit
   end;
 end;
@@ -550,10 +548,8 @@ begin
 
       if SValue='colorpanel' then
       begin
-        Ctl:= TTntPanel.Create(AForm);
-        (Ctl as TTntPanel).OnClick:= ADummy.DoOnChange;
-        (Ctl as TTntPanel).BevelInner:= bvNone;
-        (Ctl as TTntPanel).BevelOuter:= bvNone;
+        Ctl:= TATPanelColor.Create(AForm);
+        (Ctl as TATPanelColor).OnClick:= ADummy.DoOnChange;
       end;
 
       if SValue='image' then
@@ -630,7 +626,7 @@ begin
       if (Ctl is TTntCheckBox) then (Ctl as TTntCheckBox).Caption:= UTF8Decode(SValue);
       if (Ctl is TTntRadioButton) then (Ctl as TTntRadioButton).Caption:= UTF8Decode(SValue);
       if (Ctl is TTntEdit) then (Ctl as TTntEdit).Text:= UTF8Decode(SValue);
-      if (Ctl is TTntPanel) then (Ctl as TTntPanel).Caption:= UTF8Decode(SValue);
+      if (Ctl is TATPanelColor) then (Ctl as TATPanelColor).Caption:= UTF8Decode(SValue);
       Continue;
     end;
 
