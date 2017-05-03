@@ -342,6 +342,16 @@ begin
       (C as TTntLabel).AutoSize:= false;
       (C as TTntLabel).Alignment:= taRightJustify;
     end;
+    exit
+  end;
+
+  if C is TTntLabel then
+  begin
+    if StrToBool(SGetItem(S)) then
+    begin
+      (C as TTntLabel).AutoSize:= false;
+      (C as TTntLabel).Alignment:= taRightJustify;
+    end;
     exit;
   end;
 
@@ -388,6 +398,13 @@ begin
     if S='1' then
       (C as TTntTabControl).TabPosition:= tpBottom;
     exit;
+  end;
+
+  if (C is TImage) then
+  begin
+    (C as TImage).Center:= StrToBool(SGetItem(S));
+    (C as TImage).Stretch:= StrToBool(SGetItem(S));
+    exit
   end;
 end;
 
@@ -517,6 +534,12 @@ begin
         (Ctl as TTntTabControl).OnChange:= ADummy.DoOnChange;
       end;
 
+      if SValue='image' then
+      begin
+        Ctl:= TImage.Create(AForm);
+        (Ctl as TImage).Proportional:= true;
+      end;
+
       //set parent
       if Assigned(Ctl) then
       begin
@@ -540,14 +563,43 @@ begin
             (CtlPrev as TTntLabel).FocusControl:= Ctl as TWinControl;
       end;
 
-    //-------en
+    //-------
     if SName='en' then
     begin
       Ctl.Enabled:= StrToBool(SValue);
       Continue;
     end;
 
-    //-------cap
+    //-------
+    if SName='vis' then
+    begin
+      Ctl.Visible:= StrToBool(SValue);
+      Continue;
+    end;
+
+    //-------
+    if SName='x' then
+    begin
+      Ctl.Left:= StrToIntDef(SValue, Ctl.Left);
+      Continue;
+    end;
+    if SName='y' then
+    begin
+      Ctl.Top:= StrToIntDef(SValue, Ctl.Top);
+      Continue;
+    end;
+    if SName='w' then
+    begin
+      Ctl.Width:= StrToIntDef(SValue, Ctl.Width);
+      Continue;
+    end;
+    if SName='h' then
+    begin
+      Ctl.Height:= StrToIntDef(SValue, Ctl.Height);
+      Continue;
+    end;
+
+    //-------
     if SName='cap' then
     begin
       if (Ctl is TLinkLabel) then (Ctl as TLinkLabel).Caption:= UTF8Decode(SValue);
@@ -559,14 +611,14 @@ begin
       Continue;
     end;
 
-    //-------hint
+    //-------
     if SName='hint' then
     begin
       Ctl.Hint:= SValue;
       Continue;
     end;
 
-    //-------act
+    //-------
     if SName='act' then
     begin
       if SValue='1' then
@@ -574,7 +626,7 @@ begin
       Continue;
     end;
 
-    //-------pos
+    //-------
     if SName='pos' then
     begin
       NX1:= StrToIntDef(SGetItem(SValue, ','), -1);
@@ -593,16 +645,26 @@ begin
       Continue;
     end;
 
-    //-------props
+    //-------
     if SName='props' then
     begin
       DoControlSetProps(Ctl, SValue);
       Continue;
     end;
 
-    //-------items
+    //-------
     if SName='items' then
     begin
+      if Ctl is TImage then
+      begin
+        try
+          (Ctl as TImage).Picture.LoadFromFile(SValue);
+          (Ctl as TImage).Transparent:= true;
+        except
+        end;
+        Continue;
+      end;
+
       repeat
         SListItem:= SGetItem(SValue, #9);
         if SListItem='' then break;
@@ -617,7 +679,7 @@ begin
       Continue;
     end;
 
-    //-------val
+    //-------
     if SName='val' then
     begin
       if Ctl is TTntCheckBox then (Ctl as TTntCheckBox).Checked:= StrToBool(SValue);

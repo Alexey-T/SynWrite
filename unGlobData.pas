@@ -15,8 +15,8 @@ uses
   ecSyntAnal;
 
 const
-  cSynVersion = '6.38.2725';
-  cSynApiVersion = '1.0.165';
+  cSynVersion = '6.38.2730';
+  cSynApiVersion = '1.0.166';
 
 var
   SynModuleFilename: string;

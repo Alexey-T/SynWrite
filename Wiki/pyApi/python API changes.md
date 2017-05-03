@@ -1,6 +1,13 @@
 Changes in Python API
 =====================
 
+may 2017
+
+* release 1.0.166
+* add: dlg_custom: properties x, y, w, h, vis
+* add: dlg_custom: "label" has "props=bool_right_align"
+* add: dlg_custom: added type "image" (jpg/png), with "props=bool_center,bool_stretch"
+
 mar 2017
 
 * release 1.0.165

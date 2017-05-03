@@ -4,6 +4,9 @@ Legend:
  * changed
 
 
+6.38.2730
++ API (for FindInFiles plug)
+
 6.38.2725
 + menuitem "Options - Integrate with Explorer" to show info about plugin
 + autocomplete list closes by tab-key
