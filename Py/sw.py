@@ -309,7 +309,7 @@ PROP_COLOR_SYNCEDIT_BG           = 'syncedit_bg'
 def ed_handles():
     r0, r1 = sw_api.ed_handles()
     return range(r0, r1+1)
-    
+
 def ed_group(n):
     h = sw_api.ed_group(n)
     if h:
@@ -352,16 +352,42 @@ def dlg_file(is_open, filename, folder, filters):
 def dlg_folder(caption, folder):
     return sw_api.dlg_folder(caption, folder)
 dlg_dir = dlg_folder
-    
+
 def dlg_snippet(name, alias, lexers, text):
     return sw_api.dlg_snippet(name, alias, lexers, text)
 def dlg_color(color):
     return sw_api.dlg_color(color)
 def dlg_hotkey(title=""):
-    return sw_api.dlg_hotkey(title)    
+    return sw_api.dlg_hotkey(title)
 
-def dlg_custom(caption, size_x, size_y, text, focused=-1):
-    return sw_api.dlg_custom(caption, size_x, size_y, text, focused)
+def _dlg_custom_dict(res, count):
+    """Parse dlg_custom result to dict"""
+    clicked, vals = res
+    vals = vals.splitlines()
+    res = {}
+    #res[i]
+    for i in range(count):
+        res[i] = vals[i]
+    #res['clicked']
+    res['clicked'] = clicked
+    #res['focused']
+    for i in range(count, len(vals)):
+        s = vals[i].split('=', 1)
+        s_key = s[0]
+        s_val = s[1]
+        if s_val.isdigit():
+            s_val = int(s_val)
+        res[s_key] = s_val
+    return res
+
+def dlg_custom(caption, size_x, size_y, text, focused=-1, get_dict=False):
+    res = sw_api.dlg_custom(caption, size_x, size_y, text, focused)
+    if res is None:
+        return
+    if not get_dict:
+        return res
+    else:
+        return _dlg_custom_dict(res, count=len(text.splitlines()) )
 
 def app_version():
     return sw_api.app_version()
@@ -540,7 +566,7 @@ class Editor:
     def find(self, action, opt, tokens, sfind, sreplace):
         return sw_api.ed_find(self.h, action, opt, tokens, sfind, sreplace)
     def save(self, filename=''):
-        return sw_api.ed_save(self.h, filename)        
+        return sw_api.ed_save(self.h, filename)
 
 #----------------------------------------
 
