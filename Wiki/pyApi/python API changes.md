@@ -3,10 +3,12 @@ Changes in Python API
 
 may 2017
 
+* release 1.0.167
+* add: dlg_custom: param "get_dict" to get result as dict
 * release 1.0.166
 * add: dlg_custom: properties x, y, w, h, vis
 * add: dlg_custom: properties color, font_name, font_size, font_color
-* add: dlg_custom: added type "image" (jpg/png)
+* add: dlg_custom: added type "image"
 * add: dlg_custom: added type "colorpanel"
 * add: dlg_custom: "label" has "props=bool_right_align"
 
