@@ -4,8 +4,9 @@ Legend:
  * changed
 
 
-6.38.2740
-+ API (for FindInFiles plug)
+6.39.2750
++ updated SynFTP: several changes from NppFTP ported, updated libs (thanks tbeu)
++ API
 
 6.38.2725
 + menuitem "Options - Integrate with Explorer" to show info about plugin
