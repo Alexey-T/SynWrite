@@ -3,7 +3,7 @@ object fmMacroEdit: TfmMacroEdit
   Top = 192
   BorderStyle = bsDialog
   Caption = 'Edit macros'
-  ClientHeight = 538
+  ClientHeight = 466
   ClientWidth = 474
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -85,11 +85,11 @@ object fmMacroEdit: TfmMacroEdit
   end
   object boxCmd: TTntGroupBox
     Left = 8
-    Top = 328
+    Top = 256
     Width = 457
     Height = 173
     Caption = 'Commands'
-    TabOrder = 3
+    TabOrder = 2
     object btnCmdChange: TTntButton
       Left = 360
       Top = 20
@@ -157,66 +157,31 @@ object fmMacroEdit: TfmMacroEdit
   end
   object btnOk: TTntButton
     Left = 288
-    Top = 508
+    Top = 436
     Width = 87
     Height = 23
     Caption = 'OK'
     Default = True
-    TabOrder = 4
+    TabOrder = 3
     OnClick = btnOkClick
   end
   object btnCancel: TTntButton
     Left = 380
-    Top = 508
+    Top = 436
     Width = 87
     Height = 23
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
-    TabOrder = 5
-  end
-  object boxKey: TTntGroupBox
-    Left = 8
-    Top = 196
-    Width = 457
-    Height = 69
-    Caption = 'Hotkey'
-    TabOrder = 1
-    object ecHotkey: TecHotKey
-      Left = 8
-      Top = 24
-      Width = 161
-      Height = 21
-      TabStop = False
-      HotKey = 0
-      TabOrder = 0
-    end
-    object btnKeyClear: TTntButton
-      Left = 360
-      Top = 12
-      Width = 87
-      Height = 23
-      Caption = 'Clear'
-      TabOrder = 1
-      OnClick = btnKeyClearClick
-    end
-    object btnKeyAdd: TTntButton
-      Left = 360
-      Top = 40
-      Width = 87
-      Height = 23
-      Caption = 'Set'
-      TabOrder = 2
-      OnClick = btnKeyAddClick
-    end
+    TabOrder = 4
   end
   object boxPlay: TTntGroupBox
     Left = 8
-    Top = 268
+    Top = 196
     Width = 457
     Height = 57
     Caption = 'Play selected macro'
-    TabOrder = 2
+    TabOrder = 1
     object btnPlay: TTntButton
       Left = 360
       Top = 12
@@ -260,7 +225,7 @@ object fmMacroEdit: TfmMacroEdit
   end
   object ActionList1: TActionList
     Left = 248
-    Top = 428
+    Top = 356
     object MacrosPlay: TAction
       Category = 'Macros'
       OnExecute = MacrosPlayExecute
@@ -303,16 +268,16 @@ object fmMacroEdit: TfmMacroEdit
   end
   object Recorder: TecMacroRecorder
     Left = 224
-    Top = 428
+    Top = 356
   end
   object DKLanguageController1: TDKLanguageController
     IgnoreList.Strings = (
       '*.Category')
     Left = 276
-    Top = 428
+    Top = 356
     LangData = {
       0B00666D4D6163726F45646974010100000001000000070043617074696F6E01
-      240000000700626F784C697374010100000002000000070043617074696F6E00
+      200000000700626F784C697374010100000002000000070043617074696F6E00
       0A004D6163726F734C69737400000B0062746E4D6163726F52656E0101000000
       46000000070043617074696F6E000B0062746E4D6163726F44656C0101000000
       47000000070043617074696F6E000B0062746E4D6163726F4164640101000000
@@ -330,26 +295,23 @@ object fmMacroEdit: TfmMacroEdit
       00000C004D6163726F7344656C65746500000D00436F6D6D616E644368616E67
       6500000D00436F6D6D616E64496E7365727400000D00436F6D6D616E6444656C
       65746500000C00436F6D6D616E64436C656172000009004D6163726F73416464
-      000008005265636F7264657200000600626F784B657901010000003100000007
-      0043617074696F6E0008006563486F746B657900000B0062746E4B6579436C65
-      6172010100000032000000070043617074696F6E00090062746E4B6579416464
-      010100000033000000070043617074696F6E000700626F78506C617901010000
-      003D000000070043617074696F6E00070062746E506C617901010000004D0000
-      00070043617074696F6E000700656454696D657300000A0062506C617954696D
-      6573010100000040000000070043617074696F6E00080062506C6179456F6601
-      0100000041000000070043617074696F6E000E0062746E4D6163726F4578706F
-      727401010000004E000000070043617074696F6E00070053617665446C670000
-      07004F70656E446C6700000E0062746E4D6163726F496D706F72740101000000
-      4F000000070043617074696F6E00}
+      000008005265636F7264657200000700626F78506C617901010000003D000000
+      070043617074696F6E00070062746E506C617901010000004D00000007004361
+      7074696F6E000700656454696D657300000A0062506C617954696D6573010100
+      000040000000070043617074696F6E00080062506C6179456F66010100000041
+      000000070043617074696F6E000E0062746E4D6163726F4578706F7274010100
+      00004E000000070043617074696F6E00070053617665446C67000007004F7065
+      6E446C6700000E0062746E4D6163726F496D706F727401010000004F00000007
+      0043617074696F6E00}
   end
   object SaveDlg: TSaveDialog
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Left = 264
-    Top = 464
+    Top = 392
   end
   object OpenDlg: TOpenDialog
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Left = 240
-    Top = 464
+    Top = 392
   end
 end

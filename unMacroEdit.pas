@@ -40,10 +40,6 @@ type
     btnMacroAdd: TTntButton;
     MacrosAdd: TAction;
     DKLanguageController1: TDKLanguageController;
-    boxKey: TTntGroupBox;
-    ecHotkey: TecHotKey;
-    btnKeyClear: TTntButton;
-    btnKeyAdd: TTntButton;
     boxPlay: TTntGroupBox;
     btnPlay: TTntButton;
     edTimes: TSpinEdit;
@@ -76,8 +72,6 @@ type
       State: TDragState; var Accept: Boolean);
     procedure MacrosListDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure MacrosAddExecute(Sender: TObject);
-    procedure btnKeyClearClick(Sender: TObject);
-    procedure btnKeyAddClick(Sender: TObject);
     procedure TntFormDestroy(Sender: TObject);
     procedure edTimesKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -91,7 +85,6 @@ type
     FBusyKeys: TStringList;
     procedure SetMacroRecorder(const Value: TecMacroRecorder);
     function NameStr(n: integer): Widestring;
-    procedure DoAddKey(AKey: TShortcut);
   protected
     procedure FillMacrosList;
     procedure FillCommands;
@@ -247,16 +240,7 @@ end;
 procedure TfmMacroEdit.FillCommands;
 var
   i: integer;
-  en: boolean;
 begin
-  i:= MacrosList.ItemIndex;
-  en:= (i>=0) and (i<High(TMacroKeysArray));
-
-  ecHotkey.HotKey:= 0;
-  ecHotkey.Enabled:= en;
-  btnKeyClear.Enabled:= en;
-  btnKeyAdd.Enabled:= en;
-
   CmdList.Items.BeginUpdate;
   try
     CmdList.Items.Clear;
@@ -466,37 +450,6 @@ begin
   FillMacrosList;
   MacrosList.ItemIndex:= MacrosList.Items.Count - 1;
   MacrosListClick(Self);
-end;
-
-procedure TfmMacroEdit.btnKeyClearClick(Sender: TObject);
-begin
-  DoAddKey(0);
-end;
-
-procedure TfmMacroEdit.btnKeyAddClick(Sender: TObject);
-begin
-  DoAddKey(ecHotkey.HotKey);
-end;
-
-procedure TfmMacroEdit.DoAddKey(AKey: TShortcut);
-var
-  i: integer;
-begin
-  i:= MacrosList.ItemIndex;
-  if i < 0 then Exit;
-
-  while FKeys.Count-1 < i do
-    FKeys.Add(nil);
-
-  if FKeys[i]=nil then
-    FKeys[i]:= TKeyStroke.Create(nil);
-
-  if AKey<>0 then
-    TKeyStroke(FKeys[i]).KeyDefs.Add.ShortCut:= AKey
-  else
-    TKeyStroke(FKeys[i]).KeyDefs.Clear;
-
-  MacrosList.Items[i]:= NameStr(i);
 end;
 
 procedure TfmMacroEdit.TntFormDestroy(Sender: TObject);
