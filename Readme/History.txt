@@ -4,6 +4,9 @@ Legend:
  * changed
 
 
+6.40.2760
+* returned Python 3.4 files, it works on Windows XP too [you must delete Python 3.5 files from SynWrite dir]
+
 6.39.2750
 + updated SynFTP: several changes from NppFTP ported, updated libs (thanks tbeu)
 + API

@@ -156,6 +156,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * R
 * R Markdown
 * Racket
+* Rainmeter
 * Ragel
 * Razor
 * reStructuredText
@@ -177,6 +178,7 @@ Most of them are not installed by default, they are located in Addons Manager "I
 * Stylus
 * Swift
 * T-SQL
+* TakeCommand
 * Tcl/Tk
 * Textile
 * TOML
