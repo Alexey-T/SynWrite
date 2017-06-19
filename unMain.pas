@@ -25802,7 +25802,9 @@ end;
 procedure TfmMain.TbxItemOExplorerClick(Sender: TObject);
 begin
   MsgInfo('Please install plugin "Explorer Integration" via Add-ons Manager, '+
-    'it gives dialog to integrate SynWrite into Explorer context menu and double-click',
+    'it gives dialog to integrate SynWrite into Explorer context menu and double-click.'#13+
+    'After installed, run this plugin from Plugins menu.'
+    ,
     Handle);
 end;
 

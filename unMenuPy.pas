@@ -94,7 +94,7 @@ var
 begin
   case FListStyle of
     cSynPyMenuSingle: List.ItemHeight:= FontHeightToItemHeight(Font);
-    cSynPyMenuDouble: List.ItemHeight:= FontHeightToItemHeight(Font)*2;
+    cSynPyMenuDouble: List.ItemHeight:= FontHeightToItemHeight(Font)*2+2;
   end;
 
   DoFilter;
@@ -222,7 +222,6 @@ begin
       cSynPyMenuDouble:
         begin
           //desc
-          Canvas.Font.Size:= Self.Font.Size-2;
           Canvas.Font.Color:= IfThen(odSelected in State, clYellow, clNavy);
           ecTextOut(Canvas, rect.left, rect.top + List.ItemHeight div 2, SDesc);
 
