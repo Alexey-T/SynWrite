@@ -1,5 +1,8 @@
-[ref]
-0=HTML
+[comments]
+str1=/*
+str2=*/
+styles_cmt=Comment,Comment doc
+styles_str=String,String heredoc
 
 [map]
 Comment=Comment
@@ -13,15 +16,7 @@ String exec=String3
 Var=IdVar
 Id=Id
 Id keyword=IdKeyword
+Id standard types=Id2
 Id standard const=Id4
-Id standard class=Id2
-PHP_start=Id1
-PHP_end=Id1
-PHP_bg=SectionBG1
-Bracket=BracketBG
-
-[comments]
-str1=/*
-str2=*/
-styles_cmt=Comment,Comment doc
-styles_str=String,String heredoc
+Id standard class=Id1
+Bracket BG=BracketBG

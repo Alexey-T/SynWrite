@@ -4,7 +4,8 @@ Legend:
  * changed
 
 
-6.39.2760
+6.40.2770
++ updated many lexers from CudaText: C++, CSS, HTML, JavaScript, JSON, PHP, Pascal, XML (most big changes in HTML/PHP)
 * returned Python 3.4 files, it works on Windows XP too [you must delete Python 3.5 files from SynWrite dir]
 - removed old (non working) controls for hotkey from Macros dialog
 

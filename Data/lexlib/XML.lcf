@@ -1,4 +1,4 @@
-object SyntAnal22: TLibSyntAnalyzer
+object SyntAnal44: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Comment'
@@ -133,25 +133,25 @@ object SyntAnal22: TLibSyntAnalyzer
     item
       DisplayName = 'Spec char'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlue
+      Font.Color = clMaroon
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
+    end
+    item
+      DisplayName = 'Comment doc'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 12615808
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = [fsItalic]
     end>
   TokenRules = <
     item
-      DisplayName = 'XML header'
-      StyleName = 'Comment'
+      DisplayName = 'Comment doc'
+      StyleName = 'Comment doc'
       TokenType = 12
-      Expression = '(?s)<\?.*?(\?>|\Z)'#13#10
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
-      DisplayName = 'Comment ?xml'
-      StyleName = 'Comment'
-      TokenType = 1
-      Expression = '<\?xml\s.*?\?>'
+      Expression = '(?s)<\?.*?(\?>|\Z)'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -167,24 +167,24 @@ object SyntAnal22: TLibSyntAnalyzer
       DisplayName = 'CDATA start'
       StyleName = 'CDATA bound'
       TokenType = 11
-      Expression = '<!\[CDATA\['#13#10'#(?s)<!\[CDATA\[.*?(\]\]>|\Z)'#13#10
+      Expression = '<!\[CDATA\['
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = 'CDATA Text'
+      DisplayName = 'CDATA text'
       StyleName = 'CDATA text'
       BlockName = 'CDATA begin'
-      Expression = '(?s)[^\]]*'#13#10
+      Expression = '(?s)[^\]]*'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
       DisplayName = 'CDATA end'
-      StyleName = 'Tag bound'
+      StyleName = 'CDATA bound'
       BlockName = 'CDATA begin'
       TokenType = 14
-      Expression = '\]\]>'#13#10
+      Expression = '\]\]>'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -200,7 +200,7 @@ object SyntAnal22: TLibSyntAnalyzer
       DisplayName = '>'
       StyleName = 'Tag bound'
       TokenType = 10
-      Expression = '[/\?]?>'#13#10
+      Expression = '[/\?]?>'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -209,7 +209,7 @@ object SyntAnal22: TLibSyntAnalyzer
       StyleName = 'DTD element type'
       BlockName = 'DTD element start'
       TokenType = 2
-      Expression = '(?s)\((\(.*?\)|.)*?\)'#13#10
+      Expression = '(?s)\((\(.*?\)|.)*?\)'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -217,12 +217,12 @@ object SyntAnal22: TLibSyntAnalyzer
       DisplayName = 'DTD bounds: [ ] '
       StyleName = 'DTD bound'
       BlockName = 'DOCTYPE begin'
-      Expression = '[\[\]]'#13#10
+      Expression = '[\[\]]'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = 'Tag param'
+      DisplayName = 'String'
       StyleName = 'Tag val'
       BlockName = 'Tag begin'
       TokenType = 4
@@ -234,7 +234,7 @@ object SyntAnal22: TLibSyntAnalyzer
       DisplayName = '='
       StyleName = 'Tag bound'
       TokenType = 3
-      Expression = '='#13#10
+      Expression = '='
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -243,7 +243,7 @@ object SyntAnal22: TLibSyntAnalyzer
       StyleName = 'Tag param'
       BlockName = 'Tag begin'
       TokenType = 2
-      Expression = '[^>=\?\s/]*'
+      Expression = '[^>=\?\s/\[\]]+'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -256,9 +256,8 @@ object SyntAnal22: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
-      DisplayName = '&char'
+      DisplayName = 'Html entity'
       StyleName = 'Spec char'
-      TokenType = 4
       Expression = '&\w+;'
       ColumnFrom = 0
       ColumnTo = 0
@@ -499,7 +498,8 @@ object SyntAnal22: TLibSyntAnalyzer
   CodeTemplates = <>
   SubAnalyzers = <>
   SampleText.Strings = (
-    '<?xml version="1.0" encoding="ISO-8859-1" ?>'
+    '<?xml version="1.0" encoding="utf8" ?>'
+    '<!-- comment -->'
     ''
     '<!DOCTYPE web-app ['
     '  <!ELEMENT web-app (icon?, display-name?, ejb-local-ref*)>'
@@ -516,7 +516,6 @@ object SyntAnal22: TLibSyntAnalyzer
     '    <display-name abc="123" def="true"></display-name>'
     '    <description></description>'
     '    <filter-mapping>'
-    '        <filter-name></filter-name>'
     '    </filter-mapping>'
     '</web-app>')
   TokenTypeNames.Strings = (
@@ -532,7 +531,7 @@ object SyntAnal22: TLibSyntAnalyzer
     'Tag Open'
     'Tag Close'
     'CDATA'
-    'XML header'
+    'Comment doc'
     'Attrib. value'
     'CDATA end')
   Extentions = 
@@ -540,6 +539,9 @@ object SyntAnal22: TLibSyntAnalyzer
     'df xaml vcproj dproj plist storyboard msc csproj manifest lpi lp' +
     'k sublime-snippet tmLanguage jsproj appxmanifest'
   LexerName = 'XML'
+  Notes.Strings = (
+    'Based on original XML lexer from EControl'
+    'Changed by Alexey (CudaText)')
   Charset = DEFAULT_CHARSET
   Left = 140
   Top = 160
