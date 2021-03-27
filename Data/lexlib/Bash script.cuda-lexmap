@@ -1,16 +1,26 @@
-[map]
-Comment=Comment
-Key words=IdKeyword
-Params=Id
-Echo=String2
-Shebang=Comment2
-QuotMarks=String
-Symbol=Symbol
-Variable=IdVar
-Int=Number
-$(...)=SectionBG2
 [comments]
-styles_cmt=Comment
-styles_str=
+styles_cmt=Comment,Comment shebang
+styles_str=String
 str1=
 str2=
+
+[map]
+Comment=Comment
+Comment shebang=Comment2
+Keywords=IdKeyword
+Command=Id
+String=String
+Symbol=Symbol
+Var=IdVar
+Number=Number
+Var block BG=SectionBG1
+Ticks block BG=SectionBG2
+Command std=Id1
+Command param=Id2
+Func name=Label
+Symbol2=Symbol2
+Var %=Id3
+Math BG=SectionBG3
+Heredoc BG=SectionBG4
+Heredoc begin=TagInclude
+String regexp=String2

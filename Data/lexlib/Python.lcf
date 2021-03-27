@@ -1,4 +1,4 @@
-object SyntAnal28: TLibSyntAnalyzer
+object SyntAnal18: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Number'
@@ -43,10 +43,10 @@ object SyntAnal28: TLibSyntAnalyzer
     item
       DisplayName = 'Id keyword'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clPurple
+      Font.Color = clNavy
       Font.Height = -13
       Font.Name = 'Courier New'
-      Font.Style = [fsBold]
+      Font.Style = []
     end
     item
       DisplayName = 'Id keyword def'
@@ -59,76 +59,91 @@ object SyntAnal28: TLibSyntAnalyzer
     item
       DisplayName = 'Id function'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlue
+      Font.Color = clGreen
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'Id func name'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clMaroon
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'Id types'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clPurple
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'Id exception'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clOlive
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'Decorator'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 51200
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
     end>
   TokenRules = <
     item
-      DisplayName = '1st Tree item'
+      DisplayName = '^Tree item'
       StyleName = 'Id keyword def'
       TokenType = 11
-      Expression = '^[\x20\x09]*(def|class|async [\x20\x09]+ def)\b'
+      Expression = '(def|class|async[\x20\x09]+def)\b'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = '1st Keyword'
+      DisplayName = '^Keyword'
       StyleName = 'Id keyword'
       TokenType = 10
       Expression = 
-        '^[\x20\x09]*(if|else|elif|for|while|try|except|finally|switch|ca' +
-        'se|with)\b'
+        '(?<=^[\x20\x09]*) (if|else|elif|for|async\x20+for|while|try|exce' +
+        'pt|finally|switch|case|with)\b'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = '1st Number'
-      StyleName = 'Number'
-      TokenType = 9
-      Expression = '^[\x20\x09]* \d(_?\d)* (\.(_?\d)*)?'
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
-      DisplayName = '1st String'
+      DisplayName = 'String '#39#39#39
       StyleName = 'String'
       TokenType = 4
-      Expression = '(?s) ^[\x20\x09]* [rbuf]? ("""|'#39#39#39') .*? (\1|\Z)'
+      Expression = '(?s)[rbuf]* ("""|'#39#39#39') .*? (\1|\Z)'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = '1st Id'
-      StyleName = 'Id'
-      TokenType = 9
-      Expression = '^[\x20\x09]*\w+'
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
-      DisplayName = '1st Attrib'
-      StyleName = 'Symbol'
-      TokenType = 9
-      Expression = '^[\x20\x09]*@'
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
-      DisplayName = '1st Comment'
-      Enabled = False
-      StyleName = 'Comment'
-      TokenType = 13
-      Expression = '^[\x20\x09]* \#.*'
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
-      DisplayName = 'String2'
+      DisplayName = 'String raw \ at eol'
       StyleName = 'String'
       TokenType = 4
-      Expression = '(?s) [rbuf]? ("""|'#39#39#39') .*? (\1|\Z)'
+      Expression = '(r|rf|rb|br|ur) ("|'#39') (\\\z|\\.|.)*? \2'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'String \ at eol'
+      StyleName = 'String'
+      TokenType = 4
+      Expression = '(b|u|f)? ("|'#39') (\\\z|\\.|.)*? \2'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'String raw'
+      StyleName = 'String'
+      TokenType = 4
+      Expression = '(r|rf|fr|rb|br|ur) ("|'#39') (\\.|.)*? (\2|$)'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -136,47 +151,81 @@ object SyntAnal28: TLibSyntAnalyzer
       DisplayName = 'String'
       StyleName = 'String'
       TokenType = 4
-      Expression = '[rbuf]? ("|'#39') (\\.|.)*? (\1|$)'
+      Expression = '(b|u|f)? ("|'#39') (\\.|.)*? (\2|$)'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = 'Id'
+      DisplayName = '^Id='
+      StyleName = 'Id'
+      TokenType = 15
+      Expression = '(?r)(?<!:\x20*)[a-z_]\w*(?=\x20*=)'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Id func name'
+      StyleName = 'Id func name'
+      TokenType = 13
+      Expression = '(?r)(?<=\bclass\x20+)\w+ |'#13#10'(?r)(?<=\bdef\x20+)\w+'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Id after .'
+      StyleName = 'Id'
+      TokenType = 14
+      Expression = '(?r)(?<=\.)[a-z_]\w*'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = '^Id'
       StyleName = 'Id'
       TokenType = 2
-      Expression = '[a-z_]\w*'
+      Expression = '(?r)[a-z_]\w*'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = '^Symbol'
+      StyleName = 'Symbol'
+      TokenType = 8
+      Expression = '[\(\)\[\]\{\}]'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
       DisplayName = 'Int hex'
       StyleName = 'Number'
-      TokenType = 7
-      Expression = '\b 0x(_?[0-9a-f])+'
+      TokenType = 5
+      Expression = '\b0x(_?[0-9a-f])+\b'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
       DisplayName = 'Int octal'
       StyleName = 'Number'
-      TokenType = 7
-      Expression = '\b 0o(_?[0-7])+'
+      TokenType = 5
+      Expression = '\b0o(_?[0-7])+\b'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
       DisplayName = 'Int bin'
       StyleName = 'Number'
-      TokenType = 7
-      Expression = '\b 0b(_?[01])+'
+      TokenType = 5
+      Expression = '\b0b(_?[01])+\b'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = 'Float'
+      DisplayName = 'Int/float'
       StyleName = 'Number'
       TokenType = 5
-      Expression = '\b \d(_?\d)* (\.(_?\d)*)? |'#13#10'\.(_?\d)+'
+      Expression = 
+        '\b \d[_\d]* \.?\d*[_\d]* (e[\-\+]?\d[_\d]*)?j? \b |'#13#10'\B\.\d[_\d]' +
+        '* (e[\-\+]?\d[_\d]*)?j? \b |'#13#10'\b\d[_\d]*\.? ([Lj]\b)?'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -189,18 +238,10 @@ object SyntAnal28: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
-      DisplayName = 'Symbol :'
+      DisplayName = 'Ending :'
       StyleName = 'Symbol'
       TokenType = 12
-      Expression = ':'
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
-      DisplayName = 'Symbol single'
-      StyleName = 'Symbol'
-      TokenType = 3
-      Expression = '[\(\)\[\]\{\}]'
+      Expression = ':\x20*$ | :(?=\x20*\#.*$)'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -208,7 +249,23 @@ object SyntAnal28: TLibSyntAnalyzer
       DisplayName = 'Symbol'
       StyleName = 'Symbol'
       TokenType = 3
-      Expression = '[/\*,\.;=<>\+\-\^@!%\\\|~&]+'
+      Expression = '[/\*,\.;=<>\+\-\^!%\\\|~&]+'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Symbol :'
+      StyleName = 'Symbol'
+      TokenType = 9
+      Expression = ':'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Decorator'
+      StyleName = 'Decorator'
+      TokenType = 16
+      Expression = '(?r)@\w[\w\.]*'
       ColumnFrom = 0
       ColumnTo = 0
     end>
@@ -248,7 +305,6 @@ object SyntAnal28: TLibSyntAnalyzer
             'elif'
             'else'
             'except'
-            'exec'
             'finally'
             'for'
             'from'
@@ -259,7 +315,6 @@ object SyntAnal28: TLibSyntAnalyzer
             'not'
             'or'
             'pass'
-            'print'
             'raise'
             'return'
             'try'
@@ -281,26 +336,27 @@ object SyntAnal28: TLibSyntAnalyzer
             '__future__'
             '__import__'
             'abs'
+            'all'
+            'any'
             'apply'
-            'bool'
+            'ascii'
+            'bin'
             'buffer'
             'callable'
             'chr'
-            'classmethod'
             'cmp'
             'coerce'
-            'complex'
+            'compile'
             'delattr'
-            'dict'
             'dir'
             'divmod'
             'enumerate'
             'eval'
+            'exec'
             'execfile'
-            'False'
             'file'
             'filter'
-            'float'
+            'format'
             'getattr'
             'globals'
             'hasattr'
@@ -309,42 +365,33 @@ object SyntAnal28: TLibSyntAnalyzer
             'hex'
             'id'
             'input'
-            'int'
             'intern'
             'isinstance'
             'issubclass'
             'iter'
             'len'
-            'list'
             'locals'
             'long'
-            'map'
             'max'
             'min'
-            'None'
-            'NotImplemented'
-            'object'
+            'next'
             'oct'
             'open'
             'ord'
             'pow'
-            'property'
+            'print'
             'range'
             'raw_input'
             'reduce'
             'reload'
             'repr'
+            'reversed'
             'round'
             'self'
             'setattr'
             'slice'
-            'staticmethod'
-            'str'
+            'sorted'
             'sum'
-            'super'
-            'True'
-            'tuple'
-            'type'
             'unichr'
             'unicode'
             'vars'
@@ -356,56 +403,137 @@ object SyntAnal28: TLibSyntAnalyzer
       IgnoreAsParent = False
     end
     item
-      DisplayName = 'Block comment'
-      BlockName = 'Block comment'
-      NotParent = True
-      AlwaysEnabled = True
+      DisplayName = 'Type-related'
+      StyleName = 'Id types'
+      BlockType = btTagDetect
       ConditionList = <
         item
-          TokenTypes = 8192
+          TagList.Strings = (
+            'bool'
+            'bytearray'
+            'bytes'
+            'classmethod'
+            'complex'
+            'dict'
+            'Ellipsis'
+            'False'
+            'float'
+            'frozenset'
+            'int'
+            'list'
+            'map'
+            'memoryview'
+            'None'
+            'NotImplemented'
+            'object'
+            'property'
+            'set'
+            'staticmethod'
+            'str'
+            'super'
+            'True'
+            'tuple'
+            'type')
+          TokenTypes = 516
         end>
-      BlockEnd = 'Block comment end'
-      EndOfTextClose = True
-      DisplayInTree = False
-      HighlightPos = cpBound
-      CollapseFmt = '{ ... }'
+      HighlightPos = cpAny
       IgnoreAsParent = False
     end
     item
-      DisplayName = 'Block comment end'
-      BlockName = 'Block comment'
-      StrictParent = True
-      AlwaysEnabled = True
-      BlockType = btRangeEnd
+      DisplayName = 'Exceptions'
+      StyleName = 'Id exception'
+      BlockType = btTagDetect
       ConditionList = <
         item
-          CondType = tcNotEqual
-          TokenTypes = 8192
+          TagList.Strings = (
+            'ArithmeticError'
+            'AssertionError'
+            'AttributeError'
+            'BaseException'
+            'BlockingIOError'
+            'BrokenPipeError'
+            'BufferError'
+            'BytesWarning'
+            'ChildProcessError'
+            'ConnectionAbortedError'
+            'ConnectionError'
+            'ConnectionRefusedError'
+            'ConnectionResetError'
+            'DeprecationWarning'
+            'EOFError'
+            'Exception'
+            'FileExistsError'
+            'FileNotFoundError'
+            'FloatingPointError'
+            'FutureWarning'
+            'GeneratorExit'
+            'ImportError'
+            'ImportWarning'
+            'IndentationError'
+            'IndexError'
+            'InterruptedError'
+            'IsADirectoryError'
+            'KeyboardInterrupt'
+            'KeyError'
+            'LookupError'
+            'MemoryError'
+            'ModuleNotFoundError'
+            'NameError'
+            'NotADirectoryError'
+            'NotImplementedError'
+            'OSError'
+            'OverflowError'
+            'PendingDeprecationWarning'
+            'PermissionError'
+            'ProcessLookupError'
+            'RecursionError'
+            'ReferenceError'
+            'ResourceWarning'
+            'RuntimeError'
+            'RuntimeWarning'
+            'StopAsyncIteration'
+            'StopIteration'
+            'SyntaxError'
+            'SyntaxWarning'
+            'SystemError'
+            'SystemExit'
+            'TabError'
+            'TimeoutError'
+            'TypeError'
+            'UnboundLocalError'
+            'UnicodeDecodeError'
+            'UnicodeEncodeError'
+            'UnicodeError'
+            'UnicodeTranslateError'
+            'UnicodeWarning'
+            'UserWarning'
+            'ValueError'
+            'Warning'
+            'ZeroDivisionError')
+          TokenTypes = 516
         end>
-      BlockOffset = 1
-      HighlightPos = cpBound
+      HighlightPos = cpAny
       IgnoreAsParent = False
     end
     item
       DisplayName = 'block for tree'
       ConditionList = <
         item
-          TagList.Strings = (
-            ':')
           TokenTypes = 4096
         end
         item
           CondType = tcSkip
-          TokenTypes = 510
+          TokenTypes = 59390
         end
         item
           TokenTypes = 2048
         end>
       EndOfTextClose = True
-      NameFmt = '%sz0'
+      NameFmt = '%s0 %s-1'
       RefToCondEnd = True
       HighlightPos = cpAny
       CancelNextRules = True
+      DrawStaple = True
       GroupIndex = 20
       CollapseFmt = '%s0 %s-1...'
       IgnoreAsParent = False
@@ -414,13 +542,11 @@ object SyntAnal28: TLibSyntAnalyzer
       DisplayName = 'block for tree (ex)'
       ConditionList = <
         item
-          TagList.Strings = (
-            ':')
           TokenTypes = 4096
         end
         item
           CondType = tcSkip
-          TokenTypes = 1022
+          TokenTypes = 59390
         end
         item
           TokenTypes = 2048
@@ -436,25 +562,23 @@ object SyntAnal28: TLibSyntAnalyzer
       IgnoreAsParent = False
     end
     item
-      DisplayName = 'block begin'
+      DisplayName = 'block not for tree'
       ConditionList = <
         item
-          TagList.Strings = (
-            ':')
           TokenTypes = 4096
         end
         item
           CondType = tcSkip
-          TokenTypes = 510
+          TokenTypes = 59390
         end
         item
           TokenTypes = 1024
         end>
       EndOfTextClose = True
       DisplayInTree = False
-      NameFmt = '"%s0"'
       RefToCondEnd = True
       HighlightPos = cpAny
+      CancelNextRules = True
       DrawStaple = True
       GroupIndex = 20
       CollapseFmt = '%sz0 ...'
@@ -479,32 +603,33 @@ object SyntAnal28: TLibSyntAnalyzer
   CodeTemplates = <>
   SubAnalyzers = <>
   SampleText.Strings = (
-    '#Comment'
-    'test = u"""Doc'
-    'string""" +'
-    'r"""test'
-    '""" + 11_22_3.44_5 + 0x_FF_aa_b_0 + 0b10_1_0'
-    '+ 3. + .3 + 3.0'
+    '#comment'
+    'test = u"""doc'
+    'string""" + r"""doc'
+    'string""" + "long \'
+    'string"; #end'
+    '11_22_3.44_5 + 0x_FF_aa_b_0 + 0b10_1_0'
+    '+ 3. + .3 + 3.0 + 1.2e-3'
     ''
     'import sys, sys2, sys3'
     'from csv import aa, bb'
     'str = r'#39'\test\test'#39' + u'#39'test'#39' + r"\test"'
     'func = lambda x: x'
     ''
-    'def func(num):'
+    'def func(num):      #cmt  '
     '    for n in range(len(sys.argv)):'
-    '      print "Arg %s" % sys.argv[n]'
+    '      print("Arg %s" % s)'
     '      if n>2:'
     '        return True'
     '    return False'
     '    '
     'async def get_json(client, url):  '
     '    async with client.get(url) as response:'
-    '        assert response.status == 100'
+    '        assert test = {'#39'aa'#39': 2, '#39'bb'#39': None}'
     '        return await response.read()'
     ''
     'class MyName(object):      '
-    '  @staticmethod'
+    '  @Decor.name('#39'test'#39')'
     '  def func1(num):'
     '    pass'
     '   '
@@ -512,25 +637,26 @@ object SyntAnal28: TLibSyntAnalyzer
   TokenTypeNames.Strings = (
     'Unknown'
     'Comment'
-    'Identifier'
+    '^Id'
     'Symbol'
-    'String'
-    'Integer const'
-    'Float const'
-    'Hex const'
-    'Char const'
-    '1st word'
-    '1st keyword'
-    '1st word tree'
-    'Symbol :'
-    '1st comment')
-  Extentions = 'py pyw rpy cpy sconstruct'
+    '^String'
+    'Number'
+    'Number2'
+    '^Comment'
+    '^Symbol'
+    'Usual :'
+    '^Id keyword'
+    '^Id tree'
+    'Ending :'
+    'Id func name'
+    'Id after .'
+    '^Id='
+    '^@Id')
+  Extentions = 'py pyw rpy cpy sconstruct pyi'
   LexerName = 'Python'
-  SkipSpaces = False
   Notes.Strings = (
-    'New Python lexer, by Alex (SynWrite)'
-    'For indent-based folding lexer was tweaked:'
-    'see SynWrite lexer documentation about these tweaks.')
+    'Python lexer by Alexey (CudaText)')
+  RestartFromLineStart = True
   LineComment = '#'
   Charset = DEFAULT_CHARSET
   Left = 144

@@ -1,4 +1,4 @@
-object SyntAnal19: TLibSyntAnalyzer
+object SyntAnal13: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Comment'
@@ -43,23 +43,23 @@ object SyntAnal19: TLibSyntAnalyzer
     item
       DisplayName = 'Id reserved'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clNavy
+      Font.Color = clBlack
       Font.Height = -13
       Font.Name = 'Courier New'
-      Font.Style = []
-    end
-    item
-      DisplayName = 'Id func'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clGreen
-      Font.Height = -13
-      Font.Name = 'Courier New'
-      Font.Style = []
+      Font.Style = [fsBold]
     end
     item
       DisplayName = 'Id standard'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clPurple
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'Id operator'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clGreen
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
@@ -71,6 +71,24 @@ object SyntAnal19: TLibSyntAnalyzer
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
+    end
+    item
+      DisplayName = 'Label'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clFuchsia
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'Hilite BG'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+      BgColor = clMoneyGreen
+      FormatType = ftBackGround
     end>
   TokenRules = <
     item
@@ -117,23 +135,15 @@ object SyntAnal19: TLibSyntAnalyzer
       DisplayName = 'Str'
       StyleName = 'String'
       TokenType = 4
-      Expression = '("|'#39')(\\"|\\'#39'|.)*?(\1|$)'
+      Expression = '("|'#39')(\\\\|\\"|\\'#39'|.)*?(\1|$)'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = '_IdFunc1'
-      StyleName = 'Id func'
-      TokenType = 10
-      Expression = '[\w\.:]+(?=\s*=\s*function\s*\()'
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
-      DisplayName = '_IdFunc2'
-      StyleName = 'Id func'
-      TokenType = 10
-      Expression = '(?<=function\x20+)[\w\.:]+'
+      DisplayName = 'Label'
+      StyleName = 'Label'
+      TokenType = 6
+      Expression = '(?<=goto\x20+)\w+ | ::\w+::'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -146,10 +156,26 @@ object SyntAnal19: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
+      DisplayName = 'Symbol ()'
+      StyleName = 'Symbol'
+      TokenType = 7
+      Expression = '[\(\)]'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
       DisplayName = 'Symbol single'
       StyleName = 'Symbol'
       TokenType = 3
-      Expression = '[\(\)\[\]\{\}]'
+      Expression = '[\[\]\{\}]'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'NumFloat'
+      StyleName = 'Number'
+      TokenType = 5
+      Expression = '\d+\. | (\.\d+|\d+\.?\d*) (e[\+\-]?\d+)?\b'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -164,24 +190,16 @@ object SyntAnal19: TLibSyntAnalyzer
     item
       DisplayName = 'NumHex'
       StyleName = 'Number'
-      TokenType = 7
-      Expression = '0x[A-Fa-f0-9]+'
+      TokenType = 5
+      Expression = '0x\h+\.\h+\b | 0x\h+\b\.?'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = 'NumFloat'
-      StyleName = 'Number'
-      TokenType = 6
-      Expression = '\d+(\.\d+)? e[\+\-]?\d+ |'#13#10'\d+\.\d+ '
-      ColumnFrom = 0
-      ColumnTo = 0
-    end
-    item
-      DisplayName = 'Num'
+      DisplayName = 'NumInt'
       StyleName = 'Number'
       TokenType = 5
-      Expression = '\d+'
+      Expression = '\d+\b'
       ColumnFrom = 0
       ColumnTo = 0
     end>
@@ -276,6 +294,7 @@ object SyntAnal19: TLibSyntAnalyzer
             'io'
             'ipairs'
             'ldexp'
+            'load'
             'loadfile'
             'loadlib'
             'loadstring'
@@ -289,6 +308,7 @@ object SyntAnal19: TLibSyntAnalyzer
             'next'
             'openfile'
             'os'
+            'package'
             'pairs'
             'pcall'
             'print'
@@ -296,7 +316,9 @@ object SyntAnal19: TLibSyntAnalyzer
             'random'
             'randomseed'
             'rawegal'
+            'rawequal'
             'rawget'
+            'rawlen'
             'rawset'
             'read'
             'readfrom'
@@ -304,6 +326,7 @@ object SyntAnal19: TLibSyntAnalyzer
             'rename'
             'require'
             'seek'
+            'select'
             'setfenv'
             'setlocale'
             'setmetatable'
@@ -330,6 +353,7 @@ object SyntAnal19: TLibSyntAnalyzer
             'tremove'
             'type'
             'unpack'
+            'utf8'
             'write'
             'writeto'
             'xpcall')
@@ -339,48 +363,181 @@ object SyntAnal19: TLibSyntAnalyzer
       IgnoreAsParent = False
     end
     item
-      DisplayName = 'Block comment'
-      BlockName = 'Block comment'
-      NotParent = True
-      AlwaysEnabled = True
+      DisplayName = 'Id operator'
+      StyleName = 'Id operator'
+      BlockType = btTagDetect
       ConditionList = <
         item
-          TokenTypes = 2
+          TagList.Strings = (
+            '__add'
+            '__band'
+            '__bnot'
+            '__bor'
+            '__bxor'
+            '__call'
+            '__concat'
+            '__div'
+            '__eq'
+            '__gc'
+            '__idiv'
+            '__index'
+            '__ipairs'
+            '__le'
+            '__len'
+            '__lt'
+            '__metatable'
+            '__mod'
+            '__mode'
+            '__mul'
+            '__newindex'
+            '__pairs'
+            '__pow'
+            '__shl'
+            '__shr'
+            '__sub'
+            '__tostring'
+            '__unm')
+          TokenTypes = 4
         end>
-      BlockEnd = 'Block comment end'
-      EndOfTextClose = True
-      DisplayInTree = False
-      HighlightPos = cpBound
-      CollapseFmt = '/* ... */'
-      IgnoreAsParent = False
-    end
-    item
-      DisplayName = 'Block comment end'
-      BlockName = 'Block comment'
-      StrictParent = True
-      AlwaysEnabled = True
-      BlockType = btRangeEnd
-      ConditionList = <
-        item
-          CondType = tcNotEqual
-          TokenTypes = 2
-        end>
-      BlockOffset = 1
-      HighlightPos = cpBound
+      HighlightPos = cpAny
       IgnoreAsParent = False
     end
     item
       DisplayName = 'func'
+      StyleName = 'Hilite BG'
       ConditionList = <
         item
-          TokenTypes = 1024
+          TagList.Strings = (
+            '(')
+          TokenTypes = 128
+        end
+        item
+          TokenTypes = 4
+        end
+        item
+          TagList.Strings = (
+            'function')
+          TokenTypes = 4
         end>
       BlockEnd = 'end'
-      HighlightPos = cpAny
+      NameFmt = '%s-1'
+      RefToCondEnd = True
+      DynHighlight = dhBound
+      HighlightPos = cpRange
+      DynSelectMin = True
       CancelNextRules = True
       DrawStaple = True
-      NoEndRule = True
+      CollapseFmt = '%sz0'
       TreeItemImage = 5
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = 'func in class'
+      StyleName = 'Hilite BG'
+      ConditionList = <
+        item
+          TagList.Strings = (
+            '(')
+          TokenTypes = 128
+        end
+        item
+          TokenTypes = 4
+        end
+        item
+          TagList.Strings = (
+            ':'
+            '.')
+          TokenTypes = 8
+        end
+        item
+          TokenTypes = 4
+        end
+        item
+          TagList.Strings = (
+            'function')
+          TokenTypes = 4
+        end>
+      BlockEnd = 'end'
+      NameFmt = '%s-3'
+      GroupFmt = '%s-1'
+      RefToCondEnd = True
+      DynHighlight = dhBound
+      HighlightPos = cpRange
+      DynSelectMin = True
+      CancelNextRules = True
+      DrawStaple = True
+      CollapseFmt = '%sz0'
+      TreeItemImage = 5
+      TreeGroupImage = 1
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = 'func in class 2'
+      StyleName = 'Hilite BG'
+      ConditionList = <
+        item
+          TokenTypes = 4
+        end
+        item
+          TagList.Strings = (
+            ':'
+            '.')
+          TokenTypes = 8
+        end
+        item
+          TokenTypes = 4
+        end
+        item
+          TagList.Strings = (
+            ':'
+            '.')
+          TokenTypes = 8
+        end
+        item
+          TokenTypes = 4
+        end
+        item
+          TagList.Strings = (
+            'function')
+          TokenTypes = 4
+        end>
+      BlockEnd = 'end'
+      NameFmt = '%s-3%s-4%s-5'
+      GroupFmt = '%s-1'
+      RefToCondEnd = True
+      DynHighlight = dhBound
+      HighlightPos = cpRange
+      DynSelectMin = True
+      CancelNextRules = True
+      DrawStaple = True
+      CollapseFmt = '%sz0'
+      TreeItemImage = 5
+      TreeGroupImage = 1
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = 'func anon'
+      StyleName = 'Hilite BG'
+      ConditionList = <
+        item
+          TagList.Strings = (
+            '(')
+          TokenTypes = 128
+        end
+        item
+          TagList.Strings = (
+            'function')
+          TokenTypes = 4
+        end>
+      BlockEnd = 'end'
+      DisplayInTree = False
+      RefToCondEnd = True
+      DynHighlight = dhBound
+      HighlightPos = cpRange
+      DynSelectMin = True
+      CancelNextRules = True
+      DrawStaple = True
+      CollapseFmt = '%sz0'
       IgnoreAsParent = False
     end
     item
@@ -397,23 +554,26 @@ object SyntAnal19: TLibSyntAnalyzer
     end
     item
       DisplayName = 'begin'
+      StyleName = 'Hilite BG'
       ConditionList = <
         item
           TagList.Strings = (
             'do'
-            'function'
             'if')
           TokenTypes = 4
         end>
       BlockEnd = 'end'
       DisplayInTree = False
-      HighlightPos = cpAny
+      DynHighlight = dhBound
+      HighlightPos = cpRange
+      DynSelectMin = True
       DrawStaple = True
       CollapseFmt = '%sz0'
       IgnoreAsParent = False
     end
     item
       DisplayName = 'repeat'
+      StyleName = 'Hilite BG'
       ConditionList = <
         item
           TagList.Strings = (
@@ -422,7 +582,9 @@ object SyntAnal19: TLibSyntAnalyzer
         end>
       BlockEnd = 'until'
       DisplayInTree = False
-      HighlightPos = cpAny
+      DynHighlight = dhBound
+      HighlightPos = cpRange
+      DynSelectMin = True
       DrawStaple = True
       CollapseFmt = '%sz0'
       IgnoreAsParent = False
@@ -438,14 +600,39 @@ object SyntAnal19: TLibSyntAnalyzer
         end>
       HighlightPos = cpAny
       IgnoreAsParent = False
+    end
+    item
+      DisplayName = '{'
+      ConditionList = <
+        item
+          TagList.Strings = (
+            '{')
+          TokenTypes = 8
+        end>
+      BlockEnd = '}'
+      DisplayInTree = False
+      HighlightPos = cpAny
+      DrawStaple = True
+      CollapseFmt = '{ ... }'
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = '}'
+      BlockType = btRangeEnd
+      ConditionList = <
+        item
+          TagList.Strings = (
+            '}')
+          TokenTypes = 8
+        end>
+      HighlightPos = cpAny
+      IgnoreAsParent = False
     end>
   CodeTemplates = <>
   SubAnalyzers = <>
   SampleText.Strings = (
     '--Str'
     '--test'
-    '--test'
-    ''
     ' s = '#39'ww\'#39'ww'#39', "ww\"ww", '#39'alo\n123"'#39
     ' a = [[alo'
     '  123]] test'
@@ -453,31 +640,24 @@ object SyntAnal19: TLibSyntAnalyzer
     '  alo'
     '  123]==] test'
     ''
-    ' n = 2 + 2.22 + 22.22e-2 + 0.22E1 '
-    ' n = 0xF0'
+    ' n = 2 + 2.22 + 22.22e-2 + 0.22E1 + 0xF0 + .5 + 5.  '
+    ' ::name:: , goto name'
     ''
-    'function Set.mt.__lt (a,b)'
-    '  return a <= b and not (b <= a)'
+    'function Test.mt.__lt (a,b)'
+    '  return a <= b'
     'end'
     ''
-    'function perm:app (a, n)'
+    'function Test:app (a, n)'
     '  if n == 0 then'
     '    coroutine.yield(a)'
     '  else'
     '    for i=1,n do'
-    '      -- put i-th element as the last one'
-    '      a[n], a[i] = a[i], a[n]'
-    ''
-    '      -- generate all permutations of the other elements'
-    '      permgen(a, n - 1)'
-    ''
-    '      -- restore i-th element'
     '      a[n], a[i] = a[i], a[n]'
     '    end'
     '  end'
     'end'
     ''
-    'function perm (a)'
+    'function tst(a)'
     '  local n = table.getn(a)'
     '  return coroutine.wrap(function () permgen(a, n) end)'
     'end'
@@ -488,25 +668,26 @@ object SyntAnal19: TLibSyntAnalyzer
     '  end'
     '  io.write("\n")'
     'end'
+    ''
     'repeat'
     '  print "aa"'
     'until true ')
   TokenTypeNames.Strings = (
     'Unknown'
     'Comment'
-    'Identifier'
+    'Id'
     'Symbol'
     'String'
-    'Integer const'
-    'Float const'
-    'Hex const'
-    'Char const'
+    'Number'
+    'Label'
+    'Symbol ()'
+    '-'
     'Preprocessor'
     'Func name')
   Extentions = 'lua'
   LexerName = 'Lua'
   Notes.Strings = (
-    'Alex (Synwrite)'
+    'Alexey (CudaText)'
     'Ref: http://www.lua.org/manual/5.1/manual.html')
   LineComment = '--'
   Charset = DEFAULT_CHARSET

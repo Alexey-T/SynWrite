@@ -1,4 +1,4 @@
-object SyntAnal29: TLibSyntAnalyzer
+object SyntAnal19: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Head'
@@ -7,7 +7,6 @@ object SyntAnal29: TLibSyntAnalyzer
       Font.Height = -19
       Font.Name = 'Consolas'
       Font.Style = [fsBold]
-      FormatType = ftCustomFont
     end
     item
       DisplayName = 'Comment'
@@ -93,33 +92,71 @@ object SyntAnal29: TLibSyntAnalyzer
       Font.Style = []
     end
     item
+      DisplayName = 'Table BG'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+      BgColor = clMoneyGreen
+      FormatType = ftBackGround
+    end
+    item
       DisplayName = 'Sign'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlue
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
+      BgColor = clYellow
     end
     item
-      DisplayName = 'Text'
+      DisplayName = 'Var'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clGreen
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'Link'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clOlive
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'Link wiki'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clFuchsia
+      Font.Height = -13
+      Font.Name = 'Courier New'
+      Font.Style = []
+    end
+    item
+      DisplayName = 'List head'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
+      BgColor = 10084526
     end>
   TokenRules = <
     item
       DisplayName = 'Head'
       StyleName = 'Head'
-      Expression = '^[\*\#=\-\+\^\"]{2,}$ \z '#13#10'^.+$ \z '#13#10'^[\*\#=\-\+\^\"]{2,}$'
+      Expression = 
+        '^[\*\#=\-\+\^\"`~!"'#39']{2,}$ \z '#13#10'^[\x20\w].*$ \z '#13#10'^[\*\#=\-\+\^\' +
+        '"`~!"'#39']{2,}$'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
       DisplayName = 'Head 2'
       StyleName = 'Head'
-      Expression = '^\w.+$ \z'#13#10'^[\*\#=\-\+\^\"]{2,}'
+      Expression = '^\w.+$ \z'#13#10'^[\*\#=\-\+\^\"`~!"'#39']{2,}$)'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -127,7 +164,9 @@ object SyntAnal29: TLibSyntAnalyzer
       DisplayName = 'List'
       StyleName = 'List'
       TokenType = 6
-      Expression = '^([\*\#]+\.|\-|\d+\.) \x20'
+      Expression = 
+        '^\x20*([\*\-\+]\x20|\d+\.\x20|\#+\.\x20|[a-z][\)\.]\x20|[ivxlm]+' +
+        '\.\x20|\([a-z]+\)\x20)'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -159,7 +198,31 @@ object SyntAnal29: TLibSyntAnalyzer
       DisplayName = 'Quote'
       StyleName = 'Quote'
       TokenType = 3
-      Expression = '`` .+? `` |'#13#10'(?s) ` .+? `_?'
+      Expression = '(?s)``[^`\n]+``'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Link'
+      StyleName = 'Link'
+      TokenType = 8
+      Expression = '`[^`]+`_+'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Quote >'
+      StyleName = 'Quote'
+      TokenType = 3
+      Expression = '^>.*'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Var'
+      StyleName = 'Var'
+      TokenType = 1
+      Expression = '^\x20*:[^:]+:'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -167,24 +230,31 @@ object SyntAnal29: TLibSyntAnalyzer
       DisplayName = 'Sign'
       StyleName = 'Sign'
       TokenType = 3
-      Expression = '\| \w.+? \|'
+      Expression = '\| \w.+? \|_*'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = 'Code'
-      Enabled = False
+      DisplayName = 'Code ::'
       StyleName = 'Code'
       TokenType = 4
-      Expression = '^[\x20\x09]{2,} .*'
+      Expression = '(?s)^::$\z\z.+?\z(?=\z^\S)'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = 'Code dot'
+      DisplayName = 'Code ..'
       StyleName = 'Code dot'
       TokenType = 4
-      Expression = '^\.+ .*'
+      Expression = '(?s)^\.\.\x20code-block::[^\n\r]*$.+?$(?=\z^\S)'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Code spaces'
+      StyleName = 'Code'
+      TokenType = 4
+      Expression = '^[\x20\x09]{4,}\S.*'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -192,45 +262,104 @@ object SyntAnal29: TLibSyntAnalyzer
       DisplayName = 'Table'
       StyleName = 'Table'
       TokenType = 7
-      Expression = '^[\+\|] [\-\+=]*'
+      Expression = '^\x20*[\+\|] [\-\+=]*'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = 'Text'
-      StyleName = 'Text'
-      TokenType = 1
-      Expression = '.'
+      DisplayName = 'Link wiki'
+      StyleName = 'Link wiki'
+      TokenType = 9
+      Expression = '[a-z]\w*_\b'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Table begin'
+      StyleName = 'Table'
+      TokenType = 10
+      Expression = '^(\x20*==[=\x20\xA0]*\z)[^=\n].*?\z\1'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Table end'
+      StyleName = 'Table'
+      TokenType = 11
+      Expression = '^\x20*==[=\x20\xA0]*$'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'List head'
+      StyleName = 'List head'
+      TokenType = 12
+      Expression = '^\.\.\x20\w[\w\.\-\x20]+:+'
       ColumnFrom = 0
       ColumnTo = 0
     end>
   BlockRules = <
     item
-      DisplayName = 'Head'
+      DisplayName = 'Header'
       ConditionList = <
         item
           TokenTypes = 1
         end>
       EndOfTextClose = True
+      DisplayInTree = False
+      NameFmt = '%sz0'
       HighlightPos = cpAny
+      CancelNextRules = True
+      CollapseFmt = '%sz0'
       SelfClose = True
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = 'Table begin'
+      StyleName = 'Table BG'
+      ConditionList = <
+        item
+          TokenTypes = 1024
+        end>
+      BlockEnd = 'Table end'
+      DisplayInTree = False
+      DynHighlight = dhRange
+      HighlightPos = cpAny
+      CancelNextRules = True
+      CollapseFmt = 'Table...'
+      IgnoreAsParent = False
+    end
+    item
+      DisplayName = 'Table end'
+      BlockType = btRangeEnd
+      ConditionList = <
+        item
+          TokenTypes = 2048
+        end>
+      HighlightPos = cpAny
+      CancelNextRules = True
       IgnoreAsParent = False
     end>
   CodeTemplates = <>
   SubAnalyzers = <>
   SampleText.Strings = (
+    '.. _note:'
+    '  :field name: This is field.'
+    ''
     'Head'
-    '+++++++'
+    '+++++'
     ''
-    '** This is a bulleted list.'
-    '** It has two items, the second'
-    '  item uses two lines.'
-    ''
-    '1. This is a numbered list.'
-    '2. It has two items too.'
-    ''
-    '###. This is a numbered list.'
-    '###. It has two items too.'
+    '* List'
+    '   - List'
+    '   + List'
+    '   * List'
+    '   iii. List  '
+    '   text. Not list.'
+    '   A) List'
+    '   (iii) List'
+    '  1. List'
+    '  200. List'
+    '   ###. List'
     ''
     '****************************************'
     'HTTPie '
@@ -244,12 +373,9 @@ object SyntAnal29: TLibSyntAnalyzer
       '-friendly**'
     'as possible. It provides a simple ``http`` command'
     ''
-    
-      '.. image:: https://raw.githubusercontent.com/jkbrzt/httpie/maste' +
-      'r/httpie.png'
+    '.. image:: https://www.png'
     '    :alt: HTTPie compared to cURL'
     '    :align: center'
-    ''
     ''
     
       'HTTPie is written in Python, and under the hood it uses the exce' +
@@ -282,7 +408,21 @@ object SyntAnal29: TLibSyntAnalyzer
       '              |'
     
       '+-----------------------+---------------------------------------' +
-      '--------------+')
+      '--------------+'
+    ''
+    '=== =='
+    'Tst Tt'
+    '=== =='
+    'aaa bb'
+    '=== =='
+    ''
+    '=== =='
+    'Tst Tt'
+    '=== =='
+    'aaa bb'
+    'aa   b'
+    '=== =='
+    '')
   TokenTypeNames.Strings = (
     'Head'
     'Text'
@@ -291,12 +431,18 @@ object SyntAnal29: TLibSyntAnalyzer
     'Code'
     'Block'
     'List'
-    'Table')
+    'Table'
+    'Link'
+    'Link wiki'
+    'Table begin'
+    'Table end'
+    'List head')
   Extentions = 'rst'
   LexerName = 'reStructuredText'
   SkipSpaces = False
   Notes.Strings = (
-    'Alexey (Synwrite)'
-    'Test: https://github.com/jkbrzt/httpie/blob/master/README.rst')
+    'Alexey (CudaText)'
+    'Test: https://github.com/jkbrzt/httpie/blob/master/README.rst'
+    'Tests: https://github.com/andgineer/TRegExpr/tree/master/docs')
   Charset = DEFAULT_CHARSET
 end

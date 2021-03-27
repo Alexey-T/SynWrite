@@ -1,4 +1,4 @@
-object SyntAnal14: TLibSyntAnalyzer
+object SyntAnal11: TLibSyntAnalyzer
   Formats = <
     item
       DisplayName = 'Text'
@@ -123,7 +123,7 @@ object SyntAnal14: TLibSyntAnalyzer
       Font.Style = [fsBold]
     end
     item
-      DisplayName = 'Text escaped'
+      DisplayName = 'Entity'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clMaroon
       Font.Height = -13
@@ -183,7 +183,7 @@ object SyntAnal14: TLibSyntAnalyzer
       DisplayName = '<'
       StyleName = 'Tag bound'
       TokenType = 10
-      Expression = '<[/!\-]*'
+      Expression = '<[/!\-]*(?=\w)'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -191,7 +191,7 @@ object SyntAnal14: TLibSyntAnalyzer
       DisplayName = '>'
       StyleName = 'Tag bound'
       TokenType = 11
-      Expression = '[/]?>'
+      Expression = '/?>'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -200,7 +200,7 @@ object SyntAnal14: TLibSyntAnalyzer
       StyleName = 'Number'
       BlockName = 'Tag begin'
       TokenType = 5
-      Expression = '\d+'
+      Expression = '\d+%?'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -209,7 +209,7 @@ object SyntAnal14: TLibSyntAnalyzer
       StyleName = 'Color'
       BlockName = 'Tag begin'
       TokenType = 7
-      Expression = '\#[a-f\d]+'
+      Expression = '\#([0-9a-f]{3}|[0-9a-f]{6})\b'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -232,19 +232,28 @@ object SyntAnal14: TLibSyntAnalyzer
       ColumnTo = 0
     end
     item
-      DisplayName = 'Tag id'
-      StyleName = 'Tag unknown text'
+      DisplayName = 'Tag id known'
+      StyleName = 'Tag prop'
       BlockName = 'Tag begin'
       TokenType = 2
-      Expression = '[^\s<>/=]+'
+      Expression = '\b(defer|async|readonly)\b'
       ColumnFrom = 0
       ColumnTo = 0
     end
     item
-      DisplayName = 'Text escaped'
-      StyleName = 'Text escaped'
+      DisplayName = 'Tag id'
+      StyleName = 'Tag unknown text'
+      BlockName = 'Tag begin'
+      TokenType = 2
+      Expression = '[\w\-:\.]+'
+      ColumnFrom = 0
+      ColumnTo = 0
+    end
+    item
+      DisplayName = 'Entity'
+      StyleName = 'Entity'
       TokenType = 9
-      Expression = '&[a-z]+;'
+      Expression = '&\#?\w+;'
       ColumnFrom = 0
       ColumnTo = 0
     end
@@ -252,7 +261,7 @@ object SyntAnal14: TLibSyntAnalyzer
       DisplayName = 'Text'
       StyleName = 'Text'
       TokenType = 9
-      Expression = '[^<>&\{\}\[\]/\\=\x20]+'
+      Expression = '\w+'
       ColumnFrom = 0
       ColumnTo = 0
     end>
@@ -353,6 +362,7 @@ object SyntAnal14: TLibSyntAnalyzer
             'legend'
             'li'
             'link'
+            'main'
             'map'
             'mark'
             'marquee'
@@ -373,6 +383,7 @@ object SyntAnal14: TLibSyntAnalyzer
             'output'
             'p'
             'param'
+            'picture'
             'plaintext'
             'pre'
             'progress'
@@ -491,7 +502,8 @@ object SyntAnal14: TLibSyntAnalyzer
             'hr'
             'image'
             'img'
-            'link')
+            'link'
+            'p')
           TokenTypes = 4
           IgnoreCase = True
         end
@@ -501,7 +513,7 @@ object SyntAnal14: TLibSyntAnalyzer
           TokenTypes = 1024
         end>
       BlockEnd = 'Simple tag block end'
-      NameFmt = '%s0'
+      NameFmt = '<%s0>'
       HighlightPos = cpBound
       DynSelectMin = True
       CollapseFmt = '%s0'
@@ -529,7 +541,8 @@ object SyntAnal14: TLibSyntAnalyzer
             'hr'
             'image'
             'img'
-            'link')
+            'link'
+            'p')
           CondType = tcNotEqual
           TokenTypes = 4
           IgnoreCase = True
@@ -541,11 +554,10 @@ object SyntAnal14: TLibSyntAnalyzer
           TokenTypes = 1024
         end>
       BlockEnd = 'Tag block end'
-      NameFmt = '%s0~s[>]1'
+      NameFmt = '<%sz0'
       DynHighlight = dhBound
       HighlightPos = cpRange
       DynSelectMin = True
-      CollapseFmt = '<%s0>'
       IgnoreAsParent = False
     end
     item
@@ -773,20 +785,12 @@ object SyntAnal14: TLibSyntAnalyzer
   CodeTemplates = <>
   SubAnalyzers = <
     item
-      DisplayName = 'PHP'
-      StyleName = 'Sublexer BG'
-      AlwaysEnabled = True
-      StartExpression = '<\?(php)?'
-      EndExpression = '?>'
-      SyntAnalyzer = SyntAnal29
-    end
-    item
       DisplayName = 'CSS'
       StyleName = 'Sublexer BG'
       AlwaysEnabled = True
       StartExpression = '(?si)<style[^>]*>'
       EndExpression = '</style>'
-      SyntAnalyzer = SyntAnal8
+      SyntAnalyzer = SyntAnal6
     end
     item
       DisplayName = 'VBScript'
@@ -794,22 +798,22 @@ object SyntAnal14: TLibSyntAnalyzer
       AlwaysEnabled = True
       StartExpression = '(?si)<script[^>]*vbscript[^>]*>\s*(<!--)?'
       EndExpression = '(?i)(-->)?\s*</script>'
-      SyntAnalyzer = SyntAnal43
+      SyntAnalyzer = SyntAnal28
     end
     item
       DisplayName = 'JavaScript'
       StyleName = 'Sublexer BG'
       AlwaysEnabled = True
-      StartExpression = '(?si)<script[^>]*javascript [^>]* [^\?] > \s*(<!--)?'
-      EndExpression = '(?i)(//)?(-->)?\s*</script>'
-      SyntAnalyzer = SyntAnal18
+      StartExpression = '(?si)<script\s[^>]*(j|java|ecma|paper)script [^>\?]*> \s*(<!\-\-)?'
+      EndExpression = '(?i)(//)?(\-\->)?\s*</script\s*>'
+      SyntAnalyzer = SyntAnal13
     end
     item
       DisplayName = 'JavaScript simple'
       StyleName = 'Sublexer BG'
-      StartExpression = '<script>'
-      EndExpression = '</script>'
-      SyntAnalyzer = SyntAnal18
+      StartExpression = '<script\s*>'
+      EndExpression = '</script\s*>'
+      SyntAnalyzer = SyntAnal13
     end
     item
       DisplayName = 'ASP'
@@ -817,18 +821,18 @@ object SyntAnal14: TLibSyntAnalyzer
       AlwaysEnabled = True
       StartExpression = '<%'
       EndExpression = '%>'
-      SyntAnalyzer = SyntAnal43
+      SyntAnalyzer = SyntAnal28
     end>
   SampleText.Strings = (
     '<!doctype test="123">'
     '<!-- comment -->'
     '<meta1/>'
     '<meta2>text</meta3>'
-    '<?php echo '#39'test'#39', 20 ?> <% asp text %>'
+    '<? php ?> or <% asp text  %> '
     ''
     '<html> '
     '  <head>'
-    '    <title test="15" #$@ >Text</title>'
+    '    <title test="15" #$@ >Text 123</title>'
     '  </head>'
     ''
     '  <script type="text/javascript">'
@@ -859,11 +863,11 @@ object SyntAnal14: TLibSyntAnalyzer
     'Close Tag'
     'Include Tag')
   Extentions = 
-    'htm html htt hta htx htc htd shtml phtml xhtml asp aspx ascx asm' +
-    'x jsp hhc dtd php php3 php4 php5 php7 phps phpt'
+    'html htm htt hta htx htc htd shtml phtml xhtml asp aspx ascx asm' +
+    'x jsp hhc dtd'
   LexerName = 'HTML'
   Notes.Strings = (
     'Created by 480499497 from forum.wincmd.ru (named HTML_dev)'
-    'Heavily changed by Alexey (SynWrite)')
+    'Fully reworked by Alexey (CudaText)')
   Charset = DEFAULT_CHARSET
 end

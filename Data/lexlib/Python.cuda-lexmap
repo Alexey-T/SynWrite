@@ -1,3 +1,9 @@
+[comments]
+styles_cmt=Comment
+styles_str=String
+str1=
+str2=
+
 [map]
 Number=Number
 String=String
@@ -6,9 +12,8 @@ Comment=Comment
 Id=Id
 Id keyword=Id1
 Id keyword def=IdKeyword
-Id function=Id2
-[comments]
-styles_cmt=Comment
-styles_str=String
-str1=
-str2=
+Id function=Id4
+Id func name=Label
+Id types=Id2
+Id exception=Id3
+Decorator=TagId

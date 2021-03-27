@@ -5,7 +5,8 @@ styles_cmt=Comment,Comment doc
 styles_str=String
 
 [ref]
-0=PHP
+0=PHP_
+1=JSDoc
 
 [map]
 Symbol=Symbol
@@ -15,8 +16,11 @@ String regex=String2
 Identifier=Id
 Id keyword=IdKeyword
 Id standard=Id1
-Id jquery=Id2
+Id std=Id2
 Comment=Comment
 Comment doc=CommentDoc
 Current block=BracketBG
 PHP tag=TagInclude
+Id func name=Label
+HTML tag name=TagId
+Id upcase const=Id3

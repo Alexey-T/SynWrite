@@ -5,12 +5,12 @@ styles_cmt=Comment
 styles_str=String
 
 [ref]
-0=PHP
+0=PHP_
 
 [map]
-Style=Id
-Param correct=TagProp
-Param incorrect=TagPropBad
+Style=TagId
+Prop correct=TagProp
+Prop incorrect=TagPropBad
 Value=Id2
 Symbol=Symbol
 Comment=Comment
@@ -18,6 +18,9 @@ Current block=CurBlockBG
 Color=Color
 String=String
 Number=Number
-StyleSuffix=Id3
-ParamCustom=Id4
-Include tag=TagInclude
+Style suffix=Id4
+Prop user=IdVar
+PHP tag=TagInclude
+Media=Id1
+Value unit=Id3
+Value unit incorrect=IdBad
