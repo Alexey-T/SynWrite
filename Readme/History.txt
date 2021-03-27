@@ -3,6 +3,9 @@ Legend:
  - fixed
  * changed
 
+6.41.2780
+
+* removed lexers to add-ons: Apache config, C#, Delphi resources, Go, Haskell, Inno Setup, LESS, Makefile, Pascal, Perl, PowerShell, Properties, Ruby, SCSS, Tcl, VBScript
 
 6.40.2770
 + updated many lexers from CudaText: C++, CSS, HTML, JavaScript, JSON, PHP, Pascal, XML (most big changes in HTML/PHP)
