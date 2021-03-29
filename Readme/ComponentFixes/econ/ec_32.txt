@@ -1,0 +1,20 @@
+ecSyntMemo.pas
+
+//1- comment part of str
+      smCommentLines,
+      smUncommentLines:  Result := (SyntObj <> nil) {and (SyntObj.Owner.LineComment <> '') --AT} and not ReadOnly;
+
+//2
+procedure TCustomSyntaxMemo.LineComments(CommentLines: Boolean;
+....
+var
+  An: TSyntAnalyzer; //add
+begin
+  //AT- used comment for lexer-under-caret, not global lexer
+  cs := '';
+  if SyntObj<>nil then
+    An := SyntObj.AnalyzerAtPos(CaretStrPos);
+  if An<>nil then
+    cs := An.LineComment;
+
+  if cs = '' then Exit;

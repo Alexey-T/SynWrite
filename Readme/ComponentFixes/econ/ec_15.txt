@@ -1,0 +1,14 @@
+ecExtHighlight.pas
+
+TCustomHighlighter
+//add property
+    property SingleClick: Boolean read FSingleClick write FSingleClick default False; //AT
+
+function THyperlinkHighlighter.HandleMouse
+//change "if" to
+  if FActive and ((FSingleClick and (ssLeft in Shift)) or (ssCtrl in Shift)) then
+
+procedure TCustomHighlighter.UpdateCursor
+//change "if" to
+  if FActive and (FSingleClick or (ssCtrl in Shift)) and (Editor <> nil) then
+

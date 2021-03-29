@@ -1,0 +1,19 @@
+ecSyntMemo.pas
+
+//before   function DetremineWordBreak: integer;
+
+  //AT
+  function IsWordChar2(ch: Widechar): boolean;
+  begin
+    //count '()[].,?!:;' as word-chars too, for word-wrap calculation,
+    //to look like Notepad++
+    Result := not ecStrUtils.IsSpaceChar(ch);
+  end;
+
+//in  function DetremineWordBreak: integer;
+
+replace all "IsWordChar" --> "IsWordChar2", they are in block
+        if not IsSpaceChar(C) then
+        begin
+        ....
+        end;

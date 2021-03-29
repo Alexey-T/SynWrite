@@ -1,0 +1,24 @@
+ecSyntMemo
+
+      smPageUp:      begin
+                       x := ScrollPosY;
+                       cp := CaretToMouse(CaretPos.X, CaretPos.Y);
+                       nV := VisibleLines - 1; //AT
+                       ScrollPosY := ScrollPosY - nV;
+                       if x = ScrollPosY then
+                         CaretPos := SkipHidden(FCaretPos.X, FCaretPos.Y - nV, False)
+                       else
+                         CaretPos := MouseToCaret(cp.X, cp.Y);
+                       Update; //AT
+                     end;
+      smPageDown:    begin
+                       x := ScrollPosY;
+                       cp := CaretToMouse(CaretPos.X, CaretPos.Y);
+                       nV := VisibleLines - 1; //AT
+                       ScrollPosY := ScrollPosY + nV;
+                       if x = ScrollPosY then
+                         CaretPos := SkipHidden(FCaretPos.X, FCaretPos.Y + nV, True)
+                       else
+                         CaretPos := MouseToCaret(cp.X, cp.Y);
+                       Update; //AT
+                     end;

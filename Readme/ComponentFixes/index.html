@@ -1,0 +1,281 @@
+<html>
+<head>
+<title>Components Tweaks</title>
+</head>
+<body>
+
+<h1>EControl</h1>
+
+<ul>
+<li> unFrame.pas:
+  in IDE clear the TextSource.ControlSite, or app will show
+  "Control has no parent window".
+
+<p>
+<li> codepage convertion for Select Char popup.
+<a href="econ/ecA.txt" target=_blank>File</a>.
+
+<p>
+<li> code for "Autocomplete -- Show list even when no items are filtered".
+<a href="econ/ec9.txt" target=_blank>File</a>.
+
+<p>
+<li> handle Unicode filenames in editor.
+<a href="econ/ec4.txt" target="_blank">File</a>.
+
+<p>
+<li> correct word jump (Ctrl+Left/Right like in Notepad++).
+<a href="econ/ec1.txt" target=_blank>File</a>.
+
+<p>
+<li> don't remove "non-breakable space" at line ends.
+<a href="econ/ecC.txt" target=_blank>File</a>.
+
+<p>
+<li> code for option "Show CR/LF chars" for "Show non-printable".
+<a href="econ/ecD.txt" target=_blank>File</a>.
+
+<p>
+<li> replace tabs--spaces in tree.
+<a href="econ/ecB.txt" target=_blank>File</a>.
+
+<p>
+<li> allow Tab key in Template popup.
+<a href="econ/ecF.txt" target=_blank>File</a>.
+
+<p>
+<li> center caret (if needed) on Tree nodes clicking.
+<a href="econ/ecG.txt" target=_blank>File</a>.
+
+
+<p>
+<li> allow Tab key in "Char Table" popup.
+<a href="econ/ecH.txt" target=_blank>File</a>.
+
+<p>
+<li> code for "Go to last marker" cmd.
+<a href="econ/ecI.txt" target=_blank>File</a>.
+
+<p>
+<li> strip code for WM_GETTEXT msg.
+<a href="econ/ecJ.txt" target=_blank>File</a>.
+
+<p>
+<li> make window updated on PgUp/Dn holding, and on scrollbar thumb dragging.
+<a href="econ/ecK.txt" target=_blank>File</a>.
+
+<p>
+<li> patch for MiddleMouseBtn scroll like in browsers.
+<a href="econ/ecL.txt" target=_blank>File</a>.
+
+<p>
+<li> add &lt;date:nnnnnnnn&gt; macro to Code Templates.
+<a href="econ/ecM.txt" target=_blank>File</a>.
+
+<p>
+<li> fix double-click on "-------" string.
+<a href="econ/ecN.txt" target=_blank>File</a>.
+
+<p>
+<li> fix black editor on progress operations.
+<a href="econ/ecO.txt" target=_blank>File</a>.
+
+<p>
+<li> add property to macro recorder.
+<a href="econ/ecP.txt" target=_blank>File</a>.
+
+<p>
+<li> fix for lexer-library filename saving.
+<a href="econ/ecR.txt" target=_blank>File</a>.
+
+<p>
+<li> add custom commands to default KeyMapping:
+<a href="econ/ecS.txt" target=_blank>File</a>.
+
+<p>
+<li> add horizontal scroll by Shift+MouseWheel.
+<a href="econ/ecT.txt" target=_blank>File</a>.
+
+<p>
+<li> patch for pasting blocks on Unix/Mac files:
+<a href="econ/ecU.txt" target=_blank>File</a>.
+
+<p>
+<li> count '()[]' as word-chars too, for word-wrap calcuations:
+<a href="econ/ecV.txt" target=_blank>File</a>.
+
+<p>
+<li> patch to always hilite BG of selected line-ends, <a href="http://synwrite.sourceforge.net/forums/viewtopic.php?f=5&t=187" target="_blank">report</a>:
+<a href="econ/ec_01.txt" target=_blank>File</a>.
+
+<p>
+<li> patch to init file-name field of Export (Save as) dialog of lexer library:
+<a href="econ/ec_02.txt" target=_blank>File</a>.
+
+<p>
+<li> patch which adds OnShowHint event to TSyntaxMemo (needed to show image files preview):
+<a href="econ/ec_03.txt" target=_blank>File</a>.
+
+<p>
+<li> fix for unintended line wrap at 256 column:
+<a href="econ/ec_04.txt" target=_blank>File</a>.
+
+<p>
+<li> trim leading/trailing spaces in tree.
+<a href="econ/ec_05.txt" target=_blank>File</a>.
+
+<p>
+<li> patch for new property SelectModeDefault.
+<a href="econ/ec_06.txt" target=_blank>File</a>.
+<a href="econ/ec_06a.txt" target=_blank>File2</a>.
+<a href="econ/ec_06b.txt" target=_blank>File3</a>.
+<a href="econ/ec_06c.txt" target=_blank>File4</a>.
+
+<p>
+<li> fix to correctly expand tabs on code-template insertion.
+<a href="econ/ec_07.txt" target=_blank>File</a>.
+
+<p>
+<li> patch to focus editor on adding code-template.
+<a href="econ/ec_08.txt" target=_blank>File</a>.
+
+<p>
+<li> fix for non-working sel-block dragging, after opening 2+ files in SynW at once.
+<a href="econ/ec_09.txt" target=_blank>File</a>.
+
+<p>
+<li> patch implements "Keep caret on paste" option.
+<a href="econ/ec_10.txt" target=_blank>File</a>.
+
+<p>
+<li> make variable-horz-scrollbar always visible (not hidden when not needed):
+<a href="econ/ec_11.txt" target=_blank>File</a>.
+
+<p>
+<li> support for indentation-based folding, e.g. in Python lexer:
+<a href="econ/ec_12.txt" target=_blank>File</a>.
+<a href="econ/ec_12a.txt" target=_blank>File</a>.
+
+<p>
+<li> support for macro-recording of Find/replace actions:
+<a href="econ/ec_13.txt" target=_blank>File</a>.
+
+<p>
+<li> add property TSyntaxTreeView.UpdateDelay:
+<a href="econ/ec_14.txt" target=_blank>File</a>.
+
+<p>
+<li> add property THyperlinkHighlighter.SingleClick:
+<a href="econ/ec_15.txt" target=_blank>File</a>.
+
+<p>
+<li> add event OnGetGutterBandColor:
+<a href="econ/ec_16.txt" target=_blank>File</a>.
+
+<p>
+<li> fix for freeze on pasting big blocks with Tab char:
+<a href="econ/ec_17.txt" target=_blank>File</a>.
+
+<p>
+<li> disable block-staples for Zoom&lt;75% (needed to fix bug: staples drawn incorrect with mini-map shown).
+<a href="econ/ec_18.txt" target=_blank>File</a>.
+
+<p>
+<li> allow Chr(11), Chr(12) entering into text (using CharPopup).
+<a href="econ/ec_19.txt" target=_blank>File</a>.
+
+<p>
+<li> patch adds properties NonPrintedSpaces, NonPrintedEol, NonPrintedEolDetails.
+<a href="econ/ec_20.txt" target=_blank>File</a>.
+
+<p>
+<li> patch fixes macro recording\playing of smGotoXY command (click and Shift+click on editor):
+<a href="econ/ec_21.txt" target=_blank>File</a>.
+
+<p>
+<li> patch: dbl-click spaces selects all spaces (like Notepad++, Hippoedit):
+<a href="econ/ec_22.txt" target=_blank>File</a>.
+
+<p>
+<li> fix to consider option "Optimal fill" when auto-close rule works in XML lexer:
+<a href="econ/ec_23.txt" target=_blank>File</a>.
+
+<p>
+<li> patch for AutoComplete popup, handle Up/Down keys when pressed at listbox beginning/ending:
+<a href="econ/ec_24.txt" target=_blank>File</a>.
+
+<p>
+<li> patch to make SyncEdit operate ok on PHP vars: "$name":
+<a href="econ/ec_25.txt" target=_blank>File</a>.
+
+<p>
+<li> add property for "Mark selection start/end" cmds:
+<a href="econ/ec_26.txt" target=_blank>File</a>.
+
+<p>
+<li> patch to correctly copy/paste column blocks:
+<a href="econ/ec_27.txt" target=_blank>File</a>.
+
+<p>
+<li> patch to correctly PageUp/PageDown for partially visible last line:
+<a href="econ/ec_28.txt" target=_blank>File</a>.
+
+<p>
+<li> some patches to ecSyntMemo.pas:
+<a href="econ/ec_SyntMemo.txt" target=_blank>File</a>.
+
+<p>
+<li> patch for naming default HTML-export file:
+<a href="econ/ec_29.txt" target=_blank>File</a>.
+
+<p>
+<li> patch to remove trailing tabs (like spaces).
+<a href="econ/ec_30.txt" target=_blank>File</a>.
+
+<p>
+<li> patch to support keys both Ctrl+1 and Ctrl+Num1.
+<a href="econ/ec_31.txt" target=_blank>File</a>.
+
+<p>
+<li> patch to use lexer-under-caret for BlockComment/BlockUncomment.
+<a href="econ/ec_32.txt" target=_blank>File</a>.
+
+<p>
+<li> add ecSyntPrinter.FontText. 
+<a href="econ/ec_33.txt" target=_blank>File</a>.
+
+<p>
+<li> other mousewheel handler. 
+<a href="econ/ec_34.txt" target=_blank>File</a>.
+
+<p>
+<li> add option soSimplifiedUndo. 
+<a href="econ/ec_35.txt" target=_blank>File</a>.
+
+<p>
+<li> patch to public FormatRanges.
+<a href="econ/ec_36.txt" target=_blank>File</a>.
+
+<h1>Fundamentals</h1>
+<p>
+<li> enables quick mass replace for non-regex mode.
+<a href="fundamentals/fund1.txt" target=_blank>File</a>.
+
+<li> fixes case-insens search for Widechars (if code>=$80)
+<a href="fundamentals/fund2.txt" target=_blank>File</a>.
+
+<h1>Python4D</h1>
+<p>
+<li> fix:
+<a href="python/py4d.txt" target=_blank>File</a>.
+
+<h1>DKLang</h1>
+<p>
+<li> fix: additional forms instances (2+ objects of same class) not translated.
+<a href="dklang/dklang1.txt" target=_blank>File</a>.
+
+
+
+</ul>
+</body>
+</html>

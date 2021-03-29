@@ -1,0 +1,43 @@
+ecExports.pas
+
+//add this
+function SUntab(const S: ecString; TabSize: Integer): ecString;
+var
+  i, NSize: Integer;
+begin
+  Result:= S;
+  repeat
+    i:= Pos(#9, Result);
+    if i=0 then Break;
+
+    NSize:= TabSize - ((i-1) mod TabSize);
+
+    //don't do Delete, it's slower
+    Result[i]:= ' ';
+    Insert(StringOfChar(' ', NSize-1), Result, i);
+  until false;
+end;
+
+//rewrite this
+procedure TPlainTextSyntExport.ExportBlock(ABlock: TRect);
+var
+  i: integer;
+  S: ecString;
+begin
+  if not Assigned(FSyntMemo) then Exit;
+  FBlockType := TEXT_BLOCK_RECTANGLE;
+  StartExport;
+  for i := ABlock.Top to ABlock.Bottom do
+  begin
+    with FSyntMemo do
+    begin
+      S := Lines[i];
+      S := SUntab(S, TabList[0]);
+      if Length(S) < ABlock.Right + 1 then
+        S := S + StringOfChar(' ', ABlock.Right + 1 - Length(S));
+      S := Copy(S, ABlock.Left + 1, ABlock.Right - ABlock.Left);
+      AddText(S + sLineBreak);
+    end;
+  end;
+  EndExport;
+end;

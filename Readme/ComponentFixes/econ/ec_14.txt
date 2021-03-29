@@ -1,0 +1,24 @@
+ecSyntTree
+
+in
+TCustomSyntaxTreeView = class(TCustomTreeView,
+add
+    function GetUpdateDelay: Integer; //AT
+    procedure SetUpdateDelay(Value: Integer); //AT
+    property UpdateDelay: Integer read GetUpdateDelay write SetUpdateDelay; //AT
+
+in
+  TSyntaxTreeView = class(TCustomSyntaxTreeView)
+add
+    property UpdateDelay; //AT
+
+implem:
+procedure TCustomSyntaxTreeView.SetUpdateDelay(Value: Integer);
+begin
+  FUpdateTimer.Interval:= Value;
+end;
+
+function TCustomSyntaxTreeView.GetUpdateDelay: Integer;
+begin
+  Result:= FUpdateTimer.Interval;
+end;

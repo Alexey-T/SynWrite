@@ -1,0 +1,7 @@
+ecSyntMemo.pas
+
+//after
+  HA1 := TLineHighlightAttr.Create;
+  HA2 := TLineHighlightAttr.Create;
+//add condition (FZoom >= NN)  
+  if (ProcType = ptDrawing) and (FZoom >= 75) then //AT

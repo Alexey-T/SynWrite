@@ -1,0 +1,9 @@
+//ecPopupCtrl.pas
+
+procedure TecSelCharPopup.ParentWndProc(var Message: TMessage);
+begin
+  case Message.Msg of
+    WM_KEYDOWN:
+    ...
+        VK_SPACE, VK_RETURN, VK_TAB { add VK_TAB }: begin CloseUp(True); Exit; end;
+    ...

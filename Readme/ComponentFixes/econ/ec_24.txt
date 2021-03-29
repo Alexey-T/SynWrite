@@ -1,0 +1,22 @@
+ecPopupCtrl
+
+procedure TCustomAutoCompletePopup.ParentWndProc(var Message: TMessage);
+
+at beginning add such block to handle wm_keydown
+
+  //AT - handle KeyDown here for Up/Down keys
+  if (Message.Msg = wm_keydown) then
+  begin
+    if (Message.WParam = vk_up) and (Listbox.ItemIndex = 0) then
+    begin
+      Listbox.ItemIndex := Listbox.Items.Count-1;
+      Listbox.Selected[Listbox.Items.Count-1] := True;
+      Exit
+    end;
+    if (Message.WParam = vk_down) and (Listbox.ItemIndex = Listbox.Items.Count-1) then
+    begin
+      Listbox.ItemIndex := 0;
+      Listbox.Selected[0] := True;
+      Exit
+    end;
+  end;

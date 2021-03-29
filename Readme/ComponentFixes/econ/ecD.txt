@@ -1,0 +1,87 @@
+//ecSyntMemo.pas
+//interface part
+var
+  opColorNonPrintedBG: TColor = clSilver;
+
+//TCustomSyntaxMemo decl.:
+  private
+    FShowLineEnds: boolean;
+  public
+    property ShowLineEnds: boolean read FShowLineEnds write FShowLineEnds;
+
+//TSyntaxMemo decl:
+  published
+    property ShowLineEnds;
+
+//change DrawNonPrinted:
+  procedure DrawNonPrinted;
+  var i, tx, lk, t: integer;
+      C: ecChar;
+      s, sC: ecString; //AT
+  const
+    cDx = 2; cDy = 2; //indents for CR/LF
+  begin
+    // Draw non printed
+     Canvas.Brush.Style := bsClear;
+     if FNonPrinted.UseFont then Canvas.Font := FNonPrinted.Font
+      else Canvas.Font.Color := FNonPrinted.Color;
+     if LineEnd then
+      begin
+        i := Lines.LineSpace(Line) - Lines.LineLength(Line);
+        if (Line < Lines.Count) and (i > 0) then
+        if not FShowLineEnds then
+        begin
+          if (i = 1) and (Lines.TextFormat in [tfCR_NL, tfDefault]) then
+            Canvas.TextOut(X, Y, FNonPrinted.SoftLineBreakChar)
+          else
+            Canvas.TextOut(X, Y, FNonPrinted.LineBreakChar);
+        end
+        else
+        begin
+          t:= Canvas.TextHeight('W');
+          Canvas.Font.Size:= Canvas.Font.Size - cDy;
+          t:= (t - Canvas.TextHeight('W')) div 2;
+          Canvas.Brush.Color:= opColorNonPrintedBG;;
+          s:= Lines.LineEndStr(Line);
+          for i:= 1 to Length(s) do
+          begin
+            case s[i] of
+              #13: sC:= 'CR';
+              #10: sC:= 'LF';
+              else sC:= '?';
+            end;
+            Inc(X, cDx);
+            Canvas.TextOut(X, Y + t, sC);
+            Inc(X, Canvas.TextWidth(sC));
+          end;
+        end;
+      end
+      //below is old code
+     else
+       begin
+         tx := X;
+         lk := LogK;
+         ...
+
+       end;
+       end;
+
+//ecMemoStrings.pas
+function TSyntMemoStrings.LineEndStr(Index: Integer): ecString;
+var Res, st: integer;
+begin
+  Result := '';
+  if (FLines.Count = 0) or (Index < 0) or (Index >= FLines.Count) then
+    Exit
+  else
+     begin
+      Res := LineSpace(Index);
+      st := Integer(FLines[Index]);
+      while (Res > 0) and IsLineBreakChar(FText[st + Res]) do
+      begin
+        Result:= FText[st + Res] + Result;
+        Dec(Res);
+      end;
+     end;
+end;
+

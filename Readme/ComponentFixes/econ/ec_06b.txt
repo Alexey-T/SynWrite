@@ -1,0 +1,12 @@
+ecSyntMemo
+
+find
+    if Command > smSelection then
+      begin
+        if SelectMode in [msNone, msColumn] then
+          SelectMode := msNormal;
+
+replace with
+    if Command > smSelection then
+      begin
+        SelectMode := SelectModeDefault;  

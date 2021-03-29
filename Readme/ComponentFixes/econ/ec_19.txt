@@ -1,0 +1,12 @@
+ecStrUtils
+
+function IsLineBreakChar(const c: UCChar): Boolean;
+begin
+   //AT - don't count #12
+   case C of
+     #$000A, #$000D,
+     {#$000B, #$000C,} #$2028, #$2029, #$0085: Result := True;
+     else Result := False;
+   end;
+end;
+

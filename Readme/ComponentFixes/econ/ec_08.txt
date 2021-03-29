@@ -1,0 +1,14 @@
+ecsnCodeTempl.pas
+
+procedure TSyntCodeTemplFrame.Button4Click(Sender: TObject);
+
+in
+   if dlg.ShowModal = mrOk then
+    begin
+      .....
+    end
+add
+    begin
+      .....
+      SyntaxMemo2.SetFocus; //AT
+    end;

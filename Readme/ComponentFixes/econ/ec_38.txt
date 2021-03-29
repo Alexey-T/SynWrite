@@ -1,0 +1,18 @@
+ecLists.pas
+//class TRange:
+
+//add prop:
+    property Tag: Integer read FTag;
+
+//add param to Create:
+  public
+    constructor Create(AStartPos, AEndPos: integer; ATag: Integer=0);
+
+//body of Create:
+constructor TRange.Create(AStartPos, AEndPos: integer; ATag: Integer=0); //AT
+begin
+  inherited Create;
+  FStartPos := AStartPos;
+  FEndPos := AEndPos;
+  FTag := ATag;
+end;

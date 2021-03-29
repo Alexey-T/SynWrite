@@ -1,0 +1,19 @@
+ecPopupCtrl.pas
+
+before
+       if SameText('<marker>', Copy(S, i, 8)) then
+
+add block
+       //AT
+       if Copy(S, i, 6) = '<date:' then
+        begin
+          ii := Pos('>', Copy(S, i, MaxInt));
+          if ii = 0 then Inc(i) else
+          begin
+            S1 := Copy(S, i+6, ii-7); //format in <date:nnnnnnnn>
+            S1 := FormatDateTime(S1, Now); //formatted time
+            Delete(S, i, ii);
+            Insert(S1, S, i);
+            Inc(i, Length(S1));
+          end;
+        end else

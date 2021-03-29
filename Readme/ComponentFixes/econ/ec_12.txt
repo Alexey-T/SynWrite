@@ -1,0 +1,78 @@
+ecSyntAnal
+
+procedure TClientSyntAnalyzer.CloseAtEnd(StartTagIdx: integer);
+  //
+  function IndentOf(ATagIdx: integer): Integer;
+  var
+    Tag: TSyntToken;
+    P: TPoint;
+    NPos, i: Integer;
+    ch: WideChar;
+  begin
+    Result:= 0;
+    Tag:= Tags[ATagIdx];
+    NPos:= Tag.StartPos;
+    P:= FSrcProc.StrToCaret(NPos);
+    for i:= NPos-P.X+1 to NPos do
+    begin
+      ch:= FSrcProc.Text[i];
+      case ch of
+        ' ':
+          Inc(Result);
+        #9:
+          Inc(Result, 4);
+        else
+          begin
+            Result:= $ffff;
+            Break;
+          end;
+      end;
+    end;
+    //ShowMessage(Format('tag "%s", at line %d, indent %d', [TagStr[ATagIdx], P.Y, Result]) );
+  end;
+  //
+const
+  cSpecIndentID = 20;
+    //special number for "Group index" lexer property, which activates indent-based folding for a rule
+  cSpecTokenStart: char = '^';
+    //special char - must be first of token's type name (e.g. "^keyword");
+    //such tokens must NOT contain spaces+tabs at the beginning
+var i, j, Ind: integer;
+    Range: TTextRange;
+    s: string;
+begin
+  for i := FOpenedBlocks.Count - 1 downto 0 do
+   begin
+    Range := TTextRange(FOpenedBlocks[i]);
+    if Range.FRule.EndOfTextClose and
+       ((StartTagIdx = 0) or (Range.StartIdx >= StartTagIdx)) then
+     begin
+       Range.FEnd := TagCount - 1;
+       if Range.FRule.GroupIndex = cSpecIndentID then
+       begin
+         Ind := IndentOf(Range.StartIdx);
+         for j := Range.StartIdx+1 to TagCount-1 do
+         begin
+           s := '';
+           if Range.FRule.SyntOwner<>nil then
+             s := Range.FRule.SyntOwner.TokenTypeNames[Tags[j].FTokenType];
+           if (s<>'') and (s[1] = cSpecTokenStart) and (IndentOf(j) <= Ind) then
+           begin
+             Range.FEnd := j-1;
+             Break
+           end;
+         end;
+       end;
+       FOpenedBlocks.Delete(i);
+     end;
+   end;
+end;
+
+
+ecSyntmemo
+
+//after
+   else ColRangeText := GetColRangeTextAtPos(Line, ColIconPos);
+//add   
+  if Pos(#9, ColRangeText)>0 then
+    ColRangeText := StringReplace(ColRangeText, #9, StringOfChar(' ', TabList[0]), [rfReplaceAll]);

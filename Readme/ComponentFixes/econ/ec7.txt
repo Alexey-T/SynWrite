@@ -1,0 +1,30 @@
+//ecLexLibDlg.pas:
+procedure TLexerLibraryDlg.FillList;
+var i: integer;
+    cur: TObject;
+    li: TListItem;
+    sl: TStringList;
+begin
+  if LV.Selected <> nil then cur := LV.Selected.Data
+    else cur := nil;
+
+  sl := TStringList.Create;
+  sl.Duplicates := dupAccept;
+  sl.Sorted := true;
+  for i := 0 to FLexLib.AnalyzerCount - 1 do
+    sl.AddObject(FLexLib.Analyzers[i].LexerName, FLexLib.Analyzers[i]);
+
+  LV.Items.BeginUpdate;
+  try
+    LV.Items.Clear;
+    for i := 0 to sl.Count - 1 do
+     begin
+      li := LV.Items.Add;
+      FillItem(li, TSyntAnalyzer(sl.Objects[i]));
+      if li.Data = cur then li.Selected := True;
+     end;
+  finally
+    LV.Items.EndUpdate;
+    sl.Free;
+  end;
+end;

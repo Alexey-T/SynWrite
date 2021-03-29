@@ -1,0 +1,113 @@
+ecSyntMemo.pas
+
+replace calls to DrawNonPrinted, remove "if FNonPrinted.Visible": 
+
+              if {FNonPrinted.Visible and} not IsPrint then DrawNonPrinted; //AT
+                     if {FNonPrinted.Visible and} not IsPrint then
+                       DrawNonPrinted; //AT
+              
+change DrawNonPrinted to always hilite selected line-ends BG:
+---------
+  procedure DrawNonPrinted;
+  var i, tx, lk, t: integer;
+      C: ecChar;
+      s, sC: ecString; //AT
+      HiliteBG: boolean; //AT
+      Offset, HeightY: Integer; //AT
+  const
+    cDx = 2;
+    cDy = 2; //indents for CR/LF mark
+  begin
+    //AT
+    if FSelLength = 0 then
+      HiliteBG := false
+    else
+    begin
+      Offset := CaretPosToStrPos(Point(0, Line)) + Lines.LineLength(Line);
+      HiliteBG := (Offset >= FSelStart) and (Offset < FSelStart + FSelLength);
+    end;  
+    if not FNonPrinted.Visible and (not LineEnd or not HiliteBG) then Exit;
+
+     //Draw non printed
+     Canvas.Brush.Style := bsClear;
+     if FNonPrinted.UseFont then Canvas.Font := FNonPrinted.Font
+      else Canvas.Font.Color := FNonPrinted.Color;
+     HeightY := Canvas.TextHeight('W') + FLineSpacing;
+     if LineEnd then
+      begin
+        i := Lines.LineSpace(Line) - Lines.LineLength(Line);
+        if (Line < Lines.Count) and (i > 0) then
+        if (not FNonPrinted.Visible) or (not FShowLineEnds) then
+        begin
+          if not FNonPrinted.Visible then
+            sC := ' ' //show space at line-ends
+          else
+          if (i = 1) and (Lines.TextFormat in [tfCR_NL, tfDefault]) then
+            sC := FNonPrinted.SoftLineBreakChar
+          else
+            sC := FNonPrinted.LineBreakChar;
+          if HiliteBG then
+          begin
+            Canvas.Brush.Color := DefaultStyles.SelectioMark.BgColor;
+            Canvas.FillRect(Rect(X, Y, X + Canvas.TextWidth(sC), Y + HeightY));
+          end;
+          Canvas.TextOut(X, Y, sC);
+        end
+        else
+        begin
+          Canvas.Font.Size := Canvas.Font.Size - cDy;
+          s := Lines.LineEndStr(Line);
+          for i := 1 to Length(s) do
+          begin
+            case s[i] of
+              #13: sC := 'CR';
+              #10: sC := 'LF';
+              else sC := '?';
+            end;
+
+            if HiliteBG then
+            begin
+              Canvas.Brush.Color := DefaultStyles.SelectioMark.BgColor;
+              Canvas.FillRect(Rect(X, Y, X + Canvas.TextWidth(sC) + cDx*2, Y + HeightY));
+            end;
+
+            Inc(X, cDx);
+            if opColorNonPrintedBG <> clNone then
+              Canvas.Brush.Color:= opColorNonPrintedBG;
+            Canvas.TextOut(X, Y + cDy div 2, sC);
+            Inc(X, Canvas.TextWidth(sC));
+          end;
+        end;
+      end
+      //below is old MZ's code
+     else
+       begin
+         tx := X;
+         lk := LogK;
+         for i := 1 to ElemLen do
+           begin
+             C := GetChar(k + i);
+             if C = #9 then
+               begin
+                 t := NextTab(lk, BasePos + K + i);
+                 if t > lk then
+                   begin
+                     Canvas.TextOut(tX, Y, FNonPrinted.TabChar);
+                     Inc(tx, Canvas.TextWidth(' ') * (t - lk));
+                     lk := t;
+                   end;
+               end else
+               begin
+                 if C = ' ' then
+                   begin
+                     Canvas.TextOut(tX, Y, FNonPrinted.SpaceChar);
+                   end;
+                 Inc(tx, ecTextExtent(Canvas, C).cx);
+                 Inc(lk);
+               end;
+           end;
+       end;
+     Canvas.Brush.Style := bsSolid;
+     Canvas.Font := Font;
+  end;
+

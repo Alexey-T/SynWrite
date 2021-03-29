@@ -1,0 +1,21 @@
+ecSyntMemo.pas
+1.window update on holding PgUp/PgDn keys.
+in block
+      smPageUp:      begin
+                       x := ScrollPosY;
+                       ......
+                       .....
+                     end;
+add Update at end:
+      smPageUp:      begin
+                       x := ScrollPosY;
+                       ......
+                       .....
+                       Update;
+                     end;
+
+2.in the same code make VisibleLines function used only once.
+
+3.update on scrollbar thumb dragging.
+procedure TCustomSyntaxMemo.WMVScroll
+add "Update;" call at end.

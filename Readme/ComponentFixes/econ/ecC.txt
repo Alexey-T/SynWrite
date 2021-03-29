@@ -1,0 +1,6 @@
+//ecSyntMemo.pas
+procedure TCustomSyntaxMemo.RemoveTrailingBlanks
+replace
+  IsSpaceChar(s[N - cnt])
+with
+  (s[N - cnt]=' ')
