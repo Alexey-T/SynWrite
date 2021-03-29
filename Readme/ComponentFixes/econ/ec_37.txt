@@ -1,4 +1,0 @@
-ecSyntmemo.pas
-TSyntaxMemo
-  public
-    property Dragging: boolean read FDragging write FDragging;

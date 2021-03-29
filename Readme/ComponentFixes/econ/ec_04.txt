@@ -1,9 +1,0 @@
-ecSyntMemo.pas
-
-in
-     if ElemLen > 256 then ElemLen := 256;
-        
-change constant to 512     
-     //it's needed (e.g. lines longer than 4700 are invisible) but with bigger value
-     //which won't give unintended word-wrap on 1900x1200 monitor.
-     if ElemLen > 512 then ElemLen := 512;

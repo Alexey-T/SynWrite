@@ -1,7 +1,0 @@
-ecSyntMemo
-procedure TCustomSyntaxMemo.RemoveTrailingBlanks(WithUndo: Boolean);
-
-replace line
-       while (cnt < N) and {IsSpaceChar(s[N - cnt])}(s[N - cnt]=' ') do
-to       
-       while (cnt < N) and ((s[N - cnt]=' ') or (s[N - cnt]=#9)) do //AT

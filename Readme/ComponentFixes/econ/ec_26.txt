@@ -1,7 +1,0 @@
-ecSyntMemo
-
-after:
-    property SelRect: TRect read FBlock write SetSelRect;
-add:
-    property SelStartMarked: Integer read FMarkedSelStart write FMarkedSelStart; //AT
-    property DragPos: Integer read FDragPos write FDragPos; //AT

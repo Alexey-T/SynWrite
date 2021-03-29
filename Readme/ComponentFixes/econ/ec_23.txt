@@ -1,7 +1,0 @@
-ecSyntMemo
-
-replace string
-                    S := S + lBreak + GetAutoCloseText(R, StringOfChar(' ', ind));
-
-with
-                    S := S + lBreak + GetAutoCloseText(R, GetIndentString(ind, False)); //AT

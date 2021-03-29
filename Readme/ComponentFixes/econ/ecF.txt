@@ -1,7 +1,0 @@
-//ecPopupCtrl.pas
-procedure TTemplatePopup.SearchKeyPress(Sender: TObject; var Key: Char);
-..
-begin
-  if ctEnableSearch in Foptions then
-  case Key of
-    #9: CloseUp(True); //add line

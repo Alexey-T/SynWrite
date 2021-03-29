@@ -1,6 +1,0 @@
-ecSyntMemo
-
-procedure TCustomSyntaxMemo.PasteFromClipboard;
-comment 2 blocks with "if TabMode":
-            //if TabMode <> tmTabChar then
-            //  .............

@@ -1,6 +1,0 @@
-ecSyntTree.pas
-
-function TCustomSyntaxTreeView.AddNode
-
-add "Trim" around "StringReplace":
-  Result := Items.AddChild(Prn, Trim(StringReplace(Text, #9, ' ', [rfReplaceAll])));

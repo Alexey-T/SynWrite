@@ -1,3 +1,0 @@
-ecSyntMemo.pas
-
-Change parameters of *.LoadFromFile from string to WideString.

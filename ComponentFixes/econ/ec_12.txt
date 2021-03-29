@@ -1,28 +1,42 @@
 ecSyntAnal
 
-//add
-function IndentOf(const S: ecString): Integer;
-var
-  i: Integer;
-begin
-  Result:= 0;
-  for i:= 1 to Length(S) do
-    case S[i] of
-      ' ': Inc(Result);
-      #9: Inc(Result, 4);
-      else Break;
-   end;
-end;
-
-
-//change
 procedure TClientSyntAnalyzer.CloseAtEnd(StartTagIdx: integer);
+  //
+  function IndentOf(ATagIdx: integer): Integer;
+  var
+    Tag: TSyntToken;
+    P: TPoint;
+    NPos, i: Integer;
+    ch: WideChar;
+  begin
+    Result:= 0;
+    Tag:= Tags[ATagIdx];
+    NPos:= Tag.StartPos;
+    P:= FSrcProc.StrToCaret(NPos);
+    for i:= NPos-P.X+1 to NPos do
+    begin
+      ch:= FSrcProc.Text[i];
+      case ch of
+        ' ':
+          Inc(Result);
+        #9:
+          Inc(Result, 4);
+        else
+          begin
+            Result:= $ffff;
+            Break;
+          end;
+      end;
+    end;
+    //ShowMessage(Format('tag "%s", at line %d, indent %d', [TagStr[ATagIdx], P.Y, Result]) );
+  end;
+  //
 const
   cSpecIndentID = 20;
     //special number for "Group index" lexer property, which activates indent-based folding for a rule
-  cSpecTokenStart: char = '1';
-    //special char - must be first of token's type name (e.g. "1keyword");
-    //Also such tokens must contain spaces+tabs at the beginning (use parser regex like "^[\x20\x09]*\w+")
+  cSpecTokenStart: char = '^';
+    //special char - must be first of token's type name (e.g. "^keyword");
+    //such tokens must NOT contain spaces+tabs at the beginning
 var i, j, Ind: integer;
     Range: TTextRange;
     s: string;
@@ -36,11 +50,13 @@ begin
        Range.FEnd := TagCount - 1;
        if Range.FRule.GroupIndex = cSpecIndentID then
        begin
-         Ind := IndentOf(TagStr[Range.StartIdx]);
+         Ind := IndentOf(Range.StartIdx);
          for j := Range.StartIdx+1 to TagCount-1 do
          begin
-           s := Owner.TokenTypeNames[Tags[j].FTokenType];
-           if (s[1] = cSpecTokenStart) and (IndentOf(TagStr[j]) <= Ind) then
+           s := '';
+           if Range.FRule.SyntOwner<>nil then
+             s := Range.FRule.SyntOwner.TokenTypeNames[Tags[j].FTokenType];
+           if (s<>'') and (s[1] = cSpecTokenStart) and (IndentOf(j) <= Ind) then
            begin
              Range.FEnd := j-1;
              Break
