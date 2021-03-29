@@ -5,6 +5,7 @@ Legend:
 
 6.41.2780
 
++ updated code for indentation-based-folding from CudaText, to support CudaText lexers
 * removed lexers to add-ons: Apache config, C#, Delphi resources, Go, Haskell, Inno Setup, LESS, Makefile, Pascal, Perl, PowerShell, Properties, Ruby, SCSS, Tcl, VBScript
 + updated all other lexers from CudaText
 
