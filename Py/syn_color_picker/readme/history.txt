@@ -1,0 +1,9 @@
+
+2015.01.31
+
+- fix detection of colortoken position (don't use ed.get_word)
+
+2015.01.30
+
+- fix call on color "#rgb" with 3 digits
+- fix pressing Esc in dialog got #ffffffff
